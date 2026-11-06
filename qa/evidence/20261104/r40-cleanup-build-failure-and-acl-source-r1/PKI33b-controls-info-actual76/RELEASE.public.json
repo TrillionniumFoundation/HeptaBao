@@ -1,0 +1,119 @@
+{
+  "schema": "heptabao.jwt-pki33b-controls-info4-lane-release.v1",
+  "job": "1a1b001e788-fc05-6d66",
+  "slot": "jwt_pki_33b814c7_build_controls_inert_gitfirst_r1",
+  "GO": {
+    "blob": "151ec9b645dc9480f825162627d356768c253c10",
+    "bytes": 5516,
+    "sha256": "02554b9b9581649eee2d9ed4ac7eebc71dbf172a9d89201aa20c2c19392a956e"
+  },
+  "metadataCalls": 12,
+  "metadataObservers": 4,
+  "metadataImmutablePages": 4,
+  "originalObservers": [
+    {
+      "id": "37e6793e1a2f76de36163f1c4c378c7fb81ff8cfd532ae57a2821aa6d622f302",
+      "tool": "file_info",
+      "payload": {
+        "blob": "0ca57a92e272ffec1b52d199e62f4305a8537da8",
+        "bytes": 583,
+        "sha256": "4283cabb169e3edefdfc58e3a86dd9372490fb7564faae0ee048fc8663d5a571"
+      },
+      "payloadTree": "ac756e0b2ca8be563f8a7a70e9db1d5ee8af1454",
+      "nativeText": {
+        "blob": "31dbc3678d61a73a2bdec9cfe2ccf00a0abe3fa0",
+        "bytes": 466,
+        "sha256": "f16b1a05c5f21d4dea3a1211de991eb4b95efd86ef5c9a34493f8b95de5a05c0"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "c308e962ef15ebb2d386626909a1d50735e4788d1ea977514a7ed5158f1dc4ba",
+      "tool": "file_info",
+      "payload": {
+        "blob": "66593912b2eca486d4910c909bceb231de38b4c0",
+        "bytes": 590,
+        "sha256": "ee3b5305c6c579c8d5088bda9915fb2f287806dea81030fd9a9b39db1fbdda05"
+      },
+      "payloadTree": "1b01ad38247614d5d9c0ca104b9c79821299fca2",
+      "nativeText": {
+        "blob": "783f653c328b146e68025ecd41c437b7fe19e444",
+        "bytes": 473,
+        "sha256": "d47ce4ff18f9335ed53a7b50957ad250b202af1be684b6eb4d60720efa4bc83d"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "1113a55bee6550171be223c962ac709799f51b6bfe0c7c4ea63b857520466a80",
+      "tool": "file_info",
+      "payload": {
+        "blob": "aa80729bd05800dae12afea15e40d5211f3fbf8f",
+        "bytes": 591,
+        "sha256": "635726175d520c4bd76bca9365e4f156ba9f1b17f8134603f0a384e17ed85e73"
+      },
+      "payloadTree": "6d786377d1f6403ed560793f26c73c85530ce8f6",
+      "nativeText": {
+        "blob": "49b901a91bdd59f5f036afefe918e98dc1944685",
+        "bytes": 474,
+        "sha256": "6a19f9b5632c3cc4debc4e682bedc30d2dd382b31192ce222cb66ad7ad0f811d"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "178658173a8037639dfa5b0eb5198e969318b76fe5e636ee6c2eb30f8dddbc91",
+      "tool": "file_info",
+      "payload": {
+        "blob": "5a92201d46dcc574b541dfce60e038e9e2513f88",
+        "bytes": 592,
+        "sha256": "69327374012478f41584abe1a4f8f402512f5663dd486cf19ea3bb07125deda0"
+      },
+      "payloadTree": "a265950360b12e19186bab1507aa8d62687223c5",
+      "nativeText": {
+        "blob": "b87bd18cfb071f2b3dba60018038cee8bdd30f4b",
+        "bytes": 475,
+        "sha256": "d0cea042676e0ea2326af75dfe8b8f76b37adbd9ee8bfd40f48ef32778c3b5f6"
+      },
+      "pages": 1,
+      "completedInactive": true
+    }
+  ],
+  "allFourExactContentAndFull9": true,
+  "allThreeOriginalPublisherFull9Match": true,
+  "receiptOriginalMetadata": {
+    "index": 3,
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/inert-stage.result.public.json",
+    "size": 1854,
+    "sha256": "f1e1f3a2576fcb2ecd05cdb9b8f4fbebd6bb849eddb48536eb5c66ed5be109e2",
+    "version": "66306:31235927:1854:1793954281111835946:1793954281112810962",
+    "nativeText": {
+      "blob": "b87bd18cfb071f2b3dba60018038cee8bdd30f4b",
+      "bytes": 475,
+      "sha256": "d0cea042676e0ea2326af75dfe8b8f76b37adbd9ee8bfd40f48ef32778c3b5f6"
+    },
+    "originalOperation": "178658173a8037639dfa5b0eb5198e969318b76fe5e636ee6c2eb30f8dddbc91",
+    "full9Strings": [
+      "66306",
+      "31235927",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "1854",
+      "1793954281111835946",
+      "1793954281112810962"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "receiptBodyIndependentlyRead": false,
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "paused": false,
+  "laneReleased": true,
+  "Cargo": 0,
+  "originalBodyStarts": 0
+}

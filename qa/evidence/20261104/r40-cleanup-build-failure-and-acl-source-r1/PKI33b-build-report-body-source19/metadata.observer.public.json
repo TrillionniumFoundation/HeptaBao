@@ -1,0 +1,17 @@
+{
+  "id": "8e81613aa575b93e807bfe358614abb238250fc93a4180109222d00bde1430da",
+  "tool": "file_info",
+  "payload": {
+    "blob": "a294968f71ee5d305870474b34ef00fa4a548b26",
+    "bytes": 597,
+    "sha256": "9e969d0c8c4f4e015fd446e63e81c21099712f67a19db641ff5a25645cd8bad4"
+  },
+  "payloadTree": "983088ea0bfa82bf169644dda1be483aa8b7b969",
+  "nativeText": {
+    "blob": "d6e8562a91ba3ee27cfcf8a4c51e5644d9f904c1",
+    "bytes": 480,
+    "sha256": "66f341b2e43f26671e7eecdc96a4dabc0aefaa8c2634ada148001b75adc29ffb"
+  },
+  "pages": 1,
+  "completedInactive": true
+}

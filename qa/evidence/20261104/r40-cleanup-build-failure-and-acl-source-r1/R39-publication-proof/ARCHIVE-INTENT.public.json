@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r39-publication-proof",
+  "records": [
+    {
+      "name": "publication-proof.json",
+      "blob": "f1d017ac938e77241a763f464da9eb35df1c6671",
+      "bytes": 2311,
+      "sha256": "f43bac1903dc30e4a53ce04be46c7a96fee954f79334d0ff4e0a84e78a1990e2"
+    }
+  ],
+  "expected_data_tree": "8b8e5879c2fb4c4f8f9187f1749b7a32846b7be4",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

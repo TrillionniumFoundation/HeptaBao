@@ -1,0 +1,61 @@
+{
+  "schema": "heptabao.immutable-partial-evidence-manifest.v1",
+  "entries": [
+    {
+      "path": "STATE.public.json",
+      "blob": "b174296c1b46c119356df90d5c68b6ca5bc4c19c",
+      "bytes": 1629,
+      "sha256": "8e94eed174a2e88206fb6e27685df93d404eba8512cdb052e6528690656e6f3c"
+    },
+    {
+      "path": "root-bodyGO.original.json",
+      "blob": "f3a26514a3b4156e0bb27211df518018a24291fd",
+      "bytes": 4342,
+      "sha256": "b709c7af700ac09ba103a5a4d8668cd14670a8d351fedd3c8d6a582f7e1b2e37"
+    },
+    {
+      "path": "request.original.json",
+      "blob": "06f7a3eccf5de1c877b552cab886d14086d0c51c",
+      "bytes": 432,
+      "sha256": "35921fca79a714035d0033a003d481862326e4a8dc6409f5017bbc4fb37ea992"
+    },
+    {
+      "path": "intent.original.json",
+      "blob": "3480c197eb5df8d3142b505007cbe1d5c0646a4a",
+      "bytes": 725,
+      "sha256": "b2a4fd53c5e91f7c0213d1b8bf8320514549b0bfad65bfe638b9f92b9cd6e281"
+    },
+    {
+      "path": "armed.original.json",
+      "blob": "14fcc5782a1d17fe1c13c2c99628f7644010b501",
+      "bytes": 862,
+      "sha256": "6f407f3182c4b49aa1ebfbf508196f94d8b3df12bfaa8900019321eb83f341dc"
+    },
+    {
+      "path": "SDK.original.json",
+      "blob": "f181c1e93e7b64c402b332fd29b23d0141762082",
+      "bytes": 247,
+      "sha256": "20bc68d840783af5cc8e791289d5ac77c6941d45f79768c397c95e629784e3fa"
+    },
+    {
+      "path": "invoke-result.public.json",
+      "blob": "d5e9af2c96f0380a144cc14c815b26467f6a17d8",
+      "bytes": 373,
+      "sha256": "233a4e393d54f34de6fa72d3b527216cc1a993a719bdd9d2801c7eb79a809880"
+    },
+    {
+      "path": "accept-failure.public.json",
+      "blob": "448dc2f9472df26a41ee62fe64ebc6c7dcaba296",
+      "bytes": 478,
+      "sha256": "f51349c7634b2917d1c57b17c24d48d275417543e63b8e9e94a73ab0bac5a249"
+    },
+    {
+      "path": "actual-info.original.json",
+      "blob": "45d1709e3bbbf74caee996369a1eefdfbf855a31",
+      "bytes": 483,
+      "sha256": "8430d3a4b0c79f274222678fd30f8f0cec8f7f546602c6a1a1a2a8c749c5a4c2"
+    }
+  ],
+  "rawFailurePreserved": true,
+  "body1Submitted": false
+}

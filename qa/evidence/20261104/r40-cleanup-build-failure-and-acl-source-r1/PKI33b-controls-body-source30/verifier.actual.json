@@ -1,0 +1,183 @@
+{
+  "schema": "heptabao.jwt-pki33b-controls-body4-source-checks.v1",
+  "pass": true,
+  "checks": 43,
+  "rows": [
+    {
+      "name": "strict8_hunks_both_whole",
+      "pass": true
+    },
+    {
+      "name": "unique_declared_delta:1",
+      "pass": true
+    },
+    {
+      "name": "unique_declared_delta:2",
+      "pass": true
+    },
+    {
+      "name": "unique_declared_delta:3",
+      "pass": true
+    },
+    {
+      "name": "unique_declared_delta:4",
+      "pass": true
+    },
+    {
+      "name": "unique_declared_delta:5",
+      "pass": true
+    },
+    {
+      "name": "unique_declared_delta:6",
+      "pass": true
+    },
+    {
+      "name": "unique_declared_delta:7",
+      "pass": true
+    },
+    {
+      "name": "unique_declared_delta:8",
+      "pass": true
+    },
+    {
+      "name": "only_declared_delta",
+      "pass": true
+    },
+    {
+      "name": "unchanged_function:gfAuthorizePublishedControlsInfoOnly",
+      "pass": true
+    },
+    {
+      "name": "unchanged_function:gfNeed",
+      "pass": true
+    },
+    {
+      "name": "unchanged_function:gfMetaEquals",
+      "pass": true
+    },
+    {
+      "name": "unchanged_function:gfState",
+      "pass": true
+    },
+    {
+      "name": "unchanged_function:gfSave",
+      "pass": true
+    },
+    {
+      "name": "unchanged_function:gfIntegerText",
+      "pass": true
+    },
+    {
+      "name": "unchanged_function:gfInitializeOnlyAfterRootGO",
+      "pass": true
+    },
+    {
+      "name": "unchanged_function:gfReconcileSameGitArchiveReadOnly",
+      "pass": true
+    },
+    {
+      "name": "exact_four_actual_version_requests",
+      "pass": true
+    },
+    {
+      "name": "exact_total90605_all_le64K",
+      "pass": true
+    },
+    {
+      "name": "four_info_whole_bindings",
+      "pass": true
+    },
+    {
+      "name": "old8K_newbody16K_only",
+      "pass": true
+    },
+    {
+      "name": "body_once_mark_before_native",
+      "pass": true
+    },
+    {
+      "name": "whole_body_version_eof_sha",
+      "pass": true
+    },
+    {
+      "name": "selected_attach_preserves_all_prior",
+      "pass": true
+    },
+    {
+      "name": "selected_ordered_body:0",
+      "pass": true
+    },
+    {
+      "name": "selected_ordered_body:1",
+      "pass": true
+    },
+    {
+      "name": "selected_ordered_body:2",
+      "pass": true
+    },
+    {
+      "name": "selected_ordered_body:3",
+      "pass": true
+    },
+    {
+      "name": "reject_no_body_GO",
+      "pass": true
+    },
+    {
+      "name": "reject_repeated_body",
+      "pass": true
+    },
+    {
+      "name": "reject_out_of_order",
+      "pass": true
+    },
+    {
+      "name": "reject_active_future",
+      "pass": true
+    },
+    {
+      "name": "reject_pending",
+      "pass": true
+    },
+    {
+      "name": "reject_paused",
+      "pass": true
+    },
+    {
+      "name": "reject_version_drift",
+      "pass": true
+    },
+    {
+      "name": "reject_range_extension",
+      "pass": true
+    },
+    {
+      "name": "new_binary16K_page_allowed",
+      "pass": true
+    },
+    {
+      "name": "new_binary_other_page_refused",
+      "pass": true
+    },
+    {
+      "name": "old_info8K_page_preserved",
+      "pass": true
+    },
+    {
+      "name": "old_info16K_page_refused",
+      "pass": true
+    },
+    {
+      "name": "all_four_infos_required",
+      "pass": true
+    },
+    {
+      "name": "duplicate_body_authorization_refused",
+      "pass": true
+    }
+  ],
+  "privateFakeStoreOnly": true,
+  "NativeCalls": 0,
+  "realSlotUnchanged": true,
+  "PythonExecuted": false
+}

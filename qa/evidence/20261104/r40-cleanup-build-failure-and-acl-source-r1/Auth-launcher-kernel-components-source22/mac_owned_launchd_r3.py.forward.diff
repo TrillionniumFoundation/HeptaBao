@@ -1,0 +1,30 @@
+--- a/mac_owned_launchd_r3.py.before
++++ b/mac_owned_launchd_r3.py.identity-candidate
+@@ -11,6 +11,8 @@
+ from pathlib import Path
+ from mac_native_process_observer_r1 import ProcessReader
+ 
++PYTHON_LAUNCHER = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14"
++PYTHON_KERNEL_IMAGE = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+ ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1')
+ QA=ROOT/'qa'
+ BINDING_READY=True  # Actual normal61 pins are bound; host execution requires separate root GO.
+@@ -105,7 +107,8 @@
+         from mac_guarded_current_capture_r3 import public_code_pin
+         actual_python=public_code_pin('/opt/homebrew/bin/python3',remaining=self._remaining,
+                                       critical=self.signals.critical)
++        need(actual_python==python_runtime and actual_python['path']==PYTHON_LAUNCHER,
++             'same_actual_synthetic_python_for_wrappers')
+-        need(actual_python==python_runtime,'same_actual_synthetic_python_for_wrappers')
+         self.python_runtime=dict(actual_python)
+         for kind in ('server','consumer'):
+             need(self._query(LABELS[kind],None) is None,'owned_label_initially_absent')
+@@ -279,7 +282,7 @@
+             observed=self.reader.read(identity['pid'])
+             need(observed==identity and observed['uid']==501
+                  and observed['pid']==observed['pgid']
++                 and observed['executable']==PYTHON_KERNEL_IMAGE,
+-                 and observed['executable']==self.python_runtime['path'],
+                  'actual_wrapper_birth_executable')
+             entry['wrapperIdentity']=identity;entry['groups'].add(identity['pgid'])
+             entry['readySha256']=sha(raw)

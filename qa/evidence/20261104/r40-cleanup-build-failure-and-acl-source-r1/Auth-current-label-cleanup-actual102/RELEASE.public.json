@@ -1,0 +1,200 @@
+{
+  "schema": "heptabao.mac-owned-home-t5-one-label-cleanup.release.v1",
+  "scope": "CURRENT_FIXED_QA_LABEL_REMOVAL_ONLY",
+  "job": {
+    "host": "mac",
+    "id": "1a1b0305ba9-fc05-6ee6"
+  },
+  "sourceTree": "32fc87d007466d4de82c0d33bc1bb04870405151",
+  "go": {
+    "blob": "69c5e55ea0558d6d86546603eaab39e643e26672",
+    "bytes": 15897,
+    "sha256": "815533ef60d8582fb89d8543faa8c267a6b298baf5afc8e7d66811e7de2ad560"
+  },
+  "request": {
+    "blob": "1ca3b73f3cc0bd3cb11a2934dcbfff3d6ae06325",
+    "bytes": 100721,
+    "sha256": "d7ae0a4750681b826dd8a20be78c258f1cf9e04dc1f545aaf8334feeac85c75e"
+  },
+  "startSdk": {
+    "blob": "a97e497b022bc11f832516693c22d1d67df3af36",
+    "bytes": 1426,
+    "sha256": "238515dd44353e296fbd57c3882c4cf3b4b3bb28bae01f1f60d6d7d220b6584b"
+  },
+  "authority": {
+    "blob": "c1e52455a57e8ee292d87d91d973bdf6503d40c5",
+    "bytes": 733,
+    "sha256": "3287a9afd907d0ed8fd01c78efdffd21e0bae63c06323b09c34bf7dbd555a26a"
+  },
+  "stdout": {
+    "blob": "73b6e59adf15b3dd9255e445948362f71bc8cd4c",
+    "bytes": 19233,
+    "sha256": "969e3eef25a7b89610a460ede15467d860c4858cd41527208d6acf21970ac1df"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "nativeCalls": 17,
+  "originalObservers": 3,
+  "immutablePages": 10,
+  "observers": [
+    {
+      "id": "4b79662ff5e9b0f153bee6af39d912512e69ddf525c75ac9ca85abb8552ddc38",
+      "tool": "process_status",
+      "payload": {
+        "blob": "4c11fcc27e417ea63fb24acd89f3137b50f3b74c",
+        "bytes": 912,
+        "sha256": "daacf50e34c009c49bfe1e3937372e8a5ae53e43a52131680015c6f97298bc14"
+      },
+      "payloadTree": "c6291d3df8fc2ef52c704ccda74a2c1b227f4162",
+      "nativeText": {
+        "blob": "c1e52455a57e8ee292d87d91d973bdf6503d40c5",
+        "bytes": 733,
+        "sha256": "3287a9afd907d0ed8fd01c78efdffd21e0bae63c06323b09c34bf7dbd555a26a"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "37bbdc99df0408fc1ec780ed4003f6b48a887d5b114929936789b8dc7c77409d",
+      "tool": "process_read",
+      "payload": {
+        "blob": "598d23b2103d119c70d64ec517f56db68d180b3c",
+        "bytes": 54727,
+        "sha256": "9dc433f30bfece43d4f9a5be3a95bd5eb16400308bd9a27dd6b3fa0be8a1b8b5"
+      },
+      "payloadTree": "5410e5761dbdedd829679aa211c83f92afb4ff31",
+      "nativeText": {
+        "blob": "6b243421ca588449444d3f0cdc099258d6d38e27",
+        "bytes": 51181,
+        "sha256": "c558b8b4f93ec506663863cc7a426270f0a15697242b88750fd392236a3e8e43"
+      },
+      "pages": 7,
+      "completedInactive": true
+    },
+    {
+      "id": "377b79504610f321dafcd6b05363be43bad2ed3f93fac5938c6afba3e8fdaa8f",
+      "tool": "process_read",
+      "payload": {
+        "blob": "70d1ab1756fcbe53dcba2ad6464d0c1464c7af34",
+        "bytes": 9909,
+        "sha256": "f21ae6688280680f53f8902bba6d047cf5013dea034a79b2dbdc257c7ab325b2"
+      },
+      "payloadTree": "3fca559980cb02185b999ef1bfab2ce06f12f4c4",
+      "nativeText": {
+        "blob": "06152398b898f1ed0cff5d77ac135e8eaddf5af8",
+        "bytes": 9174,
+        "sha256": "6572047399acf0d9d6f0387015726c1606466df8489c3a8b1c671579bb246a35"
+      },
+      "pages": 2,
+      "completedInactive": true
+    }
+  ],
+  "allOriginalObserversCompletedInactive": true,
+  "nativeCallsInFlight": 0,
+  "nativeFuturesInFlight": 0,
+  "activeObserver": null,
+  "pending": null,
+  "laneAReleased": true,
+  "currentLabelRemovalConfirmed": true,
+  "currentRegistrationOutcomeUnknown": false,
+  "bootoutAttempted": true,
+  "bootoutReturnedKnown": true,
+  "missingServiceObservations": 2,
+  "missingReplyCode": 113,
+  "finalFencesPassed": true,
+  "allReturnedApplicationFdsClosed": true,
+  "allDirectHelpersClosed": true,
+  "registeredApplicationFds": 21,
+  "directHelpers": 4,
+  "observationComplete": true,
+  "outcomeUnknown": false,
+  "elapsedSeconds": 0.244020833,
+  "deadlineMetAfterClosure": true,
+  "historical": {
+    "R4ManagedScopeStillUnknown": true,
+    "readonlyR2Helper87650ClosureStillUnknown": true,
+    "oldAuthBusLabelUntouched": true,
+    "old11754UnknownUnchanged": true,
+    "oldGit8916UnknownUnchanged": true,
+    "registrationClosureClaimed": false,
+    "historicalR4Rewritten": false
+  },
+  "productOrConsumerStarted": false,
+  "authBusCredentialQualification": false,
+  "productionCutover": false,
+  "futureNativeAuthorizedByThisRelease": false,
+  "pureChecks": [
+    {
+      "name": "single_original_start",
+      "passed": true
+    },
+    {
+      "name": "all_native_calls_accepted",
+      "passed": true
+    },
+    {
+      "name": "all_original_observers_closed",
+      "passed": true
+    },
+    {
+      "name": "exact_page_count",
+      "passed": true
+    },
+    {
+      "name": "no_active_native",
+      "passed": true
+    },
+    {
+      "name": "authority_terminal_full_durable",
+      "passed": true
+    },
+    {
+      "name": "whole_stdout_exact",
+      "passed": true
+    },
+    {
+      "name": "empty_stderr",
+      "passed": true
+    },
+    {
+      "name": "one_bootout_known",
+      "passed": true
+    },
+    {
+      "name": "two_exact_missing",
+      "passed": true
+    },
+    {
+      "name": "current_removal_confirmed",
+      "passed": true
+    },
+    {
+      "name": "final_closure",
+      "passed": true
+    },
+    {
+      "name": "historical_unknown_preserved",
+      "passed": true
+    },
+    {
+      "name": "no_product_or_credential",
+      "passed": true
+    },
+    {
+      "name": "original_status_0",
+      "passed": true
+    },
+    {
+      "name": "original_status_1",
+      "passed": true
+    },
+    {
+      "name": "original_status_2",
+      "passed": true
+    }
+  ],
+  "localCheckerHistoryPreserved": true
+}

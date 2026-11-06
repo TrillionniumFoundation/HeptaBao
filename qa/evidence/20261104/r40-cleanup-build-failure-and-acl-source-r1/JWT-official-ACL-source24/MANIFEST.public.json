@@ -1,0 +1,151 @@
+{
+  "schema": "heptabao.native-jwt.acl-oracle.source-packet.v1",
+  "status": "SOURCE_ONLY_UNBOUND",
+  "source_commit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+  "source_tree": "5497775d9d473541e13e1603be8c893a3e27681b",
+  "official_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+  "actual_cases": 0,
+  "runtime_calls": 0,
+  "ref_mutations": 0,
+  "source_predictions_are_not_observations": true,
+  "files": [
+    {
+      "path": "BINDING.unbound.public.json",
+      "blob": "216832a5ad0034a36e2c9c89b1918e91d09f5074",
+      "bytes": 619,
+      "sha256": "6bdc85ff375aa8832bfdcdbd912e7ec6f199154ec373fdf329b94aa26014f85a"
+    },
+    {
+      "path": "COMMON-CONFIG.template.json",
+      "blob": "8d30f39ec9a2c306acf31cd0a036f0fb15c25d94",
+      "bytes": 181,
+      "sha256": "5367a6bc61bda998c8a7f75937174e3b83f091becea6f8c377439fb1e431f795"
+    },
+    {
+      "path": "COMMON-ROLE.template.json",
+      "blob": "44e935106eb66dac1bd32d76bd56de0baca7f298",
+      "bytes": 111,
+      "sha256": "7d816d3da051f8d64da1e43499ae631cff8949629d5da8bb93d18b880ad93df0"
+    },
+    {
+      "path": "MATRIX.public.json",
+      "blob": "7364a32a2341a56b0730ad3486c72bdbd6de53c4",
+      "bytes": 14285,
+      "sha256": "59e3c9519e59e7ae26cde512a8171d39e2175e8bb24f12039222218570ebe6f8"
+    },
+    {
+      "path": "PLAN.md",
+      "blob": "f5a54c51533ed7d9f4d3b4675b59dcc7fcdbde1c",
+      "bytes": 5430,
+      "sha256": "a8dcb8a194096dad9550cbaab7f73d9cc7b558d483e703604cda7a9acd637015"
+    },
+    {
+      "path": "references/current/auth_jwt_pem.rs",
+      "blob": "9ea3ae19b523bd9e0b05e08feca98e8be338464c",
+      "bytes": 7687,
+      "sha256": "418e033a050fc13433d7351b47b40f4f2a648411252282007e979bdad5571254"
+    },
+    {
+      "path": "references/current/auth_native_jwt.rs",
+      "blob": "2e76f906edefb92406328459fd6c5711dfa7ad2b",
+      "bytes": 17391,
+      "sha256": "d28cc6af7a1ef30fecb704ac9d3917a2c54ad8d6f8ac1cb77e6f75eca9de5042"
+    },
+    {
+      "path": "references/current/auth.rs",
+      "blob": "19646b7848e5588d72f5514400d607696549611d",
+      "bytes": 397709,
+      "sha256": "6fe0c3a8af3af126be3217143c85519e9b6d9abf7fcbc33f08e6b553ba5a7c97"
+    },
+    {
+      "path": "references/current/http.rs",
+      "blob": "58706d8d92e5e4a3c38a0b5843ead700ab2c4825",
+      "bytes": 231923,
+      "sha256": "6d90383db0dabca25b6f6806e2b5923352976f4c4a69b2cce9a0a2dde7d727eb"
+    },
+    {
+      "path": "references/official/acl.go",
+      "blob": "2251475f3161a7eca462c0098b0ef6f8c970a553",
+      "bytes": 27409,
+      "sha256": "6e75975d1f7ad3dd52eea2e9a87febcd3c4d7ea0c15965c20bf8b7ed6ecc3a17"
+    },
+    {
+      "path": "references/official/backend.go",
+      "blob": "36117c297614a6e5c38b98c57652d297bee10123",
+      "bytes": 4189,
+      "sha256": "f0756be85b1ef0b9beb41cff3268cd321b47b1c2cf85b14407c338fb8e61784a"
+    },
+    {
+      "path": "references/official/config.go",
+      "blob": "ffbf35fb32bc41f0c1c617e29fb1e1ae5cfdf027",
+      "bytes": 24654,
+      "sha256": "d0c4d8dc1934e0490d918426e6107500482e08616ca9f5d34054fad3b424aa80"
+    },
+    {
+      "path": "references/official/http_logical.go",
+      "blob": "7c091863ff2496db948ad945060d320d66b4bb7f",
+      "bytes": 15421,
+      "sha256": "5d474557d9dd8a28f0dfa3a83eb3c8e2fac502fae8b3404a3df1cc81c438f451"
+    },
+    {
+      "path": "references/official/role.go",
+      "blob": "558143b0ea43dc030676f05699d49ecb42542fff",
+      "bytes": 25759,
+      "sha256": "76cf4a9d86973e1a7d9a4663fa3f24da6be931387e2b07fb8c7ce0e625ebbb3d"
+    },
+    {
+      "path": "source-read/current-pem.fresh.original-sdk.json",
+      "blob": "5830210c217a32d12a918ea1965f1257bd0b1dc5",
+      "bytes": 8112,
+      "sha256": "cb410be4d584445f35495b973cd78fad8cf9f7031fbf48f623685e93b30d4b4f"
+    },
+    {
+      "path": "source-read/official-acl.whole.original-sdk.json",
+      "blob": "1b5159105efb14e25e523bb228691ca44137d488",
+      "bytes": 30495,
+      "sha256": "135cc62333d985dd2aa0512c24a31d31df4d9a6db584da87092d2bd5c6ceeb13"
+    },
+    {
+      "path": "source-read/official-backend.whole.original-sdk.json",
+      "blob": "609803d49898dc352829ae269dfc151f11282134",
+      "bytes": 4811,
+      "sha256": "ffe00557c985aa19aa98266601442664a14648248fcc251675aff11bb8ac4c28"
+    },
+    {
+      "path": "source-read/official-config.original-sdk.json",
+      "blob": "98b78a32af177e7a05832d04cd794f09a6c5a278",
+      "bytes": 54747,
+      "sha256": "827c340c61bbe3947639746db989052ca86fa41d99b3dcb9c9e5e63f2ed8f60d"
+    },
+    {
+      "path": "source-read/official-config.whole.original-sdk.json",
+      "blob": "cea0d66d96b797702f56d297946a9ac4e63fb949",
+      "bytes": 27112,
+      "sha256": "82f398b9ae292c2a5e077df6ef55b64e55f8bdebed1e8ba87a427cb7a3d6f297"
+    },
+    {
+      "path": "source-read/official-http.whole.original-sdk.json",
+      "blob": "7a32e9963753b1c3536f06552d27902d1804b61a",
+      "bytes": 17227,
+      "sha256": "8643e628bc91fa6b9d33d2e03db2ce3b5314190209542020ea08a91f6725988a"
+    },
+    {
+      "path": "source-read/official-role.whole.original-sdk.json",
+      "blob": "0b4cb4bd88e46a203244543962119f1593f24245",
+      "bytes": 28432,
+      "sha256": "f9aaf3b8e2011970376344588d6dcb2501ae79c905e9f7fae858c2ce9b1db5e0"
+    },
+    {
+      "path": "source-read/parser-error.public.json",
+      "blob": "7bedcd4e83129d58ef4d8d47339ad5ef929eb6b5",
+      "bytes": 485,
+      "sha256": "90a44673c2145d642b8b989d19a8179de3a19a267ce49ff16e39386772c56c60"
+    },
+    {
+      "path": "SOURCES.public.json",
+      "blob": "aeceaaaf5fa8f6fde9f0f0c2691ad8e9e64a0de6",
+      "bytes": 5053,
+      "sha256": "8963352ab24804a4c0bdab694155c769564f612191e118c995959cef7e5ecbd1"
+    }
+  ]
+}

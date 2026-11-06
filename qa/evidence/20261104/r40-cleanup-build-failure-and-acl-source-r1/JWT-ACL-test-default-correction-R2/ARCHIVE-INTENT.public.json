@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r40-jwt-acl-successor-test-delegation-correction",
+  "records": [
+    {
+      "name": "PLAN.public.json",
+      "blob": "a73e1d69f23c64b40aa8ec65e8c625ec177c4465",
+      "bytes": 2426,
+      "sha256": "9c7867d86162f6717ebb77be6704e389697fa8d1a7d30ac5e8bc3d3afabc7a5f"
+    },
+    {
+      "name": "service_native_jwt_tests.before.rs",
+      "blob": "452fd4d6d12d0fe050c38032b99e39c459292fbb",
+      "bytes": 42561,
+      "sha256": "89ee932bf1e5933620ef53f6e2d3537f6c3e8643ad3942bf78017107848277ff"
+    },
+    {
+      "name": "service_native_jwt_tests.after.rs",
+      "blob": "e39bb3ea23ad1689dd5543c8d87443196c9c3ff4",
+      "bytes": 43039,
+      "sha256": "11c25288286bbc65f2dd16e3cd4a8ffffad751b389b25ea24b5674760c0c1128"
+    },
+    {
+      "name": "test-delegation.strict.diff",
+      "blob": "9d9efe7faa3aa414386adc1a392b95628849c711",
+      "bytes": 12546,
+      "sha256": "3731894dae649a2df05e48cc4e14d20661fb4d8ce31552f14a5b1a85a908b6d3"
+    },
+    {
+      "name": "test-exact-replacements.public.json",
+      "blob": "925f7ba64a15aebea5b87b23891eacbd1d53d1f3",
+      "bytes": 3720,
+      "sha256": "aa7f6b720fc190a517aaef35d581ec353a03c09834b798a1caef7cdf1fa0b63f"
+    },
+    {
+      "name": "history-peer-blocker.public.txt",
+      "blob": "fc58f638661c30d110675eba387ca18fe4c764e7",
+      "bytes": 443,
+      "sha256": "f14ad58b19296c776e616c6c6c59446fcf04cb6462c27fc508e8070f868e8ed6"
+    }
+  ],
+  "expected_data_tree": "6599155ce92ab142c1c78378bf883612210974f5",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

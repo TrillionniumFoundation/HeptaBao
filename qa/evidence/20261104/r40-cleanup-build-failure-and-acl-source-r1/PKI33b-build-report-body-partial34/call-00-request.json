@@ -1,0 +1,13 @@
+{
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/result.public.json",
+      "offset": 0,
+      "limit": 36998,
+      "expected_version": "66306:31364220:36998:1793957208077081949:1793957208077081949"
+    }
+  },
+  "idempotency_key": "heptabao-native-jwt-pki-33b814c7-build149-observe-r1-result-body"
+}

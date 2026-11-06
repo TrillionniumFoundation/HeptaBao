@@ -1,0 +1,83 @@
+{
+  "schema": "heptabao.root-GO.PKI33b-failed-build-fixed-report-info.v1",
+  "authorization": "GO",
+  "agent": "/root/ha_validation",
+  "scope": "build_result_file_info_only",
+  "source_packet": "cead73145377f5310472e1a3933e0fd0147d4443",
+  "source": {
+    "blob": "21496c37dd8101299d875ffb2a9d10fa675d291e",
+    "bytes": 24791,
+    "sha256": "5235a51a3eb828174a545fa929a5ca3f72bb5254e86175805f7a34e3d0bf1960"
+  },
+  "source_review": {
+    "blob": "c43b90bbebb48457b8194dbc24a2f8f961d515da",
+    "bytes": 3615,
+    "sha256": "e1386fc9ddb5840ecdc2a81ffd19ca46c8f8b639371169b3f3f8a6db1a4ee649"
+  },
+  "source_review_checks": 15,
+  "author_pure_checks_reproduced": 49,
+  "exact_request": {
+    "blob": "3b4e093792b9fcd2a6c428381aee31e41a7c40e5",
+    "bytes": 294,
+    "sha256": "b6b76d8a6e19e118cf023ef48b03b0c8f7895943363f7e48372733f4ae54aab4"
+  },
+  "original_job": "1a1b029a998-fc05-6eb2",
+  "original_slot": "jwt_pki_33b814c7_build149_gitfirst_r1",
+  "entry_action": "authorize_build_result_info",
+  "original_terminal_qualification": {
+    "blob": "360e67448abbdc93f84e62142780b4d57974b316",
+    "bytes": 8249,
+    "sha256": "9d9a3a98548c79b2a25ac9f2593fddc09f9f98d23109df57cc9be0dc853cbd32"
+  },
+  "maximum_file_info_starts": 1,
+  "binary_read_authorized": false,
+  "metadata_acceptance": {
+    "host": "rog",
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/result.public.json",
+    "wholeSha256": "aa8a8623cc955adb64ab386387d15ad2204febc0fd526392d20cd0ab6c9638a6",
+    "size": null,
+    "version": null,
+    "full9": null,
+    "expectedMode": 384,
+    "expectedFullMode": 33152,
+    "expectedUid": 1000,
+    "expectedGid": 1000,
+    "expectedLinkCount": 1,
+    "platform": "linux",
+    "acceptSizeMin": 1,
+    "acceptSizeMax": 1048576
+  },
+  "new_explicit_readonly_size_acceptance": "New explicit acceptance ceiling 1 MiB for this one failed BUILD report. The source write() does not declare a result byte cap and actual size is unknown. This is a proposal, not inherited stage 150000 or a claim about current size. file_info computes whole SHA; no body RPC is authorized.",
+  "no_reinitialize": true,
+  "no_process_start": true,
+  "limits": {
+    "maximum_Runtime_lanes": 2,
+    "maximum_native_call_or_future_per_lane": 1,
+    "immutable_page_bytes": 8192,
+    "original_payload_cap": 1048576,
+    "stream_chunk_bytes": 16384
+  },
+  "sequence": [
+    "Whole this exact GO and attach the existing closed original BUILD slot without initialize.",
+    "Authorize exact original failed authority and whole867-byte stdout pins; neither149/166 nor all_owned_stopped is a detailed execution or lock-release proof.",
+    "Whole exact file_info request,intent,armed; separate dispatch boundary; once original operation_start.",
+    "Whole original SDK externally before parse/isError; same original operation status and contiguous immutable pages/full SHA/EOF/inactive closure only.",
+    "Require exact known result SHA plus Linux0600/1000:1000/singlelink and raw decimal version/full9. New1MiB size ceiling is accepted only for metadata; it does not expand any build/test clock or authorize a body.",
+    "Freeze actual metadata and release observer; actual-size/version body SOURCE/GO follows. Preserve originalfailed BUILD and never replay it."
+  ],
+  "lane_activation": "C may activate one fixed-report metadata lane alongside A original Maccleanup stream lane. B formatter metadata3calls/1observer/1page completed and B explicitly released0call/0future/0process; B remains0 Native until a lane releases. Root0. Cargo target still unavailable for new use until detailed closure is verified.",
+  "excludes": [
+    "new build",
+    "Cargo",
+    "retest",
+    "directory search",
+    "binary_read",
+    "other files",
+    "budget or test denominator changes",
+    "target reuse inferred from summary"
+  ],
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

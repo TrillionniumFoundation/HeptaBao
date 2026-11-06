@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r40-auth-current-label-cleanup-GO",
+  "records": [
+    {
+      "name": "ROOT-GO.public.json",
+      "blob": "69c5e55ea0558d6d86546603eaab39e643e26672",
+      "bytes": 15897,
+      "sha256": "815533ef60d8582fb89d8543faa8c267a6b298baf5afc8e7d66811e7de2ad560"
+    },
+    {
+      "name": "ROOT-source27.public.json",
+      "blob": "3ea54b16ca6131bfc0220a19285816e4e6370d11",
+      "bytes": 7890,
+      "sha256": "fd16fa9ffd2ea53ec23910a0e6a856972613ec2dd83668ae73c76226a069a664"
+    },
+    {
+      "name": "ROOT-source-verifier.js",
+      "blob": "6b076defb33c291b09ab422e46524f6d343ce2d8",
+      "bytes": 10062,
+      "sha256": "cdac8151190dc79b853a4c8d4695872fa76f2e0d0e4acc6b2707d0e087fe751f"
+    },
+    {
+      "name": "ROOT-reproduced-author61.public.json",
+      "blob": "9786d2aea5f95b3e2be9d547f04e57ccb6718106",
+      "bytes": 5778,
+      "sha256": "a7caadf1dee9847151b9d6b2e48f0de63f3e3b714888b856c78b27246e5534a7"
+    }
+  ],
+  "expected_data_tree": "42d3decf6fdf0f3a0bd22628f31063c0e28b81cc",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

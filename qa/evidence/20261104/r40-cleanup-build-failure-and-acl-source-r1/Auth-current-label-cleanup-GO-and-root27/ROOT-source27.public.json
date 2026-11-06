@@ -1,0 +1,279 @@
+{
+  "schema": "heptabao.root-source-review.Mac-existing-fixed-label-once-cleanup.v1",
+  "status": "PASS_ONE_CURRENT_LABEL_REMOVAL_SOURCE_ONLY",
+  "checks": [
+    {
+      "name": "whole34_627984",
+      "passed": true
+    },
+    {
+      "name": "original_qualified_R3_source_request_journal_exact",
+      "passed": true
+    },
+    {
+      "name": "actual_R3_original_report_root_and_authority",
+      "passed": true
+    },
+    {
+      "name": "exact_candidate_pins",
+      "passed": true
+    },
+    {
+      "name": "seven_source_hunks_strict_both_directions",
+      "passed": true
+    },
+    {
+      "name": "two_journal_hunks_strict_both_directions",
+      "passed": true
+    },
+    {
+      "name": "61_pure_checks_reproduced_from_original_files",
+      "passed": true
+    },
+    {
+      "name": "entire_prior_components_preserved_as_root_rechecked",
+      "passed": true
+    },
+    {
+      "name": "request_same_native_fields_except_source_key",
+      "passed": true
+    },
+    {
+      "name": "new_correct_typed_stdin_binding",
+      "passed": true
+    },
+    {
+      "name": "exact_actual_fixed_binding_readyIdentity",
+      "passed": true
+    },
+    {
+      "name": "exact_actual_fixed_binding_readyFull9",
+      "passed": true
+    },
+    {
+      "name": "exact_actual_fixed_binding_markerFull9",
+      "passed": true
+    },
+    {
+      "name": "exact_actual_fixed_binding_terminalFull9",
+      "passed": true
+    },
+    {
+      "name": "exact_actual_fixed_binding_stderrFull9",
+      "passed": true
+    },
+    {
+      "name": "exact_actual_fixed_binding_terminalError",
+      "passed": true
+    },
+    {
+      "name": "constant_whole_current_observations",
+      "passed": true
+    },
+    {
+      "name": "fixed_one_label_and_one_effect_only",
+      "passed": true
+    },
+    {
+      "name": "fresh_preflight_requires_inactive_exact_registration",
+      "passed": true
+    },
+    {
+      "name": "same_ready_closed_terminal_and_expired_plan_before_effect",
+      "passed": true
+    },
+    {
+      "name": "one_attempt_marker_before_fixed_bootout_dispatch",
+      "passed": true
+    },
+    {
+      "name": "two_exact_missing_service_reads_and_full_fences",
+      "passed": true
+    },
+    {
+      "name": "effect_uncertainty_conservative_and_no_historical_rewrite",
+      "passed": true
+    },
+    {
+      "name": "45_35_60_4commands_6calls_4s_0writes_unchanged",
+      "passed": true
+    },
+    {
+      "name": "new_slot_helpers_and_observation_caps",
+      "passed": true
+    },
+    {
+      "name": "explicit_current_registration_scope_no_atomic_or_departure_claim",
+      "passed": true
+    },
+    {
+      "name": "journal_syntax_not_invoked",
+      "passed": true
+    }
+  ],
+  "check_count": 27,
+  "source_packet": "32fc87d007466d4de82c0d33bc1bb04870405151",
+  "source": {
+    "blob": "1e6f601782847761425053f39217e6211af2a9a7",
+    "bytes": 97725,
+    "sha256": "4e5761d36f5e308f3d7a822276cebbd2b4b4e0b5d53c984858daaa70a08e9c50"
+  },
+  "exact_request": {
+    "blob": "1ca3b73f3cc0bd3cb11a2934dcbfff3d6ae06325",
+    "bytes": 100721,
+    "sha256": "d7ae0a4750681b826dd8a20be78c258f1cf9e04dc1f545aaf8334feeac85c75e"
+  },
+  "journal": {
+    "blob": "82b9e745abfe1876c2f34ded54d520b4aa11888f",
+    "bytes": 19060,
+    "sha256": "cbfaa9060ad7c5066638097e6c10b900527f0d98d4a1bf9c31cda3ddf906e69c"
+  },
+  "slot": "owner_launchd_home_t5_existing_close_label_gitfirst_r1",
+  "key": "heptabao-mac-owned-home-t5-close-label-4e5761d3-20261106-r1",
+  "native_binding": {
+    "sha256": "edd42b867edf3d4c64e83aa6640910339f82d2204cf9d7f9d11d2ed60ef8e1c6",
+    "native_fingerprint": "17137370338705751372"
+  },
+  "contract": {
+    "blob": "a66ab1f612a2a9e6f1777fab449b2a3518194085",
+    "bytes": 9685,
+    "sha256": "9b6d0892ba04241012225fdc8594bd0c3e516ca7f42fcaeed801bc6a1d6800b4"
+  },
+  "baseline_qualification": {
+    "blob": "56129f46fd94d072e301c4e558481efd817aed55",
+    "bytes": 14522,
+    "sha256": "bf626cd4ee05b5e5aa4c044ee93c4c52fecba8e7e469e84616918e169ce6c641"
+  },
+  "current_observed": {
+    "priorObservation": {
+      "blob": "e4a50c4a58b55c5ff73ab4df0a591a4215e049a4",
+      "bytes": 18957,
+      "sha256": "a99d55efc4cd63e14f64e635ddf9671e73a19df6ddae66ce43050abe107d51c5"
+    },
+    "rootQualification": {
+      "blob": "56129f46fd94d072e301c4e558481efd817aed55",
+      "bytes": 14522,
+      "sha256": "bf626cd4ee05b5e5aa4c044ee93c4c52fecba8e7e469e84616918e169ce6c641"
+    },
+    "readyIdentity": {
+      "birthSec": 1793950344,
+      "birthUsec": 737052,
+      "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+      "pgid": 58228,
+      "pid": 58228,
+      "ppid": 1,
+      "uid": 501
+    },
+    "readyFull9": [
+      "16777233",
+      "592904421",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "640",
+      "1793950344882619282",
+      "1793950344882619282"
+    ],
+    "markerFull9": [
+      "16777233",
+      "592904422",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "0",
+      "1793950344883708127",
+      "1793950344883708127"
+    ],
+    "terminalFull9": [
+      "16777233",
+      "592904419",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "4816",
+      "1793950369615463915",
+      "1793950369615463915"
+    ],
+    "stderrFull9": [
+      "16777233",
+      "592904420",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "0",
+      "1793950344733248255",
+      "1793950344733248255"
+    ],
+    "terminalError": {
+      "type": "ProbeRefused",
+      "code": "child_absolute_deadline",
+      "errno": null
+    }
+  },
+  "target": {
+    "host": "mac",
+    "label": "org.heptabao.qa.home-t5-context-20261106-r1",
+    "target": "gui/501/org.heptabao.qa.home-t5-context-20261106-r1",
+    "home": "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1",
+    "mutation": [
+      "/bin/launchctl",
+      "bootout",
+      "gui/501/org.heptabao.qa.home-t5-context-20261106-r1"
+    ],
+    "maximumBootout": 1,
+    "bootstrap": 0,
+    "explicitNumericPidOrGroupSignals": 0,
+    "managedWaitOrReap": 0,
+    "mayRequestTerminationThroughBootout": true,
+    "noFinallyBootout": true,
+    "noRetryOrFallback": true
+  },
+  "budgets": {
+    "controllerSeconds": 45,
+    "helperAdmissionEndSeconds": 35,
+    "outerSeconds": 60,
+    "launchctlEachMaximumSeconds": 10,
+    "launchctlEachReturnedByteCap": 65536,
+    "maximumDirectCommandAttempts": 4,
+    "successfulPathCommands": [
+      "preflight print",
+      "one bootout",
+      "first missing print",
+      "second missing print"
+    ],
+    "totalHelperReturnedBytes": 1048576,
+    "nativeNumericQueryWindows": 2,
+    "nativeQuerySecondsEach": 4,
+    "nativeNumericCallsMaximum": 6,
+    "nativeNumericStructBytes": 136,
+    "nativeNumericReturnedBytesMaximum": 816,
+    "internalCommandsOrProcessReaderCallsNotRenamedAsThoseSix": true,
+    "synchronousCCallIndividuallyHardPreemptible": false,
+    "applicationFdAttemptAndRowCap": 64,
+    "metadataCallCap": 4096,
+    "applicationReadCallCap": 256,
+    "applicationReadByteCap": 262144,
+    "applicationWriteCallCap": 0,
+    "applicationWriteByteCap": 0,
+    "stdoutPublicByteCap": 65536,
+    "processReadMaximum": 16384,
+    "immutableResultPageMaximum": 8192
+  },
+  "pure_author_checks_reproduced": 61,
+  "review_limits": [
+    "This authorizes no execution by itself.",
+    "Bootout may request termination within the one fixed current public QA label.",
+    "Sequential preflight/fences are not an atomic lock against another actor replacing a registration.",
+    "Current label removal can be established by ordered bootout/two exact missing replies/final resource closure; historical R4 and helper87650 UNKNOWN remain.",
+    "T5 business access, trusted credentials and AuthBus remain separate gates."
+  ],
+  "executed": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

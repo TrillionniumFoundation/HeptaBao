@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r40_checkpoint_root_current_packet",
+  "records": [
+    {
+      "name": "README.md",
+      "blob": "d08aab3c843644f6ce07e5e886ad6b6bc147bce6",
+      "bytes": 6060,
+      "sha256": "0e16c92961915cd4b7186763558690a9d0198f56e30f07bb630632daa3beba94"
+    },
+    {
+      "name": "STATE.public.json",
+      "blob": "5086f90cdb35a519214597a9cc3ac5250cdd6248",
+      "bytes": 17492,
+      "sha256": "6c9d57bc625d8477cf6971490df581e8a436a65b8d2e3f90a12ae74012d1d009"
+    },
+    {
+      "name": "MOUNTS.public.json",
+      "blob": "5cc7188798f063c23f9c8f21b9d4f799300e52f4",
+      "bytes": 292118,
+      "sha256": "25daab99de234bab9ab606ca65afd8aac62ce9749cb75dfdb00c2e419a6ebfb4"
+    },
+    {
+      "name": "ROOT-INDEX.public.json",
+      "blob": "0cb49359caee5c887d92d9ad6f599bc85d9566bd",
+      "bytes": 6441,
+      "sha256": "32d5e457fdb1efd0671764e131141e7a82002657b2baeeafb0ed258af8ca4156"
+    },
+    {
+      "name": "history.README-local-binding-error.json",
+      "blob": "a411279e88903f8298f5c89c2fb701c2e3c7f86a",
+      "bytes": 323,
+      "sha256": "b0c4f6e3d495bf45788e9ebc5af85f1088c6c68842308f7203d368fc9dbcc5bd"
+    }
+  ],
+  "expected_data_tree": "aeee0e6d8cb2dea0bd82c2ebf1a32dd4128b3436",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

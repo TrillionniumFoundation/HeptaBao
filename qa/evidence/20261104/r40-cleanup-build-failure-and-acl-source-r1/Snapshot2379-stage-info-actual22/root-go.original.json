@@ -1,0 +1,73 @@
+{
+  "schema": "heptabao.root-GO.snapshot-2379-stage-report-file-info.v1",
+  "authorization": "GO",
+  "agent": "/root/compatibility_audit",
+  "scope": "stage_result_file_info_only",
+  "source_packet": "3bb9e7fbc4d2919281b6d4f98395e530a20ec741",
+  "source": {
+    "blob": "981f77201755b7d3635043b93b6696e45fb6335b",
+    "bytes": 23894,
+    "sha256": "72d913a3c956cfa4c4eaa83b33be5cca85a20ff509088252ab8f16e98cb3237b"
+  },
+  "source_review": {
+    "blob": "757d079eacb8dfbd8dacffa32eb69c9a03cb36e6",
+    "bytes": 4242,
+    "sha256": "6fa98b16cb7109aeac9a99f729f7216d1f204039ab6eebcb746aa1547121f6f4"
+  },
+  "exact_request": {
+    "blob": "f706f3652a9d55e97753d0e88a4bb525d9aad920",
+    "bytes": 312,
+    "sha256": "130bc4c9a7ffd05c0380e7c9f98a083ff4675d970a3bf7106df30bcf2d63b0e8"
+  },
+  "original_job": "1a1b008fa4a-fc05-6d9a",
+  "original_slot": "snapshot_2379_rog_source_gitfirst_r1",
+  "original_stage_terminal_qualification": {
+    "blob": "b89dc3398dea6ff1c44dcd8912755921735a79ac",
+    "bytes": 5721,
+    "sha256": "4f76ffdf4a8ebdebc85738f4f7c337c4aedcf0ec6046209401808041dd8fe4f2"
+  },
+  "maximum_file_info_starts": 1,
+  "binary_read_authorized": false,
+  "metadata_acceptance": {
+    "host": "rog",
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1/control/stage-result.public.json",
+    "size": {
+      "min": 1,
+      "max": 65536
+    },
+    "mode": 384,
+    "uid": 1000,
+    "gid": 1000,
+    "link_count": 1,
+    "metadata_platform": "linux",
+    "sha256": "actual native 64 lower-case hex",
+    "version": "actual native dev:inode:size:mtime_ns:ctime_ns; preserve decimal strings",
+    "full9": "[dev,inode,1000,1000,32768|mode,1,size,mtime_ns,ctime_ns] strings"
+  },
+  "no_reinitialize": true,
+  "no_process_start": true,
+  "limits": {
+    "immutable_page_bytes": 8192,
+    "original_payload_bytes": 1048576,
+    "maximum_Runtime_lanes": 2,
+    "maximum_native_call_or_future_per_lane": 1
+  },
+  "sequence": [
+    "Whole exact GO; attach original2379 closed stage slot through authorize_stage_result_info only, never initialize.",
+    "Whole exact request,intent,armed externally and return across independent dispatch boundary before one operation_start.",
+    "Whole original SDK before parse/isError; only original returned operation status and contiguous8192 immutable pages, full payload SHA/EOF and completed inactive closure.",
+    "Require exact fixed public report path,size1..65536,0600 Linux1000:1000 single link; preserve actual SHA/version/full9 as lossless strings.",
+    "Stop after metadata; prepare actual-version-bound whole-body SOURCE and exact GO. Formatter49 follows separately qualified actual3930/61-child report."
+  ],
+  "excludes": [
+    "binary_read or detailed report body",
+    "other paths,listing,process_start,formatter,Cargo,tests,product",
+    "frozen2379 source or original SOURCE54 modification",
+    "replay,rekey,UNKNOWN replacement"
+  ],
+  "lane_activation": "B may use one metadata lane now; A original R3 observers closed/released. C may occupy one other body lane only after separate exact GO. Global max2 Native lanes.",
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

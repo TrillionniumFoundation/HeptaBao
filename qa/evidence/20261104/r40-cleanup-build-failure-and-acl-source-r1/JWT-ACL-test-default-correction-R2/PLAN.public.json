@@ -1,0 +1,53 @@
+{
+  "schema": "heptabao.JWT-ACL-successor.test-delegation-correction.v1",
+  "status": "SOURCE_ONLY_UNFORMATTED_UNCOMPILED",
+  "parent_source_packet": "74715d5f647960cfab278652079a773e88ddb0ac",
+  "base_commit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+  "unchanged_production": [
+    {
+      "path": "crates/heptabao-server/src/auth_native_jwt.rs",
+      "blob": "7a318b86ebdd47872fde86fbcce732f885571868",
+      "bytes": 19107,
+      "sha256": "59eb89dbd69dde8cd8d70c8cd340a47e5e3855e6e19f127914986ec228a8a87f"
+    },
+    {
+      "path": "crates/heptabao-server/src/auth.rs",
+      "blob": "c6a1517252cdef86ecd701a47cb1f443f4a09da3",
+      "bytes": 398708,
+      "sha256": "d1ba2a8a25a66682e4b01c1613898c172638bef2cfd0f70998ddd2bc05a7b86b"
+    }
+  ],
+  "test_before": {
+    "blob": "452fd4d6d12d0fe050c38032b99e39c459292fbb",
+    "bytes": 42561,
+    "sha256": "89ee932bf1e5933620ef53f6e2d3537f6c3e8643ad3942bf78017107848277ff"
+  },
+  "test_after": {
+    "blob": "e39bb3ea23ad1689dd5543c8d87443196c9c3ff4",
+    "bytes": 43039,
+    "sha256": "11c25288286bbc65f2dd16e3cd4a8ffffad751b389b25ea24b5674760c0c1128"
+  },
+  "test_path": "crates/heptabao-server/src/service_native_jwt_tests.rs",
+  "strict_diff": {
+    "blob": "9d9efe7faa3aa414386adc1a392b95628849c711",
+    "bytes": 12546,
+    "sha256": "3731894dae649a2df05e48cc4e14d20661fb4d8ce31552f14a5b1a85a908b6d3"
+  },
+  "reason": "policies(...,true) injects default into JWT role assignments; original actor lacked it and validate_assignment would deny intended positive role writes",
+  "changes": "Only the four role-management actors explicitly receive default plus their exact target-path policy; five collection/config actors keep no default. Actual issuance and independent token lookup must match the full intended policy set. no_default_policy:true remains set. Production validate_assignment is unchanged.",
+  "explicit_default_role_actors": 4,
+  "other_actors_without_default": 5,
+  "mechanical_test_edits": 12,
+  "strict_roundtrip_verified": true,
+  "pure_text_check_only": true,
+  "original_HTTP23_no_default_actor_plan_unchanged": true,
+  "HTTP23_positive_role_default_delegation_gap_remains": true,
+  "source_will_not_count_as_HTTP_or_runtime_pass": true,
+  "old_frozen149unique166instances_unchanged": true,
+  "formatted": false,
+  "compiled": false,
+  "executed": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false
+}

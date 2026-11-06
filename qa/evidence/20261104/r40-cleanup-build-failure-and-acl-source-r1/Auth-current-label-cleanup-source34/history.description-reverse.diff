@@ -1,0 +1,9 @@
+--- a/cleanup.fixed-label.r1.py
++++ b/unsubmitted.description-before.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
++"""One fixed existing public launchd label observation; no registration mutation."""
+-"""One preflight-qualified existing public label; at most one bootout and exact rereads."""
+ from contextlib import contextmanager
+ import base64, ctypes, errno, hashlib, json, os, plistlib, re, signal, stat, sys, time, types
+ from pathlib import Path

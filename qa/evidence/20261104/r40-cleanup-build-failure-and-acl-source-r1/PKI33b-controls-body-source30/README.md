@@ -1,0 +1,11 @@
+# Four exact actual-version published-controls bodies
+
+The12 original metadata calls/four observers/four complete payloads are closed in the existing publisher slot. These four new proposed binary reads use those exact independently observed versions and whole SHA values, offset0 and exact sizes30397/38565/19789/1854, total90605 bytes. Each whole file is below65536. No metadata refresh, directory listing, alternate path, new process, publisher replay, Cargo or product test is admitted.
+
+The journal is an eight-hunk successor of the exact INFO4 journal. A separate whole root BODY GO must bind four exact requests and90605 total bytes. It attaches the same closed slot without initialize, preserves all original histories, checks all four original metadata IDs/native pins/full9/version, and then permits one body index at a time. Started flags precede each sole Native call. Each original result must be completed/inactive, its immutable payload whole externally, and its decoded body exact version/size/EOF/wholeSHA before the next body.
+
+Only new binary observers use16384-byte immutable pages. Original metadata/status/stream observers retain8192-byte pages and the original1MiB payload bound. Native calls still go only through gfRun with SDK whole external before parsing/isError and payload whole before native-success interpretation. Unknown or errors stop new admission; no automatic retry/rekey is introduced.
+
+All actual body slots remain null. The receipt body remains independently unread; the actual independent receipt metadata has matched the1854-byte derived content expectation. A successful exact body will allow separate content/source checks and eventual build request binding, but this packet grants no build execution.
+
+The43 recorded checks are pure V8 source and selected fake-store guard checks. No Python/Native/Cargo ran. Two earlier checker-only selector failures are retained: R1 accidentally included the newly inserted top-level block after an unchanged function; R2 did not recognize original one-line functions. The narrow final selector handles both shapes. Candidate journal, exact requests and actual metadata remained unchanged throughout. Reproduction source is not represented as an original executor transcript.

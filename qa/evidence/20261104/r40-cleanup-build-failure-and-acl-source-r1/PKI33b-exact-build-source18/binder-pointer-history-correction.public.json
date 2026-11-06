@@ -1,0 +1,7 @@
+{
+  "schema": "heptabao.source-pointer-correction.r1",
+  "originalClaim": "build binder 98c4c9f9... saved with BODY30",
+  "corrected": "98c4c9f9d9457e1cf3a483ba54df6c5f17012f4f is cached exact content pin; not part of BODY30. BODY30 binder is bindPublishedControlsBodies. Build binder will be externally archived in actual BUILD SOURCE.",
+  "candidateChanged": false,
+  "NativeReplay": 0
+}

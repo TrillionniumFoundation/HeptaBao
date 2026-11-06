@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r40_pki33b_controls_body_GO_packet",
+  "records": [
+    {
+      "name": "ROOT-GO.json",
+      "blob": "b443f40b7c92a47f16ec1585efb718d53f4daa70",
+      "bytes": 6659,
+      "sha256": "04a8685cc9793f9bd9836bb7a49577e1f13fa8efe3d1fb7016f7e751d759d84b"
+    },
+    {
+      "name": "ROOT-info4-qualification.json",
+      "blob": "9b2f2950907a67d0bfd9dba6a138c009374a6255",
+      "bytes": 13443,
+      "sha256": "c01d9bea0e8553d93fdf5ad029f39a83989155eb91c670cd0f21835aa4946005"
+    },
+    {
+      "name": "ROOT-body4-source-review.json",
+      "blob": "4f34e85d39e38fa07b3c44b6acbdde53887fbe2c",
+      "bytes": 7620,
+      "sha256": "c79b13a50471fdf6750354f940b558214e26f00d654bce5c740c746cab222ba4"
+    },
+    {
+      "name": "ROOT-verifiers.js",
+      "blob": "52ad091a77153b3aa67129f7e0cce688a1190a30",
+      "bytes": 9759,
+      "sha256": "0d7e77fd58cea78d285110389761f775ce211c5ea8fa758817b9c856f46e44ba"
+    }
+  ],
+  "expected_data_tree": "002e87d12a1391e9a27aaf0e4bf8b10b97aca6a4",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

@@ -1,0 +1,62 @@
+[
+  {
+    "index": 0,
+    "role": "native_jwt_build.py",
+    "request": {
+      "idempotency_key": "heptabao-native-jwt-pki-33b814c7-controls-observe-r1-published-info0",
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "rog",
+          "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/native_jwt_build.py"
+        }
+      }
+    },
+    "submitted": false
+  },
+  {
+    "index": 1,
+    "role": "launch_native_jwt_build.py",
+    "request": {
+      "idempotency_key": "heptabao-native-jwt-pki-33b814c7-controls-observe-r1-published-info1",
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "rog",
+          "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/launch_native_jwt_build.py"
+        }
+      }
+    },
+    "submitted": false
+  },
+  {
+    "index": 2,
+    "role": "jwt-test-groups.public.json",
+    "request": {
+      "idempotency_key": "heptabao-native-jwt-pki-33b814c7-controls-observe-r1-published-info2",
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "rog",
+          "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/jwt-test-groups.public.json"
+        }
+      }
+    },
+    "submitted": false
+  },
+  {
+    "index": 3,
+    "role": "inert-stage.result.public.json",
+    "request": {
+      "idempotency_key": "heptabao-native-jwt-pki-33b814c7-controls-observe-r1-published-info3",
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "rog",
+          "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/inert-stage.result.public.json"
+        }
+      }
+    },
+    "submitted": false
+  }
+]

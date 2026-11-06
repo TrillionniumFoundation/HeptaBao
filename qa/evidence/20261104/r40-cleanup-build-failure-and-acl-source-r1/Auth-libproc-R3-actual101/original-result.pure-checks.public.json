@@ -1,0 +1,70 @@
+[
+  {
+    "name": "unique-original-start",
+    "passed": true
+  },
+  {
+    "name": "all-original-calls-accepted",
+    "passed": true
+  },
+  {
+    "name": "three-original-observers-closed",
+    "passed": true
+  },
+  {
+    "name": "ten-immutable-pages",
+    "passed": true
+  },
+  {
+    "name": "no-inflight-or-future-or-pending",
+    "passed": true
+  },
+  {
+    "name": "authority-known-zero-and-complete",
+    "passed": true
+  },
+  {
+    "name": "whole-original-stream-lengths",
+    "passed": true
+  },
+  {
+    "name": "fresh-observation-and-current-closure",
+    "passed": true
+  },
+  {
+    "name": "two-bounded-prints",
+    "passed": true
+  },
+  {
+    "name": "two-pairs-api-esrch-only",
+    "passed": true
+  },
+  {
+    "name": "actual-six-numeric-calls-and-self",
+    "passed": true
+  },
+  {
+    "name": "two-original-direct-helper-closures",
+    "passed": true
+  },
+  {
+    "name": "application-returned-fds-known-closed",
+    "passed": true
+  },
+  {
+    "name": "historical-unknowns-still-explicit",
+    "passed": true
+  },
+  {
+    "name": "no-mutation-or-credential-or-t5",
+    "passed": true
+  },
+  {
+    "name": "original-child-terminal-failure-not-rewritten",
+    "passed": true
+  },
+  {
+    "name": "signals-restored-no-pending",
+    "passed": true
+  }
+]

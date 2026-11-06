@@ -1,0 +1,264 @@
+{
+  "schema": "heptabao.native-jwt-pki-published-controls-four-bodies.actual.r1",
+  "originalJob": "1a1b001e788-fc05-6d66",
+  "metadata": [
+    {
+      "index": 0,
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/native_jwt_build.py",
+      "size": 30397,
+      "sha256": "023f6f3ad71b8909a46da632767044de44ec2ea6fcb11692a2160e2cec518add",
+      "version": "66306:31235924:30397:1793954281105928260:1793954281106897967",
+      "nativeText": {
+        "blob": "31dbc3678d61a73a2bdec9cfe2ccf00a0abe3fa0",
+        "bytes": 466,
+        "sha256": "f16b1a05c5f21d4dea3a1211de991eb4b95efd86ef5c9a34493f8b95de5a05c0"
+      },
+      "originalOperation": "37e6793e1a2f76de36163f1c4c378c7fb81ff8cfd532ae57a2821aa6d622f302",
+      "full9Strings": [
+        "66306",
+        "31235924",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "30397",
+        "1793954281105928260",
+        "1793954281106897967"
+      ],
+      "regularFileFromNativeFileInfoContract": true,
+      "binaryReadAuthorized": false
+    },
+    {
+      "index": 1,
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/launch_native_jwt_build.py",
+      "size": 38565,
+      "sha256": "5d639fbde4aa09663be694d9322bc4f598f4cd9594f9a3c09c61c21013b98056",
+      "version": "66306:31235925:38565:1793954281107963513:1793954281108998030",
+      "nativeText": {
+        "blob": "783f653c328b146e68025ecd41c437b7fe19e444",
+        "bytes": 473,
+        "sha256": "d47ce4ff18f9335ed53a7b50957ad250b202af1be684b6eb4d60720efa4bc83d"
+      },
+      "originalOperation": "c308e962ef15ebb2d386626909a1d50735e4788d1ea977514a7ed5158f1dc4ba",
+      "full9Strings": [
+        "66306",
+        "31235925",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "38565",
+        "1793954281107963513",
+        "1793954281108998030"
+      ],
+      "regularFileFromNativeFileInfoContract": true,
+      "binaryReadAuthorized": false
+    },
+    {
+      "index": 2,
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/jwt-test-groups.public.json",
+      "size": 19789,
+      "sha256": "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869",
+      "version": "66306:31235926:19789:1793954281109723489:1793954281110748800",
+      "nativeText": {
+        "blob": "49b901a91bdd59f5f036afefe918e98dc1944685",
+        "bytes": 474,
+        "sha256": "6a19f9b5632c3cc4debc4e682bedc30d2dd382b31192ce222cb66ad7ad0f811d"
+      },
+      "originalOperation": "1113a55bee6550171be223c962ac709799f51b6bfe0c7c4ea63b857520466a80",
+      "full9Strings": [
+        "66306",
+        "31235926",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "19789",
+        "1793954281109723489",
+        "1793954281110748800"
+      ],
+      "regularFileFromNativeFileInfoContract": true,
+      "binaryReadAuthorized": false
+    },
+    {
+      "index": 3,
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/inert-stage.result.public.json",
+      "size": 1854,
+      "sha256": "f1e1f3a2576fcb2ecd05cdb9b8f4fbebd6bb849eddb48536eb5c66ed5be109e2",
+      "version": "66306:31235927:1854:1793954281111835946:1793954281112810962",
+      "nativeText": {
+        "blob": "b87bd18cfb071f2b3dba60018038cee8bdd30f4b",
+        "bytes": 475,
+        "sha256": "d0cea042676e0ea2326af75dfe8b8f76b37adbd9ee8bfd40f48ef32778c3b5f6"
+      },
+      "originalOperation": "178658173a8037639dfa5b0eb5198e969318b76fe5e636ee6c2eb30f8dddbc91",
+      "full9Strings": [
+        "66306",
+        "31235927",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "1854",
+        "1793954281111835946",
+        "1793954281112810962"
+      ],
+      "regularFileFromNativeFileInfoContract": true,
+      "binaryReadAuthorized": false
+    }
+  ],
+  "bodies": [
+    {
+      "index": 0,
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/native_jwt_build.py",
+      "version": "66306:31235924:30397:1793954281105928260:1793954281106897967",
+      "body": {
+        "blob": "cf25a5f2a3f75b63374f99f7b0245ecfdf2c13e9",
+        "bytes": 30397,
+        "sha256": "023f6f3ad71b8909a46da632767044de44ec2ea6fcb11692a2160e2cec518add"
+      },
+      "originalOperation": "a7ee8bf14ece736fba5a38dd79d9d84dcdfd1a1a4405c35a7ef1aa5ff0fb5076",
+      "metadataOperation": "37e6793e1a2f76de36163f1c4c378c7fb81ff8cfd532ae57a2821aa6d622f302",
+      "originalPayload": {
+        "blob": "c4b36bfe39c63248ac60684ee4cb38cb3453ea27",
+        "bytes": 40951,
+        "sha256": "68f5e340e65d51ffe4c3a22852497734e968bf1e7e6e778c124573511eda1b75"
+      },
+      "semanticQualification": false
+    },
+    {
+      "index": 1,
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/launch_native_jwt_build.py",
+      "version": "66306:31235925:38565:1793954281107963513:1793954281108998030",
+      "body": {
+        "blob": "4c90f7e5dba00636f7e08840e892db679c7d2600",
+        "bytes": 38565,
+        "sha256": "5d639fbde4aa09663be694d9322bc4f598f4cd9594f9a3c09c61c21013b98056"
+      },
+      "originalOperation": "0938b2f17302516fc0dc84c1c17b08287e3a4448f971361808f2dedd85a3b1c4",
+      "metadataOperation": "c308e962ef15ebb2d386626909a1d50735e4788d1ea977514a7ed5158f1dc4ba",
+      "originalPayload": {
+        "blob": "8e939c70f1e1469754c90bfff7bd4361177a9360",
+        "bytes": 51846,
+        "sha256": "69b23b7e65266ea6f4cc9166189a5e0d2c3ad14bcfd860c1d3c72c08c38db564"
+      },
+      "semanticQualification": false
+    },
+    {
+      "index": 2,
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/jwt-test-groups.public.json",
+      "version": "66306:31235926:19789:1793954281109723489:1793954281110748800",
+      "body": {
+        "blob": "5d563b1c7a1b7070395f6d8a03b512ddb019fae0",
+        "bytes": 19789,
+        "sha256": "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869"
+      },
+      "originalOperation": "e31f04a2eeb0a8826cf0c7ceb24f48a19bfa8b096dfa305bf41b68c87662c6e9",
+      "metadataOperation": "1113a55bee6550171be223c962ac709799f51b6bfe0c7c4ea63b857520466a80",
+      "originalPayload": {
+        "blob": "cc0bec46e2d47d1b4aa5994f0310e52e638d7a4e",
+        "bytes": 26815,
+        "sha256": "03c8c14b204911bc6efc7a8eb9468e049e06bdcd95bd68fc44de0aad0bb4d9ab"
+      },
+      "semanticQualification": false
+    },
+    {
+      "index": 3,
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/inert-stage.result.public.json",
+      "version": "66306:31235927:1854:1793954281111835946:1793954281112810962",
+      "body": {
+        "blob": "514dda8c5a69d4ed96123d788e4e1cf672e6a0ef",
+        "bytes": 1854,
+        "sha256": "f1e1f3a2576fcb2ecd05cdb9b8f4fbebd6bb849eddb48536eb5c66ed5be109e2"
+      },
+      "originalOperation": "e38e7e36f423f58ed162954859e88bc36706d22cd3858088fba09a4a80543906",
+      "metadataOperation": "178658173a8037639dfa5b0eb5198e969318b76fe5e636ee6c2eb30f8dddbc91",
+      "originalPayload": {
+        "blob": "9a8acca585194a365edfdb931d49045e1dfc925d",
+        "bytes": 2899,
+        "sha256": "84210d75f30b99f76a3e4fdbd9c826c108940a4cd0984c14ab2ac2e04ecaff66"
+      },
+      "semanticQualification": false
+    }
+  ],
+  "decodedBytes": 90605,
+  "originalReturnedObservers": [
+    {
+      "id": "a7ee8bf14ece736fba5a38dd79d9d84dcdfd1a1a4405c35a7ef1aa5ff0fb5076",
+      "tool": "binary_read",
+      "payload": {
+        "blob": "c4b36bfe39c63248ac60684ee4cb38cb3453ea27",
+        "bytes": 40951,
+        "sha256": "68f5e340e65d51ffe4c3a22852497734e968bf1e7e6e778c124573511eda1b75"
+      },
+      "payloadTree": "a577d5b071a25c86d3ca21fc670801a42bb8372b",
+      "nativeText": {
+        "blob": "7da091edaccb0e6dee02cc859cb081ed9dda7ecb",
+        "bytes": 40848,
+        "sha256": "5f2c6d0f2b739e2067b65d44cd59c41af0081d3ba8564e4971b15bf7ef52ebd5"
+      },
+      "pages": 3,
+      "completedInactive": true
+    },
+    {
+      "id": "0938b2f17302516fc0dc84c1c17b08287e3a4448f971361808f2dedd85a3b1c4",
+      "tool": "binary_read",
+      "payload": {
+        "blob": "8e939c70f1e1469754c90bfff7bd4361177a9360",
+        "bytes": 51846,
+        "sha256": "69b23b7e65266ea6f4cc9166189a5e0d2c3ad14bcfd860c1d3c72c08c38db564"
+      },
+      "payloadTree": "4183147c9e4e47f06ef51033ee740b364159479d",
+      "nativeText": {
+        "blob": "6a858900683732be0a4d73d426ca6c7e6cdb04b4",
+        "bytes": 51743,
+        "sha256": "5869558375b0f19adff1df1ae4f3283e795f4e017fa0cefff5b216400c8e6f73"
+      },
+      "pages": 4,
+      "completedInactive": true
+    },
+    {
+      "id": "e31f04a2eeb0a8826cf0c7ceb24f48a19bfa8b096dfa305bf41b68c87662c6e9",
+      "tool": "binary_read",
+      "payload": {
+        "blob": "cc0bec46e2d47d1b4aa5994f0310e52e638d7a4e",
+        "bytes": 26815,
+        "sha256": "03c8c14b204911bc6efc7a8eb9468e049e06bdcd95bd68fc44de0aad0bb4d9ab"
+      },
+      "payloadTree": "eac35e8664a37040b009e8e4f4e40c82d6b8bd1e",
+      "nativeText": {
+        "blob": "366f3055063b03be48766f7b1d6f80c748683c6f",
+        "bytes": 26712,
+        "sha256": "acf0633b332fede34a8f7c00ed92d3c2cd86d8c672cda04961d22e14639ad529"
+      },
+      "pages": 2,
+      "completedInactive": true
+    },
+    {
+      "id": "e38e7e36f423f58ed162954859e88bc36706d22cd3858088fba09a4a80543906",
+      "tool": "binary_read",
+      "payload": {
+        "blob": "9a8acca585194a365edfdb931d49045e1dfc925d",
+        "bytes": 2899,
+        "sha256": "84210d75f30b99f76a3e4fdbd9c826c108940a4cd0984c14ab2ac2e04ecaff66"
+      },
+      "payloadTree": "35c394da47db59cecc6ddac9ad599b679bfe836a",
+      "nativeText": {
+        "blob": "fd221925ffd04965662491a2bda76338ff5b94a4",
+        "bytes": 2796,
+        "sha256": "c37db0dbc208fd5c600e22396efdd87e9c3e3164d80689950a0aa94cca2a97bb"
+      },
+      "pages": 1,
+      "completedInactive": true
+    }
+  ],
+  "actualBodyRPCs": 4,
+  "actualBodyCalls": 18,
+  "actualImmutablePages": 10,
+  "currentNativeCalls": 0,
+  "currentNativeFutures": 0,
+  "pending": null,
+  "activeObserver": null,
+  "bodyQualifiedOnly": true,
+  "buildStarted": false
+}

@@ -1,0 +1,21 @@
+--- a/mac_current_server_owner_r1.py.identity-candidate
++++ b/mac_current_server_owner_r1.py.before
+@@ -10,8 +10,6 @@
+ from contextlib import contextmanager
+ from pathlib import Path
+ 
+-PYTHON_LAUNCHER = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14"
+-PYTHON_KERNEL_IMAGE = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+ ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1')
+ QA=ROOT/'qa'
+ BINDING_READY=True  # Actual normal61 pins are bound; host execution requires separate root GO.
+@@ -172,8 +170,7 @@
+         before_binary=binary_pin()
+         reader=ProcessReader();self_identity=reader.read(os.getpid())
+         need(self_identity['uid']==501 and self_identity['pid']==self_identity['pgid']
++             and self_identity['executable']==str(Path(sys.executable).resolve()),
+-             and self_identity['executable']==PYTHON_KERNEL_IMAGE
+-             and str(Path(sys.executable).resolve())==PYTHON_LAUNCHER,
+              'actual_launchd_wrapper_identity')
+         ready={'schema':'heptabao.mac-server-wrapper-ready.r1','generation':generation,
+             'planSha256':args.plan_sha256,'wrapperIdentity':self_identity,

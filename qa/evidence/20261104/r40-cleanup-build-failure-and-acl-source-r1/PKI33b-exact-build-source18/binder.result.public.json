@@ -1,0 +1,55 @@
+{
+  "schema": "heptabao.native-jwt-pki-build-binding.actual-source-result.r1",
+  "status": "PASS_SOURCE_BINDING",
+  "binder": {
+    "blob": "98c4c9f9d9457e1cf3a483ba54df6c5f17012f4f",
+    "bytes": 4322,
+    "sha256": "5eebfacb2aad1b2db66e802f22279c7b9541e80602cebef386ffa51f9280c1d5"
+  },
+  "actualFourBodyPins": [
+    {
+      "blob": "cf25a5f2a3f75b63374f99f7b0245ecfdf2c13e9",
+      "bytes": 30397,
+      "sha256": "023f6f3ad71b8909a46da632767044de44ec2ea6fcb11692a2160e2cec518add"
+    },
+    {
+      "blob": "4c90f7e5dba00636f7e08840e892db679c7d2600",
+      "bytes": 38565,
+      "sha256": "5d639fbde4aa09663be694d9322bc4f598f4cd9594f9a3c09c61c21013b98056"
+    },
+    {
+      "blob": "5d563b1c7a1b7070395f6d8a03b512ddb019fae0",
+      "bytes": 19789,
+      "sha256": "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869"
+    },
+    {
+      "blob": "514dda8c5a69d4ed96123d788e4e1cf672e6a0ef",
+      "bytes": 1854,
+      "sha256": "f1e1f3a2576fcb2ecd05cdb9b8f4fbebd6bb849eddb48536eb5c66ed5be109e2"
+    }
+  ],
+  "fourIndependentFull9": true,
+  "receiptThreeRowsFull9Exact": true,
+  "receiptActualPrepared": true,
+  "groups149_166": true,
+  "request18ArgvOnlyFinalNullChanged": true,
+  "journal5LiteralStrictForwardReverse": true,
+  "request": {
+    "blob": "f7d799f5ba1ae46547ba12c5eb3ef7f9bf49f11a",
+    "bytes": 859,
+    "sha256": "64e8f6eabec94eaeb340b7551ae5fa9850888b8210923f46e095e984ad29dbdf"
+  },
+  "typedBinding": {
+    "sha256": "d0c72853406fc5c9bedcac0772b112aecdfe08ef09a67494ecacd5a727291379",
+    "native_fingerprint": "15044037418282894793",
+    "canonicalBytes": 749
+  },
+  "journal": {
+    "blob": "01c11226b2d6d636d57198738c55a7cade71203d",
+    "bytes": 19045,
+    "sha256": "ce51b609d645ff1ef4332eb23de436d46e213829b71ac182d5f9d7d89940012c"
+  },
+  "rootRuntimeGORequired": true,
+  "Native": 0,
+  "Cargo": 0
+}

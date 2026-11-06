@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.gitfirst.fixed-native-call-armed.r1",
+  "callKey": "snapshot-2379-formatter-body0-admit",
+  "kind": "operation_start",
+  "request": {
+    "blob": "06f7a3eccf5de1c877b552cab886d14086d0c51c",
+    "bytes": 432,
+    "sha256": "35921fca79a714035d0033a003d481862326e4a8dc6409f5017bbc4fb37ea992"
+  },
+  "rootGo": {
+    "blob": "f3a26514a3b4156e0bb27211df518018a24291fd",
+    "bytes": 4342,
+    "sha256": "b709c7af700ac09ba103a5a4d8668cd14670a8d351fedd3c8d6a582f7e1b2e37"
+  },
+  "originalJob": "1a1b02771c2-fc05-6e9f",
+  "originalOperation": null,
+  "maximumNativeCalls": 1,
+  "nativeNotYetCalled": true,
+  "lossOfAcknowledgmentNeverGrantsReplay": true,
+  "localFirstExplicitlyReplacedByExactRootGO": true,
+  "mayHaveDispatchedAfterThisCheckpoint": true,
+  "recovery": "Read exact original job/operation only; absence of later ACK is UNKNOWN."
+}

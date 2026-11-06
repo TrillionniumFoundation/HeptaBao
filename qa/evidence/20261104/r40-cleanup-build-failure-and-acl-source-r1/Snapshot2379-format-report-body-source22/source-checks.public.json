@@ -1,0 +1,299 @@
+{
+  "schema": "heptabao.source-only.formatter49-two-range-checks.v1",
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "base_is_exact_actual_INFO_journal",
+      "passed": true
+    },
+    {
+      "name": "candidate_whole_pin",
+      "passed": true
+    },
+    {
+      "name": "eight_declared_local_edits",
+      "passed": true
+    },
+    {
+      "name": "edit_0_unique",
+      "passed": true
+    },
+    {
+      "name": "edit_1_unique",
+      "passed": true
+    },
+    {
+      "name": "edit_2_unique",
+      "passed": true
+    },
+    {
+      "name": "edit_3_unique",
+      "passed": true
+    },
+    {
+      "name": "edit_4_unique",
+      "passed": true
+    },
+    {
+      "name": "edit_5_unique",
+      "passed": true
+    },
+    {
+      "name": "edit_6_unique",
+      "passed": true
+    },
+    {
+      "name": "edit_7_unique",
+      "passed": true
+    },
+    {
+      "name": "eight_edits_reconstruct_whole",
+      "passed": true
+    },
+    {
+      "name": "reverse_edit_7_unique",
+      "passed": true
+    },
+    {
+      "name": "reverse_edit_6_unique",
+      "passed": true
+    },
+    {
+      "name": "reverse_edit_5_unique",
+      "passed": true
+    },
+    {
+      "name": "reverse_edit_4_unique",
+      "passed": true
+    },
+    {
+      "name": "reverse_edit_3_unique",
+      "passed": true
+    },
+    {
+      "name": "reverse_edit_2_unique",
+      "passed": true
+    },
+    {
+      "name": "reverse_edit_1_unique",
+      "passed": true
+    },
+    {
+      "name": "reverse_edit_0_unique",
+      "passed": true
+    },
+    {
+      "name": "reverse_edits_reconstruct_whole",
+      "passed": true
+    },
+    {
+      "name": "strict_forward_whole",
+      "passed": true
+    },
+    {
+      "name": "strict_reverse_whole",
+      "passed": true
+    },
+    {
+      "name": "eight_hunks",
+      "passed": true
+    },
+    {
+      "name": "old_helper_unchanged_gfNeed",
+      "passed": true
+    },
+    {
+      "name": "old_helper_unchanged_gfMetaEquals",
+      "passed": true
+    },
+    {
+      "name": "old_helper_unchanged_gfState",
+      "passed": true
+    },
+    {
+      "name": "old_helper_unchanged_gfSave",
+      "passed": true
+    },
+    {
+      "name": "old_helper_unchanged_gfIntegerText",
+      "passed": true
+    },
+    {
+      "name": "old_helper_unchanged_gfInitializeOnlyAfterRootGO",
+      "passed": true
+    },
+    {
+      "name": "old_helper_unchanged_gfReconcileSameGitArchiveReadOnly",
+      "passed": true
+    },
+    {
+      "name": "same_info_authorization_prefix",
+      "passed": true
+    },
+    {
+      "name": "existing_slot_exact",
+      "passed": true
+    },
+    {
+      "name": "original_formatter_request_pin_unchanged",
+      "passed": true
+    },
+    {
+      "name": "original_file_cap_131072",
+      "passed": true
+    },
+    {
+      "name": "old_payload_cap_oneMiB",
+      "passed": true
+    },
+    {
+      "name": "separate_new_BODY_GO_scope",
+      "passed": true
+    },
+    {
+      "name": "separate_GO_whole_and_info_distinct",
+      "passed": true
+    },
+    {
+      "name": "existing_closed_info_and_once_authorize",
+      "passed": true
+    },
+    {
+      "name": "metadata_full_original_blob",
+      "passed": true
+    },
+    {
+      "name": "expected_actual_path",
+      "passed": true
+    },
+    {
+      "name": "expected_actual_bytes",
+      "passed": true
+    },
+    {
+      "name": "expected_actual_sha256",
+      "passed": true
+    },
+    {
+      "name": "expected_actual_version",
+      "passed": true
+    },
+    {
+      "name": "actual_regular_identity",
+      "passed": true
+    },
+    {
+      "name": "fixed_two_requests",
+      "passed": true
+    },
+    {
+      "name": "request_0_whole",
+      "passed": true
+    },
+    {
+      "name": "request_0_tool_host_path",
+      "passed": true
+    },
+    {
+      "name": "request_0_version_exact",
+      "passed": true
+    },
+    {
+      "name": "request_0_contiguous_bounded",
+      "passed": true
+    },
+    {
+      "name": "request_0_fixed_key",
+      "passed": true
+    },
+    {
+      "name": "request_1_whole",
+      "passed": true
+    },
+    {
+      "name": "request_1_tool_host_path",
+      "passed": true
+    },
+    {
+      "name": "request_1_version_exact",
+      "passed": true
+    },
+    {
+      "name": "request_1_contiguous_bounded",
+      "passed": true
+    },
+    {
+      "name": "request_1_fixed_key",
+      "passed": true
+    },
+    {
+      "name": "ranges_exact_whole_size",
+      "passed": true
+    },
+    {
+      "name": "two_only_started_equal_prior_completed",
+      "passed": true
+    },
+    {
+      "name": "new_pages_branch_only_16384_old8192",
+      "passed": true
+    },
+    {
+      "name": "capability_max16384",
+      "passed": true
+    },
+    {
+      "name": "marker_before_only_dispatch",
+      "passed": true
+    },
+    {
+      "name": "range_length_SHA_and_actual_EOF",
+      "passed": true
+    },
+    {
+      "name": "individual_chunk_no_UTF8_decode",
+      "passed": true
+    },
+    {
+      "name": "whole_SHA_then_UTF8_roundtrip",
+      "passed": true
+    },
+    {
+      "name": "whole_archive_before_semantics",
+      "passed": true
+    },
+    {
+      "name": "no_new_Native_tool_dispatch_branch",
+      "passed": true
+    },
+    {
+      "name": "no_new_initializer_call",
+      "passed": true
+    },
+    {
+      "name": "outer_failure_stops_new_admission",
+      "passed": true
+    }
+  ],
+  "count": 68,
+  "candidate": {
+    "blob": "12488e539c55f7be153e20857e162b3f80d49caf",
+    "bytes": 31928,
+    "sha256": "80a9b150c851e024e811edafe8dd9af6af4e17e4fa9606f1e7f91142e3076fba"
+  },
+  "requests": [
+    {
+      "blob": "06f7a3eccf5de1c877b552cab886d14086d0c51c",
+      "bytes": 432,
+      "sha256": "35921fca79a714035d0033a003d481862326e4a8dc6409f5017bbc4fb37ea992"
+    },
+    {
+      "blob": "c3d0ff5c4cd33e7969a6f34bdc144549d3da3d0a",
+      "bytes": 436,
+      "sha256": "978eac87aa0aab0d16149d7609ae82167472cbc893f0a9fced351017f20d4128"
+    }
+  ],
+  "nativeCalls": 0,
+  "candidateFunctionsInvoked": 0,
+  "sourceOnly": true
+}

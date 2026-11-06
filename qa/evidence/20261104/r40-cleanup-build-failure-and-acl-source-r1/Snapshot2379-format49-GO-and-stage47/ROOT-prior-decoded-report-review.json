@@ -1,0 +1,142 @@
+{
+  "schema": "heptabao.root-review.snapshot2379-decoded-report-semantic.v1",
+  "status": "PASS_DECODED_ORIGINAL_REPORT_SEMANTICS_PENDING_FULL_BODY_TRANSPORT",
+  "checks": [
+    {
+      "name": "whole_original_minimal4_32953",
+      "passed": true
+    },
+    {
+      "name": "exact_original_report_after_whole_archive",
+      "passed": true
+    },
+    {
+      "name": "original_stage_terminal_root_already_qualified",
+      "passed": true
+    },
+    {
+      "name": "exact_stage_schema_prepared_and_identity",
+      "passed": true
+    },
+    {
+      "name": "same_exact_stager_carrier_roots",
+      "passed": true
+    },
+    {
+      "name": "all3930_source_blobs_modes_and_index",
+      "passed": true
+    },
+    {
+      "name": "independent_objects_and_exact_public_fetch",
+      "passed": true
+    },
+    {
+      "name": "all16_actual_ancestry_and_history",
+      "passed": true
+    },
+    {
+      "name": "old495_source_fence_before_after",
+      "passed": true
+    },
+    {
+      "name": "original_failed_observer_all_before_after_equal",
+      "passed": true
+    },
+    {
+      "name": "original12_failed_files_whole_pins_and_lossless_identities",
+      "passed": true
+    },
+    {
+      "name": "original_failed_authority_exact",
+      "passed": true
+    },
+    {
+      "name": "actual_incremental_bundle_witness",
+      "passed": true
+    },
+    {
+      "name": "bundle_lossless_private_regular_identity",
+      "passed": true
+    },
+    {
+      "name": "all61_direct_children_reaped_success_and_empty_groups",
+      "passed": true
+    },
+    {
+      "name": "original_budgets_deadline_after_cleanup",
+      "passed": true
+    },
+    {
+      "name": "four_historical_controls_exact_inert",
+      "passed": true
+    },
+    {
+      "name": "historical_test_counts_are_not_execution",
+      "passed": true
+    }
+  ],
+  "check_count": 18,
+  "packet": {
+    "tree": "5e06b0acfbb4553423e2f605fdd558b16bff054f",
+    "files": 4,
+    "bytes": 32953,
+    "merkle": {
+      "root_sha": "5e06b0acfbb4553423e2f605fdd558b16bff054f",
+      "trees_verified": 1,
+      "leaf_count": 4
+    },
+    "whole": true
+  },
+  "report": {
+    "blob": "630883993c821cd1bb33cab2ee31667064fa9bbf",
+    "bytes": 28399,
+    "sha256": "733f77ea123b842e424f0b315d9ec910881b99e5844a4fd9ee51b651d5fb1955"
+  },
+  "actual_commands": 61,
+  "all_direct_children_closed": true,
+  "actual_elapsed_seconds": 16.411864057008643,
+  "source": {
+    "all_tracked_worktree_blobs_and_modes_match": true,
+    "full_leaf_index_sha256": "0e35cb5c3192efd2b9ddecfdbbe78581dd65c8ceb1aee8577709f7d7f504b811",
+    "index_matches_tree": true,
+    "tracked_bytes": 62486000,
+    "tracked_leaf_count": 3930
+  },
+  "canonical_bundle": {
+    "bytes": 136231,
+    "header": {
+      "header_sha256": "2cc3f0d136e18b6e294b9044a53934a04ee44faf2d2114e88a3603f2b628624a",
+      "heads": [
+        [
+          "2379d02ba1ee3e88989815d5a978f998822bac4f",
+          "HEAD"
+        ]
+      ],
+      "prerequisites": [
+        "49503322c7f446e5eb41e7744f1fdbd7f1192ecc"
+      ],
+      "version": 2
+    },
+    "identity": [
+      66306,
+      31364162,
+      1000,
+      1000,
+      33152,
+      1,
+      136231,
+      {
+        "$exactInteger": "1793954766360167918"
+      },
+      {
+        "$exactInteger": "1793954766360167918"
+      }
+    ],
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1/control/canonical-native-snapshot-forward-2379d02b-from495.bundle",
+    "public_network_import_required_on_mac": false,
+    "sha256": "04830729f13f635b6e91fa71fbdb14a343714ebc400ee968afed739906e0d92a"
+  },
+  "full_original_body_chain_root_qualified": false,
+  "formatter_authorized": false,
+  "root_Runtime_calls": 0
+}

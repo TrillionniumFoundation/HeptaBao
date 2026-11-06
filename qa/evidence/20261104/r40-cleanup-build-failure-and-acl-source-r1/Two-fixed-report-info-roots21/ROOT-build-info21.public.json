@@ -1,0 +1,163 @@
+{
+  "schema": "heptabao.root-qualification.PKI33b-build149-report-info.v1",
+  "status": "PASS_EXACT_FAILED_BUILD_REPORT_METADATA_ONLY",
+  "evidence_qualified": true,
+  "checks": [
+    {
+      "name": "whole23_88273",
+      "passed": true
+    },
+    {
+      "name": "exact_metadata_GO",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuildInfo_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuildInfo_call_jwt-pki-33b814c7-build149-report-info-start-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuildInfo_armed_tree_jwt-pki-33b814c7-build149-report-info-start-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuildInfo_call_jwt-pki-33b814c7-build149-report-info-status-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuildInfo_armed_tree_jwt-pki-33b814c7-build149-report-info-status-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuildInfo_call_jwt-pki-33b814c7-build149-report-info-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuildInfo_armed_tree_jwt-pki-33b814c7-build149-report-info-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuildInfo_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuildInfo_observer_8e81613aa575b93e807bfe358614abb238250fc93a4180109222d00bde1430da",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuildInfo_page_8e81613aa575b93e807bfe358614abb238250fc93a4180109222d00bde1430da_0",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuildInfo_payload_8e81613aa575b93e807bfe358614abb238250fc93a4180109222d00bde1430da",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuildInfo_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "one_exact_info_3calls_1page",
+      "passed": true
+    },
+    {
+      "name": "exact_actual_native_metadata_and_terminal_SHA",
+      "passed": true
+    },
+    {
+      "name": "actual_version_and_owner",
+      "passed": true
+    },
+    {
+      "name": "exact_metadata_projection",
+      "passed": true
+    },
+    {
+      "name": "all_ten_original_calls_and_three_observers_preserved",
+      "passed": true
+    },
+    {
+      "name": "original_job_slot_and_known_closed_observer",
+      "passed": true
+    },
+    {
+      "name": "no_new_build_body_or_target_qualification",
+      "passed": true
+    }
+  ],
+  "check_count": 21,
+  "packet": {
+    "tree": "5c928404eba49eab47d8b3d719bd44da63258025",
+    "files": 23,
+    "bytes": 88273,
+    "merkle": {
+      "root_sha": "5c928404eba49eab47d8b3d719bd44da63258025",
+      "trees_verified": 1,
+      "leaf_count": 23
+    },
+    "whole": true
+  },
+  "original_job": "rog/1a1b029a998-fc05-6eb2",
+  "original_operation": {
+    "id": "8e81613aa575b93e807bfe358614abb238250fc93a4180109222d00bde1430da",
+    "tool": "file_info",
+    "payload": {
+      "blob": "a294968f71ee5d305870474b34ef00fa4a548b26",
+      "bytes": 597,
+      "sha256": "9e969d0c8c4f4e015fd446e63e81c21099712f67a19db641ff5a25645cd8bad4"
+    },
+    "payloadTree": "983088ea0bfa82bf169644dda1be483aa8b7b969",
+    "nativeText": {
+      "blob": "d6e8562a91ba3ee27cfcf8a4c51e5644d9f904c1",
+      "bytes": 480,
+      "sha256": "66f341b2e43f26671e7eecdc96a4dabc0aefaa8c2634ada148001b75adc29ffb"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "actual_file_info": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/result.public.json",
+    "size": 36998,
+    "sha256": "aa8a8623cc955adb64ab386387d15ad2204febc0fd526392d20cd0ab6c9638a6",
+    "version": "66306:31364220:36998:1793957208077081949:1793957208077081949",
+    "nativeText": {
+      "blob": "d6e8562a91ba3ee27cfcf8a4c51e5644d9f904c1",
+      "bytes": 480,
+      "sha256": "66f341b2e43f26671e7eecdc96a4dabc0aefaa8c2634ada148001b75adc29ffb"
+    },
+    "originalOperation": "8e81613aa575b93e807bfe358614abb238250fc93a4180109222d00bde1430da",
+    "full9Strings": [
+      "66306",
+      "31364220",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "36998",
+      "1793957208077081949",
+      "1793957208077081949"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "actual": {
+    "new_calls": 3,
+    "new_observers": 1,
+    "new_pages": 1,
+    "cumulative_calls": 13,
+    "cumulative_observers": 4
+  },
+  "actual_failure_cause": null,
+  "actual_tests_executed": null,
+  "body_read_authorized": false,
+  "target_flock_detailed_closure_confirmed": false,
+  "compiled_qualified": false,
+  "test_pass": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

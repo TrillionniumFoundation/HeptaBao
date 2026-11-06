@@ -1,0 +1,48 @@
+--- a/crates/heptabao-server/src/auth_native_jwt.rs
++++ b/crates/heptabao-server/src/auth_native_jwt.rs
+@@ -396,19 +396,26 @@
+-                    "POST" | "PUT" => "update",
+-                    _ => return Err(err(405, "method not allowed")),
+-                });
+-                owner.sudo = method != "GET";
+-                Some(mount)
+-            }
+-            Some(JwtRoute::Role { mount, collection }) => {
+-                // The existing JWT backend treats named DELETE as update +
+-                // sudo, and collection GET as list. Retain those exact ACLs.
+-                owner.capability = Some(match (collection, method) {
+-                    (true, "GET" | "LIST") => "list",
+-                    (false, "GET") => "read",
+-                    (false, "POST" | "PUT" | "DELETE") => "update",
+-                    _ => return Err(err(405, "method not allowed")),
+-                });
+-                owner.sudo = !collection && method != "GET";
+-                Some(mount)
+-            }
+-            Some(JwtRoute::Login { mount }) => {
++                    "POST" | "PUT" => "update",
++                    _ => return Err(err(405, "method not allowed")),
++                });
++                Some(mount)
++            }
++            Some(JwtRoute::Role { mount, collection }) => {
++                owner.capability = Some(match (collection, method) {
++                    (true, "GET") | (false, "GET") => "read",
++                    (true, "LIST") => "list",
++                    (false, "POST" | "PUT") => {
++                        let name = path
++                            .strip_prefix(&format!("auth/{mount}/role/"))
++                            .ok_or_else(|| err(503, "native JWT role route changed"))?;
++                        // Retain the original source's decision. A newly
++                        // published role must still deliver under Create.
++                        self.jwt_role_write_capability(
++                            AuthScope { namespace, mount: &mount },
++                            name,
++                        )
++                    }
++                    (false, "DELETE") => "delete",
++                    _ => return Err(err(405, "method not allowed")),
++                });
++                Some(mount)
++            }
++            Some(JwtRoute::Login { mount }) => {

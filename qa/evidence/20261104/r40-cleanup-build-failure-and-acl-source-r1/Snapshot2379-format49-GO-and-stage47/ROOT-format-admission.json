@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.root-admission.snapshot2379-formatter49-after-actual-stage.v1",
+  "status": "PASS_EXACT_FORMATTER49_PREREQUISITES",
+  "checks": [
+    {
+      "name": "root99_source_review_and_actual_root47",
+      "passed": true
+    },
+    {
+      "name": "same_frozen2379_source_tree_fullindex",
+      "passed": true
+    },
+    {
+      "name": "exact_previously_reviewed_request_source_manifest",
+      "passed": true
+    },
+    {
+      "name": "correct_typed_stdin_native_binding",
+      "passed": true
+    },
+    {
+      "name": "same49fixed_files_50_10_60",
+      "passed": true
+    },
+    {
+      "name": "exact_new_journal_and_helpers",
+      "passed": true
+    },
+    {
+      "name": "no_formatter_execution_transferred",
+      "passed": true
+    }
+  ],
+  "source_review": {
+    "blob": "ee0a83720e5101983a37eecc9898ae5a08d81592",
+    "bytes": 28499,
+    "sha256": "002b82cb1f8f9206b582e10436ad1450e462bc28e80c54a5b05abd372dce36ed"
+  },
+  "actual_source_stage": {
+    "blob": "4bcad76a1fc0acdc27156f4e9a08814ae7a6a0d2",
+    "bytes": 8460,
+    "sha256": "38cb051d918ba6699d0711bb2a1edb6ed613740564fd69989c82796b528fcfef"
+  },
+  "source_packet": "21ec39d8574bd1711577a598fe54c92ad4f3b11f",
+  "source_commit": "2379d02ba1ee3e88989815d5a978f998822bac4f",
+  "source_tree": "fc933c18a0415730e3658c17ff021db9b2df2caa",
+  "exact_request": {
+    "blob": "0fce0771c8a4e42b85abfc10ffbc14e59e588616",
+    "bytes": 34045,
+    "sha256": "72289e6809a067df0df78ae0bd96383725ccbbcaca6fb219349c9ede1d4ce70f"
+  },
+  "native_binding": {
+    "sha256": "8b4e78b9c28d7e9480bc4f3898aaec15e6fb5a08d236f687c939eb06a59da5cc",
+    "native_fingerprint": "10038093358683750036"
+  },
+  "execution_before_this_GO": false,
+  "root_Runtime_calls": 0
+}

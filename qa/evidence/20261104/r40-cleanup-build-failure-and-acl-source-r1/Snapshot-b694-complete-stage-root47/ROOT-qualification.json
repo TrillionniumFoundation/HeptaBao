@@ -1,0 +1,297 @@
+{
+  "schema": "heptabao.root-qualification.snapshot-b694-independent-stage-complete-report.v1",
+  "status": "PASS_ORIGINAL_REPORT_AND_INDEPENDENT_SOURCE_STAGE",
+  "evidence_qualified": true,
+  "checks": [
+    {
+      "name": "whole49_326136",
+      "passed": true
+    },
+    {
+      "name": "exact_body_GO_source_and_prior_INFO",
+      "passed": true
+    },
+    {
+      "name": "snapshotB694Body_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "snapshotB694Body_call_snapshot-b694-report-body-admit",
+      "passed": true
+    },
+    {
+      "name": "snapshotB694Body_armed_tree_snapshot-b694-report-body-admit",
+      "passed": true
+    },
+    {
+      "name": "snapshotB694Body_call_snapshot-b694-report-body-status",
+      "passed": true
+    },
+    {
+      "name": "snapshotB694Body_armed_tree_snapshot-b694-report-body-status",
+      "passed": true
+    },
+    {
+      "name": "snapshotB694Body_call_snapshot-b694-report-body-page0",
+      "passed": true
+    },
+    {
+      "name": "snapshotB694Body_armed_tree_snapshot-b694-report-body-page0",
+      "passed": true
+    },
+    {
+      "name": "snapshotB694Body_call_snapshot-b694-report-body-page1",
+      "passed": true
+    },
+    {
+      "name": "snapshotB694Body_armed_tree_snapshot-b694-report-body-page1",
+      "passed": true
+    },
+    {
+      "name": "snapshotB694Body_call_snapshot-b694-report-body-page2",
+      "passed": true
+    },
+    {
+      "name": "snapshotB694Body_armed_tree_snapshot-b694-report-body-page2",
+      "passed": true
+    },
+    {
+      "name": "snapshotB694Body_call_snapshot-b694-report-body-page3",
+      "passed": true
+    },
+    {
+      "name": "snapshotB694Body_armed_tree_snapshot-b694-report-body-page3",
+      "passed": true
+    },
+    {
+      "name": "snapshotB694Body_call_snapshot-b694-report-body-page4",
+      "passed": true
+    },
+    {
+      "name": "snapshotB694Body_armed_tree_snapshot-b694-report-body-page4",
+      "passed": true
+    },
+    {
+      "name": "snapshotB694Body_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "snapshotB694Body_observer_1362eb4ecb29942fa30a86f757f59e6a430e16f72f47c342a4de45ff5544aa6d",
+      "passed": true
+    },
+    {
+      "name": "snapshotB694Body_page_1362eb4ecb29942fa30a86f757f59e6a430e16f72f47c342a4de45ff5544aa6d_0",
+      "passed": true
+    },
+    {
+      "name": "snapshotB694Body_page_1362eb4ecb29942fa30a86f757f59e6a430e16f72f47c342a4de45ff5544aa6d_8192",
+      "passed": true
+    },
+    {
+      "name": "snapshotB694Body_page_1362eb4ecb29942fa30a86f757f59e6a430e16f72f47c342a4de45ff5544aa6d_16384",
+      "passed": true
+    },
+    {
+      "name": "snapshotB694Body_page_1362eb4ecb29942fa30a86f757f59e6a430e16f72f47c342a4de45ff5544aa6d_24576",
+      "passed": true
+    },
+    {
+      "name": "snapshotB694Body_page_1362eb4ecb29942fa30a86f757f59e6a430e16f72f47c342a4de45ff5544aa6d_32768",
+      "passed": true
+    },
+    {
+      "name": "snapshotB694Body_payload_1362eb4ecb29942fa30a86f757f59e6a430e16f72f47c342a4de45ff5544aa6d",
+      "passed": true
+    },
+    {
+      "name": "snapshotB694Body_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "seven_original_calls_five_pages_and_original_totals",
+      "passed": true
+    },
+    {
+      "name": "one_exact_original_metadata_bound_range",
+      "passed": true
+    },
+    {
+      "name": "whole_original_binary_body_extent",
+      "passed": true
+    },
+    {
+      "name": "whole_original_report_and_exact_associations",
+      "passed": true
+    },
+    {
+      "name": "body_lane_released_no_runtime_expansion",
+      "passed": true
+    },
+    {
+      "name": "original_stage_terminal_root_already_qualified",
+      "passed": true
+    },
+    {
+      "name": "exact_stage_schema_prepared_and_identity",
+      "passed": true
+    },
+    {
+      "name": "same_exact_stager_carrier_roots",
+      "passed": true
+    },
+    {
+      "name": "all3928_source_blobs_modes_and_index",
+      "passed": true
+    },
+    {
+      "name": "independent_objects_and_exact_public_fetch",
+      "passed": true
+    },
+    {
+      "name": "all15_actual_ancestry_and_history",
+      "passed": true
+    },
+    {
+      "name": "old495_source_fence_before_after",
+      "passed": true
+    },
+    {
+      "name": "original_failed_observer_all_before_after_equal",
+      "passed": true
+    },
+    {
+      "name": "original12_failed_files_whole_pins_and_lossless_identities",
+      "passed": true
+    },
+    {
+      "name": "original_failed_authority_exact",
+      "passed": true
+    },
+    {
+      "name": "actual_incremental_bundle_witness",
+      "passed": true
+    },
+    {
+      "name": "bundle_lossless_private_regular_identity",
+      "passed": true
+    },
+    {
+      "name": "all60_direct_children_reaped_success_and_empty_groups",
+      "passed": true
+    },
+    {
+      "name": "original_budgets_deadline_after_cleanup",
+      "passed": true
+    },
+    {
+      "name": "four_historical_controls_exact_inert",
+      "passed": true
+    },
+    {
+      "name": "historical_test_counts_are_not_execution",
+      "passed": true
+    }
+  ],
+  "check_count": 47,
+  "packet": {
+    "tree": "ac1290757435090eaa787a595635ff9328da2466",
+    "files": 49,
+    "bytes": 326136,
+    "merkle": {
+      "root_sha": "ac1290757435090eaa787a595635ff9328da2466",
+      "trees_verified": 1,
+      "leaf_count": 49
+    },
+    "whole": true
+  },
+  "original_job": "rog/1a1afe9f4f5-fc05-6cb6",
+  "report": {
+    "blob": "49c3cd8ce2e70d224331ac0acf4cce8be0429485",
+    "bytes": 28206,
+    "sha256": "5709177a98a8f9b305b4e26da5f3a310a7b96d8f3086224429a9dfb56f53d5db"
+  },
+  "original_body_observer": {
+    "id": "1362eb4ecb29942fa30a86f757f59e6a430e16f72f47c342a4de45ff5544aa6d",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "a183ec16c0974ea76096bf0abc9b73ec53ad7349",
+      "bytes": 38056,
+      "sha256": "6f7f2973e6ec7fa33125b75f3c33e946f4bd9705d418c15b53cb8372bc2bcba3"
+    },
+    "payloadTree": "909d278b5dd236567d7199826cbea12681ab2438",
+    "nativeText": {
+      "blob": "077ea0b48bd96878f1106a5fa5bb22d1f1bd5c12",
+      "bytes": 37953,
+      "sha256": "691c9d30a9cd99c39ef9e5536515dea39050b49f32c8158e8729199f51e264fd"
+    },
+    "pages": 5,
+    "completedInactive": true
+  },
+  "original_transport": {
+    "stage_calls": 7,
+    "info_calls": 3,
+    "body_calls": 7,
+    "total_calls": 17,
+    "observers": 4,
+    "pages": 8
+  },
+  "source_commit": "b6949024dc5d0922ca9b27d865923d28982286c3",
+  "source_tree": "9c800e97a2527e7f01c3a4b0be594e6762f9581e",
+  "source_full_worktree": {
+    "all_tracked_worktree_blobs_and_modes_match": true,
+    "full_leaf_index_sha256": "80a220f0a5d03d5b9cbe5cdb6a69b2e1c29d794f0abe367a98b5be096996e727",
+    "index_matches_tree": true,
+    "tracked_bytes": 62463643,
+    "tracked_leaf_count": 3928
+  },
+  "actual_commands": 60,
+  "all_direct_children_closed": true,
+  "actual_elapsed_seconds": 15.02673472900642,
+  "canonical_bundle": {
+    "bytes": 128439,
+    "header": {
+      "header_sha256": "bb9e9bcb66d715e063af9763fd15a1765313cfb85a19fff746e8e195f86e344d",
+      "heads": [
+        [
+          "b6949024dc5d0922ca9b27d865923d28982286c3",
+          "HEAD"
+        ]
+      ],
+      "prerequisites": [
+        "49503322c7f446e5eb41e7744f1fdbd7f1192ecc"
+      ],
+      "version": 2
+    },
+    "identity": [
+      66306,
+      31235875,
+      1000,
+      1000,
+      33152,
+      1,
+      128439,
+      {
+        "$exactInteger": "1793952722666483659"
+      },
+      {
+        "$exactInteger": "1793952722666483659"
+      }
+    ],
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-b6949024-20261106-r1/control/canonical-native-snapshot-forward-b6949024-from495.bundle",
+    "public_network_import_required_on_mac": false,
+    "sha256": "d7934766fa031f6754464359ec8625dc81498aaacf19fa7e546fd849d55e2640"
+  },
+  "limits": [
+    "Only this unformatted b694 checkout is qualified;2379 is independently staged and needs its own detailed report.",
+    "Historical controls were parsed/compiled as Python source only, never executed.44/7/9/1 are not new tests.",
+    "Bundle generation is witnessed inside the bound stager; independent body/export/Mac import not performed.",
+    "No formatter/compiler/product/CLI repair/production/cleanup qualification follows."
+  ],
+  "formatted": false,
+  "compiled": false,
+  "product_tests_executed": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

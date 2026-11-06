@@ -1,0 +1,72 @@
+[
+  {
+    "before": "source=load(\"r34_packet_Snapshot-b694-stage-formatter46-source52\").raw[\"stage.after.py\"]",
+    "after": "source=load(\"r34_packet_Snapshot2379-stage-formatter49-source54\").raw[\"stage.after.py\"]",
+    "count": 1
+  },
+  {
+    "before": "eq(r[\"root-terminal-qualification.original.json\"],tq)&&rel.originalJob===\"1a1afe9f4f5-fc05-6cb6\"",
+    "after": "tq.value.original_job===\"rog/1a1b008fa4a-fc05-6d9a\"&&rel.originalJob===\"1a1b008fa4a-fc05-6d9a\"",
+    "count": 1
+  },
+  {
+    "before": "all3928_source_blobs_modes_and_index",
+    "after": "all3930_source_blobs_modes_and_index",
+    "count": 1
+  },
+  {
+    "before": "tracked_bytes:62463643,tracked_leaf_count:3928",
+    "after": "tracked_bytes:62486000,tracked_leaf_count:3930",
+    "count": 1
+  },
+  {
+    "before": "all15_actual_ancestry_and_history",
+    "after": "all16_actual_ancestry_and_history",
+    "count": 1
+  },
+  {
+    "before": "chain.length===15",
+    "after": "chain.length===16",
+    "count": 1
+  },
+  {
+    "before": "d.canonical_history_count===3767",
+    "after": "d.canonical_history_count===3768",
+    "count": 1
+  },
+  {
+    "before": "128439",
+    "after": "136231",
+    "count": 2
+  },
+  {
+    "before": "d7934766fa031f6754464359ec8625dc81498aaacf19fa7e546fd849d55e2640",
+    "after": "04830729f13f635b6e91fa71fbdb14a343714ebc400ee968afed739906e0d92a",
+    "count": 1
+  },
+  {
+    "before": "all60_direct_children_reaped_success_and_empty_groups",
+    "after": "all61_direct_children_reaped_success_and_empty_groups",
+    "count": 1
+  },
+  {
+    "before": "d.cleanup.length===60",
+    "after": "d.cleanup.length===61",
+    "count": 1
+  },
+  {
+    "before": "new Set(d.cleanup.map(x=>x.pid)).size===60",
+    "after": "new Set(d.cleanup.map(x=>x.pid)).size===61",
+    "count": 1
+  },
+  {
+    "before": "String(59-i)",
+    "after": "String(60-i)",
+    "count": 1
+  },
+  {
+    "before": "load(\"r34_packet_Snapshot-b694-stage-formatter46-source52\").raw[\"historical-carrier.unchanged.json\"]",
+    "after": "load(\"r34_packet_Snapshot2379-stage-formatter49-source54\").raw[\"stage.stdin.original.json\"]",
+    "count": 1
+  }
+]

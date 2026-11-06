@@ -1,0 +1,1438 @@
+{
+  "rootGoWhole": true,
+  "goRaw": "{\n  \"schema\": \"heptabao.root-GO.PKI33b-original149-166-build-and-tests.v1\",\n  \"authorization\": \"GO\",\n  \"agent\": \"/root/ha_validation\",\n  \"scope\": \"one_original_build_and_exact149_unique166_profile_tests\",\n  \"source_packet\": \"b737436832aa448f1ef2a6188f29625b2af6e304\",\n  \"source_review\": {\n    \"blob\": \"5d9a4ddbfcb1a2327e8c6c329e0950062803d369\",\n    \"bytes\": 8708,\n    \"sha256\": \"c04cf684dc946ad2e3634aedb26f339050b9932e82ef93a073d6d48c2840ed31\"\n  },\n  \"source_review_checks\": 27,\n  \"exact_request\": {\n    \"blob\": \"f7d799f5ba1ae46547ba12c5eb3ef7f9bf49f11a\",\n    \"bytes\": 859,\n    \"sha256\": \"64e8f6eabec94eaeb340b7551ae5fa9850888b8210923f46e095e984ad29dbdf\"\n  },\n  \"native_binding\": {\n    \"sha256\": \"d0c72853406fc5c9bedcac0772b112aecdfe08ef09a67494ecacd5a727291379\",\n    \"native_fingerprint\": \"15044037418282894793\",\n    \"canonicalBytes\": 749\n  },\n  \"helpers\": {\n    \"native\": {\n      \"blob\": \"01c11226b2d6d636d57198738c55a7cade71203d\",\n      \"bytes\": 19045,\n      \"sha256\": \"ce51b609d645ff1ef4332eb23de436d46e213829b71ac182d5f9d7d89940012c\"\n    },\n    \"archive\": {\n      \"blob\": \"b093fdbf655511f7db94be2d95555606141bbb42\",\n      \"bytes\": 5957,\n      \"sha256\": \"8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397\"\n    },\n    \"pure\": {\n      \"blob\": \"b6890e8b7217c546bec073dcb04988fc37652721\",\n      \"bytes\": 6685,\n      \"sha256\": \"44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432\"\n    },\n    \"correctBinding\": {\n      \"blob\": \"82e81aef13d858c865ea05dd762056553a3d1cc6\",\n      \"bytes\": 659,\n      \"sha256\": \"e98c61fceb6eecdd55e6244ad43939320114809163afee67a6b8657235dae042\"\n    },\n    \"do_not_use_legacy_processStartBinding\": true\n  },\n  \"journal\": {\n    \"slot\": \"jwt_pki_33b814c7_build149_gitfirst_r1\",\n    \"require_git_first\": true,\n    \"maximum_native_call_or_future_per_lane\": 1\n  },\n  \"start\": {\n    \"host\": \"rog\",\n    \"executable\": \"/usr/bin/python3\",\n    \"args\": [\n      \"-I\",\n      \"-S\",\n      \"-B\",\n      \"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/launch_native_jwt_build.py\",\n      \"--host\",\n      \"rog\",\n      \"--commit\",\n      \"33b814c7034ec853151b1ff13e7529c83f65ea70\",\n      \"--tree\",\n      \"b7f276f70e0da1a33306564f385ab7bc12fd44f6\",\n      \"--stage-sha256\",\n      \"2137f9962784c451d11a2aaae0741189fec8ab511c0b3e6b226031f908331da0\",\n      \"--runner-sha256\",\n      \"023f6f3ad71b8909a46da632767044de44ec2ea6fcb11692a2160e2cec518add\",\n      \"--groups-sha256\",\n      \"35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869\",\n      \"--controls-sha256\",\n      \"f1e1f3a2576fcb2ecd05cdb9b8f4fbebd6bb849eddb48536eb5c66ed5be109e2\"\n    ],\n    \"cwd\": \"/home/qian-qi\",\n    \"timeout_seconds\": 12000,\n    \"idempotency_key\": \"heptabao-native-jwt-pki-33b814c7-build149-r1-5d639fbd\",\n    \"maximum_START_count\": 1\n  },\n  \"source_commit\": \"33b814c7034ec853151b1ff13e7529c83f65ea70\",\n  \"source_tree\": \"b7f276f70e0da1a33306564f385ab7bc12fd44f6\",\n  \"source_stage_qualification\": {\n    \"blob\": \"7cdf99e46ba40fe09ab156a09608ee131e28400d\",\n    \"bytes\": 10731,\n    \"sha256\": \"76746d7ea3b03821a5f4a9aea1f4b0ad07ed380b2b765337a5afd68d9443d84a\"\n  },\n  \"controls_info_qualification\": {\n    \"blob\": \"9b2f2950907a67d0bfd9dba6a138c009374a6255\",\n    \"bytes\": 13443,\n    \"sha256\": \"c01d9bea0e8553d93fdf5ad029f39a83989155eb91c670cd0f21835aa4946005\"\n  },\n  \"controls_body_qualification\": {\n    \"blob\": \"7f080e5f7261ccaf4b4539d0efb406e15610f989\",\n    \"bytes\": 23428,\n    \"sha256\": \"f7071dc25ea59056217bd15b1f4b538b34a9d845d2862e1dfb56948cc4884dce\"\n  },\n  \"actual_controls\": {\n    \"runner\": {\n      \"index\": 0,\n      \"path\": \"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/native_jwt_build.py\",\n      \"version\": \"66306:31235924:30397:1793954281105928260:1793954281106897967\",\n      \"body\": {\n        \"blob\": \"cf25a5f2a3f75b63374f99f7b0245ecfdf2c13e9\",\n        \"bytes\": 30397,\n        \"sha256\": \"023f6f3ad71b8909a46da632767044de44ec2ea6fcb11692a2160e2cec518add\"\n      },\n      \"originalOperation\": \"a7ee8bf14ece736fba5a38dd79d9d84dcdfd1a1a4405c35a7ef1aa5ff0fb5076\",\n      \"metadataOperation\": \"37e6793e1a2f76de36163f1c4c378c7fb81ff8cfd532ae57a2821aa6d622f302\",\n      \"originalPayload\": {\n        \"blob\": \"c4b36bfe39c63248ac60684ee4cb38cb3453ea27\",\n        \"bytes\": 40951,\n        \"sha256\": \"68f5e340e65d51ffe4c3a22852497734e968bf1e7e6e778c124573511eda1b75\"\n      },\n      \"semanticQualification\": false\n    },\n    \"launcher\": {\n      \"index\": 1,\n      \"path\": \"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/launch_native_jwt_build.py\",\n      \"version\": \"66306:31235925:38565:1793954281107963513:1793954281108998030\",\n      \"body\": {\n        \"blob\": \"4c90f7e5dba00636f7e08840e892db679c7d2600\",\n        \"bytes\": 38565,\n        \"sha256\": \"5d639fbde4aa09663be694d9322bc4f598f4cd9594f9a3c09c61c21013b98056\"\n      },\n      \"originalOperation\": \"0938b2f17302516fc0dc84c1c17b08287e3a4448f971361808f2dedd85a3b1c4\",\n      \"metadataOperation\": \"c308e962ef15ebb2d386626909a1d50735e4788d1ea977514a7ed5158f1dc4ba\",\n      \"originalPayload\": {\n        \"blob\": \"8e939c70f1e1469754c90bfff7bd4361177a9360\",\n        \"bytes\": 51846,\n        \"sha256\": \"69b23b7e65266ea6f4cc9166189a5e0d2c3ad14bcfd860c1d3c72c08c38db564\"\n      },\n      \"semanticQualification\": false\n    },\n    \"groups\": {\n      \"index\": 2,\n      \"path\": \"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/jwt-test-groups.public.json\",\n      \"version\": \"66306:31235926:19789:1793954281109723489:1793954281110748800\",\n      \"body\": {\n        \"blob\": \"5d563b1c7a1b7070395f6d8a03b512ddb019fae0\",\n        \"bytes\": 19789,\n        \"sha256\": \"35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869\"\n      },\n      \"originalOperation\": \"e31f04a2eeb0a8826cf0c7ceb24f48a19bfa8b096dfa305bf41b68c87662c6e9\",\n      \"metadataOperation\": \"1113a55bee6550171be223c962ac709799f51b6bfe0c7c4ea63b857520466a80\",\n      \"originalPayload\": {\n        \"blob\": \"cc0bec46e2d47d1b4aa5994f0310e52e638d7a4e\",\n        \"bytes\": 26815,\n        \"sha256\": \"03c8c14b204911bc6efc7a8eb9468e049e06bdcd95bd68fc44de0aad0bb4d9ab\"\n      },\n      \"semanticQualification\": false\n    },\n    \"receipt\": {\n      \"index\": 3,\n      \"path\": \"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/inert-stage.result.public.json\",\n      \"version\": \"66306:31235927:1854:1793954281111835946:1793954281112810962\",\n      \"body\": {\n        \"blob\": \"514dda8c5a69d4ed96123d788e4e1cf672e6a0ef\",\n        \"bytes\": 1854,\n        \"sha256\": \"f1e1f3a2576fcb2ecd05cdb9b8f4fbebd6bb849eddb48536eb5c66ed5be109e2\"\n      },\n      \"originalOperation\": \"e38e7e36f423f58ed162954859e88bc36706d22cd3858088fba09a4a80543906\",\n      \"metadataOperation\": \"178658173a8037639dfa5b0eb5198e969318b76fe5e636ee6c2eb30f8dddbc91\",\n      \"originalPayload\": {\n        \"blob\": \"9a8acca585194a365edfdb931d49045e1dfc925d\",\n        \"bytes\": 2899,\n        \"sha256\": \"84210d75f30b99f76a3e4fdbd9c826c108940a4cd0984c14ab2ac2e04ecaff66\"\n      },\n      \"semanticQualification\": false\n    }\n  },\n  \"actual_controls_metadata\": [\n    {\n      \"index\": 0,\n      \"path\": \"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/native_jwt_build.py\",\n      \"size\": 30397,\n      \"sha256\": \"023f6f3ad71b8909a46da632767044de44ec2ea6fcb11692a2160e2cec518add\",\n      \"version\": \"66306:31235924:30397:1793954281105928260:1793954281106897967\",\n      \"nativeText\": {\n        \"blob\": \"31dbc3678d61a73a2bdec9cfe2ccf00a0abe3fa0\",\n        \"bytes\": 466,\n        \"sha256\": \"f16b1a05c5f21d4dea3a1211de991eb4b95efd86ef5c9a34493f8b95de5a05c0\"\n      },\n      \"originalOperation\": \"37e6793e1a2f76de36163f1c4c378c7fb81ff8cfd532ae57a2821aa6d622f302\",\n      \"full9Strings\": [\n        \"66306\",\n        \"31235924\",\n        \"1000\",\n        \"1000\",\n        \"33152\",\n        \"1\",\n        \"30397\",\n        \"1793954281105928260\",\n        \"1793954281106897967\"\n      ],\n      \"regularFileFromNativeFileInfoContract\": true,\n      \"binaryReadAuthorized\": false\n    },\n    {\n      \"index\": 1,\n      \"path\": \"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/launch_native_jwt_build.py\",\n      \"size\": 38565,\n      \"sha256\": \"5d639fbde4aa09663be694d9322bc4f598f4cd9594f9a3c09c61c21013b98056\",\n      \"version\": \"66306:31235925:38565:1793954281107963513:1793954281108998030\",\n      \"nativeText\": {\n        \"blob\": \"783f653c328b146e68025ecd41c437b7fe19e444\",\n        \"bytes\": 473,\n        \"sha256\": \"d47ce4ff18f9335ed53a7b50957ad250b202af1be684b6eb4d60720efa4bc83d\"\n      },\n      \"originalOperation\": \"c308e962ef15ebb2d386626909a1d50735e4788d1ea977514a7ed5158f1dc4ba\",\n      \"full9Strings\": [\n        \"66306\",\n        \"31235925\",\n        \"1000\",\n        \"1000\",\n        \"33152\",\n        \"1\",\n        \"38565\",\n        \"1793954281107963513\",\n        \"1793954281108998030\"\n      ],\n      \"regularFileFromNativeFileInfoContract\": true,\n      \"binaryReadAuthorized\": false\n    },\n    {\n      \"index\": 2,\n      \"path\": \"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/jwt-test-groups.public.json\",\n      \"size\": 19789,\n      \"sha256\": \"35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869\",\n      \"version\": \"66306:31235926:19789:1793954281109723489:1793954281110748800\",\n      \"nativeText\": {\n        \"blob\": \"49b901a91bdd59f5f036afefe918e98dc1944685\",\n        \"bytes\": 474,\n        \"sha256\": \"6a19f9b5632c3cc4debc4e682bedc30d2dd382b31192ce222cb66ad7ad0f811d\"\n      },\n      \"originalOperation\": \"1113a55bee6550171be223c962ac709799f51b6bfe0c7c4ea63b857520466a80\",\n      \"full9Strings\": [\n        \"66306\",\n        \"31235926\",\n        \"1000\",\n        \"1000\",\n        \"33152\",\n        \"1\",\n        \"19789\",\n        \"1793954281109723489\",\n        \"1793954281110748800\"\n      ],\n      \"regularFileFromNativeFileInfoContract\": true,\n      \"binaryReadAuthorized\": false\n    },\n    {\n      \"index\": 3,\n      \"path\": \"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/inert-stage.result.public.json\",\n      \"size\": 1854,\n      \"sha256\": \"f1e1f3a2576fcb2ecd05cdb9b8f4fbebd6bb849eddb48536eb5c66ed5be109e2\",\n      \"version\": \"66306:31235927:1854:1793954281111835946:1793954281112810962\",\n      \"nativeText\": {\n        \"blob\": \"b87bd18cfb071f2b3dba60018038cee8bdd30f4b\",\n        \"bytes\": 475,\n        \"sha256\": \"d0cea042676e0ea2326af75dfe8b8f76b37adbd9ee8bfd40f48ef32778c3b5f6\"\n      },\n      \"originalOperation\": \"178658173a8037639dfa5b0eb5198e969318b76fe5e636ee6c2eb30f8dddbc91\",\n      \"full9Strings\": [\n        \"66306\",\n        \"31235927\",\n        \"1000\",\n        \"1000\",\n        \"33152\",\n        \"1\",\n        \"1854\",\n        \"1793954281111835946\",\n        \"1793954281112810962\"\n      ],\n      \"regularFileFromNativeFileInfoContract\": true,\n      \"binaryReadAuthorized\": false\n    }\n  ],\n  \"target\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3\",\n  \"existing_nonblocking_target_flock\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3/release/.cargo-lock\",\n  \"budgets\": {\n    \"outerSeconds\": 12000,\n    \"releaseSeconds\": 1800,\n    \"threeCompileSharedSeconds\": 3600,\n    \"listSeconds\": 30,\n    \"fourFamiliesEachSeconds\": 600,\n    \"cleanupTermSeconds\": 5,\n    \"cleanupKillSeconds\": 5,\n    \"immutableResultPageBytes\": 8192,\n    \"streamBytesPerRead\": 16384,\n    \"payloadMaxBytes\": 1048576\n  },\n  \"denominators\": {\n    \"unique\": 149,\n    \"profileExecutions\": 166,\n    \"existingUnique\": 132,\n    \"newJWTUnique\": 15,\n    \"newPKIUnique\": 2,\n    \"newJWTProfiles\": 30,\n    \"newPKIProfiles\": 4,\n    \"groups\": [\n      {\n        \"label\": \"native-jwt-pki-file17\",\n        \"profile\": \"file\",\n        \"count\": 17,\n        \"runtime_seconds\": 600\n      },\n      {\n        \"label\": \"native-jwt-pki-default17\",\n        \"profile\": \"default\",\n        \"count\": 17,\n        \"runtime_seconds\": 600\n      },\n      {\n        \"label\": \"legacy-jwt-default63\",\n        \"profile\": \"default\",\n        \"count\": 63,\n        \"runtime_seconds\": 600\n      },\n      {\n        \"label\": \"native-auth-identity-default69\",\n        \"profile\": \"default\",\n        \"count\": 69,\n        \"runtime_seconds\": 600\n      }\n    ]\n  },\n  \"execution\": \"Original published launcher, then same-PID exec of original published runner. Existing release build plus original three compile commands and four exact test groups only.\",\n  \"allowed_isolated_tests\": \"Owned isolated Service fixtures created by these exact libtests are included; no production services or clients.\",\n  \"sequence\": [\n    \"Whole exact GO/request/journal/helpers; initialize only the absent new build149 slot with corrected typed digest/fingerprint.\",\n    \"Whole exact request,intent,armed externally and cross independent dispatch boundary before the one process_start. Preserve original SDK whole before parse/isError; no replay or rekey on ambiguity.\",\n    \"Launcher rechecks exact33b source/report/controls/full9, fixed retained12 fences and existing target nonblocking flock. It keeps original absolute deadline through same-PID exec.\",\n    \"Keep original release1800/three-compile-shared3600/list30/four-groups600/outer12000 and TERM5/KILL5. Do not expand or reset to turn a timeout into PASS.\",\n    \"Follow only original returned job status and contiguous16384 streams via8192 immutable payload pages, full payload SHA/EOF and completed inactive closure; retain all errors and original lifecycle records.\",\n    \"Actual source/build/list/exact-one-passed results and retained binaries need full original report evidence before qualification. HTTP12,ACL23,Mac,X230 and realLAN remain separate actual gates.\"\n  ],\n  \"lane_activation\": \"C may occupy one build/observation lane now. B occupies one formatter/observation lane and must not run Cargo on this target. A/root0 Native; global max2.\",\n  \"target_serialization\": \"C owns the bound Cargo target until its original lifecycle closes. B27 must wait or use a separately qualified independent target.\",\n  \"excluded\": [\n    \"new wrapper or second build/process_start\",\n    \"changed test inventory,budgets,deadlines or status normalization\",\n    \"prod service/client/traffic/credential changes\",\n    \"other report paths or files before exact observation binding\",\n    \"replay,rekey,UNKNOWN replacement or old-asset cleanup\"\n  ],\n  \"full_replacement\": false,\n  \"production_cutover\": false,\n  \"legacy_cleanup\": false,\n  \"root_Runtime_calls\": 0\n}\n",
+  "goPin": {
+    "blob": "94b478defd4356967b23390edfc152f00eba64c0",
+    "bytes": 14152,
+    "sha256": "d84bf11c8fc2b37f64a9dcabf19aee951b2170aba674df488c38f64122400013"
+  },
+  "digest": "d0c72853406fc5c9bedcac0772b112aecdfe08ef09a67494ecacd5a727291379",
+  "fingerprint": "15044037418282894793",
+  "job": "1a1b029a998-fc05-6eb2",
+  "startCalled": true,
+  "pending": "jwt-pki-33b814c7-build149-report-body-page2-r1",
+  "activeObserver": {
+    "id": "7ef06d88b0a289f89193813a2f1e20c865818515a4842c816bd1a47eff2fe0a0",
+    "request": {
+      "operation": {
+        "tool": "binary_read",
+        "arguments": {
+          "host": "rog",
+          "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/result.public.json",
+          "offset": 0,
+          "limit": 36998,
+          "expected_version": "66306:31364220:36998:1793957208077081949:1793957208077081949"
+        }
+      },
+      "idempotency_key": "heptabao-native-jwt-pki-33b814c7-build149-observe-r1-result-body"
+    },
+    "tool": "binary_read",
+    "futureClosed": true,
+    "nextPageOffset": 32768,
+    "eof": false,
+    "pages": [
+      {
+        "offset": 0,
+        "next": 16384,
+        "base64": "eyJyZXN1bHRUeXBlIjoiY29tcGxldGUiLCJjb250ZW50IjpbeyJ0eXBlIjoidGV4dCIsInRleHQiOiJ7XCJjaHVua19zaGEyNTZcIjpcImFhOGE4NjIzY2M5NTVhZGI2NGFiMzg2Mzg3ZDE1YWQyMjA0ZmViYzBmZDUyNjM5MmQyMGNkMGFiNmM5NjM4YTZcIixcImRhdGFfYmFzZTY0XCI6XCJld29nSUNKaFkzUjFZV3hmWm1sNGRIVnlaVjlpWVdOclpXNWtYMlp2Y2w5dVpYZGZkR1Z6ZEhNaU9pQWlSbWxzWlZZMklpd0tJQ0FpWTJ4bFlXNTFjQ0k2SUZzS0lDQWdJSHNLSUNBZ0lDQWdJbVJwY21WamRGOWphR2xzWkY5eVpXRndaV1FpT2lCMGNuVmxMQW9nSUNBZ0lDQWlaWGhwZEY5amIyUmxJam9nTVRBeExBb2dJQ0FnSUNBaWJHRmlaV3dpT2lBaWJtOXliV0ZzTFhKbGJHVmhjMlV0WW5WcGJHUWlMQW9nSUNBZ0lDQWljR2xrSWpvZ09ERXhOREV6TEFvZ0lDQWdJQ0FpY21WdFlXbHVhVzVuSWpvZ1cxMEtJQ0FnSUgwS0lDQmRMQW9nSUNKamIyNTBjbTlzYkdWeVgzTm9ZVEkxTmlJNklDSXdNak5tTm1ZellXUTNNV0k0T1RBNVlUUTJaR0UyTXpJM05qY3dORFJrWlRRMFpXTXlaV0UyWm1OaU1URTJPVEpoTWpFMk1HVXlZMlZqTlRFNFlXUmtJaXdLSUNBaVpHbHpkSEpwWW5WMFpXUmZibUYwYVhabFgycDNkRjlvWVY5eGRXRnNhV1pwWldRaU9pQm1ZV3h6WlN3S0lDQWlaWGhwYzNScGJtZGZkVzVwY1hWbFgzUmxjM1JmZEc5MFlXd2lPaUF4TXpJc0NpQWdJbVpoYVd4MWNtVWlPaUFpYm05eWJXRnNJSEJ5YjJSMVkzUnBiMjRnWW1sdVlYSjVJR052YlhCcGJHRjBhVzl1SUdaaGFXeGxaQ0lzQ2lBZ0ltWmhhV3gxY21WZmRIbHdaU0k2SUNKQmMzTmxjblJwYjI1RmNuSnZjaUlzQ2lBZ0ltWnBlSFIxY21WZlptVmhkSFZ5WlhNaU9pQmJYU3dLSUNBaVozSnZkWEJmY21WemRXeDBjeUk2SUZ0ZExBb2dJQ0puY205MWNITWlPaUJiQ2lBZ0lDQjdDaUFnSUNBZ0lDSnNZV0psYkNJNklDSnVZWFJwZG1VdGFuZDBMWEJyYVMxbWFXeGxNVGNpTEFvZ0lDQWdJQ0FpYkdsaWRHVnpkRjl3Y205bWFXeGxJam9nSW1acGJHVWlMQW9nSUNBZ0lDQWljblZ1ZEdsdFpWOXpaV052Ym1Seklqb2dOakF3TEFvZ0lDQWdJQ0FpZEdWemRITWlPaUJiQ2lBZ0lDQWdJQ0FnSW5ObGNuWnBZMlU2T201aGRHbDJaVjloZFhSb09qcHFkM1JmZEdWemRITTZPbTVoZEdsMlpWOXFkM1JmYkc5allXeGZjMlZ5ZG1salpWOTBiMnRsYmw5cFpHVnVkR2wwZVY5eVpXNWxkMkZzWDJGdVpGOWpiMnhrWDNKbGIzQmxiaUlzQ2lBZ0lDQWdJQ0FnSW5ObGNuWnBZMlU2T201aGRHbDJaVjloZFhSb09qcHFkM1JmZEdWemRITTZPbTVoZEdsMlpWOXFkM1JmY21WcVpXTjBjMTl5WlcxdmRHVmZZbUYwWTJoZllXNWtYMkpoWkY5emFXZHVZWFIxY21WZmQybDBhRzkxZEY5allXNWthV1JoZEdWZlpHVnNkR0VpTEFvZ0lDQWdJQ0FnSUNKelpYSjJhV05sT2pwdVlYUnBkbVZmWVhWMGFEbzZhbmQwWDNSbGMzUnpPanB1WVhScGRtVmZhbmQwWDNKdmJHVmZiM0JsY21GMGFXOXVjMTlyWldWd1gzUm9aVjlsZUdsemRHbHVaMTlzWldkaFkzbGZZV05zWDJOdmJuUnlZV04wSWl3S0lDQWdJQ0FnSUNBaWMyVnlkbWxqWlRvNmJtRjBhWFpsWDJGMWRHZzZPbXAzZEY5MFpYTjBjem82Ym1GMGFYWmxYMnAzZEY5cFpHVnVkR2wwZVY5bVlXbHNkWEpsWDJSdlpYTmZibTkwWDJWNGNHOXlkRjkzYVhSdVpYTnpYMjl5WDNSdmEyVnVYMkZ1WkY5dVpYaDBYMnh2WjJsdVgybHpYMlp5WlhOb0lpd0tJQ0FnSUNBZ0lDQWljMlZ5ZG1salpUbzZibUYwYVhabFgyRjFkR2c2T21wM2RGOTBaWE4wY3pvNmJtRjBhWFpsWDJwM2RGOXZjbWxuYVc1aGJGOWhjM05sY25ScGIyNWZaWGh3YVhKNVgySmxabTl5WlY5d2RXSnNhV05oZEdsdmJsOXJaV1Z3YzE5aGRYUm9YMmxrWlc1MGFYUjVYMkYwYjIxcFl5SXNDaUFnSUNBZ0lDQWdJbk5sY25acFkyVTZPbTVoZEdsMlpWOWhkWFJvT2pwcWQzUmZkR1Z6ZEhNNk9tNWhkR2wyWlY5cWQzUmZibUYwYVhabFgyOTNibVZ5WDJOaGNHRmphWFI1WDNabGRHOWZZV1owWlhKZllYVjBhR1Z1ZEdsallYUnBiMjVmYTJWbGNITmZkR2hsWDI5c1pGOXliMjkwSWl3S0lDQWdJQ0FnSUNBaWMyVnlkbWxqWlRvNmJtRjBhWFpsWDJGMWRHZzZPbXAzZEY5MFpYTjBjem82Ym1GMGFYWmxYMnAzZEY5dmNtbG5hVzVoYkY5aGMzTmxjblJwYjI1ZlpYaHdhWEo1WDJGbWRHVnlYMk52YlcxcGRGOTNhWFJvYUc5c1pITmZjbVZ3YkhsZmQybDBhRzkxZEY5eWIyeHNZbUZqYXlJc0NpQWdJQ0FnSUNBZ0luTmxjblpwWTJVNk9tNWhkR2wyWlY5aGRYUm9PanBxZDNSZmRHVnpkSE02T201aGRHbDJaVjlxZDNSZmNHOXpkRjlqYjIxdGFYUmZZWFZrYVhSZlptRnBiSFZ5WlY5clpXVndjMTkzYUc5c1pWOXliMjkwWDJGdVpGOXlaV052ZG1WeWVWOXlaWEYxYVhKbFpDSXNDaUFnSUNBZ0lDQWdJbk5sY25acFkyVTZPbTVoZEdsMlpWOWhkWFJvT2pwcWQzUmZkR1Z6ZEhNNk9tNWhkR2wyWlY5cWQzUmZjRzl6ZEY5aGRXUnBkRjl5WlhOd2IyNXpaVjloYm1SZmIzSnBaMmx1WVd4ZlpHVmhaR3hwYm1WZlkyRnVibTkwWDJKbFgzSmxZbTkxYm1RaUxBb2dJQ0FnSUNBZ0lDSnpaWEoyYVdObE9qcHVZWFJwZG1WZllYVjBhRG82YW5kMFgzUmxjM1J6T2pwdVlYUnBkbVZmYW5kMFgzQnZjM1JmWVhWa2FYUmZjbVYyYjJOaGRHbHZibDlqWVc1dWIzUmZjbVZ3YkdGalpWOTBhR1ZmYjNKcFoybHVZV3hmY0hWaWJHbGpZWFJwYjI1ZmNISnZiMllpTEFvZ0lDQWdJQ0FnSUNKelpYSjJhV05sT2pwdVlYUnBkbVZmWVhWMGFEbzZhbmQwWDNSbGMzUnpPanB1WVhScGRtVmZhbmQwWDNSdmEyVnVYMkZ3YVY5elpYSjJhV05sWDJSbGMyTmxibVJoYm5SelgydGxaWEJmYjNkdVgzSmxibVYzWVd4ZllXNWtYM0JoY21WdWRGOXlaWFp2WTJGMGFXOXVJaXdLSUNBZ0lDQWdJQ0FpYzJWeWRtbGpaVG82Ym1GMGFYWmxYMkYxZEdnNk9tcDNkRjkwWlhOMGN6bzZibUYwYVhabFgycDNkRjkwYjJ0bGJsOWhjR2xmWW1GMFkyaGZiM2R1WlhKZmNISmxjMlZ5ZG1WelgzSmxZV3hmY0dGeVpXNTBYMkpwYm1ScGJtZGZZV055YjNOelgyTnZiR1JmY21WdmNHVnVJaXdLSUNBZ0lDQWdJQ0FpYzJWeWRtbGpaVG82Ym1GMGFYWmxYMkYxZEdnNk9tcDNkRjkwWlhOMGN6bzZibUYwYVhabFgycDNkRjkwYjJ0bGJsOWhjR2xmY21WMmIydGxYMjl5Y0doaGJsOXJaV1Z3YzE5dmQyNWZhWE56ZFdWeVgySjFkRjl0YjNWdWRGOXlaWFJwY21WdFpXNTBYM04wYVd4c1gzSmxkbTlyWlhNaUxBb2dJQ0FnSUNBZ0lDSnpaWEoyYVdObE9qcHVZWFJwZG1WZllYVjBhRG82YW5kMFgzUmxjM1J6T2pwdVlYUnBkbVZmYW5kMFgyRnVaRjkxYzJWeWNHRnpjMTkwYjJ0bGJsOWhjR2xmZEdGeVoyVjBjMTlyWldWd1gzSmxZV3hmYjNkdVpYSmZZVzVrWDNKbGJtVjNZV3hmYVc1ZlltOTBhRjlrYVhKbFkzUnBiMjV6SWl3S0lDQWdJQ0FnSUNBaWMyVnlkbWxqWlRvNmJtRjBhWFpsWDJGMWRHZzZPbXAzZEY5MFpYTjBjem82Ym1GMGFYWmxYMnAzZEY5MGIydGxibDloY0dsZmNISnZabWxzWlY5eVpXcGxZM1J6WDIxdmRXNTBYMnhoWW1Wc1gzZHBkR2h2ZFhSZmNtVmhiRjlwYzNOMVpYSmZiM0pmY0dGeVpXNTBYMmR5WVhCb0lpd0tJQ0FnSUNBZ0lDQWljMlZ5ZG1salpUbzZibUYwYVhabFgyRjFkR2c2T25CcmFWOTBaWE4wY3pvNmJtRjBhWFpsWDNCcmFWOW1iM0p0WVd4ZlpYaHdhWEpsWkY5c1pXRnpaVjlzYjI5cmRYQmZiV0YwWTJobGMxOXZjR1Z1WW1Gdlh6STNNVjgwTURCZllXNWtYMk52YkdRaUxBb2dJQ0FnSUNBZ0lDSnpaWEoyYVdObE9qcHVZWFJwZG1WZllYVjBhRG82Y0d0cFgzUmxjM1J6T2pwdVlYUnBkbVZmY0d0cFgyWnZjbTFoYkY5eVpYWnZhMlZrWDJ4bFlYTmxYMnh2YjJ0MWNGOXRZWFJqYUdWelgyOXdaVzVpWVc5Zk1qY3hYelF3TUY5aGJtUmZZMjlzWkNJS0lDQWdJQ0FnWFFvZ0lDQWdmU3dLSUNBZ0lIc0tJQ0FnSUNBZ0lteGhZbVZzSWpvZ0ltNWhkR2wyWlMxcWQzUXRjR3RwTFdSbFptRjFiSFF4TnlJc0NpQWdJQ0FnSUNKc2FXSjBaWE4wWDNCeWIyWnBiR1VpT2lBaVpHVm1ZWFZzZENJc0NpQWdJQ0FnSUNKeWRXNTBhVzFsWDNObFkyOXVaSE1pT2lBMk1EQXNDaUFnSUNBZ0lDSjBaWE4wY3lJNklGc0tJQ0FnSUNBZ0lDQWljMlZ5ZG1salpUbzZibUYwYVhabFgyRjFkR2c2T21wM2RGOTBaWE4wY3pvNmJtRjBhWFpsWDJwM2RGOXNiMk5oYkY5elpYSjJhV05sWDNSdmEyVnVYMmxrWlc1MGFYUjVYM0psYm1WM1lXeGZZVzVrWDJOdmJHUmZjbVZ2Y0dWdUlpd0tJQ0FnSUNBZ0lDQWljMlZ5ZG1salpUbzZibUYwYVhabFgyRjFkR2c2T21wM2RGOTBaWE4wY3pvNmJtRjBhWFpsWDJwM2RGOXlaV3BsWTNSelgzSmxiVzkwWlY5aVlYUmphRjloYm1SZlltRmtYM05wWjI1aGRIVnlaVjkzYVhSb2IzVjBYMk5oYm1ScFpHRjBaVjlrWld4MFlTSXNDaUFnSUNBZ0lDQWdJbk5sY25acFkyVTZPbTVoZEdsMlpWOWhkWFJvT2pwcWQzUmZkR1Z6ZEhNNk9tNWhkR2wyWlY5cWQzUmZjbTlzWlY5dmNHVnlZWFJwYjI1elgydGxaWEJmZEdobFgyVjRhWE4wYVc1blgyeGxaMkZqZVY5aFkyeGZZMjl1ZEhKaFkzUWlMQW9nSUNBZ0lDQWdJQ0p6WlhKMmFXTmxPanB1WVhScGRtVmZZWFYwYURvNmFuZDBYM1JsYzNSek9qcHVZWFJwZG1WZmFuZDBYMmxrWlc1MGFYUjVYMlpoYVd4MWNtVmZaRzlsYzE5dWIzUmZaWGh3YjNKMFgzZHBkRzVsYzNOZmIzSmZkRzlyWlc1ZllXNWtYMjVsZUhSZmJHOW5hVzVmYVhOZlpuSmxjMmdpTEFvZ0lDQWdJQ0FnSUNKelpYSjJhV05sT2pwdVlYUnBkbVZmWVhWMGFEbzZhbmQwWDNSbGMzUnpPanB1WVhScGRtVmZhbmQwWDI5eWFXZHBibUZzWDJGemMyVnlkR2x2Ymw5bGVIQnBjbmxmWW1WbWIzSmxYM0IxWW14cFkyRjBhVzl1WDJ0bFpYQnpYMkYxZEdoZmFXUmxiblJwZEhsZllYUnZiV2xqSWl3S0lDQWdJQ0FnSUNBaWMyVnlkbWxqWlRvNmJtRjBhWFpsWDJGMWRHZzZPbXAzZEY5MFpYTjBjem82Ym1GMGFYWmxYMnAzZEY5dVlYUnBkbVZmYjNkdVpYSmZZMkZ3WVdOcGRIbGZkbVYwYjE5aFpuUmxjbDloZFhSb1pXNTBhV05oZEdsdmJsOXJaV1Z3YzE5MGFHVmZiMnhrWDNKdmIzUWlMQW9nSUNBZ0lDQWdJQ0p6WlhKMmFXTmxPanB1WVhScGRtVmZZWFYwYURvNmFuZDBYM1JsYzNSek9qcHVZWFJwZG1WZmFuZDBYMjl5YVdkcGJtRnNYMkZ6YzJWeWRHbHZibDlsZUhCcGNubGZZV1owWlhKZlkyOXRiV2wwWDNkcGRHaG9iMnhrYzE5eVpYQnNlVjkzYVhSb2IzVjBYM0p2Ykd4aVlXTnJJaXdLSUNBZ0lDQWdJQ0FpYzJWeWRtbGpaVG82Ym1GMGFYWmxYMkYxZEdnNk9tcDNkRjkwWlhOMGN6bzZibUYwYVhabFgycDNkRjl3YjNOMFgyTnZiVzFwZEY5aGRXUnBkRjltWVdsc2RYSmxYMnRsWlhCelgzZG9iMnhsWDNKdmIzUmZZVzVrWDNKbFkyOTJaWEo1WDNKbGNYVnBjbVZrSWl3S0lDQWdJQ0FnSUNBaWMyVnlkbWxqWlRvNmJtRjBhWFpsWDJGMWRHZzZPbXAzZEY5MFpYTjBjem82Ym1GMGFYWmxYMnAzZEY5d2IzTjBYMkYxWkdsMFgzSmxjM0J2Ym5ObFgyRnVaRjl2Y21sbmFXNWhiRjlrWldGa2JHbHVaVjlqWVc1dWIzUmZZbVZmY21WaWIzVnVaQ0lzQ2lBZ0lDQWdJQ0FnSW5ObGNuWnBZMlU2T201aGRHbDJaVjloZFhSb09qcHFkM1JmZEdWemRITTZPbTVoZEdsMlpWOXFkM1JmY0c5emRGOWhkV1JwZEY5eVpYWnZZMkYwYVc5dVgyTmhibTV2ZEY5eVpYQnNZV05sWDNSb1pWOXZjbWxuYVc1aGJGOXdkV0pzYVdOaGRHbHZibDl3Y205dlppSXNDaUFnSUNBZ0lDQWdJbk5sY25acFkyVTZPbTVoZEdsMlpWOWhkWFJvT2pwcWQzUmZkR1Z6ZEhNNk9tNWhkR2wyWlY5cWQzUmZkRzlyWlc1ZllYQnBYM05sY25acFkyVmZaR1Z6WTJWdVpHRnVkSE5mYTJWbGNGOXZkMjVmY21WdVpYZGhiRjloYm1SZmNHRnlaVzUwWDNKbGRtOWpZWFJwYjI0aUxBb2dJQ0FnSUNBZ0lDSnpaWEoyYVdObE9qcHVZWFJwZG1WZllYVjBhRG82YW5kMFgzUmxjM1J6T2pwdVlYUnBkbVZmYW5kMFgzUnZhMlZ1WDJGd2FWOWlZWFJqYUY5dmQyNWxjbDl3Y21WelpYSjJaWE5mY21WaGJGOXdZWEpsYm5SZlltbHVaR2x1WjE5aFkzSnZjM05mWTI5c1pGOXlaVzl3Wlc0aUxBb2dJQ0FnSUNBZ0lDSnpaWEoyYVdObE9qcHVZWFJwZG1WZllYVjBhRG82YW5kMFgzUmxjM1J6T2pwdVlYUnBkbVZmYW5kMFgzUnZhMlZ1WDJGd2FWOXlaWFp2YTJWZmIzSndhR0Z1WDJ0bFpYQnpYMjkzYmw5cGMzTjFaWEpmWW5WMFgyMXZkVzUwWDNKbGRHbHlaVzFsYm5SZmMzUnBiR3hmY21WMmIydGxjeUlzQ2lBZ0lDQWdJQ0FnSW5ObGNuWnBZMlU2T201aGRHbDJaVjloZFhSb09qcHFkM1JmZEdWemRITTZPbTVoZEdsMlpWOXFkM1JmWVc1a1gzVnpaWEp3WVhOelgzUnZhMlZ1WDJGd2FWOTBZWEpuWlhSelgydGxaWEJmY21WaGJGOXZkMjVsY2w5aGJtUmZjbVZ1WlhkaGJGOXBibDlpYjNSb1gyUnBjbVZqZEdsdmJuTWlMQW9nSUNBZ0lDQWdJQ0p6WlhKMmFXTmxPanB1WVhScGRtVmZZWFYwYURvNmFuZDBYM1JsYzNSek9qcHVZWFJwZG1WZmFuZDBYM1J2YTJWdVgyRndhVjl3Y205bWFXeGxYM0psYW1WamRITmZiVzkxYm5SZmJHRmlaV3hmZDJsMGFHOTFkRjl5WldGc1gybHpjM1ZsY2w5dmNsOXdZWEpsYm5SZlozSmhjR2dpTEFvZ0lDQWdJQ0FnSUNKelpYSjJhV05sT2pwdVlYUnBkbVZmWVhWMGFEbzZjR3RwWDNSbGMzUnpPanB1WVhScGRtVmZjR3RwWDJadmNtMWhiRjlsZUhCcGNtVmtYMnhsWVhObFgyeHZiMnQxY0Y5dFlYUmphR1Z6WDI5d1pXNWlZVzlmTWpjeFh6UXdNRjloYm1SZlkyOXNaQ0lzQ2lBZ0lDQWdJQ0FnSW5ObGNuWnBZMlU2T201aGRHbDJaVjloZFhSb09qcHdhMmxmZEdWemRITTZPbTVoZEdsMlpWOXdhMmxmWm05eWJXRnNYM0psZG05clpXUmZiR1ZoYzJWZmJHOXZhM1Z3WDIxaGRHTm9aWE5mYjNCbGJtSmhiMTh5TnpGZk5EQXdYMkZ1WkY5amIyeGtJZ29nSUNBZ0lDQmRDaUFnSUNCOUxBb2dJQ0FnZXdvZ0lDQWdJQ0FpYkdGaVpXd2lPaUFpYkdWbllXTjVMV3AzZEMxa1pXWmhkV3gwTmpNaUxBb2dJQ0FnSUNBaWJHbGlkR1Z6ZEY5d2NtOW1hV3hsSWpvZ0ltUmxabUYxYkhRaUxBb2dJQ0FnSUNBaWNuVnVkR2x0WlY5elpXTnZibVJ6SWpvZ05qQXdMQW9nSUNBZ0lDQWlkR1Z6ZEhNaU9pQmJDaUFnSUNBZ0lDQWdJbUYxZEdnNk9tcDNkRjlpWVhSamFGOTBaWE4wY3pvNmFuZDBYMkpoZEdOb1gyNTFiR3hmWlcxd2RIbGZZVzVrWDNCaGNuUnBZV3hmZFhCa1lYUmxjMTltYjJ4c2IzZGZaMlZ1WlhKcFkxOTBlWEJsYzE5aGJtUmZjbVZxWldOMGFXOXVjMTloY21WZllYUnZiV2xqSWl3S0lDQWdJQ0FnSUNBaVlYVjBhRG82YW5kMFgySmhkR05vWDNSbGMzUnpPanBxZDNSZlltRjBZMmhmZEhsd1pWOXRZWFJ5YVhoZmMyVmhiSE5mWVdaMFpYSmZhV1JsYm5ScGRIbGZkMmwwYUc5MWRGOXpaWEoyYVdObFgzSnZkM05mWVc1a1gyRnNiRzkzYzE5aGMzTmxjblJwYjI1ZmNtVjFjMlVpTEFvZ0lDQWdJQ0FnSUNKaGRYUm9PanBxZDNSZlltRjBZMmhmZEdWemRITTZPbXAzZEY5a2FYTndiR0Y1WDI1aGJXVmZjbVZ0YjNabGMxOXZibVZmZEhKaGFXeHBibWRmYUhsd2FHVnVYMkZ1WkY5clpXVndjMTkwYUdWZlpuVnNiRjlpYjNWdVpHVmtYM04xWW1wbFkzUWlMQW9nSUNBZ0lDQWdJQ0poZFhSb09qcHFkM1JmWW1GMFkyaGZkR1Z6ZEhNNk9tcDNkRjlzWldkaFkzbGZZV0p6Wlc1MFgzUjVjR1ZmY21WaFpGOXdjbVZ6WlhKMlpYTmZZbmwwWlhOZllXNWtYM1I1Y0dWa1gzTjBZWFJsWDNKbGNYVnBjbVZ6WDJ4cGRtVmZhbmQwWDIxdmRXNTBJaXdLSUNBZ0lDQWdJQ0FpWVhWMGFEbzZhbmQwWDJKaGRHTm9YM1JsYzNSek9qcHFkM1JmYlc5MWJuUmZabTl5WTJWa1gySmhkR05vWDJOaGJHTjFiR0YwWlhOZmRIUnNYMkpsWm05eVpWOWthWE5qWVhKa2FXNW5YM05sY25acFkyVmZjR1Z5YVc5a1gyRnVaRjkxYzJWeklpd0tJQ0FnSUNBZ0lDQWlZWFYwYURvNmFuZDBYMkpoZEdOb1gzUmxjM1J6T2pwcWQzUmZjbVZxWldOMFpXUmZjbTlzWlY5amNtVmhkR2x2Ymw5eVpXRmtjMTloYzE5bGJYQjBlVjl1YjNSZlptOTFibVJmZDJsMGFHOTFkRjl0ZFhSaGRHbHZiaUlzQ2lBZ0lDQWdJQ0FnSW1GMWRHZzZPblJsYzNSek9qcHFkM1JmWW05MWJtUmZZMnhoYVcxelgzUmxjM1J6T2pwcWQzUmZZbTkxYm1SZmJHVm5ZV041WDNKdmJHVmZZbmwwWlhOZmMzUmhlVjlsZUdGamRGOWhibVJmYm1WM1gzTjBZWFJsWDIxaGNtdGxjbDl6ZFhKMmFYWmxjMTlsYlhCMGVWOWliM1Z1WkhNaUxBb2dJQ0FnSUNBZ0lDSmhkWFJvT2pwMFpYTjBjem82YW5kMFgySnZkVzVrWDJOc1lXbHRjMTkwWlhOMGN6bzZhbmQwWDJKdmRXNWtYMnh2WjJsdVgzVnpaWE5mZG1WeWFXWnBaV1JmYjNKcFoybHVZV3hmWTJ4aGFXMXpYMkZ1WkY5eVpXOXdaVzV6WDNSb1pWOXpZVzFsWDNCeVpXUnBZMkYwWlNJc0NpQWdJQ0FnSUNBZ0ltRjFkR2c2T25SbGMzUnpPanBxZDNSZlltOTFibVJmWTJ4aGFXMXpYM1JsYzNSek9qcHFkM1JmWW05MWJtUmZjbTlzWlY5d1lYSjBhV0ZzWDNWd1pHRjBaWE5mWm05c2JHOTNYMjlpYzJWeWRtVmtYMjFoY0Y5aGJtUmZiVzlrWlY5elpXMWhiblJwWTNNaUxBb2dJQ0FnSUNBZ0lDSmhkWFJvT2pwMFpYTjBjem82YW5kMFgySnZkVzVrWDJOc1lXbHRjMTkwWlhOMGN6bzZibUYwYVhabFgzUnZhMlZ1WDNKbGJtVjNZV3hmWkc5bGMxOXViM1JmY21WaGNIQnNlVjl1WlhkZlkyeGhhVzFmY25Wc1pYTWlMQW9nSUNBZ0lDQWdJQ0poZFhSb09qcDBaWE4wY3pvNmFuZDBYMkp2ZFc1a1gyTnNZV2x0YzE5MFpYTjBjem82Y21WdGIzUmxYMnh2WjJsdVgzVnpaWE5mWTI5dGJXOXVYMkp2ZFc1a1gzSjFiR1Z6WDJGdVpGOW1aVzVqWlhOZmFXNW1iR2xuYUhSZmNtOXNaVjlqYUdGdVoyVnpJaXdLSUNBZ0lDQWdJQ0FpWVhWMGFEbzZkR1Z6ZEhNNk9tcDNkRjlqYjI1bWFXZGZZVzVrWDNKdmJHVmZjbVZoWkdKaFkydGZjSEpsYzJWeWRtVmZiM0JsYm1KaGIxOWhiR2xoYzJWeklpd0tJQ0FnSUNBZ0lDQWlZWFYwYURvNmRHVnpkSE02T21wM2RGOWpiMjVtYVdkMWNtRjBhVzl1WDNKbGFtVmpkSE5mWW1Ga1gydGxlWE5mYm1GdFpYTndZV05sWDJGdVpGOXdjbWwyYVd4bFoyVmZaWE5qWVd4aGRHbHZiaUlzQ2lBZ0lDQWdJQ0FnSW1GMWRHZzZPblJsYzNSek9qcHFkM1JmWlhNeU5UWmZiRzluYVc1ZmRYTmxjMTl5WldGc1gzQXlOVFpmYzJsbmJtRjBkWEpsWDJGdVpGOXlaV3BsWTNSelgyRnNaMjl5YVhSb2JWOWpiMjVtZFhOcGIyNGlMQW9nSUNBZ0lDQWdJQ0poZFhSb09qcDBaWE4wY3pvNmFuZDBYMnAzYTNOZlkyOXVabWxuWDJGalkyVndkSE5mY0hWaWJHbGpYMlZrTWpVMU1UbGZZVzVrWDJSeWFYWmxjMTlzYjJkcGJpSXNDaUFnSUNBZ0lDQWdJbUYxZEdnNk9uUmxjM1J6T2pwcWQzUmZhbmRyYzE5eVpXcGxZM1J6WDNCeWFYWmhkR1ZmYzNsdGJXVjBjbWxqWDJSMWNHeHBZMkYwWlY5aGJtUmZiV2w0WldSZmEyVjVYMjFoZEdWeWFXRnNYM2RwZEdodmRYUmZiWFYwWVhScGIyNGlMQW9nSUNBZ0lDQWdJQ0poZFhSb09qcDBaWE4wY3pvNmFuZDBYMnh2WjJsdVgyTnZiWEJ2YzJWelgzQnBibTVsWkY5emFXZHVZWFIxY21WZmNHOXNhV041WDJGdVpGOXlaWFZ6WVdKc1pWOWlaV0Z5WlhKZmRHOXJaVzV6SWl3S0lDQWdJQ0FnSUNBaVlYVjBhRG82ZEdWemRITTZPbXAzZEY5c2IyZHBibDlrWlc1cFpYTmZhVzUyWVd4cFpGOTBjblZ6ZEY5amJHRnBiWE5mYUdWaFpHVnljMTloYm1SZmNtOXNaWE5mZDJsMGFHOTFkRjl0ZFhSaGRHbHZiaUlzQ2lBZ0lDQWdJQ0FnSW1GMWRHZzZPblJsYzNSek9qcHFkM1JmYkc5bmFXNWZkR1Z6ZEhNNk9tVjRjR3hwWTJsMFgyeGxaMkZqZVY5c2FXMXBkSE5mY21WdFlXbHVYMlZ1Wm05eVkyVmtYMkZ1WkY5eWIyeGxYMk5zYjJOclgzUmhhMlZ6WDNCeVpXTmxaR1Z1WTJVaUxBb2dJQ0FnSUNBZ0lDSmhkWFJvT2pwMFpYTjBjem82YW5kMFgyeHZaMmx1WDNSbGMzUnpPanBxZDNSZmNtOXNaVjlzWldWM1lYbGZjbVZoWkdKaFkydGZkWEJrWVhSbGMxOWhibVJmYzJsbmJtVmtYMlIxY21GMGFXOXVYM1I1Y0dWelgyRnlaVjlpYjNWdVpHVmtJaXdLSUNBZ0lDQWdJQ0FpWVhWMGFEbzZkR1Z6ZEhNNk9tcDNkRjlzYjJkcGJsOTBaWE4wY3pvNmJHVm5ZV041WDJOdmJtWnBaMTlqYkc5amExOW5jbUZqWlY5a2IyVnpYMjV2ZEY5bGVIUmxibVJmWlhod2FYSjVYM2RwZEdodmRYUmZaWGh3YkdsamFYUmZjbTlzWlY5dmRtVnljbWxrWlNJc0NpQWdJQ0FnSUNBZ0ltRjFkR2c2T25SbGMzUnpPanBxZDNSZmJHOW5hVzVmZEdWemRITTZPbTVoZEdsMlpWOWpiMjVtYVdkZlpHVm1ZWFZzZEhOZllXeHNiM2RmYjNCMGFXOXVZV3hmWkdGMFpYTmZjbVYxYzJWZllXNWtYM1Z1WW05MWJtUmxaRjloYzNObGNuUnBiMjVmYkdsbVpYUnBiV1VpTEFvZ0lDQWdJQ0FnSUNKaGRYUm9PanAwWlhOMGN6bzZhbmQwWDNKbGJtVjNZV3hmZEdWemRITTZPbXAzZEY5aGJHeGZjbVZ1WlhkaGJGOXliM1YwWlhOZmNtVnhkV2x5WlY5MGFHVmZiR2wyWlY5eWIyeGxYM2RwZEdodmRYUmZjbVZqYUdWamEybHVaMTkwYUdWZllYTnpaWEowYVc5dUlpd0tJQ0FnSUNBZ0lDQWlZWFYwYURvNmRHVnpkSE02T21wM2RGOXlaVzVsZDJGc1gzUmxjM1J6T2pwcWQzUmZZM1Z5Y21WdWRGOXliMnhsWDJGdVpGOXRiM1Z1ZEY5dFlYaHBiV0ZmWTI5MWJuUmZabkp2YlY5cGMzTjFaVjkwYVcxbFgyRnVaRjlqWVc1ZmFXNWpjbVZoYzJVaUxBb2dJQ0FnSUNBZ0lDSmhkWFJvT2pwMFpYTjBjem82YW5kMFgzSmxibVYzWVd4ZmRHVnpkSE02T21wM2RGOXNaV2RoWTNsZmNHOXphWFJwZG1WZmNtOXNaVjlzYVcxcGRITmZjM1Z5ZG1sMlpWOXlaV0ZrWDNCaGNuUnBZV3hmZFhCa1lYUmxYMkZ1WkY5eVpXOXdaVzRpTEFvZ0lDQWdJQ0FnSUNKaGRYUm9PanAwWlhOMGN6bzZhbmQwWDNKbGJtVjNZV3hmZEdWemRITTZPbXAzZEY5dVlYUnBkbVZmY205c1pWOXBiblpoYkdsa1gyUjFjbUYwYVc5dWMxOWhjbVZmWVhSdmJXbGpYMkZ1WkY5d1pYSnphWE4wWldSZmJHbHRhWFJ6WDJGeVpWOWphR1ZqYTJWa0lpd0tJQ0FnSUNBZ0lDQWlZWFYwYURvNmRHVnpkSE02T21wM2RGOXlaVzVsZDJGc1gzUmxjM1J6T2pwcWQzUmZibUYwYVhabFgzSnZiR1ZmYm5Wc2JGOXdjbVZ6WlhKMlpYTmZaV0ZqYUY5a2RYSmhkR2x2Ymw5aWRYUmZlbVZ5YjE5eVpYTmxkSE5mYVhRaUxBb2dJQ0FnSUNBZ0lDSmhkWFJvT2pwMFpYTjBjem82YW5kMFgzSmxibVYzWVd4ZmRHVnpkSE02T21wM2RGOXVZWFJwZG1WZmNtOXNaVjk2WlhKdlgyUmxabUYxYkhSelgybHpjM1ZsWDJGdVpGOXlaVzVsZDE5MWMybHVaMTlqZFhKeVpXNTBYMjF2ZFc1MFgyeHBiV2wwY3lJc0NpQWdJQ0FnSUNBZ0ltRjFkR2c2T25SbGMzUnpPanBxZDNSZmNtVnVaWGRoYkY5MFpYTjBjem82YW5kMFgyNWhkR2wyWlY5eWIyeGxYM3BsY205ZmJXRjRYM1J5WVdOcmMxOXRiM1Z1ZEY5aWRYUmZaWGh3YkdsamFYUmZZMkZ3WDNOMFlYbHpYMkYwWDJsemMzVmxJaXdLSUNBZ0lDQWdJQ0FpWVhWMGFEbzZkR1Z6ZEhNNk9tcDNkRjl5Wlc1bGQyRnNYM1JsYzNSek9qcHFkM1JmY0dWeWFXOWtYMkZ1WkY5bGVIQnNhV05wZEY5dFlYaHBiWFZ0WDJ0bFpYQmZaR2x6ZEdsdVkzUmZiR2xtWlhScGJXVmZjMlZ0WVc1MGFXTnpJaXdLSUNBZ0lDQWdJQ0FpWVhWMGFEbzZkR1Z6ZEhNNk9tcDNkRjl5Wlc1bGQyRnNYM1JsYzNSek9qcHFkM1JmY0hKdmRtVnVZVzVqWlY5MllXeHBaR0YwYVc5dVgzSmxhbVZqZEhOZmFXMXdiM056YVdKc1pWOXBjM04xWlhKZmMyaGhjR1Z6SWl3S0lDQWdJQ0FnSUNBaVlYVjBhRG82ZEdWemRITTZPbXAzZEY5eVpXNWxkMkZzWDNSbGMzUnpPanBxZDNSZmNtOXNaVjloY0dsZmFYTnpkV1Z6WDNCbGNtbHZaR2xqWDNSdmEyVnVjMTkzYVhSb1gyRmZabWw0WldSZlpYaHdiR2xqYVhSZmJXRjRhVzExYlNJc0NpQWdJQ0FnSUNBZ0ltRjFkR2c2T25SbGMzUnpPanBxZDNSZmNtVnVaWGRoYkY5MFpYTjBjem82YW5kMFgzUnZhMlZ1WDJGd2FWOWtaWE5qWlc1a1lXNTBjMTlrYjE5dWIzUmZhVzVvWlhKcGRGOXliMnhsWDJGdVpGOWhiV0pwWjNWdmRYTmZiR1ZuWVdONVgyOXljR2hoYm5OZlptRnBiRjlqYkc5elpXUWlMQW9nSUNBZ0lDQWdJQ0poZFhSb09qcDBaWE4wY3pvNmFuZDBYM0psYm1WM1lXeGZkR1Z6ZEhNNk9tcDNkRjk2WlhKdlgzTmxjblpwWTJWZmRIUnNYMlJ2WlhOZmJtOTBYM0psYkdGNFgzUm9aVjlzWldkaFkzbGZZWE56WlhKMGFXOXVYMnhwWm1WMGFXMWxYMnhwYldsMElpd0tJQ0FnSUNBZ0lDQWlZWFYwYURvNmRHVnpkSE02T21wM2RGOXpaWEoyYVdObFgzQmxjbk5wYzNSelgzUnZhMlZ1YzE5aGJtUmZZV3hzYjNkelgyRnpjMlZ5ZEdsdmJsOXlaWFZ6WlY5aFkzSnZjM05mY21WdmNHVnVJaXdLSUNBZ0lDQWdJQ0FpWVhWMGFEbzZkR1Z6ZEhNNk9tcDNkRjl6ZFdOalpYTnpablZzWDI1aGRHbDJaVjlzYjJkcGJsOXlaWFJwY21WelgyeGxaMkZqZVY5eVpYQnNZWGxmZDJsMGFHOTFkRjl5WldwbFkzUnBibWRmY21WMWMyVWlMQW9nSUNBZ0lDQWdJQ0ptWldSbGNtRjBaV1JmWVhWMGFEbzZZbTkxYm1SZlkyeGhhVzF6T2pwMFpYTjBjem82WlhabGNubGZZbTkxYm1SZlkyeGhhVzFmYVhOZmNtVnhkV2x5WldSZllXNWtYMlZ0Y0hSNVgyTnZibVpwWjNWeVlYUnBiMjVmYUdGelgyNXZYMlY0ZEhKaFgzQnlaV1JwWTJGMFpTSXNDaUFnSUNBZ0lDQWdJbVpsWkdWeVlYUmxaRjloZFhSb09qcGliM1Z1WkY5amJHRnBiWE02T25SbGMzUnpPanBsZUdGamRGOWpiR0ZwYlY5aGJIUmxjbTVoZEdsMlpYTmZjSEpsYzJWeWRtVmZkSGx3WlhOZllXNWtYM05qWVd4aGNsOXVkVzFpWlhKZlkyOWxjbU5wYjI0aUxBb2dJQ0FnSUNBZ0lDSm1aV1JsY21GMFpXUmZZWFYwYURvNlltOTFibVJmWTJ4aGFXMXpPanAwWlhOMGN6bzZaMnh2WWw5b1lYTmZiMjVzZVY5emRHRnlYMkZ1WkY5amFHVmphM05mZEhsd1pXUmZZV3gwWlhKdVlYUnBkbVZ6WDJsdVgyOXlaR1Z5SWl3S0lDQWdJQ0FnSUNBaVptVmtaWEpoZEdWa1gyRjFkR2c2T21KdmRXNWtYMk5zWVdsdGN6bzZkR1Z6ZEhNNk9uQnZhVzUwWlhKelgyWnZiR3h2ZDE5d2FXNXVaV1JmY0c5cGJuUmxjbk4wY25WamRIVnlaVjlsYzJOaGNHbHVaMTloYm1SZlltRnpaVjk2WlhKdlgybHVaR2xqWlhNaUxBb2dJQ0FnSUNBZ0lDSm1aV1JsY21GMFpXUmZZWFYwYURvNmJtRjBhWFpsWDJwM2REbzZkR1Z6ZEhNNk9tVjRjR3hwWTJsMFgyMWhlR2x0ZFcxZmNtVnhkV2x5WlhOZmNtVmhiRjl6YVdkdVpXUmZaR0YwWlhOZllXNWtYMk5oYm01dmRGOTFjMlZmYzNsdWRHaGxkR2xqWDNScGJXVnpJaXdLSUNBZ0lDQWdJQ0FpWm1Wa1pYSmhkR1ZrWDJGMWRHZzZPbTVoZEdsMlpWOXFkM1E2T25SbGMzUnpPanB1WVhScGRtVmZiR1ZsZDJGNWMxOWhjSEJzZVY5MGIxOXRhWE56YVc1blgzUnBiV1Z6WDJGdVpGOWpiRzlqYTE5emEyVjNYM1J2WDJGc2JGOTBhVzFsY3lJc0NpQWdJQ0FnSUNBZ0ltWmxaR1Z5WVhSbFpGOWhkWFJvT2pwdVlYUnBkbVZmYW5kME9qcDBaWE4wY3pvNmJtRjBhWFpsWDI1MWJXVnlhV05mWkdGMFpYTmZiM0IwYVc5dVlXeGZZMnhoYVcxelgyRnVaRjlrWldaaGRXeDBYM041Ym5Sb1pYTnBjMTl0WVhSamFGOXZjR1Z1WW1Gdklpd0tJQ0FnSUNBZ0lDQWlabVZrWlhKaGRHVmtYMkYxZEdnNk9tNWhkR2wyWlY5cWQzUTZPblJsYzNSek9qcHVZWFJwZG1WZmNtVjFjMlZmWkc5bGMxOXViM1JmY21Wc1lYaGZkR2hsWDNObGNHRnlZWFJsWDNOMGNtbGpkRjl3Y205dlpsOWpiMjUwY21GamRDSXNDaUFnSUNBZ0lDQWdJbk5sY25acFkyVTZPbXAzZEY5d1pXMWZkR1Z6ZEhNNk9tcDNkRjl3WlcxZllYVjBhR1Z1ZEdsallYUmxaRjl6Ym1Gd2MyaHZkRjl3Y21Wd1lYSmxYMkZ1WkY5bWFXNWhiRjlqYjIxdGFYUmZjbVZxWldOMFgyRmpkR2wyWlY5eVpYUnBjbVZrWDJSdmQyNW5jbUZrWlNJc0NpQWdJQ0FnSUNBZ0luTmxjblpwWTJVNk9tcDNkRjl3WlcxZmRHVnpkSE02T21wM2RGOXdaVzFmYVc1MllXeHBaRjl3Y21sMllYUmxYM2RsWVd0ZmQzSnZibWRmWTNWeWRtVmZZVzVrWDNOdmRYSmpaVjl0YVhoZmJHVmhkbVZmWTI5dVptbG5YMmx1ZEdGamRDSXNDaUFnSUNBZ0lDQWdJbk5sY25acFkyVTZPbXAzZEY5d1pXMWZkR1Z6ZEhNNk9tcDNkRjl3WlcxZmJXRnBiblJoYVc1bFpGOXljMkZmWldOZlpXUmZjMmxuYm1GMGRYSmxjMTkxYzJWZmIyNXNlVjl6WVcxbFgyRnNaMjl5YVhSb2JWOXJaWGx6SWl3S0lDQWdJQ0FnSUNBaWMyVnlkbWxqWlRvNmFuZDBYM0JsYlY5MFpYTjBjem82YW5kMFgzQmxiVjl1WVcxbGMzQmhZMlZmY21WdmNHVnVYM0psYm1WM1gyRnVaRjl6ZEdsamEzbGZjbVYwYVhKbGJXVnVkRjlyWldWd1gyVjRhWE4wYVc1blgyRjFkR2h2Y21sMGVTSXNDaUFnSUNBZ0lDQWdJbk5sY25acFkyVTZPbXAzZEY5d1pXMWZkR1Z6ZEhNNk9tcDNkRjl3WlcxZmNuTXlOVFpmWVdOalpYQjBjMTkxYm1KdmRXNWtYMnRwWkY5dmJteDVYMmx1WDNCbGJWOXpiM1Z5WTJWZllXNWtYMnRsWlhCelgzTmxiR1ZqZEdWa1gyRnNhV0Z6SWl3S0lDQWdJQ0FnSUNBaWMyVnlkbWxqWlRvNmFuZDBYM0JsYlY5MFpYTjBjem82YW5kMFgzQmxiVjl6YjNWeVkyVmZjbVZ3YkdGalpXMWxiblJmZG1WMGIyVnpYM0JsYm1ScGJtZGZjbVZ0YjNSbFgyTnZiWEJzWlhScGIyNGlMQW9nSUNBZ0lDQWdJQ0p6WlhKMmFXTmxPanBxZDNSZmNHVnRYM1JsYzNSek9qcHFkM1JmY0dWdFgzTjBZWFJsWDNKbGNYVnBjbVZ6TmpsZllXNWtYM0psZG1Gc2FXUmhkR1Z6WDNCMVlteHBZMTlyWlhsZlltbHVaR2x1WjE5M2FYUm9iM1YwWDJOb1lXNW5hVzVuWDJ4bFoyRmplVjlpZVhSbGN5SXNDaUFnSUNBZ0lDQWdJbk5sY25acFkyVTZPbXAzZEY5eVpXNWxkMkZzWDNSbGMzUnpPanBxZDNSZmNtVnVaWGRoYkY5eWIyeGxYMk5vWldOclgyVmphRzlmWVc1a1gzZHlZWEJ3WlhKZmMzVnlkbWwyWlY5eVpYTjBZWEowSWl3S0lDQWdJQ0FnSUNBaWMyVnlkbWxqWlRvNmFuZDBYM0psYm1WM1lXeGZkR1Z6ZEhNNk9tcDNkRjl6WTJobGJXRmZaV2xuYUhSbFpXNWZabVZ1WTJWelgyNWxkMTlwYzNOMVpYSmZjMlZ0WVc1MGFXTnpYMkZ1WkY5aFpHMXBkSE5mY21WaGJGOXNaV2RoWTNsZmNtVmpiM0prY3lJc0NpQWdJQ0FnSUNBZ0luTmxjblpwWTJVNk9tcDNkRjl5Wlc1bGQyRnNYM1JsYzNSek9qcHVZWFJwZG1WZmFuZDBYM05qYUdWdFlWOXVhVzVsZEdWbGJsOWthWE4wYVc1bmRXbHphR1Z6WDI5c1pGOXNhVzFwZEhOZmJtVjNYMlJsWm1GMWJIUnpYMkZ1WkY5c1pXVjNZWGx6SWl3S0lDQWdJQ0FnSUNBaWMyVnlkbWxqWlRvNmFuZDBYM1Z6WlhKZlkyeGhhVzFmZEdWemRITTZPbXAzZEY5MWMyVnlYMk5zWVdsdFgyTnlaV0YwWlY5eVpYRjFhWEpsYzE5elpXeGxZM1J2Y2w5bGVHbHpkR2x1WjE5MWNHUmhkR1Z6WDNCeVpYTmxjblpsWDNObGJHVmpkRzl5SWl3S0lDQWdJQ0FnSUNBaWMyVnlkbWxqWlRvNmFuZDBYM1Z6WlhKZlkyeGhhVzFmZEdWemRITTZPbXAzZEY5MWMyVnlYMk5zWVdsdFgyMXBjM05wYm1kZmJtOXVjM1J5YVc1blgyRnVaRjkzY205dVoxOXphV2R1WVhSMWNtVmZjSFZpYkdsemFGOXViM1JvYVc1bklpd0tJQ0FnSUNBZ0lDQWljMlZ5ZG1salpUbzZhbmQwWDNWelpYSmZZMnhoYVcxZmRHVnpkSE02T21wM2RGOTFjMlZ5WDJOc1lXbHRYMjF2ZFc1MFgyNWhiV1Z6Y0dGalpWOXBjMjlzWVhScGIyNWZZVzVrWDJScGMyRmliR1ZrWDJWdWRHbDBlU0lzQ2lBZ0lDQWdJQ0FnSW5ObGNuWnBZMlU2T21wM2RGOTFjMlZ5WDJOc1lXbHRYM1JsYzNSek9qcHFkM1JmZFhObGNsOWpiR0ZwYlY5eVpXMXZkR1ZmWlc1MGFYUjVYMlJwYzJGaWJHVmZkbVYwYjJWelgyTmhjSFIxY21Wa1gyTnZiWEJzWlhScGIyNGlMQW9nSUNBZ0lDQWdJQ0p6WlhKMmFXTmxPanBxZDNSZmRYTmxjbDlqYkdGcGJWOTBaWE4wY3pvNmFuZDBYM1Z6WlhKZlkyeGhhVzFmY21WdGIzUmxYM0p2YkdWZlpXUnBkRjkyWlhSdlpYTmZZMkZ3ZEhWeVpXUmZZMjl0Y0d4bGRHbHZiaUlzQ2lBZ0lDQWdJQ0FnSW5ObGNuWnBZMlU2T21wM2RGOTFjMlZ5WDJOc1lXbHRYM1JsYzNSek9qcHFkM1JmZFhObGNsOWpiR0ZwYlY5eVpXOXdaVzVmY205c1pWOWxaR2wwWDJGdVpGOXlaVzVsZDJGc1gzSmxkR0ZwYmw5cGMzTjFaV1JmWlc1MGFYUjVJaXdLSUNBZ0lDQWdJQ0FpYzJWeWRtbGpaVG82YW5kMFgzVnpaWEpmWTJ4aGFXMWZkR1Z6ZEhNNk9tcDNkRjkxYzJWeVgyTnNZV2x0WDNKdmJHVmZkbUZzYVdSaGRHbHZibDl3Y21WelpYSjJaWE5mY0hKbGRtbHZkWE5mYzJWc1pXTjBiM0pmWVc1a1gzTjFZbXBsWTNSZlltbHVaR2x1WnlJc0NpQWdJQ0FnSUNBZ0luTmxjblpwWTJVNk9tcDNkRjkxYzJWeVgyTnNZV2x0WDNSbGMzUnpPanBxZDNSZmRYTmxjbDlqYkdGcGJWOXljekkxTmw5amRYTjBiMjFmWVd4cFlYTmZZVzVrWDJSbFptRjFiSFJmYzNWaVgyRnlaVjlrYVhOMGFXNWpkQ0lzQ2lBZ0lDQWdJQ0FnSW5ObGNuWnBZMlU2T21wM2RGOTFjMlZ5WDJOc1lXbHRYM1JsYzNSek9qcHFkM1JmZFhObGNsOWpiR0ZwYlY5elkyaGxiV0UyT0Y5cGMxOWpiMjVrYVhScGIyNWhiRjl6ZEdsamEzbGZZVzVrWDNOdVlYQnphRzkwWDNCeWIzUmxZM1JsWkNJS0lDQWdJQ0FnWFFvZ0lDQWdmU3dLSUNBZ0lIc0tJQ0FnSUNBZ0lteGhZbVZzSWpvZ0ltNWhkR2wyWlMxaGRYUm9MV2xrWlc1MA==",
+        "originalSDK": {
+          "blob": "bd82464d09210dc33bdbc4e8221addcc093c6500",
+          "bytes": 22705,
+          "sha256": "5c07545b9397df4d1e216174d5d616972b006c195a86e41887350295f57961d4"
+        },
+        "nativeText": {
+          "blob": "f36d25196efd12f5c0b69414f46dc8cf773f2391",
+          "bytes": 22534,
+          "sha256": "6ff49f789cf61601606a4811742c652e9271960114948981c2fc7059a0080929"
+        }
+      },
+      {
+        "offset": 16384,
+        "next": 32768,
+        "base64": "YVhSNUxXUmxabUYxYkhRMk9TSXNDaUFnSUNBZ0lDSnNhV0owWlhOMFgzQnliMlpwYkdVaU9pQWlaR1ZtWVhWc2RDSXNDaUFnSUNBZ0lDSnlkVzUwYVcxbFgzTmxZMjl1WkhNaU9pQTJNREFzQ2lBZ0lDQWdJQ0owWlhOMGN5STZJRnNLSUNBZ0lDQWdJQ0FpWVhWMGFEbzZZbUYwWTJoZmFYTnpkV0Z1WTJWZmRHVnpkSE02T21KaGRHTm9YMkZzYkY5MGQyVnNkbVZmYlc5MWJuUmZkWE5sY2w5amIyMWlhVzVoZEdsdmJuTmZjMlZoYkY5dmJteDVYMkZtZEdWeVgybGtaVzUwYVhSNVgzZHBkR2h2ZFhSZlltRmphMmx1WjE5MGIydGxibk1pTEFvZ0lDQWdJQ0FnSUNKaGRYUm9PanBpWVhSamFGOXBjM04xWVc1alpWOTBaWE4wY3pvNlltRjBZMmhmWVhWMGFHOXlhWFI1WDJselgzQnlaV055WldGMFpXUmZZVzVrWDJ4bFoyRmplVjloWW5ObGJtTmxYMmx6WDNCeVpYTmxjblpsWkY5MWJuUnBiRjlsZUhCc2FXTnBkRjl3ZFdKc2FXTmhkR2x2YmlJc0NpQWdJQ0FnSUNBZ0ltRjFkR2c2T21KaGRHTm9YMmx6YzNWaGJtTmxYM1JsYzNSek9qcGlZWFJqYUY5MGIydGxibDloY0dsZlkyaHBiR1JmYUdGelgzQmhjbVZ1ZEY5aGJtUmZZMmxrY25OZlluVjBYMjl5Y0doaGJsOW9ZWE5mYm1WcGRHaGxjbDloYm1SZmJtOWZZbUZqYTJsdVoxOXliM2NpTEFvZ0lDQWdJQ0FnSUNKaGRYUm9PanBpWVhSamFGOXBjM04xWVc1alpWOTBaWE4wY3pvNlltRjBZMmhmZFhObGNsOXlaV3BsWTNSelgzQmxjbWx2WkY5dmNsOTFjMlZ6WDJGMGIyMXBZMkZzYkhsZlluVjBYMlp2Y21ObFpGOXRiM1Z1ZEY5a2FYTmpZWEprYzE5elpYSjJhV05sWDI5dWJIbGZabWxsYkdSeklpd0tJQ0FnSUNBZ0lDQWlZWFYwYURvNlltRjBZMmhmYVhOemRXRnVZMlZmZEdWemRITTZPbUpoZEdOb1gzVnpaWEp3WVhOelgyMW1ZVjlqYjI1emRXMWxjMTl2Ym1WZmMyaGhjbVZrWDJOdmRXNTBaWEpmWW1WbWIzSmxYMmR5WVc1MElpd0tJQ0FnSUNBZ0lDQWlZWFYwYURvNlltRjBZMmhmYVhOemRXRnVZMlZmZEdWemRITTZPbkJsYm1ScGJtZGZZbUYwWTJoZmNtVnhkV2x5WlhOZmFXUmxiblJwZEhsZllXNWtYMnRsWlhCelgyOXNaRjloY21Ob2FYWmxYMnRsZVY5aGRYUm9iM0pwZEhsZmQybDBhRzkxZEY5MGIydGxibDl0WVhBaUxBb2dJQ0FnSUNBZ0lDSmhkWFJvT2pwaVlYUmphRjl3Y21sdVkybHdZV3hmZEdWemRITTZPbUpoZEdOb1gyRmpiRjlrWlc1cFlXeGZjSEpsWTJWa1pYTmZhMmx1WkY5bGNuSnZjbk5mWVc1a1gzQnliM1pwWkdWeVgzSmxibVYzWVd4ZmFYTmZibVYyWlhKZmNISmxjR0Z5WldRaUxBb2dJQ0FnSUNBZ0lDSmhkWFJvT2pwaVlYUmphRjl3Y21sdVkybHdZV3hmZEdWemRITTZPbUpoZEdOb1gyRmpkRzl5WDJOaGJsOTFjMlZmWVY5elpYSjJhV05sWDNkeVlYQndaWEpmZDJsMGFHOTFkRjlsZG1WeVgySmxZMjl0YVc1blgzUm9ZWFJmZDNKaGNIQmxjaUlzQ2lBZ0lDQWdJQ0FnSW1GMWRHZzZPbUpoZEdOb1gzQnlhVzVqYVhCaGJGOTBaWE4wY3pvNlltRjBZMmhmWVhWMGFHVnVkR2xqWVhScGIyNWZhWE5mY21WaFpGOXZibXg1WDJGdVpGOXlaWEYxYVhKbGMxOTBhR1ZmY21WaGJGOXdaV1Z5WDNkcGRHaHZkWFJmYzJWeWRtbGpaVjlpWVdOcmFXNW5JaXdLSUNBZ0lDQWdJQ0FpWVhWMGFEbzZZbUYwWTJoZmNISnBibU5wY0dGc1gzUmxjM1J6T2pwaVlYUmphRjloZFhSb2IzSnBkSGxmWVc1a1gyTnlaV1JsYm5ScFlXeHpYM0psYjNCbGJsOTNhWFJvYjNWMFgyMXBaM0poZEdsdVoxOXNaV2RoWTNsZmIzSmZZM0psWVhScGJtZGZkRzlyWlc1eklpd0tJQ0FnSUNBZ0lDQWlZWFYwYURvNlltRjBZMmhmY0hKcGJtTnBjR0ZzWDNSbGMzUnpPanBpWVhSamFGOWpkV0ppZVdodmJHVmZaWGhwYzNSbGJtTmxYMk5vWldOcmMxOXdjbVZqWldSbFgzZHlhWFJsWDJGamJGOWlkWFJmYjNSb1pYSmZiM0JsY21GMGFXOXVjMTlyWldWd1gyRmpiQ0lzQ2lBZ0lDQWdJQ0FnSW1GMWRHZzZPbUpoZEdOb1gzQnlhVzVqYVhCaGJGOTBaWE4wY3pvNlltRjBZMmhmWlc1MGFYUjVYM0psY1hWcGNtVnpYM0psY1hWbGMzUmZhV1JsYm5ScGRIbGZjSEp2YW1WamRHbHZibDloYm1SZmRYTmxjMTlqZFhKeVpXNTBYMkZqYkY5a2IyTjFiV1Z1ZEhNaUxBb2dJQ0FnSUNBZ0lDSmhkWFJvT2pwaVlYUmphRjl3Y21sdVkybHdZV3hmZEdWemRITTZPbUpoZEdOb1gzSmxkbTlyWlY5dmNuQm9ZVzVmWVc1a1gyVnRjSFI1WDJGalkyVnpjMjl5WDJ0bFpYQmZkRzlyWlc1ZllYQnBYMkYxZEdodmNtbDZZWFJwYjI1ZmIzSmtaWElpTEFvZ0lDQWdJQ0FnSUNKaGRYUm9PanBpWVhSamFGOXdjbWx1WTJsd1lXeGZkR1Z6ZEhNNk9tSmhkR05vWDNSaGNtZGxkRjlzYjI5cmRYQmZZVzVrWDJOaGNHRmlhV3hwZEdsbGMxOWtiMTl1YjNSZllYQndiSGxmZEdGeVoyVjBYMk5wWkhKelgzUnZYMkZrYldsdWFYTjBjbUYwYjNJaUxBb2dJQ0FnSUNBZ0lDSmhkWFJvT2pwaVlYUmphRjl3Y21sdVkybHdZV3hmZEdWemRITTZPbVY0YVhOMGFXNW5YMkpoZEdOb1gzQnlhVzVqYVhCaGJGOWhibVJmYkdWaGMyVmZjSEp2YW1WamRHbHZibDl5WldOb1pXTnJYM0JoY21WdWRGOWhibU5sYzNSdmNuTmZZVzVrWDJGMWRHaHZjbWwwZVNJc0NpQWdJQ0FnSUNBZ0ltRjFkR2c2T21KaGRHTm9YM0J5YVc1amFYQmhiRjkwWlhOMGN6bzZkSGx3WldSZmNISnBibU5wY0dGc1gydGxaWEJ6WDNSb1pWOXpaWEoyYVdObFgyWnBibUZzWDNWelpWOWpZWEJoWW1sc2FYUjVYM2RwZEdodmRYUmZjbVZ2Y0dWdWFXNW5YMkZrYldsemMybHZiaUlzQ2lBZ0lDQWdJQ0FnSW1GMWRHZzZPblJsYzNSek9qcGhZMk5sYzNOdmNuTmZZV3hzYjNkZmNtVjJiMk5oZEdsdmJsOTNhWFJvYjNWMFgzSmxkbVZoYkdsdVoxOTBiMnRsYmlJc0NpQWdJQ0FnSUNBZ0ltRjFkR2c2T25SbGMzUnpPanBoWm1acGJtVmZjbVZ4ZFdWemRGOXdjbWx1WTJsd1lXeGZkWE5sYzE5c2FYWmxYM04xWW1wbFkzUmZZVzVrWDNCaGNtVnVkRjkwYVcxbElpd0tJQ0FnSUNBZ0lDQWlZWFYwYURvNmRHVnpkSE02T21ScGMyRmliR2x1WjE5aGRYUm9YMjF2ZFc1MFgzSmxkbTlyWlhOZmFYUnpYM1J2YTJWdWMxOWhibVJmWTJocGJHUnlaVzVmWVc1a1gyVnlZWE5sYzE5amNtVmtaVzUwYVdGc2N5SXNDaUFnSUNBZ0lDQWdJbUYxZEdnNk9uUmxjM1J6T2pwd1pYSnBiMlJwWTE5aGJtUmZabWx1YVhSbFgzUnZhMlZ1YzE5eVpXNWxkMTkzYVhSb2IzVjBYMlY0WTJWbFpHbHVaMTlsZUhCc2FXTnBkRjl0WVhocGJYVnRJaXdLSUNBZ0lDQWdJQ0FpWVhWMGFEbzZkR1Z6ZEhNNk9uUnZhMlZ1WDJOeVpXRjBhVzl1WDJOaGJtNXZkRjlsYzJOaGJHRjBaVjl3YjJ4cFkybGxjMTl2Y2w5emEybHdYM0JoY21WdWRGOTNhWFJvYjNWMFgzTjFaRzhpTEFvZ0lDQWdJQ0FnSUNKaGRYUm9PanAwWlhOMGN6bzZkRzlyWlc1ZmJHOXZhM1Z3WDNKbGNHOXlkSE5mYzNSaGJtUmhjbVJmWlhod2FYSjVYMlp2Y2w5aGJHeGZjMlZzWldOMGIzSnpYMkZ1WkY5aFpuUmxjbDl5Wlc1bGQyRnNJaXdLSUNBZ0lDQWdJQ0FpWVhWMGFEbzZkR1Z6ZEhNNk9uUnZhMlZ1WDNCaGNtVnVkRjlsZUhCcGNubGZjbVYyYjJ0bFgyTmhjMk5oWkdWZllXNWtYMjl5Y0doaGJsOXpkWEoyYVhaaGJDSXNDaUFnSUNBZ0lDQWdJbUYxZEdnNk9uUmxjM1J6T2pwMGIydGxibDl5WlhadmEyVmZiM0p3YUdGdVgzUmxjM1J6T2pweVpYWnZhMlZmYjNKd2FHRnVYMjFwYzNOcGJtZGZkR0Z5WjJWMFgybHpYMmx1ZG1Gc2FXUmZjbVZ4ZFdWemRGOTNhWFJvYjNWMFgyUmhiV0ZuYVc1blgyeHBkbVZmWTJocGJHUnlaVzRpTEFvZ0lDQWdJQ0FnSUNKaGRYUm9PanAwWlhOMGN6bzZkRzlyWlc1ZmNtVjJiMnRsWDI5eWNHaGhibDkwWlhOMGN6bzZjbVYyYjJ0bFgyOXljR2hoYmw5eVpYRjFhWEpsYzE5emRXUnZYMkpsWm05eVpWOTBZWEpuWlhSZmNtVnpiMngxZEdsdmJsOTNhWFJvYjNWMFgyMTFkR0YwYVc1blgyVmtaMlZ6SWl3S0lDQWdJQ0FnSUNBaVlYVjBhRG82ZEdWemRITTZPblJ2YTJWdVgzSmxkbTlyWlY5dmNuQm9ZVzVmZEdWemRITTZPbkpsZG05clpWOXZjbkJvWVc1ZmMyVjJaWEp6WDI5dWJIbGZaR2x5WldOMFgyTm9hV3hrY21WdVgyRnVaRjl6ZFhKMmFYWmxjMTl6WlhKcFlXeHBlbUYwYVc5dUlpd0tJQ0FnSUNBZ0lDQWlZWFYwYURvNmRHVnpkSE02T25SeVlXNXpZV04wYVc5dVgyTnNiMjVsWDJaaGFXeDFjbVZmWkc5bGMxOXViM1JmWTI5dWMzVnRaVjl6YjNWeVkyVmZjM1JoZEdVaUxBb2dJQ0FnSUNBZ0lDSnpaWEoyYVdObE9qcHVZWFJwZG1WZllYVjBhRG82YVdSbGJuUnBkSGxmZEdWemRITTZPbTVoZEdsMlpWOXBaR1Z1ZEdsMGVWOWhZM1IxWVd4ZllYVmthWFJmYTJWbGNITmZaWGhoWTNSZmNtVnpjRzl1YzJWZlkzVnpkRzlrZVNJc0NpQWdJQ0FnSUNBZ0luTmxjblpwWTJVNk9tNWhkR2wyWlY5aGRYUm9PanBwWkdWdWRHbDBlVjkwWlhOMGN6bzZibUYwYVhabFgybGtaVzUwYVhSNVgyUmxiR1ZuWVhSbFpGOWhZMnhmWVc1a1gyWnBibWwwWlY5aFkzUnZjbDlyWldWd1gyOXlhV2RwYm1Gc1gyRjFkR2h2Y21sMGVTSXNDaUFnSUNBZ0lDQWdJbk5sY25acFkyVTZPbTVoZEdsMlpWOWhkWFJvT2pwcFpHVnVkR2wwZVY5MFpYTjBjem82Ym1GMGFYWmxYMmxrWlc1MGFYUjVYMlp2Y20xaGJGOWpjblZrWDJ4dmIydDFjRjlzYVhOMFgyRnVaRjlqYjJ4a1gzSmxiM0JsYmw5d2NtVnpaWEoyWlY5cmRpSXNDaUFnSUNBZ0lDQWdJbk5sY25acFkyVTZPbTVoZEdsMlpWOWhkWFJvT2pwcFpHVnVkR2wwZVY5MFpYTjBjem82Ym1GMGFYWmxYMmxrWlc1MGFYUjVYMnRsWlhCelgyWnZjbVZwWjI1ZllXTjBiM0pmZDNKaGNIQnBibWRmWVc1a1gzVnViM2R1WldSZmNHRjBhSE5mWTJ4dmMyVmtJaXdLSUNBZ0lDQWdJQ0FpYzJWeWRtbGpaVG82Ym1GMGFYWmxYMkYxZEdnNk9tbGtaVzUwYVhSNVgzUmxjM1J6T2pwdVlYUnBkbVZmYVdSbGJuUnBkSGxmYkdsMlpWOW5jbTkxY0Y5dFpXMWlaWEp6YUdsd1gyTnZiblJ5YjJ4elgyTm5YMkZtZEdWeVgyTnZiR1JmY21WemRHRnlkQ0lzQ2lBZ0lDQWdJQ0FnSW5ObGNuWnBZMlU2T201aGRHbDJaVjloZFhSb09qcHBaR1Z1ZEdsMGVWOTBaWE4wY3pvNmJtRjBhWFpsWDJsa1pXNTBhWFI1WDI5M2JtVnlYMk5oYm01dmRGOWtjbTl3WDJ0MlgyZHlZWEJvWDI5eVgyWnNhWEJmYm1GMGFYWmxYMlp2Y20xaGRDSXNDaUFnSUNBZ0lDQWdJbk5sY25acFkyVTZPbTVoZEdsMlpWOWhkWFJvT2pwMFpYTjBjem82Ym1GMGFYWmxYMkZ3Y0hKdmJHVXhOREpmYkc5allXeGZjRzlzYVdONVgydDJYMk5oYzE5eVpXNWxkMTl5WlhadmEyVmZZVzVrWDJOdmJHUmZjbVZ2Y0dWdUlpd0tJQ0FnSUNBZ0lDQWljMlZ5ZG1salpUbzZibUYwYVhabFgyRjFkR2c2T25SbGMzUnpPanB1WVhScGRtVmZZWFYwYUdKMWMxOWhjSEJ5YjJ4bFgzQnZiR2xqZVY5cmRsOWpZWE5mY21WdVpYZGZjbVYyYjJ0bFgyRnVaRjlqYjJ4a1gzSmxiM0JsYmlJc0NpQWdJQ0FnSUNBZ0luTmxjblpwWTJVNk9tNWhkR2wyWlY5aGRYUm9PanAwWlhOMGN6bzZibUYwYVhabFgyTmxjblJmWVhWMGFGOTFjMlZ6WDNabGNtbG1hV1ZrWDNSc2MxOXdaV1Z5WDJGdVpGOXpkWEoyYVhabGMxOWpiMnhrWDNKbGIzQmxiaUlzQ2lBZ0lDQWdJQ0FnSW5ObGNuWnBZMlU2T201aGRHbDJaVjloZFhSb09qcDBaWE4wY3pvNmJtRjBhWFpsWDNSdmEyVnVYMnh2YjJ0MWNGOXJaV1Z3YzE5eVpXRnNYMk52Ym5SeWIyeGZaM0p2ZFhCZllXUnRhWE56YVc5dVgySmxabTl5WlY5a2FYTndZWFJqYUNJc0NpQWdJQ0FnSUNBZ0luTmxjblpwWTJVNk9tNWhkR2wyWlY5aGRYUm9PanAwWlhOMGN6bzZibUYwYVhabFgzUnZhMlZ1WDNSaGNtZGxkRjlsZUhCcGNtVmtYMkZtZEdWeVgzSmxZV3hmWVhWa2FYUmZkMmwwYUdodmJHUnpYMnh2YjJ0MWNGOWhibVJmWVdOalpYTnpiM0pmY21Wd2JIa2lMQW9nSUNBZ0lDQWdJQ0p6WlhKMmFXTmxPanB1WVhScGRtVmZZWFYwYURvNmRYTmxjbkJoYzNOZmRHVnpkSE02T21KaGRHTm9YMmx6YzNWbGNsOTBaWE4wY3pvNmJtRjBhWFpsWDJKaGRHTm9YMkZ3Y0hKdmJHVmZabUZwYkdWa1gyTnBaSEpmWTI5dWMzVnRaWE5mYjI1c2VWOWhkWFJvWlc1MGFXTmhkR1ZrWDNOcFpGOWhibVJmYzNSaGVYTmZZMjlzWkNJc0NpQWdJQ0FnSUNBZ0luTmxjblpwWTJVNk9tNWhkR2wyWlY5aGRYUm9PanAxYzJWeWNHRnpjMTkwWlhOMGN6bzZZbUYwWTJoZmFYTnpkV1Z5WDNSbGMzUnpPanB1WVhScGRtVmZZbUYwWTJoZllYQndjbTlzWlY5bWFXeGxYMlpwY25OMFgybHpjM1ZoYm1ObFgzTnBaRjl2Ym1ObFgzQmhhWEpsWkY5allYUmhiRzluWDJGdVpGOWpiMnhrSWl3S0lDQWdJQ0FnSUNBaWMyVnlkbWxqWlRvNmJtRjBhWFpsWDJGMWRHZzZPblZ6WlhKd1lYTnpYM1JsYzNSek9qcGlZWFJqYUY5cGMzTjFaWEpmZEdWemRITTZPbTVoZEdsMlpWOWlZWFJqYUY5aGNIQnliMnhsWDJacGJHVmZiM0pwWjJsdVlXeGZjMmxrWDJOc2IyTnJYMlY0Y0dseVpYTmZZV1owWlhKZllXTjBkV0ZzWDJGMVpHbDBJaXdLSUNBZ0lDQWdJQ0FpYzJWeWRtbGpaVG82Ym1GMGFYWmxYMkYxZEdnNk9uVnpaWEp3WVhOelgzUmxjM1J6T2pwaVlYUmphRjlwYzNOMVpYSmZkR1Z6ZEhNNk9tNWhkR2wyWlY5aVlYUmphRjloY0hCeWIyeGxYMlpwYkdWZmNHOXpkRjloZFdScGRGOXphV1JmWkdWemRISnZlVjkyWlhSdlpYTmZZVzVrWDJOaGJtNXZkRjl5WlhOMWNuSmxZM1FpTEFvZ0lDQWdJQ0FnSUNKelpYSjJhV05sT2pwdVlYUnBkbVZmWVhWMGFEbzZkWE5sY25CaGMzTmZkR1Z6ZEhNNk9tSmhkR05vWDJsemMzVmxjbDkwWlhOMGN6bzZibUYwYVhabFgySmhkR05vWDJacGJHVmZZV04wZFdGc1gyRjFaR2wwWDJKdlpIbGZZVzVrWDJWeWNtOXlYM04wWVhSMWMxOTBZVzF3WlhKcGJtZGZZMkZ1Ym05MFgzSmxiR1ZoYzJVaUxBb2dJQ0FnSUNBZ0lDSnpaWEoyYVdObE9qcHVZWFJwZG1WZllYVjBhRG82ZFhObGNuQmhjM05mZEdWemRITTZPbUpoZEdOb1gybHpjM1ZsY2w5MFpYTjBjem82Ym1GMGFYWmxYMkpoZEdOb1gyWnBiR1ZmWVdOMGRXRnNYM0J2YzNSZllYVmthWFJmY0c5c2FXTjVYMkZ1WkY5d1lYSmxiblJmY21WMmIydGxYM1psZEc5ZmIyeGtYMmR5WVc1MElpd0tJQ0FnSUNBZ0lDQWljMlZ5ZG1salpUbzZibUYwYVhabFgyRjFkR2c2T25WelpYSndZWE56WDNSbGMzUnpPanBpWVhSamFGOXBjM04xWlhKZmRHVnpkSE02T201aGRHbDJaVjlpWVhSamFGOTBiMnRsYmw5aGNHbGZabWxzWlY5cGJtVnlkRjl3Y21WamFYTmxYMmR5WVc1MFgybHpYMmx6YzNWbFpGOXZibU5sWDJGdVpGOXVaWFpsY2w5aGRYUm9aVzUwYVdOaGRHVmtJaXdLSUNBZ0lDQWdJQ0FpYzJWeWRtbGpaVG82Ym1GMGFYWmxYMkYxZEdnNk9uVnpaWEp3WVhOelgzUmxjM1J6T2pwaVlYUmphRjlwYzNOMVpYSmZkR1Z6ZEhNNk9tNWhkR2wyWlY5aVlYUmphRjkwYjJ0bGJsOWhjR2xmWm1sc1pWOXdZWEpsYm5SZmNtVjJiMk5oZEdsdmJsOXpkWEoyYVhabGMxOWpiMnhrWDNkcGRHaHZkWFJmWW1GamEybHVaeUlzQ2lBZ0lDQWdJQ0FnSW5ObGNuWnBZMlU2T201aGRHbDJaVjloZFhSb09qcDFjMlZ5Y0dGemMxOTBaWE4wY3pvNlltRjBZMmhmYVhOemRXVnlYM1JsYzNSek9qcHVZWFJwZG1WZlltRjBZMmhmZEc5clpXNWZZWEJwWDJacGJHVmZjbVZ6ZEhKcFkzUmxaRjloWTNSdmNsOXlaV3BsWTNSbFpGOWhibVJmYkdGemRGOTFjMlZmWTI5dWMzVnRaV1JmYjI1alpTSXNDaUFnSUNBZ0lDQWdJbk5sY25acFkyVTZPbTVoZEdsMlpWOWhkWFJvT2pwMWMyVnljR0Z6YzE5MFpYTjBjem82WW1GMFkyaGZhWE56ZFdWeVgzUmxjM1J6T2pwdVlYUnBkbVZmWW1GMFkyaGZkRzlyWlc1ZllYQnBYMlpwYkdWZmNtOXNaVjl6ZFdabWFYaGZZVzVrWDI5eWNHaGhibDlyWldWd1gyRmpkSFZoYkY5amJHRnBiWE1pTEFvZ0lDQWdJQ0FnSUNKelpYSjJhV05sT2pwdVlYUnBkbVZmWVhWMGFEbzZkWE5sY25CaGMzTmZkR1Z6ZEhNNk9tSmhkR05vWDJsemMzVmxjbDkwWlhOMGN6bzZibUYwYVhabFgySmhkR05vWDNSdmEyVnVYMkZ3YVY5bWFXeGxYM1Z6WlhKd1lYTnpYM05sY25acFkyVmZZV04wYjNKZmEyVmxjSE5mYVc1a1pYQmxibVJsYm5SZmFYTnpkV1Z5SWl3S0lDQWdJQ0FnSUNBaWMyVnlkbWxqWlRvNmJtRjBhWFpsWDJGMWRHZzZPblZ6WlhKd1lYTnpYM1JsYzNSek9qcGlZWFJqYUY5MFpYTjBjem82Ym1GMGFYWmxYM1Z6WlhKd1lYTnpYMkpoZEdOb1gyRmpkSFZoYkY5aGRXUnBkRjlqWVc1dWIzUmZjbVZ3YkdGalpWOTBhR1ZmYjNKcFoybHVZV3hmWkdWaFpHeHBibVVpTEFvZ0lDQWdJQ0FnSUNKelpYSjJhV05sT2pwdVlYUnBkbVZmWVhWMGFEbzZkWE5sY25CaGMzTmZkR1Z6ZEhNNk9tSmhkR05vWDNSbGMzUnpPanB1WVhScGRtVmZkWE5sY25CaGMzTmZZbUYwWTJoZllXTjBkV0ZzWDJGMVpHbDBaV1JmYzNSaGRIVnpYM1JoYlhCbGNtbHVaMTlsY21GelpYTmZkR2hsWDJOeVpXUmxiblJwWVd3aUxBb2dJQ0FnSUNBZ0lDSnpaWEoyYVdObE9qcHVZWFJwZG1WZllYVjBhRG82ZFhObGNuQmhjM05mZEdWemRITTZPbUpoZEdOb1gzUmxjM1J6T2pwdVlYUnBkbVZmZFhObGNuQmhjM05mWW1GMFkyaGZZV04wZFdGc1gzQnZjM1JmWVhWa2FYUmZZMkYwWVd4dloxOWpiMjF0YVhSZmRtVjBiMlZ6WDI5eWFXZHBibUZzWDJSbGJHbDJaWEo1SWl3S0lDQWdJQ0FnSUNBaWMyVnlkbWxqWlRvNmJtRjBhWFpsWDJGMWRHZzZPblZ6WlhKd1lYTnpYM1JsYzNSek9qcGlZWFJqYUY5MFpYTjBjem82Ym1GMGFYWmxYM1Z6WlhKd1lYTnpYMkpoZEdOb1gyRmpkSFZoYkY5Mk5WOXdjbTl0YjNScGIyNWZaRzlsYzE5dWIzUmZjbVZ6WldGc1gyOXlYM0psYVhOemRXVWlMQW9nSUNBZ0lDQWdJQ0p6WlhKMmFXTmxPanB1WVhScGRtVmZZWFYwYURvNmRYTmxjbkJoYzNOZmRHVnpkSE02T21KaGRHTm9YM1JsYzNSek9qcHVZWFJwZG1WZmRYTmxjbkJoYzNOZlltRjBZMmhmWTJGMFlXeHZaMTlpWldadmNtVmZZVzVrWDJGbWRHVnlYMmx6YzNWaGJtTmxYMjF2ZG1WelgybHVYMjl1WlY5dVlYUnBkbVZmY205dmRDSXNDaUFnSUNBZ0lDQWdJbk5sY25acFkyVTZPbTVoZEdsMlpWOWhkWFJvT2pwMWMyVnljR0Z6YzE5MFpYTjBjem82WW1GMFkyaGZkR1Z6ZEhNNk9tNWhkR2wyWlY5MWMyVnljR0Z6YzE5aVlYUmphRjltYVd4bFgyTnZiR1JmYTJWbGNITmZaWGhoWTNSZlozSmhiblJmZDJsMGFHOTFkRjl6WlhKMmFXTmxYMkpoWTJ0cGJtY2lMQW9nSUNBZ0lDQWdJQ0p6WlhKMmFXTmxPanB1WVhScGRtVmZZWFYwYURvNmRYTmxjbkJoYzNOZmRHVnpkSE02T21KaGRHTm9YM1JsYzNSek9qcHVZWFJwZG1WZmRYTmxjbkJoYzNOZlltRjBZMmhmY21WemNHOXVjMlZmZDNKaGNIQmxjbDlqWVc1dWIzUmZhR2xrWlY5aGNIQnliMnhsWDJsemMzVmxjaUlzQ2lBZ0lDQWdJQ0FnSW5ObGNuWnBZMlU2T201aGRHbDJaVjloZFhSb09qcDFjMlZ5Y0dGemMxOTBaWE4wY3pvNlltRjBZMmhmZEdWemRITTZPbTVoZEdsMlpWOTFjMlZ5Y0dGemMxOWlZWFJqYUY5eVpYTndiMjV6WlY5M2NtRndjR1Z5WDJOaGJtNXZkRjlvYVdSbFgzUnZhMlZ1WDJGd2FWOXBjM04xWlhJaUxBb2dJQ0FnSUNBZ0lDSnpaWEoyYVdObE9qcHVZWFJwZG1WZllYVjBhRG82ZFhObGNuQmhjM05mZEdWemRITTZPbUpoZEdOb1gzUmxjM1J6T2pwdVlYUnBkbVZmZFhObGNuQmhjM05mWW1GMFkyaGZjbVZ6Y0c5dWMyVmZkM0poY0hCbGNsOXJaV1Z3YzE5MWMyVnljR0Z6YzE5bGJuSnZiR3h0Wlc1MFgyTnNiM05sWkNJc0NpQWdJQ0FnSUNBZ0luTmxjblpwWTJVNk9tNWhkR2wyWlY5aGRYUm9PanAxYzJWeWNHRnpjMTkwWlhOMGN6bzZZbUYwWTJoZmRHVnpkSE02T201aGRHbDJaVjkxYzJWeWNHRnpjMTlpWVhSamFGOTNjbTl1WjE5d1lYTnpkMjl5WkY5aGJtUmZhVzVrWlhCbGJtUmxiblJmZEc5clpXNWZZWEJwWDI5M2JtVnlYM0IxWW14cGMyaGZiMjVzZVY5eVpXRnNYMmR5WVc1MGN5SXNDaUFnSUNBZ0lDQWdJbk5sY25acFkyVTZPbTVoZEdsMlpWOWhkWFJvT2pwMWMyVnljR0Z6YzE5MFpYTjBjem82Ym1GMGFYWmxYM1Z6WlhKd1lYTnpYMkZqZEhWaGJGOWhkV1JwZEY5allXNXViM1JmY21WbWNtVnphRjkwYUdWZmIzSnBaMmx1WVd4ZmNtVnhkV1Z6ZEY5a1pXRmtiR2x1WlNJc0NpQWdJQ0FnSUNBZ0luTmxjblpwWTJVNk9tNWhkR2wyWlY5aGRYUm9PanAxYzJWeWNHRnpjMTkwWlhOMGN6bzZibUYwYVhabFgzVnpaWEp3WVhOelgyRmpkSFZoYkY5aGRXUnBkRjl5WlhOd2IyNXpaVjl6ZEdGMGRYTmZZVzVrWDJWeWNtOXlYM1JoYlhCbGNtbHVaMTloY21WZmRtVjBiMlZrSWl3S0lDQWdJQ0FnSUNBaWMyVnlkbWxqWlRvNmJtRjBhWFpsWDJGMWRHZzZPblZ6WlhKd1lYTnpYM1JsYzNSek9qcHVZWFJwZG1WZmRYTmxjbkJoYzNOZllXTjBkV0ZzWDNCdmMzUmZZWFZrYVhSZmNtVjJiMk5oZEdsdmJsOTJaWFJ2WlhOZmRHaGxYMjl5YVdkcGJtRnNYMk55WldSbGJuUnBZV3hmY21Wd2JIa2lMQW9nSUNBZ0lDQWdJQ0p6WlhKMmFXTmxPanB1WVhScGRtVmZZWFYwYURvNmRYTmxjbkJoYzNOZmRHVnpkSE02T201aGRHbDJaVjkxYzJWeWNHRnpjMTltYjNKdFlXeGZZV05zWDNKbGRHRnBibk5mWVdSdGFXNWZjM1ZrYjE5aGJtUmZZV05qYjNWdWRGOXpZMjl3WlNJc0NpQWdJQ0FnSUNBZ0luTmxjblpwWTJVNk9tNWhkR2wyWlY5aGRYUm9PanAxYzJWeWNHRnpjMTkwWlhOMGN6bzZibUYwYVhabFgzVnpaWEp3WVhOelgyWnZjbTFoYkY5bVlXbHNaV1JmYkc5bmFXNWZiRzlqYTI5MWRGOXBjMTlrZFhKaFlteGxYMkZqY205emMxOWpiMnhrWDI5d1pXNGlMQW9nSUNBZ0lDQWdJQ0p6WlhKMmFXTmxPanB1WVhScGRtVmZZWFYwYURvNmRYTmxjbkJoYzNOZmRHVnpkSE02T201aGRHbDJaVjkxYzJWeWNHRnpjMTltYjNKdFlXeGZabWxzWlY5c2IyZHBibDl5Wlc1bGQxOWpiMnhrWDNCeWIzWmxibUZ1WTJWZllXNWtYM0psZG05clpTSXNDaUFnSUNBZ0lDQWdJbk5sY25acFkyVTZPbTVoZEdsMlpWOWhkWFJvT2pwMWMyVnljR0Z6YzE5MFpYTjBjem82Ym1GMGFYWmxYM1Z6WlhKd1lYTnpYMlp2Y20xaGJGOW1hVzVwZEdWZmRHOXJaVzVmWkdWc2FYWmxjbmxmWkc5bGMxOXViM1JmWTI5dWMzVnRaVjloYmw5bGVIUnlZVjkxYzJVaUxBb2dJQ0FnSUNBZ0lDSnpaWEoyYVdObE9qcHVZWFJwZG1WZllYVjBhRG82ZFhObGNuQmhjM05mZEdWemRITTZPbTVoZEdsMlpWOTFjMlZ5Y0dGemMxOW1iM0p0WVd4ZmJXOTFiblJmY21WMGFYSmxiV1Z1ZEY5eVpYWnZhMlZ6WDNCaGNtVnVkRjlqYUdsc1pGOWhibVJmYTJWbGNITmZabXh2YjNJaUxBb2dJQ0FnSUNBZ0lDSnpaWEoyYVdObE9qcHVZWFJwZG1WZllYVjBhRG82ZFhObGNuQmhjM05mZEdWemRITTZPbTVoZEdsMlpWOTFjMlZ5Y0dGemMxOW1iM0p0WVd4ZmMyOTFjbU5sWDNCeWIyMXZkR2x2Ymw5clpXVndjMTl5WldGc1gzQnlaV1Y0YVhOMGFXNW5YMk55WldSbGJuUnBZV3h6SWl3S0lDQWdJQ0FnSUNBaWMyVnlkbWxqWlRvNmJtRjBhWFpsWDJGMWRHZzZPblZ6WlhKd1lYTnpYM1JsYzNSek9qcHVZWFJwZG1WZmRYTmxjbkJoYzNOZmMyVnNaV04wYjNKZmEyVmxjSE5mYjNSb1pYSmZjSEp2ZG1sa1pYSnpYMkZ1WkY5M2NtRndjR1ZrWDJ4dloybHVYMk5zYjNObFpDSUtJQ0FnSUNBZ1hRb2dJQ0FnZlFvZ0lGMHNDaUFnSW1keWIzVndjMTl6YUdFeU5UWWlPaUFpTXpVeE5UTm1aalZsT1RCaU5UZ3laamd6WlRSbVltSmlOalptWmpWak9XWmlNamsxWlRrMU1UVXpaakE0WkdZeE5USmpaV1psWkdWalpHSTFNRGcyT1NJc0NpQWdJbXhoZFc1amFHVnlYM04wWVhKMFpXUmZiVzl1YjNSdmJtbGpJam9nTWpnM01EazJMalF4T1RrMk5qRTFOaXdLSUNBaWJtVjNYM1Z1YVhGMVpWOTBaWE4wWDNSdmRHRnNJam9nTVRjc0NpQWdJbTV2Y20xaGJGOWtaV1poZFd4MFgyWmxZWFIxY21Weklqb2dkSEoxWlN3S0lDQWlibTl5YldGc1gzSmxiR1ZoYzJWZlluVnBiR1FpT2lCN0NpQWdJQ0FpWVhKbmRpSTZJRnNLSUNBZ0lDQWdJaTlvYjIxbEwzRnBZVzR0Y1drdkxuSjFjM1IxY0M5MGIyOXNZMmhoYVc1ekx6RXVPVGd1TUMxNE9EWmZOalF0ZFc1cmJtOTNiaTFzYVc1MWVDMW5iblV2WW1sdUwyTmhjbWR2SWl3S0lDQWdJQ0FnSW1KMWFXeGtJaXdLSUNBZ0lDQWdJaTB0Y21Wc1pXRnpaU0lzQ2lBZ0lDQWdJQ0l0TFd4dlkydGxaQ0lzQ2lBZ0lDQWdJQ0l0TFc5bVpteHBibVVpTEFvZ0lDQWdJQ0FpTFhBaUxBb2dJQ0FnSUNBaWFHVndkR0ZpWVc4dGMyVnlkbVZ5SWl3S0lDQWdJQ0FnSWkwdFltbHVJaXdLSUNBZ0lDQWdJbWhsY0hSaFltRnZMWE5sY25abGNpSXNDaUFnSUNBZ0lDSXRMV0pwYmlJc0NpQWdJQ0FnSUNKb1pYQjBZV0poYnkxelpXVmtJaXdLSUNBZ0lDQWdJaTB0YldWemMyRm5aUzFtYjNKdFlYUTlhbk52YmkxeVpXNWtaWEl0WkdsaFoyNXZjM1JwWTNNaUNpQWdJQ0JkTEFvZ0lDQWdJbVJwY21WamRGOWphR2xzWkY5eVpXRndaV1FpT2lCMGNuVmxMQW9nSUNBZ0ltVnNZWEJ6WldSZmMyVmpiMjVrY3lJNklETXhOaTR5TWpJMk9USTJNVFV3TURNekxBb2dJQ0FnSW1WNGFYUmZZMjlrWlNJNklERXdNU3dLSUNBZ0lDSnNZV0psYkNJNklDSnViM0p0WVd3dGNtVnNaV0Z6WlMxaWRXbHNaQ0lzQ2lBZ0lDQWliM1YwWlhKZlkyRndYM05sWTI5dVpITWlPaUF4T0RBd0xBb2dJQ0FnSW05M2JtVmtYM0JuYVdRaU9pQTRNVEUwTVRNc0NpQWdJQ0FpY21WdFlXbHVhVzVuSWpvZ1cxMHNDaUFnSUNBaWMzUmtaWEp5WDNOb1lUSTFOaUk2SUNJME5EZ3dORGRsTmpkaU9HUXpZekF6TTJFNFptRXlNVEZrWlRoa1ptUTNaREptWlRZeU5qVmhOR1l3TVdZd1kyTXlNMll3TkRSa1lUa3dPVFkwT1RZMElpd0tJQ0FnSUNKemRHUnZkWFJmYzJoaE1qVTJJam9nSWpFMU0yVXlOalUwTlRNNU5EazVNamRtWmpFeU5qZzVNekZqWmpJMk1EVXdaVFpqWldabU9HSTFZMkUxTXpZMk9HTmxPRE5qWlRGbE9UQmpOVE16TW1JaUxBb2dJQ0FnSW5ScGJXVmtYMjkxZENJNklHWmhiSE5sQ2lBZ2ZTd0tJQ0FpYjJ4a1gyNXZjbTFoYkRZeFgyWjFiR3d6TkY5TVFVNDVPSEJzZFhNeE1sOWpiMjF3WVhKcGMyOXVOamxmY21WeWRXNGlPaUJtWVd4elpTd0tJQ0FpYjNKcFoybHVZV3hmYjNWMFpYSmZjMlZqYjI1a2N5STZJREV5TURBd0xBb2dJQ0p2ZFhSbGNsOXdhR0Z6WlY5allYQnpYM05sWTI5dVpITWlPaUI3Q2lBZ0lDQWlZV3hzWDJOdmJYQnBiR1ZmWTJobFkydHpYM05vWVhKbFpDSTZJRE0yTURBc0NpQWdJQ0FpWldGamFGOXNhWE4wYVc1bklqb2dNekFzQ2lBZ0lDQWlaV0ZqYUY5eWRXNTBhVzFsWDJaaGJXbHNlVjl6YUdGeVpXUWlPaUEyTURBc0NpQWdJQ0FpYm05eWJXRnNYM0psYkdWaGMyVmZZblZwYkdRaU9pQXhPREF3Q2lBZ2ZTd0tJQ0FpY0hKdlpIVmpkR2x2Ymw5amFHRnVaMlZrSWpvZ1ptRnNjMlVzQ2lBZ0luQnliMlpwYkdVaU9pQjdDaUFnSUNBaVEwRlNSMDlmUWxWSlRFUmZTazlDVXlJNklDSXhJaXdLSUNBZ0lDSkRRVkpIVDE5SVQwMUZJam9nSWk5b2IyMWxMM0ZwWVc0dGNXa3ZhR1Z3ZEdGaVlXOHRibUYwYVhabExUSXdNall4TURJNUxXTXhZbVF0Y2pFdlkyRnlaMjh0YUc5dFpTSXNDaUFnSUNBaVEwRlNSMDlmVUZKUFJrbE1SVjlTUlV4RlFWTkZYME5QUkVWSFJVNWZWVTVKVkZNaU9pQWlNVFlpTEFvZ0lDQWdJa05CVWtkUFgxQlNUMFpKVEVWZlVrVk1SVUZUUlY5RVJVSlZSeUk2SUNJd0lpd0tJQ0FnSUNKRFFWSkhUMTlRVWs5R1NVeEZYMUpGVEVWQlUwVmZSRVZDVlVkZlFWTlRSVkpVU1U5T1V5STZJQ0owY25WbElpd0tJQ0FnSUNKRFFWSkhUMTlRVWs5R1NVeEZYMUpGVEVWQlUwVmZURlJQSWpvZ0ltWmhiSE5sSWl3S0lDQWdJQ0pEUVZKSFQxOVFVazlHU1V4RlgxSkZURVZCVTBWZlQxQlVYMHhGVmtWTUlqb2dJak1pTEFvZ0lDQWdJa05CVWtkUFgxQlNUMFpKVEVWZlVrVk1SVUZUUlY5UFZrVlNSa3hQVjE5RFNFVkRTMU1pT2lBaWRISjFaU0lzQ2lBZ0lDQWlRMEZTUjA5ZlVGSlBSa2xNUlY5U1JVeEZRVk5GWDFCQlRrbERJam9nSW5WdWQybHVaQ0lzQ2lBZ0lDQWlRMEZTUjA5ZlZFRlNSMFZVWDBSSlVpSTZJQ0l2YUc5dFpTOXhhV0Z1TFhGcEwyaGxjSFJoWW1GdkxXTnZiR1F0YURJdGJtOXliV0ZzTFRJd01qWXhNVEExTFhJeEwzUmhjbWRsZEMxdWIzSnRZV3d0Y2pNaUxBb2dJQ0FnSWtOQlVrZFBYMVJGVWsxZlEwOU1UMUlpT2lBaWJtVjJaWElpTEFvZ0lDQWdJbEJCVkVnaU9pQWlMMmh2YldVdmNXbGhiaTF4YVM4dWNuVnpkSFZ3TDNSdmIyeGphR0ZwYm5Ndk1TNDVPQzR3TFhnNE5sODJOQzExYm10dWIzZHVMV3hwYm5WNExXZHVkUzlpYVc0NkwzVnpjaTlpYVc0NkwySnBiaUlzQ2lBZ0lDQWlVbFZUVkVaTVFVZFRJam9nSWlJS0lDQjlMQW9nSUNKeVpYUmhhVzVsWkY5a1pqQXlObDloWm5SbGNpSTZJSHNLSUNBZ0lDSmhiR3hmYjNCbGJtVmtYMlJsYzJOeWFYQjBiM0p6WDJOc2IzTmxaQ0k2SUhSeWRXVXNDaUFnSUNBaVptbHNaWE1pT2lCYkNpQWdJQ0FnSUhzS0lDQWdJQ0FnSUNBaVlubDBaWE1pT2lBek1UTTNMQW9nSUNBZ0lDQWdJQ0pqYkc5elpWOWhkSFJsYlhCMFpXUWlPaUIwY25WbExBb2dJQ0FnSUNBZ0lDSmpiRzl6WldRaU9pQjBjblZsTEFvZ0lDQWdJQ0FnSUNKcFpHVnVkR2wwZVNJNklGc0tJQ0FnSUNBZ0lDQWdJRFkyTXpBMkxBb2dJQ0FnSUNBZ0lDQWdNekUyTVRnMk1ESXNDaUFnSUNBZ0lDQWdJQ0F4TURBd0xBb2dJQ0FnSUNBZ0lDQWdNVEF3TUN3S0lDQWdJQ0FnSUNBZ0lETXpNVFV5TEFvZ0lDQWdJQ0FnSUNBZ01Td0tJQ0FnSUNBZ0lDQWdJRE14TXpjc0NpQWdJQ0FnSUNBZ0lDQXhOemt6T0RVME1UazNNRGcxTURBMU5UVTJMQW9nSUNBZ0lDQWdJQ0FnTVRjNU16ZzFOREU1TnpBNE5UQXdOVFUxTmdvZ0lDQWdJQ0FnSUYwc0NpQWdJQ0FnSUNBZ0ltOXdaVzVsWkNJNklIUnlkV1VzQ2lBZ0lDQWdJQ0FnSW5CaGRHZ2lPaUFpTDJodmJXVXZjV2xoYmkxeGFTOW9aWEIwWVdKaGJ5MWpiMnhrTFdneUxXNXZjbTFoYkMweU1ESTJNVEV3TlMxeU1TOXViM0p0WVd3dGNtVnNaV0Z6WlMxMFpYTjBjeTF5TXk5dWIzSnRZV3d0Y21Wc1pXRnpaUzF5WlhOMWJIUXVjSFZpYkdsakxtcHpiMjRpTEFvZ0lDQWdJQ0FnSUNKemFHRXlOVFlpT2lBaU5qWTVNV1JrWWpCbU9USTNZVEEyT0dKa00ySTNZalJrWVRGbU1Ua3dNems1WW1ZMU9EVTFPR0ZpTVdWbVlqYzFOR1poTlRkaU5ESXpNelU1TjJZeFpDSUtJQ0FnSUNBZ2ZTd0tJQ0FnSUNBZ2V3b2dJQ0FnSUNBZ0lDSmllWFJsY3lJNklEYzNNaXdLSUNBZ0lDQWdJQ0FpWTJ4dmMyVmZZWFIwWlcxd2RHVmtJam9nZEhKMVpTd0tJQ0FnSUNBZ0lDQWlZMnh2YzJWa0lqb2dkSEoxWlN3S0lDQWdJQ0FnSUNBaWFXUmxiblJwZEhraU9pQmJDaUFnSUNBZ0lDQWdJQ0EyTmpNd05pd0tJQ0FnSUNBZ0lDQWdJRE14TmpFNE5qQTBMQW9nSUNBZ0lDQWdJQ0FnTVRBd01Dd0tJQ0FnSUNBZ0lDQWdJREV3TURBc0NpQWdJQ0FnSUNBZ0lDQXpNekUxTWl3S0lDQWdJQ0FnSUNBZ0lERXNDaUFnSUNBZ0lDQWdJQ0EzTnpJc0NpQWdJQ0FnSUNBZ0lDQXhOemt6T0RVME1UazNNRGcxT0RFME5qQXdMQW9nSUNBZ0lDQWdJQ0FnTVRjNU16ZzFOREU1TnpBNE5UZ3hORFl3TUFvZ0lDQWdJQ0FnSUYwc0NpQWdJQ0FnSUNBZ0ltOXdaVzVsWkNJNklIUnlkV1VzQ2lBZ0lDQWdJQ0FnSW5CaGRHZ2lPaUFpTDJodmJXVXZjV2xoYmkxeGFTOW9aWEIwWVdKaGJ5MWpiMnhrTFdneUxXNXZjbTFoYkMweU1ESTJNVEV3TlMxeU1TOXViM0p0WVd3dGNtVnNaV0Z6WlMxMFpYTjBjeTF5TXk5dVlYUnBkbVV0WW5WcGJHUXVjSFZpYkdsakxtcHpiMjRpTEFvZ0lDQWdJQ0FnSUNKemFHRXlOVFlpT2lBaVpXSmxaalJqWkRFeE5ETmxZVFJrTm1Oak1UazNPVEUyTURjeVpHVTBPVGM0TlRJd1lUQm1OamRrTVdFeE56VmhaR00zWW1JeVptRmhaVGRtWkRZNVpTSUtJQ0FnSUNBZ2ZTd0tJQ0FnSUNBZ2V3b2dJQ0FnSUNBZ0lDSmllWFJsY3lJNklEUTRNVGc0TEFvZ0lDQWdJQ0FnSUNKamJHOXpaVjloZEhSbGJYQjBaV1FpT2lCMGNuVmxMQW9nSUNBZ0lDQWdJQ0pqYkc5elpXUWlPaUIwY25WbExBb2dJQ0FnSUNBZ0lDSnBaR1Z1ZEdsMGVTSTZJRnNLSUNBZ0lDQWdJQ0FnSURZMk16QTJMQW9nSUNBZ0lDQWdJQ0FnTXpFMk1UZzRNRElzQ2lBZ0lDQWdJQ0FnSUNBeE1EQXdMQW9nSUNBZ0lDQWdJQ0FnTVRBd01Dd0tJQ0FnSUNBZ0lDQWdJRE16TVRVeUxBb2dJQ0FnSUNBZ0lDQWdNU3dLSUNBZ0lDQWdJQ0FnSURRNE1UZzRMQW9nSUNBZ0lDQWdJQ0FnTVRjNU16ZzFOVFF4TnpVNU5qQTBOVFF6TkN3S0lDQWdJQ0FnSUNBZ0lERTNPVE00TlRVME1UYzFPVFl3TkRVME16UUtJQ0FnSUNBZ0lDQmRMQW9nSUNBZ0lDQWdJQ0p2Y0dWdVpXUWlPaUIwY25WbExBb2dJQ0FnSUNBZ0lDSndZWFJvSWpvZ0lpOW9iMjFsTDNGcFlXNHRjV2t2YUdWd2RHRmlZVzh0WTI5c1pDMW9NaTF1YjNKdFlXd3RNakF5TmpFeE1EVXRjakV2Ym05eWJXRnNMWEpsYkdWaGMyVXRkR1Z6ZEhNdGNqTXZjbVZ6ZFd4MExuQjFZbXhwWXk1cWMyOXVJaXdLSUNBZ0lDQWdJQ0FpYzJoaE1qVTJJam9nSWpnMFpEYzJNMlUyWm1ZNU5EaGtaakkzT1RZMFpqTTNNMlU0TXpSbU9EWTVaRGRpTWpKbFpXSXdaRGRsWm1JNU1qbG1ZbVExWXpJNU9XTTFNamhtTVdJaUNpQWdJQ0FnSUgwc0NpQWdJQ0FnSUhzS0lDQWdJQ0FnSUNBaVlubDBaWE1pT2lBeE1ESXlOakExTWpBcw==",
+        "originalSDK": {
+          "blob": "b55682759d2bbab03c645e1bdc6c978837721c56",
+          "bytes": 22709,
+          "sha256": "ad5a276252f79ca3c6276753f1622946d5c10a2381eb84d87c7c5231798fdd7b"
+        },
+        "nativeText": {
+          "blob": "c8616fdbc70a6ff0d5f1c8c8cadf6bd0e3c6ea9d",
+          "bytes": 22538,
+          "sha256": "adaf61826c4010da94ee8d08965ec089caf5d9bc2fc681bf804b9e8a33503a13"
+        }
+      }
+    ],
+    "total": 49765,
+    "digest": "ca4321b37d698c2078c193087b4e76e56c4cdb8f79955aff236e3033d7188b07"
+  },
+  "nativeCallInFlight": false,
+  "paused": true,
+  "calls": {
+    "jwt-pki-33b814c7-build149-start-r1": {
+      "kind": "process_start",
+      "requestRaw": "{\n  \"host\": \"rog\",\n  \"executable\": \"/usr/bin/python3\",\n  \"args\": [\n    \"-I\",\n    \"-S\",\n    \"-B\",\n    \"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/launch_native_jwt_build.py\",\n    \"--host\",\n    \"rog\",\n    \"--commit\",\n    \"33b814c7034ec853151b1ff13e7529c83f65ea70\",\n    \"--tree\",\n    \"b7f276f70e0da1a33306564f385ab7bc12fd44f6\",\n    \"--stage-sha256\",\n    \"2137f9962784c451d11a2aaae0741189fec8ab511c0b3e6b226031f908331da0\",\n    \"--runner-sha256\",\n    \"023f6f3ad71b8909a46da632767044de44ec2ea6fcb11692a2160e2cec518add\",\n    \"--groups-sha256\",\n    \"35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869\",\n    \"--controls-sha256\",\n    \"f1e1f3a2576fcb2ecd05cdb9b8f4fbebd6bb849eddb48536eb5c66ed5be109e2\"\n  ],\n  \"cwd\": \"/home/qian-qi\",\n  \"timeout_seconds\": 12000,\n  \"idempotency_key\": \"heptabao-native-jwt-pki-33b814c7-build149-r1-5d639fbd\"\n}\n",
+      "requestPin": {
+        "blob": "f7d799f5ba1ae46547ba12c5eb3ef7f9bf49f11a",
+        "bytes": 859,
+        "sha256": "64e8f6eabec94eaeb340b7551ae5fa9850888b8210923f46e095e984ad29dbdf"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "b86018ae824a026f6df70f63ccd1115c597177d4",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "46839de13c36b9bf9e9f27bb5b2752d64fe5a22c",
+            "bytes": 841,
+            "sha256": "b990c9d06db3bf44312247e6d3277341a1e998bed29f4d3a8387acab38f03c73",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "66f35551cc759f5bc70b50cc1e07053e4349829d",
+            "bytes": 704,
+            "sha256": "ea9ba94635e650bb83f33155ede0490ba61831f089c97f41c4baaacb8d7f67e1",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "f7d799f5ba1ae46547ba12c5eb3ef7f9bf49f11a",
+            "bytes": 859,
+            "sha256": "64e8f6eabec94eaeb340b7551ae5fa9850888b8210923f46e095e984ad29dbdf",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 2404,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "3b242a6e0126cf2cec50ccc500e37643dbaf32ab",
+        "bytes": 1936,
+        "sha256": "61bd54255cd68fb3922c3bf8d24188e39b8483a1d014327d3dd0ab1b728d9a4a"
+      },
+      "sdkArchive": {
+        "tree": "9005fed9d91be5d0da9b61eb8daec8273daf00f9",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "3b242a6e0126cf2cec50ccc500e37643dbaf32ab",
+            "bytes": 1936,
+            "sha256": "61bd54255cd68fb3922c3bf8d24188e39b8483a1d014327d3dd0ab1b728d9a4a",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 1936,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "4e8a9ef67ad8f4509a7a16858acb8e7f5517a282",
+        "bytes": 1651,
+        "sha256": "522e5477a70b5b7289e123b74ba9483deca2018994ee56659618e302955f1b7b"
+      }
+    },
+    "jwt-pki-33b814c7-build149-authority0-start-r1": {
+      "kind": "operation_start",
+      "requestRaw": "{\n  \"operation\": {\n    \"tool\": \"process_status\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"job_id\": \"1a1b029a998-fc05-6eb2\"\n    }\n  },\n  \"idempotency_key\": \"heptabao-native-jwt-pki-33b814c7-build149-observe-r1-authority0\"\n}\n",
+      "requestPin": {
+        "blob": "b3a1283b0772652aed71859f56e5b9eaea85d8bf",
+        "bytes": 229,
+        "sha256": "8d57f2573ca8194bf07015a29ec2d3f57e405b0dfdfc5e82fe9053fedc98b7d9"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "981cccd72358213bc821202339326947e08fa6a5",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "d948fdddf5abe4f18c2abad72f6e60f2e79f68af",
+            "bytes": 873,
+            "sha256": "6e13be99f4690df710e182aa99e01977e8b04cd32412a0399a1c68b8be038085",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "f3e8534c5d3f0b4100abbfafa9a1902b6193c840",
+            "bytes": 736,
+            "sha256": "dbf992007e4147140ed8ae475fab85e3fbdb8bdc459027edf5d8f7e2c24e3521",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "b3a1283b0772652aed71859f56e5b9eaea85d8bf",
+            "bytes": 229,
+            "sha256": "8d57f2573ca8194bf07015a29ec2d3f57e405b0dfdfc5e82fe9053fedc98b7d9",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1838,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "dc642e5533e6b71752f8431974e9d200ab485fe1",
+        "bytes": 709,
+        "sha256": "29b76e8e6c9f570db8871774660a7bae70741d3fdbbe4b4f5ed4f54283ca9549"
+      },
+      "sdkArchive": {
+        "tree": "49f68c836c4b51f8b1ce2fb6d04a2a612b5d28c2",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "dc642e5533e6b71752f8431974e9d200ab485fe1",
+            "bytes": 709,
+            "sha256": "29b76e8e6c9f570db8871774660a7bae70741d3fdbbe4b4f5ed4f54283ca9549",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 709,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "7a03e18a4afda963523add57e35d5ce5864e2698",
+        "bytes": 548,
+        "sha256": "57857ccc23066082896e7069661e6ba7e22a0ca99d512380993f0e23099b75a2"
+      }
+    },
+    "jwt-pki-33b814c7-build149-authority0-status-r1": {
+      "kind": "operation_status",
+      "requestRaw": "{\n  \"operation_id\": \"9557b8205445f4283099e91a5cc87b3a836ff328e09f2020c98f080707e137ab\"\n}\n",
+      "requestPin": {
+        "blob": "d998c49ddb5f93a0606a22f0a6dbb86eb9c116e4",
+        "bytes": 89,
+        "sha256": "3993d897b378df25efdcf8d507441c0e06f12a1c3581de84c329f1e65211e898"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "dfe2976a05902ffa94c404cd4170054b58e9fe41",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "00a27e23d1aa9ce73af8c73518503821556da8d0",
+            "bytes": 936,
+            "sha256": "edd4db0eaf14c99d8eaddfbf3af23a0941e93c8bf564771130fb50b7093feb0b",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "b1376a2038741fd78856dce851ebe3521e891047",
+            "bytes": 799,
+            "sha256": "8a9f369161c4179cf036e01f5832089585c02cbd1b65eb0262cd71dc23c352ac",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "d998c49ddb5f93a0606a22f0a6dbb86eb9c116e4",
+            "bytes": 89,
+            "sha256": "3993d897b378df25efdcf8d507441c0e06f12a1c3581de84c329f1e65211e898",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1824,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "068ecfc56987acb2c7724a7a15bd8a774907d8f2",
+        "bytes": 980,
+        "sha256": "1942b808764ae1c4b8cdde1a0dab0652388d3d53dec60c3ee9ecd85405294ddd"
+      },
+      "sdkArchive": {
+        "tree": "880565d8b638ddff40b7ee7c9a3be072bc04cf19",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "068ecfc56987acb2c7724a7a15bd8a774907d8f2",
+            "bytes": 980,
+            "sha256": "1942b808764ae1c4b8cdde1a0dab0652388d3d53dec60c3ee9ecd85405294ddd",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 980,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "9a77d8e22e1df7c27c9e22240909dcae4dda5aa8",
+        "bytes": 805,
+        "sha256": "97404c8d09e4ab4ab399977ff05ebda199702683e7a8c83abcbefc799ddf0b0c"
+      }
+    },
+    "jwt-pki-33b814c7-build149-authority0-page0-r1": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"9557b8205445f4283099e91a5cc87b3a836ff328e09f2020c98f080707e137ab\",\n  \"offset\": 0,\n  \"limit\": 8192\n}\n",
+      "requestPin": {
+        "blob": "da3235f06a2f8da264c71c0db6ddead4a2f6d98c",
+        "bytes": 121,
+        "sha256": "9d00891cf18213e8978a5bffe3bb606e83a551d3c11e28968829e218c36390fe"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "8f20f7b0e5ed05c3c8f58c21b026a8010b4f1fa2",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "68222146527b7cbbd622a6f064bc1bed096618e3",
+            "bytes": 936,
+            "sha256": "5dee958ef9d0fa7eaa45ff57bbb0312967e9941634090531f46e655c6b75fe73",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "ab1ebfe83da984844dd2e2daf39a6f2898078daa",
+            "bytes": 799,
+            "sha256": "5b5462cc2e1ca5c48aacca96ae4c5a8ccd404d7143d79602a1f716d70514ebc3",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "da3235f06a2f8da264c71c0db6ddead4a2f6d98c",
+            "bytes": 121,
+            "sha256": "9d00891cf18213e8978a5bffe3bb606e83a551d3c11e28968829e218c36390fe",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1856,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "be990a13dca9ef991a20c8770ce10628bb26e2d1",
+        "bytes": 1676,
+        "sha256": "73f8062a9c7280825bc989cbcd3ed4a9bf179e6766721b3a5c98472922671ca4"
+      },
+      "sdkArchive": {
+        "tree": "1df45880d4945babff629298c54d85f515f6ee93",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "be990a13dca9ef991a20c8770ce10628bb26e2d1",
+            "bytes": 1676,
+            "sha256": "73f8062a9c7280825bc989cbcd3ed4a9bf179e6766721b3a5c98472922671ca4",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 1676,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "c38f2cfc58530009d90d535e3a85f8caba3a7586",
+        "bytes": 1505,
+        "sha256": "9dbe530ead3c3f387a013803d864155668512540eab71013bb8071c7e8af53ff"
+      }
+    },
+    "jwt-pki-33b814c7-build149-streams0-start-r1": {
+      "kind": "operation_start",
+      "requestRaw": "{\n  \"operation\": {\n    \"tool\": \"process_read\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"job_id\": \"1a1b029a998-fc05-6eb2\",\n      \"stdout_offset\": 0,\n      \"stderr_offset\": 0,\n      \"limit\": 16384\n    }\n  },\n  \"idempotency_key\": \"heptabao-native-jwt-pki-33b814c7-build149-observe-r1-streams0\"\n}\n",
+      "requestPin": {
+        "blob": "98b30422b1b26566aa8887d8dee4a0ede5ee3aa3",
+        "bytes": 299,
+        "sha256": "9ef42c60e16f404fca7357f69cf50b5c4e9bf30b95da512c98c42509be3fe4b3"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "f894861d56bedb4502fb81edded7374988cc390e",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "ecae539aaa6b7004c60c4f9b43fa57c604f1e397",
+            "bytes": 871,
+            "sha256": "9c470dba6f4cff6159a40a3b1fb14c68152f9a406774542193137c77e8b702d4",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "b41a109617dffb7c533b87b9cc5abbcd30a17998",
+            "bytes": 734,
+            "sha256": "c3cdd1cddde833cd6c44aa2d8de9e16a78149135f22056a7e3e45c291179ddfc",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "98b30422b1b26566aa8887d8dee4a0ede5ee3aa3",
+            "bytes": 299,
+            "sha256": "9ef42c60e16f404fca7357f69cf50b5c4e9bf30b95da512c98c42509be3fe4b3",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1904,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "9fd0ea9d3e1ce4c6c4bcad1131675659113e12c2",
+        "bytes": 707,
+        "sha256": "9e04c09ac7dd167267e647e49634f14f4d06d9c7a62bd70555a93b68e59d6d58"
+      },
+      "sdkArchive": {
+        "tree": "b7ec8a4ba0ef28aec691101f36ced8192864f93f",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "9fd0ea9d3e1ce4c6c4bcad1131675659113e12c2",
+            "bytes": 707,
+            "sha256": "9e04c09ac7dd167267e647e49634f14f4d06d9c7a62bd70555a93b68e59d6d58",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 707,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "8f539110edeba0ad2582a676a86dd5a84367e959",
+        "bytes": 546,
+        "sha256": "4f2523768b0deafc6156d9f269f32ac3430c5867582e5e50464ab6bee0f5f506"
+      }
+    },
+    "jwt-pki-33b814c7-build149-streams0-status-r1": {
+      "kind": "operation_status",
+      "requestRaw": "{\n  \"operation_id\": \"2074a4a38810ec62d88436bd3b5990663454728cbf303a4a9fe3b52fea1faaed\"\n}\n",
+      "requestPin": {
+        "blob": "77cc8e8b2b01cde2283579997e1eda155621ab96",
+        "bytes": 89,
+        "sha256": "e24a512845b8f0cadfdb71868df83758e43158f945ce405239575de9d3d47d42"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "331c117c396171c093c254dbfdc3afce4859b074",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "9fc86d32d0465203afa7644a2abe9a8d2a73d264",
+            "bytes": 934,
+            "sha256": "c80d138bdab2a3fb5b2fd41bae936ddb661b4b3e1a9eaa9d79db7d5b6dec2a10",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "55e10e4909bc9154a004395d3d8efac70f14006c",
+            "bytes": 797,
+            "sha256": "e2cb17d21764b716b1009beea1fa591a687a208bc46a2f63709a7efac2bfc707",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "77cc8e8b2b01cde2283579997e1eda155621ab96",
+            "bytes": 89,
+            "sha256": "e24a512845b8f0cadfdb71868df83758e43158f945ce405239575de9d3d47d42",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1820,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "77d3cf78a5b2acc4306440aaeae49362fa0ec8ea",
+        "bytes": 978,
+        "sha256": "2f0efaaf4d317a6711e54cea08a7e7a6ca60118e0af4bebf8b8b41a88f35b935"
+      },
+      "sdkArchive": {
+        "tree": "5b90519c025851c89362a78401be0794bad9b0cb",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "77d3cf78a5b2acc4306440aaeae49362fa0ec8ea",
+            "bytes": 978,
+            "sha256": "2f0efaaf4d317a6711e54cea08a7e7a6ca60118e0af4bebf8b8b41a88f35b935",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 978,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "de851708f21d039d6bf68871b636a39b43a9bbbc",
+        "bytes": 803,
+        "sha256": "69e0701a4089bffc5c5a37bdd769c2e891207ed22e30f64e8c7c23859a4b00ae"
+      }
+    },
+    "jwt-pki-33b814c7-build149-streams0-page0-r1": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"2074a4a38810ec62d88436bd3b5990663454728cbf303a4a9fe3b52fea1faaed\",\n  \"offset\": 0,\n  \"limit\": 8192\n}\n",
+      "requestPin": {
+        "blob": "037e55a74ef6cc0968cc272c2ad79fed911e060e",
+        "bytes": 121,
+        "sha256": "75767ca2bb2d3b3621553e22b700c7f3339b4f92405a1cfd18bdd04a3d3137eb"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "586bd229df7c5ce4819b8613c8a68c574389c76a",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "c816c0fb3c23256b9bd9f34f462be0cf4b444d56",
+            "bytes": 934,
+            "sha256": "e73342021a8ffe6e5eb179105d353b50f252baa5873affe46f83ebcc9331333e",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "f7c4bddba4785826e551698eb5ab80f812735e89",
+            "bytes": 797,
+            "sha256": "53bdfe40ad00febca37868727dc47c68107df74157e336d29313df231b834c87",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "037e55a74ef6cc0968cc272c2ad79fed911e060e",
+            "bytes": 121,
+            "sha256": "75767ca2bb2d3b3621553e22b700c7f3339b4f92405a1cfd18bdd04a3d3137eb",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1852,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "d7a81c1a01d58d40f4ac95f0ae37bdef3ea33897",
+        "bytes": 5150,
+        "sha256": "ea0e3caf5dd4d726f1b79e8b544357e6c5639ec52481b2782af5b57a0b452d65"
+      },
+      "sdkArchive": {
+        "tree": "910b51c4b896343bbeff432f1c136119684fb699",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "d7a81c1a01d58d40f4ac95f0ae37bdef3ea33897",
+            "bytes": 5150,
+            "sha256": "ea0e3caf5dd4d726f1b79e8b544357e6c5639ec52481b2782af5b57a0b452d65",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 5150,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "d5e295d15b447af206b034fb65cd37abf4583224",
+        "bytes": 4979,
+        "sha256": "2b041ebd46559ba6e87b97cde1a143d40519857fc756475e993342c3cf5ca6cd"
+      }
+    },
+    "jwt-pki-33b814c7-build149-authority1-start-r1": {
+      "kind": "operation_start",
+      "requestRaw": "{\n  \"operation\": {\n    \"tool\": \"process_status\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"job_id\": \"1a1b029a998-fc05-6eb2\"\n    }\n  },\n  \"idempotency_key\": \"heptabao-native-jwt-pki-33b814c7-build149-observe-r1-authority1\"\n}\n",
+      "requestPin": {
+        "blob": "ce28dd08bdbb712dfcaf0531e5cfed5481775aef",
+        "bytes": 229,
+        "sha256": "d7a556eabc09be8350e77a9ef325dbefd3004c984bd8e9e2ff98d6f7cdd54cea"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "d11aeafa1ccc8b6788edbcadede606f35fe6de2a",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "a305a810d22aaab977c125099252396d66aafd0d",
+            "bytes": 873,
+            "sha256": "aed03684ce399982202ddc2e6e56c729816b55e83b6925538d47331cf2f9aee3",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "76cdce05ba01233557120a1cc3b4b666f76475cb",
+            "bytes": 736,
+            "sha256": "f03299efe042e71ff572acca8cecbef2f08c565ddd8c1e2595602ec73faf0c78",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "ce28dd08bdbb712dfcaf0531e5cfed5481775aef",
+            "bytes": 229,
+            "sha256": "d7a556eabc09be8350e77a9ef325dbefd3004c984bd8e9e2ff98d6f7cdd54cea",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1838,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "698c1a4bfa16343f0fd86168eb05e554fe9722f9",
+        "bytes": 709,
+        "sha256": "52ab9ea233cf2f28467675e6e71b8ce4517865477063032397f61ccf72fe35bc"
+      },
+      "sdkArchive": {
+        "tree": "a8f3bc3ffe519922b2a5b714f0cf4ee5670151f8",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "698c1a4bfa16343f0fd86168eb05e554fe9722f9",
+            "bytes": 709,
+            "sha256": "52ab9ea233cf2f28467675e6e71b8ce4517865477063032397f61ccf72fe35bc",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 709,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "cceab65b7376bc3edad7fa9f44b503ae34ea2265",
+        "bytes": 548,
+        "sha256": "c0d159e6d7a47909ab22bcefb7335fae865547a4894e4f108bc0d97addf55ea5"
+      }
+    },
+    "jwt-pki-33b814c7-build149-authority1-status-r1": {
+      "kind": "operation_status",
+      "requestRaw": "{\n  \"operation_id\": \"e85a80c92c4313923d7c6d9f064ce6e33228315702559b1b83caa39c638e309d\"\n}\n",
+      "requestPin": {
+        "blob": "6c7641ab1aa9f087dcb83629c27bd3a746553cf3",
+        "bytes": 89,
+        "sha256": "f898407abd806c80bd02b36423a2ef60e26193fa1c579d7d3c5d840fad37f72e"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "aa85696b23a618d0083de57ae5a4b3a24a655104",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "5c0f3a2f80ea5739dd106d65f136ba0cac1585cd",
+            "bytes": 936,
+            "sha256": "8586a72db67b051edaf462ef0285b70f9877cba1e3fb53772db9ce9db74174d6",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "d686692b6bfb58d837cb51260ca334220277f701",
+            "bytes": 799,
+            "sha256": "f2b4cde10e7a080ec2c37f91d522895af0c1058814b9e2af9beef133cbe46671",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "6c7641ab1aa9f087dcb83629c27bd3a746553cf3",
+            "bytes": 89,
+            "sha256": "f898407abd806c80bd02b36423a2ef60e26193fa1c579d7d3c5d840fad37f72e",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1824,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "2c33cd5e1df045b64e111be2480f4a0d5bdf8827",
+        "bytes": 980,
+        "sha256": "085a8c372b481f8ea577e5477ee3dd0fa1cb6d33372f9ae8e75e8e9c408fad3a"
+      },
+      "sdkArchive": {
+        "tree": "97434f1225b0b162eb8f3398ee31f732a7f7bc48",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "2c33cd5e1df045b64e111be2480f4a0d5bdf8827",
+            "bytes": 980,
+            "sha256": "085a8c372b481f8ea577e5477ee3dd0fa1cb6d33372f9ae8e75e8e9c408fad3a",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 980,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "272a8aedf20e9f038dc2f5f3648206ba2c487459",
+        "bytes": 805,
+        "sha256": "9d71abba8652d006efb2545f5ab1d93291f4aa34233e8719d27e6411a6dba40e"
+      }
+    },
+    "jwt-pki-33b814c7-build149-authority1-page0-r1": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"e85a80c92c4313923d7c6d9f064ce6e33228315702559b1b83caa39c638e309d\",\n  \"offset\": 0,\n  \"limit\": 8192\n}\n",
+      "requestPin": {
+        "blob": "fc4a247fae102a8998803b5e0592d3db325312e3",
+        "bytes": 121,
+        "sha256": "983f8c584ba82e95b99a17c90e9a69840d0e379879d2703a47c728a749a7f862"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "ffa9539df055b8323b36d7dfcbe9fd5fa91204de",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "ce20ed91498a9ca47da730be094f1c870bf6bb32",
+            "bytes": 936,
+            "sha256": "83ebc62af86f261d7627bd4a019c545917911889aacb56d99627550eaf718b16",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "4e9ee6233fe6b2bcb66ff851a21e5209550bea5f",
+            "bytes": 799,
+            "sha256": "48ad4468f72f3f2a4e535c628af134cf5a9882abce2c41e5e3aca9c4534ec57c",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "fc4a247fae102a8998803b5e0592d3db325312e3",
+            "bytes": 121,
+            "sha256": "983f8c584ba82e95b99a17c90e9a69840d0e379879d2703a47c728a749a7f862",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1856,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "af55c06d05e047cbff855549f918cac5063ffaa5",
+        "bytes": 2060,
+        "sha256": "d29e32ff31dfa7f6865a7e1f488e469797f10c85fc46920d0b0f52a2b709cb5e"
+      },
+      "sdkArchive": {
+        "tree": "0fcffbd6480f1dac9289388181771409b40d0f92",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "af55c06d05e047cbff855549f918cac5063ffaa5",
+            "bytes": 2060,
+            "sha256": "d29e32ff31dfa7f6865a7e1f488e469797f10c85fc46920d0b0f52a2b709cb5e",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 2060,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "1cb7c7667d37256cb3e067b8265156d2ab582320",
+        "bytes": 1889,
+        "sha256": "45a411ad5904bba67fe4989d3558a530b767ee2bba7af3bef107faf89cbc8e4b"
+      }
+    },
+    "jwt-pki-33b814c7-build149-report-info-start-r1": {
+      "kind": "operation_start",
+      "requestRaw": "{\n  \"operation\": {\n    \"tool\": \"file_info\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/result.public.json\"\n    }\n  },\n  \"idempotency_key\": \"heptabao-native-jwt-pki-33b814c7-build149-observe-r1-result-info\"\n}\n",
+      "requestPin": {
+        "blob": "3b4e093792b9fcd2a6c428381aee31e41a7c40e5",
+        "bytes": 294,
+        "sha256": "b6b76d8a6e19e118cf023ef48b03b0c8f7895943363f7e48372733f4ae54aab4"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "0135d51d6424633d40d6bf992df6f1d33063da0b",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "ea81bf70b55295aed77664686fbdd3f3e38d80d6",
+            "bytes": 873,
+            "sha256": "bdb8e2234863daa3466880ecd3a815ffe405ebda99c208a2edcec9d8eb00745e",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "c239e1774003f903924bd9439cba085087e9ff32",
+            "bytes": 736,
+            "sha256": "2b3bbf8f3718483c9874c050c42247122a5ced1bc803ab0416fccfa1c17fe683",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "3b4e093792b9fcd2a6c428381aee31e41a7c40e5",
+            "bytes": 294,
+            "sha256": "b6b76d8a6e19e118cf023ef48b03b0c8f7895943363f7e48372733f4ae54aab4",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1903,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "b52033b166c2d1f0a7f0773e7acbb880650dd248",
+        "bytes": 704,
+        "sha256": "8d0631f23e29772e2dcc2726a34d67164092effcccdafc6391a73e7cdf78cda9"
+      },
+      "sdkArchive": {
+        "tree": "d6a34d5dc91db91275c5f3efb89e37166222e2f0",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "b52033b166c2d1f0a7f0773e7acbb880650dd248",
+            "bytes": 704,
+            "sha256": "8d0631f23e29772e2dcc2726a34d67164092effcccdafc6391a73e7cdf78cda9",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 704,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "2efc23796edc9e9421f42da97adc76871a05563d",
+        "bytes": 543,
+        "sha256": "533f98095499e22d4ed41594f3a96a45675924f2988d872166173fec70e5587f"
+      }
+    },
+    "jwt-pki-33b814c7-build149-report-info-status-r1": {
+      "kind": "operation_status",
+      "requestRaw": "{\n  \"operation_id\": \"8e81613aa575b93e807bfe358614abb238250fc93a4180109222d00bde1430da\"\n}\n",
+      "requestPin": {
+        "blob": "e8d53bce987c66587ad35b9b9de3d81903d53d6a",
+        "bytes": 89,
+        "sha256": "b064a9dd1400ed4e4c23c56f1f86cee9115c0264b907c16aae527b5fcb347050"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "f1c20929c3b3be96b6234c47e1366bae06da7073",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "0633478347aaed03255b081bbe9da62193474973",
+            "bytes": 936,
+            "sha256": "be58c3d8d027b4ab0863442458e127871ed4a0e5fd7f0a7fd123da84c49bd120",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "b7a57db52e2097074434dab91ee144b29f42e9ab",
+            "bytes": 799,
+            "sha256": "d875259eb719506a2b570f25d8cf37ed34b95d950a8af3da46a9a04efbe43337",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "e8d53bce987c66587ad35b9b9de3d81903d53d6a",
+            "bytes": 89,
+            "sha256": "b064a9dd1400ed4e4c23c56f1f86cee9115c0264b907c16aae527b5fcb347050",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1824,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "e6bbc61734a38f8512b14ff111d05e8aa5e098f3",
+        "bytes": 975,
+        "sha256": "3e7aa20067df36c24f3ab469b73e6760dca1c52c48337845880cfa815a12c2bf"
+      },
+      "sdkArchive": {
+        "tree": "5fcd79f998327ed040ed64b2c0618dc473d97dbd",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "e6bbc61734a38f8512b14ff111d05e8aa5e098f3",
+            "bytes": 975,
+            "sha256": "3e7aa20067df36c24f3ab469b73e6760dca1c52c48337845880cfa815a12c2bf",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 975,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "a52e89b61f2a9564876881f94c04e3758d38601d",
+        "bytes": 800,
+        "sha256": "3552acdc0f679c2c593fd0b3f241348300266548cabd05c6813cd8decf7a6a81"
+      }
+    },
+    "jwt-pki-33b814c7-build149-report-info-page0-r1": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"8e81613aa575b93e807bfe358614abb238250fc93a4180109222d00bde1430da\",\n  \"offset\": 0,\n  \"limit\": 8192\n}\n",
+      "requestPin": {
+        "blob": "a20805911077acb62ff8a21db80bde6ce032976e",
+        "bytes": 121,
+        "sha256": "0f264929e52d08eb89dc18ece5a0b00fd698bc73d654ca4ae5aacec577927b6a"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "61675cd05fa2f887798b23d4a7c3052576ce0401",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "757f06b3e95f2bf351a4b18a897683ddf406001b",
+            "bytes": 936,
+            "sha256": "e41e508ac26c06a2b95fd9338a1e3da702ce17521065ab5ac21b023ac43c8675",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "0da83e9f3bdf37d0cb723f49a2a33842028be1be",
+            "bytes": 799,
+            "sha256": "32d83127bce40786357163568fcee64e07225e3a41912c67e8f96adced1dce0f",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "a20805911077acb62ff8a21db80bde6ce032976e",
+            "bytes": 121,
+            "sha256": "0f264929e52d08eb89dc18ece5a0b00fd698bc73d654ca4ae5aacec577927b6a",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1856,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "8035b888576d7f2a0be4d7025f0b43cb0fabd71e",
+        "bytes": 1648,
+        "sha256": "bb9d2a3263ff536296d4b41ba11d2523fa74bd5b9d282b39b6594a7d5be7e870"
+      },
+      "sdkArchive": {
+        "tree": "f727683f0603d92320db63fc5aaeb8a2a55deca5",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "8035b888576d7f2a0be4d7025f0b43cb0fabd71e",
+            "bytes": 1648,
+            "sha256": "bb9d2a3263ff536296d4b41ba11d2523fa74bd5b9d282b39b6594a7d5be7e870",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 1648,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "6a0ef7a67c5aef1eb11fb44d28d4b32f8e5fdff8",
+        "bytes": 1477,
+        "sha256": "06682864d0994449f696f4b72ee74960eaacf659004a1a6adf146111d517dd6f"
+      }
+    },
+    "jwt-pki-33b814c7-build149-report-body-start-r1": {
+      "kind": "operation_start",
+      "requestRaw": "{\n  \"operation\": {\n    \"tool\": \"binary_read\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/result.public.json\",\n      \"offset\": 0,\n      \"limit\": 36998,\n      \"expected_version\": \"66306:31364220:36998:1793957208077081949:1793957208077081949\"\n    }\n  },\n  \"idempotency_key\": \"heptabao-native-jwt-pki-33b814c7-build149-observe-r1-result-body\"\n}\n",
+      "requestPin": {
+        "blob": "a3b254023a40af7a8adad1f17d3c9d248483f524",
+        "bytes": 427,
+        "sha256": "ce60adf4c949d0214548c38c7827aac750c738f08dbb597ffedcf73129c189fe"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "a4e17dcf313402e437228e5066f57afba0ba80b0",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "f77e4c978a8f33f4d25ee12f6a32889751741a30",
+            "bytes": 873,
+            "sha256": "a3f7c4d7573e57462339c9a1044ef1abb626f0e88874ffee9193bf5f71617101",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "70eefc04e29a7bc5fc0deebaaa8ff3ee17cea89c",
+            "bytes": 736,
+            "sha256": "1bdd1994610f6792198e73d356aeb8ed6c09e32f49dbf1afbd222c8c3ffb498b",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "a3b254023a40af7a8adad1f17d3c9d248483f524",
+            "bytes": 427,
+            "sha256": "ce60adf4c949d0214548c38c7827aac750c738f08dbb597ffedcf73129c189fe",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 2036,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "da4c98f5cac0d0ac209f0e14274a8b4c1b4a7c48",
+        "bytes": 706,
+        "sha256": "2223773fe112f7875f8638eec97bdbc376a229ad669bb6f2290e83f052f6b1eb"
+      },
+      "sdkArchive": {
+        "tree": "d6d9a048bc27e5e2a44b751ea7cbc7daad54d1b1",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "da4c98f5cac0d0ac209f0e14274a8b4c1b4a7c48",
+            "bytes": 706,
+            "sha256": "2223773fe112f7875f8638eec97bdbc376a229ad669bb6f2290e83f052f6b1eb",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 706,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "b36f9e2dd0c6f457a543fe2cec4f9729c65533b1",
+        "bytes": 545,
+        "sha256": "2819550834d8913ce0295979e14a803fe4d1efd49dc884dc9691db27c85e4514"
+      }
+    },
+    "jwt-pki-33b814c7-build149-report-body-status-r1": {
+      "kind": "operation_status",
+      "requestRaw": "{\n  \"operation_id\": \"7ef06d88b0a289f89193813a2f1e20c865818515a4842c816bd1a47eff2fe0a0\"\n}\n",
+      "requestPin": {
+        "blob": "2ac7e4e70968c87e5a6740eb529b7bee80126949",
+        "bytes": 89,
+        "sha256": "d1c9f568b2bc0005a97e4decf7e33c7059c1d04b60e51a2ca7b2a8de59f58c8e"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "8d2b40b8610f1402bd36f2cde2e8394d473b36ec",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "de164142c0581d82ab19e04431ac77ad8d5c602a",
+            "bytes": 936,
+            "sha256": "002ad1708e141f03a576073c95df1b71e438b54b5b3ead1fbb3c9fb1e01411a5",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "4c1d75f4bd47c62372cb0f01e8c6a1cf1c3527b8",
+            "bytes": 799,
+            "sha256": "51fe890f5bc5e7e9db1b5bdad7284fb6c15edb032604754986c53261e202ddf2",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "2ac7e4e70968c87e5a6740eb529b7bee80126949",
+            "bytes": 89,
+            "sha256": "d1c9f568b2bc0005a97e4decf7e33c7059c1d04b60e51a2ca7b2a8de59f58c8e",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1824,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "64fcc51a9494b8ba061838776e218190a40beba7",
+        "bytes": 977,
+        "sha256": "d06cd1d51b4fae2b7de17c60bfcdad0953600522933cfccff7c5511f8e5b45af"
+      },
+      "sdkArchive": {
+        "tree": "c510b0e90cf7300cb8c2f874287ae7e31ecc51b4",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "64fcc51a9494b8ba061838776e218190a40beba7",
+            "bytes": 977,
+            "sha256": "d06cd1d51b4fae2b7de17c60bfcdad0953600522933cfccff7c5511f8e5b45af",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 977,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "fd2986505afda7e210666b3de197dd6d14e1f3ce",
+        "bytes": 802,
+        "sha256": "205ce509413641005f059b9cbc3ba5616e3dd5ef16fcd2bbb65d535785e1d8f6"
+      }
+    },
+    "jwt-pki-33b814c7-build149-report-body-page0-r1": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"7ef06d88b0a289f89193813a2f1e20c865818515a4842c816bd1a47eff2fe0a0\",\n  \"offset\": 0,\n  \"limit\": 16384\n}\n",
+      "requestPin": {
+        "blob": "716a56013ea70800a6e5fe371a3079ea4f81e9d7",
+        "bytes": 122,
+        "sha256": "c7d76df52f6171ea06630c4354eab1eb6f67130a8463907586ba634029de8296"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "f30f65821b4420d4297352ec35192951dc2604dc",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "fbb2276d6f5a06039b3b087f9b3deaeafd7152a6",
+            "bytes": 936,
+            "sha256": "821144d5bec2db06a53691a919c9b80ec87bb0996c3400506fad9417d2ef0a36",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "7bc07ab3e176d82899f0463065657e7d16d97126",
+            "bytes": 799,
+            "sha256": "b46d77e9046393bf5d22b822da34535720a0969ac1dc5f61dbda0554aa8641c9",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "716a56013ea70800a6e5fe371a3079ea4f81e9d7",
+            "bytes": 122,
+            "sha256": "c7d76df52f6171ea06630c4354eab1eb6f67130a8463907586ba634029de8296",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1857,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "bd82464d09210dc33bdbc4e8221addcc093c6500",
+        "bytes": 22705,
+        "sha256": "5c07545b9397df4d1e216174d5d616972b006c195a86e41887350295f57961d4"
+      },
+      "sdkArchive": {
+        "tree": "272598278f84f7c960ab2c8859498249120aeacb",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "bd82464d09210dc33bdbc4e8221addcc093c6500",
+            "bytes": 22705,
+            "sha256": "5c07545b9397df4d1e216174d5d616972b006c195a86e41887350295f57961d4",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 22705,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "f36d25196efd12f5c0b69414f46dc8cf773f2391",
+        "bytes": 22534,
+        "sha256": "6ff49f789cf61601606a4811742c652e9271960114948981c2fc7059a0080929"
+      }
+    },
+    "jwt-pki-33b814c7-build149-report-body-page1-r1": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"7ef06d88b0a289f89193813a2f1e20c865818515a4842c816bd1a47eff2fe0a0\",\n  \"offset\": 16384,\n  \"limit\": 16384\n}\n",
+      "requestPin": {
+        "blob": "6bd6fd604dd41051dd26dfdca1621b3095a53a6e",
+        "bytes": 126,
+        "sha256": "f46e5e0015537a83a79335a56cd9b7f6d5f7342692ebed0552dcb4d731562d0b"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "961d76fff6e7b0efc8a6531173da71fdade4c48a",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "e4da24c178455a0ef7317ad22b540527358af775",
+            "bytes": 936,
+            "sha256": "772efd9ea46531e8f7ae46c0119054b806f169443330324733c755c9293db947",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "faa524f0080589b7aeae935f65f1842414c6ef6f",
+            "bytes": 799,
+            "sha256": "60bb8498059f51754866144780675b9acc807828ea09225ff815470405849aff",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "6bd6fd604dd41051dd26dfdca1621b3095a53a6e",
+            "bytes": 126,
+            "sha256": "f46e5e0015537a83a79335a56cd9b7f6d5f7342692ebed0552dcb4d731562d0b",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1861,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "b55682759d2bbab03c645e1bdc6c978837721c56",
+        "bytes": 22709,
+        "sha256": "ad5a276252f79ca3c6276753f1622946d5c10a2381eb84d87c7c5231798fdd7b"
+      },
+      "sdkArchive": {
+        "tree": "4fdefe9992266473220c4503bed38fa020f3eb4b",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "b55682759d2bbab03c645e1bdc6c978837721c56",
+            "bytes": 22709,
+            "sha256": "ad5a276252f79ca3c6276753f1622946d5c10a2381eb84d87c7c5231798fdd7b",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 22709,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "c8616fdbc70a6ff0d5f1c8c8cadf6bd0e3c6ea9d",
+        "bytes": 22538,
+        "sha256": "adaf61826c4010da94ee8d08965ec089caf5d9bc2fc681bf804b9e8a33503a13"
+      }
+    },
+    "jwt-pki-33b814c7-build149-report-body-page2-r1": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"7ef06d88b0a289f89193813a2f1e20c865818515a4842c816bd1a47eff2fe0a0\",\n  \"offset\": 32768,\n  \"limit\": 16384\n}\n",
+      "requestPin": {
+        "blob": "8448c7b5701f7551c847f55a66ae9c10892f2de1",
+        "bytes": 126,
+        "sha256": "10316b66ee044e51b3ed82b00be6b702335b06af50588df900417ce38a3a1b1c"
+      },
+      "phase": "native_interpretation_refused",
+      "called": true,
+      "armed": {
+        "tree": "7710c59abfc6dacf5d3c9a2d8909234bb8809c07",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "3037192510815cf1567b5e3bb78f0404aeaac66c",
+            "bytes": 936,
+            "sha256": "e341e86e003bd188c8ef5425a56cd432e31bbc31c9d33668d107d49f962b5ee0",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "fd6f2b4f31fce071e352783868ece4816cc49bcf",
+            "bytes": 799,
+            "sha256": "34afa80ea4fb19ecc75b87e5cd27a75d5334df5709eeb30c9edeb77dde024274",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "8448c7b5701f7551c847f55a66ae9c10892f2de1",
+            "bytes": 126,
+            "sha256": "10316b66ee044e51b3ed82b00be6b702335b06af50588df900417ce38a3a1b1c",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1861,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+        "bytes": 248,
+        "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+      },
+      "sdkArchive": {
+        "tree": "e675db61e07e6dfbb6d7f12b44e0f33c3fc4d6bc",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+            "bytes": 248,
+            "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 248,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "interpretationFailure": "Error: native_tool_error_preserved_stop"
+    }
+  },
+  "completedObservers": [
+    {
+      "id": "9557b8205445f4283099e91a5cc87b3a836ff328e09f2020c98f080707e137ab",
+      "tool": "process_status",
+      "payload": {
+        "blob": "a1f29c1d2fe6909fc3e40b494d34b85a532ea34a",
+        "bytes": 617,
+        "sha256": "76f054bf32c0959ede6fa6d1449464810505c4c4523bee24ba40ee15fc3619c6"
+      },
+      "payloadTree": "edb507f39ff41f7f2e47fcd313010fb160843eea",
+      "nativeText": {
+        "blob": "b83af5d546e9e17b48484c11bc2fc216c6205a53",
+        "bytes": 470,
+        "sha256": "79ad83577934476a43ca2b159c9780cf5e68c38f436454d5a7e3e209f3fd0774"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "2074a4a38810ec62d88436bd3b5990663454728cbf303a4a9fe3b52fea1faaed",
+      "tool": "process_read",
+      "payload": {
+        "blob": "c6ca880888b528d151d8eb0a5e6164fa67871959",
+        "bytes": 3222,
+        "sha256": "3890c76ca31748ddb35c18a795c4fa266760d03991c63208dd8189da663f59d9"
+      },
+      "payloadTree": "1122a9b6a6f8893a302bde74b91d4b3ff746e665",
+      "nativeText": {
+        "blob": "b55bf13ca483ed717608ffe2631ffe9308f92b67",
+        "bytes": 2976,
+        "sha256": "49292570f2fdb2f217f7275b52f22ae9e36df498e372d1f8ee1ed0322f74a663"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "e85a80c92c4313923d7c6d9f064ce6e33228315702559b1b83caa39c638e309d",
+      "tool": "process_status",
+      "payload": {
+        "blob": "29f911d3c0a54d4ce6af65809affb98f34c9edaa",
+        "bytes": 905,
+        "sha256": "ffa6a9a72508fd11cce62ceb60f46b267cb31cd1ac9c27eef878b8571360c3a6"
+      },
+      "payloadTree": "9029182663bd349df272394bc29a4bd6e0169a24",
+      "nativeText": {
+        "blob": "ef0bb0b5b159aa86d1b3723b7fcce83549b8398b",
+        "bytes": 726,
+        "sha256": "a788a9fcac34f9cf200b77af67eed9caf3b7ef106b0ae3f451fd3b6338cbdf36"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "8e81613aa575b93e807bfe358614abb238250fc93a4180109222d00bde1430da",
+      "tool": "file_info",
+      "payload": {
+        "blob": "a294968f71ee5d305870474b34ef00fa4a548b26",
+        "bytes": 597,
+        "sha256": "9e969d0c8c4f4e015fd446e63e81c21099712f67a19db641ff5a25645cd8bad4"
+      },
+      "payloadTree": "983088ea0bfa82bf169644dda1be483aa8b7b969",
+      "nativeText": {
+        "blob": "d6e8562a91ba3ee27cfcf8a4c51e5644d9f904c1",
+        "bytes": 480,
+        "sha256": "66f341b2e43f26671e7eecdc96a4dabc0aefaa8c2634ada148001b75adc29ffb"
+      },
+      "pages": 1,
+      "completedInactive": true
+    }
+  ],
+  "nextStdout": 867,
+  "nextStderr": 0,
+  "localJournalAvailable": false,
+  "gitFirstExplicitlyRequiredByThisRootGO": true,
+  "stageResultInfoGO": {
+    "pin": {
+      "blob": "4ecfe2224ae4155f42b33135512ed522ac8871c3",
+      "bytes": 3959,
+      "sha256": "d3fa3cdec67ec7d8f595091a0cc8e74b4ff0232bb66cf42dc7126a3ce1fa617a"
+    },
+    "raw": "{\n  \"schema\": \"heptabao.root-GO.PKI33b-failed-build-fixed-report-info.v1\",\n  \"authorization\": \"GO\",\n  \"agent\": \"/root/ha_validation\",\n  \"scope\": \"build_result_file_info_only\",\n  \"source_packet\": \"cead73145377f5310472e1a3933e0fd0147d4443\",\n  \"source\": {\n    \"blob\": \"21496c37dd8101299d875ffb2a9d10fa675d291e\",\n    \"bytes\": 24791,\n    \"sha256\": \"5235a51a3eb828174a545fa929a5ca3f72bb5254e86175805f7a34e3d0bf1960\"\n  },\n  \"source_review\": {\n    \"blob\": \"c43b90bbebb48457b8194dbc24a2f8f961d515da\",\n    \"bytes\": 3615,\n    \"sha256\": \"e1386fc9ddb5840ecdc2a81ffd19ca46c8f8b639371169b3f3f8a6db1a4ee649\"\n  },\n  \"source_review_checks\": 15,\n  \"author_pure_checks_reproduced\": 49,\n  \"exact_request\": {\n    \"blob\": \"3b4e093792b9fcd2a6c428381aee31e41a7c40e5\",\n    \"bytes\": 294,\n    \"sha256\": \"b6b76d8a6e19e118cf023ef48b03b0c8f7895943363f7e48372733f4ae54aab4\"\n  },\n  \"original_job\": \"1a1b029a998-fc05-6eb2\",\n  \"original_slot\": \"jwt_pki_33b814c7_build149_gitfirst_r1\",\n  \"entry_action\": \"authorize_build_result_info\",\n  \"original_terminal_qualification\": {\n    \"blob\": \"360e67448abbdc93f84e62142780b4d57974b316\",\n    \"bytes\": 8249,\n    \"sha256\": \"9d9a3a98548c79b2a25ac9f2593fddc09f9f98d23109df57cc9be0dc853cbd32\"\n  },\n  \"maximum_file_info_starts\": 1,\n  \"binary_read_authorized\": false,\n  \"metadata_acceptance\": {\n    \"host\": \"rog\",\n    \"path\": \"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/result.public.json\",\n    \"wholeSha256\": \"aa8a8623cc955adb64ab386387d15ad2204febc0fd526392d20cd0ab6c9638a6\",\n    \"size\": null,\n    \"version\": null,\n    \"full9\": null,\n    \"expectedMode\": 384,\n    \"expectedFullMode\": 33152,\n    \"expectedUid\": 1000,\n    \"expectedGid\": 1000,\n    \"expectedLinkCount\": 1,\n    \"platform\": \"linux\",\n    \"acceptSizeMin\": 1,\n    \"acceptSizeMax\": 1048576\n  },\n  \"new_explicit_readonly_size_acceptance\": \"New explicit acceptance ceiling 1 MiB for this one failed BUILD report. The source write() does not declare a result byte cap and actual size is unknown. This is a proposal, not inherited stage 150000 or a claim about current size. file_info computes whole SHA; no body RPC is authorized.\",\n  \"no_reinitialize\": true,\n  \"no_process_start\": true,\n  \"limits\": {\n    \"maximum_Runtime_lanes\": 2,\n    \"maximum_native_call_or_future_per_lane\": 1,\n    \"immutable_page_bytes\": 8192,\n    \"original_payload_cap\": 1048576,\n    \"stream_chunk_bytes\": 16384\n  },\n  \"sequence\": [\n    \"Whole this exact GO and attach the existing closed original BUILD slot without initialize.\",\n    \"Authorize exact original failed authority and whole867-byte stdout pins; neither149/166 nor all_owned_stopped is a detailed execution or lock-release proof.\",\n    \"Whole exact file_info request,intent,armed; separate dispatch boundary; once original operation_start.\",\n    \"Whole original SDK externally before parse/isError; same original operation status and contiguous immutable pages/full SHA/EOF/inactive closure only.\",\n    \"Require exact known result SHA plus Linux0600/1000:1000/singlelink and raw decimal version/full9. New1MiB size ceiling is accepted only for metadata; it does not expand any build/test clock or authorize a body.\",\n    \"Freeze actual metadata and release observer; actual-size/version body SOURCE/GO follows. Preserve originalfailed BUILD and never replay it.\"\n  ],\n  \"lane_activation\": \"C may activate one fixed-report metadata lane alongside A original Maccleanup stream lane. B formatter metadata3calls/1observer/1page completed and B explicitly released0call/0future/0process; B remains0 Native until a lane releases. Root0. Cargo target still unavailable for new use until detailed closure is verified.\",\n  \"excludes\": [\n    \"new build\",\n    \"Cargo\",\n    \"retest\",\n    \"directory search\",\n    \"binary_read\",\n    \"other files\",\n    \"budget or test denominator changes\",\n    \"target reuse inferred from summary\"\n  ],\n  \"full_replacement\": false,\n  \"production_cutover\": false,\n  \"legacy_cleanup\": false,\n  \"root_Runtime_calls\": 0\n}\n",
+    "whole": true
+  },
+  "stageResultInfoStarted": true,
+  "stageResultInfo": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/result.public.json",
+    "size": 36998,
+    "sha256": "aa8a8623cc955adb64ab386387d15ad2204febc0fd526392d20cd0ab6c9638a6",
+    "version": "66306:31364220:36998:1793957208077081949:1793957208077081949",
+    "nativeText": {
+      "blob": "d6e8562a91ba3ee27cfcf8a4c51e5644d9f904c1",
+      "bytes": 480,
+      "sha256": "66f341b2e43f26671e7eecdc96a4dabc0aefaa8c2634ada148001b75adc29ffb"
+    },
+    "originalOperation": "8e81613aa575b93e807bfe358614abb238250fc93a4180109222d00bde1430da",
+    "full9Strings": [
+      "66306",
+      "31364220",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "36998",
+      "1793957208077081949",
+      "1793957208077081949"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "stageResultBodyGO": {
+    "pin": {
+      "blob": "444843d89f9d0699e5004ba25382b8c5847c5979",
+      "bytes": 3957,
+      "sha256": "753e08ce9deed2fe455eaef4abf80d451e202aecdc0bf9cf0e8bd0ca5a84ddb3"
+    },
+    "raw": "{\n  \"schema\": \"heptabao.root-GO.PKI33b-failed-build-fixed-report-body.v1\",\n  \"authorization\": \"GO\",\n  \"agent\": \"/root/ha_validation\",\n  \"scope\": \"build_result_binary_read_only\",\n  \"source_packet\": \"e8bae434690b4a64afba0f85fa490b94e5d3e6f5\",\n  \"source\": {\n    \"blob\": \"a7af3a3329529d0629785765b7a9ade1dd14f23e\",\n    \"bytes\": 29476,\n    \"sha256\": \"bceff8ef04a1c330716436f79421ab4cae20bd96a577d8cd6fc335aa0036a333\"\n  },\n  \"source_review\": {\n    \"blob\": \"d567ec982de32ec504727a835ab399e7ac3488ef\",\n    \"bytes\": 3126,\n    \"sha256\": \"125d93b557e702d78d41f0f09c4bc20c8e3437fba42024c4469896e9048cb1bf\"\n  },\n  \"source_review_checks\": 12,\n  \"author_pure_guard_checks_reproduced\": 52,\n  \"exact_request\": {\n    \"blob\": \"a3b254023a40af7a8adad1f17d3c9d248483f524\",\n    \"bytes\": 427,\n    \"sha256\": \"ce60adf4c949d0214548c38c7827aac750c738f08dbb597ffedcf73129c189fe\"\n  },\n  \"original_job\": \"1a1b029a998-fc05-6eb2\",\n  \"original_slot\": \"jwt_pki_33b814c7_build149_gitfirst_r1\",\n  \"entry_action\": \"authorize_build_result_body\",\n  \"info_operation\": \"8e81613aa575b93e807bfe358614abb238250fc93a4180109222d00bde1430da\",\n  \"info_qualification\": {\n    \"blob\": \"373a516582bb6a3e7268dacfc39330a7d389a089\",\n    \"bytes\": 4631,\n    \"sha256\": \"a7dbf7e59371f8b13649c678d17933ae4d5827f6ebf811fcc2683417a5573464\"\n  },\n  \"expected_report\": {\n    \"path\": \"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/result.public.json\",\n    \"bytes\": 36998,\n    \"sha256\": \"aa8a8623cc955adb64ab386387d15ad2204febc0fd526392d20cd0ab6c9638a6\",\n    \"version\": \"66306:31364220:36998:1793957208077081949:1793957208077081949\",\n    \"infoOperation\": \"8e81613aa575b93e807bfe358614abb238250fc93a4180109222d00bde1430da\",\n    \"infoNative\": {\n      \"blob\": \"d6e8562a91ba3ee27cfcf8a4c51e5644d9f904c1\",\n      \"bytes\": 480,\n      \"sha256\": \"66f341b2e43f26671e7eecdc96a4dabc0aefaa8c2634ada148001b75adc29ffb\"\n    },\n    \"full9Strings\": [\n      \"66306\",\n      \"31364220\",\n      \"1000\",\n      \"1000\",\n      \"33152\",\n      \"1\",\n      \"36998\",\n      \"1793957208077081949\",\n      \"1793957208077081949\"\n    ]\n  },\n  \"maximum_binary_read_starts\": 1,\n  \"immutable_body_page_bytes\": 16384,\n  \"no_reinitialize\": true,\n  \"no_process_start\": true,\n  \"limits\": {\n    \"maximum_Runtime_lanes\": 2,\n    \"maximum_native_call_or_future_per_lane\": 1,\n    \"old_metadata_and_status_page_bytes\": 8192,\n    \"new_binary_page_bytes\": 16384,\n    \"original_payload_cap\": 1048576,\n    \"exact_body_bytes\": 36998\n  },\n  \"sequence\": [\n    \"Whole exact new GO; attach the existing closed originalBUILD slot through authorize_build_result_body. No initialize.\",\n    \"Require all original actual metadata path,size,SHA,rawversion/full9 and closed info operation before new admission.\",\n    \"Whole exact single binary_read request,intent,armed externally; independent dispatch boundary; once operation_start.\",\n    \"Whole each original SDK externally before parse/isError; follow only original returned ID,contiguous16KiB immutable binary pages/full SHA/EOF/inactive. Old observers retain8KiB.\",\n    \"Whole external decoded36998-byte original report before semantic analysis. Preserve all original failed BUILD evidence.\",\n    \"Release observer lane and inspect actual failure,command custody,source fences and target lock only from this original report; do not retry BUILD.\"\n  ],\n  \"lane_activation\": \"C may activate one fixed-body lane alongside A originalMaccleanup stream lane. B remains0 Native awaiting its separate report-body admission. Root0; at most2 lanes. Target not reusable until detailed report closure is qualified.\",\n  \"excludes\": [\n    \"new BUILD\",\n    \"new Cargo\",\n    \"test replay\",\n    \"other report or command paths\",\n    \"directory search\",\n    \"target reuse inferred from summary\",\n    \"production switch\",\n    \"legacy cleanup\"\n  ],\n  \"rebuild_authorized\": false,\n  \"target_reuse_qualified\": false,\n  \"full_replacement\": false,\n  \"production_cutover\": false,\n  \"legacy_cleanup\": false,\n  \"root_Runtime_calls\": 0\n}\n",
+    "whole": true
+  },
+  "stageResultBodyStarted": true,
+  "outerFailure": {
+    "schema": "heptabao.gitfirst.outer-caught-failure.r1",
+    "action": "accept",
+    "name": "Error",
+    "message": "native_tool_error_preserved_stop",
+    "automaticRetry": false,
+    "newAdmissionAllowed": false,
+    "returnedNormally": true
+  }
+}

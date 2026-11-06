@@ -1,0 +1,94 @@
+{
+  "schema": "heptabao.snapshot2379-detailed-report-owner-release.v1",
+  "host": "rog",
+  "originalJob": "1a1b008fa4a-fc05-6d9a",
+  "originalSlot": "snapshot_2379_rog_source_gitfirst_r1",
+  "rootBodyGO": {
+    "blob": "423479a95baf7e756b4f9cfc57cc0a04e4cf17f0",
+    "bytes": 3277,
+    "sha256": "1405c8bc6a0eb6983ab730d0e7e92d9734cfd66cf75b0e5115833fdca04d70f3"
+  },
+  "bodySource": {
+    "blob": "8c2f92092ae06161aa6cb125b07a353801b05a91",
+    "bytes": 28285,
+    "sha256": "1bd24ac2aee006ebc87a203f92fec7a76508381de6e1e96009a06818a3282851"
+  },
+  "originalReport": {
+    "blob": "630883993c821cd1bb33cab2ee31667064fa9bbf",
+    "bytes": 28399,
+    "sha256": "733f77ea123b842e424f0b315d9ec910881b99e5844a4fd9ee51b651d5fb1955"
+  },
+  "actualInfo": {
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1/control/stage-result.public.json",
+    "size": 28399,
+    "sha256": "733f77ea123b842e424f0b315d9ec910881b99e5844a4fd9ee51b651d5fb1955",
+    "version": "66306:31364206:28399:1793954767528597190:1793954767528597190",
+    "nativeText": {
+      "blob": "a5569800cbf2cc211f81fd0bd8323b24bb473577",
+      "bytes": 495,
+      "sha256": "ac43be6e933161f76a84bf057cc53189b1ed38ce1aa4947351b6498d4958face"
+    },
+    "originalOperation": "07f38b4b541c77312c94eeb6b1eb860eedf03c589f9acbcaffbc4dfa4e1f5a23",
+    "full9Strings": [
+      "66306",
+      "31364206",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "28399",
+      "1793954767528597190",
+      "1793954767528597190"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "bodyObserver": {
+    "id": "c59cd0349e6e72f862fbfc19a94cf37f70b08eab4c280ca38ad720f7cd8ebb34",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "10d35ecda23babcca9695df09a128d2f360662ce",
+      "bytes": 38316,
+      "sha256": "7a54c7f36a4b3a2a2978f987cf7436101df4d5d7e24de1bdc902504dabfb8b99"
+    },
+    "payloadTree": "9bc4b4688767939b1e4337bb45c5368c13e1db79",
+    "nativeText": {
+      "blob": "8b81a33d3114e73222ebdcda5bd0adaa66673291",
+      "bytes": 38213,
+      "sha256": "e9b7ddc4e5253bb454257fe34afb9700b2c335b33e383cc75e5f31ccb727546b"
+    },
+    "pages": 5,
+    "completedInactive": true
+  },
+  "metadataObserver": {
+    "id": "07f38b4b541c77312c94eeb6b1eb860eedf03c589f9acbcaffbc4dfa4e1f5a23",
+    "tool": "file_info",
+    "payload": {
+      "blob": "213bab8dc75f021487644a38875d5f5d2ebdbdef",
+      "bytes": 612,
+      "sha256": "394eb534866f0b41b06d153725d1a9d5f691d260e0db7976f821c6510166d6a7"
+    },
+    "payloadTree": "2e466743b6d19648ef18f26021b8a6569669557b",
+    "nativeText": {
+      "blob": "a5569800cbf2cc211f81fd0bd8323b24bb473577",
+      "bytes": 495,
+      "sha256": "ac43be6e933161f76a84bf057cc53189b1ed38ce1aa4947351b6498d4958face"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "callsThisBody": 7,
+  "cumulativeCalls": 17,
+  "cumulativeObservers": 4,
+  "cumulativePages": 8,
+  "allObserversCompletedInactive": true,
+  "pendingCall": null,
+  "nativeCallInFlight": false,
+  "activeFuture": false,
+  "originalProcessTerminal": true,
+  "laneReleased": true,
+  "reportSemanticQualificationPending": true,
+  "formatterExecuted": false,
+  "cargoExecuted": false,
+  "additionalNativeReads": false
+}

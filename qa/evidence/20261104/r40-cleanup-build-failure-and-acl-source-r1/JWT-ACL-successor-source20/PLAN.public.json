@@ -1,0 +1,114 @@
+{
+  "schema": "heptabao.JWT-ACL-successor.source-review-inputs.v1",
+  "status": "SOURCE_ONLY_UNFORMATTED_UNCOMPILED",
+  "base_commit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+  "base_tree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+  "production_files": 2,
+  "test_files": 1,
+  "files": [
+    {
+      "path": "crates/heptabao-server/src/auth_native_jwt.rs",
+      "before": {
+        "blob": "4856333932541f0da1b02cf1065b22532ee3fe96",
+        "bytes": 18771,
+        "sha256": "ca4325e8c853816855a332b85e1ae87fe24ccecdea375c3422cd25451fc49641"
+      },
+      "after": {
+        "blob": "7a318b86ebdd47872fde86fbcce732f885571868",
+        "bytes": 19107,
+        "sha256": "59eb89dbd69dde8cd8d70c8cd340a47e5e3855e6e19f127914986ec228a8a87f"
+      },
+      "diff": {
+        "blob": "edc88be5c5306859117f4f4f675d16774d0e374b",
+        "bytes": 2341,
+        "sha256": "51987cfca72e02519cf37f9d4c4f2aee70543b2a1be5755194de25632753b075"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/auth.rs",
+      "before": {
+        "blob": "c407b40741a5660b77e2342871888e2a61ac29da",
+        "bytes": 398266,
+        "sha256": "9f366e631019e55aca61717a324bf13c1995797ed088b5b9d8b80c4a11914f7f"
+      },
+      "after": {
+        "blob": "c6a1517252cdef86ecd701a47cb1f443f4a09da3",
+        "bytes": 398708,
+        "sha256": "d1ba2a8a25a66682e4b01c1613898c172638bef2cfd0f70998ddd2bc05a7b86b"
+      },
+      "diff": {
+        "blob": "751075b806e48e9aadb18070cb92abc6f7c38faa",
+        "bytes": 39280,
+        "sha256": "f9daae87024d84c70cc4a0005e4c9eac7606867d6cf11135db3f3589ba8298a2"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_jwt_tests.rs",
+      "before": {
+        "blob": "e2f9097b9715b535ba1c4ef49d95fc46f0482a63",
+        "bytes": 37377,
+        "sha256": "d16659cdb309644e8cf2ee2dcc6384671f034f49325152573f9d384076ab6feb"
+      },
+      "after": {
+        "blob": "452fd4d6d12d0fe050c38032b99e39c459292fbb",
+        "bytes": 42561,
+        "sha256": "89ee932bf1e5933620ef53f6e2d3537f6c3e8643ad3942bf78017107848277ff"
+      },
+      "diff": {
+        "blob": "42659749446b2facf3c077f78fa180bad8321f6e",
+        "bytes": 27202,
+        "sha256": "867f8bc03d7ba394ce8a2fd9fb9b07c73ea39d5269c46e59c5b840745ecbae3d"
+      }
+    }
+  ],
+  "official_source_packet": "15a9b763cc1163226b392d7b9a93d5a2ff3e5384",
+  "official_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+  "source_changes": [
+    "collection-read-before-unsupported",
+    "config-update-without-sudo",
+    "one-shared-source-role-write-capability",
+    "role-write-source-capability",
+    "role-delete-idempotent-no-state-allocation",
+    "native-config-role-original-capabilities"
+  ],
+  "security_preserved": [
+    "validate_assignment unchanged",
+    "mount registration/tune sudo unchanged",
+    "Token API revoke-orphan sudo unchanged",
+    "JWT verifier/lifetime/publication/audit/response owner unchanged",
+    "source capability captured once before candidate mutation",
+    "idempotent missing-role DELETE does not allocate state",
+    "request clocks and cleanup budgets unchanged"
+  ],
+  "test_mapping": {
+    "frozen_33b_test_unchanged_in_original_run": "native_jwt_role_operations_keep_the_existing_legacy_acl_contract",
+    "successor_replaces_one_test_with": [
+      "native_jwt_role_management_uses_source_create_update_and_delete_after_cold_reopen",
+      "native_jwt_collection_read_is_authorized_before_unsupported_and_list_stays_list",
+      "native_jwt_config_update_without_sudo_persists_and_rejects_read_only_actor"
+    ],
+    "old_module_tests": 15,
+    "new_module_tests": 17,
+    "remaining_old_tests_byte_identical": 14,
+    "HTTP23_matrix_unchanged": true,
+    "HTTP23_observed_cases": 0
+  },
+  "claims": {
+    "formatted": false,
+    "compiled": false,
+    "tests_executed": false,
+    "raw_HTTP_parity": false,
+    "published_product_commit": false,
+    "full_replacement": false,
+    "production_cutover": false,
+    "legacy_cleanup": false
+  },
+  "previous_original_run": {
+    "job": "rog/1a1b029a998-fc05-6eb2",
+    "terminal_exit_code": 1,
+    "cause": "not yet observed",
+    "not_rewritten": true,
+    "original149unique166instances_frozen": true
+  },
+  "next": "Independent source review,actual rustfmt3 and frozen successor. Recompile and run actual regressions plus unchanged23 raw HTTP oracle; never count SOURCE predictions as observations."
+}

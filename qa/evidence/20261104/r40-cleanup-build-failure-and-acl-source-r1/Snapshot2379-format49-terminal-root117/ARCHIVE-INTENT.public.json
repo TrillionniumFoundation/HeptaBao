@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r40-snapshot2379-formatter49-terminal-root",
+  "records": [
+    {
+      "name": "ROOT-terminal117.public.json",
+      "blob": "7fc040facb1ed17ba3aff8ef2449a0330e94d408",
+      "bytes": 38708,
+      "sha256": "f5c5bc51857a35ba1a6a3b575d23a1f343f76df688c52331e8173c72a6d84fa0"
+    },
+    {
+      "name": "ROOT-terminal-verifier.js",
+      "blob": "db786a4823db2a01e04a1965e4009aeab3eaea84",
+      "bytes": 7143,
+      "sha256": "06ef97308935b49dbf6f30305bf1e5801130631e2f96e111c8833b801ea15933"
+    }
+  ],
+  "expected_data_tree": "17d38d361c9424b1c958bc86439830fa69ad2e16",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

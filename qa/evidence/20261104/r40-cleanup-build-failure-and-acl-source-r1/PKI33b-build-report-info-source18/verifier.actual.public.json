@@ -1,0 +1,221 @@
+{
+  "schema": "heptabao.build149-failed-result-info.source-checks.r1",
+  "status": "PASS_SOURCE_ONLY",
+  "checks": 49,
+  "passed": true,
+  "details": [
+    {
+      "name": "strict_forward_whole",
+      "passed": true
+    },
+    {
+      "name": "strict_reverse_whole",
+      "passed": true
+    },
+    {
+      "name": "five_diff_hunks",
+      "passed": true
+    },
+    {
+      "name": "one_literal_or_fixed_block_attach existing original BUILD slot",
+      "passed": true
+    },
+    {
+      "name": "one_literal_or_fixed_block_preserve original exact BUILD request identity; start already consumed",
+      "passed": true
+    },
+    {
+      "name": "one_literal_or_fixed_block_fixed original failed result only",
+      "passed": true
+    },
+    {
+      "name": "one_literal_or_fixed_block_observed exact terminal result path",
+      "passed": true
+    },
+    {
+      "name": "one_literal_or_fixed_block_new explicit report size acceptance ceiling; current size unknown, original stdout SHA exact",
+      "passed": true
+    },
+    {
+      "name": "one_literal_or_fixed_block_one new exact file_info",
+      "passed": true
+    },
+    {
+      "name": "one_literal_or_fixed_block_actual original failed authority and whole streams pins",
+      "passed": true
+    },
+    {
+      "name": "one_literal_or_fixed_block_original job",
+      "passed": true
+    },
+    {
+      "name": "one_literal_or_fixed_block_separate root metadata-only scope",
+      "passed": true
+    },
+    {
+      "name": "one_literal_or_fixed_block_bind known failed original, not require false successful stage",
+      "passed": true
+    },
+    {
+      "name": "one_literal_or_fixed_block_original whole failed terminal contract, no success inference",
+      "passed": true
+    },
+    {
+      "name": "one_literal_or_fixed_block_original BUILD observer prefix",
+      "passed": true
+    },
+    {
+      "name": "one_literal_or_fixed_block_metadata exact whole SHA from original terminal",
+      "passed": true
+    },
+    {
+      "name": "one_literal_or_fixed_block_explicit BUILD info authorization action, no reinitialization",
+      "passed": true
+    },
+    {
+      "name": "complete_replacement_inventory",
+      "passed": true
+    },
+    {
+      "name": "only_file_info",
+      "passed": true
+    },
+    {
+      "name": "exact_host_path_keys",
+      "passed": true
+    },
+    {
+      "name": "exact_key",
+      "passed": true
+    },
+    {
+      "name": "exact_request_pin",
+      "passed": true
+    },
+    {
+      "name": "original_build_slot",
+      "passed": true
+    },
+    {
+      "name": "actual_failed_authority",
+      "passed": true
+    },
+    {
+      "name": "two_actual_rows",
+      "passed": true
+    },
+    {
+      "name": "actual_original_summary_binding",
+      "passed": true
+    },
+    {
+      "name": "867_bytes_original_stdout",
+      "passed": true
+    },
+    {
+      "name": "whole_function_gfNeed",
+      "passed": true
+    },
+    {
+      "name": "whole_function_gfMetaEquals",
+      "passed": true
+    },
+    {
+      "name": "whole_function_gfState",
+      "passed": true
+    },
+    {
+      "name": "whole_function_gfSave",
+      "passed": true
+    },
+    {
+      "name": "whole_function_gfIntegerText",
+      "passed": true
+    },
+    {
+      "name": "whole_function_gfInitializeOnlyAfterRootGO",
+      "passed": true
+    },
+    {
+      "name": "whole_function_gfPrepareOne",
+      "passed": true
+    },
+    {
+      "name": "whole_function_gfInvokePreparedOnce",
+      "passed": true
+    },
+    {
+      "name": "whole_function_gfAcceptArchivedSDK",
+      "passed": true
+    },
+    {
+      "name": "whole_function_gfReconcileSameGitArchiveReadOnly",
+      "passed": true
+    },
+    {
+      "name": "archive_sdk_before_interpretation_unchanged",
+      "passed": true
+    },
+    {
+      "name": "8k_pages_and_1MiB_payload_unchanged",
+      "passed": true
+    },
+    {
+      "name": "16k_stream_cap_unchanged",
+      "passed": true
+    },
+    {
+      "name": "single_info_once_marker",
+      "passed": true
+    },
+    {
+      "name": "stronger_exact_known_SHA_guard",
+      "passed": true
+    },
+    {
+      "name": "new_size_limit_explicit_not_observed",
+      "passed": true
+    },
+    {
+      "name": "full9_linux_mode_uid_gid_singlelink_guard_preserved",
+      "passed": true
+    },
+    {
+      "name": "new_scope_explicit",
+      "passed": true
+    },
+    {
+      "name": "no_binary_read_admission",
+      "passed": true
+    },
+    {
+      "name": "original_build_not_reinitialized",
+      "passed": true
+    },
+    {
+      "name": "three_original_observers_closed",
+      "passed": true
+    },
+    {
+      "name": "original_report_permissions_source",
+      "passed": true
+    }
+  ],
+  "unchangedFunctions": [
+    "gfNeed",
+    "gfMetaEquals",
+    "gfState",
+    "gfSave",
+    "gfIntegerText",
+    "gfInitializeOnlyAfterRootGO",
+    "gfPrepareOne",
+    "gfInvokePreparedOnce",
+    "gfAcceptArchivedSDK",
+    "gfReconcileSameGitArchiveReadOnly"
+  ],
+  "Native": 0,
+  "Cargo": 0,
+  "originalResultSizeUnobserved": true,
+  "resultBodyAuthorized": false,
+  "metadataAuthorized": false
+}

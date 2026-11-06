@@ -1,0 +1,149 @@
+{
+  "schema": "heptabao.snapshot-2379-stage-report-body-source-checks.v1",
+  "pass": true,
+  "count": 35,
+  "checks": [
+    {
+      "name": "10-logical-bindings",
+      "pass": true
+    },
+    {
+      "name": "11-exact-occurrences",
+      "pass": true
+    },
+    {
+      "name": "binding-0-count",
+      "pass": true
+    },
+    {
+      "name": "binding-1-count",
+      "pass": true
+    },
+    {
+      "name": "binding-2-count",
+      "pass": true
+    },
+    {
+      "name": "binding-3-count",
+      "pass": true
+    },
+    {
+      "name": "binding-4-count",
+      "pass": true
+    },
+    {
+      "name": "binding-5-count",
+      "pass": true
+    },
+    {
+      "name": "binding-6-count",
+      "pass": true
+    },
+    {
+      "name": "binding-7-count",
+      "pass": true
+    },
+    {
+      "name": "binding-8-count",
+      "pass": true
+    },
+    {
+      "name": "binding-9-count",
+      "pass": true
+    },
+    {
+      "name": "literal-only-whole",
+      "pass": true
+    },
+    {
+      "name": "old-body-forward",
+      "pass": true
+    },
+    {
+      "name": "old-body-reverse",
+      "pass": true
+    },
+    {
+      "name": "info-forward",
+      "pass": true
+    },
+    {
+      "name": "info-reverse",
+      "pass": true
+    },
+    {
+      "name": "3-plus-6-hunks",
+      "pass": true
+    },
+    {
+      "name": "request-whole",
+      "pass": true
+    },
+    {
+      "name": "request-binary-read",
+      "pass": true
+    },
+    {
+      "name": "fixed-host-path",
+      "pass": true
+    },
+    {
+      "name": "fixed-key",
+      "pass": true
+    },
+    {
+      "name": "one-actual-range",
+      "pass": true
+    },
+    {
+      "name": "exact-version",
+      "pass": true
+    },
+    {
+      "name": "actual-info-whole",
+      "pass": true
+    },
+    {
+      "name": "actual-info-binding",
+      "pass": true
+    },
+    {
+      "name": "actual-safe-metadata",
+      "pass": true
+    },
+    {
+      "name": "lossless-full9-source",
+      "pass": true
+    },
+    {
+      "name": "actual-closed-info",
+      "pass": true
+    },
+    {
+      "name": "separate-root-scope",
+      "pass": true
+    },
+    {
+      "name": "closed-existing-context",
+      "pass": true
+    },
+    {
+      "name": "once-before-dispatch-marker",
+      "pass": true
+    },
+    {
+      "name": "original-8192-pages",
+      "pass": true
+    },
+    {
+      "name": "original-1MiB-payload",
+      "pass": true
+    },
+    {
+      "name": "no-new-scope-execution",
+      "pass": true
+    }
+  ],
+  "newNativeCalls": 0,
+  "candidateFunctionCalls": 0
+}

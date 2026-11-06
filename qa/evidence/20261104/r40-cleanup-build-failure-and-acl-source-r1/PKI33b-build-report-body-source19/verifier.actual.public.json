@@ -1,0 +1,219 @@
+{
+  "schema": "heptabao.failed-build-report-one-body.source-checks.r1",
+  "status": "PASS_SOURCE_ONLY",
+  "checks": 52,
+  "details": [
+    {
+      "name": "eight_strict_hunks_forward_reverse",
+      "passed": true
+    },
+    {
+      "name": "exact_source_replacement_attach existing original BUILD slot",
+      "passed": true
+    },
+    {
+      "name": "exact_source_replacement_preserve original exact BUILD request identity; start already consumed",
+      "passed": true
+    },
+    {
+      "name": "exact_source_replacement_fixed original failed result only",
+      "passed": true
+    },
+    {
+      "name": "exact_source_replacement_observed exact terminal result path",
+      "passed": true
+    },
+    {
+      "name": "exact_source_replacement_new explicit report size acceptance ceiling; current size unknown, original stdout SHA exact",
+      "passed": true
+    },
+    {
+      "name": "exact_source_replacement_one new exact file_info",
+      "passed": true
+    },
+    {
+      "name": "exact_source_replacement_actual original failed authority and whole streams pins",
+      "passed": true
+    },
+    {
+      "name": "exact_source_replacement_original job: exact info-authorizer context",
+      "passed": true
+    },
+    {
+      "name": "exact_source_replacement_separate root metadata-only scope",
+      "passed": true
+    },
+    {
+      "name": "exact_source_replacement_bind known failed original, not require false successful stage",
+      "passed": true
+    },
+    {
+      "name": "exact_source_replacement_original whole failed terminal contract, no success inference",
+      "passed": true
+    },
+    {
+      "name": "exact_source_replacement_original BUILD observer prefix",
+      "passed": true
+    },
+    {
+      "name": "exact_source_replacement_metadata exact whole SHA from original terminal",
+      "passed": true
+    },
+    {
+      "name": "exact_source_replacement_explicit BUILD info authorization action, no reinitialization",
+      "passed": true
+    },
+    {
+      "name": "exact_source_replacement_actual whole result bytes",
+      "passed": true
+    },
+    {
+      "name": "exact_source_replacement_exact single new body request",
+      "passed": true
+    },
+    {
+      "name": "exact_source_replacement_independent metadata full pins",
+      "passed": true
+    },
+    {
+      "name": "exact_source_replacement_existing failed original BUILD job",
+      "passed": true
+    },
+    {
+      "name": "exact_source_replacement_new explicit body-only root scope",
+      "passed": true
+    },
+    {
+      "name": "exact_source_replacement_only newly admitted binary observer 16KiB pages",
+      "passed": true
+    },
+    {
+      "name": "exact_source_replacement_retain actual whole full9 strings",
+      "passed": true
+    },
+    {
+      "name": "exact_source_replacement_old observer 8KiB; only new binary 16KiB",
+      "passed": true
+    },
+    {
+      "name": "exact_source_replacement_old page extent unchanged, new binary explicit",
+      "passed": true
+    },
+    {
+      "name": "exact_source_replacement_new build body authorizer action",
+      "passed": true
+    },
+    {
+      "name": "reference_algorithm_mechanically_rebuilt",
+      "passed": true
+    },
+    {
+      "name": "single_body_request_pin",
+      "passed": true
+    },
+    {
+      "name": "actual_metadata_binding",
+      "passed": true
+    },
+    {
+      "name": "one_exact_range",
+      "passed": true
+    },
+    {
+      "name": "original_failed_job_and_scope",
+      "passed": true
+    },
+    {
+      "name": "info_chain_closed",
+      "passed": true
+    },
+    {
+      "name": "native_whole_identity",
+      "passed": true
+    },
+    {
+      "name": "info_0600_linux_singlelink",
+      "passed": true
+    },
+    {
+      "name": "old_observers_8k_new_binary_16k",
+      "passed": true
+    },
+    {
+      "name": "new_16k_scope_separate_GO",
+      "passed": true
+    },
+    {
+      "name": "once_marker_pre_dispatch",
+      "passed": true
+    },
+    {
+      "name": "original_payload_whole_before_parse",
+      "passed": true
+    },
+    {
+      "name": "decoded_whole_SHA_before_save",
+      "passed": true
+    },
+    {
+      "name": "exact_body_accepted_in_fake_authorized_state",
+      "passed": true
+    },
+    {
+      "name": "no_go_denied",
+      "passed": true
+    },
+    {
+      "name": "repeat_body_denied",
+      "passed": true
+    },
+    {
+      "name": "changed_path_denied",
+      "passed": true
+    },
+    {
+      "name": "changed_offset_denied",
+      "passed": true
+    },
+    {
+      "name": "changed_limit_denied",
+      "passed": true
+    },
+    {
+      "name": "changed_version_denied",
+      "passed": true
+    },
+    {
+      "name": "changed_host_denied",
+      "passed": true
+    },
+    {
+      "name": "new_body_16k_page_accepted_in_fake_state",
+      "passed": true
+    },
+    {
+      "name": "wrong_body_8k_page_denied",
+      "passed": true
+    },
+    {
+      "name": "old_info_8k_page_retained",
+      "passed": true
+    },
+    {
+      "name": "old_info_16k_denied",
+      "passed": true
+    },
+    {
+      "name": "noncontiguous_page_denied",
+      "passed": true
+    },
+    {
+      "name": "actual_slot_not_mutated",
+      "passed": true
+    }
+  ],
+  "Native": 0,
+  "productExecution": 0,
+  "actualBodyRead": false,
+  "actualSlotMutated": false
+}

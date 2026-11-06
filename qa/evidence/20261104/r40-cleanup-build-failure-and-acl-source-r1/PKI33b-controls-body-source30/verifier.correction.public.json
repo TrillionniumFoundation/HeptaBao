@@ -1,0 +1,34 @@
+{
+  "errors": [
+    {
+      "name": "Error",
+      "message": "unchanged_function:gfAuthorizePublishedControlsInfoOnly"
+    },
+    {
+      "name": "Error",
+      "message": "function_end:gfNeed"
+    }
+  ],
+  "reason": "R1 lexical function selector included following top-level constants/comment. R2 end selector did not handle original one-line gfNeed/gfSave. R3 selects original one-line functions directly and otherwise stops at last column-zero function closing brace. Source journal, requests and actual metadata never changed.",
+  "beforeR1": {
+    "blob": "00346bcd7e72aeeef80be749cdbb4c1d348e5105",
+    "bytes": 5957,
+    "sha256": "a548657743221ae871b5184ad2bfd889209b7d3dd705a826d7e54223758eae5e"
+  },
+  "beforeR2": {
+    "blob": "c62290fc804b0df82a98d8aee011a78cc7da22b9",
+    "bytes": 6062,
+    "sha256": "f53c3f73c9834248abb814920151b19393034db2a229ceb11774f9a2583d9f1a"
+  },
+  "after": {
+    "blob": "83616717ba838f901dd6beaa74b8e39a18cebe76",
+    "bytes": 6129,
+    "sha256": "e2a08da5888c633941cf67850d616095c454ce5447ced0df1ceb593061d59d06"
+  },
+  "candidateUnchanged": {
+    "blob": "4b0790aa5c365b6e386c6e05a735e733c383b57d",
+    "bytes": 34042,
+    "sha256": "22cef5e128e023e4ea4c8fed1fc7582af1e6e500c7d01cc2e36debba985aa620"
+  },
+  "Native": 0
+}

@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.pure-source-generator-error.r1",
+  "error": "body_reference_info_binding:original job",
+  "reason": "The old source reference has the same original job literal in info and body authorizers; an intended single-match replacement correctly refused two occurrences.",
+  "beforeAnyGitMutation": true,
+  "Native": 0,
+  "existingSlotUnchanged": true,
+  "correction": "Use the info-authorizer context for that replacement; retain a separate exact replacement of the body-authorizer job."
+}

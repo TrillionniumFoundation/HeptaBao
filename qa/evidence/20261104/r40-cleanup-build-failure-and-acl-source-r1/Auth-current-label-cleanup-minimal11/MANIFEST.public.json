@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.public-flat-manifest.v1",
+  "files": [
+    {
+      "path": "actual.stderr.original.txt",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "actual.stdout.original.json",
+      "blob": "73b6e59adf15b3dd9255e445948362f71bc8cd4c",
+      "bytes": 19233,
+      "sha256": "969e3eef25a7b89610a460ede15467d860c4858cd41527208d6acf21970ac1df"
+    },
+    {
+      "path": "authority.original.json",
+      "blob": "c1e52455a57e8ee292d87d91d973bdf6503d40c5",
+      "bytes": 733,
+      "sha256": "3287a9afd907d0ed8fd01c78efdffd21e0bae63c06323b09c34bf7dbd555a26a"
+    },
+    {
+      "path": "history.field-introspection.error.json",
+      "blob": "223eeb396f0ce3fb2944bbf2747eb4ea95f5b328",
+      "bytes": 193,
+      "sha256": "9a33a86c1046d4b04b92d7bec029819909da0d8886fd9e635cc15a5500a541f9"
+    },
+    {
+      "path": "history.release-checker.error.json",
+      "blob": "85aa232ac777667c02fb08f2da9fe402ac99c0b1",
+      "bytes": 2144,
+      "sha256": "78fc205f2bebfcf6e178b152cc48afe000315a7f1c20342d3435f2a014722c2f"
+    },
+    {
+      "path": "observer-0.status.original.json",
+      "blob": "143925b1a6f8794d6116fe55ab89a69684f08c61",
+      "bytes": 805,
+      "sha256": "b92a9ed2aa26bad5c33c4f1c157321900354c94c694cfc7fd649030adfabf1fd"
+    },
+    {
+      "path": "observer-1.status.original.json",
+      "blob": "322ff34a7838b6d4a8d0db2418fe00b27f387bab",
+      "bytes": 803,
+      "sha256": "6f6753d170145933f9f20c42aeeb4deb6cfda0ef40456c31031cdadcda0f2db7"
+    },
+    {
+      "path": "observer-2.status.original.json",
+      "blob": "40e9338f4811e710ff51d2da30737929df74b668",
+      "bytes": 803,
+      "sha256": "a439624d03b477f09cb704efcb1747219ce25f6a68fc7af406ccbade2031f7bc"
+    },
+    {
+      "path": "RELEASE.public.json",
+      "blob": "097d72b5b5eb92c81892d92bd8c740695b1b2d21",
+      "bytes": 5727,
+      "sha256": "640905fa84f34684385500bfd058de196f5e6c7d9155d09a848c44630ccc49fb"
+    },
+    {
+      "path": "start.original.sdk.json",
+      "blob": "a97e497b022bc11f832516693c22d1d67df3af36",
+      "bytes": 1426,
+      "sha256": "238515dd44353e296fbd57c3882c4cf3b4b3bb28bae01f1f60d6d7d220b6584b"
+    }
+  ]
+}

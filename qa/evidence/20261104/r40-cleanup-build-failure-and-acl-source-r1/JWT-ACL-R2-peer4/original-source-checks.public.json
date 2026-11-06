@@ -1,0 +1,143 @@
+{
+  "schema": "heptabao.peer.root-jwt-acl-source.narrow.v1",
+  "mechanicalChecks": [
+    {
+      "name": "source0_strict_whole",
+      "passed": true
+    },
+    {
+      "name": "source1_strict_whole",
+      "passed": true
+    },
+    {
+      "name": "source2_strict_whole",
+      "passed": true
+    },
+    {
+      "name": "collection-read-before-unsupported_unique",
+      "passed": true
+    },
+    {
+      "name": "config-update-without-sudo_unique",
+      "passed": true
+    },
+    {
+      "name": "one-shared-source-role-write-capability_unique",
+      "passed": true
+    },
+    {
+      "name": "role-write-source-capability_unique",
+      "passed": true
+    },
+    {
+      "name": "role-delete-idempotent-no-state-allocation_unique",
+      "passed": true
+    },
+    {
+      "name": "native-config-role-original-capabilities_unique",
+      "passed": true
+    },
+    {
+      "name": "auth_all_six_declared_edits_exact",
+      "passed": true
+    },
+    {
+      "name": "owner_declared_edit_exact",
+      "passed": true
+    },
+    {
+      "name": "exact_parent_native_auth_member",
+      "passed": true
+    },
+    {
+      "name": "base_member_crates/heptabao-server/src/auth_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "base_member_crates/heptabao-server/src/auth.rs",
+      "passed": true
+    },
+    {
+      "name": "base_member_crates/heptabao-server/src/service_native_jwt_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "capture_from_source_before_dispatch",
+      "passed": true
+    },
+    {
+      "name": "delivery_retains_jwt_owner",
+      "passed": true
+    },
+    {
+      "name": "delivery_calls_captured_authorize_reply",
+      "passed": true
+    },
+    {
+      "name": "owner_checks_captured_capability",
+      "passed": true
+    },
+    {
+      "name": "create_update_shared_immutable_helper",
+      "passed": true
+    },
+    {
+      "name": "dispatch_and_capture_share_helper",
+      "passed": true
+    },
+    {
+      "name": "role_delete_no_state_allocation",
+      "passed": true
+    },
+    {
+      "name": "delete204_mutation_exact_removed",
+      "passed": true
+    },
+    {
+      "name": "generic_policy_delegation_unchanged",
+      "passed": true
+    },
+    {
+      "name": "test_credential_has_no_default",
+      "passed": true
+    },
+    {
+      "name": "test_credential_policies_exact_name",
+      "passed": true
+    },
+    {
+      "name": "role_fixture_requests_empty_policy_set",
+      "passed": true
+    },
+    {
+      "name": "role_parser_always_adds_default",
+      "passed": true
+    },
+    {
+      "name": "first_create_asserts204_after_false_subset",
+      "passed": true
+    },
+    {
+      "name": "test_realFileV6",
+      "passed": true
+    },
+    {
+      "name": "test_cold_reopen_real_service",
+      "passed": true
+    },
+    {
+      "name": "test_source_not_reclassified_runtime",
+      "passed": true
+    }
+  ],
+  "status": "SOURCE_BLOCKER_IN_NEW_ROLE_REGRESSION",
+  "candidateSourcePacket": "74715d5f647960cfab278652079a773e88ddb0ac",
+  "reviewedPacket": "74715d5f647960cfab278652079a773e88ddb0ac",
+  "sourceChecksPassed": 32,
+  "blocker": "New create-only actor lacks default policy, but role parser adds default before preserved validate_assignment; expected204 is source-inconsistent.",
+  "productionConclusion": "No new production SOURCE blocker found within reviewed capability capture/dispatch/delivery boundaries.",
+  "nativeCalls": 0,
+  "rustCompilation": false,
+  "testsRun": false,
+  "parentTree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6"
+}

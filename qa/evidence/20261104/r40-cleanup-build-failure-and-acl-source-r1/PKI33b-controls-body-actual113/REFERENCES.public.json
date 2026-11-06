@@ -1,0 +1,16 @@
+{
+  "metadataActual76": "fc9c6ef4a5f3fdfce399c9ae2742576fbde83738",
+  "metadataRoot59": "9b2f2950907a67d0bfd9dba6a138c009374a6255",
+  "publisherActual52": "ab605d5e65f3be9766dad58674c55a3ba5ac636b",
+  "publisherRoot39": "dfd419873cbf01d054033a6c894ec64fbedb3605",
+  "bodySource30": "120bab2513e46370c713300df643fc077d476675",
+  "bodyRootSourceReview": "4f34e85d39e38fa07b3c44b6acbdde53887fbe2c",
+  "bodyGO": "b443f40b7c92a47f16ec1585efb718d53f4daa70",
+  "rawCalls": 18,
+  "rawObservers": 4,
+  "rawImmutablePages": 10,
+  "decodedBodyBytes": 90605,
+  "processStarts": 0,
+  "allBodyObservationsOnce": true,
+  "CargoStarted": false
+}

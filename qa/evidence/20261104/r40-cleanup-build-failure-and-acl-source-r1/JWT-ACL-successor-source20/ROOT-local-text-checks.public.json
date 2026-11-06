@@ -1,0 +1,79 @@
+{
+  "schema": "heptabao.JWT-ACL-successor.root-local-source-checks.v1",
+  "status": "PASS_TEXT_INTEGRITY_ONLY_UNFORMATTED_UNCOMPILED",
+  "checks": [
+    {
+      "name": "exact_three_frozen33b_originals",
+      "passed": true
+    },
+    {
+      "name": "exact_strict_forward_reverse_0",
+      "passed": true
+    },
+    {
+      "name": "exact_strict_forward_reverse_1",
+      "passed": true
+    },
+    {
+      "name": "exact_strict_forward_reverse_2",
+      "passed": true
+    },
+    {
+      "name": "unique_global_edit_0",
+      "passed": true
+    },
+    {
+      "name": "unique_global_edit_1",
+      "passed": true
+    },
+    {
+      "name": "unique_global_edit_2",
+      "passed": true
+    },
+    {
+      "name": "unique_role_scope_edit_3",
+      "passed": true
+    },
+    {
+      "name": "unique_role_scope_edit_4",
+      "passed": true
+    },
+    {
+      "name": "only_exact_six_production_edits",
+      "passed": true
+    },
+    {
+      "name": "only_named_test_replacement_and_truthful_comment",
+      "passed": true
+    },
+    {
+      "name": "create_owner_captured_from_original_source",
+      "passed": true
+    },
+    {
+      "name": "shared_role_write_selector_and_no_new_state_on_delete",
+      "passed": true
+    },
+    {
+      "name": "policy_delegation_function_whole_unchanged",
+      "passed": true
+    },
+    {
+      "name": "mount_and_orphan_sudo_guards_retained",
+      "passed": true
+    },
+    {
+      "name": "existing_clock_and_fixture_unchanged",
+      "passed": true
+    }
+  ],
+  "check_count": 16,
+  "source_plan": {
+    "blob": "0e2c192cc2569b9c0da35fc6fd840efd8d1e4486",
+    "bytes": 4397,
+    "sha256": "1c4605c4a6b65e53bc6af73789ec56835698f8e7bedd9963d0fb86c2e1eb364f"
+  },
+  "execution_claimed": false,
+  "Native_calls": 0,
+  "product_commit_published": false
+}

@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r40-two-fixed-report-info-roots",
+  "records": [
+    {
+      "name": "ROOT-format-info21.public.json",
+      "blob": "6f38396fbb7fbd3874aefa964ec91d997d4347e4",
+      "bytes": 4447,
+      "sha256": "312c2aec3fef71c9711d3f765ac6d55981045778333452337e6de89dde0b7246"
+    },
+    {
+      "name": "ROOT-format-info-verifier.js",
+      "blob": "c0bbe412c51cf23ffe5f7ca42131b31bae09290d",
+      "bytes": 3979,
+      "sha256": "7f3df4a0b6c97efd78466506ea5c155a863b594c52f9268cb3ff4ca76891b8d4"
+    },
+    {
+      "name": "ROOT-build-info21.public.json",
+      "blob": "373a516582bb6a3e7268dacfc39330a7d389a089",
+      "bytes": 4631,
+      "sha256": "a7dbf7e59371f8b13649c678d17933ae4d5827f6ebf811fcc2683417a5573464"
+    },
+    {
+      "name": "ROOT-build-info-verifier.js",
+      "blob": "e755ad75a0ef66cbc2458cd5cb92a49da0230ae2",
+      "bytes": 4507,
+      "sha256": "5622cb1819f712c1d514d685cc7e8265d7b45ac05720520cca2ecfb9bffdfe0e"
+    }
+  ],
+  "expected_data_tree": "a3e20579bbf37a8caff26b990e6a36515e36c598",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

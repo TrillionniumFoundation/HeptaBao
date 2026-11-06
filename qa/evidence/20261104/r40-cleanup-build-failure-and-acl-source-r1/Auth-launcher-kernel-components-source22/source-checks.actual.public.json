@@ -1,0 +1,111 @@
+{
+  "schema": "heptabao.authbus-python-identity-component-source-checks.r1",
+  "passed": true,
+  "check_count": 25,
+  "checks": [
+    {
+      "name": "manager:forward",
+      "pass": true
+    },
+    {
+      "name": "manager:reverse",
+      "pass": true
+    },
+    {
+      "name": "manager:unique_kernel_constant",
+      "pass": true
+    },
+    {
+      "name": "manager:unique_launcher_constant",
+      "pass": true
+    },
+    {
+      "name": "manager:kernel_literal",
+      "pass": true
+    },
+    {
+      "name": "manager:launcher_literal",
+      "pass": true
+    },
+    {
+      "name": "manager:original_caps_graph_agents_literals",
+      "pass": true
+    },
+    {
+      "name": "manager:only_original_top_level_definitions",
+      "pass": true
+    },
+    {
+      "name": "server-wrapper:forward",
+      "pass": true
+    },
+    {
+      "name": "server-wrapper:reverse",
+      "pass": true
+    },
+    {
+      "name": "server-wrapper:unique_kernel_constant",
+      "pass": true
+    },
+    {
+      "name": "server-wrapper:unique_launcher_constant",
+      "pass": true
+    },
+    {
+      "name": "server-wrapper:kernel_literal",
+      "pass": true
+    },
+    {
+      "name": "server-wrapper:launcher_literal",
+      "pass": true
+    },
+    {
+      "name": "server-wrapper:original_caps_graph_agents_literals",
+      "pass": true
+    },
+    {
+      "name": "server-wrapper:only_original_top_level_definitions",
+      "pass": true
+    },
+    {
+      "name": "phase-wrapper:forward",
+      "pass": true
+    },
+    {
+      "name": "phase-wrapper:reverse",
+      "pass": true
+    },
+    {
+      "name": "phase-wrapper:unique_kernel_constant",
+      "pass": true
+    },
+    {
+      "name": "phase-wrapper:unique_launcher_constant",
+      "pass": true
+    },
+    {
+      "name": "phase-wrapper:kernel_literal",
+      "pass": true
+    },
+    {
+      "name": "phase-wrapper:launcher_literal",
+      "pass": true
+    },
+    {
+      "name": "phase-wrapper:original_caps_graph_agents_literals",
+      "pass": true
+    },
+    {
+      "name": "phase-wrapper:only_original_top_level_definitions",
+      "pass": true
+    },
+    {
+      "name": "outer_whole_unchanged",
+      "pass": true
+    }
+  ],
+  "nativeCalls": 0,
+  "pythonCandidateExecution": false,
+  "fullWorkerCandidate": false,
+  "stageOrExecutionGO": false
+}

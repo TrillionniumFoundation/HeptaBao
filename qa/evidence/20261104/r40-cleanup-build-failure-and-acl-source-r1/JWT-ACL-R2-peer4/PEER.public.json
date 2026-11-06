@@ -1,0 +1,110 @@
+{
+  "schema": "heptabao.independent-peer.jwt-acl-source-and-test-fixture.r2",
+  "status": "NO_ADDITIONAL_PRODUCTION_SOURCE_BLOCKER_FOUND; IDENTIFIED_TEST_FIXTURE_BLOCKER_CLOSED_BY_R2_SOURCE",
+  "reviewer": "/root/compatibility_audit",
+  "scope": {
+    "originalPacket": "74715d5f647960cfab278652079a773e88ddb0ac",
+    "testCorrectionPacket": "a4fdb1f46ffe349e34eacbbe247e0951c1fb11e0",
+    "baseCommit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+    "baseTree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+    "production": [
+      {
+        "blob": "7a318b86ebdd47872fde86fbcce732f885571868",
+        "bytes": 19107,
+        "sha256": "59eb89dbd69dde8cd8d70c8cd340a47e5e3855e6e19f127914986ec228a8a87f"
+      },
+      {
+        "blob": "c6a1517252cdef86ecd701a47cb1f443f4a09da3",
+        "bytes": 398708,
+        "sha256": "d1ba2a8a25a66682e4b01c1613898c172638bef2cfd0f70998ddd2bc05a7b86b"
+      }
+    ],
+    "latestTest": {
+      "blob": "e39bb3ea23ad1689dd5543c8d87443196c9c3ff4",
+      "bytes": 43039,
+      "sha256": "11c25288286bbc65f2dd16e3cd4a8ffffad751b389b25ea24b5674760c0c1128"
+    },
+    "originalTest": {
+      "blob": "452fd4d6d12d0fe050c38032b99e39c459292fbb",
+      "bytes": 42561,
+      "sha256": "89ee932bf1e5933620ef53f6e2d3537f6c3e8643ad3942bf78017107848277ff"
+    },
+    "wholeFetchedSourceAndReviewLeaves": 12,
+    "wholeParentMerkleTrees": 358,
+    "parentLeaves": 3916,
+    "rustExecution": false,
+    "nativeCalls": 0,
+    "officialOracleRerun": false
+  },
+  "findings": [
+    {
+      "id": "ACL-FIXTURE-DEFAULT-DELEGATION",
+      "initialStatus": "SOURCE_BLOCKER",
+      "originalTestLines": "acl_token463-495; first create expectation521",
+      "productionLines": "auth.rs2095-2125,6799-6812,8388-8397",
+      "chain": [
+        "acl_token originally issued no_default_policy:true and exactly[name].",
+        "Role body token_policies:[] still calls policies(...,true), which inserts default.",
+        "Unchanged validate_assignment requires requested policies subset of actor policies.",
+        "Therefore the intended create-only positive is rejected403 before publication/delivery; the test cannot establish its intended204 contract."
+      ],
+      "resolution": "R2 changes only the helper and its nine call sites: four role actors explicitly receive[default,name], five collection/config actors[name]. The no_default_policy flag remains true, and both issuance fields plus independent token lookup assert the complete exact policy set.",
+      "resolutionSource": {
+        "blob": "e39bb3ea23ad1689dd5543c8d87443196c9c3ff4",
+        "bytes": 43039,
+        "sha256": "11c25288286bbc65f2dd16e3cd4a8ffffad751b389b25ea24b5674760c0c1128"
+      },
+      "resolutionStatus": "SPECIFIC_SOURCE_BLOCKER_CLOSED; NOT_COMPILED_OR_RUN"
+    },
+    {
+      "id": "SOURCE-CAPTURE-DELIVERY",
+      "status": "NO_NEW_SOURCE_BLOCKER_FOUND",
+      "evidence": [
+        {
+          "blob": "449f263ff0a911842f9e69ad18a92de6a8d4638c",
+          "lines": "1297-1344,2134-2147,1072-1088,3480-3507"
+        },
+        {
+          "blob": "7a318b86ebdd47872fde86fbcce732f885571868",
+          "lines": "authorize_reply; capture_native_v6_jwt_owner"
+        }
+      ],
+      "reason": "Service captures the NativeJwtOwner from source.auth before mutable dispatch, stores that exact owner in NativeAuthDelivery, and later calls owner.authorize_reply with the current authenticated Auth/proof and original actor/clock. The owner stores a static create/update capability and does not recompute role existence after candidate publication; both capture and JWT handler use the same immutable helper. Existing principal/parameter, proof, audit, response digest and deadline paths remain unchanged."
+    },
+    {
+      "id": "DELETE-COLLECTION-CONFIG",
+      "status": "NO_NEW_SOURCE_BLOCKER_FOUND",
+      "reason": "DELETE authorizes delete before body validation, uses get_mut-only lookup and returns empty(removed); absent role therefore204 with mutatedfalse and no jwt_at_mut allocation. Collection GET checks read then returns405; LIST retains list. Config requires update in parser and captured owner, without sudo. Mount/tune and revoke-orphan sudo sites remain outside the six exact production replacements."
+    },
+    {
+      "id": "DEFAULT-ROLE-CAPABILITIES",
+      "status": "SOURCE_CONSTRAINT_CHECKED",
+      "source": {
+        "blob": "4438e23c17470c8d74a23a9e19c2dc8fcaaee2e4",
+        "bytes": 3010,
+        "sha256": "a65b605da13b98c856898e896b131cc641183d5140f0b3635d46cb6bb5efa2ce"
+      },
+      "reason": "The parent default policy has no auth/native-jwt role/config matching path. Explicit default membership supplies the role-delegation precondition without adding the target create/update/delete capability or root. This is the exact fixture default source; not a claim about arbitrary deployed custom default policies."
+    },
+    {
+      "id": "TEST-LIFECYCLE",
+      "status": "SOURCE_ONLY",
+      "reason": "The three regressions use configured FileV6 Service, native activation, synthetic non-root Service tokens, complete Auth/JWT/token/Identity projection comparisons and actual Service drop/reopen. Fourteen pre-existing test functions remain byte-identical. No assertion has been observed in a compiled execution."
+    }
+  ],
+  "checks": {
+    "originalProductionAndFixture": 32,
+    "testCorrection": 34,
+    "total": 66,
+    "strictProductionDiffs": 3,
+    "declaredProductionReplacements": 6,
+    "testCorrectionReplacements": 12,
+    "oldTestFunctionsByteIdentical": 14
+  },
+  "boundaries": [
+    "No formatter/Cargo/Rust test/HTTP or Native call in this peer.",
+    "Original33b149unique166instances job and its old test remain unchanged.",
+    "Original23 HTTP plan with no_default actors remains an independent delegation/precondition gap; this source peer does not count it as observed parity.",
+    "Does not establish new full compatibility, production readiness, or deployment authorization."
+  ]
+}

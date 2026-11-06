@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-native-jwt-pki-33b814c7-controls-observe-r1-published-body3",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/inert-stage.result.public.json",
+      "expected_version": "66306:31235927:1854:1793954281111835946:1793954281112810962",
+      "offset": 0,
+      "limit": 1854
+    }
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "schema": "heptabao.root-GO.PKI33b-four-controls-independent-info.v1",
+  "authorization": "GO",
+  "agent": "/root/ha_validation",
+  "scope": "build_controls_fixed_four_file_info_only",
+  "source_packet": "84eabfeac9cf4179c18ee3387fe38cdafbda7048",
+  "source": {
+    "blob": "80e33a52cc2b2d5a4c781de1521432c0eb56d6de",
+    "bytes": 26589,
+    "sha256": "e67beeec067be48b18a473cbf38d579b2acb34305716356b4b3ccc678e3eb95f"
+  },
+  "source_review": {
+    "blob": "ac644ca0b18d7bf30e6bb4ee51594dde764dd5be",
+    "bytes": 6560,
+    "sha256": "2c03ec0d40fb6fdece924742673d579519783eb87b8af057ff1d482db0bea03b"
+  },
+  "source_review_checks": 35,
+  "original_job": "1a1b001e788-fc05-6d66",
+  "original_slot": "jwt_pki_33b814c7_build_controls_inert_gitfirst_r1",
+  "original_publication_root_qualification": {
+    "blob": "dfd419873cbf01d054033a6c894ec64fbedb3605",
+    "bytes": 7519,
+    "sha256": "0aef246812c716930a14769f4e58de1a5eaf17e2106eab1c0ca3fb32ad72b34f"
+  },
+  "maximum_file_info_starts": 4,
+  "binary_read_authorized": false,
+  "exact_requests": [
+    {
+      "blob": "55d9c9eaa0088e989ec9f1493e4bfca35b2a1a1a",
+      "bytes": 284,
+      "sha256": "d3deedf47dd60afe119e822d3548dcd97f3fbbe61f9cca0f428d0bbac2e4eb9e"
+    },
+    {
+      "blob": "46a7b2b225b3b8460dc5f9124b2d3e97a37ba091",
+      "bytes": 291,
+      "sha256": "06ffb83fac7970aa4fd42093451c6abcfb077cc597d17eb19b2cefad2a235c9d"
+    },
+    {
+      "blob": "13f5a8c7882754691900ddb68f720e8551cc5f5f",
+      "bytes": 292,
+      "sha256": "652a352f9db5be57f4ac069b23fac29f3ba0ab3f633fed0a8b1421a653e2130c"
+    },
+    {
+      "blob": "dc830aea81d620fb0ba59d29cd562f6d90bada27",
+      "bytes": 295,
+      "sha256": "22170fdedd1b25f061dfdf8cb145c01bf0fb8f5b7c62d6d0d345787340e0a753"
+    }
+  ],
+  "expected_metadata": [
+    {
+      "index": 0,
+      "name": "native_jwt_build.py",
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/native_jwt_build.py",
+      "bytes": 30397,
+      "sha256": "023f6f3ad71b8909a46da632767044de44ec2ea6fcb11692a2160e2cec518add",
+      "publisherFull9": [
+        "66306",
+        "31235924",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "30397",
+        "1793954281105928260",
+        "1793954281106897967"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "launch_native_jwt_build.py",
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/launch_native_jwt_build.py",
+      "bytes": 38565,
+      "sha256": "5d639fbde4aa09663be694d9322bc4f598f4cd9594f9a3c09c61c21013b98056",
+      "publisherFull9": [
+        "66306",
+        "31235925",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "38565",
+        "1793954281107963513",
+        "1793954281108998030"
+      ]
+    },
+    {
+      "index": 2,
+      "name": "jwt-test-groups.public.json",
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/jwt-test-groups.public.json",
+      "bytes": 19789,
+      "sha256": "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869",
+      "publisherFull9": [
+        "66306",
+        "31235926",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "19789",
+        "1793954281109723489",
+        "1793954281110748800"
+      ]
+    },
+    {
+      "index": 3,
+      "name": "inert-stage.result.public.json",
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/inert-stage.result.public.json",
+      "bytes": 1854,
+      "sha256": "f1e1f3a2576fcb2ecd05cdb9b8f4fbebd6bb849eddb48536eb5c66ed5be109e2",
+      "publisherFull9": null
+    }
+  ],
+  "derived_receipt": {
+    "blob": "514dda8c5a69d4ed96123d788e4e1cf672e6a0ef",
+    "bytes": 1854,
+    "sha256": "f1e1f3a2576fcb2ecd05cdb9b8f4fbebd6bb849eddb48536eb5c66ed5be109e2",
+    "actual_file_observed": false,
+    "full9": null,
+    "version": null
+  },
+  "no_reinitialize": true,
+  "no_process_start": true,
+  "limits": {
+    "immutable_page_bytes": 8192,
+    "original_payload_bytes": 1048576,
+    "maximum_Runtime_lanes": 2,
+    "maximum_native_call_or_future_per_lane": 1
+  },
+  "sequence": [
+    "Whole exact GO; attach only original closed publisher slot through authorize_published_controls_info. Preserve original start/job/calls/observers; never initialize again.",
+    "For each of four fixed requests in index order, whole request/intent/armed externally and cross independent boundary before its one operation_start; started marker precedes dispatch.",
+    "Whole original SDK externally before parse/isError. Follow only returned original operation ID/status/8192 contiguous immutable pages; full payload SHA/EOF and completed inactive closure before the next metadata request.",
+    "Require fixed path/size/SHA,0600 Linux1000:1000 nlink1, lossless full9/version; first3 must equal actual publisher full9. Fourth1854/SHA is derived expectation only until actual file_info.",
+    "After4 closed observations release lane and prepare four exact expected_version body requests. This GO reads no bodies and starts no Cargo."
+  ],
+  "lane_activation": "C may use one metadata lane now. B original2379 process observers released. A requires separate exact readonly GO before one other lane; global at most2 lanes.",
+  "excluded": [
+    "binary_read,other files,directory scan,new process_start",
+    "runner/launcher/Cargo/tests/product/production",
+    "refresh,replay,rekey,unpause or UNKNOWN replacement"
+  ],
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

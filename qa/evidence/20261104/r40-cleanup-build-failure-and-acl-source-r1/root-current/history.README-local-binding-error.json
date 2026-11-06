@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.pure-local-README-construction-error.v1",
+  "error": "ReferenceError: tot is not defined",
+  "mutation_submitted": false,
+  "Native_calls": 0,
+  "root_index_saved": true,
+  "README_saved": false,
+  "correction": "Bind existing immutable r40 mount totals explicitly in the next pure construction."
+}

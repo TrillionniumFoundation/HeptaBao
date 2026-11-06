@@ -1,0 +1,62 @@
+[
+  {
+    "before": "r34_packet_Snapshot8c95-independent-stage-formatter-source44",
+    "after": "r34_packet_Snapshot-b694-stage-formatter46-source52",
+    "count": 2
+  },
+  {
+    "before": "rel.originalStageJobTerminalRootQualification===tq.blob",
+    "after": "eq(r[\"root-terminal-qualification.original.json\"],tq)",
+    "count": 1
+  },
+  {
+    "before": "1a1afa74868-fc05-6a7e",
+    "after": "1a1afe9f4f5-fc05-6cb6",
+    "count": 1
+  },
+  {
+    "before": "tracked_bytes:62460068",
+    "after": "tracked_bytes:62463643",
+    "count": 1
+  },
+  {
+    "before": "all14_actual_ancestry_and_history",
+    "after": "all15_actual_ancestry_and_history",
+    "count": 1
+  },
+  {
+    "before": "chain.length===14",
+    "after": "chain.length===15",
+    "count": 1
+  },
+  {
+    "before": "d.canonical_history_count===3766",
+    "after": "d.canonical_history_count===3767",
+    "count": 1
+  },
+  {
+    "before": "103944",
+    "after": "128439",
+    "count": 2
+  },
+  {
+    "before": "6fcb01e845ddf4bbb7c3d1aa7ee4eaa6eb5777030853f065697c8e7ba201857b",
+    "after": "d7934766fa031f6754464359ec8625dc81498aaacf19fa7e546fd849d55e2640",
+    "count": 1
+  },
+  {
+    "before": "all59_direct_children_reaped_success_and_empty_groups",
+    "after": "all60_direct_children_reaped_success_and_empty_groups",
+    "count": 1
+  },
+  {
+    "before": "d.cleanup.length===59",
+    "after": "d.cleanup.length===60",
+    "count": 1
+  },
+  {
+    "before": "String(58-i)",
+    "after": "String(59-i)",
+    "count": 1
+  }
+]

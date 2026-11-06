@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.source-checker-field-correction.v1",
+  "oldVerifier": {
+    "blob": "79c23aaed5cd8a4c02acf4e6233a6077438df7bb",
+    "bytes": 5535,
+    "sha256": "da279bdc895d08da5e30dd8e135c6b725444e86eb6adeb74c5c0b1d00804cbdc"
+  },
+  "originalError": {
+    "message": "Error: actual_regular_identity",
+    "sourcePin": {
+      "blob": "79c23aaed5cd8a4c02acf4e6233a6077438df7bb",
+      "bytes": 5535,
+      "sha256": "da279bdc895d08da5e30dd8e135c6b725444e86eb6adeb74c5c0b1d00804cbdc"
+    }
+  },
+  "cause": "The new source-only verifier addressed native metadata.nlink; the exact file_info schema exposes metadata.link_count. No candidate source or actual metadata changed.",
+  "literalBefore": "info.metadata.nlink===1",
+  "literalAfter": "info.metadata.link_count===1",
+  "nativeCalls": 0
+}

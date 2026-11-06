@@ -1,0 +1,1255 @@
+{
+  "schema": "heptabao.exact-completed-gitfirst-state.v1",
+  "slot": "owner_launchd_home_t5_existing_close_label_gitfirst_r1",
+  "state": {
+    "rootGoWhole": true,
+    "goRaw": "{\n  \"schema\": \"heptabao.root-GO.Mac-existing-fixed-label-once-cleanup.v1\",\n  \"authorization\": \"GO\",\n  \"agent\": \"/root/authbus_migration\",\n  \"scope\": \"one_current_public_QA_launchd_label_removal_only\",\n  \"purpose\": \"Resolve the currently observed inactive public QA registration before a fresh HOME/T5 AuthBus successor. This is not production or legacy cleanup.\",\n  \"source_packet\": \"32fc87d007466d4de82c0d33bc1bb04870405151\",\n  \"source\": {\n    \"blob\": \"1e6f601782847761425053f39217e6211af2a9a7\",\n    \"bytes\": 97725,\n    \"sha256\": \"4e5761d36f5e308f3d7a822276cebbd2b4b4e0b5d53c984858daaa70a08e9c50\"\n  },\n  \"exact_request\": {\n    \"blob\": \"1ca3b73f3cc0bd3cb11a2934dcbfff3d6ae06325\",\n    \"bytes\": 100721,\n    \"sha256\": \"d7ae0a4750681b826dd8a20be78c258f1cf9e04dc1f545aaf8334feeac85c75e\"\n  },\n  \"source_review\": {\n    \"blob\": \"3ea54b16ca6131bfc0220a19285816e4e6370d11\",\n    \"bytes\": 7890,\n    \"sha256\": \"fd16fa9ffd2ea53ec23910a0e6a856972613ec2dd83668ae73c76226a069a664\"\n  },\n  \"source_review_checks\": 27,\n  \"author_pure_checks_root_reproduced\": 61,\n  \"contract\": {\n    \"blob\": \"a66ab1f612a2a9e6f1777fab449b2a3518194085\",\n    \"bytes\": 9685,\n    \"sha256\": \"9b6d0892ba04241012225fdc8594bd0c3e516ca7f42fcaeed801bc6a1d6800b4\"\n  },\n  \"native_binding\": {\n    \"sha256\": \"edd42b867edf3d4c64e83aa6640910339f82d2204cf9d7f9d11d2ed60ef8e1c6\",\n    \"native_fingerprint\": \"17137370338705751372\",\n    \"typed_stdin\": true\n  },\n  \"helpers\": {\n    \"native\": {\n      \"blob\": \"82b9e745abfe1876c2f34ded54d520b4aa11888f\",\n      \"bytes\": 19060,\n      \"sha256\": \"cbfaa9060ad7c5066638097e6c10b900527f0d98d4a1bf9c31cda3ddf906e69c\"\n    },\n    \"archive\": {\n      \"blob\": \"b093fdbf655511f7db94be2d95555606141bbb42\",\n      \"bytes\": 5957,\n      \"sha256\": \"8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397\"\n    },\n    \"pure\": {\n      \"blob\": \"b6890e8b7217c546bec073dcb04988fc37652721\",\n      \"bytes\": 6685,\n      \"sha256\": \"44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432\"\n    },\n    \"do_not_use_legacy_processStartBinding\": true\n  },\n  \"slot\": \"owner_launchd_home_t5_existing_close_label_gitfirst_r1\",\n  \"start\": {\n    \"host\": \"mac\",\n    \"executable\": \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",\n    \"args\": [\n      \"-I\",\n      \"-S\",\n      \"-B\",\n      \"-\"\n    ],\n    \"cwd\": \"/Users/qianqi\",\n    \"timeout_seconds\": 60,\n    \"idempotency_key\": \"heptabao-mac-owned-home-t5-close-label-4e5761d3-20261106-r1\",\n    \"stdin_source\": {\n      \"blob\": \"1e6f601782847761425053f39217e6211af2a9a7\",\n      \"bytes\": 97725,\n      \"sha256\": \"4e5761d36f5e308f3d7a822276cebbd2b4b4e0b5d53c984858daaa70a08e9c50\"\n    },\n    \"maximum_START_count\": 1\n  },\n  \"fixed_scope\": {\n    \"host\": \"mac\",\n    \"label\": \"org.heptabao.qa.home-t5-context-20261106-r1\",\n    \"target\": \"gui/501/org.heptabao.qa.home-t5-context-20261106-r1\",\n    \"home\": \"/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1\",\n    \"mutation\": [\n      \"/bin/launchctl\",\n      \"bootout\",\n      \"gui/501/org.heptabao.qa.home-t5-context-20261106-r1\"\n    ],\n    \"maximumBootout\": 1,\n    \"bootstrap\": 0,\n    \"explicitNumericPidOrGroupSignals\": 0,\n    \"managedWaitOrReap\": 0,\n    \"mayRequestTerminationThroughBootout\": true,\n    \"noFinallyBootout\": true,\n    \"noRetryOrFallback\": true\n  },\n  \"pinned_inputs\": {\n    \"/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/probe.public.py\": {\n      \"identity\": [\n        \"16777233\",\n        \"592904416\",\n        \"501\",\n        \"20\",\n        \"33152\",\n        \"1\",\n        \"36522\",\n        \"1793950344732464747\",\n        \"1793950344732464747\"\n      ],\n      \"bytes\": 36522,\n      \"sha256\": \"b4f52562e8e861a30bfd942399ec2229cbb52ffddd06240950b99d746686cd00\"\n    },\n    \"/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/plan.public.json\": {\n      \"identity\": [\n        \"16777233\",\n        \"592904417\",\n        \"501\",\n        \"20\",\n        \"33152\",\n        \"1\",\n        \"1108\",\n        \"1793950344732730209\",\n        \"1793950344732730209\"\n      ],\n      \"bytes\": 1108,\n      \"sha256\": \"da3f2a88a5fd382eeb3eb4a7291a102c8806f03f08220c363ba8bf537a1b99e8\"\n    },\n    \"/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/probe.plist\": {\n      \"identity\": [\n        \"16777233\",\n        \"592904418\",\n        \"501\",\n        \"20\",\n        \"33152\",\n        \"1\",\n        \"1651\",\n        \"1793950344732934377\",\n        \"1793950344732934377\"\n      ],\n      \"bytes\": 1651,\n      \"sha256\": \"7aedefa6fdbde7a17abf5dedfef5bd85903e8bdb96257107b2f2cf738227fd9a\"\n    },\n    \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14\": {\n      \"identity\": [\n        \"16777233\",\n        \"587518380\",\n        \"501\",\n        \"80\",\n        \"33261\",\n        \"1\",\n        \"34640\",\n        \"1793798038915516382\",\n        \"1793798038915695047\"\n      ],\n      \"bytes\": 34640,\n      \"sha256\": \"cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13\"\n    }\n  },\n  \"current_observed\": {\n    \"priorObservation\": {\n      \"blob\": \"e4a50c4a58b55c5ff73ab4df0a591a4215e049a4\",\n      \"bytes\": 18957,\n      \"sha256\": \"a99d55efc4cd63e14f64e635ddf9671e73a19df6ddae66ce43050abe107d51c5\"\n    },\n    \"rootQualification\": {\n      \"blob\": \"56129f46fd94d072e301c4e558481efd817aed55\",\n      \"bytes\": 14522,\n      \"sha256\": \"bf626cd4ee05b5e5aa4c044ee93c4c52fecba8e7e469e84616918e169ce6c641\"\n    },\n    \"readyIdentity\": {\n      \"birthSec\": 1793950344,\n      \"birthUsec\": 737052,\n      \"executable\": \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python\",\n      \"pgid\": 58228,\n      \"pid\": 58228,\n      \"ppid\": 1,\n      \"uid\": 501\n    },\n    \"readyFull9\": [\n      \"16777233\",\n      \"592904421\",\n      \"501\",\n      \"20\",\n      \"33152\",\n      \"1\",\n      \"640\",\n      \"1793950344882619282\",\n      \"1793950344882619282\"\n    ],\n    \"markerFull9\": [\n      \"16777233\",\n      \"592904422\",\n      \"501\",\n      \"20\",\n      \"33152\",\n      \"1\",\n      \"0\",\n      \"1793950344883708127\",\n      \"1793950344883708127\"\n    ],\n    \"terminalFull9\": [\n      \"16777233\",\n      \"592904419\",\n      \"501\",\n      \"20\",\n      \"33152\",\n      \"1\",\n      \"4816\",\n      \"1793950369615463915\",\n      \"1793950369615463915\"\n    ],\n    \"stderrFull9\": [\n      \"16777233\",\n      \"592904420\",\n      \"501\",\n      \"20\",\n      \"33152\",\n      \"1\",\n      \"0\",\n      \"1793950344733248255\",\n      \"1793950344733248255\"\n    ],\n    \"terminalError\": {\n      \"type\": \"ProbeRefused\",\n      \"code\": \"child_absolute_deadline\",\n      \"errno\": null\n    }\n  },\n  \"preflight\": [\n    \"Read fixed Python, probe source, plan and plist by original no-follow held-fd/full9/SHA protocol; retain same directory and same launchd argv binding.\",\n    \"First current launchctl print must parse as the exact target/path/program/9 argv, no PID, state not running, runs 1 and last exit 1. Missing or any other state refuses before bootout.\",\n    \"Current ready must have exact observed PID/PPID/PGID/UID/birth/kernel-image and exact observed full9/marker full9, with original source/plan/generation/home bindings.\",\n    \"Current terminal and empty stderr must have exact observed full9. The original closed schema must show ProbeRefused/child_absolute_deadline at home_admission, no same-birth admission or T5 entry, and known application-fd closure.\",\n    \"Both original plan monotonic deadlines must be integer and have elapsed in the current monotonic domain; otherwise refuse.\",\n    \"Original self2 plus ready-target2 native sampling must qualify and return the typed lookup_esrch. This result is not asserted to prove absence, departure, or historical managed closure.\",\n    \"Recheck all fixed public leaves, marker and held/named directories immediately before the one label operation. Checks are sequential, not an atomic lock against concurrent replacement.\"\n  ],\n  \"mutation_and_postconditions\": [\n    \"Mark bootout_attempted before the potential effect. At most one original Commands.run of the fixed bootout argv, clipped to original remaining helper admission/deadline.\",\n    \"Require command exit 0 and empty stdout/stderr with original direct-child WNOWAIT/once-reap/stream/group closure. Any uncertainty stops; no replay or new target.\",\n    \"Original exact missing_service predicate must pass for the first post-bootout print: only code 3 or 113, empty stdout, exact fixed-label missing-service stderr with optional exact Bad request line.\",\n    \"Perform the unchanged second two-sample numeric ready-PID lookup under the original second 4-second clip; require typed lookup_esrch, without converting it to historical absence.\",\n    \"A second independent fixed print must pass the same exact missing_service predicate. No broad substring or unknown-value/hash success path.\",\n    \"Recheck the same public leaves/marker/held directories after the observations, close application FDs and direct helpers, restore handlers, check pending signals and the original final deadline.\",\n    \"currentLabelRemovalConfirmed means only this new ordered bootout-and-two-missing-registration observation with final fences and known resources. It is not a historical process-reap or descendant-closure claim.\"\n  ],\n  \"failure_semantics\": {\n    \"beforeBootout\": \"Known preflight refusal may yield ok=false/outcomeUnknown=false only if this observer's resources are fully accounted and closed. Existing historical unknowns remain explicit.\",\n    \"afterPossibleBootout\": \"Any failure before the complete postcondition/closure chain leaves currentRegistrationOutcomeUnknown=true and ok=false, including cancellation after the attempted marker but before actual dispatch.\",\n    \"inheritedCommands\": \"Original Commands/custody may still refuse; no retries or weaker predicates have been added.\",\n    \"printMutationRace\": \"The source does not claim a transactional service-identity lock between sequential print/fences and launchctl bootout.\"\n  },\n  \"budgets\": {\n    \"controllerSeconds\": 45,\n    \"helperAdmissionEndSeconds\": 35,\n    \"outerSeconds\": 60,\n    \"launchctlEachMaximumSeconds\": 10,\n    \"launchctlEachReturnedByteCap\": 65536,\n    \"maximumDirectCommandAttempts\": 4,\n    \"successfulPathCommands\": [\n      \"preflight print\",\n      \"one bootout\",\n      \"first missing print\",\n      \"second missing print\"\n    ],\n    \"totalHelperReturnedBytes\": 1048576,\n    \"nativeNumericQueryWindows\": 2,\n    \"nativeQuerySecondsEach\": 4,\n    \"nativeNumericCallsMaximum\": 6,\n    \"nativeNumericStructBytes\": 136,\n    \"nativeNumericReturnedBytesMaximum\": 816,\n    \"internalCommandsOrProcessReaderCallsNotRenamedAsThoseSix\": true,\n    \"synchronousCCallIndividuallyHardPreemptible\": false,\n    \"applicationFdAttemptAndRowCap\": 64,\n    \"metadataCallCap\": 4096,\n    \"applicationReadCallCap\": 256,\n    \"applicationReadByteCap\": 262144,\n    \"applicationWriteCallCap\": 0,\n    \"applicationWriteByteCap\": 0,\n    \"stdoutPublicByteCap\": 65536,\n    \"processReadMaximum\": 16384,\n    \"immutableResultPageMaximum\": 8192\n  },\n  \"public_inputs\": {\n    \"pinsUnchanged\": true,\n    \"readsetUnchanged\": true,\n    \"bodyReads\": [\n      \"fixed regular Python\",\n      \"fixed public probe source\",\n      \"fixed public plan\",\n      \"fixed plist\",\n      \"fixed public ready\",\n      \"fixed public terminal stdout\",\n      \"fixed empty stderr\"\n    ],\n    \"marker\": \"metadata only\",\n    \"t5Access\": 0,\n    \"privateCapsule\": 0,\n    \"credentials\": 0,\n    \"SDK\": 0,\n    \"providerOrModelChanges\": 0,\n    \"existingFileContentsOrModesChanged\": 0,\n    \"createdDirectoriesOrFiles\": 0\n  },\n  \"public_output\": {\n    \"allowlistedErrorCodesAdded\": 10,\n    \"allOriginalErrorCodesRetained\": true,\n    \"rawUnknownPrintOrStderrExported\": false,\n    \"unknownTextHashExported\": false,\n    \"originalR4ManagedScopeStillUnknown\": true,\n    \"historicalReadonlyR2Helper87650ClosureStillUnknown\": true,\n    \"registrationClosureClaimed\": false,\n    \"oldWorkerLabelTouched\": false,\n    \"historicalR4Rewritten\": false,\n    \"fieldsAdded\": [\n      \"bootstrapCalled\",\n      \"explicitManagedPidSignalOrReapCalled\",\n      \"bootoutMayRequestTermination\",\n      \"preflightQualified\",\n      \"currentRegistrationAbsentObservedTwice\",\n      \"finalFencesPassed\",\n      \"bootoutAttempted\",\n      \"bootoutReturnedKnown\",\n      \"currentLabelRemovalConfirmed\",\n      \"currentRegistrationOutcomeUnknown\"\n    ]\n  },\n  \"baseline_actual_packet\": \"eb98487932a9b9aecc6780b81ec015be55cd8d3b\",\n  \"baseline_root\": {\n    \"blob\": \"56129f46fd94d072e301c4e558481efd817aed55\",\n    \"bytes\": 14522,\n    \"sha256\": \"bf626cd4ee05b5e5aa4c044ee93c4c52fecba8e7e469e84616918e169ce6c641\"\n  },\n  \"limits\": {\n    \"maximum_Runtime_lanes\": 2,\n    \"maximum_native_call_or_future_per_lane\": 1,\n    \"process_read_bytes\": 16384,\n    \"immutable_page_bytes\": 8192,\n    \"original_payload_cap\": 1048576\n  },\n  \"lane_activation\": \"A may activate one lane alongside C original build149 job rog/1a1b029a998-fc05-6eb2. B explicitly released the original formatter process and both original streams:0 call/0 future/0 process,16 calls/3 observers/9 pages closed,minimum packet ed61b5b9dc03d04ff793255047bb199bfef4b093. B stays0 Native until A or C releases. Root0.\",\n  \"sequence\": [\n    \"Whole exact GO and original helpers; initialize the fresh cleanup slot once using the root-correct typed stdin digest and fingerprint.\",\n    \"Whole exact request,intent,armed externally; return across independent dispatch boundary before one exact original process_start.\",\n    \"Persist and whole-read original SDK before isError or native parsing. Follow only returned original job and operation IDs; contiguous immutable pages,full SHA,EOF,inactive closure; no replay or rekey on uncertainty.\",\n    \"All current fixed preflight identities,expired original plan deadlines,typed libproc lookup results and final fences remain mandatory. Sequential preflight is not an atomic registration identity lock.\",\n    \"At most one fixed launchctl bootout of this public QA label,which may request termination; no other label,bootstrap,numeric PID signal,managed wait/reap,retry,fallback or finally bootout.\",\n    \"Qualify current removal only after known original bootout exit0/empty streams,each of two exact missing-service print results,the original second numeric sample pair,all final fences and known FD/helper closure within the original clock.\",\n    \"Preserve all historical R4,helper87650,old AuthBus label/PID11754 and Git UNKNOWN records. Even a successful current removal does not rewrite those outcomes.\",\n    \"Close and export this original lifecycle before separate SOURCE/GO for the complete AuthBus trustworthy credential successor.\"\n  ],\n  \"excludes\": [\n    \"J3160\",\n    \"private capsule or credential reads\",\n    \"T5 business path access\",\n    \"provider/model changes\",\n    \"production clients\",\n    \"production traffic switch\",\n    \"legacy OpenBao/HeptaBao/binary/backup deletion\",\n    \"any second target or automatic retry\"\n  ],\n  \"qualified_result_scope\": \"currentLabelRemovalConfirmed means only this new ordered bootout-and-two-missing-registration observation with final fences and known resources. It is not a historical process-reap or descendant-closure claim.\",\n  \"source_review_limitations\": [\n    \"This authorizes no execution by itself.\",\n    \"Bootout may request termination within the one fixed current public QA label.\",\n    \"Sequential preflight/fences are not an atomic lock against another actor replacing a registration.\",\n    \"Current label removal can be established by ordered bootout/two exact missing replies/final resource closure; historical R4 and helper87650 UNKNOWN remain.\",\n    \"T5 business access, trusted credentials and AuthBus remain separate gates.\"\n  ],\n  \"Python_compile_claimed\": false,\n  \"old_R4_managed_scope_automatically_closed\": false,\n  \"old_R2_helper_automatically_closed\": false,\n  \"AuthBus_credentials_qualified\": false,\n  \"full_replacement\": false,\n  \"production_cutover\": false,\n  \"legacy_cleanup\": false,\n  \"root_Runtime_calls\": 0\n}\n",
+    "goPin": {
+      "blob": "69c5e55ea0558d6d86546603eaab39e643e26672",
+      "bytes": 15897,
+      "sha256": "815533ef60d8582fb89d8543faa8c267a6b298baf5afc8e7d66811e7de2ad560"
+    },
+    "digest": "edd42b867edf3d4c64e83aa6640910339f82d2204cf9d7f9d11d2ed60ef8e1c6",
+    "fingerprint": "17137370338705751372",
+    "job": "1a1b0305ba9-fc05-6ee6",
+    "startCalled": true,
+    "pending": null,
+    "activeObserver": null,
+    "nativeCallInFlight": false,
+    "paused": false,
+    "calls": {
+      "home-t5-close-label-r1-start": {
+        "kind": "process_start",
+        "requestRaw": "{\n  \"host\": \"mac\",\n  \"executable\": \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",\n  \"args\": [\n    \"-I\",\n    \"-S\",\n    \"-B\",\n    \"-\"\n  ],\n  \"cwd\": \"/Users/qianqi\",\n  \"timeout_seconds\": 60,\n  \"idempotency_key\": \"heptabao-mac-owned-home-t5-close-label-4e5761d3-20261106-r1\",\n  \"stdin\": \"#!/usr/bin/env python3\\n\\\"\\\"\\\"One preflight-qualified existing public label; at most one bootout and exact rereads.\\\"\\\"\\\"\\nfrom contextlib import contextmanager\\nimport base64, ctypes, errno, hashlib, json, os, plistlib, re, signal, stat, sys, time, types\\nfrom pathlib import Path\\n\\nPYTHON = '/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14'\\nKERNEL_PYTHON_IMAGE = \\\"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python\\\"\\nPYTHON_SHA = 'cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13'\\nPYTHON_ID = ('16777233','587518380','501','80','33261','1','34640','1793798038915516382','1793798038915695047')\\nHOME_PARENT = Path('/Users/qianqi')\\nHOME = HOME_PARENT / 'heptabao-launchd-home-t5-context-20261106-r1'\\nT5_PARENT = Path('/Volumes/T5/hepta-vnext-recovery-20261013')\\nWORK = T5_PARENT / 'launchd-home-t5-context-20261106-r1'\\nLABEL = 'org.heptabao.qa.home-t5-context-20261106-r1'\\nTARGET = 'gui/501/' + LABEL\\nSENTINEL = b'heptabao-public-home-t5-context-r1\\\\n'\\nCHILD = HOME / 'probe.public.py'\\nPLAN = HOME / 'plan.public.json'\\nPLIST = HOME / 'probe.plist'\\nSTDOUT = HOME / 'probe.stdout.public'\\nSTDERR = HOME / 'probe.stderr.public'\\nREADY = HOME / 'ready.public.json'\\nREADY_MARK = HOME / 'ready.complete'\\nADMISSION = HOME / 'admission.public.json'\\nADMISSION_MARK = HOME / 'admission.complete'\\nPUBLIC_SENTINEL = WORK / 'sentinel.public.txt'\\nIDENTITY_KEYS = ('pid','ppid','pgid','uid','birthSec','birthUsec','executable')\\nPYTHON_PATHS = tuple(Path(p) for p in [\\\"/opt\\\",\\\"/opt/homebrew\\\",\\\"/opt/homebrew/Cellar\\\",\\\"/opt/homebrew/Cellar/python@3.14\\\",\\\"/opt/homebrew/Cellar/python@3.14/3.14.3_1\\\",\\\"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks\\\",\\\"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework\\\",\\\"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions\\\",\\\"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14\\\",\\\"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin\\\"])\\nDIRECTORY_OBJECT_PINS = {\\\"/\\\":[\\\"16777233\\\",\\\"2\\\",\\\"0\\\",\\\"0\\\",\\\"16877\\\"],\\\"/opt\\\":[\\\"16777233\\\",\\\"18335\\\",\\\"0\\\",\\\"0\\\",\\\"16877\\\"],\\\"/Volumes\\\":[\\\"16777233\\\",\\\"18336\\\",\\\"0\\\",\\\"0\\\",\\\"16877\\\"],\\\"/opt/homebrew\\\":[\\\"16777233\\\",\\\"10827966\\\",\\\"501\\\",\\\"80\\\",\\\"16877\\\"],\\\"/Volumes/T5\\\":[\\\"16777244\\\",\\\"2\\\",\\\"0\\\",\\\"0\\\",\\\"16893\\\"],\\\"/opt/homebrew/Cellar\\\":[\\\"16777233\\\",\\\"10827980\\\",\\\"501\\\",\\\"80\\\",\\\"16893\\\"],\\\"/Volumes/T5/hepta-vnext-recovery-20261013\\\":[\\\"16777244\\\",\\\"64176096\\\",\\\"501\\\",\\\"20\\\",\\\"16832\\\"],\\\"/opt/homebrew/Cellar/python@3.14\\\":[\\\"16777233\\\",\\\"13738376\\\",\\\"501\\\",\\\"80\\\",\\\"16877\\\"],\\\"/opt/homebrew/Cellar/python@3.14/3.14.3_1\\\":[\\\"16777233\\\",\\\"13278341\\\",\\\"501\\\",\\\"80\\\",\\\"16877\\\"],\\\"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks\\\":[\\\"16777233\\\",\\\"13278344\\\",\\\"501\\\",\\\"80\\\",\\\"16877\\\"],\\\"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework\\\":[\\\"16777233\\\",\\\"13278345\\\",\\\"501\\\",\\\"80\\\",\\\"16877\\\"],\\\"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions\\\":[\\\"16777233\\\",\\\"13278349\\\",\\\"501\\\",\\\"80\\\",\\\"16877\\\"],\\\"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14\\\":[\\\"16777233\\\",\\\"13278350\\\",\\\"501\\\",\\\"80\\\",\\\"16877\\\"],\\\"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin\\\":[\\\"16777233\\\",\\\"13278368\\\",\\\"501\\\",\\\"80\\\",\\\"16877\\\"]}\\nANCHOR_FULL9 = {\\\"/\\\":[\\\"16777233\\\",\\\"2\\\",\\\"0\\\",\\\"0\\\",\\\"16877\\\",\\\"22\\\",\\\"704\\\",\\\"1786589515000000000\\\",\\\"1786589515000000000\\\"],\\\"/Volumes\\\":[\\\"16777233\\\",\\\"18336\\\",\\\"0\\\",\\\"0\\\",\\\"16877\\\",\\\"5\\\",\\\"160\\\",\\\"1793100597756515591\\\",\\\"1793100597756515591\\\"],\\\"/Volumes/T5\\\":[\\\"16777244\\\",\\\"2\\\",\\\"0\\\",\\\"0\\\",\\\"16893\\\",\\\"12\\\",\\\"384\\\",\\\"1793152973144260495\\\",\\\"1793152973144260495\\\"]}\\nPUBLIC_ERROR_TYPES = tuple([\\\"ProbeRefused\\\",\\\"VolumeRefused\\\",\\\"CommandRefused\\\",\\\"Refusal\\\",\\\"ObservationRefused\\\",\\\"PermissionError\\\",\\\"FileNotFoundError\\\",\\\"FileExistsError\\\",\\\"NotADirectoryError\\\",\\\"IsADirectoryError\\\",\\\"OSError\\\",\\\"TimeoutError\\\",\\\"KeyboardInterrupt\\\",\\\"UnicodeDecodeError\\\",\\\"JSONDecodeError\\\",\\\"ValueError\\\",\\\"TypeError\\\",\\\"KeyError\\\",\\\"OtherException\\\"])\\nPUBLIC_ERROR_CODES = frozenset([\\\"absence_exact_enoent\\\",\\\"absolute_process_path\\\",\\\"actual_launchctl_pid\\\",\\\"actual_reap_matches_retained_exit\\\",\\\"actual_t5_uuid_mount\\\",\\\"all_helper_returned_byte_cap\\\",\\\"already_reaped_no_group_signal\\\",\\\"balanced_launchctl_print\\\",\\\"bounded_actual_diskutil_bytes\\\",\\\"bounded_atomic_observer_ack\\\",\\\"bounded_capture_sink\\\",\\\"bounded_launchctl_arguments\\\",\\\"bounded_launchctl_print\\\",\\\"bounded_observer_request\\\",\\\"bounded_owned_child_list\\\",\\\"bounded_owned_read\\\",\\\"bounded_owned_write\\\",\\\"capture_sink_custody\\\",\\\"capture_sink_stable\\\",\\\"captured_anchor_fd_identity\\\",\\\"captured_anchor_named_identity\\\",\\\"captured_volume_device\\\",\\\"child_absolute_deadline\\\",\\\"child_actual_io_counts\\\",\\\"child_actual_sentinel_success\\\",\\\"child_actual_t5_working_directory\\\",\\\"child_admission_marker_stable\\\",\\\"child_admission_not_observed\\\",\\\"child_already_reaped_no_signal\\\",\\\"child_cancelled\\\",\\\"child_created_file_completed\\\",\\\"child_each_fd_closed\\\",\\\"child_each_fd_fixed_path\\\",\\\"child_exact_arguments\\\",\\\"child_exact_io_caps\\\",\\\"child_exact_public_plan\\\",\\\"child_exact_public_sentinel\\\",\\\"child_exact_same_birth_admission\\\",\\\"child_exit_identity_changed\\\",\\\"child_fd_row_count\\\",\\\"child_final_same_birth_no_children\\\",\\\"child_fixed_creations_only\\\",\\\"child_fixed_error_projection\\\",\\\"child_generation_shape\\\",\\\"child_initial_no_children\\\",\\\"child_io_no_directory_creation\\\",\\\"child_io_schema\\\",\\\"child_launchd_home_working_directory\\\",\\\"child_open_ledger_complete\\\",\\\"child_open_ledger_schema\\\",\\\"child_parent_absolute_deadline\\\",\\\"child_platform_uid\\\",\\\"child_public_plan_fields\\\",\\\"child_public_plan_scope\\\",\\\"child_reported_known_closure\\\",\\\"child_same_home_object\\\",\\\"child_same_python_whole\\\",\\\"child_source_payload\\\",\\\"child_t5_same_observed_device\\\",\\\"child_terminal_boolean_types\\\",\\\"child_terminal_closed_schema\\\",\\\"child_terminal_fixed_stage\\\",\\\"child_terminal_same_instance\\\",\\\"child_whole_source\\\",\\\"cleanup_exact_inactive_registration\\\",\\\"cleanup_first_actual_same_birth\\\",\\\"cleanup_first_exact_service_missing\\\",\\\"cleanup_once_after_known_preflight\\\",\\\"cleanup_original_child_and_controller_deadlines_elapsed\\\",\\\"cleanup_registration_still_present\\\",\\\"cleanup_same_failed_child_terminal\\\",\\\"cleanup_same_inactive_failed_registration\\\",\\\"cleanup_same_observed_ready\\\",\\\"cleanup_same_observed_terminal_files\\\",\\\"cleanup_same_typed_pid_lookup_after\\\",\\\"cleanup_same_typed_pid_lookup_before\\\",\\\"cleanup_second_actual_same_birth\\\",\\\"cleanup_second_exact_service_missing\\\",\\\"command_cancelled\\\",\\\"command_output_bound\\\",\\\"complete_launchctl_arguments\\\",\\\"complete_observer_ack\\\",\\\"complete_reuse_birth\\\",\\\"controller_actual_regular_python_whole\\\",\\\"controller_cancelled\\\",\\\"controller_exact_platform_python\\\",\\\"created_leaf_full9\\\",\\\"created_public_sentinel_exact\\\",\\\"diagnostic_helper_cap\\\",\\\"diagnostic_one_public_terminal\\\",\\\"diagnostic_original_child_error_set\\\",\\\"diagnostic_pinned_leaf_final_full9\\\",\\\"diagnostic_pinned_whole\\\",\\\"diagnostic_print_byte_cap\\\",\\\"diagnostic_print_line_cap\\\",\\\"diagnostic_ready_not_original_controller\\\",\\\"diagnostic_same_original_plist\\\",\\\"diagnostic_same_original_public_plan\\\",\\\"diagnostic_stable_pid_birth\\\",\\\"diagnostic_total_helper_bytes\\\",\\\"direct_child_reaping_policy_changed\\\",\\\"direct_helper_outcome_unknown\\\",\\\"directory_open_full9\\\",\\\"embedded_original_helper_whole\\\",\\\"empty_complete_marker\\\",\\\"entire_chain_birth_and_executable_recheck\\\",\\\"exact_darwin_process_abi\\\",\\\"exact_fresh_probe_registration\\\",\\\"exact_launchctl_target\\\",\\\"exact_pid_projection_stderr_empty\\\",\\\"exact_pid_required\\\",\\\"exact_public_anchor_paths\\\",\\\"exact_ready_keys\\\",\\\"expected_leaf_full9_before\\\",\\\"explicit_argv\\\",\\\"fd_ledger_cap\\\",\\\"file_close_failed\\\",\\\"finite_helper_call_and_bytes\\\",\\\"finite_print_observations\\\",\\\"fixed_command_output_bound\\\",\\\"fixed_create_only_write\\\",\\\"fixed_directory_full9\\\",\\\"fixed_directory_only\\\",\\\"fixed_known_probe_state\\\",\\\"fixed_leaf_mode\\\",\\\"fixed_marker_only\\\",\\\"fixed_native_pid_call_cap\\\",\\\"fixed_owned_t5_scope\\\",\\\"fixed_read_only_leaf\\\",\\\"fixed_regular_leaf_shape\\\",\\\"fresh_label_initially_absent\\\",\\\"fresh_registration_absent_after_bootout\\\",\\\"fresh_root_already_present\\\",\\\"fresh_root_exact_mode\\\",\\\"held_directory_full9_stable\\\",\\\"held_directory_not_closed\\\",\\\"held_directory_same_object\\\",\\\"held_directory_type\\\",\\\"held_t5_anchor_changed\\\",\\\"held_t5_device_changed\\\",\\\"helper_cleanup_reserve\\\",\\\"inactive_observation_count_exhausted\\\",\\\"known_actual_t5_uuid_command\\\",\\\"known_empty_launchd_mutation\\\",\\\"known_inactive_probe_exit\\\",\\\"known_pid_projection\\\",\\\"known_probe_print\\\",\\\"label_still_absent_before_second_pid_check\\\",\\\"launchd_exit_matches_public_terminal\\\",\\\"launchd_not_controller_child\\\",\\\"launcher_lifetime_changed\\\",\\\"launcher_real_parent_group_birth\\\",\\\"marker_absence_enoent\\\",\\\"metadata_cap\\\",\\\"native_pid_absolute_query_deadline\\\",\\\"native_pid_complete_numeric_sample\\\",\\\"native_pid_exact_numeric_offsets\\\",\\\"native_pid_self_numeric_crosscheck\\\",\\\"native_pid_two_sample_kind_changed\\\",\\\"native_real_parent_group_birth\\\",\\\"new_leaf_empty\\\",\\\"new_observed_directory_owner_mode\\\",\\\"new_owned_directory\\\",\\\"new_owned_file_inode\\\",\\\"new_owned_file_name\\\",\\\"new_owned_write_progress\\\",\\\"new_work_on_actual_t5\\\",\\\"no_cleanup_dispatch_after_helper_unknown\\\",\\\"no_existing_helper_module\\\",\\\"no_unexplained_label_disappearance\\\",\\\"no_unexplained_registration_disappearance\\\",\\\"numeric_observed_pid_projection\\\",\\\"observed_directory_object\\\",\\\"observed_identity_before_pid_check\\\",\\\"observed_ready_before_admission\\\",\\\"observer_child_end_close_unconfirmed\\\",\\\"observer_deadline_after_recheck\\\",\\\"observer_deadline_at_success_ack\\\",\\\"observer_deadline_before_success_ack\\\",\\\"observer_fd_signal_guard_required\\\",\\\"observer_owned_request_pids\\\",\\\"observer_request_nonce\\\",\\\"observer_request_shape\\\",\\\"observer_response_end_close_unconfirmed\\\",\\\"once_fresh_launchd_operation\\\",\\\"once_fresh_root\\\",\\\"one_complete_launchctl_record\\\",\\\"one_launchctl_arguments_block\\\",\\\"one_observed_pid_row\\\",\\\"one_public_managed_terminal_empty_stderr\\\",\\\"original_birth_still_present_or_reuse_unproven\\\",\\\"original_command_deadline_exhausted\\\",\\\"original_stop_deadline_expired\\\",\\\"owned_child_identity_changed_no_signal\\\",\\\"owned_child_identity_missing\\\",\\\"owned_child_scope_mismatch\\\",\\\"owned_component_shape\\\",\\\"owned_directory_uid\\\",\\\"owned_exit_not_retained\\\",\\\"owned_file_custody\\\",\\\"owned_file_stable_read\\\",\\\"owned_group_uid_changed_no_signal\\\",\\\"owned_live_api_failed_without_retained_exit\\\",\\\"owned_live_session_changed_no_signal\\\",\\\"owned_live_session_mismatch\\\",\\\"owned_native_chain_observation_deadline\\\",\\\"owned_node_birth_parent_group_executable\\\",\\\"owned_node_lifetime_changed\\\",\\\"owned_parent_changed\\\",\\\"owned_parent_close_failed\\\",\\\"owned_parent_custody\\\",\\\"owned_parent_fd_identity\\\",\\\"owned_zombie_identity_changed_no_signal\\\",\\\"parent_deadline_before_observation\\\",\\\"plain_fixed_launchctl_argument\\\",\\\"process_identity_changed_during_read\\\",\\\"process_identity_fixed_python\\\",\\\"process_identity_numbers\\\",\\\"process_identity_shape\\\",\\\"process_info_complete\\\",\\\"process_path_complete\\\",\\\"process_projection_ambiguous\\\",\\\"process_projection_bound\\\",\\\"process_projection_deadline_expired\\\",\\\"process_projection_malformed\\\",\\\"process_projection_unavailable\\\",\\\"public_anchor_identity_shape\\\",\\\"public_anchor_input_bound\\\",\\\"public_anchor_schema\\\",\\\"public_anchor_whole_sha\\\",\\\"read_call_cap\\\",\\\"read_complete_full9\\\",\\\"read_content_cap\\\",\\\"read_eof_byte_budget\\\",\\\"read_leaf_cap\\\",\\\"read_open_full9\\\",\\\"read_size_cap\\\",\\\"read_total_cap\\\",\\\"ready_actual_same_birth\\\",\\\"ready_exact_public_bindings\\\",\\\"ready_inside_child_deadline\\\",\\\"ready_marker_stable\\\",\\\"ready_observation_count_exhausted\\\",\\\"ready_same_launchd_pid\\\",\\\"registered_public_input_unchanged\\\",\\\"safe_command_label\\\",\\\"same_label_pid_observation_until_exit\\\",\\\"second_same_birth_before_admission\\\",\\\"shared_45_second_deadline\\\",\\\"single_exact_native_child\\\",\\\"single_observer_request\\\",\\\"source_ready_before_child_window\\\",\\\"two_fresh_roots_only\\\",\\\"typed_launchctl_integer\\\",\\\"unique_launchctl_field\\\",\\\"unknown_observer_fd_no_close\\\",\\\"unobserved_active_managed_probe_no_bootout\\\",\\\"uuid_before_owned_private_io\\\",\\\"volume_guard_not_closed\\\",\\\"wnowait_required_no_child_started\\\",\\\"write_call_cap\\\",\\\"write_progress\\\",\\\"write_total_cap\\\"])\\nCHILD_PUBLIC_ERROR_CODES = frozenset([\\\"absence_exact_enoent\\\",\\\"absolute_process_path\\\",\\\"actual_reap_matches_retained_exit\\\",\\\"actual_t5_uuid_mount\\\",\\\"all_helper_returned_byte_cap\\\",\\\"already_reaped_no_group_signal\\\",\\\"bounded_actual_diskutil_bytes\\\",\\\"bounded_atomic_observer_ack\\\",\\\"bounded_capture_sink\\\",\\\"bounded_observer_request\\\",\\\"bounded_owned_child_list\\\",\\\"bounded_owned_read\\\",\\\"bounded_owned_write\\\",\\\"capture_sink_custody\\\",\\\"capture_sink_stable\\\",\\\"captured_anchor_fd_identity\\\",\\\"captured_anchor_named_identity\\\",\\\"captured_volume_device\\\",\\\"child_absolute_deadline\\\",\\\"child_actual_io_counts\\\",\\\"child_actual_sentinel_success\\\",\\\"child_actual_t5_working_directory\\\",\\\"child_admission_marker_stable\\\",\\\"child_admission_not_observed\\\",\\\"child_already_reaped_no_signal\\\",\\\"child_cancelled\\\",\\\"child_created_file_completed\\\",\\\"child_each_fd_closed\\\",\\\"child_each_fd_fixed_path\\\",\\\"child_exact_arguments\\\",\\\"child_exact_io_caps\\\",\\\"child_exact_public_plan\\\",\\\"child_exact_public_sentinel\\\",\\\"child_exact_same_birth_admission\\\",\\\"child_exit_identity_changed\\\",\\\"child_fd_row_count\\\",\\\"child_final_same_birth_no_children\\\",\\\"child_fixed_creations_only\\\",\\\"child_fixed_error_projection\\\",\\\"child_generation_shape\\\",\\\"child_initial_no_children\\\",\\\"child_io_no_directory_creation\\\",\\\"child_io_schema\\\",\\\"child_launchd_home_working_directory\\\",\\\"child_open_ledger_complete\\\",\\\"child_open_ledger_schema\\\",\\\"child_parent_absolute_deadline\\\",\\\"child_platform_uid\\\",\\\"child_public_plan_fields\\\",\\\"child_public_plan_scope\\\",\\\"child_reported_known_closure\\\",\\\"child_same_home_object\\\",\\\"child_same_python_whole\\\",\\\"child_source_payload\\\",\\\"child_t5_same_observed_device\\\",\\\"child_terminal_boolean_types\\\",\\\"child_terminal_closed_schema\\\",\\\"child_terminal_fixed_stage\\\",\\\"child_terminal_same_instance\\\",\\\"child_whole_source\\\",\\\"cleanup_exact_inactive_registration\\\",\\\"cleanup_first_actual_same_birth\\\",\\\"cleanup_registration_still_present\\\",\\\"cleanup_second_actual_same_birth\\\",\\\"command_cancelled\\\",\\\"command_output_bound\\\",\\\"complete_observer_ack\\\",\\\"complete_reuse_birth\\\",\\\"controller_actual_regular_python_whole\\\",\\\"controller_cancelled\\\",\\\"controller_exact_platform_python\\\",\\\"created_leaf_full9\\\",\\\"created_public_sentinel_exact\\\",\\\"direct_child_reaping_policy_changed\\\",\\\"direct_helper_outcome_unknown\\\",\\\"directory_open_full9\\\",\\\"embedded_original_helper_whole\\\",\\\"empty_complete_marker\\\",\\\"entire_chain_birth_and_executable_recheck\\\",\\\"exact_darwin_process_abi\\\",\\\"exact_fresh_probe_registration\\\",\\\"exact_pid_projection_stderr_empty\\\",\\\"exact_pid_required\\\",\\\"exact_public_anchor_paths\\\",\\\"exact_ready_keys\\\",\\\"expected_leaf_full9_before\\\",\\\"explicit_argv\\\",\\\"fd_ledger_cap\\\",\\\"file_close_failed\\\",\\\"finite_helper_call_and_bytes\\\",\\\"finite_print_observations\\\",\\\"fixed_command_output_bound\\\",\\\"fixed_create_only_write\\\",\\\"fixed_directory_full9\\\",\\\"fixed_directory_only\\\",\\\"fixed_known_probe_state\\\",\\\"fixed_leaf_mode\\\",\\\"fixed_marker_only\\\",\\\"fixed_owned_t5_scope\\\",\\\"fixed_read_only_leaf\\\",\\\"fixed_regular_leaf_shape\\\",\\\"fresh_label_initially_absent\\\",\\\"fresh_registration_absent_after_bootout\\\",\\\"fresh_root_already_present\\\",\\\"fresh_root_exact_mode\\\",\\\"held_directory_full9_stable\\\",\\\"held_directory_not_closed\\\",\\\"held_directory_same_object\\\",\\\"held_directory_type\\\",\\\"held_t5_anchor_changed\\\",\\\"held_t5_device_changed\\\",\\\"helper_cleanup_reserve\\\",\\\"inactive_observation_count_exhausted\\\",\\\"known_actual_t5_uuid_command\\\",\\\"known_empty_launchd_mutation\\\",\\\"known_inactive_probe_exit\\\",\\\"known_pid_projection\\\",\\\"known_probe_print\\\",\\\"label_still_absent_before_second_pid_check\\\",\\\"launchd_exit_matches_public_terminal\\\",\\\"launchd_not_controller_child\\\",\\\"launcher_lifetime_changed\\\",\\\"launcher_real_parent_group_birth\\\",\\\"marker_absence_enoent\\\",\\\"metadata_cap\\\",\\\"native_real_parent_group_birth\\\",\\\"new_leaf_empty\\\",\\\"new_observed_directory_owner_mode\\\",\\\"new_owned_directory\\\",\\\"new_owned_file_inode\\\",\\\"new_owned_file_name\\\",\\\"new_owned_write_progress\\\",\\\"new_work_on_actual_t5\\\",\\\"no_cleanup_dispatch_after_helper_unknown\\\",\\\"no_existing_helper_module\\\",\\\"no_unexplained_label_disappearance\\\",\\\"no_unexplained_registration_disappearance\\\",\\\"numeric_observed_pid_projection\\\",\\\"observed_directory_object\\\",\\\"observed_identity_before_pid_check\\\",\\\"observed_ready_before_admission\\\",\\\"observer_child_end_close_unconfirmed\\\",\\\"observer_deadline_after_recheck\\\",\\\"observer_deadline_at_success_ack\\\",\\\"observer_deadline_before_success_ack\\\",\\\"observer_fd_signal_guard_required\\\",\\\"observer_owned_request_pids\\\",\\\"observer_request_nonce\\\",\\\"observer_request_shape\\\",\\\"observer_response_end_close_unconfirmed\\\",\\\"once_fresh_launchd_operation\\\",\\\"once_fresh_root\\\",\\\"one_observed_pid_row\\\",\\\"one_public_managed_terminal_empty_stderr\\\",\\\"original_birth_still_present_or_reuse_unproven\\\",\\\"original_command_deadline_exhausted\\\",\\\"original_stop_deadline_expired\\\",\\\"owned_child_identity_changed_no_signal\\\",\\\"owned_child_identity_missing\\\",\\\"owned_child_scope_mismatch\\\",\\\"owned_component_shape\\\",\\\"owned_directory_uid\\\",\\\"owned_exit_not_retained\\\",\\\"owned_file_custody\\\",\\\"owned_file_stable_read\\\",\\\"owned_group_uid_changed_no_signal\\\",\\\"owned_live_api_failed_without_retained_exit\\\",\\\"owned_live_session_changed_no_signal\\\",\\\"owned_live_session_mismatch\\\",\\\"owned_native_chain_observation_deadline\\\",\\\"owned_node_birth_parent_group_executable\\\",\\\"owned_node_lifetime_changed\\\",\\\"owned_parent_changed\\\",\\\"owned_parent_close_failed\\\",\\\"owned_parent_custody\\\",\\\"owned_parent_fd_identity\\\",\\\"owned_zombie_identity_changed_no_signal\\\",\\\"parent_deadline_before_observation\\\",\\\"process_identity_changed_during_read\\\",\\\"process_identity_fixed_python\\\",\\\"process_identity_numbers\\\",\\\"process_identity_shape\\\",\\\"process_info_complete\\\",\\\"process_path_complete\\\",\\\"process_projection_ambiguous\\\",\\\"process_projection_bound\\\",\\\"process_projection_deadline_expired\\\",\\\"process_projection_malformed\\\",\\\"process_projection_unavailable\\\",\\\"public_anchor_identity_shape\\\",\\\"public_anchor_input_bound\\\",\\\"public_anchor_schema\\\",\\\"public_anchor_whole_sha\\\",\\\"read_call_cap\\\",\\\"read_complete_full9\\\",\\\"read_content_cap\\\",\\\"read_eof_byte_budget\\\",\\\"read_leaf_cap\\\",\\\"read_open_full9\\\",\\\"read_size_cap\\\",\\\"read_total_cap\\\",\\\"ready_actual_same_birth\\\",\\\"ready_exact_public_bindings\\\",\\\"ready_inside_child_deadline\\\",\\\"ready_marker_stable\\\",\\\"ready_observation_count_exhausted\\\",\\\"ready_same_launchd_pid\\\",\\\"registered_public_input_unchanged\\\",\\\"safe_command_label\\\",\\\"same_label_pid_observation_until_exit\\\",\\\"second_same_birth_before_admission\\\",\\\"shared_45_second_deadline\\\",\\\"single_exact_native_child\\\",\\\"single_observer_request\\\",\\\"source_ready_before_child_window\\\",\\\"two_fresh_roots_only\\\",\\\"unknown_observer_fd_no_close\\\",\\\"unobserved_active_managed_probe_no_bootout\\\",\\\"uuid_before_owned_private_io\\\",\\\"volume_guard_not_closed\\\",\\\"wnowait_required_no_child_started\\\",\\\"write_call_cap\\\",\\\"write_progress\\\",\\\"write_total_cap\\\"])\\nINPUT_PINS = json.loads(r'''{\\\"/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/probe.public.py\\\":{\\\"identity\\\":[\\\"16777233\\\",\\\"592904416\\\",\\\"501\\\",\\\"20\\\",\\\"33152\\\",\\\"1\\\",\\\"36522\\\",\\\"1793950344732464747\\\",\\\"1793950344732464747\\\"],\\\"bytes\\\":36522,\\\"sha256\\\":\\\"b4f52562e8e861a30bfd942399ec2229cbb52ffddd06240950b99d746686cd00\\\"},\\\"/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/plan.public.json\\\":{\\\"identity\\\":[\\\"16777233\\\",\\\"592904417\\\",\\\"501\\\",\\\"20\\\",\\\"33152\\\",\\\"1\\\",\\\"1108\\\",\\\"1793950344732730209\\\",\\\"1793950344732730209\\\"],\\\"bytes\\\":1108,\\\"sha256\\\":\\\"da3f2a88a5fd382eeb3eb4a7291a102c8806f03f08220c363ba8bf537a1b99e8\\\"},\\\"/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/probe.plist\\\":{\\\"identity\\\":[\\\"16777233\\\",\\\"592904418\\\",\\\"501\\\",\\\"20\\\",\\\"33152\\\",\\\"1\\\",\\\"1651\\\",\\\"1793950344732934377\\\",\\\"1793950344732934377\\\"],\\\"bytes\\\":1651,\\\"sha256\\\":\\\"7aedefa6fdbde7a17abf5dedfef5bd85903e8bdb96257107b2f2cf738227fd9a\\\"},\\\"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14\\\":{\\\"identity\\\":[\\\"16777233\\\",\\\"587518380\\\",\\\"501\\\",\\\"80\\\",\\\"33261\\\",\\\"1\\\",\\\"34640\\\",\\\"1793798038915516382\\\",\\\"1793798038915695047\\\"],\\\"bytes\\\":34640,\\\"sha256\\\":\\\"cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13\\\"}}''')\\nEXPECTED_ARGV = json.loads(r'''[\\\"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14\\\",\\\"-I\\\",\\\"-S\\\",\\\"-B\\\",\\\"/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/probe.public.py\\\",\\\"--plan\\\",\\\"/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/plan.public.json\\\",\\\"--plan-sha256\\\",\\\"da3f2a88a5fd382eeb3eb4a7291a102c8806f03f08220c363ba8bf537a1b99e8\\\"]''')\\nMODULES = json.loads(r'''[{\\\"name\\\":\\\"mac_owned_unreaped_r1\\\",\\\"blob\\\":\\\"53cddd9243f9f890d9a1b9975b435280ff58ab77\\\",\\\"bytes\\\":10990,\\\"sha256\\\":\\\"a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d\\\",\\\"base64\\\":\\\"IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwoiIiJSZXRhaW5lZCBkaXJlY3QtY2hpbGQgY3VzdG9keSBmb3IgTWFjIHBoYXNlIHdvcmtlcnMuCgpEZXJpdmVkIGZyb20gY2Fub25pY2FsIG5hdGl2ZV9oYV9mb3JlZ3JvdW5kX3dhdGNoZG9nLnB5IDc0OTI1NDQ5LiBObyBjaGlsZCBpcwpzdGFydGVkIGhlcmUuIFdOT1dBSVQgb2JzZXJ2ZXMgZXhpdDsgaXQgbmV2ZXIgbWFrZXMgdGhlIG51bWVyaWMgUEdJRCByZXVzYWJsZQpiZWZvcmUgc2lnbmFsaW5nLiBDbGVhbnVwIGtlZXBzIHRoZSBwcmV2aW91cyB3cmFwcGVyJ3MgVEVSTTEgLyB3YWl0NSAvCmdyb3VwMyBsaW1pdHMgYW5kIFBTNCBtYXhpbXVtLiBObyBzdGFnZSBncmFudHMgYnVzaW5lc3MgbW9yZSB0aGFuIHBoYXNlMTIwLgoiIiIKaW1wb3J0IG9zLCBzaWduYWwsIHN1YnByb2Nlc3MsIHRpbWUKCk1JQj0xMDI0KjEwMjQKY2xhc3MgUmVmdXNhbChSdW50aW1lRXJyb3IpOiBwYXNzCmRlZiBuZWVkKHZhbHVlLGNvZGUpOgogICAgaWYgbm90IHZhbHVlOnJhaXNlIFJlZnVzYWwoY29kZSkKCmRlZiByZXF1aXJlX3dhaXRpZCgpOgogICAgbmVlZChhbGwoaGFzYXR0cihvcywgbmFtZSkgZm9yIG5hbWUgaW4gKCJ3YWl0aWQiLCAiUF9QSUQiLCAiV0VYSVRFRCIsICJXTk9IQU5HIiwgIldOT1dBSVQiLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAiQ0xEX0VYSVRFRCIsICJDTERfS0lMTEVEIiwgIkNMRF9EVU1QRUQiKSksCiAgICAgICAgICJ3bm93YWl0X3JlcXVpcmVkX25vX2NoaWxkX3N0YXJ0ZWQiKQogICAgbmVlZChzaWduYWwuZ2V0c2lnbmFsKHNpZ25hbC5TSUdDSExEKSA9PSBzaWduYWwuU0lHX0RGTCwKICAgICAgICAgImRpcmVjdF9jaGlsZF9yZWFwaW5nX3BvbGljeV9jaGFuZ2VkIikKCmRlZiBleGl0X29ic2VydmF0aW9uKGNoaWxkKToKICAgICIiIlRoaXMgaXMgYW4gb2JzZXJ2YXRpb24sIG5ldmVyIFBvcGVuLnBvbGwvd2FpdC9jb21tdW5pY2F0ZS4iIiIKICAgIG5lZWQoY2hpbGQucmV0dXJuY29kZSBpcyBOb25lLCAiY2hpbGRfYWxyZWFkeV9yZWFwZWRfbm9fc2lnbmFsIikKICAgIGV2ZW50ID0gb3Mud2FpdGlkKG9zLlBfUElELCBjaGlsZC5waWQsIG9zLldFWElURUQgfCBvcy5XTk9IQU5HIHwgb3MuV05PV0FJVCkKICAgIGlmIGV2ZW50IGlzIE5vbmU6CiAgICAgICAgcmV0dXJuIE5vbmUKICAgIG5lZWQoZXZlbnQuc2lfcGlkID09IGNoaWxkLnBpZCBhbmQgZXZlbnQuc2lfc2lnbm8gPT0gc2lnbmFsLlNJR0NITEQKICAgICAgICAgYW5kIGV2ZW50LnNpX2NvZGUgaW4gKG9zLkNMRF9FWElURUQsIG9zLkNMRF9LSUxMRUQsIG9zLkNMRF9EVU1QRUQpLAogICAgICAgICAiY2hpbGRfZXhpdF9pZGVudGl0eV9jaGFuZ2VkIikKICAgICMgRGFyd2luIHJlcG9ydHMgc2lfdWlkPTAgZXZlbiBmb3IgYW4gb2JzZXJ2ZWQgdWlkNTAxIGNoaWxkLiBBY3R1YWwgVUlEIGlzCiAgICAjIGJvdW5kIGluZGVwZW5kZW50bHkgYnkgcHM7IHNpX3VpZCBuZXZlciBncmFudHMgb3duZXJzaGlwIGhlcmUuCiAgICByZXR1cm4geyJwaWQiOiBldmVudC5zaV9waWQsICJzaWdubyI6IGV2ZW50LnNpX3NpZ25vLCAiY29kZSI6IGV2ZW50LnNpX2NvZGUsICJzdGF0dXMiOiBldmVudC5zaV9zdGF0dXN9CgpkZWYgc3RhYmxlKHJvdyk6CiAgICByZXR1cm4ge2tleTogcm93W2tleV0gZm9yIGtleSBpbiAoInBpZCIsICJwcGlkIiwgInBnaWQiLCAidWlkIiwgInN0YXJ0Iil9CgpkZWYgcHNfcm93cyhwaWQ9Tm9uZSwgKiwgc2Vjb25kcz00LjAsIHVudGlsPU5vbmUpOgogICAgaWYgdW50aWwgaXMgbm90IE5vbmU6CiAgICAgICAgcmVtYWluaW5nID0gdW50aWwgLSB0aW1lLm1vbm90b25pYygpCiAgICAgICAgbmVlZChyZW1haW5pbmcgPiAwLCAib3JpZ2luYWxfc3RvcF9kZWFkbGluZV9leHBpcmVkIikKICAgICAgICBzZWNvbmRzID0gbWluKHNlY29uZHMsIHJlbWFpbmluZykKICAgIGFyZ3YgPSBbIi9iaW4vcHMiXQogICAgYXJndiArPSBbIi1wIiwgc3RyKHBpZCldIGlmIHBpZCBpcyBub3QgTm9uZSBlbHNlIFsiLWF4Il0KICAgIGFyZ3YgKz0gWyItbyIsICJwaWQ9LHBwaWQ9LHBnaWQ9LHVpZD0sc3RhdD0sbHN0YXJ0PSJdCiAgICB0cnk6CiAgICAgICAgcmVzdWx0ID0gc3VicHJvY2Vzcy5ydW4oYXJndiwgc3RkaW49c3VicHJvY2Vzcy5ERVZOVUxMLCBzdGRvdXQ9c3VicHJvY2Vzcy5QSVBFLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHN0ZGVycj1zdWJwcm9jZXNzLlBJUEUsIGVudj1kaWN0KG9zLmVudmlyb24sIExDX0FMTD0iQyIpLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHRpbWVvdXQ9c2Vjb25kcykKICAgIGV4Y2VwdCBzdWJwcm9jZXNzLlRpbWVvdXRFeHBpcmVkIGFzIGVycm9yOgogICAgICAgIGNvZGUgPSAoIm9yaWdpbmFsX3N0b3BfZGVhZGxpbmVfZXhwaXJlZCIgaWYgdW50aWwgaXMgbm90IE5vbmUgYW5kIHRpbWUubW9ub3RvbmljKCkgPj0gdW50aWwKICAgICAgICAgICAgICAgIGVsc2UgInByb2Nlc3NfcHJvamVjdGlvbl9kZWFkbGluZV9leHBpcmVkIikKICAgICAgICByYWlzZSBSZWZ1c2FsKGNvZGUpIGZyb20gZXJyb3IKICAgIGlmIHVudGlsIGlzIG5vdCBOb25lOgogICAgICAgIG5lZWQodGltZS5tb25vdG9uaWMoKSA8IHVudGlsLCAib3JpZ2luYWxfc3RvcF9kZWFkbGluZV9leHBpcmVkIikKICAgIG5lZWQobGVuKHJlc3VsdC5zdGRvdXQpIDw9IDIgKiBNSUIgYW5kIGxlbihyZXN1bHQuc3RkZXJyKSA8PSA2NTUzNiwKICAgICAgICAgInByb2Nlc3NfcHJvamVjdGlvbl9ib3VuZCIpCiAgICBpZiBwaWQgaXMgbm90IE5vbmUgYW5kIHJlc3VsdC5yZXR1cm5jb2RlID09IDEgYW5kIG5vdCByZXN1bHQuc3Rkb3V0LnN0cmlwKCk6CiAgICAgICAgcmV0dXJuIFtdCiAgICBuZWVkKHJlc3VsdC5yZXR1cm5jb2RlID09IDAsICJwcm9jZXNzX3Byb2plY3Rpb25fdW5hdmFpbGFibGUiKQogICAgcm93cyA9IFtdCiAgICBmb3IgbGluZSBpbiByZXN1bHQuc3Rkb3V0LmRlY29kZSgiYXNjaWkiKS5zcGxpdGxpbmVzKCk6CiAgICAgICAgZmllbGRzID0gbGluZS5zcGxpdChOb25lLCA1KQogICAgICAgIG5lZWQobGVuKGZpZWxkcykgPT0gNiwgInByb2Nlc3NfcHJvamVjdGlvbl9tYWxmb3JtZWQiKQogICAgICAgIHJvd3MuYXBwZW5kKHsicGlkIjogaW50KGZpZWxkc1swXSksICJwcGlkIjogaW50KGZpZWxkc1sxXSksCiAgICAgICAgICAgICAgICAgICAgICJwZ2lkIjogaW50KGZpZWxkc1syXSksICJ1aWQiOiBpbnQoZmllbGRzWzNdKSwKICAgICAgICAgICAgICAgICAgICAgInN0YXRlIjogZmllbGRzWzRdLCAic3RhcnQiOiBmaWVsZHNbNV19KQogICAgaWYgcGlkIGlzIG5vdCBOb25lOgogICAgICAgIG5lZWQobGVuKHJvd3MpID09IDEgYW5kIHJvd3NbMF1bInBpZCJdID09IHBpZCwgInByb2Nlc3NfcHJvamVjdGlvbl9hbWJpZ3VvdXMiKQogICAgcmV0dXJuIHJvd3MKCmRlZiBjYXB0dXJlX2NoaWxkKGNoaWxkLCAqLCB1bnRpbCk6CiAgICByZXF1aXJlX3dhaXRpZCgpCiAgICByb3dzID0gcHNfcm93cyhjaGlsZC5waWQsIHVudGlsPXVudGlsKQogICAgbmVlZChsZW4ocm93cykgPT0gMSwgIm93bmVkX2NoaWxkX2lkZW50aXR5X21pc3NpbmciKQogICAgcm93ID0gcm93c1swXQogICAgbmVlZChyb3dbInBwaWQiXSA9PSBvcy5nZXRwaWQoKSBhbmQgcm93WyJwZ2lkIl0gPT0gY2hpbGQucGlkCiAgICAgICAgIGFuZCByb3dbInVpZCJdID09IG9zLmdldGV1aWQoKSwgIm93bmVkX2NoaWxkX3Njb3BlX21pc21hdGNoIikKICAgICMgRGFyd2luIGtlZXBzIGFuIHVucmVhcGVkIHpvbWJpZSBpbiBwcyBidXQgZ2V0cGdpZC9nZXRzaWQgcmV0dXJuIEVTUkNILgogICAgIyBVc2UgdGhlIHJlYWwgbGl2ZSBBUElzIG9ubHkgZm9yIGEgc3RpbGwtbGl2ZSBjaGlsZDsgb3RoZXJ3aXNlIGluZGVwZW5kZW50bHkKICAgICMgcmVwZWF0IFdOT1dBSVQgYW5kIHJldGFpbiBwcyBwbHVzIFBvcGVuIGRpcmVjdC1wYXJlbnQgY3VzdG9keS4KICAgIGV2ZW50LCBsaXZlX3NpZCA9IGV4aXRfb2JzZXJ2YXRpb24oY2hpbGQpLCBOb25lCiAgICBpZiBldmVudCBpcyBOb25lIGFuZCBub3Qgcm93WyJzdGF0ZSJdLnN0YXJ0c3dpdGgoIloiKToKICAgICAgICB0cnk6CiAgICAgICAgICAgIG5lZWQob3MuZ2V0cGdpZChjaGlsZC5waWQpID09IGNoaWxkLnBpZCBhbmQgb3MuZ2V0c2lkKGNoaWxkLnBpZCkgPT0gY2hpbGQucGlkLAogICAgICAgICAgICAgICAgICJvd25lZF9saXZlX3Nlc3Npb25fbWlzbWF0Y2giKQogICAgICAgICAgICBsaXZlX3NpZCA9IGNoaWxkLnBpZAogICAgICAgIGV4Y2VwdCBQcm9jZXNzTG9va3VwRXJyb3I6CiAgICAgICAgICAgICMgQSBmYXN0IGV4aXQgYmV0d2VlbiB0aGUgZmlyc3QgcHMvd2FpdGlkIGFuZCBhIGxpdmUgQVBJIGNhbGwgaXMKICAgICAgICAgICAgIyBub3QgbG9zcyBvZiBQb3BlbiBjdXN0b2R5LCBub3IgcHJvb2YgdGhhdCB0aGUgZ3JvdXAgaXMgZW1wdHkuCiAgICAgICAgICAgIGV2ZW50ID0gZXhpdF9vYnNlcnZhdGlvbihjaGlsZCkKICAgICAgICAgICAgbmVlZChldmVudCBpcyBub3QgTm9uZSwgIm93bmVkX2xpdmVfYXBpX2ZhaWxlZF93aXRob3V0X3JldGFpbmVkX2V4aXQiKQogICAgaWYgZXZlbnQgaXMgbm90IE5vbmUgb3Igcm93WyJzdGF0ZSJdLnN0YXJ0c3dpdGgoIloiKToKICAgICAgICBldmVudCA9IGV4aXRfb2JzZXJ2YXRpb24oY2hpbGQpCiAgICAgICAgZnJlc2ggPSBwc19yb3dzKGNoaWxkLnBpZCwgdW50aWw9dW50aWwpCiAgICAgICAgbmVlZChldmVudCBpcyBub3QgTm9uZSBhbmQgbGVuKGZyZXNoKSA9PSAxIGFuZCBzdGFibGUoZnJlc2hbMF0pID09IHN0YWJsZShyb3cpCiAgICAgICAgICAgICBhbmQgZnJlc2hbMF1bInN0YXRlIl0uc3RhcnRzd2l0aCgiWiIpIGFuZCBleGl0X29ic2VydmF0aW9uKGNoaWxkKSA9PSBldmVudCwKICAgICAgICAgICAgICJvd25lZF9leGl0X25vdF9yZXRhaW5lZCIpCiAgICAgICAgcm93ID0gZnJlc2hbMF0KICAgIHJldHVybiB7InBzIjogc3RhYmxlKHJvdyksICJzaWRfb2JzZXJ2ZWRfd2hpbGVfbGl2ZSI6IGxpdmVfc2lkLAogICAgICAgICAgICAiY2FwdHVyZWRfZXhpdCI6IGV2ZW50fQoKZGVmIHZlcmlmeV91bnJlYXBlZChjaGlsZCwgb3duZXIsICosIHVudGlsPU5vbmUpOgogICAgZXZlbnQgPSBleGl0X29ic2VydmF0aW9uKGNoaWxkKQogICAgcm93cyA9IHBzX3Jvd3MoY2hpbGQucGlkLCB1bnRpbD11bnRpbCkKICAgIG5lZWQobGVuKHJvd3MpID09IDEgYW5kIHN0YWJsZShyb3dzWzBdKSA9PSBvd25lclsicHMiXQogICAgICAgICBhbmQgcm93c1swXVsicHBpZCJdID09IG9zLmdldHBpZCgpLCAib3duZWRfY2hpbGRfaWRlbnRpdHlfY2hhbmdlZF9ub19zaWduYWwiKQogICAgaWYgZXZlbnQgaXMgTm9uZSBhbmQgbm90IHJvd3NbMF1bInN0YXRlIl0uc3RhcnRzd2l0aCgiWiIpOgogICAgICAgICMgRXhhY3QgcHMgUEdJRC9zdGFydCBwbHVzIGRpcmVjdCBQb3Blbi9XTk9XQUlUIGN1c3RvZHkga2VlcHMgdGhlCiAgICAgICAgIyBvcmlnaW5hbGx5IG9ic2VydmVkIHNlc3Npb24gbGVhZGVyIHJlc2VydmVkLiBEbyBub3QgcmFjZSBhIG5vcm1hbAogICAgICAgICMgZXhpdCBieSBjb25zdWx0aW5nIERhcndpbidzIHpvbWJpZS11bnN1cHBvcnRlZCBnZXRwZ2lkL2dldHNpZCBoZXJlLgogICAgICAgIG5lZWQob3duZXJbInBzIl1bInBnaWQiXSA9PSBjaGlsZC5waWQsICJvd25lZF9saXZlX3Nlc3Npb25fY2hhbmdlZF9ub19zaWduYWwiKQogICAgZWxzZToKICAgICAgICBldmVudCA9IGV4aXRfb2JzZXJ2YXRpb24oY2hpbGQpCiAgICAgICAgbmVlZChldmVudCBpcyBub3QgTm9uZSBhbmQgcm93c1swXVsic3RhdGUiXS5zdGFydHN3aXRoKCJaIikgYW5kIGV4aXRfb2JzZXJ2YXRpb24oY2hpbGQpID09IGV2ZW50LAogICAgICAgICAgICAgIm93bmVkX3pvbWJpZV9pZGVudGl0eV9jaGFuZ2VkX25vX3NpZ25hbCIpCiAgICByZXR1cm4gZXZlbnQKCmRlZiBsaXZlX2dyb3VwKGNoaWxkLCBvd25lciwgKiwgdW50aWwpOgogICAgbmVlZCh0aW1lLm1vbm90b25pYygpIDwgdW50aWwsICJvcmlnaW5hbF9zdG9wX2RlYWRsaW5lX2V4cGlyZWQiKQogICAgdmVyaWZ5X3VucmVhcGVkKGNoaWxkLCBvd25lciwgdW50aWw9dW50aWwpCiAgICByb3dzID0gcHNfcm93cyh1bnRpbD11bnRpbCkKICAgIHNlbGVjdGVkID0gW3JvdyBmb3Igcm93IGluIHJvd3MgaWYgcm93WyJwZ2lkIl0gPT0gY2hpbGQucGlkIGFuZCBub3Qgcm93WyJzdGF0ZSJdLnN0YXJ0c3dpdGgoIloiKV0KICAgIG5lZWQoYWxsKHJvd1sidWlkIl0gPT0gb3MuZ2V0ZXVpZCgpIGZvciByb3cgaW4gc2VsZWN0ZWQpLCAib3duZWRfZ3JvdXBfdWlkX2NoYW5nZWRfbm9fc2lnbmFsIikKICAgIG5lZWQodGltZS5tb25vdG9uaWMoKSA8IHVudGlsLCAib3JpZ2luYWxfc3RvcF9kZWFkbGluZV9leHBpcmVkIikKICAgIHJldHVybiBbc3RhYmxlKHJvdykgZm9yIHJvdyBpbiBzZWxlY3RlZF0KCmRlZiBvYnNlcnZlZF9yZXR1cm5jb2RlKGV2ZW50KToKICAgIGlmIGV2ZW50IGlzIE5vbmU6cmV0dXJuIE5vbmUKICAgIHJldHVybiBldmVudFsnc3RhdHVzJ10gaWYgZXZlbnRbJ2NvZGUnXT09b3MuQ0xEX0VYSVRFRCBlbHNlIC1ldmVudFsnc3RhdHVzJ10KCmRlZiBzdG9wX29uY2VfdW5yZWFwZWQoY2hpbGQsIG93bmVyKToKICAgICIiIkNhbGxlZCBvbmNlIGJ5IHRoZSB3cmFwcGVyJ3MgcHJvdGVjdGVkIGxlZGdlcjsgbmV2ZXIgY2FsbHMgUG9wZW4ucG9sbC4iIiIKICAgIHJlcXVpcmVfd2FpdGlkKCkKICAgIHN0YXJ0ZWQ9dGltZS5tb25vdG9uaWMoKQogICAgcmVjZWlwdD17J3BpZCc6Y2hpbGQucGlkLCdwZ2lkJzpjaGlsZC5waWQsJ3N0b3BBdHRlbXB0ZWQnOlRydWUsJ3NpZ25hbHMnOltdLAogICAgICAgICAgICAgJ2RpcmVjdENoaWxkUmVhcGVkJzpGYWxzZSwnb3duZWRMaXZlR3JvdXBFbXB0eUJlZm9yZVJlYXAnOkZhbHNlLAogICAgICAgICAgICAgJ2FsbEdyb3VwUm93c0VtcHR5QWZ0ZXJSZWFwJzpGYWxzZSwnY2xlYW51cENhcHMnOnsndGVybSc6MSwnd2FpdCc6NSwnZ3JvdXAnOjMsJ3BzTWF4Jzo0fSwKICAgICAgICAgICAgICdwb3N0UmVhcFNpZ25hbFNlbnQnOkZhbHNlLCdjdXN0b2R5Jzpvd25lcn0KICAgIHRyeToKICAgICAgICBuZWVkKGNoaWxkLnJldHVybmNvZGUgaXMgTm9uZSwnYWxyZWFkeV9yZWFwZWRfbm9fZ3JvdXBfc2lnbmFsJykKICAgICAgICB0ZXJtX3VudGlsPXRpbWUubW9ub3RvbmljKCkrMS4wCiAgICAgICAgaWYgb3duZXIgaXMgTm9uZToKICAgICAgICAgICAgb3duZXI9Y2FwdHVyZV9jaGlsZChjaGlsZCx1bnRpbD10ZXJtX3VudGlsKQogICAgICAgICAgICByZWNlaXB0WydjdXN0b2R5J109b3duZXIKICAgICAgICBtZW1iZXJzPWxpdmVfZ3JvdXAoY2hpbGQsb3duZXIsdW50aWw9dGVybV91bnRpbCkKICAgICAgICByZWNlaXB0Wydpbml0aWFsTGl2ZUdyb3VwJ109bWVtYmVycwogICAgICAgIGlmIG1lbWJlcnM6CiAgICAgICAgICAgIHZlcmlmeV91bnJlYXBlZChjaGlsZCxvd25lcix1bnRpbD10ZXJtX3VudGlsKQogICAgICAgICAgICBuZWVkKHRpbWUubW9ub3RvbmljKCk8dGVybV91bnRpbCwnb3JpZ2luYWxfc3RvcF9kZWFkbGluZV9leHBpcmVkJykKICAgICAgICAgICAgb3Mua2lsbHBnKGNoaWxkLnBpZCxzaWduYWwuU0lHVEVSTSk7cmVjZWlwdFsnc2lnbmFscyddLmFwcGVuZCgnU0lHVEVSTScpCiAgICAgICAgICAgIHdoaWxlIHRpbWUubW9ub3RvbmljKCk8dGVybV91bnRpbDoKICAgICAgICAgICAgICAgIHRyeToKICAgICAgICAgICAgICAgICAgICBtZW1iZXJzPWxpdmVfZ3JvdXAoY2hpbGQsb3duZXIsdW50aWw9dGVybV91bnRpbCkKICAgICAgICAgICAgICAgICAgICBpZiBub3QgbWVtYmVyczpicmVhawogICAgICAgICAgICAgICAgZXhjZXB0IFJlZnVzYWwgYXMgZXJyb3I6CiAgICAgICAgICAgICAgICAgICAgaWYgc3RyKGVycm9yKSE9J29yaWdpbmFsX3N0b3BfZGVhZGxpbmVfZXhwaXJlZCcgb3IgdGltZS5tb25vdG9uaWMoKTx0ZXJtX3VudGlsOgogICAgICAgICAgICAgICAgICAgICAgICByYWlzZQogICAgICAgICAgICAgICAgICAgIGJyZWFrCiAgICAgICAgICAgICAgICB0aW1lLnNsZWVwKG1pbigwLjAyLG1heCgwLHRlcm1fdW50aWwtdGltZS5tb25vdG9uaWMoKSkpKQogICAgICAgIHdhaXRfdW50aWw9dGltZS5tb25vdG9uaWMoKSs1LjAKICAgICAgICBtZW1iZXJzPWxpdmVfZ3JvdXAoY2hpbGQsb3duZXIsdW50aWw9d2FpdF91bnRpbCkKICAgICAgICBpZiBtZW1iZXJzOgogICAgICAgICAgICB2ZXJpZnlfdW5yZWFwZWQoY2hpbGQsb3duZXIsdW50aWw9d2FpdF91bnRpbCkKICAgICAgICAgICAgbmVlZCh0aW1lLm1vbm90b25pYygpPHdhaXRfdW50aWwsJ29yaWdpbmFsX3N0b3BfZGVhZGxpbmVfZXhwaXJlZCcpCiAgICAgICAgICAgIG9zLmtpbGxwZyhjaGlsZC5waWQsc2lnbmFsLlNJR0tJTEwpO3JlY2VpcHRbJ3NpZ25hbHMnXS5hcHBlbmQoJ1NJR0tJTEwnKQogICAgICAgIGV2ZW50PWV4aXRfb2JzZXJ2YXRpb24oY2hpbGQpCiAgICAgICAgd2hpbGUgZXZlbnQgaXMgTm9uZToKICAgICAgICAgICAgdmVyaWZ5X3VucmVhcGVkKGNoaWxkLG93bmVyLHVudGlsPXdhaXRfdW50aWwpCiAgICAgICAgICAgIG5lZWQodGltZS5tb25vdG9uaWMoKTx3YWl0X3VudGlsLCdvcmlnaW5hbF9zdG9wX2RlYWRsaW5lX2V4cGlyZWQnKQogICAgICAgICAgICB0aW1lLnNsZWVwKG1pbigwLjAyLG1heCgwLHdhaXRfdW50aWwtdGltZS5tb25vdG9uaWMoKSkpKQogICAgICAgICAgICBldmVudD1leGl0X29ic2VydmF0aW9uKGNoaWxkKQogICAgICAgIG5lZWQodGltZS5tb25vdG9uaWMoKTx3YWl0X3VudGlsLCdvcmlnaW5hbF9zdG9wX2RlYWRsaW5lX2V4cGlyZWQnKQogICAgICAgIHJlY2VpcHRbJ3JldGFpbmVkRXhpdCddPWV2ZW50CiAgICAgICAgIyBUaGUgb2xkIHBvc3QtZXhpdCBncm91cDMgaW50ZXJ2YWwgbm93IHByZWNlZGVzIHRoZSBmaXJzdCByZWFwLgogICAgICAgICMgVGhpcyByZXRhaW5zIGFjdHVhbCBQb3BlbiBQSUQgY3VzdG9keSB3aGlsZSBvdGhlciBsaXZlIG1lbWJlcnMgbGVhdmUuCiAgICAgICAgZ3JvdXBfdW50aWw9dGltZS5tb25vdG9uaWMoKSszLjAKICAgICAgICB3aGlsZSBUcnVlOgogICAgICAgICAgICBtZW1iZXJzPWxpdmVfZ3JvdXAoY2hpbGQsb3duZXIsdW50aWw9Z3JvdXBfdW50aWwpCiAgICAgICAgICAgIGlmIG5vdCBtZW1iZXJzIGFuZCBleGl0X29ic2VydmF0aW9uKGNoaWxkKT09ZXZlbnQ6YnJlYWsKICAgICAgICAgICAgbmVlZCh0aW1lLm1vbm90b25pYygpPGdyb3VwX3VudGlsLCdvcmlnaW5hbF9zdG9wX2RlYWRsaW5lX2V4cGlyZWQnKQogICAgICAgICAgICB0aW1lLnNsZWVwKG1pbigwLjAyLG1heCgwLGdyb3VwX3VudGlsLXRpbWUubW9ub3RvbmljKCkpKSkKICAgICAgICByZWNlaXB0Wydvd25lZExpdmVHcm91cEVtcHR5QmVmb3JlUmVhcCddPVRydWUKICAgICAgICBuZWVkKHRpbWUubW9ub3RvbmljKCk8Z3JvdXBfdW50aWwsJ29yaWdpbmFsX3N0b3BfZGVhZGxpbmVfZXhwaXJlZCcpCiAgICAgICAgY2hpbGQud2FpdCh0aW1lb3V0PWdyb3VwX3VudGlsLXRpbWUubW9ub3RvbmljKCkpCiAgICAgICAgcmVjZWlwdFsnZGlyZWN0Q2hpbGRSZWFwZWQnXT1UcnVlCiAgICAgICAgcmVjZWlwdFsnZXhpdENvZGUnXT1jaGlsZC5yZXR1cm5jb2RlCiAgICAgICAgbmVlZChjaGlsZC5yZXR1cm5jb2RlPT1vYnNlcnZlZF9yZXR1cm5jb2RlKGV2ZW50KSwnYWN0dWFsX3JlYXBfbWF0Y2hlc19yZXRhaW5lZF9leGl0JykKICAgICAgICAjIEFmdGVyIHRoZSBmaXJzdCByZWFwLCBvbmx5IG9ic2VydmUuIE5vIHNpZ25hbCBvciBvd25lcnNoaXAgY2xhaW0gaXMKICAgICAgICAjIGRlcml2ZWQgZnJvbSB0aGlzIG5vdy1yZXVzYWJsZSBudW1lcmljIFBHSUQuCiAgICAgICAgd2hpbGUgVHJ1ZToKICAgICAgICAgICAgcm93cz1bcm93IGZvciByb3cgaW4gcHNfcm93cyh1bnRpbD1ncm91cF91bnRpbCkgaWYgcm93WydwZ2lkJ109PWNoaWxkLnBpZF0KICAgICAgICAgICAgcmVjZWlwdFsncmVtYWluaW5nR3JvdXBSb3dzJ109cm93cwogICAgICAgICAgICBpZiBub3Qgcm93czpicmVhawogICAgICAgICAgICBuZWVkKHRpbWUubW9ub3RvbmljKCk8Z3JvdXBfdW50aWwsJ29yaWdpbmFsX3N0b3BfZGVhZGxpbmVfZXhwaXJlZCcpCiAgICAgICAgICAgIHRpbWUuc2xlZXAobWluKDAuMDIsbWF4KDAsZ3JvdXBfdW50aWwtdGltZS5tb25vdG9uaWMoKSkpKQogICAgICAgIHJlY2VpcHRbJ2FsbEdyb3VwUm93c0VtcHR5QWZ0ZXJSZWFwJ109VHJ1ZQogICAgICAgIG5lZWQodGltZS5tb25vdG9uaWMoKTxncm91cF91bnRpbCwnb3JpZ2luYWxfc3RvcF9kZWFkbGluZV9leHBpcmVkJykKICAgICAgICByZWNlaXB0WydvayddPVRydWUKICAgIGV4Y2VwdCBCYXNlRXhjZXB0aW9uIGFzIGVycm9yOgogICAgICAgIHJlY2VpcHRbJ29rJ109RmFsc2UKICAgICAgICByZWNlaXB0WydlcnJvclR5cGUnXT10eXBlKGVycm9yKS5fX25hbWVfXwogICAgICAgIHJlY2VpcHRbJ2Vycm9yQ29kZSddPXN0cihlcnJvcikgaWYgaXNpbnN0YW5jZShlcnJvcixSZWZ1c2FsKSBlbHNlIE5vbmUKICAgICAgICByZWNlaXB0WydkaXJlY3RDaGlsZFJlYXBlZCddPWNoaWxkLnJldHVybmNvZGUgaXMgbm90IE5vbmUKICAgICAgICByZWNlaXB0WydleGl0Q29kZSddPWNoaWxkLnJldHVybmNvZGUKICAgICAgICAjIE5vIHNlY29uZCBzaWduYWwgc2VxdWVuY2UsIG5vIHJlbmV3ZWQgZGVhZGxpbmUsIG5vIGF1dG9tYXRpYyByZXRyeS4KICAgIHJlY2VpcHRbJ2VsYXBzZWRTZWNvbmRzJ109dGltZS5tb25vdG9uaWMoKS1zdGFydGVkCiAgICByZWNlaXB0WydvdXRjb21lVW5rbm93biddPW5vdChyZWNlaXB0LmdldCgnb2snKSBpcyBUcnVlCiAgICAgICBhbmQgcmVjZWlwdFsnZGlyZWN0Q2hpbGRSZWFwZWQnXSBhbmQgcmVjZWlwdFsnYWxsR3JvdXBSb3dzRW1wdHlBZnRlclJlYXAnXSkKICAgIHJldHVybiByZWNlaXB0Cg==\\\"},{\\\"name\\\":\\\"mac_owned_commands_r1\\\",\\\"blob\\\":\\\"c102dfdc565484421bf7dbbb04b7c8b9e4cd5511\\\",\\\"bytes\\\":5965,\\\"sha256\\\":\\\"eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867\\\",\\\"base64\\\":\\\"IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwoiIiJCb3VuZGVkIGZvcmVncm91bmQgY29tbWFuZHMgd2l0aCByZXRhaW5lZCBkaXJlY3QtY2hpbGQgY3VzdG9keS4KCk5vIGltcG9ydC10aW1lIEkvTy4gVGhlIGNhbGxlciBzdXBwbGllcyBleGFjdCByZXZpZXdlZCBhcmd2IGFuZCBhbiBhYnNvbHV0ZQpjb21tYW5kIGRlYWRsaW5lLiBQaXBlIHJlYWRzLCBleGl0IG9ic2VydmF0aW9uIGFuZCBtZXRhZGF0YSBjYXB0dXJlIHNoYXJlIGl0LgpDbGVhbnVwIHVzZXMgdGhlIHNlcGFyYXRlIG9uY2Utb25seSBURVJNMS93YWl0NS9ncm91cDMgY3VzdG9keSBjb250cmFjdC4KIiIiCmZyb20gX19mdXR1cmVfXyBpbXBvcnQgYW5ub3RhdGlvbnMKZnJvbSBjb250ZXh0bGliIGltcG9ydCBjb250ZXh0bWFuYWdlcgppbXBvcnQgaGFzaGxpYiwgb3MsIHNlbGVjdCwgc2lnbmFsLCBzdWJwcm9jZXNzLCB0aW1lCmZyb20gbWFjX293bmVkX3VucmVhcGVkX3IxIGltcG9ydCByZXF1aXJlX3dhaXRpZCwgY2FwdHVyZV9jaGlsZCwgZXhpdF9vYnNlcnZhdGlvbiwgb2JzZXJ2ZWRfcmV0dXJuY29kZSwgc3RvcF9vbmNlX3VucmVhcGVkCgpjbGFzcyBDb21tYW5kUmVmdXNlZChSdW50aW1lRXJyb3IpOnBhc3MKZGVmIG5lZWQodmFsdWUsY29kZSk6CiAgICBpZiBub3QgdmFsdWU6cmFpc2UgQ29tbWFuZFJlZnVzZWQoY29kZSkKZGVmIHNoYShyYXcpOnJldHVybiBoYXNobGliLnNoYTI1NihyYXcpLmhleGRpZ2VzdCgpCgpjbGFzcyBTaWduYWxzOgogICAgZGVmIF9faW5pdF9fKHNlbGYpOgogICAgICAgIHNlbGYucHJvdGVjdGVkPTA7c2VsZi5wZW5kaW5nPU5vbmUKICAgIGRlZiByZWNlaXZlKHNlbGYsc2lnbnVtLF9mcmFtZSk6CiAgICAgICAgc2VsZi5wZW5kaW5nPXNpZ251bQogICAgICAgIGlmIG5vdCBzZWxmLnByb3RlY3RlZDpyYWlzZSBLZXlib2FyZEludGVycnVwdCgpCiAgICBkZWYgaW5zdGFsbChzZWxmKToKICAgICAgICBzaWduYWwuc2lnbmFsKHNpZ25hbC5TSUdURVJNLHNlbGYucmVjZWl2ZSk7c2lnbmFsLnNpZ25hbChzaWduYWwuU0lHSU5ULHNlbGYucmVjZWl2ZSkKICAgIEBjb250ZXh0bWFuYWdlcgogICAgZGVmIGNyaXRpY2FsKHNlbGYpOgogICAgICAgIHNlbGYucHJvdGVjdGVkKz0xCiAgICAgICAgdHJ5OnlpZWxkCiAgICAgICAgZmluYWxseTpzZWxmLnByb3RlY3RlZC09MQoKY2xhc3MgQ29tbWFuZHM6CiAgICBkZWYgX19pbml0X18oc2VsZixzaWduYWxzKToKICAgICAgICBzZWxmLnNpZ25hbHM9c2lnbmFscztzZWxmLnJvd3M9W10KICAgIGRlZiBydW4oc2VsZixsYWJlbCxhcmd2LCosdW50aWwsYWxsb3dfY2FuY2VsbGVkX2NsZWFudXA9RmFsc2UsbWF4aW11bT0yKjEwMjQqMTAyNCk6CiAgICAgICAgbmVlZChpc2luc3RhbmNlKGxhYmVsLHN0cikgYW5kIGxhYmVsLnJlcGxhY2UoJy0nLCcnKS5yZXBsYWNlKCdfJywnJykuaXNhbG51bSgpLCdzYWZlX2NvbW1hbmRfbGFiZWwnKQogICAgICAgIG5lZWQodHlwZShtYXhpbXVtKSBpcyBpbnQgYW5kIDA8bWF4aW11bTw9MioxMDI0KjEwMjQsJ2ZpeGVkX2NvbW1hbmRfb3V0cHV0X2JvdW5kJykKICAgICAgICBuZWVkKGlzaW5zdGFuY2UoYXJndixsaXN0KSBhbmQgYXJndiBhbmQgYWxsKGlzaW5zdGFuY2UoeCxzdHIpIGZvciB4IGluIGFyZ3YpLCdleHBsaWNpdF9hcmd2JykKICAgICAgICBkZWYgcmVtYWluaW5nKCk6CiAgICAgICAgICAgIGlmIG5vdCBhbGxvd19jYW5jZWxsZWRfY2xlYW51cDpuZWVkKHNlbGYuc2lnbmFscy5wZW5kaW5nIGlzIE5vbmUsJ2NvbW1hbmRfY2FuY2VsbGVkJykKICAgICAgICAgICAgbj11bnRpbC10aW1lLm1vbm90b25pYygpO25lZWQobj4wLCdvcmlnaW5hbF9jb21tYW5kX2RlYWRsaW5lX2V4aGF1c3RlZCcpO3JldHVybiBuCiAgICAgICAgcmVxdWlyZV93YWl0aWQoKTtyZW1haW5pbmcoKQogICAgICAgIHN0YXJ0ZWQ9dGltZS5tb25vdG9uaWMoKTtyb3c9Tm9uZTtvdXQ9Ynl0ZWFycmF5KCk7ZXJyPWJ5dGVhcnJheSgpCiAgICAgICAgdHJ5OgogICAgICAgICAgICB3aXRoIHNlbGYuc2lnbmFscy5jcml0aWNhbCgpOgogICAgICAgICAgICAgICAgcmVtYWluaW5nKCkKICAgICAgICAgICAgICAgIHA9c3VicHJvY2Vzcy5Qb3Blbihhcmd2LHN0ZGluPXN1YnByb2Nlc3MuREVWTlVMTCxzdGRvdXQ9c3VicHJvY2Vzcy5QSVBFLHN0ZGVycj1zdWJwcm9jZXNzLlBJUEUsCiAgICAgICAgICAgICAgICAgICAgZW52PXsnUEFUSCc6Jy9vcHQvaG9tZWJyZXcvYmluOi91c3IvYmluOi9iaW46L3Vzci9zYmluOi9zYmluJywnTEFORyc6J0MnLCdMQ19BTEwnOidDJ30sCiAgICAgICAgICAgICAgICAgICAgc3RhcnRfbmV3X3Nlc3Npb249VHJ1ZSxjbG9zZV9mZHM9VHJ1ZSkKICAgICAgICAgICAgICAgIHJvdz17J2xhYmVsJzpsYWJlbCwnYXJndic6bGlzdChhcmd2KSwncHJvY2Vzcyc6cCwnY3VzdG9keSc6Tm9uZSwKICAgICAgICAgICAgICAgICAgICAgJ3N0b3BBdHRlbXB0ZWQnOkZhbHNlLCdzdHJlYW1zQ2xvc2VBdHRlbXB0ZWQnOkZhbHNlLCdzdHJlYW1zQ2xvc2VkJzpGYWxzZSwKICAgICAgICAgICAgICAgICAgICAgJ2NvbXBsZXRlQmVmb3JlRGVhZGxpbmUnOkZhbHNlLCdlcnJvclR5cGUnOk5vbmUsJ2Vycm9yQ29kZSc6Tm9uZX0KICAgICAgICAgICAgICAgIHNlbGYucm93cy5hcHBlbmQocm93KQogICAgICAgICAgICByb3dbJ2N1c3RvZHknXT1jYXB0dXJlX2NoaWxkKHAsdW50aWw9dW50aWwpCiAgICAgICAgICAgIHN0cmVhbXM9e3Auc3Rkb3V0LmZpbGVubygpOm91dCxwLnN0ZGVyci5maWxlbm8oKTplcnJ9CiAgICAgICAgICAgIGZvciBmZCBpbiBzdHJlYW1zOm9zLnNldF9ibG9ja2luZyhmZCxGYWxzZSkKICAgICAgICAgICAgZXZlbnQ9Tm9uZQogICAgICAgICAgICB3aGlsZSBzdHJlYW1zIG9yIGV2ZW50IGlzIE5vbmU6CiAgICAgICAgICAgICAgICBsZWZ0PXJlbWFpbmluZygpCiAgICAgICAgICAgICAgICByZWFkeSxfLF89c2VsZWN0LnNlbGVjdChsaXN0KHN0cmVhbXMpLFtdLFtdLG1pbihsZWZ0LDAuMDI1KSkKICAgICAgICAgICAgICAgIGZvciBmZCBpbiByZWFkeToKICAgICAgICAgICAgICAgICAgICBkYXRhPW9zLnJlYWQoZmQsNjU1MzYpCiAgICAgICAgICAgICAgICAgICAgaWYgbm90IGRhdGE6ZGVsIHN0cmVhbXNbZmRdCiAgICAgICAgICAgICAgICAgICAgZWxzZToKICAgICAgICAgICAgICAgICAgICAgICAgdGFyZ2V0PXN0cmVhbXNbZmRdO3RhcmdldC5leHRlbmQoZGF0YSkKICAgICAgICAgICAgICAgICAgICAgICAgbmVlZChsZW4odGFyZ2V0KTw9bWF4aW11bSwnY29tbWFuZF9vdXRwdXRfYm91bmQnKQogICAgICAgICAgICAgICAgZXZlbnQ9ZXhpdF9vYnNlcnZhdGlvbihwKQogICAgICAgICAgICByZW1haW5pbmcoKQogICAgICAgICAgICByb3dbJ2NvbXBsZXRlQmVmb3JlRGVhZGxpbmUnXT1UcnVlCiAgICAgICAgICAgIHJvd1snb2JzZXJ2ZWRFeGl0J109ZXZlbnQKICAgICAgICAgICAgcm93WydvYnNlcnZlZEV4aXRDb2RlJ109b2JzZXJ2ZWRfcmV0dXJuY29kZShldmVudCkKICAgICAgICBleGNlcHQgQmFzZUV4Y2VwdGlvbiBhcyBlcnJvcjoKICAgICAgICAgICAgaWYgcm93IGlzIE5vbmU6cmFpc2UKICAgICAgICAgICAgcm93WydlcnJvclR5cGUnXT10eXBlKGVycm9yKS5fX25hbWVfXwogICAgICAgICAgICByb3dbJ2Vycm9yQ29kZSddPXN0cihlcnJvcikgaWYgaXNpbnN0YW5jZShlcnJvcixDb21tYW5kUmVmdXNlZCkgZWxzZSBOb25lCiAgICAgICAgZmluYWxseToKICAgICAgICAgICAgaWYgcm93IGlzIG5vdCBOb25lOgogICAgICAgICAgICAgICAgd2l0aCBzZWxmLnNpZ25hbHMuY3JpdGljYWwoKToKICAgICAgICAgICAgICAgICAgICByb3dbJ3N0b3BBdHRlbXB0ZWQnXT1UcnVlCiAgICAgICAgICAgICAgICAgICAgdHJ5OnJvd1snY2xlYW51cCddPXN0b3Bfb25jZV91bnJlYXBlZChyb3dbJ3Byb2Nlc3MnXSxyb3dbJ2N1c3RvZHknXSkKICAgICAgICAgICAgICAgICAgICBleGNlcHQgQmFzZUV4Y2VwdGlvbiBhcyBlcnJvcjoKICAgICAgICAgICAgICAgICAgICAgICAgcm93WydjbGVhbnVwJ109eydvayc6RmFsc2UsJ291dGNvbWVVbmtub3duJzpUcnVlLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgJ2Vycm9yVHlwZSc6dHlwZShlcnJvcikuX19uYW1lX18sJ2RpcmVjdENoaWxkUmVhcGVkJzpyb3dbJ3Byb2Nlc3MnXS5yZXR1cm5jb2RlIGlzIG5vdCBOb25lLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgJ2FsbEdyb3VwUm93c0VtcHR5QWZ0ZXJSZWFwJzpGYWxzZX0KICAgICAgICAgICAgICAgICAgICByb3dbJ3N0cmVhbXNDbG9zZUF0dGVtcHRlZCddPVRydWUKICAgICAgICAgICAgICAgICAgICBlcnJvcnM9W10KICAgICAgICAgICAgICAgICAgICBmb3Igc3RyZWFtIGluIChyb3dbJ3Byb2Nlc3MnXS5zdGRvdXQscm93Wydwcm9jZXNzJ10uc3RkZXJyKToKICAgICAgICAgICAgICAgICAgICAgICAgdHJ5OnN0cmVhbS5jbG9zZSgpCiAgICAgICAgICAgICAgICAgICAgICAgIGV4Y2VwdCBCYXNlRXhjZXB0aW9uIGFzIGVycm9yOmVycm9ycy5hcHBlbmQodHlwZShlcnJvcikuX19uYW1lX18pCiAgICAgICAgICAgICAgICAgICAgcm93WydzdHJlYW1zQ2xvc2VkJ109bm90IGVycm9ycwogICAgICAgICAgICAgICAgICAgIHJvd1snc3RyZWFtQ2xvc2VFcnJvcnMnXT1lcnJvcnMKICAgICAgICBwPXJvd1sncHJvY2VzcyddO2NsZWFudXA9cm93WydjbGVhbnVwJ10KICAgICAgICBwdWJsaWM9eydsYWJlbCc6bGFiZWwsJ2FyZ3YnOmxpc3QoYXJndiksJ3BpZCc6cC5waWQsJ2V4aXRDb2RlJzpwLnJldHVybmNvZGUsCiAgICAgICAgICAgICdjb21wbGV0ZUJlZm9yZURlYWRsaW5lJzpyb3dbJ2NvbXBsZXRlQmVmb3JlRGVhZGxpbmUnXSwKICAgICAgICAgICAgJ2NvbW1hbmREZWFkbGluZU1vbm90b25pYyc6dW50aWwsJ2VsYXBzZWRTZWNvbmRzJzp0aW1lLm1vbm90b25pYygpLXN0YXJ0ZWQsCiAgICAgICAgICAgICdlcnJvclR5cGUnOnJvd1snZXJyb3JUeXBlJ10sJ2Vycm9yQ29kZSc6cm93WydlcnJvckNvZGUnXSwnY2xlYW51cCc6Y2xlYW51cCwKICAgICAgICAgICAgJ3N0ZG91dEJ5dGVzJzpsZW4ob3V0KSwnc3Rkb3V0U2hhMjU2JzpzaGEob3V0KSwnc3RkZXJyQnl0ZXMnOmxlbihlcnIpLCdzdGRlcnJTaGEyNTYnOnNoYShlcnIpLAogICAgICAgICAgICAnc3RyZWFtc0Nsb3NlZCc6cm93WydzdHJlYW1zQ2xvc2VkJ10sCiAgICAgICAgICAgICdvdXRjb21lVW5rbm93bic6bm90KHJvd1snY29tcGxldGVCZWZvcmVEZWFkbGluZSddIGFuZCBjbGVhbnVwLmdldCgnb2snKSBpcyBUcnVlCiAgICAgICAgICAgICAgICBhbmQgY2xlYW51cC5nZXQoJ2RpcmVjdENoaWxkUmVhcGVkJykgaXMgVHJ1ZSBhbmQgY2xlYW51cC5nZXQoJ2FsbEdyb3VwUm93c0VtcHR5QWZ0ZXJSZWFwJykgaXMgVHJ1ZQogICAgICAgICAgICAgICAgYW5kIHJvd1snc3RyZWFtc0Nsb3NlZCddIGFuZCByb3dbJ2Vycm9yVHlwZSddIGlzIE5vbmUpfQogICAgICAgIHJvd1sncHVibGljJ109cHVibGljCiAgICAgICAgcmV0dXJuIHB1YmxpYyxieXRlcyhvdXQpLGJ5dGVzKGVycikKICAgIGRlZiBwdWJsaWMoc2VsZik6CiAgICAgICAgdmFsdWVzPVtyLmdldCgncHVibGljJykgZm9yIHIgaW4gc2VsZi5yb3dzXQogICAgICAgIHJldHVybiB7J2NvbW1hbmRzJzp2YWx1ZXMsJ2FsbE93bmVkQ29tbWFuZHNTdG9wcGVkJzphbGwodiBpcyBub3QgTm9uZQogICAgICAgICAgICBhbmQgdlsnY2xlYW51cCddLmdldCgnZGlyZWN0Q2hpbGRSZWFwZWQnKSBpcyBUcnVlCiAgICAgICAgICAgIGFuZCB2WydjbGVhbnVwJ10uZ2V0KCdhbGxHcm91cFJvd3NFbXB0eUFmdGVyUmVhcCcpIGlzIFRydWUKICAgICAgICAgICAgYW5kIHZbJ3N0cmVhbXNDbG9zZWQnXSBmb3IgdiBpbiB2YWx1ZXMpLAogICAgICAgICAgICAndW5rbm93bkNvbW1hbmRDb3VudCc6c3VtKHYgaXMgTm9uZSBvciB2WydvdXRjb21lVW5rbm93biddIGZvciB2IGluIHZhbHVlcyl9Cg==\\\"}]''')\\n\\nclass ObservationRefused(RuntimeError):\\n    pass\\n\\n\\ndef require(value, code):\\n    if not value:\\n        raise ObservationRefused(code)\\n\\n\\nclass BsdInfo(ctypes.Structure):\\n    _fields_ = [(name, ctypes.c_uint32) for name in (\\n        'flags', 'status', 'xstatus', 'pid', 'ppid', 'uid', 'gid',\\n        'ruid', 'rgid', 'svuid', 'svgid', 'reserved',\\n    )] + [\\n        ('comm', ctypes.c_char * 16), ('name', ctypes.c_char * 32),\\n        ('nfiles', ctypes.c_uint32), ('pgid', ctypes.c_uint32),\\n        ('jobc', ctypes.c_uint32), ('ttydev', ctypes.c_uint32),\\n        ('tty_pgid', ctypes.c_uint32), ('nice', ctypes.c_int32),\\n        ('birth_sec', ctypes.c_uint64), ('birth_usec', ctypes.c_uint64),\\n    ]\\n\\n\\nclass ProcessReader:\\n    def __init__(self):\\n        require(sys.platform == 'darwin' and ctypes.sizeof(BsdInfo) == 136,\\n                'exact_darwin_process_abi')\\n        self.lib = ctypes.CDLL('/usr/lib/libproc.dylib', use_errno=True)\\n        self.lib.proc_pidinfo.argtypes = [\\n            ctypes.c_int, ctypes.c_int, ctypes.c_uint64,\\n            ctypes.c_void_p, ctypes.c_int,\\n        ]\\n        self.lib.proc_pidinfo.restype = ctypes.c_int\\n        self.lib.proc_pidpath.argtypes = [ctypes.c_int, ctypes.c_void_p, ctypes.c_uint32]\\n        self.lib.proc_pidpath.restype = ctypes.c_int\\n        self.lib.proc_listchildpids.argtypes = [ctypes.c_int, ctypes.c_void_p, ctypes.c_int]\\n        self.lib.proc_listchildpids.restype = ctypes.c_int\\n\\n    def read(self, pid):\\n        require(type(pid) is int and pid > 1, 'exact_pid_required')\\n        info = BsdInfo()\\n        count = self.lib.proc_pidinfo(pid, 3, 0, ctypes.byref(info), ctypes.sizeof(info))\\n        require(count == ctypes.sizeof(info) and info.pid == pid, 'process_info_complete')\\n        executable = ctypes.create_string_buffer(4096)\\n        length = self.lib.proc_pidpath(pid, executable, len(executable))\\n        require(0 < length < len(executable), 'process_path_complete')\\n        actual_path = executable.value.decode('utf-8', errors='strict')\\n        require(actual_path.startswith('/'), 'absolute_process_path')\\n        # A second birth read binds path lookup to the same process lifetime.\\n        again = BsdInfo()\\n        count = self.lib.proc_pidinfo(pid, 3, 0, ctypes.byref(again), ctypes.sizeof(again))\\n        require(count == ctypes.sizeof(again)\\n                and (again.pid, again.ppid, again.pgid, again.uid,\\n                     again.birth_sec, again.birth_usec)\\n                == (info.pid, info.ppid, info.pgid, info.uid,\\n                    info.birth_sec, info.birth_usec), 'process_identity_changed_during_read')\\n        return {\\n            'pid': pid, 'ppid': info.ppid, 'pgid': info.pgid, 'uid': info.uid,\\n            'birthSec': info.birth_sec, 'birthUsec': info.birth_usec,\\n            'executable': str(Path(actual_path).resolve()),\\n        }\\n\\n    def children(self, verified_pid):\\n        # proc_listchildpids returns a PID count, not bytes. The fixed bound is\\n        # fail-closed; it is not a process-wide command/argument enumeration.\\n        buffer = (ctypes.c_int * 32)()\\n        count = self.lib.proc_listchildpids(verified_pid, buffer, ctypes.sizeof(buffer))\\n        require(0 <= count < len(buffer), 'bounded_owned_child_list')\\n        return [int(buffer[i]) for i in range(count) if buffer[i] > 1]\\n\\n\\n\\nclass ProbeRefused(RuntimeError):\\n    pass\\n\\ndef need(value, code):\\n    if not value:\\n        raise ProbeRefused(code)\\n\\ndef sha(raw):\\n    return hashlib.sha256(raw).hexdigest()\\n\\ndef encoded(value):\\n    return (json.dumps(value, sort_keys=True, separators=(',', ':')) + '\\\\n').encode('ascii')\\n\\ndef identity(info):\\n    return tuple(str(x) for x in (info.st_dev, info.st_ino, info.st_uid, info.st_gid,\\n        info.st_mode, info.st_nlink, info.st_size, info.st_mtime_ns, info.st_ctime_ns))\\n\\ndef error_projection(error):\\n    allowed = PUBLIC_ERROR_TYPES\\n    name = type(error).__name__\\n    code = str(error) if name in ('ProbeRefused','VolumeRefused','CommandRefused',\\n                                 'Refusal','ObservationRefused') else None\\n    if code not in PUBLIC_ERROR_CODES:\\n        code = None\\n    number = getattr(error, 'errno', None)\\n    return {'type': name if name in allowed else 'OtherException',\\n            'code': code, 'errno': number if type(number) is int and 0 <= number <= 4096 else None}\\n\\ndef validate_process(value):\\n    need(isinstance(value, dict) and set(value) == set(IDENTITY_KEYS), 'process_identity_shape')\\n    need(all(type(value[k]) is int and 0 <= value[k] < 2**63 for k in IDENTITY_KEYS[:-1]),\\n         'process_identity_numbers')\\n    need(value['pid'] > 1 and value['pgid'] > 1 and value['uid'] == 501\\n         and value['birthSec'] > 0 and value['birthUsec'] < 1000000\\n         and value['executable'] == KERNEL_PYTHON_IMAGE, 'process_identity_fixed_python')\\n    return dict(value)\\n\\nclass FixedIO:\\n    \\\"\\\"\\\"Only declared paths; all returned FDs registered before cancellation resumes.\\\"\\\"\\\"\\n    def __init__(self, signals, remaining, *, read_cap, write_cap):\\n        self.signals = signals\\n        self.remaining = remaining\\n        self.rows = []\\n        self.open_ledger = {'attempts':0, 'knownNoReturnErrors':0, 'registered':0,\\n                            'pending':0, 'registrationUnknown':False}\\n        self.dirs = {}\\n        self.close_errors = []\\n        self.counts = {'metadata':0, 'readCalls':0, 'readBytes':0, 'writeCalls':0, 'writeBytes':0}\\n        self.read_cap = read_cap\\n        self.write_cap = write_cap\\n        self.created_directories = []\\n        self.directory_attempts = []\\n        self.max_rows = 64\\n        self.max_metadata = 4096\\n        self.max_reads = 256\\n        self.max_writes = 64\\n        self.allowed_dirs = {Path('/'), Path('/Users'), HOME_PARENT, HOME,\\n            Path('/Volumes'), Path('/Volumes/T5'), T5_PARENT, WORK}\\n        self.allowed_dirs.update(PYTHON_PATHS)\\n        self.allowed_files = {CHILD:65536, PLAN:8192, PLIST:16384, STDOUT:32768,\\n            STDERR:4096, READY:8192, READY_MARK:0, ADMISSION:8192,\\n            ADMISSION_MARK:0, PUBLIC_SENTINEL:len(SENTINEL), Path(PYTHON):34640}\\n        self.writable = {CHILD, PLAN, PLIST, STDOUT, STDERR, READY, READY_MARK,\\n                         ADMISSION, ADMISSION_MARK, PUBLIC_SENTINEL}\\n\\n    def meta(self, fn, *args, **kwargs):\\n        self.remaining()\\n        need(self.counts['metadata'] < self.max_metadata, 'metadata_cap')\\n        self.counts['metadata'] += 1\\n        value = fn(*args, **kwargs)\\n        self.remaining()\\n        return value\\n\\n    def open_fd(self, path, flags, mode=None, *, parent=None, role='file'):\\n        need(len(self.rows) < self.max_rows and self.open_ledger['attempts'] < self.max_rows,\\n             'fd_ledger_cap')\\n        with self.signals.critical():\\n            self.remaining()\\n            ledger = self.open_ledger\\n            ledger['attempts'] += 1\\n            ledger['pending'] += 1\\n            try:\\n                fd = os.open(str(path) if parent is None else path.name, flags,\\n                             *(() if mode is None else (mode,)),\\n                             **({} if parent is None else {'dir_fd':parent['fd']}))\\n            except OSError:\\n                # This handler covers the syscall expression only: no FD was returned.\\n                ledger['knownNoReturnErrors'] += 1\\n                ledger['pending'] -= 1\\n                raise\\n            try:\\n                row = {'fd':fd, 'path':str(path), 'role':role,\\n                       'created':bool(flags & os.O_CREAT), 'writeComplete':False,\\n                       'closeAttempted':False, 'closed':False}\\n                self.rows.append(row)\\n                ledger['registered'] += 1\\n                ledger['pending'] -= 1\\n            except BaseException:\\n                # Even a subsequently closed row cannot erase this incomplete transfer.\\n                # Do not guess a descriptor, blind-close, or retry registration.\\n                ledger['registrationUnknown'] = True\\n                raise\\n        return row\\n\\n    def close_one(self, row):\\n        if row['closeAttempted']:\\n            return row['closed']\\n        with self.signals.critical():\\n            row['closeAttempted'] = True\\n            try:\\n                os.close(row['fd'])\\n                row['closed'] = True\\n            except BaseException as error:\\n                row['closeError'] = error_projection(error)\\n                self.close_errors.append(row['closeError'])\\n        return row['closed']\\n\\n    def open_dir(self, path, *, full9=None):\\n        path = Path(path)\\n        need(path in self.allowed_dirs, 'fixed_directory_only')\\n        if path in self.dirs:\\n            row = self.dirs[path]\\n            self.check_dir(row)\\n        else:\\n            parent = None if path == Path('/') else self.open_dir(path.parent)\\n            before = self.meta(os.lstat, '/') if parent is None else self.meta(\\n                os.stat, path.name, dir_fd=parent['fd'], follow_symlinks=False)\\n            need(stat.S_ISDIR(before.st_mode), 'held_directory_type')\\n            if str(path) in DIRECTORY_OBJECT_PINS:\\n                need(identity(before)[:5] == tuple(DIRECTORY_OBJECT_PINS[str(path)]),\\n                     'observed_directory_object')\\n            else:\\n                need(before.st_uid in (0,501) and stat.S_IMODE(before.st_mode) & 0o022 == 0,\\n                     'new_observed_directory_owner_mode')\\n            if path in (HOME_PARENT, HOME, T5_PARENT, WORK):\\n                need(before.st_uid == 501, 'owned_directory_uid')\\n            row = self.open_fd(path, os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW,\\n                               parent=parent, role='directory')\\n            row['parent'] = parent\\n            row['initial'] = identity(before)\\n            self.dirs[path] = row\\n            after = self.meta(os.fstat, row['fd'])\\n            named = self.meta(os.lstat, '/') if parent is None else self.meta(\\n                os.stat, path.name, dir_fd=parent['fd'], follow_symlinks=False)\\n            need(identity(before) == identity(after) == identity(named), 'directory_open_full9')\\n        if str(path) in ANCHOR_FULL9:\\n            full9 = ANCHOR_FULL9[str(path)]\\n        if full9 is not None:\\n            need(len(full9) == 9 and tuple(full9) == identity(self.meta(os.fstat, row['fd'])),\\n                 'fixed_directory_full9')\\n            row['fullFence'] = tuple(full9)\\n            self.check_dir(row)\\n        return row\\n\\n    def check_dir(self, row):\\n        need(not row['closed'], 'held_directory_not_closed')\\n        path = Path(row['path'])\\n        parent = row['parent']\\n        named = self.meta(os.lstat, '/') if parent is None else self.meta(\\n            os.stat, path.name, dir_fd=parent['fd'], follow_symlinks=False)\\n        held = self.meta(os.fstat, row['fd'])\\n        need(identity(named)[:5] == identity(held)[:5] == row['initial'][:5],\\n             'held_directory_same_object')\\n        if 'fullFence' in row:\\n            need(identity(named) == identity(held) == row['fullFence'], 'held_directory_full9_stable')\\n\\n    def check_all(self):\\n        for row in self.dirs.values():\\n            self.check_dir(row)\\n\\n    def absent(self, path):\\n        path = Path(path)\\n        need(path in (HOME, WORK), 'two_fresh_roots_only')\\n        parent = self.open_dir(path.parent)\\n        self.check_dir(parent)\\n        try:\\n            self.meta(os.stat, path.name, dir_fd=parent['fd'], follow_symlinks=False)\\n        except FileNotFoundError as error:\\n            need(error.errno == errno.ENOENT, 'absence_exact_enoent')\\n            return\\n        raise ProbeRefused('fresh_root_already_present')\\n\\n    def mkdir(self, path):\\n        path = Path(path)\\n        need(path in (HOME, WORK) and path not in self.directory_attempts, 'once_fresh_root')\\n        self.absent(path)\\n        self.check_all()\\n        parent = self.open_dir(path.parent)\\n        with self.signals.critical():\\n            self.remaining()\\n            self.directory_attempts.append(path)\\n            os.mkdir(path.name, 0o700, dir_fd=parent['fd'])\\n            self.created_directories.append(path)\\n        os.fsync(parent['fd'])\\n        row = self.open_dir(path)\\n        need(stat.S_IMODE(int(row['initial'][4])) == 0o700, 'fresh_root_exact_mode')\\n        return row\\n\\n    def present_marker(self, path):\\n        need(path in (READY_MARK, ADMISSION_MARK), 'fixed_marker_only')\\n        parent = self.open_dir(HOME)\\n        self.check_dir(parent)\\n        try:\\n            before = self.meta(os.stat, path.name, dir_fd=parent['fd'], follow_symlinks=False)\\n        except FileNotFoundError as error:\\n            need(error.errno == errno.ENOENT, 'marker_absence_enoent')\\n            return None\\n        self.file_shape(before, path)\\n        need(before.st_size == 0, 'empty_complete_marker')\\n        return identity(before)\\n\\n    def file_shape(self, info, path):\\n        need(stat.S_ISREG(info.st_mode) and info.st_uid == 501 and info.st_nlink == 1\\n             and 0 <= info.st_size <= self.allowed_files[path], 'fixed_regular_leaf_shape')\\n        expected_mode = 0o755 if path == Path(PYTHON) else 0o600\\n        need(stat.S_IMODE(info.st_mode) == expected_mode, 'fixed_leaf_mode')\\n\\n    def write(self, path, raw):\\n        path = Path(path)\\n        need(path in self.writable and isinstance(raw, bytes)\\n             and len(raw) <= self.allowed_files[path], 'fixed_create_only_write')\\n        need(self.counts['writeBytes'] + len(raw) <= self.write_cap, 'write_total_cap')\\n        parent = self.open_dir(path.parent)\\n        self.check_all()\\n        row = self.open_fd(path, os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,\\n                           0o600, parent=parent)\\n        try:\\n            first = self.meta(os.fstat, row['fd'])\\n            self.file_shape(first, path)\\n            need(first.st_size == 0, 'new_leaf_empty')\\n            offset = 0\\n            while offset < len(raw):\\n                self.remaining()\\n                need(self.counts['writeCalls'] < self.max_writes, 'write_call_cap')\\n                self.counts['writeCalls'] += 1\\n                n = os.write(row['fd'], raw[offset:offset+65536])\\n                need(n > 0, 'write_progress')\\n                self.counts['writeBytes'] += n\\n                offset += n\\n            os.fsync(row['fd'])\\n            os.fsync(parent['fd'])\\n            last = self.meta(os.fstat, row['fd'])\\n            named = self.meta(os.stat, path.name, dir_fd=parent['fd'], follow_symlinks=False)\\n            need(identity(last) == identity(named) and last.st_size == len(raw)\\n                 and identity(first)[:5] == identity(last)[:5], 'created_leaf_full9')\\n            self.check_dir(parent)\\n            row['writeComplete'] = True\\n            return {'path':str(path), 'identity':list(identity(last)), 'bytes':len(raw), 'sha256':sha(raw)}\\n        finally:\\n            need(self.close_one(row), 'file_close_failed')\\n\\n    def read(self, path, *, expected=None, maximum=None):\\n        path = Path(path)\\n        need(path in self.allowed_files, 'fixed_read_only_leaf')\\n        maximum = self.allowed_files[path] if maximum is None else maximum\\n        need(type(maximum) is int and 0 <= maximum <= self.allowed_files[path], 'read_leaf_cap')\\n        parent = self.open_dir(path.parent)\\n        self.check_dir(parent)\\n        before = self.meta(os.stat, path.name, dir_fd=parent['fd'], follow_symlinks=False)\\n        self.file_shape(before, path)\\n        need(before.st_size <= maximum, 'read_size_cap')\\n        if expected is not None:\\n            need(identity(before) == tuple(expected), 'expected_leaf_full9_before')\\n        row = self.open_fd(path, os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK, parent=parent)\\n        try:\\n            need(identity(self.meta(os.fstat, row['fd'])) == identity(before), 'read_open_full9')\\n            raw = bytearray()\\n            while True:\\n                self.remaining()\\n                need(self.counts['readCalls'] < self.max_reads, 'read_call_cap')\\n                left = self.read_cap - self.counts['readBytes']\\n                need(left > 0, 'read_total_cap')\\n                want = min(65536, maximum+1-len(raw), left)\\n                need(want > 0, 'read_eof_byte_budget')\\n                self.counts['readCalls'] += 1\\n                block = os.read(row['fd'], want)\\n                self.counts['readBytes'] += len(block)\\n                if not block:\\n                    break\\n                raw.extend(block)\\n                need(len(raw) <= maximum, 'read_content_cap')\\n            after = self.meta(os.fstat, row['fd'])\\n            named = self.meta(os.stat, path.name, dir_fd=parent['fd'], follow_symlinks=False)\\n            need(identity(before) == identity(after) == identity(named)\\n                 and len(raw) == before.st_size, 'read_complete_full9')\\n            self.check_dir(parent)\\n            return bytes(raw), list(identity(after))\\n        finally:\\n            need(self.close_one(row), 'file_close_failed')\\n\\n    def close(self):\\n        with self.signals.critical():\\n            for row in reversed(self.rows):\\n                self.close_one(row)\\n\\n    def public(self):\\n        ledger = self.open_ledger\\n        accounted = (ledger['attempts'] == ledger['knownNoReturnErrors'] + ledger['registered']\\n            and ledger['registered'] == len(self.rows) and ledger['pending'] == 0\\n            and ledger['registrationUnknown'] is False)\\n        return {'fdRows':[{'ordinal':i,'path':r['path'],'role':r['role'],\\n            'closeAttempted':r['closeAttempted'],'closed':r['closed'],\\n            'closeError':r.get('closeError'),'created':r['created'],\\n            'writeComplete':r['writeComplete']} for i,r in enumerate(self.rows)],\\n            'allClosed':accounted and all(r['closed'] for r in self.rows) and not self.close_errors,\\n            'openLedger':dict(ledger),\\n            'counts':dict(self.counts), 'caps':{'fdRows':self.max_rows,\\n            'metadata':self.max_metadata,'readCalls':self.max_reads,'writeCalls':self.max_writes,\\n            'readBytes':self.read_cap,'writeBytes':self.write_cap},\\n            'createdDirectories':[str(p) for p in self.created_directories],\\n            'directoryAttempts':[str(p) for p in self.directory_attempts],\\n            'interpreterAndDynamicLoaderInternalFdsNotEnumerated':True}\\n\\ndef restore_handlers(saved):\\n    failures = []\\n    for sig, old in saved.items():\\n        try:\\n            signal.signal(sig, old)\\n        except BaseException as error:\\n            failures.append(error_projection(error))\\n    return failures\\n\\ndef parse_print(raw,target):\\n    need(isinstance(raw,bytes) and len(raw)<=262144,'bounded_launchctl_print')\\n    lines=raw.decode('utf-8','strict').splitlines()\\n    need(1<=len(lines)<=4096 and lines[0].strip()==target+' = {','exact_launchctl_target')\\n    fields={};arguments=[];depth=1;in_arguments=False;arguments_seen=False\\n    allowed=('path','program','pid','state','runs','last exit code','last terminating signal')\\n    for line in lines[1:]:\\n        text=line.strip()\\n        if in_arguments:\\n            if text=='}':\\n                in_arguments=False;depth-=1;continue\\n            need(depth==2 and text and '{' not in text and '}' not in text\\n                 and len(text)<=16384,'plain_fixed_launchctl_argument')\\n            arguments.append(text)\\n            need(len(arguments)<=32,'bounded_launchctl_arguments')\\n            continue\\n        if depth==1 and text=='arguments = {':\\n            need(not arguments_seen,'one_launchctl_arguments_block')\\n            arguments_seen=True;in_arguments=True;depth+=1;continue\\n        if depth==1 and ' = ' in text and not text.endswith('{'):\\n            name,value=text.split(' = ',1)\\n            if name in allowed:\\n                need(name not in fields,'unique_launchctl_field');fields[name]=value\\n        depth+=text.count('{')-text.count('}')\\n        need(depth>=0,'balanced_launchctl_print')\\n        if depth==0:\\n            need(text=='}' and line==lines[-1],'one_complete_launchctl_record')\\n    need(depth==0 and not in_arguments and arguments_seen,'complete_launchctl_arguments')\\n    for name in ('pid','runs','last exit code'):\\n        if name in fields:\\n            typed_value=fields[name]\\n            if name=='last exit code' and typed_value=='78: EX_CONFIG':\\n                typed_value='78'\\n            need(re.fullmatch(r'-?[0-9]{1,10}',typed_value) is not None,'typed_launchctl_integer')\\n            fields[name]=int(typed_value)\\n    need('pid' not in fields or fields['pid']>1,'actual_launchctl_pid')\\n    fields['arguments']=arguments\\n    return fields\\n\\n\\ndef missing_service(code, out, err):\\n    if code not in (3, 113) or out:\\n        return False\\n    try:\\n        lines = err.decode('utf-8', 'strict').strip().splitlines()\\n    except UnicodeError:\\n        return False\\n    exact = 'Could not find service \\\"' + LABEL + '\\\" in domain for user gui: 501'\\n    return lines == [exact] or lines == ['Bad request.', exact]\\n\\n\\ndef validate_child_io(value):\\n    need(isinstance(value,dict) and set(value) == {'fdRows','allClosed','openLedger','counts','caps',\\n        'createdDirectories','directoryAttempts','interpreterAndDynamicLoaderInternalFdsNotEnumerated'},\\n        'child_io_schema')\\n    need(value['createdDirectories'] == [] and value['directoryAttempts'] == []\\n         and value['interpreterAndDynamicLoaderInternalFdsNotEnumerated'] is True,\\n         'child_io_no_directory_creation')\\n    need(value['caps'] == {'fdRows':64,'metadata':4096,'readCalls':256,'writeCalls':64,\\n         'readBytes':131072,'writeBytes':16384}, 'child_exact_io_caps')\\n    limits = {'metadata':4096,'readCalls':256,'readBytes':131072,'writeCalls':64,'writeBytes':16384}\\n    need(isinstance(value['counts'],dict) and set(value['counts']) == set(limits)\\n         and all(type(v) is int and 0 <= v <= limits[k] for k,v in value['counts'].items()),\\n         'child_actual_io_counts')\\n    ledger = value['openLedger']\\n    need(isinstance(ledger,dict) and set(ledger) == {'attempts','knownNoReturnErrors',\\n         'registered','pending','registrationUnknown'}, 'child_open_ledger_schema')\\n    need(all(type(ledger[k]) is int and 0 <= ledger[k] <= 64 for k in\\n         ('attempts','knownNoReturnErrors','registered','pending'))\\n         and ledger['registrationUnknown'] is False and ledger['pending'] == 0\\n         and ledger['attempts'] == ledger['knownNoReturnErrors'] + ledger['registered']\\n         and ledger['registered'] == len(value['fdRows']) and value['allClosed'] is True,\\n         'child_open_ledger_complete')\\n    rows = value['fdRows']\\n    need(isinstance(rows,list) and 1 <= len(rows) <= 64, 'child_fd_row_count')\\n    file_paths = {str(p) for p in (CHILD,PLAN,READY,READY_MARK,ADMISSION,ADMISSION_MARK,\\n                                  PUBLIC_SENTINEL,Path(PYTHON))}\\n    dir_paths = {str(p) for p in (Path('/'),Path('/Users'),HOME_PARENT,HOME,\\n                                 Path('/Volumes'),Path('/Volumes/T5'),T5_PARENT,WORK)}\\n    dir_paths.update(str(p) for p in PYTHON_PATHS)\\n    for i,row in enumerate(rows):\\n        need(isinstance(row,dict) and set(row) == {'ordinal','path','role','closeAttempted',\\n             'closed','closeError','created','writeComplete'} and type(row['ordinal']) is int and row['ordinal'] == i\\n             and row['role'] in ('file','directory') and row['closeAttempted'] is True\\n             and row['closed'] is True and row['closeError'] is None, 'child_each_fd_closed')\\n        need(row['path'] in (file_paths if row['role'] == 'file' else dir_paths),\\n             'child_each_fd_fixed_path')\\n        need(type(row['created']) is bool and type(row['writeComplete']) is bool\\n             and (not row['created'] or row['path'] in (str(READY),str(READY_MARK))),\\n             'child_fixed_creations_only')\\n        need(not row['created'] or row['writeComplete'], 'child_created_file_completed')\\n    return value\\n\\ndef validate_child_terminal(raw, expected_identity):\\n    value = json.loads(raw)\\n    required = {'schema','ok','stage','identity','readyPublished','sameBirthAdmission',\\n        'enteredT5','sentinelMatched','explicitApplicationChildrenCreated','sdkOrCredentialRead',\\n        'launchdOwnsThisProcess','controllerDirectChild','parentReapedThisProcess','newFixedPathsOnly',\\n        'io','signalRestoreErrors','pendingSignalAfterRestore','deadlineMetAfterClosure','elapsedSeconds',\\n        'allReturnedApplicationFdsClosed','outcomeUnknown'}\\n    allowed = required | {'error','sentinelBytes','sentinelSha256','sentinelFull9'}\\n    need(isinstance(value,dict) and required <= set(value) <= allowed, 'child_terminal_closed_schema')\\n    need(value['schema'] == 'heptabao.public-launchd-home-t5-probe.child.r1'\\n         and value['identity'] == expected_identity and value['readyPublished'] is True\\n         and value['launchdOwnsThisProcess'] is True and value['controllerDirectChild'] is False\\n         and value['parentReapedThisProcess'] is False and value['newFixedPathsOnly'] is True\\n         and value['explicitApplicationChildrenCreated'] == 0 and value['sdkOrCredentialRead'] is False,\\n         'child_terminal_same_instance')\\n    need(value['stage'] in ('home_plan','home_identity','home_admission','t5_open_ancestors',\\n         't5_chdir','t5_sentinel_read','complete','entry'), 'child_terminal_fixed_stage')\\n    need(all(type(value[k]) is bool for k in ('ok','sameBirthAdmission','enteredT5',\\n         'sentinelMatched','deadlineMetAfterClosure','allReturnedApplicationFdsClosed','outcomeUnknown')),\\n         'child_terminal_boolean_types')\\n    validated_io = validate_child_io(value['io'])\\n    need(value['allReturnedApplicationFdsClosed'] and validated_io['allClosed']\\n         and value['signalRestoreErrors'] == [] and value['pendingSignalAfterRestore'] is None\\n         and value['outcomeUnknown'] is False, 'child_reported_known_closure')\\n    if 'error' in value:\\n        need(isinstance(value['error'],dict) and set(value['error']) == {'type','code','errno'}\\n             and value['error']['type'] in PUBLIC_ERROR_TYPES\\n             and (value['error']['code'] is None or value['error']['code'] in PUBLIC_ERROR_CODES)\\n             and (value['error']['errno'] is None or type(value['error']['errno']) is int\\n                  and 0 <= value['error']['errno'] <= 4096), 'child_fixed_error_projection')\\n    if value['ok']:\\n        need(value['stage'] == 'complete' and value['sameBirthAdmission']\\n             and value['enteredT5'] and value['sentinelMatched']\\n             and value['deadlineMetAfterClosure'] and value.get('sentinelBytes') == len(SENTINEL)\\n             and value.get('sentinelSha256') == sha(SENTINEL), 'child_actual_sentinel_success')\\n    # Do not export the child's arbitrary JSON subtree. Return only these typed fields.\\n    return {k:value[k] for k in ('ok','stage','identity','readyPublished','sameBirthAdmission',\\n        'enteredT5','sentinelMatched','deadlineMetAfterClosure','allReturnedApplicationFdsClosed',\\n        'outcomeUnknown')} | {'error':value.get('error'),'io':validated_io}\\n\\n\\nCLEANUP_OBSERVED = json.loads(r'''{\\\"priorObservation\\\":{\\\"blob\\\":\\\"e4a50c4a58b55c5ff73ab4df0a591a4215e049a4\\\",\\\"bytes\\\":18957,\\\"sha256\\\":\\\"a99d55efc4cd63e14f64e635ddf9671e73a19df6ddae66ce43050abe107d51c5\\\"},\\\"rootQualification\\\":{\\\"blob\\\":\\\"56129f46fd94d072e301c4e558481efd817aed55\\\",\\\"bytes\\\":14522,\\\"sha256\\\":\\\"bf626cd4ee05b5e5aa4c044ee93c4c52fecba8e7e469e84616918e169ce6c641\\\"},\\\"readyIdentity\\\":{\\\"birthSec\\\":1793950344,\\\"birthUsec\\\":737052,\\\"executable\\\":\\\"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python\\\",\\\"pgid\\\":58228,\\\"pid\\\":58228,\\\"ppid\\\":1,\\\"uid\\\":501},\\\"readyFull9\\\":[\\\"16777233\\\",\\\"592904421\\\",\\\"501\\\",\\\"20\\\",\\\"33152\\\",\\\"1\\\",\\\"640\\\",\\\"1793950344882619282\\\",\\\"1793950344882619282\\\"],\\\"markerFull9\\\":[\\\"16777233\\\",\\\"592904422\\\",\\\"501\\\",\\\"20\\\",\\\"33152\\\",\\\"1\\\",\\\"0\\\",\\\"1793950344883708127\\\",\\\"1793950344883708127\\\"],\\\"terminalFull9\\\":[\\\"16777233\\\",\\\"592904419\\\",\\\"501\\\",\\\"20\\\",\\\"33152\\\",\\\"1\\\",\\\"4816\\\",\\\"1793950369615463915\\\",\\\"1793950369615463915\\\"],\\\"stderrFull9\\\":[\\\"16777233\\\",\\\"592904420\\\",\\\"501\\\",\\\"20\\\",\\\"33152\\\",\\\"1\\\",\\\"0\\\",\\\"1793950344733248255\\\",\\\"1793950344733248255\\\"],\\\"terminalError\\\":{\\\"type\\\":\\\"ProbeRefused\\\",\\\"code\\\":\\\"child_absolute_deadline\\\",\\\"errno\\\":null}}''')\\n\\nPARENT_START_NS = time.monotonic_ns()\\nPARENT_UNTIL_NS = PARENT_START_NS + 45000000000\\nHELPER_ADMISSION_END_NS = PARENT_START_NS + 35000000000\\nsignals = None\\ncontroller_cleanup_mode = False\\ndirect_call_attempts = 0\\n\\ndef remaining(*, cleanup=False):\\n    if not cleanup and not controller_cleanup_mode:\\n        need(signals is not None and signals.pending is None, 'controller_cancelled')\\n    left = (PARENT_UNTIL_NS-time.monotonic_ns())/1000000000\\n    need(left > 0, 'shared_45_second_deadline')\\n    return left\\n\\ndef load_readonly_helpers():\\n    for row in MODULES:\\n        raw = base64.b64decode(row['base64'], validate=True)\\n        need(len(raw) == row['bytes'] and sha(raw) == row['sha256'],\\n             'embedded_original_helper_whole')\\n        need(row['name'] not in sys.modules, 'no_existing_helper_module')\\n        module = types.ModuleType(row['name'])\\n        module.__file__ = '<public-' + row['name'] + '>'\\n        sys.modules[row['name']] = module\\n        exec(compile(raw, module.__file__, 'exec'), module.__dict__)\\n    from mac_owned_commands_r1 import Signals, Commands\\n    return Signals, Commands\\n\\ndef fixed_field_projection(raw, expected_argv):\\n    need(isinstance(raw,bytes) and len(raw) <= 65536, 'diagnostic_print_byte_cap')\\n    result = {'bytes':len(raw), 'utf8':False, 'lineCount':None,\\n              'firstLineExactTarget':False, 'scanComplete':False,\\n              'parsed':False, 'parseError':None, 'fieldFacts':{},\\n              'arguments':None, 'registrationBinding':None}\\n    try:\\n        lines = raw.decode('utf-8','strict').splitlines()\\n    except UnicodeDecodeError as error:\\n        result['parseError'] = error_projection(error)\\n        return result, None\\n    result['utf8'] = True\\n    result['lineCount'] = len(lines)\\n    need(1 <= len(lines) <= 4096, 'diagnostic_print_line_cap')\\n    result['firstLineExactTarget'] = lines[0].strip() == TARGET + ' = {'\\n    names = ('path','program','pid','state','runs','last exit code','last terminating signal')\\n    values = {name:[] for name in names}\\n    arguments = []\\n    argument_blocks = 0\\n    depth = 1\\n    in_arguments = False\\n    structure = result['firstLineExactTarget']\\n    for ordinal,line in enumerate(lines[1:],1):\\n        text = line.strip()\\n        if in_arguments:\\n            if text == '}':\\n                in_arguments = False\\n                depth -= 1\\n                continue\\n            structure = structure and depth == 2 and bool(text) and '{' not in text and '}' not in text\\n            arguments.append(text)\\n            continue\\n        if depth == 1 and text == 'arguments = {':\\n            argument_blocks += 1\\n            in_arguments = True\\n            depth += 1\\n            continue\\n        if depth == 1 and ' = ' in text and not text.endswith('{'):\\n            name,value = text.split(' = ',1)\\n            if name in values:\\n                values[name].append(value)\\n        depth += text.count('{') - text.count('}')\\n        if depth < 0 or depth == 0 and (text != '}' or ordinal != len(lines)-1):\\n            structure = False\\n    result['scanComplete'] = bool(structure and depth == 0 and not in_arguments)\\n    for name in names:\\n        items = values[name]\\n        single = items[0] if len(items) == 1 else None\\n        fact = {'present':bool(items), 'count':len(items), 'unique':len(items) == 1,\\n                'numericDecimalSyntax':None, 'typedInteger':None,\\n                'matchesExpected':None, 'knownState':None,\\n                'exactExConfig78':None, 'exactNeverExitedLiteral':None}\\n        if name in ('pid','runs','last exit code','last terminating signal'):\\n            decimal = single is not None and re.fullmatch(r'-?[0-9]{1,10}',single) is not None\\n            fact['numericDecimalSyntax'] = decimal\\n            fact['typedInteger'] = int(single) if decimal else None\\n            if name == 'last exit code':\\n                fact['exactExConfig78'] = single == '78: EX_CONFIG'\\n                fact['exactNeverExitedLiteral'] = single == '(never exited)'\\n        elif name == 'state':\\n            fact['knownState'] = single if single in ('running','not running') else None\\n        else:\\n            fact['matchesExpected'] = single == (str(PLIST) if name == 'path' else PYTHON)\\n        result['fieldFacts'][name] = fact\\n    result['arguments'] = {'blocks':argument_blocks, 'count':len(arguments),\\n        'exactExpectedVector':argument_blocks == 1 and arguments == expected_argv,\\n        'expectedCount':len(expected_argv),\\n        'expectedPositionMatches':[i < len(arguments) and arguments[i] == v\\n                                   for i,v in enumerate(expected_argv)]}\\n    try:\\n        value = parse_print(raw,TARGET)\\n    except (ProbeRefused,UnicodeDecodeError) as error:\\n        result['parseError'] = error_projection(error)\\n        return result, None\\n    result['parsed'] = True\\n    result['registrationBinding'] = {\\n        'path':value.get('path') == str(PLIST),\\n        'program':value.get('program') == PYTHON,\\n        'arguments':value['arguments'] == expected_argv,\\n        'runsAllowed':value.get('runs') in (0,1),\\n        'stateAllowed':value.get('state') in ('running','not running')}\\n    return result, value\\n\\nclass ReadOnlyControl:\\n    def __init__(self, commands, expected_argv):\\n        self.commands = commands\\n        self.argv = list(expected_argv)\\n        self.calls = 0\\n        self.command_bytes = 0\\n        self.unknown = False\\n        self.native_calls = 0\\n        self.native_self = None\\n\\n    def call(self, label, argv, *, seconds=10.0, maximum=65536):\\n        global direct_call_attempts\\n        remaining()\\n        need(self.calls < 4 and self.command_bytes < 1048576, 'diagnostic_helper_cap')\\n        need(time.monotonic_ns() < HELPER_ADMISSION_END_NS, 'helper_cleanup_reserve')\\n        self.calls += 1\\n        until = min(HELPER_ADMISSION_END_NS/1000000000,time.monotonic()+seconds)\\n        with signals.critical():\\n            remaining()\\n            direct_call_attempts += 1\\n        try:\\n            row,out,err = self.commands.run(label,list(argv),until=until,maximum=maximum)\\n        except BaseException:\\n            self.unknown = True\\n            raise\\n        self.command_bytes += len(out)+len(err)\\n        if row['outcomeUnknown'] or not row['completeBeforeDeadline']:\\n            self.unknown = True\\n            raise ProbeRefused('direct_helper_outcome_unknown')\\n        need(self.command_bytes <= 1048576, 'diagnostic_total_helper_bytes')\\n        remaining()\\n        return row,out,err\\n\\n    def query(self, ordinal):\\n        row,out,err = self.call('readonly-print-%d' % ordinal,\\n            ['/bin/launchctl','print',TARGET])\\n        if missing_service(row['exitCode'],out,err):\\n            return {'ordinal':ordinal,'registrationAbsent':True,'knownCommand':True,\\n                    'projection':None}, None\\n        need(row['exitCode'] == 0 and not err, 'known_probe_print')\\n        projection,value = fixed_field_projection(out,self.argv)\\n        return {'ordinal':ordinal,'registrationAbsent':False,'knownCommand':True,\\n                'projection':projection}, value\\n\\n    def native_pid_once(self, reader, pid, until_ns):\\n        remaining()\\n        need(time.monotonic_ns() < until_ns, 'native_pid_absolute_query_deadline')\\n        need(self.native_calls < 6 and type(pid) is int and 1 < pid <= 2147483647,\\n             'fixed_native_pid_call_cap')\\n        self.native_calls += 1\\n        info = BsdInfo()\\n        try:\\n            ctypes.set_errno(0)\\n            count = reader.lib.proc_pidinfo(pid,3,1,ctypes.byref(info),ctypes.sizeof(info))\\n            number = ctypes.get_errno()\\n            remaining()\\n            need(time.monotonic_ns() < until_ns, 'native_pid_absolute_query_deadline')\\n            if count == 0 and number == errno.ESRCH:\\n                return {'kind':'lookup_esrch','returnedBytes':0,'errno':number,'identity':None}\\n            need(count == ctypes.sizeof(info) and info.pid == pid\\n                 and info.birth_sec > 0 and info.birth_usec < 1000000,\\n                 'native_pid_complete_numeric_sample')\\n            return {'kind':'present','returnedBytes':count,\\n                    'identity':(info.pid,info.ppid,info.pgid,info.uid,info.status,\\n                                info.birth_sec,info.birth_usec)}\\n        except BaseException:\\n            self.unknown = True\\n            raise\\n\\n    def qualify_native_self(self, reader, until_ns):\\n        if self.native_self is not None:\\n            return\\n        expected_offsets = {'status':4,'pid':12,'ppid':16,'uid':20,'pgid':100,\\n                            'birth_sec':120,'birth_usec':128}\\n        need(ctypes.sizeof(BsdInfo) == 136 and all(\\n             getattr(BsdInfo,key).offset == value for key,value in expected_offsets.items()),\\n             'native_pid_exact_numeric_offsets')\\n        expected = (os.getpid(),os.getppid(),os.getpgrp(),os.geteuid())\\n        first = self.native_pid_once(reader,expected[0],until_ns)\\n        second = self.native_pid_once(reader,expected[0],until_ns)\\n        need(first['kind'] == second['kind'] == 'present'\\n             and first['identity'] == second['identity']\\n             and first['identity'][:4] == expected and expected[3] == 501,\\n             'native_pid_self_numeric_crosscheck')\\n        self.native_self = {'fixedLibrary':'/usr/lib/libproc.dylib','flavor':3,'arg':1,\\n            'sizeof':136,'offsetsMatched':True,'twoSelfSamples':True,\\n            'selfPidParentGroupUidMatched':True,'selfBirthStable':True,\\n            'installedKernelWholePinClaimed':False,'zombieBranchExecutedBySelfClaimed':False}\\n\\n    def pid_observation(self, ordinal, ready_identity, reader):\\n        remaining()\\n        need(time.monotonic_ns() < HELPER_ADMISSION_END_NS, 'helper_cleanup_reserve')\\n        until_ns = min(HELPER_ADMISSION_END_NS,time.monotonic_ns()+4000000000)\\n        self.qualify_native_self(reader,until_ns)\\n        pid = ready_identity['pid']\\n        first = self.native_pid_once(reader,pid,until_ns)\\n        second = self.native_pid_once(reader,pid,until_ns)\\n        need(first['kind'] == second['kind'], 'native_pid_two_sample_kind_changed')\\n        if first['kind'] == 'lookup_esrch':\\n            return {'ordinal':ordinal,'originalReadyPid':pid,'kind':'lookup_esrch',\\n                'originalBirthPresent':None,'sampleCount':2,'returnedBytes':[0,0],\\n                'errno':errno.ESRCH,'zombieLookupRequested':True,\\n                'existenceOrDepartureAutomaticallyConcluded':False,\\n                'processNotOwnedOrSignalled':True}\\n        need(first['identity'] == second['identity'], 'diagnostic_stable_pid_birth')\\n        actual = first['identity']\\n        same_birth = actual[5:] == (ready_identity['birthSec'],ready_identity['birthUsec'])\\n        same_numeric_identity = actual[:4] == tuple(ready_identity[k] for k in ('pid','ppid','pgid','uid'))\\n        return {'ordinal':ordinal,'originalReadyPid':pid,\\n            'kind':'same_birth_present' if same_birth else 'reused_different_birth',\\n            'originalBirthPresent':same_birth,'sameNumericIdentity':same_numeric_identity,\\n            'sampleCount':2,'returnedBytes':[136,136],'zombieLookupRequested':True,\\n            'processNotOwnedOrSignalled':True}\\n\\n\\nclass OneLabelCleanup(ReadOnlyControl):\\n    def __init__(self, commands, expected_argv):\\n        super().__init__(commands,expected_argv)\\n        self.bootout_attempted = False\\n        self.bootout_returned_known = False\\n\\n    def bootout_once(self):\\n        remaining()\\n        need(not self.bootout_attempted and not self.unknown, 'cleanup_once_after_known_preflight')\\n        # An interruption after this declaration is conservatively possibly effected.\\n        with signals.critical():\\n            remaining()\\n            self.bootout_attempted = True\\n        row,out,err = self.call('cleanup-once-fixed-label',\\n            ['/bin/launchctl','bootout',TARGET],seconds=10.0,maximum=65536)\\n        need(row['exitCode'] == 0 and not out and not err, 'known_empty_launchd_mutation')\\n        self.bootout_returned_known = True\\n\\n\\ndef cleanup_public_fences(io, ready_held, stdout_held, stderr_held, marker):\\n    for path in (Path(PYTHON),CHILD,PLAN,PLIST):\\n        check_leaf_metadata(io,path,INPUT_PINS[str(path)]['identity'])\\n    check_leaf_metadata(io,READY,ready_held)\\n    need(io.present_marker(READY_MARK) == marker, 'ready_marker_stable')\\n    check_leaf_metadata(io,STDOUT,stdout_held)\\n    check_leaf_metadata(io,STDERR,stderr_held)\\n    io.check_all()\\n    remaining()\\n\\n\\ndef check_leaf_metadata(io, path, expected):\\n    parent = io.open_dir(path.parent)\\n    io.check_dir(parent)\\n    info = io.meta(os.stat,path.name,dir_fd=parent['fd'],follow_symlinks=False)\\n    io.file_shape(info,path)\\n    need(identity(info) == tuple(expected), 'diagnostic_pinned_leaf_final_full9')\\n    io.check_dir(parent)\\n\\ndef read_pinned(io,path,result):\\n    pin = INPUT_PINS[str(path)]\\n    raw,held = io.read(path,expected=pin['identity'],maximum=pin['bytes'])\\n    need(len(raw) == pin['bytes'] and sha(raw) == pin['sha256'], 'diagnostic_pinned_whole')\\n    result['pinnedInputs'].append({'path':str(path),'identity':held,\\n                                  'bytes':len(raw),'sha256':pin['sha256']})\\n    return raw\\n\\ndef observe_ready(io,plan,result):\\n    marker = io.present_marker(READY_MARK)\\n    result['ready'] = {'markerPresent':marker is not None,'qualified':False}\\n    if marker is None:\\n        return None,None\\n    raw,held = io.read(READY)\\n    need(io.present_marker(READY_MARK) == marker, 'ready_marker_stable')\\n    value = json.loads(raw)\\n    need(isinstance(value,dict) and set(value) == {'schema','generation','planSha256',\\n        'sourceSha256','identity','homeObject','initialChildren','t5AccessAttempted'},\\n        'exact_ready_keys')\\n    need(value['schema'] == 'heptabao.public-launchd-home-t5-ready.r1'\\n         and value['generation'] == plan['generation']\\n         and value['planSha256'] == INPUT_PINS[str(PLAN)]['sha256']\\n         and value['sourceSha256'] == INPUT_PINS[str(CHILD)]['sha256']\\n         and value['homeObject'] == plan['homeObject']\\n         and value['initialChildren'] == [] and value['t5AccessAttempted'] is False,\\n         'ready_exact_public_bindings')\\n    actual = validate_process(value['identity'])\\n    need(actual['pid'] <= 2147483647 and actual['pid'] != plan['controllerIdentity']['pid']\\n         and actual['ppid'] != plan['controllerIdentity']['pid'],\\n         'diagnostic_ready_not_original_controller')\\n    result['ready'] = {'markerPresent':True,'qualified':True,'identity':actual,\\n        'full9':held,'bytes':len(raw),'markerFull9':marker,\\n        'sameFixedPlanAndSource':True,'historicalReadyInodeNotPreviouslyPublished':True}\\n    return actual,held\\n\\ndef observe_terminal(io,ready_identity,result):\\n    raw,held = io.read(STDOUT)\\n    result['terminal'] = {'present':True,'empty':not raw,'bytes':len(raw),\\n                          'full9':held,'qualified':False}\\n    if raw and ready_identity is not None:\\n        need(raw.endswith(b'\\\\n') and raw.count(b'\\\\n') == 1, 'diagnostic_one_public_terminal')\\n        value = json.loads(raw)\\n        if isinstance(value,dict) and isinstance(value.get('error'),dict):\\n            code = value['error'].get('code')\\n            need(code is None or code in CHILD_PUBLIC_ERROR_CODES, 'diagnostic_original_child_error_set')\\n        projected = validate_child_terminal(raw,ready_identity)\\n        result['terminal'].update(qualified=True,public=projected)\\n    err,err_held = io.read(STDERR)\\n    result['managedStderr'] = {'bytes':len(err),'empty':not err,'full9':err_held,\\n        'rawOrUnknownHashExported':False}\\n    return held,err_held\\n\\ndef safe_commands_public(commands):\\n    value = commands.public()\\n    # Never forward hashes of unknown print, ps or stderr text. Only closed, typed\\n    # helper resource/exit facts and the already fixed argv survive this projection.\\n    rows = []\\n    for row in value['commands']:\\n        rows.append({key:row[key] for key in (\\n            'label','argv','pid','exitCode','stdoutBytes','stderrBytes',\\n            'elapsedSeconds','commandDeadlineMonotonic','completeBeforeDeadline',\\n            'streamsClosed','outcomeUnknown','errorType','errorCode','cleanup')})\\n    return {'commands':rows,'allOwnedCommandsStopped':value['allOwnedCommandsStopped'],\\n            'unknownCommandCount':value['unknownCommandCount']}\\n\\ndef main():\\n    global signals,controller_cleanup_mode\\n    io = None\\n    commands = None\\n    control = None\\n    saved = {}\\n    stage = 'entry'\\n    result = {'schema':'heptabao.public-home-t5-fixed-label-cleanup.r1',\\n        'ok':False,'observationComplete':False,'outcomeUnknown':False,\\n        'newLabel':LABEL,'target':TARGET,'pinnedInputs':[],'prints':[],\\n        'pidObservations':[],'historicalR4Rewritten':False,\\n        'historicalPrintRawRecovered':False,'oldWorkerLabelTouched':False,\\n        'bootstrapCalled':False,'explicitManagedPidSignalOrReapCalled':False,\\n        'bootoutMayRequestTermination':True,'preflightQualified':False,\\n        'currentRegistrationAbsentObservedTwice':False,'finalFencesPassed':False,\\n        'newDirectoriesOrFilesCreated':False,'t5FileOrDirectoryRead':False,\\n        'sdkOrCredentialRead':False,'productServerOrConsumerStarted':False,\\n        'sharedSeconds':45,'helperAdmissionEndSeconds':35,'outerSeconds':60,\\n        'registrationClosureClaimed':False,'originalR4ManagedScopeStillUnknown':True,\\n        'currentReadyOrTerminalIsNotHistoricalFull9Proof':True,\\n        'historicalReadonlyR2Helper87650ClosureStillUnknown':True}\\n    try:\\n        Signals,Commands = load_readonly_helpers()\\n        signals = Signals()\\n        saved = {s:signal.getsignal(s) for s in (signal.SIGTERM,signal.SIGINT)}\\n        signals.install()\\n        need(sys.platform == 'darwin' and os.getuid() == os.geteuid() == 501\\n             and sys.executable == PYTHON, 'controller_exact_platform_python')\\n        io = FixedIO(signals,remaining,read_cap=262144,write_cap=0)\\n        io.allowed_dirs = {Path('/'),Path('/Users'),HOME_PARENT,HOME}\\n        io.allowed_dirs.update(PYTHON_PATHS)\\n        io.allowed_files = {Path(PYTHON):34640,CHILD:INPUT_PINS[str(CHILD)]['bytes'],\\n            PLAN:INPUT_PINS[str(PLAN)]['bytes'],PLIST:INPUT_PINS[str(PLIST)]['bytes'],\\n            READY:8192,READY_MARK:0,STDOUT:32768,STDERR:4096}\\n        io.writable = set()\\n        io.max_writes = 0\\n        stage = 'pinned_inputs'\\n        for path in (Path(PYTHON),CHILD,PLAN,PLIST):\\n            raw = read_pinned(io,path,result)\\n            if path == PLAN:\\n                plan = json.loads(raw)\\n            elif path == PLIST:\\n                plist = plistlib.loads(raw)\\n        need(isinstance(plan,dict) and set(plan) == {'schema','label','home','work','sourceSha256',\\n            'homeObject','workFull9','sentinelFull9','sentinelSha256','childUntilNs',\\n            'controllerUntilNs','controllerIdentity','generation'}, 'child_public_plan_fields')\\n        need(plan['schema'] == 'heptabao.public-launchd-home-t5-plan.r1'\\n             and plan['label'] == LABEL and plan['home'] == str(HOME)\\n             and plan['work'] == str(WORK) and plan['sourceSha256'] == INPUT_PINS[str(CHILD)]['sha256']\\n             and isinstance(plan['generation'],str) and re.fullmatch(r'[0-9a-f]{64}',plan['generation']),\\n             'diagnostic_same_original_public_plan')\\n        validate_process(plan['controllerIdentity'])\\n        need(isinstance(plist,dict) and plist.get('Label') == LABEL\\n             and 'Program' not in plist and plist.get('ProgramArguments') == EXPECTED_ARGV\\n             and plist.get('WorkingDirectory') == str(HOME)\\n             and plist.get('StandardOutPath') == str(STDOUT)\\n             and plist.get('StandardErrorPath') == str(STDERR), 'diagnostic_same_original_plist')\\n        home = io.open_dir(HOME)\\n        need(tuple(plan['homeObject']) == home['initial'][:5], 'child_same_home_object')\\n        commands = Commands(signals)\\n        control = OneLabelCleanup(commands,EXPECTED_ARGV)\\n        stage = 'current_preflight_print'\\n        first,first_value = control.query(1)\\n        result['prints'].append(first)\\n        need(not first['registrationAbsent'] and first_value is not None\\n             and all(first['projection']['registrationBinding'].values())\\n             and first_value.get('pid') is None and first_value.get('state') == 'not running'\\n             and first_value.get('runs') == 1 and first_value.get('last exit code') == 1,\\n             'cleanup_same_inactive_failed_registration')\\n        stage = 'current_ready'\\n        ready_identity,ready_held = observe_ready(io,plan,result)\\n        need(ready_identity == CLEANUP_OBSERVED['readyIdentity']\\n             and ready_held == CLEANUP_OBSERVED['readyFull9']\\n             and result['ready']['markerFull9'] == tuple(CLEANUP_OBSERVED['markerFull9']),\\n             'cleanup_same_observed_ready')\\n        stage = 'current_terminal'\\n        stdout_held,stderr_held = observe_terminal(io,ready_identity,result)\\n        need(result['terminal']['qualified'] and stdout_held == CLEANUP_OBSERVED['terminalFull9']\\n             and stderr_held == CLEANUP_OBSERVED['stderrFull9']\\n             and result['managedStderr']['empty'], 'cleanup_same_observed_terminal_files')\\n        terminal = result['terminal']['public']\\n        need(terminal['ok'] is False and terminal['stage'] == 'home_admission'\\n             and terminal['error'] == CLEANUP_OBSERVED['terminalError']\\n             and terminal['sameBirthAdmission'] is False and terminal['enteredT5'] is False\\n             and terminal['sentinelMatched'] is False and terminal['outcomeUnknown'] is False\\n             and terminal['allReturnedApplicationFdsClosed'] is True,\\n             'cleanup_same_failed_child_terminal')\\n        need(type(plan['childUntilNs']) is int and type(plan['controllerUntilNs']) is int\\n             and time.monotonic_ns() > max(plan['childUntilNs'],plan['controllerUntilNs']),\\n             'cleanup_original_child_and_controller_deadlines_elapsed')\\n        reader = ProcessReader()\\n        stage = 'current_ready_pid_before_bootout'\\n        result['pidObservations'].append(control.pid_observation(1,ready_identity,reader))\\n        need(result['pidObservations'][-1]['kind'] == 'lookup_esrch',\\n             'cleanup_same_typed_pid_lookup_before')\\n        stage = 'pre_bootout_fences'\\n        cleanup_public_fences(io,ready_held,stdout_held,stderr_held,result['ready']['markerFull9'])\\n        result['preflightQualified'] = True\\n        stage = 'once_fixed_label_bootout'\\n        control.bootout_once()\\n        stage = 'first_post_bootout_print'\\n        post_first,_ = control.query(2)\\n        result['prints'].append(post_first)\\n        need(post_first['registrationAbsent'], 'cleanup_first_exact_service_missing')\\n        stage = 'current_ready_pid_after_bootout'\\n        result['pidObservations'].append(control.pid_observation(2,ready_identity,reader))\\n        need(result['pidObservations'][-1]['kind'] == 'lookup_esrch',\\n             'cleanup_same_typed_pid_lookup_after')\\n        stage = 'second_post_bootout_print'\\n        post_second,_ = control.query(3)\\n        result['prints'].append(post_second)\\n        need(post_second['registrationAbsent'], 'cleanup_second_exact_service_missing')\\n        result['currentRegistrationAbsentObservedTwice'] = True\\n        stage = 'post_bootout_fences'\\n        cleanup_public_fences(io,ready_held,stdout_held,stderr_held,result['ready']['markerFull9'])\\n        result['finalFencesPassed'] = True\\n        result['observationComplete'] = True\\n        stage = 'complete'\\n    except BaseException as error:\\n        result['error'] = error_projection(error)\\n    finally:\\n        controller_cleanup_mode = True\\n        result['stage'] = stage\\n        io_closed = io is None\\n        try:\\n            if io is not None:\\n                io.close()\\n                result['io'] = io.public()\\n                io_closed = result['io']['allClosed']\\n        except BaseException as error:\\n            result['ioCloseError'] = error_projection(error)\\n            io_closed = False\\n        helpers_closed = direct_call_attempts == 0 if commands is None else False\\n        try:\\n            if commands is not None:\\n                result['directHelpers'] = safe_commands_public(commands)\\n                helpers_closed = (direct_call_attempts == len(commands.rows)\\n                    and result['directHelpers']['allOwnedCommandsStopped']\\n                    and result['directHelpers']['unknownCommandCount'] == 0)\\n        except BaseException as error:\\n            result['helperLedgerError'] = error_projection(error)\\n            helpers_closed = False\\n        result['nativePidApi'] = {'callAttempts':0 if control is None else control.native_calls,\\n            'maximumCalls':6,'selfQualification':None if control is None else control.native_self,\\n            'explicitReadyPidPsHelperStarted':False,'errnoEsrchDoesNotAutomaticallyCloseManagedScope':True}\\n        result['signalRestoreErrors'] = restore_handlers(saved)\\n        result['pendingSignalAfterRestore'] = None if signals is None else signals.pending\\n        final_ns = time.monotonic_ns()\\n        result['deadlineMetAfterClosure'] = final_ns < PARENT_UNTIL_NS\\n        result['elapsedSeconds'] = (final_ns-PARENT_START_NS)/1000000000\\n        result['allReturnedApplicationFdsClosed'] = io_closed\\n        result['allDirectHelpersClosed'] = helpers_closed\\n        result['directHelperAttempts'] = direct_call_attempts\\n        result['directHelpersReturnedIntoLedger'] = 0 if commands is None else len(commands.rows)\\n        result['bootoutAttempted'] = bool(control is not None and control.bootout_attempted)\\n        result['bootoutReturnedKnown'] = bool(control is not None and control.bootout_returned_known)\\n        result['currentLabelRemovalConfirmed'] = bool(result['bootoutReturnedKnown']\\n            and result['currentRegistrationAbsentObservedTwice'] and result['finalFencesPassed']\\n            and result['observationComplete'] and io_closed and helpers_closed\\n            and control is not None and not control.unknown\\n            and not result['signalRestoreErrors'] and result['pendingSignalAfterRestore'] is None\\n            and result['deadlineMetAfterClosure'])\\n        result['currentRegistrationOutcomeUnknown'] = bool(result['bootoutAttempted']\\n            and not result['currentLabelRemovalConfirmed'])\\n        result['outcomeUnknown'] = bool(not io_closed or not helpers_closed\\n            or control is not None and control.unknown\\n            or result['currentRegistrationOutcomeUnknown']\\n            or result['signalRestoreErrors'] or result['pendingSignalAfterRestore'] is not None)\\n        result['ok'] = bool(result['currentLabelRemovalConfirmed'] and not result['outcomeUnknown'])\\n        final_raw = encoded(result)\\n        if len(final_raw) > 65536:\\n            raise SystemExit(1)\\n        sys.stdout.buffer.write(final_raw)\\n        sys.stdout.buffer.flush()\\n    raise SystemExit(0 if result['ok'] and time.monotonic_ns() < PARENT_UNTIL_NS else 1)\\n\\nif __name__ == '__main__':\\n    main()\\n\"\n}\n",
+        "requestPin": {
+          "blob": "1ca3b73f3cc0bd3cb11a2934dcbfff3d6ae06325",
+          "bytes": 100721,
+          "sha256": "d7ae0a4750681b826dd8a20be78c258f1cf9e04dc1f545aaf8334feeac85c75e"
+        },
+        "phase": "accepted",
+        "called": true,
+        "armed": {
+          "tree": "4b053bef59010b751b50c6021ff26025e804f71b",
+          "entries": [
+            {
+              "path": "armed.json",
+              "blob": "1d33fb4dcf05a0f7573000b667e76592ea9fa475",
+              "bytes": 838,
+              "sha256": "eae81d590de1f4a8647360ff21ad874e734523d9a3d5c40b748b2c140818a61f",
+              "whole": true
+            },
+            {
+              "path": "intent.json",
+              "blob": "83ce5e0c12ed553649cf8c0338dc199a1316f2ab",
+              "bytes": 701,
+              "sha256": "b05accc5e645844c35bdde454a9490b88f2f5e4636be9ab192efae623e37b6fc",
+              "whole": true
+            },
+            {
+              "path": "request.json",
+              "blob": "1ca3b73f3cc0bd3cb11a2934dcbfff3d6ae06325",
+              "bytes": 100721,
+              "sha256": "d7ae0a4750681b826dd8a20be78c258f1cf9e04dc1f545aaf8334feeac85c75e",
+              "whole": true
+            }
+          ],
+          "count": 3,
+          "bytes": 102260,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "sdkPin": {
+          "blob": "a97e497b022bc11f832516693c22d1d67df3af36",
+          "bytes": 1426,
+          "sha256": "238515dd44353e296fbd57c3882c4cf3b4b3bb28bae01f1f60d6d7d220b6584b"
+        },
+        "sdkArchive": {
+          "tree": "dcc0882a8cdcd6115bf8115d539655a0132b7fe6",
+          "entries": [
+            {
+              "path": "original.sdk.json",
+              "blob": "a97e497b022bc11f832516693c22d1d67df3af36",
+              "bytes": 1426,
+              "sha256": "238515dd44353e296fbd57c3882c4cf3b4b3bb28bae01f1f60d6d7d220b6584b",
+              "whole": true
+            }
+          ],
+          "count": 1,
+          "bytes": 1426,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "nativePin": {
+          "blob": "53ff2fe321b97225f5a6eb7ec6bcbf214aefa770",
+          "bytes": 1178,
+          "sha256": "e7cd67c57ce200452253692bb4ffd9e05ac0279d6a377834c59108288d193ac9"
+        }
+      },
+      "home-t5-close-label-r1-authority-admit": {
+        "kind": "operation_start",
+        "requestRaw": "{\n  \"idempotency_key\": \"heptabao-mac-owned-home-t5-close-label-4e5761d3-authority-r1\",\n  \"operation\": {\n    \"tool\": \"process_status\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"job_id\": \"1a1b0305ba9-fc05-6ee6\"\n    }\n  }\n}\n",
+        "requestPin": {
+          "blob": "768213f2bce911f67425e9bc984be5463abbbbc3",
+          "bytes": 226,
+          "sha256": "c0bda6b4bbe04b0e13139430be1205de7699167c4d648f23dae9c8a51d0b4881"
+        },
+        "phase": "accepted",
+        "called": true,
+        "armed": {
+          "tree": "df7a7c4a5db5438e945aad7a7fcfce51254e595c",
+          "entries": [
+            {
+              "path": "armed.json",
+              "blob": "f3c1d7a6d53d018a9e2eea4f43b10b8da6757a79",
+              "bytes": 866,
+              "sha256": "464489223e7842b8cef1b86ee3e298376d990a130d41ae62f5ec2d7239422bfa",
+              "whole": true
+            },
+            {
+              "path": "intent.json",
+              "blob": "75bd98985cac8b894e747dd9e4ed130c6fed3e6c",
+              "bytes": 729,
+              "sha256": "8710e2c39f8f13fcdd900511a9ceee137b84326f1d94c2bb04215af52ae5ca6e",
+              "whole": true
+            },
+            {
+              "path": "request.json",
+              "blob": "768213f2bce911f67425e9bc984be5463abbbbc3",
+              "bytes": 226,
+              "sha256": "c0bda6b4bbe04b0e13139430be1205de7699167c4d648f23dae9c8a51d0b4881",
+              "whole": true
+            }
+          ],
+          "count": 3,
+          "bytes": 1821,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "sdkPin": {
+          "blob": "185ef0126338e782dd24e95e2a98581aa9741157",
+          "bytes": 709,
+          "sha256": "e1a73ca2862574d1d788b4c28d2ec45e44a7782a35fd80c6948fe8a94c84a399"
+        },
+        "sdkArchive": {
+          "tree": "0f6c86a8fb093ed94d0c9526833edebeb4c57768",
+          "entries": [
+            {
+              "path": "original.sdk.json",
+              "blob": "185ef0126338e782dd24e95e2a98581aa9741157",
+              "bytes": 709,
+              "sha256": "e1a73ca2862574d1d788b4c28d2ec45e44a7782a35fd80c6948fe8a94c84a399",
+              "whole": true
+            }
+          ],
+          "count": 1,
+          "bytes": 709,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "nativePin": {
+          "blob": "f5195584e3716c6482e88cba0c741f956a1727d3",
+          "bytes": 548,
+          "sha256": "062d782431a128b64ab7a91a0ee2385a608466007835d44cc1091c6f0039d1bf"
+        }
+      },
+      "home-t5-close-label-r1-authority-status-0": {
+        "kind": "operation_status",
+        "requestRaw": "{\n  \"operation_id\": \"4b79662ff5e9b0f153bee6af39d912512e69ddf525c75ac9ca85abb8552ddc38\"\n}\n",
+        "requestPin": {
+          "blob": "18f451492cb5eb39343fb7a36265347f14b64287",
+          "bytes": 89,
+          "sha256": "863be20a396f07e2febd1d5e21ecf54d15018e3b2b2b43d27ed7f46527968034"
+        },
+        "phase": "accepted",
+        "called": true,
+        "armed": {
+          "tree": "64f6072fd96ef94a9fc4f533a50af1259ffeca6a",
+          "entries": [
+            {
+              "path": "armed.json",
+              "blob": "c8856a1cbccb423ca52826688cb33223b8fdabba",
+              "bytes": 931,
+              "sha256": "d5a6882eb86faf30ae0390542ed56b73bd73b0b9d0f48866689039af1a540a4a",
+              "whole": true
+            },
+            {
+              "path": "intent.json",
+              "blob": "ac9ab99bb4d4071eb086aa9e7aacbbb212996a43",
+              "bytes": 794,
+              "sha256": "18b9549ed120955b37fea36fdb83c6346250785f0fbece32f3ec8f5c4a3c2614",
+              "whole": true
+            },
+            {
+              "path": "request.json",
+              "blob": "18f451492cb5eb39343fb7a36265347f14b64287",
+              "bytes": 89,
+              "sha256": "863be20a396f07e2febd1d5e21ecf54d15018e3b2b2b43d27ed7f46527968034",
+              "whole": true
+            }
+          ],
+          "count": 3,
+          "bytes": 1814,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "sdkPin": {
+          "blob": "ec2b544065bcb67c17d2b39d2ef26ccfd71b8316",
+          "bytes": 980,
+          "sha256": "874cb9a581513e6c82abc17991d350b7cab38f8bbb327d6dde91e27c9809718e"
+        },
+        "sdkArchive": {
+          "tree": "53cfe497605ef2ce7a3b162e1c7e1cffb336ad7b",
+          "entries": [
+            {
+              "path": "original.sdk.json",
+              "blob": "ec2b544065bcb67c17d2b39d2ef26ccfd71b8316",
+              "bytes": 980,
+              "sha256": "874cb9a581513e6c82abc17991d350b7cab38f8bbb327d6dde91e27c9809718e",
+              "whole": true
+            }
+          ],
+          "count": 1,
+          "bytes": 980,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "nativePin": {
+          "blob": "143925b1a6f8794d6116fe55ab89a69684f08c61",
+          "bytes": 805,
+          "sha256": "b92a9ed2aa26bad5c33c4f1c157321900354c94c694cfc7fd649030adfabf1fd"
+        }
+      },
+      "home-t5-close-label-r1-authority-page-0": {
+        "kind": "operation_result",
+        "requestRaw": "{\n  \"operation_id\": \"4b79662ff5e9b0f153bee6af39d912512e69ddf525c75ac9ca85abb8552ddc38\",\n  \"offset\": 0,\n  \"limit\": 8192\n}\n",
+        "requestPin": {
+          "blob": "3f9e1222e87ff90d63fdf4428e8d7929ca246365",
+          "bytes": 121,
+          "sha256": "f2fc35c3114cf55b5d952a39876452bf0d777220c7cd4caf987dbc0eaa2e2c60"
+        },
+        "phase": "accepted",
+        "called": true,
+        "armed": {
+          "tree": "6f5aa736448846c2d5ae00923103de14ec1ef9c1",
+          "entries": [
+            {
+              "path": "armed.json",
+              "blob": "7a0ef62389eff3bc3968f88b278061bce5669ab3",
+              "bytes": 930,
+              "sha256": "2fd94863fe53b983e83dd035f839da22963af807eebe0f47d03960043905e0cb",
+              "whole": true
+            },
+            {
+              "path": "intent.json",
+              "blob": "f741a7323aab05e724981620f6f53080978339be",
+              "bytes": 793,
+              "sha256": "160a0dce620dfd9782cd0259984388603698b227aa71082a7a60f8d0029d1bf6",
+              "whole": true
+            },
+            {
+              "path": "request.json",
+              "blob": "3f9e1222e87ff90d63fdf4428e8d7929ca246365",
+              "bytes": 121,
+              "sha256": "f2fc35c3114cf55b5d952a39876452bf0d777220c7cd4caf987dbc0eaa2e2c60",
+              "whole": true
+            }
+          ],
+          "count": 3,
+          "bytes": 1844,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "sdkPin": {
+          "blob": "685665778330c3b4216ca78281c2dac32ce82dfa",
+          "bytes": 2068,
+          "sha256": "0567d50a77773b64b70655c0d77f8bcd6b4d22e37a07f0c80cd6837e12a859da"
+        },
+        "sdkArchive": {
+          "tree": "ae77208619363b8c69eff32e064adb2d23c5f667",
+          "entries": [
+            {
+              "path": "original.sdk.json",
+              "blob": "685665778330c3b4216ca78281c2dac32ce82dfa",
+              "bytes": 2068,
+              "sha256": "0567d50a77773b64b70655c0d77f8bcd6b4d22e37a07f0c80cd6837e12a859da",
+              "whole": true
+            }
+          ],
+          "count": 1,
+          "bytes": 2068,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "nativePin": {
+          "blob": "9cb6334438517dd273e372566167ec17a44869d0",
+          "bytes": 1897,
+          "sha256": "b8ee7746daa1645b70c24fa644b6c905019bc034b6678b50c07a49176336342a"
+        }
+      },
+      "home-t5-close-label-r1-streams-00-admit": {
+        "kind": "operation_start",
+        "requestRaw": "{\n  \"idempotency_key\": \"heptabao-mac-owned-home-t5-close-label-4e5761d3-streams-00-r1\",\n  \"operation\": {\n    \"tool\": \"process_read\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"job_id\": \"1a1b0305ba9-fc05-6ee6\",\n      \"limit\": 16384,\n      \"stdout_offset\": 0,\n      \"stderr_offset\": 0\n    }\n  }\n}\n",
+        "requestPin": {
+          "blob": "4b0b834e091831a30cab7acfa59a99a2b97f934d",
+          "bytes": 299,
+          "sha256": "28037aac7eca712ace841b7ed72fcd6b8094307f1b52d362c4dc970e66060ee3"
+        },
+        "phase": "accepted",
+        "called": true,
+        "armed": {
+          "tree": "e413e5e87605b60cba269b16a9761d4fdb44451f",
+          "entries": [
+            {
+              "path": "armed.json",
+              "blob": "1dff28ed392355b37fc225cb940acfc5a8454910",
+              "bytes": 867,
+              "sha256": "d594cb70f7b38daa93bb5a979402ce91ba87f0bb5e35be4352f5d98ac99c3d82",
+              "whole": true
+            },
+            {
+              "path": "intent.json",
+              "blob": "e02064cd27ea3ccc1574dc09e5019f04e5313543",
+              "bytes": 730,
+              "sha256": "6fb9b436b723f7d9a46f7bfdff1310920e0c8e33ce06d5aaa9761c573367ea40",
+              "whole": true
+            },
+            {
+              "path": "request.json",
+              "blob": "4b0b834e091831a30cab7acfa59a99a2b97f934d",
+              "bytes": 299,
+              "sha256": "28037aac7eca712ace841b7ed72fcd6b8094307f1b52d362c4dc970e66060ee3",
+              "whole": true
+            }
+          ],
+          "count": 3,
+          "bytes": 1896,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "sdkPin": {
+          "blob": "de966fd8ecd987407feff4c6b3826d4a389d3aae",
+          "bytes": 707,
+          "sha256": "1de238553c93fa2e2eca1ca82194d3ca95a9f49f11f53e4ff2bebe445190b3d5"
+        },
+        "sdkArchive": {
+          "tree": "b44d5efb4424c972432581f4ae7c18600dc7d7a8",
+          "entries": [
+            {
+              "path": "original.sdk.json",
+              "blob": "de966fd8ecd987407feff4c6b3826d4a389d3aae",
+              "bytes": 707,
+              "sha256": "1de238553c93fa2e2eca1ca82194d3ca95a9f49f11f53e4ff2bebe445190b3d5",
+              "whole": true
+            }
+          ],
+          "count": 1,
+          "bytes": 707,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "nativePin": {
+          "blob": "f5698d69764c10d76e2df18962acf3af82dc1a7b",
+          "bytes": 546,
+          "sha256": "9d6a192cad15c1750409294b01365ef3e4d7165141bef0b8fd71263952aa2159"
+        }
+      },
+      "home-t5-close-label-r1-streams-00-status-0": {
+        "kind": "operation_status",
+        "requestRaw": "{\n  \"operation_id\": \"37bbdc99df0408fc1ec780ed4003f6b48a887d5b114929936789b8dc7c77409d\"\n}\n",
+        "requestPin": {
+          "blob": "da2e3f604eb73b2dda49d0af655d5a9b538ea939",
+          "bytes": 89,
+          "sha256": "9abf17846499a37bce02a02ebd4f89e6c5d5483774185e050476bd069beade67"
+        },
+        "phase": "accepted",
+        "called": true,
+        "armed": {
+          "tree": "d789a59e5d7777e686b464fa9d91a9e82d3a42f0",
+          "entries": [
+            {
+              "path": "armed.json",
+              "blob": "b458e61fff4c2ea5e80a098ece3da403af402dd5",
+              "bytes": 932,
+              "sha256": "adafbeb19b4bf2f07e3aac26803a1c99cba8f7ef01eeebbbfac902801a94948c",
+              "whole": true
+            },
+            {
+              "path": "intent.json",
+              "blob": "b21400c630c15219762890f18b81b72ea1e1b697",
+              "bytes": 795,
+              "sha256": "87517fc71db1ea1a758364f91abf6630207c28171b10bdf0c493f44c9bc1eb47",
+              "whole": true
+            },
+            {
+              "path": "request.json",
+              "blob": "da2e3f604eb73b2dda49d0af655d5a9b538ea939",
+              "bytes": 89,
+              "sha256": "9abf17846499a37bce02a02ebd4f89e6c5d5483774185e050476bd069beade67",
+              "whole": true
+            }
+          ],
+          "count": 3,
+          "bytes": 1816,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "sdkPin": {
+          "blob": "be663c602fae3863965ab8ce89e37acba655401e",
+          "bytes": 978,
+          "sha256": "aa33ff53f192941019443631f749642a0dd9b6ba6eadfe94b427741de05b1492"
+        },
+        "sdkArchive": {
+          "tree": "80899282778a634f9ff183ba2068af72f906b27e",
+          "entries": [
+            {
+              "path": "original.sdk.json",
+              "blob": "be663c602fae3863965ab8ce89e37acba655401e",
+              "bytes": 978,
+              "sha256": "aa33ff53f192941019443631f749642a0dd9b6ba6eadfe94b427741de05b1492",
+              "whole": true
+            }
+          ],
+          "count": 1,
+          "bytes": 978,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "nativePin": {
+          "blob": "322ff34a7838b6d4a8d0db2418fe00b27f387bab",
+          "bytes": 803,
+          "sha256": "6f6753d170145933f9f20c42aeeb4deb6cfda0ef40456c31031cdadcda0f2db7"
+        }
+      },
+      "home-t5-close-label-r1-streams-00-page-0": {
+        "kind": "operation_result",
+        "requestRaw": "{\n  \"operation_id\": \"37bbdc99df0408fc1ec780ed4003f6b48a887d5b114929936789b8dc7c77409d\",\n  \"offset\": 0,\n  \"limit\": 8192\n}\n",
+        "requestPin": {
+          "blob": "ef70364e912aa11132b9a782335adbf451a96e3a",
+          "bytes": 121,
+          "sha256": "a2d74c2b0eeb22e78c190e4899aa915b6afb02ea6788e6a2848453bdcfa43b26"
+        },
+        "phase": "accepted",
+        "called": true,
+        "armed": {
+          "tree": "45411d35b2065f03efe5a4e28318a0446265f2b0",
+          "entries": [
+            {
+              "path": "armed.json",
+              "blob": "1ec834ad25979355e0c9fc715fa3088ee58d3599",
+              "bytes": 931,
+              "sha256": "c2395a4c15d2335073eb859b719114bebd58f87acc23af39a745953c246ba0bf",
+              "whole": true
+            },
+            {
+              "path": "intent.json",
+              "blob": "5869cd97ecf4487348b8a16d37d8fe7db37ec0ae",
+              "bytes": 794,
+              "sha256": "5100e401c53bd19b94b13e27acd57f9c94a02f97ebb1a16e9d99e00f6c21bfa0",
+              "whole": true
+            },
+            {
+              "path": "request.json",
+              "blob": "ef70364e912aa11132b9a782335adbf451a96e3a",
+              "bytes": 121,
+              "sha256": "a2d74c2b0eeb22e78c190e4899aa915b6afb02ea6788e6a2848453bdcfa43b26",
+              "whole": true
+            }
+          ],
+          "count": 3,
+          "bytes": 1846,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "sdkPin": {
+          "blob": "f2f64850e3b411da8d7321758c833022e2e05222",
+          "bytes": 11780,
+          "sha256": "e57c8e62cf8e4237e6f94fa47af36ab6b8650e4f2c58b72945fbcb0fc6f0bb3e"
+        },
+        "sdkArchive": {
+          "tree": "6b987344607f157a72db9edfdd8ed1efdd41ebe7",
+          "entries": [
+            {
+              "path": "original.sdk.json",
+              "blob": "f2f64850e3b411da8d7321758c833022e2e05222",
+              "bytes": 11780,
+              "sha256": "e57c8e62cf8e4237e6f94fa47af36ab6b8650e4f2c58b72945fbcb0fc6f0bb3e",
+              "whole": true
+            }
+          ],
+          "count": 1,
+          "bytes": 11780,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "nativePin": {
+          "blob": "5196d3db5f286e1eb0ecb7662ee8b609e17948f1",
+          "bytes": 11609,
+          "sha256": "a8d8a67d42bdb3ab412da1b5a2b0e4d6cdd24bfdab422871107ce14b00c4e8c3"
+        }
+      },
+      "home-t5-close-label-r1-streams-00-page-8192": {
+        "kind": "operation_result",
+        "requestRaw": "{\n  \"operation_id\": \"37bbdc99df0408fc1ec780ed4003f6b48a887d5b114929936789b8dc7c77409d\",\n  \"offset\": 8192,\n  \"limit\": 8192\n}\n",
+        "requestPin": {
+          "blob": "6d3a381799c1ce3488384449f5fc6cd5e0bb6347",
+          "bytes": 124,
+          "sha256": "90d0310817c1592562338640250002043e99cff5f624b1852208fdf638d108c9"
+        },
+        "phase": "accepted",
+        "called": true,
+        "armed": {
+          "tree": "eab2d2178123d8d7412ca020a5daf250a8f19dab",
+          "entries": [
+            {
+              "path": "armed.json",
+              "blob": "0880eedfadcdac906ffc1ac60d3b5ac8919cdcaf",
+              "bytes": 934,
+              "sha256": "692a2bc6cc3fbfe2cd7ca058b7b674400752ae865115a7ceffba075fd1b9eff2",
+              "whole": true
+            },
+            {
+              "path": "intent.json",
+              "blob": "b754854cf7c1d780fc745eec2d6ed9474a39580b",
+              "bytes": 797,
+              "sha256": "4a00085f26d7eb6f9badb5f1d808d1c456e5ad1b08a09f195bc2c204a4bc0a9e",
+              "whole": true
+            },
+            {
+              "path": "request.json",
+              "blob": "6d3a381799c1ce3488384449f5fc6cd5e0bb6347",
+              "bytes": 124,
+              "sha256": "90d0310817c1592562338640250002043e99cff5f624b1852208fdf638d108c9",
+              "whole": true
+            }
+          ],
+          "count": 3,
+          "bytes": 1855,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "sdkPin": {
+          "blob": "7ab8993f6a667c7b2aa74579be9cc73af2f7898a",
+          "bytes": 11784,
+          "sha256": "cf8ad2265491ac389a3dc5ccee6839ca25bb58d948a075e4c6bf426ebad5ffde"
+        },
+        "sdkArchive": {
+          "tree": "456515555aa5beefce67433d030650197f939412",
+          "entries": [
+            {
+              "path": "original.sdk.json",
+              "blob": "7ab8993f6a667c7b2aa74579be9cc73af2f7898a",
+              "bytes": 11784,
+              "sha256": "cf8ad2265491ac389a3dc5ccee6839ca25bb58d948a075e4c6bf426ebad5ffde",
+              "whole": true
+            }
+          ],
+          "count": 1,
+          "bytes": 11784,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "nativePin": {
+          "blob": "e40f42cede12c562210bd7f6ea6ef2c50138a768",
+          "bytes": 11613,
+          "sha256": "068ac4067eba51e03b2afa8b07e838fe6e1531e4a450ef925c8b8e0ee2a54c34"
+        }
+      },
+      "home-t5-close-label-r1-streams-00-page-16384": {
+        "kind": "operation_result",
+        "requestRaw": "{\n  \"operation_id\": \"37bbdc99df0408fc1ec780ed4003f6b48a887d5b114929936789b8dc7c77409d\",\n  \"offset\": 16384,\n  \"limit\": 8192\n}\n",
+        "requestPin": {
+          "blob": "ed59ca3540f2db0fb38aac070926e7af13023f07",
+          "bytes": 125,
+          "sha256": "e2d6fc67fa6df03926a04e435f145f1f0674a3bee25038e57d93861234ec894c"
+        },
+        "phase": "accepted",
+        "called": true,
+        "armed": {
+          "tree": "7d20b7d14ab54162e9fc0fe277243bbf7315ee71",
+          "entries": [
+            {
+              "path": "armed.json",
+              "blob": "28a07c6a37dc3bcc162b3e6654c80202c06c3ce2",
+              "bytes": 935,
+              "sha256": "05b5714ca85284327e402ffb5e7b7fc8fef40d32746586a83e75ed7681961b63",
+              "whole": true
+            },
+            {
+              "path": "intent.json",
+              "blob": "83b9a59c8fde500e3dcb86c47268013b90b220b2",
+              "bytes": 798,
+              "sha256": "a4f8b5031a78fc81563d9ea4a83e365f42859c5aedfebfada499d73d42fae863",
+              "whole": true
+            },
+            {
+              "path": "request.json",
+              "blob": "ed59ca3540f2db0fb38aac070926e7af13023f07",
+              "bytes": 125,
+              "sha256": "e2d6fc67fa6df03926a04e435f145f1f0674a3bee25038e57d93861234ec894c",
+              "whole": true
+            }
+          ],
+          "count": 3,
+          "bytes": 1858,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "sdkPin": {
+          "blob": "6c470d1daf010f2b7a3b9a9e409e7348910ba8a5",
+          "bytes": 11785,
+          "sha256": "ab9668bd9ef8498a6accce075c9c81dae9e204aced8ab7686a74265d5ac26d59"
+        },
+        "sdkArchive": {
+          "tree": "4f576820d4bcc5e94ba83a64f09d0db4b03c1e39",
+          "entries": [
+            {
+              "path": "original.sdk.json",
+              "blob": "6c470d1daf010f2b7a3b9a9e409e7348910ba8a5",
+              "bytes": 11785,
+              "sha256": "ab9668bd9ef8498a6accce075c9c81dae9e204aced8ab7686a74265d5ac26d59",
+              "whole": true
+            }
+          ],
+          "count": 1,
+          "bytes": 11785,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "nativePin": {
+          "blob": "d9ac0b112efef015465fa923c465a45b0738d249",
+          "bytes": 11614,
+          "sha256": "0f1fe2d352f3d29ef0aa4884648aab335711361b093df869f99a5c52af09b965"
+        }
+      },
+      "home-t5-close-label-r1-streams-00-page-24576": {
+        "kind": "operation_result",
+        "requestRaw": "{\n  \"operation_id\": \"37bbdc99df0408fc1ec780ed4003f6b48a887d5b114929936789b8dc7c77409d\",\n  \"offset\": 24576,\n  \"limit\": 8192\n}\n",
+        "requestPin": {
+          "blob": "1fedd3d392d707ba5b9c90689de19e543e014e65",
+          "bytes": 125,
+          "sha256": "9b9c434f4604906aef62c49d141b28a2ed1b0c0e61365b6bdeb448711848fe17"
+        },
+        "phase": "accepted",
+        "called": true,
+        "armed": {
+          "tree": "d8341a733da28c68a113992d47d1cd164ad04329",
+          "entries": [
+            {
+              "path": "armed.json",
+              "blob": "446762dbf680907658e77ccb487912bd64b64db0",
+              "bytes": 935,
+              "sha256": "221c80a306273827b35a35a688818e9306d4c6ef33b0f72e4886d5e39bdcf100",
+              "whole": true
+            },
+            {
+              "path": "intent.json",
+              "blob": "a3431e9250d36cd273b71c0a98e2ed5defae2a52",
+              "bytes": 798,
+              "sha256": "44ec5c06b9993ee2151a026b09140f0dd2b1e853478583c22425ec66a9149147",
+              "whole": true
+            },
+            {
+              "path": "request.json",
+              "blob": "1fedd3d392d707ba5b9c90689de19e543e014e65",
+              "bytes": 125,
+              "sha256": "9b9c434f4604906aef62c49d141b28a2ed1b0c0e61365b6bdeb448711848fe17",
+              "whole": true
+            }
+          ],
+          "count": 3,
+          "bytes": 1858,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "sdkPin": {
+          "blob": "96bb4399957424f9146f10d0d43f47d0f6dc9f67",
+          "bytes": 11785,
+          "sha256": "9d385580aaf4bf519972bb4ba1b59ed781d50eeaffefc9470f157e3653e9c3d4"
+        },
+        "sdkArchive": {
+          "tree": "24aae065ce4c3fcff798381e9023436669f97cba",
+          "entries": [
+            {
+              "path": "original.sdk.json",
+              "blob": "96bb4399957424f9146f10d0d43f47d0f6dc9f67",
+              "bytes": 11785,
+              "sha256": "9d385580aaf4bf519972bb4ba1b59ed781d50eeaffefc9470f157e3653e9c3d4",
+              "whole": true
+            }
+          ],
+          "count": 1,
+          "bytes": 11785,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "nativePin": {
+          "blob": "67e196b1977bed8289abae56a50885821e2fa2f4",
+          "bytes": 11614,
+          "sha256": "a99a336d322f04f1d0583afb33824d669339a7422a27e26d338776a096902224"
+        }
+      },
+      "home-t5-close-label-r1-streams-00-page-32768": {
+        "kind": "operation_result",
+        "requestRaw": "{\n  \"operation_id\": \"37bbdc99df0408fc1ec780ed4003f6b48a887d5b114929936789b8dc7c77409d\",\n  \"offset\": 32768,\n  \"limit\": 8192\n}\n",
+        "requestPin": {
+          "blob": "8912dda0726683c1c2d380fc823c257f722b73f5",
+          "bytes": 125,
+          "sha256": "95c97b8d6de3fe58927ab7962a5d466c16c100d28c20b760db9561c4bda849e7"
+        },
+        "phase": "accepted",
+        "called": true,
+        "armed": {
+          "tree": "a893df3f2676d64c27e09df5ad9be7a33d543838",
+          "entries": [
+            {
+              "path": "armed.json",
+              "blob": "1c38ff9e4c20d981bf8d3b6037d24e8627434ee2",
+              "bytes": 935,
+              "sha256": "7215b63548c8b630f32cb05bdcd82adfe14fdb9933a26c9ffaffb05d8117fa7f",
+              "whole": true
+            },
+            {
+              "path": "intent.json",
+              "blob": "f921038750ccc3311e378864c62396924098f903",
+              "bytes": 798,
+              "sha256": "c1b179f8b9d26b87fb933402bec9998db8c1cec34baad7bee7ebab12f7a28740",
+              "whole": true
+            },
+            {
+              "path": "request.json",
+              "blob": "8912dda0726683c1c2d380fc823c257f722b73f5",
+              "bytes": 125,
+              "sha256": "95c97b8d6de3fe58927ab7962a5d466c16c100d28c20b760db9561c4bda849e7",
+              "whole": true
+            }
+          ],
+          "count": 3,
+          "bytes": 1858,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "sdkPin": {
+          "blob": "11e4225947b8b28f1f9b3748db20315c6e395ec9",
+          "bytes": 11785,
+          "sha256": "5623d142963d0a6e01701713c2eb0856560bcd1998db89bd5dbd17d8adae39d2"
+        },
+        "sdkArchive": {
+          "tree": "321a575e55bd2f879f96cb2d8660bfe49edca9db",
+          "entries": [
+            {
+              "path": "original.sdk.json",
+              "blob": "11e4225947b8b28f1f9b3748db20315c6e395ec9",
+              "bytes": 11785,
+              "sha256": "5623d142963d0a6e01701713c2eb0856560bcd1998db89bd5dbd17d8adae39d2",
+              "whole": true
+            }
+          ],
+          "count": 1,
+          "bytes": 11785,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "nativePin": {
+          "blob": "18ee3b2a1074eef6b43a8c20878fbe0acd225653",
+          "bytes": 11614,
+          "sha256": "89ca59ef53df031e280ee5a2b4f2202e8aad847a05f9a4b876cbe2a29eb9fd88"
+        }
+      },
+      "home-t5-close-label-r1-streams-00-page-40960": {
+        "kind": "operation_result",
+        "requestRaw": "{\n  \"operation_id\": \"37bbdc99df0408fc1ec780ed4003f6b48a887d5b114929936789b8dc7c77409d\",\n  \"offset\": 40960,\n  \"limit\": 8192\n}\n",
+        "requestPin": {
+          "blob": "435864a1f5db5f5770c73557b665d724cf265e52",
+          "bytes": 125,
+          "sha256": "e1a67a83b33c7d0d47278728b69aa515d60a5b94aaa7269430a9515ccff14fea"
+        },
+        "phase": "accepted",
+        "called": true,
+        "armed": {
+          "tree": "8ed68318bc8077abef9e560d0c16bc5baa79102e",
+          "entries": [
+            {
+              "path": "armed.json",
+              "blob": "946339760adf134dc9ba5798a1f85dc30a46e0b7",
+              "bytes": 935,
+              "sha256": "e1c0074d13df679f3de5cac0584a2a23995c1f45aa0979c0ebe141e3c2cac5c4",
+              "whole": true
+            },
+            {
+              "path": "intent.json",
+              "blob": "f15d70dc28e18268805c17e0bbfc661b123c50ea",
+              "bytes": 798,
+              "sha256": "172ef567332beb2d2528afd2cb7bbf61b31ba41933fb166e1df07a7beb7f84ea",
+              "whole": true
+            },
+            {
+              "path": "request.json",
+              "blob": "435864a1f5db5f5770c73557b665d724cf265e52",
+              "bytes": 125,
+              "sha256": "e1a67a83b33c7d0d47278728b69aa515d60a5b94aaa7269430a9515ccff14fea",
+              "whole": true
+            }
+          ],
+          "count": 3,
+          "bytes": 1858,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "sdkPin": {
+          "blob": "181eb0afc94db4340ec43308c5c9232516096a9a",
+          "bytes": 11785,
+          "sha256": "e677e5b076c73eca13b52e6afbef2dd1eaa120e058f343f8049b0c0ce34d5403"
+        },
+        "sdkArchive": {
+          "tree": "1018e65f7ab2f9722403616d6e8b0ba6b950121e",
+          "entries": [
+            {
+              "path": "original.sdk.json",
+              "blob": "181eb0afc94db4340ec43308c5c9232516096a9a",
+              "bytes": 11785,
+              "sha256": "e677e5b076c73eca13b52e6afbef2dd1eaa120e058f343f8049b0c0ce34d5403",
+              "whole": true
+            }
+          ],
+          "count": 1,
+          "bytes": 11785,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "nativePin": {
+          "blob": "fa80d359fe4bf73a4de46888b6f1fde26fe7b1f3",
+          "bytes": 11614,
+          "sha256": "74a8b5a2012693fc46342674240acaac5a588d347127d5c5816c0442e800cafb"
+        }
+      },
+      "home-t5-close-label-r1-streams-00-page-49152": {
+        "kind": "operation_result",
+        "requestRaw": "{\n  \"operation_id\": \"37bbdc99df0408fc1ec780ed4003f6b48a887d5b114929936789b8dc7c77409d\",\n  \"offset\": 49152,\n  \"limit\": 8192\n}\n",
+        "requestPin": {
+          "blob": "f9c943a10b16dd38ad7d7a68e1d8286b3ed62aa8",
+          "bytes": 125,
+          "sha256": "39b9d192f185c621ec6c7f6a5cbbc0d9d590855e0b844d3bbfb2056ebe1d6dca"
+        },
+        "phase": "accepted",
+        "called": true,
+        "armed": {
+          "tree": "97e8255167f3cdb29387c93d9b07a19511d7af7f",
+          "entries": [
+            {
+              "path": "armed.json",
+              "blob": "f429a05412cbba1c8cd80785e7285256697ee589",
+              "bytes": 935,
+              "sha256": "596bc3e016df4aa3023c6208a2fd8e9293542b9f4731fdd99cb578958e6863b8",
+              "whole": true
+            },
+            {
+              "path": "intent.json",
+              "blob": "52012637ee055acb8f3e9de1cd17991b072dd3cb",
+              "bytes": 798,
+              "sha256": "fc3005cdfddca5a4d6bb9c1654e74575e0a7207eaae4b8214fb1288c0a5d60f6",
+              "whole": true
+            },
+            {
+              "path": "request.json",
+              "blob": "f9c943a10b16dd38ad7d7a68e1d8286b3ed62aa8",
+              "bytes": 125,
+              "sha256": "39b9d192f185c621ec6c7f6a5cbbc0d9d590855e0b844d3bbfb2056ebe1d6dca",
+              "whole": true
+            }
+          ],
+          "count": 3,
+          "bytes": 1858,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "sdkPin": {
+          "blob": "09c00e7c13000157a88fe7334a5417145a3cc061",
+          "bytes": 8296,
+          "sha256": "762a6723de28f1f2ec88643c00797706d3feee8831c47d88693261512da9fde8"
+        },
+        "sdkArchive": {
+          "tree": "29b20a286e44855739f32cced1798711e90cb4b1",
+          "entries": [
+            {
+              "path": "original.sdk.json",
+              "blob": "09c00e7c13000157a88fe7334a5417145a3cc061",
+              "bytes": 8296,
+              "sha256": "762a6723de28f1f2ec88643c00797706d3feee8831c47d88693261512da9fde8",
+              "whole": true
+            }
+          ],
+          "count": 1,
+          "bytes": 8296,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "nativePin": {
+          "blob": "83530726d275b4905a6f50ee7abeb0b9f68a479b",
+          "bytes": 8125,
+          "sha256": "1e54f0bdbe2bdec286fc3b5860bd7aae78bfd43fc0c3c05e1a5edb98d49102fb"
+        }
+      },
+      "home-t5-close-label-r1-streams-01-admit": {
+        "kind": "operation_start",
+        "requestRaw": "{\n  \"idempotency_key\": \"heptabao-mac-owned-home-t5-close-label-4e5761d3-streams-01-r1\",\n  \"operation\": {\n    \"tool\": \"process_read\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"job_id\": \"1a1b0305ba9-fc05-6ee6\",\n      \"limit\": 16384,\n      \"stdout_offset\": 16384,\n      \"stderr_offset\": 0\n    }\n  }\n}\n",
+        "requestPin": {
+          "blob": "eb8509e6476943e5f3ddc5b6d9c1eb61e2de8807",
+          "bytes": 303,
+          "sha256": "e9b85c6d8bd1f75ce4466373ce6c0ceb61496497e62f74ccf4f7d7e6535f073b"
+        },
+        "phase": "accepted",
+        "called": true,
+        "armed": {
+          "tree": "032ff94336d453ef25f040a35582d9e3d8ec2ea6",
+          "entries": [
+            {
+              "path": "armed.json",
+              "blob": "1d0c597835bff7c09a68136d6d4752d0147102cb",
+              "bytes": 867,
+              "sha256": "20eaade127799e34b3a45e87e77e12406a60d7936c1d75ff88e8dc43d405daf0",
+              "whole": true
+            },
+            {
+              "path": "intent.json",
+              "blob": "46c588a6c145a19ebfa623b87f9a55f26507dbfd",
+              "bytes": 730,
+              "sha256": "6e187235f174bed618a3bffd07fff22946f32d128189ff58aa160172e2c5a75b",
+              "whole": true
+            },
+            {
+              "path": "request.json",
+              "blob": "eb8509e6476943e5f3ddc5b6d9c1eb61e2de8807",
+              "bytes": 303,
+              "sha256": "e9b85c6d8bd1f75ce4466373ce6c0ceb61496497e62f74ccf4f7d7e6535f073b",
+              "whole": true
+            }
+          ],
+          "count": 3,
+          "bytes": 1900,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "sdkPin": {
+          "blob": "73c8aad63ba79cf8978fb8fe4587428673949296",
+          "bytes": 707,
+          "sha256": "0ab2a15f0b6eb0bed645376f658ff6648ba5a279c3c38aef9d850993dd228a26"
+        },
+        "sdkArchive": {
+          "tree": "0fc381aa5308d20f7455a3abbc2e511c61e21980",
+          "entries": [
+            {
+              "path": "original.sdk.json",
+              "blob": "73c8aad63ba79cf8978fb8fe4587428673949296",
+              "bytes": 707,
+              "sha256": "0ab2a15f0b6eb0bed645376f658ff6648ba5a279c3c38aef9d850993dd228a26",
+              "whole": true
+            }
+          ],
+          "count": 1,
+          "bytes": 707,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "nativePin": {
+          "blob": "1e124706a05b8058f1ca5f9accf749587cbed326",
+          "bytes": 546,
+          "sha256": "84716cf434226f4399b8fbae600f100d3e2e2bddc1f396eafd6cd9c52c2dcde2"
+        }
+      },
+      "home-t5-close-label-r1-streams-01-status-0": {
+        "kind": "operation_status",
+        "requestRaw": "{\n  \"operation_id\": \"377b79504610f321dafcd6b05363be43bad2ed3f93fac5938c6afba3e8fdaa8f\"\n}\n",
+        "requestPin": {
+          "blob": "f16a1ec8cf87e0143acce26b88837ff0ad2825f9",
+          "bytes": 89,
+          "sha256": "41201f3a5b1eeeec432742770c50c5e180c8dc0c91cdcd05ab4037132add3a4f"
+        },
+        "phase": "accepted",
+        "called": true,
+        "armed": {
+          "tree": "7e2d8b28699938b175e14250f54ded773dce7bc7",
+          "entries": [
+            {
+              "path": "armed.json",
+              "blob": "e90aefdb2ecfaabed6832e36085c48aa6b00bf76",
+              "bytes": 932,
+              "sha256": "6a1c2689487655b216af4e0d0eaa214198089e93e4da1189b473ec6de91235f7",
+              "whole": true
+            },
+            {
+              "path": "intent.json",
+              "blob": "db95b3adf28c8d9533b0da8ae67fbbb910797d90",
+              "bytes": 795,
+              "sha256": "4086a0b4c6aa066b4e0c96d178a97ce4959841b0ed46564daf066fd01cea0245",
+              "whole": true
+            },
+            {
+              "path": "request.json",
+              "blob": "f16a1ec8cf87e0143acce26b88837ff0ad2825f9",
+              "bytes": 89,
+              "sha256": "41201f3a5b1eeeec432742770c50c5e180c8dc0c91cdcd05ab4037132add3a4f",
+              "whole": true
+            }
+          ],
+          "count": 3,
+          "bytes": 1816,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "sdkPin": {
+          "blob": "6ff559d1a2937254d81e3e0dbecb38eb752ac11d",
+          "bytes": 978,
+          "sha256": "32bbcbf4ec1f1f74138cdd5b55d806373499c8cd60a8f277ee496bf8af60a868"
+        },
+        "sdkArchive": {
+          "tree": "f05d7bb0f40fcb8190c0badeb0895ba8c68d7b60",
+          "entries": [
+            {
+              "path": "original.sdk.json",
+              "blob": "6ff559d1a2937254d81e3e0dbecb38eb752ac11d",
+              "bytes": 978,
+              "sha256": "32bbcbf4ec1f1f74138cdd5b55d806373499c8cd60a8f277ee496bf8af60a868",
+              "whole": true
+            }
+          ],
+          "count": 1,
+          "bytes": 978,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "nativePin": {
+          "blob": "40e9338f4811e710ff51d2da30737929df74b668",
+          "bytes": 803,
+          "sha256": "a439624d03b477f09cb704efcb1747219ce25f6a68fc7af406ccbade2031f7bc"
+        }
+      },
+      "home-t5-close-label-r1-streams-01-page-0": {
+        "kind": "operation_result",
+        "requestRaw": "{\n  \"operation_id\": \"377b79504610f321dafcd6b05363be43bad2ed3f93fac5938c6afba3e8fdaa8f\",\n  \"offset\": 0,\n  \"limit\": 8192\n}\n",
+        "requestPin": {
+          "blob": "5076a9bcf1b82ecfe58044af4d4ec0d347f22d6b",
+          "bytes": 121,
+          "sha256": "ffb27845b0cf04b3ecf3e01eb7332ed85fb147ae5d4fc07bcd543239ab818a28"
+        },
+        "phase": "accepted",
+        "called": true,
+        "armed": {
+          "tree": "3f4e5b1ceb7cb4faa7d4be53653740be79573b4b",
+          "entries": [
+            {
+              "path": "armed.json",
+              "blob": "208aba1cd02c42d173eb199f4476d457c05e31d0",
+              "bytes": 931,
+              "sha256": "cdaf7a6c559a76e88179771019b4b3af439c11004c788652f2a97f687062c3c6",
+              "whole": true
+            },
+            {
+              "path": "intent.json",
+              "blob": "b9c212922afd5bf81663728f67db8b75cad24b70",
+              "bytes": 794,
+              "sha256": "97c5e27f891539ae1469e822aca7eec1fb7b7cd0b5543cff5ddb016492977190",
+              "whole": true
+            },
+            {
+              "path": "request.json",
+              "blob": "5076a9bcf1b82ecfe58044af4d4ec0d347f22d6b",
+              "bytes": 121,
+              "sha256": "ffb27845b0cf04b3ecf3e01eb7332ed85fb147ae5d4fc07bcd543239ab818a28",
+              "whole": true
+            }
+          ],
+          "count": 3,
+          "bytes": 1846,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "sdkPin": {
+          "blob": "0deeb708f81b7f1b6b8e27e670f4ffbb2b31ae6e",
+          "bytes": 11779,
+          "sha256": "ba637ff4510bfd60aa17fc21c589a3c994498244b98000fbaf49819065733fad"
+        },
+        "sdkArchive": {
+          "tree": "1f7ac303b010c9a216883eefa93c594ee5b87de5",
+          "entries": [
+            {
+              "path": "original.sdk.json",
+              "blob": "0deeb708f81b7f1b6b8e27e670f4ffbb2b31ae6e",
+              "bytes": 11779,
+              "sha256": "ba637ff4510bfd60aa17fc21c589a3c994498244b98000fbaf49819065733fad",
+              "whole": true
+            }
+          ],
+          "count": 1,
+          "bytes": 11779,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "nativePin": {
+          "blob": "498b488e1cf85dddf10a256ecd450729fb0405cb",
+          "bytes": 11608,
+          "sha256": "0167cac616d92d74de7f3f0972d9ea4bd92b22e24f426bb1ee5d14ae20f08abb"
+        }
+      },
+      "home-t5-close-label-r1-streams-01-page-8192": {
+        "kind": "operation_result",
+        "requestRaw": "{\n  \"operation_id\": \"377b79504610f321dafcd6b05363be43bad2ed3f93fac5938c6afba3e8fdaa8f\",\n  \"offset\": 8192,\n  \"limit\": 8192\n}\n",
+        "requestPin": {
+          "blob": "1b5a6d6d1b38a7022ada9da54cd6a5e0f7e3615f",
+          "bytes": 124,
+          "sha256": "b1b39051e8c563242ada2693a8a9031ec31818caf659c5a8b6ff024314c67d66"
+        },
+        "phase": "accepted",
+        "called": true,
+        "armed": {
+          "tree": "40bcc636c2aa2ef18d72eb676bd2e1b99732ff37",
+          "entries": [
+            {
+              "path": "armed.json",
+              "blob": "5188291f6016f411a84908c4fedcfb9ad7122eda",
+              "bytes": 934,
+              "sha256": "202006e61c3ee3e395dc6c8eefb0f03212a386c8576ffe7371bc64b07d24be59",
+              "whole": true
+            },
+            {
+              "path": "intent.json",
+              "blob": "a3c818235dd1cc8bae2a4dc86715b8739e33c08a",
+              "bytes": 797,
+              "sha256": "a955e4572ac561b674d8a124069a1c44bcb89ec420586807ef379b5776b0bf4a",
+              "whole": true
+            },
+            {
+              "path": "request.json",
+              "blob": "1b5a6d6d1b38a7022ada9da54cd6a5e0f7e3615f",
+              "bytes": 124,
+              "sha256": "b1b39051e8c563242ada2693a8a9031ec31818caf659c5a8b6ff024314c67d66",
+              "whole": true
+            }
+          ],
+          "count": 3,
+          "bytes": 1855,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "sdkPin": {
+          "blob": "9363ceb3fbe8f9ec77bba4b8f28a6e2a087547aa",
+          "bytes": 3149,
+          "sha256": "be537f586e53d392fc22a4fae619a3a75e79f880b360d4e8c4faf32916445d9e"
+        },
+        "sdkArchive": {
+          "tree": "72c66baa2a24d7256fa911b16c21864cfbd3599b",
+          "entries": [
+            {
+              "path": "original.sdk.json",
+              "blob": "9363ceb3fbe8f9ec77bba4b8f28a6e2a087547aa",
+              "bytes": 3149,
+              "sha256": "be537f586e53d392fc22a4fae619a3a75e79f880b360d4e8c4faf32916445d9e",
+              "whole": true
+            }
+          ],
+          "count": 1,
+          "bytes": 3149,
+          "whole": true,
+          "localDurableJournal": false,
+          "runtimeAuthorized": false
+        },
+        "nativePin": {
+          "blob": "1d86d0114cf102e67c4909aaec6be6b05ef574dc",
+          "bytes": 2978,
+          "sha256": "c97fb8d63172a4199d818b5be77540520f1761c7438bc3345c52f9ad30c3659b"
+        }
+      }
+    },
+    "completedObservers": [
+      {
+        "id": "4b79662ff5e9b0f153bee6af39d912512e69ddf525c75ac9ca85abb8552ddc38",
+        "tool": "process_status",
+        "payload": {
+          "blob": "4c11fcc27e417ea63fb24acd89f3137b50f3b74c",
+          "bytes": 912,
+          "sha256": "daacf50e34c009c49bfe1e3937372e8a5ae53e43a52131680015c6f97298bc14"
+        },
+        "payloadTree": "c6291d3df8fc2ef52c704ccda74a2c1b227f4162",
+        "nativeText": {
+          "blob": "c1e52455a57e8ee292d87d91d973bdf6503d40c5",
+          "bytes": 733,
+          "sha256": "3287a9afd907d0ed8fd01c78efdffd21e0bae63c06323b09c34bf7dbd555a26a"
+        },
+        "pages": 1,
+        "completedInactive": true
+      },
+      {
+        "id": "37bbdc99df0408fc1ec780ed4003f6b48a887d5b114929936789b8dc7c77409d",
+        "tool": "process_read",
+        "payload": {
+          "blob": "598d23b2103d119c70d64ec517f56db68d180b3c",
+          "bytes": 54727,
+          "sha256": "9dc433f30bfece43d4f9a5be3a95bd5eb16400308bd9a27dd6b3fa0be8a1b8b5"
+        },
+        "payloadTree": "5410e5761dbdedd829679aa211c83f92afb4ff31",
+        "nativeText": {
+          "blob": "6b243421ca588449444d3f0cdc099258d6d38e27",
+          "bytes": 51181,
+          "sha256": "c558b8b4f93ec506663863cc7a426270f0a15697242b88750fd392236a3e8e43"
+        },
+        "pages": 7,
+        "completedInactive": true
+      },
+      {
+        "id": "377b79504610f321dafcd6b05363be43bad2ed3f93fac5938c6afba3e8fdaa8f",
+        "tool": "process_read",
+        "payload": {
+          "blob": "70d1ab1756fcbe53dcba2ad6464d0c1464c7af34",
+          "bytes": 9909,
+          "sha256": "f21ae6688280680f53f8902bba6d047cf5013dea034a79b2dbdc257c7ab325b2"
+        },
+        "payloadTree": "3fca559980cb02185b999ef1bfab2ce06f12f4c4",
+        "nativeText": {
+          "blob": "06152398b898f1ed0cff5d77ac135e8eaddf5af8",
+          "bytes": 9174,
+          "sha256": "6572047399acf0d9d6f0387015726c1606466df8489c3a8b1c671579bb246a35"
+        },
+        "pages": 2,
+        "completedInactive": true
+      }
+    ],
+    "nextStdout": 19233,
+    "nextStderr": 0,
+    "localJournalAvailable": false,
+    "gitFirstExplicitlyRequiredByThisRootGO": true
+  },
+  "pureWholeOriginalComparisons": 57,
+  "noNewNativeDuringArchival": true
+}

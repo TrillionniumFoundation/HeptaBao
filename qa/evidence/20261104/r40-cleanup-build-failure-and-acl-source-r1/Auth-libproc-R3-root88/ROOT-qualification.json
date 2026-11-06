@@ -1,0 +1,529 @@
+{
+  "schema": "heptabao.root-qualification.Mac-existing-label-libproc-R3-original-success.v1",
+  "status": "PASS_FRESH_READONLY_DIAGNOSTIC_ONLY",
+  "evidence_qualified": true,
+  "checks": [
+    {
+      "name": "whole101_537804",
+      "passed": true
+    },
+    {
+      "name": "exact_original_R3_GO_request_source",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_call_home-t5-readonly-r3-start",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_armed_tree_home-t5-readonly-r3-start",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_call_home-t5-readonly-r3-authority-admit",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_armed_tree_home-t5-readonly-r3-authority-admit",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_call_home-t5-readonly-r3-authority-status-0",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_armed_tree_home-t5-readonly-r3-authority-status-0",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_call_home-t5-readonly-r3-authority-page-0",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_armed_tree_home-t5-readonly-r3-authority-page-0",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_call_home-t5-readonly-r3-streams-00-admit",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_armed_tree_home-t5-readonly-r3-streams-00-admit",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_call_home-t5-readonly-r3-streams-00-status-0",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_armed_tree_home-t5-readonly-r3-streams-00-status-0",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_call_home-t5-readonly-r3-streams-00-page-0",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_armed_tree_home-t5-readonly-r3-streams-00-page-0",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_call_home-t5-readonly-r3-streams-00-page-8192",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_armed_tree_home-t5-readonly-r3-streams-00-page-8192",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_call_home-t5-readonly-r3-streams-00-page-16384",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_armed_tree_home-t5-readonly-r3-streams-00-page-16384",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_call_home-t5-readonly-r3-streams-00-page-24576",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_armed_tree_home-t5-readonly-r3-streams-00-page-24576",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_call_home-t5-readonly-r3-streams-00-page-32768",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_armed_tree_home-t5-readonly-r3-streams-00-page-32768",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_call_home-t5-readonly-r3-streams-00-page-40960",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_armed_tree_home-t5-readonly-r3-streams-00-page-40960",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_call_home-t5-readonly-r3-streams-00-page-49152",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_armed_tree_home-t5-readonly-r3-streams-00-page-49152",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_call_home-t5-readonly-r3-streams-01-admit",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_armed_tree_home-t5-readonly-r3-streams-01-admit",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_call_home-t5-readonly-r3-streams-01-status-0",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_armed_tree_home-t5-readonly-r3-streams-01-status-0",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_call_home-t5-readonly-r3-streams-01-page-0",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_armed_tree_home-t5-readonly-r3-streams-01-page-0",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_call_home-t5-readonly-r3-streams-01-page-8192",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_armed_tree_home-t5-readonly-r3-streams-01-page-8192",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_observer_01a68b5d71c7a7c4bbd56a91e931c0b56292a0d96a1b82ec4f9bcb3532461713",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_page_01a68b5d71c7a7c4bbd56a91e931c0b56292a0d96a1b82ec4f9bcb3532461713_0",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_payload_01a68b5d71c7a7c4bbd56a91e931c0b56292a0d96a1b82ec4f9bcb3532461713",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_observer_cce99cc64074aac2eb4526a674a6a2594eee5e482bd88d527563c84f11f3775b",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_page_cce99cc64074aac2eb4526a674a6a2594eee5e482bd88d527563c84f11f3775b_0",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_page_cce99cc64074aac2eb4526a674a6a2594eee5e482bd88d527563c84f11f3775b_8192",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_page_cce99cc64074aac2eb4526a674a6a2594eee5e482bd88d527563c84f11f3775b_16384",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_page_cce99cc64074aac2eb4526a674a6a2594eee5e482bd88d527563c84f11f3775b_24576",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_page_cce99cc64074aac2eb4526a674a6a2594eee5e482bd88d527563c84f11f3775b_32768",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_page_cce99cc64074aac2eb4526a674a6a2594eee5e482bd88d527563c84f11f3775b_40960",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_page_cce99cc64074aac2eb4526a674a6a2594eee5e482bd88d527563c84f11f3775b_49152",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_payload_cce99cc64074aac2eb4526a674a6a2594eee5e482bd88d527563c84f11f3775b",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_observer_6f1ec594ac7c845d74e5df9f3454bcd9d671586187d73784f3e297ecc7a0dc34",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_page_6f1ec594ac7c845d74e5df9f3454bcd9d671586187d73784f3e297ecc7a0dc34_0",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_page_6f1ec594ac7c845d74e5df9f3454bcd9d671586187d73784f3e297ecc7a0dc34_8192",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_payload_6f1ec594ac7c845d74e5df9f3454bcd9d671586187d73784f3e297ecc7a0dc34",
+      "passed": true
+    },
+    {
+      "name": "MacLibprocR3_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "one_START17calls_3original_observers10pages",
+      "passed": true
+    },
+    {
+      "name": "exact_request_source_and_typed_stdin",
+      "passed": true
+    },
+    {
+      "name": "one_actual_mac_START_not_reused",
+      "passed": true
+    },
+    {
+      "name": "observers_only_original_job",
+      "passed": true
+    },
+    {
+      "name": "original_success_exit0_full_durable_confirmed",
+      "passed": true
+    },
+    {
+      "name": "18957stdout_zero_stderr_no_log_errors",
+      "passed": true
+    },
+    {
+      "name": "only_two_contiguous_stream_reads",
+      "passed": true
+    },
+    {
+      "name": "stream_original_request_extent_0",
+      "passed": true
+    },
+    {
+      "name": "original_stream_hex_text_extent_0_stdout",
+      "passed": true
+    },
+    {
+      "name": "original_stream_hex_text_extent_0_stderr",
+      "passed": true
+    },
+    {
+      "name": "stream_original_request_extent_1",
+      "passed": true
+    },
+    {
+      "name": "original_stream_hex_text_extent_1_stdout",
+      "passed": true
+    },
+    {
+      "name": "original_stream_hex_text_extent_1_stderr",
+      "passed": true
+    },
+    {
+      "name": "full_original_stream_bodies",
+      "passed": true
+    },
+    {
+      "name": "fresh_complete_success_not_historical_closure",
+      "passed": true
+    },
+    {
+      "name": "fixed_label_scope",
+      "passed": true
+    },
+    {
+      "name": "four_original_input_full9_bytes_SHA",
+      "passed": true
+    },
+    {
+      "name": "all21_controller_FDs_closed_readonly",
+      "passed": true
+    },
+    {
+      "name": "original_caps_and_actual_counts",
+      "passed": true
+    },
+    {
+      "name": "two_print_helpers_both_closed",
+      "passed": true
+    },
+    {
+      "name": "print_helper_closed_0",
+      "passed": true
+    },
+    {
+      "name": "current_print_exact_projection_0",
+      "passed": true
+    },
+    {
+      "name": "print_helper_closed_1",
+      "passed": true
+    },
+    {
+      "name": "current_print_exact_projection_1",
+      "passed": true
+    },
+    {
+      "name": "six_libproc_calls_arg1_self_ABI_qualification_only",
+      "passed": true
+    },
+    {
+      "name": "four_exact_ready_PID_ESRCH_observations_no_departure_claim",
+      "passed": true
+    },
+    {
+      "name": "ready_and_terminal_same_identity_no_T5_admission",
+      "passed": true
+    },
+    {
+      "name": "terminal19FDs_closed_not_managed_reap",
+      "passed": true
+    },
+    {
+      "name": "final_fences_reached_inference_from_exact_executed_source",
+      "passed": true
+    },
+    {
+      "name": "45_35_60_deadline_and_restored_handlers",
+      "passed": true
+    },
+    {
+      "name": "no_mutation_or_credentials_or_product",
+      "passed": true
+    },
+    {
+      "name": "R4_and_helper87650_history_UNKNOWN_preserved",
+      "passed": true
+    },
+    {
+      "name": "observation_lane_released_no_native_future",
+      "passed": true
+    }
+  ],
+  "check_count": 88,
+  "packet": {
+    "tree": "eb98487932a9b9aecc6780b81ec015be55cd8d3b",
+    "files": 101,
+    "bytes": 537804,
+    "merkle": {
+      "root_sha": "eb98487932a9b9aecc6780b81ec015be55cd8d3b",
+      "trees_verified": 1,
+      "leaf_count": 101
+    },
+    "whole": true
+  },
+  "original_job": "mac/1a1b00fe489-fc05-6dd5",
+  "authority": {
+    "blob": "8ba797ec9fdd55ec13da3edf3de762de8b5b2876",
+    "bytes": 733,
+    "sha256": "384d52659d3f40537a85b256734f21addd1551b6f8a13aaa5a819b5390d7aaaf"
+  },
+  "stdout": {
+    "blob": "e4a50c4a58b55c5ff73ab4df0a591a4215e049a4",
+    "bytes": 18957,
+    "sha256": "a99d55efc4cd63e14f64e635ddf9671e73a19df6ddae66ce43050abe107d51c5"
+  },
+  "actual": {
+    "native_calls": 17,
+    "observers": 3,
+    "immutable_pages": 10,
+    "elapsed_seconds": 0.099619125,
+    "print_count": 2,
+    "print_bytes_each": 2004,
+    "current_registration": "present",
+    "current_state": "not running",
+    "runs": 1,
+    "pid_present": false,
+    "last_exit": 1,
+    "libproc_calls": 6,
+    "self_qualification": {
+      "arg": 1,
+      "fixedLibrary": "/usr/lib/libproc.dylib",
+      "flavor": 3,
+      "installedKernelWholePinClaimed": false,
+      "offsetsMatched": true,
+      "selfBirthStable": true,
+      "selfPidParentGroupUidMatched": true,
+      "sizeof": 136,
+      "twoSelfSamples": true,
+      "zombieBranchExecutedBySelfClaimed": false
+    },
+    "ready_PID_observations": [
+      {
+        "errno": 3,
+        "existenceOrDepartureAutomaticallyConcluded": false,
+        "kind": "lookup_esrch",
+        "ordinal": 1,
+        "originalBirthPresent": null,
+        "originalReadyPid": 58228,
+        "processNotOwnedOrSignalled": true,
+        "returnedBytes": [
+          0,
+          0
+        ],
+        "sampleCount": 2,
+        "zombieLookupRequested": true
+      },
+      {
+        "errno": 3,
+        "existenceOrDepartureAutomaticallyConcluded": false,
+        "kind": "lookup_esrch",
+        "ordinal": 2,
+        "originalBirthPresent": null,
+        "originalReadyPid": 58228,
+        "processNotOwnedOrSignalled": true,
+        "returnedBytes": [
+          0,
+          0
+        ],
+        "sampleCount": 2,
+        "zombieLookupRequested": true
+      }
+    ],
+    "ready": {
+      "bytes": 640,
+      "full9": [
+        "16777233",
+        "592904421",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "640",
+        "1793950344882619282",
+        "1793950344882619282"
+      ],
+      "historicalReadyInodeNotPreviouslyPublished": true,
+      "identity": {
+        "birthSec": 1793950344,
+        "birthUsec": 737052,
+        "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+        "pgid": 58228,
+        "pid": 58228,
+        "ppid": 1,
+        "uid": 501
+      },
+      "markerFull9": [
+        "16777233",
+        "592904422",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "0",
+        "1793950344883708127",
+        "1793950344883708127"
+      ],
+      "markerPresent": true,
+      "qualified": true,
+      "sameFixedPlanAndSource": true
+    },
+    "terminal": {
+      "bytes": 4816,
+      "stage": "home_admission",
+      "error": {
+        "code": "child_absolute_deadline",
+        "errno": null,
+        "type": "ProbeRefused"
+      },
+      "same_birth_admission": false,
+      "entered_T5": false,
+      "application_FDs_closed": true
+    },
+    "controller_FDs": 21,
+    "controller_FDs_closed": true,
+    "direct_helpers": [
+      {
+        "pid": 5950,
+        "label": "readonly-print-1",
+        "exit": 0,
+        "reaped": true,
+        "group_empty": true
+      },
+      {
+        "pid": 5959,
+        "label": "readonly-print-2",
+        "exit": 0,
+        "reaped": true,
+        "group_empty": true
+      }
+    ],
+    "final_fences": {
+      "reached": true,
+      "basis": "Inference from original complete=true and exact executed source control flow, not a separate raw fence log"
+    },
+    "writes": 0,
+    "credentials_read": false
+  },
+  "historical_R4_managed_scope_unknown": true,
+  "historical_R2_helper87650_unknown": true,
+  "registration_closed": false,
+  "limits": [
+    "Four ready-PID libproc ESRCH samples are lookup outcomes only; no process departure or historical closure is inferred.",
+    "The two current launchd print records and ready/terminal are finite source-validated projections; original raw print/ready/terminal bodies were not exported.",
+    "Final metadata fences follow from exact source control flow and complete original result; no separate fence trace is claimed.",
+    "Fresh diagnostic closes only its own resources. Old R4 managed scope/helper87650 remain UNKNOWN.",
+    "No T5 execution, trusted credential provenance, AuthBus business, client cutover or legacy cleanup qualification follows."
+  ],
+  "AuthBus_credentials_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

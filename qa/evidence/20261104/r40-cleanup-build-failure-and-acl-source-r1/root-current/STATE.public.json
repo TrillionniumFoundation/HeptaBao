@@ -1,0 +1,403 @@
+{
+  "schema": "heptabao.r40-current-QA-cleanup-source-fixes-and-original-build-failure.v1",
+  "as_of_UTC": "2026-11-06 10:06:00 UTC",
+  "previous_validation_commit": "1badf75b2c541abcebad269adc7be8020bf9e63c",
+  "prefix": "qa/evidence/20261104/r40-cleanup-build-failure-and-acl-source-r1",
+  "task_continues": true,
+  "full_OpenBao_2_7_1_replacement": false,
+  "production_cutover": false,
+  "all_current_clients_and_backup_paths_migrated": false,
+  "legacy_cleanup": false,
+  "qualified_product_baseline": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "qualified_prior_scopes": {
+      "Mac_normal": 61,
+      "ROG_normal": 61,
+      "Mac_KV2_full34": 31,
+      "X230_KV2_full34": 31,
+      "real_Mac_ROG_Pocket4_HA": 98,
+      "independent_cold_restart": 12,
+      "X230_comparison": {
+        "profiles": 69,
+        "numeric_status_exact": 67,
+        "normalized_PKI_cases": 2
+      }
+    },
+    "no_qualification_transfer_to_unbuilt_JWT_candidate": true
+  },
+  "prior_real_LAN_scope": "Mac192.168.0.8/ROG.10/Pocket4.9 real-process SIGKILL, election, ReadIndex, quorum loss, durable cold restart98+12; not physical power removal; no transfer of qualification to new uncompiled source.",
+  "AuthBus": {
+    "J3160_contacted": false,
+    "private_capsule_read": false,
+    "old_worker_root_or_label_mutated": false,
+    "old_EX_CONFIG78_cause_qualified": false,
+    "readonly_R3_root": {
+      "blob": "56129f46fd94d072e301c4e558481efd817aed55",
+      "bytes": 14522,
+      "sha256": "bf626cd4ee05b5e5aa4c044ee93c4c52fecba8e7e469e84616918e169ce6c641"
+    },
+    "readonly_R3_original_job": "mac/1a1b00fe489-fc05-6dd5",
+    "readonly_R3_actual": {
+      "exit": 0,
+      "full": true,
+      "durable": true,
+      "elapsed_seconds": 0.099619125,
+      "two_current_inactive_prints": true,
+      "ready_PID_lookup_outcome": "ESRCH only; historical departure not proved",
+      "libproc_calls": 6,
+      "controller_FDs_closed": 21,
+      "helpers_closed": 2
+    },
+    "current_QA_label_cleanup_root": {
+      "blob": "e7a74a5f2e08c5a316ff2ea06b13ad7bd97423d6",
+      "bytes": 14057,
+      "sha256": "021f580c5e789b97d436108286b16f5e5f76c35f14a7f858ad4fe2c034d5596f"
+    },
+    "current_QA_label_cleanup_original_job": "mac/1a1b0305ba9-fc05-6ee6",
+    "current_QA_label_cleanup_actual": {
+      "target": "gui/501/org.heptabao.qa.home-t5-context-20261106-r1",
+      "source": "1e6f601782847761425053f39217e6211af2a9a7",
+      "exit": 0,
+      "full": true,
+      "durable": true,
+      "native_calls": 17,
+      "observers": 3,
+      "immutable_pages": 10,
+      "elapsed_seconds": 0.244020833,
+      "once_bootout_exit": 0,
+      "once_bootout_empty_streams": true,
+      "post_bootout_exact_missing_codes": [
+        113,
+        113
+      ],
+      "all_controller_FDs_closed": 21,
+      "all_direct_helpers_closed": 4,
+      "final_fences_passed": true,
+      "current_label_removal_confirmed": true,
+      "body_writes": 0,
+      "T5_access": false,
+      "credentials_read": false,
+      "production_cleanup": false
+    },
+    "launcher_kernel_component_source_root": {
+      "blob": "92b3aa3fc6f1c23d258699ac5cb8c7a0b5a36544",
+      "bytes": 5752,
+      "sha256": "2777375e2df2f3c328c04115af67b7113a1801ac345b60f45c35cabda457d1d3"
+    },
+    "launcher_kernel_component_source": {
+      "packet": "5a3ed3e81167e38fa92379765d25c23535dfec8c",
+      "exact_hunks": [
+        3,
+        2,
+        2
+      ],
+      "outer_unchanged": "12a6fa7a0432281246b36915f1b4b5cd5cd5b400",
+      "source_only": true,
+      "old_bindings_remain": true,
+      "dispatchable": false,
+      "kernel_image_file_qualified": false,
+      "original_EX_CONFIG_cause_proved": false
+    },
+    "fresh_HOME_T5_full_worker_candidate": "source preparation; no execution",
+    "old_R4_managed_scope_unknown": true,
+    "old_R2_helper87650_unknown": true,
+    "old_AuthBus_PID11754_unknown": true,
+    "trusted_current_credentials_qualified": false,
+    "AppRole_TLS_KV_Policy_renew_revoke_qualified": false,
+    "production_consumers_switched": 0
+  },
+  "snapshot": {
+    "source_commit": "2379d02ba1ee3e88989815d5a978f998822bac4f",
+    "source_tree": "fc933c18a0415730e3658c17ff021db9b2df2caa",
+    "complete_stage_root": {
+      "blob": "4bcad76a1fc0acdc27156f4e9a08814ae7a6a0d2",
+      "bytes": 8460,
+      "sha256": "38cb051d918ba6699d0711bb2a1edb6ed613740564fd69989c82796b528fcfef"
+    },
+    "stage_actual": {
+      "tracked_leaves": 3930,
+      "tracked_bytes": 62486000,
+      "direct_commands": 61,
+      "elapsed_seconds": 16.411864,
+      "all_direct_children_closed": true,
+      "canonical_bundle_bytes": 136231,
+      "canonical_bundle_is_standalone": false
+    },
+    "old_b694_complete_stage_root": {
+      "blob": "dc28ec4f512bdaf763165eb76f8af42a8cdd074f",
+      "bytes": 8438,
+      "sha256": "53c28d4afe0651b8b6bfc42870eba962d844b1073955cc028944a2435f57a0d0"
+    },
+    "formatter49_terminal_root": {
+      "blob": "7fc040facb1ed17ba3aff8ef2449a0330e94d408",
+      "bytes": 38708,
+      "sha256": "f5c5bc51857a35ba1a6a3b575d23a1f343f76df688c52331e8173c72a6d84fa0"
+    },
+    "formatter49_actual": {
+      "job": "rog/1a1b02771c2-fc05-6e9f",
+      "exit": 0,
+      "full": true,
+      "durable": true,
+      "native_calls": 16,
+      "observers": 3,
+      "immutable_pages": 9,
+      "elapsed_seconds": 0.9214005090179853,
+      "ordered_rows": 49,
+      "reported_changed": 23,
+      "reported_unchanged": 26,
+      "declared_output_bytes": 2033451,
+      "full_output_bodies_qualified": false,
+      "detailed_command_fences_qualified": false
+    },
+    "formatter_report_info_root": {
+      "blob": "6f38396fbb7fbd3874aefa964ec91d997d4347e4",
+      "bytes": 4447,
+      "sha256": "312c2aec3fef71c9711d3f765ac6d55981045778333452337e6de89dde0b7246"
+    },
+    "formatter_report_info": {
+      "bytes": 118925,
+      "sha256": "5755903ce5696b6745d7af2b27a69a30e0d001697eeb85282df75eb25cea40d8",
+      "version": "66306:31236133:118925:1793956739343592677:1793956739343592677"
+    },
+    "formatter_report_BODY0_unknown": {
+      "packet": "29b6302cc3cb329566b6f66c0441c0899b0cc811",
+      "request": "06f7a3eccf5de1c877b552cab886d14086d0c51c",
+      "key": "heptabao-native-snapshot-2379d02b-formatter-observe-r1-result-body0",
+      "original_SDK": "f181c1e93e7b64c402b332fd29b23d0141762082",
+      "error": "MCP -32603 request timed out",
+      "operation_id_observed": null,
+      "body_bytes_observed": 0,
+      "second_range_submitted": false,
+      "original_journal_paused": true,
+      "possible_owned_future_known_closed": false,
+      "no_replay_or_rekey_performed": true,
+      "reconciliation_source_only_pending": true
+    },
+    "component_tests_planned": 23,
+    "Service_tests_planned": 4,
+    "combined_tests_executed": 0,
+    "compiler_started": false,
+    "formatted_product_source_commit_created": false,
+    "PKI33b_separate_not_integrated": true,
+    "old_CLI_failure": {
+      "job": "desktop/1a1aee01612-fc05-639b",
+      "root": "e36c81a7222c41a9ba4e327e340d2d5d2d2bfc33",
+      "report": {
+        "blob": "0b2edd60185b80817c3c7f1378b914ae914ab21e",
+        "bytes": 848065,
+        "sha256": "d5c691d23b513a2a63916792bbe21178e2b34799e6adbd20ddf88cdf6147bc48"
+      },
+      "B01": true,
+      "B02": true,
+      "B03": true,
+      "B04": false,
+      "B05": false,
+      "B05_CLI0_did_not_restore": true,
+      "second_upload_bytes_and_internal400_cause_unknown": true
+    }
+  },
+  "JWT_PKI": {
+    "source_commit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+    "source_tree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+    "independent_stage_root": {
+      "blob": "7cdf99e46ba40fe09ab156a09608ee131e28400d",
+      "bytes": 10731,
+      "sha256": "76746d7ea3b03821a5f4a9aea1f4b0ad07ed380b2b765337a5afd68d9443d84a"
+    },
+    "independent_controls_four_bodies_root": {
+      "blob": "7f080e5f7261ccaf4b4539d0efb406e15610f989",
+      "bytes": 23428,
+      "sha256": "f7071dc25ea59056217bd15b1f4b538b34a9d845d2862e1dfb56948cc4884dce"
+    },
+    "all_exact_controls_qualified": true,
+    "original_BUILD_GO": {
+      "blob": "94b478defd4356967b23390edfc152f00eba64c0",
+      "bytes": 14152,
+      "sha256": "d84bf11c8fc2b37f64a9dcabf19aee951b2170aba674df488c38f64122400013"
+    },
+    "original_BUILD_terminal_root": {
+      "blob": "360e67448abbdc93f84e62142780b4d57974b316",
+      "bytes": 8249,
+      "sha256": "9d9a3a98548c79b2a25ac9f2593fddc09f9f98d23109df57cc9be0dc853cbd32"
+    },
+    "original_BUILD": {
+      "job": "rog/1a1b029a998-fc05-6eb2",
+      "state": "failed",
+      "exit": 1,
+      "output_complete": true,
+      "output_durable": true,
+      "terminal_publication_confirmed": true,
+      "stdout_bytes": 867,
+      "stderr_bytes": 0,
+      "preflight_unique_tests": 149,
+      "preflight_profile_instances": 166,
+      "actual_compile_test_counts_known": false,
+      "failure_cause_known": false,
+      "report_summary_all_owned_stopped": true,
+      "report_detailed_child_and_flock_closure_qualified": false,
+      "Cargo_target_reuse_authorized": false
+    },
+    "report_INFO_root": {
+      "blob": "373a516582bb6a3e7268dacfc39330a7d389a089",
+      "bytes": 4631,
+      "sha256": "a7dbf7e59371f8b13649c678d17933ae4d5827f6ebf811fcc2683417a5573464"
+    },
+    "original_report": {
+      "bytes": 36998,
+      "sha256": "aa8a8623cc955adb64ab386387d15ad2204febc0fd526392d20cd0ab6c9638a6",
+      "version": "66306:31364220:36998:1793957208077081949:1793957208077081949"
+    },
+    "original_BODY_partial": {
+      "packet": "2cfc8aaea3cc6a958cf9057fc751b6668e31c149",
+      "operation_id": "7ef06d88b0a289f89193813a2f1e20c865818515a4842c816bd1a47eff2fe0a0",
+      "state": "completed/stored_observed",
+      "owned_future_active": false,
+      "total_payload_bytes": 49765,
+      "payload_prefix_bytes": 32768,
+      "pages_observed": 2,
+      "page2_error_SDK": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+      "page2_error": "MCP -32603 request timed out",
+      "original_slot_paused_and_pending_preserved": true
+    },
+    "separate_immutable_tail_retrieval": {
+      "SOURCE": "e41fe5667d78dbefc64836329b24bde704937493",
+      "root_review": {
+        "blob": "ee397e4e66e5227c2822fa4addd2df577a41bc5c",
+        "bytes": 4248,
+        "sha256": "6afe91af42fb97a7b1ed71edc8bdba5a495796c1870b246a84cdd87e3ebb1f81"
+      },
+      "GO": {
+        "blob": "8a2bed4d6c163fb78540f21f97910a43656d2b94",
+        "bytes": 5163,
+        "sha256": "5a451a46f50ba6862062b040fa4e2b97e01977528270e3631b3c43578ceea099"
+      },
+      "offsets": [
+        32768,
+        49152
+      ],
+      "limit": 16384,
+      "new_operation_start": 0,
+      "new_process_start": 0,
+      "original_slot_mutation": false,
+      "first_page_retrieval_in_flight_at_cutoff": true,
+      "whole_payload_qualified_at_cutoff": false
+    },
+    "ACL_successor_SOURCE": {
+      "initial_packet": "74715d5f647960cfab278652079a773e88ddb0ac",
+      "test_R2_packet": "a4fdb1f46ffe349e34eacbbe247e0951c1fb11e0",
+      "production_blobs": [
+        "7a318b86ebdd47872fde86fbcce732f885571868",
+        "c6a1517252cdef86ecd701a47cb1f443f4a09da3"
+      ],
+      "latest_test_blob": "e39bb3ea23ad1689dd5543c8d87443196c9c3ff4",
+      "production_exact_replacements": 6,
+      "changed_layers": [
+        "source Auth owner capture/delivery capability",
+        "JWT backend role/config/collection authorization"
+      ],
+      "semantics": [
+        "Role source absence captures create; existing source captures update; captured capability remains stable through publication and delivery.",
+        "DELETE requires delete and returns204 for a missing role without allocating a mount.",
+        "Collection bare GET requires read then405; LIST remains list.",
+        "JWT config requires update without sudo; mount/tune and token revoke-orphan sudo remain unchanged."
+      ],
+      "validate_assignment_unchanged": true,
+      "initial_test_default_delegation_bug_preserved": true,
+      "test_only_R2_fix": {
+        "four_role_actor_policies": "explicit [default,name]",
+        "other_five_actor_policies": "[name]",
+        "no_default_policy_flag_retained": true,
+        "issuance_and_lookup_full_policy_set_assertions": true,
+        "legacy_tests_replaced": 1,
+        "new_tests": 3,
+        "old_other_test_functions_byte_unchanged": 14
+      },
+      "peer_packet": "0064bf3237d5100bf45ade059d9ac894a42d4a51",
+      "peer_source_checks": 66,
+      "peer_limit": "No additional production SOURCE blocker; no compile/runtime proof.",
+      "formatted": false,
+      "compiled": false,
+      "tests_run": false,
+      "product_commit_frozen": false,
+      "original_149_166_job_unchanged": true
+    },
+    "official_ACL_source": {
+      "packet": "15a9b763cc1163226b392d7b9a93d5a2ff3e5384",
+      "official_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+      "cases": 23,
+      "actual_executed": 0,
+      "source_predicted_differences": 9,
+      "additional_role_default_delegation_precondition_gap": true,
+      "missing_role_DELETE_extra_source_case": true
+    },
+    "HTTP12_executed": false,
+    "actual_normalized_PKI_cases_not_closed": 2
+  },
+  "history_preserved": {
+    "C_original_local_page_prepare_failure_and_once_root_authorized_local_resume": true,
+    "C_body_semantic_precheck_before_separate_decoded_leaf_order_exception": true,
+    "all_final_C_root51_semantics_after_whole_original_report": true,
+    "superseded_b694_GO_source_packet_object_corrected_to_SHA_before_dispatch": true,
+    "superseded_2379_GO_one_sequence_sentence_corrected_before_initialize": true,
+    "B2379_pure_Git_helper_argument_error_and_unpublished_release_draft_correction": true,
+    "old_UNKNOWN_records_not_replayed_or_rekeyed": true,
+    "source_verifier_corrections_not_changes_to_candidate_source": true,
+    "A_current_cleanup_local_checker_kind_and_shape_errors_preserved": true,
+    "B_original_BODY0_admission_timeout_preserved": true,
+    "C_original_BODY_page2_timeout_preserved": true,
+    "C_unexecuted_local_unpause_proposal_preserved_and_not_authorized": true,
+    "root_C_runner_envelope_vs_body_pin_verifier_correction_preserved": true,
+    "JWT_test_initial_missing_default_precondition_and_R2_exact_fix_preserved": true,
+    "root_local_executor_pre_exec_failure_not_retried": true,
+    "root_README_pure_local_missing_tot_binding_corrected_before_write": true
+  },
+  "remaining_gates": [
+    "CLI standby save and restore exact cause and repair",
+    "AuthBus actual trusted owner credential chain and five current consumers",
+    "Native JWT actual compilation/test plus precise official role ACL create/update/delete semantics",
+    "Other native auth/provider routes including OIDC/Kubernetes/MFA and SDK owners",
+    "Database/RabbitMQ/Kubernetes secret external effects",
+    "ACME/EAB/externalKMS/HSM PKI and Transit integration",
+    "Rekey/root generation/rotation and runtime plugin mutation",
+    "Protected namespace/nondefault Raft administration",
+    "Two exact PKI expired/revoked status oracles",
+    "Current per-client credential read/write, restart, rollback and traffic cutover",
+    "All current backup-path migration evidence before legacy cleanup"
+  ],
+  "baseline_evidence_limits_preserved": [
+    "Mac/X230 formal34MiB31/31 is scoped to4e808 baseline; no current candidate qualification inheritance.",
+    "X23069 remains67 exact plus2 normalized PKI until actual new HTTP oracle.",
+    "RealLAN prior98+12 does not cover new snapshot forwarding, rawOpenBao archive interoperability or current production cutover.",
+    "H2 prior H01-H03 small archive/ALPN scope does not establish34MiB H2 or multi-host new CLI restore.",
+    "Native database,Kubernetes,RabbitMQ,ACME/EAB,KMS/HSM,root/rekey/plugin/namespace/admin capability gaps remain.",
+    "Current inventory and every real client restart/rollback plus every backup migration must precede old-service and asset removal."
+  ],
+  "next_work": [
+    "Retrieve only original immutable C payload tail, identify actual BUILD failure and verify original child/flock closure before any next build.",
+    "Resolve exact original B public report admission without changing key/path/version; retain original timeout and any conditional new admission distinctly.",
+    "Whole-read formatter report and23 changed outputs, verify26 exact-SHA unchanged leaves, freeze observed source then run real23+4 regressions.",
+    "Format/compile/test the JWT ACL successor and execute the real OpenBao2.7.1 HTTP oracles; retain no-default delegation gap explicitly.",
+    "Complete fresh HOME control/T5 business AuthBus full worker source and actual trusted credentials/AppRole/TLS/KV/Policy/renew/revoke/cold validation.",
+    "Integrate qualified current candidate and rerun affected Mac,X230Linux,realLAN acceptance; each production client requires real credential R/W,restart,rollback and backup evidence before cutover or old asset removal."
+  ],
+  "publication": {
+    "mounted_packet_count": 56,
+    "mounted_file_count": 1159,
+    "mounted_bytes": 10496993,
+    "mounts_are_new_since_R39": true,
+    "prior_evidence_via_parent_commit": true,
+    "product_source_on_validation_branch_unchanged": true,
+    "previous_paths_unchanged": true,
+    "deletions": 0
+  },
+  "root_Runtime_calls": 0,
+  "maximum_Runtime_lanes": 2,
+  "local_executor_available": false,
+  "current_lanes_at_cutoff": {
+    "A": 0,
+    "B": "one original admission outcome UNKNOWN",
+    "C": "one immutable original-ID retrieval",
+    "root": 0
+  }
+}

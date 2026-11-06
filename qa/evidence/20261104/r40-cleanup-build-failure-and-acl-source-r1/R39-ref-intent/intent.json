@@ -1,0 +1,50 @@
+{
+  "schema": "heptabao.r39.ref-CAS-intent.v1",
+  "request": {
+    "repository_full_name": "TrillionniumFoundation/HeptaBao",
+    "branch_name": "codex/heptabao-validation-20261104",
+    "sha": "1badf75b2c541abcebad269adc7be8020bf9e63c",
+    "expected_sha": "4403b2e23ec12b611b4e374cc723546fea821fda",
+    "force": false
+  },
+  "commit_verified": true,
+  "tree_layers": [
+    {
+      "name": "prefix",
+      "sha": "6a8766965e50406363f7ccf63aa2921f1bd0cf9d",
+      "entries": 53,
+      "whole_immediate_merkle": true,
+      "entries_exact": true
+    },
+    {
+      "name": "day",
+      "sha": "bfd36bdcb66a3cb0d63e8cf2a7142e270570def5",
+      "entries": 116,
+      "whole_immediate_merkle": true,
+      "entries_exact": true
+    },
+    {
+      "name": "evidence",
+      "sha": "c8e520a81a2bc59fd53f1b72c05cdd892484165a",
+      "entries": 1,
+      "whole_immediate_merkle": true,
+      "entries_exact": true
+    },
+    {
+      "name": "qa",
+      "sha": "53a53ab55fda45fd7c248f122e976afb218abb34",
+      "entries": 3,
+      "whole_immediate_merkle": true,
+      "entries_exact": true
+    },
+    {
+      "name": "root",
+      "sha": "5817937651a2d75ef63f0f57d368b58fa5c090af",
+      "entries": 26,
+      "whole_immediate_merkle": true,
+      "entries_exact": true
+    }
+  ],
+  "only_evidence_subtree_added": true,
+  "replay_permitted": false
+}

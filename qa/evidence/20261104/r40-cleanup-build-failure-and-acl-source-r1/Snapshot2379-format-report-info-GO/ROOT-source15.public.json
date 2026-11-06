@@ -1,0 +1,140 @@
+{
+  "schema": "heptabao.root-source-review.snapshot2379-format49-report-info.v1",
+  "status": "PASS_SOURCE_ONLY",
+  "checks": [
+    {
+      "name": "whole23_285909",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal117_exact",
+      "passed": true
+    },
+    {
+      "name": "original_formatter_and_old_stage_info",
+      "passed": true
+    },
+    {
+      "name": "exact_request_candidate_pins",
+      "passed": true
+    },
+    {
+      "name": "formatter-to-info_strict6_both",
+      "passed": true
+    },
+    {
+      "name": "old-info_strict6_both",
+      "passed": true
+    },
+    {
+      "name": "three_actual_original_closed_prerequisites",
+      "passed": true
+    },
+    {
+      "name": "actual_authority_streams_release_summary",
+      "passed": true
+    },
+    {
+      "name": "45_author_checks_reproduced",
+      "passed": true
+    },
+    {
+      "name": "only_existing_closed_formatter_state",
+      "passed": true
+    },
+    {
+      "name": "one_info_no_body_or_new_start",
+      "passed": true
+    },
+    {
+      "name": "original_report_cap_131072_and_file_ownership",
+      "passed": true
+    },
+    {
+      "name": "page8192_payload1048576_preserved",
+      "passed": true
+    },
+    {
+      "name": "historical_404_preserved_not_execution",
+      "passed": true
+    },
+    {
+      "name": "candidate_syntax_only_not_invoked",
+      "passed": true
+    }
+  ],
+  "check_count": 15,
+  "source_packet": "13f0d2c3a4e46bffcdda30b145aa49466c380763",
+  "source": {
+    "blob": "1c4c4be5387cf79aa53bc9a847aceda040fd8c4f",
+    "bytes": 25007,
+    "sha256": "d502258569a9492411a36cd5af223f5b95d361b5eb31a14940bcf9407192b634"
+  },
+  "exact_request": {
+    "blob": "6a8d59c8f2b2e9fd163f6fb63dbb9572793bf80e",
+    "bytes": 297,
+    "sha256": "efa2d673c1065da7e588e8c619a4b8d3dcea072aab0ab88db2268c531856c658"
+  },
+  "baseline_terminal": {
+    "blob": "7fc040facb1ed17ba3aff8ef2449a0330e94d408",
+    "bytes": 38708,
+    "sha256": "f5c5bc51857a35ba1a6a3b575d23a1f343f76df688c52331e8173c72a6d84fa0"
+  },
+  "original_job": "1a1b02771c2-fc05-6e9f",
+  "original_slot": "snapshot_2379_rog_formatter_gitfirst_r1",
+  "entry_action": "authorize_format_result_info",
+  "scope": "format_result_file_info_only",
+  "metadata_acceptance": {
+    "maximumBytes": 131072,
+    "bytesSource": "Original SOURCE54 result cap131072, no new product budget.",
+    "sha256": "actual whole native file_info",
+    "version": "actual exact decimal string",
+    "mode": 384,
+    "fullMode": 33152,
+    "uid": 1000,
+    "gid": 1000,
+    "nlink": 1,
+    "metadataPlatform": "linux",
+    "full9": "dev/inode/size/mtime/ctime from raw version decimal tokens; no JavaScript unsafe-number conversion"
+  },
+  "expected_path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/result.public.json",
+  "prerequisites": [
+    {
+      "id": "1d7efb002dd78f7385f6b3a3bdc0f17f7d3f02a3c438d3b707f69f43a3999f4e",
+      "tool": "process_status",
+      "nativeText": {
+        "blob": "3b2195640ee1ccadf9b4dcd204b3c81e6cda4a43",
+        "bytes": 733,
+        "sha256": "95d65e97f1b72d02fe406396ba77555141603a577abcc086d710b5b6bbf048e1"
+      }
+    },
+    {
+      "id": "3bd7cf144acb1fa14d50fe7fa2d65bedff3c4a2e909d117bf3387bd69990bd53",
+      "tool": "process_read",
+      "nativeText": {
+        "blob": "6661e772a5bae16c6dc0a0e6369032053d9a8ed3",
+        "bytes": 50489,
+        "sha256": "0396f6be096daad7a6e50a8042b28426f3f635710ca404b017dd1d3850198bbf"
+      }
+    },
+    {
+      "id": "62c649edc4033363bced4f6ae83df8795058d133623f36ed3b0ad6458ecd15b2",
+      "tool": "process_read",
+      "nativeText": {
+        "blob": "d6d2c80ca74103e4245051684676b13d0ff58383",
+        "bytes": 4605,
+        "sha256": "de859718e06bbfb405cf19559876e65b63e52f3437f920a461acb7799c442ad0"
+      }
+    }
+  ],
+  "author_pure_checks_reproduced": 45,
+  "old_info_strict_hunks": 6,
+  "formatter_strict_hunks": 6,
+  "execution_authorized": false,
+  "body_authorized": false,
+  "compiled": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

@@ -1,0 +1,173 @@
+{
+  "schema": "heptabao.authbus-return-finite-source-plan.r1",
+  "status": "SOURCE_COMPONENTS_AND_CONCRETE_INTEGRATION_PLAN_NO_EXECUTION_REQUEST",
+  "completedSource": {
+    "kernelIdentityThreeFiles": [
+      {
+        "file": "mac_owned_launchd_r3.py",
+        "before": {
+          "blob": "96fe347f2edbda1718b2fd683041b88be8f41e30",
+          "bytes": 35736,
+          "sha256": "4989b58248f7951f825c021402bef611708b8613291d3282761c8c97d0b4adf6"
+        },
+        "after": {
+          "blob": "298fa6c40f1f64209c8279fbe584a5f9a2ac2a46",
+          "bytes": 36055,
+          "sha256": "e48da4b80a4d025b284e86d22144e5fd98f560e99cb5883865e0f2b6b8fb6b29"
+        },
+        "hunks": 3
+      },
+      {
+        "file": "mac_current_server_owner_r1.py",
+        "before": {
+          "blob": "44bf4989f10bad1d6322b182b630769bf93a09c3",
+          "bytes": 13394,
+          "sha256": "fb38bd7ce30e9a0b62539d459939b2ec20d96f84fd08d57199aa095fd3fc5ef6"
+        },
+        "after": {
+          "blob": "d7629a944f2325c3fc5c00f721ede2884edb4a37",
+          "bytes": 13718,
+          "sha256": "90fe44823ff55f5353c2032b1ce62f2255b46f3eeb51b959e50fa951627b402b"
+        },
+        "hunks": 2
+      },
+      {
+        "file": "mac_current_phase_owner_r2.py",
+        "before": {
+          "blob": "82f790ff6d26d9e998fe1c5c61f89f5975ec3920",
+          "bytes": 24975,
+          "sha256": "bb674ed1a60b204207af2dbab4d7b06a76e47fdebb19991e2f2c3dda7beac4a5"
+        },
+        "after": {
+          "blob": "41ebf1965e161782e2e1b50e913e2f0b7ec7c977",
+          "bytes": 25299,
+          "sha256": "1b79dc33c7f4bb5639b44fd0c377fbc5030545e645d3b77c95585b918391cf04"
+        },
+        "hunks": 2
+      }
+    ],
+    "outerUntouched": {
+      "blob": "12a6fa7a0432281246b36915f1b4b5cd5cd5b400",
+      "bytes": 71506,
+      "sha256": "6ad1b80ac06c90759c2ac5fd01df9c750b077ffa43253486c07658b6e1ddd4d5"
+    },
+    "fixedExit78Parser": {
+      "pin": {
+        "blob": "67eebb1703023041fe375a6313bb5f1506c5c0b5",
+        "bytes": 2030,
+        "sha256": "05f299eec7acd68c5f0bf7ba401d8bf8847d1fcb6adf16f2612a6fef2598b5ed"
+      },
+      "provenance": "Already qualified home-T5 diagnostic parse_print; accepts only the exact observed 78: EX_CONFIG spelling in last exit code and preserves numeric failure 78."
+    }
+  },
+  "actualLimits": {
+    "launcherIsRegularFile": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "kernelImageIsObservedProcessString": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+    "kernelImageWholeFileQualification": false,
+    "kernelIdentityFixIsOriginalEXCONFIGCause": false,
+    "newProbeReadyObserved": true,
+    "newProbeT5EntryObserved": false,
+    "newProbeAdmissionCompleted": false,
+    "historicalR4ManagedClosed": false,
+    "historical87650Reaped": false,
+    "oldAuthBusLabelClosed": false
+  },
+  "proposedFreshBinding": {
+    "t5BusinessRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r1",
+    "homeControlRoot": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r1",
+    "labels": {
+      "server": "org.heptabao.qa.mac-authbus-4e808-home-r1.server",
+      "consumer": "org.heptabao.qa.mac-authbus-4e808-home-r1.consumer"
+    },
+    "existsObserved": false,
+    "mandatoryCreateOnly": true,
+    "fallbackPathsAllowed": false,
+    "componentSourcesStillContainOriginalBinding": true,
+    "executionBindingReady": false
+  },
+  "requiredIntegration": [
+    {
+      "step": "source_and_create_only_stage",
+      "change": "Mechanically rebind all existing 22 sources/documents to the one fresh T5 root and two fresh labels. Add exact copies of only the two public wrapper scripts under the fresh home control root; both copies must equal their reviewed QA pins. Keep private plans, captures, TLS, server data, actual worker inputs and results on T5.",
+      "gate": "Fresh root absence/create-only, fixed parent/no-follow/owner/mode/FD ledgers, exact source whole and final publication closure; original inert 45/30-clipped/60."
+    },
+    {
+      "step": "launch_configuration",
+      "change": "Use the already observed regular Python launcher as argv[0]; the two exact home wrapper-copy paths replace only the script path. Launchd WorkingDirectory, plist and stdout/stderr append targets use the fresh home control root. This changes startup configuration as a controlled environment variation, without claiming TCC or permissions caused the old failure.",
+      "gate": "Exact reviewed server 17 argv / phase 15 argv, Label, RunAtLoad/KeepAlive/process flags, environment, named+held full9 and same source SHA. Native/SDK worker cwd is preserved explicitly from the original phase plan."
+    },
+    {
+      "step": "guard_scope_split",
+      "change": "Keep HeldT5 unchanged for every private/body/data operation. A finite fixed-path home control reader/writer handles only staged wrapper copies and exact plist/stdio files. It uses the already reviewed attempt/pending/once-close pattern and propagates unknown closure. Manager plan/ready/admission/exec-ready/result files stay on T5 to preserve the original handshake and private-read ordering.",
+      "gate": "No broad home path permit; no private capsule copied to home; new control paths are closed literals. Same controller/wrapper/phase deadlines cover this IO. Explicit finite home byte/fd limits must be frozen with the final source, without increasing existing private input/phase/output caps."
+    },
+    {
+      "step": "python_identity",
+      "change": "Integrate the three prepared narrow kernel-vs-launcher patches. Keep independent launcher whole/file identity qualification, exact kernel-image string, UID/PGID/birth conditions, and repeated manager/wrapper same-birth checks.",
+      "gate": "No kernel-image file read or invented SHA; no broad executable match."
+    },
+    {
+      "step": "print_and_failures",
+      "change": "Integrate the already frozen exact exit78 parser into manager. Retain all 11 fixed parser refusal codes and closed field predicates in public failure reporting so a future refusal is diagnosable without recovering raw private/unknown print text.",
+      "gate": "78 remains a failed exit. Unknown print variants fail closed, with no arbitrary string/parseInt widening."
+    },
+    {
+      "step": "full_worker_graph",
+      "change": "Run the existing full graph only after exact source, inert and root GO: fresh bounded capture, complete config/owner pin gate, original selector/loader same instance, local TLS/AppRole issuance, original five-agent initial and cold cycles, both inverse paths, both token lifecycle chains and complete manager closure.",
+      "gate": "No reduced credential-only shortcut, fake factory, stale capsule replay, provider refresh, production switch or old-label mutation."
+    }
+  ],
+  "trustedSourceGates": [
+    "Fresh before/after current capture only through the original OS sandbox and fixed production readset.",
+    "Registry-only WAL maximum 5,969,912 B; 1 MiB row, 8 MiB aggregate, 3 s query-closed deadline and 45 s shared capture. All new failures retain full FD/connection ledger scope.",
+    "Complete original five-agent model/provider/flags/config. Existing private capsule is never exported as Node input or reused as a new live capture.",
+    "Public code/root/source/manifest pins and original selected harness === same active registry record checks remain; ownerPluginId and harness.pluginId semantics remain distinct.",
+    "Current credential type, issuer and expiry predicates stay unchanged. Actual expiration is a known data-condition refusal; no automatic refresh or increased TTL/cap.",
+    "Retained 4e808 server exact size/SHA and normal61 proof stay explicit for this fixture; later product commits need their own actual artifact binding."
+  ],
+  "actualCredentialAndProtocolProof": [
+    "Fresh owned loopback TLS CA/leaf with original peer and address checks; fixture values are not production issuer/addr/CA/RoleID/SecretID.",
+    "AppRole role/SecretID are minted by the exact owned target. The original cycle's captured service token alone binds each pre/renew/post/revoke chain; controller administration and the separately resolved native profile credential keep their original roles. No token/accessor/secret is published.",
+    "Initial and cold: lookup-self before existing KV/Policy operations, original empty-JSON renew, lookup-self after; same token/accessor/creation and positive actual expiry delta are required.",
+    "Original role token_ttl 180 and max 600, no sleep or retry to manufacture extension. Same-second/max saturation with delta0 does not qualify extension.",
+    "Original revoke-self 204 and the actual revoked request 403 remain required before successful final qualification.",
+    "All ten native agent lineages and initial/cold inverse operations must be known complete with original ownership and cleanup before final success."
+  ],
+  "preservedBudgets": {
+    "capture45": 45,
+    "query3": 3,
+    "registryWalBytes": 5969912,
+    "rowBytes": 1048576,
+    "aggregateBytes": 8388608,
+    "originalCaptureMaterializationOrPrivateFileCapBytes": 4194304,
+    "outer900": 900,
+    "manager600": 600,
+    "phase120": 120,
+    "http10": 10,
+    "listenerReady30": 30,
+    "serverWrapper30": 30,
+    "outerRequest1080": 1080,
+    "additionalSleep": 0,
+    "applicationRetries": 0
+  },
+  "remainingConcreteSourceWork": [
+    "fixed home control IO implementation and exact read/write set",
+    "manager stdio/plist endpoint adapter and regular launcher argv",
+    "publisher two public wrapper copies with create-only home root",
+    "fresh 22-source/document/pin/candidate/dispatch mechanical binding",
+    "explicit failure projection and conservative guard-init/FD ledger connections where newly touched"
+  ],
+  "productionScope": {
+    "productionCredentialSourceQualified": false,
+    "productionRegistrationCreated": false,
+    "productionCutover": false,
+    "oldDeletion": false,
+    "j3160": false,
+    "providerModelOrRefreshChanges": false
+  },
+  "currentCleanup": {
+    "sourceTree": "32fc87d007466d4de82c0d33bc1bb04870405151",
+    "actualResult": null,
+    "historicalUnknownsNotMadePrerequisiteToInventClosedFacts": true
+  }
+}

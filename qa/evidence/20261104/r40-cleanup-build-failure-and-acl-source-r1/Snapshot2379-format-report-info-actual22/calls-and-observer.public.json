@@ -1,0 +1,97 @@
+{
+  "calls": [
+    {
+      "key": "snapshot-2379-formatter-info-admit",
+      "prefix": "00-snapshot-2379-formatter-info-admit",
+      "kind": "operation_start",
+      "phase": "accepted",
+      "called": true,
+      "request": {
+        "blob": "6a8d59c8f2b2e9fd163f6fb63dbb9572793bf80e",
+        "bytes": 297,
+        "sha256": "efa2d673c1065da7e588e8c619a4b8d3dcea072aab0ab88db2268c531856c658"
+      },
+      "sdk": {
+        "blob": "8fc3c90913c21a78789940824b438945488def8b",
+        "bytes": 704,
+        "sha256": "344eb4dd2300ff52f753c9cf387e03b37ce395b571c06a6a0872d274eadc56cd"
+      },
+      "native": {
+        "blob": "c7bd61fd6931bdb543e76285e23637c545966a6c",
+        "bytes": 543,
+        "sha256": "6f9bbcb8b42308183e03c085568b5ae4554d5d697f3d5a9bc79a8d28e90a1122"
+      },
+      "armTree": "7b6fe2a90efa01e2a43f4cdb21cec8cb251130da",
+      "sdkTree": "9a52f99b86247da7f3675a12f21b424463b09296"
+    },
+    {
+      "key": "snapshot-2379-formatter-info-status",
+      "prefix": "01-snapshot-2379-formatter-info-status",
+      "kind": "operation_status",
+      "phase": "accepted",
+      "called": true,
+      "request": {
+        "blob": "9236e8bab66533d772fe3fbbdc8923fdc6c2d422",
+        "bytes": 89,
+        "sha256": "4a372c5b75e163c7077b25228d67050cbe796339c0990cf7399157a2a0853bf4"
+      },
+      "sdk": {
+        "blob": "0a1db1a2b5aa6d260d0b10bde163f81f32fcb037",
+        "bytes": 975,
+        "sha256": "9a8081903a2a174a3cc1525b6c15319a0ddeff3b33f7850e6482ec0bcaa94204"
+      },
+      "native": {
+        "blob": "77d7c0842bdffa2d306b9e4e1d6866b723a0a014",
+        "bytes": 800,
+        "sha256": "4cf9545691aace12505c148662e75b2c779ad701e499a58b5bdd1a89bc4ffce2"
+      },
+      "armTree": "978d9a1d2eff20be29f063a452b095876a330a96",
+      "sdkTree": "4996b6197bd4d28c3a1968f08be550807bbb6aab"
+    },
+    {
+      "key": "snapshot-2379-formatter-info-page0",
+      "prefix": "02-snapshot-2379-formatter-info-page0",
+      "kind": "operation_result",
+      "phase": "accepted",
+      "called": true,
+      "request": {
+        "blob": "706c783b9ebdf61eb443cc69e2910e007ba5bc96",
+        "bytes": 121,
+        "sha256": "7687cba5cb8445ec285f8096ba07eda237e32416fcc37d3925207f3ea724070e"
+      },
+      "sdk": {
+        "blob": "fbd5b156b2db3f76319b3471b73e73c4a6e4f3ee",
+        "bytes": 1652,
+        "sha256": "b4b4f134311d15fd75127b9e7b531bcca7d6f499ab696c371c430d826898135f"
+      },
+      "native": {
+        "blob": "8a3cdf4d65ca8411414b42171ea94077a2c38bfa",
+        "bytes": 1481,
+        "sha256": "6bc1d23a730587c248ce6e4f667de6ebf63c86da3d7eab2f214619aeaf9876df"
+      },
+      "armTree": "d09bd0b60b46253e5a05959ede6e60b8ecad6fde",
+      "sdkTree": "0d3ebaf6edaf901852a5f8f4d68e2f8c221f9638"
+    }
+  ],
+  "observer": {
+    "id": "6040da16c66f2a7b6f2f4a3939721c0e78afddf8f9070d76c77a0ffe49e82cff",
+    "tool": "file_info",
+    "payload": {
+      "blob": "638aa3e1fc1ee1b08b9556747125fd95356e349a",
+      "bytes": 600,
+      "sha256": "11712b7eaaaceea46eea796c024620dd0bf24e6c0db42f8652e9dbdb454b22da"
+    },
+    "payloadTree": "67b6c0a3116c3b8e43912d3b11700f4a3a84d6f8",
+    "nativeText": {
+      "blob": "45d1709e3bbbf74caee996369a1eefdfbf855a31",
+      "bytes": 483,
+      "sha256": "8430d3a4b0c79f274222678fd30f8f0cec8f7f546602c6a1a1a2a8c749c5a4c2"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "activeObserver": null,
+  "pending": null,
+  "nativeCallInFlight": false,
+  "paused": false
+}

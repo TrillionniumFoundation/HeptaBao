@@ -1,0 +1,24 @@
+--- a/journal.libproc.r3.js
++++ b/journal.fixed-label-cleanup.r1.js
+@@ -5,9 +5,9 @@
+  * Every original SDK is store'd, serialized, Git-created once and whole-read
+  * before isError or native text is inspected.
+  */
++const GF_SLOT = "owner_launchd_home_t5_existing_close_label_gitfirst_r1";
++const GF_REQUEST = {blob:"1ca3b73f3cc0bd3cb11a2934dcbfff3d6ae06325",
++ bytes:100721,sha256:"d7ae0a4750681b826dd8a20be78c258f1cf9e04dc1f545aaf8334feeac85c75e"};
+-const GF_SLOT = "owner_launchd_home_t5_existing_readonly_libproc_gitfirst_r3";
+-const GF_REQUEST = {blob:"108f52fa6b6032079f805195794805b390228d97",
+- bytes:96033,sha256:"680aa388879b7025d06cd00625a8e83dd5fa1efb858223c4c232c319c2aa5b48"};
+ 
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {
+@@ -46,7 +46,7 @@
+   gfNeed(s.job!==null && s.activeObserver===null,"original_job_no_unclosed_observer");
+   gfNeed(Object.keys(q).sort().join(",")==="idempotency_key,operation"
+     && typeof q.idempotency_key==="string" && q.idempotency_key.length<=128
++    && /^heptabao-mac-owned-home-t5-close-label-4e5761d3-/.test(q.idempotency_key),
+-    && /^heptabao-mac-owned-home-t5-readonly-86512cae-/.test(q.idempotency_key),
+     "bounded_original_observer_key");
+   const op=q.operation,a=op?.arguments;
+   gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"

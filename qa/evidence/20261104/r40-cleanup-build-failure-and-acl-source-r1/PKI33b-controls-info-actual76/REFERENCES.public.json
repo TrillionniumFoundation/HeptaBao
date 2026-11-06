@@ -1,0 +1,16 @@
+{
+  "source26": "84eabfeac9cf4179c18ee3387fe38cdafbda7048",
+  "source": {
+    "blob": "80e33a52cc2b2d5a4c781de1521432c0eb56d6de",
+    "bytes": 26589,
+    "sha256": "e67beeec067be48b18a473cbf38d579b2acb34305716356b4b3ccc678e3eb95f"
+  },
+  "publicationActual52": "ab605d5e65f3be9766dad58674c55a3ba5ac636b",
+  "publicationRoot39": "dfd419873cbf01d054033a6c894ec64fbedb3605",
+  "expectedReceiptDerived": {
+    "blob": "514dda8c5a69d4ed96123d788e4e1cf672e6a0ef",
+    "bytes": 1854,
+    "sha256": "f1e1f3a2576fcb2ecd05cdb9b8f4fbebd6bb849eddb48536eb5c66ed5be109e2"
+  },
+  "actualBodyNotRead": true
+}

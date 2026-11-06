@@ -1,0 +1,145 @@
+{
+  "schema": "heptabao.peer.JWT-ACL-test-default-correction.v1",
+  "checks": [
+    {
+      "name": "explicit_test_delegate_parameter_unique",
+      "passed": true
+    },
+    {
+      "name": "explicit_actor_policy_set_unique",
+      "passed": true
+    },
+    {
+      "name": "verify_exact_issued_and_lookup_policies_unique",
+      "passed": true
+    },
+    {
+      "name": "actor-jwt-acl-create_unique",
+      "passed": true
+    },
+    {
+      "name": "actor-jwt-acl-update_unique",
+      "passed": true
+    },
+    {
+      "name": "actor-jwt-acl-update-sudo_unique",
+      "passed": true
+    },
+    {
+      "name": "actor-jwt-acl-delete_unique",
+      "passed": true
+    },
+    {
+      "name": "actor-jwt-acl-read_unique",
+      "passed": true
+    },
+    {
+      "name": "actor-jwt-acl-list_unique",
+      "passed": true
+    },
+    {
+      "name": "actor-jwt-acl-config-update_unique",
+      "passed": true
+    },
+    {
+      "name": "actor-jwt-acl-config-read_unique",
+      "passed": true
+    },
+    {
+      "name": "unrelated_actor_keeps_no_default_unique",
+      "passed": true
+    },
+    {
+      "name": "twelve_exact_replacements_reconstruct_whole",
+      "passed": true
+    },
+    {
+      "name": "strict_R1_to_R2_whole",
+      "passed": true
+    },
+    {
+      "name": "four_role_calls_explicit_default",
+      "passed": true
+    },
+    {
+      "name": "four_inline_actors_without_default",
+      "passed": true
+    },
+    {
+      "name": "unrelated_fifth_without_default",
+      "passed": true
+    },
+    {
+      "name": "no_implicit_issuance_default",
+      "passed": true
+    },
+    {
+      "name": "exact_issued_policy_and_token_policy",
+      "passed": true
+    },
+    {
+      "name": "independent_lookup_exact_policy",
+      "passed": true
+    },
+    {
+      "name": "old_test_unchanged_native_jwt_local_service_token_identity_renewal_and_cold_reopen",
+      "passed": true
+    },
+    {
+      "name": "old_test_unchanged_native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta",
+      "passed": true
+    },
+    {
+      "name": "old_test_unchanged_native_jwt_identity_failure_does_not_export_witness_or_token_and_next_login_is_fresh",
+      "passed": true
+    },
+    {
+      "name": "old_test_unchanged_native_jwt_original_assertion_expiry_before_publication_keeps_auth_identity_atomic",
+      "passed": true
+    },
+    {
+      "name": "old_test_unchanged_native_jwt_native_owner_capacity_veto_after_authentication_keeps_the_old_root",
+      "passed": true
+    },
+    {
+      "name": "old_test_unchanged_native_jwt_original_assertion_expiry_after_commit_withholds_reply_without_rollback",
+      "passed": true
+    },
+    {
+      "name": "old_test_unchanged_native_jwt_post_commit_audit_failure_keeps_whole_root_and_recovery_required",
+      "passed": true
+    },
+    {
+      "name": "old_test_unchanged_native_jwt_post_audit_response_and_original_deadline_cannot_be_rebound",
+      "passed": true
+    },
+    {
+      "name": "old_test_unchanged_native_jwt_post_audit_revocation_cannot_replace_the_original_publication_proof",
+      "passed": true
+    },
+    {
+      "name": "old_test_unchanged_native_jwt_token_api_service_descendants_keep_own_renewal_and_parent_revocation",
+      "passed": true
+    },
+    {
+      "name": "old_test_unchanged_native_jwt_token_api_batch_owner_preserves_real_parent_binding_across_cold_reopen",
+      "passed": true
+    },
+    {
+      "name": "old_test_unchanged_native_jwt_token_api_revoke_orphan_keeps_own_issuer_but_mount_retirement_still_revokes",
+      "passed": true
+    },
+    {
+      "name": "old_test_unchanged_native_jwt_and_userpass_token_api_targets_keep_real_owner_and_renewal_in_both_directions",
+      "passed": true
+    },
+    {
+      "name": "old_test_unchanged_native_jwt_token_api_profile_rejects_mount_label_without_real_issuer_or_parent_graph",
+      "passed": true
+    }
+  ],
+  "count": 34,
+  "status": "EXACT_TEST_FIXTURE_BLOCKER_CLOSED_SOURCE_ONLY",
+  "nativeCalls": 0,
+  "rustTestsExecuted": 0
+}

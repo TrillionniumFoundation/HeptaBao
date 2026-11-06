@@ -1,0 +1,7 @@
+{
+  "error": "SyntaxError: Unexpected token '/', \"// Copyrig\"... is not valid JSON",
+  "cause": "GitHub contents URL tool returns normalized raw source, not original REST contents envelope; source response was stored before parsing.",
+  "Runtime_calls": 0,
+  "source_candidate_changed": false,
+  "companion_fetch": "Promise.allSettled returned before parser error; second response was not saved before loop exited. Subsequent fixed public source read must be recorded separately."
+}

@@ -1,0 +1,39 @@
+{
+  "original_partial_tree": "2cfc8aaea3cc6a958cf9057fc751b6668e31c149",
+  "original_body_source_tree": "e8bae434690b4a64afba0f85fa490b94e5d3e6f5",
+  "original_body_GO": "444843d89f9d0699e5004ba25382b8c5847c5979",
+  "original_info_root_qualification": "373a516582bb6a3e7268dacfc39330a7d389a089",
+  "abandoned_unexecuted_unpause_proposal": "732e9c020c506f9e99bca6f9594546d4261f6af5",
+  "old_slot_state": {
+    "blob": "04567ecf3260b0cb341332f34ba0ba969cf6e3cc",
+    "bytes": 120307,
+    "sha256": "323ab85f815ecb7670f364f8f804b5f5117fd4b182ebe4727a885ab06f248ece"
+  },
+  "new_source": {
+    "blob": "4f5d2de78135a8fd9e5e358e9dedbab4556f6ed8",
+    "bytes": 13988,
+    "sha256": "4cd2ec5154c8c1b044e821d47e83df9626aaeb8f98ea376d53c393d2fbcd4b96"
+  },
+  "requests": [
+    {
+      "blob": "8448c7b5701f7551c847f55a66ae9c10892f2de1",
+      "bytes": 126,
+      "sha256": "10316b66ee044e51b3ed82b00be6b702335b06af50588df900417ce38a3a1b1c"
+    },
+    {
+      "blob": "42d9eb94225c869f57e0fb52061456f1a8736b0e",
+      "bytes": 126,
+      "sha256": "a18c4e3504e35482d16a3b2d94e20c0ca9fb7675f615d4ddd659d3050bc4a539"
+    }
+  ],
+  "pure": {
+    "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+    "bytes": 6685,
+    "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+  },
+  "archive": {
+    "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+    "bytes": 5957,
+    "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+  }
+}

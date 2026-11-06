@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.unsubmitted-proposal-type-correction.v1",
+  "nativeCalls": 0,
+  "before": {
+    "blob": "15fe9492bb0214d3f3b86f558b4b56b47694b089",
+    "bytes": 97711,
+    "sha256": "51df6e8c866bc954532e0ac39b881d113d587bd8b1329c02bf80707b5a06460b"
+  },
+  "after": {
+    "blob": "a409ed6b420857bf3d0f2e1656d568fb85a75876",
+    "bytes": 97718,
+    "sha256": "4b78c2b1ae7634818e4eac5da26519504a5c0972f133423e6483748a35146567"
+  },
+  "correction": "Read returns full9 list; present_marker returns tuple. Convert the observed JSON marker array to tuple only, preserving the existing reader.",
+  "noCandidateExecution": true
+}

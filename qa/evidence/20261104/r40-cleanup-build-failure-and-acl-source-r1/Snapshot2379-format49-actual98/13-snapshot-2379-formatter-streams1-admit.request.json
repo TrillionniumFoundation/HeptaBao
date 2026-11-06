@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-native-snapshot-2379d02b-formatter-observe-r1-streams1",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "rog",
+      "job_id": "1a1b02771c2-fc05-6e9f",
+      "stdout_offset": 16384,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

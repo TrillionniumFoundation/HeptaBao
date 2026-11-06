@@ -1,0 +1,205 @@
+{
+  "schema": "heptabao.root-qualification.snapshot-2379-stage-original-terminal.v1",
+  "status": "PASS_ORIGINAL_TERMINAL_AND_COMPLETE_STREAMS",
+  "evidence_qualified": true,
+  "checks": [
+    {
+      "name": "whole55_336057",
+      "passed": true
+    },
+    {
+      "name": "exact_current_GO_source_journal",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Stage_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Stage_call_snapshot-2379-rog-source-start",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Stage_armed_tree_snapshot-2379-rog-source-start",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Stage_call_snapshot-2379-authority0-admit",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Stage_armed_tree_snapshot-2379-authority0-admit",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Stage_call_snapshot-2379-authority0-status",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Stage_armed_tree_snapshot-2379-authority0-status",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Stage_call_snapshot-2379-authority0-page0",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Stage_armed_tree_snapshot-2379-authority0-page0",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Stage_call_snapshot-2379-streams0-admit",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Stage_armed_tree_snapshot-2379-streams0-admit",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Stage_call_snapshot-2379-streams0-status",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Stage_armed_tree_snapshot-2379-streams0-status",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Stage_call_snapshot-2379-streams0-page0",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Stage_armed_tree_snapshot-2379-streams0-page0",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Stage_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Stage_observer_1dd76fec9350714727e292af3868878ae220edbfb88ee10c35c204f874f2873b",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Stage_page_1dd76fec9350714727e292af3868878ae220edbfb88ee10c35c204f874f2873b_0",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Stage_payload_1dd76fec9350714727e292af3868878ae220edbfb88ee10c35c204f874f2873b",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Stage_observer_af4c0d7dfb5c3eb8da7afe7476a042c2feb85b02839021f7b258e58252084681",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Stage_page_af4c0d7dfb5c3eb8da7afe7476a042c2feb85b02839021f7b258e58252084681_0",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Stage_payload_af4c0d7dfb5c3eb8da7afe7476a042c2feb85b02839021f7b258e58252084681",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Stage_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "seven_original_calls_two_closed_observers",
+      "passed": true
+    },
+    {
+      "name": "exact_unique_typed_START",
+      "passed": true
+    },
+    {
+      "name": "only_original_ROG_job_observers",
+      "passed": true
+    },
+    {
+      "name": "known_exit0_full_durable",
+      "passed": true
+    },
+    {
+      "name": "383stdout_zero_stderr_no_truncation",
+      "passed": true
+    },
+    {
+      "name": "original_stream_observer_whole",
+      "passed": true
+    },
+    {
+      "name": "original_stdout_complete_bytes_EOF",
+      "passed": true
+    },
+    {
+      "name": "original_stderr_complete_bytes_EOF",
+      "passed": true
+    },
+    {
+      "name": "prepared_summary_exact_2379",
+      "passed": true
+    },
+    {
+      "name": "release_actual_request_GO_and_summary_association",
+      "passed": true
+    },
+    {
+      "name": "lane_released_no_new_report_or_formatter",
+      "passed": true
+    }
+  ],
+  "check_count": 36,
+  "packet": {
+    "tree": "410dfe06fb8785fbdd0722170594f3c2c43c4285",
+    "files": 55,
+    "bytes": 336057,
+    "merkle": {
+      "root_sha": "410dfe06fb8785fbdd0722170594f3c2c43c4285",
+      "trees_verified": 1,
+      "leaf_count": 55
+    },
+    "whole": true
+  },
+  "original_job": "rog/1a1b008fa4a-fc05-6d9a",
+  "authority": {
+    "blob": "9318e8a2614bcb7bb9aa54a0e4932abde7ed80fb",
+    "bytes": 729,
+    "sha256": "e0f75d21de142ba5011cc9e330032f7211b7352dd84894056e6326ebbd88cf23"
+  },
+  "stdout": {
+    "blob": "812a781e747673d4bc093c09e448bae727851c0c",
+    "bytes": 383,
+    "sha256": "0ee9949965d345b5c6c86ea4da6c22b06e9186d3491fb5d153a0b3d5271c299a"
+  },
+  "actual": {
+    "native_calls": 7,
+    "observers": 2,
+    "immutable_pages": 2,
+    "exit_code": 0,
+    "stdout_bytes": 383,
+    "stderr_bytes": 0,
+    "full_durable": true
+  },
+  "reported_summary": {
+    "all_owned_stopped": true,
+    "compiler_started": false,
+    "result_path": "/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1/control/stage-result.public.json",
+    "server_started": false,
+    "source_commit": "2379d02ba1ee3e88989815d5a978f998822bac4f",
+    "source_tree": "fc933c18a0415730e3658c17ff021db9b2df2caa",
+    "status": "prepared",
+    "within_new_stage_deadline": true
+  },
+  "limits": [
+    "Only original terminal/complete streams and summary are qualified.",
+    "Detailed2379 source3930/index/fences61 commands/bundle need independently observed report metadata/body.",
+    "Formatter49 and actual27 tests have no runtime qualification yet."
+  ],
+  "detailed_source_stage_qualified": false,
+  "formatter_executed": false,
+  "compiler_or_product_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

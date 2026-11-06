@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-native-snapshot-2379d02b-formatter-observe-r1-authority0",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "rog",
+      "job_id": "1a1b02771c2-fc05-6e9f"
+    }
+  }
+}

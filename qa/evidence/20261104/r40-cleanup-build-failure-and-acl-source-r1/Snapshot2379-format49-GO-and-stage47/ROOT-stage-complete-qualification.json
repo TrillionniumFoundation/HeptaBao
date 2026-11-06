@@ -1,0 +1,297 @@
+{
+  "schema": "heptabao.root-qualification.snapshot2379-independent-stage-complete-report.v1",
+  "status": "PASS_ORIGINAL_REPORT_AND_INDEPENDENT_SOURCE_STAGE",
+  "evidence_qualified": true,
+  "checks": [
+    {
+      "name": "whole49_327720",
+      "passed": true
+    },
+    {
+      "name": "exact_original_GO_source_INFO_and_terminal_root",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Body_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Body_call_snapshot-2379-report-body-admit",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Body_armed_tree_snapshot-2379-report-body-admit",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Body_call_snapshot-2379-report-body-status",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Body_armed_tree_snapshot-2379-report-body-status",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Body_call_snapshot-2379-report-body-page0",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Body_armed_tree_snapshot-2379-report-body-page0",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Body_call_snapshot-2379-report-body-page1",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Body_armed_tree_snapshot-2379-report-body-page1",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Body_call_snapshot-2379-report-body-page2",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Body_armed_tree_snapshot-2379-report-body-page2",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Body_call_snapshot-2379-report-body-page3",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Body_armed_tree_snapshot-2379-report-body-page3",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Body_call_snapshot-2379-report-body-page4",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Body_armed_tree_snapshot-2379-report-body-page4",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Body_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Body_observer_c59cd0349e6e72f862fbfc19a94cf37f70b08eab4c280ca38ad720f7cd8ebb34",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Body_page_c59cd0349e6e72f862fbfc19a94cf37f70b08eab4c280ca38ad720f7cd8ebb34_0",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Body_page_c59cd0349e6e72f862fbfc19a94cf37f70b08eab4c280ca38ad720f7cd8ebb34_8192",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Body_page_c59cd0349e6e72f862fbfc19a94cf37f70b08eab4c280ca38ad720f7cd8ebb34_16384",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Body_page_c59cd0349e6e72f862fbfc19a94cf37f70b08eab4c280ca38ad720f7cd8ebb34_24576",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Body_page_c59cd0349e6e72f862fbfc19a94cf37f70b08eab4c280ca38ad720f7cd8ebb34_32768",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Body_payload_c59cd0349e6e72f862fbfc19a94cf37f70b08eab4c280ca38ad720f7cd8ebb34",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379Body_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "7original_calls_5pages_original_totals17_4_8",
+      "passed": true
+    },
+    {
+      "name": "one_exact_original_metadata_bound_range",
+      "passed": true
+    },
+    {
+      "name": "whole_original_binary_body_extent",
+      "passed": true
+    },
+    {
+      "name": "whole_original_report_and_prior_whole_minimal_same",
+      "passed": true
+    },
+    {
+      "name": "body_lane_released_no_execution_expansion",
+      "passed": true
+    },
+    {
+      "name": "original_stage_terminal_root_already_qualified",
+      "passed": true
+    },
+    {
+      "name": "exact_stage_schema_prepared_and_identity",
+      "passed": true
+    },
+    {
+      "name": "same_exact_stager_carrier_roots",
+      "passed": true
+    },
+    {
+      "name": "all3930_source_blobs_modes_and_index",
+      "passed": true
+    },
+    {
+      "name": "independent_objects_and_exact_public_fetch",
+      "passed": true
+    },
+    {
+      "name": "all16_actual_ancestry_and_history",
+      "passed": true
+    },
+    {
+      "name": "old495_source_fence_before_after",
+      "passed": true
+    },
+    {
+      "name": "original_failed_observer_all_before_after_equal",
+      "passed": true
+    },
+    {
+      "name": "original12_failed_files_whole_pins_and_lossless_identities",
+      "passed": true
+    },
+    {
+      "name": "original_failed_authority_exact",
+      "passed": true
+    },
+    {
+      "name": "actual_incremental_bundle_witness",
+      "passed": true
+    },
+    {
+      "name": "bundle_lossless_private_regular_identity",
+      "passed": true
+    },
+    {
+      "name": "all61_direct_children_reaped_success_and_empty_groups",
+      "passed": true
+    },
+    {
+      "name": "original_budgets_deadline_after_cleanup",
+      "passed": true
+    },
+    {
+      "name": "four_historical_controls_exact_inert",
+      "passed": true
+    },
+    {
+      "name": "historical_test_counts_are_not_execution",
+      "passed": true
+    }
+  ],
+  "check_count": 47,
+  "packet": {
+    "tree": "2921f08e5eee0f02125c88417f936bccc88e94c4",
+    "files": 49,
+    "bytes": 327720,
+    "merkle": {
+      "root_sha": "2921f08e5eee0f02125c88417f936bccc88e94c4",
+      "trees_verified": 1,
+      "leaf_count": 49
+    },
+    "whole": true
+  },
+  "original_job": "rog/1a1b008fa4a-fc05-6d9a",
+  "report": {
+    "blob": "630883993c821cd1bb33cab2ee31667064fa9bbf",
+    "bytes": 28399,
+    "sha256": "733f77ea123b842e424f0b315d9ec910881b99e5844a4fd9ee51b651d5fb1955"
+  },
+  "original_body_observer": {
+    "id": "c59cd0349e6e72f862fbfc19a94cf37f70b08eab4c280ca38ad720f7cd8ebb34",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "10d35ecda23babcca9695df09a128d2f360662ce",
+      "bytes": 38316,
+      "sha256": "7a54c7f36a4b3a2a2978f987cf7436101df4d5d7e24de1bdc902504dabfb8b99"
+    },
+    "payloadTree": "9bc4b4688767939b1e4337bb45c5368c13e1db79",
+    "nativeText": {
+      "blob": "8b81a33d3114e73222ebdcda5bd0adaa66673291",
+      "bytes": 38213,
+      "sha256": "e9b7ddc4e5253bb454257fe34afb9700b2c335b33e383cc75e5f31ccb727546b"
+    },
+    "pages": 5,
+    "completedInactive": true
+  },
+  "original_transport": {
+    "stage_calls": 7,
+    "info_calls": 3,
+    "body_calls": 7,
+    "total_calls": 17,
+    "observers": 4,
+    "pages": 8
+  },
+  "source_commit": "2379d02ba1ee3e88989815d5a978f998822bac4f",
+  "source_tree": "fc933c18a0415730e3658c17ff021db9b2df2caa",
+  "source_full_worktree": {
+    "all_tracked_worktree_blobs_and_modes_match": true,
+    "full_leaf_index_sha256": "0e35cb5c3192efd2b9ddecfdbbe78581dd65c8ceb1aee8577709f7d7f504b811",
+    "index_matches_tree": true,
+    "tracked_bytes": 62486000,
+    "tracked_leaf_count": 3930
+  },
+  "actual_commands": 61,
+  "all_direct_children_closed": true,
+  "actual_elapsed_seconds": 16.411864057008643,
+  "canonical_bundle": {
+    "bytes": 136231,
+    "header": {
+      "header_sha256": "2cc3f0d136e18b6e294b9044a53934a04ee44faf2d2114e88a3603f2b628624a",
+      "heads": [
+        [
+          "2379d02ba1ee3e88989815d5a978f998822bac4f",
+          "HEAD"
+        ]
+      ],
+      "prerequisites": [
+        "49503322c7f446e5eb41e7744f1fdbd7f1192ecc"
+      ],
+      "version": 2
+    },
+    "identity": [
+      66306,
+      31364162,
+      1000,
+      1000,
+      33152,
+      1,
+      136231,
+      {
+        "$exactInteger": "1793954766360167918"
+      },
+      {
+        "$exactInteger": "1793954766360167918"
+      }
+    ],
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1/control/canonical-native-snapshot-forward-2379d02b-from495.bundle",
+    "public_network_import_required_on_mac": false,
+    "sha256": "04830729f13f635b6e91fa71fbdb14a343714ebc400ee968afed739906e0d92a"
+  },
+  "limits": [
+    "This exact unformatted2379 checkout is qualified for separately reviewed49-file formatting only.",
+    "Historical four controls are Python source compile-only and were not executed;44/7/9/1 are not new tests.",
+    "Bundle136231 is witnessed inside the bound stager; independent exported body or Mac import not observed.",
+    "Real Service snapshot tests4 and components23 remain unexecuted; no CLI repair,production or cleanup follows."
+  ],
+  "formatted": false,
+  "compiled": false,
+  "product_tests_executed": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

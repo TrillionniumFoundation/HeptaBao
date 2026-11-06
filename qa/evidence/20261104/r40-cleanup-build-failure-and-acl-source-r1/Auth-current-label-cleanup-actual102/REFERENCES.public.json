@@ -1,0 +1,13 @@
+{
+  "sourceTree": "32fc87d007466d4de82c0d33bc1bb04870405151",
+  "rootSourceReview": "3ea54b16ca6131bfc0220a19285816e4e6370d11",
+  "peerSourceReview": "e49f971d45f423bb0c8abeb388bea522baa58f86",
+  "minimumReleaseTree": "293cb6aa2ea4f4b02623af4370b2f2b6ee4fbfeb",
+  "historicalUnknownPreserved": [
+    "R4 managed registration/process lineage",
+    "readonly R2 direct helper 87650",
+    "old AuthBus managed server registration",
+    "original PID 11754",
+    "Git archive 8916"
+  ]
+}

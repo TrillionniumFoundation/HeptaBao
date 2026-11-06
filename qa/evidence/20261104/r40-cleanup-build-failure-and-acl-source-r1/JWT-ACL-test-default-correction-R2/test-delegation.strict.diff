@@ -1,0 +1,303 @@
+--- a/crates/heptabao-server/src/service_native_jwt_tests.rs
++++ b/crates/heptabao-server/src/service_native_jwt_tests.rs
+@@ -465,145 +465,155 @@
+-    name: &str,
+-    path: &str,
+-    capabilities: &[&str],
+-) -> TestResult<Zeroizing<String>> {
+-    let policy = format!(
+-        "path {path:?} {{ capabilities = {} }}",
+-        serde_json::to_string(capabilities)?
+-    );
+-    status(
+-        &f.admin(
+-            "PUT",
+-            &format!("sys/policies/acl/{name}"),
+-            json!({"policy":policy}),
+-        )?,
+-        204,
+-    );
+-    let mut issued = f.admin(
+-        "POST",
+-        "auth/token/create",
+-        json!({"policies":[name],"no_default_policy":true,"ttl":"600s"}),
+-    )?;
+-    status(&issued, 200);
+-    assert_eq!(issued.body["auth"]["token_type"], "service");
+-    assert_eq!(issued.body["auth"]["policies"], json!([name]));
+-    assert_eq!(issued.body["auth"]["token_policies"], json!([name]));
+-    let token = secret(&mut issued, "/auth/client_token")?;
+-    let mut looked = f.admin("POST", "auth/token/lookup", json!({"token":token.as_str()}))?;
+-    status(&looked, 200);
+-    assert_eq!(looked.body["data"]["policies"], json!([name]));
+-    erase_json(&mut looked.body);
+-    Ok(token)
+-}
+-
+-#[test]
+-fn native_jwt_role_management_uses_source_create_update_and_delete_after_cold_reopen()
+--> TestResult {
+-    let mut f = Fixture::new()?;
+-    let path = "auth/native-jwt/role/acl-managed";
+-    let create = acl_token(&mut f, "jwt-acl-create", path, &["create"])?;
+-    let update = acl_token(&mut f, "jwt-acl-update", path, &["update"])?;
+-    let update_sudo = acl_token(&mut f, "jwt-acl-update-sudo", path, &["update", "sudo"])?;
+-    let delete = acl_token(&mut f, "jwt-acl-delete", path, &["delete"])?;
+-    let role = json!({
+-        "role_type":"jwt","user_claim":"sub","bound_audiences":["native"],
+-        "token_policies":[],"token_ttl":120,"token_max_ttl":600
+-    });
+-    status(&f.admin("GET", path, json!({}))?, 404);
+-    let before = f.snapshot()?;
+-    for token in [&update, &update_sudo] {
+-        let denied = f.actor(token, "POST", path, role.clone())?;
+-        status(&denied, 403);
+-        no_credential(&denied);
+-        assert!(before.as_slice() == f.snapshot()?.as_slice());
+-    }
+-    // Once published, this role exists. Delivery must retain the source's
+-    // Create capability instead of recomputing Update against the new root.
+-    status(&f.actor(&create, "POST", path, role.clone())?, 204);
+-    let created = f.snapshot()?;
+-    assert!(before.as_slice() != created.as_slice());
+-    let mut f = f.restart()?;
+-    assert!(created.as_slice() == f.snapshot()?.as_slice());
+-    assert_eq!(f.admin("GET", path, json!({}))?.body["data"]["token_ttl"], 120);
+-    let denied = f.actor(&create, "POST", path, json!({"token_ttl":121}))?;
+-    status(&denied, 403);
+-    no_credential(&denied);
+-    assert!(created.as_slice() == f.snapshot()?.as_slice());
+-    status(&f.actor(&update, "POST", path, json!({"token_ttl":121}))?, 204);
+-    assert_eq!(f.admin("GET", path, json!({}))?.body["data"]["token_ttl"], 121);
+-    let updated = f.snapshot()?;
+-    for token in [&update, &update_sudo] {
+-        let denied = f.actor(token, "DELETE", path, json!({}))?;
+-        status(&denied, 403);
+-        no_credential(&denied);
+-        assert!(updated.as_slice() == f.snapshot()?.as_slice());
+-    }
+-    // ACL correction does not relax the existing policy-delegation boundary.
+-    let denied = f.actor(
+-        &update,
+-        "POST",
+-        path,
+-        json!({"token_policies":["native-jwt"]}),
+-    )?;
+-    status(&denied, 403);
+-    no_credential(&denied);
+-    assert!(updated.as_slice() == f.snapshot()?.as_slice());
+-    status(&f.actor(&delete, "DELETE", path, json!({}))?, 204);
+-    status(&f.admin("GET", path, json!({}))?, 404);
+-    let deleted = f.snapshot()?;
+-    status(&f.actor(&delete, "DELETE", path, json!({}))?, 204);
+-    assert!(deleted.as_slice() == f.snapshot()?.as_slice());
+-    let mut f = f.restart()?;
+-    assert!(deleted.as_slice() == f.snapshot()?.as_slice());
+-    status(&f.admin("GET", path, json!({}))?, 404);
+-    status(&f.actor(&create, "POST", path, role)?, 204);
+-    status(&f.admin("GET", path, json!({}))?, 200);
+-    Ok(())
+-}
+-
+-#[test]
+-fn native_jwt_collection_read_is_authorized_before_unsupported_and_list_stays_list()
+--> TestResult {
+-    let mut f = Fixture::new()?;
+-    let path = "auth/native-jwt/role";
+-    let read = acl_token(&mut f, "jwt-acl-read", path, &["read"])?;
+-    let list = acl_token(&mut f, "jwt-acl-list", path, &["list"])?;
+-    let none = acl_token(
+-        &mut f,
+-        "jwt-acl-unrelated",
+-        "jwt-kv/data/unrelated",
+-        &["read"],
+-    )?;
+-    let before = f.snapshot()?;
+-    for (token, method, expected) in [
+-        (&read, "GET", 405),
+-        (&list, "GET", 403),
+-        (&none, "GET", 403),
+-        (&read, "LIST", 403),
+-        (&none, "LIST", 403),
+-    ] {
+-        let denied = f.actor(token, method, path, json!({}))?;
+-        status(&denied, expected);
+-        no_credential(&denied);
+-        assert!(before.as_slice() == f.snapshot()?.as_slice());
+-    }
+-    let listed = f.actor(&list, "LIST", path, json!({}))?;
+-    status(&listed, 200);
+-    assert_eq!(listed.body["data"]["keys"], json!(["client"]));
+-    assert!(before.as_slice() == f.snapshot()?.as_slice());
+-    let mut f = f.restart()?;
+-    assert!(before.as_slice() == f.snapshot()?.as_slice());
+-    let listed = f.actor(&list, "LIST", path, json!({}))?;
+-    status(&listed, 200);
+-    assert_eq!(listed.body["data"]["keys"], json!(["client"]));
+-    Ok(())
+-}
+-
+-#[test]
+-fn native_jwt_config_update_without_sudo_persists_and_rejects_read_only_actor()
+--> TestResult {
+-    let mut f = Fixture::new()?;
+-    let update = acl_token(&mut f, "jwt-acl-config-update", CONFIG, &["update"])?;
+-    let read = acl_token(&mut f, "jwt-acl-config-read", CONFIG, &["read"])?;
+-    let mut config = f.config(&f.pair);
+-    config["issuer"] = json!("https://native-jwt-config-updated.example");
+-    let before = f.snapshot()?;
++    name: &str,
++    path: &str,
++    capabilities: &[&str],
++    delegate_default: bool,
++) -> TestResult<Zeroizing<String>> {
++    let policy = format!(
++        "path {path:?} {{ capabilities = {} }}",
++        serde_json::to_string(capabilities)?
++    );
++    status(
++        &f.admin(
++            "PUT",
++            &format!("sys/policies/acl/{name}"),
++            json!({"policy":policy}),
++        )?,
++        204,
++    );
++    // JWT role parsing currently retains the default policy. A role manager
++    // must explicitly own that delegated policy; other ACL actors omit it.
++    // no_default_policy still forbids implicit policy injection at issuance.
++    let token_policies = if delegate_default {
++        vec!["default", name]
++    } else {
++        vec![name]
++    };
++    let mut issued = f.admin(
++        "POST",
++        "auth/token/create",
++        json!({"policies":&token_policies,"no_default_policy":true,"ttl":"600s"}),
++    )?;
++    status(&issued, 200);
++    assert_eq!(issued.body["auth"]["token_type"], "service");
++    assert_eq!(issued.body["auth"]["policies"], json!(&token_policies));
++    assert_eq!(issued.body["auth"]["token_policies"], json!(&token_policies));
++    let token = secret(&mut issued, "/auth/client_token")?;
++    let mut looked = f.admin("POST", "auth/token/lookup", json!({"token":token.as_str()}))?;
++    status(&looked, 200);
++    assert_eq!(looked.body["data"]["policies"], json!(&token_policies));
++    erase_json(&mut looked.body);
++    Ok(token)
++}
++
++#[test]
++fn native_jwt_role_management_uses_source_create_update_and_delete_after_cold_reopen()
++-> TestResult {
++    let mut f = Fixture::new()?;
++    let path = "auth/native-jwt/role/acl-managed";
++    let create = acl_token(&mut f, "jwt-acl-create", path, &["create"], true)?;
++    let update = acl_token(&mut f, "jwt-acl-update", path, &["update"], true)?;
++    let update_sudo = acl_token(&mut f, "jwt-acl-update-sudo", path, &["update", "sudo"], true)?;
++    let delete = acl_token(&mut f, "jwt-acl-delete", path, &["delete"], true)?;
++    let role = json!({
++        "role_type":"jwt","user_claim":"sub","bound_audiences":["native"],
++        "token_policies":[],"token_ttl":120,"token_max_ttl":600
++    });
++    status(&f.admin("GET", path, json!({}))?, 404);
++    let before = f.snapshot()?;
++    for token in [&update, &update_sudo] {
++        let denied = f.actor(token, "POST", path, role.clone())?;
++        status(&denied, 403);
++        no_credential(&denied);
++        assert!(before.as_slice() == f.snapshot()?.as_slice());
++    }
++    // Once published, this role exists. Delivery must retain the source's
++    // Create capability instead of recomputing Update against the new root.
++    status(&f.actor(&create, "POST", path, role.clone())?, 204);
++    let created = f.snapshot()?;
++    assert!(before.as_slice() != created.as_slice());
++    let mut f = f.restart()?;
++    assert!(created.as_slice() == f.snapshot()?.as_slice());
++    assert_eq!(f.admin("GET", path, json!({}))?.body["data"]["token_ttl"], 120);
++    let denied = f.actor(&create, "POST", path, json!({"token_ttl":121}))?;
++    status(&denied, 403);
++    no_credential(&denied);
++    assert!(created.as_slice() == f.snapshot()?.as_slice());
++    status(&f.actor(&update, "POST", path, json!({"token_ttl":121}))?, 204);
++    assert_eq!(f.admin("GET", path, json!({}))?.body["data"]["token_ttl"], 121);
++    let updated = f.snapshot()?;
++    for token in [&update, &update_sudo] {
++        let denied = f.actor(token, "DELETE", path, json!({}))?;
++        status(&denied, 403);
++        no_credential(&denied);
++        assert!(updated.as_slice() == f.snapshot()?.as_slice());
++    }
++    // ACL correction does not relax the existing policy-delegation boundary.
++    let denied = f.actor(
++        &update,
++        "POST",
++        path,
++        json!({"token_policies":["native-jwt"]}),
++    )?;
++    status(&denied, 403);
++    no_credential(&denied);
++    assert!(updated.as_slice() == f.snapshot()?.as_slice());
++    status(&f.actor(&delete, "DELETE", path, json!({}))?, 204);
++    status(&f.admin("GET", path, json!({}))?, 404);
++    let deleted = f.snapshot()?;
++    status(&f.actor(&delete, "DELETE", path, json!({}))?, 204);
++    assert!(deleted.as_slice() == f.snapshot()?.as_slice());
++    let mut f = f.restart()?;
++    assert!(deleted.as_slice() == f.snapshot()?.as_slice());
++    status(&f.admin("GET", path, json!({}))?, 404);
++    status(&f.actor(&create, "POST", path, role)?, 204);
++    status(&f.admin("GET", path, json!({}))?, 200);
++    Ok(())
++}
++
++#[test]
++fn native_jwt_collection_read_is_authorized_before_unsupported_and_list_stays_list()
++-> TestResult {
++    let mut f = Fixture::new()?;
++    let path = "auth/native-jwt/role";
++    let read = acl_token(&mut f, "jwt-acl-read", path, &["read"], false)?;
++    let list = acl_token(&mut f, "jwt-acl-list", path, &["list"], false)?;
++    let none = acl_token(
++        &mut f,
++        "jwt-acl-unrelated",
++        "jwt-kv/data/unrelated",
++        &["read"],
++        false,
++    )?;
++    let before = f.snapshot()?;
++    for (token, method, expected) in [
++        (&read, "GET", 405),
++        (&list, "GET", 403),
++        (&none, "GET", 403),
++        (&read, "LIST", 403),
++        (&none, "LIST", 403),
++    ] {
++        let denied = f.actor(token, method, path, json!({}))?;
++        status(&denied, expected);
++        no_credential(&denied);
++        assert!(before.as_slice() == f.snapshot()?.as_slice());
++    }
++    let listed = f.actor(&list, "LIST", path, json!({}))?;
++    status(&listed, 200);
++    assert_eq!(listed.body["data"]["keys"], json!(["client"]));
++    assert!(before.as_slice() == f.snapshot()?.as_slice());
++    let mut f = f.restart()?;
++    assert!(before.as_slice() == f.snapshot()?.as_slice());
++    let listed = f.actor(&list, "LIST", path, json!({}))?;
++    status(&listed, 200);
++    assert_eq!(listed.body["data"]["keys"], json!(["client"]));
++    Ok(())
++}
++
++#[test]
++fn native_jwt_config_update_without_sudo_persists_and_rejects_read_only_actor()
++-> TestResult {
++    let mut f = Fixture::new()?;
++    let update = acl_token(&mut f, "jwt-acl-config-update", CONFIG, &["update"], false)?;
++    let read = acl_token(&mut f, "jwt-acl-config-read", CONFIG, &["read"], false)?;
++    let mut config = f.config(&f.pair);
++    config["issuer"] = json!("https://native-jwt-config-updated.example");
++    let before = f.snapshot()?;

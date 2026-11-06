@@ -1,0 +1,79 @@
+{
+  "schema": "heptabao.root-GO.snapshot2379-format49-report-info.v1",
+  "authorization": "GO",
+  "agent": "/root/compatibility_audit",
+  "scope": "format_result_file_info_only",
+  "source_packet": "13f0d2c3a4e46bffcdda30b145aa49466c380763",
+  "source": {
+    "blob": "1c4c4be5387cf79aa53bc9a847aceda040fd8c4f",
+    "bytes": 25007,
+    "sha256": "d502258569a9492411a36cd5af223f5b95d361b5eb31a14940bcf9407192b634"
+  },
+  "source_review": {
+    "blob": "4d6adaa1292fb19027c25125b14c085bf5a27428",
+    "bytes": 4094,
+    "sha256": "63791153cfb32cef6c3f3df20e6ecb0c223e0b8a220763cec2e08df3dac41f2f"
+  },
+  "source_review_checks": 15,
+  "author_pure_checks_reproduced": 45,
+  "exact_request": {
+    "blob": "6a8d59c8f2b2e9fd163f6fb63dbb9572793bf80e",
+    "bytes": 297,
+    "sha256": "efa2d673c1065da7e588e8c619a4b8d3dcea072aab0ab88db2268c531856c658"
+  },
+  "original_job": "1a1b02771c2-fc05-6e9f",
+  "original_slot": "snapshot_2379_rog_formatter_gitfirst_r1",
+  "entry_action": "authorize_format_result_info",
+  "original_formatter_terminal_qualification": {
+    "blob": "7fc040facb1ed17ba3aff8ef2449a0330e94d408",
+    "bytes": 38708,
+    "sha256": "f5c5bc51857a35ba1a6a3b575d23a1f343f76df688c52331e8173c72a6d84fa0"
+  },
+  "maximum_file_info_starts": 1,
+  "binary_read_authorized": false,
+  "metadata_acceptance": {
+    "maximumBytes": 131072,
+    "bytesSource": "Original SOURCE54 result cap131072, no new product budget.",
+    "sha256": "actual whole native file_info",
+    "version": "actual exact decimal string",
+    "mode": 384,
+    "fullMode": 33152,
+    "uid": 1000,
+    "gid": 1000,
+    "nlink": 1,
+    "metadataPlatform": "linux",
+    "full9": "dev/inode/size/mtime/ctime from raw version decimal tokens; no JavaScript unsafe-number conversion"
+  },
+  "expected_path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/result.public.json",
+  "no_reinitialize": true,
+  "no_process_start": true,
+  "limits": {
+    "maximum_Runtime_lanes": 2,
+    "maximum_native_call_or_future_per_lane": 1,
+    "immutable_page_bytes": 8192,
+    "original_payload_cap": 1048576
+  },
+  "sequence": [
+    "Whole this exact GO then authorize_format_result_info against the existing closed formatter slot. Preserve all original16 calls/3 observers/9 pages.",
+    "Whole exact fixed request,intent,armed before separate dispatch boundary; once file_info only.",
+    "Original SDK externally whole before parse/isError; same returned operation statuses and contiguous immutable pages/full SHA/EOF/inactive closure only.",
+    "Retain exact raw version decimal tokens and whole actual size/SHA/mode/uid/gid/nlink/full9. No body read or other file admission.",
+    "Close this metadata observer and release lane; bind later body SOURCE/GO only from independently qualified actual metadata."
+  ],
+  "excludes": [
+    "formatter replay",
+    "Cargo",
+    "product",
+    "report body",
+    "49 output reads",
+    "retained input reads",
+    "arbitrary paths",
+    "production cutover",
+    "legacy cleanup"
+  ],
+  "lane_activation": "B may activate one observation lane alongside A original Maccleanup job mac/1a1b0305ba9-fc05-6ee6. C original build lifecycle10calls/3observers/3pages is closed and C stays0 Native until a lane releases; root0; sharedCargo target remains held from further use until detailed report qualification.",
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

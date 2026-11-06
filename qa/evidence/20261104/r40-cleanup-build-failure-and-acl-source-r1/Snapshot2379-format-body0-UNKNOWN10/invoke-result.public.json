@@ -1,0 +1,14 @@
+{
+  "ok": true,
+  "action": "invoke",
+  "value": {
+    "callKey": "snapshot-2379-formatter-body0-admit",
+    "sdk": {
+      "blob": "f181c1e93e7b64c402b332fd29b23d0141762082",
+      "bytes": 247,
+      "sha256": "20bc68d840783af5cc8e791289d5ac77c6941d45f79768c397c95e629784e3fa"
+    },
+    "tree": "b47e9ddb57c646147c0bcd40fed017d965e806cd",
+    "interpreted": false
+  }
+}

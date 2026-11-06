@@ -1,0 +1,8 @@
+{
+  "initial_failure": "Error: actual_qualified_runner_whole",
+  "reason": "Root adapter passed the qualified build-input envelope instead of its nested body pin. Exact runner bytes cf25a5f2.../30397/023f6f... are unchanged.",
+  "before": "eq(r[\"runner.original.py\"],ctrl.runner)",
+  "after": "eq(r[\"runner.original.py\"],ctrl.runner.body)",
+  "candidate_changed": false,
+  "Native_calls": 0
+}

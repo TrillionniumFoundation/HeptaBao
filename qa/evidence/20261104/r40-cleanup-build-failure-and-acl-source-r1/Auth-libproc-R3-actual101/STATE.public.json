@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.home-t5-libproc-r3.actual-complete.v1",
+  "originalJob": {
+    "host": "mac",
+    "id": "1a1b00fe489-fc05-6dd5"
+  },
+  "calls": 17,
+  "observers": 3,
+  "pages": 10,
+  "originalCallsOnce": true,
+  "allSdkWholeBeforeParse": true,
+  "allOriginalPayloadsWholeAndOperationsInactive": true,
+  "stdoutCursor": 18957,
+  "stderrCursor": 0,
+  "nativeCallInFlight": false,
+  "activeObserver": null,
+  "pending": null,
+  "paused": false,
+  "observationLaneReleased": true,
+  "release": "e0c0303612f0e98b6cb0abef44353f20a6089ac7",
+  "freshDiagnosticResultOnly": true,
+  "R4ManagedScopeUnknown": true,
+  "R2Helper87650Unknown": true,
+  "SDKOrAuthBusOrCredentialsQualified": false,
+  "sourceOnlyNextStep": true
+}

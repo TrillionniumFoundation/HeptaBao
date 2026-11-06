@@ -1,0 +1,170 @@
+{
+  "schema": "heptabao.root-source-review.snapshot-2379-stage-report-body.v1",
+  "status": "PASS_ONE_EXACT_REPORT_RANGE_SOURCE",
+  "checks": [
+    {
+      "name": "whole19_141531",
+      "passed": true
+    },
+    {
+      "name": "current_info_qualification_and_originals",
+      "passed": true
+    },
+    {
+      "name": "source_and_request_pins",
+      "passed": true
+    },
+    {
+      "name": "old_algorithm_and_GO_original_whole",
+      "passed": true
+    },
+    {
+      "name": "ten_logical_eleven_literal_bindings",
+      "passed": true
+    },
+    {
+      "name": "binding_count_0",
+      "passed": true
+    },
+    {
+      "name": "binding_count_1",
+      "passed": true
+    },
+    {
+      "name": "binding_count_2",
+      "passed": true
+    },
+    {
+      "name": "binding_count_3",
+      "passed": true
+    },
+    {
+      "name": "binding_count_4",
+      "passed": true
+    },
+    {
+      "name": "binding_count_5",
+      "passed": true
+    },
+    {
+      "name": "binding_count_6",
+      "passed": true
+    },
+    {
+      "name": "binding_count_7",
+      "passed": true
+    },
+    {
+      "name": "binding_count_8",
+      "passed": true
+    },
+    {
+      "name": "binding_count_9",
+      "passed": true
+    },
+    {
+      "name": "only_exact_old_bindings_and_three_hunks",
+      "passed": true
+    },
+    {
+      "name": "current_info_six_hunks_both_directions",
+      "passed": true
+    },
+    {
+      "name": "same_original_job_slot_single_no_init",
+      "passed": true
+    },
+    {
+      "name": "exact_actual_info_and_range_binding",
+      "passed": true
+    },
+    {
+      "name": "exact_request_shape_and_idempotency",
+      "passed": true
+    },
+    {
+      "name": "closed_info",
+      "passed": true
+    },
+    {
+      "name": "single_body",
+      "passed": true
+    },
+    {
+      "name": "original_info",
+      "passed": true
+    },
+    {
+      "name": "exact_request",
+      "passed": true
+    },
+    {
+      "name": "exact_version",
+      "passed": true
+    },
+    {
+      "name": "mark_before_call",
+      "passed": true
+    },
+    {
+      "name": "full_extent",
+      "passed": true
+    },
+    {
+      "name": "decoded_hash",
+      "passed": true
+    },
+    {
+      "name": "separate_go",
+      "passed": true
+    },
+    {
+      "name": "existing_action",
+      "passed": true
+    },
+    {
+      "name": "original_fixed_caps",
+      "passed": true
+    },
+    {
+      "name": "no_scope_expansion",
+      "passed": true
+    }
+  ],
+  "check_count": 32,
+  "source_packet": "0bc6236bd2e81ce14501151cb5b4c336aaff74d8",
+  "source": {
+    "blob": "8c2f92092ae06161aa6cb125b07a353801b05a91",
+    "bytes": 28285,
+    "sha256": "1bd24ac2aee006ebc87a203f92fec7a76508381de6e1e96009a06818a3282851"
+  },
+  "exact_request": {
+    "blob": "df08f53171c4476a25e5813a4ec22fca3a716bdf",
+    "bytes": 445,
+    "sha256": "176dd3233a37856ebe8b79e4e37fa97ad140460ba096b391dff3474ea5869030"
+  },
+  "actual_info_root": {
+    "blob": "e2fe315df64f9f797458a15e3f5fb774eeca1127",
+    "bytes": 4598,
+    "sha256": "669719e4bf64db0bfbfa28b66c0d4f86987cd94060c3eeafae3064def6018c75"
+  },
+  "expected": {
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1/control/stage-result.public.json",
+    "bytes": 28399,
+    "sha256": "733f77ea123b842e424f0b315d9ec910881b99e5844a4fd9ee51b651d5fb1955",
+    "version": "66306:31364206:28399:1793954767528597190:1793954767528597190",
+    "infoOperation": "07f38b4b541c77312c94eeb6b1eb860eedf03c589f9acbcaffbc4dfa4e1f5a23",
+    "infoNative": {
+      "blob": "a5569800cbf2cc211f81fd0bd8323b24bb473577",
+      "bytes": 495,
+      "sha256": "ac43be6e933161f76a84bf057cc53189b1ed38ce1aa4947351b6498d4958face"
+    }
+  },
+  "original_job": "1a1b008fa4a-fc05-6d9a",
+  "original_slot": "snapshot_2379_rog_source_gitfirst_r1",
+  "source_only": true,
+  "body_observed": false,
+  "detailed_stage_qualified": false,
+  "format_or_compile_qualified": false,
+  "root_Runtime_calls": 0
+}

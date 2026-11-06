@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-mac-owned-home-t5-readonly-86512cae-r3-streams-00",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1b00fe489-fc05-6dd5",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

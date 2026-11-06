@@ -1,0 +1,18 @@
+{
+  "source": {
+    "blob": "1ba4cec6b0ce49db5111b429ffe337064ce42dbb",
+    "bytes": 93249,
+    "sha256": "86512cae0db15a19e1f052b4bac786e7a612bc6dfd948f1e605f14077ca0b21e"
+  },
+  "sourcePacket": "f687a33d835005a58a03db8980183bb3e9f1279e",
+  "rootSourceReview": "90a8fa6f91ae1b80f8d0a22194cf516dfa232f6d",
+  "rootGO": {
+    "blob": "339fb0884b246dedf92994dcfdca7279a802790b",
+    "bytes": 13459,
+    "sha256": "aa19f9d017396b11c778381bd2a165979aa9e5cbacda9a2765ab619098d32b81"
+  },
+  "laterSourceOnlyPeer": "a637d60ed8d4cf3fccd58f5e7a73b613eb98868b",
+  "historicalR2Actual": "80235457cc3c2190e76f8c809347de281023dd22",
+  "historicalR2Root": "e65caf0cf0e3447b50a205d1d6033796dfb75ad8",
+  "noHistoricalRewrite": true
+}

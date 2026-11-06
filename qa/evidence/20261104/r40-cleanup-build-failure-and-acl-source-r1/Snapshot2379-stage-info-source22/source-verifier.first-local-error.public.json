@@ -1,0 +1,8 @@
+{
+  "name": "Error",
+  "message": "fixed-key",
+  "scope": "pure source verifier only",
+  "candidateAndRequestChanged": false,
+  "cause": "checker replacement order changed snapshot-b6949024 through shorter snapshot-b694 first",
+  "newNativeCalls": 0
+}

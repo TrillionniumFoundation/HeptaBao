@@ -1,0 +1,362 @@
+{
+  "schema": "heptabao.r39.checkpoint-tree-intent.v1",
+  "request": {
+    "repository_full_name": "TrillionniumFoundation/HeptaBao",
+    "base_tree_sha": "578bb457e6d719d6503d5c3f29628d0ae0f2a3e8",
+    "tree_elements": [
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/R38-publication-proof",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "2e6a4f0d628112c7d96502a027e9350a6733702a"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/R38-tree-intent",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "6115108fe883a99a67ef98534fbd5fb2e0fc770c"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/R38-tree-SDK",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "f7c283330256ea1dcece81662dd2f2b11db91182"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/R38-commit-intent",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "b365185868af73790143fff53a079ccbd667c1a6"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/R38-commit-SDK",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "ff2d7dbd8e9acc6ed0c91130b3f262aeadab0810"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/R38-ref-intent",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "1dba617af51d5b197e4667280c89341278543e9e"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/R38-ref-SDK",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "96eb31bb0ab378ef707b640e7f352a525972bb58"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/PKI33b-info-actual23",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "ba5841da1f32fd1ed326766e7c699600fb52f43d"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/PKI33b-body-source23",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "74d43f4e1c7a142f833c8e276fb3deef574e801a"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/PKI33b-body-GO-and-root",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "8adc30e5938e9b4f0e7d7253d4c21d722f649147"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/PKI33b-page-local-prepare-source23",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "9dc8226cb1e0aafb29fcf240856c98381c8f3a0f"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/PKI33b-page-local-prepare-recovery-GO",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "0697922726500d436fa69586296be5e05d2fc650"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/PKI33b-complete-body-actual61",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "54e263b8fce7df97c49ebd70df288eae136b90a7"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/PKI33b-stage51-and-b694-terminal35-root",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "c407fed5494faab3ff395679da932b605c3edc87"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Snapshot-b694-stage-source52",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "c2676044f1e456c0531ee8401c567fb412a932db"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Snapshot-b694-stage-superseded-GO",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "29159abaade8dcd646672a94d452caf8963c32c5"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Snapshot-b694-stage-corrected-GO",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "479ce489ba61724595623f7b5cfb485c4633e993"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Snapshot-b694-stage-actual49",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "a4f5ad504624966ab6918623d743d105cab1752d"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Snapshot-b694-info-source20",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "f13282e598f1ade7b024904c9e293c08aabe48fc"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Snapshot-b694-info-GO-and-Service53-root",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "a6da59be8a02d136f57d96a0af417590a77bed8b"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Snapshot-b694-info-actual22",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "3bc2225f92dc750bd3c2f1becff3aaa27a2541ee"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Snapshot-b694-body-source19",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "0aa96b5f646ba65167b6abb096d7120d1ba6391c"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Snapshot-b694-body-GO-and-info22-root",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "f4136419bb3e8edb013613242abac6b8c689fa41"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Snapshot-b694-decoded-report-min4",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "52de9324b9ef2b9e2f25c7efbe313c3ae032c734"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Snapshot-Service-four-held42",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "0e8c558ac81c64a6bc9c230d083c121871277f33"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Snapshot-Service-four-source53",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "b2d0ed3d7fce6c169d0a026b6fe72fae33efe329"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Snapshot-unformatted-union49",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "d4b55106135f5873b2b316fc777898de0d964a5b"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Snapshot2379-tree-intent",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "d9c594027dac58d8c3014168ee2b101561a17df1"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Snapshot2379-tree-SDK",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "f3f6a3fed2bf164ea2ec9edef524d39197e2ca69"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Snapshot2379-commit-intent",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "4ad65d64db70debb6ce6f9a49ae1e815196028c2"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Snapshot2379-commit-SDK",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "e6ad0a8cd6f6cdbd9d3d6592e2e899c598713c72"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Snapshot2379-branch-intent",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "d0423105a7aec3080dc7e820bfa79c3109b8054a"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Snapshot2379-branch-SDK",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "229d2b2764673caeceec3a2201a492e4b9d5054e"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Snapshot2379-source-freeze",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "d925169a39d1648c4934569a11b60d07c567f893"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Snapshot2379-stage-formatter49-source54",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "21ec39d8574bd1711577a598fe54c92ad4f3b11f"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Snapshot2379-stage-superseded-GO",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "a2067746e081cdbf74d65f1b03d972ad0e00423e"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Snapshot2379-stage-corrected-GO",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "2fd2851aa06bb6d1cf57a056650f2826dd599cd3"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Auth-existing-R4-readonly-source33",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "e11856456b51b54cd3bc564fd797ea7bc95dbea8"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Auth-readonly-R2-source15",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "0d5667845ab96120314855e08f4e9809b4a505fd"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Auth-readonly-R2-GO",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "d79d70773dec3c7d1fd86b979dd510cea680f1e9"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Auth-readonly-R2-actual79",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "80235457cc3c2190e76f8c809347de281023dd22"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Auth-readonly-R2-root69",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "882413cf7790ca98dbc71bc71c955327242e8db0"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/PKI33b-controls-ready-source33",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "8fc5a3a1b0c957b163a46b2c1eb1ef29ec70f54d"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/PKI33b-controls-INERT-GO",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "cb63f8312be3ec683fca4d6498885c0324d80aa7"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/PKI33b-controls-INERT-actual52",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "ab605d5e65f3be9766dad58674c55a3ba5ac636b"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Controls-INERT39-and-format49-SOURCE99-root",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "b92f2edc54cdd2250c89a35a086488cc7a55b326"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/PKI33b-fixed4-info-source26",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "84eabfeac9cf4179c18ee3387fe38cdafbda7048"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/PKI33b-fixed4-info-GO",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "4f35ef32e0dae89e804b5a264441b7b587dd2333"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Auth-libproc-R3-source41",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "f687a33d835005a58a03db8980183bb3e9f1279e"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Auth-libproc-R3-GO-and-root44",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "905a9deb11d946e701f08bbf695c60f885fd9fbd"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Snapshot2379-stage-actual55",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "410dfe06fb8785fbdd0722170594f3c2c43c4285"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/Snapshot-b694-body-actual49",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "ac1290757435090eaa787a595635ff9328da2466"
+      },
+      {
+        "path": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1/root-current",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "5234f17ec0a700e77a7b88db29ef792126747679"
+      }
+    ]
+  },
+  "expected_root_tree": "5817937651a2d75ef63f0f57d368b58fa5c090af",
+  "expected_layers": [
+    {
+      "name": "prefix",
+      "sha": "6a8766965e50406363f7ccf63aa2921f1bd0cf9d",
+      "entries": 53
+    },
+    {
+      "name": "day",
+      "sha": "bfd36bdcb66a3cb0d63e8cf2a7142e270570def5",
+      "entries": 116
+    },
+    {
+      "name": "evidence",
+      "sha": "c8e520a81a2bc59fd53f1b72c05cdd892484165a",
+      "entries": 1
+    },
+    {
+      "name": "qa",
+      "sha": "53a53ab55fda45fd7c248f122e976afb218abb34",
+      "entries": 3
+    },
+    {
+      "name": "root",
+      "sha": "5817937651a2d75ef63f0f57d368b58fa5c090af",
+      "entries": 26
+    }
+  ],
+  "parent_commit": "4403b2e23ec12b611b4e374cc723546fea821fda",
+  "mounts": 52,
+  "root_current": "5234f17ec0a700e77a7b88db29ef792126747679",
+  "only_one_new_evidence_subtree": true,
+  "all_previous_paths_preserved": true,
+  "product_source_unchanged": true,
+  "replay_permitted": false
+}

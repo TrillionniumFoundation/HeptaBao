@@ -1,0 +1,10 @@
+{
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1/control/stage-result.public.json"
+    }
+  },
+  "idempotency_key": "heptabao-native-snapshot-2379d02b-rog-source-observe-r1-report-info"
+}

@@ -1,0 +1,27 @@
+{
+  "removed": "native_jwt_role_operations_keep_the_existing_legacy_acl_contract",
+  "added": [
+    "native_jwt_role_management_uses_source_create_update_and_delete_after_cold_reopen",
+    "native_jwt_collection_read_is_authorized_before_unsupported_and_list_stays_list",
+    "native_jwt_config_update_without_sudo_persists_and_rejects_read_only_actor"
+  ],
+  "old_test_names": [
+    "native_jwt_local_service_token_identity_renewal_and_cold_reopen",
+    "native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta",
+    "native_jwt_role_operations_keep_the_existing_legacy_acl_contract",
+    "native_jwt_identity_failure_does_not_export_witness_or_token_and_next_login_is_fresh",
+    "native_jwt_original_assertion_expiry_before_publication_keeps_auth_identity_atomic",
+    "native_jwt_native_owner_capacity_veto_after_authentication_keeps_the_old_root",
+    "native_jwt_original_assertion_expiry_after_commit_withholds_reply_without_rollback",
+    "native_jwt_post_commit_audit_failure_keeps_whole_root_and_recovery_required",
+    "native_jwt_post_audit_response_and_original_deadline_cannot_be_rebound",
+    "native_jwt_post_audit_revocation_cannot_replace_the_original_publication_proof",
+    "native_jwt_token_api_service_descendants_keep_own_renewal_and_parent_revocation",
+    "native_jwt_token_api_batch_owner_preserves_real_parent_binding_across_cold_reopen",
+    "native_jwt_token_api_revoke_orphan_keeps_own_issuer_but_mount_retirement_still_revokes",
+    "native_jwt_and_userpass_token_api_targets_keep_real_owner_and_renewal_in_both_directions",
+    "native_jwt_token_api_profile_rejects_mount_label_without_real_issuer_or_parent_graph"
+  ],
+  "old_comment": "// R2 additions below. The ten R1 regressions and all their assertions remain\n// byte-identical; these are independent Token API composition regressions.\n",
+  "new_comment": "// R2 Token API composition regressions below remain byte-identical.\n// The earlier legacy ACL expectation is replaced explicitly by the three\n// source-capability regressions above; the frozen 33b run keeps its old test.\n"
+}

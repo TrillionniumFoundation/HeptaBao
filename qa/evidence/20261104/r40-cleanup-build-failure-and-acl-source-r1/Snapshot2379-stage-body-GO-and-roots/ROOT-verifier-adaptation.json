@@ -1,0 +1,162 @@
+[
+  {
+    "before": "qualifyB694Info",
+    "after": "qualify2379Info",
+    "count": 1
+  },
+  {
+    "before": "r34_packet_Snapshot-b694-stage-info-full-actual22",
+    "after": "r34_packet_Snapshot2379-stage-info-full-actual22",
+    "count": 1
+  },
+  {
+    "before": "r39_snapshot_b694_info_GO",
+    "after": "r40_snapshot2379_info_GO",
+    "count": 1
+  },
+  {
+    "before": "whole22_51161",
+    "after": "whole22_54818",
+    "count": 1
+  },
+  {
+    "before": "p.audit.bytes===51161",
+    "after": "p.audit.bytes===54818",
+    "count": 1
+  },
+  {
+    "before": "armedTree:c.armedTree",
+    "after": "armedTree:c.armed.tree",
+    "count": 1
+  },
+  {
+    "before": "label:\"b694Info\"",
+    "after": "label:\"2379Info\"",
+    "count": 1
+  },
+  {
+    "before": "a=idx.actual_info",
+    "after": "a=rel.actual_info",
+    "count": 1
+  },
+  {
+    "before": "v.size===28206",
+    "after": "v.size===28399",
+    "count": 1
+  },
+  {
+    "before": "5709177a98a8f9b305b4e26da5f3a310a7b96d8f3086224429a9dfb56f53d5db",
+    "after": "733f77ea123b842e424f0b315d9ec910881b99e5844a4fd9ee51b651d5fb1955",
+    "count": 1
+  },
+  {
+    "before": "66306:31235919:28206:1793952723578666336:1793952723578666336",
+    "after": "66306:31364206:28399:1793954767528597190:1793954767528597190",
+    "count": 1
+  },
+  {
+    "before": "snapshot-b694-stage-independent-info",
+    "after": "snapshot-2379-stage-independent-info",
+    "count": 1
+  },
+  {
+    "before": "reviewB694Body",
+    "after": "review2379Body",
+    "count": 1
+  },
+  {
+    "before": "r34_packet_Snapshot-b694-stage-body-source19",
+    "after": "r34_packet_Snapshot2379-stage-body-source19",
+    "count": 1
+  },
+  {
+    "before": "r39_snapshot_b694_info_GO",
+    "after": "r40_snapshot2379_info_GO",
+    "count": 1
+  },
+  {
+    "before": "r39_snapshot_b694_info_actual_qualification",
+    "after": "r40_snapshot2379_info_actual_qualification",
+    "count": 1
+  },
+  {
+    "before": "r38_snapshot_stage_body_GO",
+    "after": "r39_snapshot_b694_body_GO",
+    "count": 1
+  },
+  {
+    "before": "r34_packet_Snapshot-b694-stage-info-full-actual22",
+    "after": "r34_packet_Snapshot2379-stage-info-full-actual22",
+    "count": 1
+  },
+  {
+    "before": "whole19_141877",
+    "after": "whole19_141531",
+    "count": 1
+  },
+  {
+    "before": "p.audit.bytes===141877",
+    "after": "p.audit.bytes===141531",
+    "count": 1
+  },
+  {
+    "before": "plan.request",
+    "after": "plan.exact_request",
+    "count": 2
+  },
+  {
+    "before": "plan.old_algorithm_source",
+    "after": "plan.old_reviewed_body_source",
+    "count": 1
+  },
+  {
+    "before": "plan.expected_report",
+    "after": "plan.expected",
+    "count": 1
+  },
+  {
+    "before": "plan.actual_info22",
+    "after": "plan.actual_info_packet",
+    "count": 1
+  },
+  {
+    "before": "same(plan.info_closed_observer,iq.value.original_operation)",
+    "after": "plan.actual_info_operation===iq.value.original_operation.id&&same(plan.actual_info_native,iq.value.original_operation.nativeText)",
+    "count": 1
+  },
+  {
+    "before": "plan.exact_offset",
+    "after": "plan.offset",
+    "count": 1
+  },
+  {
+    "before": "plan.exact_limit",
+    "after": "plan.limit",
+    "count": 1
+  },
+  {
+    "before": "same(plan.root_stage_terminal_qualification,ig.value.original_stage_terminal_qualification)",
+    "after": "same(plan.original_info_go,{blob:ig.blob,bytes:ig.bytes,sha256:ig.sha256})&&same(plan.full9_decimal_strings,a.full9Strings)",
+    "count": 1
+  },
+  {
+    "before": "heptabao-native-snapshot-b6949024-rog-source-observe-r1-report-body",
+    "after": "heptabao-native-snapshot-2379d02b-rog-source-observe-r1-report-body",
+    "count": 1
+  },
+  {
+    "before": "plan.report_cap===65536&&plan.maximum_native_call_or_future_per_lane===1",
+    "after": "plan.file_cap_bytes===65536&&after.includes('v.total_bytes<=1048576')",
+    "count": 1
+  },
+  {
+    "before": "plan.body_not_submitted===true&&plan.other_paths_authorized===false&&plan.info_refresh_authorized===false&&plan.formatter46_or49_authorized===false&&plan.cargo_or_product_authorized===false&&plan.newNativeCalls===0",
+    "after": "plan.no_info_refresh===true&&plan.no_process_start===true&&plan.no_formatter===true&&plan.no_cargo===true&&plan.no_product===true&&plan.new_native_calls===0&&plan.candidate_function_calls===0&&plan.raw_body_must_be_whole_archived_before_semantics===true",
+    "count": 1
+  },
+  {
+    "before": "snapshot-b694-stage-report-body",
+    "after": "snapshot-2379-stage-report-body",
+    "count": 1
+  }
+]

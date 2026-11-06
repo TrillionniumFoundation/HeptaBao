@@ -1,0 +1,5 @@
+// Pure reproduction; original executor transcript is not synthesized.
+const h=new Function(f["pure.original.js"]+"\nreturn {gitBlobMeta};")(),d=new Function(f["strict-diff.helpers.js"]+"\nreturn {makeStrictUnified,applyStrictUnified};")(),p=JSON.parse(f["PLAN.public.json"]);
+const input={before:f["journal.info4.before.js"],source:f["journal.body4.after.js"],diff:f["journal.strict.diff"],replacements:JSON.parse(f["replacements.public.json"]),requests:[0,1,2,3].map(i=>f["body"+i+".PROPOSED.request.json"]),requestPins:p.exactRequests,expected:JSON.parse(f["expected-bodies.public.json"]),closedState:JSON.parse(f["original-closed-state.public.json"]),fixtureStore:JSON.parse(f["original-closed-native-fixture.public.json"]),slot:p.originalSlot,pure:f["pure.original.js"],archive:f["archive.original.js"]};
+const actual=new Function(f["verifier.source.js"]+"\nreturn verifyControlsBody4Source;")()(input,h,d);
+if(JSON.stringify(actual)!==JSON.stringify(JSON.parse(f["verifier.actual.json"])))throw Error("exact_recorded_result");

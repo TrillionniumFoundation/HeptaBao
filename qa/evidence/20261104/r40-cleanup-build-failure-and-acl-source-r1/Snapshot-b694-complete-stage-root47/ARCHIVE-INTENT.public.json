@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r40_snapshot_b694_stage_complete_qualification_packet",
+  "records": [
+    {
+      "name": "ROOT-qualification.json",
+      "blob": "dc28ec4f512bdaf763165eb76f8af42a8cdd074f",
+      "bytes": 8438,
+      "sha256": "53c28d4afe0651b8b6bfc42870eba962d844b1073955cc028944a2435f57a0d0"
+    },
+    {
+      "name": "ROOT-verifier.js",
+      "blob": "404300458034467cd5a114264a510a49f449f23c",
+      "bytes": 10252,
+      "sha256": "3cff0346c5665ae2a2beb8fe5ce508402a63a837602133169b0b5cf5472b7825"
+    },
+    {
+      "name": "ROOT-verifier.initial.js",
+      "blob": "2274dd995ca00df0dca9247eeea63d7eb7da7224",
+      "bytes": 10252,
+      "sha256": "e10f0dafcd891946f97cf68f2765d338e61e7634e45ed5a0a12ba912f24407c3"
+    },
+    {
+      "name": "ROOT-verifier-correction.json",
+      "blob": "b28544cec51c403cc1252304e78e175ae4982a44",
+      "bytes": 444,
+      "sha256": "db58ed83aaf530ee37614a412a1cb7396f48c4faf5f0bd6e91c06b529e8b8a60"
+    },
+    {
+      "name": "ROOT-verifier-adaptation.json",
+      "blob": "f4b3f25312ffb6c4e4d73cf485955e7880e64b46",
+      "bytes": 1494,
+      "sha256": "5fa7ad883206ac9799425f5c8b8e875ce682ec7688d07c2866f264568d40792e"
+    }
+  ],
+  "expected_data_tree": "d4566d46e32c3ee9d15da9bc3215328f5d9a2062",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

@@ -1,0 +1,75 @@
+{
+  "schema": "heptabao.snapshot2379.format49.report-info.actual-release.r1",
+  "host": "rog",
+  "originalJob": "1a1b02771c2-fc05-6e9f",
+  "existingSlot": "snapshot_2379_rog_formatter_gitfirst_r1",
+  "rootGO": {
+    "blob": "7a1e5b22a444295bb93851e01bd93e265b14cdec",
+    "bytes": 3450,
+    "sha256": "618c964ca09dae6a2bf867477114c7ef5732b0c8bda5530c188a8090a2fb5241"
+  },
+  "candidate": {
+    "blob": "1c4c4be5387cf79aa53bc9a847aceda040fd8c4f",
+    "bytes": 25007,
+    "sha256": "d502258569a9492411a36cd5af223f5b95d361b5eb31a14940bcf9407192b634"
+  },
+  "exactRequest": {
+    "blob": "6a8d59c8f2b2e9fd163f6fb63dbb9572793bf80e",
+    "bytes": 297,
+    "sha256": "efa2d673c1065da7e588e8c619a4b8d3dcea072aab0ab88db2268c531856c658"
+  },
+  "originalObserver": {
+    "id": "6040da16c66f2a7b6f2f4a3939721c0e78afddf8f9070d76c77a0ffe49e82cff",
+    "tool": "file_info",
+    "payload": {
+      "blob": "638aa3e1fc1ee1b08b9556747125fd95356e349a",
+      "bytes": 600,
+      "sha256": "11712b7eaaaceea46eea796c024620dd0bf24e6c0db42f8652e9dbdb454b22da"
+    },
+    "payloadTree": "67b6c0a3116c3b8e43912d3b11700f4a3a84d6f8",
+    "nativeText": {
+      "blob": "45d1709e3bbbf74caee996369a1eefdfbf855a31",
+      "bytes": 483,
+      "sha256": "8430d3a4b0c79f274222678fd30f8f0cec8f7f546602c6a1a1a2a8c749c5a4c2"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "actualMetadata": {
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/result.public.json",
+    "size": 118925,
+    "sha256": "5755903ce5696b6745d7af2b27a69a30e0d001697eeb85282df75eb25cea40d8",
+    "version": "66306:31236133:118925:1793956739343592677:1793956739343592677",
+    "nativeText": {
+      "blob": "45d1709e3bbbf74caee996369a1eefdfbf855a31",
+      "bytes": 483,
+      "sha256": "8430d3a4b0c79f274222678fd30f8f0cec8f7f546602c6a1a1a2a8c749c5a4c2"
+    },
+    "originalOperation": "6040da16c66f2a7b6f2f4a3939721c0e78afddf8f9070d76c77a0ffe49e82cff",
+    "full9Strings": [
+      "66306",
+      "31236133",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "118925",
+      "1793956739343592677",
+      "1793956739343592677"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "originalCalls": 3,
+  "immutablePages": 1,
+  "completedInactive": true,
+  "payloadSHAFull": true,
+  "currentNativeCall": 0,
+  "currentNativeFuture": 0,
+  "currentNativeProcess": 0,
+  "laneReleased": true,
+  "binaryReadCalls": 0,
+  "bodyReadAuthorized": false,
+  "originalFormatter16CallsPreserved": true,
+  "normalAndProductQualificationClaimed": false
+}

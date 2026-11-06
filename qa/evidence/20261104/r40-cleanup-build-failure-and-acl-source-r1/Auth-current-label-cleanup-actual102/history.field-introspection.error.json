@@ -1,0 +1,7 @@
+{
+  "stage": "pure_field_introspection",
+  "expression": "r.directHelpers.map",
+  "error": "TypeError: r.directHelpers.map is not a function",
+  "candidateChanged": false,
+  "nativeCalls": 0
+}

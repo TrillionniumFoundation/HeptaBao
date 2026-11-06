@@ -1,0 +1,42 @@
+--- a/2379-info-journal.js
++++ b/2379-info-journal.js
+@@ -5,23 +5,23 @@
+  * Every original SDK is store'd, serialized, Git-created once and whole-read
+  * before isError or native text is inspected.
+  */
+-const GF_SLOT = "snapshot_2379_rog_source_gitfirst_r1";
+-const GF_REQUEST = {blob:"f84c09ce0410038dda0e55ce1a9b98609990780a",
+- bytes:112068,sha256:"6f8ed22378a218d9128d019607472452b247a8f441b2234f52038945540ca5d8"};
++const GF_SLOT = "snapshot_b694_rog_source_gitfirst_r1";
++const GF_REQUEST = {blob:"cbd6774e2f40e2c4b1e0c2f29cbc7954eaff494d",
++ bytes:111973,sha256:"12c03db5255a6373e20773cd09e82effaab754525a6f1cc6856aff61f34f1337"};
+ 
+ /* One separately approved observation of the newly owned public stage report.
+  * This does not authorize binary_read or any new process. Existing state is kept.
+  */
+-const GF_STAGE_RESULT_PATH = "/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1/control/stage-result.public.json";
++const GF_STAGE_RESULT_PATH = "/home/qian-qi/heptabao-native-snapshot-forward-source-b6949024-20261106-r1/control/stage-result.public.json";
+ const GF_STAGE_RESULT_MAX_BYTES = 65536;
+-const GF_STAGE_INFO_REQUEST = {"blob":"f706f3652a9d55e97753d0e88a4bb525d9aad920","bytes":312,"sha256":"130bc4c9a7ffd05c0380e7c9f98a083ff4675d970a3bf7106df30bcf2d63b0e8"};
+-const GF_STAGE_INFO_PREREQUISITES = [{"id":"1dd76fec9350714727e292af3868878ae220edbfb88ee10c35c204f874f2873b","tool":"process_status","nativeText":{"blob":"9318e8a2614bcb7bb9aa54a0e4932abde7ed80fb","bytes":729,"sha256":"e0f75d21de142ba5011cc9e330032f7211b7352dd84894056e6326ebbd88cf23"}},{"id":"af4c0d7dfb5c3eb8da7afe7476a042c2feb85b02839021f7b258e58252084681","tool":"process_read","nativeText":{"blob":"af75d0f01f3edd7fa51b1a0df2e2cae1b9ee95f2","bytes":1495,"sha256":"95014e3bf4ec6a29bf83ba5f92e644e46ef1d380ce883090e5bb9d5a70783ee2"}}];
++const GF_STAGE_INFO_REQUEST = {"blob":"f77cd0f6a623d4d52ac1652fb1ea7fe86a8f0309","bytes":312,"sha256":"33e1fc63a321552058870f1604b9f7b47112b0d2b3a97cee478dd9fefc155326"};
++const GF_STAGE_INFO_PREREQUISITES = [{"id":"63eb11ba6363fa901c8e79ab4418ea9f6ce240e82757391fa6c83c4ed696d4b1","tool":"process_status","nativeText":{"blob":"6da55f27d92467f15103a0bde8d1a0f2598ef9e8","bytes":729,"sha256":"fc714cd188b940470b1d1724232cd9339719270ce116cee5fb722e81e2b5489d"}},{"id":"502549e6c265343e2d5d8239a65515d474546b02b4dcc8cea72581b114394c1c","tool":"process_read","nativeText":{"blob":"6f4568f2c416ffa937bb48325c5830d26dd93c58","bytes":1495,"sha256":"968528ca330b628475e552cbcf2f42d1170ca95bc70cb15e6f0fe9a7e4e9df0d"}}];
+ 
+ function gfAuthorizeStageResultInfoOnly({goRaw,goPin,goWholeReadback}) {
+  const s=gfState();
+  gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null
+    && s.activeObserver===null && s.startCalled===true
+-   && s.job==="1a1b008fa4a-fc05-6d9a" && s.stageResultInfoGO===undefined
++   && s.job==="1a1afe9f4f5-fc05-6cb6" && s.stageResultInfoGO===undefined
+    && s.stageResultInfoStarted!==true,"closed_existing_stage_before_info_only_GO");
+  gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin)
+    && goPin.blob!==s.goPin.blob,"separate_whole_info_only_GO");
+@@ -93,7 +93,7 @@
+   gfNeed(s.job!==null && s.activeObserver===null,"original_job_no_unclosed_observer");
+   gfNeed(Object.keys(q).sort().join(",")==="idempotency_key,operation"
+     && typeof q.idempotency_key==="string" && q.idempotency_key.length<=128
+-    && /^heptabao-native-snapshot-2379d02b-rog-source-observe-r1-/.test(q.idempotency_key),
++    && /^heptabao-native-snapshot-b6949024-rog-source-observe-r1-/.test(q.idempotency_key),
+     "bounded_original_observer_key");
+   const op=q.operation,a=op?.arguments;
+   gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"

@@ -1,0 +1,79 @@
+{
+  "schema": "heptabao.local-release-checker-error.v1",
+  "stage": "pure_local_release_construction_before_any_Git_or_Native",
+  "predicate": "s.startCalled===true && Object.values(s.calls).filter(x=>x.kind==='start').length===1",
+  "error": "single_original_start",
+  "actualStartCalled": true,
+  "actualKinds": [
+    {
+      "key": "home-t5-close-label-r1-start",
+      "kind": "process_start"
+    },
+    {
+      "key": "home-t5-close-label-r1-authority-admit",
+      "kind": "operation_start"
+    },
+    {
+      "key": "home-t5-close-label-r1-authority-status-0",
+      "kind": "operation_status"
+    },
+    {
+      "key": "home-t5-close-label-r1-authority-page-0",
+      "kind": "operation_result"
+    },
+    {
+      "key": "home-t5-close-label-r1-streams-00-admit",
+      "kind": "operation_start"
+    },
+    {
+      "key": "home-t5-close-label-r1-streams-00-status-0",
+      "kind": "operation_status"
+    },
+    {
+      "key": "home-t5-close-label-r1-streams-00-page-0",
+      "kind": "operation_result"
+    },
+    {
+      "key": "home-t5-close-label-r1-streams-00-page-8192",
+      "kind": "operation_result"
+    },
+    {
+      "key": "home-t5-close-label-r1-streams-00-page-16384",
+      "kind": "operation_result"
+    },
+    {
+      "key": "home-t5-close-label-r1-streams-00-page-24576",
+      "kind": "operation_result"
+    },
+    {
+      "key": "home-t5-close-label-r1-streams-00-page-32768",
+      "kind": "operation_result"
+    },
+    {
+      "key": "home-t5-close-label-r1-streams-00-page-40960",
+      "kind": "operation_result"
+    },
+    {
+      "key": "home-t5-close-label-r1-streams-00-page-49152",
+      "kind": "operation_result"
+    },
+    {
+      "key": "home-t5-close-label-r1-streams-01-admit",
+      "kind": "operation_start"
+    },
+    {
+      "key": "home-t5-close-label-r1-streams-01-status-0",
+      "kind": "operation_status"
+    },
+    {
+      "key": "home-t5-close-label-r1-streams-01-page-0",
+      "kind": "operation_result"
+    },
+    {
+      "key": "home-t5-close-label-r1-streams-01-page-8192",
+      "kind": "operation_result"
+    }
+  ],
+  "candidateOrOriginalBytesChanged": false,
+  "NativeCalls": 0
+}

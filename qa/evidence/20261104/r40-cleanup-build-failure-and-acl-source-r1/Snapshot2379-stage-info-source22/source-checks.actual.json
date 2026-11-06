@@ -1,0 +1,137 @@
+{
+  "schema": "heptabao.snapshot-2379-info-only-source-checks.v1",
+  "pass": true,
+  "count": 32,
+  "checks": [
+    {
+      "name": "exactly-seven-literals",
+      "pass": true
+    },
+    {
+      "name": "literal-0-unique",
+      "pass": true
+    },
+    {
+      "name": "literal-1-unique",
+      "pass": true
+    },
+    {
+      "name": "literal-2-unique",
+      "pass": true
+    },
+    {
+      "name": "literal-3-unique",
+      "pass": true
+    },
+    {
+      "name": "literal-4-unique",
+      "pass": true
+    },
+    {
+      "name": "literal-5-unique",
+      "pass": true
+    },
+    {
+      "name": "literal-6-unique",
+      "pass": true
+    },
+    {
+      "name": "exact-literal-only-whole",
+      "pass": true
+    },
+    {
+      "name": "old-info-forward-strict",
+      "pass": true
+    },
+    {
+      "name": "old-info-reverse-strict",
+      "pass": true
+    },
+    {
+      "name": "stage-forward-strict",
+      "pass": true
+    },
+    {
+      "name": "stage-reverse-strict",
+      "pass": true
+    },
+    {
+      "name": "stage-six-hunks",
+      "pass": true
+    },
+    {
+      "name": "old-info-two-hunks",
+      "pass": true
+    },
+    {
+      "name": "exact-request-whole",
+      "pass": true
+    },
+    {
+      "name": "fixed-request-shape",
+      "pass": true
+    },
+    {
+      "name": "fixed-file-info",
+      "pass": true
+    },
+    {
+      "name": "fixed-key",
+      "pass": true
+    },
+    {
+      "name": "same-slot",
+      "pass": true
+    },
+    {
+      "name": "separate-go",
+      "pass": true
+    },
+    {
+      "name": "no-body-authorization",
+      "pass": true
+    },
+    {
+      "name": "existing-job",
+      "pass": true
+    },
+    {
+      "name": "original-closed-prerequisites",
+      "pass": true
+    },
+    {
+      "name": "closed-lane-required",
+      "pass": true
+    },
+    {
+      "name": "one-file-info-marker",
+      "pass": true
+    },
+    {
+      "name": "summary383-0",
+      "pass": true
+    },
+    {
+      "name": "cap65536",
+      "pass": true
+    },
+    {
+      "name": "pages8192",
+      "pass": true
+    },
+    {
+      "name": "payload1MiB",
+      "pass": true
+    },
+    {
+      "name": "decimal-lossless",
+      "pass": true
+    },
+    {
+      "name": "scope-no-execution",
+      "pass": true
+    }
+  ],
+  "newNativeCalls": 0,
+  "candidateFunctionCalls": 0
+}

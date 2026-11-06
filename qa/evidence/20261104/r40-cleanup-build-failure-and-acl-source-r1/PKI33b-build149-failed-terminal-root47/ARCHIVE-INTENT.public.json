@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r40-pki33b-build149-original-terminal-root",
+  "records": [
+    {
+      "name": "ROOT-terminal47.public.json",
+      "blob": "360e67448abbdc93f84e62142780b4d57974b316",
+      "bytes": 8249,
+      "sha256": "9d9a3a98548c79b2a25ac9f2593fddc09f9f98d23109df57cc9be0dc853cbd32"
+    },
+    {
+      "name": "ROOT-terminal-verifier.js",
+      "blob": "89cd929361db9496f76ea78eda82034221e9b19c",
+      "bytes": 6630,
+      "sha256": "6f15d807465e1b72dcbfe9146bcf3f977b007808fa02a6216b3805ced3aa78ca"
+    }
+  ],
+  "expected_data_tree": "c487314ba973f8093da3742b56b39c9b752511af",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

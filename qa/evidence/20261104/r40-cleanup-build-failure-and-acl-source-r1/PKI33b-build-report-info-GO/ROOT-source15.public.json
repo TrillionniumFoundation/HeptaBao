@@ -1,0 +1,125 @@
+{
+  "schema": "heptabao.root-source-review.PKI33b-failed-build-report-info.v1",
+  "status": "PASS_SOURCE_ONLY",
+  "checks": [
+    {
+      "name": "whole18_196057",
+      "passed": true
+    },
+    {
+      "name": "exact_prior_info_source_and_reference_GO",
+      "passed": true
+    },
+    {
+      "name": "exact_current_build_source_request_and_GO",
+      "passed": true
+    },
+    {
+      "name": "root47_qualifies_original_failed_lifecycle",
+      "passed": true
+    },
+    {
+      "name": "actual_authority_and_streams_exact",
+      "passed": true
+    },
+    {
+      "name": "candidate_diff_request_exact",
+      "passed": true
+    },
+    {
+      "name": "five_strict_hunks_both_directions",
+      "passed": true
+    },
+    {
+      "name": "fourteen_exact_source_bindings_only",
+      "passed": true
+    },
+    {
+      "name": "49_author_checks_reproduced",
+      "passed": true
+    },
+    {
+      "name": "actual_qualified_runner_whole",
+      "passed": true
+    },
+    {
+      "name": "one_fixed_report_SHA_from_actual_failed_stdout",
+      "passed": true
+    },
+    {
+      "name": "new_explicit_readonly_metadata_size_acceptance",
+      "passed": true
+    },
+    {
+      "name": "same_slot_no_START_no_body",
+      "passed": true
+    },
+    {
+      "name": "original_observer_caps_unchanged",
+      "passed": true
+    },
+    {
+      "name": "syntax_only_not_invoked",
+      "passed": true
+    }
+  ],
+  "check_count": 15,
+  "source_packet": "cead73145377f5310472e1a3933e0fd0147d4443",
+  "source": {
+    "blob": "21496c37dd8101299d875ffb2a9d10fa675d291e",
+    "bytes": 24791,
+    "sha256": "5235a51a3eb828174a545fa929a5ca3f72bb5254e86175805f7a34e3d0bf1960"
+  },
+  "exact_request": {
+    "blob": "3b4e093792b9fcd2a6c428381aee31e41a7c40e5",
+    "bytes": 294,
+    "sha256": "b6b76d8a6e19e118cf023ef48b03b0c8f7895943363f7e48372733f4ae54aab4"
+  },
+  "original_job": "1a1b029a998-fc05-6eb2",
+  "original_slot": "jwt_pki_33b814c7_build149_gitfirst_r1",
+  "entry_action": "authorize_build_result_info",
+  "scope": "build_result_file_info_only",
+  "metadata_acceptance": {
+    "host": "rog",
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/result.public.json",
+    "wholeSha256": "aa8a8623cc955adb64ab386387d15ad2204febc0fd526392d20cd0ab6c9638a6",
+    "size": null,
+    "version": null,
+    "full9": null,
+    "expectedMode": 384,
+    "expectedFullMode": 33152,
+    "expectedUid": 1000,
+    "expectedGid": 1000,
+    "expectedLinkCount": 1,
+    "platform": "linux",
+    "acceptSizeMin": 1,
+    "acceptSizeMax": 1048576
+  },
+  "original_terminal_root": {
+    "blob": "360e67448abbdc93f84e62142780b4d57974b316",
+    "bytes": 8249,
+    "sha256": "9d9a3a98548c79b2a25ac9f2593fddc09f9f98d23109df57cc9be0dc853cbd32"
+  },
+  "strict_hunks": 5,
+  "source_literal_bindings": 14,
+  "author_pure_checks_reproduced": 49,
+  "unchanged_function_names": [
+    "gfNeed",
+    "gfMetaEquals",
+    "gfState",
+    "gfSave",
+    "gfIntegerText",
+    "gfInitializeOnlyAfterRootGO",
+    "gfPrepareOne",
+    "gfInvokePreparedOnce",
+    "gfAcceptArchivedSDK",
+    "gfReconcileSameGitArchiveReadOnly"
+  ],
+  "new_explicit_acceptance_limit": "New explicit acceptance ceiling 1 MiB for this one failed BUILD report. The source write() does not declare a result byte cap and actual size is unknown. This is a proposal, not inherited stage 150000 or a claim about current size. file_info computes whole SHA; no body RPC is authorized.",
+  "execution_authorized": false,
+  "body_authorized": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

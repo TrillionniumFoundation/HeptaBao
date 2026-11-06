@@ -1,0 +1,131 @@
+{
+  "schema": "heptabao.snapshot2379.format49.terminal-owner-release.r1",
+  "host": "rog",
+  "job": "1a1b02771c2-fc05-6e9f",
+  "slot": "snapshot_2379_rog_formatter_gitfirst_r1",
+  "rootGo": {
+    "blob": "49ed50b1cf0b1c6e7fb4ebac16ebb8d17d9cef20",
+    "bytes": 22959,
+    "sha256": "219195a5c8323d35902184e57c7d4109dc8036a27fc39e50988e7759b06a2a7e"
+  },
+  "request": {
+    "blob": "0fce0771c8a4e42b85abfc10ffbc14e59e588616",
+    "bytes": 34045,
+    "sha256": "72289e6809a067df0df78ae0bd96383725ccbbcaca6fb219349c9ede1d4ce70f"
+  },
+  "authority": {
+    "blob": "3b2195640ee1ccadf9b4dcd204b3c81e6cda4a43",
+    "bytes": 733,
+    "sha256": "95d65e97f1b72d02fe406396ba77555141603a577abcc086d710b5b6bbf048e1"
+  },
+  "stdout": {
+    "blob": "2b4b66ddb59b7232b1bfa391b262d823f013f4ac",
+    "bytes": 17780,
+    "sha256": "1a937303bc837aed0d286045ae3696ee600126723aa7b3b4a34f8a1c9c0a8cd5"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "originalNativeCalls": 16,
+  "completedObservers": [
+    {
+      "id": "1d7efb002dd78f7385f6b3a3bdc0f17f7d3f02a3c438d3b707f69f43a3999f4e",
+      "tool": "process_status",
+      "payload": {
+        "blob": "9a26ce18093776fc9e86e4d416b5688019a9df04",
+        "bytes": 912,
+        "sha256": "75505e6aff407b8c8253533be367da62aafa83a71ccac5807c1d0a1cf69daaba"
+      },
+      "payloadTree": "5ad3fe8a5d6f5e573bf8475cf7fd6e6fbb580b83",
+      "nativeText": {
+        "blob": "3b2195640ee1ccadf9b4dcd204b3c81e6cda4a43",
+        "bytes": 733,
+        "sha256": "95d65e97f1b72d02fe406396ba77555141603a577abcc086d710b5b6bbf048e1"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "3bd7cf144acb1fa14d50fe7fa2d65bedff3c4a2e909d117bf3387bd69990bd53",
+      "tool": "process_read",
+      "payload": {
+        "blob": "01c7ee2f097ed4e29714d57ddaf09d5866b423ab",
+        "bytes": 52651,
+        "sha256": "4bd44ae38e84e4b768acf3f52e0c732862b772c3bfb23750df59287e8d46b9e1"
+      },
+      "payloadTree": "bf8c94fdf505bfc28ea245cb7d2aa1215f965798",
+      "nativeText": {
+        "blob": "6661e772a5bae16c6dc0a0e6369032053d9a8ed3",
+        "bytes": 50489,
+        "sha256": "0396f6be096daad7a6e50a8042b28426f3f635710ca404b017dd1d3850198bbf"
+      },
+      "pages": 7,
+      "completedInactive": true
+    },
+    {
+      "id": "62c649edc4033363bced4f6ae83df8795058d133623f36ed3b0ad6458ecd15b2",
+      "tool": "process_read",
+      "payload": {
+        "blob": "4a8e76feefdbb4794fa3932a38e285dc0dd4a112",
+        "bytes": 4920,
+        "sha256": "41361185aff94c2defd1371bb754a14e49972e16bbadfe9fa786924d8d4fb3de"
+      },
+      "payloadTree": "4d53b1898e236c142c588e0ea598cc200341170f",
+      "nativeText": {
+        "blob": "d6d2c80ca74103e4245051684676b13d0ff58383",
+        "bytes": 4605,
+        "sha256": "de859718e06bbfb405cf19559876e65b63e52f3437f920a461acb7799c442ad0"
+      },
+      "pages": 1,
+      "completedInactive": true
+    }
+  ],
+  "operationStatusOriginals": [
+    {
+      "callKey": "snapshot-2379-formatter-authority0-status",
+      "blob": "a39365c5f1be0a96edc40bbaa995006e25d81909",
+      "bytes": 805,
+      "sha256": "41a9af29798d46938288efdee42857f8ea9e80472468957962fe5d49048d2502"
+    },
+    {
+      "callKey": "snapshot-2379-formatter-streams0-status",
+      "blob": "4f233876d573713ced304cd1a84f829da0b28663",
+      "bytes": 803,
+      "sha256": "02bd61840d6cfe12f8cc5eefb5880ca8dfe97668d006af2889d7e83cc860e3e2"
+    },
+    {
+      "callKey": "snapshot-2379-formatter-streams1-status",
+      "blob": "ceb351f08255ef369d862727870ee057e148f577",
+      "bytes": 803,
+      "sha256": "7f0c8d6af7d44288894905d4924c2ceb4e314bf82a06f13b09e5743f9469456a"
+    }
+  ],
+  "immutablePages": 9,
+  "streamExtent": {
+    "stdout": 17780,
+    "stderr": 0,
+    "stdoutEof": true,
+    "stderrEof": true
+  },
+  "reported": {
+    "status": "passed",
+    "allOwnedStopped": true,
+    "withinDeadline": true,
+    "elapsedSeconds": 0.9214005090179853,
+    "fileRows": 49,
+    "error": null,
+    "publicationError": null
+  },
+  "activeNativeCalls": 0,
+  "activeNativeFutures": 0,
+  "activeNativeProcesses": 0,
+  "allOriginalObserversClosed": true,
+  "laneBReleased": true,
+  "scope": "Original format49 job terminal and full streams only. Detailed format report, per-command custody and actual output metadata/body remain pending separate GO.",
+  "noCargo": true,
+  "noProduct": true,
+  "sourceCheckoutUnmodifiedByFormatterContract": true,
+  "oldUnknownsPreserved": true
+}

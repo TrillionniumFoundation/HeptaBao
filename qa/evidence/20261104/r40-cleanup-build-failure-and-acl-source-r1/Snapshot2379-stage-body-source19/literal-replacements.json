@@ -1,0 +1,52 @@
+[
+  {
+    "before": "const GF_SLOT = \"snapshot_b694_rog_source_gitfirst_r1\";",
+    "after": "const GF_SLOT = \"snapshot_2379_rog_source_gitfirst_r1\";",
+    "count": 1
+  },
+  {
+    "before": "const GF_REQUEST = {blob:\"cbd6774e2f40e2c4b1e0c2f29cbc7954eaff494d\",\n bytes:111973,sha256:\"12c03db5255a6373e20773cd09e82effaab754525a6f1cc6856aff61f34f1337\"};",
+    "after": "const GF_REQUEST = {blob:\"f84c09ce0410038dda0e55ce1a9b98609990780a\",\n bytes:112068,sha256:\"6f8ed22378a218d9128d019607472452b247a8f441b2234f52038945540ca5d8\"};",
+    "count": 1
+  },
+  {
+    "before": "const GF_STAGE_RESULT_PATH = \"/home/qian-qi/heptabao-native-snapshot-forward-source-b6949024-20261106-r1/control/stage-result.public.json\";",
+    "after": "const GF_STAGE_RESULT_PATH = \"/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1/control/stage-result.public.json\";",
+    "count": 1
+  },
+  {
+    "before": "const GF_STAGE_INFO_REQUEST = {\"blob\":\"f77cd0f6a623d4d52ac1652fb1ea7fe86a8f0309\",\"bytes\":312,\"sha256\":\"33e1fc63a321552058870f1604b9f7b47112b0d2b3a97cee478dd9fefc155326\"};",
+    "after": "const GF_STAGE_INFO_REQUEST = {\"blob\":\"f706f3652a9d55e97753d0e88a4bb525d9aad920\",\"bytes\":312,\"sha256\":\"130bc4c9a7ffd05c0380e7c9f98a083ff4675d970a3bf7106df30bcf2d63b0e8\"};",
+    "count": 1
+  },
+  {
+    "before": "const GF_STAGE_INFO_PREREQUISITES = [{\"id\":\"63eb11ba6363fa901c8e79ab4418ea9f6ce240e82757391fa6c83c4ed696d4b1\",\"tool\":\"process_status\",\"nativeText\":{\"blob\":\"6da55f27d92467f15103a0bde8d1a0f2598ef9e8\",\"bytes\":729,\"sha256\":\"fc714cd188b940470b1d1724232cd9339719270ce116cee5fb722e81e2b5489d\"}},{\"id\":\"502549e6c265343e2d5d8239a65515d474546b02b4dcc8cea72581b114394c1c\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"6f4568f2c416ffa937bb48325c5830d26dd93c58\",\"bytes\":1495,\"sha256\":\"968528ca330b628475e552cbcf2f42d1170ca95bc70cb15e6f0fe9a7e4e9df0d\"}}];",
+    "after": "const GF_STAGE_INFO_PREREQUISITES = [{\"id\":\"1dd76fec9350714727e292af3868878ae220edbfb88ee10c35c204f874f2873b\",\"tool\":\"process_status\",\"nativeText\":{\"blob\":\"9318e8a2614bcb7bb9aa54a0e4932abde7ed80fb\",\"bytes\":729,\"sha256\":\"e0f75d21de142ba5011cc9e330032f7211b7352dd84894056e6326ebbd88cf23\"}},{\"id\":\"af4c0d7dfb5c3eb8da7afe7476a042c2feb85b02839021f7b258e58252084681\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"af75d0f01f3edd7fa51b1a0df2e2cae1b9ee95f2\",\"bytes\":1495,\"sha256\":\"95014e3bf4ec6a29bf83ba5f92e644e46ef1d380ce883090e5bb9d5a70783ee2\"}}];",
+    "count": 1
+  },
+  {
+    "before": "s.job===\"1a1afe9f4f5-fc05-6cb6\"",
+    "after": "s.job===\"1a1b008fa4a-fc05-6d9a\"",
+    "count": 2
+  },
+  {
+    "before": "/^heptabao-native-snapshot-b6949024-rog-source-observe-r1-/",
+    "after": "/^heptabao-native-snapshot-2379d02b-rog-source-observe-r1-/",
+    "count": 1
+  },
+  {
+    "before": "Only this 28206-byte range is admitted",
+    "after": "Only this 28399-byte range is admitted",
+    "count": 1
+  },
+  {
+    "before": "const GF_STAGE_BODY_REQUEST = {\"blob\":\"426dcd9abdb9e50e3e24bd2b91b702cbefbf7143\",\"bytes\":445,\"sha256\":\"c7576e46df69c988342313e14a96dac1647436a8a10d5b1c91872f0860b13fec\"};",
+    "after": "const GF_STAGE_BODY_REQUEST = {\"blob\":\"df08f53171c4476a25e5813a4ec22fca3a716bdf\",\"bytes\":445,\"sha256\":\"176dd3233a37856ebe8b79e4e37fa97ad140460ba096b391dff3474ea5869030\"};",
+    "count": 1
+  },
+  {
+    "before": "const GF_STAGE_BODY_EXPECTED = {\"path\":\"/home/qian-qi/heptabao-native-snapshot-forward-source-b6949024-20261106-r1/control/stage-result.public.json\",\"bytes\":28206,\"sha256\":\"5709177a98a8f9b305b4e26da5f3a310a7b96d8f3086224429a9dfb56f53d5db\",\"version\":\"66306:31235919:28206:1793952723578666336:1793952723578666336\",\"infoOperation\":\"353762d80b5cec5728d101a73623b74ffe60fd1333f03c5982fb73325450a336\",\"infoNative\":{\"blob\":\"3673f93e85ef4977b30870c853a95b0e607ea1d1\",\"bytes\":495,\"sha256\":\"c6ea7fd93ab7c72e01154ed5ff569dd31949cdde84f583f6d0b10be1ef41c21f\"}};",
+    "after": "const GF_STAGE_BODY_EXPECTED = {\"path\":\"/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1/control/stage-result.public.json\",\"bytes\":28399,\"sha256\":\"733f77ea123b842e424f0b315d9ec910881b99e5844a4fd9ee51b651d5fb1955\",\"version\":\"66306:31364206:28399:1793954767528597190:1793954767528597190\",\"infoOperation\":\"07f38b4b541c77312c94eeb6b1eb860eedf03c589f9acbcaffbc4dfa4e1f5a23\",\"infoNative\":{\"blob\":\"a5569800cbf2cc211f81fd0bd8323b24bb473577\",\"bytes\":495,\"sha256\":\"ac43be6e933161f76a84bf057cc53189b1ed38ce1aa4947351b6498d4958face\"}};",
+    "count": 1
+  }
+]

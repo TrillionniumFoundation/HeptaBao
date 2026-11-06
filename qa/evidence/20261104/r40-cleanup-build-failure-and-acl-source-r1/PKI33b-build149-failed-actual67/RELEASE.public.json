@@ -1,0 +1,55 @@
+{
+  "schema": "heptabao.native-jwt-pki-build149.original-terminal-release.r1",
+  "host": "rog",
+  "job": "1a1b029a998-fc05-6eb2",
+  "commit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+  "tree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+  "originalProcessStartCount": 1,
+  "originalCalls": 10,
+  "returnedObservers": 3,
+  "immutablePages": 3,
+  "allReturnedObserversCompletedInactive": true,
+  "nativeCallInFlight": false,
+  "pending": null,
+  "activeObserver": null,
+  "paused": false,
+  "authority": {
+    "blob": "ef0bb0b5b159aa86d1b3723b7fcce83549b8398b",
+    "bytes": 726,
+    "sha256": "a788a9fcac34f9cf200b77af67eed9caf3b7ef106b0ae3f451fd3b6338cbdf36"
+  },
+  "authorityState": "failed",
+  "exitCode": 1,
+  "timedOut": false,
+  "outputComplete": true,
+  "outputDurable": true,
+  "terminalPublicationConfirmed": true,
+  "stdout": {
+    "blob": "fd7931400a264d734c39f2ac43a86c9a0584767b",
+    "bytes": 867,
+    "sha256": "c7f2b0252150fd737856404b9f8cd89a669178a00d83dee97f23d88a26477ba4"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdoutReports": {
+    "preflightAdmitted": true,
+    "status": "failed",
+    "allOwnedStopped": true,
+    "publicationWithinOriginalOuter": true,
+    "resultPath": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/result.public.json",
+    "resultSha256": "aa8a8623cc955adb64ab386387d15ad2204febc0fd526392d20cd0ab6c9638a6"
+  },
+  "actualFailureCause": null,
+  "actualTestsExecuted": null,
+  "actualResultInfo": null,
+  "actualResultBody": null,
+  "buildQualified": false,
+  "targetFlockDetailedClosureConfirmed": false,
+  "scope": "Original transport and failed terminal only; all_owned_stopped is the original runner summary, detailed cleanup awaits the fixed report; no failure cause or test execution inferred.",
+  "originalBudgetsAndGroupsUnchanged": true,
+  "RuntimeLaneReleased": true,
+  "newNativeGORequiredForFixedReport": true
+}

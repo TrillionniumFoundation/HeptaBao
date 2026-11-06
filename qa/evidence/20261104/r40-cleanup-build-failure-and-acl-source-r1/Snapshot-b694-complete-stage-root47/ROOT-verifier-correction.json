@@ -1,0 +1,8 @@
+{
+  "initial_error": "Error: all60_direct_children_reaped_success_and_empty_groups",
+  "change": {
+    "before": "new Set(d.cleanup.map(x=>x.pid)).size===59",
+    "after": "new Set(d.cleanup.map(x=>x.pid)).size===60"
+  },
+  "reason": "Root adapter changed actual60 length and labels but missed the matching unique-PID count; original report contains exactly60 unique successful reaped child rows. No source,request,actual or Native changed."
+}

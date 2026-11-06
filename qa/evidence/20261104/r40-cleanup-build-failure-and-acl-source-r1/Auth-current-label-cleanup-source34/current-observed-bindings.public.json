@@ -1,0 +1,70 @@
+{
+  "priorObservation": {
+    "blob": "e4a50c4a58b55c5ff73ab4df0a591a4215e049a4",
+    "bytes": 18957,
+    "sha256": "a99d55efc4cd63e14f64e635ddf9671e73a19df6ddae66ce43050abe107d51c5"
+  },
+  "rootQualification": {
+    "blob": "56129f46fd94d072e301c4e558481efd817aed55",
+    "bytes": 14522,
+    "sha256": "bf626cd4ee05b5e5aa4c044ee93c4c52fecba8e7e469e84616918e169ce6c641"
+  },
+  "readyIdentity": {
+    "birthSec": 1793950344,
+    "birthUsec": 737052,
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+    "pgid": 58228,
+    "pid": 58228,
+    "ppid": 1,
+    "uid": 501
+  },
+  "readyFull9": [
+    "16777233",
+    "592904421",
+    "501",
+    "20",
+    "33152",
+    "1",
+    "640",
+    "1793950344882619282",
+    "1793950344882619282"
+  ],
+  "markerFull9": [
+    "16777233",
+    "592904422",
+    "501",
+    "20",
+    "33152",
+    "1",
+    "0",
+    "1793950344883708127",
+    "1793950344883708127"
+  ],
+  "terminalFull9": [
+    "16777233",
+    "592904419",
+    "501",
+    "20",
+    "33152",
+    "1",
+    "4816",
+    "1793950369615463915",
+    "1793950369615463915"
+  ],
+  "stderrFull9": [
+    "16777233",
+    "592904420",
+    "501",
+    "20",
+    "33152",
+    "1",
+    "0",
+    "1793950344733248255",
+    "1793950344733248255"
+  ],
+  "terminalError": {
+    "type": "ProbeRefused",
+    "code": "child_absolute_deadline",
+    "errno": null
+  }
+}

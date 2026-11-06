@@ -1,0 +1,212 @@
+[
+  {
+    "index": 0,
+    "callKey": "jwt-pki-33b814c7-build149-report-info-start-r1",
+    "kind": "operation_start",
+    "request": {
+      "blob": "3b4e093792b9fcd2a6c428381aee31e41a7c40e5",
+      "bytes": 294,
+      "sha256": "b6b76d8a6e19e118cf023ef48b03b0c8f7895943363f7e48372733f4ae54aab4"
+    },
+    "armed": {
+      "tree": "0135d51d6424633d40d6bf992df6f1d33063da0b",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "ea81bf70b55295aed77664686fbdd3f3e38d80d6",
+          "bytes": 873,
+          "sha256": "bdb8e2234863daa3466880ecd3a815ffe405ebda99c208a2edcec9d8eb00745e",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "c239e1774003f903924bd9439cba085087e9ff32",
+          "bytes": 736,
+          "sha256": "2b3bbf8f3718483c9874c050c42247122a5ced1bc803ab0416fccfa1c17fe683",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "3b4e093792b9fcd2a6c428381aee31e41a7c40e5",
+          "bytes": 294,
+          "sha256": "b6b76d8a6e19e118cf023ef48b03b0c8f7895943363f7e48372733f4ae54aab4",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1903,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "sdk": {
+      "blob": "b52033b166c2d1f0a7f0773e7acbb880650dd248",
+      "bytes": 704,
+      "sha256": "8d0631f23e29772e2dcc2726a34d67164092effcccdafc6391a73e7cdf78cda9"
+    },
+    "sdkArchive": {
+      "tree": "d6a34d5dc91db91275c5f3efb89e37166222e2f0",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "b52033b166c2d1f0a7f0773e7acbb880650dd248",
+          "bytes": 704,
+          "sha256": "8d0631f23e29772e2dcc2726a34d67164092effcccdafc6391a73e7cdf78cda9",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 704,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "native": {
+      "blob": "2efc23796edc9e9421f42da97adc76871a05563d",
+      "bytes": 543,
+      "sha256": "533f98095499e22d4ed41594f3a96a45675924f2988d872166173fec70e5587f"
+    },
+    "prefix": "call-00-",
+    "phase": "accepted"
+  },
+  {
+    "index": 1,
+    "callKey": "jwt-pki-33b814c7-build149-report-info-status-r1",
+    "kind": "operation_status",
+    "request": {
+      "blob": "e8d53bce987c66587ad35b9b9de3d81903d53d6a",
+      "bytes": 89,
+      "sha256": "b064a9dd1400ed4e4c23c56f1f86cee9115c0264b907c16aae527b5fcb347050"
+    },
+    "armed": {
+      "tree": "f1c20929c3b3be96b6234c47e1366bae06da7073",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "0633478347aaed03255b081bbe9da62193474973",
+          "bytes": 936,
+          "sha256": "be58c3d8d027b4ab0863442458e127871ed4a0e5fd7f0a7fd123da84c49bd120",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "b7a57db52e2097074434dab91ee144b29f42e9ab",
+          "bytes": 799,
+          "sha256": "d875259eb719506a2b570f25d8cf37ed34b95d950a8af3da46a9a04efbe43337",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "e8d53bce987c66587ad35b9b9de3d81903d53d6a",
+          "bytes": 89,
+          "sha256": "b064a9dd1400ed4e4c23c56f1f86cee9115c0264b907c16aae527b5fcb347050",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1824,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "sdk": {
+      "blob": "e6bbc61734a38f8512b14ff111d05e8aa5e098f3",
+      "bytes": 975,
+      "sha256": "3e7aa20067df36c24f3ab469b73e6760dca1c52c48337845880cfa815a12c2bf"
+    },
+    "sdkArchive": {
+      "tree": "5fcd79f998327ed040ed64b2c0618dc473d97dbd",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "e6bbc61734a38f8512b14ff111d05e8aa5e098f3",
+          "bytes": 975,
+          "sha256": "3e7aa20067df36c24f3ab469b73e6760dca1c52c48337845880cfa815a12c2bf",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 975,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "native": {
+      "blob": "a52e89b61f2a9564876881f94c04e3758d38601d",
+      "bytes": 800,
+      "sha256": "3552acdc0f679c2c593fd0b3f241348300266548cabd05c6813cd8decf7a6a81"
+    },
+    "prefix": "call-01-",
+    "phase": "accepted"
+  },
+  {
+    "index": 2,
+    "callKey": "jwt-pki-33b814c7-build149-report-info-page0-r1",
+    "kind": "operation_result",
+    "request": {
+      "blob": "a20805911077acb62ff8a21db80bde6ce032976e",
+      "bytes": 121,
+      "sha256": "0f264929e52d08eb89dc18ece5a0b00fd698bc73d654ca4ae5aacec577927b6a"
+    },
+    "armed": {
+      "tree": "61675cd05fa2f887798b23d4a7c3052576ce0401",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "757f06b3e95f2bf351a4b18a897683ddf406001b",
+          "bytes": 936,
+          "sha256": "e41e508ac26c06a2b95fd9338a1e3da702ce17521065ab5ac21b023ac43c8675",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "0da83e9f3bdf37d0cb723f49a2a33842028be1be",
+          "bytes": 799,
+          "sha256": "32d83127bce40786357163568fcee64e07225e3a41912c67e8f96adced1dce0f",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "a20805911077acb62ff8a21db80bde6ce032976e",
+          "bytes": 121,
+          "sha256": "0f264929e52d08eb89dc18ece5a0b00fd698bc73d654ca4ae5aacec577927b6a",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1856,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "sdk": {
+      "blob": "8035b888576d7f2a0be4d7025f0b43cb0fabd71e",
+      "bytes": 1648,
+      "sha256": "bb9d2a3263ff536296d4b41ba11d2523fa74bd5b9d282b39b6594a7d5be7e870"
+    },
+    "sdkArchive": {
+      "tree": "f727683f0603d92320db63fc5aaeb8a2a55deca5",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "8035b888576d7f2a0be4d7025f0b43cb0fabd71e",
+          "bytes": 1648,
+          "sha256": "bb9d2a3263ff536296d4b41ba11d2523fa74bd5b9d282b39b6594a7d5be7e870",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 1648,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "native": {
+      "blob": "6a0ef7a67c5aef1eb11fb44d28d4b32f8e5fdff8",
+      "bytes": 1477,
+      "sha256": "06682864d0994449f696f4b72ee74960eaacf659004a1a6adf146111d517dd6f"
+    },
+    "prefix": "call-02-",
+    "phase": "accepted"
+  }
+]

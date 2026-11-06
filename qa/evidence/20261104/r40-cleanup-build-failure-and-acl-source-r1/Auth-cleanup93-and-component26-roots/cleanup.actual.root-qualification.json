@@ -1,0 +1,499 @@
+{
+  "schema": "heptabao.root-qualification.Mac-current-fixed-QA-label-removal.original.v1",
+  "status": "PASS_CURRENT_FIXED_QA_LABEL_REMOVAL_ONLY",
+  "evidence_qualified": true,
+  "checks": [
+    {
+      "name": "whole102_729513",
+      "passed": true
+    },
+    {
+      "name": "exact_original_GO_request_source",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_call_home-t5-close-label-r1-start",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_armed_tree_home-t5-close-label-r1-start",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_call_home-t5-close-label-r1-authority-admit",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_armed_tree_home-t5-close-label-r1-authority-admit",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_call_home-t5-close-label-r1-authority-status-0",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_armed_tree_home-t5-close-label-r1-authority-status-0",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_call_home-t5-close-label-r1-authority-page-0",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_armed_tree_home-t5-close-label-r1-authority-page-0",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_call_home-t5-close-label-r1-streams-00-admit",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_armed_tree_home-t5-close-label-r1-streams-00-admit",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_call_home-t5-close-label-r1-streams-00-status-0",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_armed_tree_home-t5-close-label-r1-streams-00-status-0",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_call_home-t5-close-label-r1-streams-00-page-0",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_armed_tree_home-t5-close-label-r1-streams-00-page-0",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_call_home-t5-close-label-r1-streams-00-page-8192",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_armed_tree_home-t5-close-label-r1-streams-00-page-8192",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_call_home-t5-close-label-r1-streams-00-page-16384",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_armed_tree_home-t5-close-label-r1-streams-00-page-16384",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_call_home-t5-close-label-r1-streams-00-page-24576",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_armed_tree_home-t5-close-label-r1-streams-00-page-24576",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_call_home-t5-close-label-r1-streams-00-page-32768",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_armed_tree_home-t5-close-label-r1-streams-00-page-32768",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_call_home-t5-close-label-r1-streams-00-page-40960",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_armed_tree_home-t5-close-label-r1-streams-00-page-40960",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_call_home-t5-close-label-r1-streams-00-page-49152",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_armed_tree_home-t5-close-label-r1-streams-00-page-49152",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_call_home-t5-close-label-r1-streams-01-admit",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_armed_tree_home-t5-close-label-r1-streams-01-admit",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_call_home-t5-close-label-r1-streams-01-status-0",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_armed_tree_home-t5-close-label-r1-streams-01-status-0",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_call_home-t5-close-label-r1-streams-01-page-0",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_armed_tree_home-t5-close-label-r1-streams-01-page-0",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_call_home-t5-close-label-r1-streams-01-page-8192",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_armed_tree_home-t5-close-label-r1-streams-01-page-8192",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_observer_4b79662ff5e9b0f153bee6af39d912512e69ddf525c75ac9ca85abb8552ddc38",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_page_4b79662ff5e9b0f153bee6af39d912512e69ddf525c75ac9ca85abb8552ddc38_0",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_payload_4b79662ff5e9b0f153bee6af39d912512e69ddf525c75ac9ca85abb8552ddc38",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_observer_37bbdc99df0408fc1ec780ed4003f6b48a887d5b114929936789b8dc7c77409d",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_page_37bbdc99df0408fc1ec780ed4003f6b48a887d5b114929936789b8dc7c77409d_0",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_page_37bbdc99df0408fc1ec780ed4003f6b48a887d5b114929936789b8dc7c77409d_8192",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_page_37bbdc99df0408fc1ec780ed4003f6b48a887d5b114929936789b8dc7c77409d_16384",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_page_37bbdc99df0408fc1ec780ed4003f6b48a887d5b114929936789b8dc7c77409d_24576",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_page_37bbdc99df0408fc1ec780ed4003f6b48a887d5b114929936789b8dc7c77409d_32768",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_page_37bbdc99df0408fc1ec780ed4003f6b48a887d5b114929936789b8dc7c77409d_40960",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_page_37bbdc99df0408fc1ec780ed4003f6b48a887d5b114929936789b8dc7c77409d_49152",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_payload_37bbdc99df0408fc1ec780ed4003f6b48a887d5b114929936789b8dc7c77409d",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_observer_377b79504610f321dafcd6b05363be43bad2ed3f93fac5938c6afba3e8fdaa8f",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_page_377b79504610f321dafcd6b05363be43bad2ed3f93fac5938c6afba3e8fdaa8f_0",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_page_377b79504610f321dafcd6b05363be43bad2ed3f93fac5938c6afba3e8fdaa8f_8192",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_payload_377b79504610f321dafcd6b05363be43bad2ed3f93fac5938c6afba3e8fdaa8f",
+      "passed": true
+    },
+    {
+      "name": "MacFixedLabelCleanup_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "one_START17calls_3observers10pages",
+      "passed": true
+    },
+    {
+      "name": "exact_request_source_typed_stdin",
+      "passed": true
+    },
+    {
+      "name": "one_actual_mac_START_not_reused",
+      "passed": true
+    },
+    {
+      "name": "observers_original_job_only",
+      "passed": true
+    },
+    {
+      "name": "original_success_exit0_full_durable_confirmed",
+      "passed": true
+    },
+    {
+      "name": "19233stdout_zero_stderr_no_log_errors",
+      "passed": true
+    },
+    {
+      "name": "only_two_contiguous_stream_reads",
+      "passed": true
+    },
+    {
+      "name": "stream_request_extent_0",
+      "passed": true
+    },
+    {
+      "name": "stream_hex_text_extent_0_stdout",
+      "passed": true
+    },
+    {
+      "name": "stream_hex_text_extent_0_stderr",
+      "passed": true
+    },
+    {
+      "name": "stream_request_extent_1",
+      "passed": true
+    },
+    {
+      "name": "stream_hex_text_extent_1_stdout",
+      "passed": true
+    },
+    {
+      "name": "stream_hex_text_extent_1_stderr",
+      "passed": true
+    },
+    {
+      "name": "full_original_stream_bodies",
+      "passed": true
+    },
+    {
+      "name": "complete_known_current_label_removal_only",
+      "passed": true
+    },
+    {
+      "name": "fixed_current_QA_label_scope",
+      "passed": true
+    },
+    {
+      "name": "four_original_input_full9_whole_bytes_SHA",
+      "passed": true
+    },
+    {
+      "name": "21_controller_FDs_all_closed_zero_body_writes",
+      "passed": true
+    },
+    {
+      "name": "original_IO_caps_and_actual_counts",
+      "passed": true
+    },
+    {
+      "name": "four_direct_helpers_all_closed",
+      "passed": true
+    },
+    {
+      "name": "helper_once_owned_closed_0",
+      "passed": true
+    },
+    {
+      "name": "helper_once_owned_closed_1",
+      "passed": true
+    },
+    {
+      "name": "helper_once_owned_closed_2",
+      "passed": true
+    },
+    {
+      "name": "helper_once_owned_closed_3",
+      "passed": true
+    },
+    {
+      "name": "one_preflight_present_exact_nonrunning_projection",
+      "passed": true
+    },
+    {
+      "name": "two_independent_postbootout_missing_projections",
+      "passed": true
+    },
+    {
+      "name": "six_libproc_calls_original_arg1_self_ABI_only",
+      "passed": true
+    },
+    {
+      "name": "four_ready_PID_ESRCH_samples_no_departure_claim",
+      "passed": true
+    },
+    {
+      "name": "same_fixed_ready_full9_identity_marker",
+      "passed": true
+    },
+    {
+      "name": "same_fixed_failed_terminal_full9_no_T5_admission",
+      "passed": true
+    },
+    {
+      "name": "historical_terminal19FDs_closed_not_managed_reap",
+      "passed": true
+    },
+    {
+      "name": "executed_source_exact_and_missing_reply_predicate",
+      "passed": true
+    },
+    {
+      "name": "executed_fences_include_all_fixed_leaves",
+      "passed": true
+    },
+    {
+      "name": "45_35_60_original_deadlines_and_restored_handlers",
+      "passed": true
+    },
+    {
+      "name": "no_other_mutation_credentials_T5_product",
+      "passed": true
+    },
+    {
+      "name": "historical_R4_and_87650_unknown_unchanged",
+      "passed": true
+    },
+    {
+      "name": "own_lane_released_no_native_future",
+      "passed": true
+    },
+    {
+      "name": "release_not_business_qualification",
+      "passed": true
+    }
+  ],
+  "check_count": 93,
+  "packet": {
+    "tree": "fdf37f49bd3285771197d55a5eea0aa6728e0f25",
+    "files": 102,
+    "bytes": 729513,
+    "merkle": {
+      "root_sha": "fdf37f49bd3285771197d55a5eea0aa6728e0f25",
+      "trees_verified": 1,
+      "leaf_count": 102
+    },
+    "whole": true
+  },
+  "original_job": "mac/1a1b0305ba9-fc05-6ee6",
+  "authority": {
+    "blob": "c1e52455a57e8ee292d87d91d973bdf6503d40c5",
+    "bytes": 733,
+    "sha256": "3287a9afd907d0ed8fd01c78efdffd21e0bae63c06323b09c34bf7dbd555a26a"
+  },
+  "stdout": {
+    "blob": "73b6e59adf15b3dd9255e445948362f71bc8cd4c",
+    "bytes": 19233,
+    "sha256": "969e3eef25a7b89610a460ede15467d860c4858cd41527208d6acf21970ac1df"
+  },
+  "actual": {
+    "native_calls": 17,
+    "observers": 3,
+    "immutable_pages": 10,
+    "elapsed_seconds": 0.244020833,
+    "once_bootout_exit": 0,
+    "once_bootout_empty_streams": true,
+    "preflight_registration": "present; not running; runs1; no PID; last exit1",
+    "post_bootout_missing_reply_codes": [
+      113,
+      113
+    ],
+    "direct_helpers": [
+      {
+        "pid": 26299,
+        "verb": "print",
+        "exit": 0,
+        "reaped": true,
+        "group_empty": true
+      },
+      {
+        "pid": 26310,
+        "verb": "bootout",
+        "exit": 0,
+        "reaped": true,
+        "group_empty": true
+      },
+      {
+        "pid": 26327,
+        "verb": "print",
+        "exit": 113,
+        "reaped": true,
+        "group_empty": true
+      },
+      {
+        "pid": 26336,
+        "verb": "print",
+        "exit": 113,
+        "reaped": true,
+        "group_empty": true
+      }
+    ],
+    "controller_FDs": 21,
+    "controller_FDs_closed": true,
+    "final_fences": true,
+    "libproc_calls": 6,
+    "ready_PID_observations": [
+      {
+        "errno": 3,
+        "existenceOrDepartureAutomaticallyConcluded": false,
+        "kind": "lookup_esrch",
+        "ordinal": 1,
+        "originalBirthPresent": null,
+        "originalReadyPid": 58228,
+        "processNotOwnedOrSignalled": true,
+        "returnedBytes": [
+          0,
+          0
+        ],
+        "sampleCount": 2,
+        "zombieLookupRequested": true
+      },
+      {
+        "errno": 3,
+        "existenceOrDepartureAutomaticallyConcluded": false,
+        "kind": "lookup_esrch",
+        "ordinal": 2,
+        "originalBirthPresent": null,
+        "originalReadyPid": 58228,
+        "processNotOwnedOrSignalled": true,
+        "returnedBytes": [
+          0,
+          0
+        ],
+        "sampleCount": 2,
+        "zombieLookupRequested": true
+      }
+    ],
+    "body_writes": 0,
+    "credentials_read": false
+  },
+  "current_label_removal_confirmed": true,
+  "historical_R4_managed_scope_unknown": true,
+  "historical_R2_helper87650_unknown": true,
+  "historical_managed_process_closure": false,
+  "limits": [
+    "Current removal is the original ordered fixed bootout and two exact missing-service projections with source-validated final fences and resources; no atomic service identity lock is claimed.",
+    "Raw launchctl output was not exported; exact missing-service semantics follow from the original executed pinned predicate and success path.",
+    "Four ready-PID ESRCH samples remain lookup outcomes only, not historical departure or reap proof.",
+    "Historical R4, helper87650 and old AuthBus label/PID11754 remain unchanged and unresolved.",
+    "No trusted credential source, AuthBus business, product rollout or legacy deletion was performed."
+  ],
+  "AuthBus_credentials_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

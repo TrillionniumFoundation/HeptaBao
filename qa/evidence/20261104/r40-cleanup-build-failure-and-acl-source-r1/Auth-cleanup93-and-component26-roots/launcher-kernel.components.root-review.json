@@ -1,0 +1,187 @@
+{
+  "schema": "heptabao.root-source-review.Mac-python-launcher-kernel-components.v1",
+  "status": "PASS_NARROW_SOURCE_COMPONENTS_ONLY",
+  "checks": [
+    {
+      "name": "whole22_294884",
+      "passed": true
+    },
+    {
+      "name": "mac_owned_launchd_r3.py_whole_before_after",
+      "passed": true
+    },
+    {
+      "name": "mac_owned_launchd_r3.py_strict_forward_reverse",
+      "passed": true
+    },
+    {
+      "name": "mac_owned_launchd_r3.py_exact_two_constants",
+      "passed": true
+    },
+    {
+      "name": "mac_owned_launchd_r3.py_unique_original_identity_        need(actual_",
+      "passed": true
+    },
+    {
+      "name": "mac_owned_launchd_r3.py_unique_original_identity_                 and",
+      "passed": true
+    },
+    {
+      "name": "mac_owned_launchd_r3.py_only_declared_identity_edits",
+      "passed": true
+    },
+    {
+      "name": "mac_owned_launchd_r3.py_definitions_unchanged",
+      "passed": true
+    },
+    {
+      "name": "mac_current_server_owner_r1.py_whole_before_after",
+      "passed": true
+    },
+    {
+      "name": "mac_current_server_owner_r1.py_strict_forward_reverse",
+      "passed": true
+    },
+    {
+      "name": "mac_current_server_owner_r1.py_exact_two_constants",
+      "passed": true
+    },
+    {
+      "name": "mac_current_server_owner_r1.py_unique_original_identity_             and sel",
+      "passed": true
+    },
+    {
+      "name": "mac_current_server_owner_r1.py_only_declared_identity_edits",
+      "passed": true
+    },
+    {
+      "name": "mac_current_server_owner_r1.py_definitions_unchanged",
+      "passed": true
+    },
+    {
+      "name": "mac_current_phase_owner_r2.py_whole_before_after",
+      "passed": true
+    },
+    {
+      "name": "mac_current_phase_owner_r2.py_strict_forward_reverse",
+      "passed": true
+    },
+    {
+      "name": "mac_current_phase_owner_r2.py_exact_two_constants",
+      "passed": true
+    },
+    {
+      "name": "mac_current_phase_owner_r2.py_unique_original_identity_        need(self_id",
+      "passed": true
+    },
+    {
+      "name": "mac_current_phase_owner_r2.py_only_declared_identity_edits",
+      "passed": true
+    },
+    {
+      "name": "mac_current_phase_owner_r2.py_definitions_unchanged",
+      "passed": true
+    },
+    {
+      "name": "whole_outer_unchanged_original",
+      "passed": true
+    },
+    {
+      "name": "actual_R3_root_and_stdout_references_exact",
+      "passed": true
+    },
+    {
+      "name": "reviewed_exit78_parser_pin",
+      "passed": true
+    },
+    {
+      "name": "component_only_not_dispatchable",
+      "passed": true
+    },
+    {
+      "name": "no_claim_old_failure_cause_or_kernel_file",
+      "passed": true
+    },
+    {
+      "name": "author25_SOURCE_not_compiled",
+      "passed": true
+    }
+  ],
+  "check_count": 26,
+  "packet": {
+    "tree": "5a3ed3e81167e38fa92379765d25c23535dfec8c",
+    "files": 22,
+    "bytes": 294884,
+    "merkle": {
+      "root_sha": "5a3ed3e81167e38fa92379765d25c23535dfec8c",
+      "trees_verified": 1,
+      "leaf_count": 22
+    },
+    "whole": true
+  },
+  "component_pins": [
+    {
+      "file": "mac_owned_launchd_r3.py",
+      "before": {
+        "blob": "96fe347f2edbda1718b2fd683041b88be8f41e30",
+        "bytes": 35736,
+        "sha256": "4989b58248f7951f825c021402bef611708b8613291d3282761c8c97d0b4adf6"
+      },
+      "after": {
+        "blob": "298fa6c40f1f64209c8279fbe584a5f9a2ac2a46",
+        "bytes": 36055,
+        "sha256": "e48da4b80a4d025b284e86d22144e5fd98f560e99cb5883865e0f2b6b8fb6b29"
+      },
+      "hunks": 3
+    },
+    {
+      "file": "mac_current_server_owner_r1.py",
+      "before": {
+        "blob": "44bf4989f10bad1d6322b182b630769bf93a09c3",
+        "bytes": 13394,
+        "sha256": "fb38bd7ce30e9a0b62539d459939b2ec20d96f84fd08d57199aa095fd3fc5ef6"
+      },
+      "after": {
+        "blob": "d7629a944f2325c3fc5c00f721ede2884edb4a37",
+        "bytes": 13718,
+        "sha256": "90fe44823ff55f5353c2032b1ce62f2255b46f3eeb51b959e50fa951627b402b"
+      },
+      "hunks": 2
+    },
+    {
+      "file": "mac_current_phase_owner_r2.py",
+      "before": {
+        "blob": "82f790ff6d26d9e998fe1c5c61f89f5975ec3920",
+        "bytes": 24975,
+        "sha256": "bb674ed1a60b204207af2dbab4d7b06a76e47fdebb19991e2f2c3dda7beac4a5"
+      },
+      "after": {
+        "blob": "41ebf1965e161782e2e1b50e913e2f0b7ec7c977",
+        "bytes": 25299,
+        "sha256": "1b79dc33c7f4bb5639b44fd0c377fbc5030545e645d3b77c95585b918391cf04"
+      },
+      "hunks": 2
+    }
+  ],
+  "launcher_path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+  "kernel_image_observed_string": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+  "outer_unchanged": {
+    "blob": "12a6fa7a0432281246b36915f1b4b5cd5cd5b400",
+    "bytes": 71506,
+    "sha256": "6ad1b80ac06c90759c2ac5fd01df9c750b077ffa43253486c07658b6e1ddd4d5"
+  },
+  "scope": "Three exact launcher-versus-kernel-image comparisons; retained independent launcher qualification and original birth/UID/PGID checks",
+  "limits": [
+    "Component sources still use the original T5 root and labels; this is not a dispatchable fresh HOME/T5 candidate.",
+    "Kernel image is an observed process pathname only; its file body was not qualified.",
+    "This correction is not established as the cause of the original EX_CONFIG78 failure.",
+    "No Python compile, AuthBus execution, credential validation or production cutover follows from source review."
+  ],
+  "complete_AuthBus_candidate": false,
+  "execution_authorized": false,
+  "AuthBus_credentials_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

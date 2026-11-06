@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.pure-selected-source-execution.v1",
+  "verifier": {
+    "blob": "83616717ba838f901dd6beaa74b8e39a18cebe76",
+    "bytes": 6129,
+    "sha256": "e2a08da5888c633941cf67850d616095c454ce5447ced0df1ceb593061d59d06"
+  },
+  "result": {
+    "blob": "15c71d4a59e49fb0cfe406168af35c4f519b6389",
+    "bytes": 3489,
+    "sha256": "b021bd55619be6c4a4daa896e0436c0f6935c583d76819f8f085e9bd10d4a223"
+  },
+  "actualChecks": 43,
+  "pass": true,
+  "execution": "prior successful functions.exec pure V8 evaluation",
+  "fakeStore": true,
+  "toolsObjectEmpty": true,
+  "actualOriginalSlotUnchanged": true,
+  "NativeCalls": 0,
+  "PythonExecuted": false,
+  "originalCheckerFailuresRetained": true
+}

@@ -1,0 +1,159 @@
+{
+  "schema": "heptabao.native-jwt-pki-build149-failed-result-info.SOURCE.r1",
+  "status": "SOURCE_ONLY_REQUIRES_NEW_ROOT_GO",
+  "scope": "build_result_file_info_only",
+  "originalSlot": "jwt_pki_33b814c7_build149_gitfirst_r1",
+  "originalJob": "1a1b029a998-fc05-6eb2",
+  "originalBuildGO": "94b478defd4356967b23390edfc152f00eba64c0",
+  "originalBuildRequest": {
+    "blob": "f7d799f5ba1ae46547ba12c5eb3ef7f9bf49f11a",
+    "bytes": 859,
+    "sha256": "64e8f6eabec94eaeb340b7551ae5fa9850888b8210923f46e095e984ad29dbdf"
+  },
+  "originalTerminalPacket": "ee24cc540a8f39a87b8c5c45d8b9c01ccb02d1d4",
+  "originalRelease": {
+    "blob": "c817ac33b811f307e070b8abcf54f3a00667011c",
+    "bytes": 2037,
+    "sha256": "1df9f28c760ef3973af54aa37bb7c6d995478661a8dd2b4fb03aa243ef29b805"
+  },
+  "beforeSource": {
+    "blob": "696e07c763ccefaa375e947ed84b2433a1d0f089",
+    "bytes": 23888,
+    "sha256": "c8a3f15c9073ddc34fa247ce4bd2cd1342023bf9136f9235731ee08e571b752d"
+  },
+  "afterSource": {
+    "blob": "21496c37dd8101299d875ffb2a9d10fa675d291e",
+    "bytes": 24791,
+    "sha256": "5235a51a3eb828174a545fa929a5ca3f72bb5254e86175805f7a34e3d0bf1960"
+  },
+  "strictDiff": {
+    "blob": "09438188741233c3ff4c6117280153175acc0f97",
+    "bytes": 7422,
+    "sha256": "2c382a93d5eea301865ae810c5a3bd5a481a20199531ab14af71b8229110552e"
+  },
+  "strictHunks": 5,
+  "completeReplacements": [
+    {
+      "before": "const GF_SLOT = \"jwt_pki_33b814c7_rog_source_gitfirst_r1\";",
+      "after": "const GF_SLOT = \"jwt_pki_33b814c7_build149_gitfirst_r1\";",
+      "reason": "attach existing original BUILD slot"
+    },
+    {
+      "before": "const GF_REQUEST = {blob:\"1b3da82ecf429adc5d816a2ff2cb78810059ac90\",\n bytes:111811,sha256:\"576e7eb3f5f6a20d49e7fdae8939f002153ec69ebb41a891a08c80a8eb75dde4\"};",
+      "after": "const GF_REQUEST = {blob:\"f7d799f5ba1ae46547ba12c5eb3ef7f9bf49f11a\",\n bytes:859,sha256:\"64e8f6eabec94eaeb340b7551ae5fa9850888b8210923f46e095e984ad29dbdf\"};",
+      "reason": "preserve original exact BUILD request identity; start already consumed"
+    },
+    {
+      "before": "/* One separately approved observation of the newly owned public stage report.\n * This does not authorize binary_read or any new process. Existing state is kept.\n */",
+      "after": "/* One separately approved metadata observation of the original failed BUILD report.\n * The historical StageResult internal field names are retained to minimize changes.\n * No binary_read or new process is authorized. Existing state/history is retained.\n */",
+      "reason": "fixed original failed result only"
+    },
+    {
+      "before": "const GF_STAGE_RESULT_PATH = \"/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1/control/stage-result.public.json\";",
+      "after": "const GF_STAGE_RESULT_PATH = \"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/result.public.json\";",
+      "reason": "observed exact terminal result path"
+    },
+    {
+      "before": "const GF_STAGE_RESULT_MAX_BYTES = 150000;",
+      "after": "const GF_STAGE_RESULT_MAX_BYTES = 1048576;\nconst GF_STAGE_RESULT_EXPECTED_SHA256 = \"aa8a8623cc955adb64ab386387d15ad2204febc0fd526392d20cd0ab6c9638a6\";",
+      "reason": "new explicit report size acceptance ceiling; current size unknown, original stdout SHA exact"
+    },
+    {
+      "before": "const GF_STAGE_INFO_REQUEST = {\"blob\":\"538b045d46c03cd5787a4a80d41595345232ae47\",\"bytes\":309,\"sha256\":\"ca7c34ce798a1155e6b49a989f5f792c9aaaf2a4db568f70b8ab999d48b341b2\"};",
+      "after": "const GF_STAGE_INFO_REQUEST = {\"blob\":\"3b4e093792b9fcd2a6c428381aee31e41a7c40e5\",\"bytes\":294,\"sha256\":\"b6b76d8a6e19e118cf023ef48b03b0c8f7895943363f7e48372733f4ae54aab4\"};",
+      "reason": "one new exact file_info"
+    },
+    {
+      "before": "const GF_STAGE_INFO_PREREQUISITES = [{\"id\":\"d6619b76440db2e4e24535c5323e51a101555dba793f8de1571180ae86217e89\",\"tool\":\"process_status\",\"nativeText\":{\"blob\":\"611ab15877d412051a2bed50d1c6f0ba914b80bb\",\"bytes\":729,\"sha256\":\"346f5db21a1167c6c98e5578c1c0b5dbfec16b1c55a49dba8cd6aa26b3377012\"}},{\"id\":\"f8ecd82c5a3b789a80862e36bf37883d989680f2e587f47a949d61cf6a9babfb\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"76cc14a9f2aac3d70d2854316a3987b55a09b515\",\"bytes\":1468,\"sha256\":\"29b49e768d346f5e9c0e344f94cab6af92a4d31f4e1cf57206f644e09703572d\"}}];",
+      "after": "const GF_STAGE_INFO_PREREQUISITES = [{\"id\":\"e85a80c92c4313923d7c6d9f064ce6e33228315702559b1b83caa39c638e309d\",\"tool\":\"process_status\",\"nativeText\":{\"blob\":\"ef0bb0b5b159aa86d1b3723b7fcce83549b8398b\",\"bytes\":726,\"sha256\":\"a788a9fcac34f9cf200b77af67eed9caf3b7ef106b0ae3f451fd3b6338cbdf36\"}},{\"id\":\"2074a4a38810ec62d88436bd3b5990663454728cbf303a4a9fe3b52fea1faaed\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"b55bf13ca483ed717608ffe2631ffe9308f92b67\",\"bytes\":2976,\"sha256\":\"49292570f2fdb2f217f7275b52f22ae9e36df498e372d1f8ee1ed0322f74a663\"}}];",
+      "reason": "actual original failed authority and whole streams pins"
+    },
+    {
+      "before": "s.job===\"1a1afcbafab-fc05-6bb0\"",
+      "after": "s.job===\"1a1b029a998-fc05-6eb2\"",
+      "reason": "original job"
+    },
+    {
+      "before": "g.scope===\"stage_result_file_info_only\"",
+      "after": "g.scope===\"build_result_file_info_only\"",
+      "reason": "separate root metadata-only scope"
+    },
+    {
+      "before": " const terminal=JSON.parse(streams.stdout.text);\n gfNeed(authority.exit_code===0 && authority.output_complete===true",
+      "after": " const rows=streams.stdout.text.trimEnd().split(\"\\n\").map(line=>JSON.parse(line));\n gfNeed(rows.length===2 && rows[0].status===\"preflight-admitted\"\n   && rows[0].source_commit===\"33b814c7034ec853151b1ff13e7529c83f65ea70\"\n   && rows[0].source_tree===\"b7f276f70e0da1a33306564f385ab7bc12fd44f6\"\n   && rows[0].unique_test_count===149 && rows[0].profile_instance_test_count===166,\n   \"original_failed_build_preflight_summary_only\");\n const terminal=rows[1];\n gfNeed(authority.exit_code===1 && authority.state===\"failed\" && authority.output_complete===true",
+      "reason": "bind known failed original, not require false successful stage"
+    },
+    {
+      "before": "   && s.nextStdout===374 && s.nextStderr===0\n   && terminal.all_owned_stopped===true && terminal.status===\"prepared\"\n   && terminal.result_path===GF_STAGE_RESULT_PATH,\"stage_zero_and_full_summary\");",
+      "after": "   && s.nextStdout===867 && s.nextStderr===0\n   && terminal.all_owned_stopped===true && terminal.status===\"failed\"\n   && terminal.source_commit===\"33b814c7034ec853151b1ff13e7529c83f65ea70\"\n   && terminal.source_tree===\"b7f276f70e0da1a33306564f385ab7bc12fd44f6\"\n   && terminal.result_path===GF_STAGE_RESULT_PATH\n   && terminal.result_sha256===GF_STAGE_RESULT_EXPECTED_SHA256\n   && terminal.publication_within_original_outer===true,\"original_failed_build_full_summary\");",
+      "reason": "original whole failed terminal contract, no success inference"
+    },
+    {
+      "before": "    && /^heptabao-native-jwt-pki-33b814c7-rog-source-observe-r1-/.test(q.idempotency_key),",
+      "after": "    && /^heptabao-native-jwt-pki-33b814c7-build149-observe-r1-/.test(q.idempotency_key),",
+      "reason": "original BUILD observer prefix"
+    },
+    {
+      "before": "     && /^[a-f0-9]{64}$/.test(v.sha256) && v.mode===384",
+      "after": "     && v.sha256===GF_STAGE_RESULT_EXPECTED_SHA256 && v.mode===384",
+      "reason": "metadata exact whole SHA from original terminal"
+    },
+    {
+      "before": "else if(action===\"authorize_stage_result_info\")",
+      "after": "else if(action===\"authorize_build_result_info\")",
+      "reason": "explicit BUILD info authorization action, no reinitialization"
+    }
+  ],
+  "exactRequest": {
+    "blob": "3b4e093792b9fcd2a6c428381aee31e41a7c40e5",
+    "bytes": 294,
+    "sha256": "b6b76d8a6e19e118cf023ef48b03b0c8f7895943363f7e48372733f4ae54aab4"
+  },
+  "authorizationAction": "authorize_build_result_info",
+  "historicalInternalNamesRetained": "StageResult fields/functions retain the previous journal internal names only; explicit scope/action, slot, job and exact path bind failed BUILD, not stage success.",
+  "metadata": {
+    "host": "rog",
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/result.public.json",
+    "wholeSha256": "aa8a8623cc955adb64ab386387d15ad2204febc0fd526392d20cd0ab6c9638a6",
+    "size": null,
+    "version": null,
+    "full9": null,
+    "expectedMode": 384,
+    "expectedFullMode": 33152,
+    "expectedUid": 1000,
+    "expectedGid": 1000,
+    "expectedLinkCount": 1,
+    "platform": "linux",
+    "acceptSizeMin": 1,
+    "acceptSizeMax": 1048576
+  },
+  "newSizeBoundRationale": "New explicit acceptance ceiling 1 MiB for this one failed BUILD report. The source write() does not declare a result byte cap and actual size is unknown. This is a proposal, not inherited stage 150000 or a claim about current size. file_info computes whole SHA; no body RPC is authorized.",
+  "limits": {
+    "maximumInfoStarts": 1,
+    "immutablePageBytes": 8192,
+    "originalPayloadBytes": 1048576,
+    "streamChunkBytes": 16384,
+    "maximumActiveFuture": 1
+  },
+  "sequence": [
+    "Whole independent root GO; attach original closed slot without initialize.",
+    "Authorize exact original failed authority/867-byte two-row stdout/prerequisite whole pins.",
+    "Archive exact file_info request, intent and armed whole; separate boundary; one original operation_start.",
+    "Archive each SDK whole before parse/isError; only original ID status and consecutive 8192-byte immutable pages.",
+    "Close whole original payload/EOF/inactive; require Linux UID/GID/mode/single-link/version and exact original result SHA.",
+    "Freeze current metadata; only then propose actual-size/version fixed binary body. No implicit body or other paths."
+  ],
+  "excludes": [
+    "new process_start",
+    "reinitialize",
+    "Cargo/rebuild/retest",
+    "binary_read",
+    "directory search",
+    "other result or command paths",
+    "alter groups/deadlines",
+    "target-lock release inferred from stdout"
+  ],
+  "Native": 0,
+  "actualInfo": null,
+  "actualBody": null
+}

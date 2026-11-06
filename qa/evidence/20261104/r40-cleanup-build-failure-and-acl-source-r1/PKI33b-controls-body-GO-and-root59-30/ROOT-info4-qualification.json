@@ -1,0 +1,446 @@
+{
+  "schema": "heptabao.root-qualification.PKI33b-controls-independent-info4.v1",
+  "status": "PASS_FOUR_ORIGINAL_METADATA_OBSERVATIONS",
+  "evidence_qualified": true,
+  "checks": [
+    {
+      "name": "whole76_96439",
+      "passed": true
+    },
+    {
+      "name": "exact_original_GO_and_closed_inert_publication",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_call_jwt-pki-33b814c7-controls-info0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_armed_tree_jwt-pki-33b814c7-controls-info0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_call_jwt-pki-33b814c7-controls-info0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_armed_tree_jwt-pki-33b814c7-controls-info0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_call_jwt-pki-33b814c7-controls-info0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_armed_tree_jwt-pki-33b814c7-controls-info0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_call_jwt-pki-33b814c7-controls-info1-start-r1",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_armed_tree_jwt-pki-33b814c7-controls-info1-start-r1",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_call_jwt-pki-33b814c7-controls-info1-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_armed_tree_jwt-pki-33b814c7-controls-info1-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_call_jwt-pki-33b814c7-controls-info1-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_armed_tree_jwt-pki-33b814c7-controls-info1-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_call_jwt-pki-33b814c7-controls-info2-start-r1",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_armed_tree_jwt-pki-33b814c7-controls-info2-start-r1",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_call_jwt-pki-33b814c7-controls-info2-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_armed_tree_jwt-pki-33b814c7-controls-info2-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_call_jwt-pki-33b814c7-controls-info2-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_armed_tree_jwt-pki-33b814c7-controls-info2-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_call_jwt-pki-33b814c7-controls-info3-start-r1",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_armed_tree_jwt-pki-33b814c7-controls-info3-start-r1",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_call_jwt-pki-33b814c7-controls-info3-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_armed_tree_jwt-pki-33b814c7-controls-info3-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_call_jwt-pki-33b814c7-controls-info3-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_armed_tree_jwt-pki-33b814c7-controls-info3-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_observer_37e6793e1a2f76de36163f1c4c378c7fb81ff8cfd532ae57a2821aa6d622f302",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_page_37e6793e1a2f76de36163f1c4c378c7fb81ff8cfd532ae57a2821aa6d622f302_0",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_payload_37e6793e1a2f76de36163f1c4c378c7fb81ff8cfd532ae57a2821aa6d622f302",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_observer_c308e962ef15ebb2d386626909a1d50735e4788d1ea977514a7ed5158f1dc4ba",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_page_c308e962ef15ebb2d386626909a1d50735e4788d1ea977514a7ed5158f1dc4ba_0",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_payload_c308e962ef15ebb2d386626909a1d50735e4788d1ea977514a7ed5158f1dc4ba",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_observer_1113a55bee6550171be223c962ac709799f51b6bfe0c7c4ea63b857520466a80",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_page_1113a55bee6550171be223c962ac709799f51b6bfe0c7c4ea63b857520466a80_0",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_payload_1113a55bee6550171be223c962ac709799f51b6bfe0c7c4ea63b857520466a80",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_observer_178658173a8037639dfa5b0eb5198e969318b76fe5e636ee6c2eb30f8dddbc91",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_page_178658173a8037639dfa5b0eb5198e969318b76fe5e636ee6c2eb30f8dddbc91_0",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_payload_178658173a8037639dfa5b0eb5198e969318b76fe5e636ee6c2eb30f8dddbc91",
+      "passed": true
+    },
+    {
+      "name": "CcontrolsINFO4_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "exact12calls_4original_observers_4pages",
+      "passed": true
+    },
+    {
+      "name": "ordered_exact_request_0",
+      "passed": true
+    },
+    {
+      "name": "whole_original_metadata_0",
+      "passed": true
+    },
+    {
+      "name": "lossless_actual_table_0",
+      "passed": true
+    },
+    {
+      "name": "publisher_content_and_full9_exact_0",
+      "passed": true
+    },
+    {
+      "name": "ordered_exact_request_1",
+      "passed": true
+    },
+    {
+      "name": "whole_original_metadata_1",
+      "passed": true
+    },
+    {
+      "name": "lossless_actual_table_1",
+      "passed": true
+    },
+    {
+      "name": "publisher_content_and_full9_exact_1",
+      "passed": true
+    },
+    {
+      "name": "ordered_exact_request_2",
+      "passed": true
+    },
+    {
+      "name": "whole_original_metadata_2",
+      "passed": true
+    },
+    {
+      "name": "lossless_actual_table_2",
+      "passed": true
+    },
+    {
+      "name": "publisher_content_and_full9_exact_2",
+      "passed": true
+    },
+    {
+      "name": "ordered_exact_request_3",
+      "passed": true
+    },
+    {
+      "name": "whole_original_metadata_3",
+      "passed": true
+    },
+    {
+      "name": "lossless_actual_table_3",
+      "passed": true
+    },
+    {
+      "name": "actual_receipt_metadata_matches_derived_only",
+      "passed": true
+    },
+    {
+      "name": "lane_closed_no_body_or_Cargo",
+      "passed": true
+    }
+  ],
+  "check_count": 59,
+  "packet": {
+    "tree": "fc9c6ef4a5f3fdfce399c9ae2742576fbde83738",
+    "files": 76,
+    "bytes": 96439,
+    "merkle": {
+      "root_sha": "fc9c6ef4a5f3fdfce399c9ae2742576fbde83738",
+      "trees_verified": 1,
+      "leaf_count": 76
+    },
+    "whole": true
+  },
+  "original_job": "1a1b001e788-fc05-6d66",
+  "original_slot": "jwt_pki_33b814c7_build_controls_inert_gitfirst_r1",
+  "actual_infos": [
+    {
+      "index": 0,
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/native_jwt_build.py",
+      "size": 30397,
+      "sha256": "023f6f3ad71b8909a46da632767044de44ec2ea6fcb11692a2160e2cec518add",
+      "version": "66306:31235924:30397:1793954281105928260:1793954281106897967",
+      "nativeText": {
+        "blob": "31dbc3678d61a73a2bdec9cfe2ccf00a0abe3fa0",
+        "bytes": 466,
+        "sha256": "f16b1a05c5f21d4dea3a1211de991eb4b95efd86ef5c9a34493f8b95de5a05c0"
+      },
+      "originalOperation": "37e6793e1a2f76de36163f1c4c378c7fb81ff8cfd532ae57a2821aa6d622f302",
+      "full9Strings": [
+        "66306",
+        "31235924",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "30397",
+        "1793954281105928260",
+        "1793954281106897967"
+      ],
+      "regularFileFromNativeFileInfoContract": true,
+      "binaryReadAuthorized": false
+    },
+    {
+      "index": 1,
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/launch_native_jwt_build.py",
+      "size": 38565,
+      "sha256": "5d639fbde4aa09663be694d9322bc4f598f4cd9594f9a3c09c61c21013b98056",
+      "version": "66306:31235925:38565:1793954281107963513:1793954281108998030",
+      "nativeText": {
+        "blob": "783f653c328b146e68025ecd41c437b7fe19e444",
+        "bytes": 473,
+        "sha256": "d47ce4ff18f9335ed53a7b50957ad250b202af1be684b6eb4d60720efa4bc83d"
+      },
+      "originalOperation": "c308e962ef15ebb2d386626909a1d50735e4788d1ea977514a7ed5158f1dc4ba",
+      "full9Strings": [
+        "66306",
+        "31235925",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "38565",
+        "1793954281107963513",
+        "1793954281108998030"
+      ],
+      "regularFileFromNativeFileInfoContract": true,
+      "binaryReadAuthorized": false
+    },
+    {
+      "index": 2,
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/jwt-test-groups.public.json",
+      "size": 19789,
+      "sha256": "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869",
+      "version": "66306:31235926:19789:1793954281109723489:1793954281110748800",
+      "nativeText": {
+        "blob": "49b901a91bdd59f5f036afefe918e98dc1944685",
+        "bytes": 474,
+        "sha256": "6a19f9b5632c3cc4debc4e682bedc30d2dd382b31192ce222cb66ad7ad0f811d"
+      },
+      "originalOperation": "1113a55bee6550171be223c962ac709799f51b6bfe0c7c4ea63b857520466a80",
+      "full9Strings": [
+        "66306",
+        "31235926",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "19789",
+        "1793954281109723489",
+        "1793954281110748800"
+      ],
+      "regularFileFromNativeFileInfoContract": true,
+      "binaryReadAuthorized": false
+    },
+    {
+      "index": 3,
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/inert-stage.result.public.json",
+      "size": 1854,
+      "sha256": "f1e1f3a2576fcb2ecd05cdb9b8f4fbebd6bb849eddb48536eb5c66ed5be109e2",
+      "version": "66306:31235927:1854:1793954281111835946:1793954281112810962",
+      "nativeText": {
+        "blob": "b87bd18cfb071f2b3dba60018038cee8bdd30f4b",
+        "bytes": 475,
+        "sha256": "d0cea042676e0ea2326af75dfe8b8f76b37adbd9ee8bfd40f48ef32778c3b5f6"
+      },
+      "originalOperation": "178658173a8037639dfa5b0eb5198e969318b76fe5e636ee6c2eb30f8dddbc91",
+      "full9Strings": [
+        "66306",
+        "31235927",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "1854",
+        "1793954281111835946",
+        "1793954281112810962"
+      ],
+      "regularFileFromNativeFileInfoContract": true,
+      "binaryReadAuthorized": false
+    }
+  ],
+  "original_observers": [
+    {
+      "id": "37e6793e1a2f76de36163f1c4c378c7fb81ff8cfd532ae57a2821aa6d622f302",
+      "tool": "file_info",
+      "payload": {
+        "blob": "0ca57a92e272ffec1b52d199e62f4305a8537da8",
+        "bytes": 583,
+        "sha256": "4283cabb169e3edefdfc58e3a86dd9372490fb7564faae0ee048fc8663d5a571"
+      },
+      "payloadTree": "ac756e0b2ca8be563f8a7a70e9db1d5ee8af1454",
+      "nativeText": {
+        "blob": "31dbc3678d61a73a2bdec9cfe2ccf00a0abe3fa0",
+        "bytes": 466,
+        "sha256": "f16b1a05c5f21d4dea3a1211de991eb4b95efd86ef5c9a34493f8b95de5a05c0"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "c308e962ef15ebb2d386626909a1d50735e4788d1ea977514a7ed5158f1dc4ba",
+      "tool": "file_info",
+      "payload": {
+        "blob": "66593912b2eca486d4910c909bceb231de38b4c0",
+        "bytes": 590,
+        "sha256": "ee3b5305c6c579c8d5088bda9915fb2f287806dea81030fd9a9b39db1fbdda05"
+      },
+      "payloadTree": "1b01ad38247614d5d9c0ca104b9c79821299fca2",
+      "nativeText": {
+        "blob": "783f653c328b146e68025ecd41c437b7fe19e444",
+        "bytes": 473,
+        "sha256": "d47ce4ff18f9335ed53a7b50957ad250b202af1be684b6eb4d60720efa4bc83d"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "1113a55bee6550171be223c962ac709799f51b6bfe0c7c4ea63b857520466a80",
+      "tool": "file_info",
+      "payload": {
+        "blob": "aa80729bd05800dae12afea15e40d5211f3fbf8f",
+        "bytes": 591,
+        "sha256": "635726175d520c4bd76bca9365e4f156ba9f1b17f8134603f0a384e17ed85e73"
+      },
+      "payloadTree": "6d786377d1f6403ed560793f26c73c85530ce8f6",
+      "nativeText": {
+        "blob": "49b901a91bdd59f5f036afefe918e98dc1944685",
+        "bytes": 474,
+        "sha256": "6a19f9b5632c3cc4debc4e682bedc30d2dd382b31192ce222cb66ad7ad0f811d"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "178658173a8037639dfa5b0eb5198e969318b76fe5e636ee6c2eb30f8dddbc91",
+      "tool": "file_info",
+      "payload": {
+        "blob": "5a92201d46dcc574b541dfce60e038e9e2513f88",
+        "bytes": 592,
+        "sha256": "69327374012478f41584abe1a4f8f402512f5663dd486cf19ea3bb07125deda0"
+      },
+      "payloadTree": "a265950360b12e19186bab1507aa8d62687223c5",
+      "nativeText": {
+        "blob": "b87bd18cfb071f2b3dba60018038cee8bdd30f4b",
+        "bytes": 475,
+        "sha256": "d0cea042676e0ea2326af75dfe8b8f76b37adbd9ee8bfd40f48ef32778c3b5f6"
+      },
+      "pages": 1,
+      "completedInactive": true
+    }
+  ],
+  "actual": {
+    "native_calls": 12,
+    "observers": 4,
+    "immutable_pages": 4,
+    "full9_and_content_match": true,
+    "receipt_body_independently_read": false
+  },
+  "binary_bodies_qualified": false,
+  "Cargo_started": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

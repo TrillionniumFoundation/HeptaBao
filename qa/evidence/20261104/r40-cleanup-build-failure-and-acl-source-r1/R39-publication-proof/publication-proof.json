@@ -1,0 +1,72 @@
+{
+  "schema": "heptabao.r39-publication-proof.v1",
+  "status": "NONFORCE_REF_CAS_AND_READBACK_VERIFIED",
+  "request": {
+    "repository_full_name": "TrillionniumFoundation/HeptaBao",
+    "branch_name": "codex/heptabao-validation-20261104",
+    "sha": "1badf75b2c541abcebad269adc7be8020bf9e63c",
+    "expected_sha": "4403b2e23ec12b611b4e374cc723546fea821fda",
+    "force": false
+  },
+  "commit_verified": true,
+  "tree_layers": [
+    {
+      "name": "prefix",
+      "sha": "6a8766965e50406363f7ccf63aa2921f1bd0cf9d",
+      "entries": 53,
+      "whole_immediate_merkle": true,
+      "entries_exact": true
+    },
+    {
+      "name": "day",
+      "sha": "bfd36bdcb66a3cb0d63e8cf2a7142e270570def5",
+      "entries": 116,
+      "whole_immediate_merkle": true,
+      "entries_exact": true
+    },
+    {
+      "name": "evidence",
+      "sha": "c8e520a81a2bc59fd53f1b72c05cdd892484165a",
+      "entries": 1,
+      "whole_immediate_merkle": true,
+      "entries_exact": true
+    },
+    {
+      "name": "qa",
+      "sha": "53a53ab55fda45fd7c248f122e976afb218abb34",
+      "entries": 3,
+      "whole_immediate_merkle": true,
+      "entries_exact": true
+    },
+    {
+      "name": "root",
+      "sha": "5817937651a2d75ef63f0f57d368b58fa5c090af",
+      "entries": 26,
+      "whole_immediate_merkle": true,
+      "entries_exact": true
+    }
+  ],
+  "prior_paths_unchanged": true,
+  "product_source_unchanged": true,
+  "tree_intent": "73e4db4ef3cb132a34a5f62aab910cdf6a5555ee",
+  "tree_original_SDK": "50dd95870443137bfa25453676deba84907dd3ce",
+  "commit_intent": "c46f18ffdc693da446116109e40bc9b8af73b135",
+  "commit_original_SDK": "fb15aad8e0a033eca5b04852e4e2a141eed15132",
+  "ref_intent": "8cb647a0ad9bfe059e3a0e38918a27a3cbe8855f",
+  "ref_original_SDK": "30d2652aea8705307fe5c2d9da976ecdb12600ab",
+  "ref_readback": {
+    "ref": "refs/heads/codex/heptabao-validation-20261104",
+    "commit": "1badf75b2c541abcebad269adc7be8020bf9e63c"
+  },
+  "mounts": 52,
+  "mounted_files": 957,
+  "mounted_bytes": 20226417,
+  "root_current_tree": "5234f17ec0a700e77a7b88db29ef792126747679",
+  "root_current_files": 5,
+  "facts_frozen_utc": "2026-11-06 08:53:00 UTC",
+  "full_replacement_qualified": false,
+  "production_cutover": false,
+  "all_clients_and_backups_migrated": false,
+  "cleanup_qualified": false,
+  "task_continues": true
+}

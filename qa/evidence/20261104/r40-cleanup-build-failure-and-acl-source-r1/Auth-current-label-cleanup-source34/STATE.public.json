@@ -1,0 +1,50 @@
+{
+  "schema": "heptabao.fixed-label-cleanup-source-packet.r1",
+  "status": "SOURCE_ONLY_NO_NATIVE_GO",
+  "source": {
+    "blob": "1e6f601782847761425053f39217e6211af2a9a7",
+    "bytes": 97725,
+    "sha256": "4e5761d36f5e308f3d7a822276cebbd2b4b4e0b5d53c984858daaa70a08e9c50"
+  },
+  "request": {
+    "blob": "1ca3b73f3cc0bd3cb11a2934dcbfff3d6ae06325",
+    "bytes": 100721,
+    "sha256": "d7ae0a4750681b826dd8a20be78c258f1cf9e04dc1f545aaf8334feeac85c75e"
+  },
+  "journal": {
+    "blob": "82b9e745abfe1876c2f34ded54d520b4aa11888f",
+    "bytes": 19060,
+    "sha256": "cbfaa9060ad7c5066638097e6c10b900527f0d98d4a1bf9c31cda3ddf906e69c"
+  },
+  "contract": {
+    "blob": "a66ab1f612a2a9e6f1777fab449b2a3518194085",
+    "bytes": 9685,
+    "sha256": "9b6d0892ba04241012225fdc8594bd0c3e516ca7f42fcaeed801bc6a1d6800b4"
+  },
+  "actualBaseline": {
+    "blob": "e4a50c4a58b55c5ff73ab4df0a591a4215e049a4",
+    "bytes": 18957,
+    "sha256": "a99d55efc4cd63e14f64e635ddf9671e73a19df6ddae66ce43050abe107d51c5"
+  },
+  "rootBaseline": {
+    "blob": "56129f46fd94d072e301c4e558481efd817aed55",
+    "bytes": 14522,
+    "sha256": "bf626cd4ee05b5e5aa4c044ee93c4c52fecba8e7e469e84616918e169ce6c641"
+  },
+  "verifier": {
+    "blob": "7bd7d49434613e2a48eaba9b876d3985e29ba53a",
+    "bytes": 10250,
+    "sha256": "29b28b7756ed6357d35264354afa29c8cda33d7c5fba9444abc360a1562e2865"
+  },
+  "result": {
+    "blob": "9786d2aea5f95b3e2be9d547f04e57ccb6718106",
+    "bytes": 5778,
+    "sha256": "a7caadf1dee9847151b9d6b2e48f0de63f3e3b714888b856c78b27246e5534a7"
+  },
+  "pureChecks": 61,
+  "slotInitialized": false,
+  "nativeCalls": 0,
+  "oldR4ManagedUnknown": true,
+  "oldHelper87650Unknown": true,
+  "noAuthBusExecutionQualified": true
+}

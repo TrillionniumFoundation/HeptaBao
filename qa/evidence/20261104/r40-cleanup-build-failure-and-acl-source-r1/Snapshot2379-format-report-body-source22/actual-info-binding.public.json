@@ -1,0 +1,25 @@
+{
+  "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/result.public.json",
+  "size": 118925,
+  "sha256": "5755903ce5696b6745d7af2b27a69a30e0d001697eeb85282df75eb25cea40d8",
+  "version": "66306:31236133:118925:1793956739343592677:1793956739343592677",
+  "nativeText": {
+    "blob": "45d1709e3bbbf74caee996369a1eefdfbf855a31",
+    "bytes": 483,
+    "sha256": "8430d3a4b0c79f274222678fd30f8f0cec8f7f546602c6a1a1a2a8c749c5a4c2"
+  },
+  "originalOperation": "6040da16c66f2a7b6f2f4a3939721c0e78afddf8f9070d76c77a0ffe49e82cff",
+  "full9Strings": [
+    "66306",
+    "31236133",
+    "1000",
+    "1000",
+    "33152",
+    "1",
+    "118925",
+    "1793956739343592677",
+    "1793956739343592677"
+  ],
+  "regularFileFromNativeFileInfoContract": true,
+  "binaryReadAuthorized": false
+}

@@ -1,0 +1,100 @@
+{
+  "schema": "heptabao.native-jwt-pki-failed-build-result-body.SOURCE.r1",
+  "status": "SOURCE_ONLY_REQUIRES_SEPARATE_GO",
+  "scope": "build_result_binary_read_only",
+  "action": "authorize_build_result_body",
+  "originalSlot": "jwt_pki_33b814c7_build149_gitfirst_r1",
+  "originalJob": "1a1b029a998-fc05-6eb2",
+  "originalFailedBuildTerminalPacket": "ee24cc540a8f39a87b8c5c45d8b9c01ccb02d1d4",
+  "metadataActualPacket": "5c928404eba49eab47d8b3d719bd44da63258025",
+  "metadataRootQualification": {
+    "blob": "373a516582bb6a3e7268dacfc39330a7d389a089",
+    "bytes": 4631,
+    "sha256": "a7dbf7e59371f8b13649c678d17933ae4d5827f6ebf811fcc2683417a5573464"
+  },
+  "candidate": {
+    "blob": "a7af3a3329529d0629785765b7a9ade1dd14f23e",
+    "bytes": 29476,
+    "sha256": "bceff8ef04a1c330716436f79421ab4cae20bd96a577d8cd6fc335aa0036a333"
+  },
+  "before": {
+    "blob": "21496c37dd8101299d875ffb2a9d10fa675d291e",
+    "bytes": 24791,
+    "sha256": "5235a51a3eb828174a545fa929a5ca3f72bb5254e86175805f7a34e3d0bf1960"
+  },
+  "strictDiff": {
+    "blob": "c86c7fca7ad8b893d11efc81e6b2f32d80a998c5",
+    "bytes": 8411,
+    "sha256": "08dcccfc5b2ec6a8c30cd174c673194662d826aafcc085563a87fc6beda9b2be"
+  },
+  "strictHunks": 8,
+  "referenceSingleBody": {
+    "blob": "068abfcedf4a9116e618389f31213b4e31185b72",
+    "bytes": 28270,
+    "sha256": "65d8ad457fa07cf9312ac03e914bf949ba1e04ef15a88d0840b34aaa6234b4f3"
+  },
+  "expected": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/result.public.json",
+    "bytes": 36998,
+    "sha256": "aa8a8623cc955adb64ab386387d15ad2204febc0fd526392d20cd0ab6c9638a6",
+    "version": "66306:31364220:36998:1793957208077081949:1793957208077081949",
+    "infoOperation": "8e81613aa575b93e807bfe358614abb238250fc93a4180109222d00bde1430da",
+    "infoNative": {
+      "blob": "d6e8562a91ba3ee27cfcf8a4c51e5644d9f904c1",
+      "bytes": 480,
+      "sha256": "66f341b2e43f26671e7eecdc96a4dabc0aefaa8c2634ada148001b75adc29ffb"
+    },
+    "full9Strings": [
+      "66306",
+      "31364220",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "36998",
+      "1793957208077081949",
+      "1793957208077081949"
+    ]
+  },
+  "exactRequest": {
+    "blob": "a3b254023a40af7a8adad1f17d3c9d248483f524",
+    "bytes": 427,
+    "sha256": "ce60adf4c949d0214548c38c7827aac750c738f08dbb597ffedcf73129c189fe"
+  },
+  "immutableBodyPageBytes": 16384,
+  "maximumBinaryReadStarts": 1,
+  "limits": {
+    "singleBodyBytes": 36998,
+    "binaryMaximum": 65536,
+    "originalPayloadBytes": 1048576,
+    "oldMetadataAndStatusPageBytes": 8192,
+    "newBinaryPageBytes": 16384,
+    "maximumActiveFuture": 1
+  },
+  "changes": [
+    "One exact original result body after its whole metadata and source-only 16KiB-page approval.",
+    "Reuse the original single-body algorithm; only field bindings plus new binary-only 16KiB page cap and exact full9 equality are added.",
+    "Old metadata/authority/stream calls remain byte-exact; original build and all failed evidence retained."
+  ],
+  "sequence": [
+    "Whole new root GO; attach original closed slot through authorize_build_result_body, never initialize.",
+    "Whole exact request/intent/armed; independent boundary; one operation_start.",
+    "Original SDK external whole before parse/isError; same returned ID status and contiguous 16KiB immutable pages.",
+    "Original payload whole before decode; exact current path/version/size/offset0/next36998/EOF/SHA.",
+    "Externally whole decoded36998 before semantic analysis; release lane; inspect failure cause/child ledger only from original report."
+  ],
+  "initialGeneratorError": {
+    "schema": "heptabao.pure-source-generator-error.r1",
+    "error": "body_reference_info_binding:original job",
+    "reason": "The old source reference has the same original job literal in info and body authorizers; an intended single-match replacement correctly refused two occurrences.",
+    "beforeAnyGitMutation": true,
+    "Native": 0,
+    "existingSlotUnchanged": true,
+    "correction": "Use the info-authorizer context for that replacement; retain a separate exact replacement of the body-authorizer job."
+  },
+  "actualBody": null,
+  "Native": 0,
+  "Cargo": 0,
+  "rebuildAuthorized": false,
+  "targetReuseQualified": false
+}

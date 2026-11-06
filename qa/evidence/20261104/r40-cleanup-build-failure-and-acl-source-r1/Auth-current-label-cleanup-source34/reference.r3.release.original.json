@@ -1,0 +1,384 @@
+{
+  "schema": "heptabao.public-home-t5-readonly-libproc.r3.observation-lane-release.v1",
+  "scope": "Fresh R3 diagnostic observation and its own resources only",
+  "source": {
+    "blob": "1ba4cec6b0ce49db5111b429ffe337064ce42dbb",
+    "bytes": 93249,
+    "sha256": "86512cae0db15a19e1f052b4bac786e7a612bc6dfd948f1e605f14077ca0b21e"
+  },
+  "exactRequest": {
+    "blob": "108f52fa6b6032079f805195794805b390228d97",
+    "bytes": 96033,
+    "sha256": "680aa388879b7025d06cd00625a8e83dd5fa1efb858223c4c232c319c2aa5b48"
+  },
+  "rootGO": {
+    "blob": "339fb0884b246dedf92994dcfdca7279a802790b",
+    "bytes": 13459,
+    "sha256": "aa19f9d017396b11c778381bd2a165979aa9e5cbacda9a2765ab619098d32b81"
+  },
+  "originalJob": {
+    "host": "mac",
+    "job_id": "1a1b00fe489-fc05-6dd5",
+    "key": "heptabao-mac-owned-home-t5-readonly-86512cae-20261106-r3"
+  },
+  "authority": {
+    "pin": {
+      "blob": "8ba797ec9fdd55ec13da3edf3de762de8b5b2876",
+      "bytes": 733,
+      "sha256": "384d52659d3f40537a85b256734f21addd1551b6f8a13aaa5a819b5390d7aaaf"
+    },
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "timed_out": false
+  },
+  "stdout": {
+    "blob": "e4a50c4a58b55c5ff73ab4df0a591a4215e049a4",
+    "bytes": 18957,
+    "sha256": "a99d55efc4cd63e14f64e635ddf9671e73a19df6ddae66ce43050abe107d51c5"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "originalCalls": 17,
+  "originalObservers": [
+    {
+      "id": "01a68b5d71c7a7c4bbd56a91e931c0b56292a0d96a1b82ec4f9bcb3532461713",
+      "tool": "process_status",
+      "payload": {
+        "blob": "36224fa0d32955656c21e635987f802e7c19355c",
+        "bytes": 912,
+        "sha256": "a8f190c0faa0e875767f658a9c950a17aeaa9ddb6a6c580771c923fb99a981a2"
+      },
+      "payloadTree": "e8e5bef249ab87939962728d0719cf40bb8c97c5",
+      "nativeText": {
+        "blob": "8ba797ec9fdd55ec13da3edf3de762de8b5b2876",
+        "bytes": 733,
+        "sha256": "384d52659d3f40537a85b256734f21addd1551b6f8a13aaa5a819b5390d7aaaf"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "cce99cc64074aac2eb4526a674a6a2594eee5e482bd88d527563c84f11f3775b",
+      "tool": "process_read",
+      "payload": {
+        "blob": "6863cca495008d0b02e0ccb735422aca39cf9da6",
+        "bytes": 54724,
+        "sha256": "c865232f69445fa6a439fd255f1509a4a2e132dfcfa0f4b08d9c0611bbba2548"
+      },
+      "payloadTree": "742b774e14e3c137a8661af67738f3199e047c0f",
+      "nativeText": {
+        "blob": "847e1dc6d4049d0c2e0bfb642f849977964bacfe",
+        "bytes": 51180,
+        "sha256": "69fedd9b5dcb8c8b6aeebce71b8db162c40594eb64d97c09ae80295a94b639c5"
+      },
+      "pages": 7,
+      "completedInactive": true
+    },
+    {
+      "id": "6f1ec594ac7c845d74e5df9f3454bcd9d671586187d73784f3e297ecc7a0dc34",
+      "tool": "process_read",
+      "payload": {
+        "blob": "93bd4c39364823bca846bc63fc7fcc3fec554d20",
+        "bytes": 8970,
+        "sha256": "2a7d57861a7690e981cabdd418e1d318dca8158d83d29269fa6811c10b603004"
+      },
+      "payloadTree": "d1737d3befb3c344bd47fb3c1fa1932be454259b",
+      "nativeText": {
+        "blob": "33ea47085522838d7db78dfd368512d29e479487",
+        "bytes": 8309,
+        "sha256": "4992713532e28bc8255140fa9b71d7075097ecdfc23d1aacfab22f214848a34c"
+      },
+      "pages": 2,
+      "completedInactive": true
+    }
+  ],
+  "originalPages": 10,
+  "currentLane": {
+    "nativeCallsInFlight": 0,
+    "activeNativeFutures": 0,
+    "pendingCall": null,
+    "activeObserver": null,
+    "allOriginalCallsAccepted": true,
+    "allOriginalOperationsCompletedInactive": true,
+    "allPayloadsWhole": true,
+    "allStreamsEOF": true,
+    "errorsOrReconciliation": [],
+    "released": true
+  },
+  "freshResult": {
+    "ok": true,
+    "observationComplete": true,
+    "outcomeUnknown": false,
+    "stage": "complete",
+    "elapsedSeconds": 0.099619125,
+    "deadlineMetAfterClosure": true,
+    "currentPrints": [
+      {
+        "ordinal": 1,
+        "bytes": 2004,
+        "parsed": true,
+        "exactRegistrationBinding": {
+          "arguments": true,
+          "path": true,
+          "program": true,
+          "runsAllowed": true,
+          "stateAllowed": true
+        },
+        "knownState": "not running",
+        "runs": 1,
+        "pidPresent": false,
+        "lastExit": 1
+      },
+      {
+        "ordinal": 2,
+        "bytes": 2004,
+        "parsed": true,
+        "exactRegistrationBinding": {
+          "arguments": true,
+          "path": true,
+          "program": true,
+          "runsAllowed": true,
+          "stateAllowed": true
+        },
+        "knownState": "not running",
+        "runs": 1,
+        "pidPresent": false,
+        "lastExit": 1
+      }
+    ],
+    "nativePidApi": {
+      "callAttempts": 6,
+      "errnoEsrchDoesNotAutomaticallyCloseManagedScope": true,
+      "explicitReadyPidPsHelperStarted": false,
+      "maximumCalls": 6,
+      "selfQualification": {
+        "arg": 1,
+        "fixedLibrary": "/usr/lib/libproc.dylib",
+        "flavor": 3,
+        "installedKernelWholePinClaimed": false,
+        "offsetsMatched": true,
+        "selfBirthStable": true,
+        "selfPidParentGroupUidMatched": true,
+        "sizeof": 136,
+        "twoSelfSamples": true,
+        "zombieBranchExecutedBySelfClaimed": false
+      }
+    },
+    "pidObservations": [
+      {
+        "errno": 3,
+        "existenceOrDepartureAutomaticallyConcluded": false,
+        "kind": "lookup_esrch",
+        "ordinal": 1,
+        "originalBirthPresent": null,
+        "originalReadyPid": 58228,
+        "processNotOwnedOrSignalled": true,
+        "returnedBytes": [
+          0,
+          0
+        ],
+        "sampleCount": 2,
+        "zombieLookupRequested": true
+      },
+      {
+        "errno": 3,
+        "existenceOrDepartureAutomaticallyConcluded": false,
+        "kind": "lookup_esrch",
+        "ordinal": 2,
+        "originalBirthPresent": null,
+        "originalReadyPid": 58228,
+        "processNotOwnedOrSignalled": true,
+        "returnedBytes": [
+          0,
+          0
+        ],
+        "sampleCount": 2,
+        "zombieLookupRequested": true
+      }
+    ],
+    "finalFencesReached": {
+      "inferredFromCompleteStageAndExactSource": true,
+      "source": {
+        "blob": "1ba4cec6b0ce49db5111b429ffe337064ce42dbb",
+        "bytes": 93249,
+        "sha256": "86512cae0db15a19e1f052b4bac786e7a612bc6dfd948f1e605f14077ca0b21e"
+      }
+    },
+    "applicationClosure": {
+      "allReturnedApplicationFdsClosed": true,
+      "openLedger": {
+        "attempts": 21,
+        "knownNoReturnErrors": 0,
+        "pending": 0,
+        "registered": 21,
+        "registrationUnknown": false
+      },
+      "counts": {
+        "metadata": 210,
+        "readBytes": 79377,
+        "readCalls": 13,
+        "writeBytes": 0,
+        "writeCalls": 0
+      }
+    },
+    "directClosure": {
+      "allDirectHelpersClosed": true,
+      "attempts": 2,
+      "returnedRows": 2,
+      "unknownCount": 0,
+      "helpers": [
+        {
+          "pid": 5950,
+          "label": "readonly-print-1",
+          "exitCode": 0,
+          "streamsClosed": true,
+          "cleanup": {
+            "allGroupRowsEmptyAfterReap": true,
+            "cleanupCaps": {
+              "group": 3,
+              "psMax": 4,
+              "term": 1,
+              "wait": 5
+            },
+            "custody": {
+              "captured_exit": null,
+              "ps": {
+                "pgid": 5950,
+                "pid": 5950,
+                "ppid": 5948,
+                "start": "Fri Nov  6 16:53:19 2026    ",
+                "uid": 501
+              },
+              "sid_observed_while_live": 5950
+            },
+            "directChildReaped": true,
+            "elapsedSeconds": 0.04296187497675419,
+            "exitCode": 0,
+            "initialLiveGroup": [],
+            "ok": true,
+            "outcomeUnknown": false,
+            "ownedLiveGroupEmptyBeforeReap": true,
+            "pgid": 5950,
+            "pid": 5950,
+            "postReapSignalSent": false,
+            "remainingGroupRows": [],
+            "retainedExit": {
+              "code": 1,
+              "pid": 5950,
+              "signo": 20,
+              "status": 0
+            },
+            "signals": [],
+            "stopAttempted": true
+          }
+        },
+        {
+          "pid": 5959,
+          "label": "readonly-print-2",
+          "exitCode": 0,
+          "streamsClosed": true,
+          "cleanup": {
+            "allGroupRowsEmptyAfterReap": true,
+            "cleanupCaps": {
+              "group": 3,
+              "psMax": 4,
+              "term": 1,
+              "wait": 5
+            },
+            "custody": {
+              "captured_exit": null,
+              "ps": {
+                "pgid": 5959,
+                "pid": 5959,
+                "ppid": 5948,
+                "start": "Fri Nov  6 16:53:19 2026    ",
+                "uid": 501
+              },
+              "sid_observed_while_live": 5959
+            },
+            "directChildReaped": true,
+            "elapsedSeconds": 0.04140975000336766,
+            "exitCode": 0,
+            "initialLiveGroup": [],
+            "ok": true,
+            "outcomeUnknown": false,
+            "ownedLiveGroupEmptyBeforeReap": true,
+            "pgid": 5959,
+            "pid": 5959,
+            "postReapSignalSent": false,
+            "remainingGroupRows": [],
+            "retainedExit": {
+              "code": 1,
+              "pid": 5959,
+              "signo": 20,
+              "status": 0
+            },
+            "signals": [],
+            "stopAttempted": true
+          }
+        }
+      ]
+    },
+    "childTerminal": {
+      "bytes": 4816,
+      "qualified": true,
+      "ok": false,
+      "stage": "home_admission",
+      "error": {
+        "code": "child_absolute_deadline",
+        "errno": null,
+        "type": "ProbeRefused"
+      },
+      "allReturnedApplicationFdsClosed": true,
+      "sameBirthAdmission": false,
+      "enteredT5": false
+    },
+    "ready": {
+      "bytes": 640,
+      "qualified": true,
+      "identity": {
+        "birthSec": 1793950344,
+        "birthUsec": 737052,
+        "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+        "pgid": 58228,
+        "pid": 58228,
+        "ppid": 1,
+        "uid": 501
+      }
+    },
+    "currentTerminalExitMatchesPrint": [
+      true,
+      true
+    ],
+    "signalRestoreErrors": [],
+    "pendingSignalAfterRestore": null
+  },
+  "unchangedBoundaries": {
+    "R4ManagedScopeStillUnknown": true,
+    "R2Helper87650ClosureStillUnknown": true,
+    "registrationClosureClaimed": false,
+    "helper87650QueriedOrSignalled": false,
+    "ESRCHMeansAutomaticDeparture": false,
+    "originalPrint2276Recovered": false,
+    "old817Recovered": false,
+    "oldEX_CONFIGCauseProven": false,
+    "bootstrapOrBootout": false,
+    "managedSignalsOrReap": false,
+    "T5Read": false,
+    "privateCapsuleOrCredentials": false,
+    "SDKOrProduct": false,
+    "AuthBusQualified": false,
+    "productionCutover": false
+  },
+  "pureChecksOfReturnedPublicEvidence": {
+    "passed": true,
+    "count": 17,
+    "candidateRerun": false,
+    "runtimeCalls": 0
+  }
+}

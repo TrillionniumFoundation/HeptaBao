@@ -1,0 +1,116 @@
+{
+  "schema": "heptabao.snapshot2379-report-body-source-manifest.v1",
+  "files": [
+    {
+      "path": "old-approved-body-journal.js",
+      "blob": "61b7fb890ee853563f93c1539a0cee6e6585284c",
+      "bytes": 28285,
+      "sha256": "9f02326d5674de871fc71e453fba4888c8446a75804e77341cb5c9a8cb657e15"
+    },
+    {
+      "path": "candidate-body-journal.js",
+      "blob": "8c2f92092ae06161aa6cb125b07a353801b05a91",
+      "bytes": 28285,
+      "sha256": "1bd24ac2aee006ebc87a203f92fec7a76508381de6e1e96009a06818a3282851"
+    },
+    {
+      "path": "old-body-forward.diff",
+      "blob": "c27a6c78de45db8b92831f160cb9ae692c18344e",
+      "bytes": 5974,
+      "sha256": "c746c4ccd2a09bf80ea0865ad9137ea90270f9f844b9ef7efb52c35700c5c02a"
+    },
+    {
+      "path": "old-body-reverse.diff",
+      "blob": "03c2a201c0cd42807678a873b3519e5b6df65ffb",
+      "bytes": 5974,
+      "sha256": "569cd909ea0f38c19653b3add2f1b958beee53f00fe4a0f762e7bf5d6a55789d"
+    },
+    {
+      "path": "actual-info-journal.js",
+      "blob": "981f77201755b7d3635043b93b6696e45fb6335b",
+      "bytes": 23894,
+      "sha256": "72d913a3c956cfa4c4eaa83b33be5cca85a20ff509088252ab8f16e98cb3237b"
+    },
+    {
+      "path": "info-to-body-forward.diff",
+      "blob": "5bbf710136bc018ed5b1fbd22a982ccb11614aaa",
+      "bytes": 7061,
+      "sha256": "83b06647a00527e6c5a284a20a2d647cd86adf74b64c8f54d54ec5d7c4bb76af"
+    },
+    {
+      "path": "info-to-body-reverse.diff",
+      "blob": "7042c95aac4344ddb6adda5e93cd30d597e6f1d5",
+      "bytes": 7061,
+      "sha256": "dd0222ec127a1777f3978bf7f9770a071e12c5fc6d9afbb6f7374d0438f5b81d"
+    },
+    {
+      "path": "exact-binary-read-request.json",
+      "blob": "df08f53171c4476a25e5813a4ec22fca3a716bdf",
+      "bytes": 445,
+      "sha256": "176dd3233a37856ebe8b79e4e37fa97ad140460ba096b391dff3474ea5869030"
+    },
+    {
+      "path": "literal-replacements.json",
+      "blob": "02a9ddca433e9f9e0342b538bce0d763372c8552",
+      "bytes": 4611,
+      "sha256": "1d0553d4e5f1ad5c9be415c27ca63cedaa18728c8b17e0d54d4da151c11d6e4e"
+    },
+    {
+      "path": "old-body-root-go.json",
+      "blob": "830f4dada4a3dca14db6632f1594b1550dfa0897",
+      "bytes": 3425,
+      "sha256": "69a30cdee447d5477544c78649095d193dc7a0d89c264979d2fabbb5765af8b7"
+    },
+    {
+      "path": "actual-info.native.json",
+      "blob": "a5569800cbf2cc211f81fd0bd8323b24bb473577",
+      "bytes": 495,
+      "sha256": "ac43be6e933161f76a84bf057cc53189b1ed38ce1aa4947351b6498d4958face"
+    },
+    {
+      "path": "actual-info.payload.json",
+      "blob": "213bab8dc75f021487644a38875d5f5d2ebdbdef",
+      "bytes": 612,
+      "sha256": "394eb534866f0b41b06d153725d1a9d5f691d260e0db7976f821c6510166d6a7"
+    },
+    {
+      "path": "actual-info.release.json",
+      "blob": "3eb00a17c46451deaa624e48cd77280e36fed11b",
+      "bytes": 2170,
+      "sha256": "ec3beb72bf6749f250f60e64f47676c9e24b9c46c279770970d3d7c9f2365865"
+    },
+    {
+      "path": "PLAN.public.json",
+      "blob": "d91dc0a77d57abfcdbf3e37e2fb6f75e2dd92313",
+      "bytes": 2948,
+      "sha256": "5392c92c6e52a7902e6e6cd869449d7b4919fd9ec54008daa5488d8dc2c62712"
+    },
+    {
+      "path": "source-verifier.js",
+      "blob": "21ee1299f089eaffd37278def8f5b17bf03ad183",
+      "bytes": 3528,
+      "sha256": "410227b63bddf13feed0e588ece289071fe695c1ee5921dd043f9eb8ebb0d673"
+    },
+    {
+      "path": "source-checks.actual.json",
+      "blob": "093aa07e781b92fc07673071d544ba385db5af1a",
+      "bytes": 2517,
+      "sha256": "e69ee243168f104b1354b181241db4942ced9951502e4639f07d83685d5d45b3"
+    },
+    {
+      "path": "pure-helper.reference.js",
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    {
+      "path": "strict-diff-helper.reference.js",
+      "blob": "f595a6490497f54ea2b533fcbb98cdb306583286",
+      "bytes": 3497,
+      "sha256": "c872292668150c3b22396b4d23f315a709ef5b35eb9a286ded9cf7bbe7fd51f5"
+    }
+  ],
+  "checks": 35,
+  "newNativeCalls": 0,
+  "candidateFunctionsExecuted": 0
+}

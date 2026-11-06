@@ -1,0 +1,190 @@
+{
+  "schema": "heptabao.snapshot2379.format49.info-source-checks.r1",
+  "pass": true,
+  "count": 45,
+  "checks": [
+    {
+      "name": "private-constant-role:declared-count",
+      "pass": true
+    },
+    {
+      "name": "private-function-role:declared-count",
+      "pass": true
+    },
+    {
+      "name": "private-state-role:declared-count",
+      "pass": true
+    },
+    {
+      "name": "action-and-scope-role:declared-count",
+      "pass": true
+    },
+    {
+      "name": "existing-formatter-slot:declared-count",
+      "pass": true
+    },
+    {
+      "name": "unchanged-original-formatter-start:declared-count",
+      "pass": true
+    },
+    {
+      "name": "fixed-existing-result-path:declared-count",
+      "pass": true
+    },
+    {
+      "name": "frozen-read-plan-report-cap:declared-count",
+      "pass": true
+    },
+    {
+      "name": "one-exact-info-request:declared-count",
+      "pass": true
+    },
+    {
+      "name": "three-actual-original-observers:declared-count",
+      "pass": true
+    },
+    {
+      "name": "same-reviewed-formatter-observer-prefix:declared-count",
+      "pass": true
+    },
+    {
+      "name": "comment-role:declared-count",
+      "pass": true
+    },
+    {
+      "name": "formatter-authority-two-stream-success-contract:declared-count",
+      "pass": true
+    },
+    {
+      "name": "exact-declared-source-delta",
+      "pass": true
+    },
+    {
+      "name": "old-info-forward",
+      "pass": true
+    },
+    {
+      "name": "old-info-reverse",
+      "pass": true
+    },
+    {
+      "name": "formatter-forward",
+      "pass": true
+    },
+    {
+      "name": "formatter-reverse",
+      "pass": true
+    },
+    {
+      "name": "six-localized-hunks",
+      "pass": true
+    },
+    {
+      "name": "request-whole",
+      "pass": true
+    },
+    {
+      "name": "single-fixed-file-info",
+      "pass": true
+    },
+    {
+      "name": "exact-formatter-path",
+      "pass": true
+    },
+    {
+      "name": "only-existing-slot",
+      "pass": true
+    },
+    {
+      "name": "scope-exact",
+      "pass": true
+    },
+    {
+      "name": "three-original-prerequisites",
+      "pass": true
+    },
+    {
+      "name": "actual-native-0",
+      "pass": true
+    },
+    {
+      "name": "actual-native-1",
+      "pass": true
+    },
+    {
+      "name": "actual-native-2",
+      "pass": true
+    },
+    {
+      "name": "whole-stdout-precedes-summary-parse",
+      "pass": true
+    },
+    {
+      "name": "two-stream-geometry",
+      "pass": true
+    },
+    {
+      "name": "terminal-passed-fenced",
+      "pass": true
+    },
+    {
+      "name": "file-info-guard",
+      "pass": true
+    },
+    {
+      "name": "lossless-version-full9",
+      "pass": true
+    },
+    {
+      "name": "once-marker-before-native",
+      "pass": true
+    },
+    {
+      "name": "no-binary-read-dispatch",
+      "pass": true
+    },
+    {
+      "name": "same-page-and-payload-caps",
+      "pass": true
+    },
+    {
+      "name": "source-only-syntax",
+      "pass": true
+    },
+    {
+      "name": "gfNeed:unchanged-whole",
+      "pass": true
+    },
+    {
+      "name": "gfMetaEquals:unchanged-whole",
+      "pass": true
+    },
+    {
+      "name": "gfState:unchanged-whole",
+      "pass": true
+    },
+    {
+      "name": "gfSave:unchanged-whole",
+      "pass": true
+    },
+    {
+      "name": "gfIntegerText:unchanged-whole",
+      "pass": true
+    },
+    {
+      "name": "gfInitializeOnlyAfterRootGO:unchanged-whole",
+      "pass": true
+    },
+    {
+      "name": "gfAcceptArchivedSDK:unchanged-whole",
+      "pass": true
+    },
+    {
+      "name": "gfReconcileSameGitArchiveReadOnly:unchanged-whole",
+      "pass": true
+    }
+  ],
+  "noNative": true,
+  "noCandidateFunctionInvoked": true,
+  "reportBodyNotAuthorized": true
+}

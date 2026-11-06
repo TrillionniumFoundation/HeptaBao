@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r40-snapshot2379-formatter49-report-info-GO",
+  "records": [
+    {
+      "name": "ROOT-GO.public.json",
+      "blob": "7a1e5b22a444295bb93851e01bd93e265b14cdec",
+      "bytes": 3450,
+      "sha256": "618c964ca09dae6a2bf867477114c7ef5732b0c8bda5530c188a8090a2fb5241"
+    },
+    {
+      "name": "ROOT-source15.public.json",
+      "blob": "4d6adaa1292fb19027c25125b14c085bf5a27428",
+      "bytes": 4094,
+      "sha256": "63791153cfb32cef6c3f3df20e6ecb0c223e0b8a220763cec2e08df3dac41f2f"
+    },
+    {
+      "name": "ROOT-source-verifier.js",
+      "blob": "210d8f0dd023dfadf126faa5ac55ed5ab5a2ff3b",
+      "bytes": 5268,
+      "sha256": "75d093e00e0c4d5d7d738055f4f4f787a73cfea3ba2e28aff707350efd128635"
+    }
+  ],
+  "expected_data_tree": "ffe37810b046bdd958eaf774bf1e928df7ab99a0",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

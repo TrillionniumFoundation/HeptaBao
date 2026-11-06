@@ -1,0 +1,18 @@
+{
+  "ok": false,
+  "action": "accept",
+  "failure": {
+    "schema": "heptabao.gitfirst.outer-caught-failure.r1",
+    "action": "accept",
+    "name": "Error",
+    "message": "native_tool_error_preserved_stop",
+    "automaticRetry": false,
+    "newAdmissionAllowed": false,
+    "returnedNormally": true
+  },
+  "pin": {
+    "blob": "9698fce36007ca93a05dde1121690a74747a16af",
+    "bytes": 237,
+    "sha256": "1dfda1fd3bdc3a38f8121639317a01b437f34e554ee5dc7417c40da8602c4643"
+  }
+}

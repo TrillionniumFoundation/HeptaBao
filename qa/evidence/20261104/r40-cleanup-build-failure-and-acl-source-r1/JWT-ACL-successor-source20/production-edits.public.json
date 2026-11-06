@@ -1,0 +1,32 @@
+[
+  {
+    "label": "collection-read-before-unsupported",
+    "before": "        if path == format!(\"auth/{mount}/role\") {\n            if !matches!(method, \"GET\" | \"LIST\") {\n                return Err(err(405, \"method not allowed\"));\n            }\n            self.permission(principal, namespace, path, \"list\", now)?;\n",
+    "after": "        if path == format!(\"auth/{mount}/role\") {\n            if method == \"GET\" {\n                self.permission(principal, namespace, path, \"read\", now)?;\n                return Err(err(405, \"unsupported operation\"));\n            }\n            if method != \"LIST\" {\n                return Err(err(405, \"method not allowed\"));\n            }\n            self.permission(principal, namespace, path, \"list\", now)?;\n"
+  },
+  {
+    "label": "config-update-without-sudo",
+    "before": "        let path = format!(\"auth/{mount}/config\");\n        let path = path.as_str();\n        let actor = self.permission(principal, namespace, path, \"update\", now)?;\n        self.authorize_request(actor, namespace, path, \"sudo\", now)?;\n",
+    "after": "        let path = format!(\"auth/{mount}/config\");\n        let path = path.as_str();\n        self.permission(principal, namespace, path, \"update\", now)?;\n"
+  },
+  {
+    "label": "one-shared-source-role-write-capability",
+    "before": "    fn jwt_role_route(\n",
+    "after": "    // OpenBao's role existence check chooses Create or Update before dispatch.\n    // The native owner captures this same source decision for later delivery.\n    fn jwt_role_write_capability(&self, scope: AuthScope<'_>, name: &str) -> &'static str {\n        if self.jwt_at(scope).is_some_and(|state| state.roles.contains_key(name)) {\n            \"update\"\n        } else {\n            \"create\"\n        }\n    }\n\n    fn jwt_role_route(\n"
+  },
+  {
+    "label": "role-write-source-capability",
+    "before": "            \"POST\" | \"PUT\" => {\n                let actor = self.permission(principal, namespace, &path, \"update\", now)?;\n                self.authorize_request(actor, namespace, &path, \"sudo\", now)?;\n",
+    "after": "            \"POST\" | \"PUT\" => {\n                let capability = self.jwt_role_write_capability(scope, name);\n                let actor = self.permission(principal, namespace, &path, capability, now)?;\n"
+  },
+  {
+    "label": "role-delete-idempotent-no-state-allocation",
+    "before": "            \"DELETE\" => {\n                let actor = self.permission(principal, namespace, &path, \"update\", now)?;\n                self.authorize_request(actor, namespace, &path, \"sudo\", now)?;\n                reject_unknown(body, &[])?;\n                let removed = self.jwt_at_mut(scope).roles.remove(name);\n                if removed.is_some() {\n                    Ok(empty(true))\n                } else {\n                    Err(err(404, \"JWT role not found\"))\n                }\n            }\n",
+    "after": "            \"DELETE\" => {\n                self.permission(principal, namespace, &path, \"delete\", now)?;\n                reject_unknown(body, &[])?;\n                let removed = self\n                    .jwt_mounts\n                    .get_mut(namespace)\n                    .and_then(|mounts| mounts.get_mut(mount))\n                    .is_some_and(|state| state.roles.remove(name).is_some());\n                Ok(empty(removed))\n            }\n"
+  },
+  {
+    "label": "native-config-role-original-capabilities",
+    "before": "                owner.sudo = method != \"GET\";\n                Some(mount)\n            }\n            Some(JwtRoute::Role { mount, collection }) => {\n                // The existing JWT backend treats named DELETE as update +\n                // sudo, and collection GET as list. Retain those exact ACLs.\n                owner.capability = Some(match (collection, method) {\n                    (true, \"GET\" | \"LIST\") => \"list\",\n                    (false, \"GET\") => \"read\",\n                    (false, \"POST\" | \"PUT\" | \"DELETE\") => \"update\",\n                    _ => return Err(err(405, \"method not allowed\")),\n                });\n                owner.sudo = !collection && method != \"GET\";\n                Some(mount)\n            }\n",
+    "after": "                Some(mount)\n            }\n            Some(JwtRoute::Role { mount, collection }) => {\n                owner.capability = Some(match (collection, method) {\n                    (true, \"GET\") | (false, \"GET\") => \"read\",\n                    (true, \"LIST\") => \"list\",\n                    (false, \"POST\" | \"PUT\") => {\n                        let name = path\n                            .strip_prefix(&format!(\"auth/{mount}/role/\"))\n                            .ok_or_else(|| err(503, \"native JWT role route changed\"))?;\n                        // Retain the original source's decision. A newly\n                        // published role must still deliver under Create.\n                        self.jwt_role_write_capability(\n                            AuthScope { namespace, mount: &mount },\n                            name,\n                        )\n                    }\n                    (false, \"DELETE\") => \"delete\",\n                    _ => return Err(err(405, \"method not allowed\")),\n                });\n                Some(mount)\n            }\n"
+  }
+]

@@ -1,0 +1,953 @@
+{
+  "schema": "heptabao.snapshot2379.format49.original-chain-checks.r1",
+  "pass": true,
+  "count": 236,
+  "checks": [
+    {
+      "name": "16-original-calls",
+      "pass": true
+    },
+    {
+      "name": "only-one-start",
+      "pass": true
+    },
+    {
+      "name": "3-original-observers",
+      "pass": true
+    },
+    {
+      "name": "9-original-pages",
+      "pass": true
+    },
+    {
+      "name": "original-closed-state",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-rog-formatter-start:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-rog-formatter-start:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-rog-formatter-start:intent-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-rog-formatter-start:armed-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-rog-formatter-start:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-rog-formatter-start:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-rog-formatter-start:request-intent-arm",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-rog-formatter-start:sdk-native-exact",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-authority0-admit:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-authority0-admit:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-authority0-admit:intent-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-authority0-admit:armed-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-authority0-admit:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-authority0-admit:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-authority0-admit:request-intent-arm",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-authority0-admit:sdk-native-exact",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-authority0-admit:original-job-only",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-authority0-status:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-authority0-status:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-authority0-status:intent-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-authority0-status:armed-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-authority0-status:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-authority0-status:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-authority0-status:request-intent-arm",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-authority0-status:sdk-native-exact",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-authority0-page0:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-authority0-page0:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-authority0-page0:intent-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-authority0-page0:armed-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-authority0-page0:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-authority0-page0:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-authority0-page0:request-intent-arm",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-authority0-page0:sdk-native-exact",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-admit:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-admit:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-admit:intent-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-admit:armed-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-admit:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-admit:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-admit:request-intent-arm",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-admit:sdk-native-exact",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-admit:original-job-only",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-status:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-status:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-status:intent-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-status:armed-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-status:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-status:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-status:request-intent-arm",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-status:sdk-native-exact",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page0:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page0:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page0:intent-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page0:armed-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page0:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page0:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page0:request-intent-arm",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page0:sdk-native-exact",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page8192:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page8192:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page8192:intent-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page8192:armed-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page8192:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page8192:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page8192:request-intent-arm",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page8192:sdk-native-exact",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page16384:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page16384:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page16384:intent-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page16384:armed-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page16384:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page16384:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page16384:request-intent-arm",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page16384:sdk-native-exact",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page24576:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page24576:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page24576:intent-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page24576:armed-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page24576:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page24576:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page24576:request-intent-arm",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page24576:sdk-native-exact",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page32768:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page32768:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page32768:intent-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page32768:armed-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page32768:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page32768:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page32768:request-intent-arm",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page32768:sdk-native-exact",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page40960:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page40960:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page40960:intent-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page40960:armed-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page40960:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page40960:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page40960:request-intent-arm",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page40960:sdk-native-exact",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page49152:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page49152:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page49152:intent-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page49152:armed-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page49152:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page49152:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page49152:request-intent-arm",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page49152:sdk-native-exact",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams1-admit:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams1-admit:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams1-admit:intent-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams1-admit:armed-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams1-admit:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams1-admit:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams1-admit:request-intent-arm",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams1-admit:sdk-native-exact",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams1-admit:original-job-only",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams1-status:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams1-status:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams1-status:intent-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams1-status:armed-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams1-status:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams1-status:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams1-status:request-intent-arm",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams1-status:sdk-native-exact",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams1-page0:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams1-page0:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams1-page0:intent-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams1-page0:armed-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams1-page0:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams1-page0:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams1-page0:request-intent-arm",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams1-page0:sdk-native-exact",
+      "pass": true
+    },
+    {
+      "name": "exact-original-request",
+      "pass": true
+    },
+    {
+      "name": "source-stdin-byte-binding",
+      "pass": true
+    },
+    {
+      "name": "original-host-timeout-key",
+      "pass": true
+    },
+    {
+      "name": "original-unique-ack",
+      "pass": true
+    },
+    {
+      "name": "1d7efb002dd78f7385f6b3a3bdc0f17f7d3f02a3c438d3b707f69f43a3999f4e:payload-whole",
+      "pass": true
+    },
+    {
+      "name": "1d7efb002dd78f7385f6b3a3bdc0f17f7d3f02a3c438d3b707f69f43a3999f4e:native-whole",
+      "pass": true
+    },
+    {
+      "name": "1d7efb002dd78f7385f6b3a3bdc0f17f7d3f02a3c438d3b707f69f43a3999f4e:sdk-envelope",
+      "pass": true
+    },
+    {
+      "name": "1d7efb002dd78f7385f6b3a3bdc0f17f7d3f02a3c438d3b707f69f43a3999f4e:one-admission",
+      "pass": true
+    },
+    {
+      "name": "1d7efb002dd78f7385f6b3a3bdc0f17f7d3f02a3c438d3b707f69f43a3999f4e:one-closed-status",
+      "pass": true
+    },
+    {
+      "name": "1d7efb002dd78f7385f6b3a3bdc0f17f7d3f02a3c438d3b707f69f43a3999f4e:completed-inactive",
+      "pass": true
+    },
+    {
+      "name": "1d7efb002dd78f7385f6b3a3bdc0f17f7d3f02a3c438d3b707f69f43a3999f4e:page-count",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-authority0-page0:original-page",
+      "pass": true
+    },
+    {
+      "name": "1d7efb002dd78f7385f6b3a3bdc0f17f7d3f02a3c438d3b707f69f43a3999f4e:all-original-payload-bytes",
+      "pass": true
+    },
+    {
+      "name": "1d7efb002dd78f7385f6b3a3bdc0f17f7d3f02a3c438d3b707f69f43a3999f4e:original-result-job",
+      "pass": true
+    },
+    {
+      "name": "3bd7cf144acb1fa14d50fe7fa2d65bedff3c4a2e909d117bf3387bd69990bd53:payload-whole",
+      "pass": true
+    },
+    {
+      "name": "3bd7cf144acb1fa14d50fe7fa2d65bedff3c4a2e909d117bf3387bd69990bd53:native-whole",
+      "pass": true
+    },
+    {
+      "name": "3bd7cf144acb1fa14d50fe7fa2d65bedff3c4a2e909d117bf3387bd69990bd53:sdk-envelope",
+      "pass": true
+    },
+    {
+      "name": "3bd7cf144acb1fa14d50fe7fa2d65bedff3c4a2e909d117bf3387bd69990bd53:one-admission",
+      "pass": true
+    },
+    {
+      "name": "3bd7cf144acb1fa14d50fe7fa2d65bedff3c4a2e909d117bf3387bd69990bd53:one-closed-status",
+      "pass": true
+    },
+    {
+      "name": "3bd7cf144acb1fa14d50fe7fa2d65bedff3c4a2e909d117bf3387bd69990bd53:completed-inactive",
+      "pass": true
+    },
+    {
+      "name": "3bd7cf144acb1fa14d50fe7fa2d65bedff3c4a2e909d117bf3387bd69990bd53:page-count",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page0:original-page",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page8192:original-page",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page16384:original-page",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page24576:original-page",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page32768:original-page",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page40960:original-page",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams0-page49152:original-page",
+      "pass": true
+    },
+    {
+      "name": "3bd7cf144acb1fa14d50fe7fa2d65bedff3c4a2e909d117bf3387bd69990bd53:all-original-payload-bytes",
+      "pass": true
+    },
+    {
+      "name": "3bd7cf144acb1fa14d50fe7fa2d65bedff3c4a2e909d117bf3387bd69990bd53:original-result-job",
+      "pass": true
+    },
+    {
+      "name": "62c649edc4033363bced4f6ae83df8795058d133623f36ed3b0ad6458ecd15b2:payload-whole",
+      "pass": true
+    },
+    {
+      "name": "62c649edc4033363bced4f6ae83df8795058d133623f36ed3b0ad6458ecd15b2:native-whole",
+      "pass": true
+    },
+    {
+      "name": "62c649edc4033363bced4f6ae83df8795058d133623f36ed3b0ad6458ecd15b2:sdk-envelope",
+      "pass": true
+    },
+    {
+      "name": "62c649edc4033363bced4f6ae83df8795058d133623f36ed3b0ad6458ecd15b2:one-admission",
+      "pass": true
+    },
+    {
+      "name": "62c649edc4033363bced4f6ae83df8795058d133623f36ed3b0ad6458ecd15b2:one-closed-status",
+      "pass": true
+    },
+    {
+      "name": "62c649edc4033363bced4f6ae83df8795058d133623f36ed3b0ad6458ecd15b2:completed-inactive",
+      "pass": true
+    },
+    {
+      "name": "62c649edc4033363bced4f6ae83df8795058d133623f36ed3b0ad6458ecd15b2:page-count",
+      "pass": true
+    },
+    {
+      "name": "snapshot-2379-formatter-streams1-page0:original-page",
+      "pass": true
+    },
+    {
+      "name": "62c649edc4033363bced4f6ae83df8795058d133623f36ed3b0ad6458ecd15b2:all-original-payload-bytes",
+      "pass": true
+    },
+    {
+      "name": "62c649edc4033363bced4f6ae83df8795058d133623f36ed3b0ad6458ecd15b2:original-result-job",
+      "pass": true
+    },
+    {
+      "name": "authority-terminal",
+      "pass": true
+    },
+    {
+      "name": "authority-original-stream-extents",
+      "pass": true
+    },
+    {
+      "name": "stream1:stdout-bytes",
+      "pass": true
+    },
+    {
+      "name": "stream1:stderr-bytes",
+      "pass": true
+    },
+    {
+      "name": "stream2:stdout-bytes",
+      "pass": true
+    },
+    {
+      "name": "stream2:stderr-bytes",
+      "pass": true
+    },
+    {
+      "name": "streams-final-eof",
+      "pass": true
+    },
+    {
+      "name": "standalone-streams-whole",
+      "pass": true
+    },
+    {
+      "name": "formatter-summary",
+      "pass": true
+    },
+    {
+      "name": "49-ordered-rows",
+      "pass": true
+    },
+    {
+      "name": "authenticated_peer_frame.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "lib.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "native_snapshot_body.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "native_snapshot_body_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "native_snapshot_peer.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "native_snapshot_peer_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "auth_forward_actor.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "auth_snapshot_forward_actor_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "ha.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "ha_snapshot_forward.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "http.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "http_snapshot.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_forward_delivery.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_snapshot_forward.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_snapshot_forward_client.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_snapshot_forward_file.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_snapshot_forward_source.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_snapshot_forward_wire.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_snapshot_forward_wire_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_snapshot_transfer.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_snapshot_v6_ha.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_snapshot_v6_ha_restore.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_native_controlgroups_271_namespace_ha_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_native_controlgroups_271_namespace_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_native_file_gc_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_native_flat_retirement_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_native_kv2_import_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_native_kv2_large_ha_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_native_kv2_mount_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_native_kv2_storage_witness_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_native_namespace_tree_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_native_pki_archive_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_native_remount_v6_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_native_ssh_archive_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_native_storage_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_native_transit_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_native_v6_ha_cold_restore_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_native_v6_ha_historical_restore_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_native_v6_ha_restore_borrowed_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_native_v6_ha_snapshot_repair_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_native_v6_ha_snapshot_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_native_v6_migration_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_rate_limit_quota_139_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_snapshot_lossless_export_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_snapshot_v6_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_native_v6_ha_pipeline_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_snapshot_forward_test_faults.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "service_native_snapshot_forward_audit_tests.rs:source-and-output-pins",
+      "pass": true
+    },
+    {
+      "name": "release-original-associations",
+      "pass": true
+    }
+  ],
+  "scope": "Original job terminal/full streams and declared per-file hashes only; detailed report, output file_info/full9 and independent formatted bodies still pending.",
+  "noNativeCalls": true
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r40_auth_libproc_r3_actual_qualification_packet",
+  "records": [
+    {
+      "name": "ROOT-qualification.json",
+      "blob": "56129f46fd94d072e301c4e558481efd817aed55",
+      "bytes": 14522,
+      "sha256": "bf626cd4ee05b5e5aa4c044ee93c4c52fecba8e7e469e84616918e169ce6c641"
+    },
+    {
+      "name": "ROOT-verifier.js",
+      "blob": "f2c33fd4ac91a620098f950478d70a35b00c0399",
+      "bytes": 14043,
+      "sha256": "df75129e435924f1df1d0f1d21d8e2e70d1af6e0cb09c190a5b21ef69eb43f9a"
+    },
+    {
+      "name": "README.txt",
+      "blob": "7d6fe96e2037facce2aacffb86734fb8c4d30f12",
+      "bytes": 137,
+      "sha256": "289a89dd3a97f29780ebcfacea5f32db2392a304195084711758079e83bbd8b0"
+    }
+  ],
+  "expected_data_tree": "6160f5d2cadc91e57ccdca996e93ce932a5a8906",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

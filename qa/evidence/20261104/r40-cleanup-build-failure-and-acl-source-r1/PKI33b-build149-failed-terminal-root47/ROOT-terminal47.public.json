@@ -1,0 +1,277 @@
+{
+  "schema": "heptabao.root-qualification.PKI33b-build149-original-failed-terminal.v1",
+  "status": "QUALIFIED_ORIGINAL_FAILED_TERMINAL_NOT_TEST_PASS",
+  "evidence_qualified": true,
+  "checks": [
+    {
+      "name": "whole67_177664",
+      "passed": true
+    },
+    {
+      "name": "exact_GO_request_journal",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_call_jwt-pki-33b814c7-build149-start-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_armed_tree_jwt-pki-33b814c7-build149-start-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_call_jwt-pki-33b814c7-build149-authority0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_armed_tree_jwt-pki-33b814c7-build149-authority0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_call_jwt-pki-33b814c7-build149-authority0-status-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_armed_tree_jwt-pki-33b814c7-build149-authority0-status-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_call_jwt-pki-33b814c7-build149-authority0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_armed_tree_jwt-pki-33b814c7-build149-authority0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_call_jwt-pki-33b814c7-build149-streams0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_armed_tree_jwt-pki-33b814c7-build149-streams0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_call_jwt-pki-33b814c7-build149-streams0-status-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_armed_tree_jwt-pki-33b814c7-build149-streams0-status-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_call_jwt-pki-33b814c7-build149-streams0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_armed_tree_jwt-pki-33b814c7-build149-streams0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_call_jwt-pki-33b814c7-build149-authority1-start-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_armed_tree_jwt-pki-33b814c7-build149-authority1-start-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_call_jwt-pki-33b814c7-build149-authority1-status-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_armed_tree_jwt-pki-33b814c7-build149-authority1-status-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_call_jwt-pki-33b814c7-build149-authority1-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_armed_tree_jwt-pki-33b814c7-build149-authority1-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_observer_9557b8205445f4283099e91a5cc87b3a836ff328e09f2020c98f080707e137ab",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_page_9557b8205445f4283099e91a5cc87b3a836ff328e09f2020c98f080707e137ab_0",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_payload_9557b8205445f4283099e91a5cc87b3a836ff328e09f2020c98f080707e137ab",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_observer_2074a4a38810ec62d88436bd3b5990663454728cbf303a4a9fe3b52fea1faaed",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_page_2074a4a38810ec62d88436bd3b5990663454728cbf303a4a9fe3b52fea1faaed_0",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_payload_2074a4a38810ec62d88436bd3b5990663454728cbf303a4a9fe3b52fea1faaed",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_observer_e85a80c92c4313923d7c6d9f064ce6e33228315702559b1b83caa39c638e309d",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_page_e85a80c92c4313923d7c6d9f064ce6e33228315702559b1b83caa39c638e309d_0",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_payload_e85a80c92c4313923d7c6d9f064ce6e33228315702559b1b83caa39c638e309d",
+      "passed": true
+    },
+    {
+      "name": "pki33bBuild_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "one_START_10calls_3closed_observers_3pages",
+      "passed": true
+    },
+    {
+      "name": "exact_unique_native_binding",
+      "passed": true
+    },
+    {
+      "name": "only_original_status_stream_status",
+      "passed": true
+    },
+    {
+      "name": "initial_actual_running_preserved",
+      "passed": true
+    },
+    {
+      "name": "actual_failed_exit1_full_durable_confirmed",
+      "passed": true
+    },
+    {
+      "name": "867_stdout_zero_stderr_no_truncation",
+      "passed": true
+    },
+    {
+      "name": "single_original_stream_read_zero_offsets",
+      "passed": true
+    },
+    {
+      "name": "stdout_whole_bytes_EOF",
+      "passed": true
+    },
+    {
+      "name": "stderr_whole_bytes_EOF",
+      "passed": true
+    },
+    {
+      "name": "exact_two_actual_summary_lines",
+      "passed": true
+    },
+    {
+      "name": "original_report_fixed_SHA_and_summary",
+      "passed": true
+    },
+    {
+      "name": "original_slot_closed_not_reinitialized",
+      "passed": true
+    },
+    {
+      "name": "release_no_test_or_cause_claim",
+      "passed": true
+    }
+  ],
+  "check_count": 47,
+  "packet": {
+    "tree": "ee24cc540a8f39a87b8c5c45d8b9c01ccb02d1d4",
+    "files": 67,
+    "bytes": 177664,
+    "merkle": {
+      "root_sha": "ee24cc540a8f39a87b8c5c45d8b9c01ccb02d1d4",
+      "trees_verified": 1,
+      "leaf_count": 67
+    },
+    "whole": true
+  },
+  "original_job": "rog/1a1b029a998-fc05-6eb2",
+  "authority": {
+    "blob": "ef0bb0b5b159aa86d1b3723b7fcce83549b8398b",
+    "bytes": 726,
+    "sha256": "a788a9fcac34f9cf200b77af67eed9caf3b7ef106b0ae3f451fd3b6338cbdf36"
+  },
+  "stdout": {
+    "blob": "fd7931400a264d734c39f2ac43a86c9a0584767b",
+    "bytes": 867,
+    "sha256": "c7f2b0252150fd737856404b9f8cd89a669178a00d83dee97f23d88a26477ba4"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "actual": {
+    "native_calls": 10,
+    "observers": 3,
+    "immutable_pages": 3,
+    "exit_code": 1,
+    "stdout_bytes": 867,
+    "stderr_bytes": 0,
+    "full_durable": true
+  },
+  "summaries": [
+    {
+      "status": "preflight-admitted",
+      "source_commit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+      "source_tree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+      "unique_test_count": 149,
+      "profile_instance_test_count": 166,
+      "retained_r8_artifacts_verified": true,
+      "retained_r9_evidence_verified": true,
+      "retained_r10_evidence_verified": true,
+      "retained_failed_observer_verified": true,
+      "retained_successful_observer_verified": true,
+      "original_budgets_preserved": true
+    },
+    {
+      "status": "failed",
+      "source_commit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+      "source_tree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+      "result_path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/result.public.json",
+      "result_sha256": "aa8a8623cc955adb64ab386387d15ad2204febc0fd526392d20cd0ab6c9638a6",
+      "publication_within_original_outer": true,
+      "all_owned_stopped": true
+    }
+  ],
+  "expected_report": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/result.public.json",
+    "sha256": "aa8a8623cc955adb64ab386387d15ad2204febc0fd526392d20cd0ab6c9638a6",
+    "size": null,
+    "version": null
+  },
+  "actual_failure_cause": null,
+  "actual_tests_executed": null,
+  "target_flock_detailed_closure_confirmed": false,
+  "limits": [
+    "The failed process and complete original streams are qualified; the product is not qualified.",
+    "149 unique and166 instances are declared preflight denominators, not executed counts.",
+    "Detailed fixed report must establish failure cause,compile/test phases and owned-child/flock closure.",
+    "No replay or retry of this original BUILD and no target reuse based only on the summary."
+  ],
+  "compiled_qualified": false,
+  "test_pass": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

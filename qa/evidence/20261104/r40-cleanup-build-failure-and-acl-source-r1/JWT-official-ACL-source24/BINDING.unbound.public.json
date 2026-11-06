@@ -1,0 +1,18 @@
+{
+  "schema": "heptabao.native-jwt.acl-oracle.binding.v1",
+  "ready": false,
+  "source_candidate": "e3afc157447d35c861f275a761b29da3e42aff8e",
+  "source_tree": "5497775d9d473541e13e1603be8c893a3e27681b",
+  "official_source_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+  "current_product_binary": null,
+  "official_2_7_1_binary": null,
+  "host": null,
+  "fresh_tls_fixture_root": null,
+  "public_spki_bytes_sha": null,
+  "TLS_CA_and_leaf_pins": null,
+  "owned_fixture_controller": null,
+  "execution_request": null,
+  "process_start": false,
+  "Runtime_GO": false,
+  "old_4e808_qualification_inherited": false
+}

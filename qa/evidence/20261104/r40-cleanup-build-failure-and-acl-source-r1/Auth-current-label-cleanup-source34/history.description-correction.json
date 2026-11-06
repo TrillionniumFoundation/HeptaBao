@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-source-proposal-description-correction.v1",
+  "noRuntime": true,
+  "noCandidateExecuted": true,
+  "before": {
+    "blob": "a409ed6b420857bf3d0f2e1656d568fb85a75876",
+    "bytes": 97718,
+    "sha256": "4b78c2b1ae7634818e4eac5da26519504a5c0972f133423e6483748a35146567"
+  },
+  "after": {
+    "blob": "1e6f601782847761425053f39217e6211af2a9a7",
+    "bytes": 97725,
+    "sha256": "4e5761d36f5e308f3d7a822276cebbd2b4b4e0b5d53c984858daaa70a08e9c50"
+  },
+  "beforeRequest": {
+    "blob": "3b1a730dcf82e57d7fd03633049068659ee14cca",
+    "bytes": 100714,
+    "sha256": "c426fb67123625abcc3675213bda0ea5221fed07c4d4055db287b4b911f19df6"
+  },
+  "afterRequest": {
+    "blob": "1ca3b73f3cc0bd3cb11a2934dcbfff3d6ae06325",
+    "bytes": 100721,
+    "sha256": "d7ae0a4750681b826dd8a20be78c258f1cf9e04dc1f545aaf8334feeac85c75e"
+  },
+  "description": "Only inherited no-registration-mutation docstring corrected; request stdin and derived key plus journal pins updated mechanically before any submission. Original unsubmitted proposal preserved.",
+  "oldDoc": "\"\"\"One fixed existing public launchd label observation; no registration mutation.\"\"\"",
+  "newDoc": "\"\"\"One preflight-qualified existing public label; at most one bootout and exact rereads.\"\"\""
+}

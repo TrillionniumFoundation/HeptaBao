@@ -1,0 +1,64 @@
+{
+  "schema": "heptabao.original-observer-index.v1",
+  "originalObservers": 3,
+  "immutablePages": 10,
+  "observers": [
+    {
+      "id": "4b79662ff5e9b0f153bee6af39d912512e69ddf525c75ac9ca85abb8552ddc38",
+      "tool": "process_status",
+      "payload": {
+        "blob": "4c11fcc27e417ea63fb24acd89f3137b50f3b74c",
+        "bytes": 912,
+        "sha256": "daacf50e34c009c49bfe1e3937372e8a5ae53e43a52131680015c6f97298bc14"
+      },
+      "payloadTree": "c6291d3df8fc2ef52c704ccda74a2c1b227f4162",
+      "nativeText": {
+        "blob": "c1e52455a57e8ee292d87d91d973bdf6503d40c5",
+        "bytes": 733,
+        "sha256": "3287a9afd907d0ed8fd01c78efdffd21e0bae63c06323b09c34bf7dbd555a26a"
+      },
+      "pages": 1,
+      "completedInactive": true,
+      "payloadPath": "observer-01.payload.original.json",
+      "nativePath": "observer-01.native.original.json"
+    },
+    {
+      "id": "37bbdc99df0408fc1ec780ed4003f6b48a887d5b114929936789b8dc7c77409d",
+      "tool": "process_read",
+      "payload": {
+        "blob": "598d23b2103d119c70d64ec517f56db68d180b3c",
+        "bytes": 54727,
+        "sha256": "9dc433f30bfece43d4f9a5be3a95bd5eb16400308bd9a27dd6b3fa0be8a1b8b5"
+      },
+      "payloadTree": "5410e5761dbdedd829679aa211c83f92afb4ff31",
+      "nativeText": {
+        "blob": "6b243421ca588449444d3f0cdc099258d6d38e27",
+        "bytes": 51181,
+        "sha256": "c558b8b4f93ec506663863cc7a426270f0a15697242b88750fd392236a3e8e43"
+      },
+      "pages": 7,
+      "completedInactive": true,
+      "payloadPath": "observer-02.payload.original.json",
+      "nativePath": "observer-02.native.original.json"
+    },
+    {
+      "id": "377b79504610f321dafcd6b05363be43bad2ed3f93fac5938c6afba3e8fdaa8f",
+      "tool": "process_read",
+      "payload": {
+        "blob": "70d1ab1756fcbe53dcba2ad6464d0c1464c7af34",
+        "bytes": 9909,
+        "sha256": "f21ae6688280680f53f8902bba6d047cf5013dea034a79b2dbdc257c7ab325b2"
+      },
+      "payloadTree": "3fca559980cb02185b999ef1bfab2ce06f12f4c4",
+      "nativeText": {
+        "blob": "06152398b898f1ed0cff5d77ac135e8eaddf5af8",
+        "bytes": 9174,
+        "sha256": "6572047399acf0d9d6f0387015726c1606466df8489c3a8b1c671579bb246a35"
+      },
+      "pages": 2,
+      "completedInactive": true,
+      "payloadPath": "observer-03.payload.original.json",
+      "nativePath": "observer-03.native.original.json"
+    }
+  ]
+}

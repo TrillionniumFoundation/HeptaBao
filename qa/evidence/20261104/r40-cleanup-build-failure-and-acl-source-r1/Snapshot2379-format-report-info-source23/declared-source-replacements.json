@@ -1,0 +1,80 @@
+[
+  {
+    "label": "private-constant-role",
+    "before": "GF_STAGE",
+    "after": "GF_FORMAT",
+    "occurrences": 16
+  },
+  {
+    "label": "private-function-role",
+    "before": "StageResult",
+    "after": "FormatResult",
+    "occurrences": 2
+  },
+  {
+    "label": "private-state-role",
+    "before": "stageResult",
+    "after": "formatResult",
+    "occurrences": 8
+  },
+  {
+    "label": "action-and-scope-role",
+    "before": "stage_result_",
+    "after": "format_result_",
+    "occurrences": 3
+  },
+  {
+    "label": "existing-formatter-slot",
+    "before": "const GF_SLOT = \"snapshot_2379_rog_source_gitfirst_r1\";",
+    "after": "const GF_SLOT = \"snapshot_2379_rog_formatter_gitfirst_r1\";",
+    "occurrences": 1
+  },
+  {
+    "label": "unchanged-original-formatter-start",
+    "before": "const GF_REQUEST = {blob:\"f84c09ce0410038dda0e55ce1a9b98609990780a\",\n bytes:112068,sha256:\"6f8ed22378a218d9128d019607472452b247a8f441b2234f52038945540ca5d8\"};\n",
+    "after": "const GF_REQUEST = {blob:\"0fce0771c8a4e42b85abfc10ffbc14e59e588616\",\n bytes:34045,sha256:\"72289e6809a067df0df78ae0bd96383725ccbbcaca6fb219349c9ede1d4ce70f\"};\n",
+    "occurrences": 1
+  },
+  {
+    "label": "fixed-existing-result-path",
+    "before": "const GF_FORMAT_RESULT_PATH = \"/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1/control/stage-result.public.json\";",
+    "after": "const GF_FORMAT_RESULT_PATH = \"/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/result.public.json\";",
+    "occurrences": 1
+  },
+  {
+    "label": "frozen-read-plan-report-cap",
+    "before": "const GF_FORMAT_RESULT_MAX_BYTES = 65536;",
+    "after": "const GF_FORMAT_RESULT_MAX_BYTES = 131072;",
+    "occurrences": 1
+  },
+  {
+    "label": "one-exact-info-request",
+    "before": "const GF_FORMAT_INFO_REQUEST = {\"blob\":\"f706f3652a9d55e97753d0e88a4bb525d9aad920\",\"bytes\":312,\"sha256\":\"130bc4c9a7ffd05c0380e7c9f98a083ff4675d970a3bf7106df30bcf2d63b0e8\"};\n",
+    "after": "const GF_FORMAT_INFO_REQUEST = {\"blob\":\"6a8d59c8f2b2e9fd163f6fb63dbb9572793bf80e\",\"bytes\":297,\"sha256\":\"efa2d673c1065da7e588e8c619a4b8d3dcea072aab0ab88db2268c531856c658\"};\n",
+    "occurrences": 1
+  },
+  {
+    "label": "three-actual-original-observers",
+    "before": "const GF_FORMAT_INFO_PREREQUISITES = [{\"id\":\"1dd76fec9350714727e292af3868878ae220edbfb88ee10c35c204f874f2873b\",\"tool\":\"process_status\",\"nativeText\":{\"blob\":\"9318e8a2614bcb7bb9aa54a0e4932abde7ed80fb\",\"bytes\":729,\"sha256\":\"e0f75d21de142ba5011cc9e330032f7211b7352dd84894056e6326ebbd88cf23\"}},{\"id\":\"af4c0d7dfb5c3eb8da7afe7476a042c2feb85b02839021f7b258e58252084681\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"af75d0f01f3edd7fa51b1a0df2e2cae1b9ee95f2\",\"bytes\":1495,\"sha256\":\"95014e3bf4ec6a29bf83ba5f92e644e46ef1d380ce883090e5bb9d5a70783ee2\"}}];\n",
+    "after": "const GF_FORMAT_INFO_PREREQUISITES = [{\"id\":\"1d7efb002dd78f7385f6b3a3bdc0f17f7d3f02a3c438d3b707f69f43a3999f4e\",\"tool\":\"process_status\",\"nativeText\":{\"blob\":\"3b2195640ee1ccadf9b4dcd204b3c81e6cda4a43\",\"bytes\":733,\"sha256\":\"95d65e97f1b72d02fe406396ba77555141603a577abcc086d710b5b6bbf048e1\"}},{\"id\":\"3bd7cf144acb1fa14d50fe7fa2d65bedff3c4a2e909d117bf3387bd69990bd53\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"6661e772a5bae16c6dc0a0e6369032053d9a8ed3\",\"bytes\":50489,\"sha256\":\"0396f6be096daad7a6e50a8042b28426f3f635710ca404b017dd1d3850198bbf\"}},{\"id\":\"62c649edc4033363bced4f6ae83df8795058d133623f36ed3b0ad6458ecd15b2\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"d6d2c80ca74103e4245051684676b13d0ff58383\",\"bytes\":4605,\"sha256\":\"de859718e06bbfb405cf19559876e65b63e52f3437f920a461acb7799c442ad0\"}}];\n",
+    "occurrences": 1
+  },
+  {
+    "label": "same-reviewed-formatter-observer-prefix",
+    "before": "heptabao-native-snapshot-2379d02b-rog-source-observe-r1-",
+    "after": "heptabao-native-snapshot-2379d02b-formatter-observe-r1-",
+    "occurrences": 1
+  },
+  {
+    "label": "comment-role",
+    "before": "/* One separately approved observation of the newly owned public stage report.",
+    "after": "/* One separately approved observation of the newly owned public formatter report.",
+    "occurrences": 1
+  },
+  {
+    "label": "formatter-authority-two-stream-success-contract",
+    "before": "function gfAuthorizeFormatResultInfoOnly({goRaw,goPin,goWholeReadback}) {\n const s=gfState();\n gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null\n   && s.activeObserver===null && s.startCalled===true\n   && s.job===\"1a1b008fa4a-fc05-6d9a\" && s.formatResultInfoGO===undefined\n   && s.formatResultInfoStarted!==true,\"closed_existing_stage_before_info_only_GO\");\n gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin)\n   && goPin.blob!==s.goPin.blob,\"separate_whole_info_only_GO\");\n const g=JSON.parse(goRaw);\n gfNeed(g.authorization===\"GO\" && g.scope===\"format_result_file_info_only\"\n   && g.original_job===s.job && g.maximum_file_info_starts===1\n   && g.binary_read_authorized===false\n   && g.exact_request?.blob===GF_FORMAT_INFO_REQUEST.blob\n   && g.exact_request?.bytes===GF_FORMAT_INFO_REQUEST.bytes\n   && g.exact_request?.sha256===GF_FORMAT_INFO_REQUEST.sha256,\n   \"exact_new_root_file_info_scope\");\n for(const need of GF_FORMAT_INFO_PREREQUISITES) {\n  const prior=s.completedObservers.find(o=>o.id===need.id);\n  const priorRaw=load(GF_SLOT+\":closed_native:\"+need.id);\n  gfNeed(prior?.completedInactive===true && prior.tool===need.tool\n    && gfMetaEquals(priorRaw,need.nativeText)\n    && prior.nativeText.blob===need.nativeText.blob,\"original_stage_closure_pin\");\n }\n const authority=parseLosslessIntegers(load(GF_SLOT+\":closed_native:\"+GF_FORMAT_INFO_PREREQUISITES[0].id));\n const streams=parseLosslessIntegers(load(GF_SLOT+\":closed_native:\"+GF_FORMAT_INFO_PREREQUISITES[1].id));\n const terminal=JSON.parse(streams.stdout.text);\n gfNeed(authority.exit_code===0 && authority.output_complete===true\n   && authority.output_durable===true && authority.terminal_publication_confirmed===true\n   && !authority.timed_out && !authority.cancelled\n   && streams.stdout.eof===true && streams.stderr.eof===true\n   && s.nextStdout===383 && s.nextStderr===0\n   && terminal.all_owned_stopped===true && terminal.status===\"prepared\"\n   && terminal.result_path===GF_FORMAT_RESULT_PATH,\"stage_zero_and_full_summary\");\n s.formatResultInfoGO={pin:goPin,raw:goRaw,whole:true};\n gfSave(s);\n return {originalJob:s.job,exactRequest:GF_FORMAT_INFO_REQUEST,\n   maximumFileInfoStarts:1,binaryReadAuthorized:false};\n}\n",
+    "after": "function gfAuthorizeFormatResultInfoOnly({goRaw,goPin,goWholeReadback}) {\n const s=gfState();\n gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null\n   && s.activeObserver===null && s.startCalled===true\n   && s.job===\"1a1b02771c2-fc05-6e9f\" && s.formatResultInfoGO===undefined\n   && s.formatResultInfoStarted!==true,\"closed_existing_formatter_before_info_only_GO\");\n gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin)\n   && goPin.blob!==s.goPin.blob,\"separate_whole_info_only_GO\");\n const g=JSON.parse(goRaw);\n gfNeed(g.authorization===\"GO\" && g.scope===\"format_result_file_info_only\"\n   && g.original_job===s.job && g.maximum_file_info_starts===1\n   && g.binary_read_authorized===false\n   && g.exact_request?.blob===GF_FORMAT_INFO_REQUEST.blob\n   && g.exact_request?.bytes===GF_FORMAT_INFO_REQUEST.bytes\n   && g.exact_request?.sha256===GF_FORMAT_INFO_REQUEST.sha256,\n   \"exact_new_root_file_info_scope\");\n for(const need of GF_FORMAT_INFO_PREREQUISITES) {\n  const prior=s.completedObservers.find(o=>o.id===need.id);\n  const priorRaw=load(GF_SLOT+\":closed_native:\"+need.id);\n  gfNeed(prior?.completedInactive===true && prior.tool===need.tool\n    && gfMetaEquals(priorRaw,need.nativeText)\n    && prior.nativeText.blob===need.nativeText.blob,\"original_formatter_closure_pin\");\n }\n const authority=parseLosslessIntegers(load(GF_SLOT+\":closed_native:\"+GF_FORMAT_INFO_PREREQUISITES[0].id));\n const first=parseLosslessIntegers(load(GF_SLOT+\":closed_native:\"+GF_FORMAT_INFO_PREREQUISITES[1].id));\n const last=parseLosslessIntegers(load(GF_SLOT+\":closed_native:\"+GF_FORMAT_INFO_PREREQUISITES[2].id));\n const stdoutRaw=first.stdout.text+last.stdout.text;\n gfNeed(gfMetaEquals(stdoutRaw,{blob:\"2b4b66ddb59b7232b1bfa391b262d823f013f4ac\",bytes:17780,\n   sha256:\"1a937303bc837aed0d286045ae3696ee600126723aa7b3b4a34f8a1c9c0a8cd5\"}),\"actual_whole_formatter_stdout\");\n const terminal=JSON.parse(stdoutRaw);\n gfNeed(authority.exit_code===0 && authority.output_complete===true\n   && authority.output_durable===true && authority.terminal_publication_confirmed===true\n   && !authority.timed_out && !authority.cancelled\n   && first.stdout.offset===0 && first.stdout.next_offset===16384 && first.stdout.eof===false\n   && last.stdout.offset===16384 && last.stdout.next_offset===17780 && last.stdout.eof===true\n   && first.stderr.offset===0 && first.stderr.next_offset===0 && first.stderr.eof===true\n   && last.stderr.offset===0 && last.stderr.next_offset===0 && last.stderr.eof===true\n   && s.nextStdout===17780 && s.nextStderr===0\n   && terminal.allOwnedStopped===true && terminal.status===\"passed\"\n   && terminal.withinDeadline===true && terminal.elapsedSeconds<50\n   && terminal.error===null && terminal.publicationError===null\n   && terminal.files.length===49\n   && terminal.root+\"/result.public.json\"===GF_FORMAT_RESULT_PATH,\"formatter_zero_and_full_summary\");\n s.formatResultInfoGO={pin:goPin,raw:goRaw,whole:true};\n gfSave(s);\n return {originalJob:s.job,exactRequest:GF_FORMAT_INFO_REQUEST,\n   maximumFileInfoStarts:1,binaryReadAuthorized:false};\n}\n",
+    "occurrences": 1
+  }
+]

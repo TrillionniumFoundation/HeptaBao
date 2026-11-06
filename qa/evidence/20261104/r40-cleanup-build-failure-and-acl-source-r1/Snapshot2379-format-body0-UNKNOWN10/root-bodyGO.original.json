@@ -1,0 +1,103 @@
+{
+  "schema": "heptabao.root-GO.snapshot2379-format49-report-two-ranges.v1",
+  "authorization": "GO",
+  "agent": "/root/compatibility_audit",
+  "scope": "format_result_binary_read_ranges_only",
+  "source_packet": "2765b4e9fcec26762c41391f361c462a211a5723",
+  "source": {
+    "blob": "12488e539c55f7be153e20857e162b3f80d49caf",
+    "bytes": 31928,
+    "sha256": "80a9b150c851e024e811edafe8dd9af6af4e17e4fa9606f1e7f91142e3076fba"
+  },
+  "source_review": {
+    "blob": "b9b08f0be2e083573f85e48b6a92b47b6cda953e",
+    "bytes": 3799,
+    "sha256": "c1a07c20c01100bd7982ec9e04b0456901e1fdb196f2102e7c6ef70364ec4d72"
+  },
+  "source_review_checks": 19,
+  "author_pure_source_checks_reproduced": 68,
+  "exact_requests": [
+    {
+      "blob": "06f7a3eccf5de1c877b552cab886d14086d0c51c",
+      "bytes": 432,
+      "sha256": "35921fca79a714035d0033a003d481862326e4a8dc6409f5017bbc4fb37ea992"
+    },
+    {
+      "blob": "c3d0ff5c4cd33e7969a6f34bdc144549d3da3d0a",
+      "bytes": 436,
+      "sha256": "978eac87aa0aab0d16149d7609ae82167472cbc893f0a9fced351017f20d4128"
+    }
+  ],
+  "original_job": "1a1b02771c2-fc05-6e9f",
+  "original_slot": "snapshot_2379_rog_formatter_gitfirst_r1",
+  "entry_action": "authorize_format_result_body",
+  "info_operation": "6040da16c66f2a7b6f2f4a3939721c0e78afddf8f9070d76c77a0ffe49e82cff",
+  "info_qualification": {
+    "blob": "6f38396fbb7fbd3874aefa964ec91d997d4347e4",
+    "bytes": 4447,
+    "sha256": "312c2aec3fef71c9711d3f765ac6d55981045778333452337e6de89dde0b7246"
+  },
+  "fixed_report": {
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/result.public.json",
+    "bytes": 118925,
+    "sha256": "5755903ce5696b6745d7af2b27a69a30e0d001697eeb85282df75eb25cea40d8",
+    "version": "66306:31236133:118925:1793956739343592677:1793956739343592677",
+    "infoOperation": "6040da16c66f2a7b6f2f4a3939721c0e78afddf8f9070d76c77a0ffe49e82cff",
+    "infoNative": {
+      "blob": "45d1709e3bbbf74caee996369a1eefdfbf855a31",
+      "bytes": 483,
+      "sha256": "8430d3a4b0c79f274222678fd30f8f0cec8f7f546602c6a1a1a2a8c749c5a4c2"
+    }
+  },
+  "maximum_binary_read_starts": 2,
+  "immutable_body_page_bytes": 16384,
+  "no_reinitialize": true,
+  "no_process_start": true,
+  "limits": {
+    "maximum_Runtime_lanes": 2,
+    "maximum_native_call_or_future_per_lane": 1,
+    "old_observers_page_bytes": 8192,
+    "new_binary_page_bytes": 16384,
+    "original_payload_cap": 1048576,
+    "file_cap": 131072,
+    "ranges": [
+      [
+        0,
+        65536
+      ],
+      [
+        65536,
+        53389
+      ]
+    ],
+    "actual_bytes": 118925
+  },
+  "sequence": [
+    "Whole exact new GO; attach only the existing closed formatter slot through authorize_format_result_body,never initialize.",
+    "Whole actual original metadata and closed info21 prerequisite; fixed report path,118925 bytes,SHA and original raw version.",
+    "Whole body0 request,intent,armed then separate boundary and once operation_start. Whole original SDK externally before parse/isError.",
+    "Follow same original operation only,consecutive16KiB immutable pages/full SHA/EOF/inactive; require exact original chunk geometry/SHA,do not UTF8-decode an individual chunk.",
+    "Only after first observer is wholly closed,arm and dispatch exact body1 once. Preserve no-replay semantics and original failed/uncertain calls.",
+    "Join original byte ranges,verify full118925 bytes/SHA,then UTF8 roundtrip. Whole decoded original report externally before semantic analysis.",
+    "Release lane; qualify49 command results,source/tool/config fences and output full9/hash. No49 output reads or26 same-content reuse is granted by this GO."
+  ],
+  "lane_activation": "B may activate one fixed-report body lane alongside C originalfailed-build report body. A Maccleanup17calls/3observers/10pages is fully closed and A explicitly released0call/0future. Root0; at most2 lanes. Neither lane is Cargo.",
+  "excluded": [
+    "formatter replay",
+    "new process",
+    "Cargo",
+    "product runtime",
+    "other files",
+    "new file_info",
+    "formatted output BODY reads",
+    "198-file copy",
+    "production traffic switch",
+    "legacy cleanup"
+  ],
+  "output_reads_authorized": false,
+  "content_reuse_authorized": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

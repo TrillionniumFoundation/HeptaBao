@@ -1,0 +1,201 @@
+{
+  "schema": "heptabao.r40.root-evidence-index.v1",
+  "roots": [
+    {
+      "label": "Mac libproc R3 actual",
+      "kind": "PASS_FRESH_READONLY_DIAGNOSTIC_ONLY",
+      "check_count": 88,
+      "pin": {
+        "blob": "56129f46fd94d072e301c4e558481efd817aed55",
+        "bytes": 14522,
+        "sha256": "bf626cd4ee05b5e5aa4c044ee93c4c52fecba8e7e469e84616918e169ce6c641"
+      },
+      "locations": [
+        {
+          "mount": "Auth-libproc-R3-root88",
+          "path": "ROOT-qualification.json"
+        },
+        {
+          "mount": "Auth-current-label-cleanup-source34",
+          "path": "reference.r3.root-qualification.original.json"
+        },
+        {
+          "mount": "Auth-launcher-kernel-components-source22",
+          "path": "reference.r3.root-qualification.json"
+        }
+      ]
+    },
+    {
+      "label": "Mac current QA label cleanup actual",
+      "kind": "PASS_CURRENT_FIXED_QA_LABEL_REMOVAL_ONLY",
+      "check_count": 93,
+      "pin": {
+        "blob": "e7a74a5f2e08c5a316ff2ea06b13ad7bd97423d6",
+        "bytes": 14057,
+        "sha256": "021f580c5e789b97d436108286b16f5e5f76c35f14a7f858ad4fe2c034d5596f"
+      },
+      "locations": [
+        {
+          "mount": "Auth-cleanup93-and-component26-roots",
+          "path": "cleanup.actual.root-qualification.json"
+        }
+      ]
+    },
+    {
+      "label": "Mac launcher versus kernel component SOURCE",
+      "kind": "PASS_NARROW_SOURCE_COMPONENTS_ONLY",
+      "check_count": 26,
+      "pin": {
+        "blob": "92b3aa3fc6f1c23d258699ac5cb8c7a0b5a36544",
+        "bytes": 5752,
+        "sha256": "2777375e2df2f3c328c04115af67b7113a1801ac345b60f45c35cabda457d1d3"
+      },
+      "locations": [
+        {
+          "mount": "Auth-cleanup93-and-component26-roots",
+          "path": "launcher-kernel.components.root-review.json"
+        }
+      ]
+    },
+    {
+      "label": "Snapshot2379 complete original stage",
+      "kind": "PASS_ORIGINAL_REPORT_AND_INDEPENDENT_SOURCE_STAGE",
+      "check_count": 47,
+      "pin": {
+        "blob": "4bcad76a1fc0acdc27156f4e9a08814ae7a6a0d2",
+        "bytes": 8460,
+        "sha256": "38cb051d918ba6699d0711bb2a1edb6ed613740564fd69989c82796b528fcfef"
+      },
+      "locations": [
+        {
+          "mount": "Snapshot2379-format49-GO-and-stage47",
+          "path": "ROOT-stage-complete-qualification.json"
+        }
+      ]
+    },
+    {
+      "label": "Snapshot b694 complete original stage",
+      "kind": "PASS_ORIGINAL_REPORT_AND_INDEPENDENT_SOURCE_STAGE",
+      "check_count": 47,
+      "pin": {
+        "blob": "dc28ec4f512bdaf763165eb76f8af42a8cdd074f",
+        "bytes": 8438,
+        "sha256": "53c28d4afe0651b8b6bfc42870eba962d844b1073955cc028944a2435f57a0d0"
+      },
+      "locations": [
+        {
+          "mount": "Snapshot-b694-complete-stage-root47",
+          "path": "ROOT-qualification.json"
+        }
+      ]
+    },
+    {
+      "label": "Snapshot49 formatter original terminal",
+      "kind": "PASS_ORIGINAL_TERMINAL_COMPLETE_STREAMS_AND_DECLARED_HASHES",
+      "check_count": 117,
+      "pin": {
+        "blob": "7fc040facb1ed17ba3aff8ef2449a0330e94d408",
+        "bytes": 38708,
+        "sha256": "f5c5bc51857a35ba1a6a3b575d23a1f343f76df688c52331e8173c72a6d84fa0"
+      },
+      "locations": [
+        {
+          "mount": "Snapshot2379-format49-terminal-root117",
+          "path": "ROOT-terminal117.public.json"
+        },
+        {
+          "mount": "Snapshot2379-format-report-info-source23",
+          "path": "root-terminal-qualification.original.json"
+        }
+      ]
+    },
+    {
+      "label": "Snapshot49 report original INFO",
+      "kind": "PASS_EXACT_REPORT_METADATA_ONLY",
+      "check_count": 21,
+      "pin": {
+        "blob": "6f38396fbb7fbd3874aefa964ec91d997d4347e4",
+        "bytes": 4447,
+        "sha256": "312c2aec3fef71c9711d3f765ac6d55981045778333452337e6de89dde0b7246"
+      },
+      "locations": [
+        {
+          "mount": "Two-fixed-report-info-roots21",
+          "path": "ROOT-format-info21.public.json"
+        },
+        {
+          "mount": "Snapshot2379-format-report-body-source22",
+          "path": "root-info-qualification.original.json"
+        }
+      ]
+    },
+    {
+      "label": "PKI33b four control bodies",
+      "kind": "PASS_FOUR_ORIGINAL_BODIES_AND_CONTROL_SEMANTICS",
+      "check_count": 81,
+      "pin": {
+        "blob": "7f080e5f7261ccaf4b4539d0efb406e15610f989",
+        "bytes": 23428,
+        "sha256": "f7071dc25ea59056217bd15b1f4b538b34a9d845d2862e1dfb56948cc4884dce"
+      },
+      "locations": [
+        {
+          "mount": "PKI33b-build149-GO-and-root81-27",
+          "path": "ROOT-controls-body-qualification.json"
+        }
+      ]
+    },
+    {
+      "label": "PKI33b original failed BUILD terminal",
+      "kind": "QUALIFIED_ORIGINAL_FAILED_TERMINAL_NOT_TEST_PASS",
+      "check_count": 47,
+      "pin": {
+        "blob": "360e67448abbdc93f84e62142780b4d57974b316",
+        "bytes": 8249,
+        "sha256": "9d9a3a98548c79b2a25ac9f2593fddc09f9f98d23109df57cc9be0dc853cbd32"
+      },
+      "locations": [
+        {
+          "mount": "PKI33b-build149-failed-terminal-root47",
+          "path": "ROOT-terminal47.public.json"
+        }
+      ]
+    },
+    {
+      "label": "PKI33b original report INFO",
+      "kind": "PASS_EXACT_FAILED_BUILD_REPORT_METADATA_ONLY",
+      "check_count": 21,
+      "pin": {
+        "blob": "373a516582bb6a3e7268dacfc39330a7d389a089",
+        "bytes": 4631,
+        "sha256": "a7dbf7e59371f8b13649c678d17933ae4d5827f6ebf811fcc2683417a5573464"
+      },
+      "locations": [
+        {
+          "mount": "Two-fixed-report-info-roots21",
+          "path": "ROOT-build-info21.public.json"
+        }
+      ]
+    },
+    {
+      "label": "PKI33b separate immutable tail SOURCE",
+      "kind": "PASS_SOURCE_FOR_TWO_EXACT_IMMUTABLE_RETRIEVALS",
+      "check_count": 15,
+      "pin": {
+        "blob": "ee397e4e66e5227c2822fa4addd2df577a41bc5c",
+        "bytes": 4248,
+        "sha256": "6afe91af42fb97a7b1ed71edc8bdba5a495796c1870b246a84cdd87e3ebb1f81"
+      },
+      "locations": [
+        {
+          "mount": "PKI33b-original-body-tail-GO-and-root15",
+          "path": "root-source-review.public.json"
+        }
+      ]
+    }
+  ],
+  "interpretation": "Check counts are original-evidence or SOURCE validations, never product tests. Failed BUILD stays failed; two retrieval timeouts stay in original records.",
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false
+}

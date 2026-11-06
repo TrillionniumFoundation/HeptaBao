@@ -1,0 +1,166 @@
+{
+  "schema": "heptabao.root-qualification.snapshot-2379-stage-independent-info.v1",
+  "status": "PASS_ORIGINAL_INDEPENDENT_FILE_METADATA",
+  "evidence_qualified": true,
+  "checks": [
+    {
+      "name": "whole22_54818",
+      "passed": true
+    },
+    {
+      "name": "original_exact_GO_journal",
+      "passed": true
+    },
+    {
+      "name": "2379Info_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "2379Info_call_snapshot-2379-report-info-admit",
+      "passed": true
+    },
+    {
+      "name": "2379Info_armed_tree_snapshot-2379-report-info-admit",
+      "passed": true
+    },
+    {
+      "name": "2379Info_call_snapshot-2379-report-info-status",
+      "passed": true
+    },
+    {
+      "name": "2379Info_armed_tree_snapshot-2379-report-info-status",
+      "passed": true
+    },
+    {
+      "name": "2379Info_call_snapshot-2379-report-info-page0",
+      "passed": true
+    },
+    {
+      "name": "2379Info_armed_tree_snapshot-2379-report-info-page0",
+      "passed": true
+    },
+    {
+      "name": "2379Info_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "2379Info_observer_07f38b4b541c77312c94eeb6b1eb860eedf03c589f9acbcaffbc4dfa4e1f5a23",
+      "passed": true
+    },
+    {
+      "name": "2379Info_page_07f38b4b541c77312c94eeb6b1eb860eedf03c589f9acbcaffbc4dfa4e1f5a23_0",
+      "passed": true
+    },
+    {
+      "name": "2379Info_payload_07f38b4b541c77312c94eeb6b1eb860eedf03c589f9acbcaffbc4dfa4e1f5a23",
+      "passed": true
+    },
+    {
+      "name": "2379Info_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "three_original_calls_one_info",
+      "passed": true
+    },
+    {
+      "name": "fixed_original_info_request",
+      "passed": true
+    },
+    {
+      "name": "whole_observer_payload_native",
+      "passed": true
+    },
+    {
+      "name": "exact_actual_metadata_identity",
+      "passed": true
+    },
+    {
+      "name": "regular_private_single_link_linux",
+      "passed": true
+    },
+    {
+      "name": "actual_binding_lossless_full9",
+      "passed": true
+    },
+    {
+      "name": "original_terminal_slot_and_closed_lane",
+      "passed": true
+    },
+    {
+      "name": "no_body_formatter_or_new_process",
+      "passed": true
+    }
+  ],
+  "check_count": 22,
+  "packet": {
+    "tree": "c63e5e8f52673fe10a6fdf049dade75f011feaff",
+    "files": 22,
+    "bytes": 54818,
+    "merkle": {
+      "root_sha": "c63e5e8f52673fe10a6fdf049dade75f011feaff",
+      "trees_verified": 1,
+      "leaf_count": 22
+    },
+    "whole": true
+  },
+  "original_job": "rog/1a1b008fa4a-fc05-6d9a",
+  "original_operation": {
+    "id": "07f38b4b541c77312c94eeb6b1eb860eedf03c589f9acbcaffbc4dfa4e1f5a23",
+    "tool": "file_info",
+    "payload": {
+      "blob": "213bab8dc75f021487644a38875d5f5d2ebdbdef",
+      "bytes": 612,
+      "sha256": "394eb534866f0b41b06d153725d1a9d5f691d260e0db7976f821c6510166d6a7"
+    },
+    "payloadTree": "2e466743b6d19648ef18f26021b8a6569669557b",
+    "nativeText": {
+      "blob": "a5569800cbf2cc211f81fd0bd8323b24bb473577",
+      "bytes": 495,
+      "sha256": "ac43be6e933161f76a84bf057cc53189b1ed38ce1aa4947351b6498d4958face"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "actual_file_info": {
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1/control/stage-result.public.json",
+    "size": 28399,
+    "sha256": "733f77ea123b842e424f0b315d9ec910881b99e5844a4fd9ee51b651d5fb1955",
+    "version": "66306:31364206:28399:1793954767528597190:1793954767528597190",
+    "nativeText": {
+      "blob": "a5569800cbf2cc211f81fd0bd8323b24bb473577",
+      "bytes": 495,
+      "sha256": "ac43be6e933161f76a84bf057cc53189b1ed38ce1aa4947351b6498d4958face"
+    },
+    "originalOperation": "07f38b4b541c77312c94eeb6b1eb860eedf03c589f9acbcaffbc4dfa4e1f5a23",
+    "full9Strings": [
+      "66306",
+      "31364206",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "28399",
+      "1793954767528597190",
+      "1793954767528597190"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "actual": {
+    "native_calls": 3,
+    "observers": 1,
+    "immutable_pages": 1,
+    "whole_payload_bytes": 612
+  },
+  "limitations": [
+    "This exact report metadata is independently observed; decoded report and stage semantics remain pending.",
+    "No compiler, product, production cutover, full replacement or cleanup qualification."
+  ],
+  "report_body_observed": false,
+  "detailed_stage_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

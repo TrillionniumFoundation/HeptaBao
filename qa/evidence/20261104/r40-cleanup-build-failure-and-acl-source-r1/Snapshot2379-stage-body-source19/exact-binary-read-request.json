@@ -1,0 +1,13 @@
+{
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1/control/stage-result.public.json",
+      "offset": 0,
+      "limit": 28399,
+      "expected_version": "66306:31364206:28399:1793954767528597190:1793954767528597190"
+    }
+  },
+  "idempotency_key": "heptabao-native-snapshot-2379d02b-rog-source-observe-r1-report-body"
+}

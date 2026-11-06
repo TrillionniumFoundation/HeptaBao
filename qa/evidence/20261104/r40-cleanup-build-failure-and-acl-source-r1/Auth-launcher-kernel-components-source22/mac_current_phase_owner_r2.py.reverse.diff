@@ -1,0 +1,21 @@
+--- a/mac_current_phase_owner_r2.py.identity-candidate
++++ b/mac_current_phase_owner_r2.py.before
+@@ -13,8 +13,6 @@
+ 
+ START = time.monotonic()
+ UNTIL = START + 120
+-PYTHON_LAUNCHER = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14"
+-PYTHON_KERNEL_IMAGE = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+ ROOT = Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1')
+ AGENTS = ('main','trnm','hepta-ui','hepta','hepta-backend')
+ UUID = 'FB804D1B-24CB-4D6E-AEA7-A9E180807758'
+@@ -304,8 +302,7 @@
+         sys.path.insert(0,str(q))
+         from mac_native_process_observer_r1 import ProcessReader
+         self_identity=ProcessReader().read(os.getpid())
++        need(self_identity['uid']==501 and self_identity['executable']==str(Path(sys.executable).resolve()),
+-        need(self_identity['uid']==501 and self_identity['executable']==PYTHON_KERNEL_IMAGE
+-             and str(Path(sys.executable).resolve())==PYTHON_LAUNCHER,
+              'real_wrapper_process_identity')
+         ready={'schema':'heptabao.mac-phase-wrapper-ready.r1','generation':generation,
+                'planSha256':args.plan_sha256,'wrapperIdentity':self_identity,

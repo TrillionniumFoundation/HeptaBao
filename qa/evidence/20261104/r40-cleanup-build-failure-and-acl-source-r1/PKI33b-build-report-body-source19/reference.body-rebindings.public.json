@@ -1,0 +1,52 @@
+[
+  {
+    "before": "* Only this 27931-byte range is admitted; no body/listing fallback exists.",
+    "after": "* Only this 36998-byte range is admitted; no body/listing fallback exists.",
+    "reason": "actual whole result bytes"
+  },
+  {
+    "before": "const GF_STAGE_BODY_REQUEST = {\"blob\":\"d866eaf8211ae79d4d29153a3cc47de776f51863\",\"bytes\":442,\"sha256\":\"ae5cde505b6eadb04033a334a7d795ca94a81d7f0986e4332b477fd0f2884f0d\"};",
+    "after": "const GF_STAGE_BODY_REQUEST = {\"blob\":\"a3b254023a40af7a8adad1f17d3c9d248483f524\",\"bytes\":427,\"sha256\":\"ce60adf4c949d0214548c38c7827aac750c738f08dbb597ffedcf73129c189fe\"};",
+    "reason": "exact single new body request"
+  },
+  {
+    "before": "const GF_STAGE_BODY_EXPECTED = {\"path\":\"/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1/control/stage-result.public.json\",\"bytes\":27931,\"sha256\":\"2137f9962784c451d11a2aaae0741189fec8ab511c0b3e6b226031f908331da0\",\"version\":\"66306:31235720:27931:1793950741423957124:1793950741423957124\",\"infoOperation\":\"5567960600b712069d446ab140b3664ac711277ef624ecbda472c61f2142c463\",\"infoNative\":{\"blob\":\"fb286cf97c84dbe06652e7f8f4955fc075918303\",\"bytes\":486,\"sha256\":\"b5b9645947ce33389cadff175f76d54bd43d192c21a7b74d56c5d387289b76a5\"}};",
+    "after": "const GF_STAGE_BODY_EXPECTED = {\"path\":\"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/result.public.json\",\"bytes\":36998,\"sha256\":\"aa8a8623cc955adb64ab386387d15ad2204febc0fd526392d20cd0ab6c9638a6\",\"version\":\"66306:31364220:36998:1793957208077081949:1793957208077081949\",\"infoOperation\":\"8e81613aa575b93e807bfe358614abb238250fc93a4180109222d00bde1430da\",\"infoNative\":{\"blob\":\"d6e8562a91ba3ee27cfcf8a4c51e5644d9f904c1\",\"bytes\":480,\"sha256\":\"66f341b2e43f26671e7eecdc96a4dabc0aefaa8c2634ada148001b75adc29ffb\"},\"full9Strings\":[\"66306\",\"31364220\",\"1000\",\"1000\",\"33152\",\"1\",\"36998\",\"1793957208077081949\",\"1793957208077081949\"]};",
+    "reason": "independent metadata full pins"
+  },
+  {
+    "before": "s.activeObserver===null && s.job===\"1a1afcbafab-fc05-6bb0\"",
+    "after": "s.activeObserver===null && s.job===\"1a1b029a998-fc05-6eb2\"",
+    "reason": "existing failed original BUILD job"
+  },
+  {
+    "before": "g.scope===\"stage_result_binary_read_only\"",
+    "after": "g.scope===\"build_result_binary_read_only\"",
+    "reason": "new explicit body-only root scope"
+  },
+  {
+    "before": "   && g.maximum_binary_read_starts===1\n   && g.exact_request?.blob===GF_STAGE_BODY_REQUEST.blob",
+    "after": "   && g.maximum_binary_read_starts===1 && g.immutable_body_page_bytes===16384\n   && g.exact_request?.blob===GF_STAGE_BODY_REQUEST.blob",
+    "reason": "only newly admitted binary observer 16KiB pages"
+  },
+  {
+    "before": "   && info.version===need.version && info.originalOperation===need.infoOperation\n   && need.bytes>0",
+    "after": "   && info.version===need.version && info.originalOperation===need.infoOperation\n   && JSON.stringify(info.full9Strings)===JSON.stringify(need.full9Strings)\n   && need.bytes>0",
+    "reason": "retain actual whole full9 strings"
+  },
+  {
+    "before": "q.operation_id===s.activeObserver.id && q.limit===8192",
+    "after": "q.operation_id===s.activeObserver.id\n   && q.limit===(s.activeObserver.tool===\"binary_read\"?16384:8192)",
+    "reason": "old observer 8KiB; only new binary 16KiB"
+  },
+  {
+    "before": "   gfNeed(b.length<=8192 && v.next_offset===q.offset+b.length",
+    "after": "   gfNeed(b.length<=(a.tool===\"binary_read\"?16384:8192) && v.next_offset===q.offset+b.length",
+    "reason": "old page extent unchanged, new binary explicit"
+  },
+  {
+    "before": "else if(action===\"authorize_stage_result_body\")",
+    "after": "else if(action===\"authorize_build_result_body\")",
+    "reason": "new build body authorizer action"
+  }
+]

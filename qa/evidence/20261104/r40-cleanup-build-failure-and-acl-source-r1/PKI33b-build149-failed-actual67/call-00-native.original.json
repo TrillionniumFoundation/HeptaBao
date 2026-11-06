@@ -1,0 +1,49 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/launch_native_jwt_build.py",
+      "--host",
+      "rog",
+      "--commit",
+      "33b814c7034ec853151b1ff13e7529c83f65ea70",
+      "--tree",
+      "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+      "--stage-sha256",
+      "2137f9962784c451d11a2aaae0741189fec8ab511c0b3e6b226031f908331da0",
+      "--runner-sha256",
+      "023f6f3ad71b8909a46da632767044de44ec2ea6fcb11692a2160e2cec518add",
+      "--groups-sha256",
+      "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869",
+      "--controls-sha256",
+      "f1e1f3a2576fcb2ecd05cdb9b8f4fbebd6bb849eddb48536eb5c66ed5be109e2"
+    ],
+    "created_unix_ms": 1793956882840,
+    "cwd": "/home/qian-qi",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "rog",
+    "id": "1a1b029a998-fc05-6eb2",
+    "idempotency_key": "heptabao-native-jwt-pki-33b814c7-build149-r1-5d639fbd",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1b029a998-fc05-6eb2",
+    "request_digest": "d0c72853406fc5c9bedcac0772b112aecdfe08ef09a67494ecacd5a727291379",
+    "request_fingerprint": 15044037418282894793,
+    "ssh_target": "rog-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b029a998-fc05-6eb2"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1b029a998-fc05-6eb2"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

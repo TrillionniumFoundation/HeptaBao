@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r40_snapshot2379_formatter49_GO_packet",
+  "records": [
+    {
+      "name": "ROOT-GO.json",
+      "blob": "49ed50b1cf0b1c6e7fb4ebac16ebb8d17d9cef20",
+      "bytes": 22959,
+      "sha256": "219195a5c8323d35902184e57c7d4109dc8036a27fc39e50988e7759b06a2a7e"
+    },
+    {
+      "name": "ROOT-stage-complete-qualification.json",
+      "blob": "4bcad76a1fc0acdc27156f4e9a08814ae7a6a0d2",
+      "bytes": 8460,
+      "sha256": "38cb051d918ba6699d0711bb2a1edb6ed613740564fd69989c82796b528fcfef"
+    },
+    {
+      "name": "ROOT-format-admission.json",
+      "blob": "07ac66b197aee71a8b924bbddc921a5b4f6878e6",
+      "bytes": 1733,
+      "sha256": "4471f47fe73d4356af0b652d5449bc6785d7e194db4a084e36aa1f11b642f043"
+    },
+    {
+      "name": "ROOT-stage-verifier.js",
+      "blob": "f9b879451dc87d2958adf76c6df549b20e32f974",
+      "bytes": 10476,
+      "sha256": "b24ddc4e8fdc08757e2f197693ae8c267f4c60d159ae75c5e8372520dd91d2d6"
+    },
+    {
+      "name": "ROOT-stage-semantic-adaptation.json",
+      "blob": "0306fea9dc5f8151c421e0121370cfde84c9b688",
+      "bytes": 2133,
+      "sha256": "8c440fe46d4833ae9416d4948aa9c2fa02d9e690905617f39040755d18b8a1e3"
+    },
+    {
+      "name": "ROOT-prior-decoded-report-review.json",
+      "blob": "7fb24527956b515e9cb3c8af95bb83f957eccd09",
+      "bytes": 3687,
+      "sha256": "25af4d2571d03e1b4be58c67fcb558091744337e4662eeb15bd8f794109fd743"
+    }
+  ],
+  "expected_data_tree": "dcb75d46453506f80239020fdfbf181b8c33f0ea",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

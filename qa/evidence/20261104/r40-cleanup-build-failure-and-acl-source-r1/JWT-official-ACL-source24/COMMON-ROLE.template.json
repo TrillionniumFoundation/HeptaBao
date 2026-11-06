@@ -1,0 +1,7 @@
+{
+  "role_type": "jwt",
+  "user_claim": "sub",
+  "bound_audiences": [
+    "native-jwt-acl-oracle-before"
+  ]
+}

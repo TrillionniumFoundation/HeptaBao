@@ -1,0 +1,12 @@
+{
+  "schema": "heptabao.pure-verifier-comparison-correction.v1",
+  "nativeCalls": 0,
+  "candidateChanged": false,
+  "firstFailure": "actual_observed_terminalError",
+  "reason": "Object key insertion order differs in exact JSON texts; source compares Python mappings by key/value. Correct only this semantic comparison to recursively sorted JSON; arrays and values preserved.",
+  "originalError": {
+    "error": "Error: source_check:actual_observed_terminalError",
+    "stage": "pure-source-checks",
+    "nativeCalls": 0
+  }
+}

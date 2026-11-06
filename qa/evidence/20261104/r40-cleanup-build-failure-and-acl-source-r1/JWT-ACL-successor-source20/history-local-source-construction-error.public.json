@@ -1,0 +1,6 @@
+{
+  "phase": "local V8 function construction before any replacement or persistence",
+  "error": "SyntaxError: Invalid or unexpected token",
+  "Native_calls": 0,
+  "Git_mutations": 0
+}

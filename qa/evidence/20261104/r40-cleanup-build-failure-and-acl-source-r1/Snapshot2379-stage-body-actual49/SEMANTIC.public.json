@@ -1,0 +1,80 @@
+{
+  "schema": "heptabao.snapshot-2379-stage-report-semantic-summary.v1",
+  "originalReport": {
+    "blob": "630883993c821cd1bb33cab2ee31667064fa9bbf",
+    "bytes": 28399,
+    "sha256": "733f77ea123b842e424f0b315d9ec910881b99e5844a4fd9ee51b651d5fb1955"
+  },
+  "status": "prepared",
+  "sourceCommit": "2379d02ba1ee3e88989815d5a978f998822bac4f",
+  "sourceTree": "fc933c18a0415730e3658c17ff021db9b2df2caa",
+  "fullWorktree": {
+    "all_tracked_worktree_blobs_and_modes_match": true,
+    "full_leaf_index_sha256": "0e35cb5c3192efd2b9ddecfdbbe78581dd65c8ceb1aee8577709f7d7f504b811",
+    "index_matches_tree": true,
+    "tracked_bytes": 62486000,
+    "tracked_leaf_count": 3930
+  },
+  "historyCount": 3768,
+  "ancestryCount": 16,
+  "actualDirectCommands": 61,
+  "allReportedDirectChildrenReaped": true,
+  "elapsedSeconds": 16.411864057008643,
+  "oldSourceUnchanged": true,
+  "failedObserverFencesUnchanged": true,
+  "incrementalBundleWitness": {
+    "bytes": 136231,
+    "header": {
+      "header_sha256": "2cc3f0d136e18b6e294b9044a53934a04ee44faf2d2114e88a3603f2b628624a",
+      "heads": [
+        [
+          "2379d02ba1ee3e88989815d5a978f998822bac4f",
+          "HEAD"
+        ]
+      ],
+      "prerequisites": [
+        "49503322c7f446e5eb41e7744f1fdbd7f1192ecc"
+      ],
+      "version": 2
+    },
+    "identity": [
+      66306,
+      31364162,
+      1000,
+      1000,
+      33152,
+      1,
+      136231,
+      {
+        "$exactInteger": "1793954766360167918"
+      },
+      {
+        "$exactInteger": "1793954766360167918"
+      }
+    ],
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1/control/canonical-native-snapshot-forward-2379d02b-from495.bundle",
+    "public_network_import_required_on_mac": false,
+    "sha256": "04830729f13f635b6e91fa71fbdb14a343714ebc400ee968afed739906e0d92a"
+  },
+  "originalReportOnlyScope": {
+    "independentBundleFileInfo": false,
+    "bundleBodyExport": false,
+    "individualCommandFilesRead": false,
+    "formatterExecuted": false,
+    "cargoExecuted": false,
+    "rustTestsExecuted": false,
+    "controlsExecuted": false
+  },
+  "chain": {
+    "calls": 7,
+    "observer": 1,
+    "pages": 5,
+    "cumulativeCalls": 17,
+    "cumulativeObservers": 4,
+    "cumulativePages": 8
+  },
+  "noNativeInFlight": true,
+  "laneReleased": true,
+  "checks": 167,
+  "oldQualificationNotRewritten": true
+}

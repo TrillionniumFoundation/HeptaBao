@@ -1,0 +1,10 @@
+{
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "rog",
+      "job_id": "1a1b029a998-fc05-6eb2"
+    }
+  },
+  "idempotency_key": "heptabao-native-jwt-pki-33b814c7-build149-observe-r1-authority1"
+}

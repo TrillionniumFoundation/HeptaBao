@@ -1,0 +1,62 @@
+[
+  {
+    "label": "explicit_test_delegate_parameter",
+    "before": "    capabilities: &[&str],\n) -> TestResult<Zeroizing<String>> {",
+    "after": "    capabilities: &[&str],\n    delegate_default: bool,\n) -> TestResult<Zeroizing<String>> {"
+  },
+  {
+    "label": "explicit_actor_policy_set",
+    "before": "    let mut issued = f.admin(\n        \"POST\",\n        \"auth/token/create\",\n        json!({\"policies\":[name],\"no_default_policy\":true,\"ttl\":\"600s\"}),\n    )?;\n    status(&issued, 200);\n    assert_eq!(issued.body[\"auth\"][\"token_type\"], \"service\");\n    assert_eq!(issued.body[\"auth\"][\"policies\"], json!([name]));\n    assert_eq!(issued.body[\"auth\"][\"token_policies\"], json!([name]));\n",
+    "after": "    // JWT role parsing currently retains the default policy. A role manager\n    // must explicitly own that delegated policy; other ACL actors omit it.\n    // no_default_policy still forbids implicit policy injection at issuance.\n    let token_policies = if delegate_default {\n        vec![\"default\", name]\n    } else {\n        vec![name]\n    };\n    let mut issued = f.admin(\n        \"POST\",\n        \"auth/token/create\",\n        json!({\"policies\":&token_policies,\"no_default_policy\":true,\"ttl\":\"600s\"}),\n    )?;\n    status(&issued, 200);\n    assert_eq!(issued.body[\"auth\"][\"token_type\"], \"service\");\n    assert_eq!(issued.body[\"auth\"][\"policies\"], json!(&token_policies));\n    assert_eq!(issued.body[\"auth\"][\"token_policies\"], json!(&token_policies));\n"
+  },
+  {
+    "label": "verify_exact_issued_and_lookup_policies",
+    "before": "    assert_eq!(looked.body[\"data\"][\"policies\"], json!([name]));",
+    "after": "    assert_eq!(looked.body[\"data\"][\"policies\"], json!(&token_policies));"
+  },
+  {
+    "label": "actor-jwt-acl-create",
+    "before": "acl_token(&mut f, \"jwt-acl-create\", path, &[\"create\"])?",
+    "after": "acl_token(&mut f, \"jwt-acl-create\", path, &[\"create\"], true)?"
+  },
+  {
+    "label": "actor-jwt-acl-update",
+    "before": "acl_token(&mut f, \"jwt-acl-update\", path, &[\"update\"])?",
+    "after": "acl_token(&mut f, \"jwt-acl-update\", path, &[\"update\"], true)?"
+  },
+  {
+    "label": "actor-jwt-acl-update-sudo",
+    "before": "acl_token(&mut f, \"jwt-acl-update-sudo\", path, &[\"update\", \"sudo\"])?",
+    "after": "acl_token(&mut f, \"jwt-acl-update-sudo\", path, &[\"update\", \"sudo\"], true)?"
+  },
+  {
+    "label": "actor-jwt-acl-delete",
+    "before": "acl_token(&mut f, \"jwt-acl-delete\", path, &[\"delete\"])?",
+    "after": "acl_token(&mut f, \"jwt-acl-delete\", path, &[\"delete\"], true)?"
+  },
+  {
+    "label": "actor-jwt-acl-read",
+    "before": "acl_token(&mut f, \"jwt-acl-read\", path, &[\"read\"])?",
+    "after": "acl_token(&mut f, \"jwt-acl-read\", path, &[\"read\"], false)?"
+  },
+  {
+    "label": "actor-jwt-acl-list",
+    "before": "acl_token(&mut f, \"jwt-acl-list\", path, &[\"list\"])?",
+    "after": "acl_token(&mut f, \"jwt-acl-list\", path, &[\"list\"], false)?"
+  },
+  {
+    "label": "actor-jwt-acl-config-update",
+    "before": "acl_token(&mut f, \"jwt-acl-config-update\", CONFIG, &[\"update\"])?",
+    "after": "acl_token(&mut f, \"jwt-acl-config-update\", CONFIG, &[\"update\"], false)?"
+  },
+  {
+    "label": "actor-jwt-acl-config-read",
+    "before": "acl_token(&mut f, \"jwt-acl-config-read\", CONFIG, &[\"read\"])?",
+    "after": "acl_token(&mut f, \"jwt-acl-config-read\", CONFIG, &[\"read\"], false)?"
+  },
+  {
+    "label": "unrelated_actor_keeps_no_default",
+    "before": "        \"jwt-kv/data/unrelated\",\n        &[\"read\"],\n    )?;",
+    "after": "        \"jwt-kv/data/unrelated\",\n        &[\"read\"],\n        false,\n    )?;"
+  }
+]

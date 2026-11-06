@@ -1,0 +1,102 @@
+{
+  "terminal": [
+    [
+      "qualifySnapshotB694Terminal",
+      "qualifySnapshot2379Terminal"
+    ],
+    [
+      "r34_packet_Snapshot-b694-stage-full-actual49",
+      "r34_packet_Snapshot2379-stage-full-actual55"
+    ],
+    [
+      "r39_snapshot_b694_stage_GO",
+      "r39_snapshot2379_stage_GO"
+    ],
+    [
+      "whole49_301873",
+      "whole55_336057"
+    ],
+    [
+      "p.audit.files===49&&p.audit.bytes===301873",
+      "p.audit.files===55&&p.audit.bytes===336057"
+    ],
+    [
+      "armedTree:c.armedTree",
+      "armedTree:c.armed.tree"
+    ],
+    [
+      "snapshotB694Stage",
+      "snapshot2379Stage"
+    ],
+    [
+      "1a1afe9f4f5-fc05-6cb6",
+      "1a1b008fa4a-fc05-6d9a"
+    ],
+    [
+      "prepared_summary_exact_b694",
+      "prepared_summary_exact_2379"
+    ],
+    [
+      "snapshot-b694-stage-original-terminal",
+      "snapshot-2379-stage-original-terminal"
+    ],
+    [
+      "Detailed b694 source3928/index/fences60 commands/bundle",
+      "Detailed2379 source3930/index/fences61 commands/bundle"
+    ],
+    [
+      "Future Service8-file successor and formatter49 have no transferred qualification.",
+      "Formatter49 and actual27 tests have no runtime qualification yet."
+    ]
+  ],
+  "info": [
+    [
+      "reviewB694InfoSource20",
+      "review2379InfoSource22"
+    ],
+    [
+      "r34_packet_Snapshot-b694-stage-info-source20",
+      "r34_packet_Snapshot2379-stage-info-source22"
+    ],
+    [
+      "r38_snapshot_stage_info_GO",
+      "r39_snapshot_b694_info_GO"
+    ],
+    [
+      "r39_snapshot_b694_stage_GO",
+      "r39_snapshot2379_stage_GO"
+    ],
+    [
+      "r39_snapshot_b694_stage_terminal_qualification",
+      "r40_snapshot2379_stage_terminal_qualification"
+    ],
+    [
+      "r34_packet_Snapshot-b694-stage-full-actual49",
+      "r34_packet_Snapshot2379-stage-full-actual55"
+    ],
+    [
+      "whole20_133042",
+      "whole22_137317"
+    ],
+    [
+      "p.audit.files===20&&p.audit.bytes===133042",
+      "p.audit.files===22&&p.audit.bytes===137317"
+    ],
+    [
+      "heptabao-native-snapshot-b6949024-rog-source-observe-r1-report-info",
+      "heptabao-native-snapshot-2379d02b-rog-source-observe-r1-report-info"
+    ],
+    [
+      "plan.source52_unchanged",
+      "plan.source54_unchanged"
+    ],
+    [
+      "snapshot-b694-report-info-only",
+      "snapshot-2379-report-info-only"
+    ],
+    [
+      "SOURCE20's null root qualification predates root35; this review binds actual root35 without modifying source20.",
+      "SOURCE22 null root qualification predates this independent terminal qualification; original SOURCE22 is unchanged."
+    ]
+  ]
+}

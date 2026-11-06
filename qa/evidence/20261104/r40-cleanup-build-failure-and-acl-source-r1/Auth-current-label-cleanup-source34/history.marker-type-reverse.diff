@@ -1,0 +1,11 @@
+--- a/unsubmitted.description-before.py
++++ b/unsubmitted.marker-type-before.py
+@@ -966,7 +966,7 @@
+         ready_identity,ready_held = observe_ready(io,plan,result)
+         need(ready_identity == CLEANUP_OBSERVED['readyIdentity']
+              and ready_held == CLEANUP_OBSERVED['readyFull9']
++             and result['ready']['markerFull9'] == CLEANUP_OBSERVED['markerFull9'],
+-             and result['ready']['markerFull9'] == tuple(CLEANUP_OBSERVED['markerFull9']),
+              'cleanup_same_observed_ready')
+         stage = 'current_terminal'
+         stdout_held,stderr_held = observe_terminal(io,ready_identity,result)

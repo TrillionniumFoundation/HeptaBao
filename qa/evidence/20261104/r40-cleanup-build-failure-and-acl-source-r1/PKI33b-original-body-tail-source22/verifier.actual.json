@@ -1,0 +1,134 @@
+{
+  "schema": "heptabao.immutable-tail-source.offline-checks.r1",
+  "status": "PASS",
+  "checks": 31,
+  "results": [
+    {
+      "name": "candidate_whole",
+      "pass": true
+    },
+    {
+      "name": "original_state_whole",
+      "pass": true
+    },
+    {
+      "name": "old_paused_pending_and_no_inflight",
+      "pass": true
+    },
+    {
+      "name": "old_effect_closed_and_two_original_prefixes",
+      "pass": true
+    },
+    {
+      "name": "original_closed_status_whole",
+      "pass": true
+    },
+    {
+      "name": "native_completed_stored_inactive",
+      "pass": true
+    },
+    {
+      "name": "old_timeout_whole",
+      "pass": true
+    },
+    {
+      "name": "old_timeout_remains_error",
+      "pass": true
+    },
+    {
+      "name": "exact_request_0",
+      "pass": true
+    },
+    {
+      "name": "exact_request_fields_0",
+      "pass": true
+    },
+    {
+      "name": "prefix_sdk_pin_0",
+      "pass": true
+    },
+    {
+      "name": "prefix_native_pin_0",
+      "pass": true
+    },
+    {
+      "name": "prefix_SDK_native_exact_0",
+      "pass": true
+    },
+    {
+      "name": "prefix_offsets_SHA_0",
+      "pass": true
+    },
+    {
+      "name": "exact_request_1",
+      "pass": true
+    },
+    {
+      "name": "exact_request_fields_1",
+      "pass": true
+    },
+    {
+      "name": "prefix_sdk_pin_1",
+      "pass": true
+    },
+    {
+      "name": "prefix_native_pin_1",
+      "pass": true
+    },
+    {
+      "name": "prefix_SDK_native_exact_1",
+      "pass": true
+    },
+    {
+      "name": "prefix_offsets_SHA_1",
+      "pass": true
+    },
+    {
+      "name": "two_tool_extents_cover_missing_tail",
+      "pass": true
+    },
+    {
+      "name": "single_Native_method_is_result_only",
+      "pass": true
+    },
+    {
+      "name": "no_oldslot_store",
+      "pass": true
+    },
+    {
+      "name": "only_two_sequential_indices",
+      "pass": true
+    },
+    {
+      "name": "SDK_external_before_isError",
+      "pass": true
+    },
+    {
+      "name": "payload_external_before_parse",
+      "pass": true
+    },
+    {
+      "name": "no_report_semantics_parsing",
+      "pass": true
+    },
+    {
+      "name": "failure_pauses_only_newcontext",
+      "pass": true
+    },
+    {
+      "name": "JavaScript_function_constructs_without_invoking",
+      "pass": true
+    },
+    {
+      "name": "original_effect_is_not_reissued",
+      "pass": true
+    },
+    {
+      "name": "public_tool_contract_never_dispatches",
+      "pass": true
+    }
+  ],
+  "Native": 0,
+  "module_invoked": false,
+  "original_slot_mutated": false
+}

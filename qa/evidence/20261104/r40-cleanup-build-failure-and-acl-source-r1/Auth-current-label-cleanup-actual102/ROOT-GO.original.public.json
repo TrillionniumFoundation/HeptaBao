@@ -1,0 +1,372 @@
+{
+  "schema": "heptabao.root-GO.Mac-existing-fixed-label-once-cleanup.v1",
+  "authorization": "GO",
+  "agent": "/root/authbus_migration",
+  "scope": "one_current_public_QA_launchd_label_removal_only",
+  "purpose": "Resolve the currently observed inactive public QA registration before a fresh HOME/T5 AuthBus successor. This is not production or legacy cleanup.",
+  "source_packet": "32fc87d007466d4de82c0d33bc1bb04870405151",
+  "source": {
+    "blob": "1e6f601782847761425053f39217e6211af2a9a7",
+    "bytes": 97725,
+    "sha256": "4e5761d36f5e308f3d7a822276cebbd2b4b4e0b5d53c984858daaa70a08e9c50"
+  },
+  "exact_request": {
+    "blob": "1ca3b73f3cc0bd3cb11a2934dcbfff3d6ae06325",
+    "bytes": 100721,
+    "sha256": "d7ae0a4750681b826dd8a20be78c258f1cf9e04dc1f545aaf8334feeac85c75e"
+  },
+  "source_review": {
+    "blob": "3ea54b16ca6131bfc0220a19285816e4e6370d11",
+    "bytes": 7890,
+    "sha256": "fd16fa9ffd2ea53ec23910a0e6a856972613ec2dd83668ae73c76226a069a664"
+  },
+  "source_review_checks": 27,
+  "author_pure_checks_root_reproduced": 61,
+  "contract": {
+    "blob": "a66ab1f612a2a9e6f1777fab449b2a3518194085",
+    "bytes": 9685,
+    "sha256": "9b6d0892ba04241012225fdc8594bd0c3e516ca7f42fcaeed801bc6a1d6800b4"
+  },
+  "native_binding": {
+    "sha256": "edd42b867edf3d4c64e83aa6640910339f82d2204cf9d7f9d11d2ed60ef8e1c6",
+    "native_fingerprint": "17137370338705751372",
+    "typed_stdin": true
+  },
+  "helpers": {
+    "native": {
+      "blob": "82b9e745abfe1876c2f34ded54d520b4aa11888f",
+      "bytes": 19060,
+      "sha256": "cbfaa9060ad7c5066638097e6c10b900527f0d98d4a1bf9c31cda3ddf906e69c"
+    },
+    "archive": {
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    "pure": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    "do_not_use_legacy_processStartBinding": true
+  },
+  "slot": "owner_launchd_home_t5_existing_close_label_gitfirst_r1",
+  "start": {
+    "host": "mac",
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-"
+    ],
+    "cwd": "/Users/qianqi",
+    "timeout_seconds": 60,
+    "idempotency_key": "heptabao-mac-owned-home-t5-close-label-4e5761d3-20261106-r1",
+    "stdin_source": {
+      "blob": "1e6f601782847761425053f39217e6211af2a9a7",
+      "bytes": 97725,
+      "sha256": "4e5761d36f5e308f3d7a822276cebbd2b4b4e0b5d53c984858daaa70a08e9c50"
+    },
+    "maximum_START_count": 1
+  },
+  "fixed_scope": {
+    "host": "mac",
+    "label": "org.heptabao.qa.home-t5-context-20261106-r1",
+    "target": "gui/501/org.heptabao.qa.home-t5-context-20261106-r1",
+    "home": "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1",
+    "mutation": [
+      "/bin/launchctl",
+      "bootout",
+      "gui/501/org.heptabao.qa.home-t5-context-20261106-r1"
+    ],
+    "maximumBootout": 1,
+    "bootstrap": 0,
+    "explicitNumericPidOrGroupSignals": 0,
+    "managedWaitOrReap": 0,
+    "mayRequestTerminationThroughBootout": true,
+    "noFinallyBootout": true,
+    "noRetryOrFallback": true
+  },
+  "pinned_inputs": {
+    "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/probe.public.py": {
+      "identity": [
+        "16777233",
+        "592904416",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "36522",
+        "1793950344732464747",
+        "1793950344732464747"
+      ],
+      "bytes": 36522,
+      "sha256": "b4f52562e8e861a30bfd942399ec2229cbb52ffddd06240950b99d746686cd00"
+    },
+    "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/plan.public.json": {
+      "identity": [
+        "16777233",
+        "592904417",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "1108",
+        "1793950344732730209",
+        "1793950344732730209"
+      ],
+      "bytes": 1108,
+      "sha256": "da3f2a88a5fd382eeb3eb4a7291a102c8806f03f08220c363ba8bf537a1b99e8"
+    },
+    "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/probe.plist": {
+      "identity": [
+        "16777233",
+        "592904418",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "1651",
+        "1793950344732934377",
+        "1793950344732934377"
+      ],
+      "bytes": 1651,
+      "sha256": "7aedefa6fdbde7a17abf5dedfef5bd85903e8bdb96257107b2f2cf738227fd9a"
+    },
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14": {
+      "identity": [
+        "16777233",
+        "587518380",
+        "501",
+        "80",
+        "33261",
+        "1",
+        "34640",
+        "1793798038915516382",
+        "1793798038915695047"
+      ],
+      "bytes": 34640,
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+    }
+  },
+  "current_observed": {
+    "priorObservation": {
+      "blob": "e4a50c4a58b55c5ff73ab4df0a591a4215e049a4",
+      "bytes": 18957,
+      "sha256": "a99d55efc4cd63e14f64e635ddf9671e73a19df6ddae66ce43050abe107d51c5"
+    },
+    "rootQualification": {
+      "blob": "56129f46fd94d072e301c4e558481efd817aed55",
+      "bytes": 14522,
+      "sha256": "bf626cd4ee05b5e5aa4c044ee93c4c52fecba8e7e469e84616918e169ce6c641"
+    },
+    "readyIdentity": {
+      "birthSec": 1793950344,
+      "birthUsec": 737052,
+      "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+      "pgid": 58228,
+      "pid": 58228,
+      "ppid": 1,
+      "uid": 501
+    },
+    "readyFull9": [
+      "16777233",
+      "592904421",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "640",
+      "1793950344882619282",
+      "1793950344882619282"
+    ],
+    "markerFull9": [
+      "16777233",
+      "592904422",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "0",
+      "1793950344883708127",
+      "1793950344883708127"
+    ],
+    "terminalFull9": [
+      "16777233",
+      "592904419",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "4816",
+      "1793950369615463915",
+      "1793950369615463915"
+    ],
+    "stderrFull9": [
+      "16777233",
+      "592904420",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "0",
+      "1793950344733248255",
+      "1793950344733248255"
+    ],
+    "terminalError": {
+      "type": "ProbeRefused",
+      "code": "child_absolute_deadline",
+      "errno": null
+    }
+  },
+  "preflight": [
+    "Read fixed Python, probe source, plan and plist by original no-follow held-fd/full9/SHA protocol; retain same directory and same launchd argv binding.",
+    "First current launchctl print must parse as the exact target/path/program/9 argv, no PID, state not running, runs 1 and last exit 1. Missing or any other state refuses before bootout.",
+    "Current ready must have exact observed PID/PPID/PGID/UID/birth/kernel-image and exact observed full9/marker full9, with original source/plan/generation/home bindings.",
+    "Current terminal and empty stderr must have exact observed full9. The original closed schema must show ProbeRefused/child_absolute_deadline at home_admission, no same-birth admission or T5 entry, and known application-fd closure.",
+    "Both original plan monotonic deadlines must be integer and have elapsed in the current monotonic domain; otherwise refuse.",
+    "Original self2 plus ready-target2 native sampling must qualify and return the typed lookup_esrch. This result is not asserted to prove absence, departure, or historical managed closure.",
+    "Recheck all fixed public leaves, marker and held/named directories immediately before the one label operation. Checks are sequential, not an atomic lock against concurrent replacement."
+  ],
+  "mutation_and_postconditions": [
+    "Mark bootout_attempted before the potential effect. At most one original Commands.run of the fixed bootout argv, clipped to original remaining helper admission/deadline.",
+    "Require command exit 0 and empty stdout/stderr with original direct-child WNOWAIT/once-reap/stream/group closure. Any uncertainty stops; no replay or new target.",
+    "Original exact missing_service predicate must pass for the first post-bootout print: only code 3 or 113, empty stdout, exact fixed-label missing-service stderr with optional exact Bad request line.",
+    "Perform the unchanged second two-sample numeric ready-PID lookup under the original second 4-second clip; require typed lookup_esrch, without converting it to historical absence.",
+    "A second independent fixed print must pass the same exact missing_service predicate. No broad substring or unknown-value/hash success path.",
+    "Recheck the same public leaves/marker/held directories after the observations, close application FDs and direct helpers, restore handlers, check pending signals and the original final deadline.",
+    "currentLabelRemovalConfirmed means only this new ordered bootout-and-two-missing-registration observation with final fences and known resources. It is not a historical process-reap or descendant-closure claim."
+  ],
+  "failure_semantics": {
+    "beforeBootout": "Known preflight refusal may yield ok=false/outcomeUnknown=false only if this observer's resources are fully accounted and closed. Existing historical unknowns remain explicit.",
+    "afterPossibleBootout": "Any failure before the complete postcondition/closure chain leaves currentRegistrationOutcomeUnknown=true and ok=false, including cancellation after the attempted marker but before actual dispatch.",
+    "inheritedCommands": "Original Commands/custody may still refuse; no retries or weaker predicates have been added.",
+    "printMutationRace": "The source does not claim a transactional service-identity lock between sequential print/fences and launchctl bootout."
+  },
+  "budgets": {
+    "controllerSeconds": 45,
+    "helperAdmissionEndSeconds": 35,
+    "outerSeconds": 60,
+    "launchctlEachMaximumSeconds": 10,
+    "launchctlEachReturnedByteCap": 65536,
+    "maximumDirectCommandAttempts": 4,
+    "successfulPathCommands": [
+      "preflight print",
+      "one bootout",
+      "first missing print",
+      "second missing print"
+    ],
+    "totalHelperReturnedBytes": 1048576,
+    "nativeNumericQueryWindows": 2,
+    "nativeQuerySecondsEach": 4,
+    "nativeNumericCallsMaximum": 6,
+    "nativeNumericStructBytes": 136,
+    "nativeNumericReturnedBytesMaximum": 816,
+    "internalCommandsOrProcessReaderCallsNotRenamedAsThoseSix": true,
+    "synchronousCCallIndividuallyHardPreemptible": false,
+    "applicationFdAttemptAndRowCap": 64,
+    "metadataCallCap": 4096,
+    "applicationReadCallCap": 256,
+    "applicationReadByteCap": 262144,
+    "applicationWriteCallCap": 0,
+    "applicationWriteByteCap": 0,
+    "stdoutPublicByteCap": 65536,
+    "processReadMaximum": 16384,
+    "immutableResultPageMaximum": 8192
+  },
+  "public_inputs": {
+    "pinsUnchanged": true,
+    "readsetUnchanged": true,
+    "bodyReads": [
+      "fixed regular Python",
+      "fixed public probe source",
+      "fixed public plan",
+      "fixed plist",
+      "fixed public ready",
+      "fixed public terminal stdout",
+      "fixed empty stderr"
+    ],
+    "marker": "metadata only",
+    "t5Access": 0,
+    "privateCapsule": 0,
+    "credentials": 0,
+    "SDK": 0,
+    "providerOrModelChanges": 0,
+    "existingFileContentsOrModesChanged": 0,
+    "createdDirectoriesOrFiles": 0
+  },
+  "public_output": {
+    "allowlistedErrorCodesAdded": 10,
+    "allOriginalErrorCodesRetained": true,
+    "rawUnknownPrintOrStderrExported": false,
+    "unknownTextHashExported": false,
+    "originalR4ManagedScopeStillUnknown": true,
+    "historicalReadonlyR2Helper87650ClosureStillUnknown": true,
+    "registrationClosureClaimed": false,
+    "oldWorkerLabelTouched": false,
+    "historicalR4Rewritten": false,
+    "fieldsAdded": [
+      "bootstrapCalled",
+      "explicitManagedPidSignalOrReapCalled",
+      "bootoutMayRequestTermination",
+      "preflightQualified",
+      "currentRegistrationAbsentObservedTwice",
+      "finalFencesPassed",
+      "bootoutAttempted",
+      "bootoutReturnedKnown",
+      "currentLabelRemovalConfirmed",
+      "currentRegistrationOutcomeUnknown"
+    ]
+  },
+  "baseline_actual_packet": "eb98487932a9b9aecc6780b81ec015be55cd8d3b",
+  "baseline_root": {
+    "blob": "56129f46fd94d072e301c4e558481efd817aed55",
+    "bytes": 14522,
+    "sha256": "bf626cd4ee05b5e5aa4c044ee93c4c52fecba8e7e469e84616918e169ce6c641"
+  },
+  "limits": {
+    "maximum_Runtime_lanes": 2,
+    "maximum_native_call_or_future_per_lane": 1,
+    "process_read_bytes": 16384,
+    "immutable_page_bytes": 8192,
+    "original_payload_cap": 1048576
+  },
+  "lane_activation": "A may activate one lane alongside C original build149 job rog/1a1b029a998-fc05-6eb2. B explicitly released the original formatter process and both original streams:0 call/0 future/0 process,16 calls/3 observers/9 pages closed,minimum packet ed61b5b9dc03d04ff793255047bb199bfef4b093. B stays0 Native until A or C releases. Root0.",
+  "sequence": [
+    "Whole exact GO and original helpers; initialize the fresh cleanup slot once using the root-correct typed stdin digest and fingerprint.",
+    "Whole exact request,intent,armed externally; return across independent dispatch boundary before one exact original process_start.",
+    "Persist and whole-read original SDK before isError or native parsing. Follow only returned original job and operation IDs; contiguous immutable pages,full SHA,EOF,inactive closure; no replay or rekey on uncertainty.",
+    "All current fixed preflight identities,expired original plan deadlines,typed libproc lookup results and final fences remain mandatory. Sequential preflight is not an atomic registration identity lock.",
+    "At most one fixed launchctl bootout of this public QA label,which may request termination; no other label,bootstrap,numeric PID signal,managed wait/reap,retry,fallback or finally bootout.",
+    "Qualify current removal only after known original bootout exit0/empty streams,each of two exact missing-service print results,the original second numeric sample pair,all final fences and known FD/helper closure within the original clock.",
+    "Preserve all historical R4,helper87650,old AuthBus label/PID11754 and Git UNKNOWN records. Even a successful current removal does not rewrite those outcomes.",
+    "Close and export this original lifecycle before separate SOURCE/GO for the complete AuthBus trustworthy credential successor."
+  ],
+  "excludes": [
+    "J3160",
+    "private capsule or credential reads",
+    "T5 business path access",
+    "provider/model changes",
+    "production clients",
+    "production traffic switch",
+    "legacy OpenBao/HeptaBao/binary/backup deletion",
+    "any second target or automatic retry"
+  ],
+  "qualified_result_scope": "currentLabelRemovalConfirmed means only this new ordered bootout-and-two-missing-registration observation with final fences and known resources. It is not a historical process-reap or descendant-closure claim.",
+  "source_review_limitations": [
+    "This authorizes no execution by itself.",
+    "Bootout may request termination within the one fixed current public QA label.",
+    "Sequential preflight/fences are not an atomic lock against another actor replacing a registration.",
+    "Current label removal can be established by ordered bootout/two exact missing replies/final resource closure; historical R4 and helper87650 UNKNOWN remain.",
+    "T5 business access, trusted credentials and AuthBus remain separate gates."
+  ],
+  "Python_compile_claimed": false,
+  "old_R4_managed_scope_automatically_closed": false,
+  "old_R2_helper_automatically_closed": false,
+  "AuthBus_credentials_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.gitfirst.fixed-native-call-armed.r1",
+  "callKey": "jwt-pki-33b814c7-build149-report-info-status-r1",
+  "kind": "operation_status",
+  "request": {
+    "blob": "e8d53bce987c66587ad35b9b9de3d81903d53d6a",
+    "bytes": 89,
+    "sha256": "b064a9dd1400ed4e4c23c56f1f86cee9115c0264b907c16aae527b5fcb347050"
+  },
+  "rootGo": {
+    "blob": "4ecfe2224ae4155f42b33135512ed522ac8871c3",
+    "bytes": 3959,
+    "sha256": "d3fa3cdec67ec7d8f595091a0cc8e74b4ff0232bb66cf42dc7126a3ce1fa617a"
+  },
+  "originalJob": "1a1b029a998-fc05-6eb2",
+  "originalOperation": "8e81613aa575b93e807bfe358614abb238250fc93a4180109222d00bde1430da",
+  "maximumNativeCalls": 1,
+  "nativeNotYetCalled": true,
+  "lossOfAcknowledgmentNeverGrantsReplay": true,
+  "localFirstExplicitlyReplacedByExactRootGO": true,
+  "mayHaveDispatchedAfterThisCheckpoint": true,
+  "recovery": "Read exact original job/operation only; absence of later ACK is UNKNOWN."
+}

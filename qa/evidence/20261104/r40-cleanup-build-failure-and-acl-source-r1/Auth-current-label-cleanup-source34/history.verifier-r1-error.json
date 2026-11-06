@@ -1,0 +1,5 @@
+{
+  "error": "Error: source_check:actual_observed_terminalError",
+  "stage": "pure-source-checks",
+  "nativeCalls": 0
+}
