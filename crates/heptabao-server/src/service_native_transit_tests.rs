@@ -721,6 +721,8 @@ fn snapshot(
             Err(format!("Transit snapshot admission status={}", response.status).into())
         }
         NativeSnapshotAdmission::Redirect(_) => Err("unexpected local snapshot redirect".into()),
+        #[cfg(feature = "native-v6-ha")]
+        NativeSnapshotAdmission::Forward(_) => Err("unexpected local snapshot forward".into()),
     }
 }
 #[test]

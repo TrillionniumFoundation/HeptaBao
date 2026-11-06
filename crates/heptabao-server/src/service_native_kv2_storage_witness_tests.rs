@@ -251,6 +251,8 @@ fn snapshot(
             Err(format!("snapshot admission status={}", response.status).into())
         }
         NativeSnapshotAdmission::Redirect(_) => Err("unexpected single-node redirect".into()),
+        #[cfg(feature = "native-v6-ha")]
+        NativeSnapshotAdmission::Forward(_) => Err("unexpected single-node forward".into()),
     }
 }
 fn reopen(files: &Root, key: &str) -> TestResult<Service> {

@@ -138,6 +138,8 @@ fn transfer(
             Ok((response, Some(bytes)))
         }
         NativeSnapshotAdmission::Redirect(_) => Err("standalone export redirected".into()),
+        #[cfg(feature = "native-v6-ha")]
+        NativeSnapshotAdmission::Forward(_) => Err("standalone export forwarded".into()),
     }
 }
 

@@ -14,9 +14,12 @@ use std::time::{Duration, Instant};
 
 use base64::{Engine as _, engine::general_purpose::STANDARD};
 use futures::future::BoxFuture;
+#[cfg(not(feature = "native-v6-ha"))]
+use heptabao_ha_service::serve_one_mtls_authenticated_peer_frame;
+#[cfg(feature = "native-v6-ha")]
+use heptabao_ha_service::serve_one_mtls_peer_frame_or_snapshot;
 use heptabao_ha_service::{
-    MutualTlsPeerTransport, NodeId, PinnedClientCertificateMap, RAFT_ALPN_PROTOCOL,
-    TlsPeerEndpoint, serve_one_mtls_authenticated_peer_frame,
+    MutualTlsPeerTransport, NodeId, PinnedClientCertificateMap, RAFT_ALPN_PROTOCOL, TlsPeerEndpoint,
 };
 use heptabao_raft_runtime::{
     CommitReceipt, MembershipObservation, ProcessRaftNode, RaftPeerRpc, RaftRpcKind,
@@ -45,6 +48,12 @@ use crate::{
     },
     service::OwnerPublicationBinding,
 };
+
+#[cfg(feature = "native-v6-ha")]
+#[path = "ha_snapshot_forward.rs"]
+mod snapshot_forward;
+#[cfg(feature = "native-v6-ha")]
+pub(crate) use snapshot_forward::{SnapshotEndpoint, SnapshotForwardHandler, SnapshotIngress};
 
 #[path = "ha_record_runtime.rs"]
 mod records;
@@ -697,6 +706,10 @@ pub struct HaProcess {
     forward_timeout: Duration,
     emit_legacy_peer_v1: bool,
     forward_handler: Arc<Mutex<Option<ForwardHandler>>>,
+    #[cfg(feature = "native-v6-ha")]
+    snapshot_forward_handler: Arc<Mutex<Option<SnapshotForwardHandler>>>,
+    #[cfg(feature = "native-v6-ha")]
+    snapshot_server_pins: BTreeMap<u64, Vec<[u8; 32]>>,
     listener: Option<PeerListener>,
 }
 
@@ -824,6 +837,16 @@ impl HaProcess {
             .filter(|peer| peer.id != config.node_id)
             .map(|peer| (peer.node.clone(), peer.endpoint.clone()))
             .collect::<BTreeMap<_, _>>();
+        #[cfg(feature = "native-v6-ha")]
+        let snapshot_server_pins = parsed_peers
+            .iter()
+            .map(|peer| {
+                let pins = std::iter::once(peer.certificate_sha256)
+                    .chain(peer.certificate_sha256_next)
+                    .collect();
+                (peer.id, pins)
+            })
+            .collect();
         let pinned = parsed_peers
             .iter()
             .filter(|peer| peer.id != config.node_id || native_candidate)
@@ -920,6 +943,9 @@ impl HaProcess {
         let identities = Arc::new(identities);
         let ids_by_node = Arc::new(ids_by_node);
         let forward_handler: Arc<Mutex<Option<ForwardHandler>>> = Arc::new(Mutex::new(None));
+        #[cfg(feature = "native-v6-ha")]
+        let snapshot_forward_handler: Arc<Mutex<Option<SnapshotForwardHandler>>> =
+            Arc::new(Mutex::new(None));
         let worker_budget = PeerWorkerBudget::for_limit(config.max_inflight);
         let forward_slots = Arc::new(Semaphore::new(worker_budget.forwarding));
         #[cfg(feature = "native-v6-ha")]
@@ -965,6 +991,8 @@ impl HaProcess {
             let rpc_service = rpc_service.clone();
             let runtime_handle = runtime.handle().clone();
             let listener_forward_handler = forward_handler.clone();
+            #[cfg(feature = "native-v6-ha")]
+            let listener_snapshot_forward_handler = snapshot_forward_handler.clone();
             let forward_slots = forward_slots.clone();
             let read_slots = read_slots.clone();
             #[cfg(feature = "native-v6-ha")]
@@ -987,13 +1015,7 @@ impl HaProcess {
                         // has the separately configured business-request budget.
                         #[cfg(feature = "private-ha-forward-diagnostic")]
                         let mut receiver_kind = None;
-                        let result = serve_one_mtls_authenticated_peer_frame(
-                            &listener,
-                            server_tls.clone(),
-                            &identities,
-                            forward_timeout,
-                            listener_allow_legacy_peer_v1,
-                            |authenticated| {
+                        let ordinary = |authenticated: heptabao_ha_service::AuthenticatedPeerFrame| {
                                 #[cfg(feature = "private-ha-forward-diagnostic")]
                                 { receiver_kind = Some("authenticated_unclassified"); }
                                 #[cfg(feature = "native-v6-ha")]
@@ -1200,7 +1222,25 @@ impl HaProcess {
                                     encode_raft_frame(response)
                                 }
                                 .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)
-                            },
+                            };
+                        #[cfg(feature = "native-v6-ha")]
+                        let result = serve_one_mtls_peer_frame_or_snapshot(
+                            &listener, server_tls.clone(), &identities, forward_timeout,
+                            listener_allow_legacy_peer_v1,
+                            (ordinary, |peer| {
+                                if !native_candidate {
+                                    return Err(heptabao_ha_service::HaError::InvalidCluster);
+                                }
+                                snapshot_forward::dispatch(
+                                    peer, ids, &listener_cluster_id, local_id,
+                                    &forward_slots, &listener_snapshot_forward_handler,
+                                )
+                            }),
+                        );
+                        #[cfg(not(feature = "native-v6-ha"))]
+                        let result = serve_one_mtls_authenticated_peer_frame(
+                            &listener, server_tls.clone(), &identities, forward_timeout,
+                            listener_allow_legacy_peer_v1, ordinary,
                         );
                         if result.is_err() {
                             #[cfg(feature = "private-ha-forward-diagnostic")]
@@ -1293,6 +1333,10 @@ impl HaProcess {
             forward_timeout,
             emit_legacy_peer_v1,
             forward_handler,
+            #[cfg(feature = "native-v6-ha")]
+            snapshot_forward_handler,
+            #[cfg(feature = "native-v6-ha")]
+            snapshot_server_pins,
             listener: Some(listener_pool),
         })
     }

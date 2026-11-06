@@ -194,6 +194,10 @@ fn snapshot(
         NativeSnapshotAdmission::Redirect(_) => {
             return Err("selected child snapshot leader redirected".into());
         }
+        #[cfg(feature = "native-v6-ha")]
+        NativeSnapshotAdmission::Forward(_) => {
+            return Err("selected child snapshot leader forwarded".into());
+        }
     };
     // Match the production HTTP external phase: no transfer/body I/O while
     // holding the Service writer. Completion reacquires the same real owner

@@ -84,6 +84,7 @@ const APPROLE_LOCAL_STATE_SCHEMA: u32 = crate::auth::approle_local::STATE_SCHEMA
 const POLICY_EXPIRATION_STATE_SCHEMA: u32 = crate::auth::policy_expiration::STATE_SCHEMA;
 const NAMESPACE_FACTORY_STATE_SCHEMA: u32 = crate::auth::namespace_factory::STATE_SCHEMA;
 const KV_MOUNT_CONFIGURATION_STATE_SCHEMA: u32 = 146;
+const JWT_POLICY_STATE_SCHEMA: u32 = crate::auth::jwt_policies::STATE_SCHEMA;
 #[cfg(test)]
 #[path = "service_policy_expiration_tests.rs"]
 mod policy_expiration_tests;
@@ -202,7 +203,7 @@ mod request_normalization;
 const PKI_BATCH_LEASE_STATE_SCHEMA: u32 = 136;
 const NATIVE_PLAIN_NAMESPACE_STATE_SCHEMA: u32 = 138;
 #[cfg(any(test, feature = "native-v6-storage"))]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = KV_MOUNT_CONFIGURATION_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = JWT_POLICY_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -270,6 +271,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | POLICY_EXPIRATION_STATE_SCHEMA
                 | NAMESPACE_FACTORY_STATE_SCHEMA
                 | KV_MOUNT_CONFIGURATION_STATE_SCHEMA
+                | JWT_POLICY_STATE_SCHEMA
                 | PKI_BATCH_LEASE_STATE_SCHEMA
                 | USERPASS_ISSUANCE_STATE_SCHEMA
                 | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
@@ -1602,6 +1604,8 @@ pub struct Service {
     state_capacity: usize,
     #[cfg(test)]
     audit_capacity: u64,
+    #[cfg(all(test, feature = "native-v6-ha"))]
+    snapshot_forward_test: snapshot_transfer::forward::test_faults::State,
 }
 
 impl Service {
@@ -2069,6 +2073,8 @@ impl Service {
             state_capacity: MAX_STATE_BYTES,
             #[cfg(test)]
             audit_capacity: MAX_AUDIT_BYTES,
+            #[cfg(all(test, feature = "native-v6-ha"))]
+            snapshot_forward_test: Default::default(),
         })
     }
 
@@ -2373,10 +2379,14 @@ impl Service {
     }
 
     pub(crate) fn begin_forwarded(&mut self, request: ServiceRequest<'_>) -> RequestExecution {
-        let started = std::time::Instant::now();
-        let observed = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap_or(Duration::MAX);
+        let (started, observed) = self.native_snapshot_clock.unwrap_or_else(|| {
+            (
+                std::time::Instant::now(),
+                SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .unwrap_or(Duration::MAX),
+            )
+        });
         let clock = match RequestClock::anchored(observed, started) {
             Ok(clock) => clock,
             Err(_) => {
@@ -2401,7 +2411,7 @@ impl Service {
             origin_peer,
             client_certificates,
         } = request;
-        self.begin_at_mode_precise(
+        let execution = self.begin_at_mode_precise(
             RequestDispatch {
                 method,
                 path,
@@ -2416,8 +2426,12 @@ impl Service {
                 client_certificates,
             },
             clock,
-        )
-        .with_realtime_remote_jwt()
+        );
+        if self.native_snapshot_clock.is_some() {
+            execution
+        } else {
+            execution.with_realtime_remote_jwt()
+        }
     }
 
     // Test HTTP ingress keeps its original fixture clock and admission flags.
@@ -6148,6 +6162,7 @@ impl Service {
         }
         if admitted.auth.has_rate_limit_quota_state()
             || admitted.auth.has_approle_no_default_policy()
+            || admitted.auth.has_jwt_policy_state()
             || admitted.auth.has_security_contract_state()
             || admitted.auth.has_policy_expiration_state()
             || admitted.engines.has_pki_acme_state()
@@ -12615,6 +12630,10 @@ mod jwt_user_claim_tests;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "service_jwt_renewal_tests.rs"]
 mod jwt_renewal_tests;
+
+#[cfg(test)]
+#[path = "service_jwt_policy_tests.rs"]
+mod jwt_policy_tests;
 
 #[cfg(all(test, target_os = "linux"))]
 #[path = "service_kubernetes_renewal_tests.rs"]

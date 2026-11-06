@@ -54,6 +54,8 @@ fn pending_archive(
         )
         .into()),
         NativeSnapshotAdmission::Redirect(_) => Err("File snapshot unexpectedly redirected".into()),
+        #[cfg(feature = "native-v6-ha")]
+        NativeSnapshotAdmission::Forward(_) => Err("File snapshot unexpectedly forwarded".into()),
     }
 }
 

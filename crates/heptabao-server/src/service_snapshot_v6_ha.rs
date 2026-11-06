@@ -307,3 +307,42 @@ impl Service {
         response
     }
 }
+
+impl Service {
+    pub(in crate::service::snapshot_transfer) fn check_snapshot_peer_original_plan(
+        &self,
+        plan: &SnapshotTransferPlan,
+    ) -> Result<(), Response> {
+        self.check_native_ha_snapshot_owner(plan)
+    }
+
+    /// Recheck the actual exported native proof after the original terminal
+    /// clock/audit completion. This does not mint or re-admit a request.
+    pub(in crate::service::snapshot_transfer) fn check_snapshot_peer_download_publication(
+        &mut self,
+        plan: &SnapshotTransferPlan,
+    ) -> Result<(), Response> {
+        let identity = self.current_state_identity()?;
+        self.check_native_ha_snapshot_owner_at(plan, identity)?;
+        let exported = plan.native_ha_source.as_ref().ok_or_else(unavailable)?;
+        if identity == plan.base {
+            exported.check_with(self, Service::check_native_installed)?;
+        } else {
+            let auth = self.state.as_ref().ok_or_else(unavailable)?.auth.clone();
+            let current = self
+                .capture_native_ha_request_proof(&mut || {
+                    auth.authorize_request(
+                        &plan.actor,
+                        &plan.namespace,
+                        &plan.path,
+                        "read",
+                        snapshot_observed_time(plan.now, plan.started.elapsed()),
+                    )
+                    .map_err(|error| Response::error(error.status, &error.message))
+                })?
+                .ok_or_else(unavailable)?;
+            exported.check_snapshot_terminal_successor(self, &current)?;
+        }
+        self.check_native_ha_snapshot_owner_at(plan, identity)
+    }
+}

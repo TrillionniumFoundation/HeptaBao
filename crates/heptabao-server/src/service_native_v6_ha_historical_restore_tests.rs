@@ -1,5 +1,8 @@
 //! Actual Service snapshot transport plus real pinned three-node TLS/Raft.
 //! Host power loss is separately measured by the physical acceptance runner.
+#[path = "service_native_snapshot_forward_audit_tests.rs"]
+mod snapshot_forward_audit_tests;
+
 use super::*;
 use crate::state_record_root::StateIdentity;
 use heptabao_raft_runtime::NativeV6PublishedRoot;
@@ -32,6 +35,10 @@ fn admit_with_query(
         }
         NativeSnapshotAdmission::Redirect(_) => {
             Err("selected historical restore leader redirected".into())
+        }
+        #[cfg(feature = "native-v6-ha")]
+        NativeSnapshotAdmission::Forward(_) => {
+            Err("selected historical restore leader forwarded".into())
         }
     }
 }

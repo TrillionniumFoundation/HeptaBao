@@ -3581,8 +3581,9 @@ fn jwt_config_and_role_readback_preserve_openbao_aliases() {
     );
     assert_eq!(
         role.body["data"]["token_policies"],
-        json!(["default", "reader"])
+        json!(["reader"])
     );
+    assert_eq!(role.body["data"]["token_no_default_policy"], false);
 }
 
 #[test]

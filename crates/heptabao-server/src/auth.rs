@@ -142,6 +142,8 @@ mod jwt_login;
 mod jwt_pem;
 #[path = "auth_jwt_renewal.rs"]
 mod jwt_renewal;
+#[path = "auth_jwt_policies.rs"]
+pub(crate) mod jwt_policies;
 #[path = "auth_ldap_native.rs"]
 mod ldap_native;
 #[path = "auth_ldap_renewal.rs"]
@@ -1217,6 +1219,10 @@ struct JwtRole {
     #[serde(default)]
     bound_audiences: BTreeSet<String>,
     policies: BTreeSet<String>,
+    // None preserves historical normalized policies without guessing whether
+    // their default was explicit. Some(false) also requires the new reader.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    token_no_default_policy: Option<bool>,
     token_ttl: u64,
     token_max_ttl: u64,
     token_num_uses: u64,
@@ -6360,6 +6366,9 @@ impl AuthState {
                 expires_at - now,
             )?;
             let metadata = BTreeMap::from([("role".into(), role_name.to_owned())]);
+            // Role configuration and issued-token defaults are separate. The
+            // existing root-policy rejection above applies to both branches.
+            let issued_policies = jwt_policies::issued_policies(&role);
             let mut response = if self.jwt_uses_batch(scope, &role) {
                 batch_issuance::PendingBatchGrant::response(
                     batch::BatchClaims {
@@ -6369,7 +6378,7 @@ impl AuthState {
                         token_api_policy_names: false,
                         public_origin: None,
                         namespace: namespace.into(),
-                        policies: role.policies.clone(),
+                        policies: issued_policies.clone(),
                         metadata: metadata.clone(),
                         display_name,
                         path: format!("auth/{mount}/login"),
@@ -6395,7 +6404,7 @@ impl AuthState {
                     cubbyhole: cubbyhole::TokenCubbyhole::default(),
                     accessor: random_id("a.")?,
                     namespace: namespace.into(),
-                    policies: role.policies,
+                    policies: issued_policies,
                     root: false,
                     parent: None,
                     created_at: now,
@@ -6435,7 +6444,11 @@ impl AuthState {
             return Ok(response);
         }
         if path == format!("auth/{mount}/role") {
-            if !matches!(method, "GET" | "LIST") {
+            if method == "GET" {
+                self.permission(principal, namespace, path, "read", now)?;
+                return Err(err(405, "unsupported operation"));
+            }
+            if method != "LIST" {
                 return Err(err(405, "method not allowed"));
             }
             self.permission(principal, namespace, path, "list", now)?;
@@ -6523,8 +6536,7 @@ impl AuthState {
         let AuthScope { namespace, mount } = scope;
         let path = format!("auth/{mount}/config");
         let path = path.as_str();
-        let actor = self.permission(principal, namespace, path, "update", now)?;
-        self.authorize_request(actor, namespace, path, "sudo", now)?;
+        self.permission(principal, namespace, path, "update", now)?;
         reject_unknown(
             body,
             &[
@@ -6654,6 +6666,16 @@ impl AuthState {
         Ok(config)
     }
 
+    // OpenBao's role existence check chooses Create or Update before dispatch.
+    // The native owner captures this same source decision for later delivery.
+    fn jwt_role_write_capability(&self, scope: AuthScope<'_>, name: &str) -> &'static str {
+        if self.jwt_at(scope).is_some_and(|state| state.roles.contains_key(name)) {
+            "update"
+        } else {
+            "create"
+        }
+    }
+
     fn jwt_role_route(
         &mut self,
         principal: Option<&Principal>,
@@ -6692,6 +6714,7 @@ impl AuthState {
                         "bound_audiences": role.bound_audiences,
                         "policies": role.policies,
                         "token_policies": role.policies,
+                        "token_no_default_policy": role.token_no_default_policy.unwrap_or(false),
                         "token_ttl": role.token_ttl,
                         "token_max_ttl": role.token_max_ttl,
                         "token_period": role.token_period,
@@ -6705,8 +6728,8 @@ impl AuthState {
                 ))
             }
             "POST" | "PUT" => {
-                let actor = self.permission(principal, namespace, &path, "update", now)?;
-                self.authorize_request(actor, namespace, &path, "sudo", now)?;
+                let capability = self.jwt_role_write_capability(scope, name);
+                self.permission(principal, namespace, &path, capability, now)?;
                 reject_unknown(
                     body,
                     &[
@@ -6719,6 +6742,7 @@ impl AuthState {
                         "bound_audiences",
                         "policies",
                         "token_policies",
+                        "token_no_default_policy",
                         "token_ttl",
                         "token_max_ttl",
                         "token_num_uses",
@@ -6794,9 +6818,12 @@ impl AuthState {
                         .as_ref()
                         .map(|role| role.policies.clone())
                         .unwrap_or_default(),
-                    true,
+                    false,
                 )?;
-                self.validate_assignment(actor, &role_policies)?;
+                // A JWT role defines a future login grant. Its path capability
+                // does not require that grant to be a subset of the writer.
+                let token_no_default_policy =
+                    jwt_policies::configured_flag(body, previous.as_ref())?;
                 let token_ttl = jwt_renewal::role_duration(
                     body,
                     "token_ttl",
@@ -6859,6 +6886,7 @@ impl AuthState {
                     bound_subject,
                     bound_audiences,
                     policies: role_policies,
+                    token_no_default_policy,
                     token_ttl,
                     token_max_ttl,
                     token_num_uses,
@@ -6875,15 +6903,14 @@ impl AuthState {
                 Ok(empty(mutated))
             }
             "DELETE" => {
-                let actor = self.permission(principal, namespace, &path, "update", now)?;
-                self.authorize_request(actor, namespace, &path, "sudo", now)?;
+                self.permission(principal, namespace, &path, "delete", now)?;
                 reject_unknown(body, &[])?;
-                let removed = self.jwt_at_mut(scope).roles.remove(name);
-                if removed.is_some() {
-                    Ok(empty(true))
-                } else {
-                    Err(err(404, "JWT role not found"))
-                }
+                let removed = self
+                    .jwt_mounts
+                    .get_mut(namespace)
+                    .and_then(|mounts| mounts.get_mut(mount))
+                    .is_some_and(|state| state.roles.remove(name).is_some());
+                Ok(empty(removed))
             }
             _ => Err(err(405, "method not allowed")),
         }

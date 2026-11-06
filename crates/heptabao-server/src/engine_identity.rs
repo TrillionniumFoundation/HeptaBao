@@ -17,6 +17,13 @@ pub(crate) struct IdentityNamespace<'a> {
 }
 
 impl EngineState {
+    /// Borrow the complete root Identity object without traversing live KV owners.
+    /// Missing root Identity is an error for the fixture, never an empty fallback.
+    #[cfg(test)]
+    pub(crate) fn fixture_root_identity(&self) -> Option<&impl serde::Serialize> {
+        self.namespaces.get("").map(|state| &state.identity)
+    }
+
     /// Construct an existing cross-namespace collision without replacing the
     /// engine's live record representation. This is not a public Identity API.
     #[cfg(test)]

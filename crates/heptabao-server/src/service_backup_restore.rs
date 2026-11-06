@@ -336,6 +336,16 @@ impl Service {
         current: &State,
         incoming: &State,
     ) -> Result<(), Response> {
+        if (current.schema >= JWT_POLICY_STATE_SCHEMA
+            || current.auth.has_jwt_policy_state()
+            || incoming.auth.has_jwt_policy_state())
+            && incoming.schema < JWT_POLICY_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade JWT role policy semantics",
+            ));
+        }
         incoming
             .engines
             .validate_kv_mount_configuration()

@@ -341,6 +341,11 @@ impl State {
         } else {
             required
         };
+        let required = if self.auth.has_jwt_policy_state() {
+            required.max(JWT_POLICY_STATE_SCHEMA)
+        } else {
+            required
+        };
         // Child resources in the ordinary owner format do not imply V6
         // storage. The actual V6 planners raise their private candidate's
         // reader floor when they publish that representation; self.schema
@@ -352,6 +357,15 @@ impl State {
         &self,
         previous: Option<&State>,
     ) -> Result<(), Response> {
+        if self.schema < JWT_POLICY_STATE_SCHEMA
+            && (self.auth.has_jwt_policy_state()
+                || previous.is_some_and(|old| old.schema >= JWT_POLICY_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "JWT role policy semantics require schema 147 and cannot decrease",
+            ));
+        }
         self.engines
             .validate_kv_mount_configuration()
             .map_err(Response::from_engine_error)?;
@@ -1509,6 +1523,9 @@ impl State {
     }
 
     pub(super) fn validate_format(&self) -> Result<(), Response> {
+        if self.schema < JWT_POLICY_STATE_SCHEMA && self.auth.has_jwt_policy_state() {
+            return Err(Response::error(503, "JWT role policy semantics require schema 147"));
+        }
         self.validate_global_lossless_json_state(None)?;
         self.validate_native_flat_retirement_state(None)?;
         if self.schema < PKI_BATCH_LEASE_STATE_SCHEMA && self.engines.has_pki_batch_lease_state() {
@@ -2931,6 +2948,7 @@ impl State {
             | POLICY_EXPIRATION_STATE_SCHEMA
             | NAMESPACE_FACTORY_STATE_SCHEMA
             | KV_MOUNT_CONFIGURATION_STATE_SCHEMA
+            | JWT_POLICY_STATE_SCHEMA
             | PKI_BATCH_LEASE_STATE_SCHEMA
             | NATIVE_PLAIN_NAMESPACE_STATE_SCHEMA
             | USERPASS_ISSUANCE_STATE_SCHEMA

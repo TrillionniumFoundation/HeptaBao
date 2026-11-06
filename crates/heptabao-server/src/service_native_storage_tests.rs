@@ -93,6 +93,10 @@ fn snapshot_transfer(
         NativeSnapshotAdmission::Redirect(_) => {
             Err("standalone storage unexpectedly redirected".into())
         }
+        #[cfg(feature = "native-v6-ha")]
+        NativeSnapshotAdmission::Forward(_) => {
+            Err("standalone storage unexpectedly forwarded".into())
+        }
     }
 }
 

@@ -505,10 +505,11 @@ fn jwt_user_claim_schema68_is_conditional_sticky_and_snapshot_protected() -> Tes
     let (_, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let key = PKey::from_rsa(Rsa::generate(2048)?)?;
     configure(&mut service, &admin, "", "jwtcustom", &key)?;
-    assert!(
-        role(&mut service, &admin, "", "jwtcustom", "default", "sub").status == 204,
-        "default role"
-    );
+    super::jwt_policy_tests::historical_role(
+        &mut service, &admin, "", "jwtcustom", "default",
+        json!({"role_type":"jwt","user_claim":"sub","bound_subject":"original-sub",
+            "bound_audiences":["service"],"token_ttl":120,"token_max_ttl":600}), 100,
+    )?;
     assert!(
         service.state.as_ref().ok_or("state")?.schema == 65,
         "ordinary sub keeps schema65"
@@ -521,10 +522,11 @@ fn jwt_user_claim_schema68_is_conditional_sticky_and_snapshot_protected() -> Tes
         "default role retains the exact old field omission"
     );
     erase_json(&mut ordinary);
-    assert!(
-        role(&mut service, &admin, "", "jwtcustom", "custom", "username").status == 204,
-        "custom role"
-    );
+    super::jwt_policy_tests::historical_role(
+        &mut service, &admin, "", "jwtcustom", "custom",
+        json!({"role_type":"jwt","user_claim":"username","bound_subject":"original-sub",
+            "bound_audiences":["service"],"token_ttl":120,"token_max_ttl":600}), 100,
+    )?;
     let active = service.state.as_ref().ok_or("state")?.clone();
     assert!(
         active.schema == 68 && active.validate_format().is_ok(),

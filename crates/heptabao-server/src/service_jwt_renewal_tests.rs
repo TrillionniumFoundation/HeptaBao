@@ -51,18 +51,19 @@ fn restore_legacy_engine_owner(state: &mut State) -> Result<(), Box<dyn std::err
 
 // Current behavioral regressions keep the normal first-publication factory.
 fn fixture(root: &Root) -> TestResult<(Service, String, String, String)> {
-    fixture_with_bootstrap(root, bootstrap)
+    fixture_with_bootstrap(root, bootstrap, false)
 }
 
 // Historical wire-format regressions choose their old input before publication;
 // no already-published current security contract is erased or relabelled.
 fn historical_fixture(root: &Root) -> TestResult<(Service, String, String, String)> {
-    fixture_with_bootstrap(root, super::tests::bootstrap_pre141)
+    fixture_with_bootstrap(root, super::tests::bootstrap_pre141, true)
 }
 
 fn fixture_with_bootstrap(
     root: &Root,
     initialize: fn(&mut Service) -> TestResult<(String, String)>,
+    historical_role: bool,
 ) -> TestResult<(Service, String, String, String)> {
     let mut service = root.service()?;
     let (key, admin) = initialize(&mut service)?;
@@ -78,11 +79,17 @@ fn fixture_with_bootstrap(
             json!({"role_type":"jwt","user_claim":"sub","bound_audiences":["service"],"token_ttl":60,"token_max_ttl":600}),
         ),
     ] {
-        assert_eq!(
-            call(&mut service, "POST", path, &admin, body).status,
-            204,
-            "{path}"
-        );
+        if historical_role && path == "auth/jwt/role/app" {
+            super::jwt_policy_tests::historical_role(
+                &mut service, &admin, "", "jwt", "app", body, 100
+            )?;
+        } else {
+            assert_eq!(
+                call(&mut service, "POST", path, &admin, body).status,
+                204,
+                "{path}"
+            );
+        }
     }
     let payload = format!("{}.{}",URL_SAFE_NO_PAD.encode(br#"{"alg":"EdDSA","kid":"key"}"#),URL_SAFE_NO_PAD.encode(br#"{"iss":"https://issuer.example","aud":"service","sub":"alice","iat":100,"exp":102,"jti":"durable-renewal"}"#));
     let jwt = format!(
@@ -141,6 +148,11 @@ fn restore_v18_jwt_config(auth: &mut Value) -> TestResult {
                 .as_object_mut()
                 .ok_or("JWT mount")?
                 .remove("native_claims");
+            // This is a detached pre-v18 input projection. New role policy
+            // provenance did not exist then; never apply this to live state.
+            for role in mount["roles"].as_object_mut().ok_or("JWT roles")?.values_mut() {
+                role.as_object_mut().ok_or("JWT role")?.remove("token_no_default_policy");
+            }
             // These fields were mandatory numbers before native defaults.
             mount["config"]["clock_skew_seconds"] = json!(0);
             mount["config"]["maximum_token_lifetime_seconds"] = json!(3600);

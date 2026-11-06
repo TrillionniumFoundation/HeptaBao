@@ -202,6 +202,8 @@ fn snapshot(
             Ok((response, None))
         }
         NativeSnapshotAdmission::Redirect(_) => Err("File fixture cannot redirect".into()),
+        #[cfg(feature = "native-v6-ha")]
+        NativeSnapshotAdmission::Forward(_) => Err("File fixture cannot forward".into()),
     }
 }
 

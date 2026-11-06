@@ -308,6 +308,8 @@ fn snapshot(
             Ok((response, None))
         }
         NativeSnapshotAdmission::Redirect(_) => Err("configured File cannot redirect".into()),
+        #[cfg(feature = "native-v6-ha")]
+        NativeSnapshotAdmission::Forward(_) => Err("configured File cannot forward".into()),
     }
 }
 

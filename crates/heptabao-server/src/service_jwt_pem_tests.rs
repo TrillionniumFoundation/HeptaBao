@@ -50,6 +50,21 @@ fn setup(service: &mut Service, admin: &str, ns: &str, mount: &str) -> TestResul
         json!({"role_type":"jwt","user_claim":"username","bound_subject":"original-sub","bound_audiences":["service"],"token_ttl":120,"token_max_ttl":600}),100).status==204,"custom role");
     Ok(())
 }
+
+fn historical_setup(service: &mut Service, admin: &str, ns: &str, mount: &str) -> TestResult {
+    assert_eq!(
+        call(service, ns, "POST", &format!("sys/auth/{mount}"), admin,
+            json!({"type":"jwt"}), 100).status,
+        204,
+        "historical JWT mount"
+    );
+    super::jwt_policy_tests::historical_role(
+        service, admin, ns, mount, "custom",
+        json!({"role_type":"jwt","user_claim":"username","bound_subject":"original-sub",
+            "bound_audiences":["service"],"token_ttl":120,"token_max_ttl":600}), 100,
+    )
+}
+
 fn config(
     service: &mut Service,
     admin: &str,
@@ -389,7 +404,7 @@ fn jwt_pem_namespace_reopen_renew_and_sticky_retirement_keep_existing_authority(
             == 200,
         "namespace"
     );
-    setup(&mut service, &admin, "team", "pemjwt")?;
+    historical_setup(&mut service, &admin, "team", "pemjwt")?;
     assert!(
         config(
             &mut service,
@@ -507,7 +522,7 @@ fn jwt_pem_state_requires69_and_revalidates_public_key_binding_without_changing_
     let mut service = root.service()?;
     let (_, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let key = PKey::from_rsa(Rsa::generate(2048)?)?;
-    setup(&mut service, &admin, "", "pemjwt")?;
+    historical_setup(&mut service, &admin, "", "pemjwt")?;
     assert!(
         call(
             &mut service,
@@ -730,7 +745,7 @@ fn jwt_pem_authenticated_snapshot_prepare_and_final_commit_reject_active_retired
     let mut service = root.service()?;
     let (_, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let key = PKey::from_rsa(Rsa::generate(2048)?)?;
-    setup(&mut service, &admin, "", "pemjwt")?;
+    historical_setup(&mut service, &admin, "", "pemjwt")?;
     assert!(
         service.state.as_ref().ok_or("state")?.schema == JWT_USER_CLAIM_STATE_SCHEMA,
         "snapshot predecessor68"
