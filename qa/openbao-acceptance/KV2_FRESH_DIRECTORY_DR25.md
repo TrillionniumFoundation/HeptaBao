@@ -113,6 +113,14 @@ run; cleanup signals only a group still anchored by its original unreaped
 child. Original handles are waited once and both process retirement and known
 parent log-handle closure are required before quarantine.
 
+Legacy raw `os.killpg` cleanup calls are routed through that same original
+child registry while custody is active. Unknown or ambiguous numeric groups
+are refused. Once an original has been waited and its group has been proved
+retired, a late raw cleanup request is recorded without issuing a signal, and
+the custody result stays failed. Live originals retain their anchored group
+cleanup. Both global hooks are restored on exit; a nonzero migration worker
+cannot become a successful run because its late cleanup signal was suppressed.
+
 Before rename, two independent current-parent FD enumerations use
 `/proc/self/fd` on Linux or `/dev/fd` on Darwin and `fstat` each descriptor.
 Neither may match any file or directory device/inode in the complete original

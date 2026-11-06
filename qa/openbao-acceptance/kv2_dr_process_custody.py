@@ -23,6 +23,7 @@ import threading
 import time
 
 _REAL_POPEN = subprocess.Popen
+_REAL_KILLPG = os.killpg
 _ACTIVE = None
 _GATE = "--dr-owned-exec-gate"
 _PROBE_SECONDS = 2.0
@@ -357,7 +358,7 @@ class _TrackedPopen(_REAL_POPEN):
         self._anchor()
         observed = _members(self.pid)
         _need(all(row["pgid"] == self.pid for row in observed), "custody_child_changed_group")
-        os.killpg(self.pid, signum)
+        _REAL_KILLPG(self.pid, signum)
         self.custody["signals"].append({"signal": int(signum), "pgid": self.pid,
                                          "authority": "original_unreaped_child"})
 
@@ -476,6 +477,59 @@ class _TrackedPopen(_REAL_POPEN):
             self.owner.protected -= 1
 
 
+def _owned_killpg(pgid, signum):
+    """Route legacy raw cleanup calls through the retained original handle.
+
+    The unchanged full34 migration finally block can call killpg after its
+    worker's communicate has already waited. A completed original never lends
+    authority to a possibly reused numeric process group.
+    """
+    owner = _ACTIVE
+    _need(owner is not None, "custody_raw_group_owner_required")
+    intent = {"kind": "legacy_raw_group_signal", "outcome": "unknown"}
+    owner.controls.append(intent)
+    owner.protected += 1
+    try:
+        _need(not owner.finished and type(pgid) is int and pgid > 0
+              and isinstance(signum, int) and signum in (signal.SIGTERM, signal.SIGKILL),
+              "custody_raw_group_signal_arguments")
+        intent.update(pgid=pgid, signal=int(signum))
+        matches = [child for child in owner.children if child.pid == pgid]
+        if len(matches) != 1:
+            intent["outcome"] = "refused_unknown_original"
+            raise CustodyFailure("custody_raw_group_not_owned")
+        child = matches[0]
+        if child.returncode is not None:
+            _need(child.custody["original_wait_completed"] is True
+                  and child.custody["original_wait_count"] == 1
+                  and child.custody.get("no_live_members_before_reap") is True,
+                  "custody_raw_group_retirement_unproven")
+            intent.update(outcome="already_retired_no_signal", returncode=child.returncode,
+                          original_wait_completed=True, group_signal_sent=False)
+            owner._gap(child, "custody_raw_signal_after_original_retired")
+            return None
+        before = len(child.custody["signals"])
+        child.send_signal(signum)
+        signalled = len(child.custody["signals"]) > before
+        intent.update(outcome="routed_to_original_child" if signalled else "exited_original_retired_without_signal",
+                      group_signal_sent=signalled, returncode=child.returncode)
+        if not signalled:
+            _need(child.custody["original_wait_completed"] is True
+                  and child.custody.get("no_live_members_before_reap") is True,
+                  "custody_raw_group_retirement_unproven")
+            if child.returncode != 0:
+                owner._gap(child, "custody_raw_cleanup_of_nonzero_original")
+        return None
+    except BaseException as error:
+        owner.failed = True
+        if intent["outcome"] == "unknown":
+            intent["outcome"] = "refused_or_failed"
+        intent["error_type"] = type(error).__name__
+        raise
+    finally:
+        owner.protected -= 1
+
+
 @contextlib.contextmanager
 def activated():
     """Patch original Popen calls for one synchronous disposable DR run."""
@@ -489,12 +543,14 @@ def activated():
     _need(threading.current_thread() is threading.main_thread(), "custody_main_thread_required")
     _need(signal.getsignal(signal.SIGCHLD) == signal.SIG_DFL, "custody_sigchld_must_not_reap")
     _need(subprocess.Popen is _REAL_POPEN, "custody_foreign_popen_patch")
+    _need(os.killpg is _REAL_KILLPG, "custody_foreign_killpg_patch")
     # Its compatibility isinstance guard must capture the real stdlib type,
     # not a temporarily patched constructor imported during the DR run.
     importlib.import_module("owned_process")
-    owner, previous = Owner(), {}
+    owner, previous, previous_killpg = Owner(), {}, os.killpg
     _ACTIVE = owner
     subprocess.Popen = _TrackedPopen
+    os.killpg = _owned_killpg
     try:
         for signum in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP):
             previous[signum] = signal.getsignal(signum)
@@ -510,6 +566,7 @@ def activated():
         for signum, handler in previous.items():
             signal.signal(signum, handler)
         subprocess.Popen = _REAL_POPEN
+        os.killpg = previous_killpg
         _ACTIVE = None
 
 

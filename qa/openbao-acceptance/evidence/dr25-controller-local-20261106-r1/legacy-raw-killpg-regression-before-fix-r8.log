@@ -1,0 +1,14 @@
+test_legacy_raw_killpg_after_nonzero_communicate_never_signals_retired_id (test_kv2_dr_process_custody.ProcessCustodyTests.test_legacy_raw_killpg_after_nonzero_communicate_never_signals_retired_id) ... FAIL
+
+======================================================================
+FAIL: test_legacy_raw_killpg_after_nonzero_communicate_never_signals_retired_id (test_kv2_dr_process_custody.ProcessCustodyTests.test_legacy_raw_killpg_after_nonzero_communicate_never_signals_retired_id)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c94294de02e0/HeptaBao-dr/qa/openbao-acceptance/tests/test_kv2_dr_process_custody.py", line 274, in test_legacy_raw_killpg_after_nonzero_communicate_never_signals_retired_id
+    self.assertIsNot(os.killpg, self.original_killpg)
+AssertionError: unexpectedly identical: <built-in function killpg>
+
+----------------------------------------------------------------------
+Ran 1 test in 0.081s
+
+FAILED (failures=1)

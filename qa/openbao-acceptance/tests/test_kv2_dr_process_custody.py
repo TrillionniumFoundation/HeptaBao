@@ -23,9 +23,11 @@ class ProcessCustodyTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory(prefix="dr-process-method-")
         self.root = Path(self.tmp.name)
         self.original_popen = subprocess.Popen
+        self.original_killpg = os.killpg
 
     def tearDown(self):
         self.assertIs(subprocess.Popen, self.original_popen)
+        self.assertIs(os.killpg, self.original_killpg)
         self.tmp.cleanup()
 
     def target(self, source, **kwargs):
@@ -72,10 +74,11 @@ class ProcessCustodyTests(unittest.TestCase):
             row["pgid"] += 1
             return row
 
-        with patch.object(custody, "_snapshot", side_effect=wrong_group), patch.object(custody.os, "killpg") as group:
-            with custody.activated() as owner:
-                with self.assertRaisesRegex(custody.CustodyFailure, "custody_gate_birth_mismatch"):
-                    self.target("from pathlib import Path;Path(" + repr(str(marker)) + ").write_text('bad')")
+        with patch.object(custody, "_snapshot", side_effect=wrong_group), patch.object(custody, "_REAL_KILLPG") as group:
+            with patch.object(custody.os, "killpg", group):
+                with custody.activated() as owner:
+                    with self.assertRaisesRegex(custody.CustodyFailure, "custody_gate_birth_mismatch"):
+                        self.target("from pathlib import Path;Path(" + repr(str(marker)) + ").write_text('bad')")
             group.assert_not_called()
         self.assertFalse(marker.exists())
         self.assertTrue(owner.failed)
@@ -150,7 +153,7 @@ class ProcessCustodyTests(unittest.TestCase):
         with custody.activated() as owner:
             child = self.target("pass")
             _, _status = os.waitpid(child.pid, 0)
-            with patch.object(custody.os, "killpg") as group:
+            with patch.object(custody, "_REAL_KILLPG") as group:
                 with self.assertRaisesRegex(custody.CustodyFailure, "custody_original_anchor_lost"):
                     child.kill()
                 owner.finish()
@@ -260,6 +263,51 @@ class ProcessCustodyTests(unittest.TestCase):
             self.assertEqual(frozen["original_count"], len(frozen["children"]))
             self.assertEqual(frozen["original_count"], 1)
             self.assertEqual(owner.receipt()["original_count"], 2)
+
+    def test_legacy_raw_killpg_after_nonzero_communicate_never_signals_retired_id(self):
+        with custody.activated() as owner:
+            child = self.target("raise SystemExit(7)", stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            self.assertEqual(child.communicate(timeout=5), (b"", b""))
+            self.assertEqual(child.returncode, 7)
+            self.assertTrue(owner.rows[0]["original_wait_completed"])
+            # This assertion fails on the old implementation before issuing
+            # any raw group signal: its Popen hook did not guard legacy calls.
+            self.assertIsNot(os.killpg, self.original_killpg)
+            with patch.object(custody, "_REAL_KILLPG") as raw:
+                os.killpg(child.pid, signal.SIGKILL)
+                raw.assert_not_called()
+            self.assertEqual(owner.controls[-1]["outcome"], "already_retired_no_signal")
+            self.assertTrue(owner.failed)
+            self.assertFalse(owner.receipt()["passed_process_custody"])
+            self.assertEqual(owner.rows[0]["original_wait_count"], 1)
+
+    def test_legacy_raw_killpg_unknown_group_is_refused_without_touching_foreign_process(self):
+        foreign = self.original_popen([sys.executable, "-c", "import time;time.sleep(30)"], start_new_session=True)
+        try:
+            with custody.activated() as owner:
+                with patch.object(custody, "_REAL_KILLPG") as raw:
+                    with self.assertRaisesRegex(custody.CustodyFailure, "custody_raw_group_not_owned"):
+                        os.killpg(foreign.pid, signal.SIGKILL)
+                    raw.assert_not_called()
+                self.assertIsNone(foreign.poll())
+                self.assertTrue(owner.failed)
+                self.assertEqual(owner.controls[-1]["outcome"], "refused_unknown_original")
+        finally:
+            foreign.kill()
+            foreign.wait(timeout=5)
+
+    def test_legacy_raw_killpg_live_owned_group_routes_once_and_restores_global_hook(self):
+        primitive = self.original_killpg
+        with custody.activated() as owner:
+            child = self.target("import time;time.sleep(30)")
+            with patch.object(custody, "_REAL_KILLPG", wraps=primitive) as raw:
+                os.killpg(child.pid, signal.SIGTERM)
+                self.assertEqual(child.wait(timeout=5), -signal.SIGTERM)
+                raw.assert_called_once_with(child.pid, signal.SIGTERM)
+            self.assertEqual(owner.controls[-1]["outcome"], "routed_to_original_child")
+            owner.assert_retired()
+        self.assertTrue(owner.receipt()["passed_process_custody"])
+        self.assertIs(os.killpg, primitive)
 
 
 if __name__ == "__main__":
