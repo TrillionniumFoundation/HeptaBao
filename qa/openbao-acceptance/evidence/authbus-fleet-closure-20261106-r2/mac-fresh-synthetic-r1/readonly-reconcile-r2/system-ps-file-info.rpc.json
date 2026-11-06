@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":0,\"link_count\":1,\"metadata_platform\":\"darwin\",\"mode\":2541,\"uid\":0,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":2541,\"path\":\"/bin/ps\",\"sha256\":\"3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c\",\"size\":170432,\"version\":\"16777233:1152921500312571399:170432:1786589515000000000:1786589515000000000\"}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

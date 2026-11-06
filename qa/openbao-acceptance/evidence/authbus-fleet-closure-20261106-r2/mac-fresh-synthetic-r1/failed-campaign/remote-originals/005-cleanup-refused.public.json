@@ -1,0 +1,1 @@
+{"event":"cleanup-refused","index":5,"schema":"heptabao.mac-fresh-synthetic-journal.r1","value":{"errorCode":"owned_manager_command_unknown","errorType":"ManagerRefused","generation":"server-initial"}}

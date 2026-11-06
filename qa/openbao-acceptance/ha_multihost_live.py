@@ -198,7 +198,7 @@ def admitted_storage_prefix(alias: str, path: str, *, binary_source: bool = Fals
         return path.startswith("/data/")
     if alias == "x230-ts":
         return path.startswith("/home/qian/")
-    if alias in ("mac-ts", "macbook-pro"):
+    if alias in ("mac-ts", "macbook-pro", "hepta-mac-local"):
         return path.startswith("/Volumes/T5/")
     # Local Data is the existing desktop producer location. Other hosts retain
     # their original home admission; this does not grant a host or ABI identity.
