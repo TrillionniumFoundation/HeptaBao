@@ -4,7 +4,6 @@ This checks only the workflow/owner admission contract, not official OpenBao
 compatibility, three-process HA, external Oracle identity or production readiness.
 """
 from pathlib import Path
-import re
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
