@@ -7015,7 +7015,9 @@ impl Service {
                 client_certificates,
                 origin_peer,
                 Some(&state.cluster_id),
-                native_jwt_lifetime.is_some().then_some(&mut authenticated_jwt_lifetime),
+                native_jwt_lifetime
+                    .is_some()
+                    .then_some(&mut authenticated_jwt_lifetime),
             )
         };
         match auth_result {
@@ -7122,7 +7124,9 @@ impl Service {
                     state.engines = engines;
                     state.namespaces = namespaces;
                 }
-                if response.status == 200 && let Some(output) = native_jwt_lifetime {
+                if response.status == 200
+                    && let Some(output) = native_jwt_lifetime
+                {
                     *output = authenticated_jwt_lifetime;
                 }
                 return Response {

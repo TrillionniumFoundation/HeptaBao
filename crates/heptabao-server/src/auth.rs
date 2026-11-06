@@ -4551,8 +4551,17 @@ impl AuthState {
         cluster_id: Option<&str>,
     ) -> Result<Option<AuthResponse>, AuthError> {
         self.handle_with_connection_clock_and_native_jwt_lifetime_for_cluster(
-            principal, namespace, method, path, body, time, clock,
-            peer_certificates, origin_peer, cluster_id, None,
+            principal,
+            namespace,
+            method,
+            path,
+            body,
+            time,
+            clock,
+            peer_certificates,
+            origin_peer,
+            cluster_id,
+            None,
         )
     }
 
@@ -4658,7 +4667,13 @@ impl AuthState {
                 }
                 "jwt" => match native_jwt_lifetime {
                     Some(lifetime) => self.jwt_route_with_native_lifetime(
-                        principal, scope, method, path, body, now, Some(lifetime),
+                        principal,
+                        scope,
+                        method,
+                        path,
+                        body,
+                        now,
+                        Some(lifetime),
                     ),
                     None => self.jwt_route(principal, scope, method, path, body, now),
                 },
@@ -6287,14 +6302,27 @@ impl AuthState {
             let time_policy = jwt_login::native_time_policy(&config, &role);
             let user_claim = role.user_claim.as_deref().unwrap_or("sub");
             let (verified, lifetime) = if native_lifetime.is_some() {
-                verifier.verify_native_with_user_claim_and_lifetime(
-                    jwt, now, time_policy, role.bound_claims.as_ref(), user_claim,
-                ).map(|(identity, lifetime)| (identity, Some(lifetime)))
+                verifier
+                    .verify_native_with_user_claim_and_lifetime(
+                        jwt,
+                        now,
+                        time_policy,
+                        role.bound_claims.as_ref(),
+                        user_claim,
+                    )
+                    .map(|(identity, lifetime)| (identity, Some(lifetime)))
             } else {
-                verifier.verify_native_with_user_claim(
-                    jwt, now, time_policy, role.bound_claims.as_ref(), user_claim,
-                ).map(|identity| (identity, None))
-            }.map_err(|_| bad("JWT signature or claims validation failed"))?;
+                verifier
+                    .verify_native_with_user_claim(
+                        jwt,
+                        now,
+                        time_policy,
+                        role.bound_claims.as_ref(),
+                        user_claim,
+                    )
+                    .map(|identity| (identity, None))
+            }
+            .map_err(|_| bad("JWT signature or claims validation failed"))?;
             let claimed_namespace = verified.namespace.as_deref().unwrap_or("");
             if claimed_namespace != namespace
                 || !role.bound_groups.is_subset(&verified.groups)

@@ -193,14 +193,17 @@ impl JwtVerifier {
             return Err(AuthError::ClaimDenied);
         }
         let alias = selected_alias.unwrap_or_else(|| subject.clone());
-        Ok((NativeJwtIdentity {
-            issuer,
-            subject,
-            alias,
-            audiences,
-            namespace,
-            groups,
-        }, lifetime))
+        Ok((
+            NativeJwtIdentity {
+                issuer,
+                subject,
+                alias,
+                audiences,
+                namespace,
+                groups,
+            },
+            lifetime,
+        ))
     }
 }
 

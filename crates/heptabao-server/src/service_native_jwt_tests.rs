@@ -6,7 +6,10 @@ use crate::service::tests::Root;
 use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 use ring::signature::{Ed25519KeyPair, KeyPair};
 use std::cell::RefCell;
-use std::sync::{Arc, atomic::{AtomicBool, Ordering}};
+use std::sync::{
+    Arc,
+    atomic::{AtomicBool, Ordering},
+};
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 const LOGIN: &str = "auth/native-jwt/login";
@@ -36,7 +39,9 @@ impl PublicationPause {
 }
 impl Drop for PublicationPause {
     fn drop(&mut self) {
-        BEFORE_PUBLICATION.with(|slot| { slot.borrow_mut().take(); });
+        BEFORE_PUBLICATION.with(|slot| {
+            slot.borrow_mut().take();
+        });
     }
 }
 
@@ -50,11 +55,21 @@ pub(super) fn before_actual_jwt_publication() {
 }
 
 fn status(response: &Response, expected: u16) {
-    assert_eq!(response.status, expected, "JWT error shape={:?}", response.body.get("errors"));
+    assert_eq!(
+        response.status,
+        expected,
+        "JWT error shape={:?}",
+        response.body.get("errors")
+    );
 }
 fn text(response: &Response, pointer: &str) -> TestResult<String> {
-    response.body.pointer(pointer).and_then(Value::as_str)
-        .filter(|v| !v.is_empty()).map(str::to_owned).ok_or_else(|| "synthetic JWT field missing".into())
+    response
+        .body
+        .pointer(pointer)
+        .and_then(Value::as_str)
+        .filter(|v| !v.is_empty())
+        .map(str::to_owned)
+        .ok_or_else(|| "synthetic JWT field missing".into())
 }
 fn secret(response: &mut Response, pointer: &str) -> TestResult<Zeroizing<String>> {
     let value = Zeroizing::new(text(response, pointer)?);
@@ -69,17 +84,35 @@ fn no_credential(response: &Response) {
     assert!(response.unwrapped_json.is_none() && response.consistency_index.is_none());
 }
 
-fn call(service: &mut Service, now: &mut u64, token: &str,
-        method: &str, path: &str, body: Value) -> TestResult<Response> {
+fn call(
+    service: &mut Service,
+    now: &mut u64,
+    token: &str,
+    method: &str,
+    path: &str,
+    body: Value,
+) -> TestResult<Response> {
     *now += 1;
     let started = Instant::now();
     let clock = RequestClock::anchored(Duration::from_secs(*now), started)?;
-    let _scope = crate::request_deadline::RequestDeadlineScope::enter(started + Duration::from_secs(15));
-    let execution = service.begin_at_mode_precise(RequestDispatch {
-        method, path, namespace: "", token, body, now: *now,
-        allow_forward: true, enforce_namespace: true, wrap_ttl_seconds: None,
-        origin_peer: None, client_certificates: None,
-    }, clock);
+    let _scope =
+        crate::request_deadline::RequestDeadlineScope::enter(started + Duration::from_secs(15));
+    let execution = service.begin_at_mode_precise(
+        RequestDispatch {
+            method,
+            path,
+            namespace: "",
+            token,
+            body,
+            now: *now,
+            allow_forward: true,
+            enforce_namespace: true,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        },
+        clock,
+    );
     // Local JWT must not acquire a remote issuer/provider execution capsule.
     let RequestExecution::Complete(response) = execution else {
         return Err("local native JWT escaped to external execution".into());
@@ -102,28 +135,96 @@ impl Fixture {
         let mut service = files.service()?;
         service.configure_native_v6_storage(NativeStorageProfile::File)?;
         let mut now = 100;
-        let mut init = call(&mut service, &mut now, "", "POST", "sys/init",
-                            json!({"secret_shares":1,"secret_threshold":1}))?;
+        let mut init = call(
+            &mut service,
+            &mut now,
+            "",
+            "POST",
+            "sys/init",
+            json!({"secret_shares":1,"secret_threshold":1}),
+        )?;
         status(&init, 200);
         let key = Zeroizing::new(text(&init, "/keys/0")?);
         let admin = secret(&mut init, "/root_token")?;
-        status(&call(&mut service, &mut now, "", "POST", "sys/unseal", json!({"key":key.as_str()}))?,200);
-        status(&call(&mut service, &mut now, &admin, "POST", "sys/init/ack", json!({}))?,204);
-        let pair = Ed25519KeyPair::from_seed_unchecked(&[67;32]).map_err(|_| "synthetic signing key")?;
-        let mut f = Self { files, service, key, admin, now, pair };
-        status(&f.admin("POST", native_storage::ACTIVATE_PATH, json!({}))?,204);
+        status(
+            &call(
+                &mut service,
+                &mut now,
+                "",
+                "POST",
+                "sys/unseal",
+                json!({"key":key.as_str()}),
+            )?,
+            200,
+        );
+        status(
+            &call(
+                &mut service,
+                &mut now,
+                &admin,
+                "POST",
+                "sys/init/ack",
+                json!({}),
+            )?,
+            204,
+        );
+        let pair =
+            Ed25519KeyPair::from_seed_unchecked(&[67; 32]).map_err(|_| "synthetic signing key")?;
+        let mut f = Self {
+            files,
+            service,
+            key,
+            admin,
+            now,
+            pair,
+        };
+        status(
+            &f.admin("POST", native_storage::ACTIVATE_PATH, json!({}))?,
+            204,
+        );
         assert!(f.service.native_root.is_some() && f.service.record_root.is_none());
-        status(&f.admin("POST", "sys/mounts/jwt-kv", json!({"type":"kv","options":{"version":"2"}}))?,204);
-        status(&f.admin("POST", "jwt-kv/data/value", json!({"options":{"cas":0},"data":{"value":"jwt-preserved"}}))?,200);
-        status(&f.admin("PUT", "sys/policies/acl/native-jwt", json!({"policy":POLICY}))?,204);
+        status(
+            &f.admin(
+                "POST",
+                "sys/mounts/jwt-kv",
+                json!({"type":"kv","options":{"version":"2"}}),
+            )?,
+            204,
+        );
+        status(
+            &f.admin(
+                "POST",
+                "jwt-kv/data/value",
+                json!({"options":{"cas":0},"data":{"value":"jwt-preserved"}}),
+            )?,
+            200,
+        );
+        status(
+            &f.admin(
+                "PUT",
+                "sys/policies/acl/native-jwt",
+                json!({"policy":POLICY}),
+            )?,
+            204,
+        );
         // Base 4e808 rejects this actual native mount. Merely exercising the
         // pre-existing legacy JWT handler cannot make this regression pass.
-        status(&f.admin("POST", "sys/auth/native-jwt", json!({"type":"jwt"}))?,204);
+        status(
+            &f.admin("POST", "sys/auth/native-jwt", json!({"type":"jwt"}))?,
+            204,
+        );
         let config = f.config(&f.pair);
-        status(&f.admin("POST", CONFIG, config)?,204);
-        status(&f.admin("POST", ROLE, json!({"role_type":"jwt","user_claim":"sub",
+        status(&f.admin("POST", CONFIG, config)?, 204);
+        status(
+            &f.admin(
+                "POST",
+                ROLE,
+                json!({"role_type":"jwt","user_claim":"sub",
             "bound_audiences":["native"],"token_policies":["native-jwt"],
-            "token_ttl":300,"token_max_ttl":600,"token_type":"service"}))?,204);
+            "token_ttl":300,"token_max_ttl":600,"token_type":"service"}),
+            )?,
+            204,
+        );
         Ok(f)
     }
     fn config(&self, pair: &Ed25519KeyPair) -> Value {
@@ -135,28 +236,49 @@ impl Fixture {
         let header = URL_SAFE_NO_PAD.encode(br#"{"alg":"EdDSA","kid":"key"}"#);
         let claims = json!({"iss":"https://native-jwt.example","aud":"native","sub":"alice",
             "iat":self.now,"exp":expires,"jti":"reusable-not-a-nonce"});
-        let signing = format!("{header}.{}",URL_SAFE_NO_PAD.encode(claims.to_string()));
-        Zeroizing::new(format!("{signing}.{}",URL_SAFE_NO_PAD.encode(self.pair.sign(signing.as_bytes()).as_ref())))
+        let signing = format!("{header}.{}", URL_SAFE_NO_PAD.encode(claims.to_string()));
+        Zeroizing::new(format!(
+            "{signing}.{}",
+            URL_SAFE_NO_PAD.encode(self.pair.sign(signing.as_bytes()).as_ref())
+        ))
     }
     fn admin(&mut self, method: &str, path: &str, body: Value) -> TestResult<Response> {
-        call(&mut self.service, &mut self.now, &self.admin, method, path, body)
+        call(
+            &mut self.service,
+            &mut self.now,
+            &self.admin,
+            method,
+            path,
+            body,
+        )
     }
-    fn actor(&mut self, token: &str, method: &str, path: &str, body: Value) -> TestResult<Response> {
+    fn actor(
+        &mut self,
+        token: &str,
+        method: &str,
+        path: &str,
+        body: Value,
+    ) -> TestResult<Response> {
         call(&mut self.service, &mut self.now, token, method, path, body)
     }
-    fn login(&mut self, assertion: &str) -> TestResult<(Zeroizing<String>,String)> {
-        let mut response = self.actor("", "POST", LOGIN, json!({"role":"client","jwt":assertion}))?;
-        status(&response,200);
-        assert_eq!(response.body["auth"]["token_type"],"service");
-        assert_eq!(response.body["auth"]["renewable"],true);
-        let entity = text(&response,"/auth/entity_id")?;
-        let token = secret(&mut response,"/auth/client_token")?;
-        Ok((token,entity))
+    fn login(&mut self, assertion: &str) -> TestResult<(Zeroizing<String>, String)> {
+        let mut response =
+            self.actor("", "POST", LOGIN, json!({"role":"client","jwt":assertion}))?;
+        status(&response, 200);
+        assert_eq!(response.body["auth"]["token_type"], "service");
+        assert_eq!(response.body["auth"]["renewable"], true);
+        let entity = text(&response, "/auth/entity_id")?;
+        let token = secret(&mut response, "/auth/client_token")?;
+        Ok((token, entity))
     }
     fn token(&mut self, policy: &str) -> TestResult<Zeroizing<String>> {
-        let mut response = self.admin("POST", "auth/token/create", json!({
-            "policies":[policy],"no_default_policy":true,"ttl":"600s"
-        }))?;
+        let mut response = self.admin(
+            "POST",
+            "auth/token/create",
+            json!({
+                "policies":[policy],"no_default_policy":true,"ttl":"600s"
+            }),
+        )?;
         status(&response, 200);
         secret(&mut response, "/auth/client_token")
     }
@@ -164,7 +286,17 @@ impl Fixture {
         drop(self.service);
         let mut service = self.files.service()?;
         service.configure_native_v6_storage(NativeStorageProfile::File)?;
-        status(&call(&mut service,&mut self.now,"","POST","sys/unseal",json!({"key":self.key.as_str()}))?,200);
+        status(
+            &call(
+                &mut service,
+                &mut self.now,
+                "",
+                "POST",
+                "sys/unseal",
+                json!({"key":self.key.as_str()}),
+            )?,
+            200,
+        );
         assert!(service.native_root.is_some() && service.record_root.is_none());
         assert!(!service.recovery_required);
         self.service = service;
@@ -172,8 +304,10 @@ impl Fixture {
     }
     fn snapshot(&self) -> TestResult<Zeroizing<Vec<u8>>> {
         let state = self.service.state.as_ref().ok_or("native state")?;
-        let auth_bytes = owner_store::serialize_owner(&state.auth).map_err(|_| "Auth projection")?;
-        let engine_bytes = owner_store::serialize_owner(&state.engines).map_err(|_| "Identity projection")?;
+        let auth_bytes =
+            owner_store::serialize_owner(&state.auth).map_err(|_| "Auth projection")?;
+        let engine_bytes =
+            owner_store::serialize_owner(&state.engines).map_err(|_| "Identity projection")?;
         let mut auth: Value = serde_json::from_slice(&auth_bytes)?;
         let mut engines: Value = serde_json::from_slice(&engine_bytes)?;
         assert!(auth["auth_mounts"].is_object());
@@ -186,83 +320,140 @@ impl Fixture {
             "jwt":auth["jwt_mounts"].take(),"tokens":auth["tokens"].take(),
             "identity":engines["namespaces"][""]["identity"].take()});
         let bytes = Zeroizing::new(serde_json::to_vec(&projection)?);
-        erase_json(&mut projection);erase_json(&mut auth);erase_json(&mut engines);
+        erase_json(&mut projection);
+        erase_json(&mut auth);
+        erase_json(&mut engines);
         Ok(bytes)
     }
-    fn begin_login(&mut self, assertion: &str, budget: Duration) -> TestResult<(Response,RequestClock,Instant)> {
+    fn begin_login(
+        &mut self,
+        assertion: &str,
+        budget: Duration,
+    ) -> TestResult<(Response, RequestClock, Instant)> {
         self.now += 1;
-        let started = Instant::now();let until = started + budget;
-        let clock = RequestClock::anchored(Duration::from_secs(self.now),started)?;
+        let started = Instant::now();
+        let until = started + budget;
+        let clock = RequestClock::anchored(Duration::from_secs(self.now), started)?;
         let _scope = crate::request_deadline::RequestDeadlineScope::enter(until);
         let body = json!({"role":"client","jwt":assertion});
         let response = self.service.handle_inner(RequestView {
-            method:"POST",path:LOGIN,namespace:"",token:"",body:&body,now:self.now,
-            admission_started:started,token_clock:Some(clock),allow_forward:true,enforce_namespace:true,
-            wrap_ttl_seconds:None,origin_peer:None,client_certificates:None,
+            method: "POST",
+            path: LOGIN,
+            namespace: "",
+            token: "",
+            body: &body,
+            now: self.now,
+            admission_started: started,
+            token_clock: Some(clock),
+            allow_forward: true,
+            enforce_namespace: true,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
         });
-        let delivery = self.service.pending_native_auth_delivery.as_ref().ok_or("actual JWT owner")?;
+        let delivery = self
+            .service
+            .pending_native_auth_delivery
+            .as_ref()
+            .ok_or("actual JWT owner")?;
         assert!(delivery.jwt_owner.is_some());
         assert!(delivery.requires_local_proof() && delivery.tracks_terminal_checkpoint());
         assert!(delivery.proof.is_none() && delivery.delivery_checkpoint.is_some());
-        assert_eq!(delivery.deadline.instant(),until);
-        Ok((response,clock,until))
+        assert_eq!(delivery.deadline.instant(), until);
+        Ok((response, clock, until))
     }
 }
 
 #[test]
 fn native_jwt_local_service_token_identity_renewal_and_cold_reopen() -> TestResult {
-    let mut f=Fixture::new()?;
-    let expires=f.now+30;
-    let assertion=f.assertion(expires);
-    let (first,entity)=f.login(&assertion)?;
-    let (second,same_entity)=f.login(&assertion)?;
-    assert!(first.as_str()!=second.as_str());
-    assert_eq!(entity,same_entity);
-    let mut f=f.restart()?;
-    let read=f.actor(&first,"GET","jwt-kv/data/value",json!({}))?;
-    status(&read,200);assert_eq!(read.body["data"]["data"]["value"],"jwt-preserved");
-    f.now=expires+1;
+    let mut f = Fixture::new()?;
+    let expires = f.now + 30;
+    let assertion = f.assertion(expires);
+    let (first, entity) = f.login(&assertion)?;
+    let (second, same_entity) = f.login(&assertion)?;
+    assert!(first.as_str() != second.as_str());
+    assert_eq!(entity, same_entity);
+    let mut f = f.restart()?;
+    let read = f.actor(&first, "GET", "jwt-kv/data/value", json!({}))?;
+    status(&read, 200);
+    assert_eq!(read.body["data"]["data"]["value"], "jwt-preserved");
+    f.now = expires + 1;
     // Renewal follows the issuing role and issued token, not the expired JWT
     // or the role's later trust keys. No remote issuer execution is permitted.
-    let rotated=Ed25519KeyPair::from_seed_unchecked(&[68;32]).map_err(|_|"rotation key")?;
-    let config=f.config(&rotated);
-    status(&f.admin("POST",CONFIG,config)?,204);
-    let mut renewed=f.actor(&first,"POST","auth/token/renew-self",json!({"increment":120}))?;
-    status(&renewed,200);assert_eq!(renewed.body["auth"]["entity_id"],entity);
-    let echoed=secret(&mut renewed,"/auth/client_token")?;assert!(echoed.as_str()==first.as_str());
-    let mut f=f.restart()?;
-    status(&f.actor(&first,"POST","auth/token/revoke-self",json!({}))?,204);
-    status(&f.actor(&first,"GET","auth/token/lookup-self",json!({}))?,403);
-    status(&f.actor(&second,"GET","auth/token/lookup-self",json!({}))?,200);
-    status(&f.admin("DELETE",ROLE,json!({}))?,204);
-    let missing_role=f.actor(&second,"POST","auth/token/renew-self",json!({}))?;
-    status(&missing_role,500);no_credential(&missing_role);
-    status(&f.admin("DELETE","sys/auth/native-jwt",json!({}))?,204);
-    let mut f=f.restart()?;
-    status(&f.actor(&second,"GET","auth/token/lookup-self",json!({}))?,403);
+    let rotated = Ed25519KeyPair::from_seed_unchecked(&[68; 32]).map_err(|_| "rotation key")?;
+    let config = f.config(&rotated);
+    status(&f.admin("POST", CONFIG, config)?, 204);
+    let mut renewed = f.actor(
+        &first,
+        "POST",
+        "auth/token/renew-self",
+        json!({"increment":120}),
+    )?;
+    status(&renewed, 200);
+    assert_eq!(renewed.body["auth"]["entity_id"], entity);
+    let echoed = secret(&mut renewed, "/auth/client_token")?;
+    assert!(echoed.as_str() == first.as_str());
+    let mut f = f.restart()?;
+    status(
+        &f.actor(&first, "POST", "auth/token/revoke-self", json!({}))?,
+        204,
+    );
+    status(
+        &f.actor(&first, "GET", "auth/token/lookup-self", json!({}))?,
+        403,
+    );
+    status(
+        &f.actor(&second, "GET", "auth/token/lookup-self", json!({}))?,
+        200,
+    );
+    status(&f.admin("DELETE", ROLE, json!({}))?, 204);
+    let missing_role = f.actor(&second, "POST", "auth/token/renew-self", json!({}))?;
+    status(&missing_role, 500);
+    no_credential(&missing_role);
+    status(&f.admin("DELETE", "sys/auth/native-jwt", json!({}))?, 204);
+    let mut f = f.restart()?;
+    status(
+        &f.actor(&second, "GET", "auth/token/lookup-self", json!({}))?,
+        403,
+    );
     Ok(())
 }
 
 #[test]
 fn native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta() -> TestResult {
-    let mut f=Fixture::new()?;
-    for (path,body) in [(CONFIG,json!({"issuer":"https://native-jwt.example","audiences":["native"],
-        "jwks_url":"https://remote-issuer.invalid/keys"})),
-        (ROLE,json!({"token_type":"batch"})),
-        ("sys/auth/native-jwt/tune",json!({"token_type":"default_batch"}))] {
-        let before=f.snapshot()?;
-        let response=f.admin("POST",path,body)?;
-        status(&response,501);no_credential(&response);
-        assert!(before.as_slice()==f.snapshot()?.as_slice());
+    let mut f = Fixture::new()?;
+    for (path, body) in [
+        (
+            CONFIG,
+            json!({"issuer":"https://native-jwt.example","audiences":["native"],
+        "jwks_url":"https://remote-issuer.invalid/keys"}),
+        ),
+        (ROLE, json!({"token_type":"batch"})),
+        (
+            "sys/auth/native-jwt/tune",
+            json!({"token_type":"default_batch"}),
+        ),
+    ] {
+        let before = f.snapshot()?;
+        let response = f.admin("POST", path, body)?;
+        status(&response, 501);
+        no_credential(&response);
+        assert!(before.as_slice() == f.snapshot()?.as_slice());
     }
-    let assertion=f.assertion(f.now+60);
-    let mut segments=assertion.split('.').map(str::to_owned).collect::<Vec<_>>();
-    segments[2]=URL_SAFE_NO_PAD.encode([0;64]);
-    let bad=Zeroizing::new(segments.join("."));
-    let before=f.snapshot()?;
-    let response=f.actor("","POST",LOGIN,json!({"role":"client","jwt":bad.as_str()}))?;
-    status(&response,400);no_credential(&response);
-    assert!(before.as_slice()==f.snapshot()?.as_slice());
+    let assertion = f.assertion(f.now + 60);
+    let mut segments = assertion.split('.').map(str::to_owned).collect::<Vec<_>>();
+    segments[2] = URL_SAFE_NO_PAD.encode([0; 64]);
+    let bad = Zeroizing::new(segments.join("."));
+    let before = f.snapshot()?;
+    let response = f.actor(
+        "",
+        "POST",
+        LOGIN,
+        json!({"role":"client","jwt":bad.as_str()}),
+    )?;
+    status(&response, 400);
+    no_credential(&response);
+    assert!(before.as_slice() == f.snapshot()?.as_slice());
     assert!(f.service.pending_native_auth_delivery.is_none());
     Ok(())
 }
@@ -275,9 +466,16 @@ fn native_jwt_role_operations_keep_the_existing_legacy_acl_contract() -> TestRes
     status(&f.admin("PUT", "sys/policies/acl/jwt-role-manager", json!({"policy":
         "path \"auth/native-jwt/role\" { capabilities = [\"list\"] } path \"auth/native-jwt/role/client\" { capabilities = [\"read\",\"update\",\"sudo\"] }"
     }))?, 204);
-    status(&f.admin("PUT", "sys/policies/acl/jwt-role-no-sudo", json!({"policy":
-        "path \"auth/native-jwt/role/client\" { capabilities = [\"read\",\"update\"] }"
-    }))?, 204);
+    status(
+        &f.admin(
+            "PUT",
+            "sys/policies/acl/jwt-role-no-sudo",
+            json!({"policy":
+                "path \"auth/native-jwt/role/client\" { capabilities = [\"read\",\"update\"] }"
+            }),
+        )?,
+        204,
+    );
     let manager = f.token("jwt-role-manager")?;
     let no_sudo = f.token("jwt-role-no-sudo")?;
     let listed = f.actor(&manager, "GET", "auth/native-jwt/role", json!({}))?;
@@ -285,9 +483,13 @@ fn native_jwt_role_operations_keep_the_existing_legacy_acl_contract() -> TestRes
     assert_eq!(listed.body["data"]["keys"], json!(["client"]));
     let before = f.snapshot()?;
     let denied = f.actor(&no_sudo, "POST", ROLE, json!({"token_ttl":301}))?;
-    status(&denied, 403);no_credential(&denied);
+    status(&denied, 403);
+    no_credential(&denied);
     assert!(before.as_slice() == f.snapshot()?.as_slice());
-    status(&f.actor(&manager, "POST", ROLE, json!({"token_ttl":301}))?, 204);
+    status(
+        &f.actor(&manager, "POST", ROLE, json!({"token_ttl":301}))?,
+        204,
+    );
     // No delete capability: the existing named DELETE uses update + sudo.
     status(&f.actor(&manager, "DELETE", ROLE, json!({}))?, 204);
     status(&f.admin("GET", ROLE, json!({}))?, 404);
@@ -295,33 +497,52 @@ fn native_jwt_role_operations_keep_the_existing_legacy_acl_contract() -> TestRes
 }
 
 #[test]
-fn native_jwt_identity_failure_does_not_export_witness_or_token_and_next_login_is_fresh() -> TestResult {
-    let mut f=Fixture::new()?;let assertion=f.assertion(f.now+60);
-    let (_,entity)=f.login(&assertion)?;
-    let route=format!("identity/entity/id/{entity}");
-    status(&f.admin("PATCH",&route,json!({"disabled":true}))?,204);
-    let before=f.snapshot()?;
-    let denied=f.actor("","POST",LOGIN,json!({"role":"client","jwt":assertion.as_str()}))?;
-    status(&denied,403);no_credential(&denied);
-    assert!(before.as_slice()==f.snapshot()?.as_slice());
+fn native_jwt_identity_failure_does_not_export_witness_or_token_and_next_login_is_fresh()
+-> TestResult {
+    let mut f = Fixture::new()?;
+    let assertion = f.assertion(f.now + 60);
+    let (_, entity) = f.login(&assertion)?;
+    let route = format!("identity/entity/id/{entity}");
+    status(&f.admin("PATCH", &route, json!({"disabled":true}))?, 204);
+    let before = f.snapshot()?;
+    let denied = f.actor(
+        "",
+        "POST",
+        LOGIN,
+        json!({"role":"client","jwt":assertion.as_str()}),
+    )?;
+    status(&denied, 403);
+    no_credential(&denied);
+    assert!(before.as_slice() == f.snapshot()?.as_slice());
     assert!(f.service.pending_native_auth_delivery.is_none());
-    status(&f.admin("PATCH",&route,json!({"disabled":false}))?,204);
-    let (_,again)=f.login(&assertion)?;assert_eq!(again,entity);
+    status(&f.admin("PATCH", &route, json!({"disabled":false}))?, 204);
+    let (_, again) = f.login(&assertion)?;
+    assert_eq!(again, entity);
     Ok(())
 }
 
 #[test]
-fn native_jwt_original_assertion_expiry_before_publication_keeps_auth_identity_atomic() -> TestResult {
-    let mut f=Fixture::new()?;let assertion=f.assertion(f.now+2);
-    let before=f.snapshot()?;
-    let pause=PublicationPause::once(Duration::from_millis(2100));
-    let response=f.actor("","POST",LOGIN,json!({"role":"client","jwt":assertion.as_str()}))?;
-    assert!(pause.0.load(Ordering::Acquire));drop(pause);
-    status(&response,503);no_credential(&response);
-    assert!(before.as_slice()==f.snapshot()?.as_slice());
+fn native_jwt_original_assertion_expiry_before_publication_keeps_auth_identity_atomic() -> TestResult
+{
+    let mut f = Fixture::new()?;
+    let assertion = f.assertion(f.now + 2);
+    let before = f.snapshot()?;
+    let pause = PublicationPause::once(Duration::from_millis(2100));
+    let response = f.actor(
+        "",
+        "POST",
+        LOGIN,
+        json!({"role":"client","jwt":assertion.as_str()}),
+    )?;
+    assert!(pause.0.load(Ordering::Acquire));
+    drop(pause);
+    status(&response, 503);
+    no_credential(&response);
+    assert!(before.as_slice() == f.snapshot()?.as_slice());
     assert!(f.service.pending_native_auth_delivery.is_none());
     assert!(!f.service.recovery_required);
-    let f=f.restart()?;assert!(before.as_slice()==f.snapshot()?.as_slice());
+    let f = f.restart()?;
+    assert!(before.as_slice() == f.snapshot()?.as_slice());
     Ok(())
 }
 
@@ -331,18 +552,27 @@ fn native_jwt_native_owner_capacity_veto_after_authentication_keeps_the_old_root
     let assertion = f.assertion(f.now + 60);
     let before = f.snapshot()?;
     let root = f.service.native_root.as_ref().ok_or("native root")?;
-    let bytes = root.owners.iter().try_fold(0u64, |sum, owner| {
-        sum.checked_add(owner.owner.total_bytes)
-    }).ok_or("native owner bytes")?;
+    let bytes = root
+        .owners
+        .iter()
+        .try_fold(0u64, |sum, owner| sum.checked_add(owner.owner.total_bytes))
+        .ok_or("native owner bytes")?;
     let original_capacity = f.service.opaque_owner_capacity;
     f.service.opaque_owner_capacity = usize::try_from(bytes)?;
     // The original root fits; a real newly issued token and Identity require
     // more opaque-owner space. The existing writer's capacity gate must veto
     // publication after real authentication, without a partial root or grant.
     let reached = PublicationPause::once(Duration::ZERO);
-    let response = f.actor("", "POST", LOGIN, json!({"role":"client","jwt":assertion.as_str()}))?;
-    assert!(reached.0.load(Ordering::Acquire));drop(reached);
-    status(&response, 507);no_credential(&response);
+    let response = f.actor(
+        "",
+        "POST",
+        LOGIN,
+        json!({"role":"client","jwt":assertion.as_str()}),
+    )?;
+    assert!(reached.0.load(Ordering::Acquire));
+    drop(reached);
+    status(&response, 507);
+    no_credential(&response);
     assert!(before.as_slice() == f.snapshot()?.as_slice());
     assert!(f.service.pending_native_auth_delivery.is_none());
     assert!(!f.service.recovery_required);
@@ -353,61 +583,104 @@ fn native_jwt_native_owner_capacity_veto_after_authentication_keeps_the_old_root
 }
 
 #[test]
-fn native_jwt_original_assertion_expiry_after_commit_withholds_reply_without_rollback() -> TestResult {
-    let mut f=Fixture::new()?;let assertion=f.assertion(f.now+2);
-    let before=f.snapshot()?;
-    let (response,clock,_)=f.begin_login(&assertion,Duration::from_secs(15))?;
-    status(&response,200);let issued=Zeroizing::new(text(&response,"/auth/client_token")?);
-    let committed=f.snapshot()?;assert!(before.as_slice()!=committed.as_slice());
-    let response=f.service.audit_completed_response_with_receipt(
-        "native-jwt-expiry-after-commit",f.now,Some(clock),response,
-        || std::thread::sleep(Duration::from_millis(2100)));
-    status(&response,200);
-    let response=f.service.complete_native_auth_delivery(true,response,"native-jwt-expiry-after-commit");
-    status(&response,503);no_credential(&response);
+fn native_jwt_original_assertion_expiry_after_commit_withholds_reply_without_rollback() -> TestResult
+{
+    let mut f = Fixture::new()?;
+    let assertion = f.assertion(f.now + 2);
+    let before = f.snapshot()?;
+    let (response, clock, _) = f.begin_login(&assertion, Duration::from_secs(15))?;
+    status(&response, 200);
+    let issued = Zeroizing::new(text(&response, "/auth/client_token")?);
+    let committed = f.snapshot()?;
+    assert!(before.as_slice() != committed.as_slice());
+    let response = f.service.audit_completed_response_with_receipt(
+        "native-jwt-expiry-after-commit",
+        f.now,
+        Some(clock),
+        response,
+        || std::thread::sleep(Duration::from_millis(2100)),
+    );
+    status(&response, 200);
+    let response =
+        f.service
+            .complete_native_auth_delivery(true, response, "native-jwt-expiry-after-commit");
+    status(&response, 503);
+    no_credential(&response);
     assert!(f.service.pending_native_auth_delivery.is_none());
-    assert!(committed.as_slice()==f.snapshot()?.as_slice());
-    let mut f=f.restart()?;
-    status(&f.actor(&issued,"GET","auth/token/lookup-self",json!({}))?,200);
+    assert!(committed.as_slice() == f.snapshot()?.as_slice());
+    let mut f = f.restart()?;
+    status(
+        &f.actor(&issued, "GET", "auth/token/lookup-self", json!({}))?,
+        200,
+    );
     Ok(())
 }
 
 #[test]
 fn native_jwt_post_commit_audit_failure_keeps_whole_root_and_recovery_required() -> TestResult {
-    let mut f=Fixture::new()?;let assertion=f.assertion(f.now+60);
-    let (response,clock,_)=f.begin_login(&assertion,Duration::from_secs(15))?;
-    status(&response,200);let committed=f.snapshot()?;
+    let mut f = Fixture::new()?;
+    let assertion = f.assertion(f.now + 60);
+    let (response, clock, _) = f.begin_login(&assertion, Duration::from_secs(15))?;
+    status(&response, 200);
+    let committed = f.snapshot()?;
     // Existing cfg(test) audit I/O capacity injection: exercise the actual
     // mandatory audit failure, not a fabricated Response or forged receipt.
-    f.service.audit_capacity=f.service.audit.metadata()?.len();
-    let response=f.service.audit_completed_response_with_receipt(
-        "native-jwt-audit-failure",f.now,Some(clock),response,||{});
-    status(&response,503);no_credential(&response);
+    f.service.audit_capacity = f.service.audit.metadata()?.len();
+    let response = f.service.audit_completed_response_with_receipt(
+        "native-jwt-audit-failure",
+        f.now,
+        Some(clock),
+        response,
+        || {},
+    );
+    status(&response, 503);
+    no_credential(&response);
     assert!(f.service.recovery_required);
-    let response=f.service.complete_native_auth_delivery(true,response,"native-jwt-audit-failure");
-    status(&response,503);no_credential(&response);
+    let response =
+        f.service
+            .complete_native_auth_delivery(true, response, "native-jwt-audit-failure");
+    status(&response, 503);
+    no_credential(&response);
     assert!(f.service.pending_native_auth_delivery.is_none());
-    assert!(committed.as_slice()==f.snapshot()?.as_slice());
+    assert!(committed.as_slice() == f.snapshot()?.as_slice());
     // No retry, replacement token or attempt to erase this committed root.
     Ok(())
 }
 
 #[test]
 fn native_jwt_post_audit_response_and_original_deadline_cannot_be_rebound() -> TestResult {
-    let mut f=Fixture::new()?;let assertion=f.assertion(f.now+60);
-    let (response,clock,_)=f.begin_login(&assertion,Duration::from_secs(15))?;
-    let mut response=f.service.audit_completed_response_with_receipt(
-        "native-jwt-status-custody",f.now,Some(clock),response,||{});
-    status(&response,200);response.status=403;
-    let response=f.service.complete_native_auth_delivery(true,response,"native-jwt-status-custody");
-    status(&response,503);no_credential(&response);
-    let (response,clock,until)=f.begin_login(&assertion,Duration::from_millis(1500))?;
-    let response=f.service.audit_completed_response_with_receipt(
-        "native-jwt-original-deadline",f.now,Some(clock),response,||{});
-    status(&response,200);
-    std::thread::sleep(until.saturating_duration_since(Instant::now())+Duration::from_millis(2));
-    let response=f.service.complete_native_auth_delivery(true,response,"native-jwt-original-deadline");
-    status(&response,503);no_credential(&response);
+    let mut f = Fixture::new()?;
+    let assertion = f.assertion(f.now + 60);
+    let (response, clock, _) = f.begin_login(&assertion, Duration::from_secs(15))?;
+    let mut response = f.service.audit_completed_response_with_receipt(
+        "native-jwt-status-custody",
+        f.now,
+        Some(clock),
+        response,
+        || {},
+    );
+    status(&response, 200);
+    response.status = 403;
+    let response =
+        f.service
+            .complete_native_auth_delivery(true, response, "native-jwt-status-custody");
+    status(&response, 503);
+    no_credential(&response);
+    let (response, clock, until) = f.begin_login(&assertion, Duration::from_millis(1500))?;
+    let response = f.service.audit_completed_response_with_receipt(
+        "native-jwt-original-deadline",
+        f.now,
+        Some(clock),
+        response,
+        || {},
+    );
+    status(&response, 200);
+    std::thread::sleep(until.saturating_duration_since(Instant::now()) + Duration::from_millis(2));
+    let response =
+        f.service
+            .complete_native_auth_delivery(true, response, "native-jwt-original-deadline");
+    status(&response, 503);
+    no_credential(&response);
     assert!(f.service.pending_native_auth_delivery.is_none());
     Ok(())
 }
@@ -418,22 +691,47 @@ fn native_jwt_post_audit_revocation_cannot_replace_the_original_publication_proo
     let assertion = f.assertion(f.now + 60);
     let (response, clock, _) = f.begin_login(&assertion, Duration::from_secs(15))?;
     let response = f.service.audit_completed_response_with_receipt(
-        "native-jwt-original-publication", f.now, Some(clock), response, || {});
+        "native-jwt-original-publication",
+        f.now,
+        Some(clock),
+        response,
+        || {},
+    );
     status(&response, 200);
     let issued = Zeroizing::new(text(&response, "/auth/client_token")?);
     // Retain the actual affine owner and proof. The intervening mutation is a
     // separately authorized real request, not a fabricated checkpoint/token.
-    let original = f.service.pending_native_auth_delivery.take().ok_or("original JWT delivery")?;
-    assert!(matches!(original.proof.as_ref(), Some(native_v6_reader::NativeProof::Single(_))));
-    status(&f.admin("POST", "auth/token/revoke", json!({"token":issued.as_str()}))?, 204);
+    let original = f
+        .service
+        .pending_native_auth_delivery
+        .take()
+        .ok_or("original JWT delivery")?;
+    assert!(matches!(
+        original.proof.as_ref(),
+        Some(native_v6_reader::NativeProof::Single(_))
+    ));
+    status(
+        &f.admin(
+            "POST",
+            "auth/token/revoke",
+            json!({"token":issued.as_str()}),
+        )?,
+        204,
+    );
     assert!(f.service.pending_native_auth_delivery.is_none());
     f.service.pending_native_auth_delivery = Some(original);
-    let response = f.service.complete_native_auth_delivery(true, response, "native-jwt-stale-publication");
-    status(&response, 503);no_credential(&response);
+    let response =
+        f.service
+            .complete_native_auth_delivery(true, response, "native-jwt-stale-publication");
+    status(&response, 503);
+    no_credential(&response);
     assert!(!response.body.to_string().contains(issued.as_str()));
     assert!(f.service.pending_native_auth_delivery.is_none());
     let mut f = f.restart()?;
-    status(&f.actor(&issued, "GET", "auth/token/lookup-self", json!({}))?, 403);
+    status(
+        &f.actor(&issued, "GET", "auth/token/lookup-self", json!({}))?,
+        403,
+    );
     Ok(())
 }
 
@@ -451,15 +749,26 @@ path "auth/token/revoke" { capabilities = ["update"] }
 "#;
 
 fn allow_delegation(f: &mut Fixture) -> TestResult {
-    status(&f.admin("PUT", "sys/policies/acl/native-jwt",
-        json!({"policy":DELEGATION_POLICY}))?, 204);
+    status(
+        &f.admin(
+            "PUT",
+            "sys/policies/acl/native-jwt",
+            json!({"policy":DELEGATION_POLICY}),
+        )?,
+        204,
+    );
     Ok(())
 }
 
 fn create_service_child(f: &mut Fixture, parent: &str, ttl: u64) -> TestResult<Zeroizing<String>> {
-    let mut response = f.actor(parent, "POST", "auth/token/create", json!({
-        "policies":["native-jwt"],"no_default_policy":true,"ttl":ttl
-    }))?;
+    let mut response = f.actor(
+        parent,
+        "POST",
+        "auth/token/create",
+        json!({
+            "policies":["native-jwt"],"no_default_policy":true,"ttl":ttl
+        }),
+    )?;
     status(&response, 200);
     assert_eq!(response.body["auth"]["token_type"], "service");
     assert_eq!(response.body["auth"]["orphan"], false);
@@ -486,26 +795,44 @@ fn native_jwt_token_api_service_descendants_keep_own_renewal_and_parent_revocati
     f.now = assertion_expires + 1;
     // The old assertion and issuing JWT role are no longer usable. The real
     // child's renewal must use Token API provenance, not its inherited mount.
-    let mut renewed = f.actor(&child, "POST", "auth/token/renew-self",
-        json!({"increment":120}))?;
+    let mut renewed = f.actor(
+        &child,
+        "POST",
+        "auth/token/renew-self",
+        json!({"increment":120}),
+    )?;
     status(&renewed, 200);
     let echo = secret(&mut renewed, "/auth/client_token")?;
     assert!(echo.as_str() == child.as_str());
     let parent_renew = f.actor(&parent, "POST", "auth/token/renew-self", json!({}))?;
-    status(&parent_renew, 500);no_credential(&parent_renew);
+    status(&parent_renew, 500);
+    no_credential(&parent_renew);
     let mut f = f.restart()?;
-    status(&f.actor(&child, "GET", "jwt-kv/data/value", json!({}))?, 200);
-    status(&f.actor(&grandchild, "GET", "auth/token/lookup-self", json!({}))?, 200);
-    status(&f.actor(&parent, "POST", "auth/token/revoke-self", json!({}))?, 204);
+    status(
+        &f.actor(&child, "GET", "jwt-kv/data/value", json!({}))?,
+        200,
+    );
+    status(
+        &f.actor(&grandchild, "GET", "auth/token/lookup-self", json!({}))?,
+        200,
+    );
+    status(
+        &f.actor(&parent, "POST", "auth/token/revoke-self", json!({}))?,
+        204,
+    );
     let mut f = f.restart()?;
     for token in [&parent, &child, &grandchild] {
-        status(&f.actor(token, "GET", "auth/token/lookup-self", json!({}))?, 403);
+        status(
+            &f.actor(token, "GET", "auth/token/lookup-self", json!({}))?,
+            403,
+        );
     }
     Ok(())
 }
 
 #[test]
-fn native_jwt_token_api_batch_owner_preserves_real_parent_binding_across_cold_reopen() -> TestResult {
+fn native_jwt_token_api_batch_owner_preserves_real_parent_binding_across_cold_reopen() -> TestResult
+{
     let mut f = Fixture::new()?;
     allow_delegation(&mut f)?;
     let assertion = f.assertion(f.now + 60);
@@ -513,9 +840,14 @@ fn native_jwt_token_api_batch_owner_preserves_real_parent_binding_across_cold_re
     let child = create_service_child(&mut f, &parent, 250)?;
     let mut batches = Vec::new();
     for issuer in [&parent, &child] {
-        let mut response = f.actor(issuer, "POST", "auth/token/create", json!({
-            "type":"batch","policies":["native-jwt"],"no_default_policy":true,"ttl":150
-        }))?;
+        let mut response = f.actor(
+            issuer,
+            "POST",
+            "auth/token/create",
+            json!({
+                "type":"batch","policies":["native-jwt"],"no_default_policy":true,"ttl":150
+            }),
+        )?;
         status(&response, 200);
         assert_eq!(response.body["auth"]["token_type"], "batch");
         assert_eq!(response.body["auth"]["renewable"], false);
@@ -528,81 +860,158 @@ fn native_jwt_token_api_batch_owner_preserves_real_parent_binding_across_cold_re
     for batch in &batches {
         status(&f.actor(batch, "GET", "jwt-kv/data/value", json!({}))?, 200);
         let renewal = f.actor(batch, "POST", "auth/token/renew-self", json!({}))?;
-        status(&renewal, 400);no_credential(&renewal);
+        status(&renewal, 400);
+        no_credential(&renewal);
     }
-    status(&f.actor(&parent, "POST", "auth/token/revoke-self", json!({}))?, 204);
+    status(
+        &f.actor(&parent, "POST", "auth/token/revoke-self", json!({}))?,
+        204,
+    );
     let mut f = f.restart()?;
     for batch in &batches {
         status(&f.actor(batch, "GET", "jwt-kv/data/value", json!({}))?, 403);
     }
-    status(&f.actor(&child, "GET", "auth/token/lookup-self", json!({}))?, 403);
+    status(
+        &f.actor(&child, "GET", "auth/token/lookup-self", json!({}))?,
+        403,
+    );
     Ok(())
 }
 
 #[test]
-fn native_jwt_token_api_revoke_orphan_keeps_own_issuer_but_mount_retirement_still_revokes() -> TestResult {
+fn native_jwt_token_api_revoke_orphan_keeps_own_issuer_but_mount_retirement_still_revokes()
+-> TestResult {
     let mut f = Fixture::new()?;
     allow_delegation(&mut f)?;
     let assertion = f.assertion(f.now + 60);
     let (parent, _) = f.login(&assertion)?;
     let child = create_service_child(&mut f, &parent, 250)?;
-    status(&f.admin("POST", "auth/token/revoke-orphan", json!({"token":parent.as_str()}))?, 204);
+    status(
+        &f.admin(
+            "POST",
+            "auth/token/revoke-orphan",
+            json!({"token":parent.as_str()}),
+        )?,
+        204,
+    );
     status(&f.admin("DELETE", ROLE, json!({}))?, 204);
     let mut f = f.restart()?;
-    status(&f.actor(&parent, "GET", "auth/token/lookup-self", json!({}))?, 403);
+    status(
+        &f.actor(&parent, "GET", "auth/token/lookup-self", json!({}))?,
+        403,
+    );
     let lookup = f.actor(&child, "GET", "auth/token/lookup-self", json!({}))?;
     status(&lookup, 200);
     assert_eq!(lookup.body["data"]["orphan"], true);
-    let mut renewed = f.actor(&child, "POST", "auth/token/renew-self", json!({"increment":120}))?;
+    let mut renewed = f.actor(
+        &child,
+        "POST",
+        "auth/token/renew-self",
+        json!({"increment":120}),
+    )?;
     status(&renewed, 200);
     let echo = secret(&mut renewed, "/auth/client_token")?;
     assert!(echo.as_str() == child.as_str());
     status(&f.admin("DELETE", "sys/auth/native-jwt", json!({}))?, 204);
     let mut f = f.restart()?;
-    status(&f.actor(&child, "GET", "auth/token/lookup-self", json!({}))?, 403);
+    status(
+        &f.actor(&child, "GET", "auth/token/lookup-self", json!({}))?,
+        403,
+    );
     Ok(())
 }
 
 #[test]
-fn native_jwt_and_userpass_token_api_targets_keep_real_owner_and_renewal_in_both_directions() -> TestResult {
+fn native_jwt_and_userpass_token_api_targets_keep_real_owner_and_renewal_in_both_directions()
+-> TestResult {
     let mut f = Fixture::new()?;
     allow_delegation(&mut f)?;
-    status(&f.admin("POST", "sys/auth/native-up", json!({"type":"userpass"}))?, 204);
-    status(&f.admin("POST", "auth/native-up/users/bob", json!({
-        "password":"native-jwt-cross-owner-synthetic","token_policies":["native-jwt"],
-        "token_ttl":300,"token_max_ttl":600
-    }))?, 204);
-    let mut response = f.actor("", "POST", "auth/native-up/login/bob",
-        json!({"password":"native-jwt-cross-owner-synthetic"}))?;
+    status(
+        &f.admin("POST", "sys/auth/native-up", json!({"type":"userpass"}))?,
+        204,
+    );
+    status(
+        &f.admin(
+            "POST",
+            "auth/native-up/users/bob",
+            json!({
+                "password":"native-jwt-cross-owner-synthetic","token_policies":["native-jwt"],
+                "token_ttl":300,"token_max_ttl":600
+            }),
+        )?,
+        204,
+    );
+    let mut response = f.actor(
+        "",
+        "POST",
+        "auth/native-up/login/bob",
+        json!({"password":"native-jwt-cross-owner-synthetic"}),
+    )?;
     status(&response, 200);
     let userpass = secret(&mut response, "/auth/client_token")?;
     let assertion = f.assertion(f.now + 60);
     let (jwt, _) = f.login(&assertion)?;
     let (other_jwt, _) = f.login(&assertion)?;
-    let mut first = f.actor(&jwt, "POST", "auth/token/renew",
-        json!({"token":userpass.as_str(),"increment":120}))?;
+    let mut first = f.actor(
+        &jwt,
+        "POST",
+        "auth/token/renew",
+        json!({"token":userpass.as_str(),"increment":120}),
+    )?;
     status(&first, 200);
     let echo = secret(&mut first, "/auth/client_token")?;
     assert!(echo.as_str() == userpass.as_str());
-    let mut second = f.actor(&userpass, "POST", "auth/token/renew",
-        json!({"token":jwt.as_str(),"increment":120}))?;
+    let mut second = f.actor(
+        &userpass,
+        "POST",
+        "auth/token/renew",
+        json!({"token":jwt.as_str(),"increment":120}),
+    )?;
     status(&second, 200);
     let echo = secret(&mut second, "/auth/client_token")?;
     assert!(echo.as_str() == jwt.as_str());
     let mut f = f.restart()?;
-    status(&f.actor(&userpass, "POST", "auth/token/revoke", json!({"token":jwt.as_str()}))?, 204);
-    status(&f.actor(&jwt, "GET", "auth/token/lookup-self", json!({}))?, 403);
-    status(&f.actor(&other_jwt, "POST", "auth/token/revoke",
-        json!({"token":userpass.as_str()}))?, 204);
+    status(
+        &f.actor(
+            &userpass,
+            "POST",
+            "auth/token/revoke",
+            json!({"token":jwt.as_str()}),
+        )?,
+        204,
+    );
+    status(
+        &f.actor(&jwt, "GET", "auth/token/lookup-self", json!({}))?,
+        403,
+    );
+    status(
+        &f.actor(
+            &other_jwt,
+            "POST",
+            "auth/token/revoke",
+            json!({"token":userpass.as_str()}),
+        )?,
+        204,
+    );
     let mut f = f.restart()?;
-    status(&f.actor(&userpass, "GET", "auth/token/lookup-self", json!({}))?, 403);
-    status(&f.actor(&jwt, "GET", "auth/token/lookup-self", json!({}))?, 403);
-    status(&f.actor(&other_jwt, "GET", "auth/token/lookup-self", json!({}))?, 200);
+    status(
+        &f.actor(&userpass, "GET", "auth/token/lookup-self", json!({}))?,
+        403,
+    );
+    status(
+        &f.actor(&jwt, "GET", "auth/token/lookup-self", json!({}))?,
+        403,
+    );
+    status(
+        &f.actor(&other_jwt, "GET", "auth/token/lookup-self", json!({}))?,
+        200,
+    );
     Ok(())
 }
 
 #[test]
-fn native_jwt_token_api_profile_rejects_mount_label_without_real_issuer_or_parent_graph() -> TestResult {
+fn native_jwt_token_api_profile_rejects_mount_label_without_real_issuer_or_parent_graph()
+-> TestResult {
     let mut f = Fixture::new()?;
     allow_delegation(&mut f)?;
     let assertion = f.assertion(f.now + 60);
@@ -613,10 +1022,15 @@ fn native_jwt_token_api_profile_rejects_mount_label_without_real_issuer_or_paren
     assert!(auth.native_v6_jwt_state_supported());
     let bytes = owner_store::serialize_owner(auth).map_err(|_| "actual Auth bytes")?;
     let mut value: Value = serde_json::from_slice(&bytes)?;
-    let child_id = value["tokens"].as_object().ok_or("actual token map")?.iter()
-        .find(|(_, token)| token["auth_mount"] == "native-jwt"
-            && token["auth_provenance"]["kind"] == "token_api")
-        .map(|(id, _)| id.clone()).ok_or("actual Token API child")?;
+    let child_id = value["tokens"]
+        .as_object()
+        .ok_or("actual token map")?
+        .iter()
+        .find(|(_, token)| {
+            token["auth_mount"] == "native-jwt" && token["auth_provenance"]["kind"] == "token_api"
+        })
+        .map(|(id, _)| id.clone())
+        .ok_or("actual Token API child")?;
     // Negative format/profile probes operate on detached values only. They
     // never install a forged token, mutate the fixture or grant a Principal.
     for mutation in 0..7 {
@@ -639,6 +1053,9 @@ fn native_jwt_token_api_profile_rejects_mount_label_without_real_issuer_or_paren
     }
     erase_json(&mut value);
     assert!(original.as_slice() == f.snapshot()?.as_slice());
-    status(&f.actor(&child, "GET", "auth/token/lookup-self", json!({}))?, 200);
+    status(
+        &f.actor(&child, "GET", "auth/token/lookup-self", json!({}))?,
+        200,
+    );
     Ok(())
 }

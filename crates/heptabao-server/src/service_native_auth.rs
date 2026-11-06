@@ -388,7 +388,8 @@ impl NativeAuthDelivery {
                 .map_err(|error| Response::error(error.status, &error.message))?;
         }
         if let Some(owner) = self.jwt_owner.as_ref() {
-            owner.check_source(auth)
+            owner
+                .check_source(auth)
                 .and_then(|()| owner.check_login_lifetime(time))
                 .map_err(|error| Response::error(error.status, &error.message))?;
         }
@@ -1082,7 +1083,8 @@ impl NativeAuthDelivery {
                 .map_err(|error| Response::error(error.status, &error.message))?;
         }
         if let Some(owner) = self.jwt_owner.as_ref() {
-            owner.authorize_reply(auth, self.principal.as_ref(), status, time)
+            owner
+                .authorize_reply(auth, self.principal.as_ref(), status, time)
                 .map_err(|error| Response::error(error.status, &error.message))?;
         }
         if let Some(owner) = self.batch_issuer_owner.as_ref() {
@@ -1112,7 +1114,9 @@ impl NativeAuthDelivery {
                 .userpass_owner
                 .as_ref()
                 .is_some_and(|owner| !owner.permits_empty_actor_retirement())
-            || self.jwt_owner.as_ref()
+            || self
+                .jwt_owner
+                .as_ref()
                 .is_some_and(|owner| !owner.permits_empty_actor_retirement())
             || self.wrapping_owner.is_some()
             || self.mount_owner.is_some()
@@ -1323,7 +1327,11 @@ impl Service {
             ) {
                 Ok(Some(owner)) => NativeLocalOwner::Userpass(Box::new(owner)),
                 Ok(None) => match source.auth.capture_native_v6_jwt_owner(
-                    principal.as_ref(), request.namespace, request.method, request.path, request.body,
+                    principal.as_ref(),
+                    request.namespace,
+                    request.method,
+                    request.path,
+                    request.body,
                 ) {
                     Ok(Some(owner)) => NativeLocalOwner::Jwt(Box::new(owner)),
                     Ok(None) => NativeLocalOwner::Auth,
@@ -1759,8 +1767,7 @@ impl Service {
             jwt_owner,
         ) = match owner {
             NativeLocalOwner::Auth => (
-                None, None, None, None, None, None, None, None, None, None, None, None, None,
-                None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
             ),
             NativeLocalOwner::Userpass(owner) => (
                 None,
@@ -1971,8 +1978,20 @@ impl Service {
                 None,
             ),
             NativeLocalOwner::Jwt(owner) => (
-                None, None, None, None, None, None, None,
-                None, None, None, None, None, None, Some(*owner),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Some(*owner),
             ),
         };
         if self.pending_native_auth_delivery.is_some()
@@ -2412,7 +2431,10 @@ impl Service {
                 request.client_certificates,
                 request.origin_peer,
                 &mut consumption,
-                delivery.jwt_owner.as_ref().is_some_and(|owner| owner.is_login())
+                delivery
+                    .jwt_owner
+                    .as_ref()
+                    .is_some_and(|owner| owner.is_login())
                     .then_some(&mut jwt_lifetime),
             )
         };
@@ -2531,13 +2553,27 @@ impl Service {
                 }
             }
         }
-        if response.status == 200 && delivery.jwt_owner.as_ref().is_some_and(|owner| owner.is_login()) {
+        if response.status == 200
+            && delivery
+                .jwt_owner
+                .as_ref()
+                .is_some_and(|owner| owner.is_login())
+        {
             let bound = (|| -> Result<(), Response> {
                 let lifetime = jwt_lifetime.take().ok_or_else(rejected)?;
                 let time = delivery.time(&delivery.source_auth)?;
-                delivery.jwt_owner.as_mut().ok_or_else(rejected)?
-                    .bind_successful_login(&delivery.source_auth, &candidate.auth,
-                        request.body, &response.body, lifetime, time)
+                delivery
+                    .jwt_owner
+                    .as_mut()
+                    .ok_or_else(rejected)?
+                    .bind_successful_login(
+                        &delivery.source_auth,
+                        &candidate.auth,
+                        request.body,
+                        &response.body,
+                        lifetime,
+                        time,
+                    )
                     .map_err(|error| Response::error(error.status, &error.message))
             })();
             if let Err(error) = bound {
@@ -2765,7 +2801,8 @@ impl Service {
                 erase_json(&mut response.body);
                 return rejected();
             }
-            let bound = owner.bind_response(response.status, &response.body)
+            let bound = owner
+                .bind_response(response.status, &response.body)
                 .map_err(|error| Response::error(error.status, &error.message))
                 .and_then(|()| transit_reply_digest(response.status, &response.body, deadline));
             match bound {
@@ -2777,7 +2814,12 @@ impl Service {
             }
         }
         #[cfg(test)]
-        if delivery.jwt_owner.as_ref().is_some_and(|owner| owner.is_login()) && response.status == 200 {
+        if delivery
+            .jwt_owner
+            .as_ref()
+            .is_some_and(|owner| owner.is_login())
+            && response.status == 200
+        {
             jwt_tests::before_actual_jwt_publication();
         }
         // A catalog read cannot acquire a writer merely to normalize schema.
@@ -2803,7 +2845,8 @@ impl Service {
                     .map_err(|error| Response::error(error.status, &error.message))?;
             }
             if let Some(owner) = delivery.jwt_owner.as_ref() {
-                owner.admit_candidate(&delivery.source_auth, &candidate.auth)
+                owner
+                    .admit_candidate(&delivery.source_auth, &candidate.auth)
                     .map_err(|error| Response::error(error.status, &error.message))?;
             }
             if let Some(owner) = delivery.batch_lifecycle_owner.as_mut() {
@@ -3320,9 +3363,12 @@ impl Service {
                 return Err(rejected());
             }
             if delivery.jwt_owner.is_some()
-                && delivery.jwt_reply != Some(transit_reply_digest(
-                    response.status, &response.body, delivery.deadline,
-                )?)
+                && delivery.jwt_reply
+                    != Some(transit_reply_digest(
+                        response.status,
+                        &response.body,
+                        delivery.deadline,
+                    )?)
             {
                 return Err(rejected());
             }

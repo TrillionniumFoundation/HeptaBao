@@ -11,9 +11,16 @@ enum JwtRoute {
         tune: bool,
         route: String,
     },
-    Config { mount: String },
-    Role { mount: String, collection: bool },
-    Login { mount: String },
+    Config {
+        mount: String,
+    },
+    Role {
+        mount: String,
+        collection: bool,
+    },
+    Login {
+        mount: String,
+    },
 }
 
 pub(crate) struct NativeJwtOwner {
@@ -76,13 +83,19 @@ impl NativeJwtOwner {
             return Err(err(503, "native JWT login mount is unavailable"));
         };
         let role_name = string_field(request, "role")?;
-        let scope = AuthScope { namespace: "", mount };
+        let scope = AuthScope {
+            namespace: "",
+            mount,
+        };
         let state = source.jwt_at(scope).ok_or_else(denied)?;
         let role = state.roles.get(role_name).ok_or_else(denied)?;
         if !self.login
             || self.login_lifetime.is_some()
             || binding.kind != "jwt"
-            || state.config.as_ref().is_none_or(|config| config.remote.is_some())
+            || state
+                .config
+                .as_ref()
+                .is_none_or(|config| config.remote.is_some())
             || source.jwt_uses_batch(scope, role)
             || reply["auth"]["token_type"].as_str() != Some("service")
         {
@@ -119,7 +132,10 @@ impl NativeJwtOwner {
     ) -> Result<(), AuthError> {
         self.check_source(source)?;
         if !candidate.native_v6_jwt_state_supported() {
-            return Err(err(501, "native JWT requires a root local-key service-token owner"));
+            return Err(err(
+                501,
+                "native JWT requires a root local-key service-token owner",
+            ));
         }
         Ok(())
     }
@@ -167,24 +183,32 @@ impl AuthState {
             && self.validate_token_api_creation_ttl().is_ok()
             && self.validate_public_origin_state().is_ok()
             && self.auth_mounts.iter().all(|(namespace, mounts)| {
-                mounts.values().all(|mount| mount.kind != "jwt"
-                    || (namespace.is_empty()
-                        && matches!(mount.token_type.unwrap_or_default(),
-                            batch_issuance::MountTokenType::DefaultService
-                                | batch_issuance::MountTokenType::Service)))
+                mounts.values().all(|mount| {
+                    mount.kind != "jwt"
+                        || (namespace.is_empty()
+                            && matches!(
+                                mount.token_type.unwrap_or_default(),
+                                batch_issuance::MountTokenType::DefaultService
+                                    | batch_issuance::MountTokenType::Service
+                            ))
+                })
             })
             && self.jwt_mounts.iter().all(|(namespace, mounts)| {
                 mounts.is_empty()
-                    || (namespace.is_empty() && mounts.iter().all(|(mount, state)| {
-                        self.online_mount_enabled(namespace, mount, "jwt")
-                            && state.config.as_ref().is_none_or(|config| {
-                                config.remote.is_none()
-                                    && config.required_namespace.as_deref().is_none_or(str::is_empty)
-                            })
-                            && state.roles.values().all(|role| {
-                                !self.jwt_uses_batch(AuthScope { namespace, mount }, role)
-                            })
-                    }))
+                    || (namespace.is_empty()
+                        && mounts.iter().all(|(mount, state)| {
+                            self.online_mount_enabled(namespace, mount, "jwt")
+                                && state.config.as_ref().is_none_or(|config| {
+                                    config.remote.is_none()
+                                        && config
+                                            .required_namespace
+                                            .as_deref()
+                                            .is_none_or(str::is_empty)
+                                })
+                                && state.roles.values().all(|role| {
+                                    !self.jwt_uses_batch(AuthScope { namespace, mount }, role)
+                                })
+                        }))
             })
             && self.native_v6_jwt_token_edges_supported()
     }
@@ -201,17 +225,18 @@ impl AuthState {
             || token.raw_wrapped_reply_custody.is_some()
             || token.auth_cert_role.is_some()
             || token.auth_cert_sha256.is_some()
-            || !token.auth_mount.as_ref().is_some_and(|mount| {
-                self.online_mount_enabled("", mount, "jwt")
-            })
+            || !token
+                .auth_mount
+                .as_ref()
+                .is_some_and(|mount| self.online_mount_enabled("", mount, "jwt"))
         {
             return false;
         }
         match token.auth_provenance {
             Some(TokenAuthProvenance::Jwt { .. }) => token.parent.is_none(),
-            Some(TokenAuthProvenance::TokenApi { issued_creation_ttl: Some(_) }) => {
-                token.public_origin.is_some() && token.validate_public_origin().is_ok()
-            }
+            Some(TokenAuthProvenance::TokenApi {
+                issued_creation_ttl: Some(_),
+            }) => token.public_origin.is_some() && token.validate_public_origin().is_ok(),
             _ => false,
         }
     }
@@ -220,9 +245,10 @@ impl AuthState {
         let mut supported = BTreeSet::new();
         for (digest, token) in &self.tokens {
             let relevant = matches!(token.auth_provenance, Some(TokenAuthProvenance::Jwt { .. }))
-                || token.auth_mount.as_ref().is_some_and(|mount| {
-                    self.online_mount_enabled(&token.namespace, mount, "jwt")
-                });
+                || token
+                    .auth_mount
+                    .as_ref()
+                    .is_some_and(|mount| self.online_mount_enabled(&token.namespace, mount, "jwt"));
             if !relevant || supported.contains(digest.as_str()) {
                 continue;
             }
@@ -235,7 +261,9 @@ impl AuthState {
                 if !path.insert(current) {
                     return false;
                 }
-                let Some(member) = self.tokens.get(current) else { return false };
+                let Some(member) = self.tokens.get(current) else {
+                    return false;
+                };
                 if !self.native_v6_jwt_token_origin(member) {
                     return false;
                 }
@@ -245,7 +273,9 @@ impl AuthState {
                     // its own validated issuance/path owner remains mandatory.
                     break;
                 };
-                let Some(parent) = self.tokens.get(parent_digest) else { return false };
+                let Some(parent) = self.tokens.get(parent_digest) else {
+                    return false;
+                };
                 if parent.namespace != member.namespace
                     || parent.auth_mount != member.auth_mount
                     || parent.created_at > member.created_at
@@ -275,26 +305,41 @@ impl AuthState {
         if path.starts_with("sys/auth/") {
             let (mount, tune, route) = control_groups::auth_mount_route(path).ok()?;
             if mounts.get(mount).is_some_and(|entry| entry.kind == "jwt")
-                || (!tune && matches!(method, "POST" | "PUT")
+                || (!tune
+                    && matches!(method, "POST" | "PUT")
                     && body.get("type").and_then(Value::as_str) == Some("jwt"))
             {
-                return Some(JwtRoute::Mount { mount: mount.to_owned(), tune, route });
+                return Some(JwtRoute::Mount {
+                    mount: mount.to_owned(),
+                    tune,
+                    route,
+                });
             }
             return None;
         }
         let auth_path = path.strip_prefix("auth/")?;
         let (mount, entry, suffix) = mounts.iter().find_map(|(mount, entry)| {
-            auth_path.strip_prefix(&format!("{mount}/")).map(|suffix| (mount, entry, suffix))
+            auth_path
+                .strip_prefix(&format!("{mount}/"))
+                .map(|suffix| (mount, entry, suffix))
         })?;
         if entry.kind != "jwt" {
             return None;
         }
         match suffix {
-            "login" => Some(JwtRoute::Login { mount: mount.to_owned() }),
-            "config" => Some(JwtRoute::Config { mount: mount.to_owned() }),
-            "role" => Some(JwtRoute::Role { mount: mount.to_owned(), collection: true }),
+            "login" => Some(JwtRoute::Login {
+                mount: mount.to_owned(),
+            }),
+            "config" => Some(JwtRoute::Config {
+                mount: mount.to_owned(),
+            }),
+            "role" => Some(JwtRoute::Role {
+                mount: mount.to_owned(),
+                collection: true,
+            }),
             _ if suffix.starts_with("role/") => Some(JwtRoute::Role {
-                mount: mount.to_owned(), collection: false,
+                mount: mount.to_owned(),
+                collection: false,
             }),
             _ => None,
         }
@@ -307,7 +352,8 @@ impl AuthState {
         path: &str,
         body: &Value,
     ) -> bool {
-        self.selected_native_jwt_route(namespace, method, path, body).is_some()
+        self.selected_native_jwt_route(namespace, method, path, body)
+            .is_some()
     }
 
     pub(crate) fn capture_native_v6_jwt_owner(
@@ -373,23 +419,41 @@ impl AuthState {
                 let Some(operation) = path.strip_prefix("auth/token/") else {
                     return Ok(None);
                 };
-                if !matches!(operation,
-                    "lookup-self" | "lookup" | "lookup-accessor"
-                        | "renew-self" | "renew" | "renew-accessor"
-                        | "revoke-self" | "revoke" | "revoke-accessor" | "revoke-orphan"
-                        | "create" | "create-orphan") && !operation.starts_with("create/")
+                if !matches!(
+                    operation,
+                    "lookup-self"
+                        | "lookup"
+                        | "lookup-accessor"
+                        | "renew-self"
+                        | "renew"
+                        | "renew-accessor"
+                        | "revoke-self"
+                        | "revoke"
+                        | "revoke-accessor"
+                        | "revoke-orphan"
+                        | "create"
+                        | "create-orphan"
+                ) && !operation.starts_with("create/")
                 {
                     return Ok(None);
                 }
                 let from_jwt = |token: &Token| self.native_v6_jwt_token_origin(token);
-                let actor_origin = actor.and_then(Principal::service_token).is_some_and(from_jwt);
+                let actor_origin = actor
+                    .and_then(Principal::service_token)
+                    .is_some_and(from_jwt);
                 let target_origin = match operation {
-                    "lookup" | "renew" | "revoke" | "revoke-orphan" => body.get("token")
-                        .and_then(Value::as_str).and_then(|raw| self.tokens.get(&hash(raw)))
+                    "lookup" | "renew" | "revoke" | "revoke-orphan" => body
+                        .get("token")
+                        .and_then(Value::as_str)
+                        .and_then(|raw| self.tokens.get(&hash(raw)))
                         .is_some_and(from_jwt),
-                    "lookup-accessor" | "renew-accessor" | "revoke-accessor" => body.get("accessor")
-                        .and_then(Value::as_str).is_some_and(|accessor| {
-                            self.tokens.values().any(|token| token.accessor == accessor && from_jwt(token))
+                    "lookup-accessor" | "renew-accessor" | "revoke-accessor" => body
+                        .get("accessor")
+                        .and_then(Value::as_str)
+                        .is_some_and(|accessor| {
+                            self.tokens
+                                .values()
+                                .any(|token| token.accessor == accessor && from_jwt(token))
                         }),
                     _ => false,
                 };
@@ -398,10 +462,14 @@ impl AuthState {
                 }
                 owner.capability = Some(if matches!(operation, "lookup-self" | "lookup") {
                     "read"
-                } else { "update" });
+                } else {
+                    "update"
+                });
                 owner.sudo = operation == "revoke-orphan";
-                owner.may_retire_actor = matches!(operation,
-                    "revoke-self" | "revoke" | "revoke-accessor" | "revoke-orphan");
+                owner.may_retire_actor = matches!(
+                    operation,
+                    "revoke-self" | "revoke" | "revoke-accessor" | "revoke-orphan"
+                );
                 None
             }
         };
