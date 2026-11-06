@@ -1,0 +1,12 @@
+{
+  "bytes": 1009233,
+  "sha256": "28a2c91da4c77cdb40f015100c57cb7b741fac91a2f77a7950761fd9b6a72144",
+  "base": "5ded017e1c858b8602a73678acc29df75386a84d",
+  "head": "af91ec0cecbb1c0bd717095d6d8696a3f73a1cee",
+  "tree": "c3c5755344f407149b84bfaec285f1dba9be90f6",
+  "source_preparer_blob": "2a989bd43e2627a50f72877b1e7d712e7d3e67b4",
+  "source_preparation_job": "1a1b1d4fbc9-fc05-7b0b",
+  "result_bytes": 17498,
+  "result_sha256": "0b960c85d2bf50eca0eece615f59bfa8b6646edd09e2aac9b20d605cbd981d1c",
+  "source_preparation_not_ha_execution": true
+}

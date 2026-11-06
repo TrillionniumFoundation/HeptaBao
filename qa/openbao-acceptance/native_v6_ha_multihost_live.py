@@ -1245,7 +1245,7 @@ def parsed_arguments(argv=None):
     parser.add_argument("--source-commit", required=True)
     parser.add_argument("--source-tree", required=True)
     parser.add_argument("--node", action="append", required=True,
-                        help="ssh-alias,private-ip,absolute-NEW-root; specify Mac, ROG and Pocket4")
+                        help="ssh-alias,private-ip,absolute-NEW-root; exactly three configured physical hosts including Darwin and Linux")
     parser.add_argument("--api-port", type=int, default=46230)
     parser.add_argument("--raft-port", type=int, default=46231)
     parser.add_argument("--mesh-local-port-base", type=int, default=55200)
