@@ -1,0 +1,21 @@
+{
+  "all_returned_listener_rows_parsed": true,
+  "full_privileged_host_listener_inventory_claimed": false,
+  "known_storage_ports_observed": [],
+  "native_wrapper_sha256": "575a43d009d0ff3bc61c02fd1684e2455047d2d3fa0bab5d6a1fd1178511aa50",
+  "new_api_is_initially_loopback_only": true,
+  "observed_listening_rows": 29,
+  "observed_loopback_and_current_lan_addresses": [
+    "127.0.0.1",
+    "192.168.0.8"
+  ],
+  "port_reserved": false,
+  "proposed_ordinary_api": "https://127.0.0.1:18240",
+  "schema": "heptabao.mac-formal-kv2-candidate-network-admission.v1",
+  "selected_port_not_in_returned_listener_snapshot": true,
+  "services_modified": false,
+  "source": "one native network_inspect read",
+  "startup_must_still_observe_owned_process_and_exact_new_tls_identity": true,
+  "tls_certificate_exists_or_accepted": false,
+  "traffic_cutover_performed": false
+}

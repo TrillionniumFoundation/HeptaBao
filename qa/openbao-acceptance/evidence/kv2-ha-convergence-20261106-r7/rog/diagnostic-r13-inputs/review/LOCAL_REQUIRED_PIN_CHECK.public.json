@@ -1,0 +1,15 @@
+{
+  "actual_r12_public_receipt_exact": true,
+  "all25_original_artifact_map_objects_equal": true,
+  "all_unchanged_build_selection_budget_fields_verified": true,
+  "controller_sha256": "50ef1feed37b7abd31e7cc2db3b1f7feb7a77a954e347e82a6861814fb414c97",
+  "ordinary_file_controls_passed": [
+    "same_real_public_receipt_before_after",
+    "same_size_tamper_rejected",
+    "mode_change_rejected",
+    "symlink_rejected",
+    "hardlink_rejected"
+  ],
+  "product_or_remote_execution": false,
+  "schema": "heptabao.r13-local-required-pin-check.v1"
+}

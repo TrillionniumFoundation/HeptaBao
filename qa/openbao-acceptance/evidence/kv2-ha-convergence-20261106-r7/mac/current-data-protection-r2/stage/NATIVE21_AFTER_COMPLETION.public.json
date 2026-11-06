@@ -1,0 +1,160 @@
+{
+  "all_native_full_file_sha256_size_owner_mode_and_link_counts_equal": true,
+  "count": 21,
+  "files": [
+    {
+      "bytes": 2500,
+      "complete_native_readback_matches_original_staged_bytes": true,
+      "owner_mode_link_count_exact": true,
+      "private": false,
+      "role": "controls18-owned-one.public.json"
+    },
+    {
+      "bytes": 9753,
+      "complete_native_readback_matches_original_staged_bytes": true,
+      "owner_mode_link_count_exact": true,
+      "private": false,
+      "role": "controls18-result.public.json"
+    },
+    {
+      "bytes": 731,
+      "complete_native_readback_matches_original_staged_bytes": true,
+      "owner_mode_link_count_exact": true,
+      "private": false,
+      "role": "controls18-runtime-terminal.original.json"
+    },
+    {
+      "bytes": 1437,
+      "complete_native_readback_matches_original_staged_bytes": true,
+      "owner_mode_link_count_exact": true,
+      "private": false,
+      "role": "dr2-result.public.json"
+    },
+    {
+      "bytes": 729,
+      "complete_native_readback_matches_original_staged_bytes": true,
+      "owner_mode_link_count_exact": true,
+      "private": false,
+      "role": "dr2-runtime-terminal.original.json"
+    },
+    {
+      "bytes": 735,
+      "complete_native_readback_matches_original_staged_bytes": true,
+      "owner_mode_link_count_exact": true,
+      "private": false,
+      "role": "dr26-runtime-terminal.original.json"
+    },
+    {
+      "bytes": 147183,
+      "complete_native_readback_matches_original_staged_bytes": true,
+      "owner_mode_link_count_exact": true,
+      "private": false,
+      "role": "dr26-runtime.stdout.original"
+    },
+    {
+      "bytes": 5511,
+      "complete_native_readback_matches_original_staged_bytes": true,
+      "owner_mode_link_count_exact": true,
+      "private": false,
+      "role": "environment-owned-three.public.json"
+    },
+    {
+      "bytes": 3886,
+      "complete_native_readback_matches_original_staged_bytes": true,
+      "owner_mode_link_count_exact": true,
+      "private": false,
+      "role": "environment-result.public.json"
+    },
+    {
+      "bytes": 731,
+      "complete_native_readback_matches_original_staged_bytes": true,
+      "owner_mode_link_count_exact": true,
+      "private": false,
+      "role": "environment-runtime-terminal.original.json"
+    },
+    {
+      "bytes": 1827,
+      "complete_native_readback_matches_original_staged_bytes": true,
+      "owner_mode_link_count_exact": true,
+      "private": false,
+      "role": "known-product-ci-original-bindings.public.json"
+    },
+    {
+      "bytes": 181226,
+      "complete_native_readback_matches_original_staged_bytes": true,
+      "owner_mode_link_count_exact": true,
+      "private": false,
+      "role": "mac107-result.public.json"
+    },
+    {
+      "bytes": 734,
+      "complete_native_readback_matches_original_staged_bytes": true,
+      "owner_mode_link_count_exact": true,
+      "private": false,
+      "role": "mac107-runtime-terminal.original.json"
+    },
+    {
+      "bytes": 46133,
+      "complete_native_readback_matches_original_staged_bytes": true,
+      "owner_mode_link_count_exact": true,
+      "private": false,
+      "role": "mac107-selection.public.json"
+    },
+    {
+      "bytes": 5922,
+      "complete_native_readback_matches_original_staged_bytes": true,
+      "owner_mode_link_count_exact": true,
+      "private": false,
+      "role": "plan-stage-result.public.json"
+    },
+    {
+      "bytes": 731,
+      "complete_native_readback_matches_original_staged_bytes": true,
+      "owner_mode_link_count_exact": true,
+      "private": false,
+      "role": "plan-stage-runtime-terminal.original.json"
+    },
+    {
+      "bytes": 62786,
+      "complete_native_readback_matches_original_staged_bytes": true,
+      "owner_mode_link_count_exact": true,
+      "private": false,
+      "role": "mac_current_sqlite_data_protection_outer.py"
+    },
+    {
+      "bytes": 5693,
+      "complete_native_readback_matches_original_staged_bytes": true,
+      "owner_mode_link_count_exact": true,
+      "private": false,
+      "role": "fixed-inputs.public.json"
+    },
+    {
+      "bytes": 882,
+      "complete_native_readback_matches_original_staged_bytes": true,
+      "owner_mode_link_count_exact": true,
+      "private": true,
+      "role": "independent_private_pins"
+    },
+    {
+      "bytes": 5109,
+      "complete_native_readback_matches_original_staged_bytes": true,
+      "owner_mode_link_count_exact": true,
+      "private": false,
+      "role": "prior-r1-result.public.json"
+    },
+    {
+      "bytes": 728,
+      "complete_native_readback_matches_original_staged_bytes": true,
+      "owner_mode_link_count_exact": true,
+      "private": false,
+      "role": "prior-r1-runtime-terminal.original.json"
+    }
+  ],
+  "original_stage_job_id": "1a1b206dab4-fc05-7c17",
+  "original_stage_or_producer_reexecuted": false,
+  "private_count": 1,
+  "private_native_digest_and_raw_response_excluded": true,
+  "public_count": 20,
+  "schema": "heptabao.input-native21-post-completion-recovery.v1",
+  "scope": "later_read_only_recovery_of_input_integrity_after_volatile_store_loss"
+}

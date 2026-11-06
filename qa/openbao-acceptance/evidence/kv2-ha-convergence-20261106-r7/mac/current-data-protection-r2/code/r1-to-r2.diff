@@ -1,0 +1,342 @@
+--- failed-r1-4ac1110c
++++ r2-volume-specific-and-first-failure
+@@ -29,8 +29,8 @@
+ 
+ sys.dont_write_bytecode = True
+ ROOT = Path("/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1")
+-INPUT = ROOT / "control/current-sqlite-data-protection-inputs-r1"
+-OUT = ROOT / "control/current-sqlite-data-protection-execution-r1"
++INPUT = ROOT / "control/current-sqlite-data-protection-inputs-r2"
++OUT = ROOT / "control/current-sqlite-data-protection-execution-r2"
+ ENVIRONMENT = ROOT / "control/formal-kv2-python-env-50-0-2-r3"
+ ENV_INPUT = ROOT / "control/formal-kv2-python-env-inputs-r3"
+ PLAN_STAGE = ROOT / "control/mac-current-kv2-plan-stage-r1"
+@@ -61,6 +61,7 @@
+ WORKFLOW_WINDOW = False
+ AUDIT_DENIALS = []
+ CORE_ERROR_CODES = set()
++PHASE = "startup"
+ PRIVATE = {"schema": "heptabao.current-sqlite-outer-private.v1"}
+ PUBLIC = {
+     "schema": "heptabao.current-sqlite-data-protection-outer.v1",
+@@ -117,6 +118,21 @@
+         raise Refused(code)
+ 
+ 
++def record_failure(error, phase, *, cleanup=False):
++    code = str(error) if isinstance(error, Refused) else type(error).__name__
++    row = {"phase": phase, "code": code if re.fullmatch(r"[A-Za-z0-9_]{1,100}", code) else "private_failure"}
++    PUBLIC.update(status="failed", capture_backup_and_fresh_restore_completed=False)
++    if cleanup:
++        PUBLIC.setdefault("cleanup_failures", []).append(row)
++        if "primary_failure" not in PUBLIC:
++            PUBLIC.setdefault("failure_code", row["code"])
++            PUBLIC.setdefault("failure_phase", row["phase"])
++    else:
++        PUBLIC.setdefault("primary_failure", row)
++        PUBLIC["failure_code"] = PUBLIC["primary_failure"]["code"]
++        PUBLIC["failure_phase"] = PUBLIC["primary_failure"]["phase"]
++
++
+ def unique(pairs):
+     out = {}
+     for key, value in pairs:
+@@ -217,9 +233,60 @@
+         FS_PROTECTED = previous
+ 
+ 
++def volume_directory_identity(alias, path, expected):
++    """Observe only the two fixed, read-only volume roots against stage pins."""
++    mounts = {"Data": Path("/System/Volumes/Data"), "T5": Path("/Volumes/T5")}
++    path = Path(path)
++    need(alias in mounts and path == mounts[alias], "fixed_volume_alias_and_path")
++    need(set(expected) == {"path", "dev", "inode", "uid", "gid", "mode"}
++         and expected["path"] == str(path)
++         and all(type(expected[key]) is int and expected[key] >= 0 for key in ("dev", "inode", "uid", "gid", "mode"))
++         and expected["uid"] in (0, UID) and expected["mode"] <= 0o7777,
++         "fixed_volume_original_identity_fields")
++    need(path.resolve(strict=True) == path, "fixed_volume_canonical_directory")
++    st = path.lstat()
++    need(stat.S_ISDIR(st.st_mode), "fixed_volume_directory_required")
++    observed = {"path": str(path), "dev": st.st_dev, "inode": st.st_ino,
++                "uid": st.st_uid, "gid": st.st_gid, "mode": stat.S_IMODE(st.st_mode)}
++    need(observed == expected, "fixed_volume_original_identity_changed")
++    return observed
++
++
++def hold_volume_directory(alias, path, expected):
++    global FS_PROTECTED
++    path = Path(path)
++    binding = {"alias": alias, "expected": dict(expected)}
++    pin = volume_directory_identity(alias, path, expected)
++    for row in DIRECTORIES:
++        if row["path"] == path:
++            need(row.get("volume_binding") == binding and row["pin"] == pin == fd_directory(path, row["fd"]),
++                 "fixed_volume_retained_original_handle")
++            return row
++    previous = FS_PROTECTED
++    FS_PROTECTED = True
++    fd = None
++    try:
++        fd = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC)
++        need(fd_directory(path, fd) == pin == volume_directory_identity(alias, path, expected),
++             "fixed_volume_path_handle_race")
++        row = {"path": path, "pin": pin, "fd": fd, "private": False, "volume_binding": binding}
++        DIRECTORIES.append(row)
++        fd = None
++        return row
++    finally:
++        if fd is not None:
++            os.close(fd)
++        FS_PROTECTED = previous
++
++
+ def verify_directories():
+     for row in DIRECTORIES:
+-        need(directory_identity(row["path"], private=row["private"]) == row["pin"]
++        if "volume_binding" in row:
++            binding = row["volume_binding"]
++            observed = volume_directory_identity(binding["alias"], row["path"], binding["expected"])
++        else:
++            observed = directory_identity(row["path"], private=row["private"])
++        need(observed == row["pin"]
+              == fd_directory(row["path"], row["fd"]), "original_directory_identity_changed")
+ 
+ 
+@@ -536,6 +603,41 @@
+                                            "environment_original_processes": 3, "actual_darwin_controls": 18,
+                                            "control_original_writers": 1, "grants_product_qualification": False}
+     return values
++
++
++def preserve_prior_failed_attempt(inputs, values):
++    terminal = values["prior-r1-runtime-terminal.original.json"]
++    failed = values["prior-r1-result.public.json"]
++    need(terminal["job_id"] == "1a1b1f76336-fc05-7bc7" and terminal["state"] == "failed"
++         and terminal["exit_code"] == 1 and terminal["timed_out"] is False and terminal["cancelled"] is False
++         and terminal["automatic_retry"] is False and terminal["output_complete"] is True
++         and terminal["output_durable"] is True and terminal["terminal_publication_confirmed"] is True,
++         "original_r1_failed_terminal_preserved")
++    for stream in ("stdout", "stderr"):
++        need(terminal["log_synced"][stream] is True and terminal["log_truncated"][stream] is False
++             and terminal["log_errors"][stream] is None
++             and terminal["log_bytes"][stream]["seen"] == terminal["log_bytes"][stream]["stored"],
++             "original_r1_complete_streams")
++    need(failed["schema"] == "heptabao.current-sqlite-data-protection-outer.v1"
++         and failed["status"] == "failed" and failed["workflow_invoked"] is False
++         and failed["failure_code"] == "final_owned_custody_incomplete"
++         and failed["owned_native_metadata_processes"]["original_count"] == 1
++         and failed["owned_native_metadata_processes"]["failed"] is True
++         and failed["owned_native_metadata_processes"]["passed_process_custody"] is False,
++         "original_r1_failure_not_reclassified")
++    old_input = ROOT / "control/current-sqlite-data-protection-inputs-r1"
++    old_output = ROOT / "control/current-sqlite-data-protection-execution-r1"
++    hold_directory(old_input)
++    hold_directory(old_output)
++    read_file(old_output / "result.public.json", 16384,
++              pin=inputs["public_files"]["prior-r1-result.public.json"], remember=True)
++    read_file(old_input / "mac_current_sqlite_data_protection_outer.py", 128 * 1024,
++              pin={"bytes": 55776, "sha256": "4ac1110cb3a065f06a1f408b9b5b0b17565a3e0517a322d380307ab11b5ff88d"}, remember=True)
++    read_file(old_input / "fixed-inputs.public.json", 16384,
++              pin={"bytes": 5386, "sha256": "413027c61091eae87f17ab247930a48a0d7a3f20b105432b15d2826c8dbb337b"}, remember=True)
++    PUBLIC["prior_failed_attempt"] = {"job_id": terminal["job_id"], "original_status": "failed",
++                                       "original_exit_code": 1, "workflow_invoked": False,
++                                       "reclassified_as_success": False}
+ 
+ 
+ def validate_private_pin(raw, identity, pin, published_identity):
+@@ -711,16 +813,17 @@
+ 
+ 
+ def verify_volumes(binding):
+-    global OWNER, COMMAND_WINDOW
++    global OWNER, COMMAND_WINDOW, PHASE
+     need(set(binding["volume_identities"]) == {"Data", "T5"}, "exact_two_actual_volumes")
+     COMMAND_WINDOW = True
+     try:
+         with CUSTODY.activated() as owner:
+             OWNER = owner
+             for alias, mount in (("Data", "/System/Volumes/Data"), ("T5", "/Volumes/T5")):
++                PHASE = "verify_volume_" + alias
+                 check()
+-                before = hold_directory(mount, private=False)
+                 expected = binding["volume_identities"][alias]
++                before = hold_volume_directory(alias, mount, expected["directory"])
+                 need(before["pin"] == expected["directory"], "original_stage_volume_directory_identity")
+                 result = subprocess.run(["/usr/sbin/diskutil", "info", "-plist", mount], stdin=subprocess.DEVNULL,
+                                         stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=OUT,
+@@ -730,7 +833,11 @@
+                      "bounded_actual_diskutil_observation")
+                 value = plistlib.loads(result.stdout)
+                 actual = {k: value.get(k) for k in ("MountPoint", "VolumeUUID", "DiskUUID", "DeviceIdentifier", "FilesystemType", "Internal")}
+-                need(actual == expected["selected_diskutil"], "current_actual_volume_identity_changed")
++                need(actual == expected["selected_diskutil"] and actual["MountPoint"] == mount
++                     and type(actual["VolumeUUID"]) is str and bool(actual["VolumeUUID"])
++                     and type(actual["FilesystemType"]) is str and bool(actual["FilesystemType"])
++                     and type(actual["Internal"]) is bool and actual["Internal"] is (alias == "Data"),
++                     "current_actual_volume_identity_changed")
+                 PRIVATE.setdefault("actual_volume_observations", {})[alias] = actual
+             owner.assert_retired()
+     finally:
+@@ -750,6 +857,7 @@
+         st = os.statvfs(mount)
+         need(st.f_bavail * st.f_frsize >= minimum, "complete_fixed_lifecycle_disk_headroom")
+     PUBLIC["current_two_volume_identities_and_complete_lifecycle_space_verified"] = True
++    PUBLIC["read_only_volume_roots_bound_to_original_stage_identity"] = True
+ 
+ 
+ def audit(event, args):
+@@ -846,8 +954,47 @@
+     check(WORK_END)
+ 
+ 
++def verify_attempt_roots_absent(paths):
++    need(set(paths) == {"capture", "archive", "key", "restore"}, "four_unused_attempt_roles")
++    observed = {}
++    for role, path in paths.items():
++        check(WORK_END)
++        try:
++            path.lstat()
++        except FileNotFoundError:
++            observed[role] = True
++        else:
++            raise Refused("unused_attempt_root_must_be_absent")
++    PUBLIC["unused_data_roots_observed_absent_before_capture"] = observed
++
++
++def finish_original_custody_and_directories():
++    complete = True
++    try:
++        if OWNER is not None:
++            OWNER.finish()
++            receipt = OWNER.receipt()
++            PRIVATE["native_volume_process_custody"] = receipt
++            PUBLIC["owned_native_metadata_processes"] = safe_custody(receipt)
++            need(receipt["finished"] is True and receipt["passed_process_custody"] is True
++                 and receipt["failed"] is False, "final_original_process_custody")
++    except BaseException as error:
++        record_failure(error, "process_custody", cleanup=True)
++        complete = False
++    # An owner-body failure does not suppress independent directory evidence.
++    try:
++        verify_directories()
++        PUBLIC["original_directory_paths_and_handles_preserved"] = True
++    except BaseException as error:
++        PUBLIC["original_directory_paths_and_handles_preserved"] = False
++        record_failure(error, "directory_identity", cleanup=True)
++        complete = False
++    return complete
++
++
+ def run(inputs, controller_pin):
+-    global ACTIVE_END
++    global ACTIVE_END, PHASE
++    PHASE = "runtime_and_public_admission"
+     need(inputs["schema"] == "heptabao.current-sqlite-outer-fixed-inputs.v1" and inputs["stage_ready"] is True,
+          "actual_current_plan_stage_required")
+     need(inputs["budgets"] == {"runtime": 900, "work": 840, "cleanup": 60, "admission_within_work": 60,
+@@ -856,6 +1003,7 @@
+     verify_installed_runtime(inputs)
+     test_source = load_core_and_custody(inputs)
+     values = load_public_gates(inputs, test_source)
++    preserve_prior_failed_attempt(inputs, values)
+     need(inputs["known_ci"]["run_id"] == 42229582001
+          and inputs["known_ci"]["merge_job_id"] == 127931720502
+          and inputs["known_ci"]["head_job_id"] == 127931720823
+@@ -869,14 +1017,18 @@
+         need(path.parent == ROOT / "build-test-4bde9-r1/artifacts", "exact_bound_artifact_parent")
+         pin = {"bytes": row["bytes"], "sha256": row["sha256"]}
+         artifacts.append((path, pin, hash_artifact(path, pin)))
++    PHASE = "current_private_plan_admission"
+     plan, binding, paths = load_private_plan(inputs, values)
+     verify_volumes(binding)
+     check(PREFLIGHT_END)
+     PUBLIC["admission_seconds_from_original_entry"] = time.monotonic() - ENTRY
+     PUBLIC["remaining_work_seconds_at_capture_entry"] = WORK_END - time.monotonic()
++    verify_attempt_roots_absent(paths)
++    PHASE = "capture_backup_restore"
+     report = invoke_workflow(plan)
+     PRIVATE["qualified_core_public_result"] = report
+     PUBLIC["workflow"] = report
++    PHASE = "workflow_closeout_binding"
+     # Bind the actual generation observed at this successful workflow's
+     # closeout. This is not a claim about inode history before this observation.
+     check(WORK_END)
+@@ -910,6 +1062,7 @@
+         need(result["status"] == "passed" and result["phase"] == phase
+              and result["credential_values_or_content_fingerprints_published"] is False,
+              "original_phase_safe_receipt_complete")
++    PHASE = "postflight"
+     postflight(artifacts)
+     PUBLIC.update(status="passed", capture_backup_and_fresh_restore_completed=True,
+                   source_code_unchanged=True, all_bound_inputs_and_artifacts_unchanged=True,
+@@ -950,29 +1103,15 @@
+         exit_code = 0
+     except BaseException as error:
+         # No exception payload, private filename, SQL or source hash is emitted.
+-        code = str(error) if isinstance(error, Refused) else type(error).__name__
+-        PUBLIC.update(status="failed", failure_code=code if re.fullmatch(r"[A-Za-z0-9_]{1,100}", code) else "private_failure",
+-                      capture_backup_and_fresh_restore_completed=False)
++        record_failure(error, PHASE)
+         exit_code = 1
+     finally:
+         FINISHING = True
+-        try:
+-            if OWNER is not None:
+-                OWNER.finish()
+-                receipt = OWNER.receipt()
+-                PRIVATE["native_volume_process_custody"] = receipt
+-                PUBLIC["owned_native_metadata_processes"] = safe_custody(receipt)
+-                need(receipt["finished"] is True and receipt["passed_process_custody"] is True
+-                     and receipt["failed"] is False, "final_original_process_custody")
+-            verify_directories()
+-            PUBLIC["original_directory_paths_and_handles_preserved"] = True
+-        except BaseException:
+-            PUBLIC.update(status="failed", failure_code="final_owned_custody_incomplete",
+-                          original_directory_paths_and_handles_preserved=False)
++        if not finish_original_custody_and_directories():
+             exit_code = 1
+         elapsed = time.monotonic() - ENTRY
+         if FIRED or INTERRUPTED or elapsed >= 840 or FAILURE_CLEANUP:
+-            PUBLIC.update(status="failed", failure_code="original_work_deadline_or_failed_phase")
++            record_failure(Refused("original_work_deadline_or_failed_phase"), "final_work_deadline", cleanup=True)
+             exit_code = 1
+         PUBLIC.update(deadline_fired=FIRED, interrupted=INTERRUPTED,
+                       elapsed_observation_before_receipt_publication_seconds=elapsed,
+@@ -990,22 +1129,22 @@
+                 PUBLIC["private_closure_file_identity"] = private_identity
+                 PUBLIC["private_closure_binding_scope"] = "fsynced_original_workflow_closeout_private_record"
+                 if FIRED or INTERRUPTED:
+-                    PUBLIC.update(status="failed", failure_code="interrupted_during_private_publication")
++                    record_failure(Refused("interrupted_during_private_publication"), "private_publication", cleanup=True)
+                     exit_code = 1
+                 PUBLIC["owned_directory_handle_count"] = len(DIRECTORIES)
+                 # Output FD is included and is closed after its fsynced receipt.
+                 PUBLIC["directory_handle_close_is_runtime_terminal_dependent"] = True
+                 control_write("result.public.json", encoded(PUBLIC))
+-            except BaseException:
+-                PUBLIC.update(status="failed", failure_code="owned_receipt_publication_failed")
++            except BaseException as error:
++                record_failure(error, "receipt_publication", cleanup=True)
+                 exit_code = 1
+         closed = 0
+         for row in reversed(DIRECTORIES):
+             try:
+                 os.close(row["fd"])
+                 closed += 1
+-            except OSError:
+-                PUBLIC.update(status="failed", failure_code="directory_close_failed")
++            except OSError as error:
++                record_failure(error, "directory_close", cleanup=True)
+                 exit_code = 1
+         CONTROL = None
+         PUBLIC["owned_directory_handles_closed"] = closed
+@@ -1016,7 +1155,7 @@
+             signal.setitimer(signal.ITIMER_REAL, *old_timer)
+         os.umask(old_umask)
+         if FIRED or INTERRUPTED or time.monotonic() >= TOTAL_END:
+-            PUBLIC.update(status="failed", failure_code="original_runtime_or_final_interrupt")
++            record_failure(Refused("original_runtime_or_final_interrupt"), "final_runtime_deadline", cleanup=True)
+             exit_code = 1
+         if exit_code:
+             PUBLIC["status"] = "failed"

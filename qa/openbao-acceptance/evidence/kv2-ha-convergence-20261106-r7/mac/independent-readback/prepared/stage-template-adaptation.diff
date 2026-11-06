@@ -1,0 +1,66 @@
+--- actual-producer-r2-reviewed-input-stage-template
++++ independent-readback-nine-input-stage-template
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Create-only 21 inputs. The mixed request remains private; no workflow runs."""
++"""Create-only 9 independent readback inputs. Mixed request remains private; no verifier runs."""
+ import time
+ ENTRY = time.monotonic()
+ import base64
+@@ -13,7 +13,7 @@
+ import sys
+ 
+ PARENT = Path("/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control")
+-OUT = PARENT / "current-sqlite-data-protection-inputs-r2"
++OUT = PARENT / "current-sqlite-independent-readback-inputs-r1"
+ END = ENTRY + 52
+ FIRED = False
+ INTERRUPTED = False
+@@ -23,8 +23,8 @@
+ OUT_FD = None
+ PARENT_PIN = None
+ OUT_PIN = None
+-PUBLIC = {"schema": "heptabao.current-data-protection-input-stage.v1", "status": "failed",
+-          "work_seconds": 52, "runtime_seconds": 60, "workflow_executed": False,
++PUBLIC = {"schema": "heptabao.independent-whole-data-readback-input-stage.v1", "status": "failed",
++          "work_seconds": 52, "runtime_seconds": 60, "workflow_executed": False, "independent_verifier_executed": False,
+           "business_source_opened": False, "product_or_sdk_executed": False,
+           "provider_or_j3160_called": False, "service_modified": False,
+           "original_plan_or_binding_modified": False, "existing_inputs_replaced": False,
+@@ -131,9 +131,9 @@
+     need(len(raw) == 34640 and hashlib.sha256(raw).hexdigest()
+          == "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13", "fixed_python_bytes")
+     names = [item["name"] for item in items]
+-    need(len(items) == len(set(names)) == 21 and sum(item["private"] for item in items) == 1
+-         and [item["name"] for item in items if item["private"]] == ["independent-plan-pins.private.json"],
+-         "exact_twenty_one_inputs_one_private")
++    need(len(items) == len(set(names)) == 9 and sum(item["private"] for item in items) == 1
++         and [item["name"] for item in items if item["private"]] == ["original-outer-private-native-pin.private.json"],
++         "exact_nine_inputs_one_private")
+     need(sum(item["bytes"] for item in items) <= 800000, "fixed_input_total_cap")
+     for item in items:
+         need(set(item) == {"name", "bytes", "sha256", "text", "private"}
+@@ -160,7 +160,7 @@
+         check()
+         create(item["name"], item["text"].encode())
+         ident = readback(item)
+-        row = {"role": "independent_private_pins" if item["private"] else item["name"],
++        row = {"role": "original_workflow_private_native_pin" if item["private"] else item["name"],
+                "bytes": item["bytes"], "private": item["private"], "exact_readback": True,
+                "mode": ident["mode"], "uid": ident["uid"], "nlink": ident["nlink"]}
+         if not item["private"]:
+@@ -172,7 +172,7 @@
+         readback(item)
+     directories_unchanged()
+     check()
+-    PUBLIC.update(status="passed", staged_inputs=21, staged_public_inputs=20, staged_private_inputs=1,
++    PUBLIC.update(status="passed", staged_inputs=9, staged_public_inputs=8, staged_private_inputs=1,
+                   all_input_bytes_and_modes_exact=True, all_original_directories_preserved=True,
+                   inputs=rows)
+ 
+@@ -242,4 +242,4 @@
+     return result
+ 
+ 
+-# The exact 21 items are appended as one private base64 JSON literal at freeze.
++# The exact 9 items are appended as one private base64 JSON literal at freeze.

@@ -1,0 +1,12 @@
+{
+  "core_workflow_observation_is_postterminal_not_producer_historical_pin": true,
+  "full_numeric_identity_matches_original_public_and_final_stdout": true,
+  "native_private_body_read_by_this_local_assembly": false,
+  "native_version_parsed_from_original_bytes_as_python_integers": true,
+  "new_verification_executed": false,
+  "original_job": "1a1b20a271e-fc05-7c28",
+  "private_content_sha_kept_private": true,
+  "producer_and_stage_gate_files_copied_exact": true,
+  "schema": "heptabao.independent-original-private-native-pin-reconciliation.v1",
+  "uid501_mode0600_nlink1": true
+}

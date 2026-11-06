@@ -1,0 +1,29 @@
+{
+  "actual_tests": 7,
+  "business_capture_executed": false,
+  "elapsed_seconds": 0.21515006499976153,
+  "expected_tests": 7,
+  "host": "local_executor",
+  "inputs": [
+    {
+      "bytes": 62786,
+      "name": "mac_current_sqlite_data_protection_outer.py",
+      "sha256": "550c7b4017dafcb19b7ffb85f2fab40f2270c649b8549cdde1c7329cd5a85415"
+    },
+    {
+      "bytes": 10215,
+      "name": "test_volume_and_failure_guards.py",
+      "sha256": "078f107771c23635efaf277d090ffbada6a3538784dc94e6c2d268902b667d5a"
+    }
+  ],
+  "log": {
+    "bytes": 1429,
+    "name": "seven-volume-failure-guards-r1.log",
+    "sha256": "87426299937866cb6469aa68bcdf92b9a8176513483bf9dd4e00dbb9fe3f24fe"
+  },
+  "remote_or_product_executed": false,
+  "returncode": 0,
+  "schema": "heptabao.outer-r2-targeted-guards.v1",
+  "status": "passed",
+  "timeout_seconds": 30
+}

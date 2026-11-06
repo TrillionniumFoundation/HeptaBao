@@ -1,0 +1,87 @@
+--- r12/controller
++++ r13/controller
+@@ -15,8 +15,8 @@
+ 
+ os.umask(0o077)
+ ROOT = Path('/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1')
+-SOURCE = ROOT / 'source-ci422-9c68-r12'
+-OUT = ROOT / 'build-test-ci422-9c68-r12'
++SOURCE = ROOT / 'source-ci422-9c68-r13'
++OUT = ROOT / 'build-test-ci422-9c68-r13'
+ COMMIT = '9c68b95b152a468ab378b68730e9e3f04e6a7100'
+ TREE = '7f4b75930e8491a3110d8c7f8f894cfc0cfc1fdb'
+ PARENT = '4bde9aee03fcd27c59e13607e529b1cee594b249'
+@@ -29,9 +29,12 @@
+     'rustc': '3690cc576ede140504698405d5d8fa3826aaadbe71699c6c4ed0a565d6f493e2',
+     'rustfmt': '5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877',
+ }
+-TARGET = ROOT / 'target-ci422-9c68-test-r12'
+-PREP_RECEIPT = ROOT / 'control/source-ci422-9c68-r12-prep/result.public.json'
++TARGET = ROOT / 'target-ci422-9c68-test-r13'
++PREP_RECEIPT = ROOT / 'control/source-ci422-9c68-r13-prep/result.public.json'
+ CARGO_HOME = Path('/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home')
++PRIOR_FAILED_RESULT = Path('/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-ci422-9c68-r12/result.public.json')
++PRIOR_FAILED_BYTES = 34946
++PRIOR_FAILED_SHA = '2b8d85d39c2759615f40bec8ee5b4cb630a7c257a8b352b776dbbbc0a115b7d7'
+ EXACT_ABSENT = frozenset(('heptabao-seed', 'heptabao-server', 'server_libtest'))
+ EXPECTED_OLD_PINS_SHA256 = '3aa8506fe3a129e15b31c47e6da1f235563a5c845cd1a4fef3b7115d9d0e05d5'
+ DIAGNOSTIC_SUCCESS = 'diagnostic_selected11_passed_original_ci_failure_unresolved'
+@@ -60,6 +63,7 @@
+     'rollback_qualified': False, 'dr_qualified': False, 'cutover_qualified': False,
+     'production_cutover_qualified': False, 'machine_qualified_cases': 0,
+     'original_r10_preservation_failure_remains': True,
++    'original_r12_resource_preflight_failure_remains': True,
+     'original_ci_failure_unresolved': True, 'original_ci_failure_reclassified': False,
+     'diagnostic_single_case_only': True, 'full_original_107_reexecution': False,
+     'ci_test_profile': MANIFEST['ci_profile'],
+@@ -417,6 +421,28 @@
+                 and all(value.get('matches_original') is True for value in observed.values()))}
+ 
+ 
++def prior_failed_result_pin():
++    fd = os.open(PRIOR_FAILED_RESULT, os.O_RDONLY | os.O_NOFOLLOW)
++    with os.fdopen(fd, 'rb') as stream:
++        before = os.fstat(stream.fileno())
++        if not (stat.S_ISREG(before.st_mode) and before.st_nlink == 1
++                and before.st_uid == os.geteuid() and stat.S_IMODE(before.st_mode) == 0o600
++                and before.st_size == PRIOR_FAILED_BYTES):
++            raise Failed('prior_r12_result_identity_or_size')
++        raw = stream.read(PRIOR_FAILED_BYTES + 1)
++        after = os.fstat(stream.fileno())
++        fields = ('st_dev', 'st_ino', 'st_uid', 'st_gid', 'st_mode', 'st_nlink',
++                  'st_size', 'st_mtime_ns', 'st_ctime_ns')
++        if any(getattr(before, name) != getattr(after, name) for name in fields):
++            raise Failed('prior_r12_result_changed_during_read')
++    if len(raw) != PRIOR_FAILED_BYTES or hashlib.sha256(raw).hexdigest() != PRIOR_FAILED_SHA:
++        raise Failed('prior_r12_failed_result_content_changed')
++    return {'path': str(PRIOR_FAILED_RESULT), 'bytes': len(raw), 'sha256': PRIOR_FAILED_SHA,
++            'device': before.st_dev, 'inode': before.st_ino, 'uid': before.st_uid,
++            'gid': before.st_gid, 'mode': stat.S_IMODE(before.st_mode),
++            'mtime_ns': str(before.st_mtime_ns), 'ctime_ns': str(before.st_ctime_ns)}
++
++
+ def main():
+     need(MANIFEST['execution_source_commit'] == COMMIT, 'selection_source_binding')
+     groups = MANIFEST['diagnostic_groups']
+@@ -424,6 +450,7 @@
+     need(len(names) == len(set(names)) == 11, '11_unique_diagnostic_names')
+     need(sum(len(g['tests']) for g in groups if g['crate'] == 'heptabao-server') == 11, 'server11')
+     need([g['expected_count'] for g in groups] == [10, 1], 'timing10_then_original_case_once')
++    REPORT['prior_r12_result_before'] = prior_failed_result_pin()
+     for name, sha in PINS.items():
+         need(digest(TOOLCHAIN / name) == sha, 'toolchain_pin_' + name)
+     REPORT['old_retained_artifacts_before'] = old_artifacts()
+@@ -526,6 +553,13 @@
+         if REPORT['groups'] and REPORT['groups'][-1]['status'] == 'running':
+             REPORT['groups'][-1]['status'] = 'failed'
+     finally:
++        try:
++            REPORT['prior_r12_result_after'] = prior_failed_result_pin()
++            need(REPORT['prior_r12_result_after'] == REPORT.get('prior_r12_result_before'),
++                 'prior_r12_failed_result_changed_after')
++        except BaseException as error:
++            REPORT['status'] = 'failed'
++            REPORT['failure'] = REPORT['failure'] or (str(error) if isinstance(error, Failed) else type(error).__name__)
+         REPORT['old_retained_artifacts_after'] = old_artifacts()
+         REPORT['diagnostic_legacy_after'] = diagnostic_legacy_condition(REPORT['old_retained_artifacts_after'])
+         if (not REPORT['diagnostic_legacy_after']['diagnostic_condition_met']

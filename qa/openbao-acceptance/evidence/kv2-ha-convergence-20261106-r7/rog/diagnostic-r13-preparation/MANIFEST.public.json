@@ -1,0 +1,282 @@
+{
+  "schema": "heptabao.ci-publication-source-preparation-evidence.v1",
+  "job_id": "1a1b1ffdaaa-fc05-7bf5",
+  "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+  "source_tree": "7f4b75930e8491a3110d8c7f8f894cfc0cfc1fdb",
+  "authoritative_state": "succeeded",
+  "authoritative_exit_code": 0,
+  "compiler_started": false,
+  "actual_tests": 0,
+  "old_r12_failure_preserved_before_after": true,
+  "original_ci_failure_unresolved": true,
+  "machine_acceptance": "HOLD",
+  "legacy_preservation": false,
+  "files": [
+    {
+      "path": "result.native-file-info.original.json",
+      "bytes": 495,
+      "sha256": "278d04dea86b66c1c7d910cf37fcda0fc6c0aa01a212b88e91cb4db5839bf3f4",
+      "git_blob_sha1": "1c7acf06ea829fc1ea54ea602867bc1e4081df28",
+      "origin": "Exact independent native file_info"
+    },
+    {
+      "path": "result.public.json",
+      "bytes": 10188,
+      "sha256": "dd4336e933f7639e6679851045714a9015c9b839a1c8991517d4c3a2db650cf8",
+      "git_blob_sha1": "9638fd71dab78c3f4f4f6a2cb48e8b67270014a5",
+      "origin": "Exact remote source-preparation result10188B"
+    },
+    {
+      "path": "runtime-request.original.json",
+      "bytes": 13765,
+      "sha256": "b7a021180b9aa013e0ef61e9ea652f778055b6d97389939a51dc246262b209f3",
+      "git_blob_sha1": "bd8894d72e4e7db1f8ab6390eaae12b9aa84c15a",
+      "origin": "Serialized exact process_start arguments"
+    },
+    {
+      "path": "runtime-start.original.json",
+      "bytes": 1020,
+      "sha256": "953a55608d6f4c4fadff9fcf6f182c4d2fb1b0d0c46775fcb409751270f7bc05",
+      "git_blob_sha1": "eca00e5c5765878867286d0c13ef54515dbf791f",
+      "origin": "Exact Runtime start response"
+    },
+    {
+      "path": "runtime-terminal.original.json",
+      "bytes": 731,
+      "sha256": "3561e54a572f992eec5d48cf94f90ab2f7883ce2b916770f216b7630190796a0",
+      "git_blob_sha1": "c9b8a5b914fe593038940ff46ccc5a74e151d146",
+      "origin": "Exact authoritative preparation terminal"
+    },
+    {
+      "path": "runtime.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "origin": "Complete original Runtime stderr"
+    },
+    {
+      "path": "runtime.stdout.original",
+      "bytes": 8234,
+      "sha256": "8a143e21b99b6eb238d33c00baedab2f67b318ec35f8a2a280a299cd68ec59ef",
+      "git_blob_sha1": "d12f9e10eec6a7b45921fe41a3224059b96183eb",
+      "origin": "Complete original Runtime stdout"
+    },
+    {
+      "path": "source-prep.py",
+      "bytes": 13324,
+      "sha256": "f3032477ae07161c661533787b3be5763dff768f7b182be6763a33b1774cc993",
+      "git_blob_sha1": "64c500777eee31c85a6574570cba12a5dfb554b2",
+      "origin": "Exact reviewed fixed source-preparation stdin"
+    },
+    {
+      "path": "steps/00-before-clean.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/00-before-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/00-before-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/00-before-head.stdout",
+      "bytes": 41,
+      "sha256": "798ea711ddde846d7f1fe86738651bfe5fabbbb7bac5ee756af0c2929b3dfe3e",
+      "git_blob_sha1": "ee70904330a0a79689ecfec91b30b0705c1b54d4",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/00-before-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/00-before-tree.stdout",
+      "bytes": 41,
+      "sha256": "ace072102d6b0ad7e10013f16b7bcf5dc48d0344dd364b1f83691a7c3672eafc",
+      "git_blob_sha1": "1e8a3ee2980f51cd340fea4cdb610dd1cdaa5e17",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/01-clone.stderr",
+      "bytes": 100,
+      "sha256": "b3b6a86c5c529f5558faeceefbbe97d8a82fd5d49d3927a414058f0cf3b98db5",
+      "git_blob_sha1": "3762a966b776ba4d90e4fec56558f33b1a9a82aa",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/01-clone.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/02-bundle-verify.stderr",
+      "bytes": 114,
+      "sha256": "8ada9c8dd805ae3730bbfd98f10fef12cc374ab18b1a4b7ab3f255ce450cb790",
+      "git_blob_sha1": "dfd985e623a73c8fd124da82f5f17da0555231b7",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/02-bundle-verify.stdout",
+      "bytes": 190,
+      "sha256": "e85dc8bff1ac360091bb68822e02ee616c13d94e0f82da7e8f6b3276fa1ddbbd",
+      "git_blob_sha1": "dbc7a401a0564f90e7033f5885eb70587403c09e",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/03-fetch.stderr",
+      "bytes": 161,
+      "sha256": "591d692e118c7fc65a1b649024a13830cf0d40715cb9fb5a32b085653f0aca8d",
+      "git_blob_sha1": "628966fa09ea56fe4746c8701fddba16150f67d2",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/03-fetch.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/04-checkout.stderr",
+      "bytes": 198,
+      "sha256": "b2f1dbd10a5e1f7047b624461bf824f7d17e52bc460c0dabd0b3575211e1cbf0",
+      "git_blob_sha1": "ccaf0fd981d876af783fd4b000c31a4f91a5cc91",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/04-checkout.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/05-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/05-head.stdout",
+      "bytes": 41,
+      "sha256": "eb5e39b918c5c1402a6af348fb0503b37eb0278b4074c131ddb133e9ab12b318",
+      "git_blob_sha1": "9f836aae428da803516bd4ee6251f5504fa21feb",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/06-parent.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/06-parent.stdout",
+      "bytes": 41,
+      "sha256": "798ea711ddde846d7f1fe86738651bfe5fabbbb7bac5ee756af0c2929b3dfe3e",
+      "git_blob_sha1": "ee70904330a0a79689ecfec91b30b0705c1b54d4",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/06-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/06-tree.stdout",
+      "bytes": 41,
+      "sha256": "fc32bfaf81fdf778afedd565dbf0859e40b11b896bb0849a84d9f2a473d84928",
+      "git_blob_sha1": "96f5f9c9d7c613d43cdeab526238ba0a85f15ef1",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/07-clean.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/07-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/08-fsck.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/08-fsck.stdout",
+      "bytes": 562,
+      "sha256": "06d08a38c9d941e05bbdee406c042e53c9cb8cdffe667744881aab4b43447be3",
+      "git_blob_sha1": "6c7ac004143fef0f687bc0ff88cc2036e81a120a",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/09-after-clean.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/09-after-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/09-after-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/09-after-head.stdout",
+      "bytes": 41,
+      "sha256": "798ea711ddde846d7f1fe86738651bfe5fabbbb7bac5ee756af0c2929b3dfe3e",
+      "git_blob_sha1": "ee70904330a0a79689ecfec91b30b0705c1b54d4",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/09-after-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    },
+    {
+      "path": "steps/09-after-tree.stdout",
+      "bytes": 41,
+      "sha256": "ace072102d6b0ad7e10013f16b7bcf5dc48d0344dd364b1f83691a7c3672eafc",
+      "git_blob_sha1": "1e8a3ee2980f51cd340fea4cdb610dd1cdaa5e17",
+      "origin": "Complete original step stream, independently matched result SHA256"
+    }
+  ]
+}

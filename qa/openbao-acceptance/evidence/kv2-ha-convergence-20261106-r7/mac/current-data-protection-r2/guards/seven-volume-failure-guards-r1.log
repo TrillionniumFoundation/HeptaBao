@@ -1,0 +1,12 @@
+test_each_original_identity_field_and_boolean_metadata_are_rejected (__main__.VolumeAndFailureGuards.test_each_original_identity_field_and_boolean_metadata_are_rejected) ... ok
+test_exact_0775_fixed_volume_keeps_real_fd_and_generic_parent_stays_refused (__main__.VolumeAndFailureGuards.test_exact_0775_fixed_volume_keeps_real_fd_and_generic_parent_stays_refused) ... ok
+test_four_unused_roots_require_actual_absence_and_do_not_hide_observation_errors (__main__.VolumeAndFailureGuards.test_four_unused_roots_require_actual_absence_and_do_not_hide_observation_errors) ... ok
+test_multiple_cleanup_failures_never_overwrite_primary_or_skip_real_fd_close (__main__.VolumeAndFailureGuards.test_multiple_cleanup_failures_never_overwrite_primary_or_skip_real_fd_close) ... ok
+test_primary_survives_failed_owner_and_directory_evidence_and_close_still_complete (__main__.VolumeAndFailureGuards.test_primary_survives_failed_owner_and_directory_evidence_and_close_still_complete) ... ok
+test_retained_original_volume_fd_does_not_hide_real_mode_drift (__main__.VolumeAndFailureGuards.test_retained_original_volume_fd_does_not_hide_real_mode_drift) ... ok
+test_unknown_alias_wrong_mount_and_child_path_never_gain_volume_exception (__main__.VolumeAndFailureGuards.test_unknown_alias_wrong_mount_and_child_path_never_gain_volume_exception) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.005s
+
+OK

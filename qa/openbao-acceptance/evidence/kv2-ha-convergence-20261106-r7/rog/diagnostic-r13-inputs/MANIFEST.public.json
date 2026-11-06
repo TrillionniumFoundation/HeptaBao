@@ -1,0 +1,97 @@
+{
+  "schema": "heptabao.ci-publication-diagnostic-frozen-input-evidence.v1",
+  "job_id": "1a1b2017570-fc05-7bfe",
+  "files": [
+    {
+      "path": "QUALIFICATION_SCOPE.public.json",
+      "bytes": 1486,
+      "sha256": "d901b30e80cf561c952855a82723cb333e5e2c04839a5183f1f3c64702210f6a",
+      "git_blob_sha1": "32c28661b2094ad0f583751be69d569baf2f9761",
+      "origin": "Derived scope statement; this input archive does not assert test success"
+    },
+    {
+      "path": "inputs/bootstrap.py",
+      "bytes": 74431,
+      "sha256": "0c23f7fa77d1b6da9930454c573d196a4f9386a7f318bd7c1b8994854dded452",
+      "git_blob_sha1": "4797fe1940978dbe198b1446fef29f0a53d94e36",
+      "origin": "Exact frozen launch input"
+    },
+    {
+      "path": "inputs/candidate.bundle.base64",
+      "bytes": 4513,
+      "sha256": "3077f9d002f4f652134ab79074275d8360376f95695988546ff2e8c4ad9a477a",
+      "git_blob_sha1": "614fe224f371654d140befeed3829e84e6583fbc",
+      "origin": "Explicit lossless base64 of raw3383B bundle SHA9e0dcb3676ad12f7a91235769963e34d7c7159906dcda1b129b20e58b95a7ab7"
+    },
+    {
+      "path": "inputs/controller.py",
+      "bytes": 31689,
+      "sha256": "50ef1feed37b7abd31e7cc2db3b1f7feb7a77a954e347e82a6861814fb414c97",
+      "git_blob_sha1": "09a8afbc61124834832a94ccaa2b0f2f86819677",
+      "origin": "Exact frozen launch input"
+    },
+    {
+      "path": "inputs/test-selection.public.json",
+      "bytes": 19919,
+      "sha256": "3961122260ff03815ccf078a264ad18df5dc7eee5018d6d63e2eb489cc482c52",
+      "git_blob_sha1": "86b30293f2fef9cac5e1f0792fcd00f1bfbfd3fe",
+      "origin": "Exact frozen launch input"
+    },
+    {
+      "path": "preparation/result.public.json",
+      "bytes": 10188,
+      "sha256": "dd4336e933f7639e6679851045714a9015c9b839a1c8991517d4c3a2db650cf8",
+      "git_blob_sha1": "9638fd71dab78c3f4f4f6a2cb48e8b67270014a5",
+      "origin": "Exact successful preparation result"
+    },
+    {
+      "path": "preparation/runtime-terminal.original.json",
+      "bytes": 731,
+      "sha256": "3561e54a572f992eec5d48cf94f90ab2f7883ce2b916770f216b7630190796a0",
+      "git_blob_sha1": "c9b8a5b914fe593038940ff46ccc5a74e151d146",
+      "origin": "Exact authoritative preparation terminal"
+    },
+    {
+      "path": "review/INPUT_REVIEW.public.json",
+      "bytes": 1963,
+      "sha256": "5b40307ec8ce958cb0339dcc630e920e61c26c62e119d60f77e805872e3fff9d",
+      "git_blob_sha1": "3deedb6211d3fabc00cb82973d1b12ff9bb260d3",
+      "origin": "Explicitly derived local input review; not actual Rust results"
+    },
+    {
+      "path": "review/LOCAL_REQUIRED_PIN_CHECK.public.json",
+      "bytes": 546,
+      "sha256": "fc2d68db95146d1f2770d6e05830b36219b125ac4e76b317c446643c29e9ffb6",
+      "git_blob_sha1": "76f4929255155d757c1e43ce938b6d7494560be4",
+      "origin": "Explicitly derived local input review; not actual Rust results"
+    },
+    {
+      "path": "review/controller.review.patch",
+      "bytes": 5029,
+      "sha256": "c1655542fab21f527c1e195c988c15589e4e82230b24699a87f80474fb161a69",
+      "git_blob_sha1": "8bbe9e274b3b8d2ed176fa3cb1233bbbcbafcd71",
+      "origin": "Explicitly derived local input review; not actual Rust results"
+    },
+    {
+      "path": "review/source-prep.review.patch",
+      "bytes": 8138,
+      "sha256": "b0557abe1edb7aab2ccc2f06a964a70e41cbc0b4d8c3490cd2ad7d784559810c",
+      "git_blob_sha1": "efe0ea0d74e6e4022bb451c6a81b37685d93bca4",
+      "origin": "Explicitly derived local input review; not actual Rust results"
+    },
+    {
+      "path": "runtime-request.original.json",
+      "bytes": 74779,
+      "sha256": "e12df0790e42c59f0a0efcc8a526faf21d271e0905e024e50318ad2234bf0943",
+      "git_blob_sha1": "afda1992a8a90957388f544e0e1ad2b4a8f15002",
+      "origin": "Serialized exact start request stored before launch"
+    },
+    {
+      "path": "runtime-start.original.json",
+      "bytes": 1025,
+      "sha256": "ebb6b56526d5ba52e86fcef27f7d44c9a658f2faf7dc7a4301e06692accb65fc",
+      "git_blob_sha1": "2b6872f805500441b923fb3c3596ee7870ba2f48",
+      "origin": "Exact start response; launched once, not an execution success claim"
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "diff": {
+    "bytes": 17677,
+    "sha256": "1a0af672cd240aba02fb5875b66137c05156f3ffdb1a79941fe1326b8e445323"
+  },
+  "guard_source": {
+    "bytes": 10215,
+    "sha256": "078f107771c23635efaf277d090ffbada6a3538784dc94e6c2d268902b667d5a"
+  },
+  "historical_failure_boundary": {
+    "exit_code": 1,
+    "failed_r1_can_never_be_used_as_a_successful_recovery_generation": true,
+    "job_id": "1a1b1f76336-fc05-7bc7",
+    "later_source_explanation_is_not_a_reconstructed_original_primary": true,
+    "original_primary_not_recorded": true,
+    "status": "failed",
+    "workflow_invoked": false
+  },
+  "observed_guard_log": {
+    "bytes": 1429,
+    "sha256": "87426299937866cb6469aa68bcdf92b9a8176513483bf9dd4e00dbb9fe3f24fe"
+  },
+  "observed_local_guard_cases": 7,
+  "qualification_boundaries": {
+    "actual_new_workflow_success_claimed": false,
+    "authbus": false,
+    "formal_kv2": false,
+    "ha": false,
+    "independent_whole_data_readback_pass_claimed": false,
+    "legacy_cleanup": false,
+    "traffic_cutover": false
+  },
+  "review_findings": {
+    "core_capture_source_unchanged": true,
+    "core_workflow_entry_ast_unchanged": true,
+    "failed_owner_does_not_skip_directory_validation_or_handle_close": true,
+    "fixed_volume_exception_only_two_exact_mount_paths": true,
+    "generic_hold_directory_ast_unchanged": true,
+    "generic_private_0700_and_non022_scope_not_weakened": true,
+    "generic_private_directory_ast_unchanged": true,
+    "new_input_and_output_root_only": true,
+    "no_chmod_or_permissions_change_added": true,
+    "observation_errors_not_classified_as_absence": true,
+    "original_900_840_60_and_300_budgets_unchanged": true,
+    "original_deadline_check_ast_unchanged": true,
+    "original_stage_full_directory_identity_and_original_fd_bound": true,
+    "primary_failure_kept_separately_from_each_cleanup_failure": true,
+    "prior_failed_r1_source_inputs_result_and_terminal_remain_bound": true,
+    "same_four_data_attempt_paths_require_observed_absence": true,
+    "volume_uuid_filesystem_internal_exact_observation_required": true
+  },
+  "review_kind": "source_review_and_existing_local_guard_evidence_readback_only",
+  "reviewer_reran_guards": false,
+  "reviewer_started_business_workflow": false,
+  "schema": "heptabao.independent-outer900-volume-and-failure-review.v1",
+  "source": {
+    "bytes": 62786,
+    "sha256": "550c7b4017dafcb19b7ffb85f2fab40f2270c649b8549cdde1c7329cd5a85415"
+  },
+  "status": "no_new_source_blocker_for_reviewed_scope"
+}

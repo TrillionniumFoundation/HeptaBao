@@ -1,0 +1,153 @@
+import base64
+import hashlib
+import json
+import os
+import pathlib
+import stat
+import subprocess
+import time
+
+start = time.monotonic()
+end = start + 150
+os.umask(0o077)
+root = pathlib.Path('/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1')
+old = root / 'source-4bde9-diagnostic-r11'
+fresh = root / 'source-ci422-9c68-r13'
+out = root / 'control/source-ci422-9c68-r13-prep'
+target = root / 'target-ci422-9c68-test-r13'
+build_output = root / 'build-test-ci422-9c68-r13'
+cargo_home = pathlib.Path('/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home')
+bundle = out / 'candidate.bundle'
+BUNDLE_B64 = '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'
+COMMIT = '9c68b95b152a468ab378b68730e9e3f04e6a7100'
+TREE = '7f4b75930e8491a3110d8c7f8f894cfc0cfc1fdb'
+PARENT = '4bde9aee03fcd27c59e13607e529b1cee594b249'
+OLD_HEAD = '4bde9aee03fcd27c59e13607e529b1cee594b249'
+OLD_TREE = 'f08493a23f8ea0637073651231865ea9607b790e'
+OLD_RECEIPT = root / 'build-test-4bde9-diagnostic-r11/result.public.json'
+OLD_RECEIPT_SHA = '63d5f3a5d88140bfc926012b4e6c02ae30a4c82592d221ba40dc8114fdbce88b'
+PRIOR_FAILED_RESULT = pathlib.Path('/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-ci422-9c68-r12/result.public.json')
+PRIOR_FAILED_BYTES = 34946
+PRIOR_FAILED_SHA = '2b8d85d39c2759615f40bec8ee5b4cb630a7c257a8b352b776dbbbc0a115b7d7'
+env = {k: os.environ[k] for k in ('HOME', 'USER', 'LOGNAME', 'LANG', 'LC_ALL', 'TMPDIR', 'TZ') if k in os.environ}
+env.update(PATH='/usr/bin:/bin', GIT_OPTIONAL_LOCKS='0')
+report = {'schema': 'heptabao.fresh-diagnostic-source-preparation.v1', 'status': 'running',
+          'source_commit': COMMIT, 'source_tree': TREE, 'old_source_preserved': False,
+          'cooperative_lock_removed': False, 'compiler_started': False,
+          'production_changed': False, 'original_preparation_seconds': 150, 'steps': [],
+          'legacy_preservation': False, 'machine_acceptance': 'HOLD',
+          'rollback_qualified': False, 'dr_qualified': False, 'cutover_qualified': False,
+          'new_cold_target_created_empty': False}
+
+
+def run(label, args, cwd=root, cap=30):
+    remaining = min(cap, end - time.monotonic())
+    assert remaining > 0, 'original_preparation_deadline_expired'
+    result = subprocess.run(args, cwd=cwd, env=env, capture_output=True, timeout=remaining)
+    (out / (label + '.stdout')).write_bytes(result.stdout)
+    (out / (label + '.stderr')).write_bytes(result.stderr)
+    report['steps'].append({'label': label, 'argv': args, 'exit_code': result.returncode,
+                            'stdout_sha256': hashlib.sha256(result.stdout).hexdigest(),
+                            'stderr_sha256': hashlib.sha256(result.stderr).hexdigest()})
+    assert result.returncode == 0, label
+    return result.stdout
+
+
+def prior_failed_result_pin():
+    fd = os.open(PRIOR_FAILED_RESULT, os.O_RDONLY | os.O_NOFOLLOW)
+    with os.fdopen(fd, 'rb') as stream:
+        before = os.fstat(stream.fileno())
+        if not (stat.S_ISREG(before.st_mode) and before.st_nlink == 1
+                and before.st_uid == os.geteuid() and stat.S_IMODE(before.st_mode) == 0o600
+                and before.st_size == PRIOR_FAILED_BYTES):
+            raise AssertionError('prior_r12_result_identity_or_size')
+        raw = stream.read(PRIOR_FAILED_BYTES + 1)
+        after = os.fstat(stream.fileno())
+        fields = ('st_dev', 'st_ino', 'st_uid', 'st_gid', 'st_mode', 'st_nlink',
+                  'st_size', 'st_mtime_ns', 'st_ctime_ns')
+        if any(getattr(before, name) != getattr(after, name) for name in fields):
+            raise AssertionError('prior_r12_result_changed_during_read')
+    if len(raw) != PRIOR_FAILED_BYTES or hashlib.sha256(raw).hexdigest() != PRIOR_FAILED_SHA:
+        raise AssertionError('prior_r12_failed_result_content_changed')
+    return {'path': str(PRIOR_FAILED_RESULT), 'bytes': len(raw), 'sha256': PRIOR_FAILED_SHA,
+            'device': before.st_dev, 'inode': before.st_ino, 'uid': before.st_uid,
+            'gid': before.st_gid, 'mode': stat.S_IMODE(before.st_mode),
+            'mtime_ns': str(before.st_mtime_ns), 'ctime_ns': str(before.st_ctime_ns)}
+
+
+def old_identity(tag):
+    assert old.is_dir() and not old.is_symlink(), 'old_source_directory'
+    identity = old.lstat()
+    head = run(tag + '-head', ['/usr/bin/git', 'rev-parse', 'HEAD'], old).decode().strip()
+    tree = run(tag + '-tree', ['/usr/bin/git', 'rev-parse', 'HEAD^{tree}'], old).decode().strip()
+    clean = run(tag + '-clean', ['/usr/bin/git', 'status', '--porcelain'], old)
+    assert head == OLD_HEAD and tree == OLD_TREE and not clean.strip(), 'old_source_identity'
+    receipt = OLD_RECEIPT.read_bytes()
+    assert hashlib.sha256(receipt).hexdigest() == OLD_RECEIPT_SHA, 'retained_source_receipt_changed'
+    preserved_failure = prior_failed_result_pin()
+    return {'head': head, 'tree': tree, 'clean': True, 'retained_source_receipt_sha256': OLD_RECEIPT_SHA,
+            'prior_r12_failed_result': preserved_failure,
+            'directory_identity': [identity.st_dev, identity.st_ino, identity.st_uid, identity.st_gid, identity.st_mode]}
+
+
+
+def directory(path):
+    info = path.lstat()
+    assert stat.S_ISDIR(info.st_mode) and not stat.S_ISLNK(info.st_mode), 'regular_directory_required'
+    assert info.st_uid == os.geteuid() and stat.S_IMODE(info.st_mode) == 0o700, 'owned_private_directory_required'
+    return {'path': str(path), 'device': info.st_dev, 'inode': info.st_ino,
+            'uid': info.st_uid, 'gid': info.st_gid, 'mode': stat.S_IMODE(info.st_mode)}
+
+
+def fixed_existing_directories():
+    result = {name: directory(path) for name, path in (
+        ('root', root), ('cargo_home', cargo_home), ('base_source', old))}
+    for name, inode in (('root', 31507989), ('cargo_home', 31604578), ('base_source', 36083928)):
+        assert result[name]['device'] == 66306 and result[name]['inode'] == inode and result[name]['uid'] == 1000, 'observed_directory_identity_changed'
+    return result
+
+
+assert all(not path.exists() and not path.is_symlink() for path in (fresh, target, build_output)), 'new_diagnostic_path_exists'
+out.mkdir(mode=0o700)
+try:
+    report['existing_directories_before'] = fixed_existing_directories()
+    raw = base64.b64decode(BUNDLE_B64, validate=True)
+    assert len(raw) == 3383 and hashlib.sha256(raw).hexdigest() == '9e0dcb3676ad12f7a91235769963e34d7c7159906dcda1b129b20e58b95a7ab7'
+    with bundle.open('xb') as stream:
+        stream.write(raw)
+        stream.flush()
+        os.fsync(stream.fileno())
+    report['old_before'] = old_identity('00-before')
+    run('01-clone', ['/usr/bin/git', '-c', 'gc.auto=0', 'clone', '--no-hardlinks', '--no-checkout', str(old), str(fresh)], cap=60)
+    run('02-bundle-verify', ['/usr/bin/git', 'bundle', 'verify', str(bundle)], fresh)
+    run('03-fetch', ['/usr/bin/git', '-c', 'gc.auto=0', 'fetch', str(bundle), 'HEAD'], fresh)
+    run('04-checkout', ['/usr/bin/git', 'checkout', '--detach', COMMIT], fresh)
+    assert run('05-head', ['/usr/bin/git', 'rev-parse', 'HEAD'], fresh).decode().strip() == COMMIT
+    assert run('06-tree', ['/usr/bin/git', 'rev-parse', 'HEAD^{tree}'], fresh).decode().strip() == TREE
+    assert run('06-parent', ['/usr/bin/git', 'rev-parse', 'HEAD^'], fresh).decode().strip() == PARENT
+    assert not run('07-clean', ['/usr/bin/git', 'status', '--porcelain'], fresh).strip()
+    run('08-fsck', ['/usr/bin/git', 'fsck', '--full', '--strict'], fresh, 60)
+    report['old_after'] = old_identity('09-after')
+    assert report['old_before'] == report['old_after'], 'old_source_changed'
+    assert time.monotonic() < end, 'original_preparation_deadline_expired'
+    report['existing_directories_after'] = fixed_existing_directories()
+    assert report['existing_directories_before'] == report['existing_directories_after'], 'existing_directory_changed'
+    assert not build_output.exists() and not build_output.is_symlink(), 'diagnostic_build_output_appeared'
+    target.mkdir(mode=0o700)
+    assert not any(target.iterdir()), 'new_target_not_empty'
+    report['directories_after'] = {name: directory(path) for name, path in (
+        ('root', root), ('source', fresh), ('cargo_home', cargo_home), ('target', target))}
+    assert time.monotonic() < end, 'original_preparation_deadline_expired'
+    report.update(status='prepared_diagnostic_legacy_hold', old_source_preserved=True,
+                  new_source=str(fresh), new_source_clean=True, new_cold_target_created_empty=True)
+except BaseException as error:
+    report.update(status='failed', failure_type=type(error).__name__, failure=str(error))
+    raise
+finally:
+    report['elapsed_seconds'] = time.monotonic() - start
+    with (out / 'result.public.json').open('x') as stream:
+        json.dump(report, stream, sort_keys=True, indent=2)
+        stream.write('\n')
+        stream.flush()
+        os.fsync(stream.fileno())
+    print(json.dumps(report), flush=True)

@@ -1,0 +1,10 @@
+{
+  "files": [
+    {
+      "bytes": 2491,
+      "path": "REVIEW.public.json",
+      "sha256": "bbcef6bf898bb5230a82f43d3a826e40477416608fae54cc0acb34c025c4bfb6"
+    }
+  ],
+  "schema": "heptabao.public-evidence-manifest.v1"
+}

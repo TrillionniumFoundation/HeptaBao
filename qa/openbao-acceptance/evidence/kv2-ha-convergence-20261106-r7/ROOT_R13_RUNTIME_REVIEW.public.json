@@ -1,0 +1,26 @@
+{
+  "full_replacement_qualified": false,
+  "job_id": "1a1b2017570-fc05-7bfe",
+  "original_ci_failure_unresolved": true,
+  "original_terminal_file": {
+    "bytes": 731,
+    "sha256": "ec5056e3a88af25b37d93b47a51065a3d166b733e560fc82a405380860724a01"
+  },
+  "per_case_and_preservation_verification_pending": true,
+  "schema": "heptabao.root-r13-runtime-and-full-log-observation.v1",
+  "scope_note": "Initial runtime/log review retained as observed before full receipt and per-case follow-up; final closure is ROOT_R13_REVIEW.public.json.",
+  "selected_case_pass_count_reported": 11,
+  "steps_complete_once": 19,
+  "streams": {
+    "stderr": {
+      "bytes": 0,
+      "full_native_range_eof_verified": true,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "bytes": 4247,
+      "full_native_range_eof_verified": true,
+      "sha256": "cb7eda4b698c347310004e501e2885b8fba1206fb6cca95e368f211263baa53c"
+    }
+  }
+}

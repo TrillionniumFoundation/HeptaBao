@@ -1,0 +1,140 @@
+{
+  "schema": "heptabao.readonly-ci-resource-evidence.v1",
+  "no_product_or_build_started_by_these_observations": true,
+  "no_original_attempt_replayed": true,
+  "files": [
+    {
+      "path": "FINDINGS.public.json",
+      "bytes": 6230,
+      "sha256": "2e6ba04c84f9ae10fd4082a5c464d811dd52877ce0aaa1105b8bb6467e1afd9c",
+      "git_blob_sha1": "cc2c7b715dd4841817c9cb735048af7c74e284d7",
+      "origin": "Derived exact status/metadata summary and qualified inventory limits"
+    },
+    {
+      "path": "compiler_metadata/collector.py",
+      "bytes": 4006,
+      "sha256": "dbce29a85c0284797af13dcd9f3f65200f44eaa289cb05c513441e2c706681b8",
+      "git_blob_sha1": "8cfceec593bfca1f7c5bc36af09e9e62da991d0e",
+      "origin": "Exact fixed read-only Python input; no product or argv/environ access"
+    },
+    {
+      "path": "compiler_metadata/request.original.json",
+      "bytes": 4521,
+      "sha256": "3dd9dd49fd93f81eaa2a576437ac2a8662d135880a6ce47276f0cd3c40b08e02",
+      "git_blob_sha1": "cfd8a31be762b8a10f54ee949bb67a772ebb523a",
+      "origin": "Serialized exact process_start request retained before launch"
+    },
+    {
+      "path": "compiler_metadata/runtime.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "origin": "Complete original safe Runtime stream"
+    },
+    {
+      "path": "compiler_metadata/runtime.stdout.original",
+      "bytes": 614,
+      "sha256": "db9b88653c77f78372b25ff2a828718e0f507e073951301c5082820013ac3e25",
+      "git_blob_sha1": "6f2ce910626e1542741daafe3e4b7a1f1aab8ae5",
+      "origin": "Complete original safe Runtime stream"
+    },
+    {
+      "path": "compiler_metadata/start.original.json",
+      "bytes": 991,
+      "sha256": "4025e76a9e405bf49ebe4735c1d745433db8a92042769a9441596bdd29ef5b51",
+      "git_blob_sha1": "2ee043074ff3851319c254de0d6c67630c361b41",
+      "origin": "Exact start response"
+    },
+    {
+      "path": "compiler_metadata/terminal.original.json",
+      "bytes": 729,
+      "sha256": "ec5e12182fcdd869bc4a290348e4131b8583a7ff04cc313e6426ec4e458c4f0e",
+      "git_blob_sha1": "c13b5c46a0f2515f96da12a35474c4a63f5e6779",
+      "origin": "Exact authoritative terminal"
+    },
+    {
+      "path": "current_resources/collector.py",
+      "bytes": 2750,
+      "sha256": "eca7dfdfa1ac5d51bd11bd094c7559670af899f99cf4d8f1d40e51131acabd8f",
+      "git_blob_sha1": "5529feb14743b3b9069fab9660d8a9c2869e828b",
+      "origin": "Exact fixed read-only Python input; no product or argv/environ access"
+    },
+    {
+      "path": "current_resources/request.original.json",
+      "bytes": 3141,
+      "sha256": "ed6a2b3961b4e7202e420f6a8360bdccc08f74f4f863eb61babf7ce6a5208018",
+      "git_blob_sha1": "57697403008e5a276cda91ce32ae4468588ece95",
+      "origin": "Serialized exact process_start request retained before launch"
+    },
+    {
+      "path": "current_resources/runtime.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "origin": "Complete original safe Runtime stream"
+    },
+    {
+      "path": "current_resources/runtime.stdout.original",
+      "bytes": 830,
+      "sha256": "41e556a2a1345b7f3ae940b0dd32d031f0d989b02ce479088de5a49ed242231d",
+      "git_blob_sha1": "ad89d676a14db420ef46becff5ccab047f99bb7e",
+      "origin": "Complete original safe Runtime stream"
+    },
+    {
+      "path": "current_resources/start.original.json",
+      "bytes": 985,
+      "sha256": "59a388814c3c3e87d461c5256155b2fafa80ff132b9e00f9d9e4afcdee7c524a",
+      "git_blob_sha1": "296c4507fcf5350a3201ae710efc174c9f35b399",
+      "origin": "Exact start response"
+    },
+    {
+      "path": "current_resources/terminal.original.json",
+      "bytes": 729,
+      "sha256": "70d1e0c27aa8051749e937bac12a3492f60f0f20932c274aeb8901aab6717fcf",
+      "git_blob_sha1": "1a1ed8c7e7af3caa995bad37f180c3abc4fd8cdf",
+      "origin": "Exact authoritative terminal"
+    },
+    {
+      "path": "github/42229582001-jobs.original.json",
+      "bytes": 34693,
+      "sha256": "9d89f636637cd39d131244660e231bdf7c04be54dce8fae15b1c1f0bd7176a32",
+      "git_blob_sha1": "a2b93a900429eb19eae843b89bb4af24661a6b71",
+      "origin": "Exact JSON text returned by read-only GitHub fetch"
+    },
+    {
+      "path": "github/42229582001-run.original.json",
+      "bytes": 14434,
+      "sha256": "0a41a6c34df2502511115abd3e1bd614e4b7362551344de6a5072151f99b2df8",
+      "git_blob_sha1": "f2ed2d7cf44778a7d231d9c18057954f81f6939f",
+      "origin": "Exact JSON text returned by read-only GitHub fetch"
+    },
+    {
+      "path": "github/42260689736-jobs.original.json",
+      "bytes": 1913,
+      "sha256": "762d7db3c15d22e0524830b3a084ec646b17e7eaacc58beed47d81dee5a6032a",
+      "git_blob_sha1": "1a5824ab4bb571dbd9b076f180f7926bcfdbd669",
+      "origin": "Exact JSON text returned by read-only GitHub fetch"
+    },
+    {
+      "path": "github/42260689736-run.original.json",
+      "bytes": 14752,
+      "sha256": "d305c85ac06aa52d88dbd5a92270d088d93ac65a21dff0046ebeb731fab3b6df",
+      "git_blob_sha1": "f7806885c02dc5b3f0c5e64ca82d212d64ffd9ab",
+      "origin": "Exact JSON text returned by read-only GitHub fetch"
+    },
+    {
+      "path": "github/42260689756-jobs.original.json",
+      "bytes": 1929,
+      "sha256": "e73dfdf50bf990fabb9442a41fb067edafe2a27e73d5f1cdc20086335bdc67aa",
+      "git_blob_sha1": "13b0b0540dda70d96e7b90219bf3102cec854fab",
+      "origin": "Exact JSON text returned by read-only GitHub fetch"
+    },
+    {
+      "path": "github/42260689756-run.original.json",
+      "bytes": 14769,
+      "sha256": "8b7fa3d17a25bc866381b1ea94cead4314ca8fcdf728f7cd21d60b7de1fa56f5",
+      "git_blob_sha1": "3a387be4b837ee51c2318c1f1f67579938b0145e",
+      "origin": "Exact JSON text returned by read-only GitHub fetch"
+    }
+  ]
+}

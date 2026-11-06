@@ -1,0 +1,297 @@
+{
+  "corrected_dr_qa_commit": "a25772377e9bfad91564cf6702a26e861fded16f",
+  "corrected_dr_qa_tree": "d34d344e261811c406f63de56b3a7227c0e0ddf3",
+  "private_business_files_read": false,
+  "product_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+  "product_executed": false,
+  "product_tree": "7f4b75930e8491a3110d8c7f8f894cfc0cfc1fdb",
+  "reference_only_not_a_runnable_checkout": true,
+  "repository_modified": false,
+  "schema": "heptabao.formal-kv2-static-source-binding.v1",
+  "source_files": [
+    {
+      "bytes": 16470,
+      "git_blob_sha1": "1c57d398c4c090f2a412d0d3c9956ffadc974ea8",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/a25772377e9bfad91564cf6702a26e861fded16f/qa/single-node/smoke.py",
+      "local_readonly_reference": "/tmp/heptabao-formal-kv2-static-20261106-r1/source-references/a25772377e9bfad91564cf6702a26e861fded16f/qa/single-node/smoke.py",
+      "path": "qa/single-node/smoke.py",
+      "sha256": "ced4e40a825d3d98a285598d40b58c61083cfc397d0859a783958d855a161971",
+      "source_commit": "a25772377e9bfad91564cf6702a26e861fded16f"
+    },
+    {
+      "bytes": 75012,
+      "git_blob_sha1": "6b528f3fee83609a07363b5660081a4d8c237ddc",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/a25772377e9bfad91564cf6702a26e861fded16f/qa/openbao-acceptance/kv2_native_fresh_directory_dr_live.py",
+      "local_readonly_reference": "/tmp/heptabao-formal-kv2-static-20261106-r1/source-references/a25772377e9bfad91564cf6702a26e861fded16f/qa/openbao-acceptance/kv2_native_fresh_directory_dr_live.py",
+      "path": "qa/openbao-acceptance/kv2_native_fresh_directory_dr_live.py",
+      "sha256": "2271a4ca539e1190b03e95e95d4d1c79414bd852c80ac85e205def2adac74263",
+      "source_commit": "a25772377e9bfad91564cf6702a26e861fded16f"
+    },
+    {
+      "bytes": 49393,
+      "git_blob_sha1": "87db25eab1258c8a2d7f9047e2009b62404b6259",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/a25772377e9bfad91564cf6702a26e861fded16f/qa/openbao-acceptance/kv2_271_lossless_native_live.py",
+      "local_readonly_reference": "/tmp/heptabao-formal-kv2-static-20261106-r1/source-references/a25772377e9bfad91564cf6702a26e861fded16f/qa/openbao-acceptance/kv2_271_lossless_native_live.py",
+      "path": "qa/openbao-acceptance/kv2_271_lossless_native_live.py",
+      "sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581",
+      "source_commit": "a25772377e9bfad91564cf6702a26e861fded16f"
+    },
+    {
+      "bytes": 26131,
+      "git_blob_sha1": "de41f5275d5b7aa43c470556c61d9395c033e7e6",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/a25772377e9bfad91564cf6702a26e861fded16f/qa/openbao-acceptance/kv2_dr_process_custody.py",
+      "local_readonly_reference": "/tmp/heptabao-formal-kv2-static-20261106-r1/source-references/a25772377e9bfad91564cf6702a26e861fded16f/qa/openbao-acceptance/kv2_dr_process_custody.py",
+      "path": "qa/openbao-acceptance/kv2_dr_process_custody.py",
+      "sha256": "669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008",
+      "source_commit": "a25772377e9bfad91564cf6702a26e861fded16f"
+    },
+    {
+      "bytes": 28442,
+      "git_blob_sha1": "64793384ee1fd7db5081ac4ebb7e9dd354757889",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/a25772377e9bfad91564cf6702a26e861fded16f/qa/openbao-acceptance/owned_process.py",
+      "local_readonly_reference": "/tmp/heptabao-formal-kv2-static-20261106-r1/source-references/a25772377e9bfad91564cf6702a26e861fded16f/qa/openbao-acceptance/owned_process.py",
+      "path": "qa/openbao-acceptance/owned_process.py",
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0",
+      "source_commit": "a25772377e9bfad91564cf6702a26e861fded16f"
+    },
+    {
+      "bytes": 39096,
+      "git_blob_sha1": "1790e0024c6d2ff62d15ff6fb03f10c903df1cb4",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/a25772377e9bfad91564cf6702a26e861fded16f/qa/openbao-acceptance/native_snapshot_cli_live.py",
+      "local_readonly_reference": "/tmp/heptabao-formal-kv2-static-20261106-r1/source-references/a25772377e9bfad91564cf6702a26e861fded16f/qa/openbao-acceptance/native_snapshot_cli_live.py",
+      "path": "qa/openbao-acceptance/native_snapshot_cli_live.py",
+      "sha256": "bad9b52056f5b6bcf1a9a98f87a3c4af50d0a68190c22bf5b7b91b9d2ca3bf08",
+      "source_commit": "a25772377e9bfad91564cf6702a26e861fded16f"
+    },
+    {
+      "bytes": 22373,
+      "git_blob_sha1": "eabd41a737cbcb2ca73aa94d37ce50236193272c",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/a25772377e9bfad91564cf6702a26e861fded16f/qa/openbao-acceptance/official_openbao_launcher.py",
+      "local_readonly_reference": "/tmp/heptabao-formal-kv2-static-20261106-r1/source-references/a25772377e9bfad91564cf6702a26e861fded16f/qa/openbao-acceptance/official_openbao_launcher.py",
+      "path": "qa/openbao-acceptance/official_openbao_launcher.py",
+      "sha256": "b6bac1123e531ce69431105d01f26e987f151e7914365a7f1c637d38320d3535",
+      "source_commit": "a25772377e9bfad91564cf6702a26e861fded16f"
+    },
+    {
+      "bytes": 35247,
+      "git_blob_sha1": "639df2f7f742b4570a3bacc63c3cccd1707aa96f",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/a25772377e9bfad91564cf6702a26e861fded16f/qa/openbao-acceptance/native_v6_ha_official_history_live.py",
+      "local_readonly_reference": "/tmp/heptabao-formal-kv2-static-20261106-r1/source-references/a25772377e9bfad91564cf6702a26e861fded16f/qa/openbao-acceptance/native_v6_ha_official_history_live.py",
+      "path": "qa/openbao-acceptance/native_v6_ha_official_history_live.py",
+      "sha256": "758e5d6cc93900fd6c5de328446fce069f167fe1eb7c63fc1f2a8310231e04d5",
+      "source_commit": "a25772377e9bfad91564cf6702a26e861fded16f"
+    },
+    {
+      "bytes": 7076,
+      "git_blob_sha1": "35e61ebf07d1be1ae4d2d9b87a3d4fb29c3af76c",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/a25772377e9bfad91564cf6702a26e861fded16f/qa/openbao-acceptance/native_v6_ha_official_history_wire.py",
+      "local_readonly_reference": "/tmp/heptabao-formal-kv2-static-20261106-r1/source-references/a25772377e9bfad91564cf6702a26e861fded16f/qa/openbao-acceptance/native_v6_ha_official_history_wire.py",
+      "path": "qa/openbao-acceptance/native_v6_ha_official_history_wire.py",
+      "sha256": "15355994054c75d293a98f906b8762751b6edd59376a896267a9546ae8ceb080",
+      "source_commit": "a25772377e9bfad91564cf6702a26e861fded16f"
+    },
+    {
+      "bytes": 16505,
+      "git_blob_sha1": "6778b602c3a02d56874249fcf873f241846a346f",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/a25772377e9bfad91564cf6702a26e861fded16f/tools/migration/openbao271_kv2_native_large_migrate.py",
+      "local_readonly_reference": "/tmp/heptabao-formal-kv2-static-20261106-r1/source-references/a25772377e9bfad91564cf6702a26e861fded16f/tools/migration/openbao271_kv2_native_large_migrate.py",
+      "path": "tools/migration/openbao271_kv2_native_large_migrate.py",
+      "sha256": "4df0d5eaf069905e5a5bfd9e0e699391ba104ac27d54c5cbb18a79a9d8b1284d",
+      "source_commit": "a25772377e9bfad91564cf6702a26e861fded16f"
+    },
+    {
+      "bytes": 18855,
+      "git_blob_sha1": "df5381f128360add3b17dbc3b3e4e87c30e96858",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/a25772377e9bfad91564cf6702a26e861fded16f/tools/migration/openbao270_kv2_migrate.py",
+      "local_readonly_reference": "/tmp/heptabao-formal-kv2-static-20261106-r1/source-references/a25772377e9bfad91564cf6702a26e861fded16f/tools/migration/openbao270_kv2_migrate.py",
+      "path": "tools/migration/openbao270_kv2_migrate.py",
+      "sha256": "7d49451fc876040ad1887de5170b6255a0a569d79894141e34c201d6d369f607",
+      "source_commit": "a25772377e9bfad91564cf6702a26e861fded16f"
+    },
+    {
+      "bytes": 22270,
+      "git_blob_sha1": "f438d8091af7311b7d941d7604b527e08dc666da",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/a25772377e9bfad91564cf6702a26e861fded16f/tools/migration/kv2_lossless_raw.py",
+      "local_readonly_reference": "/tmp/heptabao-formal-kv2-static-20261106-r1/source-references/a25772377e9bfad91564cf6702a26e861fded16f/tools/migration/kv2_lossless_raw.py",
+      "path": "tools/migration/kv2_lossless_raw.py",
+      "sha256": "633470fd47ca5d402fb2e175ecf57aaf43d9fa6c27b8ba4885d9fc43d4a989d2",
+      "source_commit": "a25772377e9bfad91564cf6702a26e861fded16f"
+    },
+    {
+      "bytes": 5598,
+      "git_blob_sha1": "ee6c82d4d7f22fb2e7f5f20d87b4a560c5bbd939",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/9c68b95b152a468ab378b68730e9e3f04e6a7100/crates/heptabao-server/src/main.rs",
+      "path": "crates/heptabao-server/src/main.rs",
+      "sha256": "cd13c9ede516a0f6fb03c785e077df472bfa046cb63f9a8748eadb3d7bccc349",
+      "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100"
+    },
+    {
+      "bytes": 234766,
+      "git_blob_sha1": "34473f40afaed75bad8bda3e0436832703d3f781",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/9c68b95b152a468ab378b68730e9e3f04e6a7100/crates/heptabao-server/src/http.rs",
+      "path": "crates/heptabao-server/src/http.rs",
+      "sha256": "e1cf2ee36e5f6efb1ae626b0bcab47b7dd7ddf29504581bc364bdf68df9ecac5",
+      "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100"
+    },
+    {
+      "bytes": 16423,
+      "git_blob_sha1": "cfcd4469d1357547ef279d35451d1dd6d3c857a4",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/9c68b95b152a468ab378b68730e9e3f04e6a7100/crates/heptabao-server/src/server_storage.rs",
+      "path": "crates/heptabao-server/src/server_storage.rs",
+      "sha256": "fa677d67b2e34129841819152d8abbebd300fa3827fa9f6748739afa803a9010",
+      "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100"
+    },
+    {
+      "bytes": 8921,
+      "git_blob_sha1": "eee13dd9fa02278b1718697170269670fe0a8f7b",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/9c68b95b152a468ab378b68730e9e3f04e6a7100/crates/heptabao-server/src/service_native_storage.rs",
+      "path": "crates/heptabao-server/src/service_native_storage.rs",
+      "sha256": "fd128286715bc0d1350657057882ae7070bf9de17b30b8aa1067e30d430af062",
+      "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100"
+    },
+    {
+      "bytes": 12204,
+      "git_blob_sha1": "6aca23386469d70ebd8ea4390a7f66c7d60906af",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/9c68b95b152a468ab378b68730e9e3f04e6a7100/crates/heptabao-server/src/service_snapshot_lossless_export.rs",
+      "path": "crates/heptabao-server/src/service_snapshot_lossless_export.rs",
+      "sha256": "15c5f65bec79ef870053c4d52f73de6de45820502c86f7eea0ba9d72d09a9b8b",
+      "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100"
+    },
+    {
+      "bytes": 4267,
+      "git_blob_sha1": "95ba7b865884a1b08c1eb7d3c5780b4d59ac7280",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/9c68b95b152a468ab378b68730e9e3f04e6a7100/crates/heptabao-server/src/engine_native_kv2_lossless_export.rs",
+      "path": "crates/heptabao-server/src/engine_native_kv2_lossless_export.rs",
+      "sha256": "a8d0d08a35f05b5490a8f31364c593becb0a8e5195d35d2a6a96cd3b76f8d79a",
+      "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100"
+    },
+    {
+      "bytes": 16389,
+      "git_blob_sha1": "105870353f57cc56b1900891ea50697c620e5607",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/9c68b95b152a468ab378b68730e9e3f04e6a7100/crates/heptabao-server/src/engines/kv2_native_lossless_export.rs",
+      "path": "crates/heptabao-server/src/engines/kv2_native_lossless_export.rs",
+      "sha256": "04b7de26b8f15c8dd46014bf3425ab79c2e13f35b9a267992f77a0dc4b03a7e5",
+      "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100"
+    },
+    {
+      "bytes": 24986,
+      "git_blob_sha1": "d504e4961c133689a1fcd563d2d64eccc6f0ce67",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/9c68b95b152a468ab378b68730e9e3f04e6a7100/crates/heptabao-server/src/engines/kv_lossless.rs",
+      "path": "crates/heptabao-server/src/engines/kv_lossless.rs",
+      "sha256": "5e91cf0d28a23bfc59264256853bd1cf59783c0fb1e5212eb752459dbb6d2f3a",
+      "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100"
+    },
+    {
+      "bytes": 14723,
+      "git_blob_sha1": "3eda07cff27f1a5d0e05652f9d6215d2ef3ce567",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/9c68b95b152a468ab378b68730e9e3f04e6a7100/crates/heptabao-server/src/engines/kv_lossless_native_large.rs",
+      "path": "crates/heptabao-server/src/engines/kv_lossless_native_large.rs",
+      "sha256": "1a2d6881dfb10b19081275f8a6e44b38f541972c2d6652a9b00a1642efeca929",
+      "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100"
+    },
+    {
+      "bytes": 5120,
+      "git_blob_sha1": "d3902c3fd45cd1df24f7802bdb2bf2243cda19b3",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/9c68b95b152a468ab378b68730e9e3f04e6a7100/crates/heptabao-server/src/engine_kv2_native_import.rs",
+      "path": "crates/heptabao-server/src/engine_kv2_native_import.rs",
+      "sha256": "ac91f5e9284cba768ff0c60119b22ea56f5490e027c73a5498bb45a986f21ffd",
+      "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100"
+    },
+    {
+      "bytes": 9075,
+      "git_blob_sha1": "3ac3b48d91e5cb187a664bdfad7013634fd4811e",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/9c68b95b152a468ab378b68730e9e3f04e6a7100/crates/heptabao-server/src/engines/kv2_native_import.rs",
+      "path": "crates/heptabao-server/src/engines/kv2_native_import.rs",
+      "sha256": "a8e6c7b9bf0ef5ca4906d3b7af5b2225185d14b50ba1c4065551365fbe9ea6f9",
+      "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100"
+    },
+    {
+      "bytes": 30818,
+      "git_blob_sha1": "11e7bd5bb14db7512591e08128253194af5b8c17",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/9c68b95b152a468ab378b68730e9e3f04e6a7100/crates/heptabao-server/src/service_native_seed_ha_import.rs",
+      "path": "crates/heptabao-server/src/service_native_seed_ha_import.rs",
+      "sha256": "3abca7765226b43902931f82874853dd38dafa386a60c1f73cc8751b6a6b139e",
+      "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100"
+    },
+    {
+      "bytes": 27386,
+      "git_blob_sha1": "3b3982daa1cae82ec0fe2115ba7f6973d2cb2080",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/9c68b95b152a468ab378b68730e9e3f04e6a7100/crates/heptabao-server/src/service_native_seed.rs",
+      "path": "crates/heptabao-server/src/service_native_seed.rs",
+      "sha256": "4025c1a69c7b7c9d5a11662cc3395f3d1ca4ef3ddd6440283247fbeb85adf283",
+      "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100"
+    },
+    {
+      "bytes": 34394,
+      "git_blob_sha1": "4932adf8620a3d32ebf8dee4da359213010bfb68",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/9c68b95b152a468ab378b68730e9e3f04e6a7100/crates/heptabao-server/src/service_native_cold_seed.rs",
+      "path": "crates/heptabao-server/src/service_native_cold_seed.rs",
+      "sha256": "4d49ff9490be2900588d2b9517d51104308a1f82f8498da615e00ea39406998d",
+      "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100"
+    },
+    {
+      "bytes": 12539,
+      "git_blob_sha1": "357387e9f0abeda9dc43a5be21acb9e499c3e363",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/9c68b95b152a468ab378b68730e9e3f04e6a7100/crates/heptabao-server/src/ha_native_v6_backup_format.rs",
+      "path": "crates/heptabao-server/src/ha_native_v6_backup_format.rs",
+      "sha256": "fff9e0e2a32a1b141b406ebd04384ebb4ca9b8561607b8822cc2707e95dcca94",
+      "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100"
+    },
+    {
+      "bytes": 7204,
+      "git_blob_sha1": "82f03f03cf7e58d01f1ca8e90e7b1e35a8b6e001",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/9c68b95b152a468ab378b68730e9e3f04e6a7100/crates/heptabao-server/src/ha_native_v6_backup_cold.rs",
+      "path": "crates/heptabao-server/src/ha_native_v6_backup_cold.rs",
+      "sha256": "de6a7b88a7b1ea4eddf12d4b41f750e82453544365be41f97e5ce35260c793d8",
+      "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100"
+    },
+    {
+      "bytes": 5318,
+      "git_blob_sha1": "9113211afe4ceab8ffeb27578d76262d46da688e",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/9c68b95b152a468ab378b68730e9e3f04e6a7100/crates/heptabao-server/src/bin/heptabao-seed.rs",
+      "path": "crates/heptabao-server/src/bin/heptabao-seed.rs",
+      "sha256": "365befe409d2e066e9436d50489d23be3f6fbdee2097cad57c967e863ce2d84c",
+      "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100"
+    },
+    {
+      "bytes": 14656,
+      "git_blob_sha1": "ce3e4385cd218efcdab36782b7a02cb59f72d439",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/9c68b95b152a468ab378b68730e9e3f04e6a7100/crates/heptabao-server/src/service_native_kv2_storage_witness.rs",
+      "path": "crates/heptabao-server/src/service_native_kv2_storage_witness.rs",
+      "sha256": "5ce16fb9901016eb7ce40c5a891f8f6410f02fa0b2194ba1c24c952c4c8e5c2c",
+      "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100"
+    },
+    {
+      "bytes": 20583,
+      "git_blob_sha1": "31351f155da59151e060408a94586378999cbf3e",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/9c68b95b152a468ab378b68730e9e3f04e6a7100/crates/heptabao-server/src/service_native_seed_ha_import_tests.rs",
+      "path": "crates/heptabao-server/src/service_native_seed_ha_import_tests.rs",
+      "sha256": "d43fb0248d599a0a10478e38385204d0f767ef314929de03c890f0f8475b3b30",
+      "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100"
+    },
+    {
+      "bytes": 13457,
+      "git_blob_sha1": "dfe6f5e80709418b69bb1b33fee48dadb9ed6aa1",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/9c68b95b152a468ab378b68730e9e3f04e6a7100/crates/heptabao-server/src/service_snapshot_lossless_export_tests.rs",
+      "path": "crates/heptabao-server/src/service_snapshot_lossless_export_tests.rs",
+      "sha256": "9f222edca204bd1b325d1d520ee927338d587d14f5df95fd085017f9943d5072",
+      "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100"
+    },
+    {
+      "bytes": 13987,
+      "git_blob_sha1": "c05e2ac7960aa400a679e328abcbe6d5a475e285",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/9c68b95b152a468ab378b68730e9e3f04e6a7100/crates/heptabao-server/src/engines/kv2_native_lossless_export_tests.rs",
+      "path": "crates/heptabao-server/src/engines/kv2_native_lossless_export_tests.rs",
+      "sha256": "60162ea24c831f1e5f06b0ddf2d72adf76764ed6e4c992e7fd18541489f964c7",
+      "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100"
+    },
+    {
+      "bytes": 17741,
+      "git_blob_sha1": "a9ee60fe17b462028e4081033d00acb3e08c1a51",
+      "github_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/9c68b95b152a468ab378b68730e9e3f04e6a7100/qa/openbao-acceptance/authbus_current_credential_stage.py",
+      "path": "qa/openbao-acceptance/authbus_current_credential_stage.py",
+      "sha256": "1851ae94089dfb32c2f088164578044230a255239d11f598d41560899366936e",
+      "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100"
+    }
+  ]
+}

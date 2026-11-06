@@ -1,0 +1,189 @@
+{
+  "schema": "heptabao.ci-publication-readonly-followup.v1",
+  "observation_scope": "One bounded process metadata lookup and one current resource snapshot, plus six GitHub API reads; no diagnostic/build replay",
+  "ci": [
+    {
+      "id": 42260689756,
+      "status": "queued",
+      "conclusion": null,
+      "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+      "updated_at": "2026-11-06T17:37:50Z",
+      "jobs": [
+        {
+          "id": 128048873935,
+          "name": "OpenBao replacement / merge",
+          "status": "queued",
+          "conclusion": null,
+          "runner_id": 0,
+          "runner_name": "",
+          "step_count": 0,
+          "failed_step_names": []
+        },
+        {
+          "id": 128048874677,
+          "name": "OpenBao replacement / head",
+          "status": "queued",
+          "conclusion": null,
+          "runner_id": 0,
+          "runner_name": "",
+          "step_count": 0,
+          "failed_step_names": []
+        }
+      ]
+    },
+    {
+      "id": 42260689736,
+      "status": "queued",
+      "conclusion": null,
+      "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+      "updated_at": "2026-11-06T17:20:13Z",
+      "jobs": [
+        {
+          "id": 128039522982,
+          "name": "workflow-trust / prospective-merge",
+          "status": "queued",
+          "conclusion": null,
+          "runner_id": 0,
+          "runner_name": "",
+          "step_count": 0,
+          "failed_step_names": []
+        },
+        {
+          "id": 128039523452,
+          "name": "workflow-trust / exact-head",
+          "status": "queued",
+          "conclusion": null,
+          "runner_id": 0,
+          "runner_name": "",
+          "step_count": 0,
+          "failed_step_names": []
+        }
+      ]
+    },
+    {
+      "id": 42229582001,
+      "status": "completed",
+      "conclusion": "cancelled",
+      "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+      "updated_at": "2026-11-06T17:37:50Z",
+      "jobs": [
+        {
+          "id": 127931720502,
+          "name": "OpenBao replacement / merge",
+          "status": "completed",
+          "conclusion": "failure",
+          "runner_id": 1000018728,
+          "runner_name": "GitHub Actions 1000018728",
+          "step_count": 78,
+          "failed_step_names": [
+            "Test the complete locked Rust workspace"
+          ]
+        },
+        {
+          "id": 127931720823,
+          "name": "OpenBao replacement / head",
+          "status": "completed",
+          "conclusion": "failure",
+          "runner_id": 1000018738,
+          "runner_name": "GitHub Actions 1000018738",
+          "step_count": 78,
+          "failed_step_names": [
+            "Check strict first-party workspace Clippy"
+          ]
+        },
+        {
+          "id": 128012789628,
+          "name": "OpenBao replacement / exact-head-and-merge verdict",
+          "status": "completed",
+          "conclusion": "failure",
+          "runner_id": 1000022373,
+          "runner_name": "GitHub Actions 1000022373",
+          "step_count": 3,
+          "failed_step_names": [
+            "Reject failed cancelled or skipped qualification matrix"
+          ]
+        }
+      ]
+    }
+  ],
+  "original_ci_job_failures_remain_despite_cancelled_run": true,
+  "ci_cancellation_cause_not_inferred": true,
+  "cargo_observation": {
+    "boot_id": "fcdd2477-a952-4ef2-9bdc-2237255080f1",
+    "bounded_parent_chain_complete": true,
+    "clock_ticks_per_second": 100,
+    "elapsed_seconds": 0.00010034703882411122,
+    "no_attribution_inferred": true,
+    "original_preflight_birth_unknown": true,
+    "process_chain": [
+      {
+        "observation": "gone_or_raced",
+        "original_preflight_identity_not_proven": true,
+        "pid": 1419419,
+        "present": false
+      }
+    ],
+    "product_files_opened": false,
+    "read_cmdline": false,
+    "read_environ": false,
+    "requested_pid": 1419419,
+    "schema": "heptabao.readonly-compiler-metadata-observation.v1",
+    "signals_sent": false,
+    "status": "observed",
+    "subprocesses_started": 0
+  },
+  "resource_observation": {
+    "compiler_processes": [],
+    "disk_free_bytes": 113584246784,
+    "elapsed_seconds": 0.007181143970228732,
+    "euid": 1000,
+    "load_average": [
+      1.01025390625,
+      1.18701171875,
+      1.10302734375
+    ],
+    "malformed_metadata": [],
+    "mem_available_kib": 29075060,
+    "original_r12_failed_attempt_unchanged": true,
+    "original_resource_thresholds": {
+      "compiler_processes_required": 0,
+      "disk_free_minimum_bytes": 8589934592,
+      "mem_available_minimum_kib": 12582912
+    },
+    "permission_denied": [],
+    "product_files_opened": false,
+    "read_cmdline": false,
+    "read_environ": false,
+    "read_only": true,
+    "resource_gate_currently_matches_original": true,
+    "schema": "heptabao.ci-diagnostic-current-resource-observation.v1",
+    "signals_sent": false,
+    "snapshot_not_host_reservation": true,
+    "status": "observed",
+    "subprocesses_started": 0,
+    "swap_free_kib": 10924,
+    "vanished_during_scan": []
+  },
+  "runtime_or_ci_attribution_of_original_pid": "unknown: original birth was not recorded; process had already disappeared before metadata lookup",
+  "existing_verified_binary_limit": {
+    "mac_4bde_server_libtest": {
+      "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+      "bytes": 154608832,
+      "sha256": "823b6590c23d736d61d03ec6f27e44f258b0766096737bdc26e73fa0113a5b1b",
+      "profile": "normal release opt3/debug0; actual107 qualified for that scope",
+      "new_9c68_test_observation_hooks_present": false
+    },
+    "rog_r11_server_libtest": {
+      "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+      "bytes": 191839984,
+      "sha256": "44e787b4116845eb598b469e56b074ffd69e4c078b40f2fc1bf0d728880724d7",
+      "profile": "normal release opt3/debug0; actual107 diagnostic only with legacy HOLD",
+      "new_9c68_test_observation_hooks_present": false
+    },
+    "no_verified_reusable_9c68_dev_libtest_in_available_inventory": true,
+    "other_hosts_current_resource_admission_not_proven": true
+  },
+  "machine_acceptance": "HOLD",
+  "legacy_preservation": false,
+  "original_ci_failure_root_cause_proven": false
+}

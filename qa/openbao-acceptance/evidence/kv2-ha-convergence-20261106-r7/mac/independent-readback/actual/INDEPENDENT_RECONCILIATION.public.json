@@ -1,0 +1,277 @@
+{
+  "all_evidence_check_denominators_recomputed": true,
+  "all_owned_directory_handles_retired": true,
+  "all_scope_qualification_false_values_rechecked": true,
+  "archive": {
+    "absent_files": 7,
+    "archive_tree_files": 792,
+    "ciphertext_chunk_bytes": 4371275284,
+    "declared_files": 19,
+    "declared_plaintext_bytes": 3278398048,
+    "encrypted_chunks": 790,
+    "every_chunk_authenticated": true,
+    "key_tree_files": 1,
+    "no_missing_or_extra_archive_files": true,
+    "ordered_chunk_inventory_complete": true,
+    "present_files": 12
+  },
+  "cold_connections_closed": 12,
+  "cold_connections_opened": 12,
+  "cold_sqlite": {
+    "capture": {
+      "absent_families_verified": 3,
+      "agent_auth_stores_nonempty": 5,
+      "all_agent_auth_state_rows": 4,
+      "all_agent_auth_store_rows": 5,
+      "database_families": 9,
+      "empty_markers_verified": 0,
+      "nonempty_cold_checked": 6,
+      "rows": [
+        {
+          "all_agent_auth_rows_exact_or_not_agent": true,
+          "index": 0,
+          "kind": "agent",
+          "state": "cold_database_verified"
+        },
+        {
+          "all_agent_auth_rows_exact_or_not_agent": true,
+          "index": 1,
+          "kind": "agent",
+          "state": "cold_database_verified"
+        },
+        {
+          "all_agent_auth_rows_exact_or_not_agent": true,
+          "index": 2,
+          "kind": "agent",
+          "state": "cold_database_verified"
+        },
+        {
+          "all_agent_auth_rows_exact_or_not_agent": true,
+          "index": 3,
+          "kind": "agent",
+          "state": "cold_database_verified"
+        },
+        {
+          "all_agent_auth_rows_exact_or_not_agent": true,
+          "index": 4,
+          "kind": "agent",
+          "state": "cold_database_verified"
+        },
+        {
+          "all_agent_auth_rows_exact_or_not_agent": true,
+          "index": 5,
+          "kind": "shared",
+          "state": "cold_database_verified"
+        },
+        {
+          "index": 6,
+          "kind": "quarantine",
+          "state": "absent_family_verified"
+        },
+        {
+          "index": 7,
+          "kind": "transport",
+          "state": "absent_family_verified"
+        },
+        {
+          "index": 8,
+          "kind": "transport",
+          "state": "absent_family_verified"
+        }
+      ]
+    },
+    "restore": {
+      "absent_families_verified": 3,
+      "agent_auth_stores_nonempty": 5,
+      "all_agent_auth_state_rows": 4,
+      "all_agent_auth_store_rows": 5,
+      "database_families": 9,
+      "empty_markers_verified": 0,
+      "nonempty_cold_checked": 6,
+      "rows": [
+        {
+          "all_agent_auth_rows_exact_or_not_agent": true,
+          "index": 0,
+          "kind": "agent",
+          "state": "cold_database_verified"
+        },
+        {
+          "all_agent_auth_rows_exact_or_not_agent": true,
+          "index": 1,
+          "kind": "agent",
+          "state": "cold_database_verified"
+        },
+        {
+          "all_agent_auth_rows_exact_or_not_agent": true,
+          "index": 2,
+          "kind": "agent",
+          "state": "cold_database_verified"
+        },
+        {
+          "all_agent_auth_rows_exact_or_not_agent": true,
+          "index": 3,
+          "kind": "agent",
+          "state": "cold_database_verified"
+        },
+        {
+          "all_agent_auth_rows_exact_or_not_agent": true,
+          "index": 4,
+          "kind": "agent",
+          "state": "cold_database_verified"
+        },
+        {
+          "all_agent_auth_rows_exact_or_not_agent": true,
+          "index": 5,
+          "kind": "shared",
+          "state": "cold_database_verified"
+        },
+        {
+          "index": 6,
+          "kind": "quarantine",
+          "state": "absent_family_verified"
+        },
+        {
+          "index": 7,
+          "kind": "transport",
+          "state": "absent_family_verified"
+        },
+        {
+          "index": 8,
+          "kind": "transport",
+          "state": "absent_family_verified"
+        }
+      ]
+    }
+  },
+  "evidence_checks": [
+    {
+      "check": "fixed_readonly_code_and_environment_bound",
+      "passed": true
+    },
+    {
+      "check": "original_complete_workflow_and_fresh_stage_bound",
+      "passed": true
+    },
+    {
+      "check": "original_private_generation_roots_files_and_plan_bound",
+      "passed": true
+    },
+    {
+      "check": "complete_ordered_authenticated_archive_generation",
+      "passed": true
+    },
+    {
+      "check": "both_existing_copies_full_declared_bytes_and_absences",
+      "passed": true
+    },
+    {
+      "check": "every_nonempty_database_cold_and_all_agent_rows_exact",
+      "passed": true
+    },
+    {
+      "check": "all_seven_safety_and_absent_file_boundaries_covered",
+      "passed": true
+    },
+    {
+      "check": "complete_current_snapshot_denominators_without_truncation",
+      "passed": true
+    },
+    {
+      "check": "all_bound_inputs_consumed_files_and_roots_unchanged",
+      "passed": true
+    },
+    {
+      "check": "all_consumed_plaintext_key_and_input_handles_retired",
+      "passed": true
+    },
+    {
+      "check": "no_live_source_network_process_or_mutation_effect",
+      "passed": true
+    }
+  ],
+  "evidence_checks_not_new_unit_test_cases": true,
+  "full_result_and_final_stdout_only_expected_closeout_difference": true,
+  "full_result_version_bound_read_exact": true,
+  "new_child_processes": 0,
+  "owned_directory_handles_closed": 42,
+  "phases": [
+    {
+      "cap_seconds": 60,
+      "completed_within_original_phase_and_new_attempt_work_deadline": true,
+      "elapsed_seconds": 0.3671686672605574,
+      "phase": "admission",
+      "status": "passed"
+    },
+    {
+      "cap_seconds": 300,
+      "completed_within_original_phase_and_new_attempt_work_deadline": true,
+      "elapsed_seconds": 12.461778624914587,
+      "phase": "archive_authentication",
+      "status": "passed"
+    },
+    {
+      "cap_seconds": 300,
+      "completed_within_original_phase_and_new_attempt_work_deadline": true,
+      "elapsed_seconds": 3.329233792144805,
+      "phase": "existing_copies_full_hash_and_cold_sqlite",
+      "status": "passed"
+    },
+    {
+      "absolute_new_entry_work_ceiling_seconds": 840,
+      "completed_within_original_phase_and_new_attempt_work_deadline": true,
+      "elapsed_seconds": 0.09620941709727049,
+      "phase": "postflight",
+      "status": "passed"
+    }
+  ],
+  "private_closure_full_ns_identity_equals_original_public_and_native": true,
+  "private_closure_sha_stays_private": true,
+  "producer_job_id": "1a1b20a271e-fc05-7c28",
+  "safety_files": {
+    "absent_count": 4,
+    "complete_both_copy_full_bytes_and_absences_verified": true,
+    "present_count": 3,
+    "required_count": 7
+  },
+  "schema": "heptabao.independent-whole-data-readback-terminal-reconciliation.v1",
+  "scope_qualification_false_keys": [
+    "formal_kv2_qualified",
+    "ha_qualified",
+    "authbus_qualified",
+    "traffic_cutover_performed",
+    "old_assets_removed",
+    "source_live_database_opened",
+    "source_live_configuration_opened",
+    "source_data_written",
+    "new_capture_backup_or_restore_created",
+    "network_provider_or_j3160_called",
+    "product_sdk_or_service_executed",
+    "candidate_workspace_independently_verified",
+    "application_boot_or_client_routing_qualified",
+    "restored_configuration_paths_rewritten",
+    "source_device_loss_recovery_qualified",
+    "current_credential_validity_qualified",
+    "all_known_writers_fenced",
+    "cross_database_atomic_snapshot_qualified"
+  ],
+  "source_and_fixed_inputs_native_hash_size_version_unchanged_since_stage": true,
+  "status": "passed",
+  "terminal_succeeded_complete_durable": true,
+  "verifier_job_id": "1a1b2364646-fc05-7cfa",
+  "whole_file_readback": {
+    "capture": {
+      "absent_files_verified": 7,
+      "complete_manifest_matches_authenticated_archive": true,
+      "declared_files": 19,
+      "present_files_hashed": 12,
+      "whole_plaintext_bytes_hashed": 3278398048
+    },
+    "restore": {
+      "absent_files_verified": 7,
+      "complete_manifest_matches_authenticated_archive": true,
+      "declared_files": 19,
+      "present_files_hashed": 12,
+      "whole_plaintext_bytes_hashed": 3278398048
+    }
+  }
+}

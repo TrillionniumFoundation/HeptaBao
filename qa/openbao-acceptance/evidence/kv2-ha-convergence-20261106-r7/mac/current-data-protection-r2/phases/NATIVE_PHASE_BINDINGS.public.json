@@ -1,0 +1,32 @@
+{
+  "asserted_as_original_producer_closeout_file_pins": false,
+  "files": [
+    {
+      "bytes": 865,
+      "phase": "capture",
+      "sha256": "23aa39cbe88b866edeb8f9aaaea6ab9d9728e3d4bf645e499f0e14919b7734ee",
+      "version": "16777233:593495643:865:1793988384568517571:1793988384568517571"
+    },
+    {
+      "bytes": 973,
+      "phase": "backup",
+      "sha256": "d566cdf9adbe444a52e5ae601b07b24399f234dd99ed531b7e9334531d7550a5",
+      "version": "16777244:72749234:973:1793988405374777096:1793988405374777096"
+    },
+    {
+      "bytes": 1015,
+      "phase": "restore-verify",
+      "sha256": "0140edb014d64c7633156a2dc20995a1d13e0658ff691a8f4aac812edc0f7879",
+      "version": "16777233:593495987:1015:1793988435233942272:1793988435233942272"
+    },
+    {
+      "bytes": 1942,
+      "phase": "current-source-recovery-workflow",
+      "sha256": "3c2691735cfd7946100369a618853b3ed2c58d474eac9e463b912e68a760bf58",
+      "version": "16777233:593495988:1942:1793988435234382119:1793988435234382119"
+    }
+  ],
+  "private_source_account_paths_excluded": true,
+  "schema": "heptabao.post-producer-native-public-phase-bindings.v1",
+  "scope": "native_reads_after_successful_producer_terminal"
+}

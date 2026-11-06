@@ -1,0 +1,117 @@
+--- unexecuted-021454-draft-r1
++++ full-core-receipt-vs-safe-projection-r2
+@@ -617,6 +617,56 @@
+          "original_three_phases_passed_in_order")
+ 
+ 
++def validated_core_workflow_projection(value):
++    """Validate the full core receipt before deriving the outer's safe subset."""
++    false_fields = {
++        "all_clients_and_backups_migrated", "all_known_writers_fenced", "automatic_retry",
++        "credential_values_or_content_fingerprints_published", "cross_database_atomic_snapshot_qualified",
++        "current_credential_validity_qualified", "formal_kv2_qualified", "full_host_inventory_qualified",
++        "old_assets_removed", "provider_or_sdk_called", "resume_after_failed_phase_supported",
++        "service_or_client_configuration_changed", "source_capture_or_service_cutover_qualified",
++        "source_data_write_invoked", "source_freshness_after_capture_qualified",
++        "source_native_sqlite_sidecar_writes_excluded", "traffic_cutover_performed",
++    }
++    need(set(value) == false_fields | {
++        "schema", "phase", "status", "error", "counts", "phases", "budget_origin",
++        "cleanup_and_receipt_reserve_seconds", "controller_work_cap_seconds",
++        "durable_completion_authority", "elapsed_observation_before_receipt_publication_seconds",
++        "only_declared_captured_generation", "total_runtime_cap_seconds",
++    }, "complete_original_core_workflow_receipt_fields")
++    need(value["schema"] == "heptabao.mac-current-sqlite-recovery-workflow.public.v1"
++         and value["phase"] == "current-source-recovery-workflow" and value["status"] == "passed"
++         and value["error"] is None and value["only_declared_captured_generation"] is True
++         and all(value[name] is False for name in false_fields),
++         "complete_original_core_workflow_scope_and_status")
++    need(value["total_runtime_cap_seconds"] == 900 and value["controller_work_cap_seconds"] == 840
++         and value["cleanup_and_receipt_reserve_seconds"] == 60
++         and value["budget_origin"] == "new_workflow_definition_not_previous_whole_capture_budget"
++         and value["durable_completion_authority"] == "separate_original_runtime_terminal"
++         and type(value["elapsed_observation_before_receipt_publication_seconds"]) in (int, float)
++         and 0 <= value["elapsed_observation_before_receipt_publication_seconds"] < 840,
++         "complete_original_core_workflow_budgets")
++    need(isinstance(value["phases"], list)
++         and [row["phase"] for row in value["phases"]] == ["capture", "backup", "restore-verify"],
++         "complete_original_core_phase_order")
++    for row in value["phases"]:
++        need(set(row) == {"phase", "status", "phase_cap_seconds", "elapsed_seconds",
++                          "completion_observed_within_original_phase_and_total_deadlines"}
++             and row["status"] == "passed" and row["phase_cap_seconds"] == 300
++             and row["completion_observed_within_original_phase_and_total_deadlines"] is True
++             and type(row["elapsed_seconds"]) in (int, float) and 0 <= row["elapsed_seconds"] < 300,
++             "complete_original_core_phase_budgets")
++    counts = value["counts"]
++    need(set(counts) == {"captured_database_entries", "configured_agents", "logical_snapshot_bytes", "recovery"}
++         and all(type(counts[name]) is int and counts[name] >= 0
++                 for name in ("captured_database_entries", "configured_agents", "logical_snapshot_bytes"))
++         and set(counts["recovery"]) == {"absent_families", "all_declared_files", "auth_stores",
++                                        "nonempty_databases", "plaintext_bytes"}
++         and all(type(number) is int and number >= 0 for number in counts["recovery"].values()),
++         "complete_original_core_count_fields")
++    return {name: value[name] for name in ("counts", "phases", "status")}
++
++
+ def load_public_admission(inputs):
+     need(inputs["ready"] is True and isinstance(inputs["original_workflow_job_id"], str),
+          "real_successful_workflow_inputs_not_ready")
+@@ -625,7 +675,8 @@
+          "new_independent_attempt_fixed_budgets")
+     names = {"original-workflow-result.public.json", "original-workflow-runtime.stdout.original",
+              "original-workflow-runtime-terminal.original.json",
+-             "plan-stage-result.public.json", "plan-stage-runtime-terminal.original.json"}
++             "plan-stage-result.public.json", "plan-stage-runtime-terminal.original.json",
++             "observed-core-workflow-result.public.json"}
+     need(set(inputs["public_files"]) == names, "exact_public_original_gate_files")
+     values, originals = {}, {}
+     for name, pin in inputs["public_files"].items():
+@@ -638,6 +689,18 @@
+     validate_producer_success(values["original-workflow-result.public.json"],
+                               values["original-workflow-runtime.stdout.original"], terminal,
+                               inputs["original_workflow_job_id"])
++    observed = inputs["core_workflow_receipt_observation"]
++    need(set(observed) == {"scope", "asserted_as_producer_closeout_pin", "bytes", "sha256", "version"}
++         and observed["scope"] == "independent_native_read_after_producer_terminal"
++         and observed["asserted_as_producer_closeout_pin"] is False
++         and {key: observed[key] for key in ("bytes", "sha256")}
++             == inputs["public_files"]["observed-core-workflow-result.public.json"]
++         and type(observed["version"]) is str and re.fullmatch(r"[0-9]+(?::[0-9]+){4}", observed["version"]),
++         "new_complete_core_receipt_observation_not_historical_closeout_pin")
++    need(validated_core_workflow_projection(values["observed-core-workflow-result.public.json"])
++         == values["original-workflow-result.public.json"]["workflow"],
++         "complete_core_workflow_projects_exactly_to_original_outer")
++    values["observed_core_workflow_original_bytes"] = originals["observed-core-workflow-result.public.json"]
+     stage = values["plan-stage-result.public.json"]
+     successful_terminal(values["plan-stage-runtime-terminal.original.json"], "1a1b1dca238-fc05-7b30")
+     need(stage["status"] == "private_plan_staged_workflow_not_executed"
+@@ -793,7 +856,9 @@
+     PUBLIC["new_volume_uuid_query_performed"] = False
+     checked("original_private_generation_roots_files_and_plan_bound", True)
+     return {"plan": plan, "binding": binding, "paths": paths, "originals": originals,
+-            "capture_sha256": capture_sha, "agents": agents, "original_workflow_result": result["workflow"]}
++            "capture_sha256": capture_sha, "agents": agents, "original_workflow_result": result["workflow"],
++            "observed_core_workflow_original_bytes": values["observed_core_workflow_original_bytes"],
++            "observed_core_workflow_pin": inputs["core_workflow_receipt_observation"]}
+ 
+ def observe_data_file(path, expected_bytes=None):
+     check()
+@@ -1040,9 +1105,14 @@
+                           for name, pin in pins.items()}
+     need(json.loads(locations_raw, object_pairs_hook=unique) == expected_locations,
+          "existing_capture_workflow_locations_equal_original_generation")
+-    workflow_result_raw, _ = read_file(paths["capture"] / "workflow-result.public.json", 65536, remember=True)
+-    need(json.loads(workflow_result_raw, object_pairs_hook=unique) == context["original_workflow_result"],
+-         "existing_capture_workflow_result_equals_original_successful_receipt")
++    workflow_result_raw, workflow_ident = read_file(
++        paths["capture"] / "workflow-result.public.json", 65536,
++        pin=context["observed_core_workflow_pin"], remember=True)
++    need(workflow_result_raw == context["observed_core_workflow_original_bytes"]
++         and version(workflow_ident) == context["observed_core_workflow_pin"]["version"],
++         "independently_observed_complete_core_workflow_receipt_unchanged")
++    need(validated_core_workflow_projection(json.loads(workflow_result_raw, object_pairs_hook=unique))
++         == context["original_workflow_result"], "existing_complete_core_workflow_projects_to_original_success")
+     context["per_copy_files"] = per_copy
+     PRIVATE["whole_declared_file_readback_hashes"] = full_hashes
+     PUBLIC["whole_file_readback"] = per_copy

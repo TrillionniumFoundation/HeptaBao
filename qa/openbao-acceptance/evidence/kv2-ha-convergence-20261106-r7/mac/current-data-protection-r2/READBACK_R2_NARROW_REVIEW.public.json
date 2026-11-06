@@ -1,0 +1,39 @@
+{
+  "actual_independent_readback_executed_by_this_review": false,
+  "changed_existing_functions": [
+    "load_public_admission",
+    "load_completed_generation",
+    "hash_copies"
+  ],
+  "local_pure_validator_observation": {
+    "business_database_or_product_opened": false,
+    "count_change_rejected_by_outer_projection_equality": true,
+    "real_complete_30_key_receipt_projects_exactly_to_producer": true,
+    "result_is_reviewer_observation_not_claimed_as_original_unittest_log": true,
+    "six_contract_mutations_rejected": [
+      "schema",
+      "phase",
+      "runtime",
+      "work",
+      "formal",
+      "unknown_field"
+    ],
+    "whole_controller_imported_or_run": false
+  },
+  "new_helpers": [
+    "validated_core_workflow_projection"
+  ],
+  "new_native_receipt_observation_not_relabelled_as_old_closeout_pin": true,
+  "old_unexecuted_021454_draft_remains_disallowed": true,
+  "original_complete_workflow_receipt": {
+    "bytes": 1942,
+    "sha256": "3c2691735cfd7946100369a618853b3ed2c58d474eac9e463b912e68a760bf58"
+  },
+  "reviewed_source": {
+    "bytes": 81399,
+    "sha256": "b4f2bcc04bfc6e6d3cf8df158e1eb74094763892234dd2a793c73322d314b1da"
+  },
+  "schema": "heptabao.independent-readback-workflow-receipt-review.v1",
+  "static_review_no_blocker_found": true,
+  "unchanged_existing_functions": 42
+}

@@ -1,0 +1,70 @@
+{
+  "budgets": {
+    "admission": 60,
+    "archive": 300,
+    "cleanup": 60,
+    "dual_copy": 300,
+    "runtime": 900,
+    "work": 840
+  },
+  "capture_source": {
+    "bytes": 57280,
+    "sha256": "9e27369657667dc3360ae276bb62e2d1ad0c6f55f07290d91304d7d396d72972"
+  },
+  "core_workflow_receipt_observation": {
+    "asserted_as_producer_closeout_pin": false,
+    "bytes": 1942,
+    "scope": "independent_native_read_after_producer_terminal",
+    "sha256": "3c2691735cfd7946100369a618853b3ed2c58d474eac9e463b912e68a760bf58",
+    "version": "16777233:593495988:1942:1793988435234382119:1793988435234382119"
+  },
+  "environment_plan": {
+    "bytes": 13911,
+    "sha256": "ce036ee3d7879389eb23c6811b4ab2c2e23bf2221bf5315aaf78d9df40af2b49"
+  },
+  "original_outer_inputs": {
+    "bytes": 5693,
+    "sha256": "e3fd54c9b7e756bcf02ce47bf2285e99c078e06e267694c58b7887207b90f9f7"
+  },
+  "original_outer_source": {
+    "bytes": 62786,
+    "sha256": "550c7b4017dafcb19b7ffb85f2fab40f2270c649b8549cdde1c7329cd5a85415"
+  },
+  "original_workflow_job_id": "1a1b20a271e-fc05-7c28",
+  "public_files": {
+    "observed-core-workflow-result.public.json": {
+      "bytes": 1942,
+      "sha256": "3c2691735cfd7946100369a618853b3ed2c58d474eac9e463b912e68a760bf58"
+    },
+    "original-workflow-result.public.json": {
+      "bytes": 8707,
+      "sha256": "41119cc5933e66d65b3bf018082a7dbdaeb188ba36f687621556a2c2f1f7d3ba"
+    },
+    "original-workflow-runtime-terminal.original.json": {
+      "bytes": 731,
+      "sha256": "098510a6b88bd035972226a5bbabdb79a814405470eb5cfef94bdc62b4c994bc"
+    },
+    "original-workflow-runtime.stdout.original": {
+      "bytes": 6633,
+      "sha256": "47b7e92f2c2ff7a72c133d23b4193d21090188f920a58b48f37f6cd1958d8ba3"
+    },
+    "plan-stage-result.public.json": {
+      "bytes": 5922,
+      "sha256": "6aba2656581d2485b9375ddf9435984b8ec11e2ca954940a840d5a1fc7d66a6f"
+    },
+    "plan-stage-runtime-terminal.original.json": {
+      "bytes": 731,
+      "sha256": "8f8a2b35f4e89b7445eeb0789e02bc9307afd1a55fa20b1cb26ae195920ce3df"
+    }
+  },
+  "python": {
+    "bytes": 34640,
+    "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+  },
+  "ready": true,
+  "schema": "heptabao.current-sqlite-independent-readback-fixed-inputs.v1",
+  "venv_configuration": {
+    "bytes": 424,
+    "sha256": "b6229612749d7d4ba76ba83f0b65c4b80ebd88dfa82eac845d1e65dd1ef83851"
+  }
+}

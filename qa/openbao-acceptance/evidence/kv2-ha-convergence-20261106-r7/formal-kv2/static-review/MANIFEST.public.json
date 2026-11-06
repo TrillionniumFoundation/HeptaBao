@@ -1,0 +1,33 @@
+{
+  "corrected_dr_qa_commit": "a25772377e9bfad91564cf6702a26e861fded16f",
+  "credential_fingerprints_published": false,
+  "file_count": 3,
+  "files": [
+    {
+      "bytes": 10357,
+      "git_blob_sha1": "d59e78a1c37c8d133c2ffb155f3f55b2d01d3202",
+      "path": "FORMAL_KV2_STATIC_REVIEW.md",
+      "sha256": "76796ff729cf20aad30645880cab8b795390a1f46ba47579f155c0850747f1bc"
+    },
+    {
+      "bytes": 11770,
+      "git_blob_sha1": "4a0bff0f0f0ef223b17b25532159f3291c5897ad",
+      "path": "ACTIVE_FILE_TO_RAFT_BRIDGE.md",
+      "sha256": "ea350d8454a163f040bc13fa90d636f9026f523d90d4ac364c54e62919f9b7d8"
+    },
+    {
+      "bytes": 19618,
+      "git_blob_sha1": "d8d943b9d71ede7cb59c06d49da0add7571779b4",
+      "path": "SOURCE_BINDINGS.public.json",
+      "sha256": "5cefe164b4abf63d3fd97e5f1dc857833b30488a6b90f6ff946152dd4913a786"
+    }
+  ],
+  "ha_executed": false,
+  "kind": "derived_static_review_not_runtime_acceptance",
+  "local_exact_code_references_excluded_from_public_packet": true,
+  "private_business_files_read": false,
+  "product_executed": false,
+  "repository_mutated": false,
+  "schema": "heptabao.static-source-review-manifest.v1",
+  "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100"
+}

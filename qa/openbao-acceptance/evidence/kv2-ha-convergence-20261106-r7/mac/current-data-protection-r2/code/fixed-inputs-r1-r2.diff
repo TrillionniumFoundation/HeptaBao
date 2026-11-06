@@ -1,0 +1,17 @@
+--- failed-r1-fixed-inputs
++++ r2-fixed-inputs
+@@ -113,6 +113,14 @@
+     "plan-stage-runtime-terminal.original.json": {
+       "bytes": 731,
+       "sha256": "8f8a2b35f4e89b7445eeb0789e02bc9307afd1a55fa20b1cb26ae195920ce3df"
++    },
++    "prior-r1-result.public.json": {
++      "bytes": 5109,
++      "sha256": "c57baaa47b723ed073d09f8297b9e058bd45a4dc9e4741a8a436bd598bc15050"
++    },
++    "prior-r1-runtime-terminal.original.json": {
++      "bytes": 728,
++      "sha256": "baea0ab56ba79ecbcb88cc26c8be6773d5f6d83dad7224225a15aacd61391905"
+     }
+   },
+   "python": {

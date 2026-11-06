@@ -1,0 +1,66 @@
+--- r12/source-prep
++++ r13/source-prep
+@@ -12,10 +12,10 @@
+ os.umask(0o077)
+ root = pathlib.Path('/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1')
+ old = root / 'source-4bde9-diagnostic-r11'
+-fresh = root / 'source-ci422-9c68-r12'
+-out = root / 'control/source-ci422-9c68-r12-prep'
+-target = root / 'target-ci422-9c68-test-r12'
+-build_output = root / 'build-test-ci422-9c68-r12'
++fresh = root / 'source-ci422-9c68-r13'
++out = root / 'control/source-ci422-9c68-r13-prep'
++target = root / 'target-ci422-9c68-test-r13'
++build_output = root / 'build-test-ci422-9c68-r13'
+ cargo_home = pathlib.Path('/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home')
+ bundle = out / 'candidate.bundle'
+ BUNDLE_B64 = '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'
+@@ -26,6 +26,9 @@
+ OLD_TREE = 'f08493a23f8ea0637073651231865ea9607b790e'
+ OLD_RECEIPT = root / 'build-test-4bde9-diagnostic-r11/result.public.json'
+ OLD_RECEIPT_SHA = '63d5f3a5d88140bfc926012b4e6c02ae30a4c82592d221ba40dc8114fdbce88b'
++PRIOR_FAILED_RESULT = pathlib.Path('/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-ci422-9c68-r12/result.public.json')
++PRIOR_FAILED_BYTES = 34946
++PRIOR_FAILED_SHA = '2b8d85d39c2759615f40bec8ee5b4cb630a7c257a8b352b776dbbbc0a115b7d7'
+ env = {k: os.environ[k] for k in ('HOME', 'USER', 'LOGNAME', 'LANG', 'LC_ALL', 'TMPDIR', 'TZ') if k in os.environ}
+ env.update(PATH='/usr/bin:/bin', GIT_OPTIONAL_LOCKS='0')
+ report = {'schema': 'heptabao.fresh-diagnostic-source-preparation.v1', 'status': 'running',
+@@ -50,6 +53,28 @@
+     return result.stdout
+ 
+ 
++def prior_failed_result_pin():
++    fd = os.open(PRIOR_FAILED_RESULT, os.O_RDONLY | os.O_NOFOLLOW)
++    with os.fdopen(fd, 'rb') as stream:
++        before = os.fstat(stream.fileno())
++        if not (stat.S_ISREG(before.st_mode) and before.st_nlink == 1
++                and before.st_uid == os.geteuid() and stat.S_IMODE(before.st_mode) == 0o600
++                and before.st_size == PRIOR_FAILED_BYTES):
++            raise AssertionError('prior_r12_result_identity_or_size')
++        raw = stream.read(PRIOR_FAILED_BYTES + 1)
++        after = os.fstat(stream.fileno())
++        fields = ('st_dev', 'st_ino', 'st_uid', 'st_gid', 'st_mode', 'st_nlink',
++                  'st_size', 'st_mtime_ns', 'st_ctime_ns')
++        if any(getattr(before, name) != getattr(after, name) for name in fields):
++            raise AssertionError('prior_r12_result_changed_during_read')
++    if len(raw) != PRIOR_FAILED_BYTES or hashlib.sha256(raw).hexdigest() != PRIOR_FAILED_SHA:
++        raise AssertionError('prior_r12_failed_result_content_changed')
++    return {'path': str(PRIOR_FAILED_RESULT), 'bytes': len(raw), 'sha256': PRIOR_FAILED_SHA,
++            'device': before.st_dev, 'inode': before.st_ino, 'uid': before.st_uid,
++            'gid': before.st_gid, 'mode': stat.S_IMODE(before.st_mode),
++            'mtime_ns': str(before.st_mtime_ns), 'ctime_ns': str(before.st_ctime_ns)}
++
++
+ def old_identity(tag):
+     assert old.is_dir() and not old.is_symlink(), 'old_source_directory'
+     identity = old.lstat()
+@@ -59,7 +84,9 @@
+     assert head == OLD_HEAD and tree == OLD_TREE and not clean.strip(), 'old_source_identity'
+     receipt = OLD_RECEIPT.read_bytes()
+     assert hashlib.sha256(receipt).hexdigest() == OLD_RECEIPT_SHA, 'retained_source_receipt_changed'
++    preserved_failure = prior_failed_result_pin()
+     return {'head': head, 'tree': tree, 'clean': True, 'retained_source_receipt_sha256': OLD_RECEIPT_SHA,
++            'prior_r12_failed_result': preserved_failure,
+             'directory_identity': [identity.st_dev, identity.st_ino, identity.st_uid, identity.st_gid, identity.st_mode]}
+ 
+ 

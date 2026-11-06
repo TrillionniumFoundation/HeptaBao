@@ -1,0 +1,21 @@
+{
+  "budget_seconds": 60,
+  "children": 0,
+  "controller_bytes": 81399,
+  "controller_sha256": "b4f2bcc04bfc6e6d3cf8df158e1eb74094763892234dd2a793c73322d314b1da",
+  "exact_nine_payloads_and_public_pins_verified": true,
+  "fixed_inputs_bytes": 2390,
+  "fixed_inputs_sha256": "b95a029530cf629aecf9791330c3ee08c4cf1c682de15339443a00a68c27e247",
+  "input_total_bytes": 109014,
+  "local_review_initial_assertion_corrected": "Expected stage venv invocation was incorrect; actual reviewed stage uses /opt/homebrew/bin/python3 -I -S -B -, while later verifier uses the separately pinned venv. No host attempt or input mutation occurred during this correction.",
+  "new_verifier_execution_not_part_of_stage": true,
+  "nice": 5,
+  "private_pin_envelope_verified_without_public_digest": true,
+  "request_shape_and_stdlib_only_stage_interpreter_verified": true,
+  "schema": "heptabao.root-independent-readback-stage-review.v1",
+  "stage_authorized": true,
+  "stage_interpreter_preflight_checks_3_14_3_and_exact_34640_byte_binary": true,
+  "stage_template_bytes": 9974,
+  "stage_template_sha256": "16e5ed550fac5616282b0764d076066eac4c0abf40b8a6c44b544b159baa9a09",
+  "work_seconds": 52
+}

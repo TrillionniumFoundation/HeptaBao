@@ -1,0 +1,15 @@
+
+running 10 tests
+test ha::native_v6_runtime::request_timing_tests::native_request_timing_detached_spans_never_follow_a_new_request ... ok
+test ha::native_v6_runtime::request_timing_tests::native_request_timing_failure_has_only_bounded_static_metadata ... ok
+test ha::native_v6_runtime::request_timing_tests::native_request_timing_nested_requests_restore_only_their_own_context ... ok
+test ha::native_v6_runtime::request_timing_tests::native_request_timing_observes_deadlines_but_preserves_once_only_results ... ok
+test ha::native_v6_runtime::request_timing_tests::native_request_timing_out_of_order_drop_cannot_revive_a_closed_request ... ok
+test ha::native_v6_runtime::request_timing_tests::native_request_timing_phase_advance_is_distinct_from_operation_success ... ok
+test ha::native_v6_runtime::request_timing_tests::native_request_timing_sixty_four_buckets_preserve_existing_aggregates ... ok
+test ha::native_v6_runtime::request_timing_tests::native_request_timing_success_and_external_leave_no_report_or_context ... ok
+test ha::native_v6_runtime::request_timing_tests::native_request_timing_thread_local_context_is_not_inherited ... ok
+test ha::native_v6_runtime::request_timing_tests::native_request_timing_unwinding_restores_the_previous_scope ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 3750 filtered out; finished in 0.00s
+

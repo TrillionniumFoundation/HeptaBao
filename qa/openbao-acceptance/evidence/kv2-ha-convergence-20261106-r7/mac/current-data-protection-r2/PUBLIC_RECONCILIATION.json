@@ -1,0 +1,31 @@
+{
+  "counts": {
+    "captured_database_entries": 9,
+    "configured_agents": 5,
+    "logical_snapshot_bytes": 3278327808,
+    "recovery": {
+      "absent_families": 3,
+      "all_declared_files": 19,
+      "auth_stores": 5,
+      "nonempty_databases": 6,
+      "plaintext_bytes": 3278398048
+    }
+  },
+  "data_protection_only": true,
+  "formal_kv2_qualified": false,
+  "four_phase_receipts_and_full_stdout_match": true,
+  "independent_full_data_readback_performed_by_this_checker": false,
+  "private_inputs": 1,
+  "private_ns_integers_preserved": true,
+  "producer_directory_handles_closed": 16,
+  "producer_job_id": "1a1b20a271e-fc05-7c28",
+  "producer_original_metadata_children": 2,
+  "product_ci_failures_remain_held": true,
+  "public_inputs": 20,
+  "schema": "heptabao.successful-current-data-protection-public-reconciliation.v1",
+  "stage_directory_handles_closed": 2,
+  "stage_inputs": 21,
+  "stage_job_id": "1a1b206dab4-fc05-7c17",
+  "status": "passed",
+  "three_phases_passed_within_original_budgets": true
+}

@@ -1,0 +1,40 @@
+{"event": "controller_installed", "controller_sha256": "50ef1feed37b7abd31e7cc2db3b1f7feb7a77a954e347e82a6861814fb414c97", "selection_sha256": "3961122260ff03815ccf078a264ad18df5dc7eee5018d6d63e2eb489cc482c52", "bundle_sha256": "9e0dcb3676ad12f7a91235769963e34d7c7159906dcda1b129b20e58b95a7ab7"}
+{"event": "step_started", "step": "00-source-head", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-source-head", "exit_code": 0, "timed_out": false, "seconds": 0.032534}
+{"event": "step_started", "step": "01-preserved-format-diff", "budget_seconds": 30}
+{"event": "step_finished", "step": "01-preserved-format-diff", "exit_code": 0, "timed_out": false, "seconds": 0.152886}
+{"event": "step_started", "step": "02-untracked", "budget_seconds": 30}
+{"event": "step_finished", "step": "02-untracked", "exit_code": 0, "timed_out": false, "seconds": 0.038939}
+{"event": "step_started", "step": "03-bundle-verify", "budget_seconds": 30}
+{"event": "step_finished", "step": "03-bundle-verify", "exit_code": 0, "timed_out": false, "seconds": 0.038584}
+{"event": "step_started", "step": "04-fetch", "budget_seconds": 30}
+{"event": "step_finished", "step": "04-fetch", "exit_code": 0, "timed_out": false, "seconds": 0.03682}
+{"event": "step_started", "step": "05-canonical-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "05-canonical-tree", "exit_code": 0, "timed_out": false, "seconds": 0.035109}
+{"event": "step_started", "step": "06-canonical-parent", "budget_seconds": 30}
+{"event": "step_finished", "step": "06-canonical-parent", "exit_code": 0, "timed_out": false, "seconds": 0.033916}
+{"event": "step_started", "step": "07-stage-exact-format", "budget_seconds": 30}
+{"event": "step_finished", "step": "07-stage-exact-format", "exit_code": 0, "timed_out": false, "seconds": 0.145055}
+{"event": "step_started", "step": "08-format-working-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "08-format-working-tree", "exit_code": 0, "timed_out": false, "seconds": 0.026353}
+{"event": "step_started", "step": "09-checkout-canonical", "budget_seconds": 30}
+{"event": "step_finished", "step": "09-checkout-canonical", "exit_code": 0, "timed_out": false, "seconds": 0.026913}
+{"event": "step_started", "step": "10-clean-source", "budget_seconds": 30}
+{"event": "step_finished", "step": "10-clean-source", "exit_code": 0, "timed_out": false, "seconds": 0.024987}
+{"event": "step_started", "step": "11-fsck", "budget_seconds": 60}
+{"event": "step_finished", "step": "11-fsck", "exit_code": 0, "timed_out": false, "seconds": 2.815795}
+{"event": "step_started", "step": "12-format-check", "budget_seconds": 60}
+{"event": "step_finished", "step": "12-format-check", "exit_code": 0, "timed_out": false, "seconds": 5.410134}
+{"event": "step_started", "step": "14-server-libtest-build", "budget_seconds": 3600}
+{"event": "step_finished", "step": "14-server-libtest-build", "exit_code": 0, "timed_out": false, "seconds": 1882.177504}
+{"event": "step_started", "step": "heptabao-server-list", "budget_seconds": 30}
+{"event": "step_finished", "step": "heptabao-server-list", "exit_code": 0, "timed_out": false, "seconds": 0.038706}
+{"event": "step_started", "step": "test-00-existing-request-timing10-00", "budget_seconds": 59.989}
+{"event": "step_finished", "step": "test-00-existing-request-timing10-00", "exit_code": 0, "timed_out": false, "seconds": 0.029992}
+{"event": "step_started", "step": "test-01-original-cipher-case1-00", "budget_seconds": 59.99}
+{"event": "step_finished", "step": "test-01-original-cipher-case1-00", "exit_code": 0, "timed_out": false, "seconds": 4.718538}
+{"event": "step_started", "step": "99-final-source-head", "budget_seconds": 30}
+{"event": "step_finished", "step": "99-final-source-head", "exit_code": 0, "timed_out": false, "seconds": 0.035}
+{"event": "step_started", "step": "99-final-source-clean", "budget_seconds": 30}
+{"event": "step_finished", "step": "99-final-source-clean", "exit_code": 0, "timed_out": false, "seconds": 0.066215}
+{"event": "terminal", "status": "diagnostic_selected11_passed_original_ci_failure_unresolved", "failure": null, "executed_passed_cases": 11, "result": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-ci422-9c68-r13/result.public.json"}

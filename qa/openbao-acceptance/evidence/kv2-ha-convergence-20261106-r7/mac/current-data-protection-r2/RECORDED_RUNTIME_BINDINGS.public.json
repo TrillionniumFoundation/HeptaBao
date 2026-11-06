@@ -1,0 +1,38 @@
+{
+  "not_presented_as_original_start_transport": true,
+  "producer": {
+    "args": [
+      "-I",
+      "-B",
+      "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/current-sqlite-data-protection-inputs-r2/mac_current_sqlite_data_protection_outer.py",
+      "--inputs-sha256",
+      "e3fd54c9b7e756bcf02ce47bf2285e99c078e06e267694c58b7887207b90f9f7",
+      "--controller-sha256",
+      "550c7b4017dafcb19b7ffb85f2fab40f2270c649b8549cdde1c7329cd5a85415"
+    ],
+    "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/current-sqlite-data-protection-inputs-r2",
+    "executable": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/formal-kv2-python-env-50-0-2-r3/venv/bin/python3",
+    "host": "mac",
+    "idempotency_key": "heptabao-mac-current-sqlite-whole-data-protection-20261106-r2",
+    "job_id": "1a1b20a271e-fc05-7c28",
+    "nice": 5,
+    "timeout_seconds": 900
+  },
+  "schema": "heptabao.r2-recorded-runtime-bindings.v1",
+  "scope": "safe_reconstruction_of_recorded_frozen_arguments_after_volatile_store_loss",
+  "stage": {
+    "args": [
+      "-I",
+      "-B",
+      "-"
+    ],
+    "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control",
+    "executable": "/opt/homebrew/bin/python3",
+    "host": "mac",
+    "idempotency_key": "heptabao-mac-current-data-protection-outer900-input-stage-20261106-r2",
+    "job_id": "1a1b206dab4-fc05-7c17",
+    "nice": 5,
+    "private_mixed_stdin_and_its_digest_withheld": true,
+    "timeout_seconds": 60
+  }
+}

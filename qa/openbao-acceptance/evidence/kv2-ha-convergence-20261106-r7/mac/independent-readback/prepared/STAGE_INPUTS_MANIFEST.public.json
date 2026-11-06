@@ -1,0 +1,77 @@
+{
+  "core_receipt_observation_scope": "independent_native_read_after_producer_terminal",
+  "files": [
+    {
+      "bytes": 81399,
+      "private": false,
+      "role": "mac_current_sqlite_independent_readback.py",
+      "sha256": "b4f2bcc04bfc6e6d3cf8df158e1eb74094763892234dd2a793c73322d314b1da"
+    },
+    {
+      "bytes": 2390,
+      "private": false,
+      "role": "fixed-inputs.public.json",
+      "sha256": "b95a029530cf629aecf9791330c3ee08c4cf1c682de15339443a00a68c27e247"
+    },
+    {
+      "bytes": 1942,
+      "private": false,
+      "role": "observed-core-workflow-result.public.json",
+      "sha256": "3c2691735cfd7946100369a618853b3ed2c58d474eac9e463b912e68a760bf58"
+    },
+    {
+      "bytes": 8707,
+      "private": false,
+      "role": "original-workflow-result.public.json",
+      "sha256": "41119cc5933e66d65b3bf018082a7dbdaeb188ba36f687621556a2c2f1f7d3ba"
+    },
+    {
+      "bytes": 731,
+      "private": false,
+      "role": "original-workflow-runtime-terminal.original.json",
+      "sha256": "098510a6b88bd035972226a5bbabdb79a814405470eb5cfef94bdc62b4c994bc"
+    },
+    {
+      "bytes": 6633,
+      "private": false,
+      "role": "original-workflow-runtime.stdout.original",
+      "sha256": "47b7e92f2c2ff7a72c133d23b4193d21090188f920a58b48f37f6cd1958d8ba3"
+    },
+    {
+      "bytes": 5922,
+      "private": false,
+      "role": "plan-stage-result.public.json",
+      "sha256": "6aba2656581d2485b9375ddf9435984b8ec11e2ca954940a840d5a1fc7d66a6f"
+    },
+    {
+      "bytes": 731,
+      "private": false,
+      "role": "plan-stage-runtime-terminal.original.json",
+      "sha256": "8f8a2b35f4e89b7445eeb0789e02bc9307afd1a55fa20b1cb26ae195920ce3df"
+    },
+    {
+      "bytes": 559,
+      "mode": 384,
+      "private": true,
+      "role": "original_workflow_private_native_pin",
+      "uid": 501
+    }
+  ],
+  "input_count": 9,
+  "native_nice": 5,
+  "private_input_count": 1,
+  "private_payload_and_request_not_for_publication": true,
+  "public_input_count": 8,
+  "runtime_seconds": 60,
+  "schema": "heptabao.independent-readback-fixed-stage-inputs.public.v1",
+  "stage_adaptation_diff": {
+    "bytes": 3479,
+    "sha256": "44b204f973bd5b044be0d92c16fc504d6e8289626f6090c82f026e6604f4ee56"
+  },
+  "stage_template": {
+    "bytes": 9974,
+    "sha256": "16e5ed550fac5616282b0764d076066eac4c0abf40b8a6c44b544b159baa9a09"
+  },
+  "verifier_execution_started": false,
+  "work_seconds": 52
+}

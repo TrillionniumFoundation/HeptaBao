@@ -1,0 +1,14 @@
+{
+  "schema": "heptabao.private-closure-native-identity-reconciliation.safe.v1",
+  "job_id": "1a1b20a271e-fc05-7c28",
+  "private_record_bytes": 69578,
+  "original_public_full_integer_identity_equals_native_version": true,
+  "nanosecond_integers_compared_without_float_conversion": true,
+  "original_stdout_same_private_record_identity": true,
+  "mode": 384,
+  "uid": 501,
+  "gid": 20,
+  "nlink": 1,
+  "private_content_and_digests_published": false,
+  "all_16_original_directory_handles_retired": true
+}

@@ -1,0 +1,27 @@
+{
+  "all_steps_once_zero_and_original_groups_gone": true,
+  "before_after_same_25_objects": true,
+  "current_failure_report": {
+    "remaining_ns_on_exit": 14951159849,
+    "request_class": "published_plan_corrupt_cipher_test",
+    "scope": "Expected corrupt-cipher refusal in this one passing ROG diagnostic, not historical GitHub CI root cause",
+    "status": 503
+  },
+  "job_id": "1a1b2017570-fc05-7bfe",
+  "legacy_denominator": 25,
+  "legacy_matches": 22,
+  "legacy_preexisting_missing": 3,
+  "native_full_version_pinned_binary_read": true,
+  "original_ci_failure_unresolved": true,
+  "original_full_enumeration_exact_unique_cases": 3760,
+  "original_r12_failed_receipt_before_after_exact": true,
+  "original_stdout_exact_11_selected_cases_verified": true,
+  "original_step_streams_whole_bytes_matched_to_native_bound_receipt": 38,
+  "per_case_original_stdout_independent_check_pending": false,
+  "qualification_flags_remain_false": true,
+  "result_bytes": 75395,
+  "result_sha256": "b779c9c7689c3aafc82363f3bb27e1642e862c1bd110bef56a93cb93ed594dc5",
+  "schema": "heptabao.root-r13-complete-receipt-review.v1",
+  "selected_cases_reported_pass": 11,
+  "unique_original_steps": 19
+}

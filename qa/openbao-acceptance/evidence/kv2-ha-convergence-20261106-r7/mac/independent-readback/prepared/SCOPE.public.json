@@ -1,0 +1,33 @@
+{
+  "actual_independent_readback_job": "1a1b2364646-fc05-7cfa",
+  "actual_input_stage_job": "1a1b2323b08-fc05-7ce8",
+  "actual_successful_producer_job": "1a1b20a271e-fc05-7c28",
+  "application_client_routing_verified": false,
+  "authbus_qualified": false,
+  "candidate_workspace_verified": false,
+  "core_receipt_observation_is_postterminal_not_a_retroactive_producer_pin": true,
+  "correction_only_full_core_receipt_vs_outer_safe_projection": true,
+  "declared_generation_scope_only": true,
+  "fixed_source_sha256": "b4f2bcc04bfc6e6d3cf8df158e1eb74094763892234dd2a793c73322d314b1da",
+  "formal_kv2_qualified": false,
+  "ha_qualified": false,
+  "old_assets_removed": false,
+  "old_draft_021454_was_not_executed": true,
+  "private_native_envelope_and_mixed_stage_request_withheld": true,
+  "restored_configuration_paths_rewritten": false,
+  "schema": "heptabao.independent-whole-data-readback-prepared-scope.v1",
+  "source_budget_seconds": {
+    "admission": 60,
+    "archive": 300,
+    "both_existing_copies": 300,
+    "cleanup": 60,
+    "runtime": 900,
+    "work": 840
+  },
+  "source_device_loss_recovery_qualified": false,
+  "stage_budget_seconds": {
+    "runtime": 60,
+    "work": 52
+  },
+  "traffic_cutover_performed": false
+}

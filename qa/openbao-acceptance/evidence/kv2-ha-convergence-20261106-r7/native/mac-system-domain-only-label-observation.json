@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"services\": [\n    {\n      \"exit_code\": 113,\n      \"name\": \"org.heptabao.node\",\n      \"observation_complete\": false,\n      \"resolution\": \"system_domain_only\",\n      \"scope\": \"system\",\n      \"scopes_checked\": [\n        \"system\"\n      ],\n      \"stderr\": \"Bad request.\\nCould not find service \\\"org.heptabao.node\\\" in domain for system\",\n      \"stdout\": \"\"\n    },\n    {\n      \"exit_code\": 113,\n      \"name\": \"org.heptabao.kv2\",\n      \"observation_complete\": false,\n      \"resolution\": \"system_domain_only\",\n      \"scope\": \"system\",\n      \"scopes_checked\": [\n        \"system\"\n      ],\n      \"stderr\": \"Bad request.\\nCould not find service \\\"org.heptabao.kv2\\\" in domain for system\",\n      \"stdout\": \"\"\n    }\n  ]\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

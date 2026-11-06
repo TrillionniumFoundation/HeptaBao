@@ -1,0 +1,21 @@
+{
+  "actual_core_field_count": 30,
+  "actual_core_receipt_bytes": 1942,
+  "actual_core_receipt_sha256": "3c2691735cfd7946100369a618853b3ed2c58d474eac9e463b912e68a760bf58",
+  "actual_outer_receipt_sha256": "41119cc5933e66d65b3bf018082a7dbdaeb188ba36f687621556a2c2f1f7d3ba",
+  "candidate_bytes": 81399,
+  "checks": [
+    "actual_full_receipt_projects_exactly_to_original_outer",
+    "missing_field_rejected",
+    "scope_promotion_rejected",
+    "budget_extension_rejected",
+    "phase_cap_extension_rejected"
+  ],
+  "core_pin_is_new_independent_observation_not_original_producer_closeout": true,
+  "full_source_previous_review_plus_narrow_diff": true,
+  "local_pure_function_only": true,
+  "no_remote_verifier_attempt_started_by_this_review": true,
+  "reviewed_candidate_sha256": "b4f2bcc04bfc6e6d3cf8df158e1eb74094763892234dd2a793c73322d314b1da",
+  "schema": "heptabao.root-readback-r2-specific-correction-review.v1",
+  "unexecuted_original_draft_sha256": "021454208ed34ed44bcfb7c41991c63efbc641540bed7510866a9764304dd7b5"
+}

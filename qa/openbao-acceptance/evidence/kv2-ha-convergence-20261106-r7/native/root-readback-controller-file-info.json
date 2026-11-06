@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":20,\"link_count\":1,\"metadata_platform\":\"darwin\",\"mode\":384,\"uid\":501,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":384,\"path\":\"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/current-sqlite-independent-readback-inputs-r1/mac_current_sqlite_independent_readback.py\",\"sha256\":\"b4f2bcc04bfc6e6d3cf8df158e1eb74094763892234dd2a793c73322d314b1da\",\"size\":81399,\"version\":\"16777244:72750941:81399:1793990999017428017:1793990999017428017\"}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

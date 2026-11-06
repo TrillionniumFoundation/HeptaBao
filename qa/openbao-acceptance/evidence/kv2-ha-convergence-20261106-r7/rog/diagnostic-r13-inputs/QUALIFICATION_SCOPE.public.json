@@ -1,0 +1,45 @@
+{
+  "schema": "heptabao.ci-publication-diagnostic-frozen-inputs.v1",
+  "job_id": "1a1b2017570-fc05-7bfe",
+  "state_at_freeze": "launched_results_not_yet_complete",
+  "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+  "source_tree": "7f4b75930e8491a3110d8c7f8f894cfc0cfc1fdb",
+  "fixed_inputs": [
+    {
+      "path": "controller.py",
+      "bytes": 31689,
+      "sha256": "50ef1feed37b7abd31e7cc2db3b1f7feb7a77a954e347e82a6861814fb414c97"
+    },
+    {
+      "path": "test-selection.public.json",
+      "bytes": 19919,
+      "sha256": "3961122260ff03815ccf078a264ad18df5dc7eee5018d6d63e2eb489cc482c52"
+    },
+    {
+      "path": "candidate.bundle",
+      "bytes": 3383,
+      "sha256": "9e0dcb3676ad12f7a91235769963e34d7c7159906dcda1b129b20e58b95a7ab7"
+    },
+    {
+      "path": "bootstrap.py",
+      "bytes": 74431,
+      "sha256": "0c23f7fa77d1b6da9930454c573d196a4f9386a7f318bd7c1b8994854dded452"
+    }
+  ],
+  "all_budgets_unchanged_from_reviewed_r12": true,
+  "existing_r12_failed_attempt_preserved": true,
+  "expected_legacy_artifacts": 25,
+  "matching_required": 22,
+  "exact_missing_required": 3,
+  "required_cases": 11,
+  "original_ci_failure_root_cause_proven": false,
+  "legacy_preservation": false,
+  "machine_acceptance": "HOLD",
+  "formal_kv2_qualified": false,
+  "physical_ha_qualified": false,
+  "authbus_migration_qualified": false,
+  "rollback_qualified": false,
+  "dr_qualified": false,
+  "cutover_qualified": false,
+  "full_replacement_qualified": false
+}

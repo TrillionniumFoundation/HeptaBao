@@ -1,0 +1,75 @@
+{
+  "files": [
+    {
+      "bytes": 3326,
+      "path": "INDEPENDENT_STAGE_RECONCILIATION.public.json",
+      "sha256": "178496c29dd7b3754a535272b59e5b7fd00a7cc95ac86dbdf1ee9f12f0949ed4"
+    },
+    {
+      "bytes": 551,
+      "path": "fixed-inputs.public.json.native.original.json",
+      "sha256": "72b2add6478d913b09dba2bf10739ab50b984396399b0669f06e90bd8868a523"
+    },
+    {
+      "bytes": 557,
+      "path": "input-stage-result.public.json.native.original.json",
+      "sha256": "9288db540c36ce4e9477d68b7b463eb77680743879f8515805e2d14489640d45"
+    },
+    {
+      "bytes": 571,
+      "path": "mac_current_sqlite_independent_readback.py.native.original.json",
+      "sha256": "3e96b110208bc311611bf17fe00ab636df0ab99e1023786100183d16a005b61c"
+    },
+    {
+      "bytes": 568,
+      "path": "observed-core-workflow-result.public.json.native.original.json",
+      "sha256": "90002df499aeeca13c67db19b97c656e0b8d2920b6b0d4d50b64fb8488e56374"
+    },
+    {
+      "bytes": 563,
+      "path": "original-workflow-result.public.json.native.original.json",
+      "sha256": "cf25227c66215783f85c7d3dc5623af9bf6c7a5c193e6ab806eace1c0a914395"
+    },
+    {
+      "bytes": 573,
+      "path": "original-workflow-runtime-terminal.original.json.native.original.json",
+      "sha256": "5936f107a0f45f9feb094d380481271ebecb5b4f27b81bc9e812014023896811"
+    },
+    {
+      "bytes": 568,
+      "path": "original-workflow-runtime.stdout.original.native.original.json",
+      "sha256": "6e03e8c3f448c50cf6aafc65876ade177182092377aeda4c083240fbe2026f29"
+    },
+    {
+      "bytes": 556,
+      "path": "plan-stage-result.public.json.native.original.json",
+      "sha256": "d8e0feca1b5a32378cae69815c341093388c878a38da00230ea92015d49b4443"
+    },
+    {
+      "bytes": 566,
+      "path": "plan-stage-runtime-terminal.original.json.native.original.json",
+      "sha256": "e95f3a835dbff5266c6e2a089100cae0e8025f2825c7447dc6ad920582df93cd"
+    },
+    {
+      "bytes": 3911,
+      "path": "result.public.json",
+      "sha256": "9ae6741a8fb9375b1474a30bf461dfb34ae430d00673288cf4c2c316dca014a1"
+    },
+    {
+      "bytes": 731,
+      "path": "runtime-terminal.original.json",
+      "sha256": "2f3690637ec302a0114b51ddc57aeb59b6337e2ae03953fb8626b2b646a40db2"
+    },
+    {
+      "bytes": 0,
+      "path": "runtime.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3064,
+      "path": "runtime.stdout.original",
+      "sha256": "106db99e63d4a9efad6e04a5d4dc874c2dc4269d8d5813839e6c038e7f4f1a7f"
+    }
+  ],
+  "schema": "heptabao.public-evidence-manifest.v1"
+}
