@@ -33,6 +33,41 @@ EXPECTED_CASES = [
     "wrong_package_same_certificate_refused", "same_package_wrong_certificate_refused",
 ]
 
+DIAGNOSTIC_REJECTIONS = {
+    "request_expired", "wrong_result_recipient", "request_changed", "wrong_package", "wrong_certificate",
+    "missing_structure", "wrong_activity", "unsupported_windows", "structure_too_large",
+    "webview_unsupported", "wrong_fields",
+}
+DIAGNOSTIC_CODES = DIAGNOSTIC_REJECTIONS | {
+    "browser_unsupported", "import_in_progress", "vault_not_imported", "invalid_request",
+    "authentication_required", "background_locked", "expired", "locked", "importing",
+    "imported_locked", "import_failed", "memory_locked", "unlock_failed", "authentication_failed",
+    "unlocked_pending_confirmation", "handoff_pending", "filled_once", "handoff_rejected", "other",
+}
+
+
+def provider_event_projection(raw):
+    """Project original stdout bytes into closed codes and counts, never raw lines."""
+    allowed = {"ui_hidden_notification", "memory_pressure_locked", "auth_context_bound"}
+    allowed.update("auth_rejected_" + code for code in DIAGNOSTIC_REJECTIONS)
+    allowed.update({"request_expiry_timer", "request_expiry_access", "unlock_expiry_timer_login", "unlock_expiry_timer_handoff", "unlock_expiry_access", "handoff_expiry_access", "unlock_callback_stale"})
+    allowed.update("service_target_" + category for category in ("expected", "self", "other"))
+    code_union = "(?:" + "|".join(sorted(DIAGNOSTIC_CODES)) + ")"
+    patterns = (
+        r"trim_(?:running_moderate|running_low|running_critical|ui_hidden|background|moderate|complete|other)_before_p[01]l[01]h[01]_after_p[01]l0h0_epoch_advanced",
+        r"reject_(?:unlock_precheck|unlock_post_kdf|service_request)_" + code_union,
+        r"lock_all_" + code_union + r"_before_p[01]l[01]h[01]_after_p0l0h0",
+        r"cancel_(?:other|auth_pause|service_listener|service_callback)_matched_[01]_before_p[01]l[01]h[01]_after_p[01]l[01]h[01]",
+        r"request_created_before_p[01]l[01]h[01]_after_p1l0h0",
+        r"explicit_login_lock_before_p[01]l[01]h[01]_after_p1l0h0",
+    )
+    lines = raw.splitlines()
+    nonempty = [line.decode("utf-8", "replace").strip() for line in lines if line.strip()]
+    events = [line for line in nonempty if line in allowed or any(re.fullmatch(pattern, line) for pattern in patterns)]
+    return {"raw_byte_count": len(raw), "raw_line_count": len(lines), "nonempty_line_count": len(nonempty),
+            "recognized_line_count": len(events), "unrecognized_line_count": len(nonempty) - len(events),
+            "recognized_lines_omitted_by_limit": max(0, len(events) - 64), "codes": events[-64:]}
+
 
 def pending_intent_metadata(raw, identifiers):
     """Only our package section survives; raw Intent data and global UID tails do not."""
@@ -406,6 +441,9 @@ class Device:
         self._ui_parents = {}
         self._ui_started_ns = 0
         self._ui_finished_ns = 0
+        self._authorization_pid = None
+        self._authorization_pid_case = None
+        self._authorization_pid_sample_ns = None
         raw = self.command([self.adb, "devices"], 15)
         devices = [row.split()[0] for row in raw.decode().splitlines()[1:] if len(row.split()) == 2 and row.split()[1] == "device"]
         if len(devices) != 1 or sha(devices[0].encode()) != DEVICE_SHA256:
@@ -758,6 +796,54 @@ class Device:
             raise Failed("fixture_node_package_changed")
         return component
 
+    def cached_refocus(self):
+        # Clearing an already focused field may itself reopen Autofill UI. Keep
+        # the original window/Activity/task/owner; never dismiss a plaintext menu
+        # or start another request to make the cached-data control pass.
+        original = self._expected_fixture_session
+        if self.expected_fixture != GOOD or original is None:
+            raise Failed("cached_original_fixture_unavailable")
+        try:
+            self._return_snapshot("fixture", original)
+            self.tap(text="Clear fields")
+            surface = self._wait_return_surface()
+            if surface == AUTOFILL_POPUP:
+                before, session, _ = self._return_snapshot("popup", original)
+                nodes = self.ui()
+                if any(node.get("text", "").casefold() == "fill synthetic login once" for node in nodes):
+                    raise Failed("cached_plaintext_dataset_visible")
+                menus = [node for node in nodes if node.get("resource-id") == PROVIDER + ":id/presentation_text"]
+                if (len(menus) != 1 or menus[0].get("package") != PROVIDER
+                        or menus[0].get("text", "").casefold() != "unlock heptabao locally"
+                        or menus[0].get("enabled") != "true"):
+                    raise Failed("cached_popup_presentation_unrecognized")
+                latest, latest_session, _ = self._return_snapshot("popup", original)
+                if latest != before or latest_session != session:
+                    raise FocusUnavailable("cached_popup_changed")
+                return {"path": "bound_popup_after_clear", "username_touch_count": 0,
+                        "same_fixture_wms_identity": True, "autofill_internal_session_id_observed": False}
+            if surface != (GOOD, ACTIVITY):
+                raise Failed("cached_refocus_foreground_changed")
+            node = self.wait(description="Synthetic username")
+            self.assert_fixture(node)
+            self._return_snapshot("fixture", original)
+            bounds = re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]", node.get("bounds", ""))
+            if (node.get("resource-id") != GOOD + ":id/login_username"
+                    or node.get("enabled") != "true" or bounds is None):
+                raise Failed("cached_username_target_unavailable")
+            left, top, right, bottom = map(int, bounds.groups())
+            if right <= left or bottom <= top:
+                raise Failed("cached_username_bounds_invalid")
+            if (time.monotonic_ns() - self._ui_finished_ns) / 1e6 >= 1000:
+                raise Failed("cached_username_sample_stale")
+            # One ordinary touch using this fresh, bound node; no retry after an
+            # uncertain input. shell() binds the actual input argv to display 0.
+            self.shell("input", "tap", str((left + right) // 2), str((top + bottom) // 2))
+            return {"path": "fresh_username_touch_after_clear", "username_touch_count": 1,
+                    "same_fixture_wms_identity": True, "autofill_internal_session_id_observed": False}
+        except FocusUnavailable:
+            raise Failed("cached_refocus_identity_unavailable") from None
+
     def empty(self):
         self.verify("Empty fields")
 
@@ -785,11 +871,15 @@ class Device:
         raise Failed("fixture_verification_not_executed")
 
     def authentication(self):
+        self._authorization_pid = None
+        self._authorization_pid_case = None
+        self._authorization_pid_sample_ns = None
         self.fixture()
         self.tap(text="Request Autofill")
         self.tap(text="Unlock HeptaBao locally")
         self.wait(text="HeptaBao · local authorization")
         self.wait(text="Locked")
+        self.capture_authorization_pid()
 
     def authorization_status(self, expected, node=None):
         if node is None: node = self.wait(description="Authorization status")
@@ -798,19 +888,94 @@ class Device:
             raise Failed("authorization_status_not_observed")
         return {"activity": list(component), "status": expected}
 
+    def provider_pid(self):
+        try:
+            pid = self.shell("pidof", PROVIDER, timeout=5, allow_failure=True)
+            return pid if re.fullmatch(r"[1-9][0-9]{0,9}", pid) else None
+        except Failed:
+            return None
+
+    def capture_authorization_pid(self):
+        # Metadata only, after the existing Auth/Locked waits and before input.
+        # A numeric PID match is not proof of an OS process generation or request ID.
+        try:
+            if self.foreground() != (PROVIDER, "org.heptabao.preview.AuthActivity"):
+                return
+            pid = self.provider_pid()
+            if self.foreground() != (PROVIDER, "org.heptabao.preview.AuthActivity"):
+                return
+            self._authorization_pid = pid
+            self._authorization_pid_case = self.current_case
+            self._authorization_pid_sample_ns = time.monotonic_ns()
+        except Failed:
+            return
+
     def provider_events(self):
-        # Read only this process's dedicated static-code tag. This is diagnostic
-        # context, not a case assertion: the process buffer may include old cases.
-        pid = self.shell("pidof", PROVIDER, allow_failure=True)
-        if not re.fullmatch(r"[0-9]+", pid): return {"available": False}
-        raw = self.shell("logcat", "-d", "-b", "main", "-v", "raw", "--pid=" + pid,
-                         "HeptaBaoPreview:I", "*:S")
-        allowed = {"ui_hidden_notification", "memory_pressure_locked", "auth_context_bound"}
-        rejection_codes = {"request_expired", "wrong_result_recipient", "request_changed", "wrong_package", "wrong_certificate", "missing_structure", "wrong_activity", "unsupported_windows", "structure_too_large", "webview_unsupported", "wrong_fields"}
-        allowed.update("auth_rejected_" + code for code in rejection_codes)
-        trim_code = r"trim_(?:running_moderate|running_low|running_critical|ui_hidden|background|moderate|complete|other)_before_p[01]l[01]h[01]_after_p[01]l0h0_epoch_advanced"
-        events = [line.strip() for line in raw.splitlines() if line.strip() in allowed or re.fullmatch(trim_code, line.strip())]
-        return {"available": True, "scope": "current_provider_process_buffer_diagnostic_only", "codes": events[-64:]}
+        # Read only the observed process's dedicated static-code tag. Raw bytes
+        # exist in memory for counting, and are never returned or persisted.
+        started = time.monotonic_ns()
+        same_case = getattr(self, "_authorization_pid_case", None) == self.current_case
+        baseline = getattr(self, "_authorization_pid", None) if same_case else None
+        sampled = getattr(self, "_authorization_pid_sample_ns", None) if baseline is not None else None
+        before = self.provider_pid()
+        before_finished = time.monotonic_ns()
+        result = {"available": False, "scope": "current_provider_process_buffer_diagnostic_only", "codes": [],
+                  "baseline_recorded_for_case": baseline is not None, "pid_before_present": before is not None,
+                  "pid_after_present": False, "baseline_matches_before": baseline == before if baseline is not None and before is not None else None,
+                  "baseline_matches_after": None, "pid_before_after_equal": None,
+                  "numeric_pid_match_is_process_generation_proof": False, "log_delivery_order_is_event_order": False,
+                  "baseline_age_ms": round((started - sampled) / 1e6) if sampled is not None else None,
+                  "pid_before_query_ms": round((before_finished - started) / 1e6)}
+        if before is None:
+            result.update(reason="provider_pid_unavailable", duration_ms=round((before_finished - started) / 1e6))
+            return result
+        args = ("logcat", "-d", "-b", "main", "-v", "raw", "--pid=" + before, "HeptaBaoPreview:I", "*:S")
+        raw = None
+        try:
+            raw = self.adb_command("shell", " ".join(shlex.quote(arg) for arg in args))
+        except Failed:
+            result["reason"] = "logcat_query_unavailable"
+        log_finished = time.monotonic_ns()
+        after = self.provider_pid()
+        finished = time.monotonic_ns()
+        result.update(pid_after_present=after is not None, pid_before_after_equal=before == after if after is not None else None,
+                      baseline_matches_after=baseline == after if baseline is not None and after is not None else None,
+                      logcat_query_ms=round((log_finished - before_finished) / 1e6),
+                      pid_after_query_ms=round((finished - log_finished) / 1e6), duration_ms=round((finished - started) / 1e6))
+        if raw is not None:
+            if len(raw) > 1024 * 1024:
+                result.update(reason="logcat_buffer_limit", raw_byte_count=len(raw))
+            else:
+                result.update(available=True, **provider_event_projection(raw))
+        return result
+
+    def authorization_diagnostic(self):
+        # Failure-only read. The TextView describes an existing rejection branch;
+        # prior_decision_snapshot is a raceable global observation, never its cause.
+        started = time.monotonic_ns()
+        result = {"available": False, "scope": "existing_rejection_branch_ui_diagnostic_only",
+                  "prior_decision_is_request_cause_proof": False}
+        try:
+            expected = (PROVIDER, "org.heptabao.preview.AuthActivity")
+            if self.foreground() != expected:
+                result["reason"] = "auth_activity_not_foreground"
+            else:
+                nodes = [node for node in self.ui() if node.get("content-desc") == "Authorization diagnostic"]
+                if self.foreground() != expected:
+                    result["reason"] = "auth_activity_changed"
+                elif len(nodes) != 1 or nodes[0].get("package") != PROVIDER:
+                    result["reason"] = "diagnostic_node_unbound"
+                else:
+                    code_union = "(" + "|".join(sorted(DIAGNOSTIC_CODES)) + ")"
+                    match = re.fullmatch(r"reject_(unlock_precheck|unlock_post_kdf)_" + code_union + "_prior_" + code_union, nodes[0].get("text", ""))
+                    if match:
+                        result.update(available=True, stage=match.group(1), reason=match.group(2), prior_decision_snapshot=match.group(3))
+                    else:
+                        result["reason"] = "diagnostic_not_observed"
+        except Failed:
+            result["reason"] = "diagnostic_query_unavailable"
+        result["duration_ms"] = round((time.monotonic_ns() - started) / 1e6)
+        return result
 
     def unlock(self, master, expect_success=True):
         self.tap(description="Master password")
@@ -1024,18 +1189,25 @@ def main():
         case("actual_system_fill_and_login", login)
         def cached():
             authentication_reappeared = False
-            device.tap(text="Clear fields"); device.tap(description="Synthetic username")
+            refocus = device.cached_refocus()
+            locked_placeholder_attempted = False
             time.sleep(1)
             if device.find(text="Fill synthetic login once") is not None: raise Failed("cached_plaintext_dataset_visible")
             node = device.find(text="Unlock HeptaBao locally")
+            if node is None and refocus["path"] == "bound_popup_after_clear":
+                raise Failed("cached_locked_presentation_disappeared")
             if node is not None:
-                device.tap(text="Unlock HeptaBao locally"); time.sleep(0.5)
+                device.tap(text="Unlock HeptaBao locally"); locked_placeholder_attempted = True; time.sleep(0.5)
                 if device.foreground() == (PROVIDER, "org.heptabao.preview.AuthActivity"):
                     authentication_reappeared = True
                     device.wait(text="Locked"); device.tap(text="Fill once"); device.wait(text="Locked or expired"); device.cancel_authentication()
             if device.find(text="Fill synthetic login once") is not None: raise Failed("cached_plaintext_dataset_visible")
             device.empty()
-            return {"target": GOOD, "same_system_session_after_success": True, "plaintext_dataset_menu_observed": False, "authentication_reappeared": authentication_reappeared, "fixture_values": "Empty fields", "successful_control": "actual_system_fill_and_login"}
+            return {"target": GOOD, "same_fixture_wms_identity_after_success": True,
+                    "autofill_internal_session_id_observed": False, "refocus": refocus,
+                    "plaintext_dataset_menu_observed": False, "locked_placeholder_attempted": locked_placeholder_attempted,
+                    "authentication_reappeared": authentication_reappeared, "fixture_values": "Empty fields",
+                    "successful_control": "actual_system_fill_and_login"}
         case("system_cached_plaintext_not_reusable", cached)
         def explicit_lock():
             authentication_started = time.monotonic(); device.authentication()
@@ -1114,6 +1286,7 @@ def main():
                                      "fixture_return_phase": device.return_phase}
         try:
             if device.package_hash(PROVIDER) == build["artifacts"]["provider"]["sha256"]:
+                report["failure_context"]["authorization_diagnostic_before_diagnostic_activity"] = device.authorization_diagnostic()
                 report["failure_context"]["provider_events_before_diagnostic_activity"] = device.provider_events()
                 report["failure_context"]["provider_decision"] = device.decision()
                 report["failure_context"]["provider_decision_observation"] = "after_launching_MainActivity_may_change_lifecycle_not_original_state_proof"

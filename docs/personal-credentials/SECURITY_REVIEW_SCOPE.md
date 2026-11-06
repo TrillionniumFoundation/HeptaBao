@@ -58,6 +58,15 @@ cannot issue grants, select another checkout or sign changed payload bytes.
 Copied SSHSIG/Git objects remain portable; local checkout binding is not a
 cryptographic anti-copy guarantee.
 
+Review the bounded socket-read repair on both Unix platforms. The framing path
+uses nonblocking reads with polling against the same monotonic deadline across
+header and body; it must not reset the deadline, silently accept partial EOF or
+change the socket's shared mode. The retained macOS failures and subsequent
+separate Linux/macOS nineteen-test results are recorded in [status](STATUS.md).
+The thirty-minute continuity trial exercises the fixed Linux binary and
+durable replay behavior; it supplies no hostile-owner isolation or workload
+capacity assessment.
+
 ### Browser and native host
 
 Start with `clients/chromium/{worker,popup,fill}.js`, the unchanged manifest,
@@ -94,6 +103,17 @@ Review final source/APK manifests and installed signer digests, not only Java
 source or an application label. The Autofill preview needs exact package,
 certificate, activity, native view and fresh request binding, including
 cancellation, backgrounding, expiry and system-cached dataset reuse.
+
+The c9 request-ownership repair is a specific review target. A rejected service
+request that has not created a challenge must not erase another request's
+pending authorization; conversely, its own pending challenge or handoff must
+be invalidated on failure. Inspect scheduler failure, replaced requests,
+cancellation races and handoff ownership together. The paired host regression
+uses controlled Android stubs. The real r13 login observation and failed r14
+return-UI observation retain separate phone results; neither supplies the
+uncompleted twelve-case refusal profile. Closed diagnostic fields and previous
+global decisions must not become authorization inputs or be treated as causal
+request identity.
 
 The Passkey preview needs browser-independent native caller verification,
 one-time selection tickets, exact final-request binding, UP/UV semantics,

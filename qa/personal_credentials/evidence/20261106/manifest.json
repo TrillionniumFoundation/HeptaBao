@@ -1533,6 +1533,24 @@
       "sha256": "6c387d0ce79540abf24b13713da3b3c649f491c8eb59d8bdba4f3face28d2c9f",
       "bytes": 1139206,
       "transformation": "New grouping container retaining the unchanged 55facc phone packet, original receipts, local integrity verification and actual Runtime binding, plus explicit unapplied documentation drafts. Original 18-case ledger remains 16 passed/2 failed; three separate supplements passed 3/3. G08 causal limit, M05 audit gap, unobserved materializer terminal, same-device-only recovery and unqualified P4 scope remain."
+    },
+    {
+      "file": "android-c8-r12-public-evidence.tar.gz",
+      "sha256": "2f9a69b804222bdc1c38d2e18b40ddd7713deb4328fc2f8dbbe34d381098b32b",
+      "bytes": 377981,
+      "transformation": "Aggregate of the byte-identical c8 prephone packet, original r12 failed report and execution bindings, independent release, root readbacks and derived integrity/scope summaries; actual phone result remains failed 2-of-12."
+    },
+    {
+      "file": "broker-stability-30m-public-evidence.tar.gz",
+      "sha256": "302426d3637603a22d13b33f2550b6b72df293367bc11c7d9e640863ca9f6135",
+      "bytes": 309220,
+      "transformation": "Byte-identical public aggregate of the original 30-minute synthetic trial, 621 command pairs, original Runtime records, independent readbacks and internal source review; no long-term, production, external-review or attested-task qualification."
+    },
+    {
+      "file": "android-autofill-followup-public-evidence.tar.gz",
+      "sha256": "55d4ae9e35db36e834c0f9aad7f3d73ca709f8698bd8d82ba688a8b70fe8b07d",
+      "bytes": 504570,
+      "transformation": "Byte-identical c9/r13 and QA16/r14 follow-up grouping with fixed source/build, host counterexamples, original failed phone results, releases and independent root readbacks. r13 remains 4/12 and r14 remains 1/12; no combined passing denominator or production qualification."
     }
   ]
 }

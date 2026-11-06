@@ -154,3 +154,12 @@ artifact pair and state format, sustained stability observations and named
 operational ownership. Internal parallel
 review and finite synthetic tests do not satisfy independent external review
 or long-term operational evidence.
+
+The recorded thirty-minute broker trial completed sixty planned cycles,
+including duplicate-result retrieval, actual expiry/revocation refusals and
+six graceful restarts followed by complete result recovery. Its
+[original evidence](../../qa/personal_credentials/evidence/20261106/broker-stability-30m-public-evidence.tar.gz)
+qualifies that frozen synthetic exercise only. It supplies no production
+availability objective, workload capacity, arbitrary-version upgrade guarantee
+or independent security approval. Continue to preserve unknown outcomes and
+reconcile the target before considering any repeated effect.

@@ -18,6 +18,7 @@ import java.util.List;
 public final class VaultAutofillService extends AutofillService {
     @SuppressWarnings("deprecation") @Override public void onFillRequest(FillRequest request, CancellationSignal cancellation, FillCallback callback) {
         VaultApplication app = (VaultApplication)getApplication();
+        VaultApplication.Pending owned = null;
         try {
             if (cancellation.isCanceled()) return;
             if ((request.getFlags() & FillRequest.FLAG_COMPATIBILITY_MODE_REQUEST) != 0) throw new TargetPolicy.Rejected("browser_unsupported");
@@ -27,7 +28,8 @@ public final class VaultAutofillService extends AutofillService {
             if (app.isImporting()) throw new TargetPolicy.Rejected("import_in_progress");
             if (!VaultFiles.exists(this)) throw new TargetPolicy.Rejected("vault_not_imported");
             VaultApplication.Pending pending = app.begin(target);
-            cancellation.setOnCancelListener(() -> app.cancel(pending.token));
+            owned = pending;
+            cancellation.setOnCancelListener(() -> app.cancel(pending.token, VaultApplication.CancelSource.SERVICE_LISTENER));
             if (cancellation.isCanceled()) return;
             Intent intent = new Intent(this, AuthActivity.class)
                 .setAction("org.heptabao.personal.preview.AUTHORIZE_FILL")
@@ -42,12 +44,24 @@ public final class VaultAutofillService extends AutofillService {
                 .setAuthentication(launch.getIntentSender()).build();
             FillResponse response = new FillResponse.Builder().addDataset(locked).build();
             if (!cancellation.isCanceled()) callback.onSuccess(response);
-            else app.cancel(pending.token);
+            else app.cancel(pending.token, VaultApplication.CancelSource.SERVICE_CALLBACK);
         } catch (TargetPolicy.Rejected rejection) {
-            app.lockAll(rejection.code); if (!cancellation.isCanceled()) callback.onSuccess(null);
+            app.rejectServiceRequest(owned, rejection.code);
+            app.observeRejection(VaultApplication.RejectionStage.SERVICE_REQUEST, rejection.code);
+            if (!cancellation.isCanceled()) callback.onSuccess(null);
         } catch (RuntimeException error) {
-            app.lockAll("invalid_request"); if (!cancellation.isCanceled()) callback.onSuccess(null);
+            app.rejectServiceRequest(owned, "invalid_request");
+            app.observeRejection(VaultApplication.RejectionStage.SERVICE_REQUEST, "invalid_request");
+            if (!cancellation.isCanceled()) callback.onSuccess(null);
         }
+    }
+    void observeTargetPackage(String packageName) {
+        // The policy already read this value. Do not query Android again for diagnostics.
+        VaultApplication.ServiceTarget target = BuildConfig.TARGET_PACKAGE.equals(packageName)
+            ? VaultApplication.ServiceTarget.EXPECTED
+            : "org.heptabao.personal.preview".equals(packageName)
+                ? VaultApplication.ServiceTarget.SELF : VaultApplication.ServiceTarget.OTHER;
+        ((VaultApplication)getApplication()).observeServiceTarget(target);
     }
     @Override public void onSaveRequest(SaveRequest request, SaveCallback callback) { callback.onFailure("Read-only provider"); }
 }

@@ -25,6 +25,7 @@ public final class AuthActivity extends Activity {
     private String token;
     private EditText master;
     private TextView status;
+    private TextView diagnostic;
     private Button unlock;
     private boolean foreground;
     private final Runnable ticker = new Runnable() {
@@ -62,6 +63,7 @@ public final class AuthActivity extends Activity {
         Button lock = new Button(this); lock.setText("Lock"); lock.setOnClickListener(view -> { app.lockLogin(token); master.setText(""); status.setText("Locked or expired"); }); layout.addView(lock);
         Button cancel = new Button(this); cancel.setText("Cancel"); cancel.setOnClickListener(view -> finish()); layout.addView(cancel);
         status = new TextView(this); status.setText("Locked"); status.setContentDescription("Authorization status"); layout.addView(status);
+        diagnostic = new TextView(this); diagnostic.setText("not_observed"); diagnostic.setContentDescription("Authorization diagnostic"); layout.addView(diagnostic);
         setContentView(layout);
     }
     private VaultApplication.Pending boundRequest() throws TargetPolicy.Rejected {
@@ -75,7 +77,14 @@ public final class AuthActivity extends Activity {
     }
     private void unlock() {
         try { boundRequest(); }
-        catch (TargetPolicy.Rejected rejection) { app.lockAll(rejection.code); status.setText("Authorization rejected"); return; }
+        catch (TargetPolicy.Rejected rejection) {
+            // This global decision is a best-effort snapshot, not a request identity or cause.
+            String prior = app.decision();
+            app.lockAll(rejection.code);
+            app.observeRejection(VaultApplication.RejectionStage.UNLOCK_PRECHECK, rejection.code);
+            showDiagnostic(VaultApplication.RejectionStage.UNLOCK_PRECHECK, rejection.code, prior);
+            status.setText("Authorization rejected"); return;
+        }
         Editable editable = master.getText(); char[] chars = new char[editable.length()]; editable.getChars(0, editable.length(), chars, 0);
         master.setText(""); byte[] password;
         try { password = VaultCrypto.passwordBytes(chars); }
@@ -92,6 +101,7 @@ public final class AuthActivity extends Activity {
             app.handler.post(() -> {
                 if (!foreground || isFinishing() || app.ticket(token) != ticket) {
                     if (value != null) value.close();
+                    app.observeStaleUnlock();
                     // A trim can revoke this KDF ticket while retaining the
                     // same locked challenge. Permit fresh input only for that
                     // still-live token in this foreground activity; never use
@@ -103,11 +113,23 @@ public final class AuthActivity extends Activity {
                 }
                 unlock.setEnabled(true);
                 try { boundRequest(); }
-                catch (TargetPolicy.Rejected rejection) { if (value != null) value.close(); app.lockAll(rejection.code); status.setText("Authorization rejected"); return; }
+                catch (TargetPolicy.Rejected rejection) {
+                    if (value != null) value.close();
+                    String prior = app.decision(); app.lockAll(rejection.code);
+                    app.observeRejection(VaultApplication.RejectionStage.UNLOCK_POST_KDF, rejection.code);
+                    showDiagnostic(VaultApplication.RejectionStage.UNLOCK_POST_KDF, rejection.code, prior);
+                    status.setText("Authorization rejected"); return;
+                }
                 if (value != null && app.install(token, ticket, value)) status.setText("Unlocked; confirm within 20 seconds");
                 else { app.decision(code == null ? "unlock_failed" : code); status.setText("Unlock failed"); }
             });
         });
+    }
+    private void showDiagnostic(VaultApplication.RejectionStage stage, String code, String prior) {
+        // Only the two already-entered rejection branches update this read-only field.
+        // It makes the captured stage observable even when the log buffer is empty.
+        diagnostic.setText("reject_" + stage.code + "_" + VaultApplication.closedCode(code)
+            + "_prior_" + VaultApplication.closedCode(prior));
     }
     @SuppressWarnings("deprecation") private void fill() {
         VaultApplication.Pending request;
@@ -141,7 +163,7 @@ public final class AuthActivity extends Activity {
     @Override protected void onPause() {
         foreground = false;
         if (master != null) master.setText("");
-        if (app != null) { app.handler.removeCallbacks(ticker); app.cancel(token); }
+        if (app != null) { app.handler.removeCallbacks(ticker); app.cancel(token, VaultApplication.CancelSource.AUTH_PAUSE); }
         super.onPause();
     }
     @Override protected void onSaveInstanceState(Bundle state) { /* Passwords and authorization are never saved. */ }

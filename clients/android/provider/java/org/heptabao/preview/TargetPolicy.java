@@ -31,6 +31,7 @@ final class TargetPolicy {
         }
     }
     static void certificate(Context context, String packageName) throws Rejected {
+        if (context instanceof VaultAutofillService) ((VaultAutofillService)context).observeTargetPackage(packageName);
         if (!BuildConfig.TARGET_PACKAGE.equals(packageName)) throw new Rejected("wrong_package");
         try {
             PackageInfo info = context.getPackageManager().getPackageInfo(packageName, PackageManager.GET_SIGNING_CERTIFICATES);
