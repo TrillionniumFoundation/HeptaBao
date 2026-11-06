@@ -1,0 +1,30 @@
+{"event": "launch_admission", "admitted": true, "compiler_count": 0, "other_canonical_campaigns": 0, "production_changed": false}
+{"event": "step_started", "step": "00-source-head", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-source-head", "exit_code": 0, "timed_out": false, "seconds": 0.018806}
+{"event": "step_started", "step": "01-preserved-format-diff", "budget_seconds": 30}
+{"event": "step_finished", "step": "01-preserved-format-diff", "exit_code": 0, "timed_out": false, "seconds": 0.082416}
+{"event": "step_started", "step": "02-untracked", "budget_seconds": 30}
+{"event": "step_finished", "step": "02-untracked", "exit_code": 0, "timed_out": false, "seconds": 0.018345}
+{"event": "step_started", "step": "03-bundle-verify", "budget_seconds": 30}
+{"event": "step_finished", "step": "03-bundle-verify", "exit_code": 0, "timed_out": false, "seconds": 0.032977}
+{"event": "step_started", "step": "04-fetch", "budget_seconds": 30}
+{"event": "step_finished", "step": "04-fetch", "exit_code": 0, "timed_out": false, "seconds": 0.021094}
+{"event": "step_started", "step": "05-canonical-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "05-canonical-tree", "exit_code": 0, "timed_out": false, "seconds": 0.016274}
+{"event": "step_started", "step": "06-canonical-parent", "budget_seconds": 30}
+{"event": "step_finished", "step": "06-canonical-parent", "exit_code": 0, "timed_out": false, "seconds": 0.016754}
+{"event": "step_started", "step": "07-stage-exact-format", "budget_seconds": 30}
+{"event": "step_finished", "step": "07-stage-exact-format", "exit_code": 0, "timed_out": false, "seconds": 0.082224}
+{"event": "step_started", "step": "08-format-working-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "08-format-working-tree", "exit_code": 0, "timed_out": false, "seconds": 0.018198}
+{"event": "step_started", "step": "09-checkout-canonical", "budget_seconds": 30}
+{"event": "step_finished", "step": "09-checkout-canonical", "exit_code": 0, "timed_out": false, "seconds": 0.01841}
+{"event": "step_started", "step": "10-clean-source", "budget_seconds": 30}
+{"event": "step_finished", "step": "10-clean-source", "exit_code": 0, "timed_out": false, "seconds": 0.019713}
+{"event": "step_started", "step": "11-fsck", "budget_seconds": 60}
+{"event": "step_finished", "step": "11-fsck", "exit_code": 0, "timed_out": false, "seconds": 1.234193}
+{"event": "step_started", "step": "12-format-check", "budget_seconds": 60}
+{"event": "step_finished", "step": "12-format-check", "exit_code": 0, "timed_out": false, "seconds": 5.439746}
+{"event": "step_started", "step": "13-normal-release-build", "budget_seconds": 1800}
+{"event": "step_finished", "step": "13-normal-release-build", "exit_code": 101, "timed_out": false, "seconds": 102.09596}
+{"event": "terminal", "status": "failed", "failure": "13-normal-release-build_failed", "executed_passed_cases": 0, "result": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/result.public.json"}

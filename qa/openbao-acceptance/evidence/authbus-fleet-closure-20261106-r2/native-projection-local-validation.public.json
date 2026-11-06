@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.normal107-native-projection-local-validation.r2",
+  "status": "passed",
+  "cases": 5,
+  "failures": 0,
+  "skipped": 0,
+  "elapsed_seconds": 0.092,
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/openbao-acceptance/tests",
+    "-p",
+    "test_native_build_receipt_from_convergence.py",
+    "-v"
+  ],
+  "source_pins": [
+    {
+      "path": "qa/openbao-acceptance/native_build_receipt_from_convergence.py",
+      "sha256": "1f9b3c6660d49e4b4a9487dd753be4dbd124cd229cfca67a2ae4228e1ed5458f"
+    },
+    {
+      "path": "qa/openbao-acceptance/tests/test_native_build_receipt_from_convergence.py",
+      "sha256": "ab1aa05cfd8cc370a1a3bed9e0a7a2acaad91c29d2bda523a08edab77981edad"
+    }
+  ],
+  "mac_actual_job_used_original_r1_source": true,
+  "mac_original_source_retained_in_staging_payload": true,
+  "linux_source_path_adapter_executed_in_unit_tests_only": true,
+  "linux_normal107_qualified": false,
+  "physical_ha_qualified": false,
+  "production_changed": false
+}

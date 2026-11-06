@@ -1,0 +1,7 @@
+# Read-only current LAN endpoint observations
+
+The configured X230 job `1a1b1b379d9-fc05-7a55` and ai395 job `1a1b1b86cf3-fc05-7a76` both succeeded with exit 0, complete durable output and no timeout or retry under their respective original 20-second caps. These jobs used libc getifaddrs, started no children, opened no network connection and changed no network or production configuration.
+
+The actual X230 hostname is `qian-ThinkPad-X230`; its up Ethernet interface enp0s25 has `192.168.0.13/24`. The actual ai395 hostname is `ai395`; its up bridge br0 has `192.168.0.11/24`. The complete original interface observations are retained, including separate Wi-Fi, USB and overlay interfaces. These observations select existing LAN addresses only. They do not prove inter-host reachability, MTLS, service port availability, host identity for a later run, or physical HA qualification.
+
+The same ai395 read-only job inspected the two compiler PIDs observed by r3 admission and current compiler process metadata. It read no command lines or environment variables and sent no signals. One original PID was absent during the sample; observed surviving/new compiler ancestry mapped to existing runtime owners `1a1b1b4536d-fc05-7a5d` and `1a1b1add8ea-fc05-7a3c`. PID birth was not assumed from the earlier sample, and the observation is not atomic. Later authoritative owner outcomes and a fresh original admission gate are still required before the separate normal107 attempt.

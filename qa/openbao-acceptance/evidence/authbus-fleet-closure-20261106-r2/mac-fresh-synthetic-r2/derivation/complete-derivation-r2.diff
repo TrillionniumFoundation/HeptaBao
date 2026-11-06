@@ -1,0 +1,607 @@
+--- a/mac_owned_commands_r1.py
++++ b/mac_owned_commands_r1.py
+@@ -8,7 +8,7 @@
+ from __future__ import annotations
+ from contextlib import contextmanager
+ import hashlib, os, select, signal, subprocess, time
+-from mac_owned_unreaped_r1 import require_waitid, capture_child, exit_observation, observed_returncode, stop_once_unreaped
++from mac_owned_unreaped_r1 import require_waitid, capture_child, exit_observation, observed_returncode, stop_once_unreaped, prepare_fixed_ps_contract
+ 
+ class CommandRefused(RuntimeError):pass
+ def need(value,code):
+@@ -40,6 +40,8 @@
+             if not allow_cancelled_cleanup:need(self.signals.pending is None,'command_cancelled')
+             n=until-time.monotonic();need(n>0,'original_command_deadline_exhausted');return n
+         require_waitid();remaining()
++        fixed_ps_contract=prepare_fixed_ps_contract(argv,until=until)
++        remaining()
+         started=time.monotonic();row=None;out=bytearray();err=bytearray()
+         try:
+             with self.signals.critical():
+@@ -51,7 +53,7 @@
+                      'stopAttempted':False,'streamsCloseAttempted':False,'streamsClosed':False,
+                      'completeBeforeDeadline':False,'errorType':None,'errorCode':None}
+                 self.rows.append(row)
+-            row['custody']=capture_child(p,until=until)
++            row['custody']=capture_child(p,until=until,fixed_ps_contract=fixed_ps_contract)
+             streams={p.stdout.fileno():out,p.stderr.fileno():err}
+             for fd in streams:os.set_blocking(fd,False)
+             event=None
+@@ -77,7 +79,7 @@
+             if row is not None:
+                 with self.signals.critical():
+                     row['stopAttempted']=True
+-                    try:row['cleanup']=stop_once_unreaped(row['process'],row['custody'])
++                    try:row['cleanup']=stop_once_unreaped(row['process'],row['custody'],fixed_ps_contract=fixed_ps_contract)
+                     except BaseException as error:
+                         row['cleanup']={'ok':False,'outcomeUnknown':True,
+                             'errorType':type(error).__name__,'directChildReaped':row['process'].returncode is not None,
+--- a/mac_t5_volume_guard_r1.py
++++ b/mac_t5_volume_guard_r1.py
+@@ -11,7 +11,7 @@
+ from pathlib import Path
+ 
+ MOUNT = Path('/Volumes/T5')
+-ROOT = MOUNT / 'hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r1'
++ROOT = MOUNT / 'hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r2'
+ UUID = 'FB804D1B-24CB-4D6E-AEA7-A9E180807758'
+ ANCHOR_PATHS = ('/', '/Volumes', '/Volumes/T5')
+ 
+--- a/mac_owned_launchd_r3.py
++++ b/mac_owned_launchd_r3.py
+@@ -13,13 +13,13 @@
+ 
+ PYTHON_LAUNCHER = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14"
+ PYTHON_KERNEL_IMAGE = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r1')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r2')
+ QA=ROOT/'qa'
+ BINDING_READY=True  # Independent synthetic startup scope; canonical 4bde9 normal107 pin.
+ DOMAIN='gui/501'
+-LABELS={'server':'org.heptabao.qa.mac-fresh-synthetic-20261106-r1.server',
+-        'consumer':'org.heptabao.qa.mac-fresh-synthetic-20261106-r1.consumer'}
+-SERVER=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r1/bin/heptabao-server')
++LABELS={'server':'org.heptabao.qa.mac-fresh-synthetic-20261106-r2.server',
++        'consumer':'org.heptabao.qa.mac-fresh-synthetic-20261106-r2.consumer'}
++SERVER=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r2/bin/heptabao-server')
+ SERVER_SHA='5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c'
+ GRAPH=(('server-start','server-initial'),('server-kill','server-initial'),
+        ('server-start','server-cold-new-process'),('server-kill','server-cold-new-process'))
+@@ -95,7 +95,7 @@
+     return lines in ([exact],['Bad request.',exact])
+ 
+ 
+-HOME_CONTROL=Path('/Users/qianqi/heptabao-mac-fresh-synthetic-launchd-20261106-r1')
++HOME_CONTROL=Path('/Users/qianqi/heptabao-mac-fresh-synthetic-launchd-20261106-r2')
+ HOME_COPY_NAMES=('mac_current_server_owner_r1.py',)
+ HOME_GENERATIONS=('server-initial','server-cold-new-process')
+ HOME_FD_ATTEMPTS=64
+--- a/mac_owned_unreaped_r1.py
++++ b/mac_owned_unreaped_r1.py
+@@ -6,12 +6,70 @@
+ before signaling. Cleanup keeps the previous wrapper's TERM1 / wait5 /
+ group3 limits and PS4 maximum. No stage grants business more than phase120.
+ """
+-import os, signal, subprocess, time
++import hashlib, os, signal, stat, subprocess, time
+ 
+ MIB=1024*1024
+ class Refusal(RuntimeError): pass
+ def need(value,code):
+     if not value:raise Refusal(code)
++
++# Only this observed system helper may cross effective UID at exec. No target
++# service, arbitrary argv, descendant, or unrelated command gets this exception.
++FIXED_PS_ARGV=('/bin/ps','-axo','pid=,ppid=,pgid=,uid=,stat=')
++FIXED_PS_SHA256='3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c'
++FIXED_PS_BYTES=170432
++FIXED_PS_IDENTITY=(16777233,1152921500312571399,0,0,35309,1,170432,
++    1786589515000000000,1786589515000000000)
++
++def fixed_ps_identity(value):
++    return tuple(getattr(value,name) for name in ('st_dev','st_ino','st_uid','st_gid',
++        'st_mode','st_nlink','st_size','st_mtime_ns','st_ctime_ns'))
++
++def fixed_ps_pin(*,until):
++    need(os.getuid()==501 and os.geteuid()==501,'fixed_ps_requires_exact_caller')
++    need(time.monotonic()<until,'original_command_deadline_exhausted')
++    path=FIXED_PS_ARGV[0]
++    before=os.lstat(path)
++    need(fixed_ps_identity(before)==FIXED_PS_IDENTITY and stat.S_ISREG(before.st_mode)
++         and stat.S_IMODE(before.st_mode)==0o4755,'fixed_ps_system_file_identity')
++    fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK|os.O_CLOEXEC)
++    try:
++        need(fixed_ps_identity(os.fstat(fd))==FIXED_PS_IDENTITY,'fixed_ps_open_file_identity')
++        raw=bytearray()
++        while len(raw)<=FIXED_PS_BYTES:
++            need(time.monotonic()<until,'original_command_deadline_exhausted')
++            part=os.read(fd,min(65536,FIXED_PS_BYTES+1-len(raw)))
++            if not part:break
++            raw.extend(part)
++        need(len(raw)==FIXED_PS_BYTES and hashlib.sha256(raw).hexdigest()==FIXED_PS_SHA256,
++             'fixed_ps_whole_file_hash')
++        need(fixed_ps_identity(os.fstat(fd))==fixed_ps_identity(os.lstat(path))==FIXED_PS_IDENTITY,
++             'fixed_ps_named_file_unchanged')
++        need(time.monotonic()<until,'original_command_deadline_exhausted')
++        return {'identity':list(FIXED_PS_IDENTITY),'sha256':FIXED_PS_SHA256}
++    finally:
++        os.close(fd)
++
++def prepare_fixed_ps_contract(argv,*,until):
++    if not argv or argv[0]!=FIXED_PS_ARGV[0]:return None
++    need(tuple(argv)==FIXED_PS_ARGV,'fixed_ps_exact_argv_before_launch')
++    return {'schema':'heptabao.fixed-system-ps-child.r1','argv':list(FIXED_PS_ARGV),
++        'launcherPid':os.getpid(),'callerUid':501,'pin':fixed_ps_pin(until=until)}
++
++def verify_fixed_ps_contract(child,contract,*,until):
++    need(isinstance(contract,dict) and set(contract)=={'schema','argv','launcherPid','callerUid','pin'}
++         and contract['schema']=='heptabao.fixed-system-ps-child.r1'
++         and contract['argv']==list(FIXED_PS_ARGV)
++         and tuple(child.args)==FIXED_PS_ARGV
++         and contract['launcherPid']==os.getpid() and contract['callerUid']==501
++         and child.returncode is None and type(child.pid) is int and child.pid>1,
++         'fixed_ps_direct_child_contract')
++    need(contract['pin']==fixed_ps_pin(until=until),'fixed_ps_prelaunch_binding_changed')
++    return True
++
++def fixed_ps_group_uid(row,child,owner):
++    if owner.get('fixedPsContract') is None:return row['uid']==os.geteuid()
++    return row['pid']==child.pid and stable(row)==owner['ps'] and row['uid']==0
+ 
+ def require_waitid():
+     need(all(hasattr(os, name) for name in ("waitid", "P_PID", "WEXITED", "WNOHANG", "WNOWAIT",
+@@ -70,13 +128,15 @@
+         need(len(rows) == 1 and rows[0]["pid"] == pid, "process_projection_ambiguous")
+     return rows
+ 
+-def capture_child(child, *, until):
++def capture_child(child, *, until, fixed_ps_contract=None):
+     require_waitid()
+     rows = ps_rows(child.pid, until=until)
+     need(len(rows) == 1, "owned_child_identity_missing")
+     row = rows[0]
++    special=fixed_ps_contract is not None
++    if special:verify_fixed_ps_contract(child,fixed_ps_contract,until=until)
+     need(row["ppid"] == os.getpid() and row["pgid"] == child.pid
+-         and row["uid"] == os.geteuid(), "owned_child_scope_mismatch")
++         and row["uid"] == (0 if special else os.geteuid()), "owned_child_scope_mismatch")
+     # Darwin keeps an unreaped zombie in ps but getpgid/getsid return ESRCH.
+     # Use the real live APIs only for a still-live child; otherwise independently
+     # repeat WNOWAIT and retain ps plus Popen direct-parent custody.
+@@ -99,9 +159,12 @@
+              "owned_exit_not_retained")
+         row = fresh[0]
+     return {"ps": stable(row), "sid_observed_while_live": live_sid,
+-            "captured_exit": event}
++            "captured_exit": event,"fixedPsContract":fixed_ps_contract}
+ 
+ def verify_unreaped(child, owner, *, until=None):
++    if owner.get('fixedPsContract') is not None:
++        need(until is not None,'fixed_ps_requires_existing_deadline')
++        verify_fixed_ps_contract(child,owner['fixedPsContract'],until=until)
+     event = exit_observation(child)
+     rows = ps_rows(child.pid, until=until)
+     need(len(rows) == 1 and stable(rows[0]) == owner["ps"]
+@@ -121,8 +184,12 @@
+     need(time.monotonic() < until, "original_stop_deadline_expired")
+     verify_unreaped(child, owner, until=until)
+     rows = ps_rows(until=until)
++    if owner.get("fixedPsContract") is not None:
++        related=[row for row in rows if row["pgid"]==child.pid or row["ppid"]==child.pid]
++        need(all(row["pid"]==child.pid and stable(row)==owner["ps"] for row in related),
++             "fixed_ps_no_other_group_or_direct_child")
+     selected = [row for row in rows if row["pgid"] == child.pid and not row["state"].startswith("Z")]
+-    need(all(row["uid"] == os.geteuid() for row in selected), "owned_group_uid_changed_no_signal")
++    need(all(fixed_ps_group_uid(row,child,owner) for row in selected), "owned_group_uid_changed_no_signal")
+     need(time.monotonic() < until, "original_stop_deadline_expired")
+     return [stable(row) for row in selected]
+ 
+@@ -130,7 +197,7 @@
+     if event is None:return None
+     return event['status'] if event['code']==os.CLD_EXITED else -event['status']
+ 
+-def stop_once_unreaped(child, owner):
++def stop_once_unreaped(child, owner, *, fixed_ps_contract=None):
+     """Called once by the wrapper's protected ledger; never calls Popen.poll."""
+     require_waitid()
+     started=time.monotonic()
+@@ -142,7 +209,7 @@
+         need(child.returncode is None,'already_reaped_no_group_signal')
+         term_until=time.monotonic()+1.0
+         if owner is None:
+-            owner=capture_child(child,until=term_until)
++            owner=capture_child(child,until=term_until,fixed_ps_contract=fixed_ps_contract)
+             receipt['custody']=owner
+         members=live_group(child,owner,until=term_until)
+         receipt['initialLiveGroup']=members
+--- a/mac_current_server_owner_r1.py
++++ b/mac_current_server_owner_r1.py
+@@ -14,10 +14,10 @@
+ 
+ PYTHON_LAUNCHER = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14"
+ PYTHON_KERNEL_IMAGE = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r1')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r2')
+ QA=ROOT/'qa'
+ BINDING_READY=True  # Independent synthetic startup scope; canonical 4bde9 normal107 pin.
+-BINARY=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r1/bin/heptabao-server')
++BINARY=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r2/bin/heptabao-server')
+ BINARY_SHA='5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c'
+ BINARY_BYTES=92359328
+ GENERATIONS=('server-initial','server-cold-new-process')
+--- a/fresh_synthetic_controller_r1.py
++++ b/fresh_synthetic_controller_r1.py
+@@ -19,17 +19,17 @@
+ import sys
+ import time
+ 
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r1')
+-HOME=Path('/Users/qianqi/heptabao-mac-fresh-synthetic-launchd-20261106-r1')
+-PREP=Path('/Users/qianqi/heptabao-mac-fresh-synthetic-preparation-20261106-r1')
+-JOURNAL=Path('/Users/qianqi/heptabao-mac-fresh-synthetic-journal-20261106-r1')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r2')
++HOME=Path('/Users/qianqi/heptabao-mac-fresh-synthetic-launchd-20261106-r2')
++PREP=Path('/Users/qianqi/heptabao-mac-fresh-synthetic-preparation-20261106-r2')
++JOURNAL=Path('/Users/qianqi/heptabao-mac-fresh-synthetic-journal-20261106-r2')
+ QA=ROOT/'qa'
+-TARGET='gui/501/org.heptabao.qa.mac-fresh-synthetic-20261106-r1.server'
++TARGET='gui/501/org.heptabao.qa.mac-fresh-synthetic-20261106-r2.server'
+ SOURCE_NAMES=('mac_owned_launchd_r3.py','mac_current_server_owner_r1.py',
+     'mac_native_process_observer_r1.py','mac_owned_commands_r1.py',
+     'mac_owned_unreaped_r1.py','mac_public_code_pin_excerpt_r1.py',
+     'mac_t5_volume_guard_r1.py','tls_complete_http_probe.py','fresh_synthetic_controller_r1.py',
+-    'test_fresh_synthetic_controller_r1.py')
++    'test_fresh_synthetic_controller_r1.py','test_suid_ps_tls_r2.py')
+ 
+ def need(value,code):
+     if not value:raise RuntimeError(code)
+@@ -54,7 +54,7 @@
+ def load_inputs():
+     raw=stable_read(PREP/'plan.public.json',131072)
+     plan=json.loads(raw)
+-    need(plan['schema']=='heptabao.mac-fresh-synthetic-preparation.r1'
++    need(plan['schema']=='heptabao.mac-fresh-synthetic-preparation.r2'
+          and plan['root']==str(ROOT) and plan['home']==str(HOME)
+          and plan['journal']==str(JOURNAL) and plan['wrapperSeconds']==30
+          and plan['execObservationSeconds']==10 and plan['managerSeconds']==600
+@@ -88,7 +88,7 @@
+     def append(self,event,value):
+         self.check()
+         need(re.fullmatch(r'[a-z0-9-]{1,48}',event) and len(self.rows)<512,'journal_finite_events')
+-        raw=encoded({'schema':'heptabao.mac-fresh-synthetic-journal.r1','index':len(self.rows),'event':event,'value':value})
++        raw=encoded({'schema':'heptabao.mac-fresh-synthetic-journal.r2','index':len(self.rows),'event':event,'value':value})
+         need(len(raw)<=262144,'journal_bounded_record')
+         name='%03d-%s.public.json'%(len(self.rows),event)
+         with self.signals.critical():
+@@ -362,7 +362,7 @@
+         need(signals.pending is None,'outer_not_cancelled')
+         left=until-time.monotonic();need(left>0,'original_outer_600_seconds');return left
+     journal=None;guard=None;home=None;manager=None
+-    result={'schema':'heptabao.mac-fresh-synthetic-startup-qualification.r1','mode':args.mode,
++    result={'schema':'heptabao.mac-fresh-synthetic-startup-qualification.r2','mode':args.mode,
+         'ok':False,'planSha256':plan_sha,'syntheticStartupOnly':True,'businessCredentialInputsRead':False,
+         'j3160Contacted':False,'productionChanged':False,'oldR2Modified':False,
+         'sourcePins':plan['sourcePins'],'canonicalProduct':plan['canonicalProduct'],
+--- a/tls_complete_http_probe.py
++++ b/tls_complete_http_probe.py
+@@ -2,6 +2,7 @@
+ """Read one complete, pinned TLS health response without early client close."""
+ 
+ import argparse
++import errno
+ import hashlib
+ import http.client
+ import json
+@@ -18,32 +19,52 @@
+               "server_name": server_name, "request_count": 0,
+               "tls_verified": False, "http_response_complete": False,
+               "passed": False, "initialization_performed": False,
+-              "credential_supplied": False, "timeout_seconds": 15}
++              "credential_supplied": False, "timeout_seconds": 15,
++              "connection_attempts": 0, "connection_refusals": 0}
+     context = ssl.create_default_context(cafile=str(ca_file))
+     raw = None
+     tls = None
+     response = None
++    def remaining():
++        left = deadline - time.monotonic()
++        if left <= 0:
++            raise TimeoutError("whole probe deadline expired")
++        return left
+     try:
+-        raw = socket.create_connection((host, port), timeout=min(5, deadline - time.monotonic()))
+-        raw.settimeout(max(0.001, deadline - time.monotonic()))
++        # Listener readiness shares the original deadline. Only refused TCP
++        # connections retry; TLS verification and HTTP each run at most once.
++        for _attempt in range(256):
++            left = remaining()
++            record["connection_attempts"] += 1
++            try:
++                raw = socket.create_connection((host, port), timeout=min(5, left))
++                break
++            except ConnectionRefusedError as error:
++                if error.errno != errno.ECONNREFUSED:
++                    raise
++                record["connection_refusals"] += 1
++                time.sleep(min(0.1, remaining()))
++        if raw is None:
++            raise TimeoutError("finite connection attempt limit exhausted")
++        raw.settimeout(remaining())
+         tls = context.wrap_socket(raw, server_hostname=server_name)
+         record.update(tls=tls.version(), leaf_sha256=hashlib.sha256(tls.getpeercert(binary_form=True)).hexdigest())
+         if record["leaf_sha256"] != expected_leaf:
+             raise ValueError("verified certificate differs from required leaf pin")
+         record["tls_verified"] = True
+-        tls.settimeout(max(0.001, deadline - time.monotonic()))
++        tls.settimeout(remaining())
+         request = ("GET /v1/sys/health HTTP/1.1\r\nHost: " + server_name
+                    + ":" + str(port) + "\r\nConnection: close\r\n\r\n").encode("ascii")
+         record["request_count"] = 1
+         tls.sendall(request)
+-        tls.settimeout(max(0.001, deadline - time.monotonic()))
++        tls.settimeout(remaining())
+         response = http.client.HTTPResponse(tls)
+         response.begin()
+         record.update(http_version=response.version, status=response.status, reason=response.reason)
+         length = response.getheader("Content-Length")
+         if not length or not length.isdecimal() or int(length) > 65536 or response.getheader("Transfer-Encoding"):
+             raise ValueError("response lacks the required bounded Content-Length framing")
+-        tls.settimeout(max(0.001, deadline - time.monotonic()))
++        tls.settimeout(remaining())
+         body = response.read(int(length) + 1)
+         record.update(content_length=int(length), body_bytes=len(body), body_sha256=hashlib.sha256(body).hexdigest())
+         if len(body) != int(length):
+--- a/test_suid_ps_tls_r2.py
++++ b/test_suid_ps_tls_r2.py
+@@ -0,0 +1,251 @@
++#!/usr/bin/env python3
++"""Negative and deadline gates for the fixed Mac PS exception and TLS readiness.
++
++Mocks perform no subprocess, filesystem mutation, signal or network action.
++Actual fixed system-PS lifecycle qualification is a separate source-bound job.
++"""
++import copy
++import errno
++import hashlib
++import json
++import types
++import unittest
++from contextlib import ExitStack
++from unittest import mock
++import mac_owned_unreaped_r1 as u
++import mac_owned_commands_r1 as commands
++import tls_complete_http_probe as tls
++
++class FixedPsGates(unittest.TestCase):
++    def setUp(self):
++        self.child=types.SimpleNamespace(pid=2345,args=list(u.FIXED_PS_ARGV),returncode=None,wait=mock.Mock())
++        self.row={'pid':2345,'ppid':1234,'pgid':2345,'uid':0,'state':'R','start':'Fri Nov  6 22:00:00 2026'}
++        self.pin={'identity':list(u.FIXED_PS_IDENTITY),'sha256':u.FIXED_PS_SHA256}
++        self.contract={'schema':'heptabao.fixed-system-ps-child.r1','argv':list(u.FIXED_PS_ARGV),
++            'launcherPid':1234,'callerUid':501,'pin':self.pin}
++        self.owner={'ps':u.stable(self.row),'sid_observed_while_live':2345,'captured_exit':None,
++            'fixedPsContract':self.contract}
++    def base(self,rows=None):
++        st=ExitStack()
++        for target,value in ((u.os,'getpid'),(u.os,'geteuid')):
++            st.enter_context(mock.patch.object(target,value,return_value=1234 if value=='getpid' else 501))
++        st.enter_context(mock.patch.object(u,'require_waitid'))
++        st.enter_context(mock.patch.object(u,'ps_rows',return_value=[self.row] if rows is None else rows))
++        st.enter_context(mock.patch.object(u,'fixed_ps_pin',return_value=self.pin))
++        st.enter_context(mock.patch.object(u,'exit_observation',return_value=None))
++        st.enter_context(mock.patch.object(u.os,'getpgid',return_value=2345))
++        st.enter_context(mock.patch.object(u.os,'getsid',return_value=2345))
++        st.enter_context(mock.patch.object(u.time,'monotonic',return_value=1.0))
++        return st
++    def pin_context(self,*,bad=None,wrong_hash=False,changed=False,caller=501,expired=False):
++        st=ExitStack()
++        names=('st_dev','st_ino','st_uid','st_gid','st_mode','st_nlink','st_size','st_mtime_ns','st_ctime_ns')
++        info=dict(zip(names,u.FIXED_PS_IDENTITY))
++        if bad:info.update(bad)
++        state=types.SimpleNamespace(**info)
++        later=types.SimpleNamespace(**{**info,'st_ino':info['st_ino']+1})
++        raw=b'x'*u.FIXED_PS_BYTES
++        st.enter_context(mock.patch.object(u.os,'getuid',return_value=caller))
++        st.enter_context(mock.patch.object(u.os,'geteuid',return_value=caller))
++        st.enter_context(mock.patch.object(u.time,'monotonic',return_value=2.0 if expired else 0.0))
++        st.enter_context(mock.patch.object(u.os,'lstat',return_value=state))
++        st.enter_context(mock.patch.object(u.os,'fstat',side_effect=[state,later] if changed else None,return_value=state))
++        self.open=st.enter_context(mock.patch.object(u.os,'open',return_value=99))
++        self.close=st.enter_context(mock.patch.object(u.os,'close'))
++        parts=[raw[i:i+65536] for i in range(0,len(raw),65536)]+[b'']
++        st.enter_context(mock.patch.object(u.os,'read',side_effect=parts))
++        if not wrong_hash:st.enter_context(mock.patch.object(u,'FIXED_PS_SHA256',hashlib.sha256(raw).hexdigest()))
++        return st
++    def test_unrelated_command_has_no_privilege_contract(self):
++        with mock.patch.object(u,'fixed_ps_pin') as pin:
++            self.assertIsNone(u.prepare_fixed_ps_contract(['/usr/bin/true'],until=2))
++            pin.assert_not_called()
++    def test_wrong_ps_argv_rejected_before_any_child(self):
++        with mock.patch.object(commands,'require_waitid'),mock.patch.object(commands.subprocess,'Popen') as popen:
++            with self.assertRaisesRegex(u.Refusal,'fixed_ps_exact_argv_before_launch'):
++                commands.Commands(commands.Signals()).run('forbidden-ps',['/bin/ps','-ef'],until=u.time.monotonic()+4)
++            popen.assert_not_called()
++    def test_fixed_ps_requires_exact_caller_501(self):
++        with self.pin_context(caller=0):
++            with self.assertRaisesRegex(u.Refusal,'exact_caller'):u.fixed_ps_pin(until=1)
++            self.open.assert_not_called()
++    def test_fixed_ps_rejects_mode_change(self):
++        with self.pin_context(bad={'st_mode':0o100755}):
++            with self.assertRaisesRegex(u.Refusal,'file_identity'):u.fixed_ps_pin(until=1)
++            self.open.assert_not_called()
++    def test_fixed_ps_rejects_owner_change(self):
++        with self.pin_context(bad={'st_uid':501}):
++            with self.assertRaises(u.Refusal):u.fixed_ps_pin(until=1)
++            self.open.assert_not_called()
++    def test_fixed_ps_rejects_hash_change_and_closes(self):
++        with self.pin_context(wrong_hash=True):
++            with self.assertRaisesRegex(u.Refusal,'whole_file_hash'):u.fixed_ps_pin(until=1)
++            self.close.assert_called_once_with(99)
++    def test_fixed_ps_rejects_changed_file_and_closes(self):
++        with self.pin_context(changed=True):
++            with self.assertRaisesRegex(u.Refusal,'named_file_unchanged'):u.fixed_ps_pin(until=1)
++            self.close.assert_called_once_with(99)
++    def test_fixed_ps_deadline_is_existing_and_prelaunch(self):
++        with self.pin_context(expired=True):
++            with self.assertRaisesRegex(u.Refusal,'deadline_exhausted'):u.fixed_ps_pin(until=1)
++            self.open.assert_not_called()
++    def test_fixed_ps_pin_uses_nofollow_and_complete_hash(self):
++        with self.pin_context():
++            self.assertEqual(u.fixed_ps_pin(until=1)['identity'],list(u.FIXED_PS_IDENTITY))
++            self.assertTrue(self.open.call_args.args[1]&u.os.O_NOFOLLOW)
++            self.close.assert_called_once_with(99)
++    def test_contract_rejects_changed_child_argv(self):
++        self.child.args=['/bin/ps','-ef']
++        with self.base():
++            with self.assertRaisesRegex(u.Refusal,'direct_child_contract'):
++                u.verify_fixed_ps_contract(self.child,self.contract,until=2)
++    def test_contract_rejects_changed_launcher(self):
++        self.contract['launcherPid']=1111
++        with self.base():
++            with self.assertRaisesRegex(u.Refusal,'direct_child_contract'):
++                u.verify_fixed_ps_contract(self.child,self.contract,until=2)
++    def test_contract_rejects_changed_prelaunch_pin(self):
++        self.contract['pin']={'identity':[],'sha256':'0'*64}
++        with self.base():
++            with self.assertRaisesRegex(u.Refusal,'binding_changed'):
++                u.verify_fixed_ps_contract(self.child,self.contract,until=2)
++    def test_arbitrary_root_child_remains_forbidden(self):
++        with self.base():
++            with self.assertRaisesRegex(u.Refusal,'owned_child_scope_mismatch'):
++                u.capture_child(self.child,until=2)
++            self.child.wait.assert_not_called()
++    def test_fixed_ps_root_leader_accepts_without_libproc_or_reap(self):
++        with self.base():
++            owner=u.capture_child(self.child,until=2,fixed_ps_contract=self.contract)
++            self.assertEqual(owner['ps']['uid'],0);self.assertEqual(owner['sid_observed_while_live'],2345)
++            self.assertEqual(owner['fixedPsContract'],self.contract)
++            self.child.wait.assert_not_called()
++    def test_foreign_parent_or_group_still_forbidden(self):
++        for field in ('ppid','pgid'):
++            with self.subTest(field=field),self.base(rows=[{**self.row,field:7777}]):
++                with self.assertRaisesRegex(u.Refusal,'owned_child_scope_mismatch'):
++                    u.capture_child(self.child,until=2,fixed_ps_contract=self.contract)
++    def test_retained_exit_never_reaps_during_capture(self):
++        event={'pid':2345,'signo':20,'code':1,'status':0}
++        with self.base(rows=[{**self.row,'state':'Z'}]),mock.patch.object(u,'exit_observation',return_value=event):
++            owner=u.capture_child(self.child,until=2,fixed_ps_contract=self.contract)
++            self.assertEqual(owner['captured_exit'],event);self.child.wait.assert_not_called()
++    def test_changed_start_identity_blocks_verification(self):
++        with self.base(rows=[{**self.row,'start':'another lifetime'}]):
++            with self.assertRaisesRegex(u.Refusal,'identity_changed_no_signal'):
++                u.verify_unreaped(self.child,self.owner,until=2)
++    def test_changed_effective_uid_blocks_verification(self):
++        with self.base(rows=[{**self.row,'uid':501}]):
++            with self.assertRaisesRegex(u.Refusal,'identity_changed_no_signal'):
++                u.verify_unreaped(self.child,self.owner,until=2)
++    def test_no_other_uid501_group_member_allowed_for_system_ps(self):
++        other={**self.row,'pid':2346,'ppid':2345,'uid':501}
++        with self.base(),mock.patch.object(u,'verify_unreaped'),mock.patch.object(u,'ps_rows',return_value=[self.row,other]):
++            with self.assertRaisesRegex(u.Refusal,'no_other_group_or_direct_child'):
++                u.live_group(self.child,self.owner,until=2)
++    def test_no_other_uid0_group_member_allowed_for_system_ps(self):
++        other={**self.row,'pid':2346,'ppid':2345}
++        with self.base(),mock.patch.object(u,'verify_unreaped'),mock.patch.object(u,'ps_rows',return_value=[self.row,other]):
++            with self.assertRaisesRegex(u.Refusal,'no_other_group_or_direct_child'):
++                u.live_group(self.child,self.owner,until=2)
++    def test_escaped_direct_child_blocks_system_ps_custody(self):
++        other={**self.row,'pid':2346,'ppid':2345,'pgid':9876,'uid':501}
++        with self.base(),mock.patch.object(u,'verify_unreaped'),mock.patch.object(u,'ps_rows',return_value=[self.row,other]):
++            with self.assertRaisesRegex(u.Refusal,'no_other_group_or_direct_child'):
++                u.live_group(self.child,self.owner,until=2)
++    def test_standard_uid501_group_remains_standard(self):
++        owner={**self.owner,'fixedPsContract':None}
++        with self.base():
++            self.assertTrue(u.fixed_ps_group_uid({**self.row,'uid':501},self.child,owner))
++            self.assertFalse(u.fixed_ps_group_uid(self.row,self.child,owner))
++    def test_already_reaped_child_never_signalled(self):
++        self.child.returncode=0
++        with self.base(),mock.patch.object(u.os,'killpg') as kill:
++            result=u.stop_once_unreaped(self.child,self.owner)
++            self.assertFalse(result['ok']);self.assertTrue(result['outcomeUnknown'])
++            self.assertEqual(result['cleanupCaps'],{'term':1,'wait':5,'group':3,'psMax':4})
++            kill.assert_not_called()
++
++class TlsReadinessGates(unittest.TestCase):
++    def run_probe(self,*,failures=(),advance=0.1,handshake_error=None,wrong_pin=False,
++                  incomplete=False,non_refused=None,body_delay=0,always_refused=False):
++        clock=[0.0]
++        def sleep(value):clock[0]+=value if advance is None else advance
++        self.raw=mock.Mock();self.socket=mock.Mock();self.socket.version.return_value='TLSv1.3'
++        certificate=b'synthetic-public-certificate';self.socket.getpeercert.return_value=certificate
++        context=mock.Mock();context.wrap_socket.return_value=self.socket
++        if handshake_error:context.wrap_socket.side_effect=handshake_error
++        value={'initialized':False,'sealed':True};body=json.dumps(value).encode()
++        response=mock.Mock(status=501,reason='Not Implemented',version=11)
++        response.getheader.side_effect=lambda name:str(len(body)) if name=='Content-Length' else None
++        def read(_):
++            clock[0]+=body_delay
++            return body[:-1] if incomplete else body
++        response.read.side_effect=read
++        refused=ConnectionRefusedError(errno.ECONNREFUSED,'refused')
++        pending=list(failures)
++        def connect(*args,**kwargs):
++            if non_refused:raise non_refused
++            if always_refused:raise refused
++            if pending:raise pending.pop(0)
++            return self.raw
++        with mock.patch.object(tls.time,'monotonic',side_effect=lambda:clock[0]), \
++             mock.patch.object(tls.time,'sleep',side_effect=sleep), \
++             mock.patch.object(tls.ssl,'create_default_context',return_value=context), \
++             mock.patch.object(tls.socket,'create_connection',side_effect=connect) as call, \
++             mock.patch.object(tls.http.client,'HTTPResponse',return_value=response) as http:
++            record=tls.probe('127.0.0.1',61620,'localhost','synthetic-ca',
++                '0'*64 if wrong_pin else hashlib.sha256(certificate).hexdigest(),'mock')
++            self.connect_count=call.call_count;self.http_count=http.call_count
++        self.context=context;return record
++    def test_immediate_ready_one_tls_one_http(self):
++        r=self.run_probe();self.assertTrue(r['passed'])
++        self.assertEqual((r['connection_attempts'],r['connection_refusals'],r['request_count']),(1,0,1))
++        self.socket.sendall.assert_called_once();self.context.wrap_socket.assert_called_once()
++    def test_two_refusals_then_ready_sends_one_request(self):
++        refused=ConnectionRefusedError(errno.ECONNREFUSED,'refused')
++        r=self.run_probe(failures=[refused,refused]);self.assertTrue(r['passed'])
++        self.assertEqual((r['connection_attempts'],r['connection_refusals'],r['request_count']),(3,2,1))
++        self.socket.sendall.assert_called_once();self.assertEqual(r['timeout_seconds'],15)
++    def test_original_fifteen_seconds_expires_before_any_http(self):
++        r=self.run_probe(always_refused=True,advance=None)
++        self.assertFalse(r['passed']);self.assertEqual(r['error_type'],'TimeoutError')
++        self.assertLessEqual(r['elapsed_seconds'],15.001);self.assertEqual(r['request_count'],0)
++        self.context.wrap_socket.assert_not_called();self.socket.sendall.assert_not_called()
++    def test_other_connect_error_never_retries(self):
++        r=self.run_probe(non_refused=OSError(errno.EHOSTUNREACH,'unreachable'))
++        self.assertFalse(r['passed']);self.assertEqual(self.connect_count,1);self.assertEqual(r['request_count'],0)
++    def test_socket_timeout_never_retries(self):
++        r=self.run_probe(non_refused=TimeoutError('connect timeout'))
++        self.assertFalse(r['passed']);self.assertEqual(self.connect_count,1);self.assertEqual(r['request_count'],0)
++    def test_tls_verification_failure_never_retries_or_sends(self):
++        r=self.run_probe(handshake_error=tls.ssl.SSLCertVerificationError('verify failure'))
++        self.assertFalse(r['passed']);self.assertEqual(self.connect_count,1)
++        self.assertEqual(r['request_count'],0);self.raw.close.assert_called_once()
++    def test_wrong_leaf_never_retries_or_sends(self):
++        r=self.run_probe(wrong_pin=True);self.assertFalse(r['passed'])
++        self.assertEqual(self.connect_count,1);self.assertEqual(r['request_count'],0)
++        self.socket.close.assert_called_once()
++    def test_incomplete_http_never_retries(self):
++        r=self.run_probe(incomplete=True);self.assertFalse(r['passed'])
++        self.assertEqual(self.connect_count,1);self.assertEqual(r['request_count'],1)
++        self.assertEqual(self.http_count,1);self.socket.close.assert_called_once()
++    def test_late_complete_http_cannot_pass_deadline(self):
++        r=self.run_probe(body_delay=16);self.assertFalse(r['passed'])
++        self.assertEqual(r['error_type'],'TimeoutError');self.assertEqual(r['request_count'],1)
++    def test_finite_attempt_bound_when_mock_clock_stalls(self):
++        r=self.run_probe(always_refused=True,advance=0)
++        self.assertFalse(r['passed']);self.assertEqual(r['connection_attempts'],256)
++        self.assertEqual(r['request_count'],0);self.context.wrap_socket.assert_not_called()
++
++def run():
++    suite=unittest.TestSuite([unittest.defaultTestLoader.loadTestsFromTestCase(cls)
++        for cls in (FixedPsGates,TlsReadinessGates)])
++    result=unittest.TextTestRunner(verbosity=1).run(suite)
++    value={'schema':'heptabao.mac-fixed-ps-tls-readiness-gates.r2','testsRun':result.testsRun,
++        'failures':len(result.failures),'errors':len(result.errors),'skipped':len(result.skipped),
++        'ok':result.wasSuccessful(),'serviceMutationExecuted':False,'signalDispatched':False,
++        'realNetworkOrFilesystemIoPerformed':False}
++    print(json.dumps(value,sort_keys=True))
++    return 0 if result.wasSuccessful() else 1
++if __name__=='__main__':raise SystemExit(run())

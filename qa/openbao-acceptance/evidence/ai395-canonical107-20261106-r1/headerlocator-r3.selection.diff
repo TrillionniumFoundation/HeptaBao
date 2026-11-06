@@ -1,0 +1,918 @@
+--- ai395-original/test-selection.public.json
++++ ai395-headerlocator-r3/test-selection.public.json
+@@ -247,7 +247,13 @@
+       "Verify each actual ai395 retained source/preparation input in old_retained_artifacts before and after this attempt; the inherited field name does not imply that prior ROG artifacts exist here.",
+       "Retain the exact profile environment and normal feature sets. Cargo may rebuild changed local crates and paths; cache reuse is not a guarantee that every dependency remains fresh.",
+       "Bind each new executable using its own Cargo compiler-artifact record, source commit, features, SHA256 and subsequent --list output. Old executable names or old pass receipts cannot qualify the new source."
+-    ]
++    ],
++    "current_target_directory": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/target-normal-headerlocator-r3",
++    "current_target_create_only": true,
++    "current_target_initially_empty": true,
++    "prior_failed_target_preserved": true,
++    "prior_failed_target_directory": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/target-normal",
++    "prior_failed_target_reused": false
+   },
+   "current_prebuild_source_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "current_repair": {
+@@ -694,6 +700,816 @@
+       "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/offline-dependencies.result.public.json",
+       "bytes": 4058,
+       "sha256": "bdd3e486af56b1dfb95e93975a48711c2c9aa5de44e51e506c303063ae8c54fa"
++    },
++    "host_repair_gcc15": {
++      "bytes": 1305304,
++      "path": "/usr/bin/x86_64-linux-gnu-gcc-15",
++      "sha256": "b5f1b773a7c733738352000c92a077dc5852a1a2fc6d836b1e411be1e9ec5f88"
++    },
++    "host_repair_gcc15_header_acc_prof.h": {
++      "bytes": 7454,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/acc_prof.h",
++      "sha256": "c63eef3ff43a0ccf778d0caabca430ac2d30ede535c14be7f2fbe6bfc0426449"
++    },
++    "host_repair_gcc15_header_adxintrin.h": {
++      "bytes": 2832,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/adxintrin.h",
++      "sha256": "da4502336b353db04ed204d9cc8870abdbed1d180315f6b42fd3f5dd38043963"
++    },
++    "host_repair_gcc15_header_ammintrin.h": {
++      "bytes": 3216,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/ammintrin.h",
++      "sha256": "f78022e85062f1f362eda49a160ff1eeed41a16fcefffefbbc6201f387852de9"
++    },
++    "host_repair_gcc15_header_amxavx512intrin.h": {
++      "bytes": 5953,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/amxavx512intrin.h",
++      "sha256": "e2c8239670aa28e75ebe90e3f257479b42342eeb40bb53830a362b20209de57f"
++    },
++    "host_repair_gcc15_header_amxbf16intrin.h": {
++      "bytes": 1877,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/amxbf16intrin.h",
++      "sha256": "b0c643ffa1e4fc36d915ac1a31748f9a7c2047cb97c76ddc569f95bdf831e970"
++    },
++    "host_repair_gcc15_header_amxcomplexintrin.h": {
++      "bytes": 2370,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/amxcomplexintrin.h",
++      "sha256": "9c1c8e57d112568631fe71fe6d9f56302aa978f020fd7d154a159c70be3e6f23"
++    },
++    "host_repair_gcc15_header_amxfp16intrin.h": {
++      "bytes": 1731,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/amxfp16intrin.h",
++      "sha256": "a6adc40c16aa810a084e7b348dbd4f24d94e517f37683676359aba5e59a5885c"
++    },
++    "host_repair_gcc15_header_amxfp8intrin.h": {
++      "bytes": 2767,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/amxfp8intrin.h",
++      "sha256": "17ca30b257b99feabffeadd11d3b42acf66ec5cb625b9605e5666a5f1d37bb18"
++    },
++    "host_repair_gcc15_header_amxint8intrin.h": {
++      "bytes": 2160,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/amxint8intrin.h",
++      "sha256": "34a97ba6aa5ab5d0a141f119df04b9ccf75432ed614fe204101ff4514cd9dc0f"
++    },
++    "host_repair_gcc15_header_amxmovrsintrin.h": {
++      "bytes": 4082,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/amxmovrsintrin.h",
++      "sha256": "015a65bf2c94b12ab8e90c1fe157c6698687a2e7dc27f1e35383868e7c1a7a7a"
++    },
++    "host_repair_gcc15_header_amxtf32intrin.h": {
++      "bytes": 1913,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/amxtf32intrin.h",
++      "sha256": "29dd3851b3f21cfb1efd694c7bd73f096eda8e12b9dea838fd51f86ce8fa5cd7"
++    },
++    "host_repair_gcc15_header_amxtileintrin.h": {
++      "bytes": 3224,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/amxtileintrin.h",
++      "sha256": "951f6c174012871e495c1cac955ebe6ccb383b378219485529ad6c5af037002a"
++    },
++    "host_repair_gcc15_header_amxtransposeintrin.h": {
++      "bytes": 6264,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/amxtransposeintrin.h",
++      "sha256": "2969c2a933f3b7275eb416e78e86b6a9ba97f55ed3c98d754fcf0fcb9d342e06"
++    },
++    "host_repair_gcc15_header_avx10_2-512bf16intrin.h": {
++      "bytes": 20345,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx10_2-512bf16intrin.h",
++      "sha256": "0c27a6129aa97b6638e9dbe7a58257f4f9738752c0f51a28b3abf44d653a0e88"
++    },
++    "host_repair_gcc15_header_avx10_2-512convertintrin.h": {
++      "bytes": 18212,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx10_2-512convertintrin.h",
++      "sha256": "ae12fbc1021c07745a9137ce21d5750c1bb3eece2d9d85ae6e4be9eee66237d0"
++    },
++    "host_repair_gcc15_header_avx10_2-512mediaintrin.h": {
++      "bytes": 14895,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx10_2-512mediaintrin.h",
++      "sha256": "16354a36ee398386daabcc9bb993cbdcf03a1c48e5d40aebe138b4a9bf5ef2bb"
++    },
++    "host_repair_gcc15_header_avx10_2-512minmaxintrin.h": {
++      "bytes": 16198,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx10_2-512minmaxintrin.h",
++      "sha256": "04982f9420c01ed32527114cbbd8f7868b03f9a96240c27de4e5846ebd56786a"
++    },
++    "host_repair_gcc15_header_avx10_2-512satcvtintrin.h": {
++      "bytes": 46040,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx10_2-512satcvtintrin.h",
++      "sha256": "bda0d70c6d356bfaf69ac3ab31fdb342c2c3cd56809ebf86ddfb7f0e4f8a715e"
++    },
++    "host_repair_gcc15_header_avx10_2bf16intrin.h": {
++      "bytes": 39443,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx10_2bf16intrin.h",
++      "sha256": "2e3ee7f15b340837ff8a463fe4219da21c2bc5bdd49bcdded411d8e7fabe2631"
++    },
++    "host_repair_gcc15_header_avx10_2convertintrin.h": {
++      "bytes": 29904,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx10_2convertintrin.h",
++      "sha256": "bbfc7008fb08fa68fe952dba6fcd4634537f12d6d6bb8f126f25f2148b4657bb"
++    },
++    "host_repair_gcc15_header_avx10_2copyintrin.h": {
++      "bytes": 1612,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx10_2copyintrin.h",
++      "sha256": "efbfc37daae8ee0e18dc8a49bbed7fc09c749e96fc7ea6ca1b7b7f945ee87a33"
++    },
++    "host_repair_gcc15_header_avx10_2mediaintrin.h": {
++      "bytes": 23865,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx10_2mediaintrin.h",
++      "sha256": "88cef39248589c64d1979299347703dec70cc4682c7b1e5e13dbe7c3fed34b09"
++    },
++    "host_repair_gcc15_header_avx10_2minmaxintrin.h": {
++      "bytes": 28945,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx10_2minmaxintrin.h",
++      "sha256": "cbfcfac22028ebc8d45378690313790af54b9cc304159ce60e8f8df03bbcc0ad"
++    },
++    "host_repair_gcc15_header_avx10_2satcvtintrin.h": {
++      "bytes": 41327,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx10_2satcvtintrin.h",
++      "sha256": "290dad5ca6cc037e0bbf4ebc3e58dec1ecb6c6ccde1041a6a802a11731788eab"
++    },
++    "host_repair_gcc15_header_avx2intrin.h": {
++      "bytes": 70021,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx2intrin.h",
++      "sha256": "65fe56bbdd23558b68ec90d5685b0a958c74afde8d9086ed83d208b94703fc14"
++    },
++    "host_repair_gcc15_header_avx512bf16intrin.h": {
++      "bytes": 5399,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx512bf16intrin.h",
++      "sha256": "d23d9a279198f15adfd015535aa6a754e43cde10c325ab24156cb943792124d1"
++    },
++    "host_repair_gcc15_header_avx512bf16vlintrin.h": {
++      "bytes": 9217,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx512bf16vlintrin.h",
++      "sha256": "c689e94b28166b3cc1ac36280a759ca339555c1214ff5c50230c927de1ebaf51"
++    },
++    "host_repair_gcc15_header_avx512bitalgintrin.h": {
++      "bytes": 3684,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx512bitalgintrin.h",
++      "sha256": "768085bc3a29b5cef586069caddc994f206d1bca173890980f6b58f2fafef3c5"
++    },
++    "host_repair_gcc15_header_avx512bitalgvlintrin.h": {
++      "bytes": 5847,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx512bitalgvlintrin.h",
++      "sha256": "163f8d869f8555213516905e5a35864a55c2990f68272e4306032ac4735adf86"
++    },
++    "host_repair_gcc15_header_avx512bwintrin.h": {
++      "bytes": 104022,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx512bwintrin.h",
++      "sha256": "40ac6b31a77999cfd2412514aef50a5cb4bf7f60daccd7ab75618e587f349d90"
++    },
++    "host_repair_gcc15_header_avx512cdintrin.h": {
++      "bytes": 5830,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx512cdintrin.h",
++      "sha256": "bae61e540be1b946fe74c5eed5a573c7077b403d3e4636a0dd51e6ae4f7660f0"
++    },
++    "host_repair_gcc15_header_avx512dqintrin.h": {
++      "bytes": 93593,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx512dqintrin.h",
++      "sha256": "1ecba70eee600fb83f944c357a8f8978cab2623a6b91c89014e6f86b08550422"
++    },
++    "host_repair_gcc15_header_avx512fintrin.h": {
++      "bytes": 529836,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx512fintrin.h",
++      "sha256": "e05acce1cc7a7fd5563ab7cedb83dd0d223cf2c708ba72847cbf19e9a51b218c"
++    },
++    "host_repair_gcc15_header_avx512fp16intrin.h": {
++      "bytes": 216139,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx512fp16intrin.h",
++      "sha256": "064f428fc598a7691343c2f7dec4791189e4d393fdda53384613bd56356856b0"
++    },
++    "host_repair_gcc15_header_avx512fp16vlintrin.h": {
++      "bytes": 97803,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx512fp16vlintrin.h",
++      "sha256": "014aaaa2b08d8818697ddac8742f85af0dbe4272986c0fc3ae3d90f3b7d028fa"
++    },
++    "host_repair_gcc15_header_avx512ifmaintrin.h": {
++      "bytes": 3471,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx512ifmaintrin.h",
++      "sha256": "aca77d3bf19adcc8276a52fa42a9649ace71f9c1c352d7581bdc8b15ae799fc8"
++    },
++    "host_repair_gcc15_header_avx512ifmavlintrin.h": {
++      "bytes": 4798,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx512ifmavlintrin.h",
++      "sha256": "34488c8881481464087345260f80ca36e3ade4b0ec82e117867ad139f0f32cca"
++    },
++    "host_repair_gcc15_header_avx512vbmi2intrin.h": {
++      "bytes": 19523,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx512vbmi2intrin.h",
++      "sha256": "b2e4c080d7ce04dd89715285637dee64e305c833b9271513b0043f5521c078d4"
++    },
++    "host_repair_gcc15_header_avx512vbmi2vlintrin.h": {
++      "bytes": 37036,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx512vbmi2vlintrin.h",
++      "sha256": "48517ac5641451e2de54610c40ace8e420982ea13e0bf2b41798dd76b415b87b"
++    },
++    "host_repair_gcc15_header_avx512vbmiintrin.h": {
++      "bytes": 4962,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx512vbmiintrin.h",
++      "sha256": "89d7e551d233546ea3f22c5dbc90c0dfa749fdf37b33f0403b8008b1f093a658"
++    },
++    "host_repair_gcc15_header_avx512vbmivlintrin.h": {
++      "bytes": 8456,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx512vbmivlintrin.h",
++      "sha256": "d9af33df529ecb2baf92f4409648b391fa4f31f82dc8e3f05be65e6d3aae2413"
++    },
++    "host_repair_gcc15_header_avx512vlbwintrin.h": {
++      "bytes": 164564,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx512vlbwintrin.h",
++      "sha256": "8454044a1b2773de7640db8d0020a066868c632b2f35727c23e0c6900fa08b09"
++    },
++    "host_repair_gcc15_header_avx512vldqintrin.h": {
++      "bytes": 62221,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx512vldqintrin.h",
++      "sha256": "1f271b5f6d3b7173b61c66a77b6910975b1ade86420b5d4a58e4dd8075124d00"
++    },
++    "host_repair_gcc15_header_avx512vlintrin.h": {
++      "bytes": 434761,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx512vlintrin.h",
++      "sha256": "3af1c0abf8549ad8ffd6224949a6fe99d0d5332e34de6677952ae8c87d8171e9"
++    },
++    "host_repair_gcc15_header_avx512vnniintrin.h": {
++      "bytes": 5003,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx512vnniintrin.h",
++      "sha256": "0d3f8e2e06172196d98c6748aaf9a12159fdfc46adaa769ef4a71347858ea1c0"
++    },
++    "host_repair_gcc15_header_avx512vnnivlintrin.h": {
++      "bytes": 7440,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx512vnnivlintrin.h",
++      "sha256": "f579da6064f6323caba75315d4cfb1ada426bdfb52cb313219de792a9aec390f"
++    },
++    "host_repair_gcc15_header_avx512vp2intersectintrin.h": {
++      "bytes": 2139,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx512vp2intersectintrin.h",
++      "sha256": "ebc3d656d441fefed3e64439ef325ee8f1dd440b2e3cbc68131078b3c8ad9e5d"
++    },
++    "host_repair_gcc15_header_avx512vp2intersectvlintrin.h": {
++      "bytes": 2678,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx512vp2intersectvlintrin.h",
++      "sha256": "e4eb65f742cf5140137ae170ce17d7c6817f708478d093e42847806afc5735be"
++    },
++    "host_repair_gcc15_header_avx512vpopcntdqintrin.h": {
++      "bytes": 3151,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx512vpopcntdqintrin.h",
++      "sha256": "b819f2b5924c384452378658494f127d4c4e03d74d6c56e686ff7a25fe25b81f"
++    },
++    "host_repair_gcc15_header_avx512vpopcntdqvlintrin.h": {
++      "bytes": 4735,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avx512vpopcntdqvlintrin.h",
++      "sha256": "f00e7c797d21d6255cff7311c8454aae722afeed49d192966ee210d59767c850"
++    },
++    "host_repair_gcc15_header_avxifmaintrin.h": {
++      "bytes": 2551,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avxifmaintrin.h",
++      "sha256": "8c0e8ff2efadb2bb2f9519766589b7ff0063d516f06a62f7340fdd1e0c61d424"
++    },
++    "host_repair_gcc15_header_avxintrin.h": {
++      "bytes": 51427,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avxintrin.h",
++      "sha256": "4f89ad3aeffa61d2a39d26c4d1492c095b83f0f114a2574a82ddbd5c092ad05b"
++    },
++    "host_repair_gcc15_header_avxneconvertintrin.h": {
++      "bytes": 4424,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avxneconvertintrin.h",
++      "sha256": "43355a823494af4d2275b0c6b0940448cefea41279afd7fdf01ab4e5ca7d5408"
++    },
++    "host_repair_gcc15_header_avxvnniint16intrin.h": {
++      "bytes": 4578,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avxvnniint16intrin.h",
++      "sha256": "3832f0bea9fb5509d019f816ce6c9167fb4ff6f47917893d80714cd370fdfd5b"
++    },
++    "host_repair_gcc15_header_avxvnniint8intrin.h": {
++      "bytes": 4521,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avxvnniint8intrin.h",
++      "sha256": "2d166f63338656a3f68bc9eee5ee890ce20772206fcc61f7dec548063864b71e"
++    },
++    "host_repair_gcc15_header_avxvnniintrin.h": {
++      "bytes": 3604,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/avxvnniintrin.h",
++      "sha256": "b55f1a56723964d7bb8b588657275e691ec821fd8acf638644373ce026528f4c"
++    },
++    "host_repair_gcc15_header_backtrace-supported.h": {
++      "bytes": 2982,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/backtrace-supported.h",
++      "sha256": "d8e559301abdb79aa9d3c09d6b22062637607e85c2d65a4c391237baa645c15b"
++    },
++    "host_repair_gcc15_header_backtrace.h": {
++      "bytes": 9141,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/backtrace.h",
++      "sha256": "4bc1860dd36e130eade5d229f41678eca18f8e596f126368b7aa363fc1afea9b"
++    },
++    "host_repair_gcc15_header_bmi2intrin.h": {
++      "bytes": 3355,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/bmi2intrin.h",
++      "sha256": "5747f158eb2684db3be23bced69783f92bf687f05e3ecb69a3a01a606dff3224"
++    },
++    "host_repair_gcc15_header_bmiintrin.h": {
++      "bytes": 6149,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/bmiintrin.h",
++      "sha256": "f2c7395e930f8933915cbb3a92133d4e5f9ffaad4e7f0e02a88a94f7ee021b8d"
++    },
++    "host_repair_gcc15_header_bmmintrin.h": {
++      "bytes": 1154,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/bmmintrin.h",
++      "sha256": "4a9fb4f435c1428cb388b0d38c6d8de3303d54f6af30393aaff25a7a37fae627"
++    },
++    "host_repair_gcc15_header_cet.h": {
++      "bytes": 2665,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/cet.h",
++      "sha256": "814dd1c8ed35a63d949c837a559be10b816c8681558690b8fd42e3303e668a37"
++    },
++    "host_repair_gcc15_header_cetintrin.h": {
++      "bytes": 3334,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/cetintrin.h",
++      "sha256": "b5cc18d78c2253c96f4cf78a493b3423f30ac597804c71f1b03655e585ac0fe1"
++    },
++    "host_repair_gcc15_header_cldemoteintrin.h": {
++      "bytes": 1615,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/cldemoteintrin.h",
++      "sha256": "324bf910600434a56b07b22789d5882fa758de00ac84f55a8c998ba40f500df0"
++    },
++    "host_repair_gcc15_header_clflushoptintrin.h": {
++      "bytes": 1664,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/clflushoptintrin.h",
++      "sha256": "2426629d31646bc902fd8d084513d12aeb10af2221d7a33c048d5d8785cfd4f1"
++    },
++    "host_repair_gcc15_header_clwbintrin.h": {
++      "bytes": 1586,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/clwbintrin.h",
++      "sha256": "359cbf30dddc5163f82ee0c52736686089708467013a77982f202b2ef02691c0"
++    },
++    "host_repair_gcc15_header_clzerointrin.h": {
++      "bytes": 1491,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/clzerointrin.h",
++      "sha256": "6813310cb098dbd40ad7e84086f7a868f33d35e078f76c6d115f7fab2f5b0b0e"
++    },
++    "host_repair_gcc15_header_cmpccxaddintrin.h": {
++      "bytes": 2885,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/cmpccxaddintrin.h",
++      "sha256": "1594daae5a98a019aa945d3f1ffd2389743e0bb27b47fe49d27b79afe9b30ed3"
++    },
++    "host_repair_gcc15_header_cpuid.h": {
++      "bytes": 10543,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/cpuid.h",
++      "sha256": "b0c827ee5309d2d8b09f5298241861e7802d59999d736756609a3eca3f545b76"
++    },
++    "host_repair_gcc15_header_cross-stdarg.h": {
++      "bytes": 2558,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/cross-stdarg.h",
++      "sha256": "065d4af4a734735b71d5645422d7625c32301bf6ef85e4d56e1473955c7439c0"
++    },
++    "host_repair_gcc15_header_emmintrin.h": {
++      "bytes": 53273,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/emmintrin.h",
++      "sha256": "f7f86d2d29050ac026250e6501dcd86b9d44759c3e5a84faa807652e88acf7c3"
++    },
++    "host_repair_gcc15_header_enqcmdintrin.h": {
++      "bytes": 1817,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/enqcmdintrin.h",
++      "sha256": "e31975a5e3f6e98de0897e8540881e9bdebeebe952ddd3e01253c408b02f942b"
++    },
++    "host_repair_gcc15_header_f16cintrin.h": {
++      "bytes": 3410,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/f16cintrin.h",
++      "sha256": "d4ed4921513081574e7053738d4f536c2c56b3aeb4055953575e04a477f8f451"
++    },
++    "host_repair_gcc15_header_float.h": {
++      "bytes": 21430,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/float.h",
++      "sha256": "3d7029b424eea68b4c2603cdf095c94f3b8a188f134aac25328271dd9b75facf"
++    },
++    "host_repair_gcc15_header_fma4intrin.h": {
++      "bytes": 9132,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/fma4intrin.h",
++      "sha256": "ea20dbbad8aab3ffa20cd6b09b46b3cb6747a14f7292e875140123bcad90ea57"
++    },
++    "host_repair_gcc15_header_fmaintrin.h": {
++      "bytes": 10116,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/fmaintrin.h",
++      "sha256": "cbab78591f732a74b4772087eca3d76ce0b612d51fefe5aa37addaaeef9c598d"
++    },
++    "host_repair_gcc15_header_fxsrintrin.h": {
++      "bytes": 2057,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/fxsrintrin.h",
++      "sha256": "79c08d5ccd73dcdffc02305f49254a2cd7434bff3c37a2609d57c7399c6e3350"
++    },
++    "host_repair_gcc15_header_gcov.h": {
++      "bytes": 2940,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/gcov.h",
++      "sha256": "7e2d9533f97071fba7f59d6360ebd9a4d292925b0445bd209eea1fdbef898ecd"
++    },
++    "host_repair_gcc15_header_gfniintrin.h": {
++      "bytes": 15474,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/gfniintrin.h",
++      "sha256": "530cccc7d7cad1fee47df4636a09db6d883e2cb83f4d6bb7b71078b668016b92"
++    },
++    "host_repair_gcc15_header_hresetintrin.h": {
++      "bytes": 1627,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/hresetintrin.h",
++      "sha256": "56b734a6e46048d1286f219147b215328d6f680a44d96700980132edad3c93ec"
++    },
++    "host_repair_gcc15_header_ia32intrin.h": {
++      "bytes": 7865,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/ia32intrin.h",
++      "sha256": "78f1b2c9c82bcbff5feb59cb74d7d97130e0408cddd3e0bad3260e3797565856"
++    },
++    "host_repair_gcc15_header_immintrin.h": {
++      "bytes": 3324,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/immintrin.h",
++      "sha256": "265eb7d03e84377e024dc2900826db2d57f7ffe13ab4634c736444ee370fa245"
++    },
++    "host_repair_gcc15_header_iso646.h": {
++      "bytes": 1272,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/iso646.h",
++      "sha256": "a9b71c1cd04022dc48ab04ccb13448844a0fd925bd1225ebc253b08059018109"
++    },
++    "host_repair_gcc15_header_keylockerintrin.h": {
++      "bytes": 4440,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/keylockerintrin.h",
++      "sha256": "e87964f4da9fdac761d2499ec34ba64e4bb1d8cfdd30984774f252ca42ec20c0"
++    },
++    "host_repair_gcc15_header_libgdiagnostics++.h": {
++      "bytes": 13573,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/libgdiagnostics++.h",
++      "sha256": "c76f8281ec411226e3f8d57a1f4cede9dafae252a862fb1f038e8114f6b20279"
++    },
++    "host_repair_gcc15_header_libgdiagnostics.h": {
++      "bytes": 24391,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/libgdiagnostics.h",
++      "sha256": "45fc7975b181756c7be4fbaffbda97c08f6439c6740f585d19c3ff05f32b7a09"
++    },
++    "host_repair_gcc15_header_limits.h": {
++      "bytes": 6507,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/limits.h",
++      "sha256": "c1db59d8d8a54dbc7e7dbc5ce2f25fd0451f8e01794e7964a15a3e6cc17566d3"
++    },
++    "host_repair_gcc15_header_lwpintrin.h": {
++      "bytes": 3406,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/lwpintrin.h",
++      "sha256": "178cb40bb81e2f3ea6dc8781b2929a589b2e708c57e5a192b688be113706bca8"
++    },
++    "host_repair_gcc15_header_lzcntintrin.h": {
++      "bytes": 2365,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/lzcntintrin.h",
++      "sha256": "710824719de207fdbde6e2c0c445d2e7d5049d7808c9b9bd34b7f6e2602ceb74"
++    },
++    "host_repair_gcc15_header_mm3dnow.h": {
++      "bytes": 7076,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/mm3dnow.h",
++      "sha256": "7818a498b4e8aae7f6d20110a2cfecbed14280fe7ccf375405f31c26c3d5c72b"
++    },
++    "host_repair_gcc15_header_mm_malloc.h": {
++      "bytes": 1783,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/mm_malloc.h",
++      "sha256": "9cd3c588fae0625d64bc73371b1a080db254979de006c586e748a98504a2ff6b"
++    },
++    "host_repair_gcc15_header_mmintrin.h": {
++      "bytes": 31892,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/mmintrin.h",
++      "sha256": "14fe1f0d4c68382c32730f238683dde4f4d0da7c1b0e8f9a0f9842085dba8d1e"
++    },
++    "host_repair_gcc15_header_movdirintrin.h": {
++      "bytes": 2348,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/movdirintrin.h",
++      "sha256": "a62edac6e530ae4e5ab300b127fd51740ef944bf9f4bf12d6566f9c17a9805c8"
++    },
++    "host_repair_gcc15_header_movrsintrin.h": {
++      "bytes": 13329,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/movrsintrin.h",
++      "sha256": "d9e107b6ab8b9c637766e20a4dacd486de36d9ca981ff8025a9efe15c87476ed"
++    },
++    "host_repair_gcc15_header_mwaitintrin.h": {
++      "bytes": 1710,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/mwaitintrin.h",
++      "sha256": "64266e2133706f9da99fe960748ac85d15e19292c88bbaa5baf6775c909bbe55"
++    },
++    "host_repair_gcc15_header_mwaitxintrin.h": {
++      "bytes": 1747,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/mwaitxintrin.h",
++      "sha256": "1d82bf3f69298d26e479dc3f77dfc736f8b5c0e13ac1127b9bcbfea60f5bc4a1"
++    },
++    "host_repair_gcc15_header_nmmintrin.h": {
++      "bytes": 1288,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/nmmintrin.h",
++      "sha256": "b210dc3be30f7fcbbaf1d7b6ac182c93d202ca0e83cf47491e343745796d6cdb"
++    },
++    "host_repair_gcc15_header_omp.h": {
++      "bytes": 18037,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/omp.h",
++      "sha256": "b78a1211661f74c7f2ceae13a9c33755aad6675a82d09d33e8ca0ee18f90972c"
++    },
++    "host_repair_gcc15_header_openacc.h": {
++      "bytes": 6403,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/openacc.h",
++      "sha256": "9338470b317e68b470a0c681f0fb68c0423e63d5eee684087d1a1cf1cf1fc1f2"
++    },
++    "host_repair_gcc15_header_pconfigintrin.h": {
++      "bytes": 2355,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/pconfigintrin.h",
++      "sha256": "4c6d9f78e7901790580c04f3829ee8c222a644aaa647cc6207c91652210395a8"
++    },
++    "host_repair_gcc15_header_pkuintrin.h": {
++      "bytes": 1742,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/pkuintrin.h",
++      "sha256": "2086ce0ed89e4d4b763c5b54eae0c071e02c4bdd6af1b44c93ba1c9f41782250"
++    },
++    "host_repair_gcc15_header_pmmintrin.h": {
++      "bytes": 4016,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/pmmintrin.h",
++      "sha256": "0a08f7c170b191fb1689081e9db24a9ca955560a66313ea5be81edbe9ecce912"
++    },
++    "host_repair_gcc15_header_popcntintrin.h": {
++      "bytes": 1750,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/popcntintrin.h",
++      "sha256": "a7facadc2df7def66c4bdf376c9b1c3bc756cfdfcc15730cd13eb982362a8872"
++    },
++    "host_repair_gcc15_header_prfchiintrin.h": {
++      "bytes": 2009,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/prfchiintrin.h",
++      "sha256": "69f71230d3ba870c0d44aa4534efe37a8611c68041794295797e087920100979"
++    },
++    "host_repair_gcc15_header_prfchwintrin.h": {
++      "bytes": 1447,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/prfchwintrin.h",
++      "sha256": "eae322444ffd5d3ed4a1a333d9fb180fa1de7541efdcad8785dbac9bebe32539"
++    },
++    "host_repair_gcc15_header_quadmath.h": {
++      "bytes": 9358,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/quadmath.h",
++      "sha256": "e8711f597c69a64800a00b80644f66156623323615b03d0cdba4b4c845e44736"
++    },
++    "host_repair_gcc15_header_quadmath_weak.h": {
++      "bytes": 3208,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/quadmath_weak.h",
++      "sha256": "666936d1e7ddc08bf0c94e0f82cbedcbca6b3ad0a69e385d753cf530453144b8"
++    },
++    "host_repair_gcc15_header_raointintrin.h": {
++      "bytes": 2941,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/raointintrin.h",
++      "sha256": "4453641a2f31705736eeff538c38f7143cd6b4eddc223cd35a4febcce0a8e410"
++    },
++    "host_repair_gcc15_header_rdseedintrin.h": {
++      "bytes": 2018,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/rdseedintrin.h",
++      "sha256": "91b8df122f04675fec25b32f83f227fec9f94aff6d5ef35c0abbfc6e229fef1d"
++    },
++    "host_repair_gcc15_header_rtmintrin.h": {
++      "bytes": 2739,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/rtmintrin.h",
++      "sha256": "bc06cfa7d7b4cdb8b65f258eb9e198445a302ffa5b68b6f97b8cdda75498e949"
++    },
++    "host_repair_gcc15_header_sanitizer/asan_interface.h": {
++      "bytes": 13654,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/sanitizer/asan_interface.h",
++      "sha256": "a0845c4541636053d42ad6f7aafcba588f0ce054eb172c16faa1b7888f8b5f69"
++    },
++    "host_repair_gcc15_header_sanitizer/common_interface_defs.h": {
++      "bytes": 22789,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/sanitizer/common_interface_defs.h",
++      "sha256": "c9b7f630c91170a6f5557cbc8752ee724fcf905dbd4eaa0734a7b2e78d8fa037"
++    },
++    "host_repair_gcc15_header_sanitizer/hwasan_interface.h": {
++      "bytes": 5043,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/sanitizer/hwasan_interface.h",
++      "sha256": "04fa77448fb0ac24b70332c7eca1f0d6dcd1e2b21d64ae3ad65a2f3153d23a6e"
++    },
++    "host_repair_gcc15_header_sanitizer/lsan_interface.h": {
++      "bytes": 3993,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/sanitizer/lsan_interface.h",
++      "sha256": "d61859dd521fd4953fb2786e04ce29f1301f5a0194a01528410912ad841a381d"
++    },
++    "host_repair_gcc15_header_sanitizer/tsan_interface.h": {
++      "bytes": 14952,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/sanitizer/tsan_interface.h",
++      "sha256": "f91dbdf74ce69e8b8ae227c5e169a35025b24e0db6dfa31cff33b643bf7d9968"
++    },
++    "host_repair_gcc15_header_serializeintrin.h": {
++      "bytes": 1624,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/serializeintrin.h",
++      "sha256": "b1b8bed319e912a2348dca1c39d548ff90c3302e56e537ae6ed301d3fad6674d"
++    },
++    "host_repair_gcc15_header_sgxintrin.h": {
++      "bytes": 7091,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/sgxintrin.h",
++      "sha256": "5c678855e4342c8fafc2f070e9c013453a4cc80ccb4cfb4c756be06a8cbac479"
++    },
++    "host_repair_gcc15_header_sha512intrin.h": {
++      "bytes": 2162,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/sha512intrin.h",
++      "sha256": "250d6a5ed4001acb213fe3ca6fcf67f3c3a7380d44a538d42dbaa48ac762d083"
++    },
++    "host_repair_gcc15_header_shaintrin.h": {
++      "bytes": 3204,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/shaintrin.h",
++      "sha256": "ed12b6e5a6784fa1beb5aa5aacadea38c63eb064c2a3b8bb715d9acf826f32e6"
++    },
++    "host_repair_gcc15_header_sm3intrin.h": {
++      "bytes": 2382,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/sm3intrin.h",
++      "sha256": "d24117551cd41cc5d406ae9f30ef85ff9796b4b8577b6f014a3e47642c062191"
++    },
++    "host_repair_gcc15_header_sm4intrin.h": {
++      "bytes": 3023,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/sm4intrin.h",
++      "sha256": "d1a9a604f332bcf3c959f27bddab518ff4a3bb6fd13391bcf01104f2cce082c3"
++    },
++    "host_repair_gcc15_header_smmintrin.h": {
++      "bytes": 28191,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/smmintrin.h",
++      "sha256": "b73f9c7ff6e83848304492b6a97a4ea7dd021aba262f089eb05336b0c9e7087e"
++    },
++    "host_repair_gcc15_header_stdalign.h": {
++      "bytes": 1338,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/stdalign.h",
++      "sha256": "10c438e1d4f1ce66b027af636a5e8c50b45e5ac350653b9e5d8938f184742e1b"
++    },
++    "host_repair_gcc15_header_stdarg.h": {
++      "bytes": 4310,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/stdarg.h",
++      "sha256": "3014f1490722369be2ab7e10a3bd88a53435083fea5fc30fb8b6f87520684bb7"
++    },
++    "host_repair_gcc15_header_stdatomic.h": {
++      "bytes": 9715,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/stdatomic.h",
++      "sha256": "0a6b359fe9f66a7288c7ff1d37a1fb6cc16b7c3fbc630435641f100748a9af41"
++    },
++    "host_repair_gcc15_header_stdbool.h": {
++      "bytes": 1490,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/stdbool.h",
++      "sha256": "85c7055c3c43090548b29d09a38cfd967ed1b4f23be98a7b52bde66b2122e653"
++    },
++    "host_repair_gcc15_header_stdckdint.h": {
++      "bytes": 1509,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/stdckdint.h",
++      "sha256": "591a1fa843a19f97f04f41b920b6c262a9b7c02e92ac9b758bd4c703fedea9ed"
++    },
++    "host_repair_gcc15_header_stddef.h": {
++      "bytes": 14134,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/stddef.h",
++      "sha256": "472a84e536689fc48e861b2415b229742e133d09bbf1c8fd8e0fe89ab5712f04"
++    },
++    "host_repair_gcc15_header_stdfix.h": {
++      "bytes": 6000,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/stdfix.h",
++      "sha256": "49d9d0afb86d4205d955b2c1bfdc7a3d25ac5b6b29f71337d70fd6b96f5ab852"
++    },
++    "host_repair_gcc15_header_stdint-gcc.h": {
++      "bytes": 9648,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/stdint-gcc.h",
++      "sha256": "3293e221caf804316d3305d3512f09e51916a4a6da2c21d0fa0d176ca8fc4b67"
++    },
++    "host_repair_gcc15_header_stdint.h": {
++      "bytes": 443,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/stdint.h",
++      "sha256": "64ab730bb09eba38f01a62174fb8371ef281778ac33f141a6fa4217a9b39466a"
++    },
++    "host_repair_gcc15_header_stdnoreturn.h": {
++      "bytes": 1136,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/stdnoreturn.h",
++      "sha256": "26edad1fa7982444a3267e7c7e6b73bb911aca69ea55d0af85b7064a84f5c61c"
++    },
++    "host_repair_gcc15_header_syslimits.h": {
++      "bytes": 445,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/syslimits.h",
++      "sha256": "9409a59233daef9339a757c58b3dd1cee980a65f1ef2590040fe5e106222a4bc"
++    },
++    "host_repair_gcc15_header_tbmintrin.h": {
++      "bytes": 5248,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/tbmintrin.h",
++      "sha256": "3c2de8f2fc87812d3e25e6eee772bf653e5e5abe6c3a4741303d622dadecf185"
++    },
++    "host_repair_gcc15_header_tmmintrin.h": {
++      "bytes": 8343,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/tmmintrin.h",
++      "sha256": "ee214889ea5abc6c288268ffe69225645abc6c3fd7f868b5e26d5f9cba120170"
++    },
++    "host_repair_gcc15_header_tsxldtrkintrin.h": {
++      "bytes": 1777,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/tsxldtrkintrin.h",
++      "sha256": "b9d8e4fd2f5a6513b10c357dd0817f7e3df30c6b70d51f855b0d820f23471c29"
++    },
++    "host_repair_gcc15_header_uintrintrin.h": {
++      "bytes": 2307,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/uintrintrin.h",
++      "sha256": "d53d1fe34e60d4e179945c9a269d884a90c78b84d5572bcb5478173c8c80a1de"
++    },
++    "host_repair_gcc15_header_unwind.h": {
++      "bytes": 10938,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/unwind.h",
++      "sha256": "bd4d5aa26e91b1e6e7e5d15bdf123b1f55774f996332e5a3433f8ad74d3dadd0"
++    },
++    "host_repair_gcc15_header_usermsrintrin.h": {
++      "bytes": 1920,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/usermsrintrin.h",
++      "sha256": "20df00f9d1609980e3b08de95039b1e26ad95ece971b1d466deea639892a0da6"
++    },
++    "host_repair_gcc15_header_vaesintrin.h": {
++      "bytes": 3481,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/vaesintrin.h",
++      "sha256": "8a738f87ea40bf25b01b67ba8bde80afaf6190d2f64ba544e2a7ac2cc35670d0"
++    },
++    "host_repair_gcc15_header_varargs.h": {
++      "bytes": 139,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/varargs.h",
++      "sha256": "f9acb21973be5764aa2fd689c941ad963c1ecdd133f3a6529f279803135f8268"
++    },
++    "host_repair_gcc15_header_vpclmulqdqintrin.h": {
++      "bytes": 2735,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/vpclmulqdqintrin.h",
++      "sha256": "228da9c29f8293bb52814a34acde382f2c65c201b11f517eb1e8dcd98419f0b5"
++    },
++    "host_repair_gcc15_header_waitpkgintrin.h": {
++      "bytes": 2000,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/waitpkgintrin.h",
++      "sha256": "b71991084806dda83c922507b37dcce9d121e83a98da0d09307e7f9ebe8d5d54"
++    },
++    "host_repair_gcc15_header_wbnoinvdintrin.h": {
++      "bytes": 1627,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/wbnoinvdintrin.h",
++      "sha256": "c334707af0787920fc316cbca24251e2c12017d7af93030e6cc1891691be1371"
++    },
++    "host_repair_gcc15_header_wmmintrin.h": {
++      "bytes": 4197,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/wmmintrin.h",
++      "sha256": "bc48bda31e5dcc18665361a2d71d6ed84e7248404ff7aa77edead634076338ed"
++    },
++    "host_repair_gcc15_header_x86gprintrin.h": {
++      "bytes": 6193,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/x86gprintrin.h",
++      "sha256": "98d3b5ba1e055f2616cb7f3b7429e671663fa07853e59c95272940757fe67a94"
++    },
++    "host_repair_gcc15_header_x86intrin.h": {
++      "bytes": 1302,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/x86intrin.h",
++      "sha256": "5e91b4c8932a67bf8cf5fa819b9222ae55446dde1e21e17cb52c37b16e10c363"
++    },
++    "host_repair_gcc15_header_xmmintrin.h": {
++      "bytes": 46103,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/xmmintrin.h",
++      "sha256": "dc4074672de9e6f14124819cb264b62e542c9c3e8eee37532878da55966e692a"
++    },
++    "host_repair_gcc15_header_xopintrin.h": {
++      "bytes": 28783,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/xopintrin.h",
++      "sha256": "1e3c198ef5717a3f8c9d0aa4b914d85b2345496056f8b829414dd9bd7676c111"
++    },
++    "host_repair_gcc15_header_xsavecintrin.h": {
++      "bytes": 1822,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/xsavecintrin.h",
++      "sha256": "e82b1ab7956e1e61c0374cd99ec9565eb13ddd421fb9f320de511f44e89e9e89"
++    },
++    "host_repair_gcc15_header_xsaveintrin.h": {
++      "bytes": 2473,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/xsaveintrin.h",
++      "sha256": "3e3f9192440ad7ce2227b28804c1517a7695c168f2e997f44ae5691424b45693"
++    },
++    "host_repair_gcc15_header_xsaveoptintrin.h": {
++      "bytes": 1852,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/xsaveoptintrin.h",
++      "sha256": "8ebd84b3f1554618b4ea51983244421a07dc79c4b9f8c934e616dd1d74facc47"
++    },
++    "host_repair_gcc15_header_xsavesintrin.h": {
++      "bytes": 2158,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/xsavesintrin.h",
++      "sha256": "4d17e06eaa86d9ce2395eb79e06640dbe23943dc4cae9b5c8587dcc8577e1e1c"
++    },
++    "host_repair_gcc15_header_xtestintrin.h": {
++      "bytes": 1693,
++      "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include/xtestintrin.h",
++      "sha256": "c42a731c7ab5308ffb472e5d09396c0d8d610da084797b6bffa0237bbab150a5"
++    },
++    "host_repair_header_locator_probe": {
++      "bytes": 4522,
++      "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/clang-header-probe-r2/result.public.json",
++      "sha256": "b08698ddfa50187e2c98a1fa3bac8832a7be944f70d035f08e1e5c1cd8f40057"
++    },
++    "host_repair_libclang21": {
++      "bytes": 32691984,
++      "path": "/usr/lib/x86_64-linux-gnu/libclang-21.so.21",
++      "sha256": "2c262ccd53ce702daa87c95aa84b2936e13c14f974504dc58f3ed93b12def23b"
++    },
++    "host_repair_prior_controller": {
++      "bytes": 21712,
++      "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/controller.py",
++      "sha256": "2d5237fb1db25e6741f27685f99195f2e35afdeee7aa4b40adc094b0fa34fc1f"
++    },
++    "host_repair_prior_failed_progress": {
++      "bytes": 22184,
++      "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/progress.public.json",
++      "sha256": "972a694bd944235ccb5010bb5d19377c1f083d4a73deac05c73d7a92fddc0a29"
++    },
++    "host_repair_prior_failed_result": {
++      "bytes": 22187,
++      "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/result.public.json",
++      "sha256": "f3050df350c427ff34ef963b33704a144799b273ae3d37a612c96eb453e7a422"
++    },
++    "host_repair_prior_selection": {
++      "bytes": 55900,
++      "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/test-selection.public.json",
++      "sha256": "340e47e620fd963da419a0417a611ec3ba08a544b7962d908640fb14407569f9"
++    },
++    "host_repair_pin_receipt": {
++      "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/header-locator-pins-r1/result.public.json",
++      "bytes": 36404,
++      "sha256": "3048a7aed1ce909f824a8a4e94afb19a920e9e4424303b90f4df55c974258cad"
+     }
+   },
+   "original_budgets": {
+@@ -717,10 +1533,11 @@
+       "CARGO_PROFILE_RELEASE_OPT_LEVEL": "3",
+       "CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS": "true",
+       "CARGO_PROFILE_RELEASE_PANIC": "unwind",
+-      "CARGO_TARGET_DIR": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/target-normal",
++      "CARGO_TARGET_DIR": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/target-normal-headerlocator-r3",
+       "CARGO_TERM_COLOR": "never",
+       "PATH": "/home/qq/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin:/usr/bin:/bin",
+-      "RUSTFLAGS": ""
++      "RUSTFLAGS": "",
++      "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/15/include"
+     },
+     "rustc_vv": "rustc 1.98.0 (88d9e12ae 2026-08-18)\nbinary: rustc\ncommit-hash: 88d9e12ae178fab0fb5cc050a94da85685d449ea\ncommit-date: 2026-08-18\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.0\nLLVM version: 22.1.8\n",
+     "server_libtest_argv": [
+@@ -1148,5 +1965,68 @@
+     "production_scope_changed": false
+   },
+   "historical_receipts_qualify_current_candidate": false,
+-  "current_selection_reenumeration_required": true
++  "current_selection_reenumeration_required": true,
++  "host_header_locator_repair": {
++    "schema": "heptabao.existing-host-header-locator-repair.v1",
++    "source_product_changed": false,
++    "original_features_profile_groups_budgets_unchanged": true,
++    "cause": "Actual aws-lc-sys 0.41.0 internal bindgen could not locate stddef.h with the originally selected libclang21 and PATH.",
++    "fix_environment": {
++      "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/15/include"
++    },
++    "existing_tools_only": true,
++    "tools_installed": false,
++    "clang_resource_package_installed": false,
++    "clang_library_pin": {
++      "bytes": 32691984,
++      "path": "/usr/lib/x86_64-linux-gnu/libclang-21.so.21",
++      "sha256": "2c262ccd53ce702daa87c95aa84b2936e13c14f974504dc58f3ed93b12def23b"
++    },
++    "cc_pin": {
++      "bytes": 1305304,
++      "path": "/usr/bin/x86_64-linux-gnu-gcc-15",
++      "sha256": "b5f1b773a7c733738352000c92a077dc5852a1a2fc6d836b1e411be1e9ec5f88"
++    },
++    "standard_header_provider": "GCC 15 existing standard headers, explicitly used as a system include directory for existing libclang 21; not claimed to be a Clang resource bundle.",
++    "gcc_header_file_count": 154,
++    "gcc_header_manifest_sha256": "c18fe6489f262e798516b36c74d335959d8cba76aab06bc709525d94d61b82cc",
++    "probe": {
++      "job_id": "1a1b1a926f8-fc05-7a22",
++      "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/clang-header-probe-r2/result.public.json",
++      "bytes": 4522,
++      "sha256": "b08698ddfa50187e2c98a1fa3bac8832a7be944f70d035f08e1e5c1cd8f40057",
++      "scope": "Exact locked aws-lc rust_wrapper.h including SSL. Original missing-stddef failure reproduced, then existing GCC15 locator parsed without diagnostics. Not a complete Rust bindgen build or normal107 qualification."
++    },
++    "prior_failed_normal_build": {
++      "job_id": "1a1b1866775-fc05-7956",
++      "result_path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/result.public.json",
++      "result_sha256": "f3050df350c427ff34ef963b33704a144799b273ae3d37a612c96eb453e7a422",
++      "normal_release_exit_code": 101,
++      "executed_tests": 0,
++      "not_qualified_cases": 107,
++      "status": "failed",
++      "timeout": false
++    },
++    "duplicate_gate_closed_prior_outputs": [
++      {
++        "bytes": 22184,
++        "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/progress.public.json",
++        "sha256": "972a694bd944235ccb5010bb5d19377c1f083d4a73deac05c73d7a92fddc0a29"
++      },
++      {
++        "bytes": 22187,
++        "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/result.public.json",
++        "sha256": "f3050df350c427ff34ef963b33704a144799b273ae3d37a612c96eb453e7a422"
++      }
++    ],
++    "current_output_directory": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-headerlocator-r3",
++    "current_target_directory": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/target-normal-headerlocator-r3",
++    "only_controller_constant_changed_from_ai395_r2": "OUT",
++    "only_environment_keys_changed_from_ai395_r2": [
++      "CARGO_TARGET_DIR",
++      "BINDGEN_EXTRA_CLANG_ARGS"
++    ],
++    "previous_current_inputs_retained": true,
++    "normal107_qualified": false
++  }
+ }
