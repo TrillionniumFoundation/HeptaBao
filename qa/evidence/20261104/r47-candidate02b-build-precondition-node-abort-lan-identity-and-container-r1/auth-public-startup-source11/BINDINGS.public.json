@@ -1,0 +1,236 @@
+{
+  "oldRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3",
+  "newRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1",
+  "PYTHON": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+  "nodeAlias": {
+    "identity": [
+      "16777233",
+      "42479387",
+      "501",
+      "80",
+      "41453",
+      "1",
+      "32",
+      "1775693590102524708",
+      "1775693590102524708"
+    ],
+    "path": "/opt/homebrew/bin/node",
+    "resolved": "/opt/homebrew/Cellar/node/25.9.0_1/bin/node",
+    "sha256": "a46ed02589ca3af795237111ff854262064f8ff5c5b58d75c1509f37311eb15e"
+  },
+  "inputPins": {
+    "/usr/sbin/diskutil": {
+      "identity": [
+        "16777233",
+        "1152921500312575979",
+        "0",
+        "0",
+        "33261",
+        "1",
+        "1937776",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "bytes": 1937776,
+      "sha256": "624a8601b97ddfaa4b18dd2854c299e084cd45eb18fc152011c97615c3b9da1f"
+    },
+    "/usr/bin/sandbox-exec": {
+      "identity": [
+        "16777233",
+        "1152921500312572700",
+        "0",
+        "0",
+        "33261",
+        "1",
+        "102368",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "bytes": 102368,
+      "sha256": "abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a"
+    },
+    "/bin/ps": {
+      "identity": [
+        "16777233",
+        "1152921500312571399",
+        "0",
+        "0",
+        "35309",
+        "1",
+        "170432",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "bytes": 170432,
+      "sha256": "3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c"
+    },
+    "/opt/homebrew/Cellar/node/25.9.0_1/bin/node": {
+      "identity": [
+        "16777233",
+        "42479374",
+        "501",
+        "80",
+        "33133",
+        "1",
+        "68384",
+        "1775693589374925413",
+        "1775693590180968789"
+      ],
+      "bytes": 68384,
+      "sha256": "a46ed02589ca3af795237111ff854262064f8ff5c5b58d75c1509f37311eb15e"
+    },
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14": {
+      "identity": [
+        "16777233",
+        "587518380",
+        "501",
+        "80",
+        "33261",
+        "1",
+        "34640",
+        "1793798038915516382",
+        "1793798038915695047"
+      ],
+      "bytes": 34640,
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+    }
+  },
+  "publicSourcePins": {
+    "/Users/qianqi/.openclaw/extensions/openclaw-authbus/index.js": "b19b6a9e7c1d57ccef8d67994ed3421891788ac30a82ff6bad2eef2ef7e30f9b",
+    "/Users/qianqi/.openclaw/extensions/openclaw-authbus/bad-refresh-quarantine.js": "916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286",
+    "/Users/qianqi/.openclaw/extensions/openclaw-authbus/codex-client-recycler.js": "d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d",
+    "/Users/qianqi/.openclaw/extensions/openclaw-authbus/lease-assignments.js": "24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7",
+    "/Users/qianqi/.openclaw/extensions/openclaw-authbus/order-policy.js": "16bddaa7d18600f9f09dac7b5fb4999a141c86aab1fb15d3e9d6abc24e1cf301",
+    "/Users/qianqi/.openclaw/extensions/openclaw-authbus/provider-error-classifier.js": "3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77",
+    "/Users/qianqi/.openclaw/extensions/openclaw-authbus/runtime-refresh-policy.js": "8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547",
+    "/Users/qianqi/.openclaw/extensions/openclaw-authbus/package.json": "e9a39d1880a285e76b5b09fb69c9614cfbecff0e1021eb29ce214a6340fd7334",
+    "/opt/homebrew/lib/node_modules/openclaw/package.json": "695b6ee36df7fc69606dc390cf97bb2ca809114337b18c573707637cd2a4e3db",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/plugin-sdk/agent-runtime.js": "7831532d17eeaddd62889b2e8bb7b65ea7a7851901f69ceec23607a8c579dd95",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/store-DH33UrUj.js": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/source-check-ZSz5NzGW.js": "9c02bbf2df3cf123efe8c34c423ae4ea044371aab91d727f38986351695ce1c9",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/oauth-B4aOCsid.js": "505d561b6fe271c95d29d7b93b44cd0780ac5859342a98e46f20b4e08487234e",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/order-CeBlX0NH.js": "4674b1d9ccf77f2b3ef7dd87c394ad99404ba34e6b2a0efed661c4546ac5c732",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/model-auth-CJEm9SNp.js": "2b5e700c9f7a7b012f8e7d7b0b56b06267e58861b3ebf8ca3a092bd74dd90aa7",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/sqlite-wal-Bhk2Ro-u.js": "ef69e7cad95ff5cd5fe3087331294daae557833bcbc3d0ae140394d16855c3da",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/runtime-registry-loader-Duw3fvRO.js": "bd6a9f363bc7aac2fb0503640e339ffce52e0eab15336e6489b6f8129df748fb",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/runtime-registry-loader-d7xui8oD.js": "60625cfb3742d35a39a70df71eacb6160718e4beac0b1b7649dac8fb5d0e2600",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/selection-JInn13lc.js": "ccff13111aa60369ac9d88b526a58a7df1f733f1d99d205c01c6186036957e66",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/registry-DtLZ3rba.js": "a845875a1998c2a6bdd9fe4c824a0a7c3e7da0f3ee75ec56dc6163d4327f7ff0",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/windows-spawn-C5RDaB22.js": "24f856187f26ed4d6ffbddb8ec44f13e01527841a6cac0839064bb4a6dd64549",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/plugin-sdk/windows-spawn.js": "d97a1228e01c249bc2d7feabff40987beb8f8419f39c35002643fd05a2c590e4",
+    "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/shared-client-4ICy3U6d.js": "bff60f1bb2cb73ad44c7f9c9d779576a2ffd9836b22ecba0bd5b6046e7ce9103",
+    "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/config-CYEDnLJ2.js": "dd8d2fc434fc538ba8e69ebe0f2aa470eadcfb86c2ef95b19a7570afb51290a0",
+    "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/index.js": "ade01b0285488ab9c9cb2c963c85210cf97720d7188b772ecf9ce423f82c7ca5",
+    "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/harness.js": "8919eefce05b3127251724c8f8cad7f1ac1a0994c57b243361092ea4de096f72",
+    "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/openclaw.plugin.json": "e6121fbc68131d7c320da9a23ece1a41864e51c2ff04fef6b72a1d114353aa8d",
+    "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/package.json": "a11aced690f9a6e1d8c85a66bc0abd5bd6f397301609a2b15cf066fcd75ffdb8",
+    "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/@openai/codex/bin/codex.js": "134063e133f0b4244fa3b251acf973d4fe4b4aeeacbdc135211bf480f59f1477",
+    "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex": "718724d7221cf1298071ca92411cb74caa8422809154150cedca7b569a4518e3",
+    "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/@openai/codex/package.json": "66d383ce5fef10d874cbec37ab0405287c76d10b2e746f9ac8726059db038a1a",
+    "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/@openai/codex-darwin-arm64/package.json": "5d3349fb11db7efea6eab4c1d7efd4eee546ba91e12f7583996bccc9992a3953",
+    "/opt/homebrew/bin/node": "a46ed02589ca3af795237111ff854262064f8ff5c5b58d75c1509f37311eb15e",
+    "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/.bin/codex": "134063e133f0b4244fa3b251acf973d4fe4b4aeeacbdc135211bf480f59f1477",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/loader-D8d2EvVh.js": "3a10479bdcbb713692c3ded7dbd5baad27c1b17ae3566172c117d45916dabce7",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/manifest-registry--UiRn6nq.js": "819c76c314e6ed1fd39c5ed6b169d63997905b3ae8a98b9373783d626431ace4",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/registry-B8eQDFB4.js": "25f3ef82756d85281ad5c25375a5cd2f405989a1145ed438de05992e8c995376",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/openclaw.plugin.json": "518e8e071c1e5720c9fe621ac84c8b550df93af14dac0d96d788d73917835301",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/package.json": "398f73305017a1d3813610825814c6e1dd93b683da088cb6df068a31c639fcc3",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/index.js": "f245758337a55924518852f542a27d49bd786d8e4b80821dc5f98f825ec3fc60"
+  },
+  "harnessRoots": [
+    "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google"
+  ],
+  "harnessBindings": [
+    {
+      "pluginId": "codex",
+      "rootDir": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex",
+      "layout": "npm",
+      "manifest": {
+        "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/openclaw.plugin.json",
+        "sha256": "e6121fbc68131d7c320da9a23ece1a41864e51c2ff04fef6b72a1d114353aa8d"
+      },
+      "package": {
+        "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/package.json",
+        "sha256": "a11aced690f9a6e1d8c85a66bc0abd5bd6f397301609a2b15cf066fcd75ffdb8"
+      },
+      "entries": [
+        {
+          "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/index.js",
+          "sha256": "ade01b0285488ab9c9cb2c963c85210cf97720d7188b772ecf9ce423f82c7ca5"
+        }
+      ]
+    },
+    {
+      "pluginId": "google",
+      "rootDir": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google",
+      "layout": "sdk-bundled",
+      "manifest": {
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/openclaw.plugin.json",
+        "sha256": "518e8e071c1e5720c9fe621ac84c8b550df93af14dac0d96d788d73917835301"
+      },
+      "package": {
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/package.json",
+        "sha256": "398f73305017a1d3813610825814c6e1dd93b683da088cb6df068a31c639fcc3"
+      },
+      "entries": [
+        {
+          "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/index.js",
+          "sha256": "f245758337a55924518852f542a27d49bd786d8e4b80821dc5f98f825ec3fc60"
+        }
+      ]
+    }
+  ],
+  "markers": [
+    "entered-js",
+    "before-fs",
+    "after-fs",
+    "before-path",
+    "after-path",
+    "before-crypto",
+    "after-crypto",
+    "before-sqlite",
+    "after-sqlite",
+    "before-rows-cas",
+    "after-rows-cas",
+    "before-cache-cas",
+    "after-cache-cas",
+    "before-https",
+    "after-https",
+    "before-http",
+    "after-http",
+    "before-child-process",
+    "after-child-process",
+    "before-url",
+    "after-url",
+    "before-module",
+    "after-module",
+    "complete"
+  ],
+  "portPermissionLiteral": 63611,
+  "anchorB64": "ewogICJzY2hlbWEiOiAiaGVwdGFiYW8ubWFjLWN1cnJlbnQtdDUtcHVibGljLWFuY2hvci5yMSIsCiAgInNvdXJjZV9pbnZlbnRvcnlfc2hhMjU2IjogIjAwMWQ5ZDMzODRmMWI4YzAwZmEzY2JhOGFmN2YzMDIwYmVkYzU0ZjI2Njc4NjExYWIzY2QzYTUyNGNlMjM5MDIiLAogICJ2b2x1bWVVVUlEIjogIkZCODA0RDFCLTI0Q0ItNEQ2RS1BRUE3LUE5RTE4MDgwNzc1OCIsCiAgImV4cGVjdGVkVm9sdW1lRGV2aWNlIjogIjE2Nzc3MjQ0IiwKICAiYW5jaG9ycyI6IFsKICAgIHsKICAgICAgInBhdGgiOiAiLyIsCiAgICAgICJpZGVudGl0eSI6IFsKICAgICAgICAiMTY3NzcyMzMiLAogICAgICAgICIyIiwKICAgICAgICAiMCIsCiAgICAgICAgIjAiLAogICAgICAgICIxNjg3NyIsCiAgICAgICAgIjIyIiwKICAgICAgICAiNzA0IiwKICAgICAgICAiMTc4NjU4OTUxNTAwMDAwMDAwMCIsCiAgICAgICAgIjE3ODY1ODk1MTUwMDAwMDAwMDAiCiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJwYXRoIjogIi9Wb2x1bWVzIiwKICAgICAgImlkZW50aXR5IjogWwogICAgICAgICIxNjc3NzIzMyIsCiAgICAgICAgIjE4MzM2IiwKICAgICAgICAiMCIsCiAgICAgICAgIjAiLAogICAgICAgICIxNjg3NyIsCiAgICAgICAgIjUiLAogICAgICAgICIxNjAiLAogICAgICAgICIxNzkzMTAwNTk3NzU2NTE1NTkxIiwKICAgICAgICAiMTc5MzEwMDU5Nzc1NjUxNTU5MSIKICAgICAgXQogICAgfSwKICAgIHsKICAgICAgInBhdGgiOiAiL1ZvbHVtZXMvVDUiLAogICAgICAiaWRlbnRpdHkiOiBbCiAgICAgICAgIjE2Nzc3MjQ0IiwKICAgICAgICAiMiIsCiAgICAgICAgIjAiLAogICAgICAgICIwIiwKICAgICAgICAiMTY4OTMiLAogICAgICAgICIxMiIsCiAgICAgICAgIjM4NCIsCiAgICAgICAgIjE3OTMxNTI5NzMxNDQyNjA0OTUiLAogICAgICAgICIxNzkzMTUyOTczMTQ0MjYwNDk1IgogICAgICBdCiAgICB9CiAgXQp9Cg==",
+  "anchorSHA": "dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8",
+  "sourceProvenance": {
+    "originalRuntime": "mac/1a1b1d28dc2-fc05-7afe",
+    "originalPublicStdout": {
+      "blob": "71201c9dc56be7704936677c6c31c8c9d5df2ae9",
+      "bytes": 211872,
+      "sha256": "0d493d9feae4d6d2760e5cfa9c47d18367fc73baa3bdfc49df3120bc360b457e"
+    },
+    "actualReconcile": {
+      "blob": "47982e4809c94d66f0a4f899ce1e3fdfc155dad4",
+      "bytes": 31091,
+      "sha256": "43b301e075128e0bf104a3c7888be27565e740bba46e74bfebd85cfa626f72f4"
+    },
+    "materializer": {
+      "blob": "198feabe7aef20b302e5989fd72e99e0bc0d36c3",
+      "bytes": 25973,
+      "sha256": "1a2ba260cb9659cb52f429f77de1e7d5c40ecb4f36af37d6b245d1b11cc277c9"
+    },
+    "phase": {
+      "blob": "57b38b5d7072cb425898159f1f5d491fc2b1647a",
+      "bytes": 25647,
+      "sha256": "438578c430cdb86a22babfb76b7ed60a0bca8b486834378e34c54ffa85200c60"
+    }
+  }
+}

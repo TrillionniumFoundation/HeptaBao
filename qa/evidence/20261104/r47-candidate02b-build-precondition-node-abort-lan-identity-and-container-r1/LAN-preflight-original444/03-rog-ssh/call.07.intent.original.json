@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.gitfirst.fixed-native-call-intent.r1",
+  "callKey": "lanid-rog-ssh-streams0-page1-20261106-r1",
+  "kind": "operation_result",
+  "request": {
+    "blob": "01e2081f07843f2325d1edf4b830f9805f0d5665",
+    "bytes": 124,
+    "sha256": "6178ff0ffe9b36dd07996e8a12490f102d5272f587c267134068390cebec5edc"
+  },
+  "rootGo": {
+    "blob": "d9d95a4bc9be0f5bae219f304486e1f4fd712df3",
+    "bytes": 10381,
+    "sha256": "d346eeb4ea5666d8981a3abaf1a4ea189137d49b1e83e0a8212bbca20590e57b"
+  },
+  "originalJob": "1a1b2465f2a-fc05-7d48",
+  "originalOperation": "c64e64e13dedf898a9be1d5be3b116f1f54017860ee90c26575695a57af83475",
+  "maximumNativeCalls": 1,
+  "nativeNotYetCalled": true,
+  "lossOfAcknowledgmentNeverGrantsReplay": true,
+  "localFirstExplicitlyReplacedByExactRootGO": true
+}

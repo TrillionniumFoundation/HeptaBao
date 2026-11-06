@@ -1,0 +1,114 @@
+{
+  "schema": "heptabao.final-lan-original-chain-verifier-inputs.r1",
+  "function": "verifyOriginalLanIdentityRoutes(input)",
+  "helper_order": [
+    "pure_helpers.original.js",
+    "compare.source.js",
+    "verifier.source.js"
+  ],
+  "input_shape": {
+    "goRaw": "exact GO JSON text",
+    "routes": "ordered array of {name,files}; files is each entire fixed route tree path -> UTF-8 content",
+    "comparison": "parse comparison.actual.public.json from the exact release tree"
+  },
+  "go": {
+    "blob": "d9d95a4bc9be0f5bae219f304486e1f4fd712df3",
+    "bytes": 10381,
+    "sha256": "d346eeb4ea5666d8981a3abaf1a4ea189137d49b1e83e0a8212bbca20590e57b"
+  },
+  "release_tree": "d85b7653a5c625afb3f8dcef87963c2616ef73f8",
+  "comparison": {
+    "path": "comparison.actual.public.json",
+    "blob": "2892b9b409470baa4e29852c6e81913b0a38c3c8",
+    "bytes": 3157,
+    "sha256": "422d60e41c77995c98d8971fe58930d0874726f53d31514f40cdd30a2268893d",
+    "whole": true
+  },
+  "routes": [
+    {
+      "name": "00-pocket4-native",
+      "tree": "e1bd0c5c688f5f59a70eebc4bf8fc23672cf1903",
+      "files": 72,
+      "bytes": 272347,
+      "whole": true,
+      "manifest": {
+        "path": "MANIFEST.public.json",
+        "blob": "e7e04419d2ef3d728a4259d99abee063307e8147",
+        "bytes": 16040,
+        "sha256": "a315f4554d4a65116fb403b9cdf4a75e2abe83b1f3ea6a02f162f56d8a99c7b0",
+        "whole": true
+      }
+    },
+    {
+      "name": "01-pocket4-ssh",
+      "tree": "3ecfeb526b0760522127375e02831d3a359c8d37",
+      "files": 72,
+      "bytes": 248868,
+      "whole": true,
+      "manifest": {
+        "path": "MANIFEST.public.json",
+        "blob": "e5b75e2540094de7f5c116a6a5b6a7333b9498c3",
+        "bytes": 16032,
+        "sha256": "24087ffb396cb27777a2e5905f2d20bbf98eb7de42af6e5f90cc006772bed1a9",
+        "whole": true
+      }
+    },
+    {
+      "name": "02-rog-native",
+      "tree": "6801b22b12f9ef154f4cfa70b14ab00bc531aa3d",
+      "files": 72,
+      "bytes": 272903,
+      "whole": true,
+      "manifest": {
+        "path": "MANIFEST.public.json",
+        "blob": "929d8bfcc51f5af0b649790129820e179888dea8",
+        "bytes": 16032,
+        "sha256": "719ac50a25b58cb2e950f2062cae8adc8ebea5b2a080b5923791f270f4645b43",
+        "whole": true
+      }
+    },
+    {
+      "name": "03-rog-ssh",
+      "tree": "a6b3491fec46269e0980a77f6364aa64cedc752d",
+      "files": 72,
+      "bytes": 249453,
+      "whole": true,
+      "manifest": {
+        "path": "MANIFEST.public.json",
+        "blob": "3e884a4f2ad16b879780bf81f78d285cd430e480",
+        "bytes": 16024,
+        "sha256": "eb9d2e8c945ae8214dfdd4fc8ec1339bfdee6e5a5b9020b4cd8ffb9bebd4ec11",
+        "whole": true
+      }
+    },
+    {
+      "name": "04-mac-native",
+      "tree": "ea39d04e63decb53d626d86f2c7bb9d514082656",
+      "files": 65,
+      "bytes": 233842,
+      "whole": true,
+      "manifest": {
+        "path": "MANIFEST.public.json",
+        "blob": "995058c60ae1b6e739a41cdbcda684b971675d72",
+        "bytes": 14473,
+        "sha256": "f1d9e8906a2c34f1c01dc5027398c80cdaf5a321ae7b8ae2b91152ba156fcf25",
+        "whole": true
+      }
+    },
+    {
+      "name": "05-mac-ssh",
+      "tree": "bd2ace208ba8a23232078467f9b44ffcc74648d7",
+      "files": 65,
+      "bytes": 210233,
+      "whole": true,
+      "manifest": {
+        "path": "MANIFEST.public.json",
+        "blob": "fc6f781b5482cdbbd2d1aa795aaae4c1fa49e51a",
+        "bytes": 14465,
+        "sha256": "eb47d1e0074127160ca7342b7c502cfa76ede9e25a7e111bab930a5da8e5b0b1",
+        "whole": true
+      }
+    }
+  ],
+  "no_Native_or_Git_invocation_by_verifier": true
+}

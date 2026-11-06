@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.final-lan-identity-original-chain-status.r1",
+  "result": "PASS_ORIGINAL_IDENTITY_AND_BIND_CLOSE_EVIDENCE",
+  "checks": 1048,
+  "totals": {
+    "calls": 46,
+    "observers": 12,
+    "pages": 16,
+    "stdout": 18894,
+    "stderr": 0
+  },
+  "call_budget": {
+    "starts": "6/6",
+    "status_observers": "1/8 per job",
+    "read_observers": "1/2 per job",
+    "observer_status": "1/8 per observer",
+    "pages": "1 or 2/128 per observer",
+    "stream_bytes": "18894/393216 across six"
+  },
+  "C_current_calls": 0,
+  "C_current_futures": 0,
+  "all_six_job_exit_codes": 0,
+  "all_12_observers_completed_inactive": true,
+  "no_errors_or_replays_in_scope": true,
+  "model_approval": null,
+  "kernel_reported_models": [
+    {
+      "role": "mac",
+      "hostname": "MacBook-Pro.local",
+      "model": "Mac17,2"
+    },
+    {
+      "role": "rog",
+      "hostname": "qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA",
+      "model": "ROG Flow Z13 GZ302EA_GZ302EA"
+    },
+    {
+      "role": "pocket4",
+      "hostname": "alex-G1628-04",
+      "model": "G1628-04"
+    }
+  ],
+  "physical_hardware_attestation": false,
+  "final_binary_qualification": false,
+  "product_LAN_98_plus_12": false,
+  "old_unknown_contexts_unchanged": true
+}

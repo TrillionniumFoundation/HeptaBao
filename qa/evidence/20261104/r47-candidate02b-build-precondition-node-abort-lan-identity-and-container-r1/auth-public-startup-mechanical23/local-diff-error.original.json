@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.local-source-check-error.r1",
+  "step": "strict-diff-generator-return-shape",
+  "type": "TypeError",
+  "message": "diff.split is not a function",
+  "nativeCalls": 0,
+  "candidateMutation": false,
+  "correction": "Use sourceUnified(...).text after examining its documented return shape; original source and request unchanged."
+}

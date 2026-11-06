@@ -1,0 +1,130 @@
+{
+  "schema": "heptabao.mac-public-node-startup-actual-release.r1",
+  "job": "mac/1a1b25c3c54-fc05-7db1",
+  "rootGo": {
+    "blob": "7ebe24a86015cf0fa5b377c66e30576d70d6ec7d",
+    "bytes": 12126,
+    "sha256": "d0029f0d49010122b1d5ecac30173108b3aa300341daa0a625793747411c87ee"
+  },
+  "source": {
+    "blob": "350a7511e91644fd8e6652f9b6c9cbfdaca1e3d4",
+    "bytes": 150406,
+    "sha256": "9f35cf7cc8f0c63cb678f5acbd0974f1c5127452af57b740f29908a77c783dba"
+  },
+  "request": {
+    "blob": "5f92076fa2198a6f473c11bed043a4a347ac1dbc",
+    "bytes": 151322,
+    "sha256": "3ce6082cfff09e0cadeb7494b7b4a7701fc68af063fb53b3c57f965e637c6f0b"
+  },
+  "journal": {
+    "blob": "ed4e0248df0336f91832e7d3a27a7a51a8afc998",
+    "bytes": 19045,
+    "sha256": "f7a5f0e07b606671d31efb2f0060c645e5bc4179c6ff8b37976fcb2334f427f1"
+  },
+  "originalCalls": 11,
+  "originalObservers": 2,
+  "immutablePages": 6,
+  "allOriginalCallsAccepted": true,
+  "observers": [
+    {
+      "id": "22e5cc9e4eb93b2bdada5ea83d37bb16f8e70b4b529eb8643bb3ea9dd1219599",
+      "tool": "process_status",
+      "payload": {
+        "blob": "d43b317a4180f5ceb70562d5ab2a03fbe5150df9",
+        "bytes": 910,
+        "sha256": "1db23b981215c9660f6af8a2b0be7e75fdca8fe616088224faad75a349a4c7be"
+      },
+      "payloadTree": "062e377468eaa2a579dd79243b667f01770ba0b7",
+      "nativeText": {
+        "blob": "b4032586eeca0965a7ab2decc811d47aa82b06d0",
+        "bytes": 731,
+        "sha256": "b14a2dc0cba4c2227ba0cb30339e60eb2ceb565d47084aa4c3f46337390faea4"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "45c75611fb9422e8ee4982489a85db0a0e72ad26e03f1b3543eed6d6bcd2203a",
+      "tool": "process_read",
+      "payload": {
+        "blob": "000722ccbf1a08e12465beae27c266afceabb03a",
+        "bytes": 33093,
+        "sha256": "72e648c6af1983566a12bc86960edae3fc2834ec5160005c682d90c16e58418c"
+      },
+      "payloadTree": "a4c90de29c29f4a4596fcb56e157bfebbf4fdb54",
+      "nativeText": {
+        "blob": "e57312e77592b5c530e3607fdb19a52e9af03275",
+        "bytes": 31060,
+        "sha256": "af195a9d3ce0226ad0afcf32d3bfb81779e2129b2f35c7c17f7f5f1dfea02362"
+      },
+      "pages": 5,
+      "completedInactive": true
+    }
+  ],
+  "stdout": {
+    "blob": "215ee5f9d647568a2a785c239fe8e0e90b1b9539",
+    "bytes": 9930,
+    "sha256": "14fe6172b38a4a036ebe5fff0ca7f616ea6fbe757d3abd2996b64fa602ac6cc0"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "authority": {
+    "blob": "b4032586eeca0965a7ab2decc811d47aa82b06d0",
+    "bytes": 731,
+    "sha256": "b14a2dc0cba4c2227ba0cb30339e60eb2ceb565d47084aa4c3f46337390faea4"
+  },
+  "streamNative": {
+    "blob": "e57312e77592b5c530e3607fdb19a52e9af03275",
+    "bytes": 31060,
+    "sha256": "af195a9d3ce0226ad0afcf32d3bfb81779e2129b2f35c7c17f7f5f1dfea02362"
+  },
+  "state": {
+    "nativeCallInFlight": false,
+    "pending": null,
+    "activeObserver": null,
+    "paused": false,
+    "nextStdout": 9930,
+    "nextStderr": 0
+  },
+  "lane": {
+    "activeCalls": 0,
+    "activeNativeFutures": 0,
+    "released": true
+  },
+  "result": {
+    "observationComplete": true,
+    "executionSucceeded": false,
+    "outcomeUnknown": false,
+    "markerCount": 0,
+    "entryMarkerObserved": false,
+    "childExitCode": -6,
+    "childFinalReturnCode": -6,
+    "childPrimaryReaped": true,
+    "childNoGroupSurvivors": true,
+    "stdoutBytes": 0,
+    "stderrBytes": 0,
+    "allOwnDescriptorsAndChildrenClosed": true,
+    "guardFds": 79,
+    "inputFdLedger": {
+      "attempts": 5,
+      "knownNoReturnErrors": 0,
+      "pending": 0,
+      "registered": 5,
+      "registrationUnknown": false
+    },
+    "handlersRestored": true,
+    "deadlineMet": true
+  },
+  "limits": {
+    "historicalFailureReclassified": false,
+    "historicalManagedClosureClaimed": false,
+    "originalAbortCauseProved": false,
+    "authbusRuntimeQualification": false,
+    "combined02bQualification": false,
+    "credentialQualification": false
+  },
+  "meaning": "Fresh public startup/import observation only. No entered-js marker observed; this does not reconstruct original runtime progress or prove original abort cause. Historical managed and helper UNKNOWN remain."
+}

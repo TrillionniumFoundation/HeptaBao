@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-final-lan-identity-rog-native-6dd47ce4-authority-0",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "rog",
+      "job_id": "1a1b242316d-fc05-7d34"
+    }
+  }
+}

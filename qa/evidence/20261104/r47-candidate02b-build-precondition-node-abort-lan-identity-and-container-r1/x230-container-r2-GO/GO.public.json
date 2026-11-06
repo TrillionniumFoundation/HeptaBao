@@ -1,0 +1,102 @@
+{
+  "schema": "heptabao.root.x230-current-container-metadata-GO.r2",
+  "authorization": "GO",
+  "scope": "one_corrected_exact_existing_container_readonly_metadata",
+  "time_utc": "2026-11-06 19:17:52 UTC",
+  "source_packet": {
+    "tree": "479dfb2166ae08fbd71afd6fb4153591a2f0a1da",
+    "whole": true
+  },
+  "request": {
+    "blob": "3f60eab767749ee30b576dc8e8f46c1a1212d236",
+    "bytes": 1136,
+    "sha256": "f9094ec40b4c94b6a530b3e3e4c99d9876fa7af01f27577275d83f5858af301e"
+  },
+  "journal": {
+    "blob": "dca5d3670d121eac6f3f65dc67e24ff371d53a7b",
+    "bytes": 19054,
+    "sha256": "1fe968b5dcf9b1e20b1420d4678558e3bf6d0e2a52284b8fc9fb9772f277a637"
+  },
+  "slot": "root_x230_current_container_metadata_20261106_r2",
+  "observer_key_prefix": "heptabao-x230-current-container-r2-f6798549-",
+  "typed": {
+    "sha256": "37f009c0a17418a52abdf5b82a4fc288b2afecabcb78a86e354756cced51ee3c",
+    "native_fingerprint": "4030732389443704997",
+    "canonical_bytes": 1031
+  },
+  "budgets": {
+    "one_process_start": 1,
+    "outer_seconds": 30,
+    "maximum_status_observers": 8,
+    "maximum_read_observers": 2,
+    "maximum_status_per_observer": 8,
+    "immutable_page_bytes": 8192,
+    "maximum_pages_per_observer": 128,
+    "maximum_original_payload_bytes": 1048576,
+    "process_read_limit_per_stream": 16384,
+    "maximum_public_stream_bytes": 32768
+  },
+  "previous_failed_actual": {
+    "tree": "d6038f781c473cee2a929e187d7b768173bb905f",
+    "job": "x230/1a1b23d56c4-fc05-7d19",
+    "exit_code": 1,
+    "whole_originals": true,
+    "lane_closed": true
+  },
+  "corrected_two_flags_only": true,
+  "same_socket_target_output_template_and_budget": true,
+  "change_reason": {
+    "removed_only_two_args": [
+      "--tls=false",
+      "--tlsverify=false"
+    ],
+    "same_executable_host_socket_container_template_environment_and_budget": true,
+    "reason": "Explicit tlsverify=false still enables TLS in pinned official CLI source; original failure reported missing default ca.pem during endpoint initialization.",
+    "installed_CLI_version_not_verified": true,
+    "source_behavior_consistent_with_actual_error_not_binary_correspondence_proof": true
+  },
+  "primary_source": {
+    "repository": "docker/cli",
+    "commit": "7c0f1b261a24b36ad39b6031db6ffe41e60bc7e7",
+    "path": "cli/flags/options.go",
+    "body": {
+      "blob": "8c31a0f17216840fab8a5004bd59dc53c99e6218",
+      "bytes": 6594,
+      "sha256": "d2bf68c3ce37773168ddf12c7ed18f5e895ecc152c535ac4e000a603043034e7"
+    }
+  },
+  "scope_limits": {
+    "only_exact_container_inspect": true,
+    "only_fixed_local_unix_socket": true,
+    "CLI_executable_not_yet_observed": true,
+    "CLI_daemon_and_implicit_runtime_resources_not_individually_enumerated": true,
+    "CLI_may_read_existing_user_config": true,
+    "no_API_mutating_command": true,
+    "no_container_exec": true,
+    "no_start_stop_restart_or_remove": true,
+    "no_backup_or_secret_contents": true,
+    "no_environment_arguments_labels_or_logs_in_template": true,
+    "no_new_file_or_directory_requested": true,
+    "no_sudo_or_alternate_socket_host_fallback": true
+  },
+  "qualification_limits": {
+    "image_reference_is_not_binary_version_proof": true,
+    "require_exact_ID": true,
+    "PID_comparison_requires_actual_result": true,
+    "prior_EACCES_preserved": true,
+    "no_client_or_backup_coverage_claim": true,
+    "no_migration_or_cleanup_authorized": true
+  },
+  "maximum_process_starts": 1,
+  "follow_only_returned_original_job": true,
+  "no_retry_rekey_fallback_or_elevation": true,
+  "whole_external_arm_before_call_and_model_boundary": true,
+  "whole_original_SDK_before_parse": true,
+  "local_executor_unavailable_Git_first_journaling_explicitly_used": true,
+  "global_native_lanes": 2,
+  "root_reserved_lanes": 1,
+  "other_reserved_lane": "C",
+  "B_current": "closed INERT; pure build admission preparation",
+  "full_replacement": false,
+  "cleanup_authorized": false
+}

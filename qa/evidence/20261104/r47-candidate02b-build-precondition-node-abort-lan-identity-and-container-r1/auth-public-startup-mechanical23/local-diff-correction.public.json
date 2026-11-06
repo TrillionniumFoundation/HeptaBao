@@ -1,0 +1,11 @@
+{
+  "schema": "heptabao.local-source-check-correction.r1",
+  "prior": "local-diff-error.original.json",
+  "actualHelperReturn": {
+    "sourceUnified": "{raw,hunks}",
+    "strictApplySource": "{raw,hunks}"
+  },
+  "correction": "Use .raw in both directions. The prior error note's suggested .text was also inaccurate; no candidate or Native action resulted.",
+  "strictReverseApplied": true,
+  "nativeCalls": 0
+}

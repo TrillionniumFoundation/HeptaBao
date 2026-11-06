@@ -1,0 +1,87 @@
+{
+  "schema": "heptabao.root.public-node-startup-review.r1",
+  "passed": true,
+  "checks": 16,
+  "results": [
+    {
+      "name": "core_and_mechanical_whole",
+      "pass": true
+    },
+    {
+      "name": "root_author110_exact",
+      "pass": true
+    },
+    {
+      "name": "full35_input_manifest_whole",
+      "pass": true
+    },
+    {
+      "name": "correct_stdin_body",
+      "pass": true
+    },
+    {
+      "name": "fixed_mac_python_new_key",
+      "pass": true
+    },
+    {
+      "name": "finite_35_45_60_budgets",
+      "pass": true
+    },
+    {
+      "name": "exclusive_public_root",
+      "pass": true
+    },
+    {
+      "name": "fixed_inputs_and_ledger",
+      "pass": true
+    },
+    {
+      "name": "no_observer_instantiation",
+      "pass": true
+    },
+    {
+      "name": "unchanged_original_commands_unreaped",
+      "pass": true
+    },
+    {
+      "name": "wnowait_before_reap_guard",
+      "pass": true
+    },
+    {
+      "name": "24_markers_imports_only",
+      "pass": true
+    },
+    {
+      "name": "known_negative_exit_not_execution_success",
+      "pass": true
+    },
+    {
+      "name": "no_old_files_business_or_cutover",
+      "pass": true
+    },
+    {
+      "name": "no_causal_or_historical_progress_upgrade",
+      "pass": true
+    },
+    {
+      "name": "finite_original_observation",
+      "pass": true
+    }
+  ],
+  "coreTree": "354fc76f8a20e93c7082d68ce96f972636e5bc50",
+  "mechanicalTree": "30ce045ce15578e3f0dc7a9ccaecb099e6722af8",
+  "author110": {
+    "blob": "ebae70e57ad0c75b5ca2e630601a3974afca8449",
+    "bytes": 11208,
+    "sha256": "27d7be8844b7b1640bbc636176edc1abc64963fac1c5db4c17ec56af861ef080"
+  },
+  "typed": {
+    "sha256": "940617deb64438f55003f5649736389ac53deafd1d70c7f529dd0faa69711311",
+    "native_fingerprint": "10666239012781701365"
+  },
+  "oldPsObservationIssue": "Unchanged observer module is not instantiated in this probe. Original retained-custody ps projections supervise diskutil and Node; new result must disclose any actual refusal.",
+  "interpretation": "A public prerequisite diagnostic only. Old empty stdout did not identify the old failing stage. Fresh marker success or failure cannot establish the original crash cause or any unobserved business effects.",
+  "NativeCalls": 0,
+  "historicalUnknownCleared": false,
+  "authbusQualified": false
+}

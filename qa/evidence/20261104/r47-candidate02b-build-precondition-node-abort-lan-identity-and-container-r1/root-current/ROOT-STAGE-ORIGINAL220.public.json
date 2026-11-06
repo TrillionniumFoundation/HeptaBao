@@ -1,0 +1,901 @@
+{
+  "schema": "heptabao.combined02b90762.original-stage-body-verification.r1",
+  "ok": true,
+  "checks": 220,
+  "results": [
+    {
+      "name": "text_present_INPUTS.public.json",
+      "pass": true
+    },
+    {
+      "name": "single_fixed_original_operation",
+      "pass": true
+    },
+    {
+      "name": "exact_seven_original_calls",
+      "pass": true
+    },
+    {
+      "name": "text_present_GO.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_GO.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_request.exact.json",
+      "pass": true
+    },
+    {
+      "name": "whole_request.exact.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_body.payload.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_body.payload.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_body.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_body.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_stage-result.public.json",
+      "pass": true
+    },
+    {
+      "name": "whole_stage-result.public.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_metadata.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_metadata.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_STATE.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_OWNER-RELEASE.public.json",
+      "pass": true
+    },
+    {
+      "name": "state_no_pending",
+      "pass": true
+    },
+    {
+      "name": "aggregate_17calls_4observers_8pages",
+      "pass": true
+    },
+    {
+      "name": "release_no_active",
+      "pass": true
+    },
+    {
+      "name": "accepted_once_0",
+      "pass": true
+    },
+    {
+      "name": "archive_binding_0",
+      "pass": true
+    },
+    {
+      "name": "text_present_00-operation_start.request.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_00-operation_start.request.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_00-operation_start.intent.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_00-operation_start.intent.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_00-operation_start.armed.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_00-operation_start.armed.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_00-operation_start.sdk.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_00-operation_start.sdk.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_00-operation_start.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_00-operation_start.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_00-operation_start.request.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_00-operation_start.intent.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_00-operation_start.armed.original.json",
+      "pass": true
+    },
+    {
+      "name": "original_request_exact_0",
+      "pass": true
+    },
+    {
+      "name": "intent_once_0",
+      "pass": true
+    },
+    {
+      "name": "armed_same_intent_0",
+      "pass": true
+    },
+    {
+      "name": "text_present_00-operation_start.sdk.original.json",
+      "pass": true
+    },
+    {
+      "name": "not_error_sdk0",
+      "pass": true
+    },
+    {
+      "name": "text_present_00-operation_start.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "sdk_exact_native_0",
+      "pass": true
+    },
+    {
+      "name": "same_id_tool_0",
+      "pass": true
+    },
+    {
+      "name": "text_present_request.exact.json",
+      "pass": true
+    },
+    {
+      "name": "admission_request_whole",
+      "pass": true
+    },
+    {
+      "name": "admission_no_replay",
+      "pass": true
+    },
+    {
+      "name": "accepted_once_1",
+      "pass": true
+    },
+    {
+      "name": "archive_binding_1",
+      "pass": true
+    },
+    {
+      "name": "text_present_01-operation_status.request.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_01-operation_status.request.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_01-operation_status.intent.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_01-operation_status.intent.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_01-operation_status.armed.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_01-operation_status.armed.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_01-operation_status.sdk.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_01-operation_status.sdk.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_01-operation_status.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_01-operation_status.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_01-operation_status.request.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_01-operation_status.intent.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_01-operation_status.armed.original.json",
+      "pass": true
+    },
+    {
+      "name": "original_request_exact_1",
+      "pass": true
+    },
+    {
+      "name": "intent_once_1",
+      "pass": true
+    },
+    {
+      "name": "armed_same_intent_1",
+      "pass": true
+    },
+    {
+      "name": "text_present_01-operation_status.sdk.original.json",
+      "pass": true
+    },
+    {
+      "name": "not_error_sdk1",
+      "pass": true
+    },
+    {
+      "name": "text_present_01-operation_status.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "sdk_exact_native_1",
+      "pass": true
+    },
+    {
+      "name": "same_id_tool_1",
+      "pass": true
+    },
+    {
+      "name": "status_request_exact",
+      "pass": true
+    },
+    {
+      "name": "original_future_closed",
+      "pass": true
+    },
+    {
+      "name": "accepted_once_2",
+      "pass": true
+    },
+    {
+      "name": "archive_binding_2",
+      "pass": true
+    },
+    {
+      "name": "text_present_02-operation_result.request.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_02-operation_result.request.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_02-operation_result.intent.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_02-operation_result.intent.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_02-operation_result.armed.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_02-operation_result.armed.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_02-operation_result.sdk.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_02-operation_result.sdk.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_02-operation_result.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_02-operation_result.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_02-operation_result.request.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_02-operation_result.intent.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_02-operation_result.armed.original.json",
+      "pass": true
+    },
+    {
+      "name": "original_request_exact_2",
+      "pass": true
+    },
+    {
+      "name": "intent_once_2",
+      "pass": true
+    },
+    {
+      "name": "armed_same_intent_2",
+      "pass": true
+    },
+    {
+      "name": "text_present_02-operation_result.sdk.original.json",
+      "pass": true
+    },
+    {
+      "name": "not_error_sdk2",
+      "pass": true
+    },
+    {
+      "name": "text_present_02-operation_result.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "sdk_exact_native_2",
+      "pass": true
+    },
+    {
+      "name": "same_id_tool_2",
+      "pass": true
+    },
+    {
+      "name": "page_request_exact_2",
+      "pass": true
+    },
+    {
+      "name": "page_immutable_2",
+      "pass": true
+    },
+    {
+      "name": "page_geometry_2",
+      "pass": true
+    },
+    {
+      "name": "accepted_once_3",
+      "pass": true
+    },
+    {
+      "name": "archive_binding_3",
+      "pass": true
+    },
+    {
+      "name": "text_present_03-operation_result.request.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_03-operation_result.request.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_03-operation_result.intent.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_03-operation_result.intent.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_03-operation_result.armed.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_03-operation_result.armed.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_03-operation_result.sdk.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_03-operation_result.sdk.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_03-operation_result.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_03-operation_result.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_03-operation_result.request.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_03-operation_result.intent.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_03-operation_result.armed.original.json",
+      "pass": true
+    },
+    {
+      "name": "original_request_exact_3",
+      "pass": true
+    },
+    {
+      "name": "intent_once_3",
+      "pass": true
+    },
+    {
+      "name": "armed_same_intent_3",
+      "pass": true
+    },
+    {
+      "name": "text_present_03-operation_result.sdk.original.json",
+      "pass": true
+    },
+    {
+      "name": "not_error_sdk3",
+      "pass": true
+    },
+    {
+      "name": "text_present_03-operation_result.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "sdk_exact_native_3",
+      "pass": true
+    },
+    {
+      "name": "same_id_tool_3",
+      "pass": true
+    },
+    {
+      "name": "page_request_exact_3",
+      "pass": true
+    },
+    {
+      "name": "page_immutable_3",
+      "pass": true
+    },
+    {
+      "name": "page_geometry_3",
+      "pass": true
+    },
+    {
+      "name": "accepted_once_4",
+      "pass": true
+    },
+    {
+      "name": "archive_binding_4",
+      "pass": true
+    },
+    {
+      "name": "text_present_04-operation_result.request.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_04-operation_result.request.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_04-operation_result.intent.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_04-operation_result.intent.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_04-operation_result.armed.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_04-operation_result.armed.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_04-operation_result.sdk.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_04-operation_result.sdk.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_04-operation_result.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_04-operation_result.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_04-operation_result.request.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_04-operation_result.intent.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_04-operation_result.armed.original.json",
+      "pass": true
+    },
+    {
+      "name": "original_request_exact_4",
+      "pass": true
+    },
+    {
+      "name": "intent_once_4",
+      "pass": true
+    },
+    {
+      "name": "armed_same_intent_4",
+      "pass": true
+    },
+    {
+      "name": "text_present_04-operation_result.sdk.original.json",
+      "pass": true
+    },
+    {
+      "name": "not_error_sdk4",
+      "pass": true
+    },
+    {
+      "name": "text_present_04-operation_result.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "sdk_exact_native_4",
+      "pass": true
+    },
+    {
+      "name": "same_id_tool_4",
+      "pass": true
+    },
+    {
+      "name": "page_request_exact_4",
+      "pass": true
+    },
+    {
+      "name": "page_immutable_4",
+      "pass": true
+    },
+    {
+      "name": "page_geometry_4",
+      "pass": true
+    },
+    {
+      "name": "accepted_once_5",
+      "pass": true
+    },
+    {
+      "name": "archive_binding_5",
+      "pass": true
+    },
+    {
+      "name": "text_present_05-operation_result.request.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_05-operation_result.request.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_05-operation_result.intent.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_05-operation_result.intent.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_05-operation_result.armed.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_05-operation_result.armed.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_05-operation_result.sdk.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_05-operation_result.sdk.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_05-operation_result.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_05-operation_result.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_05-operation_result.request.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_05-operation_result.intent.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_05-operation_result.armed.original.json",
+      "pass": true
+    },
+    {
+      "name": "original_request_exact_5",
+      "pass": true
+    },
+    {
+      "name": "intent_once_5",
+      "pass": true
+    },
+    {
+      "name": "armed_same_intent_5",
+      "pass": true
+    },
+    {
+      "name": "text_present_05-operation_result.sdk.original.json",
+      "pass": true
+    },
+    {
+      "name": "not_error_sdk5",
+      "pass": true
+    },
+    {
+      "name": "text_present_05-operation_result.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "sdk_exact_native_5",
+      "pass": true
+    },
+    {
+      "name": "same_id_tool_5",
+      "pass": true
+    },
+    {
+      "name": "page_request_exact_5",
+      "pass": true
+    },
+    {
+      "name": "page_immutable_5",
+      "pass": true
+    },
+    {
+      "name": "page_geometry_5",
+      "pass": true
+    },
+    {
+      "name": "accepted_once_6",
+      "pass": true
+    },
+    {
+      "name": "archive_binding_6",
+      "pass": true
+    },
+    {
+      "name": "text_present_06-operation_result.request.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_06-operation_result.request.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_06-operation_result.intent.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_06-operation_result.intent.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_06-operation_result.armed.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_06-operation_result.armed.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_06-operation_result.sdk.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_06-operation_result.sdk.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_06-operation_result.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_06-operation_result.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_06-operation_result.request.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_06-operation_result.intent.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_06-operation_result.armed.original.json",
+      "pass": true
+    },
+    {
+      "name": "original_request_exact_6",
+      "pass": true
+    },
+    {
+      "name": "intent_once_6",
+      "pass": true
+    },
+    {
+      "name": "armed_same_intent_6",
+      "pass": true
+    },
+    {
+      "name": "text_present_06-operation_result.sdk.original.json",
+      "pass": true
+    },
+    {
+      "name": "not_error_sdk6",
+      "pass": true
+    },
+    {
+      "name": "text_present_06-operation_result.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "sdk_exact_native_6",
+      "pass": true
+    },
+    {
+      "name": "same_id_tool_6",
+      "pass": true
+    },
+    {
+      "name": "page_request_exact_6",
+      "pass": true
+    },
+    {
+      "name": "page_immutable_6",
+      "pass": true
+    },
+    {
+      "name": "page_geometry_6",
+      "pass": true
+    },
+    {
+      "name": "final_payload_geometry",
+      "pass": true
+    },
+    {
+      "name": "text_present_body.payload.original.json",
+      "pass": true
+    },
+    {
+      "name": "payload_reconstruct_exact",
+      "pass": true
+    },
+    {
+      "name": "text_present_body.payload.original.json",
+      "pass": true
+    },
+    {
+      "name": "payload_complete",
+      "pass": true
+    },
+    {
+      "name": "text_present_body.payload.original.json",
+      "pass": true
+    },
+    {
+      "name": "not_error_payload",
+      "pass": true
+    },
+    {
+      "name": "text_present_body.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "payload_exact_native",
+      "pass": true
+    },
+    {
+      "name": "text_present_body.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_metadata.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_request.exact.json",
+      "pass": true
+    },
+    {
+      "name": "metadata_actual_closed_identity",
+      "pass": true
+    },
+    {
+      "name": "binary_actual_version_and_range",
+      "pass": true
+    },
+    {
+      "name": "text_present_stage-result.public.json",
+      "pass": true
+    },
+    {
+      "name": "text_present_stage-result.public.json",
+      "pass": true
+    },
+    {
+      "name": "whole_report_from_original_body",
+      "pass": true
+    },
+    {
+      "name": "separate_stage_semantic_root",
+      "pass": true
+    },
+    {
+      "name": "no_new_business_claim",
+      "pass": true
+    }
+  ],
+  "originalCalls": 7,
+  "originalObservers": 1,
+  "immutablePayloadPages": 5,
+  "aggregateCalls": 17,
+  "aggregateObservers": 4,
+  "aggregatePages": 8,
+  "report": {
+    "blob": "df7309a0a4ec52d0733a6e2f1b36ea0a58b32a41",
+    "bytes": 28236,
+    "sha256": "76ace6137f5a25f508a6ece69d7dac460689cd1d782cd9e0f6ce72811a267b83"
+  },
+  "pureV8": true,
+  "NativeCalls": 0,
+  "buildQualified": false
+}

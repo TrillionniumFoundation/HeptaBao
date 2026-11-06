@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.gitfirst.fixed-native-call-intent.r1",
+  "callKey": "lanid-mac-native-auth0-page0-20261106-r1",
+  "kind": "operation_result",
+  "request": {
+    "blob": "97099de07acf9e48ee82c2c7c002e7fa971f2d4f",
+    "bytes": 121,
+    "sha256": "28458b816753787d310fe7218096cecc0bfc7e926e8bf5549cb2682f29e7b89a"
+  },
+  "rootGo": {
+    "blob": "d9d95a4bc9be0f5bae219f304486e1f4fd712df3",
+    "bytes": 10381,
+    "sha256": "d346eeb4ea5666d8981a3abaf1a4ea189137d49b1e83e0a8212bbca20590e57b"
+  },
+  "originalJob": "1a1b249a2fc-fc05-7d56",
+  "originalOperation": "9dac141b77efc700dfa74cdcc8a7283cd5fb1110e09f3a496b1e0c0b990af55e",
+  "maximumNativeCalls": 1,
+  "nativeNotYetCalled": true,
+  "lossOfAcknowledgmentNeverGrantsReplay": true,
+  "localFirstExplicitlyReplacedByExactRootGO": true
+}

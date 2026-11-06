@@ -1,0 +1,17 @@
+[
+  {
+    "name": "slot",
+    "before": "const GF_SLOT = \"combined_02b90762_build_controls_inert_gitfirst_r1\";",
+    "after": "const GF_SLOT = \"combined_02b90762_build_gitfirst_r1\";"
+  },
+  {
+    "name": "exact_request",
+    "before": "const GF_REQUEST = {blob:\"a006b6f6c81bc7c7d65c1e368c1de412acc4517b\",\n bytes:146736,sha256:\"3f6b80b0b2bc70a72017c99691d568ced31bf5b92fdc4a09e62c746aa0df9eac\"};\n",
+    "after": "const GF_REQUEST = {blob:\"e473d18841da02a68f5a251f16387b555a995a88\",\n bytes:846,sha256:\"dc4a781c1a93c87ff689332eb45290e5e683eead74e415cd45b03b08313b8151\"};\n"
+  },
+  {
+    "name": "observer_prefix",
+    "before": "/^heptabao-combined-02b90762-controls-observe-r1-/",
+    "after": "/^heptabao-combined-02b90762-build-observe-r1-/"
+  }
+]

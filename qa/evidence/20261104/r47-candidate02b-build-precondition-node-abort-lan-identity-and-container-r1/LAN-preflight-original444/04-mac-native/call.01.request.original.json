@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-final-lan-identity-mac-native-6dd47ce4-authority-0",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1b249a2fc-fc05-7d56"
+    }
+  }
+}

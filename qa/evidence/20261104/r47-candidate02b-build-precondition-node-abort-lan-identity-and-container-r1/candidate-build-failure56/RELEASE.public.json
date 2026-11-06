@@ -1,0 +1,125 @@
+{
+  "schema": "heptabao.combined02b-build-terminal-pretarget-failure-release.r1",
+  "job": {
+    "host": "rog",
+    "id": "1a1b2580881-fc05-7da1"
+  },
+  "request": {
+    "blob": "e473d18841da02a68f5a251f16387b555a995a88",
+    "bytes": 846,
+    "sha256": "dc4a781c1a93c87ff689332eb45290e5e683eead74e415cd45b03b08313b8151"
+  },
+  "rootGo": {
+    "blob": "e164b7bb3c6987d6c93f6f11bbbdd9fe7dc521d9",
+    "bytes": 8999,
+    "sha256": "7b8a1a1c5c381e9b32d76073b5346cd22c682d496ef4a696068262a5f16cd726"
+  },
+  "launcher": {
+    "blob": "924d7ddc88ba8a8cf8f44ff3cc5cda037043aaef",
+    "bytes": 39818,
+    "sha256": "4c5de46d61f90237ae6789d9efd8d347b7729621ad8a6c467205f3f18c378602"
+  },
+  "native": {
+    "calls": 7,
+    "observers": 2,
+    "immutablePages": 2,
+    "allAccepted": true,
+    "allObserversCompletedInactive": true,
+    "pending": null,
+    "activeObserver": null,
+    "inflight": false,
+    "ownerRelease": true
+  },
+  "authority": {
+    "blob": "0bc3758600965f737eaa52d670baf75e4aeffc9d",
+    "bytes": 726,
+    "sha256": "548dd4dda84f2aa98b6eb3c5eba564b2eead4e6ef6c758ab7a96311b6ea48944"
+  },
+  "streams": {
+    "blob": "c660f3d80103257deb105bd6e0b70eac74e63d15",
+    "bytes": 2175,
+    "sha256": "7f2a7458a6ed8f988c9d9a4f0f53e78ad943290cbf2e33cdd5f91c16f0302bfa"
+  },
+  "stderr": {
+    "blob": "7300e23e4242e96cbc29487ee289b9d7c098f136",
+    "bytes": 613,
+    "sha256": "95d2fb8549a5bd9b488c3f1250f9cdc9e38975087e558b044eec067bedd62b98"
+  },
+  "stdout": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "actual": {
+    "exitCode": 1,
+    "timedOut": false,
+    "outputComplete": true,
+    "outputDurable": true,
+    "stdoutBytes": 0,
+    "stderrBytes": 613
+  },
+  "sourceMatchedFailure": {
+    "file": "launch_native_jwt_build.py",
+    "line": 470,
+    "statement": "assert TARGET.resolve(strict=True) == TARGET",
+    "error": "FileNotFoundError",
+    "errno": 2,
+    "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3"
+  },
+  "executionBoundary": {
+    "stageReadReached": false,
+    "controlReadBoundReached": false,
+    "admissionMkdirReached": false,
+    "priorFenceSubprocessReached": false,
+    "targetLockReached": false,
+    "runnerExecReached": false,
+    "cargoStarted": false,
+    "rustCompileStarted": false,
+    "testsRun": 0,
+    "basis": "Whole stderr exact traceback matched the frozen launcher; all listed operations occur later in that same source."
+  },
+  "limitations": {
+    "causeOfMissingTargetUnknown": true,
+    "currentOtherPrerequisitesUnobserved": true,
+    "noTargetCreateOrRepairAuthorized": true,
+    "noBusinessReplay": true,
+    "noClaimTargetDeletedOrMoved": true,
+    "oldFailuresPreserved": true
+  },
+  "observed": [
+    {
+      "id": "843ae16816dcc0d1ac9df878a64348bafc4e5e34642ab9631bcb099a58eaa807",
+      "tool": "process_status",
+      "payload": {
+        "blob": "9d01b36cbd9372720caa08edb437641967f83694",
+        "bytes": 905,
+        "sha256": "ea27d8a0ae4df3420bde7e057c1e22a1777ef3adb00b6c750e5a751f96e0c526"
+      },
+      "payloadTree": "b2e502390fa376c28827646e27cbf482a266c6e0",
+      "nativeText": {
+        "blob": "0bc3758600965f737eaa52d670baf75e4aeffc9d",
+        "bytes": 726,
+        "sha256": "548dd4dda84f2aa98b6eb3c5eba564b2eead4e6ef6c758ab7a96311b6ea48944"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "4cdea90d5945f0f16b6ad14e5d21d5a8cf61e7d7f8a4aa1ce8a464024d81c9ea",
+      "tool": "process_read",
+      "payload": {
+        "blob": "6c520c98743d3d05c0c9fdcca634b9418e8872d6",
+        "bytes": 2336,
+        "sha256": "8274e1cabd6a46de26b650e9468d22aecef7f867ddb131f3eaa8cada4c38862b"
+      },
+      "payloadTree": "13d5bc0caa9e64d77fba361e08e2bd101fca0a39",
+      "nativeText": {
+        "blob": "c660f3d80103257deb105bd6e0b70eac74e63d15",
+        "bytes": 2175,
+        "sha256": "7f2a7458a6ed8f988c9d9a4f0f53e78ad943290cbf2e33cdd5f91c16f0302bfa"
+      },
+      "pages": 1,
+      "completedInactive": true
+    }
+  ]
+}

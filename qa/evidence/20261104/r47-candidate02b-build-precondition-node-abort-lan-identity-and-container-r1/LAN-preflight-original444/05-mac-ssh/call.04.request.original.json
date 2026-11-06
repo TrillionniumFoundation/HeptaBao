@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-final-lan-identity-mac-ssh-6dd47ce4-streams-0",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1b24c9737-fc05-7d68",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

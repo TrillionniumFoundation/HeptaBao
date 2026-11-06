@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.gitfirst.fixed-native-call-intent.r1",
+  "callKey": "lanid-mac-ssh-start-20261106-r1",
+  "kind": "process_start",
+  "request": {
+    "blob": "b51353530adecb7c157189d40b3f38cccd5ce2ac",
+    "bytes": 13088,
+    "sha256": "37746c31450fb2252e6af54e05b9700c7950ccf13cd698cebcf289cef524e571"
+  },
+  "rootGo": {
+    "blob": "d9d95a4bc9be0f5bae219f304486e1f4fd712df3",
+    "bytes": 10381,
+    "sha256": "d346eeb4ea5666d8981a3abaf1a4ea189137d49b1e83e0a8212bbca20590e57b"
+  },
+  "originalJob": null,
+  "originalOperation": null,
+  "maximumNativeCalls": 1,
+  "nativeNotYetCalled": true,
+  "lossOfAcknowledgmentNeverGrantsReplay": true,
+  "localFirstExplicitlyReplacedByExactRootGO": true
+}

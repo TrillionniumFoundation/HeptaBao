@@ -1,0 +1,20 @@
+{
+  "audit_recorded": true,
+  "job_id": "1a1b23d56c4-fc05-7d19",
+  "stderr": {
+    "bytes_hex": "4661696c656420746f20696e697469616c697a653a20756e61626c6520746f207265736f6c766520646f636b657220656e64706f696e743a206f70656e202f686f6d652f7169616e2f2e646f636b65722f63612e70656d3a206e6f20737563682066696c65206f72206469726563746f72790a",
+    "eof": true,
+    "next_offset": 115,
+    "offset": 0,
+    "size": 115,
+    "text": "Failed to initialize: unable to resolve docker endpoint: open /home/qian/.docker/ca.pem: no such file or directory\n"
+  },
+  "stdout": {
+    "bytes_hex": "",
+    "eof": true,
+    "next_offset": 0,
+    "offset": 0,
+    "size": 0,
+    "text": ""
+  }
+}

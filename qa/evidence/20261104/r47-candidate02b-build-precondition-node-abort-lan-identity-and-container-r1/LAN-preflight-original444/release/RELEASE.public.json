@@ -1,0 +1,856 @@
+{
+  "schema": "heptabao.final-lan-identity-six.lane-release.r1",
+  "GO": {
+    "blob": "d9d95a4bc9be0f5bae219f304486e1f4fd712df3",
+    "bytes": 10381,
+    "sha256": "d346eeb4ea5666d8981a3abaf1a4ea189137d49b1e83e0a8212bbca20590e57b"
+  },
+  "source_tree": "bd83663a23db62aeabe458cbcbec7a2bd0c96fe0",
+  "scope": "six_original_identity_and_bind_close_jobs_only",
+  "calls": 46,
+  "process_starts": 6,
+  "returned_observers": 12,
+  "immutable_pages": 16,
+  "stdout_bytes": 18894,
+  "stderr_bytes": 0,
+  "current_native_calls": 0,
+  "current_native_futures": 0,
+  "C_lane_released": true,
+  "all_original_jobs_exit_zero_full_durable": true,
+  "no_replay": true,
+  "no_errors_in_this_six_job_scope": true,
+  "rows": [
+    {
+      "index": 0,
+      "role": "pocket4",
+      "route": "native",
+      "slot": "final_lan_identity_pocket4_native_20261106_r1",
+      "job": "1a1b23bbf72-fc05-7d15",
+      "request": {
+        "blob": "99f8c1e947b214ea50fbc9115a81b100e0ba3dc5",
+        "bytes": 12564,
+        "sha256": "0120a9df8b521af9c77b432577482f62952b0ca315eefc9775350aef290bd992"
+      },
+      "originalCallCount": 8,
+      "originalObservers": [
+        {
+          "id": "660770d2d681a346ae5f7f6f08954cda45e6089138c66e27d210dae7ba06e58b",
+          "tool": "process_status",
+          "payload": {
+            "blob": "521163f2302c86b1155455da37ca4a553da7b888",
+            "bytes": 910,
+            "sha256": "1a40a9ca30eeca036884e4f33f22ff5f1886cab6f711159a74fabe736157eb5f"
+          },
+          "payloadTree": "b72e00107e68c5a41ee60ad5c41cb1275d066896",
+          "nativeText": {
+            "blob": "648192530f2d1634028858b55bf62079fd62fa02",
+            "bytes": 731,
+            "sha256": "9601200e8f3237241015c9749c5fa426b461c03a1094540cd71bdd593c4e213c"
+          },
+          "pages": 1,
+          "completedInactive": true
+        },
+        {
+          "id": "14e5cacf39d8a7c7694c4eda88d962215e505826b2bb2a464cab1a60172c2bfd",
+          "tool": "process_read",
+          "payload": {
+            "blob": "dccadc40c085fd7223da77611a00a38f0a4da97c",
+            "bytes": 13005,
+            "sha256": "bdc816b2378d8b47d905bf10645c52d4a68ad9a0894ddc9222b45efe9578d986"
+          },
+          "payloadTree": "4b93ec70dbf48263d98ad2a82670fc9407a53d44",
+          "nativeText": {
+            "blob": "44d4d736be1fd0fd54d81c0c7efbd246d0b1713e",
+            "bytes": 11924,
+            "sha256": "bd896bbe1401e217fcdfbe3a156e629f231a955a5924a1dea6dda81ee1694e93"
+          },
+          "pages": 2,
+          "completedInactive": true
+        }
+      ],
+      "statuses": [
+        {
+          "callKey": "lanid-p4-native-auth0-status0-20261106-r1",
+          "sdk": {
+            "blob": "e6eb10ced80e1aafcef163cd1f40fb0d893a5224",
+            "bytes": 980,
+            "sha256": "bc142c9da44b8ba1737b4a211efdf591cdb746edc5ff5c3a169b40626239e76a"
+          },
+          "native": {
+            "blob": "0b16b04dfd13d36f6d75b0ef6ed5d69d7676f2e6",
+            "bytes": 805,
+            "sha256": "d1e43f394dbb7f5d8fd093622791cc6c09250952751dfe34e50874dcb6ed839d"
+          },
+          "operation_id": "660770d2d681a346ae5f7f6f08954cda45e6089138c66e27d210dae7ba06e58b",
+          "async_state": "completed",
+          "owned_future_active": false,
+          "source_file": "status.00.0.original.sdk.json"
+        },
+        {
+          "callKey": "lanid-p4-native-streams0-status0-20261106-r1",
+          "sdk": {
+            "blob": "03f4773d17c1e505f07d6681ee4d6933408cfb1b",
+            "bytes": 978,
+            "sha256": "e187efc984caaa1b7927466c40a9d80073ddc6d92e2052b3ecedef9d15443587"
+          },
+          "native": {
+            "blob": "0f5d72618f349c9c7f81b37aacb40198e4b6aeb3",
+            "bytes": 803,
+            "sha256": "48e6011556b8a777d1641e3daaf4701f90e597f35f580947f82aa4051973aa24"
+          },
+          "operation_id": "14e5cacf39d8a7c7694c4eda88d962215e505826b2bb2a464cab1a60172c2bfd",
+          "async_state": "completed",
+          "owned_future_active": false,
+          "source_file": "status.00.1.original.sdk.json"
+        }
+      ],
+      "nextStdout": 3710,
+      "nextStderr": 0,
+      "pending": null,
+      "activeObserver": null,
+      "nativeCallInFlight": false,
+      "paused": false,
+      "knownExit": 0,
+      "minimum": {
+        "tree": "2bf7037f75d61bdf119e06a547f7760f171f46d0",
+        "entries": [
+          {
+            "path": "STATE.original.json",
+            "blob": "938d6c598ea692fd268331dd71204c24054e980b",
+            "bytes": 46868,
+            "sha256": "f207dda22646a5d218c2aef73e99b1909e134713ba3a4e870006e7adf21f7a36",
+            "whole": true
+          },
+          {
+            "path": "authority.native.original.json",
+            "blob": "648192530f2d1634028858b55bf62079fd62fa02",
+            "bytes": 731,
+            "sha256": "9601200e8f3237241015c9749c5fa426b461c03a1094540cd71bdd593c4e213c",
+            "whole": true
+          },
+          {
+            "path": "stderr.original.txt",
+            "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "whole": true
+          },
+          {
+            "path": "stdout.original.txt",
+            "blob": "59d970b21a07bd2e0cb5a47aec328f18d2e279b8",
+            "bytes": 3710,
+            "sha256": "75c802457583b6929abb427267dd7f2421de9566d6940b2f247b8f4eaba4917e",
+            "whole": true
+          },
+          {
+            "path": "streams.native.original.json",
+            "blob": "44d4d736be1fd0fd54d81c0c7efbd246d0b1713e",
+            "bytes": 11924,
+            "sha256": "bd896bbe1401e217fcdfbe3a156e629f231a955a5924a1dea6dda81ee1694e93",
+            "whole": true
+          }
+        ],
+        "count": 5,
+        "bytes": 63233,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      }
+    },
+    {
+      "index": 1,
+      "role": "pocket4",
+      "route": "ssh",
+      "slot": "final_lan_identity_pocket4_ssh_20261106_r1",
+      "job": "1a1b23eef6d-fc05-7d27",
+      "request": {
+        "blob": "5301c6cb6b4ff5ffbf318d41585b20da852210af",
+        "bytes": 13018,
+        "sha256": "5909de0b18e50ca3ff04fffb1821a749db8bc8d8267a52cfa611d0cdb9cddde6"
+      },
+      "originalCallCount": 8,
+      "originalObservers": [
+        {
+          "id": "af8614a2586040d8e9897f411a0d89a267a6a57a71a79ef6485a53ec07a354fe",
+          "tool": "process_status",
+          "payload": {
+            "blob": "677a33aeb565360db7dc3e327600b471a31ecee1",
+            "bytes": 910,
+            "sha256": "ad3b6a33d130d95596747713c1032b56dc902807f178c8d28548154572327c0b"
+          },
+          "payloadTree": "805bd1894d10447d602cec7282ec2a7e004cc9c2",
+          "nativeText": {
+            "blob": "2cf6190a892c52d93a4954dd863d1bcb45127fbc",
+            "bytes": 731,
+            "sha256": "8b30fad4dae8e813bbcd8851207f85d3602671881d3d4bbd9cdc01b301c7711e"
+          },
+          "pages": 1,
+          "completedInactive": true
+        },
+        {
+          "id": "c014ba7391e8f30578f80b00d24090464fef95e41845979d44e592fb4d0a3ea2",
+          "tool": "process_read",
+          "payload": {
+            "blob": "bcfcfebee79942e497afe0b62db842fd3116ee20",
+            "bytes": 13005,
+            "sha256": "25ef8d7d9de1bbd655e50c9a5a1b38e932da1a07927e52c367ee5466a3545b4a"
+          },
+          "payloadTree": "e66a269813cad2e1f55af512bdb5adfa0763aa55",
+          "nativeText": {
+            "blob": "8fa92e56db096a3915bf81e807847aab5d694682",
+            "bytes": 11924,
+            "sha256": "5f1946e5713c0fb6178a3c54e984189aea74bd4e25f8438c396a1e5ad0762810"
+          },
+          "pages": 2,
+          "completedInactive": true
+        }
+      ],
+      "statuses": [
+        {
+          "callKey": "lanid-p4-ssh-auth0-status0-20261106-r1",
+          "sdk": {
+            "blob": "eaf8c118323adb16e9921fa4f0396bb457720088",
+            "bytes": 980,
+            "sha256": "3c29d91bb14719313f80321f5ad73e178c1a11bae71fd6dd6e7fac4b6e0d0b34"
+          },
+          "native": {
+            "blob": "aa92ff575ea18f4e4599644f3c161b1e4526c9e8",
+            "bytes": 805,
+            "sha256": "f0d2ec670db750f2b8bf1dde682ebeee4ac43f1adaebe9dea4e9cb30e49bb68b"
+          },
+          "operation_id": "af8614a2586040d8e9897f411a0d89a267a6a57a71a79ef6485a53ec07a354fe",
+          "async_state": "completed",
+          "owned_future_active": false,
+          "source_file": "status.01.0.original.sdk.json"
+        },
+        {
+          "callKey": "lanid-p4-ssh-streams0-status0-20261106-r1",
+          "sdk": {
+            "blob": "e2ee88ba8e8c205d7813f62d816a2443672365be",
+            "bytes": 978,
+            "sha256": "157725f41028de3fdbd9e4f51dc8dc8ca65d735412a8592256202e0fe1bea63b"
+          },
+          "native": {
+            "blob": "f5eecc3919b29511e6c57251045ee5aa6b4da0a4",
+            "bytes": 803,
+            "sha256": "08897ea21579d220bf20049eb67de73ab7ae4083c327c57e8a02dc4dedffbcf7"
+          },
+          "operation_id": "c014ba7391e8f30578f80b00d24090464fef95e41845979d44e592fb4d0a3ea2",
+          "async_state": "completed",
+          "owned_future_active": false,
+          "source_file": "status.01.1.original.sdk.json"
+        }
+      ],
+      "nextStdout": 3710,
+      "nextStderr": 0,
+      "pending": null,
+      "activeObserver": null,
+      "nativeCallInFlight": false,
+      "paused": false,
+      "knownExit": 0,
+      "minimum": {
+        "tree": "c07f05d7fe9e12180af36dfa3842eaf40b9ca70b",
+        "entries": [
+          {
+            "path": "STATE.original.json",
+            "blob": "82fd87cf586aff146aa5a3d18c0e7c3ec2a9f4f2",
+            "bytes": 47357,
+            "sha256": "f693c47030586e873c79ad7e9630bfb0c206397f6a3e90e3e14e9b55836898cb",
+            "whole": true
+          },
+          {
+            "path": "authority.native.original.json",
+            "blob": "2cf6190a892c52d93a4954dd863d1bcb45127fbc",
+            "bytes": 731,
+            "sha256": "8b30fad4dae8e813bbcd8851207f85d3602671881d3d4bbd9cdc01b301c7711e",
+            "whole": true
+          },
+          {
+            "path": "stderr.original.txt",
+            "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "whole": true
+          },
+          {
+            "path": "stdout.original.txt",
+            "blob": "2314c76df1a08af2f729c0767c295c68a6d121dc",
+            "bytes": 3710,
+            "sha256": "291ea01a98500614f917e30e77198673ca6a1884d2b83123f1d48115a83f7269",
+            "whole": true
+          },
+          {
+            "path": "streams.native.original.json",
+            "blob": "8fa92e56db096a3915bf81e807847aab5d694682",
+            "bytes": 11924,
+            "sha256": "5f1946e5713c0fb6178a3c54e984189aea74bd4e25f8438c396a1e5ad0762810",
+            "whole": true
+          }
+        ],
+        "count": 5,
+        "bytes": 63722,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      }
+    },
+    {
+      "index": 2,
+      "role": "rog",
+      "route": "native",
+      "slot": "final_lan_identity_rog_native_20261106_r1",
+      "job": "1a1b242316d-fc05-7d34",
+      "request": {
+        "blob": "7886b7a297ff3aabab593bcee8819a2403ead888",
+        "bytes": 12552,
+        "sha256": "82fac2f958af84ac90185898cb95d4b69420eb247ce9becaa357757f9ba0535f"
+      },
+      "originalCallCount": 8,
+      "originalObservers": [
+        {
+          "id": "67f5d2134fa49390669e5e14b3fa0977db16dc86c55203bfa71d6a3f50523d5c",
+          "tool": "process_status",
+          "payload": {
+            "blob": "25787605c239eb13b3fb1445bb26bf21260f5384",
+            "bytes": 910,
+            "sha256": "c7e456838cc868bcff940a55398a13f11eacd8f5e05bea063c87366e993a374d"
+          },
+          "payloadTree": "cce5a937cc001ddc89f0ae738548b148c29fbf72",
+          "nativeText": {
+            "blob": "1c340c0582a98a16e379da0bb112ca815846aaa1",
+            "bytes": 731,
+            "sha256": "e5c4f3bc1cb44b6ee195cf9c6c880dba7c68b81cdd213465e1ce75085e2cd63f"
+          },
+          "pages": 1,
+          "completedInactive": true
+        },
+        {
+          "id": "2510cd8c1b12edcc71f54f84aa136945a748e88d900309dcfdb768ef985460e4",
+          "tool": "process_read",
+          "payload": {
+            "blob": "71aea14482f7adb5f1f3c85fd3dff3d81876f85c",
+            "bytes": 13134,
+            "sha256": "9ee2642397ae000a1ab3a425ccce209f39ddc1024b4343166a264080100822db"
+          },
+          "payloadTree": "765115a1c42dd17c2d9b80b4c343af872c4455d7",
+          "nativeText": {
+            "blob": "e2f1d2a71bddabe288ff84fb7e611aeeab897a83",
+            "bytes": 12053,
+            "sha256": "3d22da03b87a98b38b956d873ef9b3b47f79e23a1f77819d701ca6a95ab52256"
+          },
+          "pages": 2,
+          "completedInactive": true
+        }
+      ],
+      "statuses": [
+        {
+          "callKey": "lanid-rog-native-auth0-status0-20261106-r1",
+          "sdk": {
+            "blob": "fe147e8aa5f2865df9b39b8a0bc0f0d1736d4d99",
+            "bytes": 980,
+            "sha256": "4ca6ca699b77d07885f4d55e9c52baa98d8cd35dd0be874b8e11b44f88a85463"
+          },
+          "native": {
+            "blob": "4660cf2d8e808e54952f63d687eaa3bc235a9f17",
+            "bytes": 805,
+            "sha256": "28f95ddbdb6ea0a4b6c35ff5a68d2de7c8ca6dcb1ab7a64fa9821fffdda5a1a9"
+          },
+          "operation_id": "67f5d2134fa49390669e5e14b3fa0977db16dc86c55203bfa71d6a3f50523d5c",
+          "async_state": "completed",
+          "owned_future_active": false,
+          "source_file": "status.02.0.original.sdk.json"
+        },
+        {
+          "callKey": "lanid-rog-native-streams0-status0-20261106-r1",
+          "sdk": {
+            "blob": "40b68beb416bd2bfa64c1b3bb5a13dd99fe74aa9",
+            "bytes": 978,
+            "sha256": "6698dc2793b0ccda130c1aa91847fcb410b13a819d1fa2c0d6e733ec7ba5d9e5"
+          },
+          "native": {
+            "blob": "f9d91745ddd862e410a35893c31f85a23cd3d586",
+            "bytes": 803,
+            "sha256": "e74dc907efff6b6c3879c86b5755e22bfa14e7d0c991dc2acd5a57d489caafda"
+          },
+          "operation_id": "2510cd8c1b12edcc71f54f84aa136945a748e88d900309dcfdb768ef985460e4",
+          "async_state": "completed",
+          "owned_future_active": false,
+          "source_file": "status.02.1.original.sdk.json"
+        }
+      ],
+      "nextStdout": 3753,
+      "nextStderr": 0,
+      "pending": null,
+      "activeObserver": null,
+      "nativeCallInFlight": false,
+      "paused": false,
+      "knownExit": 0,
+      "minimum": {
+        "tree": "147f59416ced082a5b1a6d67ccede8463c474689",
+        "entries": [
+          {
+            "path": "STATE.original.json",
+            "blob": "ff1495829501c48004ab244ad2f7b2647771631e",
+            "bytes": 46849,
+            "sha256": "10e49f88544c4f40d83e75d224228fb11675a9a7a42e106c6e922efa115eea88",
+            "whole": true
+          },
+          {
+            "path": "authority.native.original.json",
+            "blob": "1c340c0582a98a16e379da0bb112ca815846aaa1",
+            "bytes": 731,
+            "sha256": "e5c4f3bc1cb44b6ee195cf9c6c880dba7c68b81cdd213465e1ce75085e2cd63f",
+            "whole": true
+          },
+          {
+            "path": "stderr.original.txt",
+            "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "whole": true
+          },
+          {
+            "path": "stdout.original.txt",
+            "blob": "8b98b97e3678fc10e17f8137a295cfeb1a503371",
+            "bytes": 3753,
+            "sha256": "3fb3fcf99b7cd0a0e200496b702cd1fd01bb79be410f028234e5d9a2e83d3fd9",
+            "whole": true
+          },
+          {
+            "path": "streams.native.original.json",
+            "blob": "e2f1d2a71bddabe288ff84fb7e611aeeab897a83",
+            "bytes": 12053,
+            "sha256": "3d22da03b87a98b38b956d873ef9b3b47f79e23a1f77819d701ca6a95ab52256",
+            "whole": true
+          }
+        ],
+        "count": 5,
+        "bytes": 63386,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      }
+    },
+    {
+      "index": 3,
+      "role": "rog",
+      "route": "ssh",
+      "slot": "final_lan_identity_rog_ssh_20261106_r1",
+      "job": "1a1b2465f2a-fc05-7d48",
+      "request": {
+        "blob": "a40cdf75bf897942579c14c96688a2112b5a5fda",
+        "bytes": 13006,
+        "sha256": "2f23b8a1c65d2a376da2949273f4177fdedbefaf5b8483db902b174c93257dd3"
+      },
+      "originalCallCount": 8,
+      "originalObservers": [
+        {
+          "id": "a9207b8e07b8b238be5bd61bc95b8adb2b9985931938b7b240fb90349f2ed58c",
+          "tool": "process_status",
+          "payload": {
+            "blob": "5b5d967d5b85d80eec54b75e88a2939f1de6f5ac",
+            "bytes": 910,
+            "sha256": "9bed01814273f0ceb126bbf378eee7dba2c9bd152318fcf887f84e17e8672397"
+          },
+          "payloadTree": "ab297854cc6b3fc52046a2970291e72ca019cd25",
+          "nativeText": {
+            "blob": "42d447f2b83e5f642f7d3fd0fd7d79db6d2b0f41",
+            "bytes": 731,
+            "sha256": "d057f3b9c0faca6affb9f38cbf3f826e9d0e91907f4494408b258474449cba53"
+          },
+          "pages": 1,
+          "completedInactive": true
+        },
+        {
+          "id": "c64e64e13dedf898a9be1d5be3b116f1f54017860ee90c26575695a57af83475",
+          "tool": "process_read",
+          "payload": {
+            "blob": "85d0ea081db1d99ff37410a0af70017d59da5f43",
+            "bytes": 13134,
+            "sha256": "47ff3e6eaafaee2adb4f096944e3af289057bb68be32490e922a0d6f87b67950"
+          },
+          "payloadTree": "295125e559261a3fa559185cb0fbbea1369cf662",
+          "nativeText": {
+            "blob": "0b44d0bf154fe71015640fe5d19c726dde85ef8f",
+            "bytes": 12053,
+            "sha256": "c8ba97d64600821efb9a6c960601dcc8c519066865e74bd88ffa1f0f3d99be5c"
+          },
+          "pages": 2,
+          "completedInactive": true
+        }
+      ],
+      "statuses": [
+        {
+          "callKey": "lanid-rog-ssh-auth0-status0-20261106-r1",
+          "sdk": {
+            "blob": "c98bd8c093edc1a0dcf18e09faa5030fbe34c32b",
+            "bytes": 980,
+            "sha256": "469f940c0c5ba07d8649ccfe4b954463fea9c036692bc81ebfe580483a16c693"
+          },
+          "native": {
+            "blob": "6ee22c26728788b238b41c65256bfb109851247d",
+            "bytes": 805,
+            "sha256": "977b56d69fb29829443efa3d01aa1cc5f22da88d7b5a8c3af09dca08cd1cd27e"
+          },
+          "operation_id": "a9207b8e07b8b238be5bd61bc95b8adb2b9985931938b7b240fb90349f2ed58c",
+          "async_state": "completed",
+          "owned_future_active": false,
+          "source_file": "status.03.0.original.sdk.json"
+        },
+        {
+          "callKey": "lanid-rog-ssh-streams0-status0-20261106-r1",
+          "sdk": {
+            "blob": "5be2f6deb40d6076000d9d1fc0174cf91bacef5d",
+            "bytes": 978,
+            "sha256": "f212fe25ae2919a07904df9d622178242a77a4f69eed49a8255a30c63a93a339"
+          },
+          "native": {
+            "blob": "657087a66877512a0053998d84aa16b47bd9f528",
+            "bytes": 803,
+            "sha256": "e28792832710588c3c52dc65dfadf146e909c3e4de85e916b00517f9b04f6d89"
+          },
+          "operation_id": "c64e64e13dedf898a9be1d5be3b116f1f54017860ee90c26575695a57af83475",
+          "async_state": "completed",
+          "owned_future_active": false,
+          "source_file": "status.03.1.original.sdk.json"
+        }
+      ],
+      "nextStdout": 3753,
+      "nextStderr": 0,
+      "pending": null,
+      "activeObserver": null,
+      "nativeCallInFlight": false,
+      "paused": false,
+      "knownExit": 0,
+      "minimum": {
+        "tree": "8327c2cb1a136597eb8f6e8af706e97d264532f1",
+        "entries": [
+          {
+            "path": "STATE.original.json",
+            "blob": "bae09af6a48be39586d73d5600bebc91b88764a6",
+            "bytes": 47345,
+            "sha256": "8aa886442b24ea684f443c49cddf96e21b7ce9b839b811a63b02ce16b37820e2",
+            "whole": true
+          },
+          {
+            "path": "authority.native.original.json",
+            "blob": "42d447f2b83e5f642f7d3fd0fd7d79db6d2b0f41",
+            "bytes": 731,
+            "sha256": "d057f3b9c0faca6affb9f38cbf3f826e9d0e91907f4494408b258474449cba53",
+            "whole": true
+          },
+          {
+            "path": "stderr.original.txt",
+            "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "whole": true
+          },
+          {
+            "path": "stdout.original.txt",
+            "blob": "34ae74b84ad097c2ad50066533741042c6176ea6",
+            "bytes": 3753,
+            "sha256": "e9034e4ab8d8fc53fef96fcc3cdc07dc12099ea20e068e46e8ffe71f9f4e3c31",
+            "whole": true
+          },
+          {
+            "path": "streams.native.original.json",
+            "blob": "0b44d0bf154fe71015640fe5d19c726dde85ef8f",
+            "bytes": 12053,
+            "sha256": "c8ba97d64600821efb9a6c960601dcc8c519066865e74bd88ffa1f0f3d99be5c",
+            "whole": true
+          }
+        ],
+        "count": 5,
+        "bytes": 63882,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      }
+    },
+    {
+      "index": 4,
+      "role": "mac",
+      "route": "native",
+      "slot": "final_lan_identity_mac_native_20261106_r1",
+      "job": "1a1b249a2fc-fc05-7d56",
+      "request": {
+        "blob": "fa64e2d748e07cb96cb66555a3738d2fba38ed8c",
+        "bytes": 12634,
+        "sha256": "05a7f7820151a90d8a9a553f44b07240cd3a0b9efbf88c888730799a2d84f414"
+      },
+      "originalCallCount": 7,
+      "originalObservers": [
+        {
+          "id": "9dac141b77efc700dfa74cdcc8a7283cd5fb1110e09f3a496b1e0c0b990af55e",
+          "tool": "process_status",
+          "payload": {
+            "blob": "680f565016168219997bae68fda7997fc6f32389",
+            "bytes": 910,
+            "sha256": "12951df9515aa066ef0721a1844562570d5167f6fd57f1621cf2374cdee5e514"
+          },
+          "payloadTree": "7c03781004204d3c5f0428ab9cc559c38fb510bf",
+          "nativeText": {
+            "blob": "ac67499d0fcc138f380c2d995799be9bda5aa191",
+            "bytes": 731,
+            "sha256": "0277346fa7a7e63282836b0a509f537ca20495d601762edcc3983da7abfe2bfc"
+          },
+          "pages": 1,
+          "completedInactive": true
+        },
+        {
+          "id": "23ab7c18f682f79dcf14cd5602bdd431e19dca234942a60e61be11f090b0f376",
+          "tool": "process_read",
+          "payload": {
+            "blob": "c55d0611153d74bab7995cfb7b3232a7944f03cd",
+            "bytes": 7071,
+            "sha256": "a2167b9bc7f64ddf3a039f5452f0f215d18c45d118ea09070f32a159337ec923"
+          },
+          "payloadTree": "4fc7af02c397872045b5d0f90692aea6d64d20f8",
+          "nativeText": {
+            "blob": "295335ddda7c2681d39239ea47ec70d4ed1dd053",
+            "bytes": 6494,
+            "sha256": "4c76e00bc0873fe5d72076e5b262d24839d104639607e4ed0c7ed9bf51d70e9b"
+          },
+          "pages": 1,
+          "completedInactive": true
+        }
+      ],
+      "statuses": [
+        {
+          "callKey": "lanid-mac-native-auth0-status0-20261106-r1",
+          "sdk": {
+            "blob": "deeab680388e70546458764c5df9f92c367c2721",
+            "bytes": 980,
+            "sha256": "49d22a1d0f7fae44246d235c69fb64cf31fdca0b02e2344cf69ae14329512b06"
+          },
+          "native": {
+            "blob": "f7e592a10a479ef26b38d99c4ccfbcd486bb8581",
+            "bytes": 805,
+            "sha256": "ceb099145b6dfd9de08d3b3c9287dd659281a8ffc9649f8a533e861761519837"
+          },
+          "operation_id": "9dac141b77efc700dfa74cdcc8a7283cd5fb1110e09f3a496b1e0c0b990af55e",
+          "async_state": "completed",
+          "owned_future_active": false,
+          "source_file": "status.04.0.original.sdk.json"
+        },
+        {
+          "callKey": "lanid-mac-native-streams0-status0-20261106-r1",
+          "sdk": {
+            "blob": "c2f752bc6f9c1cfc2db96d179470db1bf1c10c4e",
+            "bytes": 978,
+            "sha256": "5fec5fc1faaa6cfebfe1768875a2c5e29a5a4ce868122f9ac0860172ebe6e9c9"
+          },
+          "native": {
+            "blob": "0ee8552d60861ac2537f976aca159c1e73a97576",
+            "bytes": 803,
+            "sha256": "b8b65b9f685f9ce2a62a192ed2674dd918eab49a42f5eecb209906123b2778f5"
+          },
+          "operation_id": "23ab7c18f682f79dcf14cd5602bdd431e19dca234942a60e61be11f090b0f376",
+          "async_state": "completed",
+          "owned_future_active": false,
+          "source_file": "status.04.1.original.sdk.json"
+        }
+      ],
+      "nextStdout": 1984,
+      "nextStderr": 0,
+      "pending": null,
+      "activeObserver": null,
+      "nativeCallInFlight": false,
+      "paused": false,
+      "knownExit": 0,
+      "minimum": {
+        "tree": "a7fe576b06215fe4bbf4eb01e890ece04c8c2bf6",
+        "entries": [
+          {
+            "path": "STATE.original.json",
+            "blob": "1109784624f9d7144a93d8202f4b56375ce16001",
+            "bytes": 44446,
+            "sha256": "86df7abfd286f3775abfc466f6823fbc0519273a6be0d800fe828a12046df641",
+            "whole": true
+          },
+          {
+            "path": "authority.native.original.json",
+            "blob": "ac67499d0fcc138f380c2d995799be9bda5aa191",
+            "bytes": 731,
+            "sha256": "0277346fa7a7e63282836b0a509f537ca20495d601762edcc3983da7abfe2bfc",
+            "whole": true
+          },
+          {
+            "path": "stderr.original.txt",
+            "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "whole": true
+          },
+          {
+            "path": "stdout.original.txt",
+            "blob": "2bdba683e3b5c20055d4ab5fe52da1dcb3841271",
+            "bytes": 1984,
+            "sha256": "297bded76e048742dc26effa5d661a75638e6d4fb3883dbe8a0f889c4b9db773",
+            "whole": true
+          },
+          {
+            "path": "streams.native.original.json",
+            "blob": "295335ddda7c2681d39239ea47ec70d4ed1dd053",
+            "bytes": 6494,
+            "sha256": "4c76e00bc0873fe5d72076e5b262d24839d104639607e4ed0c7ed9bf51d70e9b",
+            "whole": true
+          }
+        ],
+        "count": 5,
+        "bytes": 53655,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      }
+    },
+    {
+      "index": 5,
+      "role": "mac",
+      "route": "ssh",
+      "slot": "final_lan_identity_mac_ssh_20261106_r1",
+      "job": "1a1b24c9737-fc05-7d68",
+      "request": {
+        "blob": "b51353530adecb7c157189d40b3f38cccd5ce2ac",
+        "bytes": 13088,
+        "sha256": "37746c31450fb2252e6af54e05b9700c7950ccf13cd698cebcf289cef524e571"
+      },
+      "originalCallCount": 7,
+      "originalObservers": [
+        {
+          "id": "5098d4929301aacf9e198d0739456ad1730872c54c652dee6e48d72b489cd92e",
+          "tool": "process_status",
+          "payload": {
+            "blob": "96b9e5ca068075d12be34ef4fa2e2206396ab458",
+            "bytes": 910,
+            "sha256": "d8d7c2d6d69dfeac3056144f63aeb7103af23ddd644cff61e68caab0e18fb93f"
+          },
+          "payloadTree": "6eab9685f3fdc45e45cf36512010735d295aa4fd",
+          "nativeText": {
+            "blob": "a615dc8f72054ec0b6b73e3be76c8cfa1d6ec353",
+            "bytes": 731,
+            "sha256": "5eace2e756db968da0fc41898274bf6bff0c1d846144ca365dd5c6343dbbfc47"
+          },
+          "pages": 1,
+          "completedInactive": true
+        },
+        {
+          "id": "df873847bdfce20c92aac52a7164f811444698be86d6545792bf9c24ed39f1cc",
+          "tool": "process_read",
+          "payload": {
+            "blob": "673a4bf5e9e9f3c48ac0239840feeec7c47d0144",
+            "bytes": 7071,
+            "sha256": "de5f94d2c0095d7f5a1b8e16132d44c32383c3877ba1350662863f8df4c1604b"
+          },
+          "payloadTree": "c31dc0c1dd32da4faa59dec8876250290bfa11cb",
+          "nativeText": {
+            "blob": "525e62c9a90f66fd99474a053919e4b21aa4eceb",
+            "bytes": 6494,
+            "sha256": "d26912e4784b6e8658f9fa9f8f3913bf24976f6ac365b3a673f95f4616ecc456"
+          },
+          "pages": 1,
+          "completedInactive": true
+        }
+      ],
+      "statuses": [
+        {
+          "callKey": "lanid-mac-ssh-auth0-status0-20261106-r1",
+          "sdk": {
+            "blob": "d547bfa7ce482d0fcf4eb97679d624cdb2b54587",
+            "bytes": 980,
+            "sha256": "bfe8709bd4d8d55f09c58cf1647cf798fb69d325e003d104fdc7d6ab9125c522"
+          },
+          "native": {
+            "blob": "8d4833bf3574b62966a5b5acee7f8492e3071d04",
+            "bytes": 805,
+            "sha256": "47739f42fc848053be450d59377395b4f852d523f6d226ffade4a3989e509fc7"
+          },
+          "operation_id": "5098d4929301aacf9e198d0739456ad1730872c54c652dee6e48d72b489cd92e",
+          "async_state": "completed",
+          "owned_future_active": false,
+          "source_file": "status.05.0.original.sdk.json"
+        },
+        {
+          "callKey": "lanid-mac-ssh-streams0-status0-20261106-r1",
+          "sdk": {
+            "blob": "d9b0ea38561d41fd6426a2ee0bca0173fb29c81e",
+            "bytes": 978,
+            "sha256": "3e2ad3b6b77d41d4c14450265854083ed8f84a4367b7a2ffab31c93919bd1ac3"
+          },
+          "native": {
+            "blob": "d85593eb420fa23cbb0c19958a1e81f16bd1621d",
+            "bytes": 803,
+            "sha256": "f8bc594ceac6fa8316d6d5abe13fad5517fe90f66e61a9bc1116456204ce3904"
+          },
+          "operation_id": "df873847bdfce20c92aac52a7164f811444698be86d6545792bf9c24ed39f1cc",
+          "async_state": "completed",
+          "owned_future_active": false,
+          "source_file": "status.05.1.original.sdk.json"
+        }
+      ],
+      "nextStdout": 1984,
+      "nextStderr": 0,
+      "pending": null,
+      "activeObserver": null,
+      "nativeCallInFlight": false,
+      "paused": false,
+      "knownExit": 0,
+      "minimum": {
+        "tree": "d17e7e69422e1a710c8f56184e49e063565b4e3e",
+        "entries": [
+          {
+            "path": "STATE.original.json",
+            "blob": "5b4e3b2ad78b0fbb3cfc08e496b338c8b917db1c",
+            "bytes": 44945,
+            "sha256": "be2dbbf1161baa2f2d2609fd7892aa14301f0eaa1a173ac5871b7662d2a07168",
+            "whole": true
+          },
+          {
+            "path": "authority.native.original.json",
+            "blob": "a615dc8f72054ec0b6b73e3be76c8cfa1d6ec353",
+            "bytes": 731,
+            "sha256": "5eace2e756db968da0fc41898274bf6bff0c1d846144ca365dd5c6343dbbfc47",
+            "whole": true
+          },
+          {
+            "path": "stderr.original.txt",
+            "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "whole": true
+          },
+          {
+            "path": "stdout.original.txt",
+            "blob": "33161ed16c7789ed90adaf7fd7dd5fe50bc85a7c",
+            "bytes": 1984,
+            "sha256": "94445e8670af1a3c96575308b0b86f2f2a6609c6bc26bc5dc64059a5ff82acc9",
+            "whole": true
+          },
+          {
+            "path": "streams.native.original.json",
+            "blob": "525e62c9a90f66fd99474a053919e4b21aa4eceb",
+            "bytes": 6494,
+            "sha256": "d26912e4784b6e8658f9fa9f8f3913bf24976f6ac365b3a673f95f4616ecc456",
+            "whole": true
+          }
+        ],
+        "count": 5,
+        "bytes": 54154,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      }
+    }
+  ],
+  "comparison": {
+    "blob": "2892b9b409470baa4e29852c6e81913b0a38c3c8",
+    "bytes": 3157,
+    "sha256": "422d60e41c77995c98d8971fe58930d0874726f53d31514f40cdd30a2268893d"
+  },
+  "approved_models": null,
+  "hardware_attestation": false,
+  "final_binary_qualification": false,
+  "final_LAN_98_plus_12": false,
+  "old_unknown_contexts_unchanged": true
+}

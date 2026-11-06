@@ -1,0 +1,37 @@
+{
+  "at_unix_ms": 1793991730959,
+  "audit_recorded": true,
+  "automatic_retry": false,
+  "cancelled": false,
+  "exit_code": 1,
+  "job_id": "1a1b23d56c4-fc05-7d19",
+  "launch_nonce": "5295536a920017d751391867ef3a8312",
+  "log_bytes": {
+    "stderr": {
+      "seen": 115,
+      "stored": 115
+    },
+    "stdout": {
+      "seen": 0,
+      "stored": 0
+    }
+  },
+  "log_errors": {
+    "stderr": null,
+    "stdout": null
+  },
+  "log_synced": {
+    "stderr": true,
+    "stdout": true
+  },
+  "log_truncated": {
+    "stderr": false,
+    "stdout": false
+  },
+  "output_complete": true,
+  "output_durable": true,
+  "state": "failed",
+  "terminal_publication_confirmed": true,
+  "terminal_publication_protocol": 1,
+  "timed_out": false
+}

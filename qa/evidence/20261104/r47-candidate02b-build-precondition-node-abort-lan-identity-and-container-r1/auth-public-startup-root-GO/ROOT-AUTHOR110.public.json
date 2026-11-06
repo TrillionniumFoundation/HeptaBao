@@ -1,0 +1,561 @@
+{
+  "schema": "heptabao.public-node-startup-source-verification.r1",
+  "passed": true,
+  "checkCount": 110,
+  "pythonExecuted": false,
+  "nodeExecuted": false,
+  "componentsExecuted": false,
+  "nativeCalls": 0,
+  "checks": [
+    {
+      "name": "core_whole:source.py",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "core_whole:main.py",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "core_whole:input-audit.py",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "core_whole:request.exact.json",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "core_whole:journal.js",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "core_whole:startup-imports.mjs",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "core_whole:consumer.sb",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "core_whole:CONTRACT.public.json",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "core_whole:BINDINGS.public.json",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "core_whole:README.md",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "request_exact_source",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "request_seven_fields",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "request_fixed_interpreter",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "request_new_key",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "contract_source_pin",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "contract_request_pin",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "contract_journal_pin",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "candidate_still_source",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "main_exact_included",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "input_class_exact_included",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "constant:INPUT_PINS",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "constant:NODE_ALIAS",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "constant:PUBLIC_SOURCE_PINS",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "constant:HARNESS_ROOTS",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "constant:HARNESS_BINDINGS",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "constant:MARKERS",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "exact_four_helpers",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "module_whole:mac_owned_unreaped_r1",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "module_exact_file:mac_owned_unreaped_r1",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "module_whole:mac_owned_commands_r1",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "module_exact_file:mac_owned_commands_r1",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "module_whole:mac_native_process_observer_r1",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "module_exact_file:mac_native_process_observer_r1",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "module_whole:mac_t5_volume_guard_r1",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "module_exact_file:mac_t5_volume_guard_r1",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "public_file_exact:marker",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "public_file_exact:rows",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "public_file_exact:cache",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "rows_original_pin",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "cache_original_pin",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "commands_original_pin",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "unreaped_original_pin",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "observer_original_pin",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "strict_forward:guard",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "strict_reverse:guard",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "strict_forward:capture",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "strict_reverse:capture",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "strict_forward:journal",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "strict_reverse:journal",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "guard_single_root_substitution",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "capture_only_output_caps",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "capture_in_source",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "phase_original_pin",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "materializer_original_pin",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "capture_original_excerpt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "profile_original_excerpt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "profile_exact_in_source",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "input_returned_fd_method:open_fd",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "input_method_prior_origin:open_fd",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "input_returned_fd_method:close_one",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "input_method_prior_origin:close_one",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "input_returned_fd_method:close",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "input_method_prior_origin:close",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "original_runtime_whole",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "actual_public_input:/usr/sbin/diskutil",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "actual_public_input:/usr/bin/sandbox-exec",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "actual_public_input:/bin/ps",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "actual_public_input:/opt/homebrew/Cellar/node/25.9.0_1/bin/node",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "node_alias_actual",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "policy_literal_public_origins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "historical_endpoint_permission_only",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "nine_builtins_two_cas",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "exact_24_markers",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "no_marker_static_import",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "entry_await_precedes_dynamic_import",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "before_await_precedes_import",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "marker_no_sdk_or_db_function",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "marker_error_text_not_exported",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "profile_pure_reconstruction",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "profile_whole_pin",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "profile_not_historical_body_claim",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "no_extra_policy_operations",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "original_env_seven_fields",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Popen_env_cwd_session_exact",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "no_original_cycle_or_plan_arg",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "budgets_35_45_60",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "node_10_and_diskutil_4",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "five_fixed_input_sizes",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "input_eof_bound",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "created_bytes_17915",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "six_body_reads_eof_budget",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "guard_fd_static_79",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "guard_io_ops_21",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "input_pending_before_syscall",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "input_registration_unknown_preserved",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "guard_partial_init_unknown",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "guard_pending_blocks_closure",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "worker_pending_blocks_unknown",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "no_cleanup_repeat",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "close_loop_protected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "cancel_and_handlers_final",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "unknown_stderr_not_exported",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "no_historical_closure",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "entry_absence_not_equated_nonexecution",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "negative_exit_not_execution_success",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "observation_not_execution_conflated",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "no_host_controls_in_main",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "journal_exact_normalized",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "journal_new_absent_slot_literal",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "journal_request_pin",
+      "passed": true,
+      "detail": null
+    }
+  ]
+}

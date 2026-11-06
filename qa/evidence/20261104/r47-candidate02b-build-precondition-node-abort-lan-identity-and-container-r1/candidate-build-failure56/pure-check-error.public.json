@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.pure-source-check-error.r1",
+  "where": "build stderr hex cross-check",
+  "name": "ReferenceError",
+  "message": "TextEncoder is not defined",
+  "nativeCalls": 0,
+  "sourceOrStateModified": false,
+  "correction": "Use already-reviewed utf8Bytes helper, original SDK and decoded stderr unchanged."
+}

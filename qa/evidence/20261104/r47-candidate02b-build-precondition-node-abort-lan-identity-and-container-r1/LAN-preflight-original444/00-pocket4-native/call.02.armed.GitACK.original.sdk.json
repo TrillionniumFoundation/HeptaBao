@@ -1,0 +1,12 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "sha": "872ff1f8de6300bf64df732ec957045322099502"
+  },
+  "isError": false
+}

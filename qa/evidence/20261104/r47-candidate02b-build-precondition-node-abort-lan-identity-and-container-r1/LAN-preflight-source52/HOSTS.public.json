@@ -1,0 +1,179 @@
+[
+  {
+    "node": 1,
+    "role": "mac",
+    "configured_native_host": "mac",
+    "ssh_alias": "mac-ts",
+    "declared_lan_ipv4": "192.168.0.8",
+    "ports": {
+      "api": 46230,
+      "raft": 46231
+    },
+    "historical": {
+      "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+      "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+      "observed_hostname": "MacBook-Pro.local",
+      "platform": {
+        "case": "node_1_new_private_root",
+        "machine": "arm64",
+        "passed": true,
+        "system": "Darwin"
+      },
+      "retained_fixture_root": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/same-root-publication-pocket3-mac1-postrecovery-cold-node1-r1",
+      "retained_binary_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/same-root-publication-pocket3-mac1-postrecovery-cold-node1-r1/heptabao-server",
+      "retained_binary_sha256": "c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63",
+      "retained_public_files": [
+        "process.log",
+        "pids.log",
+        "server.json",
+        "ha.json",
+        "audit.jsonl",
+        "process.identity.json",
+        "native-ha-fixture.json"
+      ],
+      "actual_summary": {
+        "blob": "74bc3f4393c3909de08c9f541570ed7c4043b162",
+        "bytes": 307292,
+        "sha256": "87f4e3a08d87045de370d30555768bea5b8a95f3a8f317a684746f8c9a4250b1"
+      }
+    },
+    "current": {
+      "native_observation": null,
+      "ssh_observation": null,
+      "route_identity_binding": null,
+      "public_model": null,
+      "approved_model_labels": null,
+      "boot_identity_hmac_sha256": null,
+      "machine_identity_hmac_sha256": null,
+      "actual_port_availability": null,
+      "physical_label_qualification": false
+    },
+    "final_candidate": {
+      "commit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+      "tree": "9781e9615ac5fb068d217241c74bb54bf87942cf",
+      "binary_path": null,
+      "binary_sha256": null,
+      "binary_full9": null,
+      "build_qualification": null,
+      "LAN_qualification": false
+    }
+  },
+  {
+    "node": 2,
+    "role": "rog",
+    "configured_native_host": "rog",
+    "ssh_alias": "rog-ts",
+    "declared_lan_ipv4": "192.168.0.10",
+    "ports": {
+      "api": 46230,
+      "raft": 46231
+    },
+    "historical": {
+      "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+      "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+      "observed_hostname": "qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA",
+      "platform": {
+        "case": "node_2_new_private_root",
+        "machine": "x86_64",
+        "passed": true,
+        "system": "Linux"
+      },
+      "retained_fixture_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/same-root-publication-pocket3-mac1-postrecovery-cold-node2-r1",
+      "retained_binary_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/same-root-publication-pocket3-mac1-postrecovery-cold-node2-r1/heptabao-server",
+      "retained_binary_sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+      "retained_public_files": [
+        "process.log",
+        "pids.log",
+        "server.json",
+        "ha.json",
+        "audit.jsonl",
+        "process.identity.json",
+        "native-ha-fixture.json"
+      ],
+      "actual_summary": {
+        "blob": "74bc3f4393c3909de08c9f541570ed7c4043b162",
+        "bytes": 307292,
+        "sha256": "87f4e3a08d87045de370d30555768bea5b8a95f3a8f317a684746f8c9a4250b1"
+      }
+    },
+    "current": {
+      "native_observation": null,
+      "ssh_observation": null,
+      "route_identity_binding": null,
+      "public_model": null,
+      "approved_model_labels": null,
+      "boot_identity_hmac_sha256": null,
+      "machine_identity_hmac_sha256": null,
+      "actual_port_availability": null,
+      "physical_label_qualification": false
+    },
+    "final_candidate": {
+      "commit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+      "tree": "9781e9615ac5fb068d217241c74bb54bf87942cf",
+      "binary_path": null,
+      "binary_sha256": null,
+      "binary_full9": null,
+      "build_qualification": null,
+      "LAN_qualification": false
+    }
+  },
+  {
+    "node": 3,
+    "role": "pocket4",
+    "configured_native_host": "pocket4",
+    "ssh_alias": "pocket4-ts",
+    "declared_lan_ipv4": "192.168.0.9",
+    "ports": {
+      "api": 46230,
+      "raft": 46231
+    },
+    "historical": {
+      "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+      "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+      "observed_hostname": "alex-G1628-04",
+      "platform": {
+        "case": "node_3_new_private_root",
+        "machine": "x86_64",
+        "passed": true,
+        "system": "Linux"
+      },
+      "retained_fixture_root": "/home/alex/heptabao-ha-closure-20261103-r1/same-root-publication-pocket3-mac1-postrecovery-cold-node3-r1",
+      "retained_binary_path": "/home/alex/heptabao-ha-closure-20261103-r1/same-root-publication-pocket3-mac1-postrecovery-cold-node3-r1/heptabao-server",
+      "retained_binary_sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+      "retained_public_files": [
+        "process.log",
+        "pids.log",
+        "server.json",
+        "ha.json",
+        "audit.jsonl",
+        "process.identity.json",
+        "native-ha-fixture.json"
+      ],
+      "actual_summary": {
+        "blob": "74bc3f4393c3909de08c9f541570ed7c4043b162",
+        "bytes": 307292,
+        "sha256": "87f4e3a08d87045de370d30555768bea5b8a95f3a8f317a684746f8c9a4250b1"
+      }
+    },
+    "current": {
+      "native_observation": null,
+      "ssh_observation": null,
+      "route_identity_binding": null,
+      "public_model": null,
+      "approved_model_labels": null,
+      "boot_identity_hmac_sha256": null,
+      "machine_identity_hmac_sha256": null,
+      "actual_port_availability": null,
+      "physical_label_qualification": false
+    },
+    "final_candidate": {
+      "commit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+      "tree": "9781e9615ac5fb068d217241c74bb54bf87942cf",
+      "binary_path": null,
+      "binary_sha256": null,
+      "binary_full9": null,
+      "build_qualification": null,
+      "LAN_qualification": false
+    }
+  }
+]

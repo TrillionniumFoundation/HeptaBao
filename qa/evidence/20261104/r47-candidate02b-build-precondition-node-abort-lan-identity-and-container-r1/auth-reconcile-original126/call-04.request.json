@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-mac-original-scope-reconcile-39e1684a-stream-00",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1b22f780d-fc05-7cd8",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

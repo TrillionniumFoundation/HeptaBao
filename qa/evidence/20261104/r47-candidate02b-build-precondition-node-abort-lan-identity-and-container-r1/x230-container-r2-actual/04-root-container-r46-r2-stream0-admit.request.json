@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-x230-current-container-r2-f6798549-stream0",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "x230",
+      "job_id": "1a1b24c3428-fc05-7d65",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

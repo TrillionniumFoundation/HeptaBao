@@ -1,0 +1,197 @@
+{
+  "schema": "heptabao.root.validation-checkpoint.r47",
+  "cutoff_UTC": "2026-11-06 19:43:45 UTC",
+  "task_continues": true,
+  "full_OpenBao_2_7_1_replacement": false,
+  "production_cutover": false,
+  "all_current_clients_and_backup_paths_migrated": false,
+  "legacy_cleanup": false,
+  "previousCheckpoint": {
+    "commit": "c62a95aa35b52fa65df24b34d913d92c6f98defa",
+    "tree": "e9695ff514fe18e29d0b9812a0a92eea456995a3",
+    "prefix": "qa/evidence/20261104/r46-candidate02b90762-official23-authbus-failure-and-current-inventory-r1"
+  },
+  "candidate": {
+    "commit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "tree": "9781e9615ac5fb068d217241c74bb54bf87942cf",
+    "soleParent": "025b05a340de841b8161c1120344e86eae30eb97",
+    "branch": "codex/heptabao-snapshot49-jwt147-9781e961-20261106",
+    "sourceLeaves": 3932,
+    "sourceBytes": 62537554,
+    "changedLeaves": 61,
+    "addedLeaves": 16,
+    "deletions": 0,
+    "sourceFormatted": false,
+    "sourceQualified": true,
+    "newReleaseBuilt": false,
+    "newTestsExecuted": 0,
+    "plannedDistinctTests": 246,
+    "plannedProfileExecutions": 268,
+    "profiles": {
+      "file": 22,
+      "default": 229,
+      "HA": 17
+    },
+    "publicationProof": {
+      "blob": "ed23864fbcbef564d3ca2c6096bb38dffcd0b089",
+      "bytes": 4708,
+      "sha256": "9219175fca62661308ec5daa4347ec0529c012a90624e34f11e6e3c89efa4a02"
+    }
+  },
+  "candidateStage": {
+    "qualified": true,
+    "sourceFiles": 3932,
+    "sourceBytes": 62537554,
+    "sourceClean": true,
+    "independentGit": true,
+    "fullStrictFsck": true,
+    "sourceFormatted": false,
+    "canonicalBundle": {
+      "path": "/home/qian-qi/hb-02b90762-src-20261106-r1/control/canonical-hb-02b90762-from495.bundle",
+      "bytes": 171016,
+      "sha256": "069e0e07ef05dc6ec7f75407f8a06edd5efd53764833334fee74dcbf5719a800",
+      "independentNativeInfo": false,
+      "independentNativeBody": false,
+      "completeMacCarrierUnder262144": false
+    },
+    "rootQualification": {
+      "blob": "6a64e5fec589abfeec7a05660e6edaddc780bdaf",
+      "bytes": 3658,
+      "sha256": "d722f322cd668f1c018ff0bc3ec143f2f7fb23f5119ae046a8f9e5982d58c646"
+    }
+  },
+  "candidateBuild": {
+    "controlsPublishedAndSyntaxChecked": true,
+    "controlsIndependentNativeInfoOrBody": false,
+    "receiptExactDerived": true,
+    "receiptMustBeValidatedByBuildEntry": true,
+    "firstJob": {
+      "host": "rog",
+      "id": "1a1b2580881-fc05-7da1"
+    },
+    "exitCode": 1,
+    "failureStage": "launcher TARGET.resolve(strict=True) line470",
+    "missingTarget": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3",
+    "cargoStarted": false,
+    "testsExecuted": 0,
+    "plannedDistinctTests": 246,
+    "plannedProfileRuns": 268,
+    "plannedFamilies": 18,
+    "targetRepairOrNewBuildNotYetExecuted": true
+  },
+  "AuthBus": {
+    "originalReconcile": {
+      "job": "mac/1a1b22f780d-fc05-7cd8",
+      "knownCurrentAbsenceObserved": true,
+      "historicalCustodyUnknownUnchanged": true,
+      "oldCycleExitCode": -6
+    },
+    "newPublicProbe": {
+      "job": "mac/1a1b25c3c54-fc05-7db1",
+      "parentExitCode": 0,
+      "observationComplete": true,
+      "executionSucceeded": false,
+      "outcomeUnknown": false,
+      "childPID": 51494,
+      "childExitCode": -6,
+      "markersObserved": 0,
+      "stdoutBytes": 0,
+      "stderrBytes": 0,
+      "ownChildGroupAndFdsClosed": true,
+      "originalAbortCauseProved": false,
+      "credentialReadOrBusinessCalls": false
+    },
+    "runtimeQualified": false,
+    "trustedCredentialMigrationQualified": false,
+    "productionChanged": false
+  },
+  "LAN": {
+    "routes": 6,
+    "hosts": [
+      "mac",
+      "rog",
+      "pocket4"
+    ],
+    "nativeSSHIdentityPairsEqual": true,
+    "distinctHostnamesAndBoots": true,
+    "exactKernelModelLabelsApproved": true,
+    "hardwareAttestation": false,
+    "portsReserved": false,
+    "originalCalls": 46,
+    "originalObservers": 12,
+    "originalPages": 16,
+    "rootOriginalChecks": 1048,
+    "finalCandidateBinaryQualified": false,
+    "finalLANFailureElectionReadIndexPersistenceRestartQualified": false
+  },
+  "X230": {
+    "currentContainer": {
+      "schema": "heptabao.x230.current-container-metadata.v1",
+      "container_id": "f67985499a16bc15917152d8083b9aa985edcbea868e3f15bdcef3aea6ab0bb9",
+      "name": "/heptabao-openbao271-oracle-r46",
+      "image_id": "sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
+      "image_reference": "ghcr.io/openbao/openbao:2.7.1",
+      "running": true,
+      "pid": 2031520,
+      "started_at": "2026-10-10T17:14:55.727875418Z",
+      "restart_count": 0,
+      "published_ports": {},
+      "mounts": []
+    },
+    "metadataQueryJob": "x230/1a1b24c3428-fc05-7d65",
+    "priorTLSInitializationFailureRetained": true,
+    "oldBaoPIDExeEACCESRetained": true,
+    "containerInitPidIsNotObservedBaoPid": true,
+    "networkModeObserved": false,
+    "imageVersionProvedByTag": false,
+    "currentClientsClassified": false,
+    "backupsComplete": false,
+    "homeTraversalIncomplete": true
+  },
+  "historicalBaseline": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "MacFormal34MiB": 31,
+    "X230Formal34MiB": 31,
+    "MacNormal": 61,
+    "ROGNormal": 61,
+    "LANHA": 98,
+    "independentColdRestart": 12,
+    "oldX230Comparison": {
+      "profiles": 69,
+      "exact": 67,
+      "normalizedPKI": 2
+    },
+    "notInheritedByCandidate": true
+  },
+  "remainingGates": [
+    "Build and run exact 246/268 candidate tests, then strict HTTP12 and official23 candidate-side comparison.",
+    "Repair and rerun AuthBus trusted-source/AppRole/TLS/KV/Policy/renew/revoke/restart/rollback with same final candidate; preserve all prior failures.",
+    "Repeat formal 34MiB migration/recovery on Mac and X230 and same-candidate real Mac/ROG/Pocket4 HA/ReadIndex/persistence/restart.",
+    "Finish current consumer and backup path inventory; each client's real credential read/write/restart/rollback before individual cutover.",
+    "Only after all migration gates, delete old services/binaries/regenerable assets and retain latest qualified service."
+  ],
+  "knownProductGaps": [
+    "Native JWT batch remains explicit 501; legacy batch tests do not grant native qualification.",
+    "Database/Kubernetes/RabbitMQ and other previously recorded plugin/admin/seal/root/rekey/ACME/EAB capability gaps remain unqualified.",
+    "Old CLI snapshot B04/B05 failures are retained; source fixes need actual leader/standby runtime evidence."
+  ],
+  "nextWork": [
+    "Observe fixed ROG build prerequisites and use a valid isolated target without inheriting old qualification.",
+    "Read only a matching fresh public Node crash report before choosing a causal diagnostic or fix.",
+    "Transport the exact canonical source bundle within existing caps and run the final candidate on Mac/X230 and real LAN.",
+    "Complete each actual client and backup inventory before cutover and cleanup."
+  ],
+  "maximumNativeLanes": 2,
+  "activeNativeJobsAtCutoff": 0,
+  "ownedNativeFuturesAtCutoff": 0,
+  "publication": {
+    "evidenceOnly": true,
+    "productionChanged": false,
+    "branch": "codex/heptabao-validation-20261104"
+  },
+  "newEvidence": {
+    "mountedPackets": 20,
+    "files": 1076,
+    "bytes": 8278777
+  }
+}

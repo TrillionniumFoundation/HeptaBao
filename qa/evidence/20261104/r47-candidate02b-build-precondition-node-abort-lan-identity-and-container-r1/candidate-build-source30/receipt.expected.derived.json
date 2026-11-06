@@ -1,0 +1,70 @@
+{
+  "artifact_transfer_started": false,
+  "compiler_started": false,
+  "files": [
+    {
+      "bytes": 32059,
+      "identity": [
+        66306,
+        28477745,
+        1000,
+        1000,
+        33152,
+        1,
+        32059,
+        1793992407176665344,
+        1793992407177714909
+      ],
+      "mode": "0600",
+      "path": "/home/qian-qi/hb-02b90762-controls-20261106-r1/native_jwt_build.py",
+      "publication": "created",
+      "sha256": "326ec765e5fa8fa06b4e41673b49d84d5325294b90283e3faab6a00f88c5f29e"
+    },
+    {
+      "bytes": 39818,
+      "identity": [
+        66306,
+        28477747,
+        1000,
+        1000,
+        33152,
+        1,
+        39818,
+        1793992407178767781,
+        1793992407179819630
+      ],
+      "mode": "0600",
+      "path": "/home/qian-qi/hb-02b90762-controls-20261106-r1/launch_native_jwt_build.py",
+      "publication": "created",
+      "sha256": "4c5de46d61f90237ae6789d9efd8d347b7729621ad8a6c467205f3f18c378602"
+    },
+    {
+      "bytes": 33825,
+      "identity": [
+        66306,
+        28477748,
+        1000,
+        1000,
+        33152,
+        1,
+        33825,
+        1793992407180879845,
+        1793992407181935291
+      ],
+      "mode": "0600",
+      "path": "/home/qian-qi/hb-02b90762-controls-20261106-r1/jwt-test-groups.public.json",
+      "publication": "created",
+      "sha256": "7c0fb6c5b6819c2cab60f3044e0aec767ad8abbf22e31ff0f7fab742ea4cd786"
+    }
+  ],
+  "git_started": false,
+  "python_compile_only": true,
+  "schema": "heptabao.native-jwt-pki-build-controls-inert.v1",
+  "service_started": false,
+  "source_executed": false,
+  "started_ns": 1793992407167493679,
+  "status": "prepared",
+  "stdin_bytes": 141131,
+  "stdin_sha256": "ea1d9c6a967ccad2c7155628ca8135b0d6889a208f30ce7601e2ea0d0058c5c4",
+  "terminal_ns": 1793992407182968496
+}

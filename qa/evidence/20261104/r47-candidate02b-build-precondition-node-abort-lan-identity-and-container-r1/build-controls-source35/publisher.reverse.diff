@@ -1,0 +1,31 @@
+--- a/controls-publisher.py
++++ b/controls-publisher.py
+@@ -7,21 +7,21 @@
+ assert BINDING_READY, 'final formatted source and build control pins are not yet bound'
+ os.umask(0o077)
+ PARENT = Path('/home/qian-qi')
+-BASE = PARENT / 'hb-02b90762-controls-20261106-r1'
++BASE = PARENT / 'heptabao-native-jwt-pki-controls-20261106-r2'
+ created_base = False
+ RECEIPT = BASE / 'inert-stage.result.public.json'
+ PINS = {
+     "native_jwt_build.py": [
+-        32059,
+-        "326ec765e5fa8fa06b4e41673b49d84d5325294b90283e3faab6a00f88c5f29e"
++        30397,
++        "d76b3d392c20bf4a7bbb7e8d8ea69abdfe3bb11f71a35075ba26ab948e778a50"
+     ],
+     "launch_native_jwt_build.py": [
+-        39818,
+-        "4c5de46d61f90237ae6789d9efd8d347b7729621ad8a6c467205f3f18c378602"
++        38565,
++        "efec176c08804a91adfd0160cdc092fad879d64ff594debe2fffe8008488d00c"
+     ],
+     "jwt-test-groups.public.json": [
+-        33825,
+-        "7c0fb6c5b6819c2cab60f3044e0aec767ad8abbf22e31ff0f7fab742ea4cd786"
++        19789,
++        "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869"
+     ]
+ }
+ 

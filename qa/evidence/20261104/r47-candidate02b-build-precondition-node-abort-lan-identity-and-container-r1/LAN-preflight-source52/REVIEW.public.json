@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.final-lan-preobservations-author-source-review.v1",
+  "status": "SOURCE_ONLY_AWAIT_ROOT_REVIEW_AND_GO",
+  "source": {
+    "blob": "b888782cf44f0454bf30f2b5e9f42c002fce37e5",
+    "bytes": 11551,
+    "sha256": "6dd47ce4367ece5d1e0cdd0119b0d073cc6c95ef601571aff0b87d86681474de"
+  },
+  "actual_source_checks": 102,
+  "tested_scope": "Pure V8 generation/strict diff/journal guards and nine comparison fixtures; no Python, host, network or product execution.",
+  "material_boundaries": [
+    "Old three_distinct_physical_hosts used different hostnames plus Linux/Darwin. No old machine/model/boot proof was recovered.",
+    "The new six requests compare a complete native-vs-SSH identity object. Equal IP, hostname or historic alias alone cannot pass.",
+    "The Linux machine-id and boot ID, and Darwin boot-session UUID, are only emitted as application-specific HMAC-SHA256. No hardware UUID or serial is read.",
+    "A kernel-reported model is an observation. Approved physical model labels remain null; no claim of cryptographic hardware attestation.",
+    "The probe itself starts no child. Three direct probe processes and three SSH transport processes each with a remote exec probe are distinct. Native/SSH terminal records, complete streams and the remote final report are all required. No global SSH-daemon child inventory is claimed.",
+    "Every explicit probe file/socket handle is registered before acquire, has exactly one close attempt and a retained close-error flag. Signal callbacks only mark pending; they do not raise through returned-handle registration or close. An unsuccessful close forbids pass.",
+    "The absolute15s probe clock is created once and checked before success exit. The explicit new outer30s also covers interpreter/SSH transport; it is not a change to any original LAN2400/3000 or postcold300 budget.",
+    "Two binds close immediately with no reuse/listen/connect. They observe availability at that instant, retain no reservation and grant no authority to touch an existing listener. The actual live fixture must recheck.",
+    "The six journal files change only slot, exact request pin, observer prefix, and the two host literals where needed; all other bytes roundtrip to c61872. They accept only one exact process start and same-original-job status/read; no metadata/body/tool expansion.",
+    "The four final binary INFO templates remain null/unsubmittable. Existing readonly build provenance logic remains the source reference; a qualified final build on both native ABIs is still required.",
+    "Existing4e80898+separate12 stays historical. Neither source-only comparison fakes nor these future identity probes add product cases or qualify the final02b candidate.",
+    "The new candidate source tree and branch were supplied by root as already frozen. No refs, product code, old evidence, fixture roots or assets are changed by this packet."
+  ],
+  "root_review": null,
+  "Native_GO": null,
+  "Native_calls": 0,
+  "Python_compile": 0,
+  "Python_execute": 0,
+  "candidate_build_qualified": false,
+  "final_LAN_qualified": false,
+  "original_qualifications_rewritten": false
+}

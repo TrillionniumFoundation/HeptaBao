@@ -1,0 +1,65 @@
+[
+  {
+    "id": "4dece75bc7d4c7b21c5033d3e3bc5932b6eab94ed065ff37e601d8e9b12d4e55",
+    "tool": "process_status",
+    "payload": {
+      "blob": "eb3e769d6b4bc3f22160c9c696e9b0bb709af2b7",
+      "bytes": 912,
+      "sha256": "36ab5b65babc1f342b68ca2dc5ed52e5b5add9a25de911a54bacd96acc914388"
+    },
+    "payloadTree": "9e4f8c4e26b39aa2f38b9fc702b1eadc32ff2446",
+    "nativeText": {
+      "blob": "6e8c8babbf160f6a2248c834410424754c05f4b8",
+      "bytes": 733,
+      "sha256": "b8401e5b50a8915ef38be75eb5da825562562069c26fd5c608a925dae3b08416"
+    },
+    "pages": 1,
+    "completedInactive": true,
+    "paths": {
+      "payload": "observer-00.payload.original.json",
+      "native": "observer-00.native.original.json"
+    }
+  },
+  {
+    "id": "82faf11cd36836b6be5e7b83b499153bea2c223cce3310ceef7a40144f869d6e",
+    "tool": "process_read",
+    "payload": {
+      "blob": "6f1e7d08d415a93e3fc2a887a15576f844bc66fe",
+      "bytes": 54469,
+      "sha256": "73dd357f621c319a6d610ca4a2ad365abbfa2838a3b82947a9b4a3590ee19d32"
+    },
+    "payloadTree": "22529bcb80cded6c1e704421625e51b0d412c1c9",
+    "nativeText": {
+      "blob": "65819daea138c11853ea6a07c178a961c0538418",
+      "bytes": 51095,
+      "sha256": "1e2332b4b75864a308390f8e7fd675d44433403853015115623c2ed6acb5e812"
+    },
+    "pages": 7,
+    "completedInactive": true,
+    "paths": {
+      "payload": "observer-01.payload.original.json",
+      "native": "observer-01.native.original.json"
+    }
+  },
+  {
+    "id": "795c5b0ff804b46b04076f681ae25e1f8cbfbda656490000470384aeca6e51a8",
+    "tool": "process_read",
+    "payload": {
+      "blob": "35eaef8655054966ccdb51fcbbd8b626e9d7c724",
+      "bytes": 48561,
+      "sha256": "3dd5769d7cb5492b95e75b14a470a1156ead3488b3f580e37d21b0a1022493ab"
+    },
+    "payloadTree": "d7f1207221a9abc5ec24895946b63d5bc562a193",
+    "nativeText": {
+      "blob": "a915c27d113561686d7fe906663d62403e415ddf",
+      "bytes": 45774,
+      "sha256": "b75ee3349b8057171d29802fd7a3636d154f81fba66beafc0823c0832e0e9b92"
+    },
+    "pages": 6,
+    "completedInactive": true,
+    "paths": {
+      "payload": "observer-02.payload.original.json",
+      "native": "observer-02.native.original.json"
+    }
+  }
+]

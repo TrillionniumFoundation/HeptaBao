@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.original-scope-reconcile-actual-verifier-execution.v1",
+  "entry": "eval(pureHelper + verifier + ';verifyOriginalScopeReconcileActual')(files)",
+  "input": "exact flat original public strings in this packet; function reads its explicit calls/observers indexes",
+  "verifier": {
+    "blob": "45bf6082c2d73505d336b1a67e5c40768d8645ec",
+    "bytes": 13480,
+    "sha256": "639628b1ca04e2fa29c4044e9cef08eb6b4e9a449f3188536d3498a60d5cd708"
+  },
+  "helper": {
+    "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+    "bytes": 6685,
+    "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+  },
+  "result": {
+    "blob": "4ce9d940f2eaebb539a2ac62c8a537740e6fc2e3",
+    "bytes": 42568,
+    "sha256": "d6a2449d15870988103258f898eb8826fa25f5b65c798e7e85e9326ec64f61bb"
+  },
+  "passed": true,
+  "checks": 538,
+  "calls": 21,
+  "observers": 3,
+  "pages": 14,
+  "environment": "functions.exec pure V8",
+  "NativeCallsByVerifier": 0,
+  "candidateOrSDKExecuted": false,
+  "oldProcessStartBindingUsed": false
+}

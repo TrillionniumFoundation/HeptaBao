@@ -1,0 +1,25 @@
+{
+  "host": "x230",
+  "executable": "/usr/bin/docker",
+  "args": [
+    "--host",
+    "unix:///var/run/docker.sock",
+    "--tls=false",
+    "--tlsverify=false",
+    "container",
+    "inspect",
+    "--format",
+    "{\"schema\":\"heptabao.x230.current-container-metadata.v1\",\"container_id\":{{json .Id}},\"name\":{{json .Name}},\"image_id\":{{json .Image}},\"image_reference\":{{json .Config.Image}},\"running\":{{json .State.Running}},\"pid\":{{json .State.Pid}},\"started_at\":{{json .State.StartedAt}},\"restart_count\":{{json .RestartCount}},\"published_ports\":{{json .NetworkSettings.Ports}},\"mounts\":[{{range $i, $m := .Mounts}}{{if $i}},{{end}}{\"type\":{{json $m.Type}},\"name\":{{json $m.Name}},\"source\":{{json $m.Source}},\"destination\":{{json $m.Destination}},\"rw\":{{json $m.RW}}}{{end}}]}",
+    "f67985499a16bc15917152d8083b9aa985edcbea868e3f15bdcef3aea6ab0bb9"
+  ],
+  "env": {
+    "DOCKER_API_VERSION": "",
+    "DOCKER_CONTEXT": "",
+    "DOCKER_HOST": "unix:///var/run/docker.sock",
+    "DOCKER_TLS": "",
+    "DOCKER_TLS_VERIFY": ""
+  },
+  "cwd": "/",
+  "timeout_seconds": 30,
+  "idempotency_key": "heptabao-x230-current-docker-inspect-20261106-r1-f6798549"
+}

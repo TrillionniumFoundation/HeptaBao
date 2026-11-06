@@ -1,0 +1,218 @@
+{
+  "schema": "heptabao.source-verifier-inputs.r1",
+  "interface": "verifyPublicNodeStartupSource(files: {[exact filename]: exact public UTF-8 source})",
+  "coreTree": "354fc76f8a20e93c7082d68ce96f972636e5bc50",
+  "required": [
+    {
+      "path": "source.py",
+      "blob": "350a7511e91644fd8e6652f9b6c9cbfdaca1e3d4",
+      "bytes": 150406,
+      "sha256": "9f35cf7cc8f0c63cb678f5acbd0974f1c5127452af57b740f29908a77c783dba"
+    },
+    {
+      "path": "main.py",
+      "blob": "a4b28da9987f237fdcfade512f7c4a7a0bdcfc69",
+      "bytes": 12154,
+      "sha256": "c30da92edb6628178a60597379090fe699060249b3cc9eb6d8d4febb4ef1abea"
+    },
+    {
+      "path": "input-audit.py",
+      "blob": "c9fcaf8e32d530ba4f583cc480c0e0c2c301f264",
+      "bytes": 5591,
+      "sha256": "948baa544723766a6d45eb8c2d87063480e73af07a3a6ab62c084784685ad5ff"
+    },
+    {
+      "path": "request.exact.json",
+      "blob": "5f92076fa2198a6f473c11bed043a4a347ac1dbc",
+      "bytes": 151322,
+      "sha256": "3ce6082cfff09e0cadeb7494b7b4a7701fc68af063fb53b3c57f965e637c6f0b"
+    },
+    {
+      "path": "journal.js",
+      "blob": "ed4e0248df0336f91832e7d3a27a7a51a8afc998",
+      "bytes": 19045,
+      "sha256": "f7a5f0e07b606671d31efb2f0060c645e5bc4179c6ff8b37976fcb2334f427f1"
+    },
+    {
+      "path": "startup-imports.mjs",
+      "blob": "416b89149f2331353c5468ca0020d8080a952ba1",
+      "bytes": 1052,
+      "sha256": "227b6113c3076e870f8ebd4876d05c441175eb48eebe0aa529db139951a8ec5e"
+    },
+    {
+      "path": "consumer.sb",
+      "blob": "84ff31f119c8d0a46fe0f09b1f1ba2f2335f7cbf",
+      "bytes": 6909,
+      "sha256": "acfbd336488f774e3acb87392bf5305f62004a0f529cbcd876593407989e7a12"
+    },
+    {
+      "path": "CONTRACT.public.json",
+      "blob": "8a25102a3cd31bf005d042e356fe77700caf3351",
+      "bytes": 14029,
+      "sha256": "5ef0ca924d2403e46571d5440b904e6e2a44bf9a7983e593541b5506d3a6fc56"
+    },
+    {
+      "path": "BINDINGS.public.json",
+      "blob": "1776aaae55d63ceb9ffe2d09fc4ce2887087c20b",
+      "bytes": 14366,
+      "sha256": "4cff2a6be53d751ccb60e9e68093cd38864c10e450417f1d3bd4b15f90348265"
+    },
+    {
+      "path": "README.md",
+      "blob": "9515d7ac6ea6583bc7093aa28209124f2ce09f72",
+      "bytes": 4032,
+      "sha256": "a5605abbac8c191f45e48efcc2384530d4da3e3bbc6e79c6f2507e6cb0397af2"
+    },
+    {
+      "path": "MANIFEST.public.json",
+      "blob": "b33d1b07286a75537c3512af949939952bd92be7",
+      "bytes": 2150,
+      "sha256": "cf9a8cbbe2e2a361fe1fa00e33ffe86b0d5723d45cca0ce0483ffe1e5294ed39"
+    },
+    {
+      "path": "module-mac_owned_unreaped_r1.py",
+      "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+      "bytes": 10990,
+      "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+    },
+    {
+      "path": "module-mac_owned_commands_r1.py",
+      "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+      "bytes": 5965,
+      "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+    },
+    {
+      "path": "module-mac_native_process_observer_r1.py",
+      "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+      "bytes": 13423,
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+    },
+    {
+      "path": "module-mac_t5_volume_guard_r1.py",
+      "blob": "bfeec9a4b3f7a1cfd3e90afb3bc4e60338414ce0",
+      "bytes": 13395,
+      "sha256": "620319affd03217ed3d53a5a806a0b79cf8a7bdee89cff74f5b31d990e3c4bda"
+    },
+    {
+      "path": "module-mac_t5_volume_guard_r1.before.py",
+      "blob": "8bc381b89b599e0cab9e2eed5fc1e9f331920225",
+      "bytes": 13392,
+      "sha256": "28bba28ee22a70002f47ab6cbb75a4af30d56806a85307dc585d533ce3a9f4d7"
+    },
+    {
+      "path": "capture.before.py",
+      "blob": "5de86f4b499f878c60772ffd3bfe27318e8ab351",
+      "bytes": 4179,
+      "sha256": "0e8153395f6caa800b87af44683b141f72bf0f9cc52d983f6a122b194c6a0dc6"
+    },
+    {
+      "path": "capture.after.py",
+      "blob": "1bb81a503862bd73abdc5c1d2806547b7bf1fdd3",
+      "bytes": 4208,
+      "sha256": "9195fc6bd4ffe05bb8064d887ec6aeb68e1582d3ff16a7c73777cf3a55ff4b2e"
+    },
+    {
+      "path": "journal.before.js",
+      "blob": "4a2b0c3aae27c0033bb6e86046fc4a8cacd788d6",
+      "bytes": 19063,
+      "sha256": "f3cab2b5b9e0827e49a87eb52443b3690d410f69f30bba7ca9fbbd6cc4571e45"
+    },
+    {
+      "path": "phase.original.py",
+      "blob": "57b38b5d7072cb425898159f1f5d491fc2b1647a",
+      "bytes": 25647,
+      "sha256": "438578c430cdb86a22babfb76b7ed60a0bca8b486834378e34c54ffa85200c60"
+    },
+    {
+      "path": "materializer.original.py",
+      "blob": "198feabe7aef20b302e5989fd72e99e0bc0d36c3",
+      "bytes": 25973,
+      "sha256": "1a2ba260cb9659cb52f429f77de1e7d5c40ecb4f36af37d6b245d1b11cc277c9"
+    },
+    {
+      "path": "consumer_profile.original.py",
+      "blob": "005c66dbcc69f9e584e23804b0af65cc82c5e87d",
+      "bytes": 4518,
+      "sha256": "98152eb2e7fcf2826813838309f0039d89ffb93d0d3b7821ee7c3ad5f7c9e4e6"
+    },
+    {
+      "path": "readonly.original.py",
+      "blob": "9231e3027ed78704f90b5acde6dfbaace5190d9f",
+      "bytes": 133654,
+      "sha256": "39e1684a7214d2899b6e6bc3de90da21f25b9944c1d2d1c4c1626559699407b8"
+    },
+    {
+      "path": "original-runtime.stdout.json",
+      "blob": "71201c9dc56be7704936677c6c31c8c9d5df2ae9",
+      "bytes": 211872,
+      "sha256": "0d493d9feae4d6d2760e5cfa9c47d18367fc73baa3bdfc49df3120bc360b457e"
+    },
+    {
+      "path": "mac_auth_rows_cas_r1.mjs",
+      "blob": "408959d22873855f79f28570c611d24db44005cd",
+      "bytes": 3108,
+      "sha256": "a1acc944965a6fbc018d8991cd6852c2c83f9fca1dea7860602a306838ef46c5"
+    },
+    {
+      "path": "mac_authbus_cache_cas_r1.mjs",
+      "blob": "a318e427095b6c9273f03208620296b57ab59bc0",
+      "bytes": 6846,
+      "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+    },
+    {
+      "path": "input-open_fd.original.py",
+      "blob": "f37f8cad57e8b45c1a2cfb26ff0738f46697422e",
+      "bytes": 1490,
+      "sha256": "807f519034edf774a80e74b5ef7227768da027b0c8ace99cb353d1b971bc81d6"
+    },
+    {
+      "path": "input-close_one.original.py",
+      "blob": "91ea967f61a16f08cd89419cd553a77e0642c185",
+      "bytes": 458,
+      "sha256": "f900ad678de9c765cb93793009ceb98f23f4881fa671cac86040e27257a7543f"
+    },
+    {
+      "path": "input-close.original.py",
+      "blob": "c6cb1f5af500c99b8a4fee9f1c97522b5a310ef4",
+      "bytes": 139,
+      "sha256": "42057aa2bfbfe146a206cab868e7e518a93003553ab9c8e07d55432ad25b02aa"
+    },
+    {
+      "path": "guard.forward.diff",
+      "blob": "1792a7200d24eda0b7ca39847972a7bd12b378b2",
+      "bytes": 391,
+      "sha256": "28d827a3c808995a444212d81988da0fbaec60f632c8f8adea079be7c74ea2e1"
+    },
+    {
+      "path": "guard.reverse.diff",
+      "blob": "c327dcc664754fd357d3ffcc12f8de0461441f7e",
+      "bytes": 391,
+      "sha256": "22f11d541efef2a9d64d8f35dc151806b6982fa6717bde7106f243021d3bae30"
+    },
+    {
+      "path": "capture.forward.diff",
+      "blob": "2146e2f3ef8242f4880f73a173b3d0ad306e583a",
+      "bytes": 672,
+      "sha256": "81d27f8c5ca3bfbfad9072220b5862188a8aab9129d4ee6f3e1c2cc880cd9f02"
+    },
+    {
+      "path": "capture.reverse.diff",
+      "blob": "8846e8054883f1dabb21db6462738eebef3fe604",
+      "bytes": 672,
+      "sha256": "c5bfa4b26c106802267a07b6c74bf7a7c4aec6c45cc204afe6a71432f85b1686"
+    },
+    {
+      "path": "journal.forward.diff",
+      "blob": "8782b743c1e527f5bfc6a815c4dbd7d569648add",
+      "bytes": 1326,
+      "sha256": "4d0255f147a404d3afbf16970894507de105dfa71f82f511e0da37c1f3869052"
+    },
+    {
+      "path": "journal.reverse.diff",
+      "blob": "c16d3ab49b5c66a83a3997af0560af13552c4314",
+      "bytes": 1326,
+      "sha256": "46c3a1a013a891b8061a6c9d337f521c801b21d709a1069b41b2c3e08e95daa8"
+    }
+  ],
+  "resolution": "Core files are in core11. New excerpts/diffs and new guard are in this companion. Other complete originals are already immutable public Git blobs at their listed SHA, including old runtime stdout; no host read is needed."
+}

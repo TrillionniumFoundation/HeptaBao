@@ -1,0 +1,8 @@
+{
+  "schema": "heptabao.pure-preparation-helper-lookup-error.r1",
+  "error": "ReferenceError: b64 is not defined",
+  "NativeCalls": 0,
+  "candidateChanged": false,
+  "controlRootCreated": false,
+  "clarification": "Only helper export-name lookup failed before any mutation; no execution request was created."
+}

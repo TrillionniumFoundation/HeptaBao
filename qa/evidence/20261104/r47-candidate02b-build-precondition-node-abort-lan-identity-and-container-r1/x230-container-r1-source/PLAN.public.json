@@ -1,0 +1,85 @@
+{
+  "schema": "heptabao.root.x230-current-container-metadata-source.r1",
+  "authorization": "SOURCE_ONLY_NOT_GO",
+  "created_utc": "2026-11-06 19:00:40 UTC",
+  "purpose": "Identify the exact existing Docker container inferred from the previously observed UID100 bao PID cgroup, and expose only image/runtime/path metadata needed to finish current migration inventory.",
+  "previous_actual": {
+    "packet": "999e036020e78e70a63120876944f10944586eb7",
+    "report": "6c032a2d08059840312b07f5ecb0104056881d49",
+    "pid": 2031533,
+    "uid": 100,
+    "executable_readlink_errno": 13,
+    "original_overall_ok": false,
+    "cgroup_container_id": "f67985499a16bc15917152d8083b9aa985edcbea868e3f15bdcef3aea6ab0bb9"
+  },
+  "exact_request": {
+    "blob": "5643bacb7b6630e03a10febff915a861c9bd0655",
+    "bytes": 1180,
+    "sha256": "90a9951f07699a1fac8cd6318f3c773dee1ba74740eb248c3ae7d64881d51d2b"
+  },
+  "journal": {
+    "blob": "36153c92439e183a1f961e247b2faa35b3164665",
+    "bytes": 19051,
+    "sha256": "487885e386f9a59c5cdd320454eceb28eb3f35ada749e6f6ccf71b8c0a565a8f"
+  },
+  "journal_base": {
+    "blob": "c61872aff6529e34ca89121d5c09702f8d56792c",
+    "bytes": 19027,
+    "sha256": "1aa2e506fd68673b182339194f47b091ec4c2c6b810498d69e2e0dec0970503c"
+  },
+  "journal_literal_swaps": 5,
+  "journal_diff_hunks": 3,
+  "slot": "root_x230_current_container_metadata_20261106_r1",
+  "observer_key_prefix": "heptabao-x230-current-container-f6798549-",
+  "typed": {
+    "sha256": "150f1eaf7e1d8937cd2b31d1fffa816058146a49d5e974b8a24fbe0648c5aca1",
+    "native_fingerprint": "1517465338531121463",
+    "canonical_bytes": 1065
+  },
+  "budgets": {
+    "one_process_start": 1,
+    "outer_seconds": 30,
+    "maximum_status_observers": 8,
+    "maximum_read_observers": 2,
+    "maximum_status_per_observer": 8,
+    "immutable_page_bytes": 8192,
+    "maximum_pages_per_observer": 128,
+    "maximum_original_payload_bytes": 1048576,
+    "process_read_limit_per_stream": 16384,
+    "maximum_public_stream_bytes": 32768
+  },
+  "scope": {
+    "only_exact_container_inspect": true,
+    "only_fixed_local_unix_socket": true,
+    "CLI_executable_not_yet_observed": true,
+    "CLI_daemon_and_implicit_runtime_resources_not_individually_enumerated": true,
+    "CLI_may_read_existing_user_config": true,
+    "no_API_mutating_command": true,
+    "no_container_exec": true,
+    "no_start_stop_restart_or_remove": true,
+    "no_backup_or_secret_contents": true,
+    "no_environment_arguments_labels_or_logs_in_template": true,
+    "no_new_file_or_directory_requested": true,
+    "no_sudo_or_alternate_socket_host_fallback": true
+  },
+  "qualification": {
+    "image_reference_is_not_binary_version_proof": true,
+    "require_exact_ID": true,
+    "PID_comparison_requires_actual_result": true,
+    "prior_EACCES_preserved": true,
+    "no_client_or_backup_coverage_claim": true,
+    "no_migration_or_cleanup_authorized": true
+  },
+  "primary_references": [
+    {
+      "url": "https://docs.docker.com/reference/cli/docker/inspect",
+      "scope": "container inspect and field-specific JSON Go template"
+    },
+    {
+      "url": "https://docs.docker.com/reference/cli/docker",
+      "scope": "fixed --host Unix socket and command-line overrides"
+    }
+  ],
+  "Native_calls": 0,
+  "actual": null
+}

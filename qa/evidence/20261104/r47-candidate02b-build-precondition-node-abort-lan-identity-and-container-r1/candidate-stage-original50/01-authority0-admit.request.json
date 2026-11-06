@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-combined-02b90762-rog-source-observe-r1-authority0",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "rog",
+      "job_id": "1a1b21f5945-fc05-7c77"
+    }
+  }
+}

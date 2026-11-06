@@ -1,0 +1,104 @@
+{
+  "schema": "heptabao.final-lan-route-comparison.v1",
+  "route_identity_binding": true,
+  "rows": [
+    {
+      "role": "mac",
+      "identity": {
+        "architecture": "arm64",
+        "boot_identity": {
+          "hmac_sha256": "89f4e5bb8b9442974282240611f3ae12a05f71756a48b0bb8f1a8445e7de3422",
+          "source": "sysctl:kern.bootsessionuuid"
+        },
+        "declared_lan_ipv4": "192.168.0.8",
+        "euid": 501,
+        "gid": 20,
+        "hostname": "MacBook-Pro.local",
+        "machine_identity": null,
+        "machine_identity_not_requested_on_darwin": true,
+        "model": {
+          "name": "Mac17,2",
+          "source": "sysctl:hw.model"
+        },
+        "os": "Darwin",
+        "uid": 501
+      },
+      "routes_equal": true,
+      "model_label_verified": false,
+      "available_ports_at_observation": [
+        46230,
+        46231
+      ],
+      "live_port_reservation": false
+    },
+    {
+      "role": "rog",
+      "identity": {
+        "architecture": "x86_64",
+        "boot_identity": {
+          "hmac_sha256": "0b747bc139d125e2e3f33b351a4e48833c9c081150ca824242a8fd732fce0f01",
+          "source": "/proc/sys/kernel/random/boot_id"
+        },
+        "declared_lan_ipv4": "192.168.0.10",
+        "euid": 1000,
+        "gid": 1000,
+        "hostname": "qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA",
+        "machine_identity": {
+          "hmac_sha256": "91699fdc59def6928c43d2cf51db71c657e030578336a035f8ce3e9dcb1e0d2e",
+          "source": "/etc/machine-id"
+        },
+        "machine_identity_not_requested_on_darwin": false,
+        "model": {
+          "name": "ROG Flow Z13 GZ302EA_GZ302EA",
+          "source": "/sys/devices/virtual/dmi/id/product_name"
+        },
+        "os": "Linux",
+        "uid": 1000
+      },
+      "routes_equal": true,
+      "model_label_verified": false,
+      "available_ports_at_observation": [
+        46230,
+        46231
+      ],
+      "live_port_reservation": false
+    },
+    {
+      "role": "pocket4",
+      "identity": {
+        "architecture": "x86_64",
+        "boot_identity": {
+          "hmac_sha256": "bc5247233996762b3528ae15a8963e3d6f20594bf81ee0c3abd81a1203cfc54d",
+          "source": "/proc/sys/kernel/random/boot_id"
+        },
+        "declared_lan_ipv4": "192.168.0.9",
+        "euid": 1000,
+        "gid": 1000,
+        "hostname": "alex-G1628-04",
+        "machine_identity": {
+          "hmac_sha256": "d55c14e27e63a410d60168c2ed30a162c22c17a627e1b113d5d488cba563876d",
+          "source": "/etc/machine-id"
+        },
+        "machine_identity_not_requested_on_darwin": false,
+        "model": {
+          "name": "G1628-04",
+          "source": "/sys/devices/virtual/dmi/id/product_name"
+        },
+        "os": "Linux",
+        "uid": 1000
+      },
+      "routes_equal": true,
+      "model_label_verified": false,
+      "available_ports_at_observation": [
+        46230,
+        46231
+      ],
+      "live_port_reservation": false
+    }
+  ],
+  "physical_model_labels_verified": false,
+  "final_candidate_binary_qualified": false,
+  "final_LAN_98_plus_12_qualified": false,
+  "cryptographic_hardware_attestation": false,
+  "kernel_reported_model_only": true
+}

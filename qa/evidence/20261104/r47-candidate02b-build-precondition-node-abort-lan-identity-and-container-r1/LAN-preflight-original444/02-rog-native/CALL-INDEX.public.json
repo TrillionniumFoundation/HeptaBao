@@ -1,0 +1,570 @@
+[
+  {
+    "index": 0,
+    "callKey": "lanid-rog-native-start-20261106-r1",
+    "stem": "call.00",
+    "kind": "process_start",
+    "request": {
+      "blob": "7886b7a297ff3aabab593bcee8819a2403ead888",
+      "bytes": 12552,
+      "sha256": "82fac2f958af84ac90185898cb95d4b69420eb247ce9becaa357757f9ba0535f"
+    },
+    "SDK": {
+      "blob": "f8a53f029b559a6107be518b9c08a888dac32772",
+      "bytes": 14783,
+      "sha256": "c75f92a72d3462c93fa5ae51c8e83404839a27c1fe027bd901840a0baa146663"
+    },
+    "native": {
+      "blob": "b2fde2fb97dcc374a0b2f05b6d94a1b3d1d5f827",
+      "bytes": 13323,
+      "sha256": "c579d647bde7c06cbf067add09ce0945af3b6356b721fa9b8c6739168a3f10e8"
+    },
+    "armed": {
+      "tree": "4b91a3fd64676b6b8c52696decdadceb096b8f44",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "921d47b1e6109d652a3f101298058105642f845c",
+          "bytes": 843,
+          "sha256": "60d2fb1188b4f10386e246ebb78b1bb8d129964281b8614147f1f47142156734",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "fd97ace3645986180458b0d58bfebcea3b79e995",
+          "bytes": 706,
+          "sha256": "6fe0b931ddce97eb8e406e7a6c3f5a2c6251d9ddf48c06f39801834f71139816",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "7886b7a297ff3aabab593bcee8819a2403ead888",
+          "bytes": 12552,
+          "sha256": "82fac2f958af84ac90185898cb95d4b69420eb247ce9becaa357757f9ba0535f",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 14101,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "SDK_archive": {
+      "tree": "a0dfb0e1bf14e5b3e79dcf36048c6934846bba0a",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "f8a53f029b559a6107be518b9c08a888dac32772",
+          "bytes": 14783,
+          "sha256": "c75f92a72d3462c93fa5ae51c8e83404839a27c1fe027bd901840a0baa146663",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 14783,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "called": true,
+    "phase": "accepted"
+  },
+  {
+    "index": 1,
+    "callKey": "lanid-rog-native-auth0-admit-20261106-r1",
+    "stem": "call.01",
+    "kind": "operation_start",
+    "request": {
+      "blob": "42e4a648d4cb4827c9b94da3be99193bd7b19437",
+      "bytes": 225,
+      "sha256": "8ff72d02579f12cbfcc9b06fab515f9a466f468a87eb640555c472530c721da1"
+    },
+    "SDK": {
+      "blob": "c18320556a599c93f944186254f79fcafdcaa0b0",
+      "bytes": 709,
+      "sha256": "ef571b8acff185ec206be83dcbe1da3f389809686f66b2df78bd93f1ed4f1141"
+    },
+    "native": {
+      "blob": "f4b302fda52e093ade62821031562d145a61e8ad",
+      "bytes": 548,
+      "sha256": "990240903d8a1c400b1e2ac34a2c2632a5cd1333cbd8da63f6213834e89e6eaf"
+    },
+    "armed": {
+      "tree": "59a2f4e175d08ec2f494722d68a3190280856edf",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "aae5c6178b1c59e95ba3864fcb1f5953c156106c",
+          "bytes": 868,
+          "sha256": "fef2613abb8d50dad57010d0915b1c3d2d53cee5399b7bbad534f7a23639feae",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "513a7a5f8f570fc1cd0c8fb9574c455b85632eea",
+          "bytes": 731,
+          "sha256": "fcd15b4b4b9092a21a2e9f36fb092285b4bac85bffec5e84bbc0372d6d11ef61",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "42e4a648d4cb4827c9b94da3be99193bd7b19437",
+          "bytes": 225,
+          "sha256": "8ff72d02579f12cbfcc9b06fab515f9a466f468a87eb640555c472530c721da1",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1824,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "SDK_archive": {
+      "tree": "883b847dacb42f29c7cfd309f09c2981b94982ae",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "c18320556a599c93f944186254f79fcafdcaa0b0",
+          "bytes": 709,
+          "sha256": "ef571b8acff185ec206be83dcbe1da3f389809686f66b2df78bd93f1ed4f1141",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 709,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "called": true,
+    "phase": "accepted"
+  },
+  {
+    "index": 2,
+    "callKey": "lanid-rog-native-auth0-status0-20261106-r1",
+    "stem": "call.02",
+    "kind": "operation_status",
+    "request": {
+      "blob": "070b8eada9c4e55ba22044e1bf2c484ea5334053",
+      "bytes": 89,
+      "sha256": "cac3ce0233883bd21e388eb94339307b809891df4760a3a343b20cb62e67f092"
+    },
+    "SDK": {
+      "blob": "fe147e8aa5f2865df9b39b8a0bc0f0d1736d4d99",
+      "bytes": 980,
+      "sha256": "4ca6ca699b77d07885f4d55e9c52baa98d8cd35dd0be874b8e11b44f88a85463"
+    },
+    "native": {
+      "blob": "4660cf2d8e808e54952f63d687eaa3bc235a9f17",
+      "bytes": 805,
+      "sha256": "28f95ddbdb6ea0a4b6c35ff5a68d2de7c8ca6dcb1ab7a64fa9821fffdda5a1a9"
+    },
+    "armed": {
+      "tree": "cfeada7e0596d605c52ba80337ae93b775792866",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "0e131c20a14e6903fa75f90dc88a04ce985832b9",
+          "bytes": 932,
+          "sha256": "365e5a4906ede7a73b38cf86ae04a8b55f7c1d49afc26ac255e2386e0d4447d1",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "cbbcfacc4709484e11c404cf0900ad66c01d6e23",
+          "bytes": 795,
+          "sha256": "cb78d76b8c37d9260e9d295c1c362687f64a43ab8390cf7e500d6c664ba7d44d",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "070b8eada9c4e55ba22044e1bf2c484ea5334053",
+          "bytes": 89,
+          "sha256": "cac3ce0233883bd21e388eb94339307b809891df4760a3a343b20cb62e67f092",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1816,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "SDK_archive": {
+      "tree": "63eb389663d26302880b1213578e17107d984d70",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "fe147e8aa5f2865df9b39b8a0bc0f0d1736d4d99",
+          "bytes": 980,
+          "sha256": "4ca6ca699b77d07885f4d55e9c52baa98d8cd35dd0be874b8e11b44f88a85463",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 980,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "called": true,
+    "phase": "accepted"
+  },
+  {
+    "index": 3,
+    "callKey": "lanid-rog-native-auth0-page0-20261106-r1",
+    "stem": "call.03",
+    "kind": "operation_result",
+    "request": {
+      "blob": "d844a8f44714fa75e3aae63e5153077e41b283be",
+      "bytes": 121,
+      "sha256": "cb3c8e7477821df7ead7e944ef4846050a210ee60944b99ffc3537d2f2eee762"
+    },
+    "SDK": {
+      "blob": "975f629224bbde6adee986f62f315822db9f3832",
+      "bytes": 2068,
+      "sha256": "e6516055a115fa65d6f1b859586b1bd7490c44c22d1d9449c8c2bd2d3cbdec0d"
+    },
+    "native": {
+      "blob": "13a15da1800ced098a1096eee847292e451eb25a",
+      "bytes": 1897,
+      "sha256": "f9df5445b8f69aa729916a743232abd09f83dc7fa5a56006c7842bdafc53449b"
+    },
+    "armed": {
+      "tree": "2528b3eb7fd06f1257744d491809f12f7dd69236",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "d3578e5f98d40c6ce4e054b13e66ba5e3ecc0971",
+          "bytes": 931,
+          "sha256": "85603e62f3a332a5eee701cf4ae426ea3dad10c29172ba812fede0d3b0113938",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "817a047fa8a3053de2dfafb38dae605e412a76f1",
+          "bytes": 794,
+          "sha256": "d450c493efe117bac80a970cb5a1ec08f3d73082530f5849f19c82f3db004ec3",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "d844a8f44714fa75e3aae63e5153077e41b283be",
+          "bytes": 121,
+          "sha256": "cb3c8e7477821df7ead7e944ef4846050a210ee60944b99ffc3537d2f2eee762",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1846,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "SDK_archive": {
+      "tree": "d57eeea8d2228bba3509aae67e7c611e9298516d",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "975f629224bbde6adee986f62f315822db9f3832",
+          "bytes": 2068,
+          "sha256": "e6516055a115fa65d6f1b859586b1bd7490c44c22d1d9449c8c2bd2d3cbdec0d",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 2068,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "called": true,
+    "phase": "accepted"
+  },
+  {
+    "index": 4,
+    "callKey": "lanid-rog-native-streams0-admit-20261106-r1",
+    "stem": "call.04",
+    "kind": "operation_start",
+    "request": {
+      "blob": "d3fb1df31ab903006ec060360cd99bfc695afc47",
+      "bytes": 295,
+      "sha256": "714eee411c5e5d6226332159335ab0a720be5436c7c7c2e66669d1a27e19d966"
+    },
+    "SDK": {
+      "blob": "5f473c1d347b529a3b7b41cb6c4d8df381c7565e",
+      "bytes": 707,
+      "sha256": "7bc6b9624f60a1c487069774dc7c4087999d60b40603930b845953a76648f844"
+    },
+    "native": {
+      "blob": "43801261fcb985248e7333e6edb38667d5d52e2e",
+      "bytes": 546,
+      "sha256": "e90f3b8d70089df0035e1e36d6deff99b78cca20a3ceb81dab48d35f187a4501"
+    },
+    "armed": {
+      "tree": "8563c3a7a227020f88775416cbba108c0510ea0e",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "782e09b6a264ef4907fbf1185f612d6222a02dd8",
+          "bytes": 871,
+          "sha256": "4a89986c7429a01fc94282a4e474770340f05fb895566ed05a96a26f26cccf9a",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "f514b1f06ee8a8032193b6dce660d6d50412a360",
+          "bytes": 734,
+          "sha256": "58069929126a0da237e1a5689f37f57cf655d80ac09349e427e208039e3b1e48",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "d3fb1df31ab903006ec060360cd99bfc695afc47",
+          "bytes": 295,
+          "sha256": "714eee411c5e5d6226332159335ab0a720be5436c7c7c2e66669d1a27e19d966",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1900,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "SDK_archive": {
+      "tree": "4631085749697907dd6a07fd777ee89b1cbc3987",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "5f473c1d347b529a3b7b41cb6c4d8df381c7565e",
+          "bytes": 707,
+          "sha256": "7bc6b9624f60a1c487069774dc7c4087999d60b40603930b845953a76648f844",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 707,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "called": true,
+    "phase": "accepted"
+  },
+  {
+    "index": 5,
+    "callKey": "lanid-rog-native-streams0-status0-20261106-r1",
+    "stem": "call.05",
+    "kind": "operation_status",
+    "request": {
+      "blob": "67ce66dfffe9565c76a23cfcaecb5937ff0ebdda",
+      "bytes": 89,
+      "sha256": "8dea546edb14b79fa573939e96c0b934bdbd241b046052195646cf3f839a54b2"
+    },
+    "SDK": {
+      "blob": "40b68beb416bd2bfa64c1b3bb5a13dd99fe74aa9",
+      "bytes": 978,
+      "sha256": "6698dc2793b0ccda130c1aa91847fcb410b13a819d1fa2c0d6e733ec7ba5d9e5"
+    },
+    "native": {
+      "blob": "f9d91745ddd862e410a35893c31f85a23cd3d586",
+      "bytes": 803,
+      "sha256": "e74dc907efff6b6c3879c86b5755e22bfa14e7d0c991dc2acd5a57d489caafda"
+    },
+    "armed": {
+      "tree": "cbc17c03759b7c88a3cafb03fb6e22011062b1af",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "9c8f56c3670d512c7c25fe4b259506f6e67df95e",
+          "bytes": 935,
+          "sha256": "c855ee446e77e63837e62d48489dbb072ebe446584ef2d9a8e981810c60de0b0",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "c8b030e67b5d1b9ddd3794bcbd54d54a26bd69bd",
+          "bytes": 798,
+          "sha256": "767fb596c9cd8eed9d0faeec34a29db200ec9aca24d31a73ef818ae75d690014",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "67ce66dfffe9565c76a23cfcaecb5937ff0ebdda",
+          "bytes": 89,
+          "sha256": "8dea546edb14b79fa573939e96c0b934bdbd241b046052195646cf3f839a54b2",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1822,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "SDK_archive": {
+      "tree": "2b96efb3b7c163b30225291df91af37031eff9a0",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "40b68beb416bd2bfa64c1b3bb5a13dd99fe74aa9",
+          "bytes": 978,
+          "sha256": "6698dc2793b0ccda130c1aa91847fcb410b13a819d1fa2c0d6e733ec7ba5d9e5",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 978,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "called": true,
+    "phase": "accepted"
+  },
+  {
+    "index": 6,
+    "callKey": "lanid-rog-native-streams0-page0-20261106-r1",
+    "stem": "call.06",
+    "kind": "operation_result",
+    "request": {
+      "blob": "66ec9fe2a5bc2aa38b0b01aa5583721fa0fb50ec",
+      "bytes": 121,
+      "sha256": "61da4de27acad81b979c2a5cf490c01e345c941a0b23fac11e334e07a4dcd40d"
+    },
+    "SDK": {
+      "blob": "54859a3eed9c3762c5e935d2548a40e2c1c3e3bd",
+      "bytes": 11780,
+      "sha256": "196322a2b8cb3600447d7f0f5e873380d9be3a67cc6e8c463f29287884a44123"
+    },
+    "native": {
+      "blob": "4854585aa9b220d612d09ab1acc73455aee5c5a7",
+      "bytes": 11609,
+      "sha256": "b32881cbd87f179d156e3fe381a1b9f9afea5aafb67a33ee5b9784d576198ecc"
+    },
+    "armed": {
+      "tree": "29db1858c9f49ada59adbc269cfd8503a6ff2a0f",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "f3af96b240c5d2a29b8f9348d45abf8c8568251b",
+          "bytes": 934,
+          "sha256": "11d720fb95ad23cb2a0d09788c65b180f6fc16402ff388581c5491035b965ba9",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "48e35a742b00c8c3a79957945461e40d0ade77c4",
+          "bytes": 797,
+          "sha256": "654e7202487a01d52f7eb5c2b392372a5a0432f8694fea86e0ad02f81d68c000",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "66ec9fe2a5bc2aa38b0b01aa5583721fa0fb50ec",
+          "bytes": 121,
+          "sha256": "61da4de27acad81b979c2a5cf490c01e345c941a0b23fac11e334e07a4dcd40d",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1852,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "SDK_archive": {
+      "tree": "d1171a370819e9d9f0a6b373573e3e5d35c5175c",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "54859a3eed9c3762c5e935d2548a40e2c1c3e3bd",
+          "bytes": 11780,
+          "sha256": "196322a2b8cb3600447d7f0f5e873380d9be3a67cc6e8c463f29287884a44123",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 11780,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "called": true,
+    "phase": "accepted"
+  },
+  {
+    "index": 7,
+    "callKey": "lanid-rog-native-streams0-page1-20261106-r1",
+    "stem": "call.07",
+    "kind": "operation_result",
+    "request": {
+      "blob": "f6f2d27981766f1bc918e2f814451f279c68b7ef",
+      "bytes": 124,
+      "sha256": "d43e41a664c5cf64e0d3dd48b0dcfb6ec42bb928bc5cc5df9c8d22ea39194915"
+    },
+    "SDK": {
+      "blob": "3d7fd571c7ddce6840c182c44b574d403eeeebe4",
+      "bytes": 7451,
+      "sha256": "0e4efa663a69a2516b8b314bf5a5f7f1ab011bb196f8443226ca481f78f37342"
+    },
+    "native": {
+      "blob": "af867609cdcd27313eaaf4eb8c43a4498ba7138b",
+      "bytes": 7280,
+      "sha256": "8b653b8734e8f3ea2ed8c172a576bd84a536027c39b4a449826800ff83b487d5"
+    },
+    "armed": {
+      "tree": "9fee8ddae42ceb6c1fc4f91610a9e0e0f97bc011",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "b2986f06b5ade81829ef58e7bece76b5a726c236",
+          "bytes": 934,
+          "sha256": "f8cdfb6a08379b9380c37a8a92e786c9f3bdc393788db4bb4e59b687991f89c1",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "045795ca8e6bc2d383dc9ad12013bed804e2b7e2",
+          "bytes": 797,
+          "sha256": "fb68012c6ff5cf4a49c97ae36efd9117b452d7f5eadb2be1edf28c0c2fa72dc6",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "f6f2d27981766f1bc918e2f814451f279c68b7ef",
+          "bytes": 124,
+          "sha256": "d43e41a664c5cf64e0d3dd48b0dcfb6ec42bb928bc5cc5df9c8d22ea39194915",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1855,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "SDK_archive": {
+      "tree": "bfeaf6578094969a48d10bf08bb5389e4ea177bd",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "3d7fd571c7ddce6840c182c44b574d403eeeebe4",
+          "bytes": 7451,
+          "sha256": "0e4efa663a69a2516b8b314bf5a5f7f1ab011bb196f8443226ca481f78f37342",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 7451,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "called": true,
+    "phase": "accepted"
+  }
+]

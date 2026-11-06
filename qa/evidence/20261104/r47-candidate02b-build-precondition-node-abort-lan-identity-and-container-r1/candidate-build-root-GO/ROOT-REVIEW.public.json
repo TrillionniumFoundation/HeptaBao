@@ -1,0 +1,98 @@
+{
+  "schema": "heptabao.root.combined02b90762-build-entry-review.r1",
+  "ok": true,
+  "checks": 17,
+  "results": [
+    {
+      "name": "same_original_control_runner.py",
+      "pass": true
+    },
+    {
+      "name": "same_original_control_launcher.py",
+      "pass": true
+    },
+    {
+      "name": "same_original_control_publisher.py",
+      "pass": true
+    },
+    {
+      "name": "same_original_control_jwt-test-groups.public.json",
+      "pass": true
+    },
+    {
+      "name": "same_stage_original",
+      "pass": true
+    },
+    {
+      "name": "same_root_stage_qualification",
+      "pass": true
+    },
+    {
+      "name": "same_publisher_original_stdout",
+      "pass": true
+    },
+    {
+      "name": "same_publisher_original_authority",
+      "pass": true
+    },
+    {
+      "name": "same_publisher_original_streams",
+      "pass": true
+    },
+    {
+      "name": "root_independent_derived_receipt",
+      "pass": true
+    },
+    {
+      "name": "root_reproduced_source57",
+      "pass": true
+    },
+    {
+      "name": "root_reproduced_original76",
+      "pass": true
+    },
+    {
+      "name": "typed_stdin_binding",
+      "pass": true
+    },
+    {
+      "name": "exact_candidate",
+      "pass": true
+    },
+    {
+      "name": "bounded_observer_and_compile_budget",
+      "pass": true
+    },
+    {
+      "name": "independent_file_readback_false",
+      "pass": true
+    },
+    {
+      "name": "future_runtime_qualification_false",
+      "pass": true
+    }
+  ],
+  "sourcePacket": "b0189b27422c1984b1641abd0f775bbf9ae968b9",
+  "originalInertPacket": "893579692601a9861814ba2b26a869d493949b4f",
+  "sourceAuthor57": {
+    "blob": "840e68c7c6ca3a28c668321ec0bc85bfaac43644",
+    "bytes": 4484,
+    "sha256": "883f4576ec43bf52e3a92cda8b3d8a60b7ff8b244f51bc1093c970976c41d1e1"
+  },
+  "inertOriginal76": {
+    "blob": "57e97b93861f04d929ae38f2e61c45940cf25a84",
+    "bytes": 5539,
+    "sha256": "1f033550c0395982d10326fb79cdeb720e8664700cd9d274c0064ac4ed423834"
+  },
+  "independentReceipt": {
+    "blob": "bdc6ebed56b2bf7288f6e9fd25385da312f43e62",
+    "bytes": 1818,
+    "sha256": "f21999a4c58cf271c16b5b6061378b52c1d0ca50d6df108adc5835818239b5d0"
+  },
+  "receiptSource": "derived exact bytes from original publisher stdout; current receipt file will be verified by unchanged BUILD entry",
+  "independentNativeControlReadback": false,
+  "NativeCalls": 0,
+  "buildExecuted": false,
+  "fullReplacement": false,
+  "productionCutover": false
+}

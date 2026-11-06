@@ -1,0 +1,104 @@
+{
+  "schema": "heptabao.root.combined02b90762.controls-inert-GO.r1",
+  "authorization": "GO",
+  "scope": "one_create_only_three_controls_publisher_compile_python_only",
+  "time_utc": "2026-11-06 19:12:04 UTC",
+  "source_packet": {
+    "tree": "b556d6e636120430cd330622e63f8bdafd8bf1c7",
+    "whole": true
+  },
+  "root_qualification": {
+    "blob": "456aaa31c4e0502e9766056cca7bbb6198f56d8f",
+    "bytes": 1407,
+    "sha256": "1d3605814b5289542f965cb2c14efed75980a4b49f348e86a4e3f7abe1b5f183"
+  },
+  "source_stage_root_qualification": {
+    "blob": "6a64e5fec589abfeec7a05660e6edaddc780bdaf",
+    "bytes": 3658,
+    "sha256": "d722f322cd668f1c018ff0bc3ec143f2f7fb23f5119ae046a8f9e5982d58c646"
+  },
+  "exact_request": {
+    "blob": "a006b6f6c81bc7c7d65c1e368c1de412acc4517b",
+    "bytes": 146736,
+    "sha256": "3f6b80b0b2bc70a72017c99691d568ced31bf5b92fdc4a09e62c746aa0df9eac"
+  },
+  "request": {
+    "blob": "a006b6f6c81bc7c7d65c1e368c1de412acc4517b",
+    "bytes": 146736,
+    "sha256": "3f6b80b0b2bc70a72017c99691d568ced31bf5b92fdc4a09e62c746aa0df9eac"
+  },
+  "publisher": {
+    "blob": "c4abedf72b4755a7d552406f173c99ce915a5437",
+    "bytes": 5170,
+    "sha256": "5765113a6b80a81dd47e672f39e8d27d7a2b5c51aacc2d977f93beebbd268e5e"
+  },
+  "journal": {
+    "blob": "503189b6aab4937d3af603a97725abe89f58fd81",
+    "bytes": 19055,
+    "sha256": "68b9b601c14821da4ec5997fd990bdededee19b404c6212113860d9f00727c82"
+  },
+  "payload": {
+    "blob": "feb8b05604a7b00f5f247477591186f95e791830",
+    "bytes": 141131,
+    "sha256": "ea1d9c6a967ccad2c7155628ca8135b0d6889a208f30ce7601e2ea0d0058c5c4"
+  },
+  "slot": "combined_02b90762_build_controls_inert_gitfirst_r1",
+  "digest": "6640c9d9b49bb7850ab1ccf8d34491e103b3e9cf213a6958bc02f739b80ec652",
+  "fingerprint": "7368110927253321605",
+  "control_root": "/home/qian-qi/hb-02b90762-controls-20261106-r1",
+  "expected_files": {
+    "native_jwt_build.py": {
+      "blob": "4a67b5858bf4c1c2c202eb1bbaeb84e35189f7a3",
+      "bytes": 32059,
+      "sha256": "326ec765e5fa8fa06b4e41673b49d84d5325294b90283e3faab6a00f88c5f29e"
+    },
+    "launch_native_jwt_build.py": {
+      "blob": "924d7ddc88ba8a8cf8f44ff3cc5cda037043aaef",
+      "bytes": 39818,
+      "sha256": "4c5de46d61f90237ae6789d9efd8d347b7729621ad8a6c467205f3f18c378602"
+    },
+    "jwt-test-groups.public.json": {
+      "blob": "8945c9f8f2565807601f8197b93be026ca4e875b",
+      "bytes": 33825,
+      "sha256": "7c0fb6c5b6819c2cab60f3044e0aec767ad8abbf22e31ff0f7fab742ea4cd786"
+    }
+  },
+  "creates_only": [
+    "native_jwt_build.py",
+    "launch_native_jwt_build.py",
+    "jwt-test-groups.public.json",
+    "inert-stage.result.public.json"
+  ],
+  "caps": {
+    "publisherSeconds": 60,
+    "stdinBytes": 262144,
+    "actualStdinBytes": 141131,
+    "launcherSourceReadBytes": 40000,
+    "actualLauncherBytes": 39818,
+    "runnerSourceReadBytes": 40000,
+    "actualRunnerBytes": 32059,
+    "groupsReadBytes": 33825
+  },
+  "maximum_process_starts": 1,
+  "maximum_original_status_observers": 8,
+  "maximum_original_stream_observers": 8,
+  "maximum_status_calls_per_observer": 8,
+  "maximum_immutable_pages_per_observer": 128,
+  "immutable_page_bytes": 8192,
+  "process_read_limit": 16384,
+  "maximum_original_payload_bytes": 1048576,
+  "external_whole_arm_then_model_boundary": true,
+  "whole_original_SDK_before_interpretation": true,
+  "no_retry_rekey_or_cleanup_after_UNKNOWN": true,
+  "local_executor_unavailable_explicit_Git_first_journal": true,
+  "global_native_lanes": 2,
+  "owner_lane": "B",
+  "other_lane": "C",
+  "root_current_calls": 0,
+  "root_current_futures": 0,
+  "actual_build_authorized": false,
+  "formatter_authorized": false,
+  "product_run_authorized": false,
+  "separate_actual_control_receipt_and_build_GO_required": true,
+  "old_failures_preserved": true
+}

@@ -1,0 +1,58 @@
+[
+  {
+    "layer": "published actual original job",
+    "job": "1a1b247b510-fc05-7d4e",
+    "source": {
+      "blob": "c4abedf72b4755a7d552406f173c99ce915a5437",
+      "bytes": 5170,
+      "sha256": "5765113a6b80a81dd47e672f39e8d27d7a2b5c51aacc2d977f93beebbd268e5e"
+    },
+    "stdout": {
+      "blob": "3ea5f03c17c7d493442bf0f2db1e1891bfd40224",
+      "bytes": 1408,
+      "sha256": "6d1f1c0b0d409aa6ad979f1fd4abf6d740284fd2ec847833b51ebe713b7ef316"
+    },
+    "meaning": "Publisher read each control in full, before/after/named full9 equal, then published and verified its receipt before printing success.",
+    "actualNativeIndependentFileInfo": false,
+    "actualNativeIndependentBody": false
+  },
+  {
+    "layer": "receipt bytes derived from actual stdout",
+    "pin": {
+      "blob": "bdc6ebed56b2bf7288f6e9fd25385da312f43e62",
+      "bytes": 1818,
+      "sha256": "f21999a4c58cf271c16b5b6061378b52c1d0ca50d6df108adc5835818239b5d0"
+    },
+    "derivation": "Lossless original integer tokens; exact Python json.dumps(sort_keys=True,indent=2)+LF; compact emitter must reproduce original stdout exactly.",
+    "actualReceiptFileInfo": false,
+    "actualReceiptBody": false,
+    "actualReceiptFull9": null
+  },
+  {
+    "layer": "future same-owned-job entry revalidation",
+    "launcher": {
+      "blob": "924d7ddc88ba8a8cf8f44ff3cc5cda037043aaef",
+      "bytes": 39818,
+      "sha256": "4c5de46d61f90237ae6789d9efd8d347b7729621ad8a6c467205f3f18c378602"
+    },
+    "readerLines": [
+      144,
+      166
+    ],
+    "admissionLines": [
+      474,
+      534
+    ],
+    "meaning": "Before ADMISSION or Cargo: full runner/groups and self-launcher SHA/size/held-and-named full9 equals SHA-bound receipt; exact mode0100600, uid=gid1000, nlink1.",
+    "hasExecuted": false,
+    "readDescriptorsHeldAcrossExec": false
+  },
+  {
+    "layer": "future real compile/test qualification",
+    "unique": 246,
+    "profileEntries": 268,
+    "groups": 18,
+    "hasExecuted": false,
+    "requiresRootExactGO": true
+  }
+]

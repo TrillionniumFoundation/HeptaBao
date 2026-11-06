@@ -1,0 +1,85 @@
+{
+  "schema": "heptabao.root.current-original-Mac-readonly-reconciliation.GO.r1",
+  "lane": "A single Native lane; B may use its separate stage report observer lane",
+  "authorization": "Read-only diagnosis of the user's failed AuthBus runtime; no production changes or original process control.",
+  "sourceTree": "4fa30fabdbb41b6c35f7a30145141ebdb728c913",
+  "rootQualification": {
+    "blob": "7eecb5eec7d13ed030580da5d92894e467fcd4ca",
+    "bytes": 2723,
+    "sha256": "5faf432d61f33547a379819f035b2fee4bf43452c9f5c2f90b4eb76abf302349"
+  },
+  "exactRequest": {
+    "blob": "15dca2a76a1e236ceae6f9735becdbe0332bd55b",
+    "bytes": 137992,
+    "sha256": "1341a2b69faf2541b01d1d0cb023062326004ed03b1cc8ec75027d02f559637c"
+  },
+  "source": {
+    "blob": "9231e3027ed78704f90b5acde6dfbaace5190d9f",
+    "bytes": 133654,
+    "sha256": "39e1684a7214d2899b6e6bc3de90da21f25b9944c1d2d1c4c1626559699407b8"
+  },
+  "journal": {
+    "blob": "4a2b0c3aae27c0033bb6e86046fc4a8cacd788d6",
+    "bytes": 19063,
+    "sha256": "f3cab2b5b9e0827e49a87eb52443b3690d410f69f30bba7ca9fbbd6cc4571e45"
+  },
+  "slot": "owner_authbus_home_r3_original_scope_reconcile_gitfirst_r1",
+  "prefix": "heptabao-mac-original-scope-reconcile-39e1684a-",
+  "native_binding": {
+    "sha256": "cade0be220ef7d5b4c47a79d917401e992aac8374e4b29a4b4aa45ea51ca2551",
+    "native_fingerprint": "14618134506334289243"
+  },
+  "originalFailedJob": "mac/1a1b1d28dc2-fc05-7afe",
+  "freshInitializeOnce": true,
+  "uniqueProcessStart": true,
+  "host": "mac",
+  "budgets": {
+    "softSeconds": 45,
+    "helperAdmissionEndSeconds": 35,
+    "outerSeconds": 60,
+    "maxDirectPrints": 4,
+    "maxLibprocCalls": 34,
+    "maxFixedLeaves": 13,
+    "maxFDOpenAttempts": 64,
+    "maxMetadataCalls": 4096,
+    "maxApplicationReads": 256,
+    "maxApplicationReturnedBytes": 704512,
+    "maxApplicationWriteBytes": 0,
+    "maxPublicStdoutBytes": 65536,
+    "maxProcessStatusObservers": 8,
+    "maxProcessReadObservers": 8,
+    "perObserverStatusCalls": 8,
+    "perObserverImmutablePages": 128,
+    "processReadBytes": 16384,
+    "immutablePageBytes": 8192,
+    "originalPayloadBytes": 1048576
+  },
+  "required": {
+    "wholeOriginalIntentAndArmBeforeDispatch": true,
+    "modelBoundaryBeforeDispatch": true,
+    "wholeOriginalSDKBeforeParse": true,
+    "originalJobAndOperationIDsOnly": true,
+    "closedOriginalAuthorityAndFullStreams": true,
+    "allOwnReturnedResourcesClosedBeforeDiagnosticPass": true,
+    "oldManagedUnknownAlwaysPreserved": true
+  },
+  "scope": {
+    "twoOriginalLabelPrintsBeforeAfter": true,
+    "fourFixedPIDsTwoEpochs": true,
+    "fixedPublicFieldsAndFirstLFProjectionsOnly": true,
+    "privateTailOrStderrBody": false,
+    "credentialPlansCapsuleOrValues": false,
+    "newBusinessRuntime": false,
+    "bootstrapBootoutOrManagedSignal": false,
+    "historicalWaitOrReap": false,
+    "extraPsMetadataOrSetuidProbe": false
+  },
+  "wordingCorrection": "Exactly two byte-identical embedded MODULES (owned_unreaped and owned_commands); the original core9 phrase 'ThreeEmbeddedHelpers' is retained as a documented wording error. The fixed PID observer remains inline.",
+  "onFailure": "Preserve original response/error/UNKNOWN; no automatic restart, rekey, scope widening or original process cleanup.",
+  "qualification": {
+    "diagnosticOnly": true,
+    "originalRuntimeStillFailed": true,
+    "originalManagedOutcomeUnknown": true,
+    "fullReplacementQualified": false
+  }
+}

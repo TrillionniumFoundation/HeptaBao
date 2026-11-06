@@ -1,0 +1,1 @@
+Failed to initialize: unable to resolve docker endpoint: open /home/qian/.docker/ca.pem: no such file or directory

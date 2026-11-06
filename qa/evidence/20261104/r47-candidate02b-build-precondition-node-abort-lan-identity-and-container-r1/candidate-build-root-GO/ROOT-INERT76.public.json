@@ -1,0 +1,317 @@
+{
+  "schema": "heptabao.combined02b90762.controls-inert-original-chain-verification.r1",
+  "ok": true,
+  "checks": 76,
+  "results": [
+    {
+      "name": "exact_closed_counts",
+      "pass": true
+    },
+    {
+      "name": "no_active_call_future",
+      "pass": true
+    },
+    {
+      "name": "fixed_original_job",
+      "pass": true
+    },
+    {
+      "name": "root_GO_whole",
+      "pass": true
+    },
+    {
+      "name": "request_whole",
+      "pass": true
+    },
+    {
+      "name": "typed_identity",
+      "pass": true
+    },
+    {
+      "name": "five_original_pins_0",
+      "pass": true
+    },
+    {
+      "name": "once_accepted_archived_0",
+      "pass": true
+    },
+    {
+      "name": "exact_intent_arm_0",
+      "pass": true
+    },
+    {
+      "name": "sdk_success_9",
+      "pass": true
+    },
+    {
+      "name": "raw_sdk_to_native_0",
+      "pass": true
+    },
+    {
+      "name": "state_exact_raw_request_0",
+      "pass": true
+    },
+    {
+      "name": "single_START_exact",
+      "pass": true
+    },
+    {
+      "name": "ACK_original",
+      "pass": true
+    },
+    {
+      "name": "five_original_pins_1",
+      "pass": true
+    },
+    {
+      "name": "once_accepted_archived_1",
+      "pass": true
+    },
+    {
+      "name": "exact_intent_arm_1",
+      "pass": true
+    },
+    {
+      "name": "sdk_success_17",
+      "pass": true
+    },
+    {
+      "name": "raw_sdk_to_native_1",
+      "pass": true
+    },
+    {
+      "name": "state_exact_raw_request_1",
+      "pass": true
+    },
+    {
+      "name": "same_original_operation_1",
+      "pass": true
+    },
+    {
+      "name": "admit_original_job_1",
+      "pass": true
+    },
+    {
+      "name": "five_original_pins_2",
+      "pass": true
+    },
+    {
+      "name": "once_accepted_archived_2",
+      "pass": true
+    },
+    {
+      "name": "exact_intent_arm_2",
+      "pass": true
+    },
+    {
+      "name": "sdk_success_25",
+      "pass": true
+    },
+    {
+      "name": "raw_sdk_to_native_2",
+      "pass": true
+    },
+    {
+      "name": "state_exact_raw_request_2",
+      "pass": true
+    },
+    {
+      "name": "same_original_operation_2",
+      "pass": true
+    },
+    {
+      "name": "completed_inactive_2",
+      "pass": true
+    },
+    {
+      "name": "five_original_pins_3",
+      "pass": true
+    },
+    {
+      "name": "once_accepted_archived_3",
+      "pass": true
+    },
+    {
+      "name": "exact_intent_arm_3",
+      "pass": true
+    },
+    {
+      "name": "sdk_success_33",
+      "pass": true
+    },
+    {
+      "name": "raw_sdk_to_native_3",
+      "pass": true
+    },
+    {
+      "name": "state_exact_raw_request_3",
+      "pass": true
+    },
+    {
+      "name": "same_original_operation_3",
+      "pass": true
+    },
+    {
+      "name": "one_original_page_3",
+      "pass": true
+    },
+    {
+      "name": "whole_original_payload_3",
+      "pass": true
+    },
+    {
+      "name": "sdk_success_39",
+      "pass": true
+    },
+    {
+      "name": "payload_native_3",
+      "pass": true
+    },
+    {
+      "name": "five_original_pins_4",
+      "pass": true
+    },
+    {
+      "name": "once_accepted_archived_4",
+      "pass": true
+    },
+    {
+      "name": "exact_intent_arm_4",
+      "pass": true
+    },
+    {
+      "name": "sdk_success_44",
+      "pass": true
+    },
+    {
+      "name": "raw_sdk_to_native_4",
+      "pass": true
+    },
+    {
+      "name": "state_exact_raw_request_4",
+      "pass": true
+    },
+    {
+      "name": "same_original_operation_4",
+      "pass": true
+    },
+    {
+      "name": "admit_original_job_4",
+      "pass": true
+    },
+    {
+      "name": "five_original_pins_5",
+      "pass": true
+    },
+    {
+      "name": "once_accepted_archived_5",
+      "pass": true
+    },
+    {
+      "name": "exact_intent_arm_5",
+      "pass": true
+    },
+    {
+      "name": "sdk_success_52",
+      "pass": true
+    },
+    {
+      "name": "raw_sdk_to_native_5",
+      "pass": true
+    },
+    {
+      "name": "state_exact_raw_request_5",
+      "pass": true
+    },
+    {
+      "name": "same_original_operation_5",
+      "pass": true
+    },
+    {
+      "name": "completed_inactive_5",
+      "pass": true
+    },
+    {
+      "name": "five_original_pins_6",
+      "pass": true
+    },
+    {
+      "name": "once_accepted_archived_6",
+      "pass": true
+    },
+    {
+      "name": "exact_intent_arm_6",
+      "pass": true
+    },
+    {
+      "name": "sdk_success_60",
+      "pass": true
+    },
+    {
+      "name": "raw_sdk_to_native_6",
+      "pass": true
+    },
+    {
+      "name": "state_exact_raw_request_6",
+      "pass": true
+    },
+    {
+      "name": "same_original_operation_6",
+      "pass": true
+    },
+    {
+      "name": "one_original_page_6",
+      "pass": true
+    },
+    {
+      "name": "whole_original_payload_6",
+      "pass": true
+    },
+    {
+      "name": "sdk_success_66",
+      "pass": true
+    },
+    {
+      "name": "payload_native_6",
+      "pass": true
+    },
+    {
+      "name": "authority_terminal_zero",
+      "pass": true
+    },
+    {
+      "name": "whole_stdout",
+      "pass": true
+    },
+    {
+      "name": "whole_stderr",
+      "pass": true
+    },
+    {
+      "name": "stdout_whole",
+      "pass": true
+    },
+    {
+      "name": "publication_prepared_only",
+      "pass": true
+    },
+    {
+      "name": "exact_three_created",
+      "pass": true
+    },
+    {
+      "name": "exact_stdin",
+      "pass": true
+    },
+    {
+      "name": "independent_readback_not_claimed",
+      "pass": true
+    }
+  ],
+  "calls": 7,
+  "observers": 2,
+  "pages": 2,
+  "pureV8": true,
+  "NativeCalls": 0,
+  "buildQualified": false
+}

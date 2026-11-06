@@ -1,0 +1,309 @@
+{
+  "schema": "heptabao.combined02b90762-original-stage-chain-verification.r1",
+  "pass": true,
+  "checks": 74,
+  "results": [
+    {
+      "name": "finite_seven_calls_two_observers",
+      "pass": true
+    },
+    {
+      "name": "released_original_state",
+      "pass": true
+    },
+    {
+      "name": "exact_call_kinds_in_order",
+      "pass": true
+    },
+    {
+      "name": "request_pin:combined-02b90762-rog-source-start",
+      "pass": true
+    },
+    {
+      "name": "SDK_pin:combined-02b90762-rog-source-start",
+      "pass": true
+    },
+    {
+      "name": "native_pin:combined-02b90762-rog-source-start",
+      "pass": true
+    },
+    {
+      "name": "SDK_exact_native_parent:combined-02b90762-rog-source-start",
+      "pass": true
+    },
+    {
+      "name": "exact_once_intent:combined-02b90762-rog-source-start",
+      "pass": true
+    },
+    {
+      "name": "original_armed_checkpoint:combined-02b90762-rog-source-start",
+      "pass": true
+    },
+    {
+      "name": "SDK_whole_acceptance:combined-02b90762-rog-source-start",
+      "pass": true
+    },
+    {
+      "name": "request_pin:combined-02b90762-rog-source-authority0-admit",
+      "pass": true
+    },
+    {
+      "name": "SDK_pin:combined-02b90762-rog-source-authority0-admit",
+      "pass": true
+    },
+    {
+      "name": "native_pin:combined-02b90762-rog-source-authority0-admit",
+      "pass": true
+    },
+    {
+      "name": "SDK_exact_native_parent:combined-02b90762-rog-source-authority0-admit",
+      "pass": true
+    },
+    {
+      "name": "exact_once_intent:combined-02b90762-rog-source-authority0-admit",
+      "pass": true
+    },
+    {
+      "name": "original_armed_checkpoint:combined-02b90762-rog-source-authority0-admit",
+      "pass": true
+    },
+    {
+      "name": "SDK_whole_acceptance:combined-02b90762-rog-source-authority0-admit",
+      "pass": true
+    },
+    {
+      "name": "request_pin:combined-02b90762-rog-source-authority0-status0",
+      "pass": true
+    },
+    {
+      "name": "SDK_pin:combined-02b90762-rog-source-authority0-status0",
+      "pass": true
+    },
+    {
+      "name": "native_pin:combined-02b90762-rog-source-authority0-status0",
+      "pass": true
+    },
+    {
+      "name": "SDK_exact_native_parent:combined-02b90762-rog-source-authority0-status0",
+      "pass": true
+    },
+    {
+      "name": "exact_once_intent:combined-02b90762-rog-source-authority0-status0",
+      "pass": true
+    },
+    {
+      "name": "original_armed_checkpoint:combined-02b90762-rog-source-authority0-status0",
+      "pass": true
+    },
+    {
+      "name": "SDK_whole_acceptance:combined-02b90762-rog-source-authority0-status0",
+      "pass": true
+    },
+    {
+      "name": "request_pin:combined-02b90762-rog-source-authority0-page0",
+      "pass": true
+    },
+    {
+      "name": "SDK_pin:combined-02b90762-rog-source-authority0-page0",
+      "pass": true
+    },
+    {
+      "name": "native_pin:combined-02b90762-rog-source-authority0-page0",
+      "pass": true
+    },
+    {
+      "name": "SDK_exact_native_parent:combined-02b90762-rog-source-authority0-page0",
+      "pass": true
+    },
+    {
+      "name": "exact_once_intent:combined-02b90762-rog-source-authority0-page0",
+      "pass": true
+    },
+    {
+      "name": "original_armed_checkpoint:combined-02b90762-rog-source-authority0-page0",
+      "pass": true
+    },
+    {
+      "name": "SDK_whole_acceptance:combined-02b90762-rog-source-authority0-page0",
+      "pass": true
+    },
+    {
+      "name": "request_pin:combined-02b90762-rog-source-streams0-admit",
+      "pass": true
+    },
+    {
+      "name": "SDK_pin:combined-02b90762-rog-source-streams0-admit",
+      "pass": true
+    },
+    {
+      "name": "native_pin:combined-02b90762-rog-source-streams0-admit",
+      "pass": true
+    },
+    {
+      "name": "SDK_exact_native_parent:combined-02b90762-rog-source-streams0-admit",
+      "pass": true
+    },
+    {
+      "name": "exact_once_intent:combined-02b90762-rog-source-streams0-admit",
+      "pass": true
+    },
+    {
+      "name": "original_armed_checkpoint:combined-02b90762-rog-source-streams0-admit",
+      "pass": true
+    },
+    {
+      "name": "SDK_whole_acceptance:combined-02b90762-rog-source-streams0-admit",
+      "pass": true
+    },
+    {
+      "name": "request_pin:combined-02b90762-rog-source-streams0-status0",
+      "pass": true
+    },
+    {
+      "name": "SDK_pin:combined-02b90762-rog-source-streams0-status0",
+      "pass": true
+    },
+    {
+      "name": "native_pin:combined-02b90762-rog-source-streams0-status0",
+      "pass": true
+    },
+    {
+      "name": "SDK_exact_native_parent:combined-02b90762-rog-source-streams0-status0",
+      "pass": true
+    },
+    {
+      "name": "exact_once_intent:combined-02b90762-rog-source-streams0-status0",
+      "pass": true
+    },
+    {
+      "name": "original_armed_checkpoint:combined-02b90762-rog-source-streams0-status0",
+      "pass": true
+    },
+    {
+      "name": "SDK_whole_acceptance:combined-02b90762-rog-source-streams0-status0",
+      "pass": true
+    },
+    {
+      "name": "request_pin:combined-02b90762-rog-source-streams0-page0",
+      "pass": true
+    },
+    {
+      "name": "SDK_pin:combined-02b90762-rog-source-streams0-page0",
+      "pass": true
+    },
+    {
+      "name": "native_pin:combined-02b90762-rog-source-streams0-page0",
+      "pass": true
+    },
+    {
+      "name": "SDK_exact_native_parent:combined-02b90762-rog-source-streams0-page0",
+      "pass": true
+    },
+    {
+      "name": "exact_once_intent:combined-02b90762-rog-source-streams0-page0",
+      "pass": true
+    },
+    {
+      "name": "original_armed_checkpoint:combined-02b90762-rog-source-streams0-page0",
+      "pass": true
+    },
+    {
+      "name": "SDK_whole_acceptance:combined-02b90762-rog-source-streams0-page0",
+      "pass": true
+    },
+    {
+      "name": "unique_exact_START_ACK",
+      "pass": true
+    },
+    {
+      "name": "typed_ACK_binding",
+      "pass": true
+    },
+    {
+      "name": "ACK_exact_source_argv",
+      "pass": true
+    },
+    {
+      "name": "observer_original_admission:0",
+      "pass": true
+    },
+    {
+      "name": "observer_completed_inactive:0",
+      "pass": true
+    },
+    {
+      "name": "one_original_immutable_page:0",
+      "pass": true
+    },
+    {
+      "name": "payload_full_SHA_EOF:0",
+      "pass": true
+    },
+    {
+      "name": "payload_exact_native_parent:0",
+      "pass": true
+    },
+    {
+      "name": "observer_job_closure:0",
+      "pass": true
+    },
+    {
+      "name": "observer_original_admission:1",
+      "pass": true
+    },
+    {
+      "name": "observer_completed_inactive:1",
+      "pass": true
+    },
+    {
+      "name": "one_original_immutable_page:1",
+      "pass": true
+    },
+    {
+      "name": "payload_full_SHA_EOF:1",
+      "pass": true
+    },
+    {
+      "name": "payload_exact_native_parent:1",
+      "pass": true
+    },
+    {
+      "name": "observer_job_closure:1",
+      "pass": true
+    },
+    {
+      "name": "actual_terminal_zero_full_durable",
+      "pass": true
+    },
+    {
+      "name": "whole_original_stdout",
+      "pass": true
+    },
+    {
+      "name": "authority_stream_counters_stdout",
+      "pass": true
+    },
+    {
+      "name": "whole_original_stderr",
+      "pass": true
+    },
+    {
+      "name": "authority_stream_counters_stderr",
+      "pass": true
+    },
+    {
+      "name": "actual_350_0",
+      "pass": true
+    },
+    {
+      "name": "public_summary_only",
+      "pass": true
+    }
+  ],
+  "calls": 7,
+  "observers": 2,
+  "pages": 2,
+  "NativeCallsForVerification": 0,
+  "detailedReportRead": false,
+  "independent61ChildAndLeafQualification": false
+}

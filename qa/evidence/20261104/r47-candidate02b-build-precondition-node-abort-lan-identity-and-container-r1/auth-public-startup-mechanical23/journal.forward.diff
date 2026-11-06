@@ -1,0 +1,24 @@
+--- a/journal.before
++++ b/journal.after
+@@ -5,9 +5,9 @@
+  * Every original SDK is store'd, serialized, Git-created once and whole-read
+  * before isError or native text is inspected.
+  */
++const GF_SLOT = "owner_authbus_public_node_startup_gitfirst_r1";
++const GF_REQUEST = {blob:"5f92076fa2198a6f473c11bed043a4a347ac1dbc",
++ bytes:151322,sha256:"3ce6082cfff09e0cadeb7494b7b4a7701fc68af063fb53b3c57f965e637c6f0b"};
+-const GF_SLOT = "owner_authbus_home_r3_original_scope_reconcile_gitfirst_r1";
+-const GF_REQUEST = {blob:"15dca2a76a1e236ceae6f9735becdbe0332bd55b",
+- bytes:137992,sha256:"1341a2b69faf2541b01d1d0cb023062326004ed03b1cc8ec75027d02f559637c"};
+ 
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {
+@@ -46,7 +46,7 @@
+   gfNeed(s.job!==null && s.activeObserver===null,"original_job_no_unclosed_observer");
+   gfNeed(Object.keys(q).sort().join(",")==="idempotency_key,operation"
+     && typeof q.idempotency_key==="string" && q.idempotency_key.length<=128
++    && /^heptabao-mac-public-node-startup-9f35cf7c-/.test(q.idempotency_key),
+-    && /^heptabao-mac-original-scope-reconcile-39e1684a-/.test(q.idempotency_key),
+     "bounded_original_observer_key");
+   const op=q.operation,a=op?.arguments;
+   gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"

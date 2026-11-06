@@ -1,0 +1,267 @@
+{
+  "schema": "heptabao.combined02b90762.controls-source-verification.r1",
+  "ok": true,
+  "checks": 64,
+  "results": [
+    {
+      "name": "whole_pin_runner.before.py",
+      "pass": true
+    },
+    {
+      "name": "whole_pin_launcher.before.py",
+      "pass": true
+    },
+    {
+      "name": "whole_pin_publisher.before.py",
+      "pass": true
+    },
+    {
+      "name": "whole_pin_journal.before.js",
+      "pass": true
+    },
+    {
+      "name": "whole_pin_donor.publisher-GO.public.json",
+      "pass": true
+    },
+    {
+      "name": "whole_pin_runner.after.py",
+      "pass": true
+    },
+    {
+      "name": "whole_pin_launcher.after.py",
+      "pass": true
+    },
+    {
+      "name": "whole_pin_jwt-test-groups.public.json",
+      "pass": true
+    },
+    {
+      "name": "whole_pin_publisher.after.py",
+      "pass": true
+    },
+    {
+      "name": "whole_pin_journal.after.js",
+      "pass": true
+    },
+    {
+      "name": "whole_pin_payload.exact.json",
+      "pass": true
+    },
+    {
+      "name": "whole_pin_request.exact.json",
+      "pass": true
+    },
+    {
+      "name": "whole_pin_stage-result.actual.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_pin_stage-root-qualification.public.json",
+      "pass": true
+    },
+    {
+      "name": "runner_forward_exact",
+      "pass": true
+    },
+    {
+      "name": "runner_reverse_exact",
+      "pass": true
+    },
+    {
+      "name": "runner_unique_literal_BINDING_READY",
+      "pass": true
+    },
+    {
+      "name": "runner_unique_literal_DIAGNOSTIC_COMMIT",
+      "pass": true
+    },
+    {
+      "name": "runner_unique_literal_DIAGNOSTIC_TREE",
+      "pass": true
+    },
+    {
+      "name": "runner_only_bound_literals",
+      "pass": true
+    },
+    {
+      "name": "launcher_forward_exact",
+      "pass": true
+    },
+    {
+      "name": "launcher_reverse_exact",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_literal_BINDING_READY",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_literal_FINAL_COMMIT",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_literal_FINAL_TREE",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_literal_SOURCE_STAGE_ROOT",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_literal_    ROOT",
+      "pass": true
+    },
+    {
+      "name": "launcher_only_bound_literals",
+      "pass": true
+    },
+    {
+      "name": "publisher_forward_exact",
+      "pass": true
+    },
+    {
+      "name": "publisher_reverse_exact",
+      "pass": true
+    },
+    {
+      "name": "publisher_unique_literal_root",
+      "pass": true
+    },
+    {
+      "name": "publisher_unique_literal_PINS",
+      "pass": true
+    },
+    {
+      "name": "publisher_only_bound_literals",
+      "pass": true
+    },
+    {
+      "name": "journal_forward_exact",
+      "pass": true
+    },
+    {
+      "name": "journal_reverse_exact",
+      "pass": true
+    },
+    {
+      "name": "journal_unique_literal_slot",
+      "pass": true
+    },
+    {
+      "name": "journal_unique_literal_exact_request",
+      "pass": true
+    },
+    {
+      "name": "journal_unique_literal_observer_prefix",
+      "pass": true
+    },
+    {
+      "name": "journal_only_bound_literals",
+      "pass": true
+    },
+    {
+      "name": "finite_literal_counts",
+      "pass": true
+    },
+    {
+      "name": "whole_group_unchanged",
+      "pass": true
+    },
+    {
+      "name": "246_unique268_entries18_groups",
+      "pass": true
+    },
+    {
+      "name": "three_exact_profiles",
+      "pass": true
+    },
+    {
+      "name": "600_each_family",
+      "pass": true
+    },
+    {
+      "name": "snapshot27_normal61_preserved",
+      "pass": true
+    },
+    {
+      "name": "all_build_budgets_kept",
+      "pass": true
+    },
+    {
+      "name": "source_caps_not_raised",
+      "pass": true
+    },
+    {
+      "name": "same_original_native_shape",
+      "pass": true
+    },
+    {
+      "name": "exact_inline_publisher",
+      "pass": true
+    },
+    {
+      "name": "exact_stdin",
+      "pass": true
+    },
+    {
+      "name": "fixed_one_key",
+      "pass": true
+    },
+    {
+      "name": "payload_three_exact_members",
+      "pass": true
+    },
+    {
+      "name": "base64_exact_native_jwt_build.py",
+      "pass": true
+    },
+    {
+      "name": "base64_exact_launch_native_jwt_build.py",
+      "pass": true
+    },
+    {
+      "name": "base64_exact_jwt-test-groups.public.json",
+      "pass": true
+    },
+    {
+      "name": "publisher_whole_PINS",
+      "pass": true
+    },
+    {
+      "name": "create_only_unchanged",
+      "pass": true
+    },
+    {
+      "name": "fixed_fresh_controls_root",
+      "pass": true
+    },
+    {
+      "name": "both_final_source_constants",
+      "pass": true
+    },
+    {
+      "name": "actual_stage_root_qualified",
+      "pass": true
+    },
+    {
+      "name": "actual_stage_matches_bound_source",
+      "pass": true
+    },
+    {
+      "name": "actual_report_no_formatter_or_tests",
+      "pass": true
+    },
+    {
+      "name": "correct_stdin_binding",
+      "pass": true
+    },
+    {
+      "name": "source_only_no_new_host",
+      "pass": true
+    }
+  ],
+  "pureV8": true,
+  "candidatePythonOrJournalInvoked": false,
+  "NativeCalls": 0,
+  "buildQualification": false
+}

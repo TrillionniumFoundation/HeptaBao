@@ -1,0 +1,152 @@
+{
+  "schema": "heptabao.root.combined02b90762.detailed-source-stage-qualification.r1",
+  "ok": true,
+  "check_count": 23,
+  "checks": [
+    {
+      "name": "actual_report_whole",
+      "pass": true
+    },
+    {
+      "name": "original_body_inactive",
+      "pass": true
+    },
+    {
+      "name": "original_body_exact_range",
+      "pass": true
+    },
+    {
+      "name": "original_body_exact_decode",
+      "pass": true
+    },
+    {
+      "name": "exact_candidate_commit_tree_parent",
+      "pass": true
+    },
+    {
+      "name": "fixed_source_directory",
+      "pass": true
+    },
+    {
+      "name": "prepared_independent_clean",
+      "pass": true
+    },
+    {
+      "name": "3932_exact_leaves_and_bytes",
+      "pass": true
+    },
+    {
+      "name": "all_leaf_content_modes_index",
+      "pass": true
+    },
+    {
+      "name": "fsck_and_independent_objects",
+      "pass": true
+    },
+    {
+      "name": "base495_same_before_after",
+      "pass": true
+    },
+    {
+      "name": "old_failed_observer_exact_before_after_lossless",
+      "pass": true
+    },
+    {
+      "name": "sixteen_actual_commits",
+      "pass": true
+    },
+    {
+      "name": "new_bundle_header",
+      "pass": true
+    },
+    {
+      "name": "new_bundle_171016_sha",
+      "pass": true
+    },
+    {
+      "name": "bundle_exact_fixed_path",
+      "pass": true
+    },
+    {
+      "name": "bundle_long_integers_preserved",
+      "pass": true
+    },
+    {
+      "name": "all61_direct_children_closed_zero",
+      "pass": true
+    },
+    {
+      "name": "unique61_pids_and_labels",
+      "pass": true
+    },
+    {
+      "name": "original_budgets_preserved",
+      "pass": true
+    },
+    {
+      "name": "elapsed_inside_original_stage",
+      "pass": true
+    },
+    {
+      "name": "no_product_control_execution",
+      "pass": true
+    },
+    {
+      "name": "old_control_inventory_not_new_tests",
+      "pass": true
+    }
+  ],
+  "original_job": "rog/1a1b21f5945-fc05-7c77",
+  "original_terminal74": {
+    "blob": "a8789f36734f12892738d1d9c8a1208a77062cda",
+    "bytes": 7579,
+    "sha256": "58158513053a4e86caf350561d71a9128dc537b452edb98fbb24549e0bc0b7af"
+  },
+  "body_packet": "a9ec6bf8cea61538ddcf9c94f8c4a5896c2f36b1",
+  "original_report": {
+    "blob": "df7309a0a4ec52d0733a6e2f1b36ea0a58b32a41",
+    "bytes": 28236,
+    "sha256": "76ace6137f5a25f508a6ece69d7dac460689cd1d782cd9e0f6ce72811a267b83"
+  },
+  "source_prepared_qualified": true,
+  "canonical_bundle": {
+    "bytes": 171016,
+    "header": {
+      "header_sha256": "bc421f87f1547daeef2cdd4ffce357d0eac193e380297296919658640be05ab5",
+      "heads": [
+        [
+          "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+          "HEAD"
+        ]
+      ],
+      "prerequisites": [
+        "49503322c7f446e5eb41e7744f1fdbd7f1192ecc"
+      ],
+      "version": 2
+    },
+    "identity": [
+      "66306",
+      "28477674",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "171016",
+      "1793989775788602563",
+      "1793989775789602574"
+    ],
+    "path": "/home/qian-qi/hb-02b90762-src-20261106-r1/control/canonical-hb-02b90762-from495.bundle",
+    "public_network_import_required_on_mac": false,
+    "sha256": "069e0e07ef05dc6ec7f75407f8a06edd5efd53764833334fee74dcbf5719a800",
+    "body_independently_transferred": false
+  },
+  "all61_direct_children_zero_and_reaped": true,
+  "global_process_group_emptiness_not_independently_claimed": true,
+  "source_phase_only": true,
+  "inert_historical_controls_do_not_define_new246_268_tests": true,
+  "candidate_build_qualified": false,
+  "formatter_qualified": false,
+  "product_tests_executed": 0,
+  "full_replacement": false,
+  "all_old_failures_preserved": true
+}

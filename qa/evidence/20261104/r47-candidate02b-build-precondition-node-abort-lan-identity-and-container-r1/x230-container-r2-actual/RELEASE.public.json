@@ -1,0 +1,62 @@
+{
+  "schema": "heptabao.root.x230-current-container-observation-release.r2",
+  "job": "x230/1a1b24c3428-fc05-7d65",
+  "state": "succeeded",
+  "exit_code": 0,
+  "output_complete": true,
+  "output_durable": true,
+  "terminal_confirmed": true,
+  "stdout": {
+    "blob": "cb2582bd7318614bc1fc2a75e6898958038aec75",
+    "bytes": 441,
+    "sha256": "7293cf7966f398451f0e66aba1610c06814aceb93febf11243c68d70359d1dc7"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "original_calls": 7,
+  "original_observers": 2,
+  "original_pages": 2,
+  "all_original_calls_accepted": true,
+  "all_observers_completed_inactive": true,
+  "lane_released": true,
+  "current_root_calls": 0,
+  "current_root_futures": 0,
+  "container_metadata_obtained": true,
+  "container": {
+    "schema": "heptabao.x230.current-container-metadata.v1",
+    "container_id": "f67985499a16bc15917152d8083b9aa985edcbea868e3f15bdcef3aea6ab0bb9",
+    "name": "/heptabao-openbao271-oracle-r46",
+    "image_id": "sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
+    "image_reference": "ghcr.io/openbao/openbao:2.7.1",
+    "running": true,
+    "pid": 2031520,
+    "started_at": "2026-10-10T17:14:55.727875418Z",
+    "restart_count": 0,
+    "published_ports": {},
+    "mounts": []
+  },
+  "priorFailedTLSInitialization": {
+    "tree": "d6038f781c473cee2a929e187d7b768173bb905f",
+    "wasPermissionDenial": false,
+    "retained": true
+  },
+  "oldPIDExeEACCESPreserved": true,
+  "containerInitPidIsNotOriginalBaoPid": true,
+  "originalBaoPid": 2031533,
+  "imageTagDoesNotProveRunningBinaryVersion": true,
+  "networkModeNotRead": true,
+  "emptyPublishedPortsDoesNotProveNoHostListener": true,
+  "emptyMountListDoesNotProveBackupMigrationComplete": true,
+  "nameDoesNotProveNoClients": true,
+  "no_container_mutation": true,
+  "no_container_exec": true,
+  "current_inventory_complete": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "allClientsAndBackupsMigrated": false,
+  "legacyCleanup": false,
+  "automaticRetry": false
+}

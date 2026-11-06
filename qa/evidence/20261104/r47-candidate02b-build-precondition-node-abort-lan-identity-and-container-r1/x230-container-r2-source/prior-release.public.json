@@ -1,0 +1,36 @@
+{
+  "schema": "heptabao.root.x230-current-container-observation-release.r1",
+  "job": "x230/1a1b23d56c4-fc05-7d19",
+  "exit_code": 1,
+  "state": "failed",
+  "output_complete": true,
+  "output_durable": true,
+  "terminal_confirmed": true,
+  "stdout": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stderr": {
+    "blob": "7317e96f9c4dfa8ce414aeda65db10f180b70667",
+    "bytes": 115,
+    "sha256": "f32007515d3f5b9b59b91e769ec8dfb56c871eee8fc5ab794dd03d06ed2de09a"
+  },
+  "original_calls": 7,
+  "original_observers": 2,
+  "original_pages": 2,
+  "all_original_calls_accepted": true,
+  "all_observers_completed_inactive": true,
+  "lane_released": true,
+  "current_root_calls": 0,
+  "current_root_futures": 0,
+  "observed_error": "CLI initialization could not open /home/qian/.docker/ca.pem",
+  "container_metadata_obtained": false,
+  "permission_denial_proven": false,
+  "old_PID_EACCES_preserved": true,
+  "no_container_mutation": true,
+  "no_container_exec": true,
+  "no_inventory_completion_claim": true,
+  "no_migration_or_cleanup_qualification": true,
+  "automatic_retry": false
+}

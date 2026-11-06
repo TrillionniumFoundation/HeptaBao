@@ -1,0 +1,73 @@
+{
+  "schema": "heptabao.combined02b90762.stage-report-body-owner-release.r1",
+  "job": "1a1b21f5945-fc05-7c77",
+  "slot": "combined_02b90762_rog_source_gitfirst_r1",
+  "bodyOperation": "d52d7e0b1bb0fe96b779284a22a9d7ed66b9507e3b232f2ec60a77b7d7b0c593",
+  "metadataOperation": "45b233c3306a73913b4f70f7d326c3bff623f47d8909f45154f313f7889ceae7",
+  "bodyCalls": 7,
+  "bodyObservers": 1,
+  "bodyPayloadPages": 5,
+  "aggregateOriginalStageCalls": 17,
+  "aggregateObservers": 4,
+  "aggregatePayloadPages": 8,
+  "originalFutureCompletedInactive": true,
+  "allOriginalSDKsWhole": true,
+  "nativeCallInFlight": false,
+  "nativeFutureActive": false,
+  "processActive": false,
+  "pending": null,
+  "activeObserver": null,
+  "paused": false,
+  "report": {
+    "blob": "df7309a0a4ec52d0733a6e2f1b36ea0a58b32a41",
+    "bytes": 28236,
+    "sha256": "76ace6137f5a25f508a6ece69d7dac460689cd1d782cd9e0f6ce72811a267b83"
+  },
+  "reportWholePacket": "02818765e70ae7ecb886c0f6ac78f66bde86b65f",
+  "reportMetadata": {
+    "path": "/home/qian-qi/hb-02b90762-src-20261106-r1/control/stage-result.public.json",
+    "size": 28236,
+    "sha256": "76ace6137f5a25f508a6ece69d7dac460689cd1d782cd9e0f6ce72811a267b83",
+    "version": "66306:28477741:28236:1793989776858375923:1793989776858375923",
+    "nativeText": {
+      "blob": "4dabaf26c32eb013d54872159496e8cf21a787a1",
+      "bytes": 462,
+      "sha256": "b8d01c7ec1b134c3c45819aba1bcdd50c77745889c17003fbf3d286c60863155"
+    },
+    "originalOperation": "45b233c3306a73913b4f70f7d326c3bff623f47d8909f45154f313f7889ceae7",
+    "full9Strings": [
+      "66306",
+      "28477741",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "28236",
+      "1793989776858375923",
+      "1793989776858375923"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "reportedSource": {
+    "commit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "tree": "9781e9615ac5fb068d217241c74bb54bf87942cf",
+    "clean": true,
+    "leafIndex": "c6cef770842a1b0006b4c86a58e325802d00dd5779dede468262f2693c3246cc",
+    "leaves": 3932,
+    "bytes": 62537554
+  },
+  "reportedCleanup": {
+    "count": 61,
+    "allDirectReapedAndRemainingEmpty": true,
+    "independentProcessGroupEmptyNotClaimed": true
+  },
+  "reportedBudgetSeconds": 13.37394643301377,
+  "detailRootQualification": false,
+  "reportSourceStageOnly": true,
+  "compilerStarted": false,
+  "formatterExecuted": false,
+  "rustTestsExecuted": false,
+  "buildAuthorized": false,
+  "allOldFailuresPreserved": true
+}

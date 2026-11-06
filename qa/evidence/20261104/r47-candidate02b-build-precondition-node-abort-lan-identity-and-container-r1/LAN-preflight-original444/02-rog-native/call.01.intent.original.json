@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.gitfirst.fixed-native-call-intent.r1",
+  "callKey": "lanid-rog-native-auth0-admit-20261106-r1",
+  "kind": "operation_start",
+  "request": {
+    "blob": "42e4a648d4cb4827c9b94da3be99193bd7b19437",
+    "bytes": 225,
+    "sha256": "8ff72d02579f12cbfcc9b06fab515f9a466f468a87eb640555c472530c721da1"
+  },
+  "rootGo": {
+    "blob": "d9d95a4bc9be0f5bae219f304486e1f4fd712df3",
+    "bytes": 10381,
+    "sha256": "d346eeb4ea5666d8981a3abaf1a4ea189137d49b1e83e0a8212bbca20590e57b"
+  },
+  "originalJob": "1a1b242316d-fc05-7d34",
+  "originalOperation": null,
+  "maximumNativeCalls": 1,
+  "nativeNotYetCalled": true,
+  "lossOfAcknowledgmentNeverGrantsReplay": true,
+  "localFirstExplicitlyReplacedByExactRootGO": true
+}

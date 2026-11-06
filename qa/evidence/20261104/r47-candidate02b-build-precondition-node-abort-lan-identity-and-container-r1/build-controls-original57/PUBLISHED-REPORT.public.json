@@ -1,0 +1,67 @@
+{
+  "files": [
+    {
+      "name": "native_jwt_build.py",
+      "path": "/home/qian-qi/hb-02b90762-controls-20261106-r1/native_jwt_build.py",
+      "bytes": 32059,
+      "sha256": "326ec765e5fa8fa06b4e41673b49d84d5325294b90283e3faab6a00f88c5f29e",
+      "full9Strings": [
+        "66306",
+        "28477745",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "32059",
+        "1793992407176665344",
+        "1793992407177714909"
+      ],
+      "reportedByPublisher": true,
+      "independentFileInfo": false,
+      "independentBodyRead": false
+    },
+    {
+      "name": "launch_native_jwt_build.py",
+      "path": "/home/qian-qi/hb-02b90762-controls-20261106-r1/launch_native_jwt_build.py",
+      "bytes": 39818,
+      "sha256": "4c5de46d61f90237ae6789d9efd8d347b7729621ad8a6c467205f3f18c378602",
+      "full9Strings": [
+        "66306",
+        "28477747",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "39818",
+        "1793992407178767781",
+        "1793992407179819630"
+      ],
+      "reportedByPublisher": true,
+      "independentFileInfo": false,
+      "independentBodyRead": false
+    },
+    {
+      "name": "jwt-test-groups.public.json",
+      "path": "/home/qian-qi/hb-02b90762-controls-20261106-r1/jwt-test-groups.public.json",
+      "bytes": 33825,
+      "sha256": "7c0fb6c5b6819c2cab60f3044e0aec767ad8abbf22e31ff0f7fab742ea4cd786",
+      "full9Strings": [
+        "66306",
+        "28477748",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "33825",
+        "1793992407180879845",
+        "1793992407181935291"
+      ],
+      "reportedByPublisher": true,
+      "independentFileInfo": false,
+      "independentBodyRead": false
+    }
+  ],
+  "receiptPath": "/home/qian-qi/hb-02b90762-controls-20261106-r1/inert-stage.result.public.json",
+  "receiptIndependentMetadata": null,
+  "receiptIndependentBody": null
+}

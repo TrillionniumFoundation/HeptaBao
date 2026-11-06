@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.final-lan-identity-primary-source.v1",
+  "sources": [
+    {
+      "name": "Apple XNU boot session UUID",
+      "url": "https://raw.githubusercontent.com/apple-oss-distributions/xnu/f6217f891ac0bb64f3d375211650a4c1ff8ca1ea/bsd/kern/kern_sysctl.c",
+      "pin": {
+        "blob": "1e9baecfcbe6e56d8deac42fe59022266ab7db46",
+        "bytes": 228755,
+        "sha256": "1cc5d1e7b46df0b2fad33449eb7df948207b7bc4c760119ed33624e7d2750df8"
+      },
+      "fact": "SYSCTL_STRING(_kern, bootsessionuuid) is CTLFLAG_RD; this is boot session identity, not APFS boot volume UUID. The code will fail if the running kernel does not expose it."
+    },
+    {
+      "name": "Apple XNU model",
+      "url": "https://raw.githubusercontent.com/apple-oss-distributions/xnu/f6217f891ac0bb64f3d375211650a4c1ff8ca1ea/bsd/kern/kern_mib.c",
+      "pin": {
+        "blob": "98757f29b2f93a860b6b27bc52ca15b106eedfb1",
+        "bytes": 58572,
+        "sha256": "c34d16dde6e3a1c588dada1d282a1f3ade898154c6b2b2978df5a9bfc29ead00"
+      },
+      "fact": "hw.model is a read-only string serviced by HW_MODEL; no IOPlatformUUID or hardware serial is requested."
+    },
+    {
+      "name": "Linux DMI public product name",
+      "url": "https://raw.githubusercontent.com/torvalds/linux/v6.12/drivers/firmware/dmi-id.c",
+      "pin": {
+        "blob": "d19c78a78ae3acbd3c8ce82a234430c529063883",
+        "bytes": 7463,
+        "sha256": "92dd83c0535bb20e08e43a135a1abd8161973ff76e04371b35fbec22cf712eca"
+      },
+      "fact": "product_name is mode0444 while product_serial is0400. The proposal reads only product_name at the fixed virtual-device path; no serial/UUID fallback."
+    },
+    {
+      "name": "Linux boot identity",
+      "url": "https://raw.githubusercontent.com/torvalds/linux/v6.12/drivers/char/random.c",
+      "pin": {
+        "blob": "23ee76bbb4aa728274bf9980a60b863216d88797",
+        "bytes": 53941,
+        "sha256": "395bb854da12bb40d491dbc129063218b3f45f65bacaa8e21b17a4584bea4d3c"
+      },
+      "fact": "boot_id is the current boot's UUID; it differs from the separately exposed uuid entry that changes each read. Only boot_id is read."
+    },
+    {
+      "name": "systemd machine-id semantics and privacy",
+      "url": "https://raw.githubusercontent.com/systemd/systemd/v256/man/machine-id.xml",
+      "pin": {
+        "blob": "4ee100b4735c42942b5dbab2a415ada596c66115",
+        "bytes": 11136,
+        "sha256": "3c19c68c02bfcb702ff0914c4b0ce011385d0324389d0619dbdc3ad026f01a64"
+      },
+      "fact": "/etc/machine-id is a 32-character lowercase hexadecimal installation/boot identity, not a hardware serial. Raw ID stays local; an application-specific keyed HMAC-SHA256 is emitted. A machine-ID match is not hardware attestation."
+    }
+  ],
+  "runtime_kernel_versions_observed": false,
+  "paths_or_sysctls_missing_can_fallback": false,
+  "source_reference_is_not_deployment_proof": true
+}

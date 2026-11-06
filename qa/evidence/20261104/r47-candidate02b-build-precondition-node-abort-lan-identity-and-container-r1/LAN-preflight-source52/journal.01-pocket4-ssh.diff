@@ -1,0 +1,37 @@
+--- a/gitfirst-native-pocket4-ssh.js
++++ b/gitfirst-native-pocket4-ssh.js
+@@ -5,9 +5,8 @@
+  * Every original SDK is store'd, serialized, Git-created once and whole-read
+  * before isError or native text is inspected.
+  */
+-const GF_SLOT = "owner_launchd_gitfirst_r1";
+-const GF_REQUEST = {blob:"d14f62155b86924edd5632673d2e73832f7b0af5",
+- bytes:76816,sha256:"ab9afbcbbdc150acd11ad9451e35e2785f8fe086d4a371c3a63d4cf0f2a087b4"};
++const GF_SLOT = "final_lan_identity_pocket4_ssh_20261106_r1";
++const GF_REQUEST = {"blob":"5301c6cb6b4ff5ffbf318d41585b20da852210af","bytes":13018,"sha256":"5909de0b18e50ca3ff04fffb1821a749db8bc8d8267a52cfa611d0cdb9cddde6"};
+ 
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {
+@@ -46,11 +45,11 @@
+   gfNeed(s.job!==null && s.activeObserver===null,"original_job_no_unclosed_observer");
+   gfNeed(Object.keys(q).sort().join(",")==="idempotency_key,operation"
+     && typeof q.idempotency_key==="string" && q.idempotency_key.length<=128
+-    && /^heptabao-mac-owned-launchd-readonly-e573407b-/.test(q.idempotency_key),
++    && /^heptabao-final-lan-identity-pocket4-ssh-6dd47ce4-/.test(q.idempotency_key),
+     "bounded_original_observer_key");
+   const op=q.operation,a=op?.arguments;
+   gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"
+-    && a && a.host==="mac" && a.job_id===s.job,"same_original_job_only");
++    && a && a.host==="desktop" && a.job_id===s.job,"same_original_job_only");
+   if(op.tool==="process_status") {
+    gfNeed(Object.keys(a).sort().join(",")==="host,job_id","exact_status_arguments");
+   } else {
+@@ -162,7 +161,7 @@
+   const v=parseLosslessIntegers(nativeRaw),q=JSON.parse(c.requestRaw);
+   if(c.kind==="process_start") {
+    gfNeed(v.audit_recorded===true && v.local_record_pending===false && v.reused===false
+-    && v.launch?.ok===true && v.job?.host==="mac" && v.job.execution_mode==="operator"
++    && v.launch?.ok===true && v.job?.host==="desktop" && v.job.execution_mode==="operator"
+     && v.job.idempotency_key===q.idempotency_key && v.job.executable===q.executable
+     && v.job.cwd===q.cwd && JSON.stringify(v.job.args)===JSON.stringify(q.args)
+     && v.job.request_digest===s.digest && gfIntegerText(v.job.request_fingerprint)===s.fingerprint

@@ -1,0 +1,611 @@
+{
+  "rootGoWhole": true,
+  "goRaw": "{\n  \"schema\": \"heptabao.root.final-lan-identity-GO.r1\",\n  \"authorization\": \"GO\",\n  \"scope\": \"six_fixed_serial_endpoint_identity_observations_only\",\n  \"time_utc\": \"2026-11-06 18:55:50 UTC\",\n  \"source_packet\": {\n    \"tree\": \"bd83663a23db62aeabe458cbcbec7a2bd0c96fe0\",\n    \"files\": 52,\n    \"bytes\": 1888417,\n    \"whole\": true\n  },\n  \"source\": {\n    \"blob\": \"b888782cf44f0454bf30f2b5e9f42c002fce37e5\",\n    \"bytes\": 11551,\n    \"sha256\": \"6dd47ce4367ece5d1e0cdd0119b0d073cc6c95ef601571aff0b87d86681474de\"\n  },\n  \"root_qualification\": {\n    \"blob\": \"71814180e169ebe574118939dcce1f08fd24d3bd\",\n    \"bytes\": 2177,\n    \"sha256\": \"c1154998cf387f8c418f6904e3c0ddd320273ae48e16533b7c82f2dd2e18c266\"\n  },\n  \"author102\": {\n    \"blob\": \"8e87b47ca3cb90e09b468df724f34eb5b81542ae\",\n    \"bytes\": 8406,\n    \"sha256\": \"66cd7178b3df3723dabd59e49ae297d71b05660a937605cc0b61944a14c1f161\"\n  },\n  \"fixed_order\": [\n    {\n      \"index\": 0,\n      \"role\": \"pocket4\",\n      \"route\": \"native\",\n      \"request\": {\n        \"blob\": \"99f8c1e947b214ea50fbc9115a81b100e0ba3dc5\",\n        \"bytes\": 12564,\n        \"sha256\": \"0120a9df8b521af9c77b432577482f62952b0ca315eefc9775350aef290bd992\"\n      },\n      \"journal\": {\n        \"blob\": \"24c8282e8d64f4baed873740d305d33aa83eec81\",\n        \"bytes\": 19066,\n        \"sha256\": \"7ccc9d3f1bea649c34aa78f5826e17a4d75ccd40109bdb2e1f0226eca9184111\"\n      },\n      \"typed\": {\n        \"sha256\": \"5e403518b61be1910f29b9e514e7488ade18b8c2c22393da0d91497882127d9e\",\n        \"native_fingerprint\": \"6791486618325475729\",\n        \"canonical_bytes\": 12504\n      },\n      \"slot\": \"final_lan_identity_pocket4_native_20261106_r1\",\n      \"observer_key_prefix\": \"heptabao-final-lan-identity-pocket4-native-6dd47ce4-\",\n      \"submitted\": false\n    },\n    {\n      \"index\": 1,\n      \"role\": \"pocket4\",\n      \"route\": \"ssh\",\n      \"request\": {\n        \"blob\": \"5301c6cb6b4ff5ffbf318d41585b20da852210af\",\n        \"bytes\": 13018,\n        \"sha256\": \"5909de0b18e50ca3ff04fffb1821a749db8bc8d8267a52cfa611d0cdb9cddde6\"\n      },\n      \"journal\": {\n        \"blob\": \"d9b52c1cd03ed8be72b4f698cdbe459305b16cd9\",\n        \"bytes\": 19060,\n        \"sha256\": \"e40678e794e1ca7545a92bf98978bc859be697b6d209dc5c77848f446848b429\"\n      },\n      \"typed\": {\n        \"sha256\": \"e5496e537837de2f30b3f74b0d59a27d747a9dca71fe88420d08c818c37e8388\",\n        \"native_fingerprint\": \"16521858012763643439\",\n        \"canonical_bytes\": 12839\n      },\n      \"slot\": \"final_lan_identity_pocket4_ssh_20261106_r1\",\n      \"observer_key_prefix\": \"heptabao-final-lan-identity-pocket4-ssh-6dd47ce4-\",\n      \"submitted\": false\n    },\n    {\n      \"index\": 2,\n      \"role\": \"rog\",\n      \"route\": \"native\",\n      \"request\": {\n        \"blob\": \"7886b7a297ff3aabab593bcee8819a2403ead888\",\n        \"bytes\": 12552,\n        \"sha256\": \"82fac2f958af84ac90185898cb95d4b69420eb247ce9becaa357757f9ba0535f\"\n      },\n      \"journal\": {\n        \"blob\": \"646be4c2261741504b7baf976b41df1dcae0a671\",\n        \"bytes\": 19050,\n        \"sha256\": \"db7da9865cd09d502fda277ad2a8da93467bbd67ff27dfb8255d49b7c2960fcc\"\n      },\n      \"typed\": {\n        \"sha256\": \"bdb7b478032f40465ef6cd5f5e9db4e93f123d52c9c53a086d2cac91799be843\",\n        \"native_fingerprint\": \"13670593621448933446\",\n        \"canonical_bytes\": 12496\n      },\n      \"slot\": \"final_lan_identity_rog_native_20261106_r1\",\n      \"observer_key_prefix\": \"heptabao-final-lan-identity-rog-native-6dd47ce4-\",\n      \"submitted\": false\n    },\n    {\n      \"index\": 3,\n      \"role\": \"rog\",\n      \"route\": \"ssh\",\n      \"request\": {\n        \"blob\": \"a40cdf75bf897942579c14c96688a2112b5a5fda\",\n        \"bytes\": 13006,\n        \"sha256\": \"2f23b8a1c65d2a376da2949273f4177fdedbefaf5b8483db902b174c93257dd3\"\n      },\n      \"journal\": {\n        \"blob\": \"5b1bd6f250b0d56b9197ed7b626a8382b3b151c0\",\n        \"bytes\": 19052,\n        \"sha256\": \"24eb40d8a4aec0d26630526c76a36090eaab453ec20895df0d8d17203bd7811c\"\n      },\n      \"typed\": {\n        \"sha256\": \"a7e9635cc13555fa070382c4c8f05437e41c953edf815e180deca1df00f63ef6\",\n        \"native_fingerprint\": \"12099311123937187322\",\n        \"canonical_bytes\": 12831\n      },\n      \"slot\": \"final_lan_identity_rog_ssh_20261106_r1\",\n      \"observer_key_prefix\": \"heptabao-final-lan-identity-rog-ssh-6dd47ce4-\",\n      \"submitted\": false\n    },\n    {\n      \"index\": 4,\n      \"role\": \"mac\",\n      \"route\": \"native\",\n      \"request\": {\n        \"blob\": \"fa64e2d748e07cb96cb66555a3738d2fba38ed8c\",\n        \"bytes\": 12634,\n        \"sha256\": \"05a7f7820151a90d8a9a553f44b07240cd3a0b9efbf88c888730799a2d84f414\"\n      },\n      \"journal\": {\n        \"blob\": \"c38a92b5144ca66050cb41bd61d09aa40cda17af\",\n        \"bytes\": 19050,\n        \"sha256\": \"7d6704a6086f85f013dc22e8c543d3ec4d8db6d17f7b0546a3e63b9e37135347\"\n      },\n      \"typed\": {\n        \"sha256\": \"2e5335d7f6feae719892fb93768cb66083a6be1205a53caeb07a001f0bdc4699\",\n        \"native_fingerprint\": \"3338070950489796209\",\n        \"canonical_bytes\": 12578\n      },\n      \"slot\": \"final_lan_identity_mac_native_20261106_r1\",\n      \"observer_key_prefix\": \"heptabao-final-lan-identity-mac-native-6dd47ce4-\",\n      \"submitted\": false\n    },\n    {\n      \"index\": 5,\n      \"role\": \"mac\",\n      \"route\": \"ssh\",\n      \"request\": {\n        \"blob\": \"b51353530adecb7c157189d40b3f38cccd5ce2ac\",\n        \"bytes\": 13088,\n        \"sha256\": \"37746c31450fb2252e6af54e05b9700c7950ccf13cd698cebcf289cef524e571\"\n      },\n      \"journal\": {\n        \"blob\": \"24a403d7087f6963513afebc8344ef6228596e0c\",\n        \"bytes\": 19052,\n        \"sha256\": \"dd301fbaea79156ffce36df1593ad95b3d4f9266c26399d6b51d3459e84b48c7\"\n      },\n      \"typed\": {\n        \"sha256\": \"7e05a7d756fba07e6b7d98f063af63cc354460561e6fdde325faab0d6cbd4f56\",\n        \"native_fingerprint\": \"9080848766981611646\",\n        \"canonical_bytes\": 12913\n      },\n      \"slot\": \"final_lan_identity_mac_ssh_20261106_r1\",\n      \"observer_key_prefix\": \"heptabao-final-lan-identity-mac-ssh-6dd47ce4-\",\n      \"submitted\": false\n    }\n  ],\n  \"budgets\": {\n    \"proposed_new_observation_jobs\": 6,\n    \"Native_process_start_calls\": 6,\n    \"remote_probe_invocations\": 6,\n    \"direct_native_probe_processes\": 3,\n    \"desktop_SSH_transport_processes\": 3,\n    \"SSH_remote_exec_probe_processes\": 3,\n    \"SSH_remote_shell_action\": \"fixed exec replaces the command shell with the one probe; SSH daemon/session internals are not claimed as observed child closures\",\n    \"child_processes_started_by_each_probe\": 0,\n    \"helper_absolute_seconds\": 15,\n    \"Native_outer_seconds_per_job\": 30,\n    \"maximum_sum_of_outer_seconds\": 180,\n    \"SSH_connect_timeout_seconds\": 5,\n    \"SSH_connection_attempts\": 1,\n    \"maximum_active_C_calls_or_futures\": 1,\n    \"global_lane_limit\": 2,\n    \"process_status_observers_per_job\": 8,\n    \"process_read_observers_per_job\": 2,\n    \"operation_status_calls_per_observer\": 8,\n    \"immutable_page_limit\": 8192,\n    \"immutable_pages_per_observer\": 128,\n    \"maximum_original_payload_bytes\": 1048576,\n    \"process_read_limit_per_stream\": 16384,\n    \"maximum_observed_stream_bytes_per_job\": 65536,\n    \"maximum_observed_stream_bytes_six_jobs\": 393216,\n    \"probe_stdout_bytes\": 8192,\n    \"Linux_fixed_reads_per_probe\": 6,\n    \"Linux_maximum_returned_input_bytes_including_failed_cap_reads\": 774,\n    \"Linux_file_metadata_calls_per_complete_probe\": 18,\n    \"Darwin_sysctl_read_calls_per_probe\": 4,\n    \"Darwin_maximum_sysctl_buffer_bytes\": 640,\n    \"local_bind_close_calls_per_probe\": 2,\n    \"fixed_ports\": [\n      46230,\n      46231\n    ],\n    \"explicit_probe_resource_handles\": {\n      \"Linux\": {\n        \"file_acquisitions\": 6,\n        \"socket_acquisitions\": 2,\n        \"peak_open\": 1\n      },\n      \"Darwin\": {\n        \"file_acquisitions\": 0,\n        \"socket_acquisitions\": 2,\n        \"peak_open\": 1\n      }\n    },\n    \"resource_scope\": \"Explicit handles created by this probe only; not CPython imports, SSH/Native supervisor pipes, or a global host FD inventory.\"\n  },\n  \"sequence\": [\n    \"Root must first grant an exact Native lane/GO for this SOURCE. Loading source/generator/comparison code does not invoke a tool.\",\n    \"For each request, whole GO and exact request, unique slot initialization, external whole request/intent/armed checkpoint, separate model boundary, one original process_start, complete SDK external whole before isError/parse.\",\n    \"Only the returned original job may be observed. Each process_status/process_read observer closes through its returned ID and every immutable page before another observer.\",\n    \"Close authority and complete stdout/stderr before the next fixed request. For each pair, require equal full identity values and fixed ports before advancing to the next role.\",\n    \"Missing ACK, timeout, permission failure, missing sysctl/file, wrong ABI/model format, nonzero exit, disagreement, cap/deadline or resource-close failure preserves all original evidence and stops later admissions. No key/path/alias/host fallback, automatic retry, reset, cleanup or substitution.\",\n    \"All six success reports and original job/observer closures are inputs to the pure comparison. IP equality alone cannot establish route identity. Reported hardware model is not cryptographic hardware attestation.\",\n    \"Actual model labels require separate explicit root approval against the observed models; this SOURCE leaves every approved model list null.\",\n    \"Four final binary metadata templates remain unbound and are not part of the six-observation admission. They require final qualified native build artifacts and separate exact GO.\"\n  ],\n  \"maximum_process_starts\": 6,\n  \"maximum_active_C_calls_or_futures\": 1,\n  \"global_lane_limit\": 2,\n  \"owner_lane\": \"C\",\n  \"other_lane\": \"B; A reports zero current calls and futures\",\n  \"each_scope_one_start_only\": true,\n  \"model_boundary_after_whole_arm\": true,\n  \"whole_original_SDK_before_semantic_interpretation\": true,\n  \"stop_on_incomplete_or_failed_original\": true,\n  \"no_retry_rekey_substitution_or_cleanup\": true,\n  \"product_execution_authorized\": false,\n  \"source_checkout_writes_authorized\": false,\n  \"binary_metadata_templates_authorized\": false,\n  \"final_LAN_execution_authorized\": false,\n  \"physical_model_labels_initially\": null,\n  \"source_formatted_qualification\": false,\n  \"supersedes_unissued_timestamp_only_GO\": {\n    \"blob\": \"a772b915ac93c1d5e8c1bacbb7486156926e539e\",\n    \"bytes\": 10131,\n    \"sha256\": \"1db7a0fe68a1dd2a4d779327f506c2e3edd0b0fb9f5c267c0a88ef9e2db1820b\"\n  },\n  \"earlier_GO_was_not_sent_or_used\": true\n}\n",
+  "goPin": {
+    "blob": "d9d95a4bc9be0f5bae219f304486e1f4fd712df3",
+    "bytes": 10381,
+    "sha256": "d346eeb4ea5666d8981a3abaf1a4ea189137d49b1e83e0a8212bbca20590e57b"
+  },
+  "digest": "a7e9635cc13555fa070382c4c8f05437e41c953edf815e180deca1df00f63ef6",
+  "fingerprint": "12099311123937187322",
+  "job": "1a1b2465f2a-fc05-7d48",
+  "startCalled": true,
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "paused": false,
+  "calls": {
+    "lanid-rog-ssh-start-20261106-r1": {
+      "kind": "process_start",
+      "requestRaw": "{\n  \"host\": \"desktop\",\n  \"executable\": \"/usr/bin/ssh\",\n  \"args\": [\n    \"-T\",\n    \"-o\",\n    \"BatchMode=yes\",\n    \"-o\",\n    \"StrictHostKeyChecking=yes\",\n    \"-o\",\n    \"ConnectTimeout=5\",\n    \"-o\",\n    \"ConnectionAttempts=1\",\n    \"-o\",\n    \"ControlMaster=no\",\n    \"-o\",\n    \"ControlPath=none\",\n    \"-o\",\n    \"ClearAllForwardings=yes\",\n    \"-o\",\n    \"PermitLocalCommand=no\",\n    \"-o\",\n    \"ProxyCommand=none\",\n    \"-o\",\n    \"ProxyJump=none\",\n    \"-o\",\n    \"CanonicalizeHostname=no\",\n    \"-o\",\n    \"RequestTTY=no\",\n    \"rog-ts\",\n    \"exec /usr/bin/python3 -I -S -B - rog\"\n  ],\n  \"cwd\": \"/\",\n  \"stdin\": \"#!/usr/bin/env python3\\n\\\"\\\"\\\"Fixed LAN endpoint identity and two bind-close observations; SOURCE proposal.\\\"\\\"\\\"\\nimport ctypes\\nimport hashlib\\nimport hmac\\nimport json\\nimport os\\nimport re\\nimport signal\\nimport socket\\nimport stat\\nimport sys\\nimport time\\n\\nSCHEMA = \\\"heptabao.final-lan-endpoint-identity.v1\\\"\\nROLE = {\\n    \\\"mac\\\": (\\\"Darwin\\\", \\\"arm64\\\", \\\"192.168.0.8\\\"),\\n    \\\"rog\\\": (\\\"Linux\\\", \\\"x86_64\\\", \\\"192.168.0.10\\\"),\\n    \\\"pocket4\\\": (\\\"Linux\\\", \\\"x86_64\\\", \\\"192.168.0.9\\\"),\\n}\\nPORTS = (46230, 46231)\\nSECONDS = 15\\nSTDOUT_MAX = 8192\\nDOMAIN = b\\\"heptabao.final-lan-endpoint-identity.20261106.r1\\\\0\\\"\\nSTART = time.monotonic_ns()\\nUNTIL = START + SECONDS * 1000000000\\nPENDING = []\\nHANDLERS = []\\nRESOURCES = []\\nREADS = []\\nSYSCTLS = []\\nPHASE = \\\"argument_admission\\\"\\nREPORT = {\\n    \\\"schema\\\": SCHEMA, \\\"status\\\": \\\"failed\\\", \\\"failure\\\": None,\\n    \\\"role\\\": None, \\\"identity\\\": None, \\\"local_ports\\\": [],\\n    \\\"probe_process\\\": {\\n        \\\"pid\\\": os.getpid(), \\\"ppid\\\": os.getppid(),\\n        \\\"pgid\\\": os.getpgrp(), \\\"sid\\\": os.getsid(0),\\n        \\\"children_started_by_probe\\\": 0,\\n        \\\"python_executable\\\": sys.executable,\\n        \\\"python_version\\\": list(sys.version_info[:3]),\\n    },\\n    \\\"started_monotonic_ns\\\": str(START), \\\"absolute_deadline_monotonic_ns\\\": str(UNTIL),\\n    \\\"deadline_seconds\\\": SECONDS, \\\"reads\\\": READS, \\\"sysctls\\\": SYSCTLS,\\n    \\\"resources\\\": RESOURCES, \\\"signals\\\": PENDING,\\n    \\\"filesystem_writes\\\": 0, \\\"listen_calls\\\": 0, \\\"connect_calls\\\": 0,\\n    \\\"machine_or_boot_identifier_raw_emitted\\\": False,\\n    \\\"hardware_serial_or_hardware_uuid_read\\\": False,\\n    \\\"all_probe_resources_closed\\\": False,\\n}\\n\\nclass Refusal(Exception):\\n    pass\\n\\ndef guard(ok, code):\\n    if not ok:\\n        raise Refusal(code)\\n\\ndef checkpoint():\\n    guard(not PENDING, \\\"signal_observed\\\")\\n    guard(time.monotonic_ns() < UNTIL, \\\"absolute_deadline_exceeded\\\")\\n\\ndef mark_signal(number, frame):\\n    # The handler never raises in an acquire/close gap.\\n    if number not in PENDING:\\n        PENDING.append(number)\\n\\ndef full9(info):\\n    return [str(value) for value in (\\n        info.st_dev, info.st_ino, info.st_uid, info.st_gid, info.st_mode,\\n        info.st_nlink, info.st_size, info.st_mtime_ns, info.st_ctime_ns)]\\n\\ndef read_fixed(path, maximum):\\n    checkpoint()\\n    row = {\\\"kind\\\": \\\"file\\\", \\\"path\\\": path, \\\"acquired\\\": False,\\n           \\\"close_attempted\\\": False, \\\"closed\\\": False, \\\"close_error\\\": None}\\n    RESOURCES.append(row)\\n    fd = None\\n    before = after = named = None\\n    raw = b\\\"\\\"\\n    try:\\n        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC)\\n        row[\\\"acquired\\\"] = True\\n        before = os.fstat(fd)\\n        guard(stat.S_ISREG(before.st_mode), \\\"identity_input_not_regular\\\")\\n        guard(before.st_uid == 0 and before.st_nlink == 1\\n              and not before.st_mode & 0o022, \\\"identity_input_metadata_refused\\\")\\n        # procfs/sysfs sizes are not content length. The returned byte cap and\\n        # explicit EOF apply to these three exact kernel/system inputs.\\n        raw = os.read(fd, maximum + 1)\\n        guard(0 < len(raw) <= maximum, \\\"identity_input_size_refused\\\")\\n        guard(os.read(fd, 1) == b\\\"\\\", \\\"identity_input_not_complete\\\")\\n        after = os.fstat(fd)\\n        named = os.stat(path, follow_symlinks=False)\\n        guard(full9(before) == full9(after) == full9(named), \\\"identity_input_changed\\\")\\n    finally:\\n        if fd is not None:\\n            row[\\\"close_attempted\\\"] = True\\n            try:\\n                os.close(fd)\\n                row[\\\"closed\\\"] = True\\n            except OSError as error:\\n                row[\\\"close_error\\\"] = error.errno\\n    guard(row[\\\"close_error\\\"] is None and row[\\\"closed\\\"], \\\"identity_input_close_failed\\\")\\n    READS.append({\\\"path\\\": path, \\\"bytes\\\": len(raw), \\\"maximum\\\": maximum,\\n                  \\\"eof\\\": True, \\\"metadata_before_after_name\\\": full9(before)})\\n    checkpoint()\\n    return raw\\n\\ndef sysctl_text(libc, key, maximum):\\n    checkpoint()\\n    output = ctypes.create_string_buffer(maximum)\\n    length = ctypes.c_size_t(maximum)\\n    ctypes.set_errno(0)\\n    result = libc.sysctlbyname(\\n        key, ctypes.cast(output, ctypes.c_void_p), ctypes.byref(length), None, 0)\\n    if result != 0:\\n        raise OSError(ctypes.get_errno(), \\\"sysctl_read_failed\\\")\\n    guard(1 < length.value <= maximum, \\\"sysctl_size_refused\\\")\\n    raw = output.raw[:length.value]\\n    guard(raw.endswith(b\\\"\\\\0\\\") and b\\\"\\\\0\\\" not in raw[:-1], \\\"sysctl_string_refused\\\")\\n    SYSCTLS.append({\\\"key\\\": key.decode(\\\"ascii\\\"), \\\"bytes_including_nul\\\": length.value,\\n                    \\\"maximum\\\": maximum})\\n    checkpoint()\\n    return raw[:-1]\\n\\ndef hash_identifier(kind, raw, pattern):\\n    guard(re.fullmatch(pattern, raw) is not None, \\\"identifier_format_refused\\\")\\n    guard(int(raw.replace(b\\\"-\\\", b\\\"\\\"), 16) != 0, \\\"zero_identifier_refused\\\")\\n    return hmac.new(DOMAIN + kind, raw.lower(), hashlib.sha256).hexdigest()\\n\\ndef public_model(raw):\\n    if raw.endswith(b\\\"\\\\n\\\"):\\n        raw = raw[:-1]\\n    guard(0 < len(raw) <= 128 and all(32 <= value <= 126 for value in raw),\\n          \\\"model_format_refused\\\")\\n    return raw.decode(\\\"ascii\\\")\\n\\ndef snapshot(role):\\n    checkpoint()\\n    actual = os.uname()\\n    expected_system, expected_machine, address = ROLE[role]\\n    guard(actual.sysname == expected_system and actual.machine == expected_machine,\\n          \\\"role_platform_mismatch\\\")\\n    hostname = socket.gethostname()\\n    guard(re.fullmatch(r\\\"[A-Za-z0-9_.-]{1,255}\\\", hostname) is not None,\\n          \\\"hostname_format_refused\\\")\\n    boot_pattern = rb\\\"[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\\\"\\n    if actual.sysname == \\\"Linux\\\":\\n        model = public_model(read_fixed(\\\"/sys/devices/virtual/dmi/id/product_name\\\", 256))\\n        machine = read_fixed(\\\"/etc/machine-id\\\", 64)\\n        boot = read_fixed(\\\"/proc/sys/kernel/random/boot_id\\\", 64)\\n        if machine.endswith(b\\\"\\\\n\\\"):\\n            machine = machine[:-1]\\n        if boot.endswith(b\\\"\\\\n\\\"):\\n            boot = boot[:-1]\\n        machine_value = {\\\"source\\\": \\\"/etc/machine-id\\\",\\n            \\\"hmac_sha256\\\": hash_identifier(b\\\"linux-machine-id\\\", machine, rb\\\"[0-9a-f]{32}\\\")}\\n        boot_value = {\\\"source\\\": \\\"/proc/sys/kernel/random/boot_id\\\",\\n            \\\"hmac_sha256\\\": hash_identifier(b\\\"linux-boot-id\\\", boot, boot_pattern)}\\n        model_source = \\\"/sys/devices/virtual/dmi/id/product_name\\\"\\n    else:\\n        libc = ctypes.CDLL(None, use_errno=True)\\n        libc.sysctlbyname.argtypes = [\\n            ctypes.c_char_p, ctypes.c_void_p, ctypes.POINTER(ctypes.c_size_t),\\n            ctypes.c_void_p, ctypes.c_size_t]\\n        libc.sysctlbyname.restype = ctypes.c_int\\n        model = public_model(sysctl_text(libc, b\\\"hw.model\\\", 256))\\n        boot = sysctl_text(libc, b\\\"kern.bootsessionuuid\\\", 64)\\n        boot_value = {\\\"source\\\": \\\"sysctl:kern.bootsessionuuid\\\",\\n            \\\"hmac_sha256\\\": hash_identifier(b\\\"darwin-boot-session-uuid\\\", boot, boot_pattern)}\\n        model_source = \\\"sysctl:hw.model\\\"\\n        machine_value = None\\n    checkpoint()\\n    return {\\n        \\\"hostname\\\": hostname, \\\"os\\\": actual.sysname, \\\"architecture\\\": actual.machine,\\n        \\\"uid\\\": os.getuid(), \\\"euid\\\": os.geteuid(), \\\"gid\\\": os.getgid(),\\n        \\\"model\\\": {\\\"source\\\": model_source, \\\"name\\\": model},\\n        \\\"boot_identity\\\": boot_value, \\\"machine_identity\\\": machine_value,\\n        \\\"machine_identity_not_requested_on_darwin\\\": actual.sysname == \\\"Darwin\\\",\\n        \\\"declared_lan_ipv4\\\": address,\\n    }\\n\\ndef bind_close(address, port):\\n    checkpoint()\\n    row = {\\\"kind\\\": \\\"socket\\\", \\\"address\\\": address, \\\"port\\\": port, \\\"acquired\\\": False,\\n           \\\"close_attempted\\\": False, \\\"closed\\\": False, \\\"close_error\\\": None}\\n    RESOURCES.append(row)\\n    endpoint = None\\n    bound = False\\n    try:\\n        endpoint = socket.socket(socket.AF_INET, socket.SOCK_STREAM)\\n        row[\\\"acquired\\\"] = True\\n        # No SO_REUSEADDR/PORT, listen, connect, accept, or traffic.\\n        endpoint.bind((address, port))\\n        bound = True\\n    finally:\\n        if endpoint is not None:\\n            row[\\\"close_attempted\\\"] = True\\n            try:\\n                endpoint.close()\\n                row[\\\"closed\\\"] = True\\n            except OSError as error:\\n                row[\\\"close_error\\\"] = error.errno\\n    guard(row[\\\"closed\\\"] and row[\\\"close_error\\\"] is None, \\\"port_close_failed\\\")\\n    REPORT[\\\"local_ports\\\"].append({\\n        \\\"address\\\": address, \\\"port\\\": port, \\\"bound\\\": bound, \\\"closed\\\": True,\\n        \\\"listen_called\\\": False, \\\"connect_called\\\": False,\\n        \\\"reservation_retained\\\": False})\\n    checkpoint()\\n\\ntry:\\n    guard(len(sys.argv) == 2 and sys.argv[1] in ROLE, \\\"fixed_role_required\\\")\\n    role = sys.argv[1]\\n    REPORT[\\\"role\\\"] = role\\n    for number in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP, signal.SIGALRM):\\n        previous = signal.signal(number, mark_signal)\\n        HANDLERS.append((number, previous))\\n    checkpoint()\\n    previous_timer = signal.setitimer(signal.ITIMER_REAL, (UNTIL - time.monotonic_ns()) / 1000000000)\\n    guard(previous_timer == (0.0, 0.0), \\\"preexisting_timer_refused\\\")\\n    PHASE = \\\"identity_before\\\"\\n    before = snapshot(role)\\n    REPORT[\\\"identity\\\"] = before\\n    PHASE = \\\"fixed_ports\\\"\\n    for port in PORTS:\\n        bind_close(before[\\\"declared_lan_ipv4\\\"], port)\\n    PHASE = \\\"identity_after\\\"\\n    after = snapshot(role)\\n    guard(after == before, \\\"identity_changed\\\")\\n    REPORT[\\\"identity_stable_before_after\\\"] = True\\n    checkpoint()\\n    REPORT[\\\"status\\\"] = \\\"passed\\\"\\nexcept BaseException as error:\\n    REPORT[\\\"status\\\"] = \\\"failed\\\"\\n    REPORT[\\\"failure\\\"] = {\\n        \\\"phase\\\": PHASE,\\n        \\\"code\\\": str(error) if type(error) is Refusal else \\\"observation_error\\\",\\n        \\\"error_type\\\": type(error).__name__,\\n        \\\"errno\\\": error.errno if isinstance(error, OSError) else None,\\n    }\\nfinally:\\n    # Every returned file/socket handle was closed exactly once in its own\\n    # non-throwing signal region. There is no second close/retry or fallback.\\n    closed = all(not row[\\\"acquired\\\"] or\\n                 (row[\\\"close_attempted\\\"] and row[\\\"closed\\\"]\\n                  and row[\\\"close_error\\\"] is None) for row in RESOURCES)\\n    REPORT[\\\"all_probe_resources_closed\\\"] = closed\\n    if not closed or PENDING or time.monotonic_ns() >= UNTIL:\\n        REPORT[\\\"status\\\"] = \\\"failed\\\"\\n        REPORT[\\\"failure\\\"] = REPORT[\\\"failure\\\"] or {\\n            \\\"phase\\\": \\\"finalization\\\", \\\"code\\\": \\\"closure_signal_or_deadline_refused\\\",\\n            \\\"error_type\\\": \\\"Refusal\\\", \\\"errno\\\": None}\\n    try:\\n        signal.setitimer(signal.ITIMER_REAL, 0)\\n        for number, previous in reversed(HANDLERS):\\n            signal.signal(number, previous)\\n    except BaseException as error:\\n        REPORT[\\\"status\\\"] = \\\"failed\\\"\\n        REPORT[\\\"failure\\\"] = {\\n            \\\"phase\\\": \\\"signal_restoration\\\", \\\"code\\\": \\\"signal_restoration_failed\\\",\\n            \\\"error_type\\\": type(error).__name__, \\\"errno\\\": None}\\n    REPORT[\\\"finished_monotonic_ns\\\"] = str(time.monotonic_ns())\\n    if int(REPORT[\\\"finished_monotonic_ns\\\"]) >= UNTIL:\\n        REPORT[\\\"status\\\"] = \\\"failed\\\"\\n        REPORT[\\\"failure\\\"] = REPORT[\\\"failure\\\"] or {\\n            \\\"phase\\\": \\\"terminal_deadline\\\", \\\"code\\\": \\\"absolute_deadline_exceeded\\\",\\n            \\\"error_type\\\": \\\"Refusal\\\", \\\"errno\\\": None}\\n\\nraw = (json.dumps(REPORT, sort_keys=True, separators=(\\\",\\\", \\\":\\\")) + \\\"\\\\n\\\").encode(\\\"utf-8\\\")\\nif len(raw) > STDOUT_MAX:\\n    raw = b'{\\\"schema\\\":\\\"heptabao.final-lan-endpoint-identity.v1\\\",\\\"status\\\":\\\"failed\\\",\\\"failure\\\":{\\\"code\\\":\\\"public_report_cap\\\"}}\\\\n'\\n    REPORT[\\\"status\\\"] = \\\"failed\\\"\\ntry:\\n    offset = 0\\n    while offset < len(raw):\\n        count = os.write(1, raw[offset:offset + 4096])\\n        if count <= 0:\\n            raise OSError(\\\"stdout_write_failed\\\")\\n        offset += count\\nexcept BaseException:\\n    raise SystemExit(2)\\nraise SystemExit(0 if REPORT[\\\"status\\\"] == \\\"passed\\\" and time.monotonic_ns() < UNTIL else 1)\\n\",\n  \"timeout_seconds\": 30,\n  \"idempotency_key\": \"heptabao-final-lan-identity-rog-ssh-20261106-r1-6dd47ce4\"\n}\n",
+      "requestPin": {
+        "blob": "a40cdf75bf897942579c14c96688a2112b5a5fda",
+        "bytes": 13006,
+        "sha256": "2f23b8a1c65d2a376da2949273f4177fdedbefaf5b8483db902b174c93257dd3"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "f6a2780f47e8355d4532ec6210325da33b51352f",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "4a82bc51275b26049207bfdd2b0118a3cf862851",
+            "bytes": 840,
+            "sha256": "ea906026c770c93afbcfe36611b9c071d67aa568d43279a7240edf6e7c4d4afc",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "1252a31d74e814af620a8d46ce2a1d421fc1728d",
+            "bytes": 703,
+            "sha256": "7aec3531f417bf7cf2aef9cd344a42b5bcadf0862fff3ac17f8a781a3e133f09",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "a40cdf75bf897942579c14c96688a2112b5a5fda",
+            "bytes": 13006,
+            "sha256": "2f23b8a1c65d2a376da2949273f4177fdedbefaf5b8483db902b174c93257dd3",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 14549,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "efe68986e2182486969bbf6d3e12e1c2d0ff8cdf",
+        "bytes": 1822,
+        "sha256": "e368534d8d7b488c7725d5c93342d0ed0791d1845a7f3d1a34563052e0b887eb"
+      },
+      "sdkArchive": {
+        "tree": "80c944b9616a8cc3882d1c2151f0e4afd84f5272",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "efe68986e2182486969bbf6d3e12e1c2d0ff8cdf",
+            "bytes": 1822,
+            "sha256": "e368534d8d7b488c7725d5c93342d0ed0791d1845a7f3d1a34563052e0b887eb",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 1822,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "edf98de38faa90a4d90b885789671c9424b3802f",
+        "bytes": 1510,
+        "sha256": "043a7fc16a16922902ef6ae76a5388736048840619d14e6e12f1b439356a93e8"
+      }
+    },
+    "lanid-rog-ssh-auth0-admit-20261106-r1": {
+      "kind": "operation_start",
+      "requestRaw": "{\n  \"idempotency_key\": \"heptabao-final-lan-identity-rog-ssh-6dd47ce4-authority-0\",\n  \"operation\": {\n    \"tool\": \"process_status\",\n    \"arguments\": {\n      \"host\": \"desktop\",\n      \"job_id\": \"1a1b2465f2a-fc05-7d48\"\n    }\n  }\n}\n",
+      "requestPin": {
+        "blob": "b8d765c90fea02b1d96f538147c2ffaf1cdbddf7",
+        "bytes": 226,
+        "sha256": "c1058a21683d442f79113b1cf2329c5ceb897678be85561d90945425fd450816"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "38cef81cb5975db948a31b8fbc3bca9a87e28ae5",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "7dad5a4d612ab6af4e382b7561a3f1217301c678",
+            "bytes": 865,
+            "sha256": "6143cff403e1f6486af7ebc392f1bdd25a0b65ecc7fff667a2714162afb0f0b4",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "06636e05e90b1b6ff83ca6d9b674d1d9756e4415",
+            "bytes": 728,
+            "sha256": "12606f47cec4c66974455b0fb23e5beb16af7288d9c806b52a46774b659b43a0",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "b8d765c90fea02b1d96f538147c2ffaf1cdbddf7",
+            "bytes": 226,
+            "sha256": "c1058a21683d442f79113b1cf2329c5ceb897678be85561d90945425fd450816",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1819,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "6e44c024383f25a30a4d40e9f2e6b5cfac137e83",
+        "bytes": 709,
+        "sha256": "66d26a929ad581c41cd16e0cbf5aff970f3a53a3dfc4d9dd1b85a819246a8dd1"
+      },
+      "sdkArchive": {
+        "tree": "f1a151d5f5dde972fe5bc8805e0d54539fa09ead",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "6e44c024383f25a30a4d40e9f2e6b5cfac137e83",
+            "bytes": 709,
+            "sha256": "66d26a929ad581c41cd16e0cbf5aff970f3a53a3dfc4d9dd1b85a819246a8dd1",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 709,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "2fb9cd216e1e951dd35a2227b96ee8b87ac814d5",
+        "bytes": 548,
+        "sha256": "6e809ecfa4cf27409693c781896320b39a63f55b98b9bc528b2e1ac88408ec89"
+      }
+    },
+    "lanid-rog-ssh-auth0-status0-20261106-r1": {
+      "kind": "operation_status",
+      "requestRaw": "{\n  \"operation_id\": \"a9207b8e07b8b238be5bd61bc95b8adb2b9985931938b7b240fb90349f2ed58c\"\n}\n",
+      "requestPin": {
+        "blob": "a5b6e9f9364e17246cab05d85399976021e670ed",
+        "bytes": 89,
+        "sha256": "1cfd010bb3d892069a7e41c24516bb98306170a7b219e6c66fb7b77855dd7b2f"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "044b3ad32a7f665fd14c782ce906eb5180994b7e",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "e528723238711283afe8c1fc54f315ec0020bcc2",
+            "bytes": 929,
+            "sha256": "52b1404899195a21d9024c619067036be1c948e6cc3408ecc7ec4562458506d5",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "c165d1ddd44d6db69154698f2d5999cf9b1b9e1b",
+            "bytes": 792,
+            "sha256": "fe77b10490e4834aec2ed555caaff03dfdd4f706f4b91cc109415926eb5e17da",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "a5b6e9f9364e17246cab05d85399976021e670ed",
+            "bytes": 89,
+            "sha256": "1cfd010bb3d892069a7e41c24516bb98306170a7b219e6c66fb7b77855dd7b2f",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1810,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "c98bd8c093edc1a0dcf18e09faa5030fbe34c32b",
+        "bytes": 980,
+        "sha256": "469f940c0c5ba07d8649ccfe4b954463fea9c036692bc81ebfe580483a16c693"
+      },
+      "sdkArchive": {
+        "tree": "7e3247750b6fb9e467fa6fa2e464078b41f26901",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "c98bd8c093edc1a0dcf18e09faa5030fbe34c32b",
+            "bytes": 980,
+            "sha256": "469f940c0c5ba07d8649ccfe4b954463fea9c036692bc81ebfe580483a16c693",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 980,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "6ee22c26728788b238b41c65256bfb109851247d",
+        "bytes": 805,
+        "sha256": "977b56d69fb29829443efa3d01aa1cc5f22da88d7b5a8c3af09dca08cd1cd27e"
+      }
+    },
+    "lanid-rog-ssh-auth0-page0-20261106-r1": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"a9207b8e07b8b238be5bd61bc95b8adb2b9985931938b7b240fb90349f2ed58c\",\n  \"offset\": 0,\n  \"limit\": 8192\n}\n",
+      "requestPin": {
+        "blob": "90f95f55ee399b9dfc1f91bdbf8387d3429ed6a1",
+        "bytes": 121,
+        "sha256": "cdfec2b1f97ca0a9c78bd22f122e8d87d8469185a19acfb468332ab36576b54e"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "e6b4ea610aa8e6c268f3adedd4ef7793d826c962",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "59ae83c11f2e88861b8e91f97ebf6df291779953",
+            "bytes": 928,
+            "sha256": "e144fb31a857f6f5a6095d77d25b01745f0ba87c6ec4204318cfde8fae48dfc6",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "4bbc4888dad4f3a8b9d43869c819f3ba02b4e6a6",
+            "bytes": 791,
+            "sha256": "d72b30cc679a7a3b0be998eb36ae769afaa970b9a8fdbc2aeeb9cefccc5e53fa",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "90f95f55ee399b9dfc1f91bdbf8387d3429ed6a1",
+            "bytes": 121,
+            "sha256": "cdfec2b1f97ca0a9c78bd22f122e8d87d8469185a19acfb468332ab36576b54e",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1840,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "a0b982e9ac906e39dbd85a7c2ff6a8ddc1461279",
+        "bytes": 2068,
+        "sha256": "32b47e56b2653e9d5c40265196e578cbef37e3628e7e787e49704a1794ab464f"
+      },
+      "sdkArchive": {
+        "tree": "d6439cd333fa820b8ea4c23c10ba89aace42a345",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "a0b982e9ac906e39dbd85a7c2ff6a8ddc1461279",
+            "bytes": 2068,
+            "sha256": "32b47e56b2653e9d5c40265196e578cbef37e3628e7e787e49704a1794ab464f",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 2068,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "f0a90df60b12342f4cd2f08fb14cb3b6b10e75d2",
+        "bytes": 1897,
+        "sha256": "d95ed47ca02abfe3b4fa79db178b9e0ffe22bb498a6073b739be03cbc7038f50"
+      }
+    },
+    "lanid-rog-ssh-streams0-admit-20261106-r1": {
+      "kind": "operation_start",
+      "requestRaw": "{\n  \"idempotency_key\": \"heptabao-final-lan-identity-rog-ssh-6dd47ce4-streams-0\",\n  \"operation\": {\n    \"tool\": \"process_read\",\n    \"arguments\": {\n      \"host\": \"desktop\",\n      \"job_id\": \"1a1b2465f2a-fc05-7d48\",\n      \"stdout_offset\": 0,\n      \"stderr_offset\": 0,\n      \"limit\": 16384\n    }\n  }\n}\n",
+      "requestPin": {
+        "blob": "121f34f61eaf495d2a963c9ab84db6a74405f3ca",
+        "bytes": 296,
+        "sha256": "6b08080c927bef196fc5e7e36c2487e535ba361e6a6420fa5efbaaf012a56071"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "78f6cdd8721e9a3bb091cac47af0f85a2e51fbcc",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "945503e3359a77972be8e1c3a627ab8afd9ed0d7",
+            "bytes": 868,
+            "sha256": "22b77c6fe9023f172240e83d1a413f044eee8e204ebe7bbef77ea19d603c2344",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "e0d66ccb039770bb30d08aefd2a48dbcfcf82e34",
+            "bytes": 731,
+            "sha256": "bc8b3592f91f0508ab3e8d56200f4b52dca1741c01e308cd0c3935c532a1f71c",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "121f34f61eaf495d2a963c9ab84db6a74405f3ca",
+            "bytes": 296,
+            "sha256": "6b08080c927bef196fc5e7e36c2487e535ba361e6a6420fa5efbaaf012a56071",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1895,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "ebd6e185ec8efb4be26c8d3766e543124c1febcf",
+        "bytes": 707,
+        "sha256": "2f802faf0b55b60469d8a130320aa7b035c7e62e2fc750ca9fd7f21285cd8759"
+      },
+      "sdkArchive": {
+        "tree": "734244a175d7e0581a21e5d728c8fde05221b120",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "ebd6e185ec8efb4be26c8d3766e543124c1febcf",
+            "bytes": 707,
+            "sha256": "2f802faf0b55b60469d8a130320aa7b035c7e62e2fc750ca9fd7f21285cd8759",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 707,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "c5bf805ad34e3d7a210cc35f103320a658fb21d6",
+        "bytes": 546,
+        "sha256": "524512131158ffdd23c8d1784c95e99b8e78a9281432c848a6f980f8c4869526"
+      }
+    },
+    "lanid-rog-ssh-streams0-status0-20261106-r1": {
+      "kind": "operation_status",
+      "requestRaw": "{\n  \"operation_id\": \"c64e64e13dedf898a9be1d5be3b116f1f54017860ee90c26575695a57af83475\"\n}\n",
+      "requestPin": {
+        "blob": "af7f1005ecbeacb17978ce4658e694b2b0ffcbad",
+        "bytes": 89,
+        "sha256": "5e9c0d05a023805d93cb03d9fb378e8123086c8816f4ea09a85355f49a4d577d"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "85eb1321a6d8f7b5a338633c9c6f609d489ac12f",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "e170aac0b4c7e1a1d19e04195e5b69c9d18f904a",
+            "bytes": 932,
+            "sha256": "973a02a3ac0b90fc393bec849b97089516b550bf7b849c3f0cb4b5159fbec463",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "f5bc83a7e3055b0a24e12aa8c19ff9d1af9e063a",
+            "bytes": 795,
+            "sha256": "165a07f09f14fea98b259ed5620afb8815d83e0ab726110d4147c8cb1b9b0ce1",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "af7f1005ecbeacb17978ce4658e694b2b0ffcbad",
+            "bytes": 89,
+            "sha256": "5e9c0d05a023805d93cb03d9fb378e8123086c8816f4ea09a85355f49a4d577d",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1816,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "5be2f6deb40d6076000d9d1fc0174cf91bacef5d",
+        "bytes": 978,
+        "sha256": "f212fe25ae2919a07904df9d622178242a77a4f69eed49a8255a30c63a93a339"
+      },
+      "sdkArchive": {
+        "tree": "b091b16a4d1281dd43f8ab11692f8fad99fc223e",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "5be2f6deb40d6076000d9d1fc0174cf91bacef5d",
+            "bytes": 978,
+            "sha256": "f212fe25ae2919a07904df9d622178242a77a4f69eed49a8255a30c63a93a339",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 978,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "657087a66877512a0053998d84aa16b47bd9f528",
+        "bytes": 803,
+        "sha256": "e28792832710588c3c52dc65dfadf146e909c3e4de85e916b00517f9b04f6d89"
+      }
+    },
+    "lanid-rog-ssh-streams0-page0-20261106-r1": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"c64e64e13dedf898a9be1d5be3b116f1f54017860ee90c26575695a57af83475\",\n  \"offset\": 0,\n  \"limit\": 8192\n}\n",
+      "requestPin": {
+        "blob": "b144d7b99f289ce4554a482c64dd123f360f16fe",
+        "bytes": 121,
+        "sha256": "c21b598792035512ac2b3b8226eb404a9715c2326ba38400bbf1acd3b163ce77"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "3bf69499310f93828863ad42e3b913b6aa294ef6",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "2a6762800d70eadb07188282e9ab74c385523f07",
+            "bytes": 931,
+            "sha256": "084b8b6deacb368a78f6b8292feee80a5c244dcab8a6b4e7c4b4afc1a5eacfca",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "157871d4f2c5f536f44884165c37db830f0a534e",
+            "bytes": 794,
+            "sha256": "84013f76fe32154a942738a0d2a2b0bf8f0c216d1661ad370d9354a5520023e7",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "b144d7b99f289ce4554a482c64dd123f360f16fe",
+            "bytes": 121,
+            "sha256": "c21b598792035512ac2b3b8226eb404a9715c2326ba38400bbf1acd3b163ce77",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1846,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "ee855534ed8c7e8e5887d61eede02fd1f6d1494e",
+        "bytes": 11780,
+        "sha256": "7498a87bc4a0938b851158c5a6c08ebb425f76998b85da530de4576ea78fd99f"
+      },
+      "sdkArchive": {
+        "tree": "d085b640d63a0002d36cfaf1ae44955bce4d9e6c",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "ee855534ed8c7e8e5887d61eede02fd1f6d1494e",
+            "bytes": 11780,
+            "sha256": "7498a87bc4a0938b851158c5a6c08ebb425f76998b85da530de4576ea78fd99f",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 11780,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "40ff597891f528f1a08517deef0c3fcd90ffb739",
+        "bytes": 11609,
+        "sha256": "92e87c0b35992f63b79ad248b1780f0af54f6d7f4d41ffecba3af24b2743e5d4"
+      }
+    },
+    "lanid-rog-ssh-streams0-page1-20261106-r1": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"c64e64e13dedf898a9be1d5be3b116f1f54017860ee90c26575695a57af83475\",\n  \"offset\": 8192,\n  \"limit\": 8192\n}\n",
+      "requestPin": {
+        "blob": "01e2081f07843f2325d1edf4b830f9805f0d5665",
+        "bytes": 124,
+        "sha256": "6178ff0ffe9b36dd07996e8a12490f102d5272f587c267134068390cebec5edc"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "a0f734db6592e3752d00c33b0454adee32b25c0e",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "c726c59448d4c40092fab8a630eed3373bd11719",
+            "bytes": 931,
+            "sha256": "b0f46ff1681be6e8f558cd6fdeaedd54ce5f67dcd3062245a55b197d12dfaa19",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "7f1edcee17e1d14fcb79f40c18ddedd550d2751f",
+            "bytes": 794,
+            "sha256": "a0648d62787c5a4047d23542cfb1153f096d531f051fa22a9e462ea7024fc9a7",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "01e2081f07843f2325d1edf4b830f9805f0d5665",
+            "bytes": 124,
+            "sha256": "6178ff0ffe9b36dd07996e8a12490f102d5272f587c267134068390cebec5edc",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1849,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "07969fe85b0753ee8d2ca57421d9423f4d60156a",
+        "bytes": 7451,
+        "sha256": "3bc5ab0c9eac385012285eb9904a4136de2ce761b9f15a41dfe4619ba2aab152"
+      },
+      "sdkArchive": {
+        "tree": "6ba14842cf2403a773af4593148256732a66a26b",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "07969fe85b0753ee8d2ca57421d9423f4d60156a",
+            "bytes": 7451,
+            "sha256": "3bc5ab0c9eac385012285eb9904a4136de2ce761b9f15a41dfe4619ba2aab152",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 7451,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "6ad4ec9ce40336dc37ea7e985bbe8d0cd30a8e44",
+        "bytes": 7280,
+        "sha256": "3795657120a8bc9e35c8dfc3c57e7768ed08b4f8b91223f8251791d74c1fd0cb"
+      }
+    }
+  },
+  "completedObservers": [
+    {
+      "id": "a9207b8e07b8b238be5bd61bc95b8adb2b9985931938b7b240fb90349f2ed58c",
+      "tool": "process_status",
+      "payload": {
+        "blob": "5b5d967d5b85d80eec54b75e88a2939f1de6f5ac",
+        "bytes": 910,
+        "sha256": "9bed01814273f0ceb126bbf378eee7dba2c9bd152318fcf887f84e17e8672397"
+      },
+      "payloadTree": "ab297854cc6b3fc52046a2970291e72ca019cd25",
+      "nativeText": {
+        "blob": "42d447f2b83e5f642f7d3fd0fd7d79db6d2b0f41",
+        "bytes": 731,
+        "sha256": "d057f3b9c0faca6affb9f38cbf3f826e9d0e91907f4494408b258474449cba53"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "c64e64e13dedf898a9be1d5be3b116f1f54017860ee90c26575695a57af83475",
+      "tool": "process_read",
+      "payload": {
+        "blob": "85d0ea081db1d99ff37410a0af70017d59da5f43",
+        "bytes": 13134,
+        "sha256": "47ff3e6eaafaee2adb4f096944e3af289057bb68be32490e922a0d6f87b67950"
+      },
+      "payloadTree": "295125e559261a3fa559185cb0fbbea1369cf662",
+      "nativeText": {
+        "blob": "0b44d0bf154fe71015640fe5d19c726dde85ef8f",
+        "bytes": 12053,
+        "sha256": "c8ba97d64600821efb9a6c960601dcc8c519066865e74bd88ffa1f0f3d99be5c"
+      },
+      "pages": 2,
+      "completedInactive": true
+    }
+  ],
+  "nextStdout": 3753,
+  "nextStderr": 0,
+  "localJournalAvailable": false,
+  "gitFirstExplicitlyRequiredByThisRootGO": true
+}

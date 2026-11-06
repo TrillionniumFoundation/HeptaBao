@@ -1,0 +1,11 @@
+--- a/capture.after
++++ b/capture.before
+@@ -17,7 +17,7 @@
+         need(not any(k in child_env for k in observer.child_env),'fresh_observer_pipe_environment')
+         child_env.update(observer.child_env)
+     need(volume_guard is not None,'held_volume_before_child_output')
++    with volume_guard.capture_sink(stdout_path) as stdout, volume_guard.capture_sink(stderr_path) as stderr:
+-    with volume_guard.capture_sink(stdout_path, maximum=4096) as stdout, volume_guard.capture_sink(stderr_path, maximum=65536) as stderr:
+         with critical():
+             remaining(until)
+             proc=subprocess.Popen(argv,env=child_env,cwd=str(cwd),start_new_session=True,

@@ -1,0 +1,114 @@
+[
+  {
+    "role": "linux-heptabao-server",
+    "source_native_host": "rog",
+    "source_abi": "x86_64-unknown-linux-gnu",
+    "actual_path": null,
+    "actual_bytes": null,
+    "actual_sha256": null,
+    "actual_full9": null,
+    "actual_version": null,
+    "expected_source_commit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "expected_source_tree": "9781e9615ac5fb068d217241c74bb54bf87942cf",
+    "expected_build_qualification": null,
+    "expected_mode": "0500",
+    "maximum_binary_bytes": 167772160,
+    "request_template": {
+      "idempotency_key": null,
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "rog",
+          "path": null
+        }
+      }
+    },
+    "submitted": false,
+    "execution_ready": false,
+    "binding_rule": "Only freeze a fresh exact file_info request after the final source commit's independently qualified native build supplies this exact artifact path, bytes, SHA256 and source/ABI receipt. No 4e808 or failed 025b report qualifies this slot."
+  },
+  {
+    "role": "linux-heptabao-seed",
+    "source_native_host": "rog",
+    "source_abi": "x86_64-unknown-linux-gnu",
+    "actual_path": null,
+    "actual_bytes": null,
+    "actual_sha256": null,
+    "actual_full9": null,
+    "actual_version": null,
+    "expected_source_commit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "expected_source_tree": "9781e9615ac5fb068d217241c74bb54bf87942cf",
+    "expected_build_qualification": null,
+    "expected_mode": "0500",
+    "maximum_binary_bytes": 167772160,
+    "request_template": {
+      "idempotency_key": null,
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "rog",
+          "path": null
+        }
+      }
+    },
+    "submitted": false,
+    "execution_ready": false,
+    "binding_rule": "Only freeze a fresh exact file_info request after the final source commit's independently qualified native build supplies this exact artifact path, bytes, SHA256 and source/ABI receipt. No 4e808 or failed 025b report qualifies this slot."
+  },
+  {
+    "role": "mac-heptabao-server",
+    "source_native_host": "mac",
+    "source_abi": "aarch64-apple-darwin",
+    "actual_path": null,
+    "actual_bytes": null,
+    "actual_sha256": null,
+    "actual_full9": null,
+    "actual_version": null,
+    "expected_source_commit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "expected_source_tree": "9781e9615ac5fb068d217241c74bb54bf87942cf",
+    "expected_build_qualification": null,
+    "expected_mode": "0500",
+    "maximum_binary_bytes": 167772160,
+    "request_template": {
+      "idempotency_key": null,
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "mac",
+          "path": null
+        }
+      }
+    },
+    "submitted": false,
+    "execution_ready": false,
+    "binding_rule": "Only freeze a fresh exact file_info request after the final source commit's independently qualified native build supplies this exact artifact path, bytes, SHA256 and source/ABI receipt. No 4e808 or failed 025b report qualifies this slot."
+  },
+  {
+    "role": "mac-heptabao-seed",
+    "source_native_host": "mac",
+    "source_abi": "aarch64-apple-darwin",
+    "actual_path": null,
+    "actual_bytes": null,
+    "actual_sha256": null,
+    "actual_full9": null,
+    "actual_version": null,
+    "expected_source_commit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "expected_source_tree": "9781e9615ac5fb068d217241c74bb54bf87942cf",
+    "expected_build_qualification": null,
+    "expected_mode": "0500",
+    "maximum_binary_bytes": 167772160,
+    "request_template": {
+      "idempotency_key": null,
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "mac",
+          "path": null
+        }
+      }
+    },
+    "submitted": false,
+    "execution_ready": false,
+    "binding_rule": "Only freeze a fresh exact file_info request after the final source commit's independently qualified native build supplies this exact artifact path, bytes, SHA256 and source/ABI receipt. No 4e808 or failed 025b report qualifies this slot."
+  }
+]

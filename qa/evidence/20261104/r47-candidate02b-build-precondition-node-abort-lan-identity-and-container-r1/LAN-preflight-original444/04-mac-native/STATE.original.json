@@ -1,0 +1,542 @@
+{
+  "rootGoWhole": true,
+  "goRaw": "{\n  \"schema\": \"heptabao.root.final-lan-identity-GO.r1\",\n  \"authorization\": \"GO\",\n  \"scope\": \"six_fixed_serial_endpoint_identity_observations_only\",\n  \"time_utc\": \"2026-11-06 18:55:50 UTC\",\n  \"source_packet\": {\n    \"tree\": \"bd83663a23db62aeabe458cbcbec7a2bd0c96fe0\",\n    \"files\": 52,\n    \"bytes\": 1888417,\n    \"whole\": true\n  },\n  \"source\": {\n    \"blob\": \"b888782cf44f0454bf30f2b5e9f42c002fce37e5\",\n    \"bytes\": 11551,\n    \"sha256\": \"6dd47ce4367ece5d1e0cdd0119b0d073cc6c95ef601571aff0b87d86681474de\"\n  },\n  \"root_qualification\": {\n    \"blob\": \"71814180e169ebe574118939dcce1f08fd24d3bd\",\n    \"bytes\": 2177,\n    \"sha256\": \"c1154998cf387f8c418f6904e3c0ddd320273ae48e16533b7c82f2dd2e18c266\"\n  },\n  \"author102\": {\n    \"blob\": \"8e87b47ca3cb90e09b468df724f34eb5b81542ae\",\n    \"bytes\": 8406,\n    \"sha256\": \"66cd7178b3df3723dabd59e49ae297d71b05660a937605cc0b61944a14c1f161\"\n  },\n  \"fixed_order\": [\n    {\n      \"index\": 0,\n      \"role\": \"pocket4\",\n      \"route\": \"native\",\n      \"request\": {\n        \"blob\": \"99f8c1e947b214ea50fbc9115a81b100e0ba3dc5\",\n        \"bytes\": 12564,\n        \"sha256\": \"0120a9df8b521af9c77b432577482f62952b0ca315eefc9775350aef290bd992\"\n      },\n      \"journal\": {\n        \"blob\": \"24c8282e8d64f4baed873740d305d33aa83eec81\",\n        \"bytes\": 19066,\n        \"sha256\": \"7ccc9d3f1bea649c34aa78f5826e17a4d75ccd40109bdb2e1f0226eca9184111\"\n      },\n      \"typed\": {\n        \"sha256\": \"5e403518b61be1910f29b9e514e7488ade18b8c2c22393da0d91497882127d9e\",\n        \"native_fingerprint\": \"6791486618325475729\",\n        \"canonical_bytes\": 12504\n      },\n      \"slot\": \"final_lan_identity_pocket4_native_20261106_r1\",\n      \"observer_key_prefix\": \"heptabao-final-lan-identity-pocket4-native-6dd47ce4-\",\n      \"submitted\": false\n    },\n    {\n      \"index\": 1,\n      \"role\": \"pocket4\",\n      \"route\": \"ssh\",\n      \"request\": {\n        \"blob\": \"5301c6cb6b4ff5ffbf318d41585b20da852210af\",\n        \"bytes\": 13018,\n        \"sha256\": \"5909de0b18e50ca3ff04fffb1821a749db8bc8d8267a52cfa611d0cdb9cddde6\"\n      },\n      \"journal\": {\n        \"blob\": \"d9b52c1cd03ed8be72b4f698cdbe459305b16cd9\",\n        \"bytes\": 19060,\n        \"sha256\": \"e40678e794e1ca7545a92bf98978bc859be697b6d209dc5c77848f446848b429\"\n      },\n      \"typed\": {\n        \"sha256\": \"e5496e537837de2f30b3f74b0d59a27d747a9dca71fe88420d08c818c37e8388\",\n        \"native_fingerprint\": \"16521858012763643439\",\n        \"canonical_bytes\": 12839\n      },\n      \"slot\": \"final_lan_identity_pocket4_ssh_20261106_r1\",\n      \"observer_key_prefix\": \"heptabao-final-lan-identity-pocket4-ssh-6dd47ce4-\",\n      \"submitted\": false\n    },\n    {\n      \"index\": 2,\n      \"role\": \"rog\",\n      \"route\": \"native\",\n      \"request\": {\n        \"blob\": \"7886b7a297ff3aabab593bcee8819a2403ead888\",\n        \"bytes\": 12552,\n        \"sha256\": \"82fac2f958af84ac90185898cb95d4b69420eb247ce9becaa357757f9ba0535f\"\n      },\n      \"journal\": {\n        \"blob\": \"646be4c2261741504b7baf976b41df1dcae0a671\",\n        \"bytes\": 19050,\n        \"sha256\": \"db7da9865cd09d502fda277ad2a8da93467bbd67ff27dfb8255d49b7c2960fcc\"\n      },\n      \"typed\": {\n        \"sha256\": \"bdb7b478032f40465ef6cd5f5e9db4e93f123d52c9c53a086d2cac91799be843\",\n        \"native_fingerprint\": \"13670593621448933446\",\n        \"canonical_bytes\": 12496\n      },\n      \"slot\": \"final_lan_identity_rog_native_20261106_r1\",\n      \"observer_key_prefix\": \"heptabao-final-lan-identity-rog-native-6dd47ce4-\",\n      \"submitted\": false\n    },\n    {\n      \"index\": 3,\n      \"role\": \"rog\",\n      \"route\": \"ssh\",\n      \"request\": {\n        \"blob\": \"a40cdf75bf897942579c14c96688a2112b5a5fda\",\n        \"bytes\": 13006,\n        \"sha256\": \"2f23b8a1c65d2a376da2949273f4177fdedbefaf5b8483db902b174c93257dd3\"\n      },\n      \"journal\": {\n        \"blob\": \"5b1bd6f250b0d56b9197ed7b626a8382b3b151c0\",\n        \"bytes\": 19052,\n        \"sha256\": \"24eb40d8a4aec0d26630526c76a36090eaab453ec20895df0d8d17203bd7811c\"\n      },\n      \"typed\": {\n        \"sha256\": \"a7e9635cc13555fa070382c4c8f05437e41c953edf815e180deca1df00f63ef6\",\n        \"native_fingerprint\": \"12099311123937187322\",\n        \"canonical_bytes\": 12831\n      },\n      \"slot\": \"final_lan_identity_rog_ssh_20261106_r1\",\n      \"observer_key_prefix\": \"heptabao-final-lan-identity-rog-ssh-6dd47ce4-\",\n      \"submitted\": false\n    },\n    {\n      \"index\": 4,\n      \"role\": \"mac\",\n      \"route\": \"native\",\n      \"request\": {\n        \"blob\": \"fa64e2d748e07cb96cb66555a3738d2fba38ed8c\",\n        \"bytes\": 12634,\n        \"sha256\": \"05a7f7820151a90d8a9a553f44b07240cd3a0b9efbf88c888730799a2d84f414\"\n      },\n      \"journal\": {\n        \"blob\": \"c38a92b5144ca66050cb41bd61d09aa40cda17af\",\n        \"bytes\": 19050,\n        \"sha256\": \"7d6704a6086f85f013dc22e8c543d3ec4d8db6d17f7b0546a3e63b9e37135347\"\n      },\n      \"typed\": {\n        \"sha256\": \"2e5335d7f6feae719892fb93768cb66083a6be1205a53caeb07a001f0bdc4699\",\n        \"native_fingerprint\": \"3338070950489796209\",\n        \"canonical_bytes\": 12578\n      },\n      \"slot\": \"final_lan_identity_mac_native_20261106_r1\",\n      \"observer_key_prefix\": \"heptabao-final-lan-identity-mac-native-6dd47ce4-\",\n      \"submitted\": false\n    },\n    {\n      \"index\": 5,\n      \"role\": \"mac\",\n      \"route\": \"ssh\",\n      \"request\": {\n        \"blob\": \"b51353530adecb7c157189d40b3f38cccd5ce2ac\",\n        \"bytes\": 13088,\n        \"sha256\": \"37746c31450fb2252e6af54e05b9700c7950ccf13cd698cebcf289cef524e571\"\n      },\n      \"journal\": {\n        \"blob\": \"24a403d7087f6963513afebc8344ef6228596e0c\",\n        \"bytes\": 19052,\n        \"sha256\": \"dd301fbaea79156ffce36df1593ad95b3d4f9266c26399d6b51d3459e84b48c7\"\n      },\n      \"typed\": {\n        \"sha256\": \"7e05a7d756fba07e6b7d98f063af63cc354460561e6fdde325faab0d6cbd4f56\",\n        \"native_fingerprint\": \"9080848766981611646\",\n        \"canonical_bytes\": 12913\n      },\n      \"slot\": \"final_lan_identity_mac_ssh_20261106_r1\",\n      \"observer_key_prefix\": \"heptabao-final-lan-identity-mac-ssh-6dd47ce4-\",\n      \"submitted\": false\n    }\n  ],\n  \"budgets\": {\n    \"proposed_new_observation_jobs\": 6,\n    \"Native_process_start_calls\": 6,\n    \"remote_probe_invocations\": 6,\n    \"direct_native_probe_processes\": 3,\n    \"desktop_SSH_transport_processes\": 3,\n    \"SSH_remote_exec_probe_processes\": 3,\n    \"SSH_remote_shell_action\": \"fixed exec replaces the command shell with the one probe; SSH daemon/session internals are not claimed as observed child closures\",\n    \"child_processes_started_by_each_probe\": 0,\n    \"helper_absolute_seconds\": 15,\n    \"Native_outer_seconds_per_job\": 30,\n    \"maximum_sum_of_outer_seconds\": 180,\n    \"SSH_connect_timeout_seconds\": 5,\n    \"SSH_connection_attempts\": 1,\n    \"maximum_active_C_calls_or_futures\": 1,\n    \"global_lane_limit\": 2,\n    \"process_status_observers_per_job\": 8,\n    \"process_read_observers_per_job\": 2,\n    \"operation_status_calls_per_observer\": 8,\n    \"immutable_page_limit\": 8192,\n    \"immutable_pages_per_observer\": 128,\n    \"maximum_original_payload_bytes\": 1048576,\n    \"process_read_limit_per_stream\": 16384,\n    \"maximum_observed_stream_bytes_per_job\": 65536,\n    \"maximum_observed_stream_bytes_six_jobs\": 393216,\n    \"probe_stdout_bytes\": 8192,\n    \"Linux_fixed_reads_per_probe\": 6,\n    \"Linux_maximum_returned_input_bytes_including_failed_cap_reads\": 774,\n    \"Linux_file_metadata_calls_per_complete_probe\": 18,\n    \"Darwin_sysctl_read_calls_per_probe\": 4,\n    \"Darwin_maximum_sysctl_buffer_bytes\": 640,\n    \"local_bind_close_calls_per_probe\": 2,\n    \"fixed_ports\": [\n      46230,\n      46231\n    ],\n    \"explicit_probe_resource_handles\": {\n      \"Linux\": {\n        \"file_acquisitions\": 6,\n        \"socket_acquisitions\": 2,\n        \"peak_open\": 1\n      },\n      \"Darwin\": {\n        \"file_acquisitions\": 0,\n        \"socket_acquisitions\": 2,\n        \"peak_open\": 1\n      }\n    },\n    \"resource_scope\": \"Explicit handles created by this probe only; not CPython imports, SSH/Native supervisor pipes, or a global host FD inventory.\"\n  },\n  \"sequence\": [\n    \"Root must first grant an exact Native lane/GO for this SOURCE. Loading source/generator/comparison code does not invoke a tool.\",\n    \"For each request, whole GO and exact request, unique slot initialization, external whole request/intent/armed checkpoint, separate model boundary, one original process_start, complete SDK external whole before isError/parse.\",\n    \"Only the returned original job may be observed. Each process_status/process_read observer closes through its returned ID and every immutable page before another observer.\",\n    \"Close authority and complete stdout/stderr before the next fixed request. For each pair, require equal full identity values and fixed ports before advancing to the next role.\",\n    \"Missing ACK, timeout, permission failure, missing sysctl/file, wrong ABI/model format, nonzero exit, disagreement, cap/deadline or resource-close failure preserves all original evidence and stops later admissions. No key/path/alias/host fallback, automatic retry, reset, cleanup or substitution.\",\n    \"All six success reports and original job/observer closures are inputs to the pure comparison. IP equality alone cannot establish route identity. Reported hardware model is not cryptographic hardware attestation.\",\n    \"Actual model labels require separate explicit root approval against the observed models; this SOURCE leaves every approved model list null.\",\n    \"Four final binary metadata templates remain unbound and are not part of the six-observation admission. They require final qualified native build artifacts and separate exact GO.\"\n  ],\n  \"maximum_process_starts\": 6,\n  \"maximum_active_C_calls_or_futures\": 1,\n  \"global_lane_limit\": 2,\n  \"owner_lane\": \"C\",\n  \"other_lane\": \"B; A reports zero current calls and futures\",\n  \"each_scope_one_start_only\": true,\n  \"model_boundary_after_whole_arm\": true,\n  \"whole_original_SDK_before_semantic_interpretation\": true,\n  \"stop_on_incomplete_or_failed_original\": true,\n  \"no_retry_rekey_substitution_or_cleanup\": true,\n  \"product_execution_authorized\": false,\n  \"source_checkout_writes_authorized\": false,\n  \"binary_metadata_templates_authorized\": false,\n  \"final_LAN_execution_authorized\": false,\n  \"physical_model_labels_initially\": null,\n  \"source_formatted_qualification\": false,\n  \"supersedes_unissued_timestamp_only_GO\": {\n    \"blob\": \"a772b915ac93c1d5e8c1bacbb7486156926e539e\",\n    \"bytes\": 10131,\n    \"sha256\": \"1db7a0fe68a1dd2a4d779327f506c2e3edd0b0fb9f5c267c0a88ef9e2db1820b\"\n  },\n  \"earlier_GO_was_not_sent_or_used\": true\n}\n",
+  "goPin": {
+    "blob": "d9d95a4bc9be0f5bae219f304486e1f4fd712df3",
+    "bytes": 10381,
+    "sha256": "d346eeb4ea5666d8981a3abaf1a4ea189137d49b1e83e0a8212bbca20590e57b"
+  },
+  "digest": "2e5335d7f6feae719892fb93768cb66083a6be1205a53caeb07a001f0bdc4699",
+  "fingerprint": "3338070950489796209",
+  "job": "1a1b249a2fc-fc05-7d56",
+  "startCalled": true,
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "paused": false,
+  "calls": {
+    "lanid-mac-native-start-20261106-r1": {
+      "kind": "process_start",
+      "requestRaw": "{\n  \"host\": \"mac\",\n  \"executable\": \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",\n  \"args\": [\n    \"-I\",\n    \"-S\",\n    \"-B\",\n    \"-c\",\n    \"#!/usr/bin/env python3\\n\\\"\\\"\\\"Fixed LAN endpoint identity and two bind-close observations; SOURCE proposal.\\\"\\\"\\\"\\nimport ctypes\\nimport hashlib\\nimport hmac\\nimport json\\nimport os\\nimport re\\nimport signal\\nimport socket\\nimport stat\\nimport sys\\nimport time\\n\\nSCHEMA = \\\"heptabao.final-lan-endpoint-identity.v1\\\"\\nROLE = {\\n    \\\"mac\\\": (\\\"Darwin\\\", \\\"arm64\\\", \\\"192.168.0.8\\\"),\\n    \\\"rog\\\": (\\\"Linux\\\", \\\"x86_64\\\", \\\"192.168.0.10\\\"),\\n    \\\"pocket4\\\": (\\\"Linux\\\", \\\"x86_64\\\", \\\"192.168.0.9\\\"),\\n}\\nPORTS = (46230, 46231)\\nSECONDS = 15\\nSTDOUT_MAX = 8192\\nDOMAIN = b\\\"heptabao.final-lan-endpoint-identity.20261106.r1\\\\0\\\"\\nSTART = time.monotonic_ns()\\nUNTIL = START + SECONDS * 1000000000\\nPENDING = []\\nHANDLERS = []\\nRESOURCES = []\\nREADS = []\\nSYSCTLS = []\\nPHASE = \\\"argument_admission\\\"\\nREPORT = {\\n    \\\"schema\\\": SCHEMA, \\\"status\\\": \\\"failed\\\", \\\"failure\\\": None,\\n    \\\"role\\\": None, \\\"identity\\\": None, \\\"local_ports\\\": [],\\n    \\\"probe_process\\\": {\\n        \\\"pid\\\": os.getpid(), \\\"ppid\\\": os.getppid(),\\n        \\\"pgid\\\": os.getpgrp(), \\\"sid\\\": os.getsid(0),\\n        \\\"children_started_by_probe\\\": 0,\\n        \\\"python_executable\\\": sys.executable,\\n        \\\"python_version\\\": list(sys.version_info[:3]),\\n    },\\n    \\\"started_monotonic_ns\\\": str(START), \\\"absolute_deadline_monotonic_ns\\\": str(UNTIL),\\n    \\\"deadline_seconds\\\": SECONDS, \\\"reads\\\": READS, \\\"sysctls\\\": SYSCTLS,\\n    \\\"resources\\\": RESOURCES, \\\"signals\\\": PENDING,\\n    \\\"filesystem_writes\\\": 0, \\\"listen_calls\\\": 0, \\\"connect_calls\\\": 0,\\n    \\\"machine_or_boot_identifier_raw_emitted\\\": False,\\n    \\\"hardware_serial_or_hardware_uuid_read\\\": False,\\n    \\\"all_probe_resources_closed\\\": False,\\n}\\n\\nclass Refusal(Exception):\\n    pass\\n\\ndef guard(ok, code):\\n    if not ok:\\n        raise Refusal(code)\\n\\ndef checkpoint():\\n    guard(not PENDING, \\\"signal_observed\\\")\\n    guard(time.monotonic_ns() < UNTIL, \\\"absolute_deadline_exceeded\\\")\\n\\ndef mark_signal(number, frame):\\n    # The handler never raises in an acquire/close gap.\\n    if number not in PENDING:\\n        PENDING.append(number)\\n\\ndef full9(info):\\n    return [str(value) for value in (\\n        info.st_dev, info.st_ino, info.st_uid, info.st_gid, info.st_mode,\\n        info.st_nlink, info.st_size, info.st_mtime_ns, info.st_ctime_ns)]\\n\\ndef read_fixed(path, maximum):\\n    checkpoint()\\n    row = {\\\"kind\\\": \\\"file\\\", \\\"path\\\": path, \\\"acquired\\\": False,\\n           \\\"close_attempted\\\": False, \\\"closed\\\": False, \\\"close_error\\\": None}\\n    RESOURCES.append(row)\\n    fd = None\\n    before = after = named = None\\n    raw = b\\\"\\\"\\n    try:\\n        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC)\\n        row[\\\"acquired\\\"] = True\\n        before = os.fstat(fd)\\n        guard(stat.S_ISREG(before.st_mode), \\\"identity_input_not_regular\\\")\\n        guard(before.st_uid == 0 and before.st_nlink == 1\\n              and not before.st_mode & 0o022, \\\"identity_input_metadata_refused\\\")\\n        # procfs/sysfs sizes are not content length. The returned byte cap and\\n        # explicit EOF apply to these three exact kernel/system inputs.\\n        raw = os.read(fd, maximum + 1)\\n        guard(0 < len(raw) <= maximum, \\\"identity_input_size_refused\\\")\\n        guard(os.read(fd, 1) == b\\\"\\\", \\\"identity_input_not_complete\\\")\\n        after = os.fstat(fd)\\n        named = os.stat(path, follow_symlinks=False)\\n        guard(full9(before) == full9(after) == full9(named), \\\"identity_input_changed\\\")\\n    finally:\\n        if fd is not None:\\n            row[\\\"close_attempted\\\"] = True\\n            try:\\n                os.close(fd)\\n                row[\\\"closed\\\"] = True\\n            except OSError as error:\\n                row[\\\"close_error\\\"] = error.errno\\n    guard(row[\\\"close_error\\\"] is None and row[\\\"closed\\\"], \\\"identity_input_close_failed\\\")\\n    READS.append({\\\"path\\\": path, \\\"bytes\\\": len(raw), \\\"maximum\\\": maximum,\\n                  \\\"eof\\\": True, \\\"metadata_before_after_name\\\": full9(before)})\\n    checkpoint()\\n    return raw\\n\\ndef sysctl_text(libc, key, maximum):\\n    checkpoint()\\n    output = ctypes.create_string_buffer(maximum)\\n    length = ctypes.c_size_t(maximum)\\n    ctypes.set_errno(0)\\n    result = libc.sysctlbyname(\\n        key, ctypes.cast(output, ctypes.c_void_p), ctypes.byref(length), None, 0)\\n    if result != 0:\\n        raise OSError(ctypes.get_errno(), \\\"sysctl_read_failed\\\")\\n    guard(1 < length.value <= maximum, \\\"sysctl_size_refused\\\")\\n    raw = output.raw[:length.value]\\n    guard(raw.endswith(b\\\"\\\\0\\\") and b\\\"\\\\0\\\" not in raw[:-1], \\\"sysctl_string_refused\\\")\\n    SYSCTLS.append({\\\"key\\\": key.decode(\\\"ascii\\\"), \\\"bytes_including_nul\\\": length.value,\\n                    \\\"maximum\\\": maximum})\\n    checkpoint()\\n    return raw[:-1]\\n\\ndef hash_identifier(kind, raw, pattern):\\n    guard(re.fullmatch(pattern, raw) is not None, \\\"identifier_format_refused\\\")\\n    guard(int(raw.replace(b\\\"-\\\", b\\\"\\\"), 16) != 0, \\\"zero_identifier_refused\\\")\\n    return hmac.new(DOMAIN + kind, raw.lower(), hashlib.sha256).hexdigest()\\n\\ndef public_model(raw):\\n    if raw.endswith(b\\\"\\\\n\\\"):\\n        raw = raw[:-1]\\n    guard(0 < len(raw) <= 128 and all(32 <= value <= 126 for value in raw),\\n          \\\"model_format_refused\\\")\\n    return raw.decode(\\\"ascii\\\")\\n\\ndef snapshot(role):\\n    checkpoint()\\n    actual = os.uname()\\n    expected_system, expected_machine, address = ROLE[role]\\n    guard(actual.sysname == expected_system and actual.machine == expected_machine,\\n          \\\"role_platform_mismatch\\\")\\n    hostname = socket.gethostname()\\n    guard(re.fullmatch(r\\\"[A-Za-z0-9_.-]{1,255}\\\", hostname) is not None,\\n          \\\"hostname_format_refused\\\")\\n    boot_pattern = rb\\\"[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\\\"\\n    if actual.sysname == \\\"Linux\\\":\\n        model = public_model(read_fixed(\\\"/sys/devices/virtual/dmi/id/product_name\\\", 256))\\n        machine = read_fixed(\\\"/etc/machine-id\\\", 64)\\n        boot = read_fixed(\\\"/proc/sys/kernel/random/boot_id\\\", 64)\\n        if machine.endswith(b\\\"\\\\n\\\"):\\n            machine = machine[:-1]\\n        if boot.endswith(b\\\"\\\\n\\\"):\\n            boot = boot[:-1]\\n        machine_value = {\\\"source\\\": \\\"/etc/machine-id\\\",\\n            \\\"hmac_sha256\\\": hash_identifier(b\\\"linux-machine-id\\\", machine, rb\\\"[0-9a-f]{32}\\\")}\\n        boot_value = {\\\"source\\\": \\\"/proc/sys/kernel/random/boot_id\\\",\\n            \\\"hmac_sha256\\\": hash_identifier(b\\\"linux-boot-id\\\", boot, boot_pattern)}\\n        model_source = \\\"/sys/devices/virtual/dmi/id/product_name\\\"\\n    else:\\n        libc = ctypes.CDLL(None, use_errno=True)\\n        libc.sysctlbyname.argtypes = [\\n            ctypes.c_char_p, ctypes.c_void_p, ctypes.POINTER(ctypes.c_size_t),\\n            ctypes.c_void_p, ctypes.c_size_t]\\n        libc.sysctlbyname.restype = ctypes.c_int\\n        model = public_model(sysctl_text(libc, b\\\"hw.model\\\", 256))\\n        boot = sysctl_text(libc, b\\\"kern.bootsessionuuid\\\", 64)\\n        boot_value = {\\\"source\\\": \\\"sysctl:kern.bootsessionuuid\\\",\\n            \\\"hmac_sha256\\\": hash_identifier(b\\\"darwin-boot-session-uuid\\\", boot, boot_pattern)}\\n        model_source = \\\"sysctl:hw.model\\\"\\n        machine_value = None\\n    checkpoint()\\n    return {\\n        \\\"hostname\\\": hostname, \\\"os\\\": actual.sysname, \\\"architecture\\\": actual.machine,\\n        \\\"uid\\\": os.getuid(), \\\"euid\\\": os.geteuid(), \\\"gid\\\": os.getgid(),\\n        \\\"model\\\": {\\\"source\\\": model_source, \\\"name\\\": model},\\n        \\\"boot_identity\\\": boot_value, \\\"machine_identity\\\": machine_value,\\n        \\\"machine_identity_not_requested_on_darwin\\\": actual.sysname == \\\"Darwin\\\",\\n        \\\"declared_lan_ipv4\\\": address,\\n    }\\n\\ndef bind_close(address, port):\\n    checkpoint()\\n    row = {\\\"kind\\\": \\\"socket\\\", \\\"address\\\": address, \\\"port\\\": port, \\\"acquired\\\": False,\\n           \\\"close_attempted\\\": False, \\\"closed\\\": False, \\\"close_error\\\": None}\\n    RESOURCES.append(row)\\n    endpoint = None\\n    bound = False\\n    try:\\n        endpoint = socket.socket(socket.AF_INET, socket.SOCK_STREAM)\\n        row[\\\"acquired\\\"] = True\\n        # No SO_REUSEADDR/PORT, listen, connect, accept, or traffic.\\n        endpoint.bind((address, port))\\n        bound = True\\n    finally:\\n        if endpoint is not None:\\n            row[\\\"close_attempted\\\"] = True\\n            try:\\n                endpoint.close()\\n                row[\\\"closed\\\"] = True\\n            except OSError as error:\\n                row[\\\"close_error\\\"] = error.errno\\n    guard(row[\\\"closed\\\"] and row[\\\"close_error\\\"] is None, \\\"port_close_failed\\\")\\n    REPORT[\\\"local_ports\\\"].append({\\n        \\\"address\\\": address, \\\"port\\\": port, \\\"bound\\\": bound, \\\"closed\\\": True,\\n        \\\"listen_called\\\": False, \\\"connect_called\\\": False,\\n        \\\"reservation_retained\\\": False})\\n    checkpoint()\\n\\ntry:\\n    guard(len(sys.argv) == 2 and sys.argv[1] in ROLE, \\\"fixed_role_required\\\")\\n    role = sys.argv[1]\\n    REPORT[\\\"role\\\"] = role\\n    for number in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP, signal.SIGALRM):\\n        previous = signal.signal(number, mark_signal)\\n        HANDLERS.append((number, previous))\\n    checkpoint()\\n    previous_timer = signal.setitimer(signal.ITIMER_REAL, (UNTIL - time.monotonic_ns()) / 1000000000)\\n    guard(previous_timer == (0.0, 0.0), \\\"preexisting_timer_refused\\\")\\n    PHASE = \\\"identity_before\\\"\\n    before = snapshot(role)\\n    REPORT[\\\"identity\\\"] = before\\n    PHASE = \\\"fixed_ports\\\"\\n    for port in PORTS:\\n        bind_close(before[\\\"declared_lan_ipv4\\\"], port)\\n    PHASE = \\\"identity_after\\\"\\n    after = snapshot(role)\\n    guard(after == before, \\\"identity_changed\\\")\\n    REPORT[\\\"identity_stable_before_after\\\"] = True\\n    checkpoint()\\n    REPORT[\\\"status\\\"] = \\\"passed\\\"\\nexcept BaseException as error:\\n    REPORT[\\\"status\\\"] = \\\"failed\\\"\\n    REPORT[\\\"failure\\\"] = {\\n        \\\"phase\\\": PHASE,\\n        \\\"code\\\": str(error) if type(error) is Refusal else \\\"observation_error\\\",\\n        \\\"error_type\\\": type(error).__name__,\\n        \\\"errno\\\": error.errno if isinstance(error, OSError) else None,\\n    }\\nfinally:\\n    # Every returned file/socket handle was closed exactly once in its own\\n    # non-throwing signal region. There is no second close/retry or fallback.\\n    closed = all(not row[\\\"acquired\\\"] or\\n                 (row[\\\"close_attempted\\\"] and row[\\\"closed\\\"]\\n                  and row[\\\"close_error\\\"] is None) for row in RESOURCES)\\n    REPORT[\\\"all_probe_resources_closed\\\"] = closed\\n    if not closed or PENDING or time.monotonic_ns() >= UNTIL:\\n        REPORT[\\\"status\\\"] = \\\"failed\\\"\\n        REPORT[\\\"failure\\\"] = REPORT[\\\"failure\\\"] or {\\n            \\\"phase\\\": \\\"finalization\\\", \\\"code\\\": \\\"closure_signal_or_deadline_refused\\\",\\n            \\\"error_type\\\": \\\"Refusal\\\", \\\"errno\\\": None}\\n    try:\\n        signal.setitimer(signal.ITIMER_REAL, 0)\\n        for number, previous in reversed(HANDLERS):\\n            signal.signal(number, previous)\\n    except BaseException as error:\\n        REPORT[\\\"status\\\"] = \\\"failed\\\"\\n        REPORT[\\\"failure\\\"] = {\\n            \\\"phase\\\": \\\"signal_restoration\\\", \\\"code\\\": \\\"signal_restoration_failed\\\",\\n            \\\"error_type\\\": type(error).__name__, \\\"errno\\\": None}\\n    REPORT[\\\"finished_monotonic_ns\\\"] = str(time.monotonic_ns())\\n    if int(REPORT[\\\"finished_monotonic_ns\\\"]) >= UNTIL:\\n        REPORT[\\\"status\\\"] = \\\"failed\\\"\\n        REPORT[\\\"failure\\\"] = REPORT[\\\"failure\\\"] or {\\n            \\\"phase\\\": \\\"terminal_deadline\\\", \\\"code\\\": \\\"absolute_deadline_exceeded\\\",\\n            \\\"error_type\\\": \\\"Refusal\\\", \\\"errno\\\": None}\\n\\nraw = (json.dumps(REPORT, sort_keys=True, separators=(\\\",\\\", \\\":\\\")) + \\\"\\\\n\\\").encode(\\\"utf-8\\\")\\nif len(raw) > STDOUT_MAX:\\n    raw = b'{\\\"schema\\\":\\\"heptabao.final-lan-endpoint-identity.v1\\\",\\\"status\\\":\\\"failed\\\",\\\"failure\\\":{\\\"code\\\":\\\"public_report_cap\\\"}}\\\\n'\\n    REPORT[\\\"status\\\"] = \\\"failed\\\"\\ntry:\\n    offset = 0\\n    while offset < len(raw):\\n        count = os.write(1, raw[offset:offset + 4096])\\n        if count <= 0:\\n            raise OSError(\\\"stdout_write_failed\\\")\\n        offset += count\\nexcept BaseException:\\n    raise SystemExit(2)\\nraise SystemExit(0 if REPORT[\\\"status\\\"] == \\\"passed\\\" and time.monotonic_ns() < UNTIL else 1)\\n\",\n    \"mac\"\n  ],\n  \"cwd\": \"/\",\n  \"timeout_seconds\": 30,\n  \"idempotency_key\": \"heptabao-final-lan-identity-mac-native-20261106-r1-6dd47ce4\"\n}\n",
+      "requestPin": {
+        "blob": "fa64e2d748e07cb96cb66555a3738d2fba38ed8c",
+        "bytes": 12634,
+        "sha256": "05a7f7820151a90d8a9a553f44b07240cd3a0b9efbf88c888730799a2d84f414"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "2765ae8a5195d51f63db320b8ef8c7d63d0bd8db",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "2bd23dcc270d4fe7379f7f7ba60d3199194cb643",
+            "bytes": 843,
+            "sha256": "49fc3510d34fef4f12ca7df005f3476941674f6b6aef9c13e9679f80ccbc7b36",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "a62fdaeebfc72ac151957a558b2196884ecab9b4",
+            "bytes": 706,
+            "sha256": "bcca23edcf84943825d7b5cfd9766a199424730f8a532221fc4877c0a46b8120",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "fa64e2d748e07cb96cb66555a3738d2fba38ed8c",
+            "bytes": 12634,
+            "sha256": "05a7f7820151a90d8a9a553f44b07240cd3a0b9efbf88c888730799a2d84f414",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 14183,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "500874de8313276c1378bb4cd21d861c1cff3ecd",
+        "bytes": 14952,
+        "sha256": "918a57eb7418b14f06bd263b98c0081cea371ba164e94957c8b737b50fb37755"
+      },
+      "sdkArchive": {
+        "tree": "1900fabe210422ec3d0233a3b61ed0a9969df14d",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "500874de8313276c1378bb4cd21d861c1cff3ecd",
+            "bytes": 14952,
+            "sha256": "918a57eb7418b14f06bd263b98c0081cea371ba164e94957c8b737b50fb37755",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 14952,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "008757bc549fffa16754c43355fa1906573dff7e",
+        "bytes": 13487,
+        "sha256": "edd4752e97939bcc4b5974e0ab991dca44ecc400592a31d95c1078f37afe6266"
+      }
+    },
+    "lanid-mac-native-auth0-admit-20261106-r1": {
+      "kind": "operation_start",
+      "requestRaw": "{\n  \"idempotency_key\": \"heptabao-final-lan-identity-mac-native-6dd47ce4-authority-0\",\n  \"operation\": {\n    \"tool\": \"process_status\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"job_id\": \"1a1b249a2fc-fc05-7d56\"\n    }\n  }\n}\n",
+      "requestPin": {
+        "blob": "232b1f243906c693d1f3152df97039e66e9b8ee1",
+        "bytes": 225,
+        "sha256": "ee2165cb69b2805f6030317b694972b1bce8d5a38e190c1d3eee00d3594d1051"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "3ebe8c4e7a5933bf6c72ad024ac2cb25c99cbac8",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "0c679f6426c94aee5caa14cfc05d967e8f5873c7",
+            "bytes": 868,
+            "sha256": "a765a6eb601259cc72ac5de9e6ce70899cd9a2654912806eb43474ced809159f",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "dbbc94903f9aff7e7383f33c1cad9accf4232e2d",
+            "bytes": 731,
+            "sha256": "47dccd744017f0dd646317a3b23d09e035a03fef3dde7cdc0513ef9ed0161fca",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "232b1f243906c693d1f3152df97039e66e9b8ee1",
+            "bytes": 225,
+            "sha256": "ee2165cb69b2805f6030317b694972b1bce8d5a38e190c1d3eee00d3594d1051",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1824,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "5c0e47c0b296ac21b5089c8c4ce3800858f600d1",
+        "bytes": 709,
+        "sha256": "54a94205e721cc3c076d7a4a03a24d45d08dc73a66c0cf9094b64b8c2d16a2f3"
+      },
+      "sdkArchive": {
+        "tree": "2f4df44762bf28de4acd2cfe15f91456179c3391",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "5c0e47c0b296ac21b5089c8c4ce3800858f600d1",
+            "bytes": 709,
+            "sha256": "54a94205e721cc3c076d7a4a03a24d45d08dc73a66c0cf9094b64b8c2d16a2f3",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 709,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "13a4c6318ca8b3999be954784dae232ae1723850",
+        "bytes": 548,
+        "sha256": "3549ea2cedba22dddf4f391ebbc4413a462f4416a695d09a84611a89b4452030"
+      }
+    },
+    "lanid-mac-native-auth0-status0-20261106-r1": {
+      "kind": "operation_status",
+      "requestRaw": "{\n  \"operation_id\": \"9dac141b77efc700dfa74cdcc8a7283cd5fb1110e09f3a496b1e0c0b990af55e\"\n}\n",
+      "requestPin": {
+        "blob": "ce539b7f80d3633a92af30abb934f9ee15f962b3",
+        "bytes": 89,
+        "sha256": "bb63c2bfca606bfe904076bf0ae2756d9c29ffb786aec4b8a531cff04630adb4"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "be872bee26ec4f4ae29162176e889bd5bd31c6d3",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "35579aa015b1327d2892b7ac817c495eecad2f87",
+            "bytes": 932,
+            "sha256": "773a720091d2488b77bdfcb0323387284bd028a7d1c754c8776a2d963d525539",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "ccc19835fb122b813323b3be21a68dd72962b4f0",
+            "bytes": 795,
+            "sha256": "648708d59dc3fff566a8ab638b32f4570e4da0ce3d321b22e9474223a5a79e46",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "ce539b7f80d3633a92af30abb934f9ee15f962b3",
+            "bytes": 89,
+            "sha256": "bb63c2bfca606bfe904076bf0ae2756d9c29ffb786aec4b8a531cff04630adb4",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1816,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "deeab680388e70546458764c5df9f92c367c2721",
+        "bytes": 980,
+        "sha256": "49d22a1d0f7fae44246d235c69fb64cf31fdca0b02e2344cf69ae14329512b06"
+      },
+      "sdkArchive": {
+        "tree": "a660c5bd743dc05b45948b64e9f3ff6175c8846a",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "deeab680388e70546458764c5df9f92c367c2721",
+            "bytes": 980,
+            "sha256": "49d22a1d0f7fae44246d235c69fb64cf31fdca0b02e2344cf69ae14329512b06",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 980,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "f7e592a10a479ef26b38d99c4ccfbcd486bb8581",
+        "bytes": 805,
+        "sha256": "ceb099145b6dfd9de08d3b3c9287dd659281a8ffc9649f8a533e861761519837"
+      }
+    },
+    "lanid-mac-native-auth0-page0-20261106-r1": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"9dac141b77efc700dfa74cdcc8a7283cd5fb1110e09f3a496b1e0c0b990af55e\",\n  \"offset\": 0,\n  \"limit\": 8192\n}\n",
+      "requestPin": {
+        "blob": "97099de07acf9e48ee82c2c7c002e7fa971f2d4f",
+        "bytes": 121,
+        "sha256": "28458b816753787d310fe7218096cecc0bfc7e926e8bf5549cb2682f29e7b89a"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "6645edb1251758acb3ef74a301a0a883c4377fb6",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "80bf6eb53fee59736963f0bd24a40715b6960d84",
+            "bytes": 931,
+            "sha256": "dcc0b5f9590de795e26b3a911961db8fee1289c08f6f4430b65d9b7a90b56f33",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "2e47d88ba4cafd3bec5ef3e70533ec4867913000",
+            "bytes": 794,
+            "sha256": "7cff6cee0a23a54c9c405b5bdd39cbed37d6745c1614d83c09cefeb2c3fcd3f4",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "97099de07acf9e48ee82c2c7c002e7fa971f2d4f",
+            "bytes": 121,
+            "sha256": "28458b816753787d310fe7218096cecc0bfc7e926e8bf5549cb2682f29e7b89a",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1846,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "2f1aa789277d1cb7261ffb6053c7bae1dfec979c",
+        "bytes": 2068,
+        "sha256": "796b7d4da5144a54c06ce53e88e16c53a1e24f475721d342531fc278316812cf"
+      },
+      "sdkArchive": {
+        "tree": "4a946ebbbcb0bf408eb89bf620e26ee2cbf13ef0",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "2f1aa789277d1cb7261ffb6053c7bae1dfec979c",
+            "bytes": 2068,
+            "sha256": "796b7d4da5144a54c06ce53e88e16c53a1e24f475721d342531fc278316812cf",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 2068,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "c1fb99f713a99197d93f09ea73138ad4cc913a06",
+        "bytes": 1897,
+        "sha256": "94fd6c03db9864351e8812c4a8554e340f7d65be07554f3bcb442023ebcda503"
+      }
+    },
+    "lanid-mac-native-streams0-admit-20261106-r1": {
+      "kind": "operation_start",
+      "requestRaw": "{\n  \"idempotency_key\": \"heptabao-final-lan-identity-mac-native-6dd47ce4-streams-0\",\n  \"operation\": {\n    \"tool\": \"process_read\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"job_id\": \"1a1b249a2fc-fc05-7d56\",\n      \"stdout_offset\": 0,\n      \"stderr_offset\": 0,\n      \"limit\": 16384\n    }\n  }\n}\n",
+      "requestPin": {
+        "blob": "c77e4fed4633494d511902fd2566eadbd1c88585",
+        "bytes": 295,
+        "sha256": "a89d5730b66da22ac603d114f4377e01cabfdd0fe32742ae361baa5f0b5bbd0e"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "72c916ee1425e6289ecc5b47d41cd82b7ee0efd1",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "dbb93ca459fb33b6bcb1ef1cdeb2cbd4a4a93c49",
+            "bytes": 871,
+            "sha256": "c7a1ebab99e87fb667fc0845ceccb755f62158c1da3ef847f6575161c3c0624e",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "50cecf10a25ece5c4164c1f80bc860d57e5d95bf",
+            "bytes": 734,
+            "sha256": "c1c6e2031ec220a8d74a6fa092db5b34eecd397e6799ee3ea87fac684f0dc740",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "c77e4fed4633494d511902fd2566eadbd1c88585",
+            "bytes": 295,
+            "sha256": "a89d5730b66da22ac603d114f4377e01cabfdd0fe32742ae361baa5f0b5bbd0e",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1900,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "33e7676330356e4a389cc1f436693e5f7de2cdd3",
+        "bytes": 707,
+        "sha256": "b22b48c6a8288c45a70ecd0b7cd1e4f2c41388fbd940c48f47a61cc79785ecee"
+      },
+      "sdkArchive": {
+        "tree": "52d8df2dae257133fd061c63d3fe8b02d60eb6b1",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "33e7676330356e4a389cc1f436693e5f7de2cdd3",
+            "bytes": 707,
+            "sha256": "b22b48c6a8288c45a70ecd0b7cd1e4f2c41388fbd940c48f47a61cc79785ecee",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 707,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "ad325acf573f54bd1ea11bc392f8aa1e4a10daa6",
+        "bytes": 546,
+        "sha256": "6b1a6f2cf6378bcb23f6b32ee70cb4abc68187d6dfdbab4c357f8999244ee37e"
+      }
+    },
+    "lanid-mac-native-streams0-status0-20261106-r1": {
+      "kind": "operation_status",
+      "requestRaw": "{\n  \"operation_id\": \"23ab7c18f682f79dcf14cd5602bdd431e19dca234942a60e61be11f090b0f376\"\n}\n",
+      "requestPin": {
+        "blob": "65d6f0d25050c3aeec759008ae5cae6794958346",
+        "bytes": 89,
+        "sha256": "d74282dfd8d76b1b6f9587e8d6940543f468d37fde826d1040a5f073d2a1b64c"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "12bcdce4371a709cb767f0165afa0e7c7fba3fee",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "a883c3595a2e2067dff9517981ed39b80900063f",
+            "bytes": 935,
+            "sha256": "526b0fc473d6f80c5637a3eb2448397cda44c79d5ea5d02d30dd0ec5a72bff2a",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "68547c7a33d9e447bb2334d797f3da6a94220eec",
+            "bytes": 798,
+            "sha256": "ffa4ddf20f749687e55e0c4cd78293b1261160d8bc62872c1ca5d9cfad4ebc51",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "65d6f0d25050c3aeec759008ae5cae6794958346",
+            "bytes": 89,
+            "sha256": "d74282dfd8d76b1b6f9587e8d6940543f468d37fde826d1040a5f073d2a1b64c",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1822,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "c2f752bc6f9c1cfc2db96d179470db1bf1c10c4e",
+        "bytes": 978,
+        "sha256": "5fec5fc1faaa6cfebfe1768875a2c5e29a5a4ce868122f9ac0860172ebe6e9c9"
+      },
+      "sdkArchive": {
+        "tree": "9a0e35bad2665d1ce580084786a753827c76638f",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "c2f752bc6f9c1cfc2db96d179470db1bf1c10c4e",
+            "bytes": 978,
+            "sha256": "5fec5fc1faaa6cfebfe1768875a2c5e29a5a4ce868122f9ac0860172ebe6e9c9",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 978,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "0ee8552d60861ac2537f976aca159c1e73a97576",
+        "bytes": 803,
+        "sha256": "b8b65b9f685f9ce2a62a192ed2674dd918eab49a42f5eecb209906123b2778f5"
+      }
+    },
+    "lanid-mac-native-streams0-page0-20261106-r1": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"23ab7c18f682f79dcf14cd5602bdd431e19dca234942a60e61be11f090b0f376\",\n  \"offset\": 0,\n  \"limit\": 8192\n}\n",
+      "requestPin": {
+        "blob": "7b7e61e76746355e5a1c2e3688844a92f81942f3",
+        "bytes": 121,
+        "sha256": "e0ac9158692c84847d97d71ec89f38476fb7131044b71becc6bb454f22f6afa9"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "6aaac5b818ec541be43a7525790016412f091cf7",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "e1916eb340cd75cb52a0392b8c4cf76703a46a7a",
+            "bytes": 934,
+            "sha256": "11597d0c90f6470edd7d49a6151fb3331c6508564866294156046affcc040ddd",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "9519e36f762317ddbb5c5c534d707793a0c203ee",
+            "bytes": 797,
+            "sha256": "872bf6de61d7dd684ce57a1e250513cd3cd675900a5552121a23fdc0d7241bcc",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "7b7e61e76746355e5a1c2e3688844a92f81942f3",
+            "bytes": 121,
+            "sha256": "e0ac9158692c84847d97d71ec89f38476fb7131044b71becc6bb454f22f6afa9",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1852,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "13caa09bb9e3857b585267fb4bb4c88424c0958c",
+        "bytes": 10282,
+        "sha256": "8319b036052e447e5a934861c866a4374cd6a620e25f232ac704ff41eeef3590"
+      },
+      "sdkArchive": {
+        "tree": "6ef22432e76a6bc33cffaa3fa529745583aa83e8",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "13caa09bb9e3857b585267fb4bb4c88424c0958c",
+            "bytes": 10282,
+            "sha256": "8319b036052e447e5a934861c866a4374cd6a620e25f232ac704ff41eeef3590",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 10282,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "cbd1736181770d347ac9a6a762fb62060a9e8519",
+        "bytes": 10111,
+        "sha256": "8dbcac2285352249937568db8ef1872e705830a884a91f1575c556f88610024c"
+      }
+    }
+  },
+  "completedObservers": [
+    {
+      "id": "9dac141b77efc700dfa74cdcc8a7283cd5fb1110e09f3a496b1e0c0b990af55e",
+      "tool": "process_status",
+      "payload": {
+        "blob": "680f565016168219997bae68fda7997fc6f32389",
+        "bytes": 910,
+        "sha256": "12951df9515aa066ef0721a1844562570d5167f6fd57f1621cf2374cdee5e514"
+      },
+      "payloadTree": "7c03781004204d3c5f0428ab9cc559c38fb510bf",
+      "nativeText": {
+        "blob": "ac67499d0fcc138f380c2d995799be9bda5aa191",
+        "bytes": 731,
+        "sha256": "0277346fa7a7e63282836b0a509f537ca20495d601762edcc3983da7abfe2bfc"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "23ab7c18f682f79dcf14cd5602bdd431e19dca234942a60e61be11f090b0f376",
+      "tool": "process_read",
+      "payload": {
+        "blob": "c55d0611153d74bab7995cfb7b3232a7944f03cd",
+        "bytes": 7071,
+        "sha256": "a2167b9bc7f64ddf3a039f5452f0f215d18c45d118ea09070f32a159337ec923"
+      },
+      "payloadTree": "4fc7af02c397872045b5d0f90692aea6d64d20f8",
+      "nativeText": {
+        "blob": "295335ddda7c2681d39239ea47ec70d4ed1dd053",
+        "bytes": 6494,
+        "sha256": "4c76e00bc0873fe5d72076e5b262d24839d104639607e4ed0c7ed9bf51d70e9b"
+      },
+      "pages": 1,
+      "completedInactive": true
+    }
+  ],
+  "nextStdout": 1984,
+  "nextStderr": 0,
+  "localJournalAvailable": false,
+  "gitFirstExplicitlyRequiredByThisRootGO": true
+}

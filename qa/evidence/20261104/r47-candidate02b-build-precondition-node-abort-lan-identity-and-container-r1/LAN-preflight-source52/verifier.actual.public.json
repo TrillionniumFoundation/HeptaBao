@@ -1,0 +1,421 @@
+{
+  "schema": "heptabao.final-lan-preobservation-pure-source-checks.v1",
+  "passed": true,
+  "check_count": 102,
+  "checks": [
+    {
+      "name": "six_frozen_requests",
+      "passed": true
+    },
+    {
+      "name": "fixed_order",
+      "passed": true
+    },
+    {
+      "name": "source_fd_acquire_ledger_precedes_open",
+      "passed": true
+    },
+    {
+      "name": "source_no_child_spawning",
+      "passed": true
+    },
+    {
+      "name": "source_no_network_listen_connect_accept",
+      "passed": true
+    },
+    {
+      "name": "source_exact_three_file_inputs",
+      "passed": true
+    },
+    {
+      "name": "source_exact_two_sysctls",
+      "passed": true
+    },
+    {
+      "name": "source_no_serial_uuid_fallback",
+      "passed": true
+    },
+    {
+      "name": "source_HMAC_not_raw_identifier",
+      "passed": true
+    },
+    {
+      "name": "source_hash_domain_fixed",
+      "passed": true
+    },
+    {
+      "name": "source_exact_ports",
+      "passed": true
+    },
+    {
+      "name": "source_absolute_no_reset",
+      "passed": true
+    },
+    {
+      "name": "source_owned_close_paths_once",
+      "passed": true
+    },
+    {
+      "name": "source_failure_no_raw_repr",
+      "passed": true
+    },
+    {
+      "name": "binary_templates_four_unbound",
+      "passed": true
+    },
+    {
+      "name": "request_0_whole",
+      "passed": true
+    },
+    {
+      "name": "request_0_typed",
+      "passed": true
+    },
+    {
+      "name": "request_0_unique_key",
+      "passed": true
+    },
+    {
+      "name": "request_0_new_source_not_old_oracle",
+      "passed": true
+    },
+    {
+      "name": "request_0_outer30",
+      "passed": true
+    },
+    {
+      "name": "request_0_exact_source",
+      "passed": true
+    },
+    {
+      "name": "request_0_journal_roundtrip",
+      "passed": true
+    },
+    {
+      "name": "request_0_exact_start_guard_accepts",
+      "passed": true
+    },
+    {
+      "name": "request_0_repeat_start_rejected",
+      "passed": true
+    },
+    {
+      "name": "request_0_same_job_status_accepts",
+      "passed": true
+    },
+    {
+      "name": "request_0_other_host_rejected",
+      "passed": true
+    },
+    {
+      "name": "request_0_other_API_rejected",
+      "passed": true
+    },
+    {
+      "name": "request_1_whole",
+      "passed": true
+    },
+    {
+      "name": "request_1_typed",
+      "passed": true
+    },
+    {
+      "name": "request_1_unique_key",
+      "passed": true
+    },
+    {
+      "name": "request_1_new_source_not_old_oracle",
+      "passed": true
+    },
+    {
+      "name": "request_1_outer30",
+      "passed": true
+    },
+    {
+      "name": "request_1_exact_source",
+      "passed": true
+    },
+    {
+      "name": "request_1_journal_roundtrip",
+      "passed": true
+    },
+    {
+      "name": "request_1_exact_start_guard_accepts",
+      "passed": true
+    },
+    {
+      "name": "request_1_repeat_start_rejected",
+      "passed": true
+    },
+    {
+      "name": "request_1_same_job_status_accepts",
+      "passed": true
+    },
+    {
+      "name": "request_1_other_host_rejected",
+      "passed": true
+    },
+    {
+      "name": "request_1_other_API_rejected",
+      "passed": true
+    },
+    {
+      "name": "request_1_fixed_SSH_route",
+      "passed": true
+    },
+    {
+      "name": "request_1_no_proxy_or_local_commands",
+      "passed": true
+    },
+    {
+      "name": "request_2_whole",
+      "passed": true
+    },
+    {
+      "name": "request_2_typed",
+      "passed": true
+    },
+    {
+      "name": "request_2_unique_key",
+      "passed": true
+    },
+    {
+      "name": "request_2_new_source_not_old_oracle",
+      "passed": true
+    },
+    {
+      "name": "request_2_outer30",
+      "passed": true
+    },
+    {
+      "name": "request_2_exact_source",
+      "passed": true
+    },
+    {
+      "name": "request_2_journal_roundtrip",
+      "passed": true
+    },
+    {
+      "name": "request_2_exact_start_guard_accepts",
+      "passed": true
+    },
+    {
+      "name": "request_2_repeat_start_rejected",
+      "passed": true
+    },
+    {
+      "name": "request_2_same_job_status_accepts",
+      "passed": true
+    },
+    {
+      "name": "request_2_other_host_rejected",
+      "passed": true
+    },
+    {
+      "name": "request_2_other_API_rejected",
+      "passed": true
+    },
+    {
+      "name": "request_3_whole",
+      "passed": true
+    },
+    {
+      "name": "request_3_typed",
+      "passed": true
+    },
+    {
+      "name": "request_3_unique_key",
+      "passed": true
+    },
+    {
+      "name": "request_3_new_source_not_old_oracle",
+      "passed": true
+    },
+    {
+      "name": "request_3_outer30",
+      "passed": true
+    },
+    {
+      "name": "request_3_exact_source",
+      "passed": true
+    },
+    {
+      "name": "request_3_journal_roundtrip",
+      "passed": true
+    },
+    {
+      "name": "request_3_exact_start_guard_accepts",
+      "passed": true
+    },
+    {
+      "name": "request_3_repeat_start_rejected",
+      "passed": true
+    },
+    {
+      "name": "request_3_same_job_status_accepts",
+      "passed": true
+    },
+    {
+      "name": "request_3_other_host_rejected",
+      "passed": true
+    },
+    {
+      "name": "request_3_other_API_rejected",
+      "passed": true
+    },
+    {
+      "name": "request_3_fixed_SSH_route",
+      "passed": true
+    },
+    {
+      "name": "request_3_no_proxy_or_local_commands",
+      "passed": true
+    },
+    {
+      "name": "request_4_whole",
+      "passed": true
+    },
+    {
+      "name": "request_4_typed",
+      "passed": true
+    },
+    {
+      "name": "request_4_unique_key",
+      "passed": true
+    },
+    {
+      "name": "request_4_new_source_not_old_oracle",
+      "passed": true
+    },
+    {
+      "name": "request_4_outer30",
+      "passed": true
+    },
+    {
+      "name": "request_4_exact_source",
+      "passed": true
+    },
+    {
+      "name": "request_4_journal_roundtrip",
+      "passed": true
+    },
+    {
+      "name": "request_4_exact_start_guard_accepts",
+      "passed": true
+    },
+    {
+      "name": "request_4_repeat_start_rejected",
+      "passed": true
+    },
+    {
+      "name": "request_4_same_job_status_accepts",
+      "passed": true
+    },
+    {
+      "name": "request_4_other_host_rejected",
+      "passed": true
+    },
+    {
+      "name": "request_4_other_API_rejected",
+      "passed": true
+    },
+    {
+      "name": "request_5_whole",
+      "passed": true
+    },
+    {
+      "name": "request_5_typed",
+      "passed": true
+    },
+    {
+      "name": "request_5_unique_key",
+      "passed": true
+    },
+    {
+      "name": "request_5_new_source_not_old_oracle",
+      "passed": true
+    },
+    {
+      "name": "request_5_outer30",
+      "passed": true
+    },
+    {
+      "name": "request_5_exact_source",
+      "passed": true
+    },
+    {
+      "name": "request_5_journal_roundtrip",
+      "passed": true
+    },
+    {
+      "name": "request_5_exact_start_guard_accepts",
+      "passed": true
+    },
+    {
+      "name": "request_5_repeat_start_rejected",
+      "passed": true
+    },
+    {
+      "name": "request_5_same_job_status_accepts",
+      "passed": true
+    },
+    {
+      "name": "request_5_other_host_rejected",
+      "passed": true
+    },
+    {
+      "name": "request_5_other_API_rejected",
+      "passed": true
+    },
+    {
+      "name": "request_5_fixed_SSH_route",
+      "passed": true
+    },
+    {
+      "name": "request_5_no_proxy_or_local_commands",
+      "passed": true
+    },
+    {
+      "name": "comparison_fake_equal_routes_not_physical_label",
+      "passed": true
+    },
+    {
+      "name": "comparison_fake_same_IP_different_boot_refused",
+      "passed": true
+    },
+    {
+      "name": "comparison_fake_same_IP_different_machine_refused",
+      "passed": true
+    },
+    {
+      "name": "comparison_fake_same_IP_different_model_refused",
+      "passed": true
+    },
+    {
+      "name": "comparison_fake_permission_failure_refused",
+      "passed": true
+    },
+    {
+      "name": "comparison_fake_missing_model_refused",
+      "passed": true
+    },
+    {
+      "name": "comparison_fake_deadline_failure_refused",
+      "passed": true
+    },
+    {
+      "name": "comparison_fake_duplicate_linux_machine_refused",
+      "passed": true
+    },
+    {
+      "name": "comparison_fake_extra_port_refused",
+      "passed": true
+    }
+  ],
+  "Native_calls": 0,
+  "Python_compilations": 0,
+  "Python_executions": 0,
+  "host_observations": 0,
+  "product_cases": 0,
+  "pure_fake_comparison_variants": 9
+}

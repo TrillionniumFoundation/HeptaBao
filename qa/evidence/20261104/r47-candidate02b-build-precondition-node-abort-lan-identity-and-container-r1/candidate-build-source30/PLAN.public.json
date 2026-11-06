@@ -1,0 +1,182 @@
+{
+  "schema": "heptabao.combined02b90762.minimal-build-admission-source.r1",
+  "status": "SOURCE_ONLY",
+  "authorization": "NOT_GO",
+  "NativeCalls": 0,
+  "initializeCalled": false,
+  "candidate": {
+    "commit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "tree": "9781e9615ac5fb068d217241c74bb54bf87942cf",
+    "source": "/home/qian-qi/hb-02b90762-src-20261106-r1/source",
+    "sourceFormatted": false
+  },
+  "controlRoot": "/home/qian-qi/hb-02b90762-controls-20261106-r1",
+  "newSlot": "combined_02b90762_build_gitfirst_r1",
+  "exactRequest": {
+    "blob": "e473d18841da02a68f5a251f16387b555a995a88",
+    "bytes": 846,
+    "sha256": "dc4a781c1a93c87ff689332eb45290e5e683eead74e415cd45b03b08313b8151"
+  },
+  "journal": {
+    "blob": "091dce5ffa6cb049e862135ad36b4979ae2a1f4e",
+    "bytes": 19034,
+    "sha256": "4f6d1e276a76ad5feb11fff9ca360b509dcd1dd3fde8fbb3da8dc48766bf1d93"
+  },
+  "typed": {
+    "canonical": "{\"args\":[\"-I\",\"-S\",\"-B\",\"/home/qian-qi/hb-02b90762-controls-20261106-r1/launch_native_jwt_build.py\",\"--host\",\"rog\",\"--commit\",\"02b90762b3d6cc8699cc88bffb6f76cb1f07e270\",\"--tree\",\"9781e9615ac5fb068d217241c74bb54bf87942cf\",\"--stage-sha256\",\"76ace6137f5a25f508a6ece69d7dac460689cd1d782cd9e0f6ce72811a267b83\",\"--runner-sha256\",\"326ec765e5fa8fa06b4e41673b49d84d5325294b90283e3faab6a00f88c5f29e\",\"--groups-sha256\",\"7c0fb6c5b6819c2cab60f3044e0aec767ad8abbf22e31ff0f7fab742ea4cd786\",\"--controls-sha256\",\"f21999a4c58cf271c16b5b6061378b52c1d0ca50d6df108adc5835818239b5d0\"],\"cpu_quota_percent\":null,\"cwd\":\"/home/qian-qi\",\"env\":{},\"executable\":\"/usr/bin/python3\",\"host\":\"rog\",\"memory_max_bytes\":null,\"nice\":null,\"stdin\":null,\"timeout_seconds\":12000}",
+    "sha256": "9882e9d1b61a0d3f81cbd77164de9c4a84a5828717f38fc0192d29cb9d4332c8",
+    "native_fingerprint": "10989603127650028863"
+  },
+  "sourcePacket": "b556d6e636120430cd330622e63f8bdafd8bf1c7",
+  "originalInertFullPacket": "893579692601a9861814ba2b26a869d493949b4f",
+  "detailedStageQualification": {
+    "blob": "6a64e5fec589abfeec7a05660e6edaddc780bdaf",
+    "bytes": 3658,
+    "sha256": "d722f322cd668f1c018ff0bc3ec143f2f7fb23f5119ae046a8f9e5982d58c646"
+  },
+  "evidence": [
+    {
+      "layer": "published actual original job",
+      "job": "1a1b247b510-fc05-7d4e",
+      "source": {
+        "blob": "c4abedf72b4755a7d552406f173c99ce915a5437",
+        "bytes": 5170,
+        "sha256": "5765113a6b80a81dd47e672f39e8d27d7a2b5c51aacc2d977f93beebbd268e5e"
+      },
+      "stdout": {
+        "blob": "3ea5f03c17c7d493442bf0f2db1e1891bfd40224",
+        "bytes": 1408,
+        "sha256": "6d1f1c0b0d409aa6ad979f1fd4abf6d740284fd2ec847833b51ebe713b7ef316"
+      },
+      "meaning": "Publisher read each control in full, before/after/named full9 equal, then published and verified its receipt before printing success.",
+      "actualNativeIndependentFileInfo": false,
+      "actualNativeIndependentBody": false
+    },
+    {
+      "layer": "receipt bytes derived from actual stdout",
+      "pin": {
+        "blob": "bdc6ebed56b2bf7288f6e9fd25385da312f43e62",
+        "bytes": 1818,
+        "sha256": "f21999a4c58cf271c16b5b6061378b52c1d0ca50d6df108adc5835818239b5d0"
+      },
+      "derivation": "Lossless original integer tokens; exact Python json.dumps(sort_keys=True,indent=2)+LF; compact emitter must reproduce original stdout exactly.",
+      "actualReceiptFileInfo": false,
+      "actualReceiptBody": false,
+      "actualReceiptFull9": null
+    },
+    {
+      "layer": "future same-owned-job entry revalidation",
+      "launcher": {
+        "blob": "924d7ddc88ba8a8cf8f44ff3cc5cda037043aaef",
+        "bytes": 39818,
+        "sha256": "4c5de46d61f90237ae6789d9efd8d347b7729621ad8a6c467205f3f18c378602"
+      },
+      "readerLines": [
+        144,
+        166
+      ],
+      "admissionLines": [
+        474,
+        534
+      ],
+      "meaning": "Before ADMISSION or Cargo: full runner/groups and self-launcher SHA/size/held-and-named full9 equals SHA-bound receipt; exact mode0100600, uid=gid1000, nlink1.",
+      "hasExecuted": false,
+      "readDescriptorsHeldAcrossExec": false
+    },
+    {
+      "layer": "future real compile/test qualification",
+      "unique": 246,
+      "profileEntries": 268,
+      "groups": 18,
+      "hasExecuted": false,
+      "requiresRootExactGO": true
+    }
+  ],
+  "independentNativeMetadataForControls": false,
+  "independentNativeBodiesForControls": false,
+  "anyControlCodeChanged": false,
+  "additionalPublisher": false,
+  "additionalFormatter": false,
+  "requiredExternalControlFileReads": 0,
+  "buildReadBoundVerifiesDerivedReceipt": true,
+  "requestConstructionFromActualMainArgparse": true,
+  "sourceBudgets": {
+    "outerSeconds": 12000,
+    "releaseSeconds": 1800,
+    "allCompileGatesSharedSeconds": 3600,
+    "perFamilySeconds": 600,
+    "listSeconds": 30,
+    "cleanupTermSeconds": 5,
+    "cleanupKillSeconds": 5
+  },
+  "compileGates": {
+    "ordinaryNoDefaultCheck": 1,
+    "libtestProfiles": [
+      "file",
+      "default",
+      "ha-native-v6-peer-ingress"
+    ],
+    "totalWithinSharedDeadline": 4
+  },
+  "denominators": {
+    "uniqueNames": 246,
+    "profileInstances": 268,
+    "families": 18,
+    "fileProfileInstances": 22,
+    "defaultProfileInstances": 229,
+    "haPeerIngressProfileInstances": 17,
+    "snapshotLowLevel": 23,
+    "snapshotServiceRegressions": 4,
+    "normal61": 61
+  },
+  "originalObservationScope": {
+    "note": "These numeric observation counts are new explicit limits of this GO. The original33b GO did not specify total status/read counts; the original worker/compile/test/cleanup deadlines and per-read/page limits stay unchanged.",
+    "maximumProcessStatusObservers": 256,
+    "maximumProcessReadObservers": 129,
+    "maximumOperationStatusCallsPerObserver": 8,
+    "maximumImmutableResultPagesPerObserver": 128,
+    "immutableResultPageBytes": 8192,
+    "maximumSerializedPayloadBytes": 1048576,
+    "streamBytesPerRead": 16384,
+    "maximumObservedBytesPerStream": 2097152,
+    "onlyReturnedOriginalJob": true,
+    "onlyProcessStatusAndProcessRead": true,
+    "contiguousOriginalStreamOffsets": true,
+    "completeEachObserverBeforeNext": true,
+    "noAutomaticRetry": true
+  },
+  "target": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3",
+  "targetLockMeaning": {
+    "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3/release/.cargo-lock",
+    "meaning": "Fresh nonblocking exclusive admission probe only; closed before same-PID exec, not a lifetime Cargo lock.",
+    "lifetimeLockClaimed": false
+  },
+  "requiredRootSoleCargoWindow": true,
+  "rootActualBuildGO": null,
+  "originalInertSlotUnchanged": "combined_02b90762_build_controls_inert_gitfirst_r1",
+  "sequence": [
+    "Root whole reviews this SOURCE and original successful INERT evidence.",
+    "Only after a separate exact root BUILD GO and target allocation: initialize this new BUILD context once.",
+    "Original exact request plus once intent/armed external whole before model boundary and unique START.",
+    "Whole original SDK before interpretation; only returned original job status/full bounded streams.",
+    "Any missing ACK or ambiguity stops; no rekey or business replay. Final report metadata/body scope requires a later exact read GO."
+  ],
+  "excluded": [
+    "Mac or X230 product runs",
+    "full34",
+    "comparison69",
+    "LAN",
+    "arbitrary metadata/body refresh",
+    "new download or formatter",
+    "clearing historical UNKNOWN",
+    "production cutover"
+  ],
+  "fullReplacement": false,
+  "productionCutover": false,
+  "limitations": [
+    "The receipt is a derived exact candidate until BUILD read_bound checks the current file.",
+    "Control read FDs are closed after stable whole validation; continuous FD custody across exec is not claimed.",
+    "The target flock is a fresh nonblocking admission probe, closed before same-PID exec; no lifetime flock claim.",
+    "Published-source syntax compile is not a Rust build or a test result."
+  ]
+}

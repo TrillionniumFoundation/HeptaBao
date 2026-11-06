@@ -1,0 +1,22 @@
+--- a/container-r2-journal.js
++++ b/container-r2-journal.js
+@@ -5,8 +5,8 @@
+  * Every original SDK is store'd, serialized, Git-created once and whole-read
+  * before isError or native text is inspected.
+  */
+-const GF_SLOT = "root_x230_current_container_metadata_20261106_r1";
+-const GF_REQUEST = {"blob":"5643bacb7b6630e03a10febff915a861c9bd0655","bytes":1180,"sha256":"90a9951f07699a1fac8cd6318f3c773dee1ba74740eb248c3ae7d64881d51d2b"};
++const GF_SLOT = "root_x230_current_container_metadata_20261106_r2";
++const GF_REQUEST = {"blob":"3f60eab767749ee30b576dc8e8f46c1a1212d236","bytes":1136,"sha256":"f9094ec40b4c94b6a530b3e3e4c99d9876fa7af01f27577275d83f5858af301e"};
+ 
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {
+@@ -45,7 +45,7 @@
+   gfNeed(s.job!==null && s.activeObserver===null,"original_job_no_unclosed_observer");
+   gfNeed(Object.keys(q).sort().join(",")==="idempotency_key,operation"
+     && typeof q.idempotency_key==="string" && q.idempotency_key.length<=128
+-    && /^heptabao-x230-current-container-f6798549-/.test(q.idempotency_key),
++    && /^heptabao-x230-current-container-r2-f6798549-/.test(q.idempotency_key),
+     "bounded_original_observer_key");
+   const op=q.operation,a=op?.arguments;
+   gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"

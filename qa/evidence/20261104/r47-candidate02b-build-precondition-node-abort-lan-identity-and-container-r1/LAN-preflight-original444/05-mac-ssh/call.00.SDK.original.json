@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-T\",\n      \"-o\",\n      \"BatchMode=yes\",\n      \"-o\",\n      \"StrictHostKeyChecking=yes\",\n      \"-o\",\n      \"ConnectTimeout=5\",\n      \"-o\",\n      \"ConnectionAttempts=1\",\n      \"-o\",\n      \"ControlMaster=no\",\n      \"-o\",\n      \"ControlPath=none\",\n      \"-o\",\n      \"ClearAllForwardings=yes\",\n      \"-o\",\n      \"PermitLocalCommand=no\",\n      \"-o\",\n      \"ProxyCommand=none\",\n      \"-o\",\n      \"ProxyJump=none\",\n      \"-o\",\n      \"CanonicalizeHostname=no\",\n      \"-o\",\n      \"RequestTTY=no\",\n      \"mac-ts\",\n      \"exec /opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14 -I -S -B - mac\"\n    ],\n    \"created_unix_ms\": 1793992726327,\n    \"cwd\": \"/\",\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/ssh\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"desktop\",\n    \"id\": \"1a1b24c9737-fc05-7d68\",\n    \"idempotency_key\": \"heptabao-final-lan-identity-mac-ssh-20261106-r1-6dd47ce4\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1b24c9737-fc05-7d68\",\n    \"request_digest\": \"7e05a7d756fba07e6b7d98f063af63cc354460561e6fdde325faab0d6cbd4f56\",\n    \"request_fingerprint\": 9080848766981611646,\n    \"ssh_target\": \"desktop-ts\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b24c9737-fc05-7d68\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1b24c9737-fc05-7d68\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

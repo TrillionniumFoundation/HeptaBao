@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.gitfirst.fixed-native-call-armed.r1",
+  "callKey": "lanid-p4-ssh-auth0-page0-20261106-r1",
+  "kind": "operation_result",
+  "request": {
+    "blob": "74ffb20b5c86071a9ed13a68a22a9dc551b7240c",
+    "bytes": 121,
+    "sha256": "d169739f2a0617378f92e419e275a8d73591f9ed9f1c2a185afe8305b8221d25"
+  },
+  "rootGo": {
+    "blob": "d9d95a4bc9be0f5bae219f304486e1f4fd712df3",
+    "bytes": 10381,
+    "sha256": "d346eeb4ea5666d8981a3abaf1a4ea189137d49b1e83e0a8212bbca20590e57b"
+  },
+  "originalJob": "1a1b23eef6d-fc05-7d27",
+  "originalOperation": "af8614a2586040d8e9897f411a0d89a267a6a57a71a79ef6485a53ec07a354fe",
+  "maximumNativeCalls": 1,
+  "nativeNotYetCalled": true,
+  "lossOfAcknowledgmentNeverGrantsReplay": true,
+  "localFirstExplicitlyReplacedByExactRootGO": true,
+  "mayHaveDispatchedAfterThisCheckpoint": true,
+  "recovery": "Read exact original job/operation only; absence of later ACK is UNKNOWN."
+}

@@ -1,0 +1,285 @@
+{
+  "schema": "heptabao.original-scope-reconcile-readonly-lane-release.v1",
+  "job": "mac/1a1b22f780d-fc05-7cd8",
+  "request": {
+    "blob": "15dca2a76a1e236ceae6f9735becdbe0332bd55b",
+    "bytes": 137992,
+    "sha256": "1341a2b69faf2541b01d1d0cb023062326004ed03b1cc8ec75027d02f559637c"
+  },
+  "GO": {
+    "blob": "e10747a3ac9227d57db70fbb3f63d6ba5da8867f",
+    "bytes": 3433,
+    "sha256": "a0ccd889f4d340a1267e67023fa108f8a84e27aaf0eccf90e974406b2fd33240"
+  },
+  "originalRuntime": "mac/1a1b1d28dc2-fc05-7afe",
+  "originalRuntimeStatus": "failed1",
+  "authority": {
+    "blob": "6e8c8babbf160f6a2248c834410424754c05f4b8",
+    "bytes": 733,
+    "sha256": "b8401e5b50a8915ef38be75eb5da825562562069c26fd5c608a925dae3b08416"
+  },
+  "stdout": {
+    "blob": "47982e4809c94d66f0a4f899ce1e3fdfc155dad4",
+    "bytes": 31091,
+    "sha256": "43b301e075128e0bf104a3c7888be27565e740bba46e74bfebd85cfa626f72f4"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "calls": 21,
+  "callCounts": {
+    "process_start": 1,
+    "operation_start": 3,
+    "operation_status": 3,
+    "operation_result": 14
+  },
+  "returnedObservers": 3,
+  "immutablePages": 14,
+  "allCallsAccepted": true,
+  "allObserversCompletedInactive": true,
+  "fullStdout": true,
+  "fullStderr": true,
+  "NativeCallsInFlight": 0,
+  "NativeFuturesActive": 0,
+  "activeObserver": null,
+  "pendingCall": null,
+  "paused": false,
+  "laneReleased": true,
+  "newNativeAdmissionAuthorized": false,
+  "diagnostic": {
+    "exitCode": 0,
+    "outputComplete": true,
+    "outputDurable": true,
+    "terminalConfirmed": true,
+    "ok": true,
+    "observationComplete": true,
+    "outcomeUnknown": false,
+    "elapsedSeconds": 0.203521375,
+    "allReturnedApplicationFdsClosed": true,
+    "fdRows": 30,
+    "openLedger": {
+      "attempts": 30,
+      "knownNoReturnErrors": 0,
+      "pending": 0,
+      "registered": 30,
+      "registrationUnknown": false
+    },
+    "ioCounts": {
+      "metadata": 424,
+      "readBytes": 97699,
+      "readCalls": 22,
+      "writeBytes": 0,
+      "writeCalls": 0
+    },
+    "allDirectHelpersClosed": true,
+    "directHelpers": 4,
+    "deadlineMetAfterClosure": true,
+    "pendingSignal": null
+  },
+  "registrations": [
+    {
+      "exactMissingBoth": true,
+      "fixedControlBindingsMatchBoth": false,
+      "kind": "server",
+      "label": "org.heptabao.qa.mac-authbus-4e808-home-r3.server",
+      "registrationIdentityOrHistoricalClosureProven": false
+    },
+    {
+      "exactMissingBoth": true,
+      "fixedControlBindingsMatchBoth": false,
+      "kind": "consumer",
+      "label": "org.heptabao.qa.mac-authbus-4e808-home-r3.consumer",
+      "registrationIdentityOrHistoricalClosureProven": false
+    }
+  ],
+  "fixedPidSummaries": [
+    {
+      "allFourNumericSamplesReturnedESRCH": true,
+      "currentDirectChildCounts": [
+        null,
+        null
+      ],
+      "historicalBirthKnown": true,
+      "historicalReapOrLineageClosureProven": false,
+      "pid": 84720,
+      "recordedLifetimeAndImageMatchedBoth": false,
+      "role": "server-exec",
+      "sameCurrentLifetimeAcrossEpochs": false
+    },
+    {
+      "allFourNumericSamplesReturnedESRCH": true,
+      "currentDirectChildCounts": [
+        null,
+        null
+      ],
+      "historicalBirthKnown": true,
+      "historicalReapOrLineageClosureProven": false,
+      "pid": 84846,
+      "recordedLifetimeAndImageMatchedBoth": false,
+      "role": "consumer-wrapper",
+      "sameCurrentLifetimeAcrossEpochs": false
+    },
+    {
+      "allFourNumericSamplesReturnedESRCH": true,
+      "currentDirectChildCounts": [
+        null,
+        null
+      ],
+      "historicalBirthKnown": false,
+      "historicalReapOrLineageClosureProven": false,
+      "pid": 84947,
+      "recordedLifetimeAndImageMatchedBoth": null,
+      "role": "failed-ps-helper-1",
+      "sameCurrentLifetimeAcrossEpochs": false
+    },
+    {
+      "allFourNumericSamplesReturnedESRCH": true,
+      "currentDirectChildCounts": [
+        null,
+        null
+      ],
+      "historicalBirthKnown": false,
+      "historicalReapOrLineageClosureProven": false,
+      "pid": 85012,
+      "recordedLifetimeAndImageMatchedBoth": null,
+      "role": "failed-ps-helper-2",
+      "sameCurrentLifetimeAcrossEpochs": false
+    }
+  ],
+  "consumer": {
+    "publicResultPresent": true,
+    "resultBytes": 3085,
+    "readyPresent": true,
+    "recordCount": 1,
+    "nativeWorkerCount": 0,
+    "resultBooleans": {
+      "allObserverClosuresAttemptedOnce": true,
+      "allOwnedStopped": true,
+      "authorityExitZeroAndOriginalPhaseDeadlineRequired": true,
+      "j3160Contacted": false,
+      "ok": false,
+      "outcomeUnknown": true,
+      "ownedBusinessWorkingDirectoryHeldT5": true,
+      "productionChanged": false,
+      "providerRequestSent": false
+    },
+    "phaseError": {
+      "errorCodeKnown": "worker_complete_known_success.authbus-five-agent-cycle",
+      "errorCodePresent": true,
+      "errorCodeRecognized": true,
+      "errorTypeKnown": "Refused",
+      "errorTypePresent": true,
+      "errorTypeRecognized": true,
+      "unknownTextOrHashPublished": false
+    },
+    "cycle": {
+      "agentIdKnown": null,
+      "lifecycle": {
+        "actualDirectChildCustodyPresent": true,
+        "claimsAreFromOriginalPublicResultNotCurrentReap": true,
+        "directChildRetainedUntilGroupCleanup": true,
+        "exitCode": -6,
+        "finalReturnCode": -6,
+        "interrupted": false,
+        "nativeObserver": null,
+        "noGroupSurvivors": true,
+        "observationErrorKnown": null,
+        "observationErrorPresent": false,
+        "observerCloseErrorKnown": null,
+        "observerCloseErrorPresent": false,
+        "outcomeUnknown": false,
+        "ownedProcessGroupClaim": 84892,
+        "presentObject": true,
+        "primaryReaped": true,
+        "remainingGroupMemberCount": 0,
+        "retainedChildCleanup": {
+          "allGroupRowsEmptyAfterReap": true,
+          "custodyPresent": true,
+          "directChildReaped": true,
+          "exitCode": -6,
+          "ok": true,
+          "outcomeUnknown": false,
+          "ownedLiveGroupEmptyBeforeReap": true,
+          "postReapSignalSent": false
+        },
+        "retainedExitPresent": true,
+        "timeout": false
+      },
+      "modeKnown": "cycle",
+      "nameKnown": "authbus-five-agent-cycle",
+      "ordinal": 0,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "workerReport": {
+        "agentIdKnown": null,
+        "booleans": {
+          "allAccountsQualified": null,
+          "credentialValuesPublished": null,
+          "inverseCompleted": null,
+          "inverseMutationAttempted": null,
+          "j3160Contacted": null,
+          "nativeClientCloseAndWait": null,
+          "nativeCloseAttempted": null,
+          "nativeCloseConfirmed": null,
+          "ok": false,
+          "outcomeUnknown": true,
+          "productionChanged": null,
+          "providerRequestSent": null,
+          "providerResponseObtained": null,
+          "serviceStopped": null
+        },
+        "checkCount": null,
+        "checksShape": false,
+        "error": {
+          "errorCodeKnown": "worker_report_unavailable",
+          "errorCodePresent": true,
+          "errorCodeRecognized": true,
+          "errorTypeKnown": null,
+          "errorTypePresent": false,
+          "errorTypeRecognized": true,
+          "unknownTextOrHashPublished": false
+        },
+        "failedCasesWithinFiniteListCap": false,
+        "failedCheckCount": null,
+        "failedKnownCases": null,
+        "modeKnown": null,
+        "phaseMatches": false,
+        "presentObject": true,
+        "schemaKnown": null,
+        "unknownCaseCount": null,
+        "wireCount": null,
+        "wireFieldsOrCredentialHashesPublished": false
+      }
+    },
+    "terminal": {
+      "booleans": {
+        "allOwnedStopped": true,
+        "ok": false,
+        "outcomeUnknown": true
+      },
+      "elapsedSeconds": 1.0569927501492202,
+      "exactProducerKeys": true,
+      "generationMatches": true,
+      "jsonObject": true,
+      "managedCurrentOrHistoricalClosureClaimed": false,
+      "recordKind": "post_volume_close_public_first_lf",
+      "resultSha256Present": true,
+      "volumeReported": {
+        "allDescriptorsClosed": true,
+        "closeErrorCount": 0,
+        "lastAnchorCheckPassed": true
+      }
+    },
+    "resultHashComparison": true,
+    "successfulBusinessPhaseQualification": false
+  },
+  "originalManagedOutcomeUnknown": true,
+  "historicalReapOrLineageClosureClaimed": false,
+  "originalPsHelpersStillHistoricalUnknown": [
+    84947,
+    85012
+  ],
+  "noNewBusinessOrCleanup": true
+}

@@ -1,0 +1,54 @@
+{
+  "schema": "heptabao.root.LAN-exact-kernel-model-label-approval.r1",
+  "authorization": "MODEL_LABEL_APPROVAL_ONLY",
+  "issuedAtUtc": "2026-11-06 19:33:22 UTC",
+  "approvedModels": {
+    "mac": [
+      "Mac17,2"
+    ],
+    "rog": [
+      "ROG Flow Z13 GZ302EA_GZ302EA"
+    ],
+    "pocket4": [
+      "G1628-04"
+    ]
+  },
+  "originalReleaseTree": "d85b7653a5c625afb3f8dcef87963c2616ef73f8",
+  "originalComparison": {
+    "blob": "2892b9b409470baa4e29852c6e81913b0a38c3c8",
+    "bytes": 3157,
+    "sha256": "422d60e41c77995c98d8971fe58930d0874726f53d31514f40cdd30a2268893d"
+  },
+  "approvedComparison": {
+    "blob": "2a23dddb283483b2bdaf45a4ef59b81d58920826",
+    "bytes": 3153,
+    "sha256": "a66182265efa4042942087cdcd7c030435138a641b862e3062d8dff7377f44f7"
+  },
+  "originalResultPreservedUnchanged": true,
+  "sourceReference": {
+    "blob": "b205c433b6146639258d9b4cd912ed101195d501",
+    "bytes": 1735,
+    "sha256": "a93c2469dfd482ae2e57401ab986c2c46d40eb41dac4ea94b0ee1144afa91bf9"
+  },
+  "additionalAppleReference": {
+    "url": "https://support.apple.com/en-us/108052",
+    "observedIdentifier": "Mac17,2",
+    "officialFamily": "MacBook Pro (14-inch, M5, 2025)",
+    "retrievedSourceRefs": [
+      "turn65search0",
+      "turn65view0"
+    ]
+  },
+  "interpretation": "Exact observed OS model strings may carry these device-family labels. This is not independent chassis measurement, hardware serial identity, hardware attestation, or proof that an unobserved vendor predicate holds.",
+  "routes_equal": true,
+  "kernel_reported_model_only": true,
+  "cryptographic_hardware_attestation": false,
+  "port_reservation": false,
+  "final_candidate_binary_qualified": false,
+  "final_LAN_qualified": false,
+  "NativeCalls": 0,
+  "additionalNativeCallsAuthorized": 0,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

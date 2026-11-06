@@ -1,0 +1,39 @@
+{
+  "schema": "heptabao.root.LAN-public-model-source-reference.r1",
+  "time_utc": "2026-11-06 19:16:18 UTC",
+  "primary_sources": {
+    "pocket4": {
+      "repository": "torvalds/linux",
+      "commit": "a91337fb5e8e0127c8b5be87be9f3027f95b48bc",
+      "path": "drivers/hwmon/gpd-fan.c",
+      "body": {
+        "blob": "b3b75f99f58836850cad14fd1d9516d35974564d",
+        "bytes": 16689,
+        "sha256": "85b9c6068c98de738a8491517a092765a97f284745475b1d2adff1ef4ea55bdc"
+      },
+      "excerpt": "// GPD Pocket 4\n\t\t.matches = {\n\t\t\tDMI_MATCH(DMI_SYS_VENDOR, \"GPD\"),\n\t\t\tDMI_MATCH(DMI_PRODUCT_NAME, \"G1628-04\"),\n\t\t},\n\t\t.driver_data = &gpd_win_mini_drvdata,\n\t},",
+      "model": "G1628-04",
+      "label": "GPD Pocket 4",
+      "vendor_condition_in_driver": "GPD",
+      "vendor_field_not_observed_by_our_probe": true
+    },
+    "rog": {
+      "url": "https://rog.asus.com/us/laptops/rog-flow/rog-flow-z13-2025/spec/",
+      "short_primary_identifiers": [
+        "ROG Flow Z13 (2025) GZ302",
+        "GZ302EA"
+      ],
+      "observed_kernel_model": "ROG Flow Z13 GZ302EA_GZ302EA"
+    }
+  },
+  "interpretation": "Model naming correspondence supports the OS-reported device-family labels. It is not proof that the driver matching predicates all apply, not an independently measured chassis identity, and not cryptographic hardware attestation.",
+  "route_observations": {
+    "pocket4_native": "2bf7037f75d61bdf119e06a547f7760f171f46d0",
+    "pocket4_ssh": "c07f05d7fe9e12180af36dfa3842eaf40b9ca70b",
+    "rog_native": "147f59416ced082a5b1a6d67ccede8463c474689",
+    "rog_ssh": "8327c2cb1a136597eb8f6e8af706e97d264532f1"
+  },
+  "Native_calls": 0,
+  "hardware_attestation": false,
+  "final_LAN_qualified": false
+}

@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-final-lan-identity-mac-ssh-6dd47ce4-authority-0",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1b24c9737-fc05-7d68"
+    }
+  }
+}

@@ -1,0 +1,570 @@
+[
+  {
+    "index": 0,
+    "callKey": "lanid-p4-ssh-start-20261106-r1",
+    "stem": "call.00",
+    "kind": "process_start",
+    "request": {
+      "blob": "5301c6cb6b4ff5ffbf318d41585b20da852210af",
+      "bytes": 13018,
+      "sha256": "5909de0b18e50ca3ff04fffb1821a749db8bc8d8267a52cfa611d0cdb9cddde6"
+    },
+    "SDK": {
+      "blob": "7d0684be5be5699ba2e58dec72f9a7b205c810cb",
+      "bytes": 1834,
+      "sha256": "6a6d8a5be709e952902ca2febb4701f3d923470bc3fb7799067658e33b10ffd7"
+    },
+    "native": {
+      "blob": "9b3b0e4d4873fa2a394f744828227b52fcded91f",
+      "bytes": 1522,
+      "sha256": "e1861427aa1eea9877e0a94bd938799c19fe47739d0c2160b7d417d6a0d2de21"
+    },
+    "armed": {
+      "tree": "57d7384e14dda312f8a708a607632b736181b9d8",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "5153096b6f71754cdf7a1dbc915635a6a92a94e9",
+          "bytes": 839,
+          "sha256": "ad0de23145acdfb4ef740c9bb1655520312c1a8d78b803010f152608da692f31",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "f61bacb1a91998e3f89695562f94a5f25ea19a0d",
+          "bytes": 702,
+          "sha256": "68111da540a233fc17acd10e2281b49d964a1e5e6cab238c939a6b495e75bfcf",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "5301c6cb6b4ff5ffbf318d41585b20da852210af",
+          "bytes": 13018,
+          "sha256": "5909de0b18e50ca3ff04fffb1821a749db8bc8d8267a52cfa611d0cdb9cddde6",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 14559,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "SDK_archive": {
+      "tree": "6d7fecd91ed3e7e64526edb33502ba17837c2b2d",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "7d0684be5be5699ba2e58dec72f9a7b205c810cb",
+          "bytes": 1834,
+          "sha256": "6a6d8a5be709e952902ca2febb4701f3d923470bc3fb7799067658e33b10ffd7",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 1834,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "called": true,
+    "phase": "accepted"
+  },
+  {
+    "index": 1,
+    "callKey": "lanid-p4-ssh-auth0-admit-20261106-r1",
+    "stem": "call.01",
+    "kind": "operation_start",
+    "request": {
+      "blob": "343234c961a205e692036e33c921082cfa396f92",
+      "bytes": 230,
+      "sha256": "915a1cc4e35ab9f698c9d15df3d07453b3ab4b824e07bf3281aae2a779cac4f1"
+    },
+    "SDK": {
+      "blob": "361f20cd3bb94c236a6cadfccddc87be54ef6f5a",
+      "bytes": 709,
+      "sha256": "a7e998cb05ed2b8d9695a1f6e46463bdf6569d381f52943c72eb0f04e0744845"
+    },
+    "native": {
+      "blob": "c0b6d90f9e061398f9db93ee353b24d4b2caaf35",
+      "bytes": 548,
+      "sha256": "b97f3ba35b9266be4632d40d4c5e66146399a785cd6ba30101586c649384b99c"
+    },
+    "armed": {
+      "tree": "7744118cb997932c0dd92c3aba3bae7e83a6c515",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "3c25d58bf4d031885b604c9dee2983cbcc8e29ab",
+          "bytes": 864,
+          "sha256": "471d138df09a270ca73548a8a57df0ac2041c0d3b5d163d907aa3755b97b1027",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "bd17bc400b5bbef07f2bbae8a0666cc81721fffc",
+          "bytes": 727,
+          "sha256": "8923a20341eab48ee20e3c7c9970e0bf5a2be04f8d31dab79f622333e1c0e132",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "343234c961a205e692036e33c921082cfa396f92",
+          "bytes": 230,
+          "sha256": "915a1cc4e35ab9f698c9d15df3d07453b3ab4b824e07bf3281aae2a779cac4f1",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1821,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "SDK_archive": {
+      "tree": "00de8ecc8f70fb76504ace25f96cb4748bed6a77",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "361f20cd3bb94c236a6cadfccddc87be54ef6f5a",
+          "bytes": 709,
+          "sha256": "a7e998cb05ed2b8d9695a1f6e46463bdf6569d381f52943c72eb0f04e0744845",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 709,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "called": true,
+    "phase": "accepted"
+  },
+  {
+    "index": 2,
+    "callKey": "lanid-p4-ssh-auth0-status0-20261106-r1",
+    "stem": "call.02",
+    "kind": "operation_status",
+    "request": {
+      "blob": "4ee30f175d9b56018544adeaabf6c58bcbe1583d",
+      "bytes": 89,
+      "sha256": "0ab1b9fcd6c2c71c546528925b1f03ca202ba5509729d40aec45e00638c4976b"
+    },
+    "SDK": {
+      "blob": "eaf8c118323adb16e9921fa4f0396bb457720088",
+      "bytes": 980,
+      "sha256": "3c29d91bb14719313f80321f5ad73e178c1a11bae71fd6dd6e7fac4b6e0d0b34"
+    },
+    "native": {
+      "blob": "aa92ff575ea18f4e4599644f3c161b1e4526c9e8",
+      "bytes": 805,
+      "sha256": "f0d2ec670db750f2b8bf1dde682ebeee4ac43f1adaebe9dea4e9cb30e49bb68b"
+    },
+    "armed": {
+      "tree": "0945e839fc70454f0859e6f234dc98c0062cb38c",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "f694d34feaf78963032106a9440951275ccff99c",
+          "bytes": 928,
+          "sha256": "4a071de11517c37d5c2783ee572f4dafd90de5a258c4ee8abdd19953f150c67b",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "b6e87d29fb2ab605fa71586f76fd9c46f71801d4",
+          "bytes": 791,
+          "sha256": "9724c1427aa45c1e2dbf8d00679e0984d761d27fd6e8d5992081f0e7bfaaceb7",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "4ee30f175d9b56018544adeaabf6c58bcbe1583d",
+          "bytes": 89,
+          "sha256": "0ab1b9fcd6c2c71c546528925b1f03ca202ba5509729d40aec45e00638c4976b",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1808,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "SDK_archive": {
+      "tree": "6dd8ebca4f5cdc00061c8455b9a4b8cdb3a41c72",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "eaf8c118323adb16e9921fa4f0396bb457720088",
+          "bytes": 980,
+          "sha256": "3c29d91bb14719313f80321f5ad73e178c1a11bae71fd6dd6e7fac4b6e0d0b34",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 980,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "called": true,
+    "phase": "accepted"
+  },
+  {
+    "index": 3,
+    "callKey": "lanid-p4-ssh-auth0-page0-20261106-r1",
+    "stem": "call.03",
+    "kind": "operation_result",
+    "request": {
+      "blob": "74ffb20b5c86071a9ed13a68a22a9dc551b7240c",
+      "bytes": 121,
+      "sha256": "d169739f2a0617378f92e419e275a8d73591f9ed9f1c2a185afe8305b8221d25"
+    },
+    "SDK": {
+      "blob": "f11a857fac2c1427d7eca6e45a4af87777b21851",
+      "bytes": 2068,
+      "sha256": "4a83a7e38abd7bfe7adc4609ace73f8b466076d90765e5d599bafa90b39eaf5c"
+    },
+    "native": {
+      "blob": "82a0dba4a14d9ede8d839b1483b0a5a8d903f01c",
+      "bytes": 1897,
+      "sha256": "c608177009f5e9271b167fe7e134ec26ae5656b5d333239577c47861f8e991a1"
+    },
+    "armed": {
+      "tree": "ae82f987d2a86b79bf884bf8aaf476d3bae478dc",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "ee55bb6b391f9573848280e5d516bacff4b80805",
+          "bytes": 927,
+          "sha256": "3ccaa8119e9e03c6dcca1ee0c2b572006e0ade8afafc1586e70a2384776666f8",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "315910d252575fa26b591b23d2cf8104e5fd5a64",
+          "bytes": 790,
+          "sha256": "de4cec91289716e9f9bb1043edd22c390e2f27a3c6793b56e560d07cbfafc20b",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "74ffb20b5c86071a9ed13a68a22a9dc551b7240c",
+          "bytes": 121,
+          "sha256": "d169739f2a0617378f92e419e275a8d73591f9ed9f1c2a185afe8305b8221d25",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1838,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "SDK_archive": {
+      "tree": "53293e424af8b5552b70124ce397df968806d445",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "f11a857fac2c1427d7eca6e45a4af87777b21851",
+          "bytes": 2068,
+          "sha256": "4a83a7e38abd7bfe7adc4609ace73f8b466076d90765e5d599bafa90b39eaf5c",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 2068,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "called": true,
+    "phase": "accepted"
+  },
+  {
+    "index": 4,
+    "callKey": "lanid-p4-ssh-streams0-admit-20261106-r1",
+    "stem": "call.04",
+    "kind": "operation_start",
+    "request": {
+      "blob": "f46d016b873ccc3280a241a4993ce12e4afaf92f",
+      "bytes": 300,
+      "sha256": "cfd2762f68545473d1166810d5cdc115a0c43d2e9f25cafd7ff32b1c74888b4f"
+    },
+    "SDK": {
+      "blob": "d6bf85cb9b1d64be001e3725f40072dabd44995d",
+      "bytes": 707,
+      "sha256": "2c80262ff350e36a58e3ed4f208d40abcae50fbd59a0fb07de6b80ac1540d613"
+    },
+    "native": {
+      "blob": "8137cec48de2e7033dfd48af0d12603a1dc4a938",
+      "bytes": 546,
+      "sha256": "7efbff50c104565004c6e93eae48d792f7baf0ae9c12cf83aae34de73eac5023"
+    },
+    "armed": {
+      "tree": "62f21ae5cca645031dd618aaa47b1f43794f0ce0",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "49793f63ae188187a5c186e55d1be5443f22c7e8",
+          "bytes": 867,
+          "sha256": "618a4ab45a058e55da328c70813104b798906ba51b2059e3b6c7922a83589cff",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "c34efd43c6e8d12c3237b9eff31f6c19051354df",
+          "bytes": 730,
+          "sha256": "e1a22f925c38d03ca5991293896e7c9b33f700574538b35cb3d80dab9aa10afd",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "f46d016b873ccc3280a241a4993ce12e4afaf92f",
+          "bytes": 300,
+          "sha256": "cfd2762f68545473d1166810d5cdc115a0c43d2e9f25cafd7ff32b1c74888b4f",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1897,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "SDK_archive": {
+      "tree": "6f3595e94aa44a293bca5ed532c57c3db870585b",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "d6bf85cb9b1d64be001e3725f40072dabd44995d",
+          "bytes": 707,
+          "sha256": "2c80262ff350e36a58e3ed4f208d40abcae50fbd59a0fb07de6b80ac1540d613",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 707,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "called": true,
+    "phase": "accepted"
+  },
+  {
+    "index": 5,
+    "callKey": "lanid-p4-ssh-streams0-status0-20261106-r1",
+    "stem": "call.05",
+    "kind": "operation_status",
+    "request": {
+      "blob": "2cbfa04f570f3c90c4cbd488a9659f32f98c8ad4",
+      "bytes": 89,
+      "sha256": "ee026db409eb33aa6ed86302d732bdcd79c01f4750313572fc6b0a0c03b6f451"
+    },
+    "SDK": {
+      "blob": "e2ee88ba8e8c205d7813f62d816a2443672365be",
+      "bytes": 978,
+      "sha256": "157725f41028de3fdbd9e4f51dc8dc8ca65d735412a8592256202e0fe1bea63b"
+    },
+    "native": {
+      "blob": "f5eecc3919b29511e6c57251045ee5aa6b4da0a4",
+      "bytes": 803,
+      "sha256": "08897ea21579d220bf20049eb67de73ab7ae4083c327c57e8a02dc4dedffbcf7"
+    },
+    "armed": {
+      "tree": "2353fefa5f6553071c067fab071a170b7a600c42",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "adab63b21c752198dbfbdcd37b5da48f1ffcfffb",
+          "bytes": 931,
+          "sha256": "009de409d16d73fe6317c5d44cddbef699c18045253614fc68954ff086b95b31",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "fcd708d33f2da9deef8f9abf16b0330f78db1020",
+          "bytes": 794,
+          "sha256": "c589875a7e9de6cc0cc336bd87378bb62c9f9c1269ff262c875855242c22294f",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "2cbfa04f570f3c90c4cbd488a9659f32f98c8ad4",
+          "bytes": 89,
+          "sha256": "ee026db409eb33aa6ed86302d732bdcd79c01f4750313572fc6b0a0c03b6f451",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1814,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "SDK_archive": {
+      "tree": "d108668a3e607e337afe7da3c6d8616539b79c39",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "e2ee88ba8e8c205d7813f62d816a2443672365be",
+          "bytes": 978,
+          "sha256": "157725f41028de3fdbd9e4f51dc8dc8ca65d735412a8592256202e0fe1bea63b",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 978,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "called": true,
+    "phase": "accepted"
+  },
+  {
+    "index": 6,
+    "callKey": "lanid-p4-ssh-streams0-page0-20261106-r1",
+    "stem": "call.06",
+    "kind": "operation_result",
+    "request": {
+      "blob": "9d029311cb88c3ba7b0070f555ec7c051e57da77",
+      "bytes": 121,
+      "sha256": "731f48a72a810b2d6e1f353a2c3006c35aeb0c42e9247fc80330b1807188d60c"
+    },
+    "SDK": {
+      "blob": "71d6e62402f25516eccb5404b5d531df76492d91",
+      "bytes": 11780,
+      "sha256": "c28b21ec5dd9b61ac4bdec98476030ca37c8d120e09dddcb3086ba50fb93e70c"
+    },
+    "native": {
+      "blob": "e16d05c15d578a0f5633ce90a1f38f8fa0f13007",
+      "bytes": 11609,
+      "sha256": "0f392bdf8b2208f349c98708bbdf768432ebb4bd354b4ff7674026f296a774ed"
+    },
+    "armed": {
+      "tree": "dc46da05ea6ad6c616ce150f772b7f0297361c36",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "d9479b416442ae41406e2269dc70125c59cc33f6",
+          "bytes": 930,
+          "sha256": "53d3b1b4e4601c498d04416e2f8da85740841d6fbe36817b3572f49041e6a394",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "952f4218429d8144660f0140f70c99f779ef37b4",
+          "bytes": 793,
+          "sha256": "ca587ac0fc2ebc767c726485a835c3e573c7acc8f4bbba2f82d3bdad15a3aee8",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "9d029311cb88c3ba7b0070f555ec7c051e57da77",
+          "bytes": 121,
+          "sha256": "731f48a72a810b2d6e1f353a2c3006c35aeb0c42e9247fc80330b1807188d60c",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1844,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "SDK_archive": {
+      "tree": "b26278328ea153d99d263147d6c1776966aec020",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "71d6e62402f25516eccb5404b5d531df76492d91",
+          "bytes": 11780,
+          "sha256": "c28b21ec5dd9b61ac4bdec98476030ca37c8d120e09dddcb3086ba50fb93e70c",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 11780,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "called": true,
+    "phase": "accepted"
+  },
+  {
+    "index": 7,
+    "callKey": "lanid-p4-ssh-streams0-page1-20261106-r1",
+    "stem": "call.07",
+    "kind": "operation_result",
+    "request": {
+      "blob": "9d653a4b76d4b746b35da329fb78b9bb31bde5f6",
+      "bytes": 124,
+      "sha256": "2c055def0c1d1693d6021bc53d981979f9310d00bb75c4aa87374f191a736a95"
+    },
+    "SDK": {
+      "blob": "8a40403b3f39fa118569742be40c6c509acaf87d",
+      "bytes": 7279,
+      "sha256": "e7e16c8daaf6f7cb95630a84680cbe9cf2931f09292d545a63070272cda49869"
+    },
+    "native": {
+      "blob": "d6029ef58abeab057ccf128bcd2dfefa7bceb8c3",
+      "bytes": 7108,
+      "sha256": "a7ef69977c5b17fcd2456cc0cb32498ca8674779dd5a6194c18a2d2c4e6c5260"
+    },
+    "armed": {
+      "tree": "d38ac071652f446ec290daac55983ec3fb502490",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "a459edd57b03008d18ce6c9c1334b2bbe2a35061",
+          "bytes": 930,
+          "sha256": "6c2a2f83d3a1f19b1ec2e347e485a7a5418795710821997218acf663952bc65b",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "ecaae471c5d29e8807a4d54850f307accd074f31",
+          "bytes": 793,
+          "sha256": "ebdd165d868708143dd2ac799d8968c2732f0d35eea3ca8ae91f63034e03a726",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "9d653a4b76d4b746b35da329fb78b9bb31bde5f6",
+          "bytes": 124,
+          "sha256": "2c055def0c1d1693d6021bc53d981979f9310d00bb75c4aa87374f191a736a95",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1847,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "SDK_archive": {
+      "tree": "0ae7ee5fa0a05112cfe66cfb424e3e06919407af",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "8a40403b3f39fa118569742be40c6c509acaf87d",
+          "bytes": 7279,
+          "sha256": "e7e16c8daaf6f7cb95630a84680cbe9cf2931f09292d545a63070272cda49869",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 7279,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "called": true,
+    "phase": "accepted"
+  }
+]

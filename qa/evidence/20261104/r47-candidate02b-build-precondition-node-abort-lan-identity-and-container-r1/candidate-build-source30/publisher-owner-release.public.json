@@ -1,0 +1,93 @@
+{
+  "schema": "heptabao.combined02b90762.controls-inert-owner-release.r1",
+  "slot": "combined_02b90762_build_controls_inert_gitfirst_r1",
+  "job": "1a1b247b510-fc05-7d4e",
+  "calls": 7,
+  "observers": 2,
+  "pages": 2,
+  "allObserversCompletedInactive": true,
+  "nativeCallInFlight": false,
+  "nativeFutureActive": false,
+  "processActive": false,
+  "pending": null,
+  "activeObserver": null,
+  "paused": false,
+  "exitCode": 0,
+  "stdout": {
+    "blob": "3ea5f03c17c7d493442bf0f2db1e1891bfd40224",
+    "bytes": 1408,
+    "sha256": "6d1f1c0b0d409aa6ad979f1fd4abf6d740284fd2ec847833b51ebe713b7ef316"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "reportedPrepared": true,
+  "reportedFiles": [
+    {
+      "name": "native_jwt_build.py",
+      "path": "/home/qian-qi/hb-02b90762-controls-20261106-r1/native_jwt_build.py",
+      "bytes": 32059,
+      "sha256": "326ec765e5fa8fa06b4e41673b49d84d5325294b90283e3faab6a00f88c5f29e",
+      "full9Strings": [
+        "66306",
+        "28477745",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "32059",
+        "1793992407176665344",
+        "1793992407177714909"
+      ],
+      "reportedByPublisher": true,
+      "independentFileInfo": false,
+      "independentBodyRead": false
+    },
+    {
+      "name": "launch_native_jwt_build.py",
+      "path": "/home/qian-qi/hb-02b90762-controls-20261106-r1/launch_native_jwt_build.py",
+      "bytes": 39818,
+      "sha256": "4c5de46d61f90237ae6789d9efd8d347b7729621ad8a6c467205f3f18c378602",
+      "full9Strings": [
+        "66306",
+        "28477747",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "39818",
+        "1793992407178767781",
+        "1793992407179819630"
+      ],
+      "reportedByPublisher": true,
+      "independentFileInfo": false,
+      "independentBodyRead": false
+    },
+    {
+      "name": "jwt-test-groups.public.json",
+      "path": "/home/qian-qi/hb-02b90762-controls-20261106-r1/jwt-test-groups.public.json",
+      "bytes": 33825,
+      "sha256": "7c0fb6c5b6819c2cab60f3044e0aec767ad8abbf22e31ff0f7fab742ea4cd786",
+      "full9Strings": [
+        "66306",
+        "28477748",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "33825",
+        "1793992407180879845",
+        "1793992407181935291"
+      ],
+      "reportedByPublisher": true,
+      "independentFileInfo": false,
+      "independentBodyRead": false
+    }
+  ],
+  "independentControlsReadbackComplete": false,
+  "buildAuthorized": false,
+  "formatterExecuted": false,
+  "oldFailuresPreserved": true
+}

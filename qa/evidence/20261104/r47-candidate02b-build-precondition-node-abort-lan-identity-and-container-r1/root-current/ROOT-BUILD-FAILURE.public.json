@@ -1,0 +1,41 @@
+{
+  "schema": "heptabao.root.candidate-first-build-failure-qualification.r1",
+  "passed": true,
+  "checks": {
+    "oneOriginalKnownJob": true,
+    "allSevenAccepted": true,
+    "twoObserversClosed": true,
+    "noPending": true,
+    "terminalKnownFailure": true,
+    "wholeOriginalStderr": true,
+    "emptyStdout": true,
+    "frozenLauncher": true,
+    "tracebackExactLine": true,
+    "noCargoReached": true
+  },
+  "originalTree": "55ace66fb7c0d963385fd481f8088cb920d22546",
+  "job": {
+    "host": "rog",
+    "id": "1a1b2580881-fc05-7da1"
+  },
+  "stderr": {
+    "blob": "7300e23e4242e96cbc29487ee289b9d7c098f136",
+    "bytes": 613,
+    "sha256": "95d2fb8549a5bd9b488c3f1250f9cdc9e38975087e558b044eec067bedd62b98"
+  },
+  "executionBoundary": {
+    "stageReadReached": false,
+    "controlReadBoundReached": false,
+    "admissionMkdirReached": false,
+    "priorFenceSubprocessReached": false,
+    "targetLockReached": false,
+    "runnerExecReached": false,
+    "cargoStarted": false,
+    "rustCompileStarted": false,
+    "testsRun": 0,
+    "basis": "Whole stderr exact traceback matched the frozen launcher; all listed operations occur later in that same source."
+  },
+  "meaning": "A known Python launcher precondition failure before Cargo. No Rust build or tests qualified. The current target was absent; why it is absent remains unproven.",
+  "originalJobReplayed": false,
+  "NativeCalls": 0
+}

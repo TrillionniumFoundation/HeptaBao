@@ -1,0 +1,499 @@
+[
+  {
+    "index": 0,
+    "callKey": "lanid-mac-native-start-20261106-r1",
+    "stem": "call.00",
+    "kind": "process_start",
+    "request": {
+      "blob": "fa64e2d748e07cb96cb66555a3738d2fba38ed8c",
+      "bytes": 12634,
+      "sha256": "05a7f7820151a90d8a9a553f44b07240cd3a0b9efbf88c888730799a2d84f414"
+    },
+    "SDK": {
+      "blob": "500874de8313276c1378bb4cd21d861c1cff3ecd",
+      "bytes": 14952,
+      "sha256": "918a57eb7418b14f06bd263b98c0081cea371ba164e94957c8b737b50fb37755"
+    },
+    "native": {
+      "blob": "008757bc549fffa16754c43355fa1906573dff7e",
+      "bytes": 13487,
+      "sha256": "edd4752e97939bcc4b5974e0ab991dca44ecc400592a31d95c1078f37afe6266"
+    },
+    "armed": {
+      "tree": "2765ae8a5195d51f63db320b8ef8c7d63d0bd8db",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "2bd23dcc270d4fe7379f7f7ba60d3199194cb643",
+          "bytes": 843,
+          "sha256": "49fc3510d34fef4f12ca7df005f3476941674f6b6aef9c13e9679f80ccbc7b36",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "a62fdaeebfc72ac151957a558b2196884ecab9b4",
+          "bytes": 706,
+          "sha256": "bcca23edcf84943825d7b5cfd9766a199424730f8a532221fc4877c0a46b8120",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "fa64e2d748e07cb96cb66555a3738d2fba38ed8c",
+          "bytes": 12634,
+          "sha256": "05a7f7820151a90d8a9a553f44b07240cd3a0b9efbf88c888730799a2d84f414",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 14183,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "SDK_archive": {
+      "tree": "1900fabe210422ec3d0233a3b61ed0a9969df14d",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "500874de8313276c1378bb4cd21d861c1cff3ecd",
+          "bytes": 14952,
+          "sha256": "918a57eb7418b14f06bd263b98c0081cea371ba164e94957c8b737b50fb37755",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 14952,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "called": true,
+    "phase": "accepted"
+  },
+  {
+    "index": 1,
+    "callKey": "lanid-mac-native-auth0-admit-20261106-r1",
+    "stem": "call.01",
+    "kind": "operation_start",
+    "request": {
+      "blob": "232b1f243906c693d1f3152df97039e66e9b8ee1",
+      "bytes": 225,
+      "sha256": "ee2165cb69b2805f6030317b694972b1bce8d5a38e190c1d3eee00d3594d1051"
+    },
+    "SDK": {
+      "blob": "5c0e47c0b296ac21b5089c8c4ce3800858f600d1",
+      "bytes": 709,
+      "sha256": "54a94205e721cc3c076d7a4a03a24d45d08dc73a66c0cf9094b64b8c2d16a2f3"
+    },
+    "native": {
+      "blob": "13a4c6318ca8b3999be954784dae232ae1723850",
+      "bytes": 548,
+      "sha256": "3549ea2cedba22dddf4f391ebbc4413a462f4416a695d09a84611a89b4452030"
+    },
+    "armed": {
+      "tree": "3ebe8c4e7a5933bf6c72ad024ac2cb25c99cbac8",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "0c679f6426c94aee5caa14cfc05d967e8f5873c7",
+          "bytes": 868,
+          "sha256": "a765a6eb601259cc72ac5de9e6ce70899cd9a2654912806eb43474ced809159f",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "dbbc94903f9aff7e7383f33c1cad9accf4232e2d",
+          "bytes": 731,
+          "sha256": "47dccd744017f0dd646317a3b23d09e035a03fef3dde7cdc0513ef9ed0161fca",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "232b1f243906c693d1f3152df97039e66e9b8ee1",
+          "bytes": 225,
+          "sha256": "ee2165cb69b2805f6030317b694972b1bce8d5a38e190c1d3eee00d3594d1051",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1824,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "SDK_archive": {
+      "tree": "2f4df44762bf28de4acd2cfe15f91456179c3391",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "5c0e47c0b296ac21b5089c8c4ce3800858f600d1",
+          "bytes": 709,
+          "sha256": "54a94205e721cc3c076d7a4a03a24d45d08dc73a66c0cf9094b64b8c2d16a2f3",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 709,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "called": true,
+    "phase": "accepted"
+  },
+  {
+    "index": 2,
+    "callKey": "lanid-mac-native-auth0-status0-20261106-r1",
+    "stem": "call.02",
+    "kind": "operation_status",
+    "request": {
+      "blob": "ce539b7f80d3633a92af30abb934f9ee15f962b3",
+      "bytes": 89,
+      "sha256": "bb63c2bfca606bfe904076bf0ae2756d9c29ffb786aec4b8a531cff04630adb4"
+    },
+    "SDK": {
+      "blob": "deeab680388e70546458764c5df9f92c367c2721",
+      "bytes": 980,
+      "sha256": "49d22a1d0f7fae44246d235c69fb64cf31fdca0b02e2344cf69ae14329512b06"
+    },
+    "native": {
+      "blob": "f7e592a10a479ef26b38d99c4ccfbcd486bb8581",
+      "bytes": 805,
+      "sha256": "ceb099145b6dfd9de08d3b3c9287dd659281a8ffc9649f8a533e861761519837"
+    },
+    "armed": {
+      "tree": "be872bee26ec4f4ae29162176e889bd5bd31c6d3",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "35579aa015b1327d2892b7ac817c495eecad2f87",
+          "bytes": 932,
+          "sha256": "773a720091d2488b77bdfcb0323387284bd028a7d1c754c8776a2d963d525539",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "ccc19835fb122b813323b3be21a68dd72962b4f0",
+          "bytes": 795,
+          "sha256": "648708d59dc3fff566a8ab638b32f4570e4da0ce3d321b22e9474223a5a79e46",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "ce539b7f80d3633a92af30abb934f9ee15f962b3",
+          "bytes": 89,
+          "sha256": "bb63c2bfca606bfe904076bf0ae2756d9c29ffb786aec4b8a531cff04630adb4",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1816,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "SDK_archive": {
+      "tree": "a660c5bd743dc05b45948b64e9f3ff6175c8846a",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "deeab680388e70546458764c5df9f92c367c2721",
+          "bytes": 980,
+          "sha256": "49d22a1d0f7fae44246d235c69fb64cf31fdca0b02e2344cf69ae14329512b06",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 980,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "called": true,
+    "phase": "accepted"
+  },
+  {
+    "index": 3,
+    "callKey": "lanid-mac-native-auth0-page0-20261106-r1",
+    "stem": "call.03",
+    "kind": "operation_result",
+    "request": {
+      "blob": "97099de07acf9e48ee82c2c7c002e7fa971f2d4f",
+      "bytes": 121,
+      "sha256": "28458b816753787d310fe7218096cecc0bfc7e926e8bf5549cb2682f29e7b89a"
+    },
+    "SDK": {
+      "blob": "2f1aa789277d1cb7261ffb6053c7bae1dfec979c",
+      "bytes": 2068,
+      "sha256": "796b7d4da5144a54c06ce53e88e16c53a1e24f475721d342531fc278316812cf"
+    },
+    "native": {
+      "blob": "c1fb99f713a99197d93f09ea73138ad4cc913a06",
+      "bytes": 1897,
+      "sha256": "94fd6c03db9864351e8812c4a8554e340f7d65be07554f3bcb442023ebcda503"
+    },
+    "armed": {
+      "tree": "6645edb1251758acb3ef74a301a0a883c4377fb6",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "80bf6eb53fee59736963f0bd24a40715b6960d84",
+          "bytes": 931,
+          "sha256": "dcc0b5f9590de795e26b3a911961db8fee1289c08f6f4430b65d9b7a90b56f33",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "2e47d88ba4cafd3bec5ef3e70533ec4867913000",
+          "bytes": 794,
+          "sha256": "7cff6cee0a23a54c9c405b5bdd39cbed37d6745c1614d83c09cefeb2c3fcd3f4",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "97099de07acf9e48ee82c2c7c002e7fa971f2d4f",
+          "bytes": 121,
+          "sha256": "28458b816753787d310fe7218096cecc0bfc7e926e8bf5549cb2682f29e7b89a",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1846,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "SDK_archive": {
+      "tree": "4a946ebbbcb0bf408eb89bf620e26ee2cbf13ef0",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "2f1aa789277d1cb7261ffb6053c7bae1dfec979c",
+          "bytes": 2068,
+          "sha256": "796b7d4da5144a54c06ce53e88e16c53a1e24f475721d342531fc278316812cf",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 2068,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "called": true,
+    "phase": "accepted"
+  },
+  {
+    "index": 4,
+    "callKey": "lanid-mac-native-streams0-admit-20261106-r1",
+    "stem": "call.04",
+    "kind": "operation_start",
+    "request": {
+      "blob": "c77e4fed4633494d511902fd2566eadbd1c88585",
+      "bytes": 295,
+      "sha256": "a89d5730b66da22ac603d114f4377e01cabfdd0fe32742ae361baa5f0b5bbd0e"
+    },
+    "SDK": {
+      "blob": "33e7676330356e4a389cc1f436693e5f7de2cdd3",
+      "bytes": 707,
+      "sha256": "b22b48c6a8288c45a70ecd0b7cd1e4f2c41388fbd940c48f47a61cc79785ecee"
+    },
+    "native": {
+      "blob": "ad325acf573f54bd1ea11bc392f8aa1e4a10daa6",
+      "bytes": 546,
+      "sha256": "6b1a6f2cf6378bcb23f6b32ee70cb4abc68187d6dfdbab4c357f8999244ee37e"
+    },
+    "armed": {
+      "tree": "72c916ee1425e6289ecc5b47d41cd82b7ee0efd1",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "dbb93ca459fb33b6bcb1ef1cdeb2cbd4a4a93c49",
+          "bytes": 871,
+          "sha256": "c7a1ebab99e87fb667fc0845ceccb755f62158c1da3ef847f6575161c3c0624e",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "50cecf10a25ece5c4164c1f80bc860d57e5d95bf",
+          "bytes": 734,
+          "sha256": "c1c6e2031ec220a8d74a6fa092db5b34eecd397e6799ee3ea87fac684f0dc740",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "c77e4fed4633494d511902fd2566eadbd1c88585",
+          "bytes": 295,
+          "sha256": "a89d5730b66da22ac603d114f4377e01cabfdd0fe32742ae361baa5f0b5bbd0e",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1900,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "SDK_archive": {
+      "tree": "52d8df2dae257133fd061c63d3fe8b02d60eb6b1",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "33e7676330356e4a389cc1f436693e5f7de2cdd3",
+          "bytes": 707,
+          "sha256": "b22b48c6a8288c45a70ecd0b7cd1e4f2c41388fbd940c48f47a61cc79785ecee",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 707,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "called": true,
+    "phase": "accepted"
+  },
+  {
+    "index": 5,
+    "callKey": "lanid-mac-native-streams0-status0-20261106-r1",
+    "stem": "call.05",
+    "kind": "operation_status",
+    "request": {
+      "blob": "65d6f0d25050c3aeec759008ae5cae6794958346",
+      "bytes": 89,
+      "sha256": "d74282dfd8d76b1b6f9587e8d6940543f468d37fde826d1040a5f073d2a1b64c"
+    },
+    "SDK": {
+      "blob": "c2f752bc6f9c1cfc2db96d179470db1bf1c10c4e",
+      "bytes": 978,
+      "sha256": "5fec5fc1faaa6cfebfe1768875a2c5e29a5a4ce868122f9ac0860172ebe6e9c9"
+    },
+    "native": {
+      "blob": "0ee8552d60861ac2537f976aca159c1e73a97576",
+      "bytes": 803,
+      "sha256": "b8b65b9f685f9ce2a62a192ed2674dd918eab49a42f5eecb209906123b2778f5"
+    },
+    "armed": {
+      "tree": "12bcdce4371a709cb767f0165afa0e7c7fba3fee",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "a883c3595a2e2067dff9517981ed39b80900063f",
+          "bytes": 935,
+          "sha256": "526b0fc473d6f80c5637a3eb2448397cda44c79d5ea5d02d30dd0ec5a72bff2a",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "68547c7a33d9e447bb2334d797f3da6a94220eec",
+          "bytes": 798,
+          "sha256": "ffa4ddf20f749687e55e0c4cd78293b1261160d8bc62872c1ca5d9cfad4ebc51",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "65d6f0d25050c3aeec759008ae5cae6794958346",
+          "bytes": 89,
+          "sha256": "d74282dfd8d76b1b6f9587e8d6940543f468d37fde826d1040a5f073d2a1b64c",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1822,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "SDK_archive": {
+      "tree": "9a0e35bad2665d1ce580084786a753827c76638f",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "c2f752bc6f9c1cfc2db96d179470db1bf1c10c4e",
+          "bytes": 978,
+          "sha256": "5fec5fc1faaa6cfebfe1768875a2c5e29a5a4ce868122f9ac0860172ebe6e9c9",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 978,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "called": true,
+    "phase": "accepted"
+  },
+  {
+    "index": 6,
+    "callKey": "lanid-mac-native-streams0-page0-20261106-r1",
+    "stem": "call.06",
+    "kind": "operation_result",
+    "request": {
+      "blob": "7b7e61e76746355e5a1c2e3688844a92f81942f3",
+      "bytes": 121,
+      "sha256": "e0ac9158692c84847d97d71ec89f38476fb7131044b71becc6bb454f22f6afa9"
+    },
+    "SDK": {
+      "blob": "13caa09bb9e3857b585267fb4bb4c88424c0958c",
+      "bytes": 10282,
+      "sha256": "8319b036052e447e5a934861c866a4374cd6a620e25f232ac704ff41eeef3590"
+    },
+    "native": {
+      "blob": "cbd1736181770d347ac9a6a762fb62060a9e8519",
+      "bytes": 10111,
+      "sha256": "8dbcac2285352249937568db8ef1872e705830a884a91f1575c556f88610024c"
+    },
+    "armed": {
+      "tree": "6aaac5b818ec541be43a7525790016412f091cf7",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "e1916eb340cd75cb52a0392b8c4cf76703a46a7a",
+          "bytes": 934,
+          "sha256": "11597d0c90f6470edd7d49a6151fb3331c6508564866294156046affcc040ddd",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "9519e36f762317ddbb5c5c534d707793a0c203ee",
+          "bytes": 797,
+          "sha256": "872bf6de61d7dd684ce57a1e250513cd3cd675900a5552121a23fdc0d7241bcc",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "7b7e61e76746355e5a1c2e3688844a92f81942f3",
+          "bytes": 121,
+          "sha256": "e0ac9158692c84847d97d71ec89f38476fb7131044b71becc6bb454f22f6afa9",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1852,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "SDK_archive": {
+      "tree": "6ef22432e76a6bc33cffaa3fa529745583aa83e8",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "13caa09bb9e3857b585267fb4bb4c88424c0958c",
+          "bytes": 10282,
+          "sha256": "8319b036052e447e5a934861c866a4374cd6a620e25f232ac704ff41eeef3590",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 10282,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "called": true,
+    "phase": "accepted"
+  }
+]

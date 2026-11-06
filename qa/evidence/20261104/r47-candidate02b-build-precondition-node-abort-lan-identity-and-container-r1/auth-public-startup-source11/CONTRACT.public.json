@@ -1,0 +1,355 @@
+{
+  "schema": "heptabao.mac-public-node-startup-source-contract.r1",
+  "sourceOnly": true,
+  "readyForRootReview": true,
+  "nativeSubmitted": false,
+  "slotInitialized": false,
+  "purpose": "One new public-only startup/import observation; diagnose the current cycle -6 without reading old private stdio or rerunning AuthBus.",
+  "source": {
+    "blob": "350a7511e91644fd8e6652f9b6c9cbfdaca1e3d4",
+    "bytes": 150406,
+    "sha256": "9f35cf7cc8f0c63cb678f5acbd0974f1c5127452af57b740f29908a77c783dba"
+  },
+  "request": {
+    "blob": "5f92076fa2198a6f473c11bed043a4a347ac1dbc",
+    "bytes": 151322,
+    "sha256": "3ce6082cfff09e0cadeb7494b7b4a7701fc68af063fb53b3c57f965e637c6f0b"
+  },
+  "journal": {
+    "blob": "ed4e0248df0336f91832e7d3a27a7a51a8afc998",
+    "bytes": 19045,
+    "sha256": "f7a5f0e07b606671d31efb2f0060c645e5bc4179c6ff8b37976fcb2334f427f1"
+  },
+  "dispatch": {
+    "host": "mac",
+    "slot": "owner_authbus_public_node_startup_gitfirst_r1",
+    "key": "heptabao-mac-public-node-startup-9f35cf7c-20261106-r1",
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-"
+    ],
+    "cwd": "/Users/qianqi",
+    "timeoutSeconds": 60,
+    "typedNativeDigest": null,
+    "typedNativeFingerprint": null,
+    "typedBindingNote": "Root must compute the supported stdin mapping; old b689 processStartBinding is not used."
+  },
+  "newScope": {
+    "root": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1",
+    "rootMustBeExclusiveCreate": true,
+    "existingRootFallback": false,
+    "directories": 9,
+    "publicSourceOrProfileFiles": 4,
+    "publicCaptureFiles": 2,
+    "noRemoval": true,
+    "noLaunchd": true,
+    "noPortBindOrListen": true,
+    "noOldRootMutation": true
+  },
+  "exactInputPins": {
+    "/usr/sbin/diskutil": {
+      "identity": [
+        "16777233",
+        "1152921500312575979",
+        "0",
+        "0",
+        "33261",
+        "1",
+        "1937776",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "bytes": 1937776,
+      "sha256": "624a8601b97ddfaa4b18dd2854c299e084cd45eb18fc152011c97615c3b9da1f"
+    },
+    "/usr/bin/sandbox-exec": {
+      "identity": [
+        "16777233",
+        "1152921500312572700",
+        "0",
+        "0",
+        "33261",
+        "1",
+        "102368",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "bytes": 102368,
+      "sha256": "abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a"
+    },
+    "/bin/ps": {
+      "identity": [
+        "16777233",
+        "1152921500312571399",
+        "0",
+        "0",
+        "35309",
+        "1",
+        "170432",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "bytes": 170432,
+      "sha256": "3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c"
+    },
+    "/opt/homebrew/Cellar/node/25.9.0_1/bin/node": {
+      "identity": [
+        "16777233",
+        "42479374",
+        "501",
+        "80",
+        "33133",
+        "1",
+        "68384",
+        "1775693589374925413",
+        "1775693590180968789"
+      ],
+      "bytes": 68384,
+      "sha256": "a46ed02589ca3af795237111ff854262064f8ff5c5b58d75c1509f37311eb15e"
+    },
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14": {
+      "identity": [
+        "16777233",
+        "587518380",
+        "501",
+        "80",
+        "33261",
+        "1",
+        "34640",
+        "1793798038915516382",
+        "1793798038915695047"
+      ],
+      "bytes": 34640,
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+    }
+  },
+  "nodeAlias": {
+    "identity": [
+      "16777233",
+      "42479387",
+      "501",
+      "80",
+      "41453",
+      "1",
+      "32",
+      "1775693590102524708",
+      "1775693590102524708"
+    ],
+    "path": "/opt/homebrew/bin/node",
+    "resolved": "/opt/homebrew/Cellar/node/25.9.0_1/bin/node",
+    "sha256": "a46ed02589ca3af795237111ff854262064f8ff5c5b58d75c1509f37311eb15e"
+  },
+  "anchor": {
+    "base64": "ewogICJzY2hlbWEiOiAiaGVwdGFiYW8ubWFjLWN1cnJlbnQtdDUtcHVibGljLWFuY2hvci5yMSIsCiAgInNvdXJjZV9pbnZlbnRvcnlfc2hhMjU2IjogIjAwMWQ5ZDMzODRmMWI4YzAwZmEzY2JhOGFmN2YzMDIwYmVkYzU0ZjI2Njc4NjExYWIzY2QzYTUyNGNlMjM5MDIiLAogICJ2b2x1bWVVVUlEIjogIkZCODA0RDFCLTI0Q0ItNEQ2RS1BRUE3LUE5RTE4MDgwNzc1OCIsCiAgImV4cGVjdGVkVm9sdW1lRGV2aWNlIjogIjE2Nzc3MjQ0IiwKICAiYW5jaG9ycyI6IFsKICAgIHsKICAgICAgInBhdGgiOiAiLyIsCiAgICAgICJpZGVudGl0eSI6IFsKICAgICAgICAiMTY3NzcyMzMiLAogICAgICAgICIyIiwKICAgICAgICAiMCIsCiAgICAgICAgIjAiLAogICAgICAgICIxNjg3NyIsCiAgICAgICAgIjIyIiwKICAgICAgICAiNzA0IiwKICAgICAgICAiMTc4NjU4OTUxNTAwMDAwMDAwMCIsCiAgICAgICAgIjE3ODY1ODk1MTUwMDAwMDAwMDAiCiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJwYXRoIjogIi9Wb2x1bWVzIiwKICAgICAgImlkZW50aXR5IjogWwogICAgICAgICIxNjc3NzIzMyIsCiAgICAgICAgIjE4MzM2IiwKICAgICAgICAiMCIsCiAgICAgICAgIjAiLAogICAgICAgICIxNjg3NyIsCiAgICAgICAgIjUiLAogICAgICAgICIxNjAiLAogICAgICAgICIxNzkzMTAwNTk3NzU2NTE1NTkxIiwKICAgICAgICAiMTc5MzEwMDU5Nzc1NjUxNTU5MSIKICAgICAgXQogICAgfSwKICAgIHsKICAgICAgInBhdGgiOiAiL1ZvbHVtZXMvVDUiLAogICAgICAiaWRlbnRpdHkiOiBbCiAgICAgICAgIjE2Nzc3MjQ0IiwKICAgICAgICAiMiIsCiAgICAgICAgIjAiLAogICAgICAgICIwIiwKICAgICAgICAiMTY4OTMiLAogICAgICAgICIxMiIsCiAgICAgICAgIjM4NCIsCiAgICAgICAgIjE3OTMxNTI5NzMxNDQyNjA0OTUiLAogICAgICAgICIxNzkzMTUyOTczMTQ0MjYwNDk1IgogICAgICBdCiAgICB9CiAgXQp9Cg==",
+    "sha256": "dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8",
+    "volumeIdentityIsNotMachineIdentity": true
+  },
+  "execution": {
+    "diskutil": {
+      "argv": [
+        "/usr/sbin/diskutil",
+        "info",
+        "-plist",
+        "/Volumes/T5"
+      ],
+      "commandSeconds": 4,
+      "outputMaximumEach": 262144
+    },
+    "worker": {
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/consumer.sb",
+        "/opt/homebrew/bin/node",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/qa/startup-imports.mjs"
+      ],
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial",
+      "commandSeconds": 10,
+      "env": {
+        "PATH": "/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+        "HOME": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/state/home",
+        "TMPDIR": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/tmp",
+        "OPENCLAW_STATE_DIR": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/state",
+        "OPENCLAW_CONFIG_PATH": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/state/openclaw.json",
+        "OPENCLAW_OAUTH_DIR": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/state/oauth",
+        "OPENCLAW_HOME": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/state/home"
+      }
+    },
+    "ownDirectPopenEntries": 2,
+    "commandsInternalPsSubprocessesAreSeparate": true,
+    "internalPsOriginalCapsUnchanged": true,
+    "foregroundParentNotOriginalLaunchdParent": true,
+    "noClaimToReproduceOldProcessState": true
+  },
+  "budgets": {
+    "workSeconds": 35,
+    "afterClosureSeconds": 45,
+    "nativeOuterSeconds": 60,
+    "oldOnceCleanup": {
+      "term": 1,
+      "wait": 5,
+      "group": 3,
+      "psEachMaximum": 4
+    },
+    "fixedInputFiles": 5,
+    "fixedInputBytes": 2313600,
+    "fixedInputPhysicalReadCapIncludingEOFReserve": 2313605,
+    "inputReadCalls": 128,
+    "inputMetadataCalls": 128,
+    "heldGuardReturnedFdStaticMaximum": 79,
+    "heldGuardRuntimeLedgerCeiling": 80,
+    "inputFdAttemptMaximum": 5,
+    "fixedGuardPublicIoOperations": 21,
+    "createdInputBytes": 17915,
+    "publicReadbackCalls": 6,
+    "successfulReadbackByteMaximum": 87547,
+    "physicalReadMaximumIncludingPerReadEOFSentinel": 87553,
+    "stdoutCapturePostExitLimit": 4096,
+    "stderrCapturePostExitLimit": 65536,
+    "captureLimitsArePostExitChecksNotKernelRLIMIT": true,
+    "wholePublicReportMaximum": 65536,
+    "observation": {
+      "processStatusMaximum": 8,
+      "processReadObserverMaximum": 8,
+      "processReadBytesPerStream": 16384,
+      "perObserverStatusMaximum": 8,
+      "immutablePageBytes": 8192,
+      "perObserverMaximumPages": 128,
+      "perObserverMaximumPayloadBytes": 1048576
+    }
+  },
+  "sandbox": {
+    "source": {
+      "blob": "198feabe7aef20b302e5989fd72e99e0bc0d36c3",
+      "bytes": 25973,
+      "sha256": "1a2ba260cb9659cb52f429f77de1e7d5c40ecb4f36af37d6b245d1b11cc277c9"
+    },
+    "functionWhole": {
+      "blob": "005c66dbcc69f9e584e23804b0af65cc82c5e87d",
+      "bytes": 4518,
+      "sha256": "98152eb2e7fcf2826813838309f0039d89ffb93d0d3b7821ee7c3ad5f7c9e4e6"
+    },
+    "derivedProfile": {
+      "blob": "84ff31f119c8d0a46fe0f09b1f1ba2f2335f7cbf",
+      "bytes": 6909,
+      "sha256": "acfbd336488f774e3acb87392bf5305f62004a0f529cbcd876593407989e7a12"
+    },
+    "unchangedOperationCategories": true,
+    "newScopePathRebindingOnlyForApplicationRoots": true,
+    "credentialLiteralsUnderNewRootRemainAbsent": true,
+    "networkPermission": "localhost:63611",
+    "networkPermissionIsHistoricalPublicLiteralOnly": true,
+    "noConnectionOrAvailabilityClaim": true,
+    "originalProfileBodyNotRetrieved": true,
+    "noByteExactHistoricalProfileClaim": true,
+    "semanticProof": "The original consumer_profile definition is copied byte-exact. Its broad public-system/CODEX/SDK read, current phase write and fixed loopback categories are unchanged. Forty observed public aliases exclude utilities and binary; the extra .bin/codex alias is already within the CODEX subpath. Original per-phase native config literals and eight copied-plugin literals are redundant under the original phase/installed-plugin-copy subpaths. New scope contains no credentials/config/database; these private contents are never inputs."
+  },
+  "markers": {
+    "source": {
+      "blob": "416b89149f2331353c5468ca0020d8080a952ba1",
+      "bytes": 1052,
+      "sha256": "227b6113c3076e870f8ebd4876d05c441175eb48eebe0aa529db139951a8ec5e"
+    },
+    "fixedSequence": [
+      "entered-js",
+      "before-fs",
+      "after-fs",
+      "before-path",
+      "after-path",
+      "before-crypto",
+      "after-crypto",
+      "before-sqlite",
+      "after-sqlite",
+      "before-rows-cas",
+      "after-rows-cas",
+      "before-cache-cas",
+      "after-cache-cas",
+      "before-https",
+      "after-https",
+      "before-http",
+      "after-http",
+      "before-child-process",
+      "after-child-process",
+      "before-url",
+      "after-url",
+      "before-module",
+      "after-module",
+      "complete"
+    ],
+    "importCount": 11,
+    "builtinCount": 9,
+    "casImports": 2,
+    "casFunctionsCalled": 0,
+    "sdkImports": 0,
+    "sourceFiles": [
+      {
+        "blob": "408959d22873855f79f28570c611d24db44005cd",
+        "bytes": 3108,
+        "sha256": "a1acc944965a6fbc018d8991cd6852c2c83f9fca1dea7860602a306838ef46c5"
+      },
+      {
+        "blob": "a318e427095b6c9273f03208620296b57ab59bc0",
+        "bytes": 6846,
+        "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+      }
+    ],
+    "ordering": "Entered-JS marker is awaited before any explicit import. Each fixed before/after marker is awaited before advancing. Markers are accepted only as an ordered exact prefix, optional exact failed-last-marker, or complete sequence.",
+    "absentMarkerDoesNotProveNoJSExecution": true,
+    "unknownOutputTextOrHashExported": false,
+    "stderrBytesOnly": true
+  },
+  "ownership": {
+    "originalCommandsWhole": true,
+    "originalUnreapedWhole": true,
+    "originalNativeObserverWholeButNotInstantiated": true,
+    "HeldT5OnlyRootLiteralChanged": true,
+    "captureFunctionOnlyOutputLimitsChanged": true,
+    "noBlindCloseOrReap": true,
+    "noHistoricalPidOrGroupSignal": true,
+    "allGuardCallsConservativePendingFlag": true,
+    "HeldT5PartialInitializationConservativeUnknown": true,
+    "inputReturnRegistrationPendingLedgerPreserved": true,
+    "closeLoopsProtected": true,
+    "handlerRestorationRequired": true
+  },
+  "result": {
+    "observationComplete": "Known original worker terminal and complete accepted marker protocol, own FD/helper closure, and final deadline. Empty markers with a known negative child exit may qualify only an empty observed prefix.",
+    "executionSucceeded": "Child exit0/finalReturnCode0, full 24-marker sequence, all own closure/deadline. This is startup/import only.",
+    "historicalManagedClosureClaimed": false,
+    "originalAbortCauseProved": false,
+    "credentialQualification": false,
+    "authbusRuntimeQualification": false,
+    "combined02bQualification": false
+  },
+  "priorFacts": {
+    "originalRuntime": "mac/1a1b1d28dc2-fc05-7afe",
+    "originalPublicStdout": {
+      "blob": "71201c9dc56be7704936677c6c31c8c9d5df2ae9",
+      "bytes": 211872,
+      "sha256": "0d493d9feae4d6d2760e5cfa9c47d18367fc73baa3bdfc49df3120bc360b457e"
+    },
+    "actualReconcile": {
+      "blob": "47982e4809c94d66f0a4f899ce1e3fdfc155dad4",
+      "bytes": 31091,
+      "sha256": "43b301e075128e0bf104a3c7888be27565e740bba46e74bfebd85cfa626f72f4"
+    },
+    "materializer": {
+      "blob": "198feabe7aef20b302e5989fd72e99e0bc0d36c3",
+      "bytes": 25973,
+      "sha256": "1a2ba260cb9659cb52f429f77de1e7d5c40ecb4f36af37d6b245d1b11cc277c9"
+    },
+    "phase": {
+      "blob": "57b38b5d7072cb425898159f1f5d491fc2b1647a",
+      "bytes": 25647,
+      "sha256": "438578c430cdb86a22babfb76b7ed60a0bca8b486834378e34c54ffa85200c60"
+    }
+  },
+  "inheritedUnknowns": [
+    "Original mac/1a1b1d28dc2-fc05-7afe failure and managed UNKNOWN",
+    "84947 / 85012 custody-null historical helper UNKNOWN",
+    "All prior launchd/transport/Git UNKNOWN records remain unchanged"
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.public-source-core-manifest.r1",
+  "files": [
+    {
+      "path": "source.py",
+      "blob": "350a7511e91644fd8e6652f9b6c9cbfdaca1e3d4",
+      "bytes": 150406,
+      "sha256": "9f35cf7cc8f0c63cb678f5acbd0974f1c5127452af57b740f29908a77c783dba"
+    },
+    {
+      "path": "main.py",
+      "blob": "a4b28da9987f237fdcfade512f7c4a7a0bdcfc69",
+      "bytes": 12154,
+      "sha256": "c30da92edb6628178a60597379090fe699060249b3cc9eb6d8d4febb4ef1abea"
+    },
+    {
+      "path": "input-audit.py",
+      "blob": "c9fcaf8e32d530ba4f583cc480c0e0c2c301f264",
+      "bytes": 5591,
+      "sha256": "948baa544723766a6d45eb8c2d87063480e73af07a3a6ab62c084784685ad5ff"
+    },
+    {
+      "path": "request.exact.json",
+      "blob": "5f92076fa2198a6f473c11bed043a4a347ac1dbc",
+      "bytes": 151322,
+      "sha256": "3ce6082cfff09e0cadeb7494b7b4a7701fc68af063fb53b3c57f965e637c6f0b"
+    },
+    {
+      "path": "journal.js",
+      "blob": "ed4e0248df0336f91832e7d3a27a7a51a8afc998",
+      "bytes": 19045,
+      "sha256": "f7a5f0e07b606671d31efb2f0060c645e5bc4179c6ff8b37976fcb2334f427f1"
+    },
+    {
+      "path": "startup-imports.mjs",
+      "blob": "416b89149f2331353c5468ca0020d8080a952ba1",
+      "bytes": 1052,
+      "sha256": "227b6113c3076e870f8ebd4876d05c441175eb48eebe0aa529db139951a8ec5e"
+    },
+    {
+      "path": "consumer.sb",
+      "blob": "84ff31f119c8d0a46fe0f09b1f1ba2f2335f7cbf",
+      "bytes": 6909,
+      "sha256": "acfbd336488f774e3acb87392bf5305f62004a0f529cbcd876593407989e7a12"
+    },
+    {
+      "path": "CONTRACT.public.json",
+      "blob": "8a25102a3cd31bf005d042e356fe77700caf3351",
+      "bytes": 14029,
+      "sha256": "5ef0ca924d2403e46571d5440b904e6e2a44bf9a7983e593541b5506d3a6fc56"
+    },
+    {
+      "path": "BINDINGS.public.json",
+      "blob": "1776aaae55d63ceb9ffe2d09fc4ce2887087c20b",
+      "bytes": 14366,
+      "sha256": "4cff2a6be53d751ccb60e9e68093cd38864c10e450417f1d3bd4b15f90348265"
+    },
+    {
+      "path": "README.md",
+      "blob": "9515d7ac6ea6583bc7093aa28209124f2ce09f72",
+      "bytes": 4032,
+      "sha256": "a5605abbac8c191f45e48efcc2384530d4da3e3bbc6e79c6f2507e6cb0397af2"
+    }
+  ]
+}

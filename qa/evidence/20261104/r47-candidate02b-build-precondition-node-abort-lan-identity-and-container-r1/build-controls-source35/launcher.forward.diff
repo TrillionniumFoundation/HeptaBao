@@ -1,0 +1,27 @@
+--- a/launcher.py
++++ b/launcher.py
+@@ -11,11 +11,11 @@
+ import subprocess
+ import time
+ 
+-BINDING_READY = False
++BINDING_READY = True
+ assert BINDING_READY, 'formatted source and published controls need separate exact admission'
+-FINAL_COMMIT = None
+-FINAL_TREE = None
+-SOURCE_STAGE_ROOT = None
++FINAL_COMMIT = '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'
++FINAL_TREE = '9781e9615ac5fb068d217241c74bb54bf87942cf'
++SOURCE_STAGE_ROOT = Path('/home/qian-qi/hb-02b90762-src-20261106-r1')
+ SOURCE_STAGE_SCHEMA = 'heptabao.native-jwt-independent-source-stage.v1'
+ GROUPS_SHA256 = '7c0fb6c5b6819c2cab60f3044e0aec767ad8abbf22e31ff0f7fab742ea4cd786'
+ OUTER_STARTED = time.monotonic()
+@@ -66,7 +66,7 @@
+     expected_system, expected_uid = ('Darwin', 'arm64'), 501
+ else:
+     BASE = Path('/home/qian-qi/heptabao-native-ssh-owner-20261104-r1')
+-    ROOT = None
++    ROOT = Path('/home/qian-qi/hb-02b90762-controls-20261106-r1')
+     R9 = BASE / 'r9-http-routing-r1'
+     OLD = BASE / 'normal-release-tests-r8-r1'
+     OLD_SOURCE = BASE / 'source-r8-test-fixtures-r1'

@@ -1,0 +1,239 @@
+{
+  "schema": "heptabao.combined02b90762.minimal-build-source-verification.r1",
+  "ok": true,
+  "checks": 57,
+  "results": [
+    {
+      "name": "whole_launcher.py",
+      "pass": true
+    },
+    {
+      "name": "whole_runner.py",
+      "pass": true
+    },
+    {
+      "name": "whole_jwt-test-groups.public.json",
+      "pass": true
+    },
+    {
+      "name": "whole_publisher.py",
+      "pass": true
+    },
+    {
+      "name": "whole_journal.before.js",
+      "pass": true
+    },
+    {
+      "name": "whole_journal.after.js",
+      "pass": true
+    },
+    {
+      "name": "whole_request.exact.json",
+      "pass": true
+    },
+    {
+      "name": "whole_stage-result.actual.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_stage-root-qualification.public.json",
+      "pass": true
+    },
+    {
+      "name": "whole_publisher.stdout.original.txt",
+      "pass": true
+    },
+    {
+      "name": "whole_publisher.authority.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_publisher.streams.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole_receipt.expected.derived.json",
+      "pass": true
+    },
+    {
+      "name": "whole_donor.BUILD-GO.public.json",
+      "pass": true
+    },
+    {
+      "name": "singleton_slot",
+      "pass": true
+    },
+    {
+      "name": "singleton_exact_request",
+      "pass": true
+    },
+    {
+      "name": "singleton_observer_prefix",
+      "pass": true
+    },
+    {
+      "name": "only_three_journal_literals",
+      "pass": true
+    },
+    {
+      "name": "strict_forward",
+      "pass": true
+    },
+    {
+      "name": "strict_reverse",
+      "pass": true
+    },
+    {
+      "name": "two_hunks",
+      "pass": true
+    },
+    {
+      "name": "donor_whole_request",
+      "pass": true
+    },
+    {
+      "name": "same_native_request_fields",
+      "pass": true
+    },
+    {
+      "name": "same_native_execution_shape",
+      "pass": true
+    },
+    {
+      "name": "original_arg_flags",
+      "pass": true
+    },
+    {
+      "name": "unique_new_build_key",
+      "pass": true
+    },
+    {
+      "name": "fixed_launcher_path",
+      "pass": true
+    },
+    {
+      "name": "final_commit_tree",
+      "pass": true
+    },
+    {
+      "name": "actual_stage_binding",
+      "pass": true
+    },
+    {
+      "name": "three_control_bindings",
+      "pass": true
+    },
+    {
+      "name": "correct_stdin_typed_binding",
+      "pass": true
+    },
+    {
+      "name": "journal_exact_new_request",
+      "pass": true
+    },
+    {
+      "name": "compact_original_lossless_reconstruction",
+      "pass": true
+    },
+    {
+      "name": "derived_receipt_exact",
+      "pass": true
+    },
+    {
+      "name": "actual_publisher_zero_full",
+      "pass": true
+    },
+    {
+      "name": "actual_complete_original_stdout",
+      "pass": true
+    },
+    {
+      "name": "actual_three_exact_publications",
+      "pass": true
+    },
+    {
+      "name": "same_python_controls",
+      "pass": true
+    },
+    {
+      "name": "full9_reader",
+      "pass": true
+    },
+    {
+      "name": "reader_regular_owner_single",
+      "pass": true
+    },
+    {
+      "name": "three_receipt_full9",
+      "pass": true
+    },
+    {
+      "name": "before_side_effect_admission",
+      "pass": true
+    },
+    {
+      "name": "source_caps_kept",
+      "pass": true
+    },
+    {
+      "name": "receipt_read_SHA_bound",
+      "pass": true
+    },
+    {
+      "name": "receipt_publisher_verify_then_print",
+      "pass": true
+    },
+    {
+      "name": "same_pid_deadline_preserved",
+      "pass": true
+    },
+    {
+      "name": "no_rustfmt_gate",
+      "pass": true
+    },
+    {
+      "name": "unformatted_explicit",
+      "pass": true
+    },
+    {
+      "name": "246_268_18_exact",
+      "pass": true
+    },
+    {
+      "name": "three_profiles",
+      "pass": true
+    },
+    {
+      "name": "original_family600",
+      "pass": true
+    },
+    {
+      "name": "normal61_snapshot27",
+      "pass": true
+    },
+    {
+      "name": "execution_budget_identity",
+      "pass": true
+    },
+    {
+      "name": "donor_observation_caps_unchanged",
+      "pass": true
+    },
+    {
+      "name": "target_and_lock_scope_unchanged",
+      "pass": true
+    },
+    {
+      "name": "no_independent_Native_readback_claim",
+      "pass": true
+    },
+    {
+      "name": "source_only_separate_GO",
+      "pass": true
+    }
+  ],
+  "pureV8": true,
+  "candidatePythonOrJournalInvoked": false,
+  "NativeCalls": 0,
+  "buildQualified": false
+}

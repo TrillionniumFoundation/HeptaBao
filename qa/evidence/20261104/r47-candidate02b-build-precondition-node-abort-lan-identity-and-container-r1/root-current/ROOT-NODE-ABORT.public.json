@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.root.public-Node-known-abort-qualification.r1",
+  "passed": true,
+  "checks": {
+    "parentKnownSuccess": true,
+    "wholeOriginalStdout": true,
+    "closedObservationNotExecution": true,
+    "knownNewSIGABRT": true,
+    "noMarkerObserved": true,
+    "directChildRetainedAndReaped": true,
+    "noCleanupSignal": true,
+    "allOwnClosure": true,
+    "deadlineAndHandlers": true,
+    "oldUnknownUnchanged": true,
+    "noBusinessQualification": true
+  },
+  "originalTree": "e2eb55ce4db90981fb77dea23f4bad5aed285e06",
+  "job": "mac/1a1b25c3c54-fc05-7db1",
+  "stdout": {
+    "blob": "215ee5f9d647568a2a785c239fe8e0e90b1b9539",
+    "bytes": 9930,
+    "sha256": "14fe6172b38a4a036ebe5fff0ca7f616ea6fbe757d3abd2996b64fa602ac6cc0"
+  },
+  "child": {
+    "pid": 51494,
+    "ppid": 51483,
+    "pgid": 51494,
+    "uid": 501,
+    "psStartLocal": "Sat Nov  7 03:35:52 2026    ",
+    "exitCode": -6
+  },
+  "meaning": "The new public probe produced a known SIGABRT without an observed entry marker, with own resources closed. This does not prove old progress or cause, nor that no JavaScript instruction executed. No AuthBus business qualification.",
+  "NativeCalls": 0
+}

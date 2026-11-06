@@ -1,0 +1,40 @@
+[
+  {
+    "index": 0,
+    "stem": "observer.00",
+    "id": "af8614a2586040d8e9897f411a0d89a267a6a57a71a79ef6485a53ec07a354fe",
+    "tool": "process_status",
+    "payload": {
+      "blob": "677a33aeb565360db7dc3e327600b471a31ecee1",
+      "bytes": 910,
+      "sha256": "ad3b6a33d130d95596747713c1032b56dc902807f178c8d28548154572327c0b"
+    },
+    "payloadTree": "805bd1894d10447d602cec7282ec2a7e004cc9c2",
+    "nativeText": {
+      "blob": "2cf6190a892c52d93a4954dd863d1bcb45127fbc",
+      "bytes": 731,
+      "sha256": "8b30fad4dae8e813bbcd8851207f85d3602671881d3d4bbd9cdc01b301c7711e"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  {
+    "index": 1,
+    "stem": "observer.01",
+    "id": "c014ba7391e8f30578f80b00d24090464fef95e41845979d44e592fb4d0a3ea2",
+    "tool": "process_read",
+    "payload": {
+      "blob": "bcfcfebee79942e497afe0b62db842fd3116ee20",
+      "bytes": 13005,
+      "sha256": "25ef8d7d9de1bbd655e50c9a5a1b38e932da1a07927e52c367ee5466a3545b4a"
+    },
+    "payloadTree": "e66a269813cad2e1f55af512bdb5adfa0763aa55",
+    "nativeText": {
+      "blob": "8fa92e56db096a3915bf81e807847aab5d694682",
+      "bytes": 11924,
+      "sha256": "5f1946e5713c0fb6178a3c54e984189aea74bd4e25f8438c396a1e5ad0762810"
+    },
+    "pages": 2,
+    "completedInactive": true
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "rog",
+      "path": "/home/qian-qi/hb-02b90762-src-20261106-r1/control/stage-result.public.json",
+      "offset": 0,
+      "limit": 28236,
+      "expected_version": "66306:28477741:28236:1793989776858375923:1793989776858375923"
+    }
+  },
+  "idempotency_key": "heptabao-combined-02b90762-rog-source-observe-r1-report-body"
+}

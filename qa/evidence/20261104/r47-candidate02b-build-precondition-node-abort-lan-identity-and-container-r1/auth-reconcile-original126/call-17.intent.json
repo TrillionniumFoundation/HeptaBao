@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.gitfirst.fixed-native-call-intent.r1",
+  "callKey": "original-reconcile-stream-01-page-016384",
+  "kind": "operation_result",
+  "request": {
+    "blob": "9192c0110f7487207d4aeda404b29bf7b5a3450a",
+    "bytes": 125,
+    "sha256": "fc2f7d7ac270fa6beacc280bbfc7b189d8a6cc45a0b322744ca43ab08d024bbc"
+  },
+  "rootGo": {
+    "blob": "e10747a3ac9227d57db70fbb3f63d6ba5da8867f",
+    "bytes": 3433,
+    "sha256": "a0ccd889f4d340a1267e67023fa108f8a84e27aaf0eccf90e974406b2fd33240"
+  },
+  "originalJob": "1a1b22f780d-fc05-7cd8",
+  "originalOperation": "795c5b0ff804b46b04076f681ae25e1f8cbfbda656490000470384aeca6e51a8",
+  "maximumNativeCalls": 1,
+  "nativeNotYetCalled": true,
+  "lossOfAcknowledgmentNeverGrantsReplay": true,
+  "localFirstExplicitlyReplacedByExactRootGO": true
+}

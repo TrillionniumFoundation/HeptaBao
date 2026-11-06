@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.gitfirst.fixed-native-call-armed.r1",
+  "callKey": "original-reconcile-stream-00-page-049152",
+  "kind": "operation_result",
+  "request": {
+    "blob": "89ac83cbda635685dcaafdce5a74b71165124264",
+    "bytes": 125,
+    "sha256": "31a2a04d9e05fc37b2e0b962e9d00e4339c46606ae5c9444a73af4a68af2df8c"
+  },
+  "rootGo": {
+    "blob": "e10747a3ac9227d57db70fbb3f63d6ba5da8867f",
+    "bytes": 3433,
+    "sha256": "a0ccd889f4d340a1267e67023fa108f8a84e27aaf0eccf90e974406b2fd33240"
+  },
+  "originalJob": "1a1b22f780d-fc05-7cd8",
+  "originalOperation": "82faf11cd36836b6be5e7b83b499153bea2c223cce3310ceef7a40144f869d6e",
+  "maximumNativeCalls": 1,
+  "nativeNotYetCalled": true,
+  "lossOfAcknowledgmentNeverGrantsReplay": true,
+  "localFirstExplicitlyReplacedByExactRootGO": true,
+  "mayHaveDispatchedAfterThisCheckpoint": true,
+  "recovery": "Read exact original job/operation only; absence of later ACK is UNKNOWN."
+}
