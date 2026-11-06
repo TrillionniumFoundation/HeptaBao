@@ -1,0 +1,171 @@
+{
+  "scope": "source_archive_to_current_repository_bytes_only",
+  "archive_sha256": "e84c3768271be8b908f7f9a505c3d96abdc98fd9e3bba4ed3d5d9557e13322be",
+  "source_files": 28,
+  "qa_files": 4,
+  "matched_files": 32,
+  "mismatches": [],
+  "files": [
+    {
+      "archive_path": "source/LICENSE-APACHE-2.0.txt",
+      "repository_path": "clients/android-passkey/LICENSE-APACHE-2.0.txt",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "archive_path": "source/NOTICE",
+      "repository_path": "clients/android-passkey/NOTICE",
+      "sha256": "20b1529f229bf6ca96248e92d38909e24d99cbbdad337d4b5f1ae77fc6cdf9fe"
+    },
+    {
+      "archive_path": "source/README.md",
+      "repository_path": "clients/android-passkey/README.md",
+      "sha256": "bae8b7e503bf61c4c5ba44437511ff3b9f7b323d279c98da3253d7316a740af6"
+    },
+    {
+      "archive_path": "source/common/java/org/heptabao/passkey/core/Codec.java",
+      "repository_path": "clients/android-passkey/common/java/org/heptabao/passkey/core/Codec.java",
+      "sha256": "a1a80c446a438e532f08a190a0208a965290b6f037a11350e75b41f0c006ca3d"
+    },
+    {
+      "archive_path": "source/common/java/org/heptabao/passkey/core/Failure.java",
+      "repository_path": "clients/android-passkey/common/java/org/heptabao/passkey/core/Failure.java",
+      "sha256": "aa14de964dc69e63089ba314cd7611bf7ab5c80405f40d8e7cea0efa15a5b39d"
+    },
+    {
+      "archive_path": "source/common/java/org/heptabao/passkey/core/Hbv.java",
+      "repository_path": "clients/android-passkey/common/java/org/heptabao/passkey/core/Hbv.java",
+      "sha256": "4411788882603bdf22b10251321d06b8e8f27e1996d4ff13ee44cbe21a647753"
+    },
+    {
+      "archive_path": "source/common/java/org/heptabao/passkey/core/Json.java",
+      "repository_path": "clients/android-passkey/common/java/org/heptabao/passkey/core/Json.java",
+      "sha256": "2c06fa99b7c66f103d2bfca2aad73375fe2da3783c01a72cf7110a1670be4c84"
+    },
+    {
+      "archive_path": "source/common/java/org/heptabao/passkey/core/Passkey.java",
+      "repository_path": "clients/android-passkey/common/java/org/heptabao/passkey/core/Passkey.java",
+      "sha256": "e2b3cc6c4778e7fd6e4affbd762f9656d2b1f33cbc37f16484b6ea3f036c3be9"
+    },
+    {
+      "archive_path": "source/common/java/org/heptabao/passkey/core/Protocol.java",
+      "repository_path": "clients/android-passkey/common/java/org/heptabao/passkey/core/Protocol.java",
+      "sha256": "5d66798fd44839a52db5e39a5591eedf9b9f4c5cafd01e66bd6897b5f5a3fa7e"
+    },
+    {
+      "archive_path": "source/fixture/AndroidManifest.xml",
+      "repository_path": "clients/android-passkey/fixture/AndroidManifest.xml",
+      "sha256": "4bf2498860b3bb2809077bfd813b6df7fb0ee48c7299033a50b90f0667b3d21d"
+    },
+    {
+      "archive_path": "source/fixture/java/org/heptabao/passkey/fixture/FixtureActivity.java",
+      "repository_path": "clients/android-passkey/fixture/java/org/heptabao/passkey/fixture/FixtureActivity.java",
+      "sha256": "301efa366ad2baf275156ba68fd51edd0256f942aaeabe2eadf89161b1a1df66"
+    },
+    {
+      "archive_path": "source/fixture/res/values/strings.xml",
+      "repository_path": "clients/android-passkey/fixture/res/values/strings.xml",
+      "sha256": "b1fa4c51c5d941823bb1d07d47e2c94f5d0a73ac47013365cc8771d02c325931"
+    },
+    {
+      "archive_path": "source/fixture/res/xml/network_security_config.xml",
+      "repository_path": "clients/android-passkey/fixture/res/xml/network_security_config.xml",
+      "sha256": "b1ed49780dbe2704ab8245b257a9ca7953f48eda0df5a7bbbb756ede5b82a257"
+    },
+    {
+      "archive_path": "source/provider/AndroidManifest.xml",
+      "repository_path": "clients/android-passkey/provider/AndroidManifest.xml",
+      "sha256": "28546c75814a93ed005680c6e2dd544c4b4826b9c5be35f7bc3ec0858308c25c"
+    },
+    {
+      "archive_path": "source/provider/java/org/heptabao/passkey/preview/DocumentIO.java",
+      "repository_path": "clients/android-passkey/provider/java/org/heptabao/passkey/preview/DocumentIO.java",
+      "sha256": "8a08b26986febb451a0416559ce43949e537e1649cd6d536754c45fddb49fa2f"
+    },
+    {
+      "archive_path": "source/provider/java/org/heptabao/passkey/preview/Entries.java",
+      "repository_path": "clients/android-passkey/provider/java/org/heptabao/passkey/preview/Entries.java",
+      "sha256": "0698ec4ae0727d26255216abe697b0a0cea1d787b4acf4dbbe45960a7b49e0ab"
+    },
+    {
+      "archive_path": "source/provider/java/org/heptabao/passkey/preview/HomeActivity.java",
+      "repository_path": "clients/android-passkey/provider/java/org/heptabao/passkey/preview/HomeActivity.java",
+      "sha256": "90e3ea0753c5edb28db406f5b1c0845a8dec17e4d778651c62b17814869b3657"
+    },
+    {
+      "archive_path": "source/provider/java/org/heptabao/passkey/preview/OperationActivity.java",
+      "repository_path": "clients/android-passkey/provider/java/org/heptabao/passkey/preview/OperationActivity.java",
+      "sha256": "6404723a1f9af284758da7f7b982dc897d8fcf824fe42e6377764174ecca79f8"
+    },
+    {
+      "archive_path": "source/provider/java/org/heptabao/passkey/preview/Policy.java",
+      "repository_path": "clients/android-passkey/provider/java/org/heptabao/passkey/preview/Policy.java",
+      "sha256": "24d7f9e101bff4bf64530d2806d4a51ad8c7580c58ad48c70475b8699d706282"
+    },
+    {
+      "archive_path": "source/provider/java/org/heptabao/passkey/preview/ProviderService.java",
+      "repository_path": "clients/android-passkey/provider/java/org/heptabao/passkey/preview/ProviderService.java",
+      "sha256": "cfda85b0fc5602537ec12b187bd3bfd7298c46ada93c6f759e9a44673807fc48"
+    },
+    {
+      "archive_path": "source/provider/java/org/heptabao/passkey/preview/Session.java",
+      "repository_path": "clients/android-passkey/provider/java/org/heptabao/passkey/preview/Session.java",
+      "sha256": "ba6309510d7172e2cd78cfeb6d270a85722b06e2227c03a54b30e73148d92716"
+    },
+    {
+      "archive_path": "source/provider/java/org/heptabao/passkey/preview/Tickets.java",
+      "repository_path": "clients/android-passkey/provider/java/org/heptabao/passkey/preview/Tickets.java",
+      "sha256": "bf04daf9f40b664e2de9464da7e9abaaf2106ada0d262dc61f376162758119b7"
+    },
+    {
+      "archive_path": "source/provider/java/org/heptabao/passkey/preview/VaultFiles.java",
+      "repository_path": "clients/android-passkey/provider/java/org/heptabao/passkey/preview/VaultFiles.java",
+      "sha256": "9e74d029b32161649e98627023e619d8bbc5318b5ed5fb6386ea119ac3ab04f8"
+    },
+    {
+      "archive_path": "source/provider/res/drawable/key_icon.xml",
+      "repository_path": "clients/android-passkey/provider/res/drawable/key_icon.xml",
+      "sha256": "c9118fd6bcbf484bf9acf22ec8a69612dd402e7a55ec4af67cab959809c3c807"
+    },
+    {
+      "archive_path": "source/provider/res/values/strings.xml",
+      "repository_path": "clients/android-passkey/provider/res/values/strings.xml",
+      "sha256": "db15c5fbeedf173f4370c7d9d3aa81de9be8a3d187393008530547c755fbfe54"
+    },
+    {
+      "archive_path": "source/provider/res/xml/data_extraction_rules.xml",
+      "repository_path": "clients/android-passkey/provider/res/xml/data_extraction_rules.xml",
+      "sha256": "fa72fbaadf71d0396bd1e021b851ffc12ce81178e803ccc1dd45edd3675b4401"
+    },
+    {
+      "archive_path": "source/provider/res/xml/provider.xml",
+      "repository_path": "clients/android-passkey/provider/res/xml/provider.xml",
+      "sha256": "26d7867c9f9781e810f8720e73a980941e254d5f95e6b552e9da064deac08e2c"
+    },
+    {
+      "archive_path": "source/tests/org/heptabao/passkey/core/HostInterop.java",
+      "repository_path": "clients/android-passkey/tests/org/heptabao/passkey/core/HostInterop.java",
+      "sha256": "445f4abc4a95c8afae80db071bba2c07cac70899d95e35237b6735a7c0c6493f"
+    },
+    {
+      "archive_path": "qa/passkey_build.py",
+      "repository_path": "qa/personal_credentials/passkey_build.py",
+      "sha256": "3cde1f09676c5f0a1fd7df2b65195b111bed11933118a08e37dc644d379a92f6"
+    },
+    {
+      "archive_path": "qa/passkey_prepare.py",
+      "repository_path": "qa/personal_credentials/passkey_prepare.py",
+      "sha256": "01d18f09db37a06876f02b193bb5a961bebdbfa203893ff58d2fbd8b3a7c995f"
+    },
+    {
+      "archive_path": "qa/passkey_rp.py",
+      "repository_path": "qa/personal_credentials/passkey_rp.py",
+      "sha256": "386de84bb5335f21998a000b4a1267eaa17fadbde1e1753d5df1c30325709a63"
+    },
+    {
+      "archive_path": "qa/passkey_host.py",
+      "repository_path": "qa/personal_credentials/passkey_host.py",
+      "sha256": "8944bcdaef7312a06cec0abf6ee06e9e1edd67530bb132b47e8aaf77394279d7"
+    }
+  ],
+  "build_or_device_qualification_granted": false
+}

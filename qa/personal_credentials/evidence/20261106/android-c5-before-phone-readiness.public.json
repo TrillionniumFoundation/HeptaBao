@@ -1,0 +1,27 @@
+{
+  "credential_entry": "synthetic_only_adb_input_text_argv",
+  "local_driver_guard_tests": 8,
+  "phone_case_denominator": 12,
+  "phone_cases_run_on_candidate5": 0,
+  "product_source_archive_sha256": "f465fc3230fdfbe144f31b95baa3e4964997884d314ef0724ea77074384cf256",
+  "product_source_before_after_local_equal": true,
+  "product_source_count": 18,
+  "production_qualified": false,
+  "qa8_sha256": "44d6658109744bb3450eece3d68b36603dffe284d92655c7c04c474e23724007",
+  "receipt_files": {
+    "artifact-review.json": "ae076522cc4c9bb24f2262296c05f7c07d4eea3ddf87ddbd767dc16784106bad",
+    "driver-guard-tests.json": "b3fba2d2e42a4c196809576a2c3c9ec6fa263305b89a81d17e4261be034d85e2",
+    "driver-guard-tests.stderr": "1c1c199aad32a864d4e4cf0a78d6e10b4d1ddaf4d93d5b16690649cba74e3122",
+    "driver-guard-tests.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "provider-data-extraction-tree.stdout": "03fd67f0e66d2b365809181cfac21f4cf8da2f9a54e8613a7351b8083dc7f03e",
+    "provider-manifest-tree.stdout": "7a2f23c3590f99e15ab590c55fe55ecd22536af2e43137c97f7bc207497643cd",
+    "provider-verify.stdout": "a25d4ef1fbdcd3670f363917886192b54e8c6e9f22c04acd25de75d6adc9f816",
+    "receipt.json": "e9fa9d9d12ad9e02433799528d8ffeb0165d5db5ddb0545ede4b3f67e2fe7047",
+    "rust-java-interop.stdout": "51b6dbcfb012a0102cad86d7279eed7c0646b2fc9b8be63b623e54708adae212",
+    "source-difference.json": "114ba2b7314837e03e0a5c8b1b1771661d64ea9d5bf87039e2bb4b7123956283"
+  },
+  "schema": 1,
+  "static_audit": "p0_audit_go_not_device_pass",
+  "status": "build_and_host_interop_passed_phone_pending",
+  "synthetic_only": true
+}

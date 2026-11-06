@@ -1,0 +1,19 @@
+{
+  "autofill_restored_exact_original": true,
+  "checked_unix_ns": 1793956764822746050,
+  "device_serial_sha256": "41ad305f8562a6c47710afe71fabf30cb8692a71d3de1a47ca9949b669bcc6c1",
+  "no_device_mutation": true,
+  "original_setting_sha256": "9fb252f02fa059931879ba0cd6179b9890d0e25538994d63d70290a333124a6e",
+  "packages_absent_including_retained_records": {
+    "org.heptabao.personal.preview": true,
+    "org.heptabao.synthetic.decoy": true,
+    "org.heptabao.synthetic.fixture": true
+  },
+  "phone_checks_passed": 1,
+  "phone_expected_count": 12,
+  "phone_passed": false,
+  "phone_released_after_this_job_finishes": true,
+  "report_sha256": "a5e914d2fb0c0e5749128d8c731f2c51055fed10f33798ae89ea556489be570b",
+  "schema": 1,
+  "scope": "candidate5_qa8_r6_release_readonly_verification"
+}

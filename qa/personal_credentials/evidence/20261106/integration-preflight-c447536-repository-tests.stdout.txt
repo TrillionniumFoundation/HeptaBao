@@ -1,0 +1,62 @@
+REJECTED: external trust-store SHA-256 does not match the expected root
+REJECTED: artifact byte count does not match evidence
+module closure validation: PASS (52 workspace modules)
+exact head: c447536ae0343731d84c18291d2dcd712b3bea08
+binding: exact-head Git src-tree oid; registry hashes/counts are non-authoritative metadata
+heptabao-agent	git-tree=3074bf6a6cb415581a5e5624658839ab53fe301a
+heptabao-authbus-contracts	git-tree=7a3777628fd806edbbe6cb989cb302de96c7705f
+heptabao-barrier-api	git-tree=7a8355f172d9804daa740547bdb2dcb446d0fe89
+heptabao-cli-contracts	git-tree=fa474fbd9177e9f41d90443e4a9e0aee7155cbc0
+heptabao-client-contracts	git-tree=4c10585d1b3b6a7053dc32e84a2e275305f9ef24
+heptabao-compatibility	git-tree=b089f01cd8cbfeb0d893c674a31285fe49928463
+heptabao-credential-broker	git-tree=d562d897fab8a1605e1ca46bee93279ec8fcf3fb
+heptabao-darwin-vnode-events	git-tree=0adecb1987ddc414b5f38a7c4cc1c19004f6a8cc
+heptabao-domain	git-tree=fb5fce20490667706037b0d0aeeff703bea34fd4
+heptabao-durable-core	git-tree=93acfaced615f8129d139efa863d39041f7c7e5f
+heptabao-durable-service	git-tree=35abb3248ec5660003cf92efb3c05695d39bd224
+heptabao-filesystem-guard	git-tree=376aa3664ee1863f3208ce3e9e228f451aaac8a1
+heptabao-governance	git-tree=2c259146314312c7f9b7c935bb0c08bf33dbd5f6
+heptabao-ha-contracts	git-tree=3515529c49ed7153888e9625165da5efa6f46de6
+heptabao-ha-service	git-tree=8b6e8c8f6c6cbbaf992c71ab42338fcfa06a1765
+heptabao-identity	git-tree=8497e04dbc73f6f325506668838a1b83e4509adc
+heptabao-journal-api	git-tree=78e85d473b896b53b8c1138bba036c42fa06122d
+heptabao-journaled-core	git-tree=780075ee3efb6032800720aecb828e9c71b84348
+heptabao-key-lifecycle	git-tree=b32ec179cba230581d2dc9707281f180cc0a1ffb
+heptabao-kms-contracts	git-tree=7ac9d43740f8fe3b231ac18ebfa4bee58f3d5524
+heptabao-kv-engine	git-tree=fe23eb805cb5e8c30cd49fc3821ac67a5fadfd45
+heptabao-lease	git-tree=849b34da00e78b8299b3883e37c4b74670011fa9
+heptabao-linux-parent-death	git-tree=7e8eab6d4afea8ac1cb204032755aac288c7ef99
+heptabao-migration	git-tree=5320774e1bee53225cc40cb4fa3d5236c6dc589a
+heptabao-mount-router	git-tree=b62769ca5a18f7c84315644bfbf27c413978f1be
+heptabao-namespace	git-tree=32dee37ad4975e6ce447103799fce481c27aa337
+heptabao-openbao-grpc	git-tree=763dd7fc816ae0fe564b8dc6e9f00e37a3eecbd5
+heptabao-operation-ledger	git-tree=72e7fb1efd3367260724039d657d21c7fc76f1e5
+heptabao-operator-api	git-tree=c7734bc21d50f8193190e4cdea738a4861fa19f7
+heptabao-oracle-observer	git-tree=51f9ec69e5506f1edff22ff885ac5ea6938b2e4a
+heptabao-p0-server	git-tree=a702367764c4fe13bbbf568417ea0f64e7c9e8e8
+heptabao-personal-edge	git-tree=f3d2b40e995bf403f93e168da4727bb31097c67e
+heptabao-personal-vault	git-tree=bc652a6e3d0df7217df9a84b708f54c210ef4e76
+heptabao-platform-bakeoff	git-tree=7e6ac12759d923d180b047e4c9be375819641fa9
+heptabao-platform-contracts	git-tree=c3e25ece4bfb960b6464bbc5529622c7c9e65271
+heptabao-plugin-contracts	git-tree=42135f801251cb2152f2a8c2fa74c7023305bc30
+heptabao-plugin-host	git-tree=fbdb947e1547c1e5cd4060a92a9dcaa51e110984
+heptabao-policy	git-tree=e5cbad2b68804c8515f91dcd4796ce0d9af71cbe
+heptabao-protocol	git-tree=e9724fd0ce6a9cebf5e6d3ba533a26da81fa6eae
+heptabao-proxy	git-tree=ee933edde7b6304d3637cc08f52be318502e15d2
+heptabao-raft-runtime	git-tree=089304388fb69ef95947c554113ec68f0639096f
+heptabao-recovery-core	git-tree=642996ade6569b8890c4daf382c08147f797abb0
+heptabao-retention	git-tree=120b7fec14c6743cb8afeb4cb09e66980d9c0a03
+heptabao-rollback-anchor	git-tree=e703093bdf79bf621ff27feef193907473cd1e3d
+heptabao-runtime-service	git-tree=2d4a5163f3bf6b272d7dc4985760f01fa3b47518
+heptabao-server	git-tree=de426e481e192ca774a4c9fef252d8c1d4b71b92
+heptabao-service-core	git-tree=a0b8e25b641003c598c9ed534772ad3b0440cd4d
+heptabao-single-node-journal	git-tree=57467a555673a9b9f0527f4256a1c80334e6def4
+heptabao-single-node-store	git-tree=ff13f68704ac1e12b8d34f8a0f5dbaa8bef20c25
+heptabao-storage-api	git-tree=f8c11401c84d6a865b6949160f6a16651cea909e
+heptabao-telemetry	git-tree=a8e6077b3233db20a40257452653aa5cc09a2708
+heptabao-token	git-tree=c020a71353daf08709e74c3c7d6bf708e231e0ed
+{"status": "blocked_prerequisite", "reason": "OSError", "independent_qualification": false, "compatibility_claim": false}
+{"status": "blocked_prerequisite", "reason": "OSError", "independent_qualification": false, "compatibility_claim": false}
+{"status": "blocked_prerequisite", "reason": "OSError", "independent_qualification": false, "compatibility_claim": false}
+{"status": "blocked_prerequisite", "reason": "OSError", "independent_qualification": false, "compatibility_claim": false}
+{"status": "blocked_prerequisite", "reason": "OSError", "independent_qualification": false, "compatibility_claim": false}

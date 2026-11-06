@@ -1,7 +1,9 @@
 package org.heptabao.passkey.preview;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.credentials.CredentialManager;
 import android.os.Bundle;
 import android.net.Uri;
 import android.text.InputType;
@@ -54,7 +56,14 @@ public final class HomeActivity extends Activity {
         button(layout, "Lock now", 0x4a120005, () -> { generation++; Session.lock(); cancelDocument(); password.getText().clear(); status.setText("Locked"); });
         button(layout, "Cancel active document operation", 0x4a120010, () -> { generation++; cancelDocument(); status.setText("Document operation cancelled"); });
         button(layout, "Open provider settings", 0x4a120006, () -> {
-            try { startActivity(new Intent("android.settings.CREDENTIAL_PROVIDER")); }
+            try {
+                CredentialManager manager = getSystemService(CredentialManager.class);
+                if (manager != null && manager.isEnabledCredentialProviderService(new ComponentName(this, ProviderService.class))) {
+                    status.setText("Provider is already enabled in Android credential settings"); return;
+                }
+                startActivity(new Intent("android.settings.CREDENTIAL_PROVIDER")
+                    .setData(Uri.fromParts("package", getPackageName(), null)));
+            }
             catch (Exception error) { status.setText("Open Android Settings > Passwords, passkeys and accounts manually"); }
         });
         status = new TextView(this); status.setText("Locked until you import or unlock"); status.setId(0x4a120007); layout.addView(status);

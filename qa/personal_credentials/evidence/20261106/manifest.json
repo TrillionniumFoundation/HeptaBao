@@ -64,10 +64,118 @@
       "transformation": "derived comparison of original build source inventories; does not grant device qualification"
     },
     {
+      "file": "android-c5-artifact-review.public.json",
+      "sha256": "ae076522cc4c9bb24f2262296c05f7c07d4eea3ddf87ddbd767dc16784106bad",
+      "bytes": 906,
+      "transformation": "none; byte-identical original decoded-artifact review"
+    },
+    {
+      "file": "android-c5-before-phone-readiness.public.json",
+      "sha256": "e65d251050be7c0a760f7cf0170430265bb25b25e9080a95f0b8b951e85532aa",
+      "bytes": 1639,
+      "transformation": "none; byte-identical original readiness snapshot before its first phone run; not current qualification"
+    },
+    {
       "file": "android-c5-build.public.json",
       "sha256": "e9fa9d9d12ad9e02433799528d8ffeb0165d5db5ddb0545ede4b3f67e2fe7047",
       "bytes": 56499,
       "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "android-c5-phone-r6.public.json",
+      "sha256": "a5e914d2fb0c0e5749128d8c731f2c51055fed10f33798ae89ea556489be570b",
+      "bytes": 3589,
+      "transformation": "none; byte-identical original failed 1-of-12 device receipt"
+    },
+    {
+      "file": "android-c5-r6-readonly-diagnostic.public.json",
+      "sha256": "1cc9652f1593b510416868912a4ee7e2180210ef07581e4c16aa5042eb4e2715",
+      "bytes": 4301,
+      "transformation": "none; byte-identical original read-only diagnostic; no proven root cause"
+    },
+    {
+      "file": "android-c5-release-r6.public.json",
+      "sha256": "88286461b8775ac8dc53be12a7e9793a798cffce8e9eb9b122f4adb541d01aeb",
+      "bytes": 790,
+      "transformation": "none; byte-identical original final device release proof"
+    },
+    {
+      "file": "android-qa8-guard-tests.public.json",
+      "sha256": "b3fba2d2e42a4c196809576a2c3c9ec6fa263305b89a81d17e4261be034d85e2",
+      "bytes": 479,
+      "transformation": "none; byte-identical original eight host-only driver guard tests"
+    },
+    {
+      "file": "broker-ed25519-build-and-tests.public.json",
+      "sha256": "d29fff92ecbcdab6e52c905e6a4a96217d4c712f2c453dd5c63214e47c0e88bb",
+      "bytes": 33544,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "broker-ed25519-build-first-failed.public.json",
+      "sha256": "53edc60020e3e538b2d23644f83912c6be0f3ceeeff43db15486921d17c54396",
+      "bytes": 13028,
+      "transformation": "none; byte-identical original failed runner receipt; no tests executed"
+    },
+    {
+      "file": "broker-ed25519-build-runner.py",
+      "sha256": "de6b79f3f261a44f6be80a14af96fac8ea3e058e33ac3be490739fa471e7814e",
+      "bytes": 13364,
+      "transformation": "none; byte-identical original synthetic builder"
+    },
+    {
+      "file": "broker-ed25519-compiler-artifacts.jsonl",
+      "sha256": "7c2cc2e6d34335ae2ac96b9530b671860d6655415dfe9340933bc264673031e5",
+      "bytes": 68290,
+      "transformation": "none; byte-identical original Cargo compiler-artifact stream"
+    },
+    {
+      "file": "broker-ed25519-continuation-runner.py",
+      "sha256": "77b35c50a5ce5addf53f513bcd54aa6ba5061888a43de4692207c078e7a82fac",
+      "bytes": 9104,
+      "transformation": "none; byte-identical original continuation runner"
+    },
+    {
+      "file": "broker-ed25519-internal-evidence-review.public.json",
+      "sha256": "9de07f5e4ac33cacc088d75b93b83a230c30b9596c4e26ee87ff0eea410437b5",
+      "bytes": 8592,
+      "transformation": "none; byte-identical original internal read-only evidence-consistency review; no new runtime execution or external audit"
+    },
+    {
+      "file": "broker-ed25519-linux-normal-graph.txt",
+      "sha256": "d22582bf4a8b42e26480255dd55bdc9c7f814370b8910e9b74ca1811da6ae512",
+      "bytes": 4133,
+      "transformation": "none; byte-identical original selected normal dependency graph"
+    },
+    {
+      "file": "broker-ed25519-macos-normal-graph.txt",
+      "sha256": "7fd4908fa66b5d1138be86a2abfb50552d1756139560d0cca66bccaaf8ca0883",
+      "bytes": 3937,
+      "transformation": "none; byte-identical original selected normal dependency graph; target executable not run"
+    },
+    {
+      "file": "broker-ed25519-policy2.stdout.txt",
+      "sha256": "8163bd6a9d747c8b92ff55c84e3e695fb611e3e860c71dc2230b5b011d5712a0",
+      "bytes": 221,
+      "transformation": "none; byte-identical original test output"
+    },
+    {
+      "file": "broker-ed25519-process11.stdout.txt",
+      "sha256": "3bd0f3665435635a9ed7c88a3832e2407a041c7eb74a1f55660157d6c97fda1b",
+      "bytes": 895,
+      "transformation": "none; byte-identical original test output"
+    },
+    {
+      "file": "broker-ed25519-root-graph-check.public.json",
+      "sha256": "b4ba9ec5f791254d5a33f7e8115983ffc7349d202506ca43d9c86b69d3ff62ce",
+      "bytes": 2687,
+      "transformation": "none; byte-identical original separate root-side graph observation"
+    },
+    {
+      "file": "broker-ed25519-workspace-graph-failed.stderr.txt",
+      "sha256": "6ed706716a9ed84c8c6235bf5c6bc0728dc9a4c27267cc2c26100bb8f1f366d5",
+      "bytes": 119,
+      "transformation": "none; byte-identical original failed offline workspace graph output"
     },
     {
       "file": "browser-headed-driver-r10.public.json",
@@ -154,6 +262,54 @@
       "transformation": "none; byte-identical original public receipt"
     },
     {
+      "file": "github-ci-0a0bed8-build.public.json",
+      "sha256": "b97bfb40d3d474a428e32cf75779ce2156e0b28aeac1f51efded69fa39154483",
+      "bytes": 1846,
+      "transformation": "byte-identical reconstruction from bounded CI log envelope, verified against original file SHA-256",
+      "github_run_id": 42181992169,
+      "github_job_id": 127773479397
+    },
+    {
+      "file": "github-ci-0a0bed8-native-backpressure.public.json",
+      "sha256": "4e1dfd7d51d98b3e28aea5eeb6debfea6a3bc00fd59dd1ba02688a88f1699b2f",
+      "bytes": 1926,
+      "transformation": "byte-identical reconstruction from bounded CI log envelope, verified against original file SHA-256",
+      "github_run_id": 42181992169,
+      "github_job_id": 127773479397
+    },
+    {
+      "file": "github-ci-0a0bed8-result.public.json",
+      "sha256": "40b2bb89c3a4579455cd1af5fb65bdcf1ad7a36b244519865b29a50114e66190",
+      "bytes": 1913,
+      "transformation": "byte-identical reconstruction from bounded CI log envelope, verified against original file SHA-256",
+      "github_run_id": 42181992169,
+      "github_job_id": 127773479397
+    },
+    {
+      "file": "github-ci-2280c36-build.public.json",
+      "sha256": "64b6b99f1668b5ca44a1f06c074477bc7f4cff98aef265f03dee641a78f45586",
+      "bytes": 1912,
+      "transformation": "byte-identical reconstruction from bounded CI log envelope, verified against original file SHA-256",
+      "github_run_id": 42186444165,
+      "github_job_id": 127787818002
+    },
+    {
+      "file": "github-ci-2280c36-native-backpressure.public.json",
+      "sha256": "5001f8b31af19ddcb11a6286ebc1e6285a5c5d2be875ab0c69c7b95a6f05280e",
+      "bytes": 1926,
+      "transformation": "byte-identical reconstruction from bounded CI log envelope, verified against original file SHA-256",
+      "github_run_id": 42186444165,
+      "github_job_id": 127787818002
+    },
+    {
+      "file": "github-ci-2280c36-result.public.json",
+      "sha256": "ab456cd3db1ca4bfbb0ad156b1e15cfed5a20a50301d46488c00acc099a46bc2",
+      "bytes": 1979,
+      "transformation": "byte-identical reconstruction from bounded CI log envelope, verified against original file SHA-256",
+      "github_run_id": 42186444165,
+      "github_job_id": 127787818002
+    },
+    {
       "file": "github-ci-a38dab7-build.public.json",
       "sha256": "56f7b0e58575a0da37918025759ac33d8fcf1b457736f7284e833422bfbe635a",
       "bytes": 1846,
@@ -196,6 +352,90 @@
       "transformation": "none; byte-identical original public receipt"
     },
     {
+      "file": "integration-preflight-c447536-acceptance-tests.stderr.txt",
+      "sha256": "4f2c5e60b72efb4efef921beef785b3350d8754123655677a99d7c1a254b6812",
+      "bytes": 277278,
+      "transformation": "none; byte-identical original preflight command output"
+    },
+    {
+      "file": "integration-preflight-c447536-acceptance-tests.stdout.txt",
+      "sha256": "3aa369ddf26e48a200dd274bac370c9da73f191c24192b36767fff11c5179306",
+      "bytes": 294,
+      "transformation": "none; byte-identical original preflight command output"
+    },
+    {
+      "file": "integration-preflight-c447536-python-client-tests.stderr.txt",
+      "sha256": "b33d0f7ff10c2448cd56c9bb563509673f7ac25e147890df69a7e0b164c4640b",
+      "bytes": 29430,
+      "transformation": "none; byte-identical original preflight command output"
+    },
+    {
+      "file": "integration-preflight-c447536-python-client-tests.stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "transformation": "none; byte-identical original preflight command output"
+    },
+    {
+      "file": "integration-preflight-c447536-repository-tests.stderr.txt",
+      "sha256": "11fd7ccc2695826f2af788348e59f35383f1dc690c6653b42496003cc0b22ab2",
+      "bytes": 49302,
+      "transformation": "none; byte-identical original preflight command output"
+    },
+    {
+      "file": "integration-preflight-c447536-repository-tests.stdout.txt",
+      "sha256": "f740f13a99137d65c9a3c98fca4b97d9146c7659f4e9d294d93bb9d579bbd16b",
+      "bytes": 4683,
+      "transformation": "none; byte-identical original preflight command output"
+    },
+    {
+      "file": "integration-preflight-c447536-runner.py",
+      "sha256": "26cf94cd1f8c0aa0308f0b7a4a1c31017b7b4b143cca6c57cb44c0aa91d864ca",
+      "bytes": 6920,
+      "transformation": "none; byte-identical original preflight runner"
+    },
+    {
+      "file": "integration-preflight-c447536-verify-python.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "transformation": "none; byte-identical original preflight command output"
+    },
+    {
+      "file": "integration-preflight-c447536-verify-python.stdout.txt",
+      "sha256": "5d7706e8b269f96f7114ca4dcdc813e36ada8e6a6d2b106ca40c9370190a2b97",
+      "bytes": 389,
+      "transformation": "none; byte-identical original preflight command output"
+    },
+    {
+      "file": "integration-preflight-c447536.public.json",
+      "sha256": "b417b8fcb718fc539fb09f6f04f022f2e4fbca42d620a166da10b95614c80da6",
+      "bytes": 9305,
+      "transformation": "none; byte-identical original isolated Python preflight receipt; not server or full replacement qualification"
+    },
+    {
+      "file": "local-preflight-earlier-acceptance.log.txt",
+      "sha256": "0f887415bdc0c18654a716d5dd48ed9164484cd1af5af45a58e34a3645d418eb",
+      "bytes": 282953,
+      "transformation": "none; byte-identical original earlier local test output including retained errors"
+    },
+    {
+      "file": "local-preflight-earlier-environment-errors.public.json",
+      "sha256": "d390ddb50671ce2c8c0e76117f8bca28823a63698389065757c9507783f29d2b",
+      "bytes": 3021,
+      "transformation": "none; byte-identical original earlier local result; independent source identity not recorded in this receipt"
+    },
+    {
+      "file": "local-preflight-earlier-python-client.log.txt",
+      "sha256": "b07b0300b5e7bce8669d1b725230077a15d3041d19b969bf55044d5d6e844e94",
+      "bytes": 31206,
+      "transformation": "none; byte-identical original earlier local test output including retained errors"
+    },
+    {
+      "file": "local-preflight-earlier-repository.log.txt",
+      "sha256": "b7f163c32b40a84f3f92da2cdb4ffaa635d0b42a3a7c327450df355864de6241",
+      "bytes": 53963,
+      "transformation": "none; byte-identical original earlier local test output including retained errors"
+    },
+    {
       "file": "native-backpressure-fixed.public.json",
       "sha256": "7b3ccd812f2446b081e9cf91589ab259ee0c32c427c63e078feeda6a2416dbde",
       "bytes": 1922,
@@ -214,10 +454,28 @@
       "transformation": "none; byte-identical original public host-only receipt"
     },
     {
+      "file": "passkey-r4-rust-reopen-fixed-b0cc.public.json",
+      "sha256": "d6dd270dbc8be85e7d96622b0c5c2c8d29c72945adcdb9b811d365e2b48bf2e7",
+      "bytes": 1732,
+      "transformation": "none; byte-identical original fixed-core Rust recovery/read-back receipt"
+    },
+    {
       "file": "passkey-r4-rust-reopen.public.json",
       "sha256": "f3b724612b8bc216ded8c0b161be5d6ffab175ae32ae81a70f6f1ebf54112638",
       "bytes": 592,
       "transformation": "none; byte-identical original public Rust recovery/read-back receipt"
+    },
+    {
+      "file": "passkey-r4-seed-original.public.json",
+      "sha256": "8f4aa93fb4600a722ca34798d4f8364dba81c43da71a1c7cc2d30c95e2cd4b1b",
+      "bytes": 473,
+      "transformation": "none; byte-identical original seed receipt; its local producer build provenance remains unestablished"
+    },
+    {
+      "file": "passkey-r5b-source-match.public.json",
+      "sha256": "81d3e675bb708fd8d18111feb8042eced5a38500e718c040c113f9d4212112e8",
+      "bytes": 8686,
+      "transformation": "derived exact comparison of source archive paths to repository files; no device qualification"
     },
     {
       "file": "passkey-rp-http-21-r2.public.json",
@@ -297,6 +555,25 @@
       "sha256": "f465fc3230fdfbe144f31b95baa3e4964997884d314ef0724ea77074384cf256",
       "bytes": 27122,
       "transformation": "none; original public source archive, exact entry and source digest allowlist verified"
+    },
+    {
+      "file": "source-android-passkey-r5-first-build-failed.tar.gz",
+      "sha256": "63765fb1361160fda0900bce977b1451ffe2add7cf52d3aa76ef92b8c0af2e15",
+      "bytes": 61618,
+      "transformation": "none; byte-identical first r5 source archive; SDK34 compile failed"
+    },
+    {
+      "file": "source-android-passkey-r5b.tar.gz",
+      "sha256": "e84c3768271be8b908f7f9a505c3d96abdc98fd9e3bba4ed3d5d9557e13322be",
+      "bytes": 61770,
+      "transformation": "none; byte-identical corrected r5b source archive"
+    },
+    {
+      "file": "source-broker-c447536.bundle",
+      "sha256": "4973eb63705f49f1950568c838d67e403463a3753d5eca8c5c91bb6f482a1d8e",
+      "bytes": 501591,
+      "base_required": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+      "source_commit": "c447536ae0343731d84c18291d2dcd712b3bea08"
     },
     {
       "file": "source-browser-802c57c.bundle",

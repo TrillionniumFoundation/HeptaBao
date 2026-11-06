@@ -1,0 +1,381 @@
+{
+  "artifacts": {},
+  "builder_sha256": "de6b79f3f261a44f6be80a14af96fac8ea3e058e33ac3be490739fa471e7814e",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "clone",
+        "--no-hardlinks",
+        "/home/qq/heptabao-personal-credentials-20261106-r1",
+        "/home/qq/heptabao-broker-ed25519-c447536"
+      ],
+      "cwd": "/home/qq/heptabao-broker-ed25519-c447536-build",
+      "environment_additions": {},
+      "exit_code": 0,
+      "finished_unix_ns": 1793955039910974179,
+      "label": "clone-isolated",
+      "started_unix_ns": 1793955039395879861,
+      "stderr_sha256": "963f467ce492c7526563fac93951564b7850e0a2b159bd9e8e8530a7099a2781",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "fetch",
+        "/home/qq/heptabao-broker-ed25519-c447536.bundle",
+        "HEAD"
+      ],
+      "cwd": "/home/qq/heptabao-broker-ed25519-c447536",
+      "environment_additions": {},
+      "exit_code": 0,
+      "finished_unix_ns": 1793955039949189196,
+      "label": "import-frozen-source",
+      "started_unix_ns": 1793955039917080772,
+      "stderr_sha256": "8915cd8c55ba7b080f72387715d45adb188a409e4db7893a798b4025d9e7e0c2",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "checkout",
+        "--detach",
+        "c447536ae0343731d84c18291d2dcd712b3bea08"
+      ],
+      "cwd": "/home/qq/heptabao-broker-ed25519-c447536",
+      "environment_additions": {},
+      "exit_code": 0,
+      "finished_unix_ns": 1793955040067103898,
+      "label": "checkout-frozen-source",
+      "started_unix_ns": 1793955039953083187,
+      "stderr_sha256": "b0cdf24dcecc436f37b4654981d7a9a3e37031d9281e09d66bf411f5d3bf27fc",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "/home/qq/heptabao-broker-ed25519-c447536",
+      "environment_additions": {},
+      "exit_code": 0,
+      "finished_unix_ns": 1793955040088529493,
+      "label": "before-git",
+      "started_unix_ns": 1793955040072759326,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "cwd": "/home/qq/heptabao-broker-ed25519-c447536",
+      "environment_additions": {},
+      "exit_code": 0,
+      "finished_unix_ns": 1793955040091445919,
+      "label": "before-head",
+      "started_unix_ns": 1793955040089984261,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e62df72004515a94536ab0d082e070a48865afe2f20da0c92712806ed97919e7"
+    },
+    {
+      "argv": [
+        "rustc",
+        "+1.98.0",
+        "-vV"
+      ],
+      "cwd": "/home/qq/heptabao-broker-ed25519-c447536",
+      "environment_additions": {},
+      "exit_code": 0,
+      "finished_unix_ns": 1793955040206343479,
+      "label": "rustc-version",
+      "started_unix_ns": 1793955040092642697,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "3975d062e234a9f3921955bf6ae5b90f5819df94fa825d057f76b34a35ed0f4d"
+    },
+    {
+      "argv": [
+        "rustup",
+        "which",
+        "--toolchain",
+        "1.98.0",
+        "cargo"
+      ],
+      "cwd": "/home/qq/heptabao-broker-ed25519-c447536",
+      "environment_additions": {},
+      "exit_code": 0,
+      "finished_unix_ns": 1793955040216305084,
+      "label": "cargo-executable",
+      "started_unix_ns": 1793955040208660446,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "9bb3121b0f5c2bd934ce7fbf5ba569f19024ae5ce44356b3c26f23a6f757412a"
+    },
+    {
+      "argv": [
+        "rustup",
+        "which",
+        "--toolchain",
+        "1.98.0",
+        "rustc"
+      ],
+      "cwd": "/home/qq/heptabao-broker-ed25519-c447536",
+      "environment_additions": {},
+      "exit_code": 0,
+      "finished_unix_ns": 1793955040297432698,
+      "label": "rustc-executable",
+      "started_unix_ns": 1793955040289657916,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "979f2b4558c65a7224509b3edb0c3e985c670ba9932f9b10614e66cb0da56d91"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.98.0",
+        "tree",
+        "--locked",
+        "--offline",
+        "--target",
+        "x86_64-unknown-linux-gnu",
+        "--edges",
+        "normal",
+        "--prefix",
+        "depth",
+        "--format",
+        "{p} [{f}]",
+        "-p",
+        "heptabao-credential-broker",
+        "-p",
+        "heptabao-personal-vault",
+        "-p",
+        "heptabao-personal-edge"
+      ],
+      "cwd": "/home/qq/heptabao-broker-ed25519-c447536",
+      "environment_additions": {},
+      "exit_code": 0,
+      "finished_unix_ns": 1793955040520670552,
+      "label": "selected-graph-x86_64-unknown-linux-gnu",
+      "started_unix_ns": 1793955040306631490,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "d22582bf4a8b42e26480255dd55bdc9c7f814370b8910e9b74ca1811da6ae512"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.98.0",
+        "tree",
+        "--locked",
+        "--offline",
+        "--target",
+        "aarch64-apple-darwin",
+        "--edges",
+        "normal",
+        "--prefix",
+        "depth",
+        "--format",
+        "{p} [{f}]",
+        "-p",
+        "heptabao-credential-broker",
+        "-p",
+        "heptabao-personal-vault",
+        "-p",
+        "heptabao-personal-edge"
+      ],
+      "cwd": "/home/qq/heptabao-broker-ed25519-c447536",
+      "environment_additions": {},
+      "exit_code": 0,
+      "finished_unix_ns": 1793955040637309120,
+      "label": "selected-graph-aarch64-apple-darwin",
+      "started_unix_ns": 1793955040523278119,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "7fd4908fa66b5d1138be86a2abfb50552d1756139560d0cca66bccaaf8ca0883"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.98.0",
+        "tree",
+        "--locked",
+        "--offline",
+        "--target",
+        "x86_64-unknown-linux-gnu",
+        "--edges",
+        "normal",
+        "--prefix",
+        "depth",
+        "--format",
+        "{p} [{f}]",
+        "--workspace"
+      ],
+      "cwd": "/home/qq/heptabao-broker-ed25519-c447536",
+      "environment_additions": {},
+      "exit_code": 101,
+      "finished_unix_ns": 1793955040803592276,
+      "label": "workspace-graph-observation",
+      "started_unix_ns": 1793955040639311298,
+      "stderr_sha256": "6ed706716a9ed84c8c6235bf5c6bc0728dc9a4c27267cc2c26100bb8f1f366d5",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.98.0",
+        "fmt",
+        "-p",
+        "heptabao-credential-broker",
+        "-p",
+        "heptabao-personal-vault",
+        "-p",
+        "heptabao-personal-edge",
+        "--",
+        "--check"
+      ],
+      "cwd": "/home/qq/heptabao-broker-ed25519-c447536",
+      "environment_additions": {},
+      "exit_code": 0,
+      "finished_unix_ns": 1793955040919688273,
+      "label": "fmt",
+      "started_unix_ns": 1793955040805563066,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.98.0",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-credential-broker",
+        "-p",
+        "heptabao-personal-vault",
+        "-p",
+        "heptabao-personal-edge",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/home/qq/heptabao-broker-ed25519-c447536",
+      "environment_additions": {},
+      "exit_code": 0,
+      "finished_unix_ns": 1793955048555867167,
+      "label": "clippy",
+      "started_unix_ns": 1793955040921893144,
+      "stderr_sha256": "f5d344b1279ad76f3661c80074b0eec956e6d1430106ba1c914b4335f19e182e",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.98.0",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-credential-broker",
+        "-p",
+        "heptabao-personal-vault",
+        "-p",
+        "heptabao-personal-edge",
+        "--tests",
+        "--no-run",
+        "--message-format=json"
+      ],
+      "cwd": "/home/qq/heptabao-broker-ed25519-c447536",
+      "environment_additions": {},
+      "exit_code": 0,
+      "finished_unix_ns": 1793955060317764681,
+      "label": "compile-cli-and-tests",
+      "started_unix_ns": 1793955048570489165,
+      "stderr_sha256": "7df015c3cccefde5b57690e347e75ad864c5d855bb7ca14ee37798ba86e859b7",
+      "stdout_sha256": "7c2cc2e6d34335ae2ac96b9530b671860d6655415dfe9340933bc264673031e5"
+    }
+  ],
+  "environment": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_TARGET_DIR": "/home/qq/heptabao-broker-ed25519-c447536-build/target",
+    "PATH": "/home/qq/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+    "TMPDIR": "/tmp"
+  },
+  "error_type": "AssertionError",
+  "finished_unix_ns": 1793955060323923131,
+  "old_qualification_directory_not_modified": "/home/qq/heptabao-personal-credentials-20261106-r1",
+  "old_retained_binary_sha256_before": {
+    "heptabao-browser": "e6eaa6210b6d8a6480a20d4d1be65c221c548e08803ed76558a7b72eb3cd2f7d",
+    "heptabao-credential-broker": "389cc15a0926ef9f30cd149b56424a484dfad600a308252ed111f2869b5b9175",
+    "heptabao-sync": "c82a17b0c148423b6223dd4a77540cd9c188f354c76309944cbb2091f2836663",
+    "heptabao-vault": "b0cccc3c204d6be5e2e20ee5830e34cb1242d3ac03ea42cd3b7e26a3ea416358"
+  },
+  "production_qualified": false,
+  "result": "failed",
+  "rustc_vV": "rustc 1.98.0 (88d9e12ae 2026-08-18)\nbinary: rustc\ncommit-hash: 88d9e12ae178fab0fb5cc050a94da85685d449ea\ncommit-date: 2026-08-18\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.0\nLLVM version: 22.1.8\n",
+  "schema": 1,
+  "scope": "synthetic_three_crate_build_and_13_broker_integration_tests",
+  "scope_limit": "No P0/server tests; no claim that the workspace is vulnerability-free.",
+  "selected_normal_graphs": {
+    "aarch64-apple-darwin": {
+      "crypto_bigint_selected": false,
+      "exit_code": 0,
+      "rsa_selected": false,
+      "sha256": "7fd4908fa66b5d1138be86a2abfb50552d1756139560d0cca66bccaaf8ca0883",
+      "ssh_key_lines": [
+        "1ssh-key v0.6.7 [alloc,ed25519,rand_core,std]"
+      ]
+    },
+    "x86_64-unknown-linux-gnu": {
+      "crypto_bigint_selected": false,
+      "exit_code": 0,
+      "rsa_selected": false,
+      "sha256": "d22582bf4a8b42e26480255dd55bdc9c7f814370b8910e9b74ca1811da6ae512",
+      "ssh_key_lines": [
+        "1ssh-key v0.6.7 [alloc,ed25519,rand_core,std]"
+      ]
+    }
+  },
+  "source_before": {
+    "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+    "head": "c447536ae0343731d84c18291d2dcd712b3bea08",
+    "status_clean": true,
+    "tree": "50835fd4df6e7bdd2b551941a3fa012281c931c2"
+  },
+  "source_bundle_sha256": "4973eb63705f49f1950568c838d67e403463a3753d5eca8c5c91bb6f482a1d8e",
+  "source_expected_commit": "c447536ae0343731d84c18291d2dcd712b3bea08",
+  "source_expected_tree": "50835fd4df6e7bdd2b551941a3fa012281c931c2",
+  "started_unix_ns": 1793955039383728325,
+  "tests": {},
+  "tools": {
+    "cargo": {
+      "path": "/home/qq/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "sha256": "ff3022fcbd13b08434ea7afde9a0ef9d5b3f5c17b5fc7a40031be3ee000a6a24"
+    },
+    "git": {
+      "path": "/usr/bin/git",
+      "sha256": "ed8b2df973b28c0fb773b9c0dc0816d3ee2b3835bb932d9153c21417bb51b362"
+    },
+    "rustc": {
+      "path": "/home/qq/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "sha256": "3690cc576ede140504698405d5d8fa3826aaadbe71699c6c4ed0a565d6f493e2"
+    },
+    "ssh-keygen": {
+      "path": "/usr/bin/ssh-keygen",
+      "sha256": "2dd834413c9d3f4c0e3535b9fcf2e96e14c11f3d36fd23b6c5fc24e50411d051"
+    }
+  },
+  "workspace_normal_graph": {
+    "crypto_bigint_selected": null,
+    "exit_code": 101,
+    "rsa_selected": null,
+    "scope": "observation_only_not_a_workspace_test_or_clean_audit",
+    "server_manifest_sha256": "6464e7c760943ef3e973e1416ea91f469780261e28afb3c0a5267d62d7d06642",
+    "server_ssh_key_declaration": "ssh-key = { version = \"=0.6.7\", default-features = false, features = [\"std\", \"crypto\"] }"
+  }
+}

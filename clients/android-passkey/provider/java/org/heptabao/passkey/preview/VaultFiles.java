@@ -42,6 +42,40 @@ final class VaultFiles {
         Failure.require(OsConstants.S_ISDIR(stat.st_mode) && stat.st_uid == Process.myUid()
             && (stat.st_mode & 0777) == 0700, "unsafe_directory");
     }
+    private static File privateFiles(Context context) throws Exception {
+        File files = context.getFilesDir();
+        Failure.require(files.equals(new File(context.getDataDir(), "files")), "unsafe_directory");
+        StructStat leaf = Os.lstat(files.getPath());
+        int leafMode = leaf.st_mode & 07777;
+        Failure.require(OsConstants.S_ISDIR(leaf.st_mode) && leaf.st_uid == Process.myUid()
+            && (leafMode == 0700 || leafMode == 0771), "unsafe_directory");
+        // O_DIRECTORY is not a public SDK 34 constant. Refuse symlinks, make
+        // special-file opens nonblocking, and verify the opened inode is the
+        // already-checked directory before any permission mutation.
+        FileDescriptor fd = Os.open(files.getPath(), OsConstants.O_RDONLY | OsConstants.O_NONBLOCK
+            | OsConstants.O_NOFOLLOW | OsConstants.O_CLOEXEC, 0);
+        try {
+            StructStat before = Os.fstat(fd);
+            int mode = before.st_mode & 07777;
+            // Android ContextImpl creates its own files directory with 0771.
+            // Narrow only that fixed app-owned directory, through its verified
+            // descriptor, before storing anything. All later checks stay 0700.
+            Failure.require(OsConstants.S_ISDIR(before.st_mode) && before.st_uid == Process.myUid()
+                && (mode == 0700 || mode == 0771) && before.st_dev == leaf.st_dev
+                && before.st_ino == leaf.st_ino, "unsafe_directory");
+            if (mode == 0771) Os.fchmod(fd, 0700);
+            StructStat after = Os.fstat(fd);
+            Failure.require(OsConstants.S_ISDIR(after.st_mode) && after.st_uid == Process.myUid()
+                && (after.st_mode & 07777) == 0700 && before.st_dev == after.st_dev
+                && before.st_ino == after.st_ino, "unsafe_directory");
+            Os.fsync(fd);
+            StructStat named = Os.lstat(files.getPath());
+            Failure.require(OsConstants.S_ISDIR(named.st_mode) && named.st_uid == Process.myUid()
+                && (named.st_mode & 07777) == 0700 && named.st_dev == after.st_dev
+                && named.st_ino == after.st_ino, "unsafe_directory");
+            return files;
+        } finally { Os.close(fd); }
+    }
     private static void regular(StructStat stat, int limit) throws Failure {
         Failure.require(OsConstants.S_ISREG(stat.st_mode) && stat.st_uid == Process.myUid()
             && (stat.st_mode & 0777) == 0600 && stat.st_nlink == 1
@@ -107,7 +141,7 @@ final class VaultFiles {
         final FileOutputStream stream;
         final FileLock lock;
         Guard(Context context) throws Exception {
-            File files = context.getFilesDir(); directory(files, false);
+            File files = privateFiles(context);
             root = new File(files, "passkey-stores"); directory(root, true); syncDirectory(files);
             FileDescriptor fd = Os.open(new File(root, "store.lock").getPath(), OsConstants.O_RDWR | OsConstants.O_CREAT
                 | OsConstants.O_NOFOLLOW | OsConstants.O_CLOEXEC, 0600);

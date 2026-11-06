@@ -14,11 +14,11 @@ from implementation in progress.
 | Phase | Implemented and observed | Remaining boundary |
 | --- | --- | --- |
 | P0: selected credential service | Normal Linux server entry point, loopback TLS/private CA, Shamir, root-namespace KV2, userpass and scoped tokens: **57/57**, including real expiry/revocation, ACL denials, SIGKILL and cold recovery. | This exact single-node profile only. HA, full compatibility, old failing snapshot actor regression and broad replacement remain HOLD. |
-| P1: agent/developer use | Executable Rust CLI/SDK, local socket broker, exact-operation owner grants, controlled loopback API use, SSHSIG and actual `git commit -S` followed by `git verify-commit`: **11 integration tests**. Durable unknown outcomes are never automatically retried. | Task/run labels are owner-issued, not attested HeptaRuntime identities. Current runtime aliases use the same trusted OS account. External HTTPS APIs and SSH login are unsupported. |
+| P1: agent/developer use | Executable Rust CLI/SDK, local socket broker, exact-operation owner grants, controlled loopback API use, SSHSIG and actual `git commit -S` followed by `git verify-commit`. The separately frozen Ed25519-only build passed **13/13 integration tests**, including all original eleven tests and real RSA/ECDSA rejection. Durable unknown outcomes are never automatically retried. | Task/run labels are owner-issued, not attested HeptaRuntime identities. Current runtime aliases use the same trusted OS account. External HTTPS APIs and SSH login are unsupported. |
 | P2: personal vault | Encrypted login/note/API entries, password generation, RFC-vector TOTP, local health, bounded sessions, offline CLI, encrypted backup/recovery, explicit JSON import/export and password change. Independent process and actual SIGKILL recovery observed. | Linux/Unix private local filesystem, trusted owner account; no hostile-owner isolation, hardware anti-rollback, third-party import or independent security review. |
 | P3: daily clients | Real headed Chromium/native-host login and rejection profile: **26/26**. Physical two-device opaque synchronization: **14 stages and 18 authenticated transfers** across ai395 and ROG retained conflicting edits and restored both histories. Native backpressure fix: **8/8**. | Target Android Autofill qualification is in progress. Browser observation covers the fixed Chrome 157 Linux combination. Sync is an explicit CLI workflow, not an automatic daemon or field merger. |
 | P4: extended vault | Android native Passkey provider and CredentialManager fixture implemented. Frozen r4 host cryptography/format profile: **10/10**, including separate JVMs, latest-backup recovery, restart and stale-counter rejection. Independent RP: **68/68** per tested backend and **21/21** real loopback HTTP/restart cases. | Host and RP observations do not exercise Android CredentialManager. No completed phone create/login/recovery evidence yet. Credential exchange, sharing, device revocation, additional browsers/platforms remain unsupported. |
-| P5: production adoption | Published `a38dab7` passed synthetic-core CI and the workflow-trust checks for both its exact head and prospective merge. Immutable evidence, runtime trust analysis and an operations/recovery procedure are available. | Newer `0a0bed8` CI remains queued/pending at the last observation. No result is inherited across heads. Independent review, measured long-term stability, signed releases, tested upgrade/rollback and operational support are not complete. |
+| P5: production adoption | Published `a38dab7`, `0a0bed8` and `2280c36` each passed synthetic-core CI and the workflow-trust checks for both exact head and prospective merge. A separate clean `c447536` Python preflight has no failures across 300 repository, 1510 acceptance and 183 client tests, with five explicit platform skips. Immutable evidence, an internal dependency review, runtime trust analysis and an operations/recovery procedure are available. | Full replacement qualification for `2280c36` is running and has not passed. No result is inherited across heads. Independent review, measured long-term stability, signed releases, tested upgrade/rollback and operational support are not complete. |
 
 These are separate acceptance boundaries. For example, a real local Git signing
 test does not establish a malicious same-account agent cannot read owner files;
@@ -64,6 +64,27 @@ compiler logs is labeled as an inference in that receipt.
 The [P0 report](../../qa/personal_credentials/P0_STATUS.md) retains the older
 174/176 and 180/181 failures as historical results. They are not silently replaced
 by the newer, smaller 57-case profile. x230 formal-34 preflight remains preflight.
+
+### Separately qualified Ed25519-only broker
+
+The internal [dependency review](DEPENDENCY_REVIEW.md) found two RustSec version
+matches reached through unused RSA/ECDSA features at baseline `8cd4761`.
+Local source `c447536ae0343731d84c18291d2dcd712b3bea08`, tree
+`50835fd4df6e7bdd2b551941a3fa012281c931c2`, narrows only the broker's feature
+selection. Its fixed executable SHA-256 is
+`6fe0b6c78213e4bb1184ca4c4be7fc3e44dce4117f22097aab14efa567ac8a08`.
+All eleven existing real process tests and two new valid-key rejection tests
+passed against that exact executable; its bytes and both test executables were
+checked before and after execution. The original failed runner attempt is
+preserved alongside the successful continuation.
+
+The selected Linux and macOS normal graphs no longer contain `rsa` or
+`crypto-bigint`. The server still selects broader crypto features, and the
+full-workspace graph could not be resolved offline because a dependency was
+not cached. This is a selected-build correction, not a whole-workspace clean
+audit. New vault/browser/sync artifacts built in that run receive only their
+actual build/Clippy observations; older functional results remain bound to
+the original artifacts above.
 
 ## Browser observation
 
@@ -117,9 +138,15 @@ Candidate 5 changes the handling of `TRIM_MEMORY_UI_HIDDEN` and adds bounded
 authentication-entry diagnostics while preserving request cancellation,
 background invalidation, timers and final caller/target checks. Its 18 source
 files match its build receipt exactly, and its new Rust-to-Java profile is
-12/12. The old phone results do not qualify this new APK; its own complete
-12-case device run is still required. Both original source archives and build
-receipts are retained.
+12/12. Its own QA8 phone run r6 still failed after **1/12** completed checks:
+the authorization Activity was not observed. The original setting was restored
+and all three owned packages removed. Read-only diagnostics found no own Auth
+Activity start or explicit background-launch refusal; an empty fixed-tag log
+does not establish a root cause. The later `memory_locked` observation came
+after opening the provider's Main Activity and is explicitly not proof of the
+earlier state. The UI-hidden change has not been shown to solve the failure.
+Both original source archives, build receipts and failed device results are
+retained. A full successful device profile is still required.
 
 Passkey candidate r4 has 28 source files matching its original build inventory.
 It implements a separate Android credential provider for one pinned native
@@ -147,9 +174,17 @@ Its independent build provenance has not been established. These observations
 must not be attributed to the separately qualified `b0cccc3c` core binary;
 the original reports retain their actual identities.
 
+A later independent observation used the frozen ai395 `b0cccc3c` executable,
+bound to core source `a1b6ff4` and original final build receipt `fa166952...`.
+Three independent processes restored, listed and read the same Java ciphertext
+through the recovery-key path. Revision 5, one item, counter 4, backup state and
+the RP's original SPKI digest all matched. This closes that reader's source and
+artifact binding without retroactively establishing the seed producer's build
+provenance. It does not claim a password-path read in that later observation.
+
 | Frozen mobile artifact | SHA-256 | Current evidence boundary |
 | --- | --- | --- |
-| Autofill candidate 5 provider APK | `5c643afa5a08c6e8dd0baf751fe56dadf0f66947284d119d2da7051f4ab88ff8` | Build/decoded manifest and 12 host format checks; device profile pending. |
+| Autofill candidate 5 provider APK | `5c643afa5a08c6e8dd0baf751fe56dadf0f66947284d119d2da7051f4ab88ff8` | Build/decoded manifest and 12 host format checks; its r6 phone profile failed after 1/12 checks. |
 | Passkey r4 provider APK | `e96218bc0ab1c228120471d5168a336e6b526bfd5e39e1a0a533335300d7c6e8` | Build/decoded manifest and 10 host checks; CredentialManager/SAF profile pending. |
 
 All mobile material is synthetic. The device QA driver enters synthetic
@@ -178,10 +213,54 @@ from those log envelopes and checked byte-for-byte against their original
 SHA-256 values before archival.
 
 The later source `0a0bed8cb98e0e80fe3130bf43c43358ebbaad19` adds the missing
-module guides, closure records and updated 52-module inventory. Its new runs
-were still queued/pending at the last observation on 2026-11-06 07:49 UTC.
-The older core and trust results do not qualify that newer source, and a queued
-run is not a passing gate. This draft remains unmerged.
+module guides, closure records and updated 52-module inventory. Its own
+[synthetic-core run 42181992169](https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/42181992169)
+and both combinations of
+[workflow-trust run 42181992170](https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/42181992170)
+completed successfully. Its original three core receipts are also archived.
+These results were observed on 2026-11-06 08:17 UTC.
+
+Mobile-source publication `2280c3645b6b2c2bd81ed0bde2bfe602773000c2`
+exactly matches local tree `2efb7f30c715af3404b2c03329d1c65e2e1f9ef4`.
+Its own [synthetic-core run 42186444165](https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/42186444165)
+and both combinations of
+[workflow-trust run 42186444305](https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/42186444305)
+completed successfully. Its three original public core receipts are archived
+after byte-identical SHA-256 verification. Its separate
+[full replacement run 42186444220](https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/42186444220)
+was running at the 2026-11-06 09:20 UTC observation: both exact head and
+prospective merge passed repository/fixture preflight and were executing the
+complete locked Rust workspace tests. The older results do not qualify a newer
+publication, and an in-progress run is not a passing gate. This draft remains
+unmerged.
+
+### Separately observed Python integration preflight
+
+An isolated ai395 clone of source `c447536` retained exact tree
+`50835fd4df6e7bdd2b551941a3fa012281c931c2` before and after this observation.
+The real published history was fetched, and both pinned PostgreSQL migration
+source commits were verified as exact-tree ancestors. An owned virtual
+environment used Python 3.14.4 and the declared direct pins PyYAML 6.0.2,
+jsonschema 4.23.0 and cryptography 46.0.4. Transitive Python dependencies were
+not fully locked by that requirements file.
+
+Repository/schema/module/surface validators and all three unittest commands
+returned zero. The results are **300 passed** repository tests, **1509 passed
+and one skipped** acceptance tests, and **179 passed and four skipped** client
+tests. The skips are an alternate non-Linux process-owner path and four Darwin
+filesystem/proxy-specific cases. The original receipt and complete stdout and
+stderr are archived, with every file digest checked against the receipt.
+Runtime job `1a1b0200c30-fc05-6e49` reported succeeded, exit zero, complete
+durable output and no timeout.
+
+The earlier local run's four acceptance errors and two client errors remain
+archived. They involved prohibited Unix sockets, the local system ELF loader's
+ownership precondition and missing real Git history. The relevant Python test
+and validator sources are unchanged between that earlier local baseline and
+this frozen source. The later run passed the formerly failing cases in the
+supported Linux environment without changing those tests or their gates.
+This is Python preflight evidence; it did not execute the server, the complete
+Rust workspace, device flows or an OpenBao replacement qualification.
 
 ## Actual supported entry points
 
@@ -191,6 +270,7 @@ run is not a passing gate. This draft remains unmerged.
 - [Android Autofill preview](../../clients/android/README.md): one exact signed native fixture, fresh authorization and ephemeral datasets.
 - [Android Passkey preview](../../clients/android-passkey/README.md): native CredentialManager, encrypted counters, local document import/export and explicit recovery limits.
 - [Runtime identity analysis](RUNTIME_IDENTITY.md): what current operator jobs prove, what they do not prove and the required separate-principal boundary.
+- [Internal dependency review](DEPENDENCY_REVIEW.md): pinned advisory/database scope, selected-build correction and the remaining wider-workspace boundary.
 - [Operations and recovery](OPERATIONS.md): evidence checks, clean staging, unknown outcomes and backup/restore procedures.
 
 ## Reproduction gates

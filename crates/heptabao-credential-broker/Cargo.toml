@@ -12,7 +12,7 @@ serde_json = "=1.0.151"
 ring = "=0.17.14"
 base64 = "=0.22.1"
 zeroize = "=1.8.1"
-ssh-key = { version = "=0.6.7", default-features = false, features = ["std", "crypto"] }
+ssh-key = { version = "=0.6.7", default-features = false, features = ["std", "ed25519"] }
 rustix = { version = "=1.1.4", features = ["fs", "process"] }
 
 [lints]
