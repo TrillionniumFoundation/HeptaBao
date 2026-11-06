@@ -586,16 +586,118 @@
       "transformation": "none; byte-identical original seed receipt; its local producer build provenance remains unestablished"
     },
     {
+      "file": "passkey-r5-first-build-receipt.failed.json",
+      "sha256": "d7a36b6292202d6487b4ae9c9c3252973256c9cbad6dd52e969d2eda29c79fb2",
+      "bytes": 18317,
+      "transformation": "none; byte-identical original public receipt or observed wrapper source"
+    },
+    {
+      "file": "passkey-r5b-build-receipt.public.json",
+      "sha256": "b46691b4da0fc2f461801ff7b8e3abf64cb461a55a03d2624f24d4713f20fc40",
+      "bytes": 59317,
+      "transformation": "none; byte-identical original public receipt or observed wrapper source"
+    },
+    {
+      "file": "passkey-r5b-host-result.public.json",
+      "sha256": "4db33700c86cd4f185fa56c1e1fe92af291c8a50f6da48fae53682438fc92bb2",
+      "bytes": 16248,
+      "transformation": "none; byte-identical original public receipt or observed wrapper source"
+    },
+    {
       "file": "passkey-r5b-phone-profile.declared.json",
       "sha256": "79632f9c91877bdcec9285fe7b893196e1029008d7185cf0a2618dc158bb1c9f",
       "bytes": 12552,
       "transformation": "deterministic output of frozen profile source 5e21b66be609f539ca7e6945752b66974933ac11639e7b0b9ccb6751a7ce5400; declares eighteen cases and does not prove execution"
     },
     {
+      "file": "passkey-r5b-public-packet.manifest.json",
+      "sha256": "7167caa81f48e4166e35aa2212b24767b4d37887c68d8400e5f284c5244f2a3d",
+      "bytes": 1842,
+      "transformation": "none; original retrieval and cross-file consistency manifest; not phone qualification"
+    },
+    {
+      "file": "passkey-r5b-seed-producer-wrapper.actual.py",
+      "sha256": "9fc9472b4995cd469b6157819432bfb98cd4a709d3d36f0abbe90f16eafb587f",
+      "bytes": 2621,
+      "transformation": "none; byte-identical original public receipt or observed wrapper source"
+    },
+    {
+      "file": "passkey-r5b-seed-producer-wrapper.binding.public.json",
+      "sha256": "5bebf6fb697a12578b81eba278fcf5ca48f35cba2f82ff65605d7116a2ae518b",
+      "bytes": 553,
+      "transformation": "none; byte-identical original public receipt or observed wrapper source"
+    },
+    {
+      "file": "passkey-r5b-seed-producer.public.json",
+      "sha256": "533cb27055640f2da05b7e362a6c767203894f0bc05fc80b55acb01310308eb8",
+      "bytes": 1372,
+      "transformation": "none; byte-identical original public receipt or observed wrapper source"
+    },
+    {
+      "file": "passkey-r5b-seed-receipt.public.json",
+      "sha256": "ab16e81f85823b75bea71a4648b701be6072b41ee6096926c13ded5282a814d3",
+      "bytes": 473,
+      "transformation": "none; byte-identical original public receipt or observed wrapper source"
+    },
+    {
       "file": "passkey-r5b-source-match.public.json",
       "sha256": "81d3e675bb708fd8d18111feb8042eced5a38500e718c040c113f9d4212112e8",
       "bytes": 8686,
       "transformation": "derived exact comparison of source archive paths to repository files; no device qualification"
+    },
+    {
+      "file": "passkey-r5b-transfer.manifest.public.json",
+      "sha256": "115ccc878381063569d9f34f77c238287dc27d984ed18b7f35a56537c8c12799",
+      "bytes": 4273,
+      "transformation": "none; byte-identical original public receipt or observed wrapper source"
+    },
+    {
+      "file": "passkey-reset-helper-v1-input-schema.public.json",
+      "sha256": "e28824ab8bdbeefbfcf206f83cf7b0d5aa64692b45ddf37e6a698d633edf04ed",
+      "bytes": 6926,
+      "transformation": "none; original historical input template, not device evidence"
+    },
+    {
+      "file": "passkey-reset-helper-v1-self-test.public.json",
+      "sha256": "99280a415e5e03687a60692b3272b390f164061b756f98196605c8311d86dcaf",
+      "bytes": 1979,
+      "transformation": "none; original 44 host-only author tests before the independently found result-persistence gap"
+    },
+    {
+      "file": "passkey-reset-helper-v1-to-v2.patch",
+      "sha256": "91727ebb744ace276124b7dacbf3933963c5f83038792572c574313a2fa8671a",
+      "bytes": 15369,
+      "transformation": "none; original source diff reviewed internally"
+    },
+    {
+      "file": "passkey-reset-helper-v1.py",
+      "sha256": "6c938dd1f0a9cad41a48db12ea0a80282d9123d5d9f48cf9f249fdf5c31e6dc0",
+      "bytes": 57331,
+      "transformation": "none; original historical pre-review helper, not admitted for phone execution"
+    },
+    {
+      "file": "passkey-reset-helper-v2-author-fix-note.public.json",
+      "sha256": "d4586cfbea78d292b150158da2846efb8d00530c8b18e8716c12656f849bc487",
+      "bytes": 1172,
+      "transformation": "none; original author correction note; not independent or external review"
+    },
+    {
+      "file": "passkey-reset-helper-v2-input-schema.public.json",
+      "sha256": "71d8d58030255c540d19220ec1bb7e019f08a1f8ea760e0167653075b41359a7",
+      "bytes": 7290,
+      "transformation": "none; original input template, not device evidence"
+    },
+    {
+      "file": "passkey-reset-helper-v2-internal-review.public.json",
+      "sha256": "2baa88f9a7625ec0f860e7e915ebc2d94e9c870ab6d5e755ec8b30ac229a0073",
+      "bytes": 2042,
+      "transformation": "none; original internal root review and independent execution of the author host suite; not external audit"
+    },
+    {
+      "file": "passkey-reset-helper-v2-self-test.public.json",
+      "sha256": "eab627415074b0108c81cdf3b64c893b4d572b4e2283deffa1efbebd26a5f135",
+      "bytes": 2115,
+      "transformation": "none; original 46 host-only author tests, including two precise persistence failure regressions"
     },
     {
       "file": "passkey-rp-http-21-r2.public.json",

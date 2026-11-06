@@ -182,6 +182,22 @@ strict later checks. The first r5 SDK34 compile failure and the corrected r5b
 source archive remain separate originals. New builds and device observations
 must retain their own identities.
 
+The r5b build receipt `b46691b4...` binds all 28 product source files to that
+archive before and after its 48 successful build/inspection commands. Its own
+host profile `4db33700...` passed ten top-level checks, including the separate
+17- and 18-check negative groups. Both originals are archived. A new 615-byte
+phone seed, digest `bb527d9a...`, was produced by the frozen core `b0cccc3c`
+vault executable, with the original `a1b6ff4` source/build receipt and actual
+producer wrapper separately bound. This closes the new seed's producer chain;
+it does not change the r4 seed's historical provenance limit.
+
+The first r5b phone attempt selected that exact seed through ordinary SAF and
+returned `operation_failed`, before any master-password entry. M01 remains
+failed, and no phone CredentialManager create/get result has been established.
+This differs from r4's `unsafe_directory` observation. The frozen candidate's
+generic error does not reveal the exception class or failing stage, so a cause
+has not yet been established. Its host checks do not override the phone failure.
+
 The archived r4 packet contains the complete eighteen-case ledger, cleanup and
 correction receipts, a twenty-four-attempt index and five actual QA source
 files. It does not contain every original inline wrapper's complete argv.
@@ -219,6 +235,33 @@ provenance. It does not claim a password-path read in that later observation.
 | --- | --- | --- |
 | Autofill candidate 5 provider APK | `5c643afa5a08c6e8dd0baf751fe56dadf0f66947284d119d2da7051f4ab88ff8` | Build/decoded manifest and 12 host format checks; its r6 phone profile failed after 1/12 checks. |
 | Passkey r4 provider APK | `e96218bc0ab1c228120471d5168a336e6b526bfd5e39e1a0a533335300d7c6e8` | Build/decoded manifest and 10 host checks; phone import failed before any credential creation, with all eighteen cases retained. |
+| Passkey r5b provider APK | `9985457ba13ddef5c286c6017d6c675cb0e64bafa97f119516a3fc4fcce5fc3a` | Separately fixed source/build and 10 host checks; its first ordinary-SAF phone import returned `operation_failed` before password entry. |
+
+### Case-bound synthetic reset helper
+
+The separate `passkey_reset_provider.py` helper is frozen at SHA-256
+`2a21f7bcc013abab41f3eba38f612afb6ec869933aee438053a7a5abc81cf48b`.
+It supports only the reset portions of M05 then G11, once each, after checking
+actual ordinary-SAF backup observations, the current RP key/counter, the exact
+owned APK, all three settings and a nonempty old provider PID. The latest
+recovery backup and G11's historical stale input are separately bound.
+
+Internal review found that the first version could retain a success-looking
+result after its directory fsync failed and the failure diagnostic could not be
+written. The corrected helper requires a matching completion witness created
+only after the result's file and directory synchronization return successfully.
+Recovery re-syncs an existing witness; it never creates a missing witness or
+repeats an uncertain `pm clear`. Missing, failed or mismatched prior records
+fence both cases.
+
+The author's **46/46 host-only checks** were independently rerun internally,
+with subprocess and HTTP calls disabled. Two targeted regressions leave the
+success-looking file visible after the real atomic-write rename and inject
+either a second write failure or a simulated in-process termination. Both
+prevent later resets. This is fault injection, not an actual phone or power-loss
+test. The original 44-check report, first source, correction diff and internal
+review are archived. The helper confirms only a reset step; ordinary restore,
+subsequent authentication and each complete phone case need separate evidence.
 
 All mobile material is synthetic. The device QA driver enters synthetic
 passwords through real EditText controls, with a temporary value in the

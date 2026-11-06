@@ -1,0 +1,38 @@
+{
+  "case_passed": false,
+  "correction": "A completion witness is created only after result file and directory fsync return successfully. Recovery requires hash-bound intent, result and witness, and re-syncs the existing witness through a validated file handle and parent directory. It never creates a missing witness or repeats pm clear.",
+  "driver_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+  "finding": "A result visible after rename but with failed directory fsync could be accepted after the failure diagnostic also failed or the process terminated before writing it.",
+  "helper_sha256": "2a21f7bcc013abab41f3eba38f612afb6ec869933aee438053a7a5abc81cf48b",
+  "independent_external_security_review": false,
+  "input_contract_review": "A separate internal reviewer checked the actual SAF/RP input contract. Actual device observations are still required.",
+  "limited_execution_review": "Exact frozen helper admitted for the synthetic M05 then G11 reset steps only, subject to all real input checks. No automatic redispatch after unknown outcome.",
+  "phone_reset_executed_by_root": false,
+  "physical_crash_test": false,
+  "physical_device_migration": false,
+  "previous_helper_sha256": "6c938dd1f0a9cad41a48db12ea0a80282d9123d5d9f48cf9f249fdf5c31e6dc0",
+  "production_qualified": false,
+  "root_reviewed": [
+    "v1 full input, history, execution, filesystem guard and CLI paths",
+    "complete v1-to-v2 source diff",
+    "two precise failure regressions and unchanged positive M05-to-G11 sequence"
+  ],
+  "root_test_execution": {
+    "adb_calls": 0,
+    "argv": [
+      "python3",
+      "-B",
+      "qa/personal_credentials/passkey_reset_provider.py",
+      "--self-test",
+      "--driver",
+      "qa/personal_credentials/passkey_live.py"
+    ],
+    "exit_code": 0,
+    "network_calls": 0,
+    "passed": 46,
+    "same_author_test_suite_independently_executed": true,
+    "subprocess_and_http_disabled": true
+  },
+  "schema": 1,
+  "scope": "internal_source_review_and_host_only_regression_execution"
+}

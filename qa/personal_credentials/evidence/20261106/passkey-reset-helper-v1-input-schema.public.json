@@ -1,0 +1,138 @@
+{
+  "backup_rules": "Observe ordinary SAF export with unchanged RP before/after. The current RP credential/key/count must still equal that export. A same-SHA copy may use another allowed leaf in the same run directory. G11 requires a NEW current export after M05; its separate stale input must match M05's actual prior backup digest/length/credential and have a strictly older counter. No counter editing.",
+  "case_filenames": {
+    "G11": {
+      "checkpoint": "provider-reset-G11-checkpoint.private.json",
+      "intent": "provider-reset-G11-intent.private.json",
+      "result": "provider-reset-G11-result.public.json"
+    },
+    "M05": {
+      "checkpoint": "provider-reset-M05-checkpoint.private.json",
+      "intent": "provider-reset-M05-intent.private.json",
+      "result": "provider-reset-M05-result.public.json"
+    }
+  },
+  "checkpoint_G11": {
+    "backup_receipt_file": "g11-current-backup.private.json",
+    "backup_receipt_sha256": "ACTUAL_FILE_SHA256",
+    "build_receipt_sha256": "FROZEN_BUILD_SHA256",
+    "case_id": "G11",
+    "created_unix_ns": "ACTUAL_INTEGER",
+    "credential": {
+      "credential_id": "FROM_ACTUAL_RP_STATE",
+      "flags": "ACTUAL_INTEGER_13_OR_29",
+      "public_key_sha256": "FROM_ACTUAL_RP_STATE",
+      "sign_count": "ACTUAL_POSITIVE_INTEGER"
+    },
+    "device_sha256": "FROM_RUN_JOURNAL",
+    "prior_reset_result_sha256": "ACTUAL_M05_RESET_RESULT_SHA256",
+    "profile_public_sha256": "79632f9c91877bdcec9285fe7b893196e1029008d7185cf0a2618dc158bb1c9f",
+    "profile_source_sha256": "5e21b66be609f539ca7e6945752b66974933ac11639e7b0b9ccb6751a7ce5400",
+    "provider_apk_sha256": "FROZEN_PROVIDER_APK_SHA256",
+    "recovery_backup": {
+      "bytes": "ACTUALLY_OBSERVED_INTEGER",
+      "device_path": "/sdcard/Download/HeptaBao-Passkey-QA-20261106-r5b/heptabao-passkey-latest-recovery.hbv",
+      "sha256": "ACTUAL_CURRENT_RECOVERY_SHA256_DIFFERENT_FROM_STALE_INPUT"
+    },
+    "reset_id": "G11-reset-1",
+    "rp_snapshot_file": "g11-rp-before.private.json",
+    "rp_snapshot_sha256": "ACTUAL_FILE_SHA256",
+    "rp_source_sha256": "386de84bb5335f21998a000b4a1267eaa17fadbde1e1753d5df1c30325709a63",
+    "schema": 1,
+    "scope": "same_device_synthetic_provider_reset",
+    "stale_input": {
+      "backup": {
+        "bytes": "ACTUALLY_OBSERVED_INTEGER",
+        "device_path": "/sdcard/Download/HeptaBao-Passkey-QA-20261106-r5b/heptabao-passkey-stale-input.hbv",
+        "sha256": "ACTUALLY_OBSERVED_SHA256"
+      },
+      "credential": "EXACT_M05_PRE_RESET_PUBLIC_CREDENTIAL_WITH_OLDER_COUNTER",
+      "source_reset_result_sha256": "ACTUAL_M05_RESET_RESULT_SHA256"
+    }
+  },
+  "checkpoint_M05": {
+    "backup_receipt_file": "m04-backup-verified.private.json",
+    "backup_receipt_sha256": "ACTUAL_FILE_SHA256",
+    "build_receipt_sha256": "FROZEN_BUILD_SHA256",
+    "case_id": "M05",
+    "created_unix_ns": "ACTUAL_INTEGER",
+    "credential": {
+      "credential_id": "FROM_ACTUAL_RP_STATE",
+      "flags": "ACTUAL_INTEGER_13_OR_29",
+      "public_key_sha256": "FROM_ACTUAL_RP_STATE",
+      "sign_count": "ACTUAL_POSITIVE_INTEGER"
+    },
+    "device_sha256": "FROM_RUN_JOURNAL",
+    "prior_reset_result_sha256": null,
+    "profile_public_sha256": "79632f9c91877bdcec9285fe7b893196e1029008d7185cf0a2618dc158bb1c9f",
+    "profile_source_sha256": "5e21b66be609f539ca7e6945752b66974933ac11639e7b0b9ccb6751a7ce5400",
+    "provider_apk_sha256": "FROZEN_PROVIDER_APK_SHA256",
+    "recovery_backup": {
+      "bytes": "ACTUALLY_OBSERVED_INTEGER",
+      "device_path": "/sdcard/Download/HeptaBao-Passkey-QA-20261106-r5b/heptabao-passkey-backup.hbv",
+      "sha256": "ACTUALLY_OBSERVED_SHA256"
+    },
+    "reset_id": "M05-reset-1",
+    "rp_snapshot_file": "m05-rp-before.private.json",
+    "rp_snapshot_sha256": "ACTUAL_FILE_SHA256",
+    "rp_source_sha256": "386de84bb5335f21998a000b4a1267eaa17fadbde1e1753d5df1c30325709a63",
+    "schema": 1,
+    "scope": "same_device_synthetic_provider_reset",
+    "stale_input": null
+  },
+  "driver_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+  "fence_rules": "Only M05 then G11, one reset each. Any existing unknown, incomplete, failed, or malformed reset record fences both cases; no case-ID change or automatic repeat resolves it.",
+  "file_rules": "All JSON evidence: single safe filename in root; mode0600, same owner, ordinary non-symlink single-link file. Existing journal and prior reset records are never modified.",
+  "observed_backup_receipt_G11": {
+    "build_receipt_sha256": "FROZEN_BUILD_SHA256",
+    "completed_unix_ns": "ACTUAL_INTEGER",
+    "credential": {
+      "credential_id": "FROM_ACTUAL_RP_STATE",
+      "flags": "ACTUAL_INTEGER_13_OR_29",
+      "public_key_sha256": "FROM_ACTUAL_RP_STATE",
+      "sign_count": "ACTUAL_POSITIVE_INTEGER"
+    },
+    "device_sha256": "FROM_RUN_JOURNAL",
+    "observed_backup": {
+      "bytes": "ACTUALLY_OBSERVED_INTEGER",
+      "device_path": "/sdcard/Download/HeptaBao-Passkey-QA-20261106-r5b/heptabao-passkey-latest-recovery.hbv",
+      "sha256": "ACTUAL_CURRENT_RECOVERY_SHA256_DIFFERENT_FROM_STALE_INPUT"
+    },
+    "ordinary_saf_export_observed": "TRUE_ONLY_AFTER_REAL_OBSERVATION",
+    "provider_apk_sha256": "FROZEN_PROVIDER_APK_SHA256",
+    "provider_write_readback_verified": "TRUE_ONLY_AFTER_REAL_OBSERVATION",
+    "rp_after_sha256": "SAME_ACTUAL_RP_SNAPSHOT_FILE_SHA256",
+    "rp_before_sha256": "SAME_ACTUAL_RP_SNAPSHOT_FILE_SHA256",
+    "schema": 1,
+    "scope": "observed_ordinary_saf_backup_for_reset",
+    "source_case_id": "G11_RECOVERY_EXPORT",
+    "synthetic_directory_initial_absent": "TRUE_ONLY_FROM_PRE_ACTION_DOCUMENT_JOURNAL"
+  },
+  "observed_backup_receipt_M05": {
+    "build_receipt_sha256": "FROZEN_BUILD_SHA256",
+    "completed_unix_ns": "ACTUAL_INTEGER",
+    "credential": {
+      "credential_id": "FROM_ACTUAL_RP_STATE",
+      "flags": "ACTUAL_INTEGER_13_OR_29",
+      "public_key_sha256": "FROM_ACTUAL_RP_STATE",
+      "sign_count": "ACTUAL_POSITIVE_INTEGER"
+    },
+    "device_sha256": "FROM_RUN_JOURNAL",
+    "observed_backup": {
+      "bytes": "ACTUALLY_OBSERVED_INTEGER",
+      "device_path": "/sdcard/Download/HeptaBao-Passkey-QA-20261106-r5b/heptabao-passkey-backup.hbv",
+      "sha256": "ACTUALLY_OBSERVED_SHA256"
+    },
+    "ordinary_saf_export_observed": "TRUE_ONLY_AFTER_REAL_OBSERVATION",
+    "provider_apk_sha256": "FROZEN_PROVIDER_APK_SHA256",
+    "provider_write_readback_verified": "TRUE_ONLY_AFTER_REAL_OBSERVATION",
+    "rp_after_sha256": "SAME_ACTUAL_RP_SNAPSHOT_FILE_SHA256",
+    "rp_before_sha256": "SAME_ACTUAL_RP_SNAPSHOT_FILE_SHA256",
+    "schema": 1,
+    "scope": "observed_ordinary_saf_backup_for_reset",
+    "source_case_id": "M04",
+    "synthetic_directory_initial_absent": "TRUE_ONLY_FROM_PRE_ACTION_DOCUMENT_JOURNAL"
+  },
+  "rp_snapshot": "Exact bounded JSON response from fixed http://127.0.0.1:38491/state, including ok; no private key or password.",
+  "scope": "input_schema_only_not_device_evidence"
+}

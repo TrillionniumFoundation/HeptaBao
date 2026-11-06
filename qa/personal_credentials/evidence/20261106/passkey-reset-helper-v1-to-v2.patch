@@ -1,0 +1,212 @@
+--- passkey_reset_provider.v1.py
++++ passkey_reset_provider.v2.py
+@@ -9,6 +9,9 @@
+ All reset intents for this run/provider are checked before either case. A second
+ case is admitted only after a complete, hash-bound success for the first case,
+ with a new current recovery backup. The G11 stale input is a separate artifact.
++The result alone is provisional: a separate witness is created only after its
++file and directory fsyncs succeed. Recovery re-syncs an existing valid witness;
++it never repeats pm clear or manufactures a witness for an uncertain result.
+ 
+ All input JSON files are private, ordinary files in --root. See --schema for the
+ exact checkpoint/backup receipt shapes. --self-test performs no ADB or network IO.
+@@ -101,7 +104,12 @@
+     return (prefix + "-checkpoint.private.json", prefix + "-intent.private.json", prefix + "-result.public.json")
+ 
+ 
+-def private_read(path, maximum=MAX_JSON, code_source=False):
++def completion_name(case_id):
++    require(case_id in CASES, "unsupported_reset_case")
++    return "provider-reset-" + case_id + "-completion.public.json"
++
++
++def private_read(path, maximum=MAX_JSON, code_source=False, durable=False):
+     require(path.is_absolute() and str(path) == str(path.resolve(strict=True)), "unsafe_input_path")
+     fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+     try:
+@@ -117,6 +125,15 @@
+                 (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns)
+                 == (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns),
+                 "input_changed_during_read")
++        if durable:
++            # Re-establish persistence of an already present witness, using the
++            # same validated file handle. This never creates a missing witness.
++            os.fsync(fd)
++            named = path.lstat()
++            require((named.st_dev, named.st_ino) == (after.st_dev, after.st_ino), "witness_path_changed")
++            parent = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
++            try: os.fsync(parent)
++            finally: os.close(parent)
+         return raw
+     finally:
+         os.close(fd)
+@@ -201,26 +218,38 @@
+                 "rp_snapshot_sha256", "rp_key_and_counter_unchanged", "credential", "journal_unchanged",
+                 "reset_completed", "synthetic_only", "case_passed", "physical_device_migration",
+                 "production_qualified", "completed_unix_ns"}
++COMPLETION_KEYS = {"schema", "scope", "case_id", "reset_id", "device_sha256", "provider_package",
++                   "intent_sha256", "result_sha256", "result_persisted_before_witness", "completed_unix_ns"}
+ 
+ 
+ def reset_history(live, root, case_id, build, build_sha):
+     """Unknown/missing/failed prior outcomes fence both cases, not only one ID."""
+-    allowed = {name for case in CASES for name in names(case)}
++    allowed = {name for case in CASES for name in (*names(case), completion_name(case))}
+     require(all(not path.name.startswith("provider-reset-") or path.name in allowed
+                 for path in root.iterdir()), "unknown_reset_record_reconcile_first")
+     previous = {}
+     for case in CASES:
+         _, intent_name, result_name = names(case)
+-        intent_path, result_path = root / intent_name, root / result_name
+-        present = (os.path.lexists(intent_path), os.path.lexists(result_path))
+-        if present == (False, False):
++        intent_path, result_path, complete_path = root / intent_name, root / result_name, root / completion_name(case)
++        present = (os.path.lexists(intent_path), os.path.lexists(result_path), os.path.lexists(complete_path))
++        if present == (False, False, False):
+             continue
+-        require(present == (True, True), "unresolved_prior_reset_fences_provider")
++        require(present == (True, True, True), "unresolved_prior_reset_fences_provider")
+         raw = private_read(intent_path)
+         intent, result_raw = unique_json(raw), private_read(result_path)
+         result = unique_json(result_raw)
++        complete = unique_json(private_read(complete_path, durable=True))
+         exact(intent, INTENT_KEYS, "invalid_prior_reset_intent")
+         exact(result, SUCCESS_KEYS, "unresolved_prior_reset_fences_provider")
++        exact(complete, COMPLETION_KEYS, "invalid_reset_completion_witness")
++        require(type(complete["schema"]) is int and complete["schema"] == 1
++                and complete["scope"] == "reset_result_durability_witness"
++                and complete["case_id"] == case and complete["reset_id"] == case + "-reset-1"
++                and complete["device_sha256"] == live.DEVICE_SHA256 and complete["provider_package"] == PROVIDER
++                and complete["intent_sha256"] == sha(raw) and complete["result_sha256"] == sha(result_raw)
++                and complete["result_persisted_before_witness"] is True
++                and type(complete["completed_unix_ns"]) is int and type(result["completed_unix_ns"]) is int
++                and complete["completed_unix_ns"] >= result["completed_unix_ns"], "invalid_reset_completion_witness")
+         exact(intent["input_sha256"], INPUT_KEYS, "invalid_prior_reset_binding")
+         require(all(digest(value) for value in intent["input_sha256"].values())
+                 and intent["input_sha256"]["driver"] == DRIVER_SHA256
+@@ -466,6 +495,16 @@
+                   "reset_completed": True, "synthetic_only": True, "case_passed": False, "physical_device_migration": False,
+                   "production_qualified": False, "completed_unix_ns": time.time_ns()}
+         live.atomic(root / result_name, result)
++        # Only reaching here proves the result's atomic() returned after both
++        # file and directory fsync. A visible result from a failed atomic()
++        # cannot reach this witness creation, even if failure reporting fails.
++        result_raw = private_read(root / result_name)
++        require(unique_json(result_raw) == result, "reset_result_readback_changed")
++        completion = {"schema": 1, "scope": "reset_result_durability_witness", "case_id": case_id,
++                      "reset_id": checkpoint["reset_id"], "device_sha256": live.DEVICE_SHA256,
++                      "provider_package": PROVIDER, "intent_sha256": intent_sha, "result_sha256": sha(result_raw),
++                      "result_persisted_before_witness": True, "completed_unix_ns": time.time_ns()}
++        live.atomic(root / completion_name(case_id), completion)
+         return result
+     except Exception:
+         # Preserve the original intent. Even a pre-dispatch failure is fenced;
+@@ -476,10 +515,9 @@
+                    "intent_sha256": intent_sha, "dispatch_attempted": dispatched,
+                    "error": "reset_postconditions_unconfirmed_reconcile_before_retry" if dispatched else "reset_pre_dispatch_changed_reconcile_before_retry",
+                    "reset_completed": False, "production_qualified": False}
+-        # atomic() can fail after rename (for example, directory fsync). Replace
+-        # this call's provisional success with failure rather than trusting a
+-        # visible but unacknowledged success file on a later case. If this write
+-        # itself fails, preserve the intent and return failure to the operator.
++        # This diagnostic is best effort. Safety does not depend on replacing a
++        # provisional success: no completion witness exists for an uncertain
++        # result, and all later cases reject that incomplete record set.
+         live.atomic(root / result_name, failure)
+         raise
+ 
+@@ -513,12 +551,13 @@
+     g11_receipt = copy.deepcopy(receipt)
+     g11_receipt.update(source_case_id="G11_RECOVERY_EXPORT", observed_backup=g11["recovery_backup"])
+     return {"scope": "input_schema_only_not_device_evidence", "driver_sha256": DRIVER_SHA256,
+-            "case_filenames": {case: dict(zip(("checkpoint", "intent", "result"), names(case))) for case in CASES},
++            "case_filenames": {case: dict(zip(("checkpoint", "intent", "result", "completion"),
++                                              (*names(case), completion_name(case)))) for case in CASES},
+             "checkpoint_M05": checkpoint, "observed_backup_receipt_M05": receipt,
+             "checkpoint_G11": g11, "observed_backup_receipt_G11": g11_receipt,
+             "rp_snapshot": "Exact bounded JSON response from fixed http://127.0.0.1:38491/state, including ok; no private key or password.",
+             "backup_rules": "Observe ordinary SAF export with unchanged RP before/after. The current RP credential/key/count must still equal that export. A same-SHA copy may use another allowed leaf in the same run directory. G11 requires a NEW current export after M05; its separate stale input must match M05's actual prior backup digest/length/credential and have a strictly older counter. No counter editing.",
+-            "fence_rules": "Only M05 then G11, one reset each. Any existing unknown, incomplete, failed, or malformed reset record fences both cases; no case-ID change or automatic repeat resolves it.",
++            "fence_rules": "Only M05 then G11, one reset each. Prior success requires a matching completion witness written only after result file+directory fsync returned. An existing witness is re-synced through its validated descriptor and parent before use; a missing witness is never manufactured. Any unknown, incomplete, failed, or malformed record fences both cases; no case-ID change or automatic pm clear repeat resolves it.",
+             "file_rules": "All JSON evidence: single safe filename in root; mode0600, same owner, ordinary non-symlink single-link file. Existing journal and prior reset records are never modified."}
+ 
+ 
+@@ -600,7 +639,11 @@
+             if self.fault == "rp_after": self.rp["credentials"][0]["sign_count"] += 1
+             return subprocess.CompletedProcess([], 0, b"Success\n", b"")
+ 
+-    def trial(name, change=None, expected_clear=0, success=False, intent_failure=False, repeat=False, result_failure=False):
++    class SimulatedTermination(BaseException):
++        """Stop before execute_reset's Exception handler, without a real child."""
++
++    def trial(name, change=None, expected_clear=0, success=False, intent_failure=False, repeat=False,
++              result_failure=False, double_failure=False, simulated_termination=False):
+         with tempfile.TemporaryDirectory(prefix="passkey-reset-stub-") as directory:
+             root = Path(directory); d = FakeDevice(root)
+             j, c, m, r = map(copy.deepcopy, (journal, checkpoint, m04, rp))
+@@ -613,23 +656,51 @@
+                 if intent_failure:
+                     with mock.patch.object(live, "atomic", side_effect=OSError("synthetic_fsync_failure")):
+                         execute_reset(live, d, root, build, build_sha, raw, c, m, r, hashes, lambda: copy.deepcopy(d.rp))
+-                elif result_failure:
++                elif result_failure or double_failure or simulated_termination:
+                     real_atomic = live.atomic
++                    real_fsync = os.fsync
++                    failure_writes = []
++                    def fail_directory_fsync(fd):
++                        if stat.S_ISDIR(os.fstat(fd).st_mode):
++                            raise OSError("synthetic_result_directory_fsync_failure")
++                        return real_fsync(fd)
+                     def uncertain_result(path, value):
+-                        real_atomic(path, value)
+                         if path.name == names("M05")[2] and value.get("ok") is True:
+-                            raise OSError("synthetic_failure_after_result_rename")
++                            if double_failure or simulated_termination:
++                                # Exercise the actual atomic ordering: its file
++                                # fsync and rename run; its directory fsync fails.
++                                with mock.patch.object(os, "fsync", side_effect=fail_directory_fsync):
++                                    try: real_atomic(path, value)
++                                    except OSError:
++                                        if simulated_termination:
++                                            raise SimulatedTermination() from None
++                                        raise
++                            else:
++                                real_atomic(path, value)
++                                raise OSError("synthetic_failure_after_result_rename")
++                        elif path.name == names("M05")[2] and value.get("ok") is False and double_failure:
++                            failure_writes.append("attempted_before_replace")
++                            raise OSError("synthetic_failure_diagnostic_write_failure")
++                        else:
++                            real_atomic(path, value)
+                     with mock.patch.object(live, "atomic", side_effect=uncertain_result):
+                         execute_reset(live, d, root, build, build_sha, raw, c, m, r, hashes, lambda: copy.deepcopy(d.rp))
+                 else:
+                     result = execute_reset(live, d, root, build, build_sha, raw, c, m, r, hashes, lambda: copy.deepcopy(d.rp))
+                 assert success and result["ok"] and not result["case_passed"]
+-            except (Failed, live.Failed, OSError):
++            except (Failed, live.Failed, OSError, SimulatedTermination):
+                 assert not success, name
+             assert d.clear_calls == expected_clear, name
+             if expected_clear and not success:
+                 failure = unique_json((root / names("M05")[2]).read_bytes())
+-                assert failure["ok"] is False and failure["reset_completed"] is False
++                if double_failure or simulated_termination:
++                    # A complete-looking success really remains on disk. It
++                    # must not become a reusable success without its witness.
++                    assert failure["ok"] is True and failure["reset_completed"] is True
++                    assert not os.path.lexists(root / completion_name("M05"))
++                    assert failure_writes == (["attempted_before_replace"] if double_failure else [])
++                else:
++                    assert failure["ok"] is False and failure["reset_completed"] is False
+                 for case in CASES:
+                     try: reset_history(live, root, case, build, build_sha)
+                     except Failed: pass
+@@ -652,6 +723,8 @@
+     trial("pid_transport_failure_denied", lambda d,j,c,m,r: setattr(d, "fault", "pid_query_error"))
+     trial("intent_persistence_failure_prevents_clear", intent_failure=True)
+     trial("published_result_fsync_error_remains_fenced", expected_clear=1, result_failure=True)
++    trial("result_dir_fsync_and_failure_write_both_fail_fences_provider", expected_clear=1, double_failure=True)
++    trial("termination_after_result_rename_before_failure_write_fences_provider", expected_clear=1, simulated_termination=True)
+     trial("state_change_after_intent_prevents_clear", lambda d,j,c,m,r: setattr(d, "fault", "changed_before_dispatch"))
+     trial("existing_intent_never_repeats_clear", repeat=True)
+     for fault in ("clear_nonzero", "clear_extra_output", "old_pid_remains", "settings_after", "apk_after", "rp_after"):
