@@ -1349,6 +1349,138 @@
       "sha256": "a2a2d98267afc4eb64f457722cd16c2846b60e9fd29b28f79bc92af3bf224f19",
       "bytes": 84076,
       "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "ha-cleanup-r1-remote-originals.tar.gz",
+      "bytes": 88964,
+      "sha256": "346e7cbd1e65149e1ae6a18c66e60653988c362d5a556c06c2cb5c41776b5de6",
+      "transformation": "Byte-identical original remote public packet, recovered with pinned versions, EOF, exact length and SHA-256; retained failures are not converted to passing results."
+    },
+    {
+      "file": "ha-snapshot-r2-remote-originals.tar.gz",
+      "bytes": 105047,
+      "sha256": "7eedfc768abe52b4f5f849a6ead1e8477e2c1a8b0b2d2d507c4749917129c9c7",
+      "transformation": "Byte-identical original remote public packet, recovered with pinned versions, EOF, exact length and SHA-256; retained failures are not converted to passing results."
+    },
+    {
+      "file": "passkey-r7-phone-originals.tar.gz",
+      "bytes": 203579,
+      "sha256": "27847e9bf8d72245eaac9255fcd4703f6dec87b421f22b741bafd641d32a96dd",
+      "transformation": "Byte-identical original remote public packet, recovered with pinned versions, EOF, exact length and SHA-256; retained failures are not converted to passing results."
+    },
+    {
+      "file": "passkey-r8-ingress-originals.tar.gz",
+      "bytes": 197320,
+      "sha256": "15f917a77be26b249984b18177532eb2ee5767ba06eff8e3a8c17a71b10a7ca2",
+      "transformation": "Byte-identical original remote public packet, recovered with pinned versions, EOF, exact length and SHA-256; retained failures are not converted to passing results."
+    },
+    {
+      "file": "passkey-r7-controller-originals.tar.gz",
+      "bytes": 46216,
+      "sha256": "b5ec268c28c473abc4be2c69c36b1bb97ba0ac901f5258660e2ba539a30e8fbe",
+      "transformation": "Byte-identical original remote public packet, recovered with pinned versions, EOF, exact length and SHA-256; retained failures are not converted to passing results."
+    },
+    {
+      "file": "passkey-r7-peer-review-originals.tar.gz",
+      "bytes": 87298,
+      "sha256": "92839240da30becc16818011764dc2040e3932df8d63b498a4a4b7028d610cc0",
+      "transformation": "Byte-identical original remote public packet, recovered with pinned versions, EOF, exact length and SHA-256; retained failures are not converted to passing results."
+    },
+    {
+      "file": "passkey-r7-review-supplement-originals.tar.gz",
+      "bytes": 3985,
+      "sha256": "138fb164fa9107be52afa8ffd3dab66691d82e351b9a3240fd0c92f9fbf7ff06",
+      "transformation": "Byte-identical original remote public packet, recovered with pinned versions, EOF, exact length and SHA-256; retained failures are not converted to passing results."
+    },
+    {
+      "file": "broker-upgrade-r1-remote-originals.tar.gz",
+      "bytes": 13803,
+      "sha256": "45573d50fa424c8b79990b648c354702dffcdd5198f96ad258040af12868802e",
+      "transformation": "Byte-identical original remote public packet, recovered with pinned versions, EOF, exact length and SHA-256; retained failures are not converted to passing results."
+    },
+    {
+      "file": "passkey-r7-phone-cases.public.json",
+      "bytes": 90108,
+      "sha256": "45fb6826947ab46a0bf90cbdf86f9861fa1ad588f425aaadbda8a2b79a47dca5",
+      "transformation": "Byte-identical original public result also present in the corresponding recovered remote packet; qualification scope remains as recorded."
+    },
+    {
+      "file": "broker-upgrade-r1.public.json",
+      "bytes": 43769,
+      "sha256": "94b784a7e9cbcffc826d71a94b0cd1fabbd8f524999a1eb214b03366e6a6f5f0",
+      "transformation": "Byte-identical original public result also present in the corresponding recovered remote packet; qualification scope remains as recorded."
+    },
+    {
+      "file": "ha-snapshot-r2-real-profiles.public.json",
+      "bytes": 3242,
+      "sha256": "9acca09fb8f4fd32e6b58fb73b6fd094747a1e20ae221521624879f928fb01e2",
+      "transformation": "Byte-identical original public result also present in the corresponding recovered remote packet; qualification scope remains as recorded."
+    },
+    {
+      "file": "ci-2280-terminal-7e77-core-recovered-originals.tar.gz",
+      "bytes": 473804,
+      "sha256": "5e6f3041886d12110e66557e3765d8d1f3ae4d92f94d90b6235e5f4a32ef38fa",
+      "transformation": "New container assembled after executor replacement from preserved decoded GitHub log strings and original receipt envelopes; all three 7e77 core receipt hashes match. Full 2280 failures and in-progress 7e77 observations remain distinct."
+    },
+    {
+      "file": "ci-7e77-result.public.json",
+      "bytes": 1979,
+      "sha256": "c932d75fb40b03ea92fb6410ccb6a27e43aac044c9ebdb9106f45de412e55742",
+      "transformation": "Reconstructed from the original GitHub job-log JSON envelope using Python JSON number parsing and original formatting; exact original SHA-256 verified."
+    },
+    {
+      "file": "workspace-recovery-originals-and-limits.tar.gz",
+      "bytes": 800235,
+      "sha256": "2e553f225487eff204f4fca56b4ec4d0df69e0536503ad59aa9154af1dcfadab",
+      "transformation": "New recovery report with original pinned binary-read envelopes, restored source hashes, complete remote-packet member verification and explicit unavailable local-only originals. Recovery is not product qualification."
+    },
+    {
+      "file": "recovered-workflow-guards-new-run-originals.tar.gz",
+      "bytes": 2578,
+      "sha256": "76a3c7d6c85fe5719f641ad8a13aa3197fdd9272703b27f580897c7c8e0090c7",
+      "transformation": "New independent integration execution of the four added workflow commands on recovered exact r7/r8 reset/input sources; 49/20/55/20 author-defined host checks. Original outputs are new and do not reconstruct unavailable older runs."
+    },
+    {
+      "file": "mac-r2-r4-available-originals.tar.gz",
+      "bytes": 148917,
+      "sha256": "7a2fd970339a078c09a9092c9192cd85c018ed60d0ab434d8ce82dd03d0036a4",
+      "transformation": "New container of fifteen recovered exact Mac source/cache/failed-run originals plus retained tool-object metadata. No whole original log packet or successful Mac qualification is claimed."
+    },
+    {
+      "file": "android-c6-r9-available-originals.tar.gz",
+      "bytes": 63230,
+      "sha256": "241871ce5df0bd4161d68703554d66cae665ca46891a739ea1ec6f0cd4ad165f",
+      "transformation": "New container for eleven recovered r9 originals, the exact original carrier and root independent release observations. Missing local-only supplementary files are explicit; r9 remains failed after 1/12."
+    },
+    {
+      "file": "android-c6-r9-phone.public.json",
+      "bytes": 14836,
+      "sha256": "3c45a72bfe64100433ade75e598897335488802af5faa82636cab046669757f4",
+      "transformation": "Byte-identical original c6/QA12 r9 failed phone result recovered from pinned remote bytes; the original twelve-case denominator and all authorization time limits remain unchanged."
+    },
+    {
+      "file": "android-qa13-host-originals.tar.gz",
+      "bytes": 81951,
+      "sha256": "45ce47e4d660f40a08594404a6611ad5d41914846322bf6c778fc68b675251bc",
+      "transformation": "Byte-identical 34-member QA13 author packet, with all 33 member hashes verified; preserves held 100-check candidate, five actual counterexample failures and new 104-check candidate. Host evidence only, not a successful phone result."
+    },
+    {
+      "file": "ha-snapshot-r3-real-profiles.public.json",
+      "bytes": 6683,
+      "sha256": "42858ba2fe2b2441600a52eb584f24eea50ef7c806d0a40f18ff7341bb7c5ddb",
+      "transformation": "Byte-identical new r3 three-profile summary, cross-checked against every original execution/report digest and actual replay frontier. This fixes only the declared c27/QA combination, not the entire PR or full replacement gate."
+    },
+    {
+      "file": "ha-snapshot-r3-originals.tar.gz",
+      "bytes": 172714,
+      "sha256": "f53624030dbdb697120c7a8be6e0949a393de224685c67b1b0600dc28b3143a4",
+      "transformation": "Byte-identical newly completed original qualification/review packet; every manifest member length and SHA-256 verified, with original requests, source identities, outputs and explicit scope limits retained."
+    },
+    {
+      "file": "android-qa13-peer-review-originals.tar.gz",
+      "bytes": 44256,
+      "sha256": "546419bbabda93a8cdce6619d128082797663e9bfa306889ceed58d2d14b7469",
+      "transformation": "Byte-identical newly completed original qualification/review packet; every manifest member length and SHA-256 verified, with original requests, source identities, outputs and explicit scope limits retained."
     }
   ]
 }

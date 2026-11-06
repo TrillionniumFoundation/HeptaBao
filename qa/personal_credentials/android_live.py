@@ -320,6 +320,39 @@ def autofill_popup_metadata(focus, popup, parent, activities, final_focus, packa
             "oem_contract_requires_device_evidence": True}
 
 
+def _fixture_session(window, package):
+    # This WMS window/record/task/owner identity stays in memory. It is not the
+    # Android Autofill framework's internal session ID, which is never queried.
+    return window["window"], _activity_identity(window["activity"], package), window["owner"]
+
+
+def fixture_return_metadata(focus, window, activities, final_focus, package, expected_session=None):
+    """Bind the resumed fixture window, including the original session on return."""
+    identity = _activity_identity(focus["activity"], package) if focus["activity"] else None
+    if (identity is None or focus["focused_app_field_count"] != "one"
+            or focus["title"] != package + "/" + ACTIVITY
+            or window["window"] != focus["window"] or window["title"] != focus["title"]
+            or window["package"] != package):
+        raise FocusUnavailable("fixture_return_window_identity")
+    if (window["display"] != 0 or not window["visible"] or not window["onscreen"]
+            or window["task"] != identity[1] or window["parent"] is not None
+            or window["type"] not in {"BASE_APPLICATION", "APPLICATION", "1", "2"}
+            or window["owner"] < 10000):
+        raise FocusUnavailable("fixture_return_window_not_active")
+    if (_activity_identity(window["token"], package) != identity
+            or _activity_identity(window["activity"], package) != identity):
+        raise FocusUnavailable("fixture_return_activity_token")
+    _top_resumed_bound(activities, package, window["window"])
+    if final_focus != focus:
+        raise FocusUnavailable("fixture_return_focus_changed")
+    if expected_session is not None and _fixture_session(window, package) != expected_session:
+        raise FocusUnavailable("fixture_return_session_changed")
+    return {"available": True, "classification": "bound_fixture_activity", "display": 0,
+            "fixture_resumed": True, "focus_rechecked": True,
+            "resumed_evidence": "server_only_top_resumed_record",
+            "original_session_checked": expected_session is not None}
+
+
 def sha(data):
     return hashlib.sha256(data).hexdigest()
 
@@ -366,6 +399,9 @@ class Device:
         self.expected_fixture = None
         self.current_case = None
         self.tap_diagnostics = []
+        self.return_diagnostics = []
+        self.return_phase = "not_observed"
+        self._expected_fixture_session = None
         self._pi_identifiers = {}
         self._ui_parents = {}
         self._ui_started_ns = 0
@@ -597,12 +633,122 @@ class Device:
 
     def fixture(self, package=GOOD):
         if package not in {GOOD, DECOY}: raise Failed("fixture_out_of_scope")
+        self._expected_fixture_session = None
         self.shell("am", "force-stop", "--user", "0", package)
         launched = self.shell("am", "start", "--user", "0", "--display", "0", "-W", "-f", "0x10008000", "-n", package + "/" + ACTIVITY)
         if "Status: ok" not in launched or ("Activity: " + package + "/" + ACTIVITY) not in launched:
             raise Failed("fixture_activity_not_started")
         self.expected_fixture = package
         self.assert_fixture(self.wait(text="HeptaBao synthetic native login"))
+        # Capture the original window/token/task only at this existing case setup.
+        # Returning from authentication must never silently accept a new Activity.
+        self.return_phase = "bind_initial_fixture_session"
+        try:
+            _, session, _ = self._return_snapshot("fixture")
+        except FocusUnavailable:
+            raise Failed("initial_fixture_session_unavailable") from None
+        self._expected_fixture_session = session
+
+    def _return_snapshot(self, kind, expected_session=None):
+        package = self.expected_fixture
+        if package not in {GOOD, DECOY} or kind not in {"fixture", "popup"}:
+            raise FocusUnavailable("fixture_return_scope")
+        focus = _focus_snapshot(self.shell("dumpsys", "window"))
+        window = _window_details(self.shell("dumpsys", "window", "-a", focus["window"]), focus["window"])
+        if kind == "popup":
+            parent_id, _ = _popup_parent(focus, window, package)
+            parent = _window_details(self.shell("dumpsys", "window", "-a", parent_id), parent_id)
+            _bound_parent(focus, window, parent, package)
+        else:
+            parent = window
+        activities = self.shell("dumpsys", "activity", "top-resumed")
+        final_focus = _focus_snapshot(self.shell("dumpsys", "window"))
+        if kind == "popup":
+            metadata = autofill_popup_metadata(focus, window, parent, activities, final_focus, package)
+        else:
+            metadata = fixture_return_metadata(focus, window, activities, final_focus, package, expected_session)
+        session = _fixture_session(parent, package)
+        if expected_session is not None and session != expected_session:
+            raise FocusUnavailable("fixture_return_session_changed")
+        return focus, session, metadata
+
+    def _wait_return_surface(self, after_back=False):
+        # Metadata-only transition observation; never key into an unrecognized app.
+        deadline = time.monotonic() + 3
+        while True:
+            current = self.foreground()
+            # A slow successful query cannot extend the observation deadline.
+            if time.monotonic() >= deadline:
+                raise Failed("fixture_return_not_observed")
+            if current == (self.expected_fixture, ACTIVITY):
+                return current
+            if current == AUTOFILL_POPUP and not after_back:
+                return current
+            if current is not None and current != AUTOFILL_POPUP and not (
+                    not after_back and current == (PROVIDER, "org.heptabao.preview.AuthActivity")):
+                raise Failed("fixture_return_foreground_changed")
+            time.sleep(0.05)
+
+    def return_to_fixture(self, origin):
+        if origin not in {"after_auth_cancel", "after_auth_fill", "before_fixture_verification"}:
+            raise Failed("fixture_return_origin_out_of_scope")
+        event = {"origin": origin, "case": self.current_case, "back_command_count": 0,
+                 "sampling_is_not_case_proof": True, "result": "pending"}
+        self.return_diagnostics.append(event)
+        try:
+            self.return_phase = "await_return_surface"
+            if self._expected_fixture_session is None:
+                raise Failed("original_fixture_session_unavailable")
+            surface = self._wait_return_surface()
+            if surface == AUTOFILL_POPUP:
+                self.return_phase = "bind_return_popup_before_ui"
+                before, session, metadata = self._return_snapshot("popup", self._expected_fixture_session)
+                self.return_phase = "inspect_return_popup_presentation"
+                nodes = self.ui()
+                if any(node.get("text", "").casefold() == "fill synthetic login once" for node in nodes):
+                    raise Failed("cached_plaintext_dataset_visible")
+                menus = [node for node in nodes if node.get("resource-id") == PROVIDER + ":id/presentation_text"]
+                if (len(menus) != 1 or menus[0].get("package") != PROVIDER
+                        or menus[0].get("text", "").casefold() != "unlock heptabao locally"
+                        or menus[0].get("enabled") != "true"):
+                    raise Failed("fixture_return_popup_presentation_unrecognized")
+                self.return_phase = "recheck_return_popup_before_back"
+                latest, latest_session, metadata = self._return_snapshot("popup", session)
+                if latest != before or latest_session != session:
+                    raise FocusUnavailable("fixture_return_popup_changed")
+                elapsed_ms = (time.monotonic_ns() - self._ui_finished_ns) / 1e6
+                event["dump_end_to_back_start_ms"] = round(elapsed_ms)
+                event["focus_metadata_before_back"] = metadata
+                if elapsed_ms >= 1000:
+                    raise Failed("fixture_return_popup_sample_stale")
+                self.return_phase = "dismiss_bound_return_popup_once"
+                event["back_command_count"] = 1  # An uncertain input is never retried.
+                started = time.monotonic_ns()
+                self.shell("input", "keyevent", "KEYCODE_BACK")
+                event["back_command_completed"] = True
+                event["back_command_ms"] = round((time.monotonic_ns() - started) / 1e6)
+                self.return_phase = "observe_fixture_after_back"
+                self._wait_return_surface(after_back=True)
+                _, _, metadata = self._return_snapshot("fixture", session)
+                event["same_parent_session_after_back"] = True
+            else:
+                self.return_phase = "bind_direct_fixture_return"
+                _, _, metadata = self._return_snapshot("fixture", self._expected_fixture_session)
+            event["focus_metadata_after_return"] = metadata
+            self.return_phase = "observe_returned_fixture_title"
+            self.assert_fixture(self.wait(text="HeptaBao synthetic native login"))
+            self.return_phase = "recheck_fixture_identity_after_title"
+            _, _, metadata = self._return_snapshot("fixture", self._expected_fixture_session)
+            event["focus_metadata_after_title"] = metadata
+            event["result"] = "returned_to_original_fixture"
+            self.return_phase = "returned_to_original_fixture"
+            return event
+        except FocusUnavailable as error:
+            event["result"] = "refused"; event["reason"] = str(error)
+            raise Failed("fixture_return_identity_unavailable") from None
+        except Failed as error:
+            event["result"] = "refused"; event["reason"] = str(error)
+            raise
 
     def assert_fixture(self, node=None):
         component = self.foreground()
@@ -616,7 +762,9 @@ class Device:
         self.verify("Empty fields")
 
     def verify(self, expected):
-        # Dismiss a suggestion overlay; require an incremented counter, not a stale status label.
+        # Dismiss only a fully bound locked placeholder, after checking for plaintext.
+        # The verification still requires a newly incremented fixture counter.
+        self.return_to_fixture("before_fixture_verification")
         self.assert_fixture()
         self.tap(text="HeptaBao synthetic native login")
         before = self.wait(description="Fixture verification")
@@ -680,7 +828,7 @@ class Device:
             if time.monotonic() - unlock_started >= 18 or time.monotonic() - authentication_started >= 100:
                 raise Failed("cancel_check_could_be_expiry")
         self.tap(text="Cancel")
-        self.assert_fixture(self.wait(text="HeptaBao synthetic native login"))
+        self.return_to_fixture("after_auth_cancel")
         evidence = None
         if authentication_started is not None:
             elapsed = time.monotonic() - unlock_started; request_elapsed = time.monotonic() - authentication_started
@@ -869,7 +1017,7 @@ def main():
         case("wrong_master_refused", wrong_master)
         def login():
             device.authentication(); device.unlock(master); device.tap(text="Fill once")
-            device.wait(text="HeptaBao synthetic native login"); device.verify("Synthetic login accepted")
+            device.return_to_fixture("after_auth_fill"); device.verify("Synthetic login accepted")
             actual = device.assert_fixture()
             if actual != (GOOD, ACTIVITY): raise Failed("accepted_fixture_target_changed")
             return {"target": GOOD, "actual_activity": list(actual), "fixture_values": "Synthetic login accepted", "target_apk_sha256": build["artifacts"]["fixture-good"]["sha256"]}
@@ -962,7 +1110,8 @@ def main():
     except Failed as error:
         failure = str(error)
         report["failure_context"] = {"expected_control": device.last_wait, "public_ui": device.last_public_ui,
-                                     "focus_metadata": getattr(device, "last_focus_metadata", None)}
+                                     "focus_metadata": getattr(device, "last_focus_metadata", None),
+                                     "fixture_return_phase": device.return_phase}
         try:
             if device.package_hash(PROVIDER) == build["artifacts"]["provider"]["sha256"]:
                 report["failure_context"]["provider_events_before_diagnostic_activity"] = device.provider_events()
@@ -985,6 +1134,7 @@ def main():
         if report["missing_cases"]: failure = failure or "incomplete_case_inventory"
         report["finished_unix_ns"] = time.time_ns(); report["passed"] = failure is None
         report["interaction_diagnostics"] = {"scope": "public_geometry_and_package_scoped_pending_intent_metadata", "causal_case_proof": False, "pending_intent_absence_does_not_distinguish_cancel_from_one_shot_send": True, "events": device.tap_diagnostics}
+        report["fixture_return_diagnostics"] = {"scope": "bound_popup_single_back_and_same_wms_window_record_task_owner", "autofill_internal_session_id_observed": False, "causal_case_proof": False, "events": device.return_diagnostics}
         report["error"] = failure; report["checks_passed"] = len(report["cases"])
         atomic_json(args.output / "report.json", report)
     print(json.dumps({"ok": report["passed"], "checks_passed": report["checks_passed"], "error": failure, "restoration": report["restoration"], "report": str(args.output / "report.json"), "report_sha256": sha((args.output / "report.json").read_bytes())}, sort_keys=True), flush=True)

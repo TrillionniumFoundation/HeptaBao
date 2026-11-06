@@ -19,6 +19,13 @@ import urllib.error
 from ha_destructive import Cluster, FixtureError, Node, checked_binary
 
 
+def snapshot_covers_frontier(observation: dict[str, object], target: int) -> bool:
+    """An older positive purge index cannot prove this epoch's log was removed."""
+    snapshot, purged = observation.get("snapshot_index"), observation.get("purged_index")
+    return (type(target) is int and type(snapshot) is int and type(purged) is int
+            and 0 < target <= purged <= snapshot < 2 ** 64)
+
+
 class ReplayEpochCluster(Cluster):
     def replay_capacity(self, node: Node) -> dict[str, object]:
         status, body = node.call(
@@ -214,39 +221,48 @@ class ReplayEpochCluster(Cluster):
         # wait until the leader reports a purged log frontier. The lagging voter
         # can no longer rely on replaying the two retirement log entries it
         # missed: rejoin must install state carrying the latest replay epoch.
-        status, snapshot = final_leader.call(
-            "GET",
-            "sys/storage/raft/snapshot",
+        snapshot = final_leader.snapshot_after_compaction(
             token=self.root_token,
             timeout=20,
         )
+        self.snapshot_downloads.append(snapshot)
+        target_frontier = snapshot["raft_compaction"]["target_applied_index"]
         self.check(
             "multi_epoch_snapshot_committed_while_voter_offline",
-            status == 200 and isinstance(snapshot.get("data"), dict),
+            True,
         )
         deadline = time.monotonic() + 10
         snapshot_status: dict[str, object] = {}
+        self.replay_snapshot_frontier = {
+            "target_applied_index": target_frontier, "read_only_polls": 0,
+            "snapshot_index": None, "purged_index": None, "covered": False}
         while time.monotonic() < deadline:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                break
             status, body = final_leader.call(
                 "GET",
                 "sys/storage/raft/snapshot-status",
                 token=self.root_token,
-                timeout=10,
+                timeout=remaining,
             )
+            self.replay_snapshot_frontier["read_only_polls"] += 1
+            self.replay_snapshot_frontier["last_http_status"] = status
             if status == 200 and isinstance(body.get("data"), dict):
                 snapshot_status = body["data"]
-                if (
-                    type(snapshot_status.get("snapshot_index")) is int
-                    and type(snapshot_status.get("purged_index")) is int
-                    and snapshot_status["purged_index"] > 0
-                ):
+                for key in ("snapshot_index", "purged_index"):
+                    value = snapshot_status.get(key)
+                    self.replay_snapshot_frontier[key] = (
+                        value if type(value) is int and 0 <= value < 2 ** 64 else None)
+                if (time.monotonic() <= deadline
+                        and snapshot_covers_frontier(snapshot_status, target_frontier)):
+                    self.replay_snapshot_frontier["covered"] = True
                     break
             time.sleep(0.1)
         self.check(
             "multi_epoch_snapshot_purged_pre_rejoin_log_frontier",
-            type(snapshot_status.get("snapshot_index")) is int
-            and type(snapshot_status.get("purged_index")) is int
-            and snapshot_status["purged_index"] > 0,
+            self.replay_snapshot_frontier["covered"]
+            and snapshot_covers_frontier(snapshot_status, target_frontier),
         )
 
         self.restart(lagging)
@@ -353,6 +369,8 @@ def main() -> int:
         if cluster is not None:
             report["scenarios"] = cluster.scenarios
             report["fixture_mount_setup"] = cluster.fixture_mount_setup
+            report["snapshot_downloads"] = cluster.snapshot_downloads
+            report["replay_snapshot_frontier"] = getattr(cluster, "replay_snapshot_frontier", None)
             try:
                 cluster.close()
             except (FixtureError, OSError, subprocess.SubprocessError):

@@ -13,12 +13,12 @@ from implementation in progress.
 
 | Phase | Implemented and observed | Remaining boundary |
 | --- | --- | --- |
-| P0: selected credential service | Normal Linux server entry point, loopback TLS/private CA, Shamir, root-namespace KV2, userpass and scoped tokens: **57/57**, including real expiry/revocation, ACL denials, SIGKILL and cold recovery. | This exact single-node profile only. HA, full compatibility, old failing snapshot actor regression and broad replacement remain HOLD. |
+| P0: selected credential service | Normal Linux server entry point, loopback TLS/private CA, Shamir, root-namespace KV2, userpass and scoped tokens: **57/57**, including real expiry/revocation, ACL denials, SIGKILL and cold recovery. The separately frozen r3 QA revision passed all three complete destructive, network-partition and replay-epoch profiles against that original server binary. | This is the fixed single-node/three-node synthetic scope. Older r1/r2 failures remain recorded; full compatibility, other snapshot regressions and broad replacement remain HOLD. |
 | P1: agent/developer use | Executable Rust CLI/SDK, local socket broker, exact-operation owner grants, controlled loopback API use, SSHSIG and actual `git commit -S` followed by `git verify-commit`. The separately frozen Ed25519-only build passed **13/13 integration tests**, including all original eleven tests and real RSA/ECDSA rejection. Durable unknown outcomes are never automatically retried. | Task/run labels are owner-issued, not attested HeptaRuntime identities. Current runtime aliases use the same trusted OS account. External HTTPS APIs and SSH login are unsupported. |
 | P2: personal vault | Encrypted login/note/API entries, password generation, RFC-vector TOTP, local health, bounded sessions, offline CLI, encrypted backup/recovery, explicit JSON import/export and password change. Independent process and actual SIGKILL recovery observed. | Linux/Unix private local filesystem, trusted owner account; no hostile-owner isolation, hardware anti-rollback, third-party import or independent security review. |
-| P3: daily clients | Real headed Chromium/native-host login and rejection profile: **26/26**. Physical two-device opaque synchronization: **14 stages and 18 authenticated transfers** across ai395 and ROG retained conflicting edits and restored both histories. Native backpressure fix: **8/8**. | Target Android Autofill qualification is in progress. Browser observation covers the fixed Chrome 157 Linux combination. Sync is an explicit CLI workflow, not an automatic daemon or field merger. |
-| P4: extended vault | Android native Passkey provider and CredentialManager fixture implemented. Separately frozen r4, r5b, r6 and r7 host cryptography/format profiles each passed **10/10**, including separate JVMs, latest-backup recovery, restart and stale-counter rejection. Independent RP: **68/68** per tested backend and **21/21** real loopback HTTP/restart cases. The r7 storage correction passed **34/34** fault-model checks in two internal executions of unchanged product classes. | The r4, r5b and r6 phone runs each failed import before password entry: **one failed, one cleanup passed, sixteen blocked**, retaining all eighteen cases. The separately built r7 candidate has been admitted to a new phone run; no completed phone create/login/recovery evidence yet. Credential exchange, sharing, device revocation, additional browsers/platforms remain unsupported. |
-| P5: production adoption | Published `a38dab7`, `0a0bed8` and `2280c36` each passed synthetic-core CI and the workflow-trust checks for both exact head and prospective merge. A separate clean `c447536` Python preflight has no failures across 300 repository, 1510 acceptance and 183 client tests, with five explicit platform skips. Immutable evidence, an internal dependency review, runtime trust analysis and an operations/recovery procedure are available. | Full replacement qualification for `2280c36` is running and has not passed. No result is inherited across heads. Independent review, measured long-term stability, signed releases, tested upgrade/rollback and operational support are not complete. |
+| P3: daily clients | Real headed Chromium/native-host login and rejection profile: **26/26**. Physical two-device opaque synchronization: **14 stages and 18 authenticated transfers** across ai395 and ROG retained conflicting edits and restored both histories. Native backpressure fix: **8/8**. | The latest c6/QA12 Android run r9 failed after **1/12** completed checks. Browser observation covers the fixed Chrome 157 Linux combination. Sync is an explicit CLI workflow, not an automatic daemon or field merger. |
+| P4: extended vault | Android native Passkey provider and CredentialManager fixture implemented. The r7 phone ledger has **8 passed, 1 failed, 9 blocked**, including actual CredentialManager creation with independent RP registration and ordinary encrypted backup. Separate host format/cryptography and RP results retain their original scope. | Phone authentication failed; reset, recovery and stale-backup cases were not qualified. The r8 fixture adds its required normal permission and starts a new eighteen-case observation. Credential exchange, sharing, device revocation and additional browsers/platforms remain unsupported. |
+| P5: production adoption | The fixed old/new broker binaries completed **27/27** real same-format upgrade/rollback checks, including interrupted-operation fencing and exact denial behavior. Published `7e77aa3` passed synthetic-core CI and both workflow-trust combinations. The clean `c447536` Python preflight passed 1988 tests with five explicit platform skips. | The `2280c36` full workflow retained three HA failures before cancellation; `7e77aa3` has not passed the full gate. Independent security review, measured long-term stability, signed releases, arbitrary-version/data-format migration and operational support remain incomplete. |
 
 These are separate acceptance boundaries. For example, a real local Git signing
 test does not establish a malicious same-account agent cannot read owner files;
@@ -64,6 +64,71 @@ compiler logs is labeled as an inference in that receipt.
 The [P0 report](../../qa/personal_credentials/P0_STATUS.md) retains the older
 174/176 and 180/181 failures as historical results. They are not silently replaced
 by the newer, smaller 57-case profile. x230 formal-34 preflight remains preflight.
+
+### Actual HA follow-up on the fixed server
+
+The full-workflow failure exposed a QA cleanup mismatch: a bootstrap-negative
+child had already exited with the required status 1 and exact rejection
+diagnostic, but cleanup still required a SIGKILL exit. The corrected path accepts
+status 1 only after that exact observation; failed assertions still preserve
+their original error while reaping the owned child. The separate real-process
+owner controls cover the correct rejection, an exit-zero counterexample and a
+wrong diagnostic. This does not change the process-owner library globally.
+
+All three r1 real profiles then failed when the legacy JSON helper decoded the
+native gzip snapshot response as UTF-8 JSON. The original failures and complete
+Runtime invocation/termination records remain in
+[the r1 packet](../../qa/personal_credentials/evidence/20261106/ha-cleanup-r1-remote-originals.tar.gz).
+
+The r2 helper performs one native download with private-CA verification, no
+proxy or redirect, exact response framing, a 32 MiB wire bound and a 64 MiB
+expanded bound. It rejects truncated, corrupt, concatenated or trailing gzip
+data. Its report explicitly does not claim archive authenticity or successful
+restore. Against the same `c27a0c22` server, the complete destructive and
+network-partition profiles passed, with 22 and 66 recorded scenarios
+respectively. Replay stopped after 46 recorded scenarios at
+`multi_epoch_snapshot_purged_pre_rejoin_log_frontier`. These overlapping
+scenario counts are not added into a new test denominator. All original
+children were reaped, without fallback cleanup or deadline expiry. See the
+[r2 summary](../../qa/personal_credentials/evidence/20261106/ha-snapshot-r2-real-profiles.public.json)
+and [complete original packet](../../qa/personal_credentials/evidence/20261106/ha-snapshot-r2-remote-originals.tar.gz).
+
+The r3 QA source uses the existing authenticated compact operation before the
+separate native export. It captures the applied index first, keeps all three
+requests inside the original shared budget, never replays the mutation and
+requires the observed purge to cover that captured index. A positive purge
+left over from an older snapshot is insufficient. The exact original `a1b6ff4`
+server source was checked independently to establish this route distinction.
+New host controls passed 12/12 for the maintenance/frontier changes and 25/25
+for the original cleanup/download checks. All three new real profiles then
+completed successfully: destructive recorded 22 scenarios, partition 66 and
+replay 53. Replay observed target applied index 61, snapshot index 61 and purge
+index 61 after two read-only polls, then completed lagging-voter recovery,
+leadership, latest-epoch writes and acknowledged-value read-back. Original
+240/360/600-second outer budgets were unchanged; no deadline or fallback cleanup
+was used and every registered original child was reaped. These results bind
+the exact `403d10c5`/`a9cfb31d`/`73bac79c` QA files and original `c27a0c22`
+server, not the entire latest PR tree. Neither r1 nor r2 was relabeled.
+The [r3 summary](../../qa/personal_credentials/evidence/20261106/ha-snapshot-r3-real-profiles.public.json)
+and [86-member original packet](../../qa/personal_credentials/evidence/20261106/ha-snapshot-r3-originals.tar.gz)
+retain all three reports, original process ownership/termination records, host
+controls, frozen source and actual Runtime inputs.
+
+### Evidence recovery boundary
+
+After the executor was replaced, the old temporary working directory was
+unavailable. The clean public `7e77aa3` tree was cloned again and checked against
+tree `44b5f1ae9f0c7ff1994d096c26f2456bc4a75c06`. Unpublished sources were
+recovered only where their complete bytes matched their previously recorded
+hashes. The remote phone, HA and upgrade packets survived and were read back
+with pinned versions, exact lengths, EOF and full SHA-256 checks.
+
+Some local-only root and peer host-test outputs, the r9 local supplementary
+packet and unpublished grouping archives were unavailable. Their observed
+metadata does not substitute for those missing originals. New executions and
+new grouping containers are explicitly labeled as new. The
+[recovery packet](../../qa/personal_credentials/evidence/20261106/workspace-recovery-originals-and-limits.tar.gz)
+records those limits, original read envelopes and recovered source identities.
 
 ### Separately qualified Ed25519-only broker
 
@@ -215,6 +280,52 @@ checks, and an additional reviewer read the full diff without claiming a
 third execution. This source-backed compatibility correction does not prove
 the old r8 phone text or qualify a new phone run.
 
+The c6/QA12 phone run r9 again failed after **1/12** completed checks. This time
+the actual server WMS/top-resumed identities passed, including the canonical
+decimal ActivityRecord representation, and the ordinary system-menu touch was
+issued with a fresh bound observation. The provider recorded `auth_context_bound`
+and a closed trim event with no pending request, plaintext login or handoff.
+Those bits do not prove a successful fill, request consumption or a lifecycle
+cause.
+
+The preserved failure expected the native fixture title
+`HeptaBao synthetic native login` while the system Autofill UI was still visible.
+Combined with the unchanged driver's control flow, this supports a failure in
+the return wait after Cancel. It does not support the initial interpretation
+that the Auth title had never appeared. No master password or successful fill
+was observed, and the uncompleted locked-fill case stays uncompleted. Independent
+release verification confirmed the original setting and installed/retained
+absence of all three owned packages before the phone changed owners. A new
+driver candidate must retain the full twelve-case inventory and validate the
+original WMS window, ActivityRecord, task and owner before any ordinary popup
+dismissal.
+
+The [r9 result](../../qa/personal_credentials/evidence/20261106/android-c6-r9-phone.public.json)
+and [available original packet](../../qa/personal_credentials/evidence/20261106/android-c6-r9-available-originals.tar.gz)
+retain the failed outcome and independent release. The old local 22-member
+supplement was not completely recovered; eleven original files, their original
+remote carrier and the root release observations are available.
+
+QA13 now captures the original WMS window, ActivityRecord, task and owner at
+the existing fixture setup. A return may dismiss only a positively bound locked
+placeholder, after refusing any visible plaintext-fill presentation. The one
+ordinary Back input remains explicitly bound to display 0 by the existing
+input wrapper. Fresh focus and the same original identity are required before
+and after the action and again after observing the fixture title. This is not
+an observation of Android's internal Autofill session ID.
+
+Review of the first 100-check candidate found late query results could escape
+the three-second transition deadline and a title observation needed a final
+identity check. Five actual new counterexamples failed against that held
+candidate. The corrected `5e6ba13b` source passed all 66 existing plus 38 new
+host checks; a peer independently reran those 38 with zero external-process
+attempts. That [separate peer packet](../../qa/personal_credentials/evidence/20261106/android-qa13-peer-review-originals.tar.gz)
+retains the actual harness, outputs, external-call audit and source comparison.
+The original twelve-case inventory, cancellation time limits and
+product APK are unchanged. The [host packet](../../qa/personal_credentials/evidence/20261106/android-qa13-host-originals.tar.gz)
+retains both candidates, all original outputs and the counterexample failures.
+No QA13 phone success is inferred from this host evidence.
+
 Passkey candidate r4 has 28 source files matching its original build inventory.
 It implements a separate Android credential provider for one pinned native
 fixture and relying-party ID. Its password-protected `.hbv` store preserves the
@@ -339,6 +450,42 @@ still report UNKNOWN. The new r7 phone declaration retains all eighteen
 cases and separately pins this build, host result, line check and four APKs.
 No phone result is inherited from an earlier candidate.
 
+The completed r7 phone ledger contains eighteen unique cases: M01, M02, M04,
+G01, G08, G09, G10 and M07 passed; M03 failed; M05, M06, G02 through G07 and
+G11 are blocked. M02 traversed the actual Android CredentialManager, the
+provider's ordinary approval UI and independent RP registration. M04 exported
+and read back the encrypted backup through ordinary SAF. M03 reported
+`platform_invocation_failed`; the RP accepted zero authentications and its
+counter stayed zero. No provider reset was executed.
+
+Source inspection found that the fixed fixture called `addAllowedProvider`
+without declaring the platform's normal
+[`CREDENTIAL_MANAGER_SET_ALLOWED_PROVIDERS` permission](https://developer.android.com/reference/android/Manifest.permission#CREDENTIAL_MANAGER_SET_ALLOWED_PROVIDERS).
+This is a source-backed explanation consistent with the failure, not an
+observed OEM exception class. No runtime permission grant or allowlist
+weakening was used. The RP's later natural 3600-second timeout is retained as
+a process outcome and is not used as evidence for any negative case.
+
+The [r7 phone packet](../../qa/personal_credentials/evidence/20261106/passkey-r7-phone-originals.tar.gz)
+preserves 381 original files plus its manifest, all 29 actual Runtime
+invocations and terminal observations, phase failures, the complete
+[case ledger](../../qa/personal_credentials/evidence/20261106/passkey-r7-phone-cases.public.json)
+and final release. Every one of its 286 phase-result citation occurrences was
+resolved to the exact original file digest. Cleanup verified all three original
+settings, installed/retained absence of the three owned packages, removal of
+owned documents/media entries and reverse mapping, and a closed RP listener.
+
+The r8 product delta is that one fixture manifest permission. All other product
+source bytes and the `b16e8291` provider APK are unchanged. Its new build receipt
+`97a6daec...` records 33 successful SDK commands and separately verifies all
+three newly signed fixture APK manifests and certificates. The r7 provider's
+host/DEX evidence is explicitly reused as older evidence, not reported as a new
+r8 host execution. The new phone declaration retains all eighteen cases and
+pins new input/reset helpers, artifact identities and backup roles. Its
+[ingress packet](../../qa/personal_credentials/evidence/20261106/passkey-r8-ingress-originals.tar.gz)
+preserves the exact new build and author host controls. A new phone run must
+establish every claimed r8 result.
+
 The archived r4 packet contains the complete eighteen-case ledger, cleanup and
 correction receipts, a twenty-four-attempt index and five actual QA source
 files. It does not contain every original inline wrapper's complete argv.
@@ -375,11 +522,11 @@ provenance. It does not claim a password-path read in that later observation.
 | Frozen mobile artifact | SHA-256 | Current evidence boundary |
 | --- | --- | --- |
 | Autofill candidate 5 provider APK | `5c643afa5a08c6e8dd0baf751fe56dadf0f66947284d119d2da7051f4ab88ff8` | Build/decoded manifest and 12 host format checks; its r6 and r7 phone profiles each failed after 1/12 checks. |
-| Autofill candidate 6 provider APK | `10028da82fede388096362d0bf2c6d106bd1e8823a12c17c022f8115adcf262a` | Separate build, 12 host format checks and 12 actual-APK checks; r8 with QA11 failed after 1/12, before menu touch. |
+| Autofill candidate 6 provider APK | `10028da82fede388096362d0bf2c6d106bd1e8823a12c17c022f8115adcf262a` | Separate build, 12 host format checks and 12 actual-APK checks; QA11/r8 and QA12/r9 each failed after 1/12. QA12 reached the actual menu touch. |
 | Passkey r4 provider APK | `e96218bc0ab1c228120471d5168a336e6b526bfd5e39e1a0a533335300d7c6e8` | Build/decoded manifest and 10 host checks; phone import failed before any credential creation, with all eighteen cases retained. |
 | Passkey r5b provider APK | `9985457ba13ddef5c286c6017d6c675cb0e64bafa97f119516a3fc4fcce5fc3a` | Separately fixed source/build and 10 host checks; its first ordinary-SAF phone import returned `operation_failed` before password entry. |
 | Passkey r6 provider APK | `0240a545d9ed9518201cfda945a26c5f7dc8742534d1ab21d5e84f23bf9c4ac7` | Separate diagnostic build and 10 host checks; phone M01 failed PUBLISH_LINK/EACCES, cleanup passed, sixteen blocked. |
-| Passkey r7 provider APK | `b16e82916330fac6909f82696089798c3ec76d7b4058fe9290e7e841b9e00459` | Separate storage-fix build, 10 host checks and actual DEX line inspection; new eighteen-case phone observation pending. |
+| Passkey r7 provider APK | `b16e82916330fac6909f82696089798c3ec76d7b4058fe9290e7e841b9e00459` | Separate storage-fix build, 10 host checks and actual DEX inspection; r7 phone 8 passed, 1 failed, 9 blocked. Reused unchanged for the new r8 fixture observation. |
 
 ### Case-bound synthetic reset helper
 
@@ -388,7 +535,11 @@ The separate `passkey_reset_provider.py` helper is frozen at SHA-256
 That original helper is pinned to r5b and is not admitted for a different
 candidate. The r7 declaration requires a separately frozen and reviewed
 `passkey_reset_provider_r7.py` before M05 or G11; earlier ordinary cases may
-proceed while that helper is prepared.
+proceed independently of a reset. The r7 helper and its 49 author-defined host
+controls were subsequently frozen and reviewed; the completed phone run never
+reached a reset admission. The r8 helper adds six backup-role/path rejection
+controls, for 55, while preserving the original reset and completion-witness
+logic. Its input helper has twenty host-only controls.
 It supports only the reset portions of M05 then G11, once each, after checking
 actual ordinary-SAF backup observations, the current RP key/counter, the exact
 owned APK, all three settings and a nonempty old provider PID. The latest
@@ -410,6 +561,15 @@ prevent later resets. This is fault injection, not an actual phone or power-loss
 test. The original 44-check report, first source, correction diff and internal
 review are archived. The helper confirms only a reset step; ordinary restore,
 subsequent authentication and each complete phone case need separate evidence.
+
+The peer who reviewed the r7 reset delta authored the older reset core and
+completion-witness correction. Their new execution is a fresh peer rerun of
+author-defined controls, not a new independently authored test suite. The
+authorship supplement records that boundary and the separately observed root
+rerun. The old root rerun's full local-only output was lost during executor
+replacement; the surviving peer and author originals remain distinct. Each
+actual M05/G11 operation still requires its own current checkpoint, backup,
+RP state, exact APK, settings, process identity and durable completion evidence.
 
 All mobile material is synthetic. The device QA driver enters synthetic
 passwords through real EditText controls, with a temporary value in the
@@ -452,15 +612,53 @@ and both combinations of
 completed successfully. Its three original public core receipts are archived
 after byte-identical SHA-256 verification. Its separate
 [full replacement run 42186444220](https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/42186444220)
-was running at the 2026-11-06 11:24 UTC observation: both exact head and
-prospective merge passed the complete locked Rust workspace tests, strict
-Clippy and documentation checks. The exact head was exercising the real TLS
-service, while the prospective merge had progressed through the service,
-bounded plugins, external providers and audit steps to state saturation and
-replay-preserving capacity recovery. Neither job had completed the full gate.
-The older results do not qualify a newer
-publication, and an in-progress run is not a passing gate. This draft remains
-unmerged.
+was cancelled at 12:13 UTC after three prospective-merge HA steps had failed.
+Both combinations had passed complete locked Rust workspace tests, strict
+Clippy and documentation. Those successful earlier steps do not make the full
+run successful. The failed HA cleanup records are retained in the recovered
+original decoded job log; the subsequent local corrections require their own
+qualification.
+
+Published `7e77aa3f4319e9e6c8fbc6e0d200dc2cde8af7c6` subsequently passed
+[synthetic core 42215657954](https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/42215657954)
+and both combinations of
+[workflow trust 42215657871](https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/42215657871).
+Its three bounded core receipts were recovered from original log lines with
+all original SHA-256 values verified. At the 13:34 UTC observation,
+[full replacement 42215657729](https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/42215657729)
+was still running complete locked Rust workspace tests in both combinations.
+No newer source inherits these results. This draft remains unmerged.
+
+### Real same-format broker upgrade and rollback
+
+The original `389cc15a` broker and separately built Ed25519-only `6fe0b6c7`
+broker completed the actual sequence old to new to old to new using the same
+format-1 durable state. All 27 declared checks passed. Completed results stayed
+stable across versions; revoked, expired and wrong-target operations were
+rejected. An actual SIGKILL after target contact left an unknown operation that
+was not automatically dispatched again. The synthetic target observed exactly
+four authorized effects and zero effects for the denial cases. All owned
+processes terminated and both executable identities stayed unchanged.
+
+The [original result](../../qa/personal_credentials/evidence/20261106/broker-upgrade-r1.public.json)
+and [complete 72-original-file packet](../../qa/personal_credentials/evidence/20261106/broker-upgrade-r1-remote-originals.tar.gz)
+bind the 33 actual commands and 66 original stdout/stderr files. This qualifies
+that two-binary, same-format, trusted-owner loopback exercise. It does not
+qualify an installer, signed release, arbitrary rollback, data-format migration,
+physical power loss or long-term production stability.
+
+### macOS remains unqualified
+
+The separate clean `c447536` Mac source was recovered without changing its
+tree. Earlier attempts retained the tool-path failure, network timeout and
+offline `autocfg 1.5.1` cache miss. The fourth offline attempt completed formatting
+but Clippy exited 101 because `base16ct 0.2.0` was absent from its private cache.
+It did not freeze new binaries or run the planned functional tests. Existing
+matching public cache archives may be verified and copied into a new private
+attempt; the lockfile, selected features and test gates are not relaxed.
+The [available Mac originals](../../qa/personal_credentials/evidence/20261106/mac-r2-r4-available-originals.tar.gz)
+retain fifteen exact source, preparation, inventory and failed-run files. This
+partial recovery does not claim all earlier command logs are available.
 
 ### Separately observed Python integration preflight
 

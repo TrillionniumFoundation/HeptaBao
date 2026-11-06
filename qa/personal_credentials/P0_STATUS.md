@@ -183,6 +183,17 @@ other failures. The exact-head full workflow, the non-root historical snapshot
 actor regression, native HA shutdown, Unicode decoding and non-root OpenAPI
 visibility require their own current-combination evidence.
 
+The later fixed-binary HA work is tracked separately in the
+[credential status report](../../docs/personal-credentials/STATUS.md#actual-ha-follow-up-on-the-fixed-server).
+The r1 real runs preserved all three native-snapshot JSON-decoding failures.
+The r2 native-gzip helper completed the destructive and network-partition
+profiles against the original `c27a0c22` server, while replay still failed its
+log-purge frontier assertion. The r3 QA revision explicitly requests compact
+and requires the purge to cover a captured applied index. Its new destructive,
+partition and replay profiles all passed against the fixed original server,
+including replay's observed 61/61/61 applied/snapshot/purge frontier. These
+bounded observations do not close the other outstanding full-workflow failures.
+
 - [PR #160](https://github.com/TrillionniumFoundation/HeptaBao/pull/160)
 - [PR #159](https://github.com/TrillionniumFoundation/HeptaBao/pull/159)
 - [Original qualification workflow](https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/42011051329)
