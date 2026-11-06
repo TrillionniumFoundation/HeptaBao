@@ -2,7 +2,7 @@
 
 Positive parser samples below are explicitly fictional, using synthetic artifact
 bytes and observations. They are not build receipts or qualification evidence.
-The exact retained ROG selection is a fixture. Set
+The exact retained Pocket4 selection is a fixture. Set
 HEPTABAO_X230_FAILED_RECEIPT to the original Mac 09c14 failed report to exercise
 that original, pinned refusal as well; no failed report is rewritten to pass.
 """
@@ -70,9 +70,9 @@ def fictional_build():
             "sha256": digest(b"fictional-libtest"), "bytes": len(b"fictional-libtest")}
         receipt["artifacts"][name] = {
             **actual, "source_commit": q.BUILD_COMMIT, "source_tree": q.BUILD_TREE,
-            "normal_features_profile_and_source_verified": True, "path": str(q.ROG_BUILD / "artifacts" / name),
-            "cargo_source_entry": str(q.ROG_SOURCE / "crates" / package / entry),
-            "cargo_package_id": "path+file://" + str(q.ROG_SOURCE / "crates" / package) + "#0.0.0",
+            "normal_features_profile_and_source_verified": True, "path": str(q.PRODUCER_BUILD / "artifacts" / name),
+            "cargo_source_entry": str(q.PRODUCER_SOURCE / "crates" / package / entry),
+            "cargo_package_id": "path+file://" + str(q.PRODUCER_SOURCE / "crates" / package) + "#0.0.0",
             "cargo_features": ["default", "native-v6-peer-ingress"] if peer else
                               ["default", "native-v6-ha", "native-v6-storage"],
             "cargo_profile": {"opt_level": "3", "debuginfo": 0, "debug_assertions": True,
@@ -245,7 +245,7 @@ class ReceiptGuards(unittest.TestCase):
         self.assertEqual(digest(raw), FAILED_RECEIPT_SHA)
         actual = dr.full.decode(raw)
         self.assertEqual(actual["status"], "failed")
-        self.assertEqual(actual["source_commit"], q.BUILD_COMMIT)
+        self.assertEqual(actual["source_commit"], "09c14eae7a3b52dee8ce3af3175dad5900ac59ec")
         self.assertEqual(actual["observed_test_executed_cases"], 103)
         self.assertEqual(actual["observed_test_passed_cases"], 102)
         self.assertEqual(actual["observed_test_failed_cases"], 1)
@@ -468,6 +468,110 @@ class FileAndExecutionGuards(unittest.TestCase):
                 q.run_workloads(self.args, deps, {}, report)
         comparison.assert_not_called(); owner.finish.assert_called_once()
         self.assertIn("process_custody", report)
+
+
+class StaticReceiverAdmissionGuards(unittest.TestCase):
+    """Pure bridge fixtures; fresh filesystem rechecks are explicit mocks."""
+    def setUp(self):
+        from test_x230_native_abi_admission import bundle, LOADER, RESOLVED, refresh
+        self.capture, self.parser, _ = q.load_abi_guards(dr)
+        self.refresh = refresh
+        artifacts, providers, expected = bundle()
+        self.build = {"artifacts": expected}
+        self.compatibility = self.parser["verify_compatibility"](artifacts, providers,
+            expected_artifact_pins=expected, interpreter_path=LOADER, interpreter_resolved_path=RESOLVED)
+        self.value = {"unit_test_fixture_not_an_execution": True,
+            "schema": "heptabao.current-native-static-abi-capture.v1", "status": "passed", "role": "receiver",
+            "hostname": "qian-ThinkPad-X230", "source_commit": q.BUILD_COMMIT, "source_tree": q.BUILD_TREE,
+            "normal107_job_id": q.BUILD_JOB_ID, "static_receiver_compatibility_qualified": True,
+            "inputs_unchanged": True, "controller": {"sha256": q.ABI_CAPTURE_SHA256},
+            "parser": {"sha256": q.ABI_PARSER_SHA256}, "target_binary_executions": 0,
+            "production_changed": False, "actual_x230_runtime_qualified": False, "full_replacement_qualified": False,
+            "deadline_renewed": False, "automatic_retry": False,
+            "inputs": {"producer_receipt": {}, "producer_terminal": {}}, "tools": {"readelf": {}, "ldconfig": {}},
+            "artifacts": artifacts, "providers": providers,
+            "interpreter_pin": {"path": RESOLVED}, "compatibility": self.compatibility,
+            "provider_lookup_candidates": {name: [row["pin"]["path"]] for name, row in providers.items()},
+            "provider_alias_bindings": {row["pin"]["path"]: {"path": row["pin"]["path"],
+                "resolved_path": row["pin"]["path"], "components": []} for row in providers.values()}}
+        self.terminal = {"job_id": "actual-abi-job", "state": "succeeded", "exit_code": 0,
+            "output_complete": True, "output_durable": True, "terminal_publication_confirmed": True,
+            "timed_out": False, "cancelled": False, "automatic_retry": False,
+            "log_bytes": {key: {"seen": 0, "stored": 0} for key in ("stdout", "stderr")},
+            "log_synced": {key: True for key in ("stdout", "stderr")},
+            "log_truncated": {key: False for key in ("stdout", "stderr")},
+            "log_errors": {key: None for key in ("stdout", "stderr")}}
+        self.fresh = Mock()
+        self.capture = dict(self.capture, Capture=Mock(return_value=self.fresh))
+
+    def validate(self):
+        return q.validate_static_admission(self.value, self.terminal, "actual-abi-job", self.build,
+                                           self.capture, self.parser)
+
+    def test_public_reviewed_code_is_allowed_but_other_writable_code_is_refused(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            for name in ("x230_native_abi_capture.py", "x230_native_abi_admission.py"):
+                source = Path(q.__file__).with_name(name)
+                (root / name).write_bytes(source.read_bytes()); (root / name).chmod(0o644)
+            with patch.object(q, "__file__", str(root / "qualification.py")):
+                capture, parser, pins = q.load_abi_guards(dr)
+                self.assertTrue(callable(capture["require_terminal"]))
+                self.assertTrue(callable(parser["verify_compatibility"]))
+                self.assertTrue(all(pin["mode"] == 0o644 for pin in pins.values()))
+                (root / "x230_native_abi_capture.py").chmod(0o666)
+                with self.assertRaisesRegex(q.AdmissionFailure, "owned_reviewed_abi_source_custody"):
+                    q.load_abi_guards(dr)
+
+    def test_static_match_requires_fresh_receiver_recheck_without_runtime_claim(self):
+        result = self.validate()
+        self.fresh.recheck.assert_called_once_with(self.value)
+        self.assertTrue(result["receiver_current_pins_rechecked"])
+        self.assertFalse(result["actual_x230_runtime_qualified_by_admission"])
+
+    def test_failed_nonterminal_or_wrong_original_abi_terminal_refused(self):
+        for key, value in (("state", "running"), ("state", "failed"), ("job_id", "other"),
+                           ("exit_code", 1), ("timed_out", True), ("output_durable", False)):
+            with self.subTest(key=key):
+                before = copy.deepcopy(self.terminal); self.terminal[key] = value
+                with self.assertRaises(self.capture["Refused"]): self.validate()
+                self.terminal = before
+        self.fresh.recheck.assert_not_called()
+
+    def test_source_scope_and_parser_controller_hashes_remain_bound(self):
+        for key, value in (("status", "running"), ("source_commit", "0" * 40), ("source_tree", "0" * 40),
+                           ("normal107_job_id", "other"), ("hostname", "other"),
+                           ("controller", {"sha256": "0" * 64}), ("parser", {"sha256": "0" * 64}),
+                           ("inputs_unchanged", False), ("actual_x230_runtime_qualified", True)):
+            with self.subTest(key=key):
+                before = copy.deepcopy(self.value); self.value[key] = value
+                with self.assertRaises(q.AdmissionFailure): self.validate()
+                self.value = before
+        self.fresh.recheck.assert_not_called()
+
+    def test_incomplete_or_misdirected_alias_sets_and_tools_refused(self):
+        for mutation in (lambda v: v["tools"].pop("ldconfig"),
+                         lambda v: v["inputs"].update(extra={}),
+                         lambda v: v["provider_alias_bindings"].pop(next(iter(v["provider_alias_bindings"]))),
+                         lambda v: next(iter(v["provider_alias_bindings"].values())).update(resolved_path="/wrong/provider"),
+                         lambda v: v.update(compatibility={})):
+            before = copy.deepcopy(self.value); mutation(self.value)
+            with self.assertRaises(q.AdmissionFailure): self.validate()
+            self.value = before
+        self.fresh.recheck.assert_not_called()
+
+    def test_actual_version_parser_rejects_missing_middle_glibc_definition(self):
+        row = self.value["providers"]["libc.so.6"]
+        row["raw_readelf"] = row["raw_readelf"].replace("GLIBC_2.34", "GLIBC_2.42")
+        self.refresh(row)
+        with self.assertRaisesRegex(self.parser["AbiRefused"], "provider_version_set_incomplete"):
+            self.validate()
+        self.fresh.recheck.assert_not_called()
+
+    def test_changed_receiver_files_or_aliases_block_admission(self):
+        self.fresh.recheck.side_effect = self.capture["Refused"]("actual_loader_lookup_alias_changed")
+        with self.assertRaisesRegex(self.capture["Refused"], "actual_loader_lookup_alias_changed"):
+            self.validate()
 
 
 if __name__ == "__main__":

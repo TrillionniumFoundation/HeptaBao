@@ -1,0 +1,10 @@
+test_inline_operation_label_is_explicitly_bound_to_new_attempt (__main__.Delta.test_inline_operation_label_is_explicitly_bound_to_new_attempt) ... ok
+test_seed_has_only_actual_qualified_directory_literals (__main__.Delta.test_seed_has_only_actual_qualified_directory_literals) ... ok
+test_three_worker_scope_rebindings_preserve_every_other_byte (__main__.Delta.test_three_worker_scope_rebindings_preserve_every_other_byte) ... ok
+test_unobserved_controller_cwd_refuses_before_profile (__main__.Delta.test_unobserved_controller_cwd_refuses_before_profile) ... ok
+test_worker_retains_all_original_write_and_network_boundaries (__main__.Delta.test_worker_retains_all_original_write_and_network_boundaries) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.032s
+
+OK
