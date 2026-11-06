@@ -674,6 +674,21 @@ fn serve_inner(
         ha.lock()
             .map_err(|_| "HA process lock is unavailable".to_owned())?
             .register_forward_handler(handler)?;
+        #[cfg(feature = "native-v6-ha")]
+        if ha.lock()
+            .map_err(|_| "HA process lock is unavailable".to_owned())?
+            .native_v6_enabled()
+        {
+            let weak_service = Arc::downgrade(&service);
+            let snapshot_handler: crate::ha::SnapshotForwardHandler = Arc::new(move |ingress| {
+                let service = weak_service.upgrade()
+                    .ok_or(heptabao_ha_service::HaError::Transport)?;
+                Service::serve_native_snapshot_peer(&service, ingress, forward_timeout)
+            });
+            ha.lock()
+                .map_err(|_| "HA process lock is unavailable".to_owned())?
+                .register_snapshot_forward_handler(snapshot_handler)?;
+        }
     }
     let listener = match TcpListener::bind(config.listen) {
         Ok(value) => value,

@@ -2373,10 +2373,12 @@ impl Service {
     }
 
     pub(crate) fn begin_forwarded(&mut self, request: ServiceRequest<'_>) -> RequestExecution {
-        let started = std::time::Instant::now();
-        let observed = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap_or(Duration::MAX);
+        let (started, observed) = self.native_snapshot_clock.unwrap_or_else(|| {
+            (
+                std::time::Instant::now(),
+                SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or(Duration::MAX),
+            )
+        });
         let clock = match RequestClock::anchored(observed, started) {
             Ok(clock) => clock,
             Err(_) => {
@@ -2401,7 +2403,7 @@ impl Service {
             origin_peer,
             client_certificates,
         } = request;
-        self.begin_at_mode_precise(
+        let execution = self.begin_at_mode_precise(
             RequestDispatch {
                 method,
                 path,
@@ -2416,8 +2418,12 @@ impl Service {
                 client_certificates,
             },
             clock,
-        )
-        .with_realtime_remote_jwt()
+        );
+        if self.native_snapshot_clock.is_some() {
+            execution
+        } else {
+            execution.with_realtime_remote_jwt()
+        }
     }
 
     // Test HTTP ingress keeps its original fixture clock and admission flags.

@@ -1015,3 +1015,62 @@ mod historical_prepare_observer {
         }
     }
 }
+
+impl Service {
+    /// Only the actual restore receipt can attest this transition. The fields
+    /// returned here are data for a separate MAC, never an executable receipt.
+    /// Original Auth is read from that receipt, never from restored State.
+    pub(in crate::service::snapshot_transfer) fn snapshot_peer_historical_publication(
+        &mut self,
+        plan: &SnapshotTransferPlan,
+        expected_original_auth: [u8; 32],
+        original_epoch: u64,
+    ) -> Result<([u8; 32], StateIdentity, StateIdentity, u64), Response> {
+        let restored = plan.native_ha_restored.as_ref().ok_or_else(unavailable)?;
+        let identity = self.current_state_identity()?;
+        self.check_native_ha_historical_delivery(plan, restored, identity)?;
+        if restored.original_auth.forward_owner_projection_digest().map_err(|_| unavailable())?
+                != expected_original_auth
+            || original_epoch.checked_add(1) != Some(restored.restored_epoch)
+        {
+            return Err(unavailable());
+        }
+        actor_original(&restored.original_auth, plan)?;
+        if identity == restored.restored_identity {
+            restored.proof.check_with(self, Service::check_native_installed)?;
+        } else {
+            let current = self.capture_native_ha_request_proof(
+                &mut || actor_original(&restored.original_auth, plan),
+            )?.ok_or_else(unavailable)?;
+            restored.proof.check_snapshot_terminal_successor(self, &current)?;
+        }
+        self.check_native_ha_historical_delivery(plan, restored, identity)?;
+        Ok((restored.operation_digest, restored.original_identity,
+            restored.restored_identity, restored.restored_epoch))
+    }
+}
+
+impl Service {
+    /// This helper is reachable only with the actual retained restore plan
+    /// after its original finalizer. Wire data cannot supply a recovery reference.
+    pub(in crate::service::snapshot_transfer) fn snapshot_peer_historical_publication_veto(
+        &mut self, plan: &SnapshotTransferPlan, fingerprint: &str,
+    ) -> Option<Response> {
+        let operation = plan.native_ha_restored.as_ref()?.operation_digest;
+        let _ = self.audit_event(
+            "native-ha-historical-restore-peer-publication-veto", fingerprint,
+            snapshot_observed_time(plan.now, plan.started.elapsed()), Some(503),
+        );
+        self.recovery_required = true;
+        self.ha_activation = None;
+        self.ha_read_cache = None;
+        Some(Response {
+            status: 503,
+            body: json!({"errors":["historical restore peer delivery requires reconciliation"],
+                "outcome_unknown":true,"recovery_required":true,"retry_allowed":false,
+                "root_attempted":true,
+                "recovery_reference":historical_recovery_reference(operation)}),
+            unwrapped_json: None, response_headers: Default::default(), consistency_index: None,
+        })
+    }
+}

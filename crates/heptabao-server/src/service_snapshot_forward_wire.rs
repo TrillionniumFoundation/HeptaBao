@@ -1,0 +1,384 @@
+//! Snapshot-only application bindings. No ordinary JSON completion is accepted.
+use super::*;
+use serde::{Deserialize, Serialize};
+use heptabao_ha_service::{EncodedSnapshotBody, VerifiedSnapshotBody};
+use heptabao_raft_runtime::CommittedApplicationPrefix;
+
+pub(super) const MAX_METADATA: usize = 1024 * 1024;
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub(super) enum Operation { Download, HistoricalRestore }
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub(super) enum BodyRole { Empty, NativeArchive }
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct BodyDescriptor {
+    pub(super) role: BodyRole,
+    pub(super) bytes: u64,
+    pub(super) frames: u32,
+    pub(super) sha256: [u8; 32],
+}
+impl BodyDescriptor {
+    pub(super) fn empty() -> Self {
+        Self { role: BodyRole::Empty, bytes: 0, frames: 0, sha256: digest(&[]) }
+    }
+    pub(super) fn valid(&self) -> bool {
+        self.bytes <= MAX_NATIVE_ARCHIVE
+            && self.frames as u64 == self.bytes.div_ceil(65_536)
+            && match self.role {
+                BodyRole::Empty => *self == Self::empty(),
+                BodyRole::NativeArchive => self.bytes != 0 && self.sha256 != [0; 32],
+            }
+    }
+    pub(super) fn from_verified(
+        witness: &VerifiedSnapshotBody, role: BodyRole,
+    ) -> Result<Self, Response> {
+        let result = Self { role, bytes: witness.bytes(), frames: witness.frames(), sha256: witness.sha256() };
+        result.valid().then_some(result).ok_or_else(unavailable)
+    }
+    pub(super) fn from_encoded(
+        witness: &EncodedSnapshotBody, role: BodyRole,
+    ) -> Result<Self, Response> {
+        let result = Self { role, bytes: witness.bytes(), frames: witness.frames(), sha256: witness.sha256() };
+        result.valid().then_some(result).ok_or_else(unavailable)
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct RequestWire {
+    pub(super) version: u8,
+    pub(super) cluster: String,
+    pub(super) ingress: u64,
+    pub(super) leader: u64,
+    pub(super) hop: u8,
+    pub(super) nonce: [u8; 32],
+    pub(super) method: String,
+    pub(super) path: String,
+    pub(super) namespace: String,
+    pub(super) token: String,
+    pub(super) wrap_ttl_seconds: Option<u64>,
+    pub(super) origin_peer: Option<std::net::IpAddr>,
+    pub(super) client_certificates: Option<Vec<Vec<u8>>>,
+}
+impl Drop for RequestWire {
+    fn drop(&mut self) {
+        use zeroize::Zeroize;
+        self.token.zeroize();
+        if let Some(certificates) = self.client_certificates.as_mut() {
+            certificates.iter_mut().for_each(Vec::zeroize);
+        }
+    }
+}
+impl RequestWire {
+    pub(super) fn operation(&self) -> Result<Operation, Response> {
+        if self.version != 1 || self.hop != 1
+            || self.cluster.is_empty() || self.cluster.len() > 128
+            || self.ingress == 0 || self.leader == 0 || self.ingress == self.leader
+            || self.nonce == [0; 32] || !self.namespace.is_empty()
+            || self.token.len() > 16 * 1024
+            || self.wrap_ttl_seconds.is_some_and(|ttl| ttl != 0)
+        {
+            return Err(unavailable());
+        }
+        if let Some(chain) = &self.client_certificates
+            && (chain.is_empty() || chain.len() > 8
+                || chain.iter().any(|certificate|
+                    certificate.is_empty() || certificate.len() > 64 * 1024))
+        {
+            return Err(unavailable());
+        }
+        match (self.method.as_str(), self.path.as_str()) {
+            ("GET" | "HEAD", "sys/storage/raft/snapshot") => Ok(Operation::Download),
+            ("POST" | "PUT", "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force") =>
+                Ok(Operation::HistoricalRestore),
+            _ => Err(unavailable()),
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct AdmissionData {
+    pub(super) cluster: String,
+    pub(super) ingress: u64,
+    pub(super) leader: u64,
+    pub(super) nonce: [u8; 32],
+    pub(super) metadata_sha256: [u8; 32],
+    pub(super) operation: Operation,
+    pub(super) original_identity: StateIdentity,
+    pub(super) original_epoch: u64,
+    pub(super) original_auth: [u8; 32],
+    pub(super) source_activation: [u8; 32],
+    pub(super) seal_identity: [u8; 32],
+    pub(super) prefix: CommittedApplicationPrefix,
+    pub(super) actor: crate::auth::ForwardActorWitness,
+}
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct AdmissionWire {
+    pub(super) data: AdmissionData,
+    mac: [u8; 32],
+}
+impl AdmissionWire {
+    pub(super) fn seal(data: AdmissionData, barrier: &[u8]) -> Result<Self, Response> {
+        let bytes = encode(&("native-snapshot-ready-v1", &data))?;
+        let mac = sign(barrier, &bytes);
+        Ok(Self { data, mac })
+    }
+    pub(super) fn verify(
+        &self, request: &RequestWire, metadata: &[u8], barrier: &[u8],
+    ) -> Result<(), Response> {
+        let data = &self.data;
+        if data.cluster != request.cluster || data.ingress != request.ingress
+            || data.leader != request.leader || data.nonce != request.nonce
+            || data.metadata_sha256 != digest(metadata) || data.operation != request.operation()?
+            || !matches!(data.original_identity, StateIdentity::RecordsV6(digest) if digest != [0; 32])
+            || data.original_auth == [0; 32] || data.source_activation == [0; 32]
+            || data.seal_identity == [0; 32] || !data.prefix.valid()
+        {
+            return Err(unavailable());
+        }
+        let bytes = encode(&("native-snapshot-ready-v1", data))?;
+        verify(barrier, &bytes, &self.mac)
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct ReplyData {
+    pub(super) status: u16,
+    #[serde(deserialize_with = "heptabao_domain::json::deserialize")]
+    pub(super) body: Value,
+    pub(super) headers: crate::service::ResponseHeaders,
+    pub(super) consistency_index: Option<u64>,
+}
+impl Drop for ReplyData {
+    fn drop(&mut self) { erase_json(&mut self.body); }
+}
+impl ReplyData {
+    pub(super) fn from_response(mut response: Response, cluster: &str) -> Result<Self, Response> {
+        if response.unwrapped_json.is_some() || response.response_headers.has_local_redirect() {
+            return Err(unavailable());
+        }
+        let consistency_index = match response.consistency_index.as_ref() {
+            Some(index) => Some(index.raft_index_for_cluster(cluster).ok_or_else(unavailable)?),
+            None => None,
+        };
+        // The owned response is consumed. Header custody is never cloned and a
+        // local redirect cannot be serialized into this binary publication.
+        Ok(Self {
+            status: response.status,
+            body: std::mem::replace(&mut response.body, Value::Null),
+            headers: std::mem::take(&mut response.response_headers),
+            consistency_index,
+        })
+    }
+    pub(super) fn into_response(mut self, cluster: &str) -> Result<Response, Response> {
+        let consistency_index = match self.consistency_index {
+            Some(index) => Some(crate::http::consistency::IndexValue::for_raft(cluster, index)
+                .wire().ok_or_else(unavailable)?),
+            None => None,
+        };
+        Ok(Response {
+            status: self.status,
+            body: std::mem::replace(&mut self.body, Value::Null),
+            response_headers: std::mem::take(&mut self.headers),
+            consistency_index,
+            unwrapped_json: None,
+        })
+    }
+}
+
+#[derive(Eq, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "kebab-case", deny_unknown_fields)]
+pub(super) enum TerminalKind {
+    Download { exported_identity: StateIdentity },
+    HistoricalRestore {
+        operation: [u8; 32],
+        original_identity: StateIdentity,
+        original_epoch: u64,
+        restored_identity: StateIdentity,
+        restored_epoch: u64,
+    },
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct CompletionData {
+    pub(super) admission_sha256: [u8; 32],
+    pub(super) request_digest: [u8; 32],
+    pub(super) response_digest: [u8; 32],
+    pub(super) uploaded: BodyDescriptor,
+    pub(super) downloaded: BodyDescriptor,
+    pub(super) terminal: TerminalKind,
+    pub(super) terminal_identity: StateIdentity,
+    pub(super) terminal_epoch: u64,
+    pub(super) source_activation: [u8; 32],
+    pub(super) original_auth: [u8; 32],
+    pub(super) owner_projection: [u8; 32],
+    pub(super) prefix: CommittedApplicationPrefix,
+    pub(super) floor: Option<crate::auth::Timestamp>,
+    pub(super) precise: bool,
+    pub(super) audit_sequence: u64,
+    pub(super) audit_mac: [u8; 32],
+}
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct CompletionWire {
+    pub(super) reply: ReplyData,
+    pub(super) data: CompletionData,
+    mac: [u8; 32],
+}
+
+/// Only MAC authentication plus actual request/response byte witnesses creates
+/// this affine data capability. It still requires the native delivery gates.
+pub(super) struct AuthenticatedCompletion {
+    pub(super) wire: CompletionWire,
+}
+impl CompletionWire {
+    pub(super) fn seal(
+        reply: ReplyData, data: CompletionData, barrier: &[u8],
+    ) -> Result<Self, Response> {
+        let bytes = encode(&("native-snapshot-completion-v1", &reply, &data))?;
+        let mac = sign(barrier, &bytes);
+        Ok(Self { reply, data, mac })
+    }
+
+    pub(super) fn authenticate(
+        self,
+        admission: &AdmissionWire,
+        admission_bytes: &[u8],
+        encoded_upload: &EncodedSnapshotBody,
+        verified_download: &VerifiedSnapshotBody,
+        barrier: &[u8],
+    ) -> Result<AuthenticatedCompletion, Response> {
+        let original = &admission.data;
+        let upload_role = match original.operation {
+            Operation::Download => BodyRole::Empty,
+            Operation::HistoricalRestore => BodyRole::NativeArchive,
+        };
+        let download_role = match original.operation {
+            Operation::Download => BodyRole::NativeArchive,
+            Operation::HistoricalRestore => BodyRole::Empty,
+        };
+        let uploaded = BodyDescriptor::from_encoded(encoded_upload, upload_role)?;
+        let downloaded = BodyDescriptor::from_verified(verified_download, download_role)?;
+        let data = &self.data;
+        if data.admission_sha256 != digest(admission_bytes)
+            || data.request_digest != request_digest(original.metadata_sha256, uploaded)?
+            || data.response_digest != response_digest(&self.reply, downloaded)?
+            || data.uploaded != uploaded || data.downloaded != downloaded
+            || !data.prefix.valid() || data.prefix.index() < original.prefix.index()
+            || data.terminal_identity.digest() == [0; 32]
+            || data.original_auth != original.original_auth
+            || data.owner_projection == [0; 32] || data.audit_sequence == 0
+            || data.audit_mac == [0; 32] || data.source_activation == [0; 32]
+            || (data.precise && data.floor.is_none())
+        {
+            return Err(unavailable());
+        }
+        match (&data.terminal, original.operation) {
+            (TerminalKind::Download { exported_identity }, Operation::Download)
+                if *exported_identity == original.original_identity
+                    && data.terminal_epoch == original.original_epoch
+                    && data.source_activation == original.source_activation
+                    && self.reply.status == 200 => {}
+            (TerminalKind::HistoricalRestore { operation, original_identity, original_epoch,
+                restored_identity, restored_epoch }, Operation::HistoricalRestore)
+                if *operation != [0; 32] && *original_identity == original.original_identity
+                    && *original_epoch == original.original_epoch
+                    && original.original_epoch.checked_add(1) == Some(*restored_epoch)
+                    && data.terminal_epoch == *restored_epoch
+                    && restored_identity.digest() != [0; 32]
+                    && data.source_activation != original.source_activation
+                    && matches!(self.reply.status, 200 | 204) => {}
+            _ => return Err(unavailable()),
+        }
+        let bytes = encode(&("native-snapshot-completion-v1", &self.reply, data))?;
+        verify(barrier, &bytes, &self.mac)?;
+        Ok(AuthenticatedCompletion { wire: self })
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct RejectionWire {
+    pub(super) nonce: [u8; 32],
+    pub(super) metadata_sha256: [u8; 32],
+    pub(super) reply: ReplyData,
+}
+
+pub(super) fn digest(bytes: &[u8]) -> [u8; 32] {
+    crate::ha_forward_completion::digest(bytes)
+}
+pub(super) fn encode<T: Serialize>(value: &T) -> Result<Zeroizing<Vec<u8>>, Response> {
+    crate::secret_serde::to_vec(value, MAX_METADATA).map_err(|_| unavailable())
+}
+pub(super) fn decode<'de, T: Deserialize<'de>>(bytes: &'de [u8]) -> Result<T, Response> {
+    if bytes.is_empty() || bytes.len() > MAX_METADATA { return Err(unavailable()); }
+    serde_json::from_slice(bytes).map_err(|_| unavailable())
+}
+pub(super) fn request_digest(
+    metadata_sha256: [u8; 32], body: BodyDescriptor,
+) -> Result<[u8; 32], Response> {
+    let bytes = encode(&("native-snapshot-request-body-v1", metadata_sha256, body))?;
+    Ok(digest(&bytes))
+}
+pub(super) fn response_digest(
+    response: &ReplyData, body: BodyDescriptor,
+) -> Result<[u8; 32], Response> {
+    let bytes = encode(&("native-snapshot-response-body-v1", response, body))?;
+    Ok(digest(&bytes))
+}
+fn key(barrier: &[u8]) -> ring::hmac::Key {
+    let original = ring::hmac::Key::new(ring::hmac::HMAC_SHA256, barrier);
+    let derived = ring::hmac::sign(&original, b"HeptaBao/native-snapshot-publication/v1");
+    ring::hmac::Key::new(ring::hmac::HMAC_SHA256, derived.as_ref())
+}
+fn sign(barrier: &[u8], bytes: &[u8]) -> [u8; 32] {
+    let mut mac = [0_u8; 32];
+    mac.copy_from_slice(ring::hmac::sign(&key(barrier), bytes).as_ref());
+    mac
+}
+fn verify(barrier: &[u8], bytes: &[u8], mac: &[u8; 32]) -> Result<(), Response> {
+    ring::hmac::verify(&key(barrier), bytes, mac).map_err(|_| unavailable())
+}
+
+/// Same field order and values as ReplyData, without cloning a response owner.
+#[derive(Serialize)]
+struct BorrowedReply<'a> {
+    status: u16,
+    body: &'a Value,
+    headers: &'a crate::service::ResponseHeaders,
+    consistency_index: Option<u64>,
+}
+pub(super) fn observed_response_digest(
+    response: &Response, cluster: &str, body: BodyDescriptor,
+) -> Result<[u8; 32], Response> {
+    if response.unwrapped_json.is_some() || response.response_headers.has_local_redirect() {
+        return Err(unavailable());
+    }
+    let consistency_index = match response.consistency_index.as_ref() {
+        Some(index) => Some(index.raft_index_for_cluster(cluster).ok_or_else(unavailable)?),
+        None => None,
+    };
+    let response = BorrowedReply { status: response.status, body: &response.body,
+        headers: &response.response_headers, consistency_index };
+    let bytes = encode(&("native-snapshot-response-body-v1", response, body))?;
+    Ok(digest(&bytes))
+}
+
+impl AuthenticatedCompletion {
+    pub(super) fn into_parts(self) -> (ReplyData, CompletionData) {
+        (self.wire.reply, self.wire.data)
+    }
+}
+
+#[cfg(test)]
+#[path = "service_snapshot_forward_wire_tests.rs"]
+mod tests;

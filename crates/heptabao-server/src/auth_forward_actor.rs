@@ -85,3 +85,53 @@ impl AuthState {
         Ok(())
     }
 }
+
+#[cfg(feature = "native-v6-ha")]
+impl AuthState {
+    /// Bind the already admitted root Principal. This does not authenticate,
+    /// issue a Principal, consume a use, or read restored credentials.
+    pub(crate) fn snapshot_forward_actor(
+        &self,
+        actor: &Principal,
+        namespace: &str,
+        time: AuthorityTime,
+    ) -> Result<ForwardActorWitness, AuthError> {
+        if !namespace.is_empty() || !actor.is_root() {
+            return Err(denied());
+        }
+        let batch_principal::VerifiedCredential::Service(snapshot) = &actor.credential else {
+            return Err(denied());
+        };
+        let witness = ForwardActorWitness {
+            owner: LeaseOwner::service(&actor.digest).map_err(|_| denied())?,
+            namespace: namespace.to_owned(),
+            accessor: Some(snapshot.accessor.clone()),
+            entity_id: snapshot.entity_id.clone(),
+            origin_peer: actor.origin_peer,
+        };
+        self.validate_snapshot_forward_actor(&witness, time)?;
+        Ok(witness)
+    }
+
+    /// Delivery-only validation against the actual retained original Auth view.
+    /// A finite final use remains a delivery witness, never a new admission.
+    pub(crate) fn validate_snapshot_forward_actor(
+        &self,
+        actor: &ForwardActorWitness,
+        time: AuthorityTime,
+    ) -> Result<(), AuthError> {
+        if !actor.namespace.is_empty() {
+            return Err(denied());
+        }
+        let digest = actor.owner.service_digest().ok_or_else(denied)?;
+        let token = self.active_token_observed(digest, self.token_api_observed_time(time), false)?;
+        if !token.root {
+            return Err(denied());
+        }
+        self.validate_forward_actor(actor, time)
+    }
+}
+
+#[cfg(all(test, feature = "native-v6-ha"))]
+#[path = "auth_snapshot_forward_actor_tests.rs"]
+mod snapshot_tests;

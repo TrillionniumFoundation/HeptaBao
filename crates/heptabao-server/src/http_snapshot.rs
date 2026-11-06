@@ -63,6 +63,8 @@ pub(super) enum NativeReply {
     Ui(super::ui::Reply),
     HttpBadRequest,
     File(SnapshotFile),
+    #[cfg(feature = "native-v6-ha")]
+    ForwardedFile { file: SnapshotFile, response: Response },
     #[cfg(feature = "native-v6-storage")]
     LosslessFile(SnapshotFile),
     Redirect {
@@ -94,6 +96,9 @@ impl NativeReply {
             }
             Self::Ui(reply) => reply.write(writer, head),
             Self::File(file) => write_file_response(writer, file, head, namespace),
+            #[cfg(feature = "native-v6-ha")]
+            Self::ForwardedFile { file, response } =>
+                write_forwarded_file_response(writer, file, response, head, namespace),
             #[cfg(feature = "native-v6-storage")]
             Self::LosslessFile(file) => write_lossless_file_response(writer, file, head, namespace),
             Self::Redirect {
@@ -349,6 +354,37 @@ pub(super) fn execute(
     };
     let execution = match execution {
         NativeSnapshotAdmission::Execute(execution) => execution,
+        #[cfg(feature = "native-v6-ha")]
+        NativeSnapshotAdmission::Forward(plan) => {
+            let (response, file) = match BodyReader::new(reader, native.body, deadline) {
+                Ok(mut body) => {
+                    let completed = (*plan).execute(service, &mut body);
+                    let (response, file) = completed.into_parts();
+                    // A denial before READY has not consumed the caller's upload.
+                    // Drain only this same original bounded HTTP reader, exactly
+                    // as local admission denials do; never resend it to a peer.
+                    if response.status >= 400 {
+                        let mut buffer = Zeroizing::new([0; 8192]);
+                        while let Ok(count) = body.read(&mut *buffer) {
+                            if count == 0 { break; }
+                        }
+                    }
+                    (response, file)
+                }
+                Err(_) => (*plan).reject_before_exchange(
+                    service, Response::error(400, "invalid snapshot body framing"),
+                ).into_parts(),
+            };
+            return if response.status == 200 {
+                match file {
+                    Some(file) => NativeReply::ForwardedFile { file, response },
+                    None => NativeReply::Json(response),
+                }
+            } else {
+                drop(file);
+                NativeReply::Json(response)
+            };
+        }
         NativeSnapshotAdmission::Redirect(origin) => {
             // Do not read/replay the upload, allocate a spool or transport any
             // archive in the ordinary bounded HA forwarding frame.
@@ -441,6 +477,39 @@ pub(super) fn write_file_response(
             if count == 0 {
                 break;
             }
+            writer.write_all(&buffer[..count])?;
+        }
+    }
+    writer.flush()
+}
+
+#[cfg(feature = "native-v6-ha")]
+fn write_forwarded_file_response(
+    writer: &mut impl Write, mut file: SnapshotFile, response: Response,
+    head: bool, namespace: &str,
+) -> io::Result<()> {
+    if response.status != 200 {
+        return Err(io::Error::other("snapshot completion status changed"));
+    }
+    // This file reaches HTTP only after authenticated END/EOF, actual file hash,
+    // original Actor/native-owner gates and the mandatory ingress response audit.
+    // Framing and binary media fields remain transport-owned constants.
+    write!(
+        writer,
+        "HTTP/1.1 200 OK\r\nContent-Type: application/gzip\r\nContent-Disposition: attachment; filename=\"heptabao-native.snap\"\r\nContent-Length: {}\r\n",
+        file.len(),
+    )?;
+    response.response_headers.write(writer)?;
+    if let Some(index) = response.consistency_index.as_ref() {
+        write!(writer, "X-Vault-Index: {}\r\n", index.as_str())?;
+    }
+    write_standard_headers_with_date(writer, namespace, response.response_headers.has_date())?;
+    writer.write_all(b"\r\n")?;
+    if !head {
+        let mut buffer = Zeroizing::new([0; 64 * 1024]);
+        loop {
+            let count = file.read(&mut *buffer)?;
+            if count == 0 { break; }
             writer.write_all(&buffer[..count])?;
         }
     }

@@ -24,7 +24,7 @@ pub(super) struct ForwardDelivery {
 impl Service {
     // Exact current authority graph, with only the independently proven
     // monotonic Token API observation excluded. Other owners stay exact.
-    fn forward_owner_projection(&self) -> Result<[u8; 32], Response> {
+    pub(in crate::service) fn forward_owner_projection(&self) -> Result<[u8; 32], Response> {
         let state = self
             .state
             .as_ref()
