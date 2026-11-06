@@ -1,0 +1,25 @@
+{
+  "build_argv_tails_unchanged": true,
+  "controller_only_reviewed_three_constants_and_host_docstring_changed": true,
+  "controller_sha256": "c8ef09b133312149eecc1886322cc96dcecda18c637b0db9fc3a5e917b3f6564",
+  "current_actual_offline_and_clang_receipts_bound": true,
+  "current_retained_input_count": 322,
+  "env_changed_keys": [
+    "CARGO_HOME",
+    "CARGO_TARGET_DIR",
+    "PATH"
+  ],
+  "extra_header_locator_environment": {},
+  "groups_unchanged": 16,
+  "inherited_prior_host_maps_not_treated_as_current_pins": true,
+  "normal107_qualified": false,
+  "original_feature_profile_budget_values_unchanged": true,
+  "other_controller_ast_identical": true,
+  "peer_selected": 17,
+  "rust_build_executed_by_preparation": false,
+  "schema": "heptabao.pocket4-current107-input-integrity.v1",
+  "selection_bytes": 142663,
+  "selection_sha256": "869feff2d8672fe37a26a2fb671cdc853b3c9d7f889edfe76650eed8103f44e9",
+  "server_selected": 90,
+  "unique_selected_test_names_unchanged": 107
+}

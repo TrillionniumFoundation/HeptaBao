@@ -1,0 +1,695 @@
+--- r4-with-only-new-root/main3_api_cycle.py
++++ r5/main3_api_cycle.py
+@@ -18,6 +18,7 @@
+ import stat
+ import time
+ from main3_source_fence import CapsuleFence,Refused,need,ident
++from main3_http_complete import DeadlineSocket,CompleteHTTPResponse,read_complete_body,safe_failure_code
+ 
+ ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r5')
+ MOUNT='openclaw-auth'
+@@ -76,7 +77,7 @@
+         self.rows.append(row)
+         self.journal.append('api-request-intent',dict(row))
+         deadline=time.monotonic()+self.remaining(15 if readiness else 10)
+-        raw=tls=response=None
++        raw=tls=response=stream=None
+         def left():
+             remaining=min(self.until,deadline)-time.monotonic();need(remaining>0,'one_http_original_absolute_deadline');return remaining
+         try:
+@@ -96,26 +97,24 @@
+             request=('\r\n'.join(headers)+'\r\n\r\n').encode('ascii')+payload
+             tls.settimeout(left());row['dispatched']=True;row['httpRequestCount']=1
+             tls.sendall(request)
+-            tls.settimeout(left());response=http.client.HTTPResponse(tls);response.begin()
++            stream=DeadlineSocket(tls,left,row)
++            response=CompleteHTTPResponse(stream,left,row);response.begin()
+             row['status']=response.status
+-            length=response.getheader('Content-Length')
+-            need(not response.getheader('Transfer-Encoding') and (length is None or re.fullmatch(r'[0-9]{1,9}',length)),
+-                 'complete_fixed_http_response_framing')
+-            if response.status==204:
+-                need(length in (None,'0'),'empty_204_response_frame');amount=0
+-            else:
+-                need(length is not None and int(length)<=MAX_BODY,'bounded_content_length_required');amount=int(length)
+-            tls.settimeout(left());data=response.read(amount+1)
+-            need(len(data)==amount and response.isclosed(),'complete_http_body_before_acceptance')
++            data=read_complete_body(response,left,row)
+             left();row.update(responseComplete=True,responseBytes=len(data))
+             value=json.loads(data) if data else {}
+         except BaseException as error:
+             row['outcomeUnknown']=bool(row['dispatched'] and not row['responseComplete'])
+             self.unknown=True;row['errorType']=type(error).__name__
++            row['failureCode']=safe_failure_code(error)
++            if isinstance(error,Refused) and error.args==('one_http_original_absolute_deadline',):row['failureCode']='http_original_deadline'
++            if isinstance(error,json.JSONDecodeError):row['failureCode']='complete_body_json_invalid'
+             # Exception messages, response bodies and their hashes stay private.
+             raise Refused('api_transport_or_complete_response_failed') from None
+         finally:
+             if response is not None:response.close()
++            if stream is not None:stream.close_reader()
++            row['responseReaderClosed']=stream is None or stream.raw.closed
+             if tls is not None:tls.close()
+             elif raw is not None:raw.close()
+             row['socketsClosed']=True
+--- r4-with-only-new-root/main3_http_complete.py
++++ r5/main3_http_complete.py
+@@ -0,0 +1,212 @@
++#!/usr/bin/env python3
++"""Bounded, complete HTTP response framing for one already-owned TLS socket.
++
++No connection, dispatch, retry, credential logging or socket ownership is added.
++The caller supplies its original absolute deadline and closes the TLS socket.
++"""
++from __future__ import annotations
++import http.client
++import io
++import re
++
++MAX_BODY = 1048576
++MAX_WIRE = 2 * MAX_BODY + 131072
++MAX_LINE = 8192
++MAX_HEADERS = 100
++MAX_HEADER_BYTES = 65536
++MAX_TRAILER_BYTES = 16384
++MAX_CHUNKS = 4096
++_TOKEN = rb"[!#$%&'*+.^_`|~0-9A-Za-z-]+"
++_QUOTED = rb'"(?:[\t !#-\[\]-~\x80-\xff]|\\[\t \x21-\x7e\x80-\xff])*"'
++_CHUNK_LINE = re.compile(rb'([0-9A-Fa-f]{1,16})(?:[ \t]*;[ \t]*' + _TOKEN +
++                         rb'(?:[ \t]*=[ \t]*(?:' + _TOKEN + rb'|' + _QUOTED + rb'))?)*[ \t]*')
++_HEADER_NAME = re.compile(_TOKEN)
++_FORBIDDEN_TRAILERS = frozenset((
++    b'content-length', b'transfer-encoding', b'host', b'connection', b'trailer',
++    b'content-encoding', b'content-type', b'content-range', b'authorization',
++    b'proxy-authorization', b'www-authenticate', b'proxy-authenticate', b'set-cookie'))
++
++
++class HttpFramingRefused(Exception):
++    def __init__(self, code):
++        self.safe_code = code
++        super().__init__(code)
++
++
++def require(value, code):
++    if not value:
++        raise HttpFramingRefused(code)
++
++
++class _DeadlineRaw(io.RawIOBase):
++    def __init__(self, tls, remaining, projection):
++        super().__init__()
++        self.tls, self.remaining, self.projection = tls, remaining, projection
++        self.wire_bytes = 0
++
++    def readable(self):
++        return True
++
++    def readinto(self, buffer):
++        self.tls.settimeout(self.remaining())
++        require(self.wire_bytes < MAX_WIRE, 'http_wire_limit')
++        data = self.tls.recv(min(len(buffer), 8192, MAX_WIRE - self.wire_bytes))
++        self.wire_bytes += len(data)
++        self.projection['receivedWireBytes'] = self.wire_bytes
++        self.remaining()
++        buffer[:len(data)] = data
++        return len(data)
++
++
++class DeadlineSocket:
++    """Only the response reader owns this file; the original caller owns TLS."""
++    def __init__(self, tls, remaining, projection):
++        self.raw = _DeadlineRaw(tls, remaining, projection)
++        self.reader = None
++
++    def makefile(self, mode):
++        require(mode == 'rb' and self.reader is None, 'http_one_response_reader')
++        self.reader = io.BufferedReader(self.raw, buffer_size=8192)
++        return self.reader
++
++    def close_reader(self):
++        if self.reader is not None:
++            self.reader.close()
++        else:
++            self.raw.close()
++
++
++class CompleteHTTPResponse(http.client.HTTPResponse):
++    """Use stdlib status/headers/body parsing with strict bounded chunk endings."""
++    def __init__(self, stream, remaining, projection):
++        self.remaining, self.projection = remaining, projection
++        self.announced_bytes = self.data_chunks = self.trailer_count = 0
++        self.terminal_chunk_seen = self.trailers_complete = False
++        super().__init__(stream)
++
++    def _read_next_chunk_size(self):
++        self.remaining()
++        line = self.fp.readline(MAX_LINE + 1)
++        require(bool(line), 'http_chunk_size_missing')
++        require(len(line) <= MAX_LINE and line.endswith(b'\r\n'), 'http_chunk_size_line')
++        match = _CHUNK_LINE.fullmatch(line[:-2])
++        require(match is not None, 'http_chunk_size_grammar')
++        size = int(match.group(1), 16)
++        require(self.announced_bytes + size <= MAX_BODY, 'http_decoded_body_limit')
++        if size:
++            self.data_chunks += 1
++            require(self.data_chunks <= MAX_CHUNKS, 'http_chunk_count_limit')
++            self.announced_bytes += size
++        else:
++            self.terminal_chunk_seen = True
++        self.projection.update(dataChunkCount=self.data_chunks,
++                               terminalChunkSeen=self.terminal_chunk_seen)
++        return size
++
++    def _read_and_discard_trailer(self):
++        total = 0
++        while True:
++            self.remaining()
++            line = self.fp.readline(MAX_LINE + 1)
++            require(bool(line), 'http_terminal_trailer_missing')
++            total += len(line)
++            require(len(line) <= MAX_LINE and total <= MAX_TRAILER_BYTES,
++                    'http_trailer_limit')
++            require(line.endswith(b'\r\n'), 'http_trailer_line_ending')
++            if line == b'\r\n':
++                self.trailers_complete = True
++                self.projection['trailersComplete'] = True
++                return
++            self.trailer_count += 1
++            self.projection['trailerCount'] = self.trailer_count
++            require(self.trailer_count <= MAX_HEADERS, 'http_trailer_count_limit')
++            name, separator, value = line[:-2].partition(b':')
++            require(bool(separator) and _HEADER_NAME.fullmatch(name) is not None,
++                    'http_trailer_field_grammar')
++            require(name.lower() not in _FORBIDDEN_TRAILERS, 'http_forbidden_trailer')
++            require(all(c == 9 or c >= 32 and c != 127 for c in value),
++                    'http_trailer_value_grammar')
++
++    def _get_chunk_left(self):
++        left = self.chunk_left
++        if not left:
++            if left is not None:
++                require(self._safe_read(2) == b'\r\n', 'http_chunk_data_terminator')
++            left = self._read_next_chunk_size()
++            if left == 0:
++                self._read_and_discard_trailer()
++                self._close_conn()
++                left = None
++            self.chunk_left = left
++        return left
++
++
++def read_complete_body(response, remaining, projection):
++    """No unbounded read, EOF inference, response replay or header-value logging."""
++    remaining()
++    headers = response.getheaders()
++    lengths = [v for k, v in headers if k.lower() == 'content-length']
++    transfers = [v for k, v in headers if k.lower() == 'transfer-encoding']
++    projection.update(contentLengthHeaderCount=len(lengths),
++                      transferEncodingHeaderCount=len(transfers),
++                      responseFraming='unadmitted')
++    require(len(headers) <= MAX_HEADERS, 'http_header_count_limit')
++    require(not getattr(response.headers, 'defects', ()), 'http_header_grammar')
++    size = 0
++    for name, value in headers:
++        require(_HEADER_NAME.fullmatch(name.encode('ascii', 'strict')) is not None,
++                'http_header_name_grammar')
++        require(all(c == '\t' or ord(c) >= 32 and ord(c) != 127 for c in value),
++                'http_header_value_grammar')
++        size += len(name) + len(value) + 4
++        require(len(name) + len(value) + 4 <= MAX_LINE and size <= MAX_HEADER_BYTES,
++                'http_header_bytes_limit')
++    require(len(lengths) <= 1 and len(transfers) <= 1, 'http_duplicate_framing_header')
++    require(not (lengths and transfers), 'http_ambiguous_transfer_and_length')
++    require(response.version in (10, 11), 'http_response_version')
++    length = lengths[0].strip(' \t') if lengths else None
++    require(length is None or re.fullmatch(r'[0-9]{1,9}', length), 'http_length_grammar')
++    if length is not None:
++        length = int(length)
++        projection['declaredContentLength'] = length
++        require(length <= MAX_BODY, 'http_decoded_body_limit')
++    if response.status == 204:
++        require(not transfers and length in (None, 0), 'http_empty_204_frame')
++        projection['responseFraming'] = 'no-body'
++        expected = 0
++    elif transfers:
++        require(transfers[0].strip(' \t').lower() == 'chunked' and response.version == 11,
++                'http_unsupported_transfer_encoding')
++        # The stdlib compares TE literally; admit case/OWS only after rejecting
++        # all duplicate/ambiguous framing, then select its original chunk reader.
++        response.chunked, response.chunk_left, response.length = True, None, None
++        projection.update(responseFraming='chunked', dataChunkCount=0,
++                          trailerCount=0, terminalChunkSeen=False, trailersComplete=False)
++        expected = None
++    else:
++        require(length is not None, 'http_content_length_required')
++        projection['responseFraming'] = 'content-length'
++        expected = length
++    data = response.read(MAX_BODY + 1 if expected is None else expected + 1)
++    remaining()
++    require(len(data) <= MAX_BODY, 'http_decoded_body_limit')
++    require(response.isclosed(), 'http_body_incomplete')
++    if expected is None:
++        require(response.terminal_chunk_seen and response.trailers_complete and
++                len(data) == response.announced_bytes, 'http_chunked_body_incomplete')
++    else:
++        require(len(data) == expected, 'http_body_incomplete')
++    projection['decodedBodyBytes'] = len(data)
++    return data
++
++
++def safe_failure_code(error):
++    if isinstance(error, HttpFramingRefused):
++        return error.safe_code
++    if isinstance(error, http.client.IncompleteRead):
++        return 'http_body_incomplete'
++    if isinstance(error, TimeoutError):
++        return 'http_original_deadline'
++    if isinstance(error, http.client.HTTPException):
++        return 'http_status_or_header_grammar'
++    return 'api_transport_or_guard_refused'
+--- r4-with-only-new-root/test_main3_api_guards.py
++++ r5/test_main3_api_guards.py
+@@ -122,8 +122,9 @@
+     def __init__(self,body=b'{"ok":true}',status=200,length=None,transfer=None,complete=True):
+         self.body=body;self.status=status;self.length=str(len(body)) if length is None else length
+         self.transfer=transfer;self.complete=complete;self.closed=False
++        self.version=11;self.headers=types.SimpleNamespace(defects=[])
+     def begin(self):pass
+-    def getheader(self,name):return self.transfer if name=='Transfer-Encoding' else self.length
++    def getheaders(self):return ([('Content-Length',self.length)] if self.length is not None else []) + ([('Transfer-Encoding',self.transfer)] if self.transfer is not None else [])
+     def read(self,size):return self.body
+     def isclosed(self):return self.complete
+     def close(self):self.closed=True
+@@ -137,7 +138,7 @@
+         self.api.guard=types.SimpleNamespace(check=mock.Mock())
+         self.sock=FakeSocket();self.api.context=types.SimpleNamespace(wrap_socket=mock.Mock(return_value=self.sock))
+         self.connect=mock.patch.object(a.socket,'create_connection',return_value=self.sock).start()
+-        self.response=Response();self.response_factory=mock.patch.object(a.http.client,'HTTPResponse',return_value=self.response).start()
++        self.response=Response();self.response_factory=mock.patch.object(a,'CompleteHTTPResponse',return_value=self.response).start()
+         self.addCleanup(mock.patch.stopall)
+     def call(self,**kw):return self.api.call('synthetic.case','GET','/v1/sys/health',token='',category='health',**kw)
+     def test_complete_verified_response_one_request(self):
+@@ -162,7 +163,7 @@
+         self.response.length='999'
+         with self.assertRaises(f.Refused):self.call()
+         self.assertTrue(self.api.rows[0]['outcomeUnknown']);self.assertEqual(self.connect.call_count,1)
+-    def test_chunked_response_is_rejected(self):
++    def test_ambiguous_transfer_and_content_length_is_rejected(self):
+         self.response.transfer='chunked'
+         with self.assertRaises(f.Refused):self.call()
+         self.assertTrue(self.api.rows[0]['outcomeUnknown'])
+--- r4-with-only-new-root/test_main3_http_complete.py
++++ r5/test_main3_http_complete.py
+@@ -0,0 +1,231 @@
++#!/usr/bin/env python3
++"""Synthetic framing and deadline cases; no current credentials or provider I/O."""
++import http.client
++import json
++import time
++import unittest
++from unittest import mock
++import main3_http_complete as h
++
++
++class MemoryTLS:
++    def __init__(self, data, fragment=8192, delay=0):
++        self.data, self.fragment, self.delay = data, fragment, delay
++        self.offset = 0
++        self.closed = False
++        self.timeouts = []
++
++    def settimeout(self, value):
++        self.timeouts.append(value)
++
++    def recv(self, amount):
++        if self.delay:
++            time.sleep(self.delay)
++        value = self.data[self.offset:self.offset + min(amount, self.fragment)]
++        self.offset += len(value)
++        return value
++
++    def close(self):
++        self.closed = True
++
++
++def frame(body=b'{}', headers=None, status=200, version='HTTP/1.1'):
++    headers = [('Content-Length', str(len(body)))] if headers is None else headers
++    return (version + ' ' + str(status) + ' Synthetic\r\n' +
++            ''.join(k + ': ' + v + '\r\n' for k, v in headers) + '\r\n').encode() + body
++
++
++def chunked(body=b'2\r\n{}\r\n0\r\n\r\n', headers=None):
++    return frame(body, [('Transfer-Encoding', 'chunked')] if headers is None else headers)
++
++
++class CompleteFraming(unittest.TestCase):
++    def parse(self, raw, fragment=8192, remaining=None, delay=0):
++        self.projection = {}
++        self.socket = MemoryTLS(raw, fragment, delay)
++        if remaining is None:
++            until = time.monotonic() + 2
++            def remaining():
++                left = until - time.monotonic()
++                if left <= 0:
++                    raise TimeoutError('synthetic_absolute_deadline')
++                return left
++        stream = h.DeadlineSocket(self.socket, remaining, self.projection)
++        response = None
++        try:
++            response = h.CompleteHTTPResponse(stream, remaining, self.projection)
++            response.begin()
++            data = h.read_complete_body(response, remaining, self.projection)
++            return data
++        finally:
++            if response is not None:
++                response.close()
++            stream.close_reader()
++            self.socket.close()
++
++    def rejects(self, raw, code=None):
++        with self.assertRaises((h.HttpFramingRefused, http.client.HTTPException)) as caught:
++            self.parse(raw)
++        if code is not None:
++            self.assertEqual(h.safe_failure_code(caught.exception), code)
++        self.assertTrue(self.socket.closed)
++
++    def test_content_length_fragmented_complete(self):
++        body = json.dumps({'synthetic': 'x' * 4096}).encode()
++        self.assertEqual(self.parse(frame(body), fragment=7), body)
++        self.assertEqual(self.projection['responseFraming'], 'content-length')
++        self.assertEqual(self.projection['decodedBodyBytes'], len(body))
++        self.assertTrue(self.socket.closed)
++
++    def test_content_length_zero(self):
++        self.assertEqual(self.parse(frame(b'')), b'')
++
++    def test_empty_204_without_length(self):
++        self.assertEqual(self.parse(frame(b'', [], 204)), b'')
++        self.assertEqual(self.projection['responseFraming'], 'no-body')
++
++    def test_empty_204_with_zero_length(self):
++        self.assertEqual(self.parse(frame(b'', [('Content-Length', '0')], 204)), b'')
++
++    def test_large_multichunk_extensions_and_trailer(self):
++        body = json.dumps({'synthetic': 'x' * 4096}).encode()
++        first, second = body[:137], body[137:]
++        raw = (b'89; kind=one; quoted="two; three"\r\n' + first + b'\r\n' +
++               format(len(second), 'X').encode() + b'\r\n' + second +
++               b'\r\n0; done=yes\r\nX-Synthetic-Only: closed\r\n\r\n')
++        self.assertEqual(self.parse(chunked(raw), fragment=11), body)
++        self.assertEqual(self.projection['dataChunkCount'], 2)
++        self.assertEqual(self.projection['trailerCount'], 1)
++        self.assertTrue(self.projection['terminalChunkSeen'])
++        self.assertTrue(self.projection['trailersComplete'])
++
++    def test_chunked_case_and_optional_whitespace(self):
++        self.assertEqual(self.parse(chunked(headers=[('Transfer-Encoding', '  ChUnKeD \t')])), b'{}')
++
++    def test_chunked_empty_body_terminal_required(self):
++        self.assertEqual(self.parse(chunked(b'0\r\n\r\n')), b'')
++        self.assertEqual(self.projection['dataChunkCount'], 0)
++
++    def test_exact_decoded_body_limit(self):
++        body = b'x' * h.MAX_BODY
++        self.assertEqual(self.parse(chunked(b'100000\r\n' + body + b'\r\n0\r\n\r\n'), fragment=8192), body)
++
++    def test_truncated_content_length(self):
++        self.rejects(frame(b'{}', [('Content-Length', '3')]), 'http_body_incomplete')
++
++    def test_missing_length_not_inferred_from_eof(self):
++        self.rejects(frame(b'{}', []), 'http_content_length_required')
++
++    def test_duplicate_content_length_rejected_even_identical(self):
++        self.rejects(frame(b'{}', [('Content-Length', '2'), ('content-length', '2')]),
++                     'http_duplicate_framing_header')
++
++    def test_duplicate_transfer_encoding_rejected(self):
++        self.rejects(chunked(headers=[('Transfer-Encoding', 'chunked'), ('transfer-encoding', 'chunked')]),
++                     'http_duplicate_framing_header')
++
++    def test_transfer_and_length_ambiguity_rejected(self):
++        self.rejects(chunked(headers=[('Transfer-Encoding', 'chunked'), ('Content-Length', '2')]),
++                     'http_ambiguous_transfer_and_length')
++
++    def test_unsupported_transfer_codings_rejected(self):
++        for value in ('gzip, chunked', 'chunked, chunked', 'identity', ''):
++            with self.subTest(value=value):
++                self.rejects(chunked(headers=[('Transfer-Encoding', value)]), 'http_unsupported_transfer_encoding')
++
++    def test_invalid_content_length_rejected(self):
++        for value in ('-1', '+2', '0x2', '2, 2', 'synthetic', '9999999999'):
++            with self.subTest(value=value):
++                self.rejects(frame(b'{}', [('Content-Length', value)]), 'http_length_grammar')
++
++    def test_oversized_declared_content_length(self):
++        self.rejects(frame(b'{}', [('Content-Length', '1048577')]), 'http_decoded_body_limit')
++
++    def test_body_for_204_rejected(self):
++        self.rejects(frame(b'{}', [('Content-Length', '2')], 204), 'http_empty_204_frame')
++
++    def test_chunked_204_rejected(self):
++        self.rejects(frame(b'0\r\n\r\n', [('Transfer-Encoding', 'chunked')], 204), 'http_empty_204_frame')
++
++    def test_invalid_chunk_size_grammar(self):
++        for value in (b'z', b'-2', b'+2', b'0x2', b' 2', b'2;=bad', b'2;foo="unterminated'):
++            with self.subTest(value=value):
++                self.rejects(chunked(value + b'\r\n{}\r\n0\r\n\r\n'), 'http_chunk_size_grammar')
++
++    def test_chunk_size_requires_crlf(self):
++        self.rejects(chunked(b'2\n{}\r\n0\r\n\r\n'), 'http_chunk_size_line')
++
++    def test_chunk_data_requires_crlf(self):
++        self.rejects(chunked(b'2\r\n{}XX0\r\n\r\n'), 'http_chunk_data_terminator')
++
++    def test_truncated_chunk_body(self):
++        self.rejects(chunked(b'20\r\n{}'), 'http_body_incomplete')
++
++    def test_missing_zero_chunk_rejected(self):
++        self.rejects(chunked(b'2\r\n{}\r\n'), 'http_chunk_size_missing')
++
++    def test_missing_final_trailer_separator_rejected(self):
++        self.rejects(chunked(b'2\r\n{}\r\n0\r\n'), 'http_terminal_trailer_missing')
++
++    def test_trailer_bad_line_ending_rejected(self):
++        self.rejects(chunked(b'0\r\nX-Synthetic: ok\n\n'), 'http_trailer_line_ending')
++
++    def test_forbidden_framing_trailer_rejected(self):
++        self.rejects(chunked(b'0\r\nContent-Length: 0\r\n\r\n'), 'http_forbidden_trailer')
++
++    def test_folded_trailer_rejected(self):
++        self.rejects(chunked(b'0\r\n folded: value\r\n\r\n'), 'http_trailer_field_grammar')
++
++    def test_folded_header_rejected(self):
++        self.rejects(frame(b'{}', [('Content-Length', '2'), ('X-Synthetic', 'value\r\n folded')]),
++                     'http_header_value_grammar')
++
++    def test_oversized_chunk_rejected_before_body(self):
++        self.rejects(chunked(b'100001\r\n'), 'http_decoded_body_limit')
++
++    def test_cumulative_decoded_limit_rejected(self):
++        self.rejects(chunked(b'100000\r\n' + b'x' * h.MAX_BODY + b'\r\n1\r\nx\r\n0\r\n\r\n'),
++                     'http_decoded_body_limit')
++
++    def test_bounded_number_of_chunks(self):
++        self.rejects(chunked(b'1\r\nx\r\n' * (h.MAX_CHUNKS + 1) + b'0\r\n\r\n'), 'http_chunk_count_limit')
++
++    def test_bounded_chunk_line(self):
++        self.rejects(chunked(b'2;extension=' + b'x' * h.MAX_LINE + b'\r\n{}\r\n0\r\n\r\n'),
++                     'http_chunk_size_line')
++
++    def test_bounded_trailer_bytes(self):
++        self.rejects(chunked(b'0\r\n' + (b'X-Synthetic: ' + b'x' * 8100 + b'\r\n') * 3 + b'\r\n'),
++                     'http_trailer_limit')
++
++    def test_bounded_wire_bytes(self):
++        with mock.patch.object(h, 'MAX_WIRE', 48):
++            self.rejects(frame(b'x' * 100), 'http_wire_limit')
++
++    def test_absolute_deadline_not_restarted_by_slow_header(self):
++        until = time.monotonic() + .045
++        def remaining():
++            left = until - time.monotonic()
++            if left <= 0:
++                raise TimeoutError('synthetic_secret_must_not_be_reported')
++            return left
++        started = time.monotonic()
++        with self.assertRaises(TimeoutError) as caught:
++            self.parse(frame(), fragment=1, remaining=remaining, delay=.01)
++        self.assertEqual(h.safe_failure_code(caught.exception), 'http_original_deadline')
++        self.assertLess(time.monotonic() - started, .15)
++        self.assertTrue(self.socket.closed)
++        self.assertGreater(len(self.socket.timeouts), 2)
++        self.assertLess(self.socket.timeouts[-1], self.socket.timeouts[0])
++
++    def test_projection_contains_no_body_header_value_or_digest(self):
++        value = 'synthetic-private-marker-not-public'
++        self.parse(frame(value.encode(), [('Content-Length', str(len(value))), ('X-Synthetic', value)]))
++        public = json.dumps(self.projection)
++        self.assertNotIn(value, public)
++        self.assertNotIn('sha256', public)
++        self.assertNotIn('X-Synthetic', public)
++
++
++if __name__ == '__main__':
++    unittest.main(verbosity=2)
+--- r4-with-only-new-root/qualify_main3_http_tls.py
++++ r5/qualify_main3_http_tls.py
+@@ -0,0 +1,158 @@
++#!/usr/bin/env python3
++"""One-shot synthetic TLS peers qualify the real Api reader and socket closure.
++
++Accepts an already-created synthetic certificate/key pair, never runs a child,
++never contacts a provider, and never loads a production configuration/capsule.
++"""
++import hashlib
++import json
++from pathlib import Path
++import socket
++import ssl
++import threading
++import time
++import types
++import main3_api_cycle as a
++
++
++def run(certificate, key):
++    started = time.monotonic()
++    until = started + 30
++    cert = Path(certificate).read_text()
++    leaf = hashlib.sha256(ssl.PEM_cert_to_DER_cert(cert)).hexdigest()
++    server_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
++    server_context.minimum_version = ssl.TLSVersion.TLSv1_2
++    server_context.load_cert_chain(str(certificate), str(key))
++    client_context = ssl.create_default_context(cafile=str(certificate))
++    checks = []
++    peers = []
++    body = json.dumps({'synthetic': True, 'padding': 'x' * 4096}, separators=(',', ':')).encode()
++    large = (b'HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\nConnection: close\r\n\r\n' +
++             b'89;synthetic=one\r\n' + body[:137] + b'\r\n' +
++             format(len(body) - 137, 'x').encode() + b'\r\n' + body[137:] +
++             b'\r\n0\r\nX-Synthetic: complete\r\n\r\n')
++    header = b'HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n'
++    fixtures = [
++        ('content_length', b'HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\n{}', True, 200),
++        ('large_fragmented_chunked', large, True, 200),
++        ('empty_204_no_length', b'HTTP/1.1 204 No Content\r\n\r\n', True, 204),
++        ('truncated_content_length', b'HTTP/1.1 200 OK\r\nContent-Length: 1000\r\n\r\n{}', False, 200),
++        ('invalid_chunk_size', header + b'z\r\n{}\r\n0\r\n\r\n', False, 200),
++        ('missing_terminal_chunk', header + b'2\r\n{}\r\n', False, 200),
++        ('missing_trailer_completion', header + b'2\r\n{}\r\n0\r\n', False, 200),
++        ('bad_chunk_terminator', header + b'2\r\n{}XX0\r\n\r\n', False, 200),
++        ('oversize_decoded_chunk', header + b'100001\r\n', False, 200),
++        ('ambiguous_transfer_and_length', b'HTTP/1.1 200 OK\r\nContent-Length: 2\r\nTransfer-Encoding: chunked\r\n\r\n2\r\n{}\r\n0\r\n\r\n', False, 200),
++        ('duplicate_transfer', b'HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\nTransfer-Encoding: chunked\r\n\r\n0\r\n\r\n', False, 200),
++        ('forbidden_trailer', header + b'0\r\nContent-Length: 0\r\n\r\n', False, 200),
++        ('wrong_leaf_before_dispatch', b'', False, 200),
++        ('original_absolute_deadline_stall', b'', False, 200),
++        ('original_absolute_deadline_slow_header', b'HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\n{}', False, 200),
++    ]
++    for name, wire, success, status in fixtures:
++        if time.monotonic() >= until:
++            raise RuntimeError('synthetic_tls_qualification_30_seconds')
++        observed = {'case': name, 'connections': 0, 'requests': 0,
++                    'listenerClosed': False, 'acceptedSocketClosed': False,
++                    'peerThreadJoined': False}
++        listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
++        listener.settimeout(2)
++        listener.bind(('127.0.0.1', 0))
++        listener.listen(1)
++        port = listener.getsockname()[1]
++        release = threading.Event()
++
++        def serve():
++            raw = tls = None
++            try:
++                raw, _ = listener.accept()
++                observed['connections'] += 1
++                raw.settimeout(2)
++                tls = server_context.wrap_socket(raw, server_side=True)
++                request = b''
++                while b'\r\n\r\n' not in request:
++                    part = tls.recv(8192)
++                    if not part:
++                        return
++                    request += part
++                    if len(request) > 65536:
++                        raise RuntimeError('bounded_synthetic_peer_request')
++                observed['requests'] += 1
++                if name == 'original_absolute_deadline_stall':
++                    release.wait(1)
++                elif name == 'original_absolute_deadline_slow_header':
++                    for byte in wire:
++                        tls.sendall(bytes([byte]))
++                        if release.wait(.025):
++                            break
++                else:
++                    for offset in range(0, len(wire), 137):
++                        tls.sendall(wire[offset:offset + 137])
++            except (BrokenPipeError, ConnectionResetError, ssl.SSLError):
++                observed['peerSawClientClosure'] = True
++            except BaseException as error:
++                observed['peerErrorType'] = type(error).__name__
++            finally:
++                if tls is not None:
++                    tls.close()
++                elif raw is not None:
++                    raw.close()
++                observed['acceptedSocketClosed'] = raw is not None
++                listener.close()
++                observed['listenerClosed'] = True
++
++        peer = threading.Thread(target=serve, name='synthetic-main3-http-peer', daemon=False)
++        peer.start()
++        api = object.__new__(a.Api)
++        api.plan = {'port': port, 'certificateLeafSha256': leaf if name != 'wrong_leaf_before_dispatch' else '0' * 64}
++        api.phase = 'initial'
++        api.until = min(until, time.monotonic() + (.18 if name.startswith('original_absolute_deadline') else 2))
++        api.rows, api.checks, api.sensitive = [], [], []
++        api.unknown, api.root_token = False, None
++        api.context = client_context
++        events = []
++        api.journal = types.SimpleNamespace(append=lambda event, row: events.append((event, row)))
++        api.guard = types.SimpleNamespace(check=lambda: None)
++        returned = False
++        try:
++            value = api.call('synthetic.' + name, 'GET', '/v1/sys/health', expected=status,
++                             token='', category='health')
++            returned = True
++            if name == 'large_fragmented_chunked':
++                assert value == json.loads(body)
++            if not success:
++                raise RuntimeError('malformed_synthetic_response_accepted')
++        except a.Refused:
++            if success:
++                raise
++        finally:
++            release.set()
++            peer.join(timeout=min(3, max(.01, until - time.monotonic())))
++            observed['peerThreadJoined'] = not peer.is_alive()
++            peers.append(observed)
++        assert returned == success
++        assert observed['connections'] == 1 and observed['requests'] == (0 if name == 'wrong_leaf_before_dispatch' else 1)
++        assert observed['listenerClosed'] and observed['acceptedSocketClosed'] and observed['peerThreadJoined']
++        assert 'peerErrorType' not in observed
++        assert len(api.rows) == 1 and api.rows[0]['socketsClosed'] and api.rows[0]['responseReaderClosed']
++        if success:
++            assert api.rows[0]['responseComplete'] and not api.rows[0]['outcomeUnknown']
++        else:
++            assert api.unknown and not api.rows[0]['responseComplete']
++            assert api.rows[0]['outcomeUnknown'] == (name != 'wrong_leaf_before_dispatch')
++            try:
++                api.call('synthetic.replay_refused', 'GET', '/v1/sys/health', token='', category='health')
++                raise RuntimeError('unknown_synthetic_replay_permitted')
++            except a.Refused:
++                pass
++            assert len(api.rows) == 1
++        public = json.dumps({'rows': api.rows, 'events': events})
++        assert 'padding' not in public and 'sha256' not in public.lower()
++        checks.append({'case': name, 'passed': True, 'requests': api.rows})
++    return {'schema': 'heptabao.main3-http-complete-real-tls-qualification.r1',
++            'ok': True, 'checks': checks, 'checkCount': len(checks), 'peers': peers,
++            'allPeerThreadsJoined': all(x['peerThreadJoined'] for x in peers),
++            'allPeerSocketsClosed': all(x['listenerClosed'] and x['acceptedSocketClosed'] for x in peers),
++            'elapsedSeconds': time.monotonic() - started,
++            'providerCalled': False, 'productionCredentialInputsRead': False,
++            'productServiceStarted': False, 'productionChanged': False}

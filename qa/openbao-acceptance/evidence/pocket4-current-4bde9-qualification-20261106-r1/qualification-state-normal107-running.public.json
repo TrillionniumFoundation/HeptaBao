@@ -1,0 +1,61 @@
+{
+  "first_normal107_admission": {
+    "controller_invoked": false,
+    "exit_code": 1,
+    "failure": "unrelated historical root-owned directory inaccessible during inherited broad receipt scan",
+    "job_id": "1a1b229e173-fc05-7cbe",
+    "source_sha256": "ad3c5e84ca0959337797a9e0990ab9a1bb16ab56404fa024f62a533ac05cca86",
+    "state": "failed"
+  },
+  "last_observed_controller_step": "13-normal-release-build",
+  "mac_public_relay": {
+    "installed_public_files": 677,
+    "job_id": "1a1b21eaaca-fc05-7c72",
+    "state": "succeeded"
+  },
+  "normal107_input_stage": {
+    "current_pinned_inputs": 322,
+    "job_id": "1a1b22889c3-fc05-7cb4",
+    "state": "succeeded"
+  },
+  "normal107_qualified": false,
+  "old_assets_deleted": false,
+  "other_host_unknown_jobs_replayed_or_reclassified": false,
+  "pocket4_actual_native_clang_probe": {
+    "diagnostics": 0,
+    "extra_environment": {},
+    "job_id": "1a1b220db96-fc05-7c80",
+    "normal107_qualified": false,
+    "state": "succeeded"
+  },
+  "pocket4_actual_offline_closure": {
+    "exact_original_commands": 2,
+    "host_source_prefix_only_expected_adaptation": true,
+    "job_id": "1a1b22024b4-fc05-7c7e",
+    "state": "succeeded"
+  },
+  "pocket4_formal_rust_builds": 1,
+  "pocket4_normal_controller_invocations": 1,
+  "pocket4_product_tests_executed": 0,
+  "production_changed": false,
+  "release_source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "release_source_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "schema": "heptabao.pocket4-current-qualification-state.v1",
+  "scope_observation": {
+    "historical_contents_read": false,
+    "historical_directory_mode": "0700",
+    "historical_directory_uid": 0,
+    "historical_permissions_changed": false,
+    "job_id": "1a1b22e34c8-fc05-7cd1",
+    "state": "succeeded"
+  },
+  "successor_scope_admission": {
+    "admission_sha256": "ad4d8f732f6f442c10cc6a337c19374139763951c54e52c0d55b163d5255c714",
+    "authoritative_last_observed_state": "running",
+    "idempotency_key": "pocket4-canonical-4bde9-normal107-owned-scope-admission-20261106-r2",
+    "job_id": "1a1b2367cb2-fc05-7cfc",
+    "source_sha256": "be0883eb264aa1d2e02e193c56456637cc749fe1001c5f468013c437c03886b1",
+    "status": "admitted_controller_running"
+  },
+  "x230_current_runtime_qualified": false
+}
