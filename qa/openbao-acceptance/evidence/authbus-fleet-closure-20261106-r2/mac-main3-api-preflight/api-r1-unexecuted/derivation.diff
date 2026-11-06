@@ -1,0 +1,860 @@
+--- qualified-r2/mac_t5_volume_guard_r1.py
++++ main3-api-r1/mac_t5_volume_guard_r1.py
+@@ -11,7 +11,7 @@
+ from pathlib import Path
+ 
+ MOUNT = Path('/Volumes/T5')
+-ROOT = MOUNT / 'hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r2'
++ROOT = MOUNT / 'hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r1'
+ UUID = 'FB804D1B-24CB-4D6E-AEA7-A9E180807758'
+ ANCHOR_PATHS = ('/', '/Volumes', '/Volumes/T5')
+ 
+--- qualified-r2/mac_owned_launchd_r3.py
++++ main3-api-r1/mac_owned_launchd_r3.py
+@@ -13,13 +13,13 @@
+ 
+ PYTHON_LAUNCHER = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14"
+ PYTHON_KERNEL_IMAGE = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r2')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r1')
+ QA=ROOT/'qa'
+-BINDING_READY=True  # Independent synthetic startup scope; canonical 4bde9 normal107 pin.
++BINDING_READY=True  # Startup custody scope only; actual main3 capsule admission is independently fenced.
+ DOMAIN='gui/501'
+-LABELS={'server':'org.heptabao.qa.mac-fresh-synthetic-20261106-r2.server',
+-        'consumer':'org.heptabao.qa.mac-fresh-synthetic-20261106-r2.consumer'}
+-SERVER=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r2/bin/heptabao-server')
++LABELS={'server':'org.heptabao.qa.mac-authbus-main3-api-20261106-r1.server',
++        'consumer':'org.heptabao.qa.mac-authbus-main3-api-20261106-r1.consumer'}
++SERVER=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r1/bin/heptabao-server')
+ SERVER_SHA='5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c'
+ GRAPH=(('server-start','server-initial'),('server-kill','server-initial'),
+        ('server-start','server-cold-new-process'),('server-kill','server-cold-new-process'))
+@@ -95,7 +95,7 @@
+     return lines in ([exact],['Bad request.',exact])
+ 
+ 
+-HOME_CONTROL=Path('/Users/qianqi/heptabao-mac-fresh-synthetic-launchd-20261106-r2')
++HOME_CONTROL=Path('/Users/qianqi/heptabao-mac-authbus-main3-api-20261106-r1')
+ HOME_COPY_NAMES=('mac_current_server_owner_r1.py',)
+ HOME_GENERATIONS=('server-initial','server-cold-new-process')
+ HOME_FD_ATTEMPTS=64
+@@ -911,7 +911,7 @@
+         commands=self.commands.public()
+         return {'schema':'heptabao.mac-owned-launchd-manager.r3','ok':bool(self.finished and not self.unknown and time.monotonic()<self.until),
+             'outcomeUnknown':self.unknown,'newManagerSeconds':NEW_MANAGER_SECONDS,
+-            'newFailureCleanupSeconds':NEW_CLEANUP_SECONDS,'originalPhaseSeconds':120,'syntheticStartupOnly':True,'businessPhasesExecuted':False,
++            'newFailureCleanupSeconds':NEW_CLEANUP_SECONDS,'originalPhaseSeconds':120,'startupCustodyOnly':True,'businessPhasesExecuted':False,
+             'pythonRuntime':dict(self.python_runtime),'pythonKernelImage':PYTHON_KERNEL_IMAGE,
+             'homeControlRoot':str(HOME_CONTROL),'businessRoot':str(ROOT),
+             'homeControlFinalDescriptorsOwnedByOuter':True,
+--- qualified-r2/mac_current_server_owner_r1.py
++++ main3-api-r1/mac_current_server_owner_r1.py
+@@ -14,10 +14,10 @@
+ 
+ PYTHON_LAUNCHER = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14"
+ PYTHON_KERNEL_IMAGE = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r2')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r1')
+ QA=ROOT/'qa'
+-BINDING_READY=True  # Independent synthetic startup scope; canonical 4bde9 normal107 pin.
+-BINARY=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r2/bin/heptabao-server')
++BINDING_READY=True  # Startup custody scope only; actual main3 capsule admission is independently fenced.
++BINARY=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r1/bin/heptabao-server')
+ BINARY_SHA='5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c'
+ BINARY_BYTES=92359328
+ GENERATIONS=('server-initial','server-cold-new-process')
+--- qualified-r2/main3_api_controller.py
++++ main3-api-r1/main3_api_controller.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Separate synthetic launchd startup/retirement qualification; no client credentials.
++"""Actual selected main3 API qualification on separately owned launchd lifetimes.
+ 
+ The inherited admission and executable-transition gates remain authoritative.
+ Bootstrap-only identity is a distinct cleanup authority, never readiness.
+@@ -19,17 +19,18 @@
+ import sys
+ import time
+ 
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r2')
+-HOME=Path('/Users/qianqi/heptabao-mac-fresh-synthetic-launchd-20261106-r2')
+-PREP=Path('/Users/qianqi/heptabao-mac-fresh-synthetic-preparation-20261106-r2')
+-JOURNAL=Path('/Users/qianqi/heptabao-mac-fresh-synthetic-journal-20261106-r2')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r1')
++HOME=Path('/Users/qianqi/heptabao-mac-authbus-main3-api-20261106-r1')
++PREP=Path('/Users/qianqi/heptabao-mac-authbus-main3-api-preparation-20261106-r1')
++JOURNAL=Path('/Users/qianqi/heptabao-mac-authbus-main3-api-journal-20261106-r1')
+ QA=ROOT/'qa'
+-TARGET='gui/501/org.heptabao.qa.mac-fresh-synthetic-20261106-r2.server'
++TARGET='gui/501/org.heptabao.qa.mac-authbus-main3-api-20261106-r1.server'
+ SOURCE_NAMES=('mac_owned_launchd_r3.py','mac_current_server_owner_r1.py',
+     'mac_native_process_observer_r1.py','mac_owned_commands_r1.py',
+     'mac_owned_unreaped_r1.py','mac_public_code_pin_excerpt_r1.py',
+-    'mac_t5_volume_guard_r1.py','tls_complete_http_probe.py','fresh_synthetic_controller_r1.py',
+-    'test_fresh_synthetic_controller_r1.py','test_suid_ps_tls_r2.py')
++    'mac_t5_volume_guard_r1.py','tls_complete_http_probe.py','main3_api_controller.py',
++    'test_main3_api_controller.py','test_suid_ps_tls_r2.py',
++    'main3_source_fence.py','main3_api_cycle.py','test_main3_api_guards.py')
+ 
+ def need(value,code):
+     if not value:raise RuntimeError(code)
+@@ -54,17 +55,17 @@
+ def load_inputs():
+     raw=stable_read(PREP/'plan.public.json',131072)
+     plan=json.loads(raw)
+-    need(plan['schema']=='heptabao.mac-fresh-synthetic-preparation.r2'
++    need(plan['schema']=='heptabao.mac-main3-api-preparation.r1'
+          and plan['root']==str(ROOT) and plan['home']==str(HOME)
+          and plan['journal']==str(JOURNAL) and plan['wrapperSeconds']==30
+          and plan['execObservationSeconds']==10 and plan['managerSeconds']==600
+-         and plan['failureCleanupSeconds']==60 and plan['syntheticStartupOnly'] is True,
++         and plan['failureCleanupSeconds']==60 and plan['startupCustodyOnly'] is True,
+          'fixed_fresh_synthetic_plan')
+     need(set(plan['sourcePins'])==set(SOURCE_NAMES),'fixed_complete_source_inventory')
+     for name,pin in plan['sourcePins'].items():
+         source=stable_read(QA/name)
+         need(len(source)==pin['bytes'] and sha(source)==pin['sha256'],'complete_pinned_fresh_source')
+-    need(Path(__file__).resolve()==QA/'fresh_synthetic_controller_r1.py','only_pinned_remote_controller')
++    need(Path(__file__).resolve()==QA/'main3_api_controller.py','only_pinned_remote_controller')
+     return plan,sha(raw)
+ 
+ class Journal:
+@@ -88,7 +89,7 @@
+     def append(self,event,value):
+         self.check()
+         need(re.fullmatch(r'[a-z0-9-]{1,48}',event) and len(self.rows)<512,'journal_finite_events')
+-        raw=encoded({'schema':'heptabao.mac-fresh-synthetic-journal.r2','index':len(self.rows),'event':event,'value':value})
++        raw=encoded({'schema':'heptabao.mac-main3-api-journal.r1','index':len(self.rows),'event':event,'value':value})
+         need(len(raw)<=262144,'journal_bounded_record')
+         name='%03d-%s.public.json'%(len(self.rows),event)
+         with self.signals.critical():
+@@ -323,7 +324,7 @@
+             result=super().public()
+             result['bootstrapCleanupCustody']=[{'generation':e['generation'],'identity':e.get('bootstrapIdentity'),
+                 'businessAdmissionGrantedByBootstrap':False,'syntheticCleanupClosure':e.get('syntheticCleanupClosure',False)} for e in self.entries]
+-            result['syntheticStartupOnly']=True
++            result['startupCustodyOnly']=True
+             return result
+     return SyntheticOwnedLaunchd
+ 
+@@ -343,7 +344,8 @@
+                 need(set(value)<= {'schema','stage','elapsedSeconds'} and isinstance(value.get('stage'),str)
+                      and len(value['stage'])<=128,'fixed_stage_schema')
+                 values.append(value)
+-        return {'bytesRead':len(raw),'prefixSha256':sha(raw),'stages':values,'completeFileAtInitialStat':True}
++        return {'bytesRead':len(raw),'stages':values,'completeFileAtInitialStat':True,
++                'rawServerDiagnosticsOrDigestsPublished':False}
+     finally:os.close(fd)
+ 
+ def main():
+@@ -355,18 +357,22 @@
+     import mac_native_process_observer_r1 as reader_module
+     from mac_owned_commands_r1 import Signals,Commands
+     from mac_t5_volume_guard_r1 import HeldT5
+-    import tls_complete_http_probe as tls_probe
++    import main3_api_cycle as api_cycle
++    from main3_source_fence import CapsuleFence
+     signals=Signals();signals.install();commands=Commands(signals)
+     started=time.monotonic();until=started+600.0
+     def remaining():
+         need(signals.pending is None,'outer_not_cancelled')
+         left=until-time.monotonic();need(left>0,'original_outer_600_seconds');return left
+-    journal=None;guard=None;home=None;manager=None
+-    result={'schema':'heptabao.mac-fresh-synthetic-startup-qualification.r2','mode':args.mode,
+-        'ok':False,'planSha256':plan_sha,'syntheticStartupOnly':True,'businessCredentialInputsRead':False,
++    journal=None;guard=None;home=None;manager=None;active_api=None;active_fence=None;private_state=None
++    result={'schema':'heptabao.mac-main3-current-api-qualification.r1','mode':args.mode,
++        'ok':False,'planSha256':plan_sha,'startupCustodyOnly':False,'businessCredentialInputsRead':False,
++        'providerValid':False,'providerCalled':False,'providerRefreshAttempted':False,
++        'productionTrafficCutover':False,'credentialValuesOrDigestsPublished':False,
++        'actualPluginSdkPhaseExecuted':False,'productionClientRollbackQualified':False,
+         'j3160Contacted':False,'productionChanged':False,'oldR2Modified':False,
+         'sourcePins':plan['sourcePins'],'canonicalProduct':plan['canonicalProduct'],
+-        'health':[],'stages':{},'mutationExecuted':False}
++        'phases':[],'sourceFences':[],'stages':{},'mutationExecuted':False}
+     try:
+         anchor=base64.b64decode(plan['anchorBase64'],validate=True)
+         guard=HeldT5(anchor,plan['anchorSha256'],remaining,signals.critical)
+@@ -383,26 +389,35 @@
+             qa_pins={name:pin['sha256'] for name,pin in plan['sourcePins'].items()},
+             python_runtime=plan['pythonRuntime'],home_control=home)
+         if args.mode=='preflight':
++            active_fence=CapsuleFence(min(until,time.monotonic()+45.0))
++            result['businessCredentialInputsRead']=True
++            active_fence.observe('preflight')
+             result.update(ok=True,labelsInitiallyAbsent=True,mutationExecuted=False)
+         else:
+             journal.append('run-intent',{'planSha256':plan_sha,'sourcePins':plan['sourcePins'],
+                 'wrapperSeconds':30,'execObservationSeconds':10,'managerSeconds':600,
+                 'failureCleanupSeconds':60,'maximumTermGraceSeconds':20,'maximumKillGraceSeconds':10,
+-                'operationGraph':list(base.GRAPH),'businessCredentialInputsRead':False})
++                'operationGraph':list(base.GRAPH),'realSelectedOwnerCount':3,
++                'providerValid':False,'productionCutover':False})
+             original_new_entry=manager._new_entry
+             def new_entry(kind,generation):
+                 entry=original_new_entry(kind,generation)
+                 entry['stderrInitialIdentity']=ident(entry['stderr'].lstat())
+                 return entry
+             manager._new_entry=new_entry
+-            for generation in ('server-initial','server-cold-new-process'):
++            for generation,phase in (('server-initial','initial'),('server-cold-new-process','cold-new-process')):
++                phase_until=min(until,time.monotonic()+120.0)
++                active_fence=CapsuleFence(phase_until)
++                result['businessCredentialInputsRead']=True
++                active_fence.observe('preflight')
+                 result['mutationExecuted']=True
+                 manager.start_server(generation)
+-                health=tls_probe.probe('127.0.0.1',plan['port'],'localhost',
+-                    ROOT/'server/tls/server.crt',plan['certificateLeafSha256'],generation)
+-                result['health'].append(health)
+-                need(health['passed'] is True,'actual_complete_pinned_tls_health')
+-                journal.append('actual-tls-health',health)
++                active_api=api_cycle.Api(plan,phase,phase_until,journal,guard)
++                if phase=='initial':private_state=api_cycle.initial(active_api,active_fence)
++                else:api_cycle.cold(active_api,active_fence,private_state)
++                result['phases'].append(active_api.public());active_api=None
++                result['sourceFences'].append(active_fence.public());active_fence=None
++                need(time.monotonic()<phase_until,'business_phase_completed_within_original_120_seconds')
+                 manager.kill_server_for_cold_or_inverse(generation)
+             identities=[e['execIdentity'] for e in manager.entries]
+             need(len(identities)==2 and identities[0]['pid']!=identities[1]['pid']
+@@ -416,6 +431,8 @@
+             try:result['manager']=manager.abort_cleanup_once()
+             except BaseException as cleanup_error:result['outerCleanupErrorType']=type(cleanup_error).__name__
+     finally:
++        if active_api is not None:result['phases'].append(active_api.public())
++        if active_fence is not None:result['sourceFences'].append(active_fence.public())
+         for sig in (signal.SIGTERM,signal.SIGINT):signal.signal(sig,signal.SIG_IGN)
+         if manager is not None:
+             result['manager']=manager.public()
+@@ -432,7 +449,10 @@
+             and result['homeClosure']['allReturnedDescriptorsClosed']
+             and result['commands']['allOwnedCommandsStopped'] and result['commands']['unknownCommandCount']==0)
+         result['closuresKnown']=bool(closure)
+-        result['ok']=bool(result['ok'] and closure and time.monotonic()<until)
++        result['ok']=bool(result['ok'] and closure and time.monotonic()<until
++            and all(x['allReturnedDescriptorsClosed'] for x in result['sourceFences'])
++            and all(x['allReturnedSocketsClosed'] and x['unknownHttpOutcomeCount']==0
++                and x['allDispatchedResponsesComplete'] and all(c['passed'] for c in x['checks']) for x in result['phases']))
+         result['elapsedSeconds']=time.monotonic()-started
+         if journal is not None:
+             try:
+--- qualified-r2/test_main3_api_controller.py
++++ main3-api-r1/test_main3_api_controller.py
+@@ -5,7 +5,7 @@
+ import types
+ import unittest
+ from unittest import mock
+-import fresh_synthetic_controller_r1 as c
++import main3_api_controller as c
+ 
+ IDENTITY={'pid':32528,'ppid':1,'pgid':32528,'uid':501,'birthSec':1793973000,
+           'birthUsec':123456,'executable':'/exact/Python'}
+--- qualified-r2/main3_source_fence.py
++++ main3-api-r1/main3_source_fence.py
+@@ -0,0 +1,189 @@
++#!/usr/bin/env python3
++"""Private selected-owner capsule admission; no credential output or public digest.
++
++Each fence is one bounded before/after observation, never a continuous lock.
++The source producer has a known succeeded terminal. Current namespace identities
++must still match its private generation before any canonical value is written.
++"""
++from __future__ import annotations
++import hashlib
++import json
++import os
++from pathlib import Path
++import re
++import stat
++import time
++
++LIVE=Path('/Users/qianqi/.openclaw')
++CAPSULE_ROOT=Path('/Users/qianqi/heptabao-authbus-current-sdk-capsule-20261106-r1')
++CAPSULE=CAPSULE_ROOT/'output/selected-owner-credentials.private.json'
++AGENTS=('main','trnm','hepta-ui','hepta','hepta-backend')
++CAPTURE_JOB='1a1b1a4c29c-fc05-7a0c'
++CAPTURE_WORKER_SHA='dbbac9f6ee12704b1e6e73ca2587d6f4e6489b58ec36122c49d24a9605274628'
++
++class Refused(RuntimeError):pass
++def need(value,code):
++    if not value:raise Refused(code)
++def ident(s):return tuple(str(getattr(s,k)) for k in ('st_dev','st_ino','st_uid','st_gid','st_mode','st_nlink','st_size','st_mtime_ns','st_ctime_ns'))
++def typed_identity(value):
++    need(isinstance(value,(list,tuple)) and len(value)==9 and all(isinstance(x,str) and re.fullmatch(r'[0-9]{1,30}',x) for x in value),'private_full9_identity_shape')
++    return tuple(value)
++def within(path,root):
++    try:relative=Path(path).relative_to(root)
++    except ValueError:return False
++    return str(relative)!='.' and '..' not in relative.parts
++
++class CapsuleFence:
++    def __init__(self,phase_until,*,capsule_path=CAPSULE,clock=time.monotonic):
++        self.clock=clock;self.phase_until=phase_until;self.until=min(phase_until,clock()+45.0)
++        self.opened=0;self.closed=0;self.bytes=0;self.file_reads=0;self.observations=[]
++        self.capsule_path=Path(capsule_path)
++        need(self.capsule_path==CAPSULE,'fixed_authoritative_capsule_path')
++        self.remaining()
++        for p in (CAPSULE_ROOT,CAPSULE_ROOT/'output'):
++            s=p.lstat();need(stat.S_ISDIR(s.st_mode) and s.st_uid==501 and stat.S_IMODE(s.st_mode)==0o700,'private_capsule_parent_custody')
++        raw,self.capsule_identity=self.read(self.capsule_path,1048576,private=True)
++        self.doc=json.loads(raw)
++        self.validate(self.doc)
++        self.remaining()
++    def remaining(self):
++        left=min(self.phase_until,self.until)-self.clock()
++        need(left>0,'source_fence_original_absolute_deadline');return left
++    def read(self,path,maximum,*,private=False,expected=None):
++        self.remaining();need(self.file_reads<4096,'source_fence_finite_file_reads');self.file_reads+=1
++        fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK|os.O_CLOEXEC);self.opened+=1
++        try:
++            s=os.fstat(fd)
++            need(stat.S_ISREG(s.st_mode) and s.st_uid in (0,501) and s.st_nlink==1
++                 and not stat.S_IMODE(s.st_mode)&0o022 and 0<=s.st_size<=maximum,'source_fence_regular_custody')
++            if private:need(s.st_uid==501 and stat.S_IMODE(s.st_mode)==0o600,'source_fence_private_mode')
++            current=ident(s)
++            if expected is not None:need(current==typed_identity(expected),'source_fence_exact_expected_generation')
++            raw=bytearray()
++            while len(raw)<=maximum:
++                self.remaining();part=os.read(fd,min(65536,maximum+1-len(raw)))
++                if not part:break
++                raw.extend(part)
++            self.bytes+=len(raw);need(self.bytes<=512*1048576,'source_fence_total_read_bound')
++            need(len(raw)==s.st_size and current==ident(os.fstat(fd))==ident(Path(path).lstat()),'source_fence_stable_whole_file')
++            self.remaining();return bytes(raw),current
++        finally:os.close(fd);self.closed+=1
++    @staticmethod
++    def validate(doc):
++        need(isinstance(doc,dict) and doc.get('schema')=='heptabao.actual-sdk-selected-owner-credentials.private.r1'
++             and doc.get('host')=='mac','exact_selected_owner_capsule_schema')
++        c=doc.get('constraints',{})
++        need(c.get('containsCredentialValues') is True and c.get('containsCredentialDigests') is False
++             and c.get('selectedOwnerCount')==3 and c.get('containsUnselectedCredentials') is False
++             and all(c.get(k) is False for k in ('productionChanged','providerLivenessVerified','oauthRefreshAttempted','productionCutover')),
++             'selected_capsule_scope_and_provider_unqualified')
++        rows=doc.get('ownerEntries');need(isinstance(rows,list) and len(rows)==3,'exact_three_selected_owners')
++        ids=[]
++        for entry in rows:
++            need(isinstance(entry,dict) and entry.get('ownerAgent')=='main'
++                 and entry.get('ownerAgentDir')==str(LIVE/'agents/main/agent') and entry.get('actualProvider')=='openai',
++                 'actual_main_owner_and_provider')
++            profile=entry.get('profileId');cred=entry.get('credential')
++            need(isinstance(profile,str) and 0<len(profile)<=240 and profile not in ids,'three_unique_private_profile_ids');ids.append(profile)
++            need(isinstance(cred,dict) and cred.get('provider')=='openai' and cred.get('type')=='oauth'
++                 and all(isinstance(cred.get(k),str) and 8<=len(cred[k])<=131072 for k in ('access','refresh'))
++                 and type(cred.get('expires')) in (int,float) and cred['expires']>0
++                 and not any(k in cred for k in ('keyRef','tokenRef','accessRef','refreshRef','oauthRef'))
++                 and len(json.dumps(cred,ensure_ascii=False).encode())<=131072,'exact_real_oauth_shape_no_secret_references')
++        consumers=doc.get('consumerBindings')
++        need(isinstance(consumers,list) and len(consumers)==15,'exact_fifteen_private_consumer_bindings')
++        seen=set()
++        for row in consumers:
++            need(isinstance(row,dict) and row.get('scopeAgent') in AGENTS
++                 and row.get('scopeAgentDir')==str(LIVE/'agents'/row['scopeAgent']/'agent')
++                 and row.get('profileId') in ids and row.get('ownerAgent')=='main'
++                 and row.get('ownerAgentDir')==str(LIVE/'agents/main/agent')
++                 and row.get('persistedOwnerMatchesEffective') is True
++                 and row.get('selectedByActualSdkOrder') is True
++                 and type(row.get('actualSdkOrderRank')) is int and 0<=row['actualSdkOrderRank']<3
++                 and row.get('configuredProfileId') is False,'current_sdk_five_by_three_owner_binding')
++            key=(row['scopeAgent'],row['profileId'])
++            need(key not in seen,'unique_consumer_owner_reference');seen.add(key)
++        for agent in AGENTS:
++            need({r['actualSdkOrderRank'] for r in consumers if r['scopeAgent']==agent}=={0,1,2},'exact_three_sdk_order_ranks_per_agent')
++        generations=doc.get('sourceGenerations')
++        need(isinstance(generations,list) and len(generations)==5 and set(x.get('agent') for x in generations)==set(AGENTS),
++             'exact_five_source_agent_generations')
++        typed_identity(doc.get('configurationIdentity'))
++        need(isinstance(doc.get('configurationSha256'),str) and re.fullmatch(r'[0-9a-f]{64}',doc['configurationSha256']),
++             'private_configuration_pin_shape')
++        metadata=doc.get('registeredMetadataFileBindings')
++        need(isinstance(metadata,list) and len(metadata)==145,'exact_observed_registered_metadata_count')
++    def namespace(self,bundle,scope):
++        need(isinstance(bundle,dict) and isinstance(bundle.get('sourceIdentities'),dict)
++             and isinstance(bundle.get('sourceAbsences'),list),'private_namespace_bundle_shape')
++        identities=bundle['sourceIdentities'];absences=bundle['sourceAbsences']
++        need(1<=len(identities)<=8 and len(absences)<=16 and len(set(absences))==len(absences)
++             and not set(identities).intersection(absences),'finite_disjoint_source_namespace')
++        for name,expected in identities.items():
++            self.remaining();need(scope(name),'fixed_source_namespace_scope')
++            s=Path(name).lstat()
++            need(stat.S_ISREG(s.st_mode) and s.st_uid==501 and s.st_nlink==1
++                 and not stat.S_IMODE(s.st_mode)&0o077 and ident(s)==typed_identity(expected),
++                 'current_source_full_generation_exact')
++        for name in absences:
++            self.remaining();need(isinstance(name,str) and scope(name),'fixed_absence_namespace_scope')
++            try:Path(name).lstat()
++            except FileNotFoundError:continue
++            raise Refused('current_source_expected_absence_changed')
++        return len(identities),len(absences)
++    @staticmethod
++    def exact_database_bundle(bundle,base):
++        need(isinstance(bundle,dict) and isinstance(bundle.get('sourceIdentities'),dict)
++             and isinstance(bundle.get('sourceAbsences'),list),'database_bundle_shape')
++        present=bundle['sourceIdentities'];absent=bundle['sourceAbsences'];base=str(base)
++        allowed={base,base+'-wal',base+'-shm',base+'-journal'}
++        need(set(present)|set(absent)==allowed and not set(present)&set(absent)
++             and base in present and base+'-journal' in absent,'exact_database_namespace_and_journal_absence')
++        if base+'-wal' in absent:need(base+'-shm' in absent,'absent_wal_requires_absent_shm')
++        elif int(typed_identity(present[base+'-wal'])[6])>0:
++            need(base+'-shm' in present and int(typed_identity(present[base+'-shm'])[6])>0,'nonempty_wal_requires_actual_nonempty_shm')
++        return allowed
++    def observe(self,label):
++        # Each explicit observation is <=45s AND the original phase deadline.
++        # This does not reset or extend phase_until.
++        need(label in ('preflight','before-phase','before-canonical-write','after-phase'),'fixed_source_fence_observation')
++        need(len(self.observations)<16,'source_fence_finite_observations')
++        self.until=min(self.phase_until,self.clock()+45.0);self.remaining()
++        before_reads=self.file_reads;before_bytes=self.bytes;started=self.clock()
++        raw,identity=self.read(CAPSULE,1048576,private=True,expected=self.capsule_identity)
++        need(json.loads(raw)==self.doc and identity==self.capsule_identity,'same_private_capsule_full_values')
++        d=self.doc;identities=0;absences=0
++        for source in d['sourceGenerations']:
++            prefix=LIVE/'agents'/source['agent']/'agent'
++            allowed=self.exact_database_bundle(source,prefix/'openclaw-agent.sqlite')
++            a,b=self.namespace(source,lambda name:name in allowed);identities+=a;absences+=b
++        allowed=self.exact_database_bundle(d['registryGeneration'],LIVE/'state/openclaw.sqlite')
++        a,b=self.namespace(d['registryGeneration'],lambda name:name in allowed)
++        identities+=a;absences+=b
++        config,_=self.read(LIVE/'openclaw.json',1048576,private=True,expected=d['configurationIdentity'])
++        need(hashlib.sha256(config).hexdigest()==d['configurationSha256'],'private_configuration_whole_bytes_exact')
++        for item in d['registeredMetadataFileBindings']:
++            self.remaining();need(isinstance(item,dict) and set(item)=={'nominal','path','identity','sha256'},'metadata_binding_shape')
++            nominal=Path(item['nominal']);actual=Path(item['path'])
++            need(nominal.is_absolute() and actual.is_absolute() and nominal.resolve(strict=True)==actual,'metadata_same_actual_namespace')
++            need(isinstance(item['sha256'],str) and re.fullmatch(r'[0-9a-f]{64}',item['sha256']),'private_metadata_pin_shape')
++            code,_=self.read(actual,2*1048576,expected=item['identity'])
++            need(hashlib.sha256(code).hexdigest()==item['sha256'] and nominal.resolve(strict=True)==actual,'private_metadata_whole_bytes_exact')
++        need(ident(CAPSULE.lstat())==self.capsule_identity and self.opened==self.closed,'source_fence_capsule_and_descriptor_closure')
++        self.remaining()
++        row={'observation':label,'beforeAfterObservationOnly':True,'continuousLockClaimed':False,
++             'currentFiveAgentGenerationsExact':True,'currentRegistryGenerationExact':True,
++             'currentConfigurationWholeBytesExact':True,'currentMetadataWholeFilesExact':145,
++             'namespacePresentCount':identities,'namespaceAbsentCount':absences,
++             'wholeFileReadCount':self.file_reads-before_reads,'wholeFileBytesRead':self.bytes-before_bytes,
++             'descriptorsClosed':True,'withinOriginalPhaseDeadline':True,'observationMaximumSeconds':45,
++             'elapsedSeconds':self.clock()-started}
++        self.observations.append(row);return row
++    def public(self):
++        return {'captureJob':CAPTURE_JOB,'captureWorkerSourceSha256':CAPTURE_WORKER_SHA,
++                'selectedOwnerCount':3,'consumerReferenceCount':15,'sourceAgentCount':5,
++                'providerValid':False,'providerRefreshAttempted':False,'productionCutover':False,
++                'credentialValuesOrDigestsPublished':False,'capsuleDigestsPublished':False,
++                'fileDescriptorsOpened':self.opened,'fileDescriptorsClosed':self.closed,
++                'allReturnedDescriptorsClosed':self.opened==self.closed,'observations':self.observations}
+--- qualified-r2/main3_api_cycle.py
++++ main3-api-r1/main3_api_cycle.py
+@@ -0,0 +1,216 @@
++#!/usr/bin/env python3
++"""Actual three-owner OAuth bytes through isolated canonical HeptaBao APIs.
++
++No provider request or refresh. Credentials and protocol tokens stay in memory
++or create-only private recovery state. Public events contain fixed case labels,
++route categories, ordinals and status/predicate evidence, never response bodies.
++"""
++from __future__ import annotations
++import errno
++import hashlib
++import http.client
++import json
++import os
++from pathlib import Path
++import re
++import socket
++import ssl
++import stat
++import time
++from main3_source_fence import CapsuleFence,Refused,need,ident
++
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r1')
++MOUNT='openclaw-auth'
++MAX_HTTP=192
++MAX_BODY=1048576
++
++def private_new(path,value,guard,remaining):
++    raw=(json.dumps(value,sort_keys=True,separators=(',',':'))+'\n').encode()
++    need(len(raw)<=MAX_BODY and Path(path).parent==ROOT/'server/private','fixed_private_recovery_output')
++    guard.check();remaining(1)
++    with guard.parent(path) as (parent,name):
++        p=os.fstat(parent);need(stat.S_ISDIR(p.st_mode) and p.st_uid==501 and stat.S_IMODE(p.st_mode)==0o700,'private_recovery_directory')
++        fd=os.open(name,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW|os.O_CLOEXEC,0o600,dir_fd=parent)
++        try:
++            before=os.fstat(fd);need(stat.S_ISREG(before.st_mode) and before.st_uid==501 and before.st_nlink==1 and stat.S_IMODE(before.st_mode)==0o600,'private_recovery_file')
++            offset=0
++            while offset<len(raw):
++                remaining(1)
++                count=os.write(fd,raw[offset:]);need(count>0,'private_recovery_write_progress');offset+=count
++            os.fsync(fd);os.fsync(parent);after=os.fstat(fd)
++            need(ident(before)[:6]==ident(after)[:6] and after.st_size==len(raw)
++                 and ident(after)==ident(os.stat(Path(path).name,dir_fd=parent,follow_symlinks=False)),'private_recovery_durable_same_file')
++        finally:os.close(fd)
++    guard.check();remaining(1)
++
++class Api:
++    def __init__(self,plan,phase,phase_until,journal,guard):
++        need(phase in ('initial','cold-new-process'),'fixed_api_phase')
++        need(type(plan['port']) is int and 1024<=plan['port']<=65535
++             and re.fullmatch(r'[0-9a-f]{64}',plan['certificateLeafSha256']),'fixed_owned_tls_endpoint')
++        self.plan=plan;self.phase=phase;self.until=phase_until;self.journal=journal;self.guard=guard
++        self.context=ssl.create_default_context(cafile=str(ROOT/'server/tls/server.crt'))
++        self.rows=[];self.checks=[];self.unknown=False;self.root_token=None;self.sensitive=[]
++    def remaining(self,cap):
++        left=self.until-time.monotonic();need(left>0,'original_api_phase_120_seconds');return min(left,cap)
++    def check(self,case,value):
++        need(re.fullmatch(r'[a-z0-9._-]{1,100}',case),'fixed_public_api_case')
++        self.checks.append({'case':case,'passed':value is True});need(value is True,case)
++    def call(self,case,method,route,body=None,*,expected=200,token=None,category,slot=0,readiness=False):
++        self.remaining(1)
++        self.guard.check()
++        need(not self.unknown and len(self.rows)<MAX_HTTP,'no_http_after_unknown_and_finite_requests')
++        need(re.fullmatch(r'[a-z0-9._-]{1,100}',case) and category in ('health','init','unseal','mount','activate','capacity','policy','role','role-id','secret-id','login','kv-read','kv-write','lookup','renew','revoke','secret-destroy','admin-denied'),
++             'fixed_public_route_category')
++        need(method in ('GET','POST','PUT') and isinstance(route,str) and route.startswith('/v1/')
++             and re.fullmatch(r'/[A-Za-z0-9/._-]+',route) and 0<=slot<=3,'fixed_owned_api_route')
++        need(not readiness or (method=='GET' and route=='/v1/sys/health' and body is None and token==''),'health_only_tcp_refusal_wait')
++        bearer=self.root_token if token is None else token
++        need(bearer is None or isinstance(bearer,str) and len(bearer)<=16384 and '\r' not in bearer and '\n' not in bearer,'private_single_line_bearer')
++        payload=b'' if body is None else json.dumps(body,separators=(',',':'),ensure_ascii=False).encode()
++        need(len(payload)<=MAX_BODY,'bounded_private_request_body')
++        row={'phase':self.phase,'ordinal':len(self.rows)+1,'case':case,'routeCategory':category,'slotOrdinal':slot,
++             'method':method,'dispatched':False,'responseComplete':False,'outcomeUnknown':False,
++             'httpRequestCount':0,'connectionAttempts':0,'connectionRefusals':0,'tlsVerified':False,'socketsClosed':False}
++        self.rows.append(row)
++        self.journal.append('api-request-intent',dict(row))
++        deadline=time.monotonic()+self.remaining(15 if readiness else 10)
++        raw=tls=response=None
++        def left():
++            remaining=min(self.until,deadline)-time.monotonic();need(remaining>0,'one_http_original_absolute_deadline');return remaining
++        try:
++            for _ in range(256 if readiness else 1):
++                row['connectionAttempts']+=1
++                try:raw=socket.create_connection(('127.0.0.1',self.plan['port']),timeout=min(5,left()));break
++                except ConnectionRefusedError as error:
++                    if not readiness or error.errno!=errno.ECONNREFUSED:raise
++                    row['connectionRefusals']+=1;time.sleep(min(0.1,left()))
++            need(raw is not None,'bounded_health_connection_attempts')
++            raw.settimeout(left());tls=self.context.wrap_socket(raw,server_hostname='localhost')
++            need(hashlib.sha256(tls.getpeercert(binary_form=True)).hexdigest()==self.plan['certificateLeafSha256'],'actual_tls_leaf_pin')
++            row.update(tlsVerified=True,tlsVersion=tls.version())
++            headers=[method+' '+route+' HTTP/1.1','Host: localhost:'+str(self.plan['port']),'Accept: application/json','Connection: close']
++            if bearer:headers.append('X-Vault-Token: '+bearer)
++            if body is not None:headers+=['Content-Type: application/json','Content-Length: '+str(len(payload))]
++            request=('\r\n'.join(headers)+'\r\n\r\n').encode('ascii')+payload
++            tls.settimeout(left());row['dispatched']=True;row['httpRequestCount']=1
++            tls.sendall(request)
++            tls.settimeout(left());response=http.client.HTTPResponse(tls);response.begin()
++            row['status']=response.status
++            length=response.getheader('Content-Length')
++            need(not response.getheader('Transfer-Encoding') and (length is None or re.fullmatch(r'[0-9]{1,9}',length)),
++                 'complete_fixed_http_response_framing')
++            if response.status==204:
++                need(length in (None,'0'),'empty_204_response_frame');amount=0
++            else:
++                need(length is not None and int(length)<=MAX_BODY,'bounded_content_length_required');amount=int(length)
++            tls.settimeout(left());data=response.read(amount+1)
++            need(len(data)==amount and response.isclosed(),'complete_http_body_before_acceptance')
++            left();row.update(responseComplete=True,responseBytes=len(data))
++            value=json.loads(data) if data else {}
++        except BaseException as error:
++            row['outcomeUnknown']=bool(row['dispatched'] and not row['responseComplete'])
++            self.unknown=True;row['errorType']=type(error).__name__
++            # Exception messages, response bodies and their hashes stay private.
++            raise Refused('api_transport_or_complete_response_failed') from None
++        finally:
++            if response is not None:response.close()
++            if tls is not None:tls.close()
++            elif raw is not None:raw.close()
++            row['socketsClosed']=True
++            self.journal.append('api-request-result',dict(row))
++        self.guard.check();self.remaining(1)
++        self.check(case,row['status']==expected)
++        return value
++    def public(self):
++        return {'phase':self.phase,'checks':self.checks,'requests':self.rows,'requestCount':len(self.rows),
++                'unknownHttpOutcomeCount':sum(r['outcomeUnknown'] for r in self.rows),
++                'allDispatchedResponsesComplete':all(not r['dispatched'] or r['responseComplete'] for r in self.rows),
++                'allReturnedSocketsClosed':all(r['socketsClosed'] for r in self.rows),
++                'credentialValuesOrDigestsPublished':False,'providerValid':False,'providerCalled':False,
++                'providerRefreshAttempted':False,'productionCutover':False}
++
++def slot_path(index):return '/v1/'+MOUNT+'/data/selected/main/slot-'+str(index)
++def body_for(entry,version):
++    return {'ownerAgent':'main','profileId':entry['profileId'],'actualProvider':'openai',
++            'credential':entry['credential'],'canaryGeneration':version}
++def initial(api,fence):
++    fence.observe('before-phase')
++    entries=fence.doc['ownerEntries']
++    api.check('source.three_expired_real_oauth',sum(e['credential']['expires']<time.time()*1000 for e in entries)==3)
++    health=api.call('initial.uninitialized_tls_health','GET','/v1/sys/health',token='',expected=501,category='health',readiness=True)
++    api.check('initial.uninitialized_sealed',health.get('initialized') is False and health.get('sealed') is True)
++    value=api.call('initial.initialize_once','POST','/v1/sys/init',{'secret_shares':1,'secret_threshold':1},token='',category='init')
++    key=value.get('keys_base64',[None])[0];api.root_token=value.get('root_token')
++    api.check('initial.private_recovery_material_received',isinstance(key,str) and bool(key) and isinstance(api.root_token,str) and bool(api.root_token))
++    state={'rootToken':api.root_token,'unsealKey':key,'roles':[]}
++    private_new(ROOT/'server/private/initial-recovery.private.json',state,api.guard,api.remaining)
++    unsealed=api.call('initial.unseal','POST','/v1/sys/unseal',{'key':key},token='',category='unseal')
++    api.check('initial.actually_unsealed',unsealed.get('sealed') is False)
++    api.call('initial.kv2_mount','POST','/v1/sys/mounts/'+MOUNT,{'type':'kv','options':{'version':'2'}},expected=204,category='mount')
++    api.call('initial.native_activate_once','POST','/v1/sys/internal/native-v6/activate',{},expected=204,category='activate')
++    capacity=api.call('initial.native_capacity','GET','/v1/sys/internal/capacity',category='capacity')
++    api.check('initial.native_format_two',capacity.get('data',{}).get('native_kv2_reader_format')==2)
++    api.call('initial.approle_mount','POST','/v1/sys/auth/approle',{'type':'approle'},expected=204,category='mount')
++    for i,entry in enumerate(entries,1):
++        case='slot'+str(i);name='main3-current-slot-'+str(i);base='/v1/auth/approle/role/'+name
++        fence.observe('before-canonical-write')
++        result=api.call(case+'.root_cas_zero','POST',slot_path(i),{'data':body_for(entry,1),'options':{'cas':0}},category='kv-write',slot=i)
++        api.check(case+'.created_version_one',result.get('data',{}).get('version')==1)
++        policy='path "'+MOUNT+'/data/selected/main/slot-'+str(i)+'" { capabilities = ["create", "read", "update"] }\n'
++        policy+='path "auth/token/lookup-self" { capabilities = ["read"] }\npath "auth/token/renew-self" { capabilities = ["update"] }\npath "auth/token/revoke-self" { capabilities = ["update"] }\n'
++        api.call(case+'.scoped_policy','PUT','/v1/sys/policies/acl/'+name,{'policy':policy},expected=204,category='policy',slot=i)
++        api.call(case+'.approle_create','POST',base,{'token_policies':[name],'token_ttl':'1200s','token_max_ttl':'1800s','secret_id_num_uses':0,'secret_id_ttl':'3600s'},expected=204,category='role',slot=i)
++        role_id=api.call(case+'.role_id','GET',base+'/role-id',category='role-id',slot=i)['data']['role_id']
++        secret=api.call(case+'.secret_id','POST',base+'/secret-id',{},category='secret-id',slot=i)['data']['secret_id']
++        auth=api.call(case+'.approle_login','POST','/v1/auth/approle/login',{'role_id':role_id,'secret_id':secret},token='',category='login',slot=i)['auth']
++        token=auth['client_token']
++        api.check(case+'.renewable_service_lease',auth.get('renewable') is True and 0<auth.get('lease_duration',0)<=1800 and name in auth.get('policies',[]))
++        state['roles'].append({'name':name,'roleId':role_id,'secretId':secret,'token':token})
++        read=api.call(case+'.read_real_credential','GET',slot_path(i),token=token,category='kv-read',slot=i)
++        api.check(case+'.private_deep_compare_v1',read.get('data',{}).get('data')==body_for(entry,1))
++        other=i%3+1
++        api.call(case+'.cross_slot_read_denied','GET',slot_path(other),token=token,expected=403,category='kv-read',slot=i)
++        # Denied writes carry only a fixed synthetic marker, never another credential.
++        api.call(case+'.cross_slot_write_denied','POST',slot_path(other),{'data':{'deniedProbe':True}},token=token,expected=403,category='kv-write',slot=i)
++        api.call(case+'.admin_read_denied','GET','/v1/sys/mounts',token=token,expected=403,category='admin-denied',slot=i)
++        lookup=api.call(case+'.lookup_self','GET','/v1/auth/token/lookup-self',token=token,category='lookup',slot=i)
++        api.check(case+'.lookup_own_policy',name in lookup.get('data',{}).get('policies',[]) and lookup['data'].get('renewable') is True)
++        renewed=api.call(case+'.renew_self','POST','/v1/auth/token/renew-self',{'increment':'1200s'},token=token,category='renew',slot=i)
++        api.check(case+'.renewal_preserves_token_and_positive_lease',renewed.get('auth',{}).get('client_token')==token and renewed['auth'].get('renewable') is True and 0<renewed['auth'].get('lease_duration',0)<=1800)
++        fence.observe('before-canonical-write')
++        changed=api.call(case+'.scoped_cas_one','POST',slot_path(i),{'data':body_for(entry,2),'options':{'cas':1}},token=token,category='kv-write',slot=i)
++        api.check(case+'.created_version_two',changed.get('data',{}).get('version')==2)
++        api.call(case+'.stale_cas_denied','POST',slot_path(i),{'data':{'staleProbe':True},'options':{'cas':1}},token=token,expected=400,category='kv-write',slot=i)
++        read=api.call(case+'.read_after_stale_cas','GET',slot_path(i),token=token,category='kv-read',slot=i)
++        api.check(case+'.private_deep_compare_v2',read.get('data',{}).get('data')==body_for(entry,2) and read['data'].get('metadata',{}).get('version')==2)
++    private_new(ROOT/'server/private/initial-roles.private.json',state,api.guard,api.remaining)
++    fence.observe('after-phase');return state
++
++def cold(api,fence,state):
++    fence.observe('before-phase');api.root_token=state['rootToken']
++    health=api.call('cold.sealed_tls_health','GET','/v1/sys/health',token='',expected=503,category='health',readiness=True)
++    api.check('cold.initialized_sealed_after_restart',health.get('initialized') is True and health.get('sealed') is True)
++    unsealed=api.call('cold.unseal_existing_store','POST','/v1/sys/unseal',{'key':state['unsealKey']},token='',category='unseal')
++    api.check('cold.actually_unsealed',unsealed.get('sealed') is False)
++    capacity=api.call('cold.native_capacity','GET','/v1/sys/internal/capacity',category='capacity')
++    api.check('cold.native_format_two_preserved',capacity.get('data',{}).get('native_kv2_reader_format')==2)
++    for i,(entry,role) in enumerate(zip(fence.doc['ownerEntries'],state['roles'],strict=True),1):
++        case='cold.slot'+str(i);old=role['token'];login={'role_id':role['roleId'],'secret_id':role['secretId']}
++        lookup=api.call(case+'.old_lease_lookup','GET','/v1/auth/token/lookup-self',token=old,category='lookup',slot=i)
++        api.check(case+'.old_lease_policy_persisted',role['name'] in lookup.get('data',{}).get('policies',[]))
++        value=api.call(case+'.old_lease_reads_persisted','GET',slot_path(i),token=old,category='kv-read',slot=i)
++        api.check(case+'.old_private_deep_compare_persisted_v2',value.get('data',{}).get('data')==body_for(entry,2) and value['data'].get('metadata',{}).get('version')==2)
++        auth=api.call(case+'.fresh_login_after_restart','POST','/v1/auth/approle/login',login,token='',category='login',slot=i)['auth'];new=auth['client_token']
++        api.check(case+'.fresh_token_distinct',new!=old and auth.get('renewable') is True)
++        value=api.call(case+'.fresh_lease_reads_persisted','GET',slot_path(i),token=new,category='kv-read',slot=i)
++        api.check(case+'.fresh_private_deep_compare_persisted_v2',value.get('data',{}).get('data')==body_for(entry,2))
++        api.call(case+'.self_revoke_once','POST','/v1/auth/token/revoke-self',{},token=old,expected=204,category='revoke',slot=i)
++        api.call(case+'.self_revoked_lookup_denied','GET','/v1/auth/token/lookup-self',token=old,expected=403,category='lookup',slot=i)
++        api.call(case+'.self_revoked_kv_denied','GET',slot_path(i),token=old,expected=403,category='kv-read',slot=i)
++        api.call(case+'.admin_revoke_new_once','POST','/v1/auth/token/revoke',{'token':new},expected=204,category='revoke',slot=i)
++        api.call(case+'.admin_revoked_lookup_denied','GET','/v1/auth/token/lookup-self',token=new,expected=403,category='lookup',slot=i)
++        api.call(case+'.admin_revoked_kv_denied','GET',slot_path(i),token=new,expected=403,category='kv-read',slot=i)
++        api.call(case+'.destroy_secret_id_once','POST','/v1/auth/approle/role/'+role['name']+'/secret-id/destroy',{'secret_id':role['secretId']},expected=204,category='secret-destroy',slot=i)
++        api.call(case+'.destroyed_secret_login_denied','POST','/v1/auth/approle/login',login,token='',expected=400,category='login',slot=i)
++    fence.observe('after-phase')
+--- qualified-r2/test_main3_api_guards.py
++++ main3-api-r1/test_main3_api_guards.py
+@@ -0,0 +1,193 @@
++#!/usr/bin/env python3
++"""Closed-scope and unknown-outcome guards; synthetic values, zero real network."""
++import copy
++import errno
++import hashlib
++import json
++import time
++import types
++import unittest
++from unittest import mock
++import main3_source_fence as f
++import main3_api_cycle as a
++
++IDENT=['1','2','501','20','33152','1','4096','100','100']
++def capsule():
++    entries=[{'profileId':'synthetic-profile-'+str(i),'ownerAgent':'main',
++        'ownerAgentDir':str(f.LIVE/'agents/main/agent'),'actualProvider':'openai',
++        'credential':{'type':'oauth','provider':'openai','access':'synthetic-access-'+str(i),
++                      'refresh':'synthetic-refresh-'+str(i),'expires':1}} for i in range(3)]
++    return {'schema':'heptabao.actual-sdk-selected-owner-credentials.private.r1','host':'mac',
++        'constraints':{'containsCredentialValues':True,'containsCredentialDigests':False,'selectedOwnerCount':3,
++            'containsUnselectedCredentials':False,'productionChanged':False,'providerLivenessVerified':False,
++            'oauthRefreshAttempted':False,'productionCutover':False},
++        'ownerEntries':entries,'consumerBindings':[
++          {'scopeAgent':agent,'scopeAgentDir':str(f.LIVE/'agents'/agent/'agent'),
++           'profileId':entry['profileId'],'ownerAgent':'main','ownerAgentDir':str(f.LIVE/'agents/main/agent'),
++           'persistedOwnerMatchesEffective':True,'selectedByActualSdkOrder':True,
++           'actualSdkOrderRank':i,'configuredProfileId':False} for agent in f.AGENTS for i,entry in enumerate(entries)],
++        'sourceGenerations':[{'agent':x} for x in f.AGENTS],
++        'configurationIdentity':IDENT,'configurationSha256':'a'*64,
++        'registeredMetadataFileBindings':[{} for _ in range(145)]}
++def bundle():
++    base=str(f.LIVE/'agents/main/agent/openclaw-agent.sqlite')
++    return base,{'sourceIdentities':{base:IDENT},'sourceAbsences':[base+'-wal',base+'-shm',base+'-journal']}
++
++class CapsuleGuards(unittest.TestCase):
++    def test_valid_synthetic_shape_has_exact_three_and_fifteen(self):f.CapsuleFence.validate(capsule())
++    def test_fourth_owner_rejected(self):
++        value=capsule();value['ownerEntries'].append(copy.deepcopy(value['ownerEntries'][0]))
++        with self.assertRaises(f.Refused):f.CapsuleFence.validate(value)
++    def test_duplicate_owner_rejected(self):
++        value=capsule();value['ownerEntries'][1]=copy.deepcopy(value['ownerEntries'][0])
++        with self.assertRaises(f.Refused):f.CapsuleFence.validate(value)
++    def test_nonmain_owner_rejected(self):
++        value=capsule();value['ownerEntries'][0]['ownerAgent']='trnm'
++        with self.assertRaises(f.Refused):f.CapsuleFence.validate(value)
++    def test_unselected_consumer_rejected(self):
++        value=capsule();value['consumerBindings'][0]['profileId']='unselected'
++        with self.assertRaises(f.Refused):f.CapsuleFence.validate(value)
++    def test_missing_consumer_rejected(self):
++        value=capsule();value['consumerBindings'].pop()
++        with self.assertRaises(f.Refused):f.CapsuleFence.validate(value)
++    def test_duplicate_consumer_rejected(self):
++        value=capsule();value['consumerBindings'][1]=copy.deepcopy(value['consumerBindings'][0])
++        with self.assertRaises(f.Refused):f.CapsuleFence.validate(value)
++    def test_wrong_actual_rank_rejected(self):
++        value=capsule();value['consumerBindings'][0]['actualSdkOrderRank']=2
++        with self.assertRaises(f.Refused):f.CapsuleFence.validate(value)
++    def test_refreshed_provider_claim_is_not_admitted(self):
++        value=capsule();value['constraints']['providerLivenessVerified']=True
++        with self.assertRaises(f.Refused):f.CapsuleFence.validate(value)
++    def test_secret_reference_rejected(self):
++        value=capsule();value['ownerEntries'][0]['credential']['refreshRef']='secret'
++        with self.assertRaises(f.Refused):f.CapsuleFence.validate(value)
++    def test_numeric_identity_rejected_to_preserve_precision(self):
++        value=capsule();value['configurationIdentity']=[int(x) for x in IDENT]
++        with self.assertRaises(f.Refused):f.CapsuleFence.validate(value)
++    def test_missing_metadata_rejected(self):
++        value=capsule();value['registeredMetadataFileBindings'].pop()
++        with self.assertRaises(f.Refused):f.CapsuleFence.validate(value)
++    def test_exact_database_and_three_explicit_absences(self):
++        base,value=bundle();self.assertEqual(len(f.CapsuleFence.exact_database_bundle(value,base)),4)
++    def test_implicit_missing_journal_is_rejected(self):
++        base,value=bundle();value['sourceAbsences'].remove(base+'-journal')
++        with self.assertRaises(f.Refused):f.CapsuleFence.exact_database_bundle(value,base)
++    def test_present_journal_is_rejected(self):
++        base,value=bundle();value['sourceAbsences'].remove(base+'-journal');value['sourceIdentities'][base+'-journal']=IDENT
++        with self.assertRaises(f.Refused):f.CapsuleFence.exact_database_bundle(value,base)
++    def test_foreign_database_path_is_rejected(self):
++        base,value=bundle();value['sourceIdentities']['/foreign/source.sqlite']=IDENT
++        with self.assertRaises(f.Refused):f.CapsuleFence.exact_database_bundle(value,base)
++    def test_absent_wal_existing_shm_is_rejected(self):
++        base,value=bundle();value['sourceAbsences'].remove(base+'-shm');value['sourceIdentities'][base+'-shm']=IDENT
++        with self.assertRaises(f.Refused):f.CapsuleFence.exact_database_bundle(value,base)
++    def test_nonempty_wal_without_shm_is_rejected(self):
++        base,value=bundle();value['sourceAbsences'].remove(base+'-wal');value['sourceIdentities'][base+'-wal']=IDENT
++        with self.assertRaises(f.Refused):f.CapsuleFence.exact_database_bundle(value,base)
++    def test_nonempty_wal_and_shm_allowed_as_separate_identities(self):
++        base,value=bundle()
++        for suffix in ('-wal','-shm'):value['sourceAbsences'].remove(base+suffix);value['sourceIdentities'][base+suffix]=IDENT
++        self.assertEqual(len(f.CapsuleFence.exact_database_bundle(value,base)),4)
++    def test_phase_deadline_cannot_be_replenished(self):
++        fence=object.__new__(f.CapsuleFence);fence.clock=lambda:100;fence.phase_until=99;fence.until=145
++        with self.assertRaises(f.Refused):fence.remaining()
++
++class FakeSocket:
++    def __init__(self):self.closed=False;self.sent=[]
++    def settimeout(self,value):self.timeout=value
++    def getpeercert(self,**kwargs):return b'synthetic-public-certificate'
++    def version(self):return 'TLSv1.3'
++    def sendall(self,value):self.sent.append(value)
++    def close(self):self.closed=True
++class Response:
++    def __init__(self,body=b'{"ok":true}',status=200,length=None,transfer=None,complete=True):
++        self.body=body;self.status=status;self.length=str(len(body)) if length is None else length
++        self.transfer=transfer;self.complete=complete;self.closed=False
++    def begin(self):pass
++    def getheader(self,name):return self.transfer if name=='Transfer-Encoding' else self.length
++    def read(self,size):return self.body
++    def isclosed(self):return self.complete
++    def close(self):self.closed=True
++
++class HttpGuards(unittest.TestCase):
++    def setUp(self):
++        self.api=object.__new__(a.Api);self.api.plan={'port':45678,'certificateLeafSha256':hashlib.sha256(b'synthetic-public-certificate').hexdigest()}
++        self.api.phase='initial';self.api.until=time.monotonic()+120;self.api.rows=[];self.api.checks=[]
++        self.api.unknown=False;self.api.root_token=None;self.api.sensitive=[]
++        self.api.journal=types.SimpleNamespace(append=mock.Mock())
++        self.api.guard=types.SimpleNamespace(check=mock.Mock())
++        self.sock=FakeSocket();self.api.context=types.SimpleNamespace(wrap_socket=mock.Mock(return_value=self.sock))
++        self.connect=mock.patch.object(a.socket,'create_connection',return_value=self.sock).start()
++        self.response=Response();self.response_factory=mock.patch.object(a.http.client,'HTTPResponse',return_value=self.response).start()
++        self.addCleanup(mock.patch.stopall)
++    def call(self,**kw):return self.api.call('synthetic.case','GET','/v1/sys/health',token='',category='health',**kw)
++    def test_complete_verified_response_one_request(self):
++        self.assertEqual(self.call(),{'ok':True});self.assertEqual(len(self.sock.sent),1)
++        self.assertTrue(self.api.rows[0]['socketsClosed']);self.assertFalse(self.api.rows[0]['outcomeUnknown'])
++    def test_private_body_and_bearer_never_in_public_or_journal(self):
++        self.api.call('synthetic.private','POST','/v1/sys/unseal',{'key':'synthetic-private-value'},token='synthetic-private-bearer',category='unseal')
++        public=json.dumps(self.api.public())+str(self.api.journal.append.call_args_list)
++        self.assertNotIn('synthetic-private',public);self.assertNotIn('sha256',public)
++    def test_unknown_dispatch_prevents_second_request(self):
++        self.sock.sendall=mock.Mock(side_effect=OSError('synthetic-secret-error'))
++        with self.assertRaises(f.Refused):self.call()
++        self.assertTrue(self.api.rows[0]['outcomeUnknown'])
++        with self.assertRaises(f.Refused):self.call()
++        self.assertEqual(self.connect.call_count,1)
++        self.assertNotIn('synthetic-secret-error',json.dumps(self.api.public()))
++    def test_bad_leaf_prevents_send(self):
++        self.api.plan['certificateLeafSha256']='f'*64
++        with self.assertRaises(f.Refused):self.call()
++        self.assertEqual(self.sock.sent,[]);self.assertTrue(self.sock.closed)
++    def test_incomplete_body_is_unknown_and_no_retry(self):
++        self.response.length='999'
++        with self.assertRaises(f.Refused):self.call()
++        self.assertTrue(self.api.rows[0]['outcomeUnknown']);self.assertEqual(self.connect.call_count,1)
++    def test_chunked_response_is_rejected(self):
++        self.response.transfer='chunked'
++        with self.assertRaises(f.Refused):self.call()
++        self.assertTrue(self.api.rows[0]['outcomeUnknown'])
++    def test_redirect_is_observed_once_never_followed(self):
++        self.response.status=302
++        with self.assertRaises(f.Refused):self.call()
++        self.assertEqual(self.connect.call_count,1);self.assertTrue(self.api.rows[0]['responseComplete'])
++    def test_bad_json_complete_known_http_stops_business(self):
++        self.response.body=b'BAD';self.response.length='3'
++        with self.assertRaises(f.Refused):self.call()
++        self.assertFalse(self.api.rows[0]['outcomeUnknown']);self.assertTrue(self.api.unknown)
++    def test_health_only_refused_tcp_retry_one_tls_and_get(self):
++        self.connect.side_effect=[ConnectionRefusedError(errno.ECONNREFUSED,'refused'),ConnectionRefusedError(errno.ECONNREFUSED,'refused'),self.sock]
++        with mock.patch.object(a.time,'sleep'):self.call(readiness=True)
++        self.assertEqual(self.api.rows[0]['connectionRefusals'],2);self.assertEqual(len(self.sock.sent),1)
++        self.api.context.wrap_socket.assert_called_once()
++    def test_api_write_never_retries_connection_refusal(self):
++        self.connect.side_effect=ConnectionRefusedError(errno.ECONNREFUSED,'refused')
++        with self.assertRaises(f.Refused):self.api.call('synthetic.write','POST','/v1/sys/unseal',{'key':'synthetic'},token='',category='unseal')
++        self.assertEqual(self.connect.call_count,1)
++    def test_non_refusal_tcp_failure_never_retries(self):
++        self.connect.side_effect=PermissionError(errno.EACCES,'denied')
++        with self.assertRaises(f.Refused):self.call(readiness=True)
++        self.assertEqual(self.connect.call_count,1)
++    def test_readiness_retry_cannot_be_applied_to_private_mutation(self):
++        with self.assertRaises(f.Refused):self.api.call('synthetic.write','POST','/v1/sys/unseal',{'key':'synthetic'},token='',category='unseal',readiness=True)
++        self.connect.assert_not_called()
++    def test_expired_phase_does_not_dispatch(self):
++        self.api.until=time.monotonic()-1
++        with self.assertRaises(f.Refused):self.call()
++        self.connect.assert_not_called();self.api.journal.append.assert_not_called()
++    def test_empty_204_known_complete(self):
++        self.response.body=b'';self.response.length='0';self.response.status=204
++        self.assertEqual(self.api.call('synthetic.empty','POST','/v1/sys/auth/approle',{},expected=204,category='mount'),{})
++    def test_header_injection_prevented(self):
++        with self.assertRaises(f.Refused):self.api.call('synthetic.token','GET','/v1/sys/health',token='bad\r\nheader',category='health')
++        self.connect.assert_not_called()
++    def test_public_route_never_contains_private_key(self):
++        self.call();row=self.api.public()['requests'][0]
++        self.assertNotIn('path',row);self.assertNotIn('route',row);self.assertEqual(row['routeCategory'],'health')
++    def test_fixed_request_bound_prevents_dispatch(self):
++        self.api.rows=[{} for _ in range(a.MAX_HTTP)]
++        with self.assertRaises(f.Refused):self.call()
++        self.connect.assert_not_called()
++
++if __name__=='__main__':unittest.main(verbosity=2)

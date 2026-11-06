@@ -1,0 +1,98 @@
+{
+  "schema": "heptabao.mac-main3-api-source-derivation.r1",
+  "qualifiedR2OriginalPins": {
+    "mac_owned_unreaped_r1.py": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298",
+    "mac_owned_commands_r1.py": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530",
+    "mac_t5_volume_guard_r1.py": "9d5a6ea743e5abe87f6f84bcbcf6ddb7ba9f080fd3f51e54040d56122159394a",
+    "mac_owned_launchd_r3.py": "9209144dd581ed547478e5210fffc8e1c75e7bc5511637ba02aed18a63129354",
+    "mac_native_process_observer_r1.py": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b",
+    "mac_current_server_owner_r1.py": "c7eaf0a36bcfac4355c778d93e27bdff58fbcc0cba625987cee6e98e72909be5",
+    "mac_public_code_pin_excerpt_r1.py": "7ff262e7ff913eb97aab77855d988cb3a6af8cab5ea9c77940a2782afd91ca4f",
+    "tls_complete_http_probe.py": "7e92967416e0dcdc80b9c5d56e0655775630cef9198aba5541fa75bbf98c42fc",
+    "fresh_synthetic_controller_r1.py": "4697eb12c7af0b88fc8faec697518e0397cc8f620cf2581f301b18206f54f42c",
+    "test_fresh_synthetic_controller_r1.py": "5b4d3f2cc67196ef2eab036467493edcb90db5e5902e92619b5d78236f754e7a",
+    "test_suid_ps_tls_r2.py": "261d38cdf25e873a99fc99c901d1cefcbdc0d434388877caa26d57cac7496bc6"
+  },
+  "sourcePins": {
+    "mac_owned_unreaped_r1.py": {
+      "bytes": 14877,
+      "sha256": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298"
+    },
+    "mac_owned_commands_r1.py": {
+      "bytes": 6154,
+      "sha256": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530"
+    },
+    "mac_t5_volume_guard_r1.py": {
+      "bytes": 13385,
+      "sha256": "634ac319affd52365e8c30fcba44743ff2465a649b9e76a945d2cef09b9a945b"
+    },
+    "mac_owned_launchd_r3.py": {
+      "bytes": 58613,
+      "sha256": "92d97be595c5ef260b971c753c59d0712592bf2f0162031234f3e5ae5b8cb863"
+    },
+    "mac_native_process_observer_r1.py": {
+      "bytes": 13423,
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+    },
+    "mac_current_server_owner_r1.py": {
+      "bytes": 16143,
+      "sha256": "f3a41ea0f0533a6cd7dc9f14f187248e3ad43eacd814942fdd0528c5a8c69dfa"
+    },
+    "mac_public_code_pin_excerpt_r1.py": {
+      "bytes": 1792,
+      "sha256": "7ff262e7ff913eb97aab77855d988cb3a6af8cab5ea9c77940a2782afd91ca4f"
+    },
+    "tls_complete_http_probe.py": {
+      "bytes": 4750,
+      "sha256": "7e92967416e0dcdc80b9c5d56e0655775630cef9198aba5541fa75bbf98c42fc"
+    },
+    "main3_api_controller.py": {
+      "bytes": 31502,
+      "sha256": "2930663c007036e28211a53c10730cf143214b29be09068ba39932418e8622ce"
+    },
+    "test_main3_api_controller.py": {
+      "bytes": 11340,
+      "sha256": "47dfa875d51c2247f03759adcf5e2591891b8a4c09856c65a64a06f79bfc1b7f"
+    },
+    "test_suid_ps_tls_r2.py": {
+      "bytes": 16309,
+      "sha256": "261d38cdf25e873a99fc99c901d1cefcbdc0d434388877caa26d57cac7496bc6"
+    },
+    "main3_source_fence.py": {
+      "bytes": 13102,
+      "sha256": "ce1df2f15987d8598796c4c0d1c411c5ca2c18b31fbb53107043ef7f679fcbd5"
+    },
+    "main3_api_cycle.py": {
+      "bytes": 17553,
+      "sha256": "b586d4e7fc0475d7c6331a2438f7a8e505870ff85504a7fc044246f92f6892ef"
+    },
+    "test_main3_api_guards.py": {
+      "bytes": 12968,
+      "sha256": "3851bfc3d1ddd0f8134f41ca9c6673fa3d1af730282ca574f189461aade52048"
+    }
+  },
+  "preparer": {
+    "bytes": 14824,
+    "sha256": "e5278d414cb05d05db1639f15bccedbd1ce3139bd694f7ac48a155132e8b28bb"
+  },
+  "canonicalCommit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "canonicalBinarySha256": "5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c",
+  "budgets": {
+    "outer": 600,
+    "phase": 120,
+    "sourceObservationMaximum": 45,
+    "wrapperReady": 30,
+    "execObservation": 10,
+    "health": 15,
+    "singleOtherHttp": 10,
+    "failureCleanup": 60
+  },
+  "signalOwnershipUnchanged": true,
+  "psSuidExceptionUnchanged": true,
+  "actualCredentialScope": 3,
+  "providerValid": false,
+  "productionCutover": false,
+  "actualPluginSdkQualified": false,
+  "publicCredentialValuesOrDigests": false,
+  "productionClientRollbackQualified": false
+}
