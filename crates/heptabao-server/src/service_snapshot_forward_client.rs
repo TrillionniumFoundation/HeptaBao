@@ -1,5 +1,6 @@
 //! The ingress owns one selected peer and stages all binary response bytes.
 use super::*;
+use crate::request_deadline::lock_until;
 
 pub(crate) struct SnapshotForwardPlan {
     endpoint: Option<crate::ha::SnapshotEndpoint>,
@@ -265,8 +266,7 @@ impl SnapshotForwardPlan {
         // A failed exchange is never treated as proof that the leader did no work.
         self.transport_attempted = true;
         let exchange = endpoint.exchange(&self.metadata, upload, &mut file, limits, |metadata| {
-            let mut writer = service
-                .lock_for_request()
+            let mut writer = lock_until(service, self.owner.deadline)
                 .map_err(|_| heptabao_ha_service::HaError::Transport)?;
             let checkpoint = self
                 .accept_ready(&mut writer, metadata)
@@ -299,7 +299,7 @@ impl SnapshotForwardPlan {
             }
         };
         let completion: Result<CompletedSnapshotForward, Response> = (|| {
-            let mut writer = service.lock_for_request().map_err(|_| unavailable())?;
+            let mut writer = lock_until(service, self.owner.deadline).map_err(|_| unavailable())?;
             self.owner.check(&writer)?;
             let wire: wire::CompletionWire = wire::decode(result.metadata())?;
             if wire.reply.status != result.status() {
@@ -359,7 +359,7 @@ impl SnapshotForwardPlan {
         service: &Arc<Mutex<Service>>,
         response: Response,
     ) -> CompletedSnapshotForward {
-        match service.lock_for_request() {
+        match lock_until(service, self.owner.deadline) {
             Ok(mut writer) => self.audit_failure(&mut writer, response, None),
             Err(_) => CompletedSnapshotForward {
                 response: self.audit_veto_response(None),
