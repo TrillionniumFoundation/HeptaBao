@@ -102,6 +102,224 @@ class Failed(Exception):
     pass
 
 
+class FocusUnavailable(Exception):
+    """Closed diagnostic code only; never attach raw WindowManager output."""
+
+
+AUTOFILL_POPUP = ("android", "AutofillUI")
+
+
+def _one_match(pattern, raw, reason):
+    matches = list(re.finditer(pattern, raw, re.MULTILINE))
+    if len(matches) != 1:
+        raise FocusUnavailable(reason)
+    return matches[0]
+
+
+def _activity_id_supported(value):
+    if re.fullmatch(r"[0-9a-f]{1,8}", value):
+        return True
+    # Android 16 QPR2 appends System.identityHashCode(int) directly. Keep the
+    # original token for equality; never merge decimal and hexadecimal spellings.
+    return bool(re.fullmatch(r"-?(?:0|[1-9][0-9]{0,9})", value)) and str(int(value)) == value and -2147483648 <= int(value) <= 2147483647
+
+
+def _activity_identity(value, package):
+    if package not in {GOOD, DECOY}:
+        raise FocusUnavailable("fixture_not_selected")
+    match = re.fullmatch(r"ActivityRecord\{([^ {}\r\n]+) u0 " + re.escape(package + "/" + ACTIVITY) + r" t([0-9]+)\}", value)
+    if not match or not _activity_id_supported(match.group(1)):
+        raise FocusUnavailable("activity_identity_unavailable")
+    return match.group(1), int(match.group(2))
+
+
+def _activity_shape(value, package):
+    """Closed metadata only: never retain a record ID, task number or component."""
+    result = {"present": value is not None, "is_null": value == "null", "shape": "unrecognized",
+              "expected_component": False, "user_zero": False, "complete_record": False,
+              "finishing_marker": False, "exiting_marker": False, "identity_format": "unrecognized"}
+    if value is None:
+        result["shape"] = "absent"; return result
+    if value == "null":
+        result["shape"] = "null"; return result
+    if not isinstance(value, str) or len(value) > 2048:
+        return result
+    prefix = re.match(r"^ActivityRecord\{([^ {}\r\n]+) u(-?[0-9]+) ([^ {}\r\n]+)", value)
+    if prefix is None:
+        return result
+    result["expected_component"] = package in {GOOD, DECOY} and prefix.group(3) == package + "/" + ACTIVITY
+    result["user_zero"] = prefix.group(2) == "0"
+    token = prefix.group(1)
+    if re.fullmatch(r"[0-9]{1,8}", token): result["identity_format"] = "digits_1_to_8"
+    elif re.fullmatch(r"[0-9a-f]{1,8}", token): result["identity_format"] = "legacy_hex_1_to_8"
+    elif re.fullmatch(r"[1-9][0-9]{8,9}", token) and _activity_id_supported(token): result["identity_format"] = "canonical_decimal_9_or_10"
+    elif token.startswith("-") and _activity_id_supported(token): result["identity_format"] = "canonical_signed_decimal"
+    result["finishing_marker"] = bool(re.search(r" f\}", value))
+    result["exiting_marker"] = " isExiting" in value
+    complete = re.fullmatch(r"ActivityRecord\{[^ {}\r\n]+ u-?[0-9]+ [^ {}\r\n]+ t-?[0-9]+\}", value)
+    result["complete_record"] = complete is not None
+    if result["finishing_marker"] or result["exiting_marker"]: result["shape"] = "finishing_or_exiting"
+    elif complete: result["shape"] = "complete_record"
+    elif re.fullmatch(r"ActivityRecord\{[^ {}\r\n]+ u-?[0-9]+ [^ {}\r\n]+", value): result["shape"] = "incomplete_record"
+    return result
+
+
+def _activity_relation(first, second, package):
+    if not isinstance(first, str) or not isinstance(second, str):
+        return None
+    try:
+        return _activity_identity(first, package) == _activity_identity(second, package)
+    except FocusUnavailable:
+        return None
+
+
+def _focus_snapshot(raw):
+    if len(raw) > 2 * 1024 * 1024:
+        raise FocusUnavailable("window_metadata_limit")
+    top = _one_match(r"^\s*mTopFocusedDisplayId=([0-9]+)\s*$", raw, "top_display_unavailable")
+    if top.group(1) != "0":
+        raise FocusUnavailable("nondefault_top_display")
+    sections, current, lines = 0, None, []
+    for line in raw.splitlines():
+        marker = re.match(r"^\s*Display: mDisplayId=([0-9]+)\b", line)
+        if marker:
+            current = int(marker.group(1))
+            if current == 0:
+                sections += 1
+        elif line.lstrip().startswith("WINDOW MANAGER "):
+            current = None
+        if current == 0:
+            lines.append(line)
+    if sections != 1:
+        raise FocusUnavailable("default_display_ambiguous")
+    section = "\n".join(lines)
+    focus = _one_match(r"^\s*mCurrentFocus=(.+)\s*$", section, "focused_window_ambiguous")
+    window = re.fullmatch(r"Window\{([0-9a-f]{1,8}) u0 ([^{}\r\n]+)\}", focus.group(1).strip())
+    if not window or int(window.group(1), 16) > 0x7fffffff:
+        raise FocusUnavailable("focused_window_unrecognized")
+    apps = re.findall(r"^\s*mFocusedApp=(.+)\s*$", section, re.MULTILINE)
+    return {"window": window.group(1), "title": window.group(2),
+            "activity": apps[0].strip() if len(apps) == 1 else None,
+            "focused_app_field_count": "one" if len(apps) == 1 else "zero" if not apps else "multiple"}
+
+
+def _window_details(raw, expected_id):
+    """Parse one identity-filtered WMS window, discarding every global tail."""
+    if len(raw) > 512 * 1024 or not raw.startswith("WINDOW MANAGER WINDOWS (dumpsys window windows)"):
+        raise FocusUnavailable("window_detail_format")
+    headers = list(re.finditer(r"^([ \t]*)Window #[0-9]+ Window\{([0-9a-f]{1,8}) u([0-9]+) ([^{}\r\n]+)\}:[ \t]*$", raw, re.MULTILINE))
+    if len(headers) != 1 or headers[0].group(2) != expected_id or headers[0].group(3) != "0":
+        raise FocusUnavailable("window_detail_identity")
+    header = headers[0]
+    indent = len(header.group(1).split("\n")[-1])
+    body = []
+    for line in raw[header.end():].splitlines():
+        if line.strip() and len(line) - len(line.lstrip()) <= indent:
+            break
+        body.append(line)
+    body = "\n".join(body)
+    display = _one_match(r"^\s*mDisplayId=([0-9]+)(?: taskId=([0-9]+))?\s+mSession=.+$", body, "window_display_unavailable")
+    owner = _one_match(r"^\s*mOwnerUid=([0-9]+) showForAllUsers=(?:true|false) package=([A-Za-z0-9_.$]+) appop=\S+\s*$", body, "window_owner_unavailable")
+    attrs = _one_match(r"^\s*mAttrs=(.+)$", body, "window_attributes_unavailable")
+    window_type = _one_match(r"\bty=([A-Z_0-9]+)\b", attrs.group(1), "window_type_unavailable").group(1)
+    if len(re.findall(r"\bmToken=", body)) != 1:
+        raise FocusUnavailable("window_token_ambiguous")
+    # Android 16 QPR2 prints the base/sub-layer prefix without a newline before
+    # mToken. Accept that exact form and the standalone form, never arbitrary prefixes.
+    token = _one_match(r"^[ \t]*(?:mBaseLayer=-?[0-9]+ mSubLayer=-?[0-9]+[ \t]+)?mToken=([^\r\n]+)$", body, "window_token_unavailable").group(1).strip()
+    activity = _one_match(r"^\s*mActivityRecord=(.+)\s*$", body, "window_activity_unavailable").group(1).strip()
+    visible = _one_match(r"^\s*isVisible=(true|false)\s*$", body, "window_visibility_unavailable").group(1) == "true"
+    onscreen = _one_match(r"^\s*isOnScreen=(true|false)\s*$", body, "window_onscreen_unavailable").group(1) == "true"
+    parents = re.findall(r"^\s*mParentWindow=Window\{([0-9a-f]{1,8}) u([0-9]+) ([^{}\r\n]+)\} mLayoutAttached=(true|false)\s*$", body, re.MULTILINE)
+    if len(parents) > 1:
+        raise FocusUnavailable("window_parent_ambiguous")
+    return {"window": expected_id, "title": header.group(4), "display": int(display.group(1)),
+            "task": int(display.group(2)) if display.group(2) is not None else None,
+            "owner": int(owner.group(1)), "package": owner.group(2), "type": window_type,
+            "token": token, "activity": activity, "visible": visible, "onscreen": onscreen,
+            "parent": parents[0] if parents else None}
+
+
+def _popup_parent(focus, popup, package):
+    identity = _activity_identity(focus["activity"], package) if focus["activity"] else None
+    if identity is None or focus["title"] != "Autofill UI" or popup["title"] != "Autofill UI" or popup["window"] != focus["window"]:
+        raise FocusUnavailable("popup_focus_identity")
+    if popup["owner"] != 1000 or popup["package"] != "android":
+        raise FocusUnavailable("popup_not_system_owned")
+    if popup["type"] not in {"APPLICATION_ABOVE_SUB_PANEL", "1005"}:
+        raise FocusUnavailable("popup_type_unsupported")
+    if popup["display"] != 0 or not popup["visible"] or not popup["onscreen"]:
+        raise FocusUnavailable("popup_not_visible_on_default_display")
+    parent = popup["parent"]
+    if parent is None or parent[1:] != ("0", package + "/" + ACTIVITY, "true") or int(parent[0], 16) > 0x7fffffff:
+        raise FocusUnavailable("popup_parent_not_expected_fixture")
+    if _activity_identity(popup["token"], package) != identity or _activity_identity(popup["activity"], package) != identity or popup["task"] != identity[1]:
+        raise FocusUnavailable("popup_activity_token_mismatch")
+    return parent[0], identity
+
+
+def _bound_parent(focus, popup, parent, package):
+    parent_id, identity = _popup_parent(focus, popup, package)
+    if parent["window"] != parent_id or parent["title"] != package + "/" + ACTIVITY or parent["package"] != package:
+        raise FocusUnavailable("parent_window_identity_mismatch")
+    if parent["display"] != 0 or not parent["visible"] or not parent["onscreen"] or parent["task"] != identity[1]:
+        raise FocusUnavailable("parent_window_not_active")
+    if parent["type"] not in {"BASE_APPLICATION", "APPLICATION", "1", "2"} or parent["owner"] < 10000:
+        raise FocusUnavailable("parent_window_type_or_owner")
+    if _activity_identity(parent["token"], package) != identity or _activity_identity(parent["activity"], package) != identity:
+        raise FocusUnavailable("parent_activity_token_mismatch")
+    return parent_id
+
+
+def _top_resumed_bound(raw, package, parent_id):
+    """Server-only top record; never use the -p/-c client-dump command."""
+    header = "ACTIVITY MANAGER TOP-RESUMED (dumpsys activity top-resumed)"
+    if len(raw) > 1024 * 1024 or not raw.startswith(header + "\n"):
+        raise FocusUnavailable("top_resumed_format_unavailable")
+    if _one_match(r"^[ \t]*ACTIVITY MANAGER[^\r\n]*$", raw, "top_resumed_header_ambiguous").group(0) != header:
+        raise FocusUnavailable("top_resumed_format_unavailable")
+    if re.search(r"^[ \t]*(?:CLIENT:|ResumedActivity:)", raw, re.MULTILINE):
+        raise FocusUnavailable("top_resumed_client_format_refused")
+    # Count generic field prefixes before checking their values. App-supplied intent
+    # or task-label text containing forged new lines cannot hide a real wrong value.
+    named = _one_match(r"^[ \t]*packageName=([^\r\n]*)$", raw, "top_resumed_package_ambiguous").group(1)
+    names = re.fullmatch(r"([A-Za-z0-9_.$]+) processName=([A-Za-z0-9_.$:]+)", named)
+    if names is None or names.groups() != (package, package):
+        raise FocusUnavailable("top_resumed_package_mismatch")
+    launched = _one_match(r"^[ \t]*launchedFromUid=([^\r\n]*)$", raw, "top_resumed_user_ambiguous").group(1)
+    user = re.fullmatch(r"[0-9]+ launchedFromPackage=[A-Za-z0-9_.$]+ launchedFromFeature=[A-Za-z0-9_.$:-]+ userId=([0-9]+)", launched)
+    if user is None or user.group(1) != "0" or len(re.findall(r"\buserId=", raw)) != 1:
+        raise FocusUnavailable("top_resumed_user_mismatch")
+    component = _one_match(r"^[ \t]*mActivityComponent=([^\r\n]*)$", raw, "top_resumed_component_ambiguous").group(1)
+    if component != package + "/" + ACTIVITY:
+        raise FocusUnavailable("top_resumed_component_mismatch")
+    state = _one_match(r"^[ \t]*state=([^\r\n]*)$", raw, "top_resumed_state_ambiguous").group(1)
+    if state != "RESUMED delayedResume=false finishing=false":
+        raise FocusUnavailable("top_resumed_state_refused")
+    windows = _one_match(r"^[ \t]*windows=([^\r\n]*)$", raw, "top_resumed_windows_ambiguous").group(1)
+    window = r"Window\{([0-9a-f]{1,8}) u([0-9]+) ([^{}\r\n]+)\}"
+    if not re.fullmatch(r"\[" + window + r"(?:, " + window + r")*\]", windows):
+        raise FocusUnavailable("top_resumed_windows_format")
+    children = re.findall(window, windows)
+    if not 1 <= len(children) <= 16 or len({row[0] for row in children}) != len(children) or children.count((parent_id, "0", package + "/" + ACTIVITY)) != 1:
+        raise FocusUnavailable("top_resumed_parent_window_mismatch")
+
+
+def autofill_popup_metadata(focus, popup, parent, activities, final_focus, package):
+    """Upstream WMS contract, still subject to real OEM qualification; no title-only fallback."""
+    parent_id = _bound_parent(focus, popup, parent, package)
+    _top_resumed_bound(activities, package, parent_id)
+    if final_focus != focus:
+        raise FocusUnavailable("popup_focus_changed")
+    return {"available": True, "classification": "bound_system_autofill_popup", "display": 0,
+            "system_owner": True, "system_package": True, "window_type": 1005,
+            "expected_fixture_parent": True, "activity_token_matches": True,
+            "fixture_resumed": True, "focus_rechecked": True,
+            "resumed_evidence": "server_only_top_resumed_record", "package_filter_used": False,
+            "top_resumed_parent_window_matches": True,
+            "oem_contract_requires_device_evidence": True}
+
+
 def sha(data):
     return hashlib.sha256(data).hexdigest()
 
@@ -144,6 +362,7 @@ class Device:
         self.adb = str(adb)
         self.last_wait = None
         self.last_public_ui = {}
+        self.last_focus_metadata = {"available": False, "reason": "not_observed"}
         self.expected_fixture = None
         self.current_case = None
         self.tap_diagnostics = []
@@ -204,19 +423,61 @@ class Device:
         return value
 
     def foreground(self):
-        raw = self.shell("dumpsys", "window")
-        if not re.search(r"(?m)^\s*mTopFocusedDisplayId=0\s*$", raw):
+        self.last_focus_metadata = {"available": False, "reason": "not_observed"}
+        phase, shapes = "initial_focus_snapshot", {}
+        try:
+            focus = _focus_snapshot(self.shell("dumpsys", "window"))
+            component = re.fullmatch(r"([A-Za-z0-9_.$]+)/([A-Za-z0-9_.$]+)", focus["title"])
+            if component:
+                current = component.groups()
+                self.last_focus_metadata = {"available": True, "classification": "activity_window", "display": 0,
+                                            "allowed_package": current[0] in PACKAGES | {"android"}}
+                return current
+            if focus["title"] != "Autofill UI":
+                raise FocusUnavailable("focused_title_not_supported")
+            package = self.expected_fixture
+            if package not in {GOOD, DECOY}:
+                raise FocusUnavailable("fixture_not_selected")
+            phase = "focused_app_identity"
+            shapes["focused_app_field_count"] = focus["focused_app_field_count"]
+            shapes["focused_app"] = _activity_shape(focus["activity"], package)
+            if focus["activity"] is None:
+                raise FocusUnavailable("activity_identity_unavailable")
+            _activity_identity(focus["activity"], package)
+            # WMS supports an identity-hash selector; never dump a guessed package/title.
+            phase = "popup_window_details"
+            popup = _window_details(self.shell("dumpsys", "window", "-a", focus["window"]), focus["window"])
+            shapes["popup_token"] = _activity_shape(popup["token"], package)
+            shapes["popup_activity"] = _activity_shape(popup["activity"], package)
+            shapes["focused_app_matches_popup_token"] = _activity_relation(focus["activity"], popup["token"], package)
+            shapes["focused_app_matches_popup_activity"] = _activity_relation(focus["activity"], popup["activity"], package)
+            phase = "popup_parent_binding"
+            parent_id, _ = _popup_parent(focus, popup, package)
+            phase = "parent_window_details"
+            parent = _window_details(self.shell("dumpsys", "window", "-a", parent_id), parent_id)
+            shapes["parent_token"] = _activity_shape(parent["token"], package)
+            shapes["parent_activity"] = _activity_shape(parent["activity"], package)
+            shapes["focused_app_matches_parent_token"] = _activity_relation(focus["activity"], parent["token"], package)
+            shapes["focused_app_matches_parent_activity"] = _activity_relation(focus["activity"], parent["activity"], package)
+            phase = "parent_window_binding"
+            _bound_parent(focus, popup, parent, package)
+            # This exact command dumps one server-owned top record without an app
+            # callback. It is not a package filter. All unrelated raw fields are discarded.
+            phase = "server_top_resumed_query"
+            activities = self.shell("dumpsys", "activity", "top-resumed")
+            phase = "final_focus_snapshot"
+            final_focus = _focus_snapshot(self.shell("dumpsys", "window"))
+            shapes["final_focused_app_field_count"] = final_focus["focused_app_field_count"]
+            shapes["final_focused_app"] = _activity_shape(final_focus["activity"], package)
+            phase = "complete_system_chain"
+            self.last_focus_metadata = autofill_popup_metadata(focus, popup, parent, activities, final_focus, package)
+            self.last_focus_metadata["shape_diagnostics"] = shapes
+            return AUTOFILL_POPUP
+        except FocusUnavailable as error:
+            self.last_focus_metadata = {"available": False, "reason": str(error),
+                                        "phase": phase, "shape_diagnostics": shapes,
+                                        "oem_contract_requires_device_evidence": True}
             return None
-        current_display = None
-        default_display = []
-        for line in raw.splitlines():
-            marker = re.match(r"^\s*Display: mDisplayId=([0-9]+)\b", line)
-            if marker: current_display = int(marker.group(1))
-            if current_display == 0: default_display.append(line)
-        matches = re.findall(r"mCurrentFocus=Window\{[^\n]*? ([A-Za-z0-9_.$]+)/([A-Za-z0-9_.$]+)\}", "\n".join(default_display))
-        if len(matches) != 1:
-            return None
-        return matches[0]
 
     def ui(self):
         current = self.foreground()
@@ -281,6 +542,7 @@ class Device:
                 event["pending_intents_immediately_before_tap"] = self.pending_intents()
                 current = self.foreground()
                 event["foreground_before_tap"] = self.public_component(current)
+                event["focus_metadata_before_tap"] = getattr(self, "last_focus_metadata", {"available": False, "reason": "not_observed"})
                 if current != (self.expected_fixture, ACTIVITY) and not (current is not None and current[0] == "android"):
                     self.tap_diagnostics.append(event)
                     raise Failed("autofill_menu_context_changed")
@@ -398,7 +660,8 @@ class Device:
         allowed = {"ui_hidden_notification", "memory_pressure_locked", "auth_context_bound"}
         rejection_codes = {"request_expired", "wrong_result_recipient", "request_changed", "wrong_package", "wrong_certificate", "missing_structure", "wrong_activity", "unsupported_windows", "structure_too_large", "webview_unsupported", "wrong_fields"}
         allowed.update("auth_rejected_" + code for code in rejection_codes)
-        events = [line.strip() for line in raw.splitlines() if line.strip() in allowed]
+        trim_code = r"trim_(?:running_moderate|running_low|running_critical|ui_hidden|background|moderate|complete|other)_before_p[01]l[01]h[01]_after_p[01]l0h0_epoch_advanced"
+        events = [line.strip() for line in raw.splitlines() if line.strip() in allowed or re.fullmatch(trim_code, line.strip())]
         return {"available": True, "scope": "current_provider_process_buffer_diagnostic_only", "codes": events[-64:]}
 
     def unlock(self, master, expect_success=True):
@@ -698,7 +961,8 @@ def main():
         case("same_package_wrong_certificate_refused", rejected_certificate)
     except Failed as error:
         failure = str(error)
-        report["failure_context"] = {"expected_control": device.last_wait, "public_ui": device.last_public_ui}
+        report["failure_context"] = {"expected_control": device.last_wait, "public_ui": device.last_public_ui,
+                                     "focus_metadata": getattr(device, "last_focus_metadata", None)}
         try:
             if device.package_hash(PROVIDER) == build["artifacts"]["provider"]["sha256"]:
                 report["failure_context"]["provider_events_before_diagnostic_activity"] = device.provider_events()

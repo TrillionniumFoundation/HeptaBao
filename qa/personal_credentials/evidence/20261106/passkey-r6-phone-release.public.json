@@ -1,0 +1,72 @@
+{
+  "all_prior_phone_jobs_terminal": [
+    {
+      "exit_code": 0,
+      "job_id": "1a1b07ab9f8-fc05-70c2",
+      "output_complete": true,
+      "output_durable": true,
+      "state": "cancelled"
+    },
+    {
+      "exit_code": 0,
+      "job_id": "1a1b07ae82a-fc05-70c3",
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded"
+    },
+    {
+      "exit_code": 1,
+      "job_id": "1a1b07c7280-fc05-70d1",
+      "output_complete": true,
+      "output_durable": true,
+      "state": "failed"
+    },
+    {
+      "exit_code": 0,
+      "job_id": "1a1b0805edd-fc05-70f2",
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded"
+    },
+    {
+      "exit_code": 0,
+      "job_id": "1a1b0810baf-fc05-70fc",
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded"
+    },
+    {
+      "exit_code": 0,
+      "job_id": "1a1b0837a32-fc05-710f",
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded"
+    },
+    {
+      "exit_code": 0,
+      "job_id": "1a1b085aad3-fc05-7121",
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded"
+    }
+  ],
+  "candidate": "r6",
+  "case_ledger_sha256": "9c5743523313e3e430ec05aef09c7bd4926901759e862a9814e9826a76854d1b",
+  "cleanup_sha256": "f08275822034034834fd63d92eaf0e734bd3244322fcd7855594324b3376be3c",
+  "credential_manager_exercised": false,
+  "device_sha256": "41ad305f8562a6c47710afe71fabf30cb8692a71d3de1a47ca9949b669bcc6c1",
+  "master_entered": false,
+  "ok": true,
+  "owned_documents_and_media_index_absent": true,
+  "owned_packages_absent_including_retained": true,
+  "owned_reverse_absent": true,
+  "p4_qualified": false,
+  "production_qualified": false,
+  "released": true,
+  "released_unix_ns": 1793963119189155878,
+  "rp_job_terminal": true,
+  "rp_port_closed": true,
+  "schema": 1,
+  "scope": "synthetic_passkey_phone_release",
+  "settings_match_original": true
+}

@@ -1,0 +1,66 @@
+{
+  "adb_calls": 0,
+  "commands": [
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "/workspace/scratch/848006513f75/HeptaBao/qa/personal_credentials/android_popup_guard_tests.py",
+        "--driver",
+        "/workspace/scratch/848006513f75/HeptaBao/qa/personal_credentials/android_live.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964919584642672,
+      "passed": 46,
+      "started_unix_ns": 1793964919428784562,
+      "stderr_sha256": "056b79fecb17a847a93e9574249a4a83eabf5e227d706a4490d535f045cebbc6",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "/workspace/scratch/848006513f75/HeptaBao/qa/personal_credentials/android_driver_guard_tests.py",
+        "--driver",
+        "/workspace/scratch/848006513f75/HeptaBao/qa/personal_credentials/android_live.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964919743675134,
+      "passed": 8,
+      "started_unix_ns": 1793964919585329937,
+      "stderr_sha256": "1c1c199aad32a864d4e4cf0a78d6e10b4d1ddaf4d93d5b16690649cba74e3122",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "/workspace/scratch/848006513f75/HeptaBao/qa/personal_credentials/android_diagnostic_guard_tests.py",
+        "--driver",
+        "/workspace/scratch/848006513f75/HeptaBao/qa/personal_credentials/android_live.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964919861667700,
+      "passed": 12,
+      "started_unix_ns": 1793964919743997662,
+      "stderr_sha256": "7de70946e37e43e539f4967c492d8e61f18a756ab28eef0e83f897c3d07cf4a1",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "expected": 66,
+  "network_calls": 0,
+  "oem_qualification": false,
+  "passed": 66,
+  "production_qualified": false,
+  "review": "Full QA11-to-QA12 diff and added tests read; Android16 QPR2 ActivityRecord blob aa8d93e991328f9fcfa8e99a3cc431fda9596a47 opened independently; decimal token kept literal; finishing/exiting/incomplete and wrong-parent remain rejected.",
+  "schema": 1,
+  "scope": "independent_root_QA12_host_guard_rerun",
+  "source_sha256": {
+    "qa/personal_credentials/android_live.py": "7443b8115260ac08feb23dbdd8c9e14ed448933380642b0c53d5f4d60cf10c9c",
+    "qa/personal_credentials/android_popup_guard_tests.py": "dece8e0830dfeecfc414e52752f2de7f7bf87603f3c5ae1e6ac5fda404ec6e44"
+  },
+  "source_unchanged": true
+}

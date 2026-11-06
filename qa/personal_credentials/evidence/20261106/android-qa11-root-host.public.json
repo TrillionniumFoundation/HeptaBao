@@ -1,0 +1,74 @@
+{
+  "adb_calls": 0,
+  "android_device_qualified": false,
+  "commands": [
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/848006513f75/HeptaBao/qa/personal_credentials/android_popup_guard_tests.py",
+        "--driver",
+        "/workspace/scratch/848006513f75/HeptaBao/qa/personal_credentials/android_live.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793963029980288678,
+      "started_unix_ns": 1793963029852830441,
+      "stderr_sha256": "c3f4b14f3f5798e6d36d26a567d71bccef4f7d481b5ff604d9beb10c373f56e5",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tests_passed": 37
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/848006513f75/HeptaBao/qa/personal_credentials/android_driver_guard_tests.py",
+        "--driver",
+        "/workspace/scratch/848006513f75/HeptaBao/qa/personal_credentials/android_live.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793963030136760555,
+      "started_unix_ns": 1793963029980317601,
+      "stderr_sha256": "1c1c199aad32a864d4e4cf0a78d6e10b4d1ddaf4d93d5b16690649cba74e3122",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tests_passed": 8
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/848006513f75/HeptaBao/qa/personal_credentials/android_diagnostic_guard_tests.py",
+        "--driver",
+        "/workspace/scratch/848006513f75/HeptaBao/qa/personal_credentials/android_live.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793963030296848302,
+      "started_unix_ns": 1793963030137215944,
+      "stderr_sha256": "7de70946e37e43e539f4967c492d8e61f18a756ab28eef0e83f897c3d07cf4a1",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tests_passed": 12
+    }
+  ],
+  "external_review": false,
+  "limits": [
+    "Constructed upstream-format metadata only; actual OEM fields remain unqualified",
+    "No Android framework, PendingIntent delivery or device test inferred",
+    "Internal team review is not external security review"
+  ],
+  "production_qualified": false,
+  "schema": 1,
+  "scope": "internal_independent_offline_guard_rerun",
+  "source_review": [
+    "System-only top-resumed query occurs after complete verified popup and parent WMS chain",
+    "Generic field prefixes are counted before expected values, with actual same parent Window identity required",
+    "Old client-origin ResumedActivity shape and forged duplicate server fields fail closed",
+    "Android16-QPR2 same-line layer/token form retains exact identity constraints",
+    "Final focus recheck, original twelve case inventory, one touch and one-second menu-age bound retained"
+  ],
+  "source_sha256_before_and_after": {
+    "android_diagnostic_guard_tests.py": "e489b8c72f1a287b751ca80c9bbd36e8cdcc59477d9b8c35b95936027ce03b31",
+    "android_driver_guard_tests.py": "c3ed49de97b4a8c3e81d74e6abe14eacd7b8c7051b2de4481410684b70e0424f",
+    "android_live.py": "8a6fcd3959ef3d428ffc3888b0118c6cb381ee8afb7b7eba50a06a344a9ad3a9",
+    "android_popup_guard_tests.py": "53471f14b5eb3939e44a04711ed0edb43e55abc0e76b9f9602923375fdd9ec9f"
+  },
+  "tests_passed": 57
+}

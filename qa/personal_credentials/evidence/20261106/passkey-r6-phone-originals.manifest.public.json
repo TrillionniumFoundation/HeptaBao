@@ -1,0 +1,418 @@
+{
+  "all_eight_runtime_invocations_bound": true,
+  "candidate": "r6",
+  "created_unix_ns": 1793963233010651932,
+  "credential_manager_exercised": false,
+  "diagnostic": "stage_failed:PUBLISH_LINK:ERRNO:EACCES",
+  "files": [
+    {
+      "bytes": 10543,
+      "kind": "original",
+      "name": "case-results.public.json",
+      "sha256": "9c5743523313e3e430ec05aef09c7bd4926901759e862a9814e9826a76854d1b",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/case-results.public.json"
+    },
+    {
+      "bytes": 2008,
+      "kind": "original",
+      "name": "cleanup.result.public.json",
+      "sha256": "f08275822034034834fd63d92eaf0e734bd3244322fcd7855594324b3376be3c",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/live-r6/cleanup.result.public.json"
+    },
+    {
+      "bytes": 1963,
+      "kind": "original",
+      "name": "release-r6.public.json",
+      "sha256": "3d086e0521215337110331d4b675c4ac2de0c171b214628b0cbd10992c302d2e",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/release-r6.public.json"
+    },
+    {
+      "bytes": 918,
+      "kind": "original",
+      "name": "documents-reconcile.public.json",
+      "sha256": "d36d20c1eab3d3baea912050a205fddc5855ebde7d81f8844ca11cf751900a49",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/live-r6/documents-reconcile.public.json"
+    },
+    {
+      "bytes": 822,
+      "kind": "original",
+      "name": "documents-prepared.public.json",
+      "sha256": "dda02e67f8efba010aeff362ba9a8caec653d357431090fd50ebe7f7a29c338d",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/live-r6/documents-prepared.public.json"
+    },
+    {
+      "bytes": 12566,
+      "kind": "original",
+      "name": "profile.public.json",
+      "sha256": "45ddd9d2ae0c5558e6623fc03f1c594a7c9e8c315303e657c9a5b846ab592bed",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/profile.public.json"
+    },
+    {
+      "bytes": 40150,
+      "kind": "original",
+      "name": "source/passkey_live.py",
+      "sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/passkey_live.r6.py"
+    },
+    {
+      "bytes": 14944,
+      "kind": "original",
+      "name": "source/passkey_phone_profile_r6.py",
+      "sha256": "b8c1d013b662dfb05ff526f0d409f00820dd1e037cf2d4307da02d50e121d439",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/passkey_phone_profile.r6.py"
+    },
+    {
+      "bytes": 4573,
+      "kind": "original",
+      "name": "source/run_phases.public.py",
+      "sha256": "fe0193e858a357abdeff1764782920a15e9c471f4bf116eb82a95858d0679dfa",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/run_phases.public.py"
+    },
+    {
+      "bytes": 60215,
+      "kind": "original",
+      "name": "build.receipt.json",
+      "sha256": "cb70894ea9ea6f6216b015f978dab7be304ec9910969dca9a46eee2beee84190",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/artifacts/build.receipt.json"
+    },
+    {
+      "bytes": 16208,
+      "kind": "original",
+      "name": "host.result.public.json",
+      "sha256": "69a03e93b8aaad9edceffba5bdfc745db38626817289544ba2cdb82874afe7cc",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/artifacts/host.result.public.json"
+    },
+    {
+      "bytes": 5716,
+      "kind": "original",
+      "name": "line-check.public.json",
+      "sha256": "5caf6d0d6ef9fa5c04675f7743ea5ab7a96470ab9c2c861d8b81ec36b98e9818",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/artifacts/line-check.public.json"
+    },
+    {
+      "bytes": 689,
+      "kind": "original",
+      "name": "phases/1793962209128297967-8e4d27b2-0.result.public.json",
+      "sha256": "58d062bc1a0e0eac5d83c26c0560c6de29dda4e371cddc8fbda243030aed9f13",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962209128297967-8e4d27b2-0.result.public.json"
+    },
+    {
+      "bytes": 1035,
+      "kind": "original",
+      "name": "phases/1793962209128297967-8e4d27b2-1.result.public.json",
+      "sha256": "36957613bf06b17dec84e77d83fd2d3ea98722672e7f2ac9b559751f91fff6f4",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962209128297967-8e4d27b2-1.result.public.json"
+    },
+    {
+      "bytes": 793,
+      "kind": "original",
+      "name": "phases/1793962209128297967-8e4d27b2-10.result.public.json",
+      "sha256": "e1bdc37904bcbe9b516c5a73b5f934ff11cc26e3ad440183e8dedfc5bcba3697",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962209128297967-8e4d27b2-10.result.public.json"
+    },
+    {
+      "bytes": 5074,
+      "kind": "original",
+      "name": "phases/1793962209128297967-8e4d27b2-11.result.public.json",
+      "sha256": "616cd57b564466f54a918de65c709e64bf5e6bf6144f38d76567f114605db58c",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962209128297967-8e4d27b2-11.result.public.json"
+    },
+    {
+      "bytes": 684,
+      "kind": "original",
+      "name": "phases/1793962209128297967-8e4d27b2-2.result.public.json",
+      "sha256": "4ed6d6f630a8157726418074fbda2e40dd699b2d0e6c1ed4e5f69111448f6a0c",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962209128297967-8e4d27b2-2.result.public.json"
+    },
+    {
+      "bytes": 905,
+      "kind": "original",
+      "name": "phases/1793962209128297967-8e4d27b2-3.result.public.json",
+      "sha256": "bb55d4af88d91e508840ef54e60eb054a675dfa357c6f2a6483ec565f349037d",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962209128297967-8e4d27b2-3.result.public.json"
+    },
+    {
+      "bytes": 792,
+      "kind": "original",
+      "name": "phases/1793962209128297967-8e4d27b2-4.result.public.json",
+      "sha256": "d873e984943f62d7d43f8c63185d67803f46af67d2b10b1750a988d620e5abb8",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962209128297967-8e4d27b2-4.result.public.json"
+    },
+    {
+      "bytes": 720,
+      "kind": "original",
+      "name": "phases/1793962209128297967-8e4d27b2-5.result.public.json",
+      "sha256": "1c0f3d27ee35828d0f02ceb0eeaa78362cdfb7e450f7c0827ddee09d47350a77",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962209128297967-8e4d27b2-5.result.public.json"
+    },
+    {
+      "bytes": 735,
+      "kind": "original",
+      "name": "phases/1793962209128297967-8e4d27b2-6.result.public.json",
+      "sha256": "eff2e3792aa21ad833b9d6029187b3b41132552441061853e976cd8bb7036401",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962209128297967-8e4d27b2-6.result.public.json"
+    },
+    {
+      "bytes": 725,
+      "kind": "original",
+      "name": "phases/1793962209128297967-8e4d27b2-7.result.public.json",
+      "sha256": "8006be3f5bafff29e4e178aa4eba1919e6988262b50e54dffe55eb69cebc6081",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962209128297967-8e4d27b2-7.result.public.json"
+    },
+    {
+      "bytes": 716,
+      "kind": "original",
+      "name": "phases/1793962209128297967-8e4d27b2-8.result.public.json",
+      "sha256": "1902a0a898f84d71725e43286f9080909ad9e55ed3190c4329eb7fdc47c24bfd",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962209128297967-8e4d27b2-8.result.public.json"
+    },
+    {
+      "bytes": 1061,
+      "kind": "original",
+      "name": "phases/1793962209128297967-8e4d27b2-9.result.public.json",
+      "sha256": "c891f1bb06b233a09968850c3e8fb40d9933f921036946515844598808b722d1",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962209128297967-8e4d27b2-9.result.public.json"
+    },
+    {
+      "bytes": 723,
+      "kind": "original",
+      "name": "phases/1793962617663585884-255bd2dd-0.result.public.json",
+      "sha256": "4c9d0188e3c22e65661c4e5133e1051551440e5781bec0325cefb9066ebecd31",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962617663585884-255bd2dd-0.result.public.json"
+    },
+    {
+      "bytes": 726,
+      "kind": "original",
+      "name": "phases/1793962617663585884-255bd2dd-1.result.public.json",
+      "sha256": "917e689e4975cf720fd3cc6077be8895e43960da7b309ecfe38178418cc097ad",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962617663585884-255bd2dd-1.result.public.json"
+    },
+    {
+      "bytes": 708,
+      "kind": "original",
+      "name": "phases/1793962617663585884-255bd2dd-2.result.public.json",
+      "sha256": "97554b5f8608831d5aef859e08a243871bed503028a59e34260fa2bbf98dfb8b",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962617663585884-255bd2dd-2.result.public.json"
+    },
+    {
+      "bytes": 727,
+      "kind": "original",
+      "name": "phases/1793962617663585884-255bd2dd-3.result.public.json",
+      "sha256": "26cb1a49627821516e2d9587de711f33c1e3658fc3cd464307795a509ecfb2c1",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962617663585884-255bd2dd-3.result.public.json"
+    },
+    {
+      "bytes": 727,
+      "kind": "original",
+      "name": "phases/1793962617663585884-255bd2dd-4.result.public.json",
+      "sha256": "139a5b85d17d8d71cb2040804cd7e1cd0de44d1d93fc869249423fe51773c148",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962617663585884-255bd2dd-4.result.public.json"
+    },
+    {
+      "bytes": 5076,
+      "kind": "original",
+      "name": "phases/1793962617663585884-255bd2dd-5.result.public.json",
+      "sha256": "5f6978722cf335eb27e5dc8da2fbe0b1f3ce50811b9cd6db5e5e00530fe21a0c",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962617663585884-255bd2dd-5.result.public.json"
+    },
+    {
+      "bytes": 1068,
+      "kind": "original",
+      "name": "phases/1793962779646991856-98a3d70f-0.result.public.json",
+      "sha256": "0bcf9b4c0691a7a4923a133d6a86d05db5a95ddfc0b39b1a7936f6972b33f8c6",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962779646991856-98a3d70f-0.result.public.json"
+    },
+    {
+      "bytes": 1189,
+      "kind": "original",
+      "name": "dispatch/1793962209128297967-8e4d27b2.intent.public.json",
+      "sha256": "2666223a22888ed1f26892ae032273ec34d8c4ce87a5c3d016f8b86c7ffbce1d",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962209128297967-8e4d27b2.intent.public.json"
+    },
+    {
+      "bytes": 929,
+      "kind": "original",
+      "name": "dispatch/1793962617663585884-255bd2dd.intent.public.json",
+      "sha256": "67c1e72a6522a51cfb6ac575dbf348b6f4aa8a746629f77173d43ddeb4bfa120",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962617663585884-255bd2dd.intent.public.json"
+    },
+    {
+      "bytes": 480,
+      "kind": "original",
+      "name": "dispatch/1793962779646991856-98a3d70f.intent.public.json",
+      "sha256": "58b780c524be4f0a8901660260451147b5e37e61b439bc695d35663e44f06dcb",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962779646991856-98a3d70f.intent.public.json"
+    },
+    {
+      "bytes": 530,
+      "kind": "original",
+      "name": "dispatch/1793962209128297967-8e4d27b2-0.dispatch.public.json",
+      "sha256": "854faa152bb84fe2b598d7a0614d534ac67b6e2b124121a41a3680499e217664",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962209128297967-8e4d27b2-0.dispatch.public.json"
+    },
+    {
+      "bytes": 526,
+      "kind": "original",
+      "name": "dispatch/1793962209128297967-8e4d27b2-1.dispatch.public.json",
+      "sha256": "7b1e31b30ea3bcf91bab28be989f584877373b875160a6c049d6d56e64a92b8d",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962209128297967-8e4d27b2-1.dispatch.public.json"
+    },
+    {
+      "bytes": 543,
+      "kind": "original",
+      "name": "dispatch/1793962209128297967-8e4d27b2-10.dispatch.public.json",
+      "sha256": "7b3afdd24368e1f6a4fca9e7c3f246d95e9f63f98e41fc61f0b287d119c73960",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962209128297967-8e4d27b2-10.dispatch.public.json"
+    },
+    {
+      "bytes": 527,
+      "kind": "original",
+      "name": "dispatch/1793962209128297967-8e4d27b2-11.dispatch.public.json",
+      "sha256": "645d416d5896c6431bed8bcd78f603acf34885a750e0c0cf5c2ed6b7ddd6afa8",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962209128297967-8e4d27b2-11.dispatch.public.json"
+    },
+    {
+      "bytes": 526,
+      "kind": "original",
+      "name": "dispatch/1793962209128297967-8e4d27b2-2.dispatch.public.json",
+      "sha256": "0e1e7c819564abaad2f65688852d5384eb629a7351527fdb0f4176eed5e38cb6",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962209128297967-8e4d27b2-2.dispatch.public.json"
+    },
+    {
+      "bytes": 580,
+      "kind": "original",
+      "name": "dispatch/1793962209128297967-8e4d27b2-3.dispatch.public.json",
+      "sha256": "69ae4904c6c7cb70a790469cec025630bc080c240742628d27a0449efb2cd597",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962209128297967-8e4d27b2-3.dispatch.public.json"
+    },
+    {
+      "bytes": 542,
+      "kind": "original",
+      "name": "dispatch/1793962209128297967-8e4d27b2-4.dispatch.public.json",
+      "sha256": "f304d7ae50d9f77ffa935943b10225b2465b5ca4ef18431520f18e23166913ac",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962209128297967-8e4d27b2-4.dispatch.public.json"
+    },
+    {
+      "bytes": 601,
+      "kind": "original",
+      "name": "dispatch/1793962209128297967-8e4d27b2-5.dispatch.public.json",
+      "sha256": "403823d9400b5d4511f22ba9c23b7e8b3dc607446db1aa139a5c06e01450f08c",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962209128297967-8e4d27b2-5.dispatch.public.json"
+    },
+    {
+      "bytes": 614,
+      "kind": "original",
+      "name": "dispatch/1793962209128297967-8e4d27b2-6.dispatch.public.json",
+      "sha256": "521dc32c90816aceacb375fa47e619ad9e9e1791a7d7cd287f6335bae7155dac",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962209128297967-8e4d27b2-6.dispatch.public.json"
+    },
+    {
+      "bytes": 606,
+      "kind": "original",
+      "name": "dispatch/1793962209128297967-8e4d27b2-7.dispatch.public.json",
+      "sha256": "08d5dee22717b167c7b7e3193231459f3de61fa18fc4f7c2f56255b96b45a5a3",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962209128297967-8e4d27b2-7.dispatch.public.json"
+    },
+    {
+      "bytes": 595,
+      "kind": "original",
+      "name": "dispatch/1793962209128297967-8e4d27b2-8.dispatch.public.json",
+      "sha256": "a5daebed66babd5ba4069fc2974ce085d29588d10ab2e818f732ef15081423c0",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962209128297967-8e4d27b2-8.dispatch.public.json"
+    },
+    {
+      "bytes": 546,
+      "kind": "original",
+      "name": "dispatch/1793962209128297967-8e4d27b2-9.dispatch.public.json",
+      "sha256": "cc6900ce0b6331cc6482610110409815eabbe4d50f82707dbf62e3e70db7f629",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962209128297967-8e4d27b2-9.dispatch.public.json"
+    },
+    {
+      "bytes": 604,
+      "kind": "original",
+      "name": "dispatch/1793962617663585884-255bd2dd-0.dispatch.public.json",
+      "sha256": "cd49541a67f05319483db9b481aa1a95d0e04be6c3d1a15ee6f818af28d3e5d8",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962617663585884-255bd2dd-0.dispatch.public.json"
+    },
+    {
+      "bytes": 614,
+      "kind": "original",
+      "name": "dispatch/1793962617663585884-255bd2dd-1.dispatch.public.json",
+      "sha256": "042196c5110e2c50f31554ec4c2ed7fd84b9bdab424b0ff01d30f733ef1f47fd",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962617663585884-255bd2dd-1.dispatch.public.json"
+    },
+    {
+      "bytes": 589,
+      "kind": "original",
+      "name": "dispatch/1793962617663585884-255bd2dd-2.dispatch.public.json",
+      "sha256": "7e2de736808a876eb604a366021ce1675ce72afa5bc8b89dc6099f5fc9cfcb70",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962617663585884-255bd2dd-2.dispatch.public.json"
+    },
+    {
+      "bytes": 608,
+      "kind": "original",
+      "name": "dispatch/1793962617663585884-255bd2dd-3.dispatch.public.json",
+      "sha256": "b300e043b9555076fb885a50b3b281273737eb868e52fd569bd3b37727daf91d",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962617663585884-255bd2dd-3.dispatch.public.json"
+    },
+    {
+      "bytes": 608,
+      "kind": "original",
+      "name": "dispatch/1793962617663585884-255bd2dd-4.dispatch.public.json",
+      "sha256": "6735fe33425f6324916a2888451cfe4d8689cd7c52e428e52baeb48e42161bc6",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962617663585884-255bd2dd-4.dispatch.public.json"
+    },
+    {
+      "bytes": 524,
+      "kind": "original",
+      "name": "dispatch/1793962617663585884-255bd2dd-5.dispatch.public.json",
+      "sha256": "ddaa7fc641549425882b6b656ae356e6cd1ccf6bd22bfe83d66d4b13a588bf17",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962617663585884-255bd2dd-5.dispatch.public.json"
+    },
+    {
+      "bytes": 524,
+      "kind": "original",
+      "name": "dispatch/1793962779646991856-98a3d70f-0.dispatch.public.json",
+      "sha256": "c2267a72b97bb68505be0ae97f104d05781a63622deed08b72cc25b618e316d6",
+      "source": "/home/alex/HeptaBaoPasskey-20261106-r6/attempts/1793962779646991856-98a3d70f-0.dispatch.public.json"
+    },
+    {
+      "bytes": 24943,
+      "kind": "original_runtime_argv_fields",
+      "name": "execution-inputs.public.json",
+      "sha256": "4e3566f704c4715b48d496049013ee97f4951241a244c6f3b79e5c0647a9ac26",
+      "source": "functions.store original process_start responses"
+    },
+    {
+      "bytes": 1200,
+      "kind": "original_runtime_status_fields",
+      "name": "terminal-jobs.public.json",
+      "sha256": "235eafd5fc93e868755aad9cff7850ee7c8da1b59e8ec067ab8f27625ba6ab59",
+      "source": "functions.store authoritative process_status responses"
+    },
+    {
+      "bytes": 0,
+      "kind": "original_runtime_log_bytes",
+      "name": "failed-document-poll.stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "job1a1b07c7280-fc05-70d1 process_read"
+    },
+    {
+      "bytes": 164,
+      "kind": "original_runtime_log_bytes",
+      "name": "failed-document-poll.stderr.txt",
+      "sha256": "e8284a55c32af16f12f09f777e4d1774592475e47e8e172a0a52023a875162b7",
+      "source": "job1a1b07c7280-fc05-70d1 process_read"
+    }
+  ],
+  "master_entered": false,
+  "p4_qualified": false,
+  "phone_blocked": 16,
+  "phone_expected": 18,
+  "phone_failed": 1,
+  "phone_passed": 1,
+  "private_material_included": false,
+  "production_qualified": false,
+  "schema": 1,
+  "scope": "closed_diagnostic_M01_failure_and_complete_cleanup"
+}

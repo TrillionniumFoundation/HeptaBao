@@ -1,0 +1,24 @@
+{
+  "build_host_job": "1a1b09adea7-fc05-71a5",
+  "files": [
+    {
+      "bytes": 60561,
+      "name": "build.receipt.original.json",
+      "sha256": "e12bd68de3c606e03ce22a7a688ebb90c7b6ec4a951d15e5be233339e698042b"
+    },
+    {
+      "bytes": 16250,
+      "name": "host.result.original.json",
+      "sha256": "173a3777dd928acb8b3a18f1e7bb81e995c74fd501c48cd35cdb702a2ade7c57"
+    },
+    {
+      "bytes": 13911,
+      "name": "line-check.original.json",
+      "sha256": "1aa1b59249be927fa41c68d21015b9503903485d74fa1fd52f0497ba41479abc"
+    }
+  ],
+  "line_package_job": "1a1b09d20c3-fc05-71b6",
+  "phone_qualified": false,
+  "schema": 1,
+  "scope": "r7_exact_sdk_host_dex_original_receipts"
+}

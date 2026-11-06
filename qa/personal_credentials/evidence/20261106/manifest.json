@@ -202,10 +202,34 @@
       "transformation": "none; byte-identical original final device release proof"
     },
     {
+      "file": "android-c6-artifact-review.public.json",
+      "sha256": "9ef1698dfe6deafb77cd495fa48039652e61303968232da90b899c4170d4a148",
+      "bytes": 13197,
+      "transformation": "none; byte-identical candidate6 public original; host/build/static-artifact evidence only"
+    },
+    {
       "file": "android-c6-author-host-check.public.json",
       "sha256": "d963ab6a500c15d5b7130e9c7495358fe43b6d0ac2ce3913957ac9bd5f8706fe",
       "bytes": 6820,
       "transformation": "none; byte-identical original c6 host-stub lifecycle qualification artifact"
+    },
+    {
+      "file": "android-c6-build-originals.manifest.public.json",
+      "sha256": "345d86b55ba90e2085881fe9449a03b2e58f24f5d4b5c431ced81c5ab81f67e7",
+      "bytes": 5803,
+      "transformation": "none; byte-identical candidate6 public original; host/build/static-artifact evidence only"
+    },
+    {
+      "file": "android-c6-build-originals.tar.gz",
+      "sha256": "0eef5193b12b8cae9716b21f4050fb40801a10abfb7a603089f49b5dba0331cd",
+      "bytes": 1345547,
+      "transformation": "none; byte-identical candidate6 public original; host/build/static-artifact evidence only"
+    },
+    {
+      "file": "android-c6-build.public.json",
+      "sha256": "327060e7d1a5bb5edd3634307a448d9e87c3cb578a3a2b5e09cc1b256760a33e",
+      "bytes": 56499,
+      "transformation": "none; byte-identical candidate6 public original; host/build/static-artifact evidence only"
     },
     {
       "file": "android-c6-changes.patch",
@@ -232,10 +256,136 @@
       "transformation": "derived internal review; independent host rerun is separate from Android framework/device qualification"
     },
     {
+      "file": "android-c6-phone-r8-originals.manifest.public.json",
+      "sha256": "da4cd707ade5ad4b39b37a588a647451fa859ca4e19058448b8ea7c877a42123",
+      "bytes": 7396,
+      "transformation": "new explicit archive index; no source member bytes transformed; failed original 1/12 phone run, no menu touch or master entry after guard refusal, complete cleanup"
+    },
+    {
+      "file": "android-c6-phone-r8-originals.tar.gz",
+      "sha256": "82d08cb41cefbfdf3c0a5ec7f7b35e55b89a4b90505ecfd71bde994c81fae6a1",
+      "bytes": 10997,
+      "transformation": "deterministic tar/gzip container; every listed member byte-identical; failed original 1/12 phone run, no menu touch or master entry after guard refusal, complete cleanup"
+    },
+    {
+      "file": "android-c6-phone-r8-release.public.json",
+      "sha256": "8374fc47df7fa059a919344a19f98246a1786373bc435650fbd21c03e87817b1",
+      "bytes": 1200,
+      "transformation": "none; byte-identical original r8 failed phone observation or independent release"
+    },
+    {
+      "file": "android-c6-phone-r8.public.json",
+      "sha256": "c2a67ae10815f7e4351c776dc2c556ed3332d803a1c9d6a718ac453fe85444be",
+      "bytes": 7966,
+      "transformation": "none; byte-identical original r8 failed phone observation or independent release"
+    },
+    {
       "file": "android-c6-root-host-check.public.json",
       "sha256": "339a3c1e5a9f16eb0691edfba1b76c3a6a5fac872c7903f6c5861d75d2fdb6cc",
       "bytes": 6820,
       "transformation": "none; byte-identical original c6 host-stub lifecycle qualification artifact"
+    },
+    {
+      "file": "android-posix-fd-close.public.json",
+      "sha256": "4586c5b3ffd7bae91b3a4641a5de205b9b2aefe4a132fc9c5274156a713e16bf",
+      "bytes": 825,
+      "transformation": "none; original Linux process-lock descriptor-close experiment; not an Android OEM result or cause proof"
+    },
+    {
+      "file": "android-qa10-author-host.public.json",
+      "sha256": "b76a180e0ef0cec7edb85ec518b683ccd919be693b4c3dff1beaa9a4ad7e88ed",
+      "bytes": 6267,
+      "transformation": "none; byte-identical original 44-check host receipt, superseded for phone admission by reproduced source defect"
+    },
+    {
+      "file": "android-qa10-counterexample-reproduce.py",
+      "sha256": "48cd01b259a5392b1e8a185462fd50808686fed379f271e285cbed75a8782e59",
+      "bytes": 3223,
+      "transformation": "none; byte-identical original internal reproduction source"
+    },
+    {
+      "file": "android-qa10-counterexample.stdout.original.json",
+      "sha256": "1bb9967df9f1813eb4ab3530fd707f81b3f6261029fe2e2da2640e0b8f74376a",
+      "bytes": 1211,
+      "transformation": "none; byte-identical original synthetic client-origin false-acceptance reproduction"
+    },
+    {
+      "file": "android-qa10-internal-review.public.json",
+      "sha256": "9d48d2345bfa204cce1e18e12df6b7ff445fd2476f9d5c3cd25b53e37a83be0a",
+      "bytes": 4940,
+      "transformation": "none; byte-identical original independent internal review and blocking finding"
+    },
+    {
+      "file": "android-qa10-originals.manifest.public.json",
+      "sha256": "a6305cb46bd642842c392fed44089e2256564339da1cecf406b9790ca6354590",
+      "bytes": 4445,
+      "transformation": "derived index of the original QA10 packet; records reproduced false acceptance and HOLD"
+    },
+    {
+      "file": "android-qa10-originals.tar.gz",
+      "sha256": "debd46f6a79f266acb243d81a48fca233e1cc6c476a27fbe01e9ebdf48bddbd8",
+      "bytes": 42410,
+      "transformation": "derived deterministic container of twenty-four byte-identical original source, host and defect-review files; not a passing phone candidate"
+    },
+    {
+      "file": "android-qa11-author-host.public.json",
+      "sha256": "83764546e417a88899b6ae4a5683f37418b9c8731cee8f6ab3eb7fdc22db2baa",
+      "bytes": 7426,
+      "transformation": "none; byte-identical original QA11 host-only review; no OEM qualification"
+    },
+    {
+      "file": "android-qa11-internal-review.public.json",
+      "sha256": "28eca28fb0d6e6704f5b01804eaa2435744eeb974e3acad0ee364b73b80c62ad",
+      "bytes": 2550,
+      "transformation": "none; byte-identical original QA11 host-only review; no OEM qualification"
+    },
+    {
+      "file": "android-qa11-originals.manifest.public.json",
+      "sha256": "82a8e43fc39b8cc84dafead00af08a96f41337f4f2acdd14060467b9a96e60ea",
+      "bytes": 6082,
+      "transformation": "new explicit archive index; no source member bytes transformed; QA10 client-dump defect correction; author and root 57 host checks, internal reviewer two targeted controls; phone r8 separately failed"
+    },
+    {
+      "file": "android-qa11-originals.tar.gz",
+      "sha256": "f9a073bb851fa7ac419cf43cfbfd5e7d07678b5de7c4fba92e2beffcb417b327",
+      "bytes": 29882,
+      "transformation": "deterministic tar/gzip container; every listed member byte-identical; QA10 client-dump defect correction; author and root 57 host checks, internal reviewer two targeted controls; phone r8 separately failed"
+    },
+    {
+      "file": "android-qa11-root-host.public.json",
+      "sha256": "e547c7427f6f51c5e788c30886e6c629ca16d119635313a752330614ac67eedf",
+      "bytes": 3475,
+      "transformation": "none; byte-identical original QA11 host-only review; no OEM qualification"
+    },
+    {
+      "file": "android-qa12-author-host.public.json",
+      "sha256": "3506f2da0a8e056783871f76c9a2a4f4a462401eb8b0860abe568a5bbb943491",
+      "bytes": 7484,
+      "transformation": "none; byte-identical original QA12 host review; no phone qualification"
+    },
+    {
+      "file": "android-qa12-internal-review.public.json",
+      "sha256": "433a005777b83e7df26a861926c7a5aae518af841cc60d780d0bb37edb914b79",
+      "bytes": 3144,
+      "transformation": "none; byte-identical original QA12 host review; no phone qualification"
+    },
+    {
+      "file": "android-qa12-originals.manifest.public.json",
+      "sha256": "7dd1279aeb01c518f13296ee312c35558e41ecb9953c3bb365a0a95a61a8f6ba",
+      "bytes": 5814,
+      "transformation": "new explicit index of byte-identical QA12 originals; no OEM qualification"
+    },
+    {
+      "file": "android-qa12-originals.tar.gz",
+      "sha256": "ab6492d49c344b7e0cab2dafc10ffdf7803d0ecda09129b6fa7154cf16433753",
+      "bytes": 31803,
+      "transformation": "deterministic tar/gzip container; listed original source/review bytes unchanged; host-only"
+    },
+    {
+      "file": "android-qa12-root-host.public.json",
+      "sha256": "ee168264eb0f0782e072cc7d07fb575da4ae7bb2b51ba31c31926c679b179411",
+      "bytes": 2827,
+      "transformation": "none; byte-identical original QA12 host review; no phone qualification"
     },
     {
       "file": "android-qa8-guard-tests.public.json",
@@ -730,6 +880,12 @@
       "transformation": "none; byte-identical original failed compiler stderr or version-pinned retrieval receipt"
     },
     {
+      "file": "passkey-r5-provider-javac.stderr.original.txt",
+      "sha256": "039fc9c4f9c21455f9044892dbb0602e7818437ecda301827e9c5dded0c60f17",
+      "bytes": 406,
+      "transformation": "none; original failed SDK34 compiler stderr; O_DIRECTORY public stub absent; old failure retained"
+    },
+    {
       "file": "passkey-r5b-build-receipt.public.json",
       "sha256": "b46691b4da0fc2f461801ff7b8e3abf64cb461a55a03d2624f24d4713f20fc40",
       "bytes": 59317,
@@ -868,6 +1024,48 @@
       "transformation": "none; byte-identical original javac and final DEX line-table inspection; not phone qualification"
     },
     {
+      "file": "passkey-r6-phone-cases.public.json",
+      "sha256": "9c5743523313e3e430ec05aef09c7bd4926901759e862a9814e9826a76854d1b",
+      "bytes": 10543,
+      "transformation": "none; byte-identical r6 original; M01 failed PUBLISH_LINK/EACCES, M07 cleanup passed, sixteen blocked; no CredentialManager qualification"
+    },
+    {
+      "file": "passkey-r6-phone-cleanup.public.json",
+      "sha256": "f08275822034034834fd63d92eaf0e734bd3244322fcd7855594324b3376be3c",
+      "bytes": 2008,
+      "transformation": "none; byte-identical r6 original; M01 failed PUBLISH_LINK/EACCES, M07 cleanup passed, sixteen blocked; no CredentialManager qualification"
+    },
+    {
+      "file": "passkey-r6-phone-execution-inputs.public.json",
+      "sha256": "4e3566f704c4715b48d496049013ee97f4951241a244c6f3b79e5c0647a9ac26",
+      "bytes": 24943,
+      "transformation": "none; byte-identical r6 original; M01 failed PUBLISH_LINK/EACCES, M07 cleanup passed, sixteen blocked; no CredentialManager qualification"
+    },
+    {
+      "file": "passkey-r6-phone-originals.manifest.public.json",
+      "sha256": "55c8f72cf5fa28b94c26f52239f74d34973aeb8e0acff972901dc07479535541",
+      "bytes": 18662,
+      "transformation": "none; byte-identical r6 original; M01 failed PUBLISH_LINK/EACCES, M07 cleanup passed, sixteen blocked; no CredentialManager qualification"
+    },
+    {
+      "file": "passkey-r6-phone-originals.tar.gz",
+      "sha256": "61d6e50d6fe655262e94ae9d21d15eed51870419fd5185c504d334edbd68b177",
+      "bytes": 51483,
+      "transformation": "none; byte-identical r6 original; M01 failed PUBLISH_LINK/EACCES, M07 cleanup passed, sixteen blocked; no CredentialManager qualification"
+    },
+    {
+      "file": "passkey-r6-phone-release.public.json",
+      "sha256": "3d086e0521215337110331d4b675c4ac2de0c171b214628b0cbd10992c302d2e",
+      "bytes": 1963,
+      "transformation": "none; byte-identical r6 original; M01 failed PUBLISH_LINK/EACCES, M07 cleanup passed, sixteen blocked; no CredentialManager qualification"
+    },
+    {
+      "file": "passkey-r6-phone-terminal-jobs.public.json",
+      "sha256": "235eafd5fc93e868755aad9cff7850ee7c8da1b59e8ec067ab8f27625ba6ab59",
+      "bytes": 1200,
+      "transformation": "none; byte-identical r6 original; M01 failed PUBLISH_LINK/EACCES, M07 cleanup passed, sixteen blocked; no CredentialManager qualification"
+    },
+    {
       "file": "passkey-r6-profile.public.json",
       "sha256": "45ddd9d2ae0c5558e6623fc03f1c594a7c9e8c315303e657c9a5b846ab592bed",
       "bytes": 12566,
@@ -878,6 +1076,72 @@
       "sha256": "90d66751273ce8266014245a2f03bd5accb7e4794cc70128c91be3bfd88bf2a9",
       "bytes": 63093,
       "transformation": "none; byte-identical original r6 candidate source/build/host or declared phone-profile artifact"
+    },
+    {
+      "file": "passkey-r7-build-packet.manifest.public.json",
+      "sha256": "5852e605a49874bdec97ae4a18f0556c478f6389e2ad045fe91c42bb4e509942",
+      "bytes": 693,
+      "transformation": "none; byte-identical r7 source or SDK/host original; checkpoint and final README identities remain separate; no phone qualification"
+    },
+    {
+      "file": "passkey-r7-build.public.json",
+      "sha256": "e12bd68de3c606e03ce22a7a688ebb90c7b6ec4a951d15e5be233339e698042b",
+      "bytes": 60561,
+      "transformation": "none; byte-identical r7 source or SDK/host original; checkpoint and final README identities remain separate; no phone qualification"
+    },
+    {
+      "file": "passkey-r7-host.public.json",
+      "sha256": "173a3777dd928acb8b3a18f1e7bb81e995c74fd501c48cd35cdb702a2ade7c57",
+      "bytes": 16250,
+      "transformation": "none; byte-identical r7 source or SDK/host original; checkpoint and final README identities remain separate; no phone qualification"
+    },
+    {
+      "file": "passkey-r7-line-check.public.json",
+      "sha256": "1aa1b59249be927fa41c68d21015b9503903485d74fa1fd52f0497ba41479abc",
+      "bytes": 13911,
+      "transformation": "none; byte-identical r7 source or SDK/host original; checkpoint and final README identities remain separate; no phone qualification"
+    },
+    {
+      "file": "passkey-r7-phone-profile.patch",
+      "sha256": "436e4e478c761f4a0f7ff5c6f66ab2953e4c0268dca0fecb2e307c02003e2d1d",
+      "bytes": 4932,
+      "transformation": "none; frozen r7 eighteen-case declaration and exact prior-profile diff; no execution result"
+    },
+    {
+      "file": "passkey-r7-phone-profile.public.json",
+      "sha256": "8a2c3e83c878ea5a6c6d646f94559d0de5154fd9b8210604bcdc879349a7165d",
+      "bytes": 13630,
+      "transformation": "none; frozen r7 eighteen-case declaration and exact prior-profile diff; no execution result"
+    },
+    {
+      "file": "passkey-r7-storage-host.public.json",
+      "sha256": "5f199c94bb8438fd102f736c704f1d552924b79f910312249799f5d4ff454bdf",
+      "bytes": 37525,
+      "transformation": "none; byte-identical original r7 host control-flow review; explicit Android API mocks and limits"
+    },
+    {
+      "file": "passkey-r7-storage-internal-review.public.json",
+      "sha256": "cb12a9401906bc32195a122ad46bb8bfd29d0ab5fccdb557146ed3bbda5845ca",
+      "bytes": 5254,
+      "transformation": "none; byte-identical original r7 host control-flow review; explicit Android API mocks and limits"
+    },
+    {
+      "file": "passkey-r7-storage-originals.manifest.public.json",
+      "sha256": "a301da845ca0a1260119efc8e46b5a1f0a74a836f37d5f7868f0e396212b4a03",
+      "bytes": 192356,
+      "transformation": "new explicit archive index; no source member bytes transformed; unchanged product VaultFiles/StageDiagnostics with explicit Android API fault mocks; 33 initial and 34 final internal checks plus root 34 rerun; no ART/OEM/crypto qualification"
+    },
+    {
+      "file": "passkey-r7-storage-originals.tar.gz",
+      "sha256": "55f6fd008d18d412d23045e5f9a78b38b634de01b4d9b63e5f82b958a393e3ca",
+      "bytes": 261602,
+      "transformation": "deterministic tar/gzip container; every listed member byte-identical; unchanged product VaultFiles/StageDiagnostics with explicit Android API fault mocks; 33 initial and 34 final internal checks plus root 34 rerun; no ART/OEM/crypto qualification"
+    },
+    {
+      "file": "passkey-r7-storage-root-host.public.json",
+      "sha256": "b7586f053db9ea4bfccfa236e7e4f6fe93159abbccb8ee8540c3a6108f3db5c3",
+      "bytes": 37792,
+      "transformation": "none; byte-identical original r7 host control-flow review; explicit Android API mocks and limits"
     },
     {
       "file": "passkey-reset-helper-v1-input-schema.public.json",
@@ -1067,6 +1331,18 @@
       "sha256": "1b7af164b251f7075a1d54e3f950b96dc0581b5d2e14899d1857209a6e3118b0",
       "bytes": 64367,
       "transformation": "none; original public source archive, exact entry and source digest allowlist verified"
+    },
+    {
+      "file": "source-passkey-r7-checkpoint.tar.gz",
+      "sha256": "93e1c7fa8013833844c6dc2405a7e9bf2be3ff523a51889a0379f523b6b50340",
+      "bytes": 66249,
+      "transformation": "none; byte-identical r7 source or SDK/host original; checkpoint and final README identities remain separate; no phone qualification"
+    },
+    {
+      "file": "source-passkey-r7-final.tar.gz",
+      "sha256": "e2e79c7e35a507c11ba2a52a67c5a4882528d2447fa1c489977a64ad992f91b6",
+      "bytes": 66257,
+      "transformation": "none; byte-identical r7 source or SDK/host original; checkpoint and final README identities remain separate; no phone qualification"
     },
     {
       "file": "two-device-sync-r4.public.json",

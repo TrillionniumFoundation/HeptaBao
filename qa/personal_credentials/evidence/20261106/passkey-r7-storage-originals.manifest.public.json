@@ -1,0 +1,3429 @@
+{
+  "archive_sha256": "55f6fd008d18d412d23045e5f9a78b38b634de01b4d9b63e5f82b958a393e3ca",
+  "members": [
+    {
+      "bytes": 8851,
+      "path": "internal-review/host_check.py",
+      "sha256": "187185de4d36da28f61982b4ac4bacd44b8bd2e0fd4227a62a439681ba9052ab",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/host_check.py"
+    },
+    {
+      "bytes": 73318,
+      "path": "internal-review/manifest.public.json",
+      "sha256": "4bdee80e76f1b800d5c75ba6a81735ef7f1130a16c2fa64a04d51ab4daafb196",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/manifest.public.json"
+    },
+    {
+      "bytes": 5254,
+      "path": "internal-review/review.public.json",
+      "sha256": "cb12a9401906bc32195a122ad46bb8bfd29d0ab5fccdb557146ed3bbda5845ca",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/review.public.json"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/admission_before_open/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/admission_before_open/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/constructor_cleanup_unknown_fences/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/constructor_cleanup_unknown_fences/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/constructor_dup_failure/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/constructor_dup_failure/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/constructor_files_open_failure/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/constructor_files_open_failure/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/constructor_lock_open_failure/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/constructor_lock_open_failure/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/constructor_lock_stat_failure/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/constructor_lock_stat_failure/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/create_and_reopen/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/create_and_reopen/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 25,
+      "path": "internal-review/run1/cases/create_and_reopen/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/create_and_reopen/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/cross_thread_close_and_old_close/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/cross_thread_close_and_old_close/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/initial_absence_conflict/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/initial_absence_conflict/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 19,
+      "path": "internal-review/run1/cases/initial_absence_conflict/files/test-ciphertext.hbv",
+      "sha256": "7c8988303ee1ab16718a02dd653de90b0ed533ae35099045191fa3a9cafadde8",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/initial_absence_conflict/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 25,
+      "path": "internal-review/run1/cases/invalid_read_progress/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/invalid_read_progress/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/lock_release_unknown_fences/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/lock_release_unknown_fences/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/lost_guard_refuses_before_io/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/lost_guard_refuses_before_io/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/pfd_close_unknown_fences/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/pfd_close_unknown_fences/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/postrename_directory_close_unknown/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/postrename_directory_close_unknown/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 25,
+      "path": "internal-review/run1/cases/postrename_directory_close_unknown/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/postrename_directory_close_unknown/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/postrename_directory_sync_unknown/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/postrename_directory_sync_unknown/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 25,
+      "path": "internal-review/run1/cases/postrename_directory_sync_unknown/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/postrename_directory_sync_unknown/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/postrename_read_close_unknown/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/postrename_read_close_unknown/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 25,
+      "path": "internal-review/run1/cases/postrename_read_close_unknown/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/postrename_read_close_unknown/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/postrename_read_unknown/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/postrename_read_unknown/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 25,
+      "path": "internal-review/run1/cases/postrename_read_unknown/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/postrename_read_unknown/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 25,
+      "path": "internal-review/run1/cases/primary_failure_survives_close_failure/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/primary_failure_survives_close_failure/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/published_lock_release_unknown/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/published_lock_release_unknown/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 25,
+      "path": "internal-review/run1/cases/published_lock_release_unknown/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/published_lock_release_unknown/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/published_pfd_close_unknown/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/published_pfd_close_unknown/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 25,
+      "path": "internal-review/run1/cases/published_pfd_close_unknown/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/published_pfd_close_unknown/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/raw_lock_close_unknown_fences/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/raw_lock_close_unknown_fences/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/rename_failure_preserves_old/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/rename_failure_preserves_old/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 19,
+      "path": "internal-review/run1/cases/rename_failure_preserves_old/files/test-ciphertext.hbv",
+      "sha256": "7c8988303ee1ab16718a02dd653de90b0ed533ae35099045191fa3a9cafadde8",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/rename_failure_preserves_old/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/second_cas_conflict/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/second_cas_conflict/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 28,
+      "path": "internal-review/run1/cases/second_cas_conflict/files/test-ciphertext.hbv",
+      "sha256": "fcd8133da2938d30527544206026087b3d8c811e81fa0219f7841bbce1e1ec71",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/second_cas_conflict/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 25,
+      "path": "internal-review/run1/cases/short_reads/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/short_reads/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/short_writes/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/short_writes/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 25,
+      "path": "internal-review/run1/cases/short_writes/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/short_writes/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/stream_constructor_failure_cleans/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/stream_constructor_failure_cleans/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/temporary_cleanup_error_keeps_primary/files/.pending-c5706676e9141444a377b1676840e71c",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/temporary_cleanup_error_keeps_primary/files/.pending-c5706676e9141444a377b1676840e71c"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/temporary_cleanup_error_keeps_primary/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/temporary_cleanup_error_keeps_primary/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 19,
+      "path": "internal-review/run1/cases/temporary_cleanup_error_keeps_primary/files/test-ciphertext.hbv",
+      "sha256": "7c8988303ee1ab16718a02dd653de90b0ed533ae35099045191fa3a9cafadde8",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/temporary_cleanup_error_keeps_primary/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 38,
+      "path": "internal-review/run1/cases/transaction_unknown_requires_reopen/files/passkey-stores/current",
+      "sha256": "df62df9755de66ce06a4bcc9eb29987a8d70bc316a6421258cc907ea5d6c363c",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/transaction_unknown_requires_reopen/files/passkey-stores/current"
+    },
+    {
+      "bytes": 28,
+      "path": "internal-review/run1/cases/transaction_unknown_requires_reopen/files/passkey-stores/store-00000000000000000000000000000001/vault.hbv",
+      "sha256": "fcd8133da2938d30527544206026087b3d8c811e81fa0219f7841bbce1e1ec71",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/transaction_unknown_requires_reopen/files/passkey-stores/store-00000000000000000000000000000001/vault.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/transaction_unknown_requires_reopen/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/transaction_unknown_requires_reopen/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/trylock_io_cleans/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/trylock_io_cleans/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/trylock_null_cleans/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/trylock_null_cleans/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/trylock_overlap_cleans/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/trylock_overlap_cleans/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 28,
+      "path": "internal-review/run1/cases/unowned_temp_collision_preserved/files/.pending-8e0491ba1eda35ced989c4f753c80cac",
+      "sha256": "fcd8133da2938d30527544206026087b3d8c811e81fa0219f7841bbce1e1ec71",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/unowned_temp_collision_preserved/files/.pending-8e0491ba1eda35ced989c4f753c80cac"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/unowned_temp_collision_preserved/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/unowned_temp_collision_preserved/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/cases/zero_write_preserves_old/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/zero_write_preserves_old/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 19,
+      "path": "internal-review/run1/cases/zero_write_preserves_old/files/test-ciphertext.hbv",
+      "sha256": "7c8988303ee1ab16718a02dd653de90b0ed533ae35099045191fa3a9cafadde8",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/cases/zero_write_preserves_old/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 609,
+      "path": "internal-review/run1/classes/android/content/Context.class",
+      "sha256": "b7b616c92045d5d75ee5668edb8b69a7e21d31cdff338429a3ecb1ec7dcaf388",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/android/content/Context.class"
+    },
+    {
+      "bytes": 365,
+      "path": "internal-review/run1/classes/android/net/Uri.class",
+      "sha256": "2d7385f53ea759bf82263993521cb927c87050f240c7d8c2a6627c80c4eaa1b9",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/android/net/Uri.class"
+    },
+    {
+      "bytes": 383,
+      "path": "internal-review/run1/classes/android/os/OperationCanceledException.class",
+      "sha256": "4235ab1283678f9377ab1d8d2601a9b1b7e929c4e00e9c3c35e0f4466e0fdf26",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/android/os/OperationCanceledException.class"
+    },
+    {
+      "bytes": 1403,
+      "path": "internal-review/run1/classes/android/os/ParcelFileDescriptor$AutoCloseInputStream.class",
+      "sha256": "a74333d072311407162d8decb252308dd1325e7a5f9555cbf5c7c6674a9f7258",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/android/os/ParcelFileDescriptor$AutoCloseInputStream.class"
+    },
+    {
+      "bytes": 2018,
+      "path": "internal-review/run1/classes/android/os/ParcelFileDescriptor$AutoCloseOutputStream.class",
+      "sha256": "b8e2469c9a827a1003561dfb9fc7b641a52d3ae89fc7973e679aee8281b4063a",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/android/os/ParcelFileDescriptor$AutoCloseOutputStream.class"
+    },
+    {
+      "bytes": 3961,
+      "path": "internal-review/run1/classes/android/os/ParcelFileDescriptor$FakeChannel.class",
+      "sha256": "55bea356fcf8a3137600b7cff78b4a3f72f55ac0b95d289259e48a561d53a1fb",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/android/os/ParcelFileDescriptor$FakeChannel.class"
+    },
+    {
+      "bytes": 1311,
+      "path": "internal-review/run1/classes/android/os/ParcelFileDescriptor$FakeLock.class",
+      "sha256": "92f732d26562256719450fd0ed439ef40089381fe5efbe6d1c0f232ff0ba43e8",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/android/os/ParcelFileDescriptor$FakeLock.class"
+    },
+    {
+      "bytes": 1705,
+      "path": "internal-review/run1/classes/android/os/ParcelFileDescriptor.class",
+      "sha256": "2f749785c57b0f995689f8ce3787e0d81cb2f4d899c386f2f60273a482985caf",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/android/os/ParcelFileDescriptor.class"
+    },
+    {
+      "bytes": 324,
+      "path": "internal-review/run1/classes/android/os/Process.class",
+      "sha256": "e857f17e3e124b3233d1d8f8008e35bc7afc75c2de78a00d7759998f987ae392",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/android/os/Process.class"
+    },
+    {
+      "bytes": 680,
+      "path": "internal-review/run1/classes/android/system/ErrnoException.class",
+      "sha256": "4dc5d2ac1e4331f58f0cdbc9172820506b97462204096fe815b006138b4b4fae",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/android/system/ErrnoException.class"
+    },
+    {
+      "bytes": 713,
+      "path": "internal-review/run1/classes/android/system/Os$Handle.class",
+      "sha256": "eba937d54d0765a3eb8599694ea4d18237baab74f5f9fff33edb758c571c6805",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/android/system/Os$Handle.class"
+    },
+    {
+      "bytes": 324,
+      "path": "internal-review/run1/classes/android/system/Os$Hook.class",
+      "sha256": "caa9d03fdcc3ecc3eecbfc2828c3e2a8e8e2e3b0c6ba4a2cc4b44ddf4fbb05d0",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/android/system/Os$Hook.class"
+    },
+    {
+      "bytes": 444,
+      "path": "internal-review/run1/classes/android/system/Os$Node.class",
+      "sha256": "2677dcb450731f3a3f4e57b4f39ba1ec9c4a5270787e13463e8297c148549b97",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/android/system/Os$Node.class"
+    },
+    {
+      "bytes": 383,
+      "path": "internal-review/run1/classes/android/system/Os$Position.class",
+      "sha256": "2dbf8d897938faecb623a4540778f57a59fde5719f71f389e9e476f061187da4",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/android/system/Os$Position.class"
+    },
+    {
+      "bytes": 13279,
+      "path": "internal-review/run1/classes/android/system/Os.class",
+      "sha256": "390212121b6a79c80bedbdb6f76dc20fe2b892460871867449a064ba06c18bc0",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/android/system/Os.class"
+    },
+    {
+      "bytes": 1199,
+      "path": "internal-review/run1/classes/android/system/OsConstants.class",
+      "sha256": "f4f1927846ae45d0d42373ee09410501c199657acd60cfddb8d1c36e7758eb8a",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/android/system/OsConstants.class"
+    },
+    {
+      "bytes": 437,
+      "path": "internal-review/run1/classes/android/system/StructStat.class",
+      "sha256": "16693d52379c03f94df525f7bc07f4d8ffef4b7f37dd9666d6adbab168683419",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/android/system/StructStat.class"
+    },
+    {
+      "bytes": 5980,
+      "path": "internal-review/run1/classes/org/heptabao/passkey/core/Codec.class",
+      "sha256": "d8a1b09467c871676fcffd9ea6dd2a41c261b55a6775e2b364169aff5fbf8f6e",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/org/heptabao/passkey/core/Codec.class"
+    },
+    {
+      "bytes": 568,
+      "path": "internal-review/run1/classes/org/heptabao/passkey/core/Failure.class",
+      "sha256": "a2ed7b7156e8a47e9a37f69f0933d799f655900ab70e7ef496011c94338b7cb7",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/org/heptabao/passkey/core/Failure.class"
+    },
+    {
+      "bytes": 823,
+      "path": "internal-review/run1/classes/org/heptabao/passkey/core/Hbv$Unlocked.class",
+      "sha256": "da3903ac28f0efec09a7ece8469d848ebd82343d85bec33d9d92c21f5a7e741f",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/org/heptabao/passkey/core/Hbv$Unlocked.class"
+    },
+    {
+      "bytes": 647,
+      "path": "internal-review/run1/classes/org/heptabao/passkey/core/Hbv.class",
+      "sha256": "d3ea553739a53a3a5f61f8144ba807b2c1011c1171274d4f3e9832fe1f46e72b",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/org/heptabao/passkey/core/Hbv.class"
+    },
+    {
+      "bytes": 10396,
+      "path": "internal-review/run1/classes/org/heptabao/passkey/core/Json.class",
+      "sha256": "0add49fe45fe1e1dca7a3629c4ba1e985dcf2ec3e917f96699f5a4ed9a1d1fcb",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/org/heptabao/passkey/core/Json.class"
+    },
+    {
+      "bytes": 730,
+      "path": "internal-review/run1/classes/org/heptabao/passkey/core/Passkey$Record.class",
+      "sha256": "8b5ddf58297e67eca2e0efc6f0ae848a99a1522ebb0268110c8a4fce37752c63",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/org/heptabao/passkey/core/Passkey$Record.class"
+    },
+    {
+      "bytes": 982,
+      "path": "internal-review/run1/classes/org/heptabao/passkey/core/Passkey.class",
+      "sha256": "af64c7a1b7dde60ac56b30ec3df5dd0fb6f28430241b905f19b5657844c2c1a3",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/org/heptabao/passkey/core/Passkey.class"
+    },
+    {
+      "bytes": 461,
+      "path": "internal-review/run1/classes/org/heptabao/passkey/preview/BuildConfig.class",
+      "sha256": "98152fdd7d82964673db32051eca86c1e2c043d14e5aa4307de47e12de54facf",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/org/heptabao/passkey/preview/BuildConfig.class"
+    },
+    {
+      "bytes": 916,
+      "path": "internal-review/run1/classes/org/heptabao/passkey/preview/DocumentIO.class",
+      "sha256": "b952539c1a022e5455dd9170d9d105424c2276161cf809b7d98f29b0f701b1b3",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/org/heptabao/passkey/preview/DocumentIO.class"
+    },
+    {
+      "bytes": 416,
+      "path": "internal-review/run1/classes/org/heptabao/passkey/preview/Session$Entry.class",
+      "sha256": "40d1253d3aaa51f59b477d48ae96d0e2d323b00dc99213110474633e10704d99",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/org/heptabao/passkey/preview/Session$Entry.class"
+    },
+    {
+      "bytes": 917,
+      "path": "internal-review/run1/classes/org/heptabao/passkey/preview/Session.class",
+      "sha256": "76e33de4b7a73198ff4ac9a878e673f8fd290ff13cbc917c88de531dd681a5f2",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/org/heptabao/passkey/preview/Session.class"
+    },
+    {
+      "bytes": 876,
+      "path": "internal-review/run1/classes/org/heptabao/passkey/preview/StageDiagnostics$Binding.class",
+      "sha256": "d0a493ee31a0ebbb14039a42ef2795a1ecb8fe1908520dc62ab4787f21bef535",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/org/heptabao/passkey/preview/StageDiagnostics$Binding.class"
+    },
+    {
+      "bytes": 1998,
+      "path": "internal-review/run1/classes/org/heptabao/passkey/preview/StageDiagnostics$Errno.class",
+      "sha256": "6fa2fb6eddda5ff61c9e7d092250c8aa0cb711010cde9436921ceacbdd8f5a6b",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/org/heptabao/passkey/preview/StageDiagnostics$Errno.class"
+    },
+    {
+      "bytes": 1637,
+      "path": "internal-review/run1/classes/org/heptabao/passkey/preview/StageDiagnostics$Kind.class",
+      "sha256": "eda69d5578c7bc00c87b9632481e5904f4949357c5ebbae6949445bed837158e",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/org/heptabao/passkey/preview/StageDiagnostics$Kind.class"
+    },
+    {
+      "bytes": 3464,
+      "path": "internal-review/run1/classes/org/heptabao/passkey/preview/StageDiagnostics$Site.class",
+      "sha256": "2d6e858f17c098b368cb49273c02deb3ecf9fe2ce32fdf43651545484adeb2f3",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/org/heptabao/passkey/preview/StageDiagnostics$Site.class"
+    },
+    {
+      "bytes": 7539,
+      "path": "internal-review/run1/classes/org/heptabao/passkey/preview/StageDiagnostics.class",
+      "sha256": "5fa8821950121213f00bbc45c6d15067120030f9f424dfb0a02f5c6b6713fdae",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/org/heptabao/passkey/preview/StageDiagnostics.class"
+    },
+    {
+      "bytes": 312,
+      "path": "internal-review/run1/classes/org/heptabao/passkey/preview/StorageHost$Action.class",
+      "sha256": "e6c21b538660b25e6528b600c8dd694f688f65507621ac3d64f68042c567c20b",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/org/heptabao/passkey/preview/StorageHost$Action.class"
+    },
+    {
+      "bytes": 25852,
+      "path": "internal-review/run1/classes/org/heptabao/passkey/preview/StorageHost.class",
+      "sha256": "8b50a68f8fd769f762badb356230de84f6f4a51ff5055aee366b752a20bc7bf5",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/org/heptabao/passkey/preview/StorageHost.class"
+    },
+    {
+      "bytes": 905,
+      "path": "internal-review/run1/classes/org/heptabao/passkey/preview/VaultFiles$Descriptor.class",
+      "sha256": "bc0de0b2eb67d64c4e6681e4b440aa69ff6ce901f5f93248f455f8340cc55161",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/org/heptabao/passkey/preview/VaultFiles$Descriptor.class"
+    },
+    {
+      "bytes": 4887,
+      "path": "internal-review/run1/classes/org/heptabao/passkey/preview/VaultFiles$Guard.class",
+      "sha256": "9312b7301c379933b789f68640c5a19a156c21a0a486712b80bcdb667b7b7628",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/org/heptabao/passkey/preview/VaultFiles$Guard.class"
+    },
+    {
+      "bytes": 922,
+      "path": "internal-review/run1/classes/org/heptabao/passkey/preview/VaultFiles$Loaded.class",
+      "sha256": "ea8111fd48d541e0070524d5d000760cb26571aeb426f31a3aa2c4a7a2bc2a56",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/org/heptabao/passkey/preview/VaultFiles$Loaded.class"
+    },
+    {
+      "bytes": 4218,
+      "path": "internal-review/run1/classes/org/heptabao/passkey/preview/VaultFiles$Prepared.class",
+      "sha256": "36755b83135d2f3a1730247aca7b92a63423d82b123bb72c5aa5b742d157dee4",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/org/heptabao/passkey/preview/VaultFiles$Prepared.class"
+    },
+    {
+      "bytes": 2088,
+      "path": "internal-review/run1/classes/org/heptabao/passkey/preview/VaultFiles$Transaction.class",
+      "sha256": "f47f03d307c7504d1b0a458c943b05823fa83dde0f22d28320c3c6cacba4872b",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/org/heptabao/passkey/preview/VaultFiles$Transaction.class"
+    },
+    {
+      "bytes": 15537,
+      "path": "internal-review/run1/classes/org/heptabao/passkey/preview/VaultFiles.class",
+      "sha256": "f1e18c8112a80b9c7299d78548225ea1db8f91af6a05d5b39b1db2d8afe543e5",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/classes/org/heptabao/passkey/preview/VaultFiles.class"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/compile.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/compile.stderr.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/compile.stdout.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/compile.stdout.original"
+    },
+    {
+      "bytes": 8529,
+      "path": "internal-review/run1/host_check.v1.exact_recovered.py",
+      "sha256": "e2dfce4455cbaa4260e6d37d5aaea823fc0ea7d4a3ac4f0075bd83cd27b0f48f",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/host_check.v1.exact_recovered.py"
+    },
+    {
+      "bytes": 181,
+      "path": "internal-review/run1/java-version.stderr.original",
+      "sha256": "0fc83381287ccbc8623d257bce2b0d03997ba0e85ff4492d38b409aea37a8aa9",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/java-version.stderr.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/java-version.stdout.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/java-version.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/admission_before_open.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/admission_before_open.stderr.original"
+    },
+    {
+      "bytes": 133,
+      "path": "internal-review/run1/outputs/admission_before_open.stdout.original",
+      "sha256": "dda9a4c3666e0e2d6f4be72101db213441d532a0729e6638b3782403c79273a2",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/admission_before_open.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/constructor_cleanup_unknown_fences.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/constructor_cleanup_unknown_fences.stderr.original"
+    },
+    {
+      "bytes": 146,
+      "path": "internal-review/run1/outputs/constructor_cleanup_unknown_fences.stdout.original",
+      "sha256": "724a4583cbb9e4bca5a388daff3c304c49c7840f0a4a659ef80dfbbced96710e",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/constructor_cleanup_unknown_fences.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/constructor_dup_failure.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/constructor_dup_failure.stderr.original"
+    },
+    {
+      "bytes": 135,
+      "path": "internal-review/run1/outputs/constructor_dup_failure.stdout.original",
+      "sha256": "f3f05574669a5e58f1a13dfff811fe1907af8ff9c8121ec66634eb83dd97d7f7",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/constructor_dup_failure.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/constructor_files_open_failure.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/constructor_files_open_failure.stderr.original"
+    },
+    {
+      "bytes": 142,
+      "path": "internal-review/run1/outputs/constructor_files_open_failure.stdout.original",
+      "sha256": "625b37c92b111be8dc38cfa9f4493e61e7435f6de2abd4a9010a0ab6a7f57d03",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/constructor_files_open_failure.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/constructor_lock_open_failure.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/constructor_lock_open_failure.stderr.original"
+    },
+    {
+      "bytes": 141,
+      "path": "internal-review/run1/outputs/constructor_lock_open_failure.stdout.original",
+      "sha256": "121f0e6ef903df6c357c6417aeb674bd606a05dad986a10668223550a928ce0a",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/constructor_lock_open_failure.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/constructor_lock_stat_failure.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/constructor_lock_stat_failure.stderr.original"
+    },
+    {
+      "bytes": 141,
+      "path": "internal-review/run1/outputs/constructor_lock_stat_failure.stdout.original",
+      "sha256": "2abed0a86fb511ddf1c883cf98407ee4abf7bfbd8f2bedef2455636dd6cb8668",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/constructor_lock_stat_failure.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/create_and_reopen.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/create_and_reopen.stderr.original"
+    },
+    {
+      "bytes": 131,
+      "path": "internal-review/run1/outputs/create_and_reopen.stdout.original",
+      "sha256": "e0d6f3a0486cbf1cad49a6de624043b4647d40d67ea466712f45fd5a3c2fb03a",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/create_and_reopen.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/cross_thread_close_and_old_close.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/cross_thread_close_and_old_close.stderr.original"
+    },
+    {
+      "bytes": 144,
+      "path": "internal-review/run1/outputs/cross_thread_close_and_old_close.stdout.original",
+      "sha256": "4cbf120a890e1a6a5a1c52aa9c4e0e4cf37ded6b9b0bcfaa7e3ed614beb43ad9",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/cross_thread_close_and_old_close.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/initial_absence_conflict.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/initial_absence_conflict.stderr.original"
+    },
+    {
+      "bytes": 136,
+      "path": "internal-review/run1/outputs/initial_absence_conflict.stdout.original",
+      "sha256": "a226ec502584a445205db3b5a56e5d2415eace3e8e20b82e28111a8184d30f62",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/initial_absence_conflict.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/invalid_read_progress.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/invalid_read_progress.stderr.original"
+    },
+    {
+      "bytes": 133,
+      "path": "internal-review/run1/outputs/invalid_read_progress.stdout.original",
+      "sha256": "fec69860639a12ce4cea86ffdd5d09283818bbce271d4fd9dd4bb75596b4819e",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/invalid_read_progress.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/lock_release_unknown_fences.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/lock_release_unknown_fences.stderr.original"
+    },
+    {
+      "bytes": 139,
+      "path": "internal-review/run1/outputs/lock_release_unknown_fences.stdout.original",
+      "sha256": "963d5364524c39631607e9a4dcca709d4676b431318b274b92e1d9f07f2e4205",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/lock_release_unknown_fences.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/lost_guard_refuses_before_io.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/lost_guard_refuses_before_io.stderr.original"
+    },
+    {
+      "bytes": 140,
+      "path": "internal-review/run1/outputs/lost_guard_refuses_before_io.stdout.original",
+      "sha256": "837f412c210ea81a88b256ca0165e7a20ad52cacf0d772d0a7f21160cf8ed760",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/lost_guard_refuses_before_io.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/pfd_close_unknown_fences.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/pfd_close_unknown_fences.stderr.original"
+    },
+    {
+      "bytes": 136,
+      "path": "internal-review/run1/outputs/pfd_close_unknown_fences.stdout.original",
+      "sha256": "b4aab917f3610c654a572b749a193a70f50696f54fd42985ff8735f2af717d7f",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/pfd_close_unknown_fences.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/postrename_directory_close_unknown.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/postrename_directory_close_unknown.stderr.original"
+    },
+    {
+      "bytes": 148,
+      "path": "internal-review/run1/outputs/postrename_directory_close_unknown.stdout.original",
+      "sha256": "8d3aa644130f91e8d6de52fad8a6b9e890cdd9feb189dd6cc3c860490b8f19fd",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/postrename_directory_close_unknown.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/postrename_directory_sync_unknown.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/postrename_directory_sync_unknown.stderr.original"
+    },
+    {
+      "bytes": 147,
+      "path": "internal-review/run1/outputs/postrename_directory_sync_unknown.stdout.original",
+      "sha256": "577f5ce60725e05006a779066f2ef2bd1a68b69f2357157dc9b488473e5ef0b1",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/postrename_directory_sync_unknown.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/postrename_read_close_unknown.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/postrename_read_close_unknown.stderr.original"
+    },
+    {
+      "bytes": 143,
+      "path": "internal-review/run1/outputs/postrename_read_close_unknown.stdout.original",
+      "sha256": "fddccc830a1ab0ddadaa77707ae911fa467359946972c41dfc40ceeb2e51c2f1",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/postrename_read_close_unknown.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/postrename_read_unknown.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/postrename_read_unknown.stderr.original"
+    },
+    {
+      "bytes": 137,
+      "path": "internal-review/run1/outputs/postrename_read_unknown.stdout.original",
+      "sha256": "3909c4b246b4507fd4f36edf8cc2f6be8164263e64f7cc59b68d11e5b7741cb8",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/postrename_read_unknown.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/primary_failure_survives_close_failure.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/primary_failure_survives_close_failure.stderr.original"
+    },
+    {
+      "bytes": 150,
+      "path": "internal-review/run1/outputs/primary_failure_survives_close_failure.stdout.original",
+      "sha256": "5c86c3fc17868d54bd0d0e3727649cc07f9d0072a22a3e5bc566303a46bc8fc3",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/primary_failure_survives_close_failure.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/published_lock_release_unknown.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/published_lock_release_unknown.stderr.original"
+    },
+    {
+      "bytes": 142,
+      "path": "internal-review/run1/outputs/published_lock_release_unknown.stdout.original",
+      "sha256": "99699cc8819827018b0397c605a368f215fd2c2f709e5428d57d8c0068518220",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/published_lock_release_unknown.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/published_pfd_close_unknown.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/published_pfd_close_unknown.stderr.original"
+    },
+    {
+      "bytes": 139,
+      "path": "internal-review/run1/outputs/published_pfd_close_unknown.stdout.original",
+      "sha256": "ed66778d50c82a904a93414a57fefda264c2a9c5e821586f569007441cbc8d30",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/published_pfd_close_unknown.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/raw_lock_close_unknown_fences.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/raw_lock_close_unknown_fences.stderr.original"
+    },
+    {
+      "bytes": 141,
+      "path": "internal-review/run1/outputs/raw_lock_close_unknown_fences.stdout.original",
+      "sha256": "e09467b6bc5c02ab86b6a75fb809d848243522252c128c4ade47c4048d353b8b",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/raw_lock_close_unknown_fences.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/rename_failure_preserves_old.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/rename_failure_preserves_old.stderr.original"
+    },
+    {
+      "bytes": 140,
+      "path": "internal-review/run1/outputs/rename_failure_preserves_old.stdout.original",
+      "sha256": "4b683c4c58dee5f13160d26ef64f70915194c5c37c3e25f1d50d0873082f958a",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/rename_failure_preserves_old.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/second_cas_conflict.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/second_cas_conflict.stderr.original"
+    },
+    {
+      "bytes": 131,
+      "path": "internal-review/run1/outputs/second_cas_conflict.stdout.original",
+      "sha256": "46cbfa05b0a2a26cb660f5d4603966553e70294ec121a77870c6576ab394521b",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/second_cas_conflict.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/short_reads.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/short_reads.stderr.original"
+    },
+    {
+      "bytes": 123,
+      "path": "internal-review/run1/outputs/short_reads.stdout.original",
+      "sha256": "2717ae730bb812bd05ea6849880a57f8e5229d9061dcb8f9b182c23a85297a40",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/short_reads.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/short_writes.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/short_writes.stderr.original"
+    },
+    {
+      "bytes": 124,
+      "path": "internal-review/run1/outputs/short_writes.stdout.original",
+      "sha256": "34044d15be2d5f2d8f52864f99fbe6ce380cf37c97a70dcc7db683f191f93e70",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/short_writes.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/stream_constructor_failure_cleans.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/stream_constructor_failure_cleans.stderr.original"
+    },
+    {
+      "bytes": 145,
+      "path": "internal-review/run1/outputs/stream_constructor_failure_cleans.stdout.original",
+      "sha256": "9cda251d7b7943931f02bf0e987f01b5f5a6bfa8d9979dd91f6b717426bd8f43",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/stream_constructor_failure_cleans.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/temporary_cleanup_error_keeps_primary.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/temporary_cleanup_error_keeps_primary.stderr.original"
+    },
+    {
+      "bytes": 149,
+      "path": "internal-review/run1/outputs/temporary_cleanup_error_keeps_primary.stdout.original",
+      "sha256": "ce93648ef5454ba962e5ba4c1f381c58948e5df8451b5f0355eb35510fdde165",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/temporary_cleanup_error_keeps_primary.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/transaction_unknown_requires_reopen.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/transaction_unknown_requires_reopen.stderr.original"
+    },
+    {
+      "bytes": 149,
+      "path": "internal-review/run1/outputs/transaction_unknown_requires_reopen.stdout.original",
+      "sha256": "caacdde7d0087fe74c80a68a65935ae2d49f2924f7b8e7a1b31d3ac14b01abd0",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/transaction_unknown_requires_reopen.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/trylock_io_cleans.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/trylock_io_cleans.stderr.original"
+    },
+    {
+      "bytes": 129,
+      "path": "internal-review/run1/outputs/trylock_io_cleans.stdout.original",
+      "sha256": "223a15538208ddba85e59a765314de9c26c9884c84d47608aced999962dcd485",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/trylock_io_cleans.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/trylock_null_cleans.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/trylock_null_cleans.stderr.original"
+    },
+    {
+      "bytes": 131,
+      "path": "internal-review/run1/outputs/trylock_null_cleans.stdout.original",
+      "sha256": "bc3174b9c1dd021f76831c113d8b34fb612b5b250ade26532754484f1f607740",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/trylock_null_cleans.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/trylock_overlap_cleans.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/trylock_overlap_cleans.stderr.original"
+    },
+    {
+      "bytes": 134,
+      "path": "internal-review/run1/outputs/trylock_overlap_cleans.stdout.original",
+      "sha256": "4a8c37f1474e62ba702c80b4d184c8816e07401bd12bdae1ffb99618ac923982",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/trylock_overlap_cleans.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/unowned_temp_collision_preserved.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/unowned_temp_collision_preserved.stderr.original"
+    },
+    {
+      "bytes": 144,
+      "path": "internal-review/run1/outputs/unowned_temp_collision_preserved.stdout.original",
+      "sha256": "e7a9a40b54f1966cb6bcfbb745e6fa3819a088e7057819294c29216c4164eab7",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/unowned_temp_collision_preserved.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run1/outputs/zero_write_preserves_old.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/zero_write_preserves_old.stderr.original"
+    },
+    {
+      "bytes": 136,
+      "path": "internal-review/run1/outputs/zero_write_preserves_old.stdout.original",
+      "sha256": "a99b240a02ec3b706188e180e2fde08c251548234cbe30e08f2da3f8e2b58cd8",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/outputs/zero_write_preserves_old.stdout.original"
+    },
+    {
+      "bytes": 36598,
+      "path": "internal-review/run1/receipt.public.json",
+      "sha256": "4ead0d0684109fdf611e51af69748ea9a04f62bfd9b0f174e4cea2915f683c9e",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/receipt.public.json"
+    },
+    {
+      "bytes": 250,
+      "path": "internal-review/run1/src/android/content/Context.java",
+      "sha256": "4942bc4a113a0917265b31025944d80f3bdcd1861fe830189fa3b507b4f149ef",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/src/android/content/Context.java"
+    },
+    {
+      "bytes": 91,
+      "path": "internal-review/run1/src/android/net/Uri.java",
+      "sha256": "11c433737104aee40388d1dd10bc79231c539c3c9bed63182c02e898c4f3455e",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/src/android/net/Uri.java"
+    },
+    {
+      "bytes": 157,
+      "path": "internal-review/run1/src/android/os/OperationCanceledException.java",
+      "sha256": "865ee067835c594c758293476683f087577f00055c0a391d0844ef5c45ce3f1a",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/src/android/os/OperationCanceledException.java"
+    },
+    {
+      "bytes": 5265,
+      "path": "internal-review/run1/src/android/os/ParcelFileDescriptor.java",
+      "sha256": "e93cb52b3a2472f692161d09dc0dd670ab1e2f964dc2c6643b2003b80d328bf8",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/src/android/os/ParcelFileDescriptor.java"
+    },
+    {
+      "bytes": 90,
+      "path": "internal-review/run1/src/android/os/Process.java",
+      "sha256": "d4f4898173dcf19f53477ecb3555fa6b8e1a1c40d04e7f833239c757c3f5a9eb",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/src/android/os/Process.java"
+    },
+    {
+      "bytes": 306,
+      "path": "internal-review/run1/src/android/system/ErrnoException.java",
+      "sha256": "b426244d681a3bc0082fbdeca22898ed2afb4e6d0233393403bd1ddb5a8bb9bd",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/src/android/system/ErrnoException.java"
+    },
+    {
+      "bytes": 8737,
+      "path": "internal-review/run1/src/android/system/Os.java",
+      "sha256": "64fca332be4374f0e3a8e4c7547e0f7adbbbe3082ee8309931f97346862f495e",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/src/android/system/Os.java"
+    },
+    {
+      "bytes": 517,
+      "path": "internal-review/run1/src/android/system/OsConstants.java",
+      "sha256": "bd060941116686555a7b34aa9fac55af2d251f54b0f2a536cf842427e9e18557",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/src/android/system/OsConstants.java"
+    },
+    {
+      "bytes": 151,
+      "path": "internal-review/run1/src/android/system/StructStat.java",
+      "sha256": "b09322fdb569c332b4f973a3b9fade7ada2d326aea8e5c1354f36e7fd28bb15b",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/src/android/system/StructStat.java"
+    },
+    {
+      "bytes": 4534,
+      "path": "internal-review/run1/src/org/heptabao/passkey/core/Codec.java",
+      "sha256": "a1a80c446a438e532f08a190a0208a965290b6f037a11350e75b41f0c006ca3d",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/src/org/heptabao/passkey/core/Codec.java"
+    },
+    {
+      "bytes": 399,
+      "path": "internal-review/run1/src/org/heptabao/passkey/core/Failure.java",
+      "sha256": "aa14de964dc69e63089ba314cd7611bf7ab5c80405f40d8e7cea0efa15a5b39d",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/src/org/heptabao/passkey/core/Failure.java"
+    },
+    {
+      "bytes": 588,
+      "path": "internal-review/run1/src/org/heptabao/passkey/core/Hbv.java",
+      "sha256": "317bb062dd1fc75852b97dbb11e0fea7607574536b5f61fbc913fdd50c44d788",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/src/org/heptabao/passkey/core/Hbv.java"
+    },
+    {
+      "bytes": 10099,
+      "path": "internal-review/run1/src/org/heptabao/passkey/core/Json.java",
+      "sha256": "2c06fa99b7c66f103d2bfca2aad73375fe2da3783c01a72cf7110a1670be4c84",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/src/org/heptabao/passkey/core/Json.java"
+    },
+    {
+      "bytes": 358,
+      "path": "internal-review/run1/src/org/heptabao/passkey/core/Passkey.java",
+      "sha256": "1f28b87bfea903ae33eec79ea40a5140c7d722695d4249fad0810bb76f161c26",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/src/org/heptabao/passkey/core/Passkey.java"
+    },
+    {
+      "bytes": 172,
+      "path": "internal-review/run1/src/org/heptabao/passkey/preview/BuildConfig.java",
+      "sha256": "bcbc54ff7e577076f262de28163d6358f32ab7b50bfae3bc0e12effe3935d718",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/src/org/heptabao/passkey/preview/BuildConfig.java"
+    },
+    {
+      "bytes": 334,
+      "path": "internal-review/run1/src/org/heptabao/passkey/preview/DocumentIO.java",
+      "sha256": "34fbf509acc511387438b4a1c38a5791245f9f944caf35da1affbe0653afb797",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/src/org/heptabao/passkey/preview/DocumentIO.java"
+    },
+    {
+      "bytes": 249,
+      "path": "internal-review/run1/src/org/heptabao/passkey/preview/Session.java",
+      "sha256": "2fb74a2f7f2f98cec1ea3ba27067a75f9c391fcd76db32f44874f25bd4104b8d",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/src/org/heptabao/passkey/preview/Session.java"
+    },
+    {
+      "bytes": 8847,
+      "path": "internal-review/run1/src/org/heptabao/passkey/preview/StageDiagnostics.java",
+      "sha256": "1791431a579b62c66c31ae64e7749b5074ff1a3cc57f723acd708fb43c15b389",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/src/org/heptabao/passkey/preview/StageDiagnostics.java"
+    },
+    {
+      "bytes": 15924,
+      "path": "internal-review/run1/src/org/heptabao/passkey/preview/StorageHost.java",
+      "sha256": "3d3736b14340b14d194b2a74c6d077794c09c5803fa459031e49225785a24fab",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/src/org/heptabao/passkey/preview/StorageHost.java"
+    },
+    {
+      "bytes": 22729,
+      "path": "internal-review/run1/src/org/heptabao/passkey/preview/VaultFiles.java",
+      "sha256": "f19b24a8091bac11c92354922d5fe0db1d2d2d59d1afbc511387f2a9d19c2012",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run1/src/org/heptabao/passkey/preview/VaultFiles.java"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/admission_before_open/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/admission_before_open/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/constructor_cleanup_unknown_fences/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/constructor_cleanup_unknown_fences/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/constructor_dup_failure/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/constructor_dup_failure/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/constructor_files_open_failure/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/constructor_files_open_failure/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/constructor_lock_open_failure/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/constructor_lock_open_failure/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/constructor_lock_stat_failure/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/constructor_lock_stat_failure/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/create_and_reopen/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/create_and_reopen/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 25,
+      "path": "internal-review/run2/cases/create_and_reopen/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/create_and_reopen/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/cross_thread_close_and_old_close/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/cross_thread_close_and_old_close/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/initial_absence_conflict/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/initial_absence_conflict/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 19,
+      "path": "internal-review/run2/cases/initial_absence_conflict/files/test-ciphertext.hbv",
+      "sha256": "7c8988303ee1ab16718a02dd653de90b0ed533ae35099045191fa3a9cafadde8",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/initial_absence_conflict/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 25,
+      "path": "internal-review/run2/cases/invalid_read_progress/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/invalid_read_progress/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/lock_release_unknown_fences/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/lock_release_unknown_fences/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/lost_guard_refuses_before_io/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/lost_guard_refuses_before_io/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/pfd_close_unknown_fences/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/pfd_close_unknown_fences/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/postrename_directory_close_unknown/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/postrename_directory_close_unknown/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 25,
+      "path": "internal-review/run2/cases/postrename_directory_close_unknown/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/postrename_directory_close_unknown/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/postrename_directory_sync_unknown/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/postrename_directory_sync_unknown/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 25,
+      "path": "internal-review/run2/cases/postrename_directory_sync_unknown/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/postrename_directory_sync_unknown/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/postrename_read_close_unknown/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/postrename_read_close_unknown/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 25,
+      "path": "internal-review/run2/cases/postrename_read_close_unknown/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/postrename_read_close_unknown/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/postrename_read_unknown/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/postrename_read_unknown/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 25,
+      "path": "internal-review/run2/cases/postrename_read_unknown/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/postrename_read_unknown/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 25,
+      "path": "internal-review/run2/cases/primary_failure_survives_close_failure/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/primary_failure_survives_close_failure/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/published_lock_release_unknown/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/published_lock_release_unknown/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 25,
+      "path": "internal-review/run2/cases/published_lock_release_unknown/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/published_lock_release_unknown/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/published_pfd_close_unknown/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/published_pfd_close_unknown/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 25,
+      "path": "internal-review/run2/cases/published_pfd_close_unknown/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/published_pfd_close_unknown/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/raw_lock_close_unknown_fences/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/raw_lock_close_unknown_fences/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/rename_failure_preserves_old/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/rename_failure_preserves_old/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 19,
+      "path": "internal-review/run2/cases/rename_failure_preserves_old/files/test-ciphertext.hbv",
+      "sha256": "7c8988303ee1ab16718a02dd653de90b0ed533ae35099045191fa3a9cafadde8",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/rename_failure_preserves_old/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/second_cas_conflict/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/second_cas_conflict/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 28,
+      "path": "internal-review/run2/cases/second_cas_conflict/files/test-ciphertext.hbv",
+      "sha256": "fcd8133da2938d30527544206026087b3d8c811e81fa0219f7841bbce1e1ec71",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/second_cas_conflict/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 25,
+      "path": "internal-review/run2/cases/short_reads/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/short_reads/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/short_writes/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/short_writes/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 25,
+      "path": "internal-review/run2/cases/short_writes/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/short_writes/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/stream_constructor_failure_cleans/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/stream_constructor_failure_cleans/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/temporary_cleanup_error_keeps_primary/files/.pending-794848c3a6ed12768a9e589451e02dd1",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/temporary_cleanup_error_keeps_primary/files/.pending-794848c3a6ed12768a9e589451e02dd1"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/temporary_cleanup_error_keeps_primary/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/temporary_cleanup_error_keeps_primary/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 19,
+      "path": "internal-review/run2/cases/temporary_cleanup_error_keeps_primary/files/test-ciphertext.hbv",
+      "sha256": "7c8988303ee1ab16718a02dd653de90b0ed533ae35099045191fa3a9cafadde8",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/temporary_cleanup_error_keeps_primary/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 38,
+      "path": "internal-review/run2/cases/transaction_unknown_requires_reopen/files/passkey-stores/current",
+      "sha256": "df62df9755de66ce06a4bcc9eb29987a8d70bc316a6421258cc907ea5d6c363c",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/transaction_unknown_requires_reopen/files/passkey-stores/current"
+    },
+    {
+      "bytes": 28,
+      "path": "internal-review/run2/cases/transaction_unknown_requires_reopen/files/passkey-stores/store-00000000000000000000000000000001/vault.hbv",
+      "sha256": "fcd8133da2938d30527544206026087b3d8c811e81fa0219f7841bbce1e1ec71",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/transaction_unknown_requires_reopen/files/passkey-stores/store-00000000000000000000000000000001/vault.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/transaction_unknown_requires_reopen/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/transaction_unknown_requires_reopen/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/trylock_io_cleans/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/trylock_io_cleans/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/trylock_null_cleans/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/trylock_null_cleans/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/trylock_overlap_cleans/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/trylock_overlap_cleans/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 28,
+      "path": "internal-review/run2/cases/unowned_temp_collision_preserved/files/.pending-4513584637540cab96dee87b4cd29dc1",
+      "sha256": "fcd8133da2938d30527544206026087b3d8c811e81fa0219f7841bbce1e1ec71",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/unowned_temp_collision_preserved/files/.pending-4513584637540cab96dee87b4cd29dc1"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/unowned_temp_collision_preserved/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/unowned_temp_collision_preserved/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/cases/zero_write_preserves_old/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/zero_write_preserves_old/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 19,
+      "path": "internal-review/run2/cases/zero_write_preserves_old/files/test-ciphertext.hbv",
+      "sha256": "7c8988303ee1ab16718a02dd653de90b0ed533ae35099045191fa3a9cafadde8",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/zero_write_preserves_old/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 609,
+      "path": "internal-review/run2/classes/android/content/Context.class",
+      "sha256": "b7b616c92045d5d75ee5668edb8b69a7e21d31cdff338429a3ecb1ec7dcaf388",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/android/content/Context.class"
+    },
+    {
+      "bytes": 365,
+      "path": "internal-review/run2/classes/android/net/Uri.class",
+      "sha256": "2d7385f53ea759bf82263993521cb927c87050f240c7d8c2a6627c80c4eaa1b9",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/android/net/Uri.class"
+    },
+    {
+      "bytes": 383,
+      "path": "internal-review/run2/classes/android/os/OperationCanceledException.class",
+      "sha256": "4235ab1283678f9377ab1d8d2601a9b1b7e929c4e00e9c3c35e0f4466e0fdf26",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/android/os/OperationCanceledException.class"
+    },
+    {
+      "bytes": 1403,
+      "path": "internal-review/run2/classes/android/os/ParcelFileDescriptor$AutoCloseInputStream.class",
+      "sha256": "a74333d072311407162d8decb252308dd1325e7a5f9555cbf5c7c6674a9f7258",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/android/os/ParcelFileDescriptor$AutoCloseInputStream.class"
+    },
+    {
+      "bytes": 2018,
+      "path": "internal-review/run2/classes/android/os/ParcelFileDescriptor$AutoCloseOutputStream.class",
+      "sha256": "b8e2469c9a827a1003561dfb9fc7b641a52d3ae89fc7973e679aee8281b4063a",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/android/os/ParcelFileDescriptor$AutoCloseOutputStream.class"
+    },
+    {
+      "bytes": 3961,
+      "path": "internal-review/run2/classes/android/os/ParcelFileDescriptor$FakeChannel.class",
+      "sha256": "55bea356fcf8a3137600b7cff78b4a3f72f55ac0b95d289259e48a561d53a1fb",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/android/os/ParcelFileDescriptor$FakeChannel.class"
+    },
+    {
+      "bytes": 1311,
+      "path": "internal-review/run2/classes/android/os/ParcelFileDescriptor$FakeLock.class",
+      "sha256": "92f732d26562256719450fd0ed439ef40089381fe5efbe6d1c0f232ff0ba43e8",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/android/os/ParcelFileDescriptor$FakeLock.class"
+    },
+    {
+      "bytes": 1705,
+      "path": "internal-review/run2/classes/android/os/ParcelFileDescriptor.class",
+      "sha256": "2f749785c57b0f995689f8ce3787e0d81cb2f4d899c386f2f60273a482985caf",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/android/os/ParcelFileDescriptor.class"
+    },
+    {
+      "bytes": 324,
+      "path": "internal-review/run2/classes/android/os/Process.class",
+      "sha256": "e857f17e3e124b3233d1d8f8008e35bc7afc75c2de78a00d7759998f987ae392",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/android/os/Process.class"
+    },
+    {
+      "bytes": 680,
+      "path": "internal-review/run2/classes/android/system/ErrnoException.class",
+      "sha256": "4dc5d2ac1e4331f58f0cdbc9172820506b97462204096fe815b006138b4b4fae",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/android/system/ErrnoException.class"
+    },
+    {
+      "bytes": 713,
+      "path": "internal-review/run2/classes/android/system/Os$Handle.class",
+      "sha256": "eba937d54d0765a3eb8599694ea4d18237baab74f5f9fff33edb758c571c6805",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/android/system/Os$Handle.class"
+    },
+    {
+      "bytes": 324,
+      "path": "internal-review/run2/classes/android/system/Os$Hook.class",
+      "sha256": "caa9d03fdcc3ecc3eecbfc2828c3e2a8e8e2e3b0c6ba4a2cc4b44ddf4fbb05d0",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/android/system/Os$Hook.class"
+    },
+    {
+      "bytes": 444,
+      "path": "internal-review/run2/classes/android/system/Os$Node.class",
+      "sha256": "2677dcb450731f3a3f4e57b4f39ba1ec9c4a5270787e13463e8297c148549b97",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/android/system/Os$Node.class"
+    },
+    {
+      "bytes": 383,
+      "path": "internal-review/run2/classes/android/system/Os$Position.class",
+      "sha256": "2dbf8d897938faecb623a4540778f57a59fde5719f71f389e9e476f061187da4",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/android/system/Os$Position.class"
+    },
+    {
+      "bytes": 13279,
+      "path": "internal-review/run2/classes/android/system/Os.class",
+      "sha256": "390212121b6a79c80bedbdb6f76dc20fe2b892460871867449a064ba06c18bc0",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/android/system/Os.class"
+    },
+    {
+      "bytes": 1199,
+      "path": "internal-review/run2/classes/android/system/OsConstants.class",
+      "sha256": "f4f1927846ae45d0d42373ee09410501c199657acd60cfddb8d1c36e7758eb8a",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/android/system/OsConstants.class"
+    },
+    {
+      "bytes": 437,
+      "path": "internal-review/run2/classes/android/system/StructStat.class",
+      "sha256": "16693d52379c03f94df525f7bc07f4d8ffef4b7f37dd9666d6adbab168683419",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/android/system/StructStat.class"
+    },
+    {
+      "bytes": 5980,
+      "path": "internal-review/run2/classes/org/heptabao/passkey/core/Codec.class",
+      "sha256": "d8a1b09467c871676fcffd9ea6dd2a41c261b55a6775e2b364169aff5fbf8f6e",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/org/heptabao/passkey/core/Codec.class"
+    },
+    {
+      "bytes": 568,
+      "path": "internal-review/run2/classes/org/heptabao/passkey/core/Failure.class",
+      "sha256": "a2ed7b7156e8a47e9a37f69f0933d799f655900ab70e7ef496011c94338b7cb7",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/org/heptabao/passkey/core/Failure.class"
+    },
+    {
+      "bytes": 823,
+      "path": "internal-review/run2/classes/org/heptabao/passkey/core/Hbv$Unlocked.class",
+      "sha256": "da3903ac28f0efec09a7ece8469d848ebd82343d85bec33d9d92c21f5a7e741f",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/org/heptabao/passkey/core/Hbv$Unlocked.class"
+    },
+    {
+      "bytes": 647,
+      "path": "internal-review/run2/classes/org/heptabao/passkey/core/Hbv.class",
+      "sha256": "d3ea553739a53a3a5f61f8144ba807b2c1011c1171274d4f3e9832fe1f46e72b",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/org/heptabao/passkey/core/Hbv.class"
+    },
+    {
+      "bytes": 10396,
+      "path": "internal-review/run2/classes/org/heptabao/passkey/core/Json.class",
+      "sha256": "0add49fe45fe1e1dca7a3629c4ba1e985dcf2ec3e917f96699f5a4ed9a1d1fcb",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/org/heptabao/passkey/core/Json.class"
+    },
+    {
+      "bytes": 730,
+      "path": "internal-review/run2/classes/org/heptabao/passkey/core/Passkey$Record.class",
+      "sha256": "8b5ddf58297e67eca2e0efc6f0ae848a99a1522ebb0268110c8a4fce37752c63",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/org/heptabao/passkey/core/Passkey$Record.class"
+    },
+    {
+      "bytes": 982,
+      "path": "internal-review/run2/classes/org/heptabao/passkey/core/Passkey.class",
+      "sha256": "af64c7a1b7dde60ac56b30ec3df5dd0fb6f28430241b905f19b5657844c2c1a3",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/org/heptabao/passkey/core/Passkey.class"
+    },
+    {
+      "bytes": 461,
+      "path": "internal-review/run2/classes/org/heptabao/passkey/preview/BuildConfig.class",
+      "sha256": "98152fdd7d82964673db32051eca86c1e2c043d14e5aa4307de47e12de54facf",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/org/heptabao/passkey/preview/BuildConfig.class"
+    },
+    {
+      "bytes": 916,
+      "path": "internal-review/run2/classes/org/heptabao/passkey/preview/DocumentIO.class",
+      "sha256": "b952539c1a022e5455dd9170d9d105424c2276161cf809b7d98f29b0f701b1b3",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/org/heptabao/passkey/preview/DocumentIO.class"
+    },
+    {
+      "bytes": 416,
+      "path": "internal-review/run2/classes/org/heptabao/passkey/preview/Session$Entry.class",
+      "sha256": "40d1253d3aaa51f59b477d48ae96d0e2d323b00dc99213110474633e10704d99",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/org/heptabao/passkey/preview/Session$Entry.class"
+    },
+    {
+      "bytes": 917,
+      "path": "internal-review/run2/classes/org/heptabao/passkey/preview/Session.class",
+      "sha256": "76e33de4b7a73198ff4ac9a878e673f8fd290ff13cbc917c88de531dd681a5f2",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/org/heptabao/passkey/preview/Session.class"
+    },
+    {
+      "bytes": 876,
+      "path": "internal-review/run2/classes/org/heptabao/passkey/preview/StageDiagnostics$Binding.class",
+      "sha256": "d0a493ee31a0ebbb14039a42ef2795a1ecb8fe1908520dc62ab4787f21bef535",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/org/heptabao/passkey/preview/StageDiagnostics$Binding.class"
+    },
+    {
+      "bytes": 1998,
+      "path": "internal-review/run2/classes/org/heptabao/passkey/preview/StageDiagnostics$Errno.class",
+      "sha256": "6fa2fb6eddda5ff61c9e7d092250c8aa0cb711010cde9436921ceacbdd8f5a6b",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/org/heptabao/passkey/preview/StageDiagnostics$Errno.class"
+    },
+    {
+      "bytes": 1637,
+      "path": "internal-review/run2/classes/org/heptabao/passkey/preview/StageDiagnostics$Kind.class",
+      "sha256": "eda69d5578c7bc00c87b9632481e5904f4949357c5ebbae6949445bed837158e",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/org/heptabao/passkey/preview/StageDiagnostics$Kind.class"
+    },
+    {
+      "bytes": 3464,
+      "path": "internal-review/run2/classes/org/heptabao/passkey/preview/StageDiagnostics$Site.class",
+      "sha256": "2d6e858f17c098b368cb49273c02deb3ecf9fe2ce32fdf43651545484adeb2f3",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/org/heptabao/passkey/preview/StageDiagnostics$Site.class"
+    },
+    {
+      "bytes": 7539,
+      "path": "internal-review/run2/classes/org/heptabao/passkey/preview/StageDiagnostics.class",
+      "sha256": "5fa8821950121213f00bbc45c6d15067120030f9f424dfb0a02f5c6b6713fdae",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/org/heptabao/passkey/preview/StageDiagnostics.class"
+    },
+    {
+      "bytes": 312,
+      "path": "internal-review/run2/classes/org/heptabao/passkey/preview/StorageHost$Action.class",
+      "sha256": "e6c21b538660b25e6528b600c8dd694f688f65507621ac3d64f68042c567c20b",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/org/heptabao/passkey/preview/StorageHost$Action.class"
+    },
+    {
+      "bytes": 26433,
+      "path": "internal-review/run2/classes/org/heptabao/passkey/preview/StorageHost.class",
+      "sha256": "176d1fd25403e743388c269a063a6c20f4838d889534e79d47af4634d1d5e6b4",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/org/heptabao/passkey/preview/StorageHost.class"
+    },
+    {
+      "bytes": 905,
+      "path": "internal-review/run2/classes/org/heptabao/passkey/preview/VaultFiles$Descriptor.class",
+      "sha256": "bc0de0b2eb67d64c4e6681e4b440aa69ff6ce901f5f93248f455f8340cc55161",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/org/heptabao/passkey/preview/VaultFiles$Descriptor.class"
+    },
+    {
+      "bytes": 4887,
+      "path": "internal-review/run2/classes/org/heptabao/passkey/preview/VaultFiles$Guard.class",
+      "sha256": "9312b7301c379933b789f68640c5a19a156c21a0a486712b80bcdb667b7b7628",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/org/heptabao/passkey/preview/VaultFiles$Guard.class"
+    },
+    {
+      "bytes": 922,
+      "path": "internal-review/run2/classes/org/heptabao/passkey/preview/VaultFiles$Loaded.class",
+      "sha256": "ea8111fd48d541e0070524d5d000760cb26571aeb426f31a3aa2c4a7a2bc2a56",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/org/heptabao/passkey/preview/VaultFiles$Loaded.class"
+    },
+    {
+      "bytes": 4218,
+      "path": "internal-review/run2/classes/org/heptabao/passkey/preview/VaultFiles$Prepared.class",
+      "sha256": "36755b83135d2f3a1730247aca7b92a63423d82b123bb72c5aa5b742d157dee4",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/org/heptabao/passkey/preview/VaultFiles$Prepared.class"
+    },
+    {
+      "bytes": 2088,
+      "path": "internal-review/run2/classes/org/heptabao/passkey/preview/VaultFiles$Transaction.class",
+      "sha256": "f47f03d307c7504d1b0a458c943b05823fa83dde0f22d28320c3c6cacba4872b",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/org/heptabao/passkey/preview/VaultFiles$Transaction.class"
+    },
+    {
+      "bytes": 15537,
+      "path": "internal-review/run2/classes/org/heptabao/passkey/preview/VaultFiles.class",
+      "sha256": "f1e18c8112a80b9c7299d78548225ea1db8f91af6a05d5b39b1db2d8afe543e5",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes/org/heptabao/passkey/preview/VaultFiles.class"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/compile.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/compile.stderr.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/compile.stdout.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/compile.stdout.original"
+    },
+    {
+      "bytes": 8851,
+      "path": "internal-review/run2/host_check.original.py",
+      "sha256": "187185de4d36da28f61982b4ac4bacd44b8bd2e0fd4227a62a439681ba9052ab",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/host_check.original.py"
+    },
+    {
+      "bytes": 181,
+      "path": "internal-review/run2/java-version.stderr.original",
+      "sha256": "0fc83381287ccbc8623d257bce2b0d03997ba0e85ff4492d38b409aea37a8aa9",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/java-version.stderr.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/java-version.stdout.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/java-version.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/admission_before_open.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/admission_before_open.stderr.original"
+    },
+    {
+      "bytes": 133,
+      "path": "internal-review/run2/outputs/admission_before_open.stdout.original",
+      "sha256": "dda9a4c3666e0e2d6f4be72101db213441d532a0729e6638b3782403c79273a2",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/admission_before_open.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/constructor_cleanup_unknown_fences.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/constructor_cleanup_unknown_fences.stderr.original"
+    },
+    {
+      "bytes": 146,
+      "path": "internal-review/run2/outputs/constructor_cleanup_unknown_fences.stdout.original",
+      "sha256": "724a4583cbb9e4bca5a388daff3c304c49c7840f0a4a659ef80dfbbced96710e",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/constructor_cleanup_unknown_fences.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/constructor_dup_failure.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/constructor_dup_failure.stderr.original"
+    },
+    {
+      "bytes": 135,
+      "path": "internal-review/run2/outputs/constructor_dup_failure.stdout.original",
+      "sha256": "f3f05574669a5e58f1a13dfff811fe1907af8ff9c8121ec66634eb83dd97d7f7",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/constructor_dup_failure.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/constructor_files_open_failure.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/constructor_files_open_failure.stderr.original"
+    },
+    {
+      "bytes": 142,
+      "path": "internal-review/run2/outputs/constructor_files_open_failure.stdout.original",
+      "sha256": "625b37c92b111be8dc38cfa9f4493e61e7435f6de2abd4a9010a0ab6a7f57d03",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/constructor_files_open_failure.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/constructor_lock_open_failure.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/constructor_lock_open_failure.stderr.original"
+    },
+    {
+      "bytes": 141,
+      "path": "internal-review/run2/outputs/constructor_lock_open_failure.stdout.original",
+      "sha256": "121f0e6ef903df6c357c6417aeb674bd606a05dad986a10668223550a928ce0a",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/constructor_lock_open_failure.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/constructor_lock_stat_failure.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/constructor_lock_stat_failure.stderr.original"
+    },
+    {
+      "bytes": 141,
+      "path": "internal-review/run2/outputs/constructor_lock_stat_failure.stdout.original",
+      "sha256": "2abed0a86fb511ddf1c883cf98407ee4abf7bfbd8f2bedef2455636dd6cb8668",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/constructor_lock_stat_failure.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/create_and_reopen.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/create_and_reopen.stderr.original"
+    },
+    {
+      "bytes": 131,
+      "path": "internal-review/run2/outputs/create_and_reopen.stdout.original",
+      "sha256": "e0d6f3a0486cbf1cad49a6de624043b4647d40d67ea466712f45fd5a3c2fb03a",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/create_and_reopen.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/cross_thread_close_and_old_close.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/cross_thread_close_and_old_close.stderr.original"
+    },
+    {
+      "bytes": 144,
+      "path": "internal-review/run2/outputs/cross_thread_close_and_old_close.stdout.original",
+      "sha256": "4cbf120a890e1a6a5a1c52aa9c4e0e4cf37ded6b9b0bcfaa7e3ed614beb43ad9",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/cross_thread_close_and_old_close.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/fresh_jvm_reopens_prior_fenced_directory.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/fresh_jvm_reopens_prior_fenced_directory.stderr.original"
+    },
+    {
+      "bytes": 152,
+      "path": "internal-review/run2/outputs/fresh_jvm_reopens_prior_fenced_directory.stdout.original",
+      "sha256": "60d337fe99022a6640ddc0cbbe8f44faa3696076046ada16b3b41d359f2bd16f",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/fresh_jvm_reopens_prior_fenced_directory.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/initial_absence_conflict.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/initial_absence_conflict.stderr.original"
+    },
+    {
+      "bytes": 136,
+      "path": "internal-review/run2/outputs/initial_absence_conflict.stdout.original",
+      "sha256": "a226ec502584a445205db3b5a56e5d2415eace3e8e20b82e28111a8184d30f62",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/initial_absence_conflict.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/invalid_read_progress.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/invalid_read_progress.stderr.original"
+    },
+    {
+      "bytes": 133,
+      "path": "internal-review/run2/outputs/invalid_read_progress.stdout.original",
+      "sha256": "fec69860639a12ce4cea86ffdd5d09283818bbce271d4fd9dd4bb75596b4819e",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/invalid_read_progress.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/lock_release_unknown_fences.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/lock_release_unknown_fences.stderr.original"
+    },
+    {
+      "bytes": 139,
+      "path": "internal-review/run2/outputs/lock_release_unknown_fences.stdout.original",
+      "sha256": "963d5364524c39631607e9a4dcca709d4676b431318b274b92e1d9f07f2e4205",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/lock_release_unknown_fences.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/lost_guard_refuses_before_io.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/lost_guard_refuses_before_io.stderr.original"
+    },
+    {
+      "bytes": 140,
+      "path": "internal-review/run2/outputs/lost_guard_refuses_before_io.stdout.original",
+      "sha256": "837f412c210ea81a88b256ca0165e7a20ad52cacf0d772d0a7f21160cf8ed760",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/lost_guard_refuses_before_io.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/pfd_close_unknown_fences.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/pfd_close_unknown_fences.stderr.original"
+    },
+    {
+      "bytes": 136,
+      "path": "internal-review/run2/outputs/pfd_close_unknown_fences.stdout.original",
+      "sha256": "b4aab917f3610c654a572b749a193a70f50696f54fd42985ff8735f2af717d7f",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/pfd_close_unknown_fences.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/postrename_directory_close_unknown.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/postrename_directory_close_unknown.stderr.original"
+    },
+    {
+      "bytes": 148,
+      "path": "internal-review/run2/outputs/postrename_directory_close_unknown.stdout.original",
+      "sha256": "8d3aa644130f91e8d6de52fad8a6b9e890cdd9feb189dd6cc3c860490b8f19fd",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/postrename_directory_close_unknown.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/postrename_directory_sync_unknown.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/postrename_directory_sync_unknown.stderr.original"
+    },
+    {
+      "bytes": 147,
+      "path": "internal-review/run2/outputs/postrename_directory_sync_unknown.stdout.original",
+      "sha256": "577f5ce60725e05006a779066f2ef2bd1a68b69f2357157dc9b488473e5ef0b1",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/postrename_directory_sync_unknown.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/postrename_read_close_unknown.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/postrename_read_close_unknown.stderr.original"
+    },
+    {
+      "bytes": 143,
+      "path": "internal-review/run2/outputs/postrename_read_close_unknown.stdout.original",
+      "sha256": "fddccc830a1ab0ddadaa77707ae911fa467359946972c41dfc40ceeb2e51c2f1",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/postrename_read_close_unknown.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/postrename_read_unknown.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/postrename_read_unknown.stderr.original"
+    },
+    {
+      "bytes": 137,
+      "path": "internal-review/run2/outputs/postrename_read_unknown.stdout.original",
+      "sha256": "3909c4b246b4507fd4f36edf8cc2f6be8164263e64f7cc59b68d11e5b7741cb8",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/postrename_read_unknown.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/primary_failure_survives_close_failure.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/primary_failure_survives_close_failure.stderr.original"
+    },
+    {
+      "bytes": 150,
+      "path": "internal-review/run2/outputs/primary_failure_survives_close_failure.stdout.original",
+      "sha256": "5c86c3fc17868d54bd0d0e3727649cc07f9d0072a22a3e5bc566303a46bc8fc3",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/primary_failure_survives_close_failure.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/published_lock_release_unknown.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/published_lock_release_unknown.stderr.original"
+    },
+    {
+      "bytes": 142,
+      "path": "internal-review/run2/outputs/published_lock_release_unknown.stdout.original",
+      "sha256": "99699cc8819827018b0397c605a368f215fd2c2f709e5428d57d8c0068518220",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/published_lock_release_unknown.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/published_pfd_close_unknown.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/published_pfd_close_unknown.stderr.original"
+    },
+    {
+      "bytes": 139,
+      "path": "internal-review/run2/outputs/published_pfd_close_unknown.stdout.original",
+      "sha256": "ed66778d50c82a904a93414a57fefda264c2a9c5e821586f569007441cbc8d30",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/published_pfd_close_unknown.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/raw_lock_close_unknown_fences.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/raw_lock_close_unknown_fences.stderr.original"
+    },
+    {
+      "bytes": 141,
+      "path": "internal-review/run2/outputs/raw_lock_close_unknown_fences.stdout.original",
+      "sha256": "e09467b6bc5c02ab86b6a75fb809d848243522252c128c4ade47c4048d353b8b",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/raw_lock_close_unknown_fences.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/rename_failure_preserves_old.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/rename_failure_preserves_old.stderr.original"
+    },
+    {
+      "bytes": 140,
+      "path": "internal-review/run2/outputs/rename_failure_preserves_old.stdout.original",
+      "sha256": "4b683c4c58dee5f13160d26ef64f70915194c5c37c3e25f1d50d0873082f958a",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/rename_failure_preserves_old.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/second_cas_conflict.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/second_cas_conflict.stderr.original"
+    },
+    {
+      "bytes": 131,
+      "path": "internal-review/run2/outputs/second_cas_conflict.stdout.original",
+      "sha256": "46cbfa05b0a2a26cb660f5d4603966553e70294ec121a77870c6576ab394521b",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/second_cas_conflict.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/short_reads.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/short_reads.stderr.original"
+    },
+    {
+      "bytes": 123,
+      "path": "internal-review/run2/outputs/short_reads.stdout.original",
+      "sha256": "2717ae730bb812bd05ea6849880a57f8e5229d9061dcb8f9b182c23a85297a40",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/short_reads.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/short_writes.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/short_writes.stderr.original"
+    },
+    {
+      "bytes": 124,
+      "path": "internal-review/run2/outputs/short_writes.stdout.original",
+      "sha256": "34044d15be2d5f2d8f52864f99fbe6ce380cf37c97a70dcc7db683f191f93e70",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/short_writes.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/stream_constructor_failure_cleans.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/stream_constructor_failure_cleans.stderr.original"
+    },
+    {
+      "bytes": 145,
+      "path": "internal-review/run2/outputs/stream_constructor_failure_cleans.stdout.original",
+      "sha256": "9cda251d7b7943931f02bf0e987f01b5f5a6bfa8d9979dd91f6b717426bd8f43",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/stream_constructor_failure_cleans.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/temporary_cleanup_error_keeps_primary.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/temporary_cleanup_error_keeps_primary.stderr.original"
+    },
+    {
+      "bytes": 149,
+      "path": "internal-review/run2/outputs/temporary_cleanup_error_keeps_primary.stdout.original",
+      "sha256": "ce93648ef5454ba962e5ba4c1f381c58948e5df8451b5f0355eb35510fdde165",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/temporary_cleanup_error_keeps_primary.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/transaction_unknown_requires_reopen.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/transaction_unknown_requires_reopen.stderr.original"
+    },
+    {
+      "bytes": 149,
+      "path": "internal-review/run2/outputs/transaction_unknown_requires_reopen.stdout.original",
+      "sha256": "caacdde7d0087fe74c80a68a65935ae2d49f2924f7b8e7a1b31d3ac14b01abd0",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/transaction_unknown_requires_reopen.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/trylock_io_cleans.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/trylock_io_cleans.stderr.original"
+    },
+    {
+      "bytes": 129,
+      "path": "internal-review/run2/outputs/trylock_io_cleans.stdout.original",
+      "sha256": "223a15538208ddba85e59a765314de9c26c9884c84d47608aced999962dcd485",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/trylock_io_cleans.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/trylock_null_cleans.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/trylock_null_cleans.stderr.original"
+    },
+    {
+      "bytes": 131,
+      "path": "internal-review/run2/outputs/trylock_null_cleans.stdout.original",
+      "sha256": "bc3174b9c1dd021f76831c113d8b34fb612b5b250ade26532754484f1f607740",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/trylock_null_cleans.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/trylock_overlap_cleans.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/trylock_overlap_cleans.stderr.original"
+    },
+    {
+      "bytes": 134,
+      "path": "internal-review/run2/outputs/trylock_overlap_cleans.stdout.original",
+      "sha256": "4a8c37f1474e62ba702c80b4d184c8816e07401bd12bdae1ffb99618ac923982",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/trylock_overlap_cleans.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/unowned_temp_collision_preserved.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/unowned_temp_collision_preserved.stderr.original"
+    },
+    {
+      "bytes": 144,
+      "path": "internal-review/run2/outputs/unowned_temp_collision_preserved.stdout.original",
+      "sha256": "e7a9a40b54f1966cb6bcfbb745e6fa3819a088e7057819294c29216c4164eab7",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/unowned_temp_collision_preserved.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "internal-review/run2/outputs/zero_write_preserves_old.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/zero_write_preserves_old.stderr.original"
+    },
+    {
+      "bytes": 136,
+      "path": "internal-review/run2/outputs/zero_write_preserves_old.stdout.original",
+      "sha256": "a99b240a02ec3b706188e180e2fde08c251548234cbe30e08f2da3f8e2b58cd8",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/outputs/zero_write_preserves_old.stdout.original"
+    },
+    {
+      "bytes": 37525,
+      "path": "internal-review/run2/receipt.public.json",
+      "sha256": "5f199c94bb8438fd102f736c704f1d552924b79f910312249799f5d4ff454bdf",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/receipt.public.json"
+    },
+    {
+      "bytes": 250,
+      "path": "internal-review/run2/src/android/content/Context.java",
+      "sha256": "4942bc4a113a0917265b31025944d80f3bdcd1861fe830189fa3b507b4f149ef",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/android/content/Context.java"
+    },
+    {
+      "bytes": 91,
+      "path": "internal-review/run2/src/android/net/Uri.java",
+      "sha256": "11c433737104aee40388d1dd10bc79231c539c3c9bed63182c02e898c4f3455e",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/android/net/Uri.java"
+    },
+    {
+      "bytes": 157,
+      "path": "internal-review/run2/src/android/os/OperationCanceledException.java",
+      "sha256": "865ee067835c594c758293476683f087577f00055c0a391d0844ef5c45ce3f1a",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/android/os/OperationCanceledException.java"
+    },
+    {
+      "bytes": 5265,
+      "path": "internal-review/run2/src/android/os/ParcelFileDescriptor.java",
+      "sha256": "e93cb52b3a2472f692161d09dc0dd670ab1e2f964dc2c6643b2003b80d328bf8",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/android/os/ParcelFileDescriptor.java"
+    },
+    {
+      "bytes": 90,
+      "path": "internal-review/run2/src/android/os/Process.java",
+      "sha256": "d4f4898173dcf19f53477ecb3555fa6b8e1a1c40d04e7f833239c757c3f5a9eb",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/android/os/Process.java"
+    },
+    {
+      "bytes": 306,
+      "path": "internal-review/run2/src/android/system/ErrnoException.java",
+      "sha256": "b426244d681a3bc0082fbdeca22898ed2afb4e6d0233393403bd1ddb5a8bb9bd",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/android/system/ErrnoException.java"
+    },
+    {
+      "bytes": 8737,
+      "path": "internal-review/run2/src/android/system/Os.java",
+      "sha256": "64fca332be4374f0e3a8e4c7547e0f7adbbbe3082ee8309931f97346862f495e",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/android/system/Os.java"
+    },
+    {
+      "bytes": 517,
+      "path": "internal-review/run2/src/android/system/OsConstants.java",
+      "sha256": "bd060941116686555a7b34aa9fac55af2d251f54b0f2a536cf842427e9e18557",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/android/system/OsConstants.java"
+    },
+    {
+      "bytes": 151,
+      "path": "internal-review/run2/src/android/system/StructStat.java",
+      "sha256": "b09322fdb569c332b4f973a3b9fade7ada2d326aea8e5c1354f36e7fd28bb15b",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/android/system/StructStat.java"
+    },
+    {
+      "bytes": 4534,
+      "path": "internal-review/run2/src/org/heptabao/passkey/core/Codec.java",
+      "sha256": "a1a80c446a438e532f08a190a0208a965290b6f037a11350e75b41f0c006ca3d",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/org/heptabao/passkey/core/Codec.java"
+    },
+    {
+      "bytes": 399,
+      "path": "internal-review/run2/src/org/heptabao/passkey/core/Failure.java",
+      "sha256": "aa14de964dc69e63089ba314cd7611bf7ab5c80405f40d8e7cea0efa15a5b39d",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/org/heptabao/passkey/core/Failure.java"
+    },
+    {
+      "bytes": 588,
+      "path": "internal-review/run2/src/org/heptabao/passkey/core/Hbv.java",
+      "sha256": "317bb062dd1fc75852b97dbb11e0fea7607574536b5f61fbc913fdd50c44d788",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/org/heptabao/passkey/core/Hbv.java"
+    },
+    {
+      "bytes": 10099,
+      "path": "internal-review/run2/src/org/heptabao/passkey/core/Json.java",
+      "sha256": "2c06fa99b7c66f103d2bfca2aad73375fe2da3783c01a72cf7110a1670be4c84",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/org/heptabao/passkey/core/Json.java"
+    },
+    {
+      "bytes": 358,
+      "path": "internal-review/run2/src/org/heptabao/passkey/core/Passkey.java",
+      "sha256": "1f28b87bfea903ae33eec79ea40a5140c7d722695d4249fad0810bb76f161c26",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/org/heptabao/passkey/core/Passkey.java"
+    },
+    {
+      "bytes": 172,
+      "path": "internal-review/run2/src/org/heptabao/passkey/preview/BuildConfig.java",
+      "sha256": "bcbc54ff7e577076f262de28163d6358f32ab7b50bfae3bc0e12effe3935d718",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/org/heptabao/passkey/preview/BuildConfig.java"
+    },
+    {
+      "bytes": 334,
+      "path": "internal-review/run2/src/org/heptabao/passkey/preview/DocumentIO.java",
+      "sha256": "34fbf509acc511387438b4a1c38a5791245f9f944caf35da1affbe0653afb797",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/org/heptabao/passkey/preview/DocumentIO.java"
+    },
+    {
+      "bytes": 249,
+      "path": "internal-review/run2/src/org/heptabao/passkey/preview/Session.java",
+      "sha256": "2fb74a2f7f2f98cec1ea3ba27067a75f9c391fcd76db32f44874f25bd4104b8d",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/org/heptabao/passkey/preview/Session.java"
+    },
+    {
+      "bytes": 8847,
+      "path": "internal-review/run2/src/org/heptabao/passkey/preview/StageDiagnostics.java",
+      "sha256": "1791431a579b62c66c31ae64e7749b5074ff1a3cc57f723acd708fb43c15b389",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/org/heptabao/passkey/preview/StageDiagnostics.java"
+    },
+    {
+      "bytes": 16592,
+      "path": "internal-review/run2/src/org/heptabao/passkey/preview/StorageHost.java",
+      "sha256": "fb8e9b69cb532c544ac0e5c72bfe78137eb6ea7aaf170033c75362a7a93db0de",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/org/heptabao/passkey/preview/StorageHost.java"
+    },
+    {
+      "bytes": 22729,
+      "path": "internal-review/run2/src/org/heptabao/passkey/preview/VaultFiles.java",
+      "sha256": "f19b24a8091bac11c92354922d5fe0db1d2d2d59d1afbc511387f2a9d19c2012",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/org/heptabao/passkey/preview/VaultFiles.java"
+    },
+    {
+      "bytes": 250,
+      "path": "internal-review/stubsrc/android/content/Context.java",
+      "sha256": "4942bc4a113a0917265b31025944d80f3bdcd1861fe830189fa3b507b4f149ef",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/stubsrc/android/content/Context.java"
+    },
+    {
+      "bytes": 91,
+      "path": "internal-review/stubsrc/android/net/Uri.java",
+      "sha256": "11c433737104aee40388d1dd10bc79231c539c3c9bed63182c02e898c4f3455e",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/stubsrc/android/net/Uri.java"
+    },
+    {
+      "bytes": 157,
+      "path": "internal-review/stubsrc/android/os/OperationCanceledException.java",
+      "sha256": "865ee067835c594c758293476683f087577f00055c0a391d0844ef5c45ce3f1a",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/stubsrc/android/os/OperationCanceledException.java"
+    },
+    {
+      "bytes": 5265,
+      "path": "internal-review/stubsrc/android/os/ParcelFileDescriptor.java",
+      "sha256": "e93cb52b3a2472f692161d09dc0dd670ab1e2f964dc2c6643b2003b80d328bf8",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/stubsrc/android/os/ParcelFileDescriptor.java"
+    },
+    {
+      "bytes": 90,
+      "path": "internal-review/stubsrc/android/os/Process.java",
+      "sha256": "d4f4898173dcf19f53477ecb3555fa6b8e1a1c40d04e7f833239c757c3f5a9eb",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/stubsrc/android/os/Process.java"
+    },
+    {
+      "bytes": 306,
+      "path": "internal-review/stubsrc/android/system/ErrnoException.java",
+      "sha256": "b426244d681a3bc0082fbdeca22898ed2afb4e6d0233393403bd1ddb5a8bb9bd",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/stubsrc/android/system/ErrnoException.java"
+    },
+    {
+      "bytes": 8737,
+      "path": "internal-review/stubsrc/android/system/Os.java",
+      "sha256": "64fca332be4374f0e3a8e4c7547e0f7adbbbe3082ee8309931f97346862f495e",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/stubsrc/android/system/Os.java"
+    },
+    {
+      "bytes": 517,
+      "path": "internal-review/stubsrc/android/system/OsConstants.java",
+      "sha256": "bd060941116686555a7b34aa9fac55af2d251f54b0f2a536cf842427e9e18557",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/stubsrc/android/system/OsConstants.java"
+    },
+    {
+      "bytes": 151,
+      "path": "internal-review/stubsrc/android/system/StructStat.java",
+      "sha256": "b09322fdb569c332b4f973a3b9fade7ada2d326aea8e5c1354f36e7fd28bb15b",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/stubsrc/android/system/StructStat.java"
+    },
+    {
+      "bytes": 588,
+      "path": "internal-review/stubsrc/org/heptabao/passkey/core/Hbv.java",
+      "sha256": "317bb062dd1fc75852b97dbb11e0fea7607574536b5f61fbc913fdd50c44d788",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/stubsrc/org/heptabao/passkey/core/Hbv.java"
+    },
+    {
+      "bytes": 358,
+      "path": "internal-review/stubsrc/org/heptabao/passkey/core/Passkey.java",
+      "sha256": "1f28b87bfea903ae33eec79ea40a5140c7d722695d4249fad0810bb76f161c26",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/stubsrc/org/heptabao/passkey/core/Passkey.java"
+    },
+    {
+      "bytes": 172,
+      "path": "internal-review/stubsrc/org/heptabao/passkey/preview/BuildConfig.java",
+      "sha256": "bcbc54ff7e577076f262de28163d6358f32ab7b50bfae3bc0e12effe3935d718",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/stubsrc/org/heptabao/passkey/preview/BuildConfig.java"
+    },
+    {
+      "bytes": 334,
+      "path": "internal-review/stubsrc/org/heptabao/passkey/preview/DocumentIO.java",
+      "sha256": "34fbf509acc511387438b4a1c38a5791245f9f944caf35da1affbe0653afb797",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/stubsrc/org/heptabao/passkey/preview/DocumentIO.java"
+    },
+    {
+      "bytes": 249,
+      "path": "internal-review/stubsrc/org/heptabao/passkey/preview/Session.java",
+      "sha256": "2fb74a2f7f2f98cec1ea3ba27067a75f9c391fcd76db32f44874f25bd4104b8d",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/stubsrc/org/heptabao/passkey/preview/Session.java"
+    },
+    {
+      "bytes": 16592,
+      "path": "internal-review/stubsrc/org/heptabao/passkey/preview/StorageHost.java",
+      "sha256": "fb8e9b69cb532c544ac0e5c72bfe78137eb6ea7aaf170033c75362a7a93db0de",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_review/stubsrc/org/heptabao/passkey/preview/StorageHost.java"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/admission_before_open/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/admission_before_open/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/constructor_cleanup_unknown_fences/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/constructor_cleanup_unknown_fences/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/constructor_dup_failure/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/constructor_dup_failure/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/constructor_files_open_failure/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/constructor_files_open_failure/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/constructor_lock_open_failure/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/constructor_lock_open_failure/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/constructor_lock_stat_failure/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/constructor_lock_stat_failure/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/create_and_reopen/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/create_and_reopen/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 25,
+      "path": "root/cases/create_and_reopen/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/create_and_reopen/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/cross_thread_close_and_old_close/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/cross_thread_close_and_old_close/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/initial_absence_conflict/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/initial_absence_conflict/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 19,
+      "path": "root/cases/initial_absence_conflict/files/test-ciphertext.hbv",
+      "sha256": "7c8988303ee1ab16718a02dd653de90b0ed533ae35099045191fa3a9cafadde8",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/initial_absence_conflict/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 25,
+      "path": "root/cases/invalid_read_progress/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/invalid_read_progress/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/lock_release_unknown_fences/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/lock_release_unknown_fences/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/lost_guard_refuses_before_io/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/lost_guard_refuses_before_io/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/pfd_close_unknown_fences/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/pfd_close_unknown_fences/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/postrename_directory_close_unknown/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/postrename_directory_close_unknown/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 25,
+      "path": "root/cases/postrename_directory_close_unknown/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/postrename_directory_close_unknown/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/postrename_directory_sync_unknown/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/postrename_directory_sync_unknown/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 25,
+      "path": "root/cases/postrename_directory_sync_unknown/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/postrename_directory_sync_unknown/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/postrename_read_close_unknown/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/postrename_read_close_unknown/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 25,
+      "path": "root/cases/postrename_read_close_unknown/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/postrename_read_close_unknown/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/postrename_read_unknown/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/postrename_read_unknown/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 25,
+      "path": "root/cases/postrename_read_unknown/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/postrename_read_unknown/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 25,
+      "path": "root/cases/primary_failure_survives_close_failure/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/primary_failure_survives_close_failure/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/published_lock_release_unknown/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/published_lock_release_unknown/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 25,
+      "path": "root/cases/published_lock_release_unknown/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/published_lock_release_unknown/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/published_pfd_close_unknown/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/published_pfd_close_unknown/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 25,
+      "path": "root/cases/published_pfd_close_unknown/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/published_pfd_close_unknown/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/raw_lock_close_unknown_fences/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/raw_lock_close_unknown_fences/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/rename_failure_preserves_old/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/rename_failure_preserves_old/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 19,
+      "path": "root/cases/rename_failure_preserves_old/files/test-ciphertext.hbv",
+      "sha256": "7c8988303ee1ab16718a02dd653de90b0ed533ae35099045191fa3a9cafadde8",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/rename_failure_preserves_old/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/second_cas_conflict/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/second_cas_conflict/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 28,
+      "path": "root/cases/second_cas_conflict/files/test-ciphertext.hbv",
+      "sha256": "fcd8133da2938d30527544206026087b3d8c811e81fa0219f7841bbce1e1ec71",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/second_cas_conflict/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 25,
+      "path": "root/cases/short_reads/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/short_reads/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/short_writes/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/short_writes/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 25,
+      "path": "root/cases/short_writes/files/test-ciphertext.hbv",
+      "sha256": "976f02b5415e108dc4e4f49f4146a9921283e0a08aff49cd422733b240e0dd41",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/short_writes/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/stream_constructor_failure_cleans/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/stream_constructor_failure_cleans/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/temporary_cleanup_error_keeps_primary/files/.pending-4aef7e2d795d2d17baebfc3da62008a8",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/temporary_cleanup_error_keeps_primary/files/.pending-4aef7e2d795d2d17baebfc3da62008a8"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/temporary_cleanup_error_keeps_primary/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/temporary_cleanup_error_keeps_primary/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 19,
+      "path": "root/cases/temporary_cleanup_error_keeps_primary/files/test-ciphertext.hbv",
+      "sha256": "7c8988303ee1ab16718a02dd653de90b0ed533ae35099045191fa3a9cafadde8",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/temporary_cleanup_error_keeps_primary/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 38,
+      "path": "root/cases/transaction_unknown_requires_reopen/files/passkey-stores/current",
+      "sha256": "df62df9755de66ce06a4bcc9eb29987a8d70bc316a6421258cc907ea5d6c363c",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/transaction_unknown_requires_reopen/files/passkey-stores/current"
+    },
+    {
+      "bytes": 28,
+      "path": "root/cases/transaction_unknown_requires_reopen/files/passkey-stores/store-00000000000000000000000000000001/vault.hbv",
+      "sha256": "fcd8133da2938d30527544206026087b3d8c811e81fa0219f7841bbce1e1ec71",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/transaction_unknown_requires_reopen/files/passkey-stores/store-00000000000000000000000000000001/vault.hbv"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/transaction_unknown_requires_reopen/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/transaction_unknown_requires_reopen/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/trylock_io_cleans/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/trylock_io_cleans/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/trylock_null_cleans/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/trylock_null_cleans/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/trylock_overlap_cleans/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/trylock_overlap_cleans/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 28,
+      "path": "root/cases/unowned_temp_collision_preserved/files/.pending-1387792e5dc18850b00e7213aed6dc9c",
+      "sha256": "fcd8133da2938d30527544206026087b3d8c811e81fa0219f7841bbce1e1ec71",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/unowned_temp_collision_preserved/files/.pending-1387792e5dc18850b00e7213aed6dc9c"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/unowned_temp_collision_preserved/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/unowned_temp_collision_preserved/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 0,
+      "path": "root/cases/zero_write_preserves_old/files/passkey-stores/store.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/zero_write_preserves_old/files/passkey-stores/store.lock"
+    },
+    {
+      "bytes": 19,
+      "path": "root/cases/zero_write_preserves_old/files/test-ciphertext.hbv",
+      "sha256": "7c8988303ee1ab16718a02dd653de90b0ed533ae35099045191fa3a9cafadde8",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/cases/zero_write_preserves_old/files/test-ciphertext.hbv"
+    },
+    {
+      "bytes": 609,
+      "path": "root/classes/android/content/Context.class",
+      "sha256": "b7b616c92045d5d75ee5668edb8b69a7e21d31cdff338429a3ecb1ec7dcaf388",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/android/content/Context.class"
+    },
+    {
+      "bytes": 365,
+      "path": "root/classes/android/net/Uri.class",
+      "sha256": "2d7385f53ea759bf82263993521cb927c87050f240c7d8c2a6627c80c4eaa1b9",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/android/net/Uri.class"
+    },
+    {
+      "bytes": 383,
+      "path": "root/classes/android/os/OperationCanceledException.class",
+      "sha256": "4235ab1283678f9377ab1d8d2601a9b1b7e929c4e00e9c3c35e0f4466e0fdf26",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/android/os/OperationCanceledException.class"
+    },
+    {
+      "bytes": 1403,
+      "path": "root/classes/android/os/ParcelFileDescriptor$AutoCloseInputStream.class",
+      "sha256": "a74333d072311407162d8decb252308dd1325e7a5f9555cbf5c7c6674a9f7258",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/android/os/ParcelFileDescriptor$AutoCloseInputStream.class"
+    },
+    {
+      "bytes": 2018,
+      "path": "root/classes/android/os/ParcelFileDescriptor$AutoCloseOutputStream.class",
+      "sha256": "b8e2469c9a827a1003561dfb9fc7b641a52d3ae89fc7973e679aee8281b4063a",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/android/os/ParcelFileDescriptor$AutoCloseOutputStream.class"
+    },
+    {
+      "bytes": 3961,
+      "path": "root/classes/android/os/ParcelFileDescriptor$FakeChannel.class",
+      "sha256": "55bea356fcf8a3137600b7cff78b4a3f72f55ac0b95d289259e48a561d53a1fb",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/android/os/ParcelFileDescriptor$FakeChannel.class"
+    },
+    {
+      "bytes": 1311,
+      "path": "root/classes/android/os/ParcelFileDescriptor$FakeLock.class",
+      "sha256": "92f732d26562256719450fd0ed439ef40089381fe5efbe6d1c0f232ff0ba43e8",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/android/os/ParcelFileDescriptor$FakeLock.class"
+    },
+    {
+      "bytes": 1705,
+      "path": "root/classes/android/os/ParcelFileDescriptor.class",
+      "sha256": "2f749785c57b0f995689f8ce3787e0d81cb2f4d899c386f2f60273a482985caf",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/android/os/ParcelFileDescriptor.class"
+    },
+    {
+      "bytes": 324,
+      "path": "root/classes/android/os/Process.class",
+      "sha256": "e857f17e3e124b3233d1d8f8008e35bc7afc75c2de78a00d7759998f987ae392",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/android/os/Process.class"
+    },
+    {
+      "bytes": 680,
+      "path": "root/classes/android/system/ErrnoException.class",
+      "sha256": "4dc5d2ac1e4331f58f0cdbc9172820506b97462204096fe815b006138b4b4fae",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/android/system/ErrnoException.class"
+    },
+    {
+      "bytes": 713,
+      "path": "root/classes/android/system/Os$Handle.class",
+      "sha256": "eba937d54d0765a3eb8599694ea4d18237baab74f5f9fff33edb758c571c6805",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/android/system/Os$Handle.class"
+    },
+    {
+      "bytes": 324,
+      "path": "root/classes/android/system/Os$Hook.class",
+      "sha256": "caa9d03fdcc3ecc3eecbfc2828c3e2a8e8e2e3b0c6ba4a2cc4b44ddf4fbb05d0",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/android/system/Os$Hook.class"
+    },
+    {
+      "bytes": 444,
+      "path": "root/classes/android/system/Os$Node.class",
+      "sha256": "2677dcb450731f3a3f4e57b4f39ba1ec9c4a5270787e13463e8297c148549b97",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/android/system/Os$Node.class"
+    },
+    {
+      "bytes": 383,
+      "path": "root/classes/android/system/Os$Position.class",
+      "sha256": "2dbf8d897938faecb623a4540778f57a59fde5719f71f389e9e476f061187da4",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/android/system/Os$Position.class"
+    },
+    {
+      "bytes": 13279,
+      "path": "root/classes/android/system/Os.class",
+      "sha256": "390212121b6a79c80bedbdb6f76dc20fe2b892460871867449a064ba06c18bc0",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/android/system/Os.class"
+    },
+    {
+      "bytes": 1199,
+      "path": "root/classes/android/system/OsConstants.class",
+      "sha256": "f4f1927846ae45d0d42373ee09410501c199657acd60cfddb8d1c36e7758eb8a",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/android/system/OsConstants.class"
+    },
+    {
+      "bytes": 437,
+      "path": "root/classes/android/system/StructStat.class",
+      "sha256": "16693d52379c03f94df525f7bc07f4d8ffef4b7f37dd9666d6adbab168683419",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/android/system/StructStat.class"
+    },
+    {
+      "bytes": 5980,
+      "path": "root/classes/org/heptabao/passkey/core/Codec.class",
+      "sha256": "d8a1b09467c871676fcffd9ea6dd2a41c261b55a6775e2b364169aff5fbf8f6e",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/org/heptabao/passkey/core/Codec.class"
+    },
+    {
+      "bytes": 568,
+      "path": "root/classes/org/heptabao/passkey/core/Failure.class",
+      "sha256": "a2ed7b7156e8a47e9a37f69f0933d799f655900ab70e7ef496011c94338b7cb7",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/org/heptabao/passkey/core/Failure.class"
+    },
+    {
+      "bytes": 823,
+      "path": "root/classes/org/heptabao/passkey/core/Hbv$Unlocked.class",
+      "sha256": "da3903ac28f0efec09a7ece8469d848ebd82343d85bec33d9d92c21f5a7e741f",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/org/heptabao/passkey/core/Hbv$Unlocked.class"
+    },
+    {
+      "bytes": 647,
+      "path": "root/classes/org/heptabao/passkey/core/Hbv.class",
+      "sha256": "d3ea553739a53a3a5f61f8144ba807b2c1011c1171274d4f3e9832fe1f46e72b",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/org/heptabao/passkey/core/Hbv.class"
+    },
+    {
+      "bytes": 10396,
+      "path": "root/classes/org/heptabao/passkey/core/Json.class",
+      "sha256": "0add49fe45fe1e1dca7a3629c4ba1e985dcf2ec3e917f96699f5a4ed9a1d1fcb",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/org/heptabao/passkey/core/Json.class"
+    },
+    {
+      "bytes": 730,
+      "path": "root/classes/org/heptabao/passkey/core/Passkey$Record.class",
+      "sha256": "8b5ddf58297e67eca2e0efc6f0ae848a99a1522ebb0268110c8a4fce37752c63",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/org/heptabao/passkey/core/Passkey$Record.class"
+    },
+    {
+      "bytes": 982,
+      "path": "root/classes/org/heptabao/passkey/core/Passkey.class",
+      "sha256": "af64c7a1b7dde60ac56b30ec3df5dd0fb6f28430241b905f19b5657844c2c1a3",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/org/heptabao/passkey/core/Passkey.class"
+    },
+    {
+      "bytes": 461,
+      "path": "root/classes/org/heptabao/passkey/preview/BuildConfig.class",
+      "sha256": "98152fdd7d82964673db32051eca86c1e2c043d14e5aa4307de47e12de54facf",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/org/heptabao/passkey/preview/BuildConfig.class"
+    },
+    {
+      "bytes": 916,
+      "path": "root/classes/org/heptabao/passkey/preview/DocumentIO.class",
+      "sha256": "b952539c1a022e5455dd9170d9d105424c2276161cf809b7d98f29b0f701b1b3",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/org/heptabao/passkey/preview/DocumentIO.class"
+    },
+    {
+      "bytes": 416,
+      "path": "root/classes/org/heptabao/passkey/preview/Session$Entry.class",
+      "sha256": "40d1253d3aaa51f59b477d48ae96d0e2d323b00dc99213110474633e10704d99",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/org/heptabao/passkey/preview/Session$Entry.class"
+    },
+    {
+      "bytes": 917,
+      "path": "root/classes/org/heptabao/passkey/preview/Session.class",
+      "sha256": "76e33de4b7a73198ff4ac9a878e673f8fd290ff13cbc917c88de531dd681a5f2",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/org/heptabao/passkey/preview/Session.class"
+    },
+    {
+      "bytes": 876,
+      "path": "root/classes/org/heptabao/passkey/preview/StageDiagnostics$Binding.class",
+      "sha256": "d0a493ee31a0ebbb14039a42ef2795a1ecb8fe1908520dc62ab4787f21bef535",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/org/heptabao/passkey/preview/StageDiagnostics$Binding.class"
+    },
+    {
+      "bytes": 1998,
+      "path": "root/classes/org/heptabao/passkey/preview/StageDiagnostics$Errno.class",
+      "sha256": "6fa2fb6eddda5ff61c9e7d092250c8aa0cb711010cde9436921ceacbdd8f5a6b",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/org/heptabao/passkey/preview/StageDiagnostics$Errno.class"
+    },
+    {
+      "bytes": 1637,
+      "path": "root/classes/org/heptabao/passkey/preview/StageDiagnostics$Kind.class",
+      "sha256": "eda69d5578c7bc00c87b9632481e5904f4949357c5ebbae6949445bed837158e",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/org/heptabao/passkey/preview/StageDiagnostics$Kind.class"
+    },
+    {
+      "bytes": 3464,
+      "path": "root/classes/org/heptabao/passkey/preview/StageDiagnostics$Site.class",
+      "sha256": "2d6e858f17c098b368cb49273c02deb3ecf9fe2ce32fdf43651545484adeb2f3",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/org/heptabao/passkey/preview/StageDiagnostics$Site.class"
+    },
+    {
+      "bytes": 7539,
+      "path": "root/classes/org/heptabao/passkey/preview/StageDiagnostics.class",
+      "sha256": "5fa8821950121213f00bbc45c6d15067120030f9f424dfb0a02f5c6b6713fdae",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/org/heptabao/passkey/preview/StageDiagnostics.class"
+    },
+    {
+      "bytes": 312,
+      "path": "root/classes/org/heptabao/passkey/preview/StorageHost$Action.class",
+      "sha256": "e6c21b538660b25e6528b600c8dd694f688f65507621ac3d64f68042c567c20b",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/org/heptabao/passkey/preview/StorageHost$Action.class"
+    },
+    {
+      "bytes": 26433,
+      "path": "root/classes/org/heptabao/passkey/preview/StorageHost.class",
+      "sha256": "176d1fd25403e743388c269a063a6c20f4838d889534e79d47af4634d1d5e6b4",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/org/heptabao/passkey/preview/StorageHost.class"
+    },
+    {
+      "bytes": 905,
+      "path": "root/classes/org/heptabao/passkey/preview/VaultFiles$Descriptor.class",
+      "sha256": "bc0de0b2eb67d64c4e6681e4b440aa69ff6ce901f5f93248f455f8340cc55161",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/org/heptabao/passkey/preview/VaultFiles$Descriptor.class"
+    },
+    {
+      "bytes": 4887,
+      "path": "root/classes/org/heptabao/passkey/preview/VaultFiles$Guard.class",
+      "sha256": "9312b7301c379933b789f68640c5a19a156c21a0a486712b80bcdb667b7b7628",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/org/heptabao/passkey/preview/VaultFiles$Guard.class"
+    },
+    {
+      "bytes": 922,
+      "path": "root/classes/org/heptabao/passkey/preview/VaultFiles$Loaded.class",
+      "sha256": "ea8111fd48d541e0070524d5d000760cb26571aeb426f31a3aa2c4a7a2bc2a56",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/org/heptabao/passkey/preview/VaultFiles$Loaded.class"
+    },
+    {
+      "bytes": 4218,
+      "path": "root/classes/org/heptabao/passkey/preview/VaultFiles$Prepared.class",
+      "sha256": "36755b83135d2f3a1730247aca7b92a63423d82b123bb72c5aa5b742d157dee4",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/org/heptabao/passkey/preview/VaultFiles$Prepared.class"
+    },
+    {
+      "bytes": 2088,
+      "path": "root/classes/org/heptabao/passkey/preview/VaultFiles$Transaction.class",
+      "sha256": "f47f03d307c7504d1b0a458c943b05823fa83dde0f22d28320c3c6cacba4872b",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/org/heptabao/passkey/preview/VaultFiles$Transaction.class"
+    },
+    {
+      "bytes": 15537,
+      "path": "root/classes/org/heptabao/passkey/preview/VaultFiles.class",
+      "sha256": "f1e18c8112a80b9c7299d78548225ea1db8f91af6a05d5b39b1db2d8afe543e5",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/classes/org/heptabao/passkey/preview/VaultFiles.class"
+    },
+    {
+      "bytes": 0,
+      "path": "root/compile.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/compile.stderr.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/compile.stdout.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/compile.stdout.original"
+    },
+    {
+      "bytes": 181,
+      "path": "root/java-version.stderr.original",
+      "sha256": "0fc83381287ccbc8623d257bce2b0d03997ba0e85ff4492d38b409aea37a8aa9",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/java-version.stderr.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/java-version.stdout.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/java-version.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/admission_before_open.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/admission_before_open.stderr.original"
+    },
+    {
+      "bytes": 133,
+      "path": "root/outputs/admission_before_open.stdout.original",
+      "sha256": "dda9a4c3666e0e2d6f4be72101db213441d532a0729e6638b3782403c79273a2",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/admission_before_open.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/constructor_cleanup_unknown_fences.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/constructor_cleanup_unknown_fences.stderr.original"
+    },
+    {
+      "bytes": 146,
+      "path": "root/outputs/constructor_cleanup_unknown_fences.stdout.original",
+      "sha256": "724a4583cbb9e4bca5a388daff3c304c49c7840f0a4a659ef80dfbbced96710e",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/constructor_cleanup_unknown_fences.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/constructor_dup_failure.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/constructor_dup_failure.stderr.original"
+    },
+    {
+      "bytes": 135,
+      "path": "root/outputs/constructor_dup_failure.stdout.original",
+      "sha256": "f3f05574669a5e58f1a13dfff811fe1907af8ff9c8121ec66634eb83dd97d7f7",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/constructor_dup_failure.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/constructor_files_open_failure.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/constructor_files_open_failure.stderr.original"
+    },
+    {
+      "bytes": 142,
+      "path": "root/outputs/constructor_files_open_failure.stdout.original",
+      "sha256": "625b37c92b111be8dc38cfa9f4493e61e7435f6de2abd4a9010a0ab6a7f57d03",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/constructor_files_open_failure.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/constructor_lock_open_failure.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/constructor_lock_open_failure.stderr.original"
+    },
+    {
+      "bytes": 141,
+      "path": "root/outputs/constructor_lock_open_failure.stdout.original",
+      "sha256": "121f0e6ef903df6c357c6417aeb674bd606a05dad986a10668223550a928ce0a",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/constructor_lock_open_failure.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/constructor_lock_stat_failure.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/constructor_lock_stat_failure.stderr.original"
+    },
+    {
+      "bytes": 141,
+      "path": "root/outputs/constructor_lock_stat_failure.stdout.original",
+      "sha256": "2abed0a86fb511ddf1c883cf98407ee4abf7bfbd8f2bedef2455636dd6cb8668",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/constructor_lock_stat_failure.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/create_and_reopen.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/create_and_reopen.stderr.original"
+    },
+    {
+      "bytes": 131,
+      "path": "root/outputs/create_and_reopen.stdout.original",
+      "sha256": "e0d6f3a0486cbf1cad49a6de624043b4647d40d67ea466712f45fd5a3c2fb03a",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/create_and_reopen.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/cross_thread_close_and_old_close.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/cross_thread_close_and_old_close.stderr.original"
+    },
+    {
+      "bytes": 144,
+      "path": "root/outputs/cross_thread_close_and_old_close.stdout.original",
+      "sha256": "4cbf120a890e1a6a5a1c52aa9c4e0e4cf37ded6b9b0bcfaa7e3ed614beb43ad9",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/cross_thread_close_and_old_close.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/fresh_jvm_reopens_prior_fenced_directory.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/fresh_jvm_reopens_prior_fenced_directory.stderr.original"
+    },
+    {
+      "bytes": 152,
+      "path": "root/outputs/fresh_jvm_reopens_prior_fenced_directory.stdout.original",
+      "sha256": "60d337fe99022a6640ddc0cbbe8f44faa3696076046ada16b3b41d359f2bd16f",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/fresh_jvm_reopens_prior_fenced_directory.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/initial_absence_conflict.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/initial_absence_conflict.stderr.original"
+    },
+    {
+      "bytes": 136,
+      "path": "root/outputs/initial_absence_conflict.stdout.original",
+      "sha256": "a226ec502584a445205db3b5a56e5d2415eace3e8e20b82e28111a8184d30f62",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/initial_absence_conflict.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/invalid_read_progress.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/invalid_read_progress.stderr.original"
+    },
+    {
+      "bytes": 133,
+      "path": "root/outputs/invalid_read_progress.stdout.original",
+      "sha256": "fec69860639a12ce4cea86ffdd5d09283818bbce271d4fd9dd4bb75596b4819e",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/invalid_read_progress.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/lock_release_unknown_fences.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/lock_release_unknown_fences.stderr.original"
+    },
+    {
+      "bytes": 139,
+      "path": "root/outputs/lock_release_unknown_fences.stdout.original",
+      "sha256": "963d5364524c39631607e9a4dcca709d4676b431318b274b92e1d9f07f2e4205",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/lock_release_unknown_fences.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/lost_guard_refuses_before_io.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/lost_guard_refuses_before_io.stderr.original"
+    },
+    {
+      "bytes": 140,
+      "path": "root/outputs/lost_guard_refuses_before_io.stdout.original",
+      "sha256": "837f412c210ea81a88b256ca0165e7a20ad52cacf0d772d0a7f21160cf8ed760",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/lost_guard_refuses_before_io.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/pfd_close_unknown_fences.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/pfd_close_unknown_fences.stderr.original"
+    },
+    {
+      "bytes": 136,
+      "path": "root/outputs/pfd_close_unknown_fences.stdout.original",
+      "sha256": "b4aab917f3610c654a572b749a193a70f50696f54fd42985ff8735f2af717d7f",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/pfd_close_unknown_fences.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/postrename_directory_close_unknown.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/postrename_directory_close_unknown.stderr.original"
+    },
+    {
+      "bytes": 148,
+      "path": "root/outputs/postrename_directory_close_unknown.stdout.original",
+      "sha256": "8d3aa644130f91e8d6de52fad8a6b9e890cdd9feb189dd6cc3c860490b8f19fd",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/postrename_directory_close_unknown.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/postrename_directory_sync_unknown.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/postrename_directory_sync_unknown.stderr.original"
+    },
+    {
+      "bytes": 147,
+      "path": "root/outputs/postrename_directory_sync_unknown.stdout.original",
+      "sha256": "577f5ce60725e05006a779066f2ef2bd1a68b69f2357157dc9b488473e5ef0b1",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/postrename_directory_sync_unknown.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/postrename_read_close_unknown.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/postrename_read_close_unknown.stderr.original"
+    },
+    {
+      "bytes": 143,
+      "path": "root/outputs/postrename_read_close_unknown.stdout.original",
+      "sha256": "fddccc830a1ab0ddadaa77707ae911fa467359946972c41dfc40ceeb2e51c2f1",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/postrename_read_close_unknown.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/postrename_read_unknown.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/postrename_read_unknown.stderr.original"
+    },
+    {
+      "bytes": 137,
+      "path": "root/outputs/postrename_read_unknown.stdout.original",
+      "sha256": "3909c4b246b4507fd4f36edf8cc2f6be8164263e64f7cc59b68d11e5b7741cb8",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/postrename_read_unknown.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/primary_failure_survives_close_failure.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/primary_failure_survives_close_failure.stderr.original"
+    },
+    {
+      "bytes": 150,
+      "path": "root/outputs/primary_failure_survives_close_failure.stdout.original",
+      "sha256": "5c86c3fc17868d54bd0d0e3727649cc07f9d0072a22a3e5bc566303a46bc8fc3",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/primary_failure_survives_close_failure.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/published_lock_release_unknown.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/published_lock_release_unknown.stderr.original"
+    },
+    {
+      "bytes": 142,
+      "path": "root/outputs/published_lock_release_unknown.stdout.original",
+      "sha256": "99699cc8819827018b0397c605a368f215fd2c2f709e5428d57d8c0068518220",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/published_lock_release_unknown.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/published_pfd_close_unknown.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/published_pfd_close_unknown.stderr.original"
+    },
+    {
+      "bytes": 139,
+      "path": "root/outputs/published_pfd_close_unknown.stdout.original",
+      "sha256": "ed66778d50c82a904a93414a57fefda264c2a9c5e821586f569007441cbc8d30",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/published_pfd_close_unknown.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/raw_lock_close_unknown_fences.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/raw_lock_close_unknown_fences.stderr.original"
+    },
+    {
+      "bytes": 141,
+      "path": "root/outputs/raw_lock_close_unknown_fences.stdout.original",
+      "sha256": "e09467b6bc5c02ab86b6a75fb809d848243522252c128c4ade47c4048d353b8b",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/raw_lock_close_unknown_fences.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/rename_failure_preserves_old.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/rename_failure_preserves_old.stderr.original"
+    },
+    {
+      "bytes": 140,
+      "path": "root/outputs/rename_failure_preserves_old.stdout.original",
+      "sha256": "4b683c4c58dee5f13160d26ef64f70915194c5c37c3e25f1d50d0873082f958a",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/rename_failure_preserves_old.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/second_cas_conflict.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/second_cas_conflict.stderr.original"
+    },
+    {
+      "bytes": 131,
+      "path": "root/outputs/second_cas_conflict.stdout.original",
+      "sha256": "46cbfa05b0a2a26cb660f5d4603966553e70294ec121a77870c6576ab394521b",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/second_cas_conflict.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/short_reads.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/short_reads.stderr.original"
+    },
+    {
+      "bytes": 123,
+      "path": "root/outputs/short_reads.stdout.original",
+      "sha256": "2717ae730bb812bd05ea6849880a57f8e5229d9061dcb8f9b182c23a85297a40",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/short_reads.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/short_writes.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/short_writes.stderr.original"
+    },
+    {
+      "bytes": 124,
+      "path": "root/outputs/short_writes.stdout.original",
+      "sha256": "34044d15be2d5f2d8f52864f99fbe6ce380cf37c97a70dcc7db683f191f93e70",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/short_writes.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/stream_constructor_failure_cleans.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/stream_constructor_failure_cleans.stderr.original"
+    },
+    {
+      "bytes": 145,
+      "path": "root/outputs/stream_constructor_failure_cleans.stdout.original",
+      "sha256": "9cda251d7b7943931f02bf0e987f01b5f5a6bfa8d9979dd91f6b717426bd8f43",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/stream_constructor_failure_cleans.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/temporary_cleanup_error_keeps_primary.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/temporary_cleanup_error_keeps_primary.stderr.original"
+    },
+    {
+      "bytes": 149,
+      "path": "root/outputs/temporary_cleanup_error_keeps_primary.stdout.original",
+      "sha256": "ce93648ef5454ba962e5ba4c1f381c58948e5df8451b5f0355eb35510fdde165",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/temporary_cleanup_error_keeps_primary.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/transaction_unknown_requires_reopen.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/transaction_unknown_requires_reopen.stderr.original"
+    },
+    {
+      "bytes": 149,
+      "path": "root/outputs/transaction_unknown_requires_reopen.stdout.original",
+      "sha256": "caacdde7d0087fe74c80a68a65935ae2d49f2924f7b8e7a1b31d3ac14b01abd0",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/transaction_unknown_requires_reopen.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/trylock_io_cleans.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/trylock_io_cleans.stderr.original"
+    },
+    {
+      "bytes": 129,
+      "path": "root/outputs/trylock_io_cleans.stdout.original",
+      "sha256": "223a15538208ddba85e59a765314de9c26c9884c84d47608aced999962dcd485",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/trylock_io_cleans.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/trylock_null_cleans.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/trylock_null_cleans.stderr.original"
+    },
+    {
+      "bytes": 131,
+      "path": "root/outputs/trylock_null_cleans.stdout.original",
+      "sha256": "bc3174b9c1dd021f76831c113d8b34fb612b5b250ade26532754484f1f607740",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/trylock_null_cleans.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/trylock_overlap_cleans.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/trylock_overlap_cleans.stderr.original"
+    },
+    {
+      "bytes": 134,
+      "path": "root/outputs/trylock_overlap_cleans.stdout.original",
+      "sha256": "4a8c37f1474e62ba702c80b4d184c8816e07401bd12bdae1ffb99618ac923982",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/trylock_overlap_cleans.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/unowned_temp_collision_preserved.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/unowned_temp_collision_preserved.stderr.original"
+    },
+    {
+      "bytes": 144,
+      "path": "root/outputs/unowned_temp_collision_preserved.stdout.original",
+      "sha256": "e7a9a40b54f1966cb6bcfbb745e6fa3819a088e7057819294c29216c4164eab7",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/unowned_temp_collision_preserved.stdout.original"
+    },
+    {
+      "bytes": 0,
+      "path": "root/outputs/zero_write_preserves_old.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/zero_write_preserves_old.stderr.original"
+    },
+    {
+      "bytes": 136,
+      "path": "root/outputs/zero_write_preserves_old.stdout.original",
+      "sha256": "a99b240a02ec3b706188e180e2fde08c251548234cbe30e08f2da3f8e2b58cd8",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/outputs/zero_write_preserves_old.stdout.original"
+    },
+    {
+      "bytes": 37792,
+      "path": "root/receipt.public.json",
+      "sha256": "b7586f053db9ea4bfccfa236e7e4f6fe93159abbccb8ee8540c3a6108f3db5c3",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/receipt.public.json"
+    },
+    {
+      "bytes": 250,
+      "path": "root/src/android/content/Context.java",
+      "sha256": "4942bc4a113a0917265b31025944d80f3bdcd1861fe830189fa3b507b4f149ef",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/src/android/content/Context.java"
+    },
+    {
+      "bytes": 91,
+      "path": "root/src/android/net/Uri.java",
+      "sha256": "11c433737104aee40388d1dd10bc79231c539c3c9bed63182c02e898c4f3455e",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/src/android/net/Uri.java"
+    },
+    {
+      "bytes": 157,
+      "path": "root/src/android/os/OperationCanceledException.java",
+      "sha256": "865ee067835c594c758293476683f087577f00055c0a391d0844ef5c45ce3f1a",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/src/android/os/OperationCanceledException.java"
+    },
+    {
+      "bytes": 5265,
+      "path": "root/src/android/os/ParcelFileDescriptor.java",
+      "sha256": "e93cb52b3a2472f692161d09dc0dd670ab1e2f964dc2c6643b2003b80d328bf8",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/src/android/os/ParcelFileDescriptor.java"
+    },
+    {
+      "bytes": 90,
+      "path": "root/src/android/os/Process.java",
+      "sha256": "d4f4898173dcf19f53477ecb3555fa6b8e1a1c40d04e7f833239c757c3f5a9eb",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/src/android/os/Process.java"
+    },
+    {
+      "bytes": 306,
+      "path": "root/src/android/system/ErrnoException.java",
+      "sha256": "b426244d681a3bc0082fbdeca22898ed2afb4e6d0233393403bd1ddb5a8bb9bd",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/src/android/system/ErrnoException.java"
+    },
+    {
+      "bytes": 8737,
+      "path": "root/src/android/system/Os.java",
+      "sha256": "64fca332be4374f0e3a8e4c7547e0f7adbbbe3082ee8309931f97346862f495e",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/src/android/system/Os.java"
+    },
+    {
+      "bytes": 517,
+      "path": "root/src/android/system/OsConstants.java",
+      "sha256": "bd060941116686555a7b34aa9fac55af2d251f54b0f2a536cf842427e9e18557",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/src/android/system/OsConstants.java"
+    },
+    {
+      "bytes": 151,
+      "path": "root/src/android/system/StructStat.java",
+      "sha256": "b09322fdb569c332b4f973a3b9fade7ada2d326aea8e5c1354f36e7fd28bb15b",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/src/android/system/StructStat.java"
+    },
+    {
+      "bytes": 4534,
+      "path": "root/src/org/heptabao/passkey/core/Codec.java",
+      "sha256": "a1a80c446a438e532f08a190a0208a965290b6f037a11350e75b41f0c006ca3d",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/src/org/heptabao/passkey/core/Codec.java"
+    },
+    {
+      "bytes": 399,
+      "path": "root/src/org/heptabao/passkey/core/Failure.java",
+      "sha256": "aa14de964dc69e63089ba314cd7611bf7ab5c80405f40d8e7cea0efa15a5b39d",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/src/org/heptabao/passkey/core/Failure.java"
+    },
+    {
+      "bytes": 588,
+      "path": "root/src/org/heptabao/passkey/core/Hbv.java",
+      "sha256": "317bb062dd1fc75852b97dbb11e0fea7607574536b5f61fbc913fdd50c44d788",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/src/org/heptabao/passkey/core/Hbv.java"
+    },
+    {
+      "bytes": 10099,
+      "path": "root/src/org/heptabao/passkey/core/Json.java",
+      "sha256": "2c06fa99b7c66f103d2bfca2aad73375fe2da3783c01a72cf7110a1670be4c84",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/src/org/heptabao/passkey/core/Json.java"
+    },
+    {
+      "bytes": 358,
+      "path": "root/src/org/heptabao/passkey/core/Passkey.java",
+      "sha256": "1f28b87bfea903ae33eec79ea40a5140c7d722695d4249fad0810bb76f161c26",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/src/org/heptabao/passkey/core/Passkey.java"
+    },
+    {
+      "bytes": 172,
+      "path": "root/src/org/heptabao/passkey/preview/BuildConfig.java",
+      "sha256": "bcbc54ff7e577076f262de28163d6358f32ab7b50bfae3bc0e12effe3935d718",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/src/org/heptabao/passkey/preview/BuildConfig.java"
+    },
+    {
+      "bytes": 334,
+      "path": "root/src/org/heptabao/passkey/preview/DocumentIO.java",
+      "sha256": "34fbf509acc511387438b4a1c38a5791245f9f944caf35da1affbe0653afb797",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/src/org/heptabao/passkey/preview/DocumentIO.java"
+    },
+    {
+      "bytes": 249,
+      "path": "root/src/org/heptabao/passkey/preview/Session.java",
+      "sha256": "2fb74a2f7f2f98cec1ea3ba27067a75f9c391fcd76db32f44874f25bd4104b8d",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/src/org/heptabao/passkey/preview/Session.java"
+    },
+    {
+      "bytes": 8847,
+      "path": "root/src/org/heptabao/passkey/preview/StageDiagnostics.java",
+      "sha256": "1791431a579b62c66c31ae64e7749b5074ff1a3cc57f723acd708fb43c15b389",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/src/org/heptabao/passkey/preview/StageDiagnostics.java"
+    },
+    {
+      "bytes": 16592,
+      "path": "root/src/org/heptabao/passkey/preview/StorageHost.java",
+      "sha256": "fb8e9b69cb532c544ac0e5c72bfe78137eb6ea7aaf170033c75362a7a93db0de",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/src/org/heptabao/passkey/preview/StorageHost.java"
+    },
+    {
+      "bytes": 22729,
+      "path": "root/src/org/heptabao/passkey/preview/VaultFiles.java",
+      "sha256": "f19b24a8091bac11c92354922d5fe0db1d2d2d59d1afbc511387f2a9d19c2012",
+      "source": "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1/src/org/heptabao/passkey/preview/VaultFiles.java"
+    }
+  ],
+  "production_qualified": false,
+  "schema": 1,
+  "scope": "unchanged product VaultFiles/StageDiagnostics with explicit Android API fault mocks; 33 initial and 34 final internal checks plus root 34 rerun; no ART/OEM/crypto qualification",
+  "synthetic_only": true
+}

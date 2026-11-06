@@ -11,15 +11,13 @@ import android.system.StructStat;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import org.heptabao.passkey.core.Codec;
 import org.heptabao.passkey.core.Failure;
 import org.heptabao.passkey.core.Hbv;
@@ -28,6 +26,35 @@ import org.heptabao.passkey.core.Passkey;
 
 /** Android sandbox storage. One cooperative process lock, descriptor checks and ciphertext CAS. */
 final class VaultFiles {
+    private static final AtomicReference<Object> ADMISSION = new AtomicReference<>();
+
+    /** Sole owner of one Os.open descriptor; close is attempted once only. */
+    private static final class Descriptor implements AutoCloseable {
+        final FileDescriptor fd;
+        private boolean closed;
+        boolean closeFailed;
+        Descriptor(FileDescriptor fd) { this.fd = fd; }
+        @Override public void close() throws Exception {
+            if (closed) return;
+            closed = true;
+            try { Os.close(fd); }
+            catch (Exception error) { closeFailed = true; throw error; }
+        }
+    }
+    private static Exception closeKeeping(Exception primary, AutoCloseable resource) {
+        if (resource == null) return primary;
+        try { resource.close(); }
+        catch (Exception error) {
+            if (primary == null) return error;
+            if (primary != error) primary.addSuppressed(error);
+        }
+        return primary;
+    }
+    private static Failure unknown(Exception error) {
+        Failure failure = new Failure("save_outcome_unknown");
+        failure.addSuppressed(error);
+        return failure;
+    }
     static final class Loaded {
         final String store;
         final List<Session.Entry> labels;
@@ -52,9 +79,9 @@ final class VaultFiles {
         // O_DIRECTORY is not a public SDK 34 constant. Refuse symlinks, make
         // special-file opens nonblocking, and verify the opened inode is the
         // already-checked directory before any permission mutation.
-        FileDescriptor fd = Os.open(files.getPath(), OsConstants.O_RDONLY | OsConstants.O_NONBLOCK
-            | OsConstants.O_NOFOLLOW | OsConstants.O_CLOEXEC, 0);
-        try {
+        try (Descriptor owner = new Descriptor(Os.open(files.getPath(), OsConstants.O_RDONLY | OsConstants.O_NONBLOCK
+                | OsConstants.O_NOFOLLOW | OsConstants.O_CLOEXEC, 0))) {
+            FileDescriptor fd = owner.fd;
             StructStat before = Os.fstat(fd);
             int mode = before.st_mode & 07777;
             // Android ContextImpl creates its own files directory with 0771.
@@ -74,7 +101,7 @@ final class VaultFiles {
                 && (named.st_mode & 07777) == 0700 && named.st_dev == after.st_dev
                 && named.st_ino == after.st_ino, "unsafe_directory");
             return files;
-        } finally { Os.close(fd); }
+        }
     }
     private static void regular(StructStat stat, int limit) throws Failure {
         Failure.require(OsConstants.S_ISREG(stat.st_mode) && stat.st_uid == Process.myUid()
@@ -82,12 +109,13 @@ final class VaultFiles {
             && stat.st_size >= 0 && stat.st_size <= limit, "unsafe_file");
     }
     private static byte[] read(File path, int limit) throws Exception {
-        FileDescriptor fd = Os.open(path.getPath(), OsConstants.O_RDONLY | OsConstants.O_NOFOLLOW | OsConstants.O_CLOEXEC, 0);
-        try (FileInputStream stream = new FileInputStream(fd)) {
+        try (Descriptor owner = new Descriptor(Os.open(path.getPath(), OsConstants.O_RDONLY | OsConstants.O_NOFOLLOW | OsConstants.O_CLOEXEC, 0))) {
+            FileDescriptor fd = owner.fd;
             StructStat before = Os.fstat(fd); regular(before, limit);
             ByteArrayOutputStream bytes = new ByteArrayOutputStream((int)before.st_size);
             byte[] buffer = new byte[8192]; int count;
-            while ((count = stream.read(buffer)) != -1) {
+            while ((count = Os.read(fd, buffer, 0, buffer.length)) != 0) {
+                Failure.require(count > 0 && count <= buffer.length, "read_incomplete");
                 Failure.require(bytes.size() + count <= limit, "input_limit"); bytes.write(buffer, 0, count);
             }
             StructStat after = Os.fstat(fd); regular(after, limit);
@@ -101,63 +129,123 @@ final class VaultFiles {
         catch (ErrnoException error) { if (error.errno == OsConstants.ENOENT) return null; throw error; }
     }
     private static void syncDirectory(File path) throws Exception {
-        FileDescriptor fd = Os.open(path.getPath(), OsConstants.O_RDONLY | OsConstants.O_NOFOLLOW | OsConstants.O_CLOEXEC, 0);
-        try {
+        try (Descriptor owner = new Descriptor(Os.open(path.getPath(), OsConstants.O_RDONLY | OsConstants.O_NOFOLLOW | OsConstants.O_CLOEXEC, 0))) {
+            FileDescriptor fd = owner.fd;
             StructStat stat = Os.fstat(fd);
             Failure.require(OsConstants.S_ISDIR(stat.st_mode) && stat.st_uid == Process.myUid() && (stat.st_mode & 0777) == 0700, "unsafe_directory");
             Os.fsync(fd);
-        } finally { Os.close(fd); }
+        }
     }
-    private static void publish(File target, byte[] value, byte[] expectedHash, int limit) throws Exception {
+    private static void publish(Guard guard, File target, byte[] value, byte[] expectedHash, int limit) throws Exception {
+        guard.requireHeld();
         Failure.require(value.length <= limit, "input_limit");
         File parent = target.getParentFile(); directory(parent, false);
         byte[] prior = maybeRead(target, limit);
         Failure.require(expectedHash == null ? prior == null : prior != null && MessageDigest.isEqual(expectedHash, Codec.sha(prior)), "conflict");
         File temporary = new File(parent, ".pending-" + Codec.hex(Codec.random(16)));
         boolean visible = false;
+        boolean temporaryOwned = false;
+        Exception failure = null;
         try {
-            FileDescriptor fd = Os.open(temporary.getPath(), OsConstants.O_WRONLY | OsConstants.O_CREAT | OsConstants.O_EXCL
-                | OsConstants.O_NOFOLLOW | OsConstants.O_CLOEXEC, 0600);
-            try (FileOutputStream output = new FileOutputStream(fd)) {
-                Os.fchmod(fd, 0600); regular(Os.fstat(fd), limit); output.write(value); output.flush(); Os.fsync(fd);
+            try (Descriptor owner = new Descriptor(Os.open(temporary.getPath(), OsConstants.O_WRONLY | OsConstants.O_CREAT | OsConstants.O_EXCL
+                    | OsConstants.O_NOFOLLOW | OsConstants.O_CLOEXEC, 0600))) {
+                temporaryOwned = true;
+                FileDescriptor fd = owner.fd;
+                Os.fchmod(fd, 0600); regular(Os.fstat(fd), limit);
+                for (int offset = 0; offset < value.length;) {
+                    int count = Os.write(fd, value, offset, value.length - offset);
+                    Failure.require(count > 0 && count <= value.length - offset, "write_incomplete");
+                    offset += count;
+                }
+                Os.fsync(fd);
             }
+            guard.requireHeld();
             byte[] current = maybeRead(target, limit);
             Failure.require(expectedHash == null ? current == null : current != null && MessageDigest.isEqual(expectedHash, Codec.sha(current)), "conflict");
-            if (expectedHash == null) {
-                Os.link(temporary.getPath(), target.getPath()); visible = true;
-                Os.remove(temporary.getPath());
-            } else { Os.rename(temporary.getPath(), target.getPath()); visible = true; }
+            // The same Guard covers both CAS checks and rename. Android denies
+            // app hard links. This is a cooperating-writer protocol, not a
+            // kernel NOREPLACE guarantee against unrelated same-UID writers.
+            guard.requireHeld();
+            Os.rename(temporary.getPath(), target.getPath());
+            visible = true; temporaryOwned = false; guard.published = true;
             syncDirectory(parent);
             Failure.require(MessageDigest.isEqual(Codec.sha(value), Codec.sha(read(target, limit))), "save_outcome_unknown");
         } catch (Exception error) {
-            if (visible) throw new Failure("save_outcome_unknown");
-            throw error;
+            failure = visible ? unknown(error) : error;
+            throw failure;
         } finally {
-            try { Os.remove(temporary.getPath()); } catch (ErrnoException ignored) { /* Own temporary only. */ }
+            if (temporaryOwned) {
+                try { Os.remove(temporary.getPath()); }
+                catch (ErrnoException error) {
+                    if (error.errno != OsConstants.ENOENT) {
+                        if (failure != null) { if (failure != error) failure.addSuppressed(error); }
+                        else throw visible ? unknown(error) : error;
+                    }
+                }
+            }
         }
     }
     private static final class Guard implements AutoCloseable {
         final File root;
-        final FileOutputStream stream;
+        final ParcelFileDescriptor descriptor;
+        final ParcelFileDescriptor.AutoCloseOutputStream stream;
         final FileLock lock;
+        private final Object admission = new Object();
+        private final AtomicBoolean closed = new AtomicBoolean();
+        private volatile boolean published;
         Guard(Context context) throws Exception {
-            File files = privateFiles(context);
-            root = new File(files, "passkey-stores"); directory(root, true); syncDirectory(files);
-            FileDescriptor fd = Os.open(new File(root, "store.lock").getPath(), OsConstants.O_RDWR | OsConstants.O_CREAT
-                | OsConstants.O_NOFOLLOW | OsConstants.O_CLOEXEC, 0600);
-            FileOutputStream opened = new FileOutputStream(fd); FileLock acquired = null;
+            // Closing any descriptor for this inode may release this process's
+            // fcntl locks. Reject another local Guard before it opens the file.
+            Failure.require(ADMISSION.compareAndSet(null, admission), "busy");
+            Descriptor raw = null;
+            ParcelFileDescriptor owned = null;
+            ParcelFileDescriptor.AutoCloseOutputStream opened = null;
+            FileLock acquired = null;
             try {
-                regular(Os.fstat(fd), 0);
+                File files = privateFiles(context);
+                root = new File(files, "passkey-stores"); directory(root, true); syncDirectory(files);
+                raw = new Descriptor(Os.open(new File(root, "store.lock").getPath(), OsConstants.O_RDWR | OsConstants.O_CREAT
+                    | OsConstants.O_NOFOLLOW | OsConstants.O_CLOEXEC, 0600));
+                try (Descriptor closing = raw) {
+                    regular(Os.fstat(raw.fd), 0);
+                    owned = ParcelFileDescriptor.dup(raw.fd);
+                } // Close the original before obtaining any lock on the duplicate.
+                opened = new ParcelFileDescriptor.AutoCloseOutputStream(owned);
                 try { acquired = opened.getChannel().tryLock(); }
                 catch (OverlappingFileLockException error) { throw new Failure("busy"); }
-                Failure.require(acquired != null, "busy"); stream = opened; lock = acquired;
-            } catch (Exception error) { if (acquired != null) acquired.release(); opened.close(); throw error; }
+                Failure.require(acquired != null, "busy");
+                descriptor = owned; stream = opened; lock = acquired;
+            } catch (Exception error) {
+                Exception cleanup = closeKeeping(null, acquired);
+                cleanup = closeKeeping(cleanup, opened);
+                cleanup = closeKeeping(cleanup, owned);
+                if (cleanup != null && cleanup != error) error.addSuppressed(cleanup);
+                // An uncertain close fences this process. Do not open the
+                // lockfile again until a fresh process can establish ownership.
+                if (cleanup == null && (raw == null || !raw.closeFailed)) ADMISSION.compareAndSet(admission, null);
+                throw error;
+            }
+        }
+        void requireHeld() throws Failure {
+            Failure.require(!closed.get() && ADMISSION.get() == admission && lock.isValid()
+                && stream.getChannel().isOpen(), "storage_lock_lost");
         }
         String current() throws Exception {
+            requireHeld();
             String name = new String(read(new File(root, "current"), 128), StandardCharsets.US_ASCII);
             Failure.require(name.matches("store-[0-9a-f]{32}"), "invalid_store_pointer"); directory(new File(root, name), false); return name;
         }
-        @Override public void close() throws Exception { try { lock.release(); } finally { stream.close(); } }
+        @Override public void close() throws Exception {
+            if (!closed.compareAndSet(false, true)) return;
+            Exception error = closeKeeping(null, lock);
+            error = closeKeeping(error, stream);
+            error = closeKeeping(error, descriptor);
+            if (error != null) throw published ? unknown(error) : error;
+            if (!ADMISSION.compareAndSet(admission, null)) {
+                Failure failure = new Failure("storage_lock_lost");
+                throw published ? unknown(failure) : failure;
+            }
+        }
     }
     static final class Transaction implements AutoCloseable {
         private final Guard guard;
@@ -168,7 +256,7 @@ final class VaultFiles {
         void commit(Hbv.Unlocked vault) throws Exception {
             Failure.require(!attempted, "outcome_requires_reopen"); attempted = true;
             Failure.require(guard.current().equals(store) && MessageDigest.isEqual(Codec.sha(ciphertext), vault.expectedFileSha256), "conflict");
-            publish(new File(new File(guard.root, store), "vault.hbv"), vault.encryptNext(), vault.expectedFileSha256, Json.MAX_BYTES);
+            publish(guard, new File(new File(guard.root, store), "vault.hbv"), vault.encryptNext(), vault.expectedFileSha256, Json.MAX_BYTES);
         }
         @Override public void close() throws Exception { guard.close(); }
     }
@@ -178,7 +266,7 @@ final class VaultFiles {
             String store = guard.current(); Failure.require(expectedStore == null || expectedStore.equals(store), "store_changed");
             byte[] ciphertext = read(new File(new File(guard.root, store), "vault.hbv"), Json.MAX_BYTES);
             return new Transaction(guard, store, ciphertext);
-        } catch (Exception error) { guard.close(); throw error; }
+        } catch (Exception error) { throw closeKeeping(error, guard); }
     }
     static final class Prepared implements AutoCloseable {
         private final Guard guard;
@@ -197,13 +285,14 @@ final class VaultFiles {
         }
         // Worker checks logical revocation before and after this durable action.
         Loaded publish() throws Exception {
+            guard.requireHeld();
             Failure.require(!used, "request_consumed"); used = true;
             if (action.equals("import")) {
                 String freshName = "store-" + Codec.hex(Codec.random(16)); File fresh = new File(guard.root, freshName);
-                directory(fresh, true); VaultFiles.publish(new File(fresh, "vault.hbv"), ciphertext, null, Json.MAX_BYTES);
+                directory(fresh, true); VaultFiles.publish(guard, new File(fresh, "vault.hbv"), ciphertext, null, Json.MAX_BYTES);
                 syncDirectory(guard.root);
                 File pointer = new File(guard.root, "current"); byte[] prior = maybeRead(pointer, 128);
-                VaultFiles.publish(pointer, freshName.getBytes(StandardCharsets.US_ASCII), prior == null ? null : Codec.sha(prior), 128);
+                VaultFiles.publish(guard, pointer, freshName.getBytes(StandardCharsets.US_ASCII), prior == null ? null : Codec.sha(prior), 128);
                 return new Loaded(freshName, labels);
             }
             Failure.require(guard.current().equals(store), "store_changed");
@@ -211,7 +300,7 @@ final class VaultFiles {
             if (action.equals("backup")) {
                 File exports = new File(context.getFilesDir(), "encrypted-backups"); directory(exports, true); syncDirectory(context.getFilesDir());
                 backupName = "backup-r" + revision + "-" + Codec.hex(Codec.random(8)) + ".hbv";
-                VaultFiles.publish(new File(exports, backupName), ciphertext, null, Json.MAX_BYTES);
+                VaultFiles.publish(guard, new File(exports, backupName), ciphertext, null, Json.MAX_BYTES);
             }
             return new Loaded(store, labels);
         }
@@ -235,7 +324,7 @@ final class VaultFiles {
                 }
                 return new Prepared(guard, context, action, store, encrypted, Session.labels(vault), vault.revision());
             }
-        } catch (Exception error) { guard.close(); throw error; }
+        } catch (Exception error) { throw closeKeeping(error, guard); }
     }
     static String stage(Context context, Uri uri, DocumentIO operation) throws Exception {
         try {
@@ -243,7 +332,7 @@ final class VaultFiles {
             try (Guard guard = new Guard(context)) {
                 operation.check();
                 File target = new File(context.getFilesDir(), "incoming.hbv"); byte[] old = maybeRead(target, Json.MAX_BYTES);
-                publish(target, incoming, old == null ? null : Codec.sha(old), Json.MAX_BYTES);
+                publish(guard, target, incoming, old == null ? null : Codec.sha(old), Json.MAX_BYTES);
                 operation.check(); return Codec.hex(Codec.sha(incoming));
             }
         } catch (Exception error) { throw StageDiagnostics.failure(error); }

@@ -17,25 +17,24 @@ import org.heptabao.passkey.core.Failure;
  * Existing Failure instances retain their identity and code.
  */
 final class StageDiagnostics {
-    static final String VAULT_SOURCE_SHA256 = "2b21338fe7086ac034f04441b521ddf11ed9d071e0c6aa4e64b34cd0dd7fcbc9";
+    static final String VAULT_SOURCE_SHA256 = "f19b24a8091bac11c92354922d5fe0db1d2d2d59d1afbc511387f2a9d19c2012";
     static final String DOCUMENT_SOURCE_SHA256 = "8a08b26986febb451a0416559ce43949e537e1649cd6d536754c45fddb49fa2f";
     private static final String PREFIX = "org.heptabao.passkey.";
     private static final String VAULT = PREFIX + "preview.VaultFiles";
     private static final String GUARD = VAULT + "$Guard";
+    private static final String DESCRIPTOR = VAULT + "$Descriptor";
     private static final String DOCUMENT = PREFIX + "preview.DocumentIO";
 
     private enum Site {
         UNKNOWN, SAF_PROVIDER_RESOLVE, SAF_OPEN, SAF_OPEN_CLEANUP,
-        STORAGE_MKDIR, STORAGE_DIRECTORY_STAT,
+        RAW_CLOSE, RESOURCE_CLOSE, STORAGE_MKDIR, STORAGE_DIRECTORY_STAT,
         FILES_LSTAT, FILES_OPEN, FILES_FSTAT_BEFORE, FILES_CHMOD,
-        FILES_FSTAT_AFTER, FILES_FSYNC, FILES_LSTAT_AFTER, FILES_CLOSE,
-        LOCAL_READ_OPEN, LOCAL_READ_RESOURCE, LOCAL_READ_FSTAT_BEFORE,
-        LOCAL_READ_BYTES, LOCAL_READ_FSTAT_AFTER,
-        DIRECTORY_OPEN, DIRECTORY_FSTAT, DIRECTORY_FSYNC, DIRECTORY_CLOSE,
-        PUBLISH_TEMP_OPEN, PUBLISH_TEMP_RESOURCE, PUBLISH_WRITE_SYNC,
-        PUBLISH_LINK, PUBLISH_RENAME, PUBLISH_TEMP_CLEANUP,
-        LOCK_OPEN, LOCK_STREAM_SETUP, LOCK_FSTAT, LOCK_TRY,
-        LOCK_CONSTRUCTION_CLEANUP, LOCK_RELEASE_CLOSE,
+        FILES_FSTAT_AFTER, FILES_FSYNC, FILES_LSTAT_AFTER,
+        LOCAL_READ_OPEN, LOCAL_READ_FSTAT_BEFORE, LOCAL_READ_BYTES, LOCAL_READ_FSTAT_AFTER,
+        DIRECTORY_OPEN, DIRECTORY_FSTAT, DIRECTORY_FSYNC,
+        PUBLISH_TEMP_OPEN, PUBLISH_CHMOD_STAT, PUBLISH_WRITE, PUBLISH_FSYNC,
+        PUBLISH_RENAME, PUBLISH_TEMP_CLEANUP,
+        LOCK_OPEN, LOCK_FSTAT, LOCK_DUP, LOCK_STREAM_SETUP, LOCK_TRY,
         SAF_RESOURCE_SETUP_CLOSE, SAF_FSTAT, SAF_READ, SAF_RESOURCE_CLOSE_RELEASE
     }
     private enum Kind { ERRNO, FILE_NOT_FOUND, CANCELLED, IO, SECURITY, ARGUMENT, STATE, OTHER }
@@ -58,44 +57,42 @@ final class StageDiagnostics {
         bind(DOCUMENT, "open", 54, Site.SAF_PROVIDER_RESOLVE), // resolveContentProvider
         bind(DOCUMENT, "open", 58, Site.SAF_OPEN), // openFileDescriptor
         bind(DOCUMENT, "open", 62, Site.SAF_OPEN_CLEANUP), // opened.close()
-        bind(VAULT, "directory", 38, Site.STORAGE_MKDIR), // Os.mkdir
-        bind(VAULT, "directory", 41, Site.STORAGE_DIRECTORY_STAT), // Os.lstat
-        bind(VAULT, "privateFiles", 48, Site.FILES_LSTAT), // Os.lstat
-        bind(VAULT, "privateFiles", 55, Site.FILES_OPEN), // Os.open
-        bind(VAULT, "privateFiles", 56, Site.FILES_OPEN), // OsConstants.O_NOFOLLOW
-        bind(VAULT, "privateFiles", 58, Site.FILES_FSTAT_BEFORE), // Os.fstat
-        bind(VAULT, "privateFiles", 66, Site.FILES_CHMOD), // Os.fchmod
-        bind(VAULT, "privateFiles", 67, Site.FILES_FSTAT_AFTER), // Os.fstat
-        bind(VAULT, "privateFiles", 71, Site.FILES_FSYNC), // Os.fsync
-        bind(VAULT, "privateFiles", 72, Site.FILES_LSTAT_AFTER), // Os.lstat
-        bind(VAULT, "privateFiles", 77, Site.FILES_CLOSE), // Os.close
-        bind(VAULT, "read", 85, Site.LOCAL_READ_OPEN), // Os.open
-        bind(VAULT, "read", 86, Site.LOCAL_READ_RESOURCE), // new FileInputStream
-        bind(VAULT, "read", 87, Site.LOCAL_READ_FSTAT_BEFORE), // Os.fstat
-        bind(VAULT, "read", 90, Site.LOCAL_READ_BYTES), // stream.read
-        bind(VAULT, "read", 93, Site.LOCAL_READ_FSTAT_AFTER), // Os.fstat
-        bind(VAULT, "syncDirectory", 104, Site.DIRECTORY_OPEN), // Os.open
-        bind(VAULT, "syncDirectory", 106, Site.DIRECTORY_FSTAT), // Os.fstat
-        bind(VAULT, "syncDirectory", 108, Site.DIRECTORY_FSYNC), // Os.fsync
-        bind(VAULT, "syncDirectory", 109, Site.DIRECTORY_CLOSE), // Os.close
-        bind(VAULT, "publish", 119, Site.PUBLISH_TEMP_OPEN), // Os.open
-        bind(VAULT, "publish", 120, Site.PUBLISH_TEMP_OPEN), // OsConstants.O_NOFOLLOW
-        bind(VAULT, "publish", 121, Site.PUBLISH_TEMP_RESOURCE), // new FileOutputStream
-        bind(VAULT, "publish", 122, Site.PUBLISH_WRITE_SYNC), // Os.fchmod(fd, 0600); regular(Os.fstat(fd), limit); output.write(value); output.flush(); Os.fsync(fd)
-        bind(VAULT, "publish", 127, Site.PUBLISH_LINK), // Os.link
-        bind(VAULT, "publish", 129, Site.PUBLISH_RENAME), // Os.rename
-        bind(VAULT, "publish", 136, Site.PUBLISH_TEMP_CLEANUP), // Os.remove
-        bind(GUARD, "<init>", 146, Site.LOCK_OPEN), // Os.open
-        bind(GUARD, "<init>", 147, Site.LOCK_OPEN), // OsConstants.O_NOFOLLOW
-        bind(GUARD, "<init>", 148, Site.LOCK_STREAM_SETUP), // new FileOutputStream
-        bind(GUARD, "<init>", 150, Site.LOCK_FSTAT), // Os.fstat
-        bind(GUARD, "<init>", 151, Site.LOCK_TRY), // opened.getChannel().tryLock()
-        bind(GUARD, "<init>", 154, Site.LOCK_CONSTRUCTION_CLEANUP), // acquired.release(); opened.close()
-        bind(GUARD, "close", 160, Site.LOCK_RELEASE_CLOSE), // lock.release(); } finally { stream.close()
-        bind(VAULT, "readContent", 253, Site.SAF_RESOURCE_SETUP_CLOSE), // new ParcelFileDescriptor.AutoCloseInputStream
-        bind(VAULT, "readContent", 254, Site.SAF_FSTAT), // Os.fstat
-        bind(VAULT, "readContent", 258, Site.SAF_READ), // input.read(block)
-        bind(VAULT, "readContent", 262, Site.SAF_RESOURCE_CLOSE_RELEASE), // operation.released(descriptor)
+        bind(DESCRIPTOR, "close", 40, Site.RAW_CLOSE), // Os.close
+        bind(VAULT, "closeKeeping", 46, Site.RESOURCE_CLOSE), // resource.close()
+        bind(VAULT, "directory", 65, Site.STORAGE_MKDIR), // Os.mkdir
+        bind(VAULT, "directory", 68, Site.STORAGE_DIRECTORY_STAT), // Os.lstat
+        bind(VAULT, "privateFiles", 75, Site.FILES_LSTAT), // Os.lstat
+        bind(VAULT, "privateFiles", 82, Site.FILES_OPEN), // Os.open
+        bind(VAULT, "privateFiles", 83, Site.FILES_OPEN), // OsConstants.O_NOFOLLOW
+        bind(VAULT, "privateFiles", 85, Site.FILES_FSTAT_BEFORE), // Os.fstat
+        bind(VAULT, "privateFiles", 93, Site.FILES_CHMOD), // Os.fchmod
+        bind(VAULT, "privateFiles", 94, Site.FILES_FSTAT_AFTER), // Os.fstat
+        bind(VAULT, "privateFiles", 98, Site.FILES_FSYNC), // Os.fsync
+        bind(VAULT, "privateFiles", 99, Site.FILES_LSTAT_AFTER), // Os.lstat
+        bind(VAULT, "read", 112, Site.LOCAL_READ_OPEN), // Os.open
+        bind(VAULT, "read", 114, Site.LOCAL_READ_FSTAT_BEFORE), // Os.fstat
+        bind(VAULT, "read", 117, Site.LOCAL_READ_BYTES), // Os.read
+        bind(VAULT, "read", 121, Site.LOCAL_READ_FSTAT_AFTER), // Os.fstat
+        bind(VAULT, "syncDirectory", 132, Site.DIRECTORY_OPEN), // Os.open
+        bind(VAULT, "syncDirectory", 134, Site.DIRECTORY_FSTAT), // Os.fstat
+        bind(VAULT, "syncDirectory", 136, Site.DIRECTORY_FSYNC), // Os.fsync
+        bind(VAULT, "publish", 150, Site.PUBLISH_TEMP_OPEN), // Os.open
+        bind(VAULT, "publish", 151, Site.PUBLISH_TEMP_OPEN), // OsConstants.O_NOFOLLOW
+        bind(VAULT, "publish", 154, Site.PUBLISH_CHMOD_STAT), // Os.fchmod(fd, 0600); regular(Os.fstat(fd), limit)
+        bind(VAULT, "publish", 156, Site.PUBLISH_WRITE), // Os.write
+        bind(VAULT, "publish", 160, Site.PUBLISH_FSYNC), // Os.fsync
+        bind(VAULT, "publish", 169, Site.PUBLISH_RENAME), // Os.rename
+        bind(VAULT, "publish", 178, Site.PUBLISH_TEMP_CLEANUP), // Os.remove
+        bind(GUARD, "<init>", 207, Site.LOCK_OPEN), // Os.open
+        bind(GUARD, "<init>", 208, Site.LOCK_OPEN), // OsConstants.O_NOFOLLOW
+        bind(GUARD, "<init>", 210, Site.LOCK_FSTAT), // Os.fstat
+        bind(GUARD, "<init>", 211, Site.LOCK_DUP), // ParcelFileDescriptor.dup
+        bind(GUARD, "<init>", 213, Site.LOCK_STREAM_SETUP), // new ParcelFileDescriptor.AutoCloseOutputStream
+        bind(GUARD, "<init>", 214, Site.LOCK_TRY), // opened.getChannel().tryLock()
+        bind(VAULT, "readContent", 342, Site.SAF_RESOURCE_SETUP_CLOSE), // new ParcelFileDescriptor.AutoCloseInputStream
+        bind(VAULT, "readContent", 343, Site.SAF_FSTAT), // Os.fstat
+        bind(VAULT, "readContent", 347, Site.SAF_READ), // input.read(block)
+        bind(VAULT, "readContent", 351, Site.SAF_RESOURCE_CLOSE_RELEASE), // operation.released(descriptor)
     };
 
     static Failure failure(Exception error) {

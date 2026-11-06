@@ -1,0 +1,133 @@
+{
+  "device_vulnerability_claimed": false,
+  "external_review": false,
+  "files": [
+    {
+      "bytes": 7120,
+      "name": "author/android_diagnostic_guard_tests.py",
+      "sha256": "e489b8c72f1a287b751ca80c9bbd36e8cdcc59477d9b8c35b95936027ce03b31"
+    },
+    {
+      "bytes": 4538,
+      "name": "author/android_driver_guard_tests.py",
+      "sha256": "c3ed49de97b4a8c3e81d74e6abe14eacd7b8c7051b2de4481410684b70e0424f"
+    },
+    {
+      "bytes": 56066,
+      "name": "author/android_live.py",
+      "sha256": "8fc8ddff71ef534fc95d7c5fae1fcb707e7ee0c687a234212aab68fdbd5905f2"
+    },
+    {
+      "bytes": 46458,
+      "name": "author/android_live.qa9.py",
+      "sha256": "4d20ac12535e592da591b5c63cf7971ef2443c6b219f36e250aac2074fd3ce1e"
+    },
+    {
+      "bytes": 10815,
+      "name": "author/android_popup_guard_tests.py",
+      "sha256": "62be4f817e7d4ad45922040a4b37178146a81702caa5ed644abd400a5249da5f"
+    },
+    {
+      "bytes": 1749,
+      "name": "author/diagnostic_guards.stderr",
+      "sha256": "3ee56e2be560c16a9f59bd1c9aace8017c950140571057170be38ba76ccdd11c"
+    },
+    {
+      "bytes": 0,
+      "name": "author/diagnostic_guards.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2859,
+      "name": "author/popup_guards.stderr",
+      "sha256": "7daa1f864278c6d425a7723b1c03f7f8f004f7a5176a8bbf094a8e2fdce5efc4"
+    },
+    {
+      "bytes": 0,
+      "name": "author/popup_guards.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 24606,
+      "name": "author/qa10.changes.patch",
+      "sha256": "5ae02bad035500f37ed7924fd5d813f51d8b0db09675e856d56176de91d058da"
+    },
+    {
+      "bytes": 6267,
+      "name": "author/receipt.public.json",
+      "sha256": "b76a180e0ef0cec7edb85ec518b683ccd919be693b4c3dff1beaa9a4ad7e88ed"
+    },
+    {
+      "bytes": 1066,
+      "name": "author/restore_guards.stderr",
+      "sha256": "1c1c199aad32a864d4e4cf0a78d6e10b4d1ddaf4d93d5b16690649cba74e3122"
+    },
+    {
+      "bytes": 0,
+      "name": "author/restore_guards.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "name": "internal_review/host.stderr.original.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1211,
+      "name": "internal_review/host.stdout.original.json",
+      "sha256": "1bb9967df9f1813eb4ab3530fd707f81b3f6261029fe2e2da2640e0b8f74376a"
+    },
+    {
+      "bytes": 3223,
+      "name": "internal_review/reproduce.py",
+      "sha256": "48cd01b259a5392b1e8a185462fd50808686fed379f271e285cbed75a8782e59"
+    },
+    {
+      "bytes": 4940,
+      "name": "internal_review/review.public.json",
+      "sha256": "9d48d2345bfa204cce1e18e12df6b7ff445fd2476f9d5c3cd25b53e37a83be0a"
+    },
+    {
+      "bytes": 1749,
+      "name": "root_rerun/android_diagnostic_guard_tests.py.stderr",
+      "sha256": "1d02e3b6ecbc92a0a8f9c9c4269776fb5c190d679bdb720344555dfa3dc2ce95"
+    },
+    {
+      "bytes": 0,
+      "name": "root_rerun/android_diagnostic_guard_tests.py.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1066,
+      "name": "root_rerun/android_driver_guard_tests.py.stderr",
+      "sha256": "1c1c199aad32a864d4e4cf0a78d6e10b4d1ddaf4d93d5b16690649cba74e3122"
+    },
+    {
+      "bytes": 0,
+      "name": "root_rerun/android_driver_guard_tests.py.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2859,
+      "name": "root_rerun/android_popup_guard_tests.py.stderr",
+      "sha256": "ec53eafb75fa771b5dca085d76ff91d2970ccc3e1ee362e1ad43847cc1f0f53d"
+    },
+    {
+      "bytes": 0,
+      "name": "root_rerun/android_popup_guard_tests.py.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2967,
+      "name": "root_rerun/receipt.public.json",
+      "sha256": "d105e7c3d8439538e4aba232ae3da64a988cb15bd1363697814dcc1887e9cbfb"
+    }
+  ],
+  "ordinary_host_checks_passed": 44,
+  "phone_qualified": false,
+  "production_qualified": false,
+  "qa10_disposition": "HOLD_not_admitted_to_phone",
+  "reproduced_two_space_client_forgery_accepted": true,
+  "schema": 1,
+  "scope": "original_QA10_host_evidence_and_reproduced_source_defect"
+}

@@ -104,10 +104,29 @@ backup recovery and concurrent passkey use across devices are not supported.
 
 ## Cancellation, concurrency and uncertain results
 
-One file lock serializes cooperating writes. Private filesystem paths reject
-symlinks, unsafe ownership/modes and extra hard links; writes use ciphertext CAS,
-atomic publication, file and parent-directory synchronization, and read-back
-verification. Post-publication failure is reported as an unknown outcome.
+One process-wide admission token is acquired before opening the lock file, then
+one file lock serializes cooperating processes. Another thread is rejected before
+it can open or close the same lock inode: on Android, closing another descriptor
+for that inode can release the process's file locks. The token remains owned until
+every lock descriptor has been closed. Uncertain lock-descriptor cleanup fences further storage
+operations in that process; restart and inspect the current state before retrying.
+
+Private filesystem paths reject symlinks, unsafe ownership/modes and extra hard
+links. Every publication takes the live Guard explicitly, checks the expected
+ciphertext or target absence twice while holding it, writes and synchronizes a
+temporary file, and commits with a same-directory atomic rename. File and parent
+directory synchronization and read-back verification follow. First creation and
+updates therefore protect against conflicting **cooperating writers**. Android
+forbids app hard links, so this protocol does not provide a kernel `NOREPLACE`
+guarantee against code in the same UID that ignores the lock. The private directory
+and application sandbox remain the access boundary. A failure after publication,
+including uncertain lock cleanup, is reported as an unknown outcome.
+
+Raw private-file descriptors have one explicit owner and use `Os.read`/`Os.write`;
+short writes are completed, and zero progress fails closed. The lock descriptor is
+duplicated into an owning `ParcelFileDescriptor`, with the original closed before
+locking. Closing a non-owning `FileInputStream` or `FileOutputStream` wrapper alone
+is not used as evidence that a raw Android descriptor was closed.
 
 KDF, package-manager calls, key generation, signing and filesystem work run off
 the UI thread. Atomic session invalidation and a volatile cancellation flag do not

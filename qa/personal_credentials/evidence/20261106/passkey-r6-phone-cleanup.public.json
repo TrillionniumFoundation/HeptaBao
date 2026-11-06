@@ -1,0 +1,64 @@
+{
+  "completed_unix_ns": 1793962920203512850,
+  "credential_manager_exercised": false,
+  "empty_owned_directory_removed": true,
+  "historical_exact_path_readonly_checks": [
+    {
+      "canonical_media_index_absent": true,
+      "query_sha256": "998dddbd7011f78f68ca8d7b6e4ba910c10b98d60a2e1e39ace8bfc3de0cce4c",
+      "read_only": true,
+      "run": "r4"
+    },
+    {
+      "canonical_media_index_absent": true,
+      "query_sha256": "998dddbd7011f78f68ca8d7b6e4ba910c10b98d60a2e1e39ace8bfc3de0cce4c",
+      "read_only": true,
+      "run": "r5"
+    }
+  ],
+  "master_entered": false,
+  "media_alias_and_canonical_checked": true,
+  "ok": true,
+  "owned_documents_absent": true,
+  "owned_media_index_absent": true,
+  "owned_packages": [
+    "org.heptabao.passkey.decoy",
+    "org.heptabao.passkey.fixture",
+    "org.heptabao.passkey.preview"
+  ],
+  "packages_absent": true,
+  "production_qualified": false,
+  "retained_package_records_checked": true,
+  "reverse_absent": true,
+  "rp": {
+    "ceremony_counts": {
+      "consumed": 0,
+      "pending": 0,
+      "restart_invalidated": 0
+    },
+    "counters": {
+      "authentications": 0,
+      "options": 0,
+      "registrations": 0,
+      "rejected": 0,
+      "restart_invalidated": 0,
+      "verification_attempts": 0
+    },
+    "credential_count": 0,
+    "credentials": [],
+    "event_count": 1,
+    "fixture_cert_sha256": "15c1d0cd8508fab307e9c2cf74ddc988bcc77c22623f9d963d0eca15b4b18353",
+    "ok": true,
+    "origin": "android:apk-key-hash:FcHQzYUI-rMH6cLPdN3JiLzHfCJiP52WPQ7KFbSxg1M",
+    "revision": 1,
+    "rp_id": "passkeys.heptabao.test"
+  },
+  "schema": 1,
+  "scope": "r6_synthetic_phone_cleanup",
+  "settings_match_original": true,
+  "settings_sha256": {
+    "autofill_service": "9fb252f02fa059931879ba0cd6179b9890d0e25538994d63d70290a333124a6e",
+    "credential_service": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "credential_service_primary": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

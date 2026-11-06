@@ -1,0 +1,954 @@
+{
+  "adb_calls": 0,
+  "android_runtime_exercised": false,
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-version"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964247476375589,
+      "started_unix_ns": 1793964247296812503,
+      "stderr_sha256": "0fc83381287ccbc8623d257bce2b0d03997ba0e85ff4492d38b409aea37a8aa9",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-m",
+        "jdk.compiler/com.sun.tools.javac.Main",
+        "-g",
+        "-d",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/android/content/Context.java",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/android/net/Uri.java",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/android/os/OperationCanceledException.java",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/android/os/ParcelFileDescriptor.java",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/android/os/Process.java",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/android/system/ErrnoException.java",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/android/system/Os.java",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/android/system/OsConstants.java",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/android/system/StructStat.java",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/org/heptabao/passkey/core/Codec.java",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/org/heptabao/passkey/core/Failure.java",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/org/heptabao/passkey/core/Hbv.java",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/org/heptabao/passkey/core/Json.java",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/org/heptabao/passkey/core/Passkey.java",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/org/heptabao/passkey/preview/BuildConfig.java",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/org/heptabao/passkey/preview/DocumentIO.java",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/org/heptabao/passkey/preview/Session.java",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/org/heptabao/passkey/preview/StageDiagnostics.java",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/org/heptabao/passkey/preview/StorageHost.java",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/src/org/heptabao/passkey/preview/VaultFiles.java"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964249423619143,
+      "started_unix_ns": 1793964247481687098,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "create_and_reopen",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/create_and_reopen"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964249662459372,
+      "started_unix_ns": 1793964249426570100,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e0d6f3a0486cbf1cad49a6de624043b4647d40d67ea466712f45fd5a3c2fb03a"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "admission_before_open",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/admission_before_open"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964249835564049,
+      "started_unix_ns": 1793964249673296367,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "dda9a4c3666e0e2d6f4be72101db213441d532a0729e6638b3782403c79273a2"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "cross_thread_close_and_old_close",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/cross_thread_close_and_old_close"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964249993852848,
+      "started_unix_ns": 1793964249841214353,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "4cbf120a890e1a6a5a1c52aa9c4e0e4cf37ded6b9b0bcfaa7e3ed614beb43ad9"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "short_reads",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/short_reads"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964250096720169,
+      "started_unix_ns": 1793964249996714086,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "2717ae730bb812bd05ea6849880a57f8e5229d9061dcb8f9b182c23a85297a40"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "invalid_read_progress",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/invalid_read_progress"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964250272667937,
+      "started_unix_ns": 1793964250106718318,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "fec69860639a12ce4cea86ffdd5d09283818bbce271d4fd9dd4bb75596b4819e"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "short_writes",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/short_writes"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964250504656788,
+      "started_unix_ns": 1793964250276774636,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "34044d15be2d5f2d8f52864f99fbe6ce380cf37c97a70dcc7db683f191f93e70"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "zero_write_preserves_old",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/zero_write_preserves_old"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964250722355048,
+      "started_unix_ns": 1793964250509014833,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "a99b240a02ec3b706188e180e2fde08c251548234cbe30e08f2da3f8e2b58cd8"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "second_cas_conflict",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/second_cas_conflict"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964250951024188,
+      "started_unix_ns": 1793964250730852113,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "46cbfa05b0a2a26cb660f5d4603966553e70294ec121a77870c6576ab394521b"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "initial_absence_conflict",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/initial_absence_conflict"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964251239587071,
+      "started_unix_ns": 1793964250955049432,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "a226ec502584a445205db3b5a56e5d2415eace3e8e20b82e28111a8184d30f62"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "rename_failure_preserves_old",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/rename_failure_preserves_old"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964251540876387,
+      "started_unix_ns": 1793964251244793262,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "4b683c4c58dee5f13160d26ef64f70915194c5c37c3e25f1d50d0873082f958a"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "postrename_directory_sync_unknown",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/postrename_directory_sync_unknown"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964251868872560,
+      "started_unix_ns": 1793964251547978614,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "577f5ce60725e05006a779066f2ef2bd1a68b69f2357157dc9b488473e5ef0b1"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "postrename_read_unknown",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/postrename_read_unknown"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964252244525576,
+      "started_unix_ns": 1793964251871575653,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "3909c4b246b4507fd4f36edf8cc2f6be8164263e64f7cc59b68d11e5b7741cb8"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "postrename_read_close_unknown",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/postrename_read_close_unknown"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964252485094137,
+      "started_unix_ns": 1793964252249380646,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "fddccc830a1ab0ddadaa77707ae911fa467359946972c41dfc40ceeb2e51c2f1"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "postrename_directory_close_unknown",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/postrename_directory_close_unknown"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964252839203728,
+      "started_unix_ns": 1793964252498445308,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "8d3aa644130f91e8d6de52fad8a6b9e890cdd9feb189dd6cc3c860490b8f19fd"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "constructor_files_open_failure",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/constructor_files_open_failure"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964252963480211,
+      "started_unix_ns": 1793964252841364005,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "625b37c92b111be8dc38cfa9f4493e61e7435f6de2abd4a9010a0ab6a7f57d03"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "constructor_lock_open_failure",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/constructor_lock_open_failure"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964253289218318,
+      "started_unix_ns": 1793964252967865630,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "121f0e6ef903df6c357c6417aeb674bd606a05dad986a10668223550a928ce0a"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "constructor_lock_stat_failure",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/constructor_lock_stat_failure"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964253831903206,
+      "started_unix_ns": 1793964253317192820,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "2abed0a86fb511ddf1c883cf98407ee4abf7bfbd8f2bedef2455636dd6cb8668"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "constructor_dup_failure",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/constructor_dup_failure"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964254015680023,
+      "started_unix_ns": 1793964253836934111,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "f3f05574669a5e58f1a13dfff811fe1907af8ff9c8121ec66634eb83dd97d7f7"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "raw_lock_close_unknown_fences",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/raw_lock_close_unknown_fences"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964254208003475,
+      "started_unix_ns": 1793964254019636646,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e09467b6bc5c02ab86b6a75fb809d848243522252c128c4ade47c4048d353b8b"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "stream_constructor_failure_cleans",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/stream_constructor_failure_cleans"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964254392940270,
+      "started_unix_ns": 1793964254211723677,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "9cda251d7b7943931f02bf0e987f01b5f5a6bfa8d9979dd91f6b717426bd8f43"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "trylock_null_cleans",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/trylock_null_cleans"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964254625031145,
+      "started_unix_ns": 1793964254396653052,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "bc3174b9c1dd021f76831c113d8b34fb612b5b250ade26532754484f1f607740"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "trylock_io_cleans",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/trylock_io_cleans"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964254831625040,
+      "started_unix_ns": 1793964254632958807,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "223a15538208ddba85e59a765314de9c26c9884c84d47608aced999962dcd485"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "trylock_overlap_cleans",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/trylock_overlap_cleans"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964254992877590,
+      "started_unix_ns": 1793964254841195301,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "4a8c37f1474e62ba702c80b4d184c8816e07401bd12bdae1ffb99618ac923982"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "constructor_cleanup_unknown_fences",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/constructor_cleanup_unknown_fences"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964255203684909,
+      "started_unix_ns": 1793964254998379800,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "724a4583cbb9e4bca5a388daff3c304c49c7840f0a4a659ef80dfbbced96710e"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "lock_release_unknown_fences",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/lock_release_unknown_fences"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964255481109158,
+      "started_unix_ns": 1793964255216654820,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "963d5364524c39631607e9a4dcca709d4676b431318b274b92e1d9f07f2e4205"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "pfd_close_unknown_fences",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/pfd_close_unknown_fences"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964255633809938,
+      "started_unix_ns": 1793964255484724191,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "b4aab917f3610c654a572b749a193a70f50696f54fd42985ff8735f2af717d7f"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "published_lock_release_unknown",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/published_lock_release_unknown"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964255852732801,
+      "started_unix_ns": 1793964255638176268,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "99699cc8819827018b0397c605a368f215fd2c2f709e5428d57d8c0068518220"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "published_pfd_close_unknown",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/published_pfd_close_unknown"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964256024743963,
+      "started_unix_ns": 1793964255855488014,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "ed66778d50c82a904a93414a57fefda264c2a9c5e821586f569007441cbc8d30"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "primary_failure_survives_close_failure",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/primary_failure_survives_close_failure"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964256224724093,
+      "started_unix_ns": 1793964256028298809,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "5c86c3fc17868d54bd0d0e3727649cc07f9d0072a22a3e5bc566303a46bc8fc3"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "lost_guard_refuses_before_io",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/lost_guard_refuses_before_io"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964256378391961,
+      "started_unix_ns": 1793964256229244930,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "837f412c210ea81a88b256ca0165e7a20ad52cacf0d772d0a7f21160cf8ed760"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "unowned_temp_collision_preserved",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/unowned_temp_collision_preserved"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964256636573866,
+      "started_unix_ns": 1793964256381413449,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e7a9a40b54f1966cb6bcfbb745e6fa3819a088e7057819294c29216c4164eab7"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "temporary_cleanup_error_keeps_primary",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/temporary_cleanup_error_keeps_primary"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964256847332037,
+      "started_unix_ns": 1793964256639586899,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "ce93648ef5454ba962e5ba4c1f381c58948e5df8451b5f0355eb35510fdde165"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "transaction_unknown_requires_reopen",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/transaction_unknown_requires_reopen"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964257010309470,
+      "started_unix_ns": 1793964256850956505,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "caacdde7d0087fe74c80a68a65935ae2d49f2924f7b8e7a1b31d3ac14b01abd0"
+    },
+    {
+      "argv": [
+        "/usr/bin/java",
+        "-cp",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/classes",
+        "org.heptabao.passkey.preview.StorageHost",
+        "fresh_jvm_reopens_prior_fenced_directory",
+        "/workspace/scratch/848006513f75/passkey_storage_r7_review/run2/cases/published_pfd_close_unknown"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793964257203580361,
+      "started_unix_ns": 1793964257014227980,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "60d337fe99022a6640ddc0cbbe8f44faa3696076046ada16b3b41d359f2bd16f"
+    }
+  ],
+  "compile_succeeded": true,
+  "diagnostic_mapping_entries_checked": 39,
+  "executed": 34,
+  "expected": 34,
+  "external_review": false,
+  "failed": [],
+  "harness_sha256": "187185de4d36da28f61982b4ac4bacd44b8bd2e0fd4227a62a439681ba9052ab",
+  "java_binary_sha256": "1a7e0b17c39003c75b457d686775ccb032e56fa9c8afe3c492d8eb3715e8951a",
+  "limits": [
+    "Actual frozen VaultFiles and StageDiagnostics classes are compiled unchanged.",
+    "Android Os, descriptor identity, PFD ownership and FileChannel behavior are explicit fault mocks.",
+    "Host file bytes, rename and force operations use private real Linux files; this is not ART/OEM durability evidence.",
+    "Hbv, Passkey, Session and DocumentIO are compile-only or sentinel dependencies; encryption, credentials and SAF are not qualified.",
+    "Normal data/directory descriptor close uncertainty is distinguished from the process-wide lock-cleanup admission fence.",
+    "Cases with deliberately uncertain descriptor close retain their mock descriptor and report it; no leak-free claim is inferred for failed closes.",
+    "Each case starts a new JVM and never edits the product admission static to clear a fence."
+  ],
+  "missing": [],
+  "network_calls": 0,
+  "passed": 34,
+  "phone_qualified": false,
+  "product_source_sha256": {
+    "Codec.java": "a1a80c446a438e532f08a190a0208a965290b6f037a11350e75b41f0c006ca3d",
+    "Failure.java": "aa14de964dc69e63089ba314cd7611bf7ab5c80405f40d8e7cea0efa15a5b39d",
+    "Json.java": "2c06fa99b7c66f103d2bfca2aad73375fe2da3783c01a72cf7110a1670be4c84",
+    "StageDiagnostics.java": "1791431a579b62c66c31ae64e7749b5074ff1a3cc57f723acd708fb43c15b389",
+    "VaultFiles.java": "f19b24a8091bac11c92354922d5fe0db1d2d2d59d1afbc511387f2a9d19c2012"
+  },
+  "production_qualified": false,
+  "results": [
+    {
+      "case": "create_and_reopen",
+      "exit_code": 0,
+      "mock_close_calls": 12,
+      "mock_open_calls": 12,
+      "open_descriptors_at_end": 0,
+      "passed": true,
+      "rename_calls": 1,
+      "stderr_empty": true
+    },
+    {
+      "case": "admission_before_open",
+      "exit_code": 0,
+      "mock_close_calls": 4,
+      "mock_open_calls": 3,
+      "open_descriptors_at_end": 0,
+      "passed": true,
+      "rename_calls": 0,
+      "stderr_empty": true
+    },
+    {
+      "case": "cross_thread_close_and_old_close",
+      "exit_code": 0,
+      "mock_close_calls": 8,
+      "mock_open_calls": 6,
+      "open_descriptors_at_end": 0,
+      "passed": true,
+      "rename_calls": 0,
+      "stderr_empty": true
+    },
+    {
+      "case": "short_reads",
+      "exit_code": 0,
+      "mock_close_calls": 1,
+      "mock_open_calls": 1,
+      "open_descriptors_at_end": 0,
+      "passed": true,
+      "rename_calls": 0,
+      "stderr_empty": true
+    },
+    {
+      "case": "invalid_read_progress",
+      "exit_code": 0,
+      "mock_close_calls": 1,
+      "mock_open_calls": 1,
+      "open_descriptors_at_end": 0,
+      "passed": true,
+      "rename_calls": 0,
+      "stderr_empty": true
+    },
+    {
+      "case": "short_writes",
+      "exit_code": 0,
+      "mock_close_calls": 7,
+      "mock_open_calls": 8,
+      "open_descriptors_at_end": 0,
+      "passed": true,
+      "rename_calls": 1,
+      "stderr_empty": true
+    },
+    {
+      "case": "zero_write_preserves_old",
+      "exit_code": 0,
+      "mock_close_calls": 6,
+      "mock_open_calls": 5,
+      "open_descriptors_at_end": 0,
+      "passed": true,
+      "rename_calls": 0,
+      "stderr_empty": true
+    },
+    {
+      "case": "second_cas_conflict",
+      "exit_code": 0,
+      "mock_close_calls": 7,
+      "mock_open_calls": 6,
+      "open_descriptors_at_end": 0,
+      "passed": true,
+      "rename_calls": 0,
+      "stderr_empty": true
+    },
+    {
+      "case": "initial_absence_conflict",
+      "exit_code": 0,
+      "mock_close_calls": 5,
+      "mock_open_calls": 4,
+      "open_descriptors_at_end": 0,
+      "passed": true,
+      "rename_calls": 0,
+      "stderr_empty": true
+    },
+    {
+      "case": "rename_failure_preserves_old",
+      "exit_code": 0,
+      "mock_close_calls": 7,
+      "mock_open_calls": 6,
+      "open_descriptors_at_end": 0,
+      "passed": true,
+      "rename_calls": 0,
+      "stderr_empty": true
+    },
+    {
+      "case": "postrename_directory_sync_unknown",
+      "exit_code": 0,
+      "mock_close_calls": 13,
+      "mock_open_calls": 11,
+      "open_descriptors_at_end": 0,
+      "passed": true,
+      "rename_calls": 1,
+      "stderr_empty": true
+    },
+    {
+      "case": "postrename_read_unknown",
+      "exit_code": 0,
+      "mock_close_calls": 14,
+      "mock_open_calls": 12,
+      "open_descriptors_at_end": 0,
+      "passed": true,
+      "rename_calls": 1,
+      "stderr_empty": true
+    },
+    {
+      "case": "postrename_read_close_unknown",
+      "exit_code": 0,
+      "mock_close_calls": 14,
+      "mock_open_calls": 12,
+      "open_descriptors_at_end": 1,
+      "passed": true,
+      "rename_calls": 1,
+      "stderr_empty": true
+    },
+    {
+      "case": "postrename_directory_close_unknown",
+      "exit_code": 0,
+      "mock_close_calls": 13,
+      "mock_open_calls": 11,
+      "open_descriptors_at_end": 1,
+      "passed": true,
+      "rename_calls": 1,
+      "stderr_empty": true
+    },
+    {
+      "case": "constructor_files_open_failure",
+      "exit_code": 0,
+      "mock_close_calls": 4,
+      "mock_open_calls": 4,
+      "open_descriptors_at_end": 0,
+      "passed": true,
+      "rename_calls": 0,
+      "stderr_empty": true
+    },
+    {
+      "case": "constructor_lock_open_failure",
+      "exit_code": 0,
+      "mock_close_calls": 6,
+      "mock_open_calls": 6,
+      "open_descriptors_at_end": 0,
+      "passed": true,
+      "rename_calls": 0,
+      "stderr_empty": true
+    },
+    {
+      "case": "constructor_lock_stat_failure",
+      "exit_code": 0,
+      "mock_close_calls": 7,
+      "mock_open_calls": 6,
+      "open_descriptors_at_end": 0,
+      "passed": true,
+      "rename_calls": 0,
+      "stderr_empty": true
+    },
+    {
+      "case": "constructor_dup_failure",
+      "exit_code": 0,
+      "mock_close_calls": 7,
+      "mock_open_calls": 6,
+      "open_descriptors_at_end": 0,
+      "passed": true,
+      "rename_calls": 0,
+      "stderr_empty": true
+    },
+    {
+      "case": "raw_lock_close_unknown_fences",
+      "exit_code": 0,
+      "mock_close_calls": 4,
+      "mock_open_calls": 3,
+      "open_descriptors_at_end": 1,
+      "passed": true,
+      "rename_calls": 0,
+      "stderr_empty": true
+    },
+    {
+      "case": "stream_constructor_failure_cleans",
+      "exit_code": 0,
+      "mock_close_calls": 8,
+      "mock_open_calls": 6,
+      "open_descriptors_at_end": 0,
+      "passed": true,
+      "rename_calls": 0,
+      "stderr_empty": true
+    },
+    {
+      "case": "trylock_null_cleans",
+      "exit_code": 0,
+      "mock_close_calls": 8,
+      "mock_open_calls": 6,
+      "open_descriptors_at_end": 0,
+      "passed": true,
+      "rename_calls": 0,
+      "stderr_empty": true
+    },
+    {
+      "case": "trylock_io_cleans",
+      "exit_code": 0,
+      "mock_close_calls": 8,
+      "mock_open_calls": 6,
+      "open_descriptors_at_end": 0,
+      "passed": true,
+      "rename_calls": 0,
+      "stderr_empty": true
+    },
+    {
+      "case": "trylock_overlap_cleans",
+      "exit_code": 0,
+      "mock_close_calls": 8,
+      "mock_open_calls": 6,
+      "open_descriptors_at_end": 0,
+      "passed": true,
+      "rename_calls": 0,
+      "stderr_empty": true
+    },
+    {
+      "case": "constructor_cleanup_unknown_fences",
+      "exit_code": 0,
+      "mock_close_calls": 3,
+      "mock_open_calls": 3,
+      "open_descriptors_at_end": 1,
+      "passed": true,
+      "rename_calls": 0,
+      "stderr_empty": true
+    },
+    {
+      "case": "lock_release_unknown_fences",
+      "exit_code": 0,
+      "mock_close_calls": 4,
+      "mock_open_calls": 3,
+      "open_descriptors_at_end": 0,
+      "passed": true,
+      "rename_calls": 0,
+      "stderr_empty": true
+    },
+    {
+      "case": "pfd_close_unknown_fences",
+      "exit_code": 0,
+      "mock_close_calls": 3,
+      "mock_open_calls": 3,
+      "open_descriptors_at_end": 1,
+      "passed": true,
+      "rename_calls": 0,
+      "stderr_empty": true
+    },
+    {
+      "case": "published_lock_release_unknown",
+      "exit_code": 0,
+      "mock_close_calls": 7,
+      "mock_open_calls": 8,
+      "open_descriptors_at_end": 0,
+      "passed": true,
+      "rename_calls": 1,
+      "stderr_empty": true
+    },
+    {
+      "case": "published_pfd_close_unknown",
+      "exit_code": 0,
+      "mock_close_calls": 6,
+      "mock_open_calls": 8,
+      "open_descriptors_at_end": 1,
+      "passed": true,
+      "rename_calls": 1,
+      "stderr_empty": true
+    },
+    {
+      "case": "primary_failure_survives_close_failure",
+      "exit_code": 0,
+      "mock_close_calls": 1,
+      "mock_open_calls": 1,
+      "open_descriptors_at_end": 1,
+      "passed": true,
+      "rename_calls": 0,
+      "stderr_empty": true
+    },
+    {
+      "case": "lost_guard_refuses_before_io",
+      "exit_code": 0,
+      "mock_close_calls": 4,
+      "mock_open_calls": 3,
+      "open_descriptors_at_end": 0,
+      "passed": true,
+      "rename_calls": 0,
+      "stderr_empty": true
+    },
+    {
+      "case": "unowned_temp_collision_preserved",
+      "exit_code": 0,
+      "mock_close_calls": 4,
+      "mock_open_calls": 5,
+      "open_descriptors_at_end": 0,
+      "passed": true,
+      "rename_calls": 0,
+      "stderr_empty": true
+    },
+    {
+      "case": "temporary_cleanup_error_keeps_primary",
+      "exit_code": 0,
+      "mock_close_calls": 6,
+      "mock_open_calls": 5,
+      "open_descriptors_at_end": 0,
+      "passed": true,
+      "rename_calls": 0,
+      "stderr_empty": true
+    },
+    {
+      "case": "transaction_unknown_requires_reopen",
+      "exit_code": 0,
+      "mock_close_calls": 27,
+      "mock_open_calls": 24,
+      "open_descriptors_at_end": 0,
+      "passed": true,
+      "rename_calls": 2,
+      "stderr_empty": true
+    },
+    {
+      "case": "fresh_jvm_reopens_prior_fenced_directory",
+      "exit_code": 0,
+      "mock_close_calls": 5,
+      "mock_open_calls": 4,
+      "open_descriptors_at_end": 0,
+      "passed": true,
+      "rename_calls": 0,
+      "stderr_empty": true
+    }
+  ],
+  "schema": 1,
+  "scope": "frozen_storage_class_control_flow_with_android_api_mocks",
+  "sdk_or_apk_builds": 0,
+  "source_unchanged_before_after": true,
+  "stub_source_sha256": {
+    "android/content/Context.java": "4942bc4a113a0917265b31025944d80f3bdcd1861fe830189fa3b507b4f149ef",
+    "android/net/Uri.java": "11c433737104aee40388d1dd10bc79231c539c3c9bed63182c02e898c4f3455e",
+    "android/os/OperationCanceledException.java": "865ee067835c594c758293476683f087577f00055c0a391d0844ef5c45ce3f1a",
+    "android/os/ParcelFileDescriptor.java": "e93cb52b3a2472f692161d09dc0dd670ab1e2f964dc2c6643b2003b80d328bf8",
+    "android/os/Process.java": "d4f4898173dcf19f53477ecb3555fa6b8e1a1c40d04e7f833239c757c3f5a9eb",
+    "android/system/ErrnoException.java": "b426244d681a3bc0082fbdeca22898ed2afb4e6d0233393403bd1ddb5a8bb9bd",
+    "android/system/Os.java": "64fca332be4374f0e3a8e4c7547e0f7adbbbe3082ee8309931f97346862f495e",
+    "android/system/OsConstants.java": "bd060941116686555a7b34aa9fac55af2d251f54b0f2a536cf842427e9e18557",
+    "android/system/StructStat.java": "b09322fdb569c332b4f973a3b9fade7ada2d326aea8e5c1354f36e7fd28bb15b",
+    "org/heptabao/passkey/core/Hbv.java": "317bb062dd1fc75852b97dbb11e0fea7607574536b5f61fbc913fdd50c44d788",
+    "org/heptabao/passkey/core/Passkey.java": "1f28b87bfea903ae33eec79ea40a5140c7d722695d4249fad0810bb76f161c26",
+    "org/heptabao/passkey/preview/BuildConfig.java": "bcbc54ff7e577076f262de28163d6358f32ab7b50bfae3bc0e12effe3935d718",
+    "org/heptabao/passkey/preview/DocumentIO.java": "34fbf509acc511387438b4a1c38a5791245f9f944caf35da1affbe0653afb797",
+    "org/heptabao/passkey/preview/Session.java": "2fb74a2f7f2f98cec1ea3ba27067a75f9c391fcd76db32f44874f25bd4104b8d",
+    "org/heptabao/passkey/preview/StorageHost.java": "fb8e9b69cb532c544ac0e5c72bfe78137eb6ea7aaf170033c75362a7a93db0de"
+  }
+}
