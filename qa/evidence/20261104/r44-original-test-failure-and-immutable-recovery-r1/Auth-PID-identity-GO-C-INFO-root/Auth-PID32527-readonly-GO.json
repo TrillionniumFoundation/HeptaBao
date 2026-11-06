@@ -1,0 +1,497 @@
+{
+  "schema": "heptabao.root.exact-original-Mac-PID32527-readonly-GO.r44",
+  "decision": "GO_ONE_EXACT_ORIGINAL_INSTANCE_PID_IDENTITY_READONLY_DIAGNOSTIC",
+  "userAuthorization": "Continue original user-authorized blocker resolution; finite read-only diagnosis of the failed owned QA registration, without production cutover or cleanup.",
+  "owner": "/root/authbus_migration",
+  "sourcePacket": "af2a0454dff4937b095779079f4ecbfebc963c73",
+  "sourceQualification": {
+    "blob": "ad10d6bfe0d3e3281ae89c8e7d6da2db3eb0de5e",
+    "bytes": 3402,
+    "sha256": "302119d75ad70e0e26ab3c5ded13eac02777c7bce45052322767426614eb90ed"
+  },
+  "sourceChecks": 24,
+  "originalRuntimeFullPacket": "4a3bafecbc966aed7c6b14538c1403a1076598dd",
+  "originalRuntimeRootQualification": {
+    "blob": "1208fbe37f61e01e7324f8bef1b6fc6db9f5b4a5",
+    "bytes": 32162,
+    "sha256": "ea6db23190b816f88c4b7a88e66079bb01cccd6e5abb7b0a435285e89f7e0497"
+  },
+  "priorManagedScope": "UNKNOWN",
+  "exactProcessStart": {
+    "blob": "cfe54ac6b630277b0cb100ffd9fe7d7e30a316d2",
+    "bytes": 97208,
+    "sha256": "7b89f6591bc7e0f43f6ebd144b5325e70b8bb9242438034d4c492d14be133baf"
+  },
+  "exactSource": {
+    "blob": "a938ba9fd034a6ba4b66300fd88e61383ab1be32",
+    "bytes": 94611,
+    "sha256": "6a1ee2c4bc31c4d55d2fde24eaa17c644037dd18c5a9853bba2a35035609e566"
+  },
+  "nativeBinding": {
+    "sha256": "f9621ac37f677fdd6c411224005fac66fac40a9517ceacffb2d0c83af8dd8f64",
+    "native_fingerprint": "17969954890120134621",
+    "canonicalBytes": 97145
+  },
+  "host": "mac",
+  "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+  "argv": [
+    "-I",
+    "-S",
+    "-B",
+    "-"
+  ],
+  "cwd": "/Users/qianqi",
+  "stdinIsExactWholeSource": true,
+  "idempotency_key": "heptabao-mac-current-home-pid-identity-6a1ee2c4-20261106-r1",
+  "maximumBusinessStarts": 1,
+  "journal": {
+    "blob": "a4397a47257178ccf98374b694edd4d04903896a",
+    "bytes": 19059,
+    "sha256": "42ad555c661fc46f4c577c15fc40aebc036b56a754db3349be5aaea72f6f3bc5"
+  },
+  "slot": "owner_authbus_home_r2_current_pid_identity_gitfirst_r1",
+  "observerKeyPrefix": "heptabao-mac-current-home-pid-identity-6a1ee2c4-",
+  "scope": {
+    "host": "mac",
+    "label": "org.heptabao.qa.mac-authbus-4e808-home-r2.server",
+    "target": "gui/501/org.heptabao.qa.mac-authbus-4e808-home-r2.server",
+    "generation": "server-initial",
+    "originalJob": "1a1b0e85206-fc05-73e1",
+    "sameOriginalRegistration": true,
+    "bootstrap": false,
+    "bootout": false,
+    "signalsToManagedProcess": false,
+    "managedReaping": false,
+    "privatePlanOrCapsuleRead": false,
+    "stderrBodyRead": false,
+    "credentialRead": false,
+    "SDKOrFactory": false,
+    "productRetry": false,
+    "privateStdoutProjectionFirstLfOnly": true,
+    "firstBoundedReadMayContainTail": true,
+    "stdioTailExported": false,
+    "currentFixedPid": 32527,
+    "currentFixedPidSource": "two actual fresh registration prints, original diagnostic mac/1a1b12864e2-fc05-765c",
+    "historicalBirth": null,
+    "explicitLibprocReadsOnlyForSelfAndFixedPid": true,
+    "processArgumentsRead": false,
+    "childPidNumbersPublished": false,
+    "unknownExecutablePathPublished": false
+  },
+  "fixedPublicControls": {
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14": {
+      "identity": [
+        "16777233",
+        "587518380",
+        "501",
+        "80",
+        "33261",
+        "1",
+        "34640",
+        "1793798038915516382",
+        "1793798038915695047"
+      ],
+      "bytes": 34640,
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+    },
+    "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2/mac_current_server_owner_r1.py": {
+      "bytes": 14052,
+      "identity": [
+        "16777233",
+        "593160542",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "14052",
+        "1793964565557957451",
+        "1793964565557957451"
+      ],
+      "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2/mac_current_server_owner_r1.py",
+      "sha256": "34aa6a9799419573dfc8cf6b63f479162b3e9e316dc391d54c5f0c0c54cdedb1"
+    },
+    "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2/server-initial.plist": {
+      "identity": null,
+      "bytes": 3970,
+      "sha256": "9c804e84dea6d5648ffac531ab41536fb6d4f245409fd1f393423dbaf448d454"
+    }
+  },
+  "fixedAdditionalPaths": [
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/launchd/server-initial.ready.public.json",
+      "maximum": 8192,
+      "mode": "0600",
+      "uid": 501,
+      "nlink": 1,
+      "body": "whole public producer JSON; only fixed typed projection",
+      "absence": "only exact ENOENT for this path, not historic absence"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/launchd/server-initial.exec-ready.public.json",
+      "maximum": 65536,
+      "mode": "0600",
+      "uid": 501,
+      "nlink": 1,
+      "body": "whole public pre-finally candidate JSON; typed projection, no terminal or exec claim"
+    },
+    {
+      "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2/server-initial.stdout.private",
+      "maximumContainer": 2097152,
+      "maximumFirstChunk": 65536,
+      "maximumRepeatedPrefix": 65536,
+      "body": "First read is min(65536, observed size), then only the first LF prefix is reread through the same FD. Bytes after LF inside the first bounded block may have been read, but are discarded; no raw, hash, tail or second line is exported.",
+      "firstLfMayLackGenerationOnEarlyError": true
+    },
+    {
+      "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2/server-initial.stderr.private",
+      "maximumContainer": 2097152,
+      "body": "NONE; full9 metadata and finite size only"
+    }
+  ],
+  "rootBindings": {
+    "home": {
+      "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2",
+      "full9": [
+        "16777233",
+        "593160541",
+        "501",
+        "20",
+        "16832",
+        "7",
+        "224",
+        "1793969379294575499",
+        "1793969379294575499"
+      ],
+      "source": "actual report.homeControlFinal.currentRootIdentity"
+    },
+    "sharedParentFirst5": {
+      "/": [
+        "16777233",
+        "2",
+        "0",
+        "0",
+        "16877"
+      ],
+      "/opt": [
+        "16777233",
+        "18335",
+        "0",
+        "0",
+        "16877"
+      ],
+      "/Volumes": [
+        "16777233",
+        "18336",
+        "0",
+        "0",
+        "16877"
+      ],
+      "/opt/homebrew": [
+        "16777233",
+        "10827966",
+        "501",
+        "80",
+        "16877"
+      ],
+      "/Volumes/T5": [
+        "16777244",
+        "2",
+        "0",
+        "0",
+        "16893"
+      ],
+      "/opt/homebrew/Cellar": [
+        "16777233",
+        "10827980",
+        "501",
+        "80",
+        "16893"
+      ],
+      "/Volumes/T5/hepta-vnext-recovery-20261013": [
+        "16777244",
+        "64176096",
+        "501",
+        "20",
+        "16832"
+      ],
+      "/opt/homebrew/Cellar/python@3.14": [
+        "16777233",
+        "13738376",
+        "501",
+        "80",
+        "16877"
+      ],
+      "/opt/homebrew/Cellar/python@3.14/3.14.3_1": [
+        "16777233",
+        "13278341",
+        "501",
+        "80",
+        "16877"
+      ],
+      "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks": [
+        "16777233",
+        "13278344",
+        "501",
+        "80",
+        "16877"
+      ],
+      "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework": [
+        "16777233",
+        "13278345",
+        "501",
+        "80",
+        "16877"
+      ],
+      "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions": [
+        "16777233",
+        "13278349",
+        "501",
+        "80",
+        "16877"
+      ],
+      "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14": [
+        "16777233",
+        "13278350",
+        "501",
+        "80",
+        "16877"
+      ],
+      "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin": [
+        "16777233",
+        "13278368",
+        "501",
+        "80",
+        "16877"
+      ],
+      "/Users": [
+        "16777233",
+        "18326",
+        "0",
+        "80",
+        "16877"
+      ],
+      "/Users/qianqi": [
+        "16777233",
+        "6929812",
+        "501",
+        "20",
+        "16877"
+      ],
+      "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2": [
+        "16777233",
+        "593160541",
+        "501",
+        "20",
+        "16832"
+      ]
+    },
+    "volumeAnchorsFull9": {
+      "/": [
+        "16777233",
+        "2",
+        "0",
+        "0",
+        "16877",
+        "22",
+        "704",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "/Volumes": [
+        "16777233",
+        "18336",
+        "0",
+        "0",
+        "16877",
+        "5",
+        "160",
+        "1793100597756515591",
+        "1793100597756515591"
+      ],
+      "/Volumes/T5": [
+        "16777244",
+        "2",
+        "0",
+        "0",
+        "16893",
+        "12",
+        "384",
+        "1793152973144260495",
+        "1793152973144260495"
+      ]
+    },
+    "actualVolumeDevice": "16777244",
+    "t5WorkAndLaunchdDirectoryInodesPreviouslyPinned": false,
+    "t5PublicChildrenFreshObservationOnly": true,
+    "noUUIDHelperOrPrivateRead": true
+  },
+  "originalParserRetainedByteExact": true,
+  "neverExitedIsOnlyDiagnosticEqualityCandidate": false,
+  "offendingFieldOrValueNotYetObserved": false,
+  "budgets": {
+    "softSeconds": 45,
+    "helperAdmissionEndSeconds": 35,
+    "perPrintClippedSeconds": 10,
+    "outerSeconds": 60,
+    "directPrintCalls": 2,
+    "commandReturnedBytes": 1048576,
+    "perCommandPerStreamBytes": 65536,
+    "applicationReadBytes": 262144,
+    "applicationReadCalls": 256,
+    "metadata": 4096,
+    "returnedFdAttempts": 64,
+    "writeCalls": 0,
+    "writeBytes": 0,
+    "outputBytes": 65536,
+    "plannedProcessStatusMaximum": 8,
+    "plannedTerminalStreamReadsMaximum": 8,
+    "processReadLimit": 16384,
+    "immutablePageLimit": 8192,
+    "perObserverStatusMaximum": 8,
+    "addedExplicitLibproc": {
+      "bsdinfoArg1": 6,
+      "pidpath": 2,
+      "directChildCount": 2,
+      "totalCalls": 10,
+      "knownPidTargets": [
+        "self",
+        32527
+      ],
+      "blocks": [
+        {
+          "kind": "self-two-plus-first-target-pair",
+          "maxSeconds": 4
+        },
+        {
+          "kind": "second-target-pair",
+          "maxSeconds": 4
+        }
+      ],
+      "clippedToOriginal35And45": true,
+      "individualSynchronousCCallPreemptionClaimed": false,
+      "excludesOriginalCommandsInternalOperations": true
+    }
+  },
+  "observations": {
+    "originalReturnedJobOnly": true,
+    "maximumProcessStatusObservers": 8,
+    "maximumOperationStatusCallsPerObserver": 8,
+    "maximumProcessReadObservers": 8,
+    "processReadPerStreamBytes": 16384,
+    "maximumObservedBytesPerStream": 131072,
+    "immutablePageBytes": 8192,
+    "maximumImmutablePagesPerObserver": 128,
+    "maximumSerializedOriginalPayloadBytes": 1048576,
+    "closeEachObserverBeforeNext": true,
+    "onlyProcessStatusAndProcessRead": true,
+    "actualTerminalAuthorityAndContiguousCursors": true,
+    "unknownNeverGrantsReplay": true
+  },
+  "archivalProtocol": {
+    "wholeThisExactGOBeforeFreshSlotInitialization": true,
+    "wholeRequestIntentArmedBeforeEachNative": true,
+    "invokeOnlyAcrossIndependentCallBoundary": true,
+    "wholeOriginalSDKBeforeParse": true,
+    "rootNativeCalls": 0,
+    "maximumRuntimeLanes": 2,
+    "maximumNativeCallOrOwnedFuturePerLane": 1,
+    "unknownKeepsLane": true
+  },
+  "laneActivation": {
+    "verifiedCReportInfoRelease": {
+      "blob": "493332cfade7a38dfc4cdc4167fdd4a4a77663f5",
+      "bytes": 3883,
+      "sha256": "6d0e68dcec6e54902468f2fcbe404172c39b65a99dc5187aba8df67c1b4802c2"
+    },
+    "allocationBefore": {
+      "A": 0,
+      "B": 1,
+      "C": 0,
+      "root": 0
+    },
+    "allocationDuring": {
+      "A": 1,
+      "B": 1,
+      "C": 0,
+      "root": 0
+    },
+    "CRemainHoldBeforeBODY": true,
+    "ROGCargoTargetStillNotQualifiedReusable": true
+  },
+  "qualificationBoundary": {
+    "diagnosticSuccessIsOnlyBoundedObservationAndOwnResourceClosure": true,
+    "registrationClosureClaimed": false,
+    "managedLineageClosureClaimed": false,
+    "readThenExecAtomicityClaimed": false,
+    "currentCredentialCycleSuccess": false,
+    "rawPrivateStdoutOrHashExportAllowed": false,
+    "firstBoundedPrefixMayContainPostLfBytes": true,
+    "privatePlanCapsuleBodyReadAllowed": false,
+    "currentLifetimeObservationOnly": true,
+    "originalReadyIdentityReconstruction": false,
+    "managedScopeStillUnknown": true,
+    "identityMismatchPreservesUnknown": true,
+    "ESRCHAloneIsNotExitOrReap": true,
+    "individualSynchronousCCallPreemptionClaimed": false
+  },
+  "afterRun": "Preserve original terminal authority and complete public output; close only original Native observers. Return actual fixed PID numeric birth tuple, known-image booleans, child counts, two registration mappings and own FD/helper closure. No managed cleanup, business retry or new registration is authorized by this GO.",
+  "excluded": [
+    "bootstrap/bootout/managed signal/managed reap",
+    "new service or business retry",
+    "private plan/capsule/credential-file body reads",
+    "stderr body or stdout tail export",
+    "directory discovery or unrelated files",
+    "Cargo/fixture/download/production changes",
+    "legacy deletion",
+    "child PID follow-up or process argv reads",
+    "raw unknown executable path export",
+    "numeric-PID signal or any managed cleanup"
+  ],
+  "fullReplacement": false,
+  "productionCutoverAuthorized": false,
+  "legacyCleanupAuthorized": false,
+  "allClientsAndBackupsMigrated": false,
+  "authorSourceChecksReproduced": 62,
+  "priorFreshDiagnosisRootQualification": {
+    "blob": "74562ffa04fbb190508857fb3b4d483a6a255ca9",
+    "bytes": 7775,
+    "sha256": "2582d4ed177f1b01e685f14daf8a0581cf6987f9038ccdbe3a3c3ee5aa170fe3"
+  },
+  "priorFreshDiagnosisPacket": "061b2fe4336d34e50943fd216c2b2166df1b3a64",
+  "observedRejectedLiteral": "(never exited)",
+  "currentIdentityProjection": {
+    "numeric": [
+      "pid",
+      "ppid",
+      "pgid",
+      "uid",
+      "gid",
+      "birthSec",
+      "birthUsec",
+      "status",
+      "exitStatusNumeric",
+      "flagsNumeric"
+    ],
+    "path": [
+      "kernelPython boolean",
+      "launcherPython boolean",
+      "knownServerBinary boolean"
+    ],
+    "childCountOnly": true,
+    "childPidsPublished": false,
+    "otherPathPublished": false,
+    "processArgumentsRead": false,
+    "bsdExitStatusInterpretedAsLaunchdExit": false,
+    "epochClaim": "fresh current lifetime only; not original ready identity"
+  },
+  "currentIdentityQualificationConditions": {
+    "beforeAndAfterSameLifetime": true,
+    "currentLabelMappingSameFixedPid": true,
+    "uid501": true,
+    "pgidMatchesPid": true,
+    "kernelImageExactBoolean": true,
+    "directChildrenZeroBoth": true,
+    "actualResultRequired": true,
+    "noCurrentCleanupAuthorization": true
+  }
+}

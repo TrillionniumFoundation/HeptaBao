@@ -1,0 +1,134 @@
+--- a/formatted23-journal.js
++++ b/formatted23-journal.js
+@@ -257,123 +257,6 @@
+   originalFailedCallPreserved:true,originalFutureAlreadyClosed:true};
+ }
+ 
+-/* Exact BODY16 page0 delivery recovery only; no binary_read/status admission.
+- * Original failed call, prior INFO10 recovery and all counters remain preserved.
+- * A successful first payload page may be non-EOF; original continuation uses the
+- * resulting actual offset and monotonically advanced pageCalled (next label p2).
+- */
+-async function gfPrepareClosedBody16Page0Recovery({goRaw,goPin,goWholeReadback}) {
+- const s=gfState(),oldKey="sf23-r1-f16-b00-p0",callKey=oldKey+"-recovery1";
+- const old=s.calls[oldKey],a=s.activeObserver;
+- const requestPin={blob:"bfd96536330ccc3704a2ba596203edf3680a0702",bytes:122,
+-  sha256:"ede3d944c75b34dbcc7cf3b644e9d8374496f8348d375e792d565141c92b2ef5"};
+- const errorPin={blob:"923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",bytes:248,
+-  sha256:"cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"};
+- const operationId="9037480fbf014345c1d2bbe1894020e30602a9adb2d8c1a864f6eff35368f1b0";
+- gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin),"whole_separate_page_recovery_GO");
+- const g=JSON.parse(goRaw);
+- gfNeed(g.authorization==="GO" && g.scope==="snapshot_formatted23_body16_page0_retrieval_recovery"
+-  && g.slot===GF_SLOT && g.original_operation===operationId
+-  && g.failed_call_key===oldKey && g.recovery_call_key===callKey
+-  && g.request?.blob===requestPin.blob && g.request?.bytes===requestPin.bytes
+-  && g.request?.sha256===requestPin.sha256
+-  && g.failed_sdk?.blob===errorPin.blob && g.failed_sdk?.bytes===errorPin.bytes
+-  && g.failed_sdk?.sha256===errorPin.sha256
+-  && g.maximum_recovery_page_calls===1 && g.page_bytes===16384
+-  && g.native_payload_cap===1048576 && g.operation_start_authorized===false
+-  && g.operation_status_authorized===false && g.failed_call_preserved===true
+-  && g.continue_original_observer_after_recovered_page===true
+-  && g.continue_original_table_only_after_file_whole===true
+-  && g.original_go==="25ea12c4406a12ba5ce263b10a2723f73276d74b",
+-  "exact_closed_body16_page_only_scope");
+- gfNeed(s.paused===true && s.pending===oldKey && !s.nativeCallInFlight
+-  && s.body16Page0Recovery===undefined && !s.calls[callKey]
+-  && s.goPin.blob===g.original_go && old?.kind==="operation_result"
+-  && old.called===true && old.phase==="native_interpretation_refused"
+-  && old.sdkArchive?.whole===true && gfMetaEquals(old.requestRaw,requestPin)
+-  && old.sdkPin.blob===errorPin.blob
+-  && gfMetaEquals(load(GF_SLOT+":original_sdk_raw:"+oldKey),errorPin),
+-  "unchanged_original_failed_delivery_and_once_recovery");
+- const failedCallPin={blob:"593f02daca6b8ac9511ed460af8919eed0b7bc32",bytes:2066,
+-  sha256:"f70e2ae9bac4c87df0faac3a2fbd4e507a64db29d4d1b010b3771028465d7776"};
+- const infoPin={blob:"49c3c0f34cf3a033a8fea1f6b0a8c3fb8132c133",bytes:1078,
+-  sha256:"bc8d572b9f7bcfcbe0ce1d7f98692c2ca3430aa35ec34b181db50fbf84de6086"};
+- const bodyRequestPin={blob:"143e9be276d829ff48959b3b43f2e886deab6a9b",bytes:448,
+-  sha256:"b175517b8290a3d3b3f835d839d3abe72ef55f7fa13dcbcd5353e57eeee349e2"};
+- gfNeed(g.failed_call?.blob===failedCallPin.blob && g.failed_call?.bytes===failedCallPin.bytes
+-  && g.failed_call?.sha256===failedCallPin.sha256
+-  && gfMetaEquals(JSON.stringify(old,null,2)+"\n",failedCallPin)
+-  && gfMetaEquals(JSON.stringify(s.outputInfos[16],null,2)+"\n",infoPin),
+-  "exact_original_failed_call_and_actual_INFO16");
+- const bodyCall=s.calls["sf23-r1-f16-b00-admit"];
+- gfNeed(bodyCall?.phase==="accepted" && bodyCall.called===true
+-  && bodyCall.sdkArchive?.whole===true && gfMetaEquals(bodyCall.requestRaw,bodyRequestPin)
+-  && JSON.stringify(a?.request)===JSON.stringify(JSON.parse(bodyCall.requestRaw)),
+-  "exact_already_submitted_version_bound_body_only");
+- const priorInfo10Raw=JSON.stringify(s.calls["sf23-r1-f10-info-p0"],null,2)+"\n";
+- const priorInfo10RecoveryRaw=JSON.stringify(s.info10Page0Recovery);
+- gfNeed(gfMetaEquals(priorInfo10Raw,{blob:"2b64176574dbb70da660cb4ec8eee657b1969eae",bytes:2065,
+-  sha256:"1d91200c87b3f9ae88631471212dae416cf697d341d0436ed7b8ea1db9ebc84b"})
+-  && s.calls["sf23-r1-f10-info-p0-recovery1"]?.phase==="accepted"
+-  && s.info10Page0Recovery?.oldFailureUnchanged===true,
+-  "prior_INFO10_failure_and_recovery_unchanged");
+- const request=JSON.parse(old.requestRaw);
+- gfNeed(Object.keys(request).sort().join(",")==="limit,offset,operation_id"
+-  && request.operation_id===operationId && request.offset===0 && request.limit===16384
+-  && a?.id===operationId && a.tool==="binary_read" && a.futureClosed===true
+-  && a.nextPageOffset===0 && a.eof===false && a.pages.length===0
+-  && a.total===null && a.digest===null && a.statusCalled===1 && a.pageCalled===1
+-  && s.outputFiles.length===16 && s.completedObservers.length===46
+-  && s.admissionsCalled===47 && s.bodyBytes===1184165
+-  && s.infoStarted[16]===true && s.outputInfos[16]!==null
+-  && s.bodyStarted[16].length===1 && s.bodyStarted[16][0]===true
+-  && s.outputRanges[16].length===0 && s.infoStarted[17]===false,
+-  "actual_closed_body16_before_any_later_file");
+- const statusKey="sf23-r1-f16-b00-s0",statusCall=s.calls[statusKey];
+- const statusPin={blob:"237b2709d1ca13c6b56fdd4be8012920bac38b7a",bytes:802,
+-  sha256:"9b667dd791f4fb7a67710f127b0b4475d9c15ca9b5e09b45c67f22410bc769b3"};
+- const statusRaw=load(GF_SLOT+":native_raw:"+statusKey);
+- gfNeed(statusCall?.called===true && statusCall.phase==="accepted"
+-  && statusCall.sdkArchive?.whole===true && gfMetaEquals(statusRaw,statusPin),
+-  "original_completed_status_identity");
+- const status=parseLosslessIntegers(statusRaw);
+- gfNeed(status.operation_id===operationId && status.async_state==="completed"
+-  && status.result_state==="stored_observed" && status.owned_future_active===false
+-  && status.payload_available===true,"original_future_already_closed");
+- const failedCallRaw=JSON.stringify(old,null,2)+"\n";
+- const before={pending:s.pending,paused:s.paused,failedCall:gitBlobMeta(failedCallRaw),
+-  admissionsCalled:s.admissionsCalled,bodyBytes:s.bodyBytes,pageCalled:a.pageCalled,
+-  completedObservers:s.completedObservers.length,wholeFiles:s.outputFiles.length};
+- const intent={schema:"heptabao.gitfirst.closed-immutable-page-recovery-intent.r1",
+-  callKey,kind:"operation_result",request:requestPin,rootRecoveryGo:goPin,
+-  originalRootGo:s.goPin,originalOperation:operationId,originalFailedSDK:errorPin,
+-  originalFailedCall:before.failedCall,originalCompletedStatus:statusPin,
+-  maximumNativeCalls:1,nativeNotYetCalled:true,noNativeAdmission:true,
+-  notRecoveryOfOriginalSDK:true,originalFailureRemains:true,before};
+- const armed={...intent,schema:"heptabao.gitfirst.closed-immutable-page-recovery-armed.r1",
+-  mayHaveDispatchedAfterThisCheckpoint:true,automaticRetry:false};
+- s.body16Page0Recovery={phase:"arming",goRaw,goPin,before,oldKey,callKey,
+-  oldFailureUnchanged:true,request:requestPin};
+- s.calls[callKey]={kind:"operation_result",requestRaw:old.requestRaw,requestPin,
+-  phase:"arming",called:false,recoveryOfDelivery:oldKey};
+- gfSave(s);
+- const archive=await archiveFlatPublicTextsOnce({
+-  key:"gfa-"+callKey,repository:"TrillionniumFoundation/HeptaBao",
+-  texts:{"request.json":old.requestRaw,"intent.json":JSON.stringify(intent,null,2)+"\n",
+-   "armed.json":JSON.stringify(armed,null,2)+"\n","original-failed-call.json":failedCallRaw}});
+- gfNeed(archive.whole===true && s.pending===oldKey && s.paused===true
+-  && !s.nativeCallInFlight && JSON.stringify(s.calls[oldKey],null,2)+"\n"===failedCallRaw,
+-  "whole_arm_and_original_failure_preserved");
+- gfNeed(JSON.stringify(s.calls["sf23-r1-f10-info-p0"],null,2)+"\n"===priorInfo10Raw
+-  && JSON.stringify(s.info10Page0Recovery)===priorInfo10RecoveryRaw,
+-  "prior_INFO10_history_unchanged_after_new_arm");
+- s.calls[callKey].armed=archive;s.calls[callKey].phase="armed_whole";
+- s.body16Page0Recovery.phase="armed_whole";
+- s.pending=callKey;s.paused=false;gfSave(s);
+- return {callKey,request:requestPin,armedTree:archive.tree,nativeCalled:false,
+-  originalFailedCallPreserved:true,originalFutureAlreadyClosed:true};
+-}
+-
+ async function gfPrepareOne({callKey,kind,requestRaw}) {
+  const s=gfState();
+  gfNeed(/^[a-z0-9][a-z0-9-]{0,70}$/.test(callKey) && !s.calls[callKey],"fresh_call_record");
+@@ -666,7 +549,6 @@
+   if(action==="initialize")value=gfInitializeOnlyAfterRootGO(args);
+   else if(action==="next_request")value=gfNextFixedRequest(gfState());
+   else if(action==="prepare_closed_info10_page0_recovery")value=await gfPrepareClosedInfo10Page0Recovery(args);
+-  else if(action==="prepare_closed_body16_page0_recovery")value=await gfPrepareClosedBody16Page0Recovery(args);
+   else if(action==="prepare")value=await gfPrepareOne(args);
+   else if(action==="invoke")value=await gfInvokePreparedOnce(args.callKey);
+   else if(action==="accept")value=gfAcceptArchivedSDK(args.callKey);

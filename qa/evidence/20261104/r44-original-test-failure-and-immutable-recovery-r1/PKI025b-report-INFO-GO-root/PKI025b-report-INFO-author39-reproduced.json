@@ -1,0 +1,170 @@
+{
+  "value": {
+    "schema": "heptabao.025b-build-report-info-source-checks.v1",
+    "checks": [
+      {
+        "name": "strict_forward_whole",
+        "pass": true
+      },
+      {
+        "name": "strict_reverse_whole",
+        "pass": true
+      },
+      {
+        "name": "same_current_slot",
+        "pass": true
+      },
+      {
+        "name": "existing_original_current_start_request",
+        "pass": true
+      },
+      {
+        "name": "fixed_only_report_path",
+        "pass": true
+      },
+      {
+        "name": "actual_failed_original_job_known",
+        "pass": true
+      },
+      {
+        "name": "actual_31_calls_10_closed",
+        "pass": true
+      },
+      {
+        "name": "actual_frontier_no_future",
+        "pass": true
+      },
+      {
+        "name": "same_function_names",
+        "pass": true
+      },
+      {
+        "name": "preserved_gfNeed",
+        "pass": true
+      },
+      {
+        "name": "preserved_gfMetaEquals",
+        "pass": true
+      },
+      {
+        "name": "preserved_gfState",
+        "pass": true
+      },
+      {
+        "name": "preserved_gfSave",
+        "pass": true
+      },
+      {
+        "name": "preserved_gfIntegerText",
+        "pass": true
+      },
+      {
+        "name": "preserved_gfInitializeOnlyAfterRootGO",
+        "pass": true
+      },
+      {
+        "name": "preserved_gfValidateRequest",
+        "pass": true
+      },
+      {
+        "name": "preserved_gfPrepareOne",
+        "pass": true
+      },
+      {
+        "name": "preserved_gfInvokePreparedOnce",
+        "pass": true
+      },
+      {
+        "name": "preserved_gfAcceptArchivedSDK",
+        "pass": true
+      },
+      {
+        "name": "preserved_gfCloseOriginalObserver",
+        "pass": true
+      },
+      {
+        "name": "preserved_gfReconcileSameGitArchiveReadOnly",
+        "pass": true
+      },
+      {
+        "name": "preserved_gfRun",
+        "pass": true
+      },
+      {
+        "name": "metadata_size_cap_1MiB_preserved",
+        "pass": true
+      },
+      {
+        "name": "metadata_fullmode_correct",
+        "pass": true
+      },
+      {
+        "name": "new_metadata_8KiB_pages_preserved",
+        "pass": true
+      },
+      {
+        "name": "no_binary_dispatch_added",
+        "pass": true
+      },
+      {
+        "name": "candidate_compiles_as_JS_source_only",
+        "pass": true
+      },
+      {
+        "name": "actual_closure_authorizes_metadata_only",
+        "pass": true
+      },
+      {
+        "name": "all_old_state_byte_values_preserved",
+        "pass": true
+      },
+      {
+        "name": "one_exact_file_info_admission_valid",
+        "pass": true
+      },
+      {
+        "name": "other_path_refused",
+        "pass": true
+      },
+      {
+        "name": "body_not_authorized",
+        "pass": true
+      },
+      {
+        "name": "repeat_info_refused",
+        "pass": true
+      },
+      {
+        "name": "new_process_refused",
+        "pass": true
+      },
+      {
+        "name": "live_future_refused",
+        "pass": true
+      },
+      {
+        "name": "wrong_frontier_refused",
+        "pass": true
+      },
+      {
+        "name": "missing_closed_observer_refused",
+        "pass": true
+      },
+      {
+        "name": "unwhole_original_pin_refused",
+        "pass": true
+      },
+      {
+        "name": "zero_native_git_tools_executed",
+        "pass": true
+      }
+    ],
+    "passed": 39,
+    "failed": 0,
+    "scope": "PURE_SOURCE_AND_SELECTED_GUARDS_ONLY",
+    "native_calls": 0,
+    "product_tests": 0,
+    "actual_metadata_observed": false
+  },
+  "exactOriginal": true
+}

@@ -1,0 +1,259 @@
+{
+  "schema": "heptabao.independent-label-pid-source-mechanical-review.r2",
+  "passed": true,
+  "checkCount": 62,
+  "checks": [
+    {
+      "name": "forward_exact",
+      "pass": true
+    },
+    {
+      "name": "reverse_exact",
+      "pass": true
+    },
+    {
+      "name": "source_hunks_7_7",
+      "pass": true
+    },
+    {
+      "name": "journal_forward_exact",
+      "pass": true
+    },
+    {
+      "name": "journal_reverse_exact",
+      "pass": true
+    },
+    {
+      "name": "journal_hunks_2_2",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition:ProbeRefused",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition:need",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition:sha",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition:encoded",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition:identity",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition:error_projection",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition:FixedIO",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition:restore_handlers",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition:parse_print",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition:missing_service",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition:remaining",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition:load_readonly_helpers",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition:fixed_field_projection",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition:ReadOnlyControl",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition:BsdInfo",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition:strict_json",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition:typed_number",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition:process_claim_projection",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition:file_json_projection",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition:check_leaf_metadata",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition:read_pinned",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition:observe_public_json",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition:safe_commands_public",
+      "pass": true
+    },
+    {
+      "name": "exact_definition_set",
+      "pass": true
+    },
+    {
+      "name": "constants_and_embedded_helpers_whole",
+      "pass": true
+    },
+    {
+      "name": "unchanged_sampler_method:__init__",
+      "pass": true
+    },
+    {
+      "name": "unchanged_sampler_method:check_time",
+      "pass": true
+    },
+    {
+      "name": "unchanged_sampler_method:call",
+      "pass": true
+    },
+    {
+      "name": "unchanged_sampler_method:lifetime",
+      "pass": true
+    },
+    {
+      "name": "unchanged_sampler_method:verify_self",
+      "pass": true
+    },
+    {
+      "name": "unchanged_sampler_method:public",
+      "pass": true
+    },
+    {
+      "name": "self_numeric_remains_strict",
+      "pass": true
+    },
+    {
+      "name": "strict_numeric_conditions_preserved",
+      "pass": true
+    },
+    {
+      "name": "target_observation_only_two_callsites",
+      "pass": true
+    },
+    {
+      "name": "target_numeric_scoped_exact",
+      "pass": true
+    },
+    {
+      "name": "numeric_esrch_is_classification",
+      "pass": true
+    },
+    {
+      "name": "no_esrch_exit_or_reap_claim",
+      "pass": true
+    },
+    {
+      "name": "conditional_path_and_children",
+      "pass": true
+    },
+    {
+      "name": "second_numeric_outside_conditional",
+      "pass": true
+    },
+    {
+      "name": "missing_label_only_classified",
+      "pass": true
+    },
+    {
+      "name": "two_label_classifications",
+      "pass": true
+    },
+    {
+      "name": "original_first_and_second_prints",
+      "pass": true
+    },
+    {
+      "name": "public_files_before_second_print",
+      "pass": true
+    },
+    {
+      "name": "target_pair_both",
+      "pass": true
+    },
+    {
+      "name": "current_mapping_still_required_for_future_identity",
+      "pass": true
+    },
+    {
+      "name": "no_none_lifetime_dereference",
+      "pass": true
+    },
+    {
+      "name": "new_numeric_caps_unchanged",
+      "pass": true
+    },
+    {
+      "name": "same_two_four_second_windows",
+      "pass": true
+    },
+    {
+      "name": "same_application_io_caps",
+      "pass": true
+    },
+    {
+      "name": "remaining_unknown_and_original_finally",
+      "pass": true
+    },
+    {
+      "name": "original_final_file_fences",
+      "pass": true
+    },
+    {
+      "name": "request_source_exact",
+      "pass": true
+    },
+    {
+      "name": "request_metadata_unchanged",
+      "pass": true
+    },
+    {
+      "name": "exact_new_key",
+      "pass": true
+    },
+    {
+      "name": "journal_exact_request",
+      "pass": true
+    },
+    {
+      "name": "journal_only_identity_literals",
+      "pass": true
+    }
+  ],
+  "pythonExecuted": false,
+  "compiledOrImportedCandidate": false,
+  "newNativeCalls": 0,
+  "scope": "pure source whole/diff/binding and unchanged resource boundaries; no runtime qualification"
+}

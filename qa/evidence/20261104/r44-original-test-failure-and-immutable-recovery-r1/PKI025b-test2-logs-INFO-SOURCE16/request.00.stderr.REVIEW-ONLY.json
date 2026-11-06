@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-native-jwt-pki-025b05a3-build149-failed-test2-stderr-info-r1",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1/native-jwt-pki-file17-2.stderr"
+    }
+  }
+}

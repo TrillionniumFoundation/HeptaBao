@@ -1,0 +1,140 @@
+{
+  "schema": "heptabao.root-original-body16-page-recovery.r1",
+  "passed": true,
+  "checks": 21,
+  "rows": [
+    {
+      "name": "exact_root_recovery_GO",
+      "passed": true
+    },
+    {
+      "name": "original_failed_call_fourth_leaf_exact",
+      "passed": true
+    },
+    {
+      "name": "original_failed_called_not_accepted",
+      "passed": true
+    },
+    {
+      "name": "four_leaf_recovery_arm",
+      "passed": true
+    },
+    {
+      "name": "same_original_closed_future",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_native_0",
+      "passed": true
+    },
+    {
+      "name": "called_accepted_0",
+      "passed": true
+    },
+    {
+      "name": "exact_request_and_key_0",
+      "passed": true
+    },
+    {
+      "name": "contiguous_immutable_page_0",
+      "passed": true
+    },
+    {
+      "name": "recovery_explicit_separate_GO_and_old_failure",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_native_1",
+      "passed": true
+    },
+    {
+      "name": "called_accepted_1",
+      "passed": true
+    },
+    {
+      "name": "exact_request_and_key_1",
+      "passed": true
+    },
+    {
+      "name": "contiguous_immutable_page_1",
+      "passed": true
+    },
+    {
+      "name": "ordinary_p2_original_GO_and_three_leaf_arm",
+      "passed": true
+    },
+    {
+      "name": "whole_original_payload",
+      "passed": true
+    },
+    {
+      "name": "whole_original_body",
+      "passed": true
+    },
+    {
+      "name": "original_version_path_range",
+      "passed": true
+    },
+    {
+      "name": "no_extra_admission_or_status",
+      "passed": true
+    },
+    {
+      "name": "closed_file_boundary",
+      "passed": true
+    },
+    {
+      "name": "historical_failures_still_explicit",
+      "passed": true
+    }
+  ],
+  "sourcePacket": "5aea752641f3c23c9cf708e3e82796d42b1b3609",
+  "file": {
+    "index": 16,
+    "name": "service_snapshot_forward_wire.rs",
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_forward_wire.rs",
+    "body": {
+      "blob": "a06777634573628646661f75d2d3d060d16e06f8",
+      "bytes": 16474,
+      "sha256": "865e1c316cec0890b3a28076b95a00eedff366bae9d0949899afe23fa044fa75"
+    },
+    "bodyTree": "61d3a245c5d621ffe5939a33421c0dc5cd32d734",
+    "version": "66306:31236012:16474:1793956738925595332:1793956738925595332",
+    "full9Strings": [
+      "66306",
+      "31236012",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "16474",
+      "1793956738925595332",
+      "1793956738925595332"
+    ],
+    "metadataOperation": "1c9f9418c519a2b618d0313158fbcdb84583304fb62d3587778161b3835f391b",
+    "ranges": [
+      {
+        "offset": 0,
+        "next": 16474,
+        "limit": 16474,
+        "chunkSha256": "865e1c316cec0890b3a28076b95a00eedff366bae9d0949899afe23fa044fa75",
+        "originalOperation": "9037480fbf014345c1d2bbe1894020e30602a9adb2d8c1a864f6eff35368f1b0",
+        "nativeText": {
+          "blob": "15fa12c9e9fbb8832b3a5fb911f72a8eba4cbcc5",
+          "bytes": 22323,
+          "sha256": "bf0324f330231ba8890455451f7ba5c058e25558071f981f9c44c8178de60b44"
+        }
+      }
+    ],
+    "wholeUTF8DecodedAfterByteSHA": true,
+    "semanticQualification": false
+  },
+  "successfulPayloadPages": 2,
+  "originalFailedPageStillCalled": true,
+  "priorINFO10FailurePreserved": true,
+  "originalOperationClosed": true,
+  "wholeFilesAtBoundary": 17,
+  "wholeBytesAtBoundary": 1200639,
+  "final23Qualified": false,
+  "newProductTests": 0
+}

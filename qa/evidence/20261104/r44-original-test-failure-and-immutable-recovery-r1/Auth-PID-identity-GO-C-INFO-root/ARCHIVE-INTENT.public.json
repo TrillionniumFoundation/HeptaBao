@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r44-C-INFO-closed-and-A-PID32527-GO",
+  "records": [
+    {
+      "name": "PKI025b-report-INFO-actual-root-qualification.json",
+      "blob": "493332cfade7a38dfc4cdc4167fdd4a4a77663f5",
+      "bytes": 3883,
+      "sha256": "6d0e68dcec6e54902468f2fcbe404172c39b65a99dc5187aba8df67c1b4802c2"
+    },
+    {
+      "name": "PKI025b-report-INFO-actual-root-verifier.js",
+      "blob": "1989c14bd4eed5a68c913303235684f64e1de227",
+      "bytes": 4361,
+      "sha256": "dbb3d313bde6fe74fa758e75e2e66ba725e9d9e2c41cd47a6ff88115dda90c38"
+    },
+    {
+      "name": "Auth-PID32527-readonly-GO.json",
+      "blob": "a7212b6b7a17c7e21bed8e51ecdff50b27a5b561",
+      "bytes": 15324,
+      "sha256": "791d0ee2482ecf919abc32694384b998f97737e10d35fa7c9ce0d6320a7060ac"
+    }
+  ],
+  "expected_data_tree": "43a320186286f54e8c13a256a84df7d009017954",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

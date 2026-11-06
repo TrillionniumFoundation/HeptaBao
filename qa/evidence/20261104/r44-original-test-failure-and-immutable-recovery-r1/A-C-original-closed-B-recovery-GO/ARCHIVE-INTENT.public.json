@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r44-A-C-closed-B-body16-recovery-GO",
+  "records": [
+    {
+      "name": "A-original-identity-root-verifier.js",
+      "blob": "5a4a572c7aafb7551005d1d4181ee891c8d6dbd2",
+      "bytes": 3940,
+      "sha256": "65ca6a1ffeaec31e05b5f3e13f30d8ff849318483f58ccadf30d3871a2dfa21f"
+    },
+    {
+      "name": "A-original-identity-root21.public.json",
+      "blob": "abcedc9dcfa325948984ff6cc31c75cecf0cda6b",
+      "bytes": 1937,
+      "sha256": "c94c958a9c14d02a86694c5db04f90819f15861d59fd9757961e7dbd4ab0854c"
+    },
+    {
+      "name": "B-body16-recovery-source-root-verifier.js",
+      "blob": "24a3dd1e0fdb735f7f4c0930812f8c3bd3de7eac",
+      "bytes": 3194,
+      "sha256": "35f509df53702827cd1ae0b65a39e3e4924a1e883bea0919f3012587782a1a68"
+    },
+    {
+      "name": "B-body16-recovery-source-root18.public.json",
+      "blob": "261e09f09361670a534a2faa3770c8fab84f9f13",
+      "bytes": 1634,
+      "sha256": "584e63e5ffcb367229d4045017d72f0898071b262af2a40cbd564888558d00e7"
+    },
+    {
+      "name": "B-body16-recovery-GO.public.json",
+      "blob": "748716dc20b7d61a5fe773aaefc44ba9d4a9ddac",
+      "bytes": 3876,
+      "sha256": "affe4439b1649e907d1df5be0a4bed06a0ed59d27ae6e8dba14d91d4527ca593"
+    },
+    {
+      "name": "C-original-report-minimum-root-verifier.js",
+      "blob": "99b88e22483d8810da9f83c9ad4ac9ecac34b6c8",
+      "bytes": 3118,
+      "sha256": "0579883593654cdc79ca30a19b11d7a0191c8ec6ce0e227f2b2b54245a5a14e0"
+    },
+    {
+      "name": "C-original-report-minimum-root17.public.json",
+      "blob": "525294a9961a1550000aec907c7bc217f89bda16",
+      "bytes": 1832,
+      "sha256": "0ffb759948abc62a9dd16dce4ba777366d80e383ec6059f418b3b2f8f60c381b"
+    },
+    {
+      "name": "root-pure-driver-error-preserved.public.json",
+      "blob": "7ab2a4fd1a4979a44fc610adbaa54ab1811b64b3",
+      "bytes": 298,
+      "sha256": "a5605a2d935c0ad4686fba3e0db274af0071b8deb2f870e3d5a530356c92ec54"
+    }
+  ],
+  "expected_data_tree": "49ad8a124911ef6d54f052857b38e1a4008bc7b2",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

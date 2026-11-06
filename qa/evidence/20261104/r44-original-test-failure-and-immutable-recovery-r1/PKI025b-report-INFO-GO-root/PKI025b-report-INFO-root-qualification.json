@@ -1,0 +1,95 @@
+{
+  "schema": "heptabao.root.PKI025b-report-INFO-SOURCE20-qualification.r44",
+  "passed": true,
+  "checkCount": 18,
+  "checks": [
+    {
+      "name": "whole_SOURCE20",
+      "pass": true
+    },
+    {
+      "name": "source_pins_exact",
+      "pass": true
+    },
+    {
+      "name": "three_hunks_strict_forward_reverse",
+      "pass": true
+    },
+    {
+      "name": "author39_exact_reproduction",
+      "pass": true
+    },
+    {
+      "name": "checker_inputs_whole_files",
+      "pass": true
+    },
+    {
+      "name": "root_terminal_qualification_available",
+      "pass": true
+    },
+    {
+      "name": "exact_same_report_from_actual_terminal",
+      "pass": true
+    },
+    {
+      "name": "only_fixed_metadata_request",
+      "pass": true
+    },
+    {
+      "name": "metadata_no_speculative_size_or_version",
+      "pass": true
+    },
+    {
+      "name": "metadata_mode_identity_preserved",
+      "pass": true
+    },
+    {
+      "name": "original_slot_no_reinitialization",
+      "pass": true
+    },
+    {
+      "name": "new_GO_exact_request_pin_once",
+      "pass": true
+    },
+    {
+      "name": "3_fixed_native_prerequisites_match_original",
+      "pass": true
+    },
+    {
+      "name": "actual_31_call_10_observer_boundary",
+      "pass": true
+    },
+    {
+      "name": "whole_report_hash_fixed_in_source",
+      "pass": true
+    },
+    {
+      "name": "source_count_limits",
+      "pass": true
+    },
+    {
+      "name": "scope_does_not_start_build_or_read_body",
+      "pass": true
+    },
+    {
+      "name": "failure_and_test_results_still_unknown",
+      "pass": true
+    }
+  ],
+  "sourcePacket": "167e48e740541344a9b719bfda9c5285078d7c8d",
+  "journal": {
+    "blob": "792b1555449a82012596fb765da4e841585b0e20",
+    "bytes": 26557,
+    "sha256": "16907a9c20a8610199ea72bbf8da476b61ffd942dfb0fb97dad33ea2305b2741"
+  },
+  "exactRequest": {
+    "blob": "464277d021b666996c5788b038497e1157dc82c9",
+    "bytes": 294,
+    "sha256": "771ec011b8c64a3df402dabc99d02337fc873f850d0d46a24d5a846efba42047"
+  },
+  "author39Reproduced": true,
+  "scope": "one fixed report metadata observation source; no dispatch in this review",
+  "actualReportBodyRead": false,
+  "actualMetadataObserved": false,
+  "newNativeCalls": 0
+}

@@ -1,0 +1,95 @@
+{
+  "schema": "heptabao.025b-original-failed-build-fixed-report-body-source.v1",
+  "status": "SOURCE_ONLY_SEPARATE_ROOT_GO_REQUIRED",
+  "scope": "build_result_binary_read_only",
+  "slot": "jwt_pki_025b05a3_build149_gitfirst_r2",
+  "entry_action": "authorize_build_result_body",
+  "original_job": "1a1b10cad9b-fc05-7560",
+  "source": {
+    "blob": "e12d33cfa8170256dd0e9575192cac3a15afc2ba",
+    "bytes": 31242,
+    "sha256": "ebe21b7466dd79ad1c050161699bcb92fade6bd0f63832e5ed6a3c55cd298e55"
+  },
+  "base_info_source": {
+    "blob": "792b1555449a82012596fb765da4e841585b0e20",
+    "bytes": 26557,
+    "sha256": "16907a9c20a8610199ea72bbf8da476b61ffd942dfb0fb97dad33ea2305b2741"
+  },
+  "existing_body_algorithm_reference": {
+    "blob": "a7af3a3329529d0629785765b7a9ade1dd14f23e",
+    "bytes": 29476,
+    "sha256": "bceff8ef04a1c330716436f79421ab4cae20bd96a577d8cd6fc335aa0036a333"
+  },
+  "strict_diff": {
+    "blob": "b09bf1c7a4ccba06809db5c7b775968238b86049",
+    "bytes": 8398,
+    "sha256": "99d7c587160eee75807700954c55443b46c5c64869e7d4a472a8a2f607409f19"
+  },
+  "strict_hunks": 8,
+  "exact_request": {
+    "blob": "8e7a4856de578ea88d188e5b21831ba5f43af9c1",
+    "bytes": 428,
+    "sha256": "49a8de3340efe023b42bbc2cbd6a3bea5831976814ef6f7346112f20c992642b"
+  },
+  "expected_report": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1/result.public.json",
+    "bytes": 49775,
+    "sha256": "47748eadb948f08973d7de202272823cd5f031ed99ec62286868236a8cbaa318",
+    "version": "66306:33202271:49775:1793974567959218921:1793974567959218921",
+    "infoOperation": "081575224fe6c414c2c1da7b451f3d00a54cfc513bdcca0c1980e40581bc276d",
+    "infoNative": {
+      "blob": "8c996ffb4877cb71d6b9721f57b7f3ffab40860e",
+      "bytes": 480,
+      "sha256": "8edfc11c65702adb295417234d5880ac22f7983c4da6832f446f8e3515a1b1ca"
+    },
+    "full9Strings": [
+      "66306",
+      "33202271",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "49775",
+      "1793974567959218921",
+      "1793974567959218921"
+    ]
+  },
+  "actual_info_packet": "26581e676cae80a0433de0d793c27bcb6d724c58",
+  "root_actual_info_qualification": {
+    "blob": "493332cfade7a38dfc4cdc4167fdd4a4a77663f5",
+    "bytes": 3883,
+    "sha256": "6d0e68dcec6e54902468f2fcbe404172c39b65a99dc5187aba8df67c1b4802c2",
+    "tree": "96f6a94a4fcae3b5a6a61afb1a8c18640b3ed72e"
+  },
+  "limits": {
+    "binary_starts": 1,
+    "binary_offset": 0,
+    "binary_bytes": 49775,
+    "maximum_binary_bytes": 65536,
+    "new_binary_immutable_page_bytes": 16384,
+    "original_info_status_page_bytes": 8192,
+    "operation_status_calls": 8,
+    "immutable_pages": 128,
+    "serialized_original_payload_cap": 1048576,
+    "concurrent_native_calls_or_future": 1
+  },
+  "original_context_reinitialize": false,
+  "new_process_authorized": false,
+  "new_info_authorized": false,
+  "target_reuse_authorized": false,
+  "build_replay_authorized": false,
+  "sequence": [
+    "Whole separate exact root GO, attach original closed INFO context without initialize.",
+    "Whole exact request/intent/armed; independent model boundary; one binary_read admission.",
+    "Each returned original SDK whole before isError/native parse; same returned ID status and contiguous immutable pages only.",
+    "Whole original serialized payload SHA/EOF; decode exact 49,775 bytes and whole externally archive before semantic diagnosis.",
+    "Release known closed observer lane; retain original failed BUILD and all historical UNKNOWN/error contexts."
+  ],
+  "checks": {
+    "pure_selected_guard_passed": 29,
+    "native_calls": 0,
+    "product_tests": 0
+  },
+  "runtime_body_submitted": false,
+  "actual_tests_qualified": false
+}

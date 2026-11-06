@@ -1,0 +1,45 @@
+{
+  "tree": "b313c1e214900126ca9d2c85558ac7e24888bb96",
+  "entries": [
+    {
+      "path": "actual-checks.public.json",
+      "blob": "8afe6cb030be277baa8ef878e363f13535e02ae0",
+      "bytes": 1152788,
+      "sha256": "0f11b2fefe637f91254d369e2d18fef6ea64de63c895d3bd47aca470251b7961",
+      "whole": true
+    },
+    {
+      "path": "blobs.index.public.json",
+      "blob": "b8aaf07a67074c561afc84d7ca249475a1eebdd0",
+      "bytes": 186177,
+      "sha256": "6c0c8b97c855bc980348dcbb8abab596cf9f4000be6bdd6f722ed4535bd3957a",
+      "whole": true
+    },
+    {
+      "path": "projection-contract.public.json",
+      "blob": "b2ac6da89ec774743b03a244f61590242c542904",
+      "bytes": 1463,
+      "sha256": "4374d1a78765197334c234e54a7b07d2ee81fa2d3e51d18acd68ebbeb8a09a28",
+      "whole": true
+    },
+    {
+      "path": "projection-verifier.js",
+      "blob": "e8862e61710fc891bc94d352e7c91cce2e85b3e2",
+      "bytes": 26691,
+      "sha256": "ddafb2aa410a8c1fa140ba88be7f30673150d3a2fb4fe1658a291a1fd5d9ee40",
+      "whole": true
+    },
+    {
+      "path": "state.original.compact.json",
+      "blob": "4e2143f94098dbeabe0a2990123dee380645b65a",
+      "bytes": 1934059,
+      "sha256": "7251b4d80853ff81bf78525aef53c7637dc2946a6982f63939623d93d2b07c08",
+      "whole": true
+    }
+  ],
+  "count": 5,
+  "bytes": 3301178,
+  "whole": true,
+  "localDurableJournal": false,
+  "runtimeAuthorized": false
+}

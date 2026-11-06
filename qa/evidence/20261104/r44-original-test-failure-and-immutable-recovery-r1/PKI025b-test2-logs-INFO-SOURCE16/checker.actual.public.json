@@ -1,0 +1,158 @@
+{
+  "schema": "heptabao.025b.failed-test2-log-info-source-checks.v1",
+  "passed": 37,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "strict_forward_whole",
+      "pass": true
+    },
+    {
+      "name": "strict_reverse_whole",
+      "pass": true
+    },
+    {
+      "name": "three_hunks",
+      "pass": true
+    },
+    {
+      "name": "same_function_inventory",
+      "pass": true
+    },
+    {
+      "name": "old_function_unchanged_gfNeed",
+      "pass": true
+    },
+    {
+      "name": "old_function_unchanged_gfMetaEquals",
+      "pass": true
+    },
+    {
+      "name": "old_function_unchanged_gfState",
+      "pass": true
+    },
+    {
+      "name": "old_function_unchanged_gfSave",
+      "pass": true
+    },
+    {
+      "name": "old_function_unchanged_gfIntegerText",
+      "pass": true
+    },
+    {
+      "name": "old_function_unchanged_gfValidateRequest",
+      "pass": true
+    },
+    {
+      "name": "old_function_unchanged_gfPrepareOne",
+      "pass": true
+    },
+    {
+      "name": "old_function_unchanged_gfInvokePreparedOnce",
+      "pass": true
+    },
+    {
+      "name": "old_function_unchanged_gfAcceptArchivedSDK",
+      "pass": true
+    },
+    {
+      "name": "old_function_unchanged_gfCloseOriginalObserver",
+      "pass": true
+    },
+    {
+      "name": "old_function_unchanged_gfReconcileSameGitArchiveReadOnly",
+      "pass": true
+    },
+    {
+      "name": "old_function_unchanged_gfRun",
+      "pass": true
+    },
+    {
+      "name": "two_exact_public_test_paths",
+      "pass": true
+    },
+    {
+      "name": "same_actual_report_root",
+      "pass": true
+    },
+    {
+      "name": "actual_failed_test_record",
+      "pass": true
+    },
+    {
+      "name": "actual_raw_log_hashes",
+      "pass": true
+    },
+    {
+      "name": "owned_runner_path_rule_original",
+      "pass": true
+    },
+    {
+      "name": "all34prior_plus7body_closed",
+      "pass": true
+    },
+    {
+      "name": "exact_new_readonly_context_initializes",
+      "pass": true
+    },
+    {
+      "name": "original_build_context_unchanged",
+      "pass": true
+    },
+    {
+      "name": "first_stderr_exact_admissible",
+      "pass": true
+    },
+    {
+      "name": "stdout_out_of_order_refused",
+      "pass": true
+    },
+    {
+      "name": "process_start_refused",
+      "pass": true
+    },
+    {
+      "name": "binary_refused",
+      "pass": true
+    },
+    {
+      "name": "extra_path_refused",
+      "pass": true
+    },
+    {
+      "name": "started_info_not_replayed",
+      "pass": true
+    },
+    {
+      "name": "second_only_after_completed_index",
+      "pass": true
+    },
+    {
+      "name": "drift_old_state_refused",
+      "pass": true
+    },
+    {
+      "name": "changed_report_refused",
+      "pass": true
+    },
+    {
+      "name": "context_reinitialize_refused",
+      "pass": true
+    },
+    {
+      "name": "unchanged_metadata1MiB_and8KiB_pages",
+      "pass": true
+    },
+    {
+      "name": "metadata_does_not_authorize_body",
+      "pass": true
+    },
+    {
+      "name": "no_tools_executed",
+      "pass": true
+    }
+  ],
+  "Native": 0,
+  "actual_metadata_observed": false,
+  "product_tests": 0
+}

@@ -1,0 +1,32 @@
+{
+  "authorization": "REVIEW_ONLY_NOT_A_GO",
+  "scope": "snapshot_formatted23_body16_page0_retrieval_recovery",
+  "slot": "snapshot_2379_formatted23_readonly_gitfirst_r1",
+  "original_operation": "9037480fbf014345c1d2bbe1894020e30602a9adb2d8c1a864f6eff35368f1b0",
+  "failed_call_key": "sf23-r1-f16-b00-p0",
+  "recovery_call_key": "sf23-r1-f16-b00-p0-recovery1",
+  "request": {
+    "blob": "bfd96536330ccc3704a2ba596203edf3680a0702",
+    "bytes": 122,
+    "sha256": "ede3d944c75b34dbcc7cf3b644e9d8374496f8348d375e792d565141c92b2ef5"
+  },
+  "failed_sdk": {
+    "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+    "bytes": 248,
+    "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+  },
+  "failed_call": {
+    "blob": "593f02daca6b8ac9511ed460af8919eed0b7bc32",
+    "bytes": 2066,
+    "sha256": "f70e2ae9bac4c87df0faac3a2fbd4e507a64db29d4d1b010b3771028465d7776"
+  },
+  "maximum_recovery_page_calls": 1,
+  "page_bytes": 16384,
+  "native_payload_cap": 1048576,
+  "operation_start_authorized": false,
+  "operation_status_authorized": false,
+  "failed_call_preserved": true,
+  "continue_original_observer_after_recovered_page": true,
+  "continue_original_table_only_after_file_whole": true,
+  "original_go": "25ea12c4406a12ba5ce263b10a2723f73276d74b"
+}

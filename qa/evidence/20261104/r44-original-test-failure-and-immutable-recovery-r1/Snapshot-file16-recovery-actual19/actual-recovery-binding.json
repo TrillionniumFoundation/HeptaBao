@@ -1,0 +1,44 @@
+{
+  "go": {
+    "blob": "748716dc20b7d61a5fe773aaefc44ba9d4a9ddac",
+    "bytes": 3876,
+    "sha256": "affe4439b1649e907d1df5be0a4bed06a0ed59d27ae6e8dba14d91d4527ca593"
+  },
+  "armTree": "c370ed05be5ee262616c26daeee0beca0f4f5a13",
+  "armEntries": [
+    {
+      "path": "armed.json",
+      "blob": "398925095ce1edbcaa677907d09756b52eff83ca",
+      "bytes": 1969,
+      "sha256": "397eb8a1d2cc54753c134b9350edf7ad6ad56e5fa4f3b60204218e5ce2439bbd"
+    },
+    {
+      "path": "intent.json",
+      "blob": "494505a388d443199fe9825e0583f8409cd9cdec",
+      "bytes": 1895,
+      "sha256": "c358d981c725c5021598dffa3177e5ae66b9b10ac0532901abd5be02f554b45a"
+    },
+    {
+      "path": "original-failed-call.json",
+      "blob": "593f02daca6b8ac9511ed460af8919eed0b7bc32",
+      "bytes": 2066,
+      "sha256": "f70e2ae9bac4c87df0faac3a2fbd4e507a64db29d4d1b010b3771028465d7776"
+    },
+    {
+      "path": "request.json",
+      "blob": "bfd96536330ccc3704a2ba596203edf3680a0702",
+      "bytes": 122,
+      "sha256": "ede3d944c75b34dbcc7cf3b644e9d8374496f8348d375e792d565141c92b2ef5"
+    }
+  ],
+  "sdk": {
+    "blob": "2776bd5f05ab70da6d48606a1ab96b3252350cd7",
+    "bytes": 22705,
+    "sha256": "23fbc257b38be670a42141a26baed551a8ba3b1a3e2c9ca73ffb4762637fa805"
+  },
+  "native": {
+    "blob": "569162defbc1fc5340e8da3beb11c26cde9b222c",
+    "bytes": 22534,
+    "sha256": "0f9937a879ceade2af04e05595f7a9bb16b9bbd0f12c9b55f99f975513666d67"
+  }
+}

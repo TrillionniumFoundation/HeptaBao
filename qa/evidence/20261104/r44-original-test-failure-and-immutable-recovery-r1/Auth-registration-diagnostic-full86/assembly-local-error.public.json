@@ -1,0 +1,5 @@
+{
+  "error": "closed original map",
+  "stage": "pure data assembly before archive; no Native or Git mutation",
+  "reason": "closed archive stores the payload under its original naming"
+}

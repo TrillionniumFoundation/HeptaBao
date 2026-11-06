@@ -1,0 +1,102 @@
+{
+  "schema": "heptabao.formatted23-body16-page0-recovery-source-proposal.v1",
+  "scope": "snapshot_formatted23_body16_page0_retrieval_recovery",
+  "authorization": "SOURCE_ONLY_NO_NATIVE",
+  "before": {
+    "blob": "a154e8b3e4bbce818471dd10fe434e4ded570c8b",
+    "bytes": 79062,
+    "sha256": "8ad44f98b72e37ae7037451eada7cf9c5616609ec5123f7bc8cef3b4fcf4f9d9"
+  },
+  "after": {
+    "blob": "3397c4e1b8743273af9209c5074170e855491cc1",
+    "bytes": 87063,
+    "sha256": "08fd91a8804b4868851a81541fa25d2fb247fc5db4774827ab0c12a733df9710"
+  },
+  "strictHunks": 2,
+  "modifications": [
+    "Add only gfPrepareClosedBody16Page0Recovery and its one gfRun dispatch branch.",
+    "All existing 18 definitions remain whole except the one gfRun added branch; INFO10 recovery, gfInvoke, gfAccept, ordinary validation, fixed23 table and caps are unchanged."
+  ],
+  "originalFailure": {
+    "callKey": "sf23-r1-f16-b00-p0",
+    "originalOperation": "9037480fbf014345c1d2bbe1894020e30602a9adb2d8c1a864f6eff35368f1b0",
+    "request": {
+      "blob": "bfd96536330ccc3704a2ba596203edf3680a0702",
+      "bytes": 122,
+      "sha256": "ede3d944c75b34dbcc7cf3b644e9d8374496f8348d375e792d565141c92b2ef5"
+    },
+    "failedCall": {
+      "blob": "593f02daca6b8ac9511ed460af8919eed0b7bc32",
+      "bytes": 2066,
+      "sha256": "f70e2ae9bac4c87df0faac3a2fbd4e507a64db29d4d1b010b3771028465d7776"
+    },
+    "SDK": {
+      "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+      "bytes": 248,
+      "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+    },
+    "whole23Tree": "d4d3b0541dbb06cf809c987d19bfe8702938009d",
+    "rootClosure": "557023960b1b922cb2862745a1ccf10265ba0488"
+  },
+  "exactFutureOperationResult": {
+    "operation_id": "9037480fbf014345c1d2bbe1894020e30602a9adb2d8c1a864f6eff35368f1b0",
+    "offset": 0,
+    "limit": 16384
+  },
+  "expectedSequence": [
+    "New separate root GO must be whole and exactly match this scope and original failure.",
+    "gfRun prepare_closed_body16_page0_recovery builds a new exact four-leaf request/intent/armed/original-failed-call tree; no Native call in this prepare method.",
+    "Cross the model/tool boundary after whole arm, then invoke the new callKey once and archive the complete original SDK before accept.",
+    "On success retain original failed page call and previous INFO10 records. Do not reset pageCalled; next original page call is p2 at actual nextPageOffset, because failed p0 and recovery1 each consumed one call counter.",
+    "Finish the same original observer under the original page/payload caps, then whole-file byte SHA and UTF8 before any later INFO. Any continuation/lane activation follows exact root GO; no implicit new Native permission."
+  ],
+  "newCallKey": "sf23-r1-f16-b00-p0-recovery1",
+  "newStateField": "body16Page0Recovery",
+  "failedCallAlwaysCalledTrue": true,
+  "resetOldFailedCall": false,
+  "resetOldContext": false,
+  "operationStartAuthorized": false,
+  "operationStatusAuthorized": false,
+  "additionalBinaryReadAuthorized": false,
+  "extraPathAuthorized": false,
+  "limits": {
+    "oneRecoveryPageCall": 1,
+    "pageBytes": 16384,
+    "payloadCap": 1048576,
+    "originalPerBodyPageCallCap": 64,
+    "originalTotalBodyBytes": 1346637,
+    "maximumNativeFutures": 1
+  },
+  "dataScope": {
+    "currentInfo16Version": "66306:31236012:16474:1793956738925595332:1793956738925595332",
+    "currentInfo16Full9Strings": [
+      "66306",
+      "31236012",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "16474",
+      "1793956738925595332",
+      "1793956738925595332"
+    ],
+    "bodyOriginalSize": 16474,
+    "bodyOriginalSHA": "defer_to_exact_frozen_GF_OUTPUTS16_unchanged",
+    "bodyOriginalRequest": {
+      "blob": "143e9be276d829ff48959b3b43f2e886deab6a9b",
+      "bytes": 448,
+      "sha256": "b175517b8290a3d3b3f835d839d3abe72ef55f7fa13dcbcd5353e57eeee349e2"
+    },
+    "bodyOriginalFutureClosed": true,
+    "newDeliveryNotRecoveryOfOriginalSDK": true
+  },
+  "pureChecks": {
+    "checks": 65,
+    "positiveFakeArmCases": 1,
+    "negativeCases": 23,
+    "realNativeCalls": 0,
+    "realGitMutations": 0,
+    "liveStateUnchanged": true
+  },
+  "finalVerifierStatus": "Original SOURCE12/root-prefix12 remain immutable and correctly reject this new second failed row. A separate final-verifier successor will bind this exact failure and the actual new recovery arm/GO after those identities are available; no generic retry exception or final23 success is claimed."
+}

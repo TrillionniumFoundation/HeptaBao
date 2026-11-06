@@ -1,0 +1,169 @@
+{
+  "schema": "heptabao.root.X230-official271-ACL23-R2-entry-and-journal-SOURCE-review.r44",
+  "passed": true,
+  "checkCount": 32,
+  "checks": [
+    {
+      "name": "whole_original18_and_R2_13",
+      "pass": true
+    },
+    {
+      "name": "original_entry_and_plan_exact",
+      "pass": true
+    },
+    {
+      "name": "four_entry_hunks_forward_reverse",
+      "pass": true
+    },
+    {
+      "name": "author24_exact_reproduction",
+      "pass": true
+    },
+    {
+      "name": "entry_request_payload_pins",
+      "pass": true
+    },
+    {
+      "name": "all11_inputs_exact_and_same_original",
+      "pass": true
+    },
+    {
+      "name": "known_Owner_and_official_launcher_unchanged",
+      "pass": true
+    },
+    {
+      "name": "public_RSA_and_current_record_components_root_reviewed",
+      "pass": true
+    },
+    {
+      "name": "fixed_original_matrix23_and_executor",
+      "pass": true
+    },
+    {
+      "name": "fixed_x230_inline_python_request",
+      "pass": true
+    },
+    {
+      "name": "typed_request_binding_exact",
+      "pass": true
+    },
+    {
+      "name": "original360_absolute_deadline_not_reset",
+      "pass": true
+    },
+    {
+      "name": "new_outer390_explicit_proposal_only",
+      "pass": true
+    },
+    {
+      "name": "one_verified_TLS_loopback_official_fixture",
+      "pass": true
+    },
+    {
+      "name": "actual_artifact_gates_and_no_download",
+      "pass": true
+    },
+    {
+      "name": "whole_archive_binary_and_unique_member_verified",
+      "pass": true
+    },
+    {
+      "name": "fixed_primary_artifact_hashes_in_entry",
+      "pass": true
+    },
+    {
+      "name": "create_only_new_private_root_and_outputs",
+      "pass": true
+    },
+    {
+      "name": "finite_write_readback_and_source_fences",
+      "pass": true
+    },
+    {
+      "name": "single_health_actual_counters",
+      "pass": true
+    },
+    {
+      "name": "ACL853_and957_are_static_caps",
+      "pass": true
+    },
+    {
+      "name": "actual_raw_status_not_prediction_normalized",
+      "pass": true
+    },
+    {
+      "name": "real_nonroot_no_default_actor_preserved",
+      "pass": true
+    },
+    {
+      "name": "original_owner_and_descriptor_closure_required",
+      "pass": true
+    },
+    {
+      "name": "partial_unknowns_and_private_values_not_replayed_or_exported",
+      "pass": true
+    },
+    {
+      "name": "not_candidate_or_HTTP12_product_execution",
+      "pass": true
+    },
+    {
+      "name": "whole_journal_SOURCE9",
+      "pass": true
+    },
+    {
+      "name": "three_journal_hunks_forward_reverse",
+      "pass": true
+    },
+    {
+      "name": "journal_only_seven_literal_bindings",
+      "pass": true
+    },
+    {
+      "name": "same_exact_R2_request_in_journal_packet",
+      "pass": true
+    },
+    {
+      "name": "new_slot_no_current_BUILD_mutation",
+      "pass": true
+    },
+    {
+      "name": "journal_original_archive_pure_helpers_pinned",
+      "pass": true
+    }
+  ],
+  "originalPacket": "e3518490fa1d61da12cfe2147fcf49d46451a135",
+  "entryPacket": "4558f286a88f1d56e7df91b1aa2259dbf23f17dc",
+  "journalPacket": "66c39b32bef91db80ac5c630958aba6958205284",
+  "entry": {
+    "blob": "0c4aac9d0494a0f42014606ecad96887ff391dde",
+    "bytes": 18330,
+    "sha256": "03f5f32674767bd55cd52e50606fd3f430dc8c87bd953778398888df6834f1e3"
+  },
+  "request": {
+    "blob": "90b68f243c6dfc77cedce08b6d1095ffdd1a79a1",
+    "bytes": 164440,
+    "sha256": "f03764a69cd820e1e31409fb5c9d08523f4df98c4c28078eb5bf7ed8b56df9d8"
+  },
+  "journal": {
+    "blob": "131bdd5fd616cc1e9e7d182b51cbf7ad7fe1d9db",
+    "bytes": 19055,
+    "sha256": "a2371e0a1dd8931d6e539a577d92079760714f79e07ea6ff77c6e3ba1976b15b"
+  },
+  "slot": "official271_x230_acl23_oracle_gitfirst_r1",
+  "nativeBinding": {
+    "sha256": "416c6f5326e8343b637bc06c6a80ab2c9aec439ff85e953b908ac2838cc9b94b",
+    "native_fingerprint": "4714265312875787323",
+    "canonicalBytes": 164376
+  },
+  "author24Reproduced": true,
+  "ownerAbsoluteSeconds": 360,
+  "outerSecondsProposed": 390,
+  "staticHTTPMaximum": 957,
+  "actualHTTPRequests": null,
+  "actualCasesExecuted": 0,
+  "actualPythonComponentsExecuted": 0,
+  "newNativeCalls": 0,
+  "parityQualified": false,
+  "runtimeGOIssued": false
+}

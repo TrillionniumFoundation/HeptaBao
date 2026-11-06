@@ -1,0 +1,130 @@
+{
+  "value": {
+    "schema": "heptabao.025b-fixed-report-body-source-checks.v1",
+    "passed": 29,
+    "failed": 0,
+    "checks": [
+      {
+        "name": "strict_forward",
+        "pass": true
+      },
+      {
+        "name": "strict_reverse",
+        "pass": true
+      },
+      {
+        "name": "single_known_49775_range",
+        "pass": true
+      },
+      {
+        "name": "actual_path_version_SHA",
+        "pass": true
+      },
+      {
+        "name": "actual_info_original_pin",
+        "pass": true
+      },
+      {
+        "name": "old_info_authorizer_whole_unchanged",
+        "pass": true
+      },
+      {
+        "name": "closed_original_frontier",
+        "pass": true
+      },
+      {
+        "name": "valid_exact_actual_info_authorizes_body_only",
+        "pass": true
+      },
+      {
+        "name": "original_all_state_preserved",
+        "pass": true
+      },
+      {
+        "name": "one_exact_body_valid",
+        "pass": true
+      },
+      {
+        "name": "wrong_version",
+        "pass": true
+      },
+      {
+        "name": "other_path",
+        "pass": true
+      },
+      {
+        "name": "wrong_offset",
+        "pass": true
+      },
+      {
+        "name": "over_range",
+        "pass": true
+      },
+      {
+        "name": "repeat_body_refused",
+        "pass": true
+      },
+      {
+        "name": "no_new_process",
+        "pass": true
+      },
+      {
+        "name": "no_repeat_info",
+        "pass": true
+      },
+      {
+        "name": "unclosed_refused",
+        "pass": true
+      },
+      {
+        "name": "drift_version_refused",
+        "pass": true
+      },
+      {
+        "name": "drift_full9_refused",
+        "pass": true
+      },
+      {
+        "name": "missing_info_closed_refused",
+        "pass": true
+      },
+      {
+        "name": "wrong_original_info_refused",
+        "pass": true
+      },
+      {
+        "name": "new_binary_page16K",
+        "pass": true
+      },
+      {
+        "name": "wrong_binary_page8K",
+        "pass": true
+      },
+      {
+        "name": "old_info_page8K_preserved",
+        "pass": true
+      },
+      {
+        "name": "payload1MiB_preserved",
+        "pass": true
+      },
+      {
+        "name": "whole_body_SHA_EOF_preserved",
+        "pass": true
+      },
+      {
+        "name": "once_marker_before_call",
+        "pass": true
+      },
+      {
+        "name": "no_tools_no_actual_body",
+        "pass": true
+      }
+    ],
+    "scope": "PURE_SELECTED_GUARDS_ONLY",
+    "native_calls": 0,
+    "actual_body_observed": false,
+    "product_tests": 0
+  },
+  "exactOriginal": true
+}

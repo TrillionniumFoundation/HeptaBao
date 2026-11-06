@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r44-A-PID32527-source-root",
+  "records": [
+    {
+      "name": "Auth-PID32527-source-root-qualification.json",
+      "blob": "ad10d6bfe0d3e3281ae89c8e7d6da2db3eb0de5e",
+      "bytes": 3402,
+      "sha256": "302119d75ad70e0e26ab3c5ded13eac02777c7bce45052322767426614eb90ed"
+    },
+    {
+      "name": "Auth-PID32527-source-root-verifier.js",
+      "blob": "080b4f02e3f66082733d829e898c13ff941cc464",
+      "bytes": 6451,
+      "sha256": "91162fd42d77ca38e0503b23bd1ac0eee5df6c05f7e4e53b75bc12e10e8e9db3"
+    },
+    {
+      "name": "Auth-PID32527-author62-reproduced.json",
+      "blob": "c2d3a05d1929c88d619c037fa810fcf20ad56583",
+      "bytes": 5614,
+      "sha256": "e0cad05cd1e2d462f23c02f8d9711e3db876a21ecc2bc5fee43119e1372d8a51"
+    },
+    {
+      "name": "Apple-libproc-reference.c",
+      "blob": "c3e7369f886fbb7bbc8d77f8fca9ecc943bb5f4e",
+      "bytes": 28996,
+      "sha256": "5c8a771427e04c5e1d55c4cdf5a077f3b52c5be4a091683b970084bfdda76df2"
+    },
+    {
+      "name": "Apple-libproc-reference.h",
+      "blob": "602e4fe897d1fc5a7ceacc372c78f184ea242bfe",
+      "bytes": 7580,
+      "sha256": "37c7629819a18c5ef10d19a9bea00eb7e0bd31e0b127ecd2ae108c74f47c39e2"
+    }
+  ],
+  "expected_data_tree": "3166e167d84a9ea13514a4a63c0025d8506f3b6b",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

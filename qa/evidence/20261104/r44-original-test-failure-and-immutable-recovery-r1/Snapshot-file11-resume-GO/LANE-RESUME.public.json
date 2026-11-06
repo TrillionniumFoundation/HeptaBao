@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.root.A-original-diagnostic-closed-B-original-formatted23-resume.r44",
+  "decision": "RESUME_ORIGINAL_TABLE_FROM_INFO12",
+  "B": "/root/compatibility_audit",
+  "originalGO": "25ea12c4406a12ba5ce263b10a2723f73276d74b",
+  "originalJournal": {
+    "blob": "a154e8b3e4bbce818471dd10fe434e4ded570c8b",
+    "bytes": 79062,
+    "sha256": "8ad44f98b72e37ae7037451eada7cf9c5616609ec5123f7bc8cef3b4fcf4f9d9"
+  },
+  "originalSlot": "snapshot_2379_formatted23_readonly_gitfirst_r1",
+  "BpreviousBoundary": {
+    "blob": "806aa85a0bdd893409618fe3796a84a31f862b6d",
+    "bytes": 3057,
+    "sha256": "451c699bed52fb5e81a06724ba5c3fd66cab0d4b9ee063570d51cfbc3f31d4d1"
+  },
+  "AactualLaneRelease": {
+    "blob": "9301de95a0aed055a31c07673fc2005700067021",
+    "bytes": 3426,
+    "sha256": "d7db8003998c46278bcb30cb102aef082283fcf59416c0be0eb76622dfb1bc18"
+  },
+  "remainingOriginalTable": "614d59b7c85ae59f9ccc11e7125389db14613cd0",
+  "nextFile": 12,
+  "lastFile": 22,
+  "remainingFiles": 11,
+  "remainingWholeBytes": 214014,
+  "remainingMetadataObservers": 11,
+  "remainingBodyRanges": 11,
+  "knownActualVersionsAreNotPredicted": true,
+  "originalAllBudgetsAndKeysUnchanged": true,
+  "maximumRuntimeLanes": 2,
+  "maximumNativeCallOrOwnedFuturePerLane": 1,
+  "allocation": {
+    "A": 0,
+    "B": 1,
+    "C": 1,
+    "root": 0
+  },
+  "C_original_job": "rog/1a1b10cad9b-fc05-7560",
+  "C_target_exclusive": true,
+  "sequence": [
+    "Read this whole disposition before resuming the original live slot; never reinitialize.",
+    "For each original fixed file, finish original INFO then actual-version-bound BODY and every original observer before the next file.",
+    "Return to an agent message boundary after each complete file, so an explicit later root hold can stop before the following INFO; no cancellation or new control layer.",
+    "Preserve original INFO10 page0 delivery failure/recovery and file7 Git-arm error histories in final evidence.",
+    "After final file22, hold and publish complete actual23 outputs and original whole evidence before any combined candidate freeze."
+  ],
+  "notAuthorized": [
+    "Cargo/build",
+    "new path/index/digest/key",
+    "replay unknown Native call",
+    "new API or controller",
+    "production mutation or cleanup"
+  ],
+  "A_managed_scope_remains_UNKNOWN": true,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

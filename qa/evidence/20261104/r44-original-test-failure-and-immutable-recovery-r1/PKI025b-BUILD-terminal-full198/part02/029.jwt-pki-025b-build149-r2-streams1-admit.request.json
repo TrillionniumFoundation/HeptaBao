@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-native-jwt-pki-025b05a3-build149-observe-r2-streams1",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "rog",
+      "job_id": "1a1b10cad9b-fc05-7560",
+      "stdout_offset": 1809,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

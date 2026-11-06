@@ -1,0 +1,144 @@
+{
+  "schema": "heptabao.root.PKI025b-original-report-INFO-actual23-qualification.r44",
+  "passed": true,
+  "checkCount": 25,
+  "checks": [
+    {
+      "name": "whole_actual23",
+      "pass": true
+    },
+    {
+      "name": "same_original_INFO_GO_and_journal",
+      "pass": true
+    },
+    {
+      "name": "original_boundary_state_exact",
+      "pass": true
+    },
+    {
+      "name": "all_original_31_calls_unchanged",
+      "pass": true
+    },
+    {
+      "name": "original_10_observers_unchanged",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_report_INFO_unique_calls",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_report_INFO_call_jwt-pki-025b-build149-r2-result-info-admit",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_report_INFO_armed_tree_jwt-pki-025b-build149-r2-result-info-admit",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_report_INFO_call_jwt-pki-025b-build149-r2-result-info-status0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_report_INFO_armed_tree_jwt-pki-025b-build149-r2-result-info-status0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_report_INFO_call_jwt-pki-025b-build149-r2-result-info-page0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_report_INFO_armed_tree_jwt-pki-025b-build149-r2-result-info-page0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_report_INFO_observer_unique",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_report_INFO_observer_081575224fe6c414c2c1da7b451f3d00a54cfc513bdcca0c1980e40581bc276d",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_report_INFO_page_081575224fe6c414c2c1da7b451f3d00a54cfc513bdcca0c1980e40581bc276d_0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_report_INFO_payload_081575224fe6c414c2c1da7b451f3d00a54cfc513bdcca0c1980e40581bc276d",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_report_INFO_all_observer_calls_accounted",
+      "pass": true
+    },
+    {
+      "name": "one_original_INFO_start",
+      "pass": true
+    },
+    {
+      "name": "whole_payload_and_native_metadata",
+      "pass": true
+    },
+    {
+      "name": "fresh_report_exact_path_hash",
+      "pass": true
+    },
+    {
+      "name": "actual_linux_permissions_and_owner",
+      "pass": true
+    },
+    {
+      "name": "lossless_actual_version",
+      "pass": true
+    },
+    {
+      "name": "metadata_binding_exact",
+      "pass": true
+    },
+    {
+      "name": "call_accounting_and_idle",
+      "pass": true
+    },
+    {
+      "name": "report_body_not_yet_observed",
+      "pass": true
+    }
+  ],
+  "packet": "26581e676cae80a0433de0d793c27bcb6d724c58",
+  "originalJob": "rog/1a1b10cad9b-fc05-7560",
+  "originalInfoOperation": "081575224fe6c414c2c1da7b451f3d00a54cfc513bdcca0c1980e40581bc276d",
+  "originalNativeCalls": 3,
+  "originalPages": 1,
+  "originalObserversClosed": 1,
+  "metadata": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1/result.public.json",
+    "size": 49775,
+    "sha256": "47748eadb948f08973d7de202272823cd5f031ed99ec62286868236a8cbaa318",
+    "version": "66306:33202271:49775:1793974567959218921:1793974567959218921",
+    "nativeText": {
+      "blob": "8c996ffb4877cb71d6b9721f57b7f3ffab40860e",
+      "bytes": 480,
+      "sha256": "8edfc11c65702adb295417234d5880ac22f7983c4da6832f446f8e3515a1b1ca"
+    },
+    "originalOperation": "081575224fe6c414c2c1da7b451f3d00a54cfc513bdcca0c1980e40581bc276d",
+    "full9Strings": [
+      "66306",
+      "33202271",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "49775",
+      "1793974567959218921",
+      "1793974567959218921"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "nativeLaneReleased": true,
+  "reportBodyObserved": false,
+  "failureCause": null,
+  "actualTestsQualified": false,
+  "cargoTargetReuseQualified": false,
+  "newNativeCalls": 0
+}

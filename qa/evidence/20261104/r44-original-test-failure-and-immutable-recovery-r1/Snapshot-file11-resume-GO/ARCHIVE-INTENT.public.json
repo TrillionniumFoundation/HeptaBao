@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r44-A-diagnostic-minimal-actual-and-B-resume",
+  "records": [
+    {
+      "name": "ROOT.diagnostic-actual.public.json",
+      "blob": "9301de95a0aed055a31c07673fc2005700067021",
+      "bytes": 3426,
+      "sha256": "d7db8003998c46278bcb30cb102aef082283fcf59416c0be0eb76622dfb1bc18"
+    },
+    {
+      "name": "ROOT.verifier.js",
+      "blob": "301c2cdab266a20391aadd3d82a3478aa082f9b2",
+      "bytes": 6781,
+      "sha256": "ffff0efd71af96c21e83dd63a7a9ae815b9c38b26a6867d121a4fc63f07176e0"
+    },
+    {
+      "name": "LANE-RESUME.public.json",
+      "blob": "9b378d9160ec4ab96a59046efafa949e4de50984",
+      "bytes": 2432,
+      "sha256": "7a41a93484e27f58567b9d1aa707be37f7836d898ae0aedd658b56730e2bc4e6"
+    }
+  ],
+  "expected_data_tree": "75d731e8088dc1877a089f4a1235593aaae19f5a",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

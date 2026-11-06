@@ -1,0 +1,16 @@
+{
+  "originalManager": {
+    "blob": "03c8f2e6472a2b52dad789c28bacc28022c87dc0",
+    "bytes": 58452,
+    "sha256": "8feb3f9db05fa59986409c6c1306b48213102c7deaae6035219afa959add5ae4"
+  },
+  "candidateManager": {
+    "blob": "3f259a4b085394fba0658359575aa0d74b9757e2",
+    "bytes": 58584,
+    "sha256": "1d69a93a3111238424f90b02ffe44f6f3e9c3eb704aa8044625de7c17978f78f"
+  },
+  "freshDiagnosticFull": "061b2fe4336d34e50943fd216c2b2166df1b3a64",
+  "freshDiagnosticMinimum": "e913422fb77d079400227418cf6fbdf2fc807148",
+  "originalFailureFull": "4a3bafecbc966aed7c6b14538c1403a1076598dd",
+  "originalFailureRoot": "1208fbe37f61e01e7324f8bef1b6fc6db9f5b4a5"
+}

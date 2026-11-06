@@ -1,0 +1,287 @@
+{
+  "schema": "heptabao.root.original-registration-diagnostic-full86-qualification.r44",
+  "passed": true,
+  "checkCount": 66,
+  "checks": [
+    {
+      "name": "whole_packet_pinned",
+      "pass": true
+    },
+    {
+      "name": "exact_manifest",
+      "pass": true
+    },
+    {
+      "name": "root_GO_exact",
+      "pass": true
+    },
+    {
+      "name": "minimal_actual_members_unchanged",
+      "pass": true
+    },
+    {
+      "name": "calls_index_all_original",
+      "pass": true
+    },
+    {
+      "name": "observers_index_all_original",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-registration-start_index_pins",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-admit_index_pins",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-state-01_index_pins",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-page-00000_index_pins",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-admit_index_pins",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-state-01_index_pins",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-00000_index_pins",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-08192_index_pins",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-16384_index_pins",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-24576_index_pins",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-32768_index_pins",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-40960_index_pins",
+      "pass": true
+    },
+    {
+      "name": "author_207_exact_reproduction",
+      "pass": true
+    },
+    {
+      "name": "original_registration_unique_calls",
+      "pass": true
+    },
+    {
+      "name": "original_registration_call_current-home-r2-registration-start",
+      "pass": true
+    },
+    {
+      "name": "original_registration_armed_tree_current-home-r2-registration-start",
+      "pass": true
+    },
+    {
+      "name": "original_registration_call_current-home-r2-reg-status-01-admit",
+      "pass": true
+    },
+    {
+      "name": "original_registration_armed_tree_current-home-r2-reg-status-01-admit",
+      "pass": true
+    },
+    {
+      "name": "original_registration_call_current-home-r2-reg-status-01-state-01",
+      "pass": true
+    },
+    {
+      "name": "original_registration_armed_tree_current-home-r2-reg-status-01-state-01",
+      "pass": true
+    },
+    {
+      "name": "original_registration_call_current-home-r2-reg-status-01-page-00000",
+      "pass": true
+    },
+    {
+      "name": "original_registration_armed_tree_current-home-r2-reg-status-01-page-00000",
+      "pass": true
+    },
+    {
+      "name": "original_registration_call_current-home-r2-reg-streams-01-admit",
+      "pass": true
+    },
+    {
+      "name": "original_registration_armed_tree_current-home-r2-reg-streams-01-admit",
+      "pass": true
+    },
+    {
+      "name": "original_registration_call_current-home-r2-reg-streams-01-state-01",
+      "pass": true
+    },
+    {
+      "name": "original_registration_armed_tree_current-home-r2-reg-streams-01-state-01",
+      "pass": true
+    },
+    {
+      "name": "original_registration_call_current-home-r2-reg-streams-01-page-00000",
+      "pass": true
+    },
+    {
+      "name": "original_registration_armed_tree_current-home-r2-reg-streams-01-page-00000",
+      "pass": true
+    },
+    {
+      "name": "original_registration_call_current-home-r2-reg-streams-01-page-08192",
+      "pass": true
+    },
+    {
+      "name": "original_registration_armed_tree_current-home-r2-reg-streams-01-page-08192",
+      "pass": true
+    },
+    {
+      "name": "original_registration_call_current-home-r2-reg-streams-01-page-16384",
+      "pass": true
+    },
+    {
+      "name": "original_registration_armed_tree_current-home-r2-reg-streams-01-page-16384",
+      "pass": true
+    },
+    {
+      "name": "original_registration_call_current-home-r2-reg-streams-01-page-24576",
+      "pass": true
+    },
+    {
+      "name": "original_registration_armed_tree_current-home-r2-reg-streams-01-page-24576",
+      "pass": true
+    },
+    {
+      "name": "original_registration_call_current-home-r2-reg-streams-01-page-32768",
+      "pass": true
+    },
+    {
+      "name": "original_registration_armed_tree_current-home-r2-reg-streams-01-page-32768",
+      "pass": true
+    },
+    {
+      "name": "original_registration_call_current-home-r2-reg-streams-01-page-40960",
+      "pass": true
+    },
+    {
+      "name": "original_registration_armed_tree_current-home-r2-reg-streams-01-page-40960",
+      "pass": true
+    },
+    {
+      "name": "original_registration_observer_unique",
+      "pass": true
+    },
+    {
+      "name": "original_registration_observer_7c8c3417327bf2c4256f73b25ccadb3dfaf550e3d5da6b2505eab73f4ecdda09",
+      "pass": true
+    },
+    {
+      "name": "original_registration_page_7c8c3417327bf2c4256f73b25ccadb3dfaf550e3d5da6b2505eab73f4ecdda09_0",
+      "pass": true
+    },
+    {
+      "name": "original_registration_payload_7c8c3417327bf2c4256f73b25ccadb3dfaf550e3d5da6b2505eab73f4ecdda09",
+      "pass": true
+    },
+    {
+      "name": "original_registration_observer_cdbd7665f0bcab929bce636007819d7905738ef258774a74b7b06fd9feea7c8d",
+      "pass": true
+    },
+    {
+      "name": "original_registration_page_cdbd7665f0bcab929bce636007819d7905738ef258774a74b7b06fd9feea7c8d_0",
+      "pass": true
+    },
+    {
+      "name": "original_registration_page_cdbd7665f0bcab929bce636007819d7905738ef258774a74b7b06fd9feea7c8d_8192",
+      "pass": true
+    },
+    {
+      "name": "original_registration_page_cdbd7665f0bcab929bce636007819d7905738ef258774a74b7b06fd9feea7c8d_16384",
+      "pass": true
+    },
+    {
+      "name": "original_registration_page_cdbd7665f0bcab929bce636007819d7905738ef258774a74b7b06fd9feea7c8d_24576",
+      "pass": true
+    },
+    {
+      "name": "original_registration_page_cdbd7665f0bcab929bce636007819d7905738ef258774a74b7b06fd9feea7c8d_32768",
+      "pass": true
+    },
+    {
+      "name": "original_registration_page_cdbd7665f0bcab929bce636007819d7905738ef258774a74b7b06fd9feea7c8d_40960",
+      "pass": true
+    },
+    {
+      "name": "original_registration_payload_cdbd7665f0bcab929bce636007819d7905738ef258774a74b7b06fd9feea7c8d",
+      "pass": true
+    },
+    {
+      "name": "original_registration_all_observer_calls_accounted",
+      "pass": true
+    },
+    {
+      "name": "typed_start_whole_and_exact",
+      "pass": true
+    },
+    {
+      "name": "ACK_exact_job_and_binding",
+      "pass": true
+    },
+    {
+      "name": "only_original_observer_scope",
+      "pass": true
+    },
+    {
+      "name": "observation_count_caps",
+      "pass": true
+    },
+    {
+      "name": "journal_idle",
+      "pass": true
+    },
+    {
+      "name": "diagnosis_succeeded_owned_resources_closed",
+      "pass": true
+    },
+    {
+      "name": "live_registration_not_claimed_closed",
+      "pass": true
+    },
+    {
+      "name": "actual_blocker_exactly_never_exited",
+      "pass": true
+    },
+    {
+      "name": "no_credential_or_production_phase",
+      "pass": true
+    }
+  ],
+  "packet": "061b2fe4336d34e50943fd216c2b2166df1b3a64",
+  "originalJob": "mac/1a1b12864e2-fc05-765c",
+  "originalCalls": 12,
+  "originalObservers": 2,
+  "originalPages": 7,
+  "stdoutBytes": 13957,
+  "stderrBytes": 0,
+  "authorChecksReproduced": 207,
+  "observedFailureLiteral": "(never exited)",
+  "observedPid": 32527,
+  "observedRuns": 1,
+  "observationClosed": true,
+  "managedScope": "UNKNOWN",
+  "credentialCycleSuccess": false,
+  "newNativeCalls": 0,
+  "fullReplacement": false
+}

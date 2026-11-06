@@ -1,0 +1,13 @@
+{
+  "method": "Pure V8. Evaluate the already-fixed owner_pure_source, then verify-original-chain.js. Call verifyCurrentRegistrationOriginalEvidence(input). No Native, SDK module, Python or subprocess execution.",
+  "input": {
+    "state": "JSON.parse(journal-final-state.original.json)",
+    "calls": "For each original-calls.index.public.json entry, use its paths to load the five exact strings under requestRaw/intentRaw/armedRaw/sdkRaw/nativeRaw, keyed by entry.key.",
+    "payloads": "For each original-observers.index.public.json entry, load payloadRaw and nativeRaw by the exact paths, keyed by entry.id.",
+    "authorityRaw": "actual--authority.original.json",
+    "stdoutRaw": "actual--stdout.original.txt",
+    "stderrRaw": "actual--stderr.original.txt"
+  },
+  "result": "actual-pure-verifier-result.public.json",
+  "scope": "Original evidence chain, own closure and exact fresh public projection; not product qualification or managed cleanup."
+}

@@ -1,0 +1,155 @@
+{
+  "schema": "heptabao.root.PKI025b-original-terminal-minimal-lane-qualification.r44",
+  "passed": true,
+  "checkCount": 31,
+  "checks": [
+    {
+      "name": "whole_minimal12",
+      "pass": true
+    },
+    {
+      "name": "same_root_GO",
+      "pass": true
+    },
+    {
+      "name": "original_start_request",
+      "pass": true
+    },
+    {
+      "name": "original_START_ACK",
+      "pass": true
+    },
+    {
+      "name": "exact_terminal_authority",
+      "pass": true
+    },
+    {
+      "name": "authority_payload_exact",
+      "pass": true
+    },
+    {
+      "name": "terminal_stream_accounting",
+      "pass": true
+    },
+    {
+      "name": "release_authority_same",
+      "pass": true
+    },
+    {
+      "name": "all_closed_statuses_available",
+      "pass": true
+    },
+    {
+      "name": "original_status_0",
+      "pass": true
+    },
+    {
+      "name": "original_status_1",
+      "pass": true
+    },
+    {
+      "name": "original_status_2",
+      "pass": true
+    },
+    {
+      "name": "original_status_3",
+      "pass": true
+    },
+    {
+      "name": "original_status_4",
+      "pass": true
+    },
+    {
+      "name": "original_status_5",
+      "pass": true
+    },
+    {
+      "name": "original_status_6",
+      "pass": true
+    },
+    {
+      "name": "original_status_7",
+      "pass": true
+    },
+    {
+      "name": "original_status_8",
+      "pass": true
+    },
+    {
+      "name": "original_status_9",
+      "pass": true
+    },
+    {
+      "name": "ledger_has_no_active_call_or_future",
+      "pass": true
+    },
+    {
+      "name": "stream_original_0",
+      "pass": true
+    },
+    {
+      "name": "stream_extent_0_stdout",
+      "pass": true
+    },
+    {
+      "name": "stream_extent_0_stderr",
+      "pass": true
+    },
+    {
+      "name": "stream_original_1",
+      "pass": true
+    },
+    {
+      "name": "stream_extent_1_stdout",
+      "pass": true
+    },
+    {
+      "name": "stream_extent_1_stderr",
+      "pass": true
+    },
+    {
+      "name": "whole_contiguous_streams",
+      "pass": true
+    },
+    {
+      "name": "original_release_prefix_unchanged",
+      "pass": true
+    },
+    {
+      "name": "three_original_lines",
+      "pass": true
+    },
+    {
+      "name": "last_exact_report_locator",
+      "pass": true
+    },
+    {
+      "name": "terminal_claims_not_promoted_to_detail",
+      "pass": true
+    }
+  ],
+  "packet": "1ae0793d6f1ad35da4fc0f1a08721afa538b220e",
+  "originalJob": "rog/1a1b10cad9b-fc05-7560",
+  "state": "failed",
+  "exitCode": 1,
+  "timedOut": false,
+  "stdoutBytes": 2216,
+  "stderrBytes": 0,
+  "closedObserverCount": 10,
+  "originalCallCountReported": 31,
+  "full31CallChainQualified": false,
+  "nativeLaneReleased": true,
+  "cargoTargetReuseQualified": false,
+  "finalReport": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1/result.public.json",
+    "sha256": "47748eadb948f08973d7de202272823cd5f031ed99ec62286868236a8cbaa318",
+    "bytes": null,
+    "version": null,
+    "independentlyRead": false
+  },
+  "runtimeTestResults": null,
+  "failureCause": null,
+  "normalReleaseIsPhaseOnly": true,
+  "newNativeCalls": 0,
+  "fullReplacement": false
+}

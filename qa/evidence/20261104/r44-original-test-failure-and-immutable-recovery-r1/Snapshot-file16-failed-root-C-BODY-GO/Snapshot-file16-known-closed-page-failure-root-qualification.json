@@ -1,0 +1,139 @@
+{
+  "schema": "heptabao.root.formatted23-file16-closed-future-page-delivery-failure-qualification.r44",
+  "passed": true,
+  "checkCount": 25,
+  "checks": [
+    {
+      "name": "whole_minimal23",
+      "pass": true
+    },
+    {
+      "name": "same_original_slot_GO",
+      "pass": true
+    },
+    {
+      "name": "f16-b00-admit_whole_original_request_and_SDK",
+      "pass": true
+    },
+    {
+      "name": "f16-b00-admit_whole_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "f16-b00-admit_once_exact_GO",
+      "pass": true
+    },
+    {
+      "name": "f16-b00-admit_SDK_archive_Merkle",
+      "pass": true
+    },
+    {
+      "name": "f16-b00-admit_successful_original_native",
+      "pass": true
+    },
+    {
+      "name": "f16-b00-s0_whole_original_request_and_SDK",
+      "pass": true
+    },
+    {
+      "name": "f16-b00-s0_whole_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "f16-b00-s0_once_exact_GO",
+      "pass": true
+    },
+    {
+      "name": "f16-b00-s0_SDK_archive_Merkle",
+      "pass": true
+    },
+    {
+      "name": "f16-b00-s0_successful_original_native",
+      "pass": true
+    },
+    {
+      "name": "f16-b00-p0_whole_original_request_and_SDK",
+      "pass": true
+    },
+    {
+      "name": "f16-b00-p0_whole_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "f16-b00-p0_once_exact_GO",
+      "pass": true
+    },
+    {
+      "name": "f16-b00-p0_SDK_archive_Merkle",
+      "pass": true
+    },
+    {
+      "name": "original_failed_page_preserved",
+      "pass": true
+    },
+    {
+      "name": "original_binary_admission_only_once",
+      "pass": true
+    },
+    {
+      "name": "known_future_completed_inactive",
+      "pass": true
+    },
+    {
+      "name": "failed_delivery_exact_original_immutable_page",
+      "pass": true
+    },
+    {
+      "name": "active_cursor_still_zero_with_known_closed_future",
+      "pass": true
+    },
+    {
+      "name": "body_bound_to_actual_INFO",
+      "pass": true
+    },
+    {
+      "name": "paused_pending_history_preserved",
+      "pass": true
+    },
+    {
+      "name": "no_native_call_or_owned_future",
+      "pass": true
+    },
+    {
+      "name": "no_product_failure_or_completion_inferred",
+      "pass": true
+    }
+  ],
+  "packet": "d4d3b0541dbb06cf809c987d19bfe8702938009d",
+  "originalOperation": "9037480fbf014345c1d2bbe1894020e30602a9adb2d8c1a864f6eff35368f1b0",
+  "failedCall": "sf23-r1-f16-b00-p0",
+  "failedRequest": {
+    "blob": "bfd96536330ccc3704a2ba596203edf3680a0702",
+    "bytes": 122,
+    "sha256": "ede3d944c75b34dbcc7cf3b644e9d8374496f8348d375e792d565141c92b2ef5"
+  },
+  "failedSDK": {
+    "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+    "bytes": 248,
+    "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+  },
+  "originalStatus": {
+    "blob": "237b2709d1ca13c6b56fdd4be8012920bac38b7a",
+    "bytes": 802,
+    "sha256": "9b667dd791f4fb7a67710f127b0b4475d9c15ca9b5e09b45c67f22410bc769b3"
+  },
+  "originalFailedCall": {
+    "blob": "593f02daca6b8ac9511ed460af8919eed0b7bc32",
+    "bytes": 2066,
+    "sha256": "f70e2ae9bac4c87df0faac3a2fbd4e507a64db29d4d1b010b3771028465d7776"
+  },
+  "knownNativeFutureClosed": true,
+  "nativeLaneReleased": true,
+  "immutablePageDelivery": "UNKNOWN",
+  "originalPausedAndCalledStatePreserved": true,
+  "wholeFileCountReported": 16,
+  "nextINFO17Submitted": false,
+  "newNativeCalls": 0,
+  "recoveryAuthorized": false,
+  "final23Qualified": false
+}

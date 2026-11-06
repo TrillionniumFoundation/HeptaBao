@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.current-registration-readonly-statement-correction-checks.v1",
+  "passed": true,
+  "checks": [
+    {
+      "name": "old inaccurate combined flag removed",
+      "passed": true
+    },
+    {
+      "name": "stderr body not read",
+      "passed": true
+    },
+    {
+      "name": "tail not exported",
+      "passed": true
+    },
+    {
+      "name": "no reads beyond first bounded prefix",
+      "passed": true
+    },
+    {
+      "name": "single source statement hunk strict forward",
+      "passed": true
+    },
+    {
+      "name": "single source statement hunk strict reverse",
+      "passed": true
+    },
+    {
+      "name": "actual boolean contract corrected to13",
+      "passed": true
+    }
+  ],
+  "NativeCalls": 0
+}

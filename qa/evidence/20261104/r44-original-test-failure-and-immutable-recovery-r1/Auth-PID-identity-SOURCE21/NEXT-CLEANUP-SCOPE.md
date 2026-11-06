@@ -1,0 +1,7 @@
+# Conditional follow-up, not authorized by this source
+
+Only after this exact read-only run produces a complete same-lifetime PID tuple and the original label/plist/program/17argv mapping, root may review a separate finite once-bootout successor for the same QA label. Its exact expected birth/image tuple must come from that actual report; the slot is currently unbound, not filled with guessed numbers.
+
+The intended successor reuses the existing owned Commands custody and held/name full9 paths. It must verify the current exact registration/PID/birth again before marking one bootout attempt, call only `/bin/launchctl bootout gui/501/org.heptabao.qa.mac-authbus-4e808-home-r2.server` at most once, and observe the original exact missing-service response twice plus finite same-PID lifetime observations. No direct PID signal, business replay, bootstrap, private plan/capsule read, follow-up of unknown child PIDs, or fallback label is proposed. A nonempty child count or foreign/mismatched image keeps the candidate unadmitted. Error/unknown never creates a second attempt.
+
+A launchd-managed process is not a direct child of the diagnostic and cannot be called waited or reaped. Current finite registration removal and current lifetime nonobservation, if later actually established under separate GO, will be reported independently of all historical lineage UNKNOWNs. This file is a proposed exact scope, not a cleanup implementation, request or grant.

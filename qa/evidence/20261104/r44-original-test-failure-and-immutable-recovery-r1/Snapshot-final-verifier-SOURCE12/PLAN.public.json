@@ -1,0 +1,159 @@
+{
+  "schema": "heptabao.formatted23-final-verifier-preparation.v1",
+  "scope": "Pure evidence verifier SOURCE; no Native journal entrypoint, no Runtime, no current/future source modification.",
+  "source": {
+    "blob": "6b10754735685ad3708c60f6baec369a3ac88359",
+    "bytes": 29158,
+    "sha256": "a499ea4f9898c8c1e0838855ba84e895a3bfbbafa260ba65db9e73b1fd09d086"
+  },
+  "currentBoundary": {
+    "wholeFiles": 12,
+    "wholeBytes": 1132623,
+    "closedObservers": 37,
+    "originalCallRecords": 194,
+    "nextInfoIndex": 12,
+    "noNewNativeCalls": true
+  },
+  "historicalRules": {
+    "nativeFailure": {
+      "callKey": "sf23-r1-f10-info-p0",
+      "originalOperation": "37a07e380c8f74019d9b6c20c86cfa339d409e3b6d01b42b3a4230cb767777dc",
+      "failedSDK": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+      "failedCallSnapshot": "2b64176574dbb70da660cb4ec8eee657b1969eae",
+      "mustRemainCalled": true,
+      "mustRemainNonaccepted": true,
+      "onlyAllowedNonacceptedHistoricalCall": true
+    },
+    "immutableRecovery": {
+      "callKey": "sf23-r1-f10-info-p0-recovery1",
+      "armTree": "f8e7d259a405cd5318011350959a96f8006b5a1f",
+      "exactFourLeaves": [
+        "armed.json",
+        "intent.json",
+        "original-failed-call.json",
+        "request.json"
+      ],
+      "sameOriginalRequest": "916332b53c58b018404b00324cb5aa1588975b52",
+      "noOperationStart": true,
+      "originalFailureNeverReplaced": true
+    },
+    "gitArmFailure": {
+      "callKey": "sf23-r1-f07-b01-p0",
+      "originalErrorSDK": "ddc8b45cb9056b09ca3a6bc0e94ea3aff95211f2",
+      "armTree": "2c9943bd00cb04e94b6b357739b3c7efea35faba",
+      "beforeNativeCalled": false,
+      "originalFutureAlreadyClosed": true,
+      "readonlyTreeReconcile": true,
+      "noNativeReplay": true
+    },
+    "allOtherCalls": "Require accepted + original successful SDK/native bytes + exact intent/arm/request; reject any additional failed/recovery/archiveFailure row."
+  },
+  "inputs": {
+    "shape": "{state,blobs:{[GitBlobSHA]:exactUTF8Text}}",
+    "readOnly": true,
+    "fullStateFrozenAtBoundary": {
+      "path": "state.original.compact.json",
+      "blob": "4e2143f94098dbeabe0a2990123dee380645b65a",
+      "bytes": 1934059,
+      "sha256": "7251b4d80853ff81bf78525aef53c7637dc2946a6982f63939623d93d2b07c08",
+      "whole": true
+    },
+    "blobIndex": {
+      "path": "blobs.index.public.json",
+      "blob": "b8aaf07a67074c561afc84d7ca249475a1eebdd0",
+      "bytes": 186177,
+      "sha256": "6c0c8b97c855bc980348dcbb8abab596cf9f4000be6bdd6f722ed4535bd3957a",
+      "whole": true
+    },
+    "finalInput": "Later exact full23 state plus original raw blobs. Do not run final entrypoint as qualification until all 23 changed files are whole."
+  },
+  "checks": {
+    "targetedActual": {
+      "cases": 18,
+      "passed": true,
+      "exactSevenCallFixture": true,
+      "realNativeOrProductCalls": 0
+    },
+    "prefix12Actual": {
+      "checks": 12434,
+      "passed": true,
+      "originalCalls": 194,
+      "observers": 37,
+      "successfulPages": 119,
+      "files": 12,
+      "bytes": 1132623,
+      "artifact": {
+        "tree": "b313c1e214900126ca9d2c85558ac7e24888bb96",
+        "entries": [
+          {
+            "path": "actual-checks.public.json",
+            "blob": "8afe6cb030be277baa8ef878e363f13535e02ae0",
+            "bytes": 1152788,
+            "sha256": "0f11b2fefe637f91254d369e2d18fef6ea64de63c895d3bd47aca470251b7961",
+            "whole": true
+          },
+          {
+            "path": "blobs.index.public.json",
+            "blob": "b8aaf07a67074c561afc84d7ca249475a1eebdd0",
+            "bytes": 186177,
+            "sha256": "6c0c8b97c855bc980348dcbb8abab596cf9f4000be6bdd6f722ed4535bd3957a",
+            "whole": true
+          },
+          {
+            "path": "projection-contract.public.json",
+            "blob": "b2ac6da89ec774743b03a244f61590242c542904",
+            "bytes": 1463,
+            "sha256": "4374d1a78765197334c234e54a7b07d2ee81fa2d3e51d18acd68ebbeb8a09a28",
+            "whole": true
+          },
+          {
+            "path": "projection-verifier.js",
+            "blob": "e8862e61710fc891bc94d352e7c91cce2e85b3e2",
+            "bytes": 26691,
+            "sha256": "ddafb2aa410a8c1fa140ba88be7f30673150d3a2fb4fe1658a291a1fd5d9ee40",
+            "whole": true
+          },
+          {
+            "path": "state.original.compact.json",
+            "blob": "4e2143f94098dbeabe0a2990123dee380645b65a",
+            "bytes": 1934059,
+            "sha256": "7251b4d80853ff81bf78525aef53c7637dc2946a6982f63939623d93d2b07c08",
+            "whole": true
+          }
+        ],
+        "count": 5,
+        "bytes": 3301178,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "projectionOnly": true,
+      "final23Qualified": false
+    },
+    "futureFinal": {
+      "requiredChangedFiles": 23,
+      "requiredObservers": 59,
+      "requiredStarts": 59,
+      "requiredRanges": 36,
+      "requiredBytes": 1346637,
+      "unchangedWholeSourceReuse": 26,
+      "unchangedOutputIndependentFull9": false,
+      "notExecutedYet": true,
+      "notQualified": true
+    }
+  },
+  "limitations": [
+    "Verifies archived bytes/identities and exact original-call ledger; does not create operational authorization.",
+    "The prefix12 projection stops before final49 mapping; it does not claim completion for 11 unread changed files.",
+    "Original SOURCE198 checker was source-only, not a full actual-chain verifier.",
+    "The first INFO uses preserved original key sf23-r1-i00; all later INFO labels retain their actual fNN-info form."
+  ],
+  "originalSourceChecker": {
+    "blob": "d0d8ea9ecc1a430d8235e575d91edc080d404c59",
+    "bytes": 9861,
+    "sha256": "50252555343c572a0f9b9e83fa152304f8e3de37131fcb78833eaf3c616c0b01"
+  },
+  "rootOrderedHoldAtTest": true,
+  "slotInitialized": false,
+  "liveStateUnchanged": true
+}

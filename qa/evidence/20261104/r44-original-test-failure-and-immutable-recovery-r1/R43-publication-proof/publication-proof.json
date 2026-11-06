@@ -1,0 +1,37 @@
+{
+  "schema": "heptabao.r43-evidence-publication-proof.v1",
+  "branch": "codex/heptabao-validation-20261104",
+  "commit": "5733a11714677d542fa9a8dbed260364c68f14cf",
+  "tree": "636f0c953c91056b5a25390b9be426ee57bddd8d",
+  "parent": "b1aab9285605544e50bf8ee332007dfa618008a6",
+  "prefix": "qa/evidence/20261104/r43-original-runtime-failure-and-native-build-r1",
+  "cutoff_UTC": "2026-11-06 13:46:22 UTC",
+  "complete_packet_totals": {
+    "packets": 38,
+    "files": 1053,
+    "bytes": 10333229,
+    "allWhole": true
+  },
+  "root_current": {
+    "tree": "c68baedf257989dd34942bf482c2d786be9377d2",
+    "files": 8,
+    "bytes": 309237
+  },
+  "index_qualification_checks": 78,
+  "actual_tree_layers_verified": 5,
+  "commit_parent_and_tree_verified": true,
+  "expected_head_CAS": true,
+  "actual_ref_readback_verified": true,
+  "original_mutation_counts": {
+    "tree": 1,
+    "commit": 1,
+    "ref": 1
+  },
+  "product_source_unchanged": true,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "task_continues": true,
+  "root_Runtime_calls": 0,
+  "README": "https://github.com/TrillionniumFoundation/HeptaBao/blob/5733a11714677d542fa9a8dbed260364c68f14cf/qa/evidence/20261104/r43-original-runtime-failure-and-native-build-r1/root-current/README.md"
+}

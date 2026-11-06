@@ -1,0 +1,25 @@
+{
+  "id": "9037480fbf014345c1d2bbe1894020e30602a9adb2d8c1a864f6eff35368f1b0",
+  "request": {
+    "idempotency_key": "heptabao-snapshot2379-format23-observe-20261106-r1-body16-00",
+    "operation": {
+      "tool": "binary_read",
+      "arguments": {
+        "host": "rog",
+        "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_forward_wire.rs",
+        "offset": 0,
+        "limit": 16474,
+        "expected_version": "66306:31236012:16474:1793956738925595332:1793956738925595332"
+      }
+    }
+  },
+  "tool": "binary_read",
+  "futureClosed": true,
+  "nextPageOffset": 0,
+  "eof": false,
+  "pages": [],
+  "total": null,
+  "digest": null,
+  "statusCalled": 1,
+  "pageCalled": 1
+}

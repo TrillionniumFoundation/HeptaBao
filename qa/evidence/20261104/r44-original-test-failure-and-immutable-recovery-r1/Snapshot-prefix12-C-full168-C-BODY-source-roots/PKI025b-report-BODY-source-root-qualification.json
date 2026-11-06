@@ -1,0 +1,116 @@
+{
+  "schema": "heptabao.root.PKI025b-report-BODY-SOURCE18-review.r44",
+  "passed": true,
+  "checkCount": 18,
+  "checks": [
+    {
+      "name": "whole_SOURCE18",
+      "pass": true
+    },
+    {
+      "name": "exact_source_request_diff_pins",
+      "pass": true
+    },
+    {
+      "name": "eight_hunks_exact_forward_reverse",
+      "pass": true
+    },
+    {
+      "name": "root_INFO_actual_qualified",
+      "pass": true
+    },
+    {
+      "name": "actual_INFO_binding_whole",
+      "pass": true
+    },
+    {
+      "name": "exact_single_range_49775",
+      "pass": true
+    },
+    {
+      "name": "exact_request_argument_set",
+      "pass": true
+    },
+    {
+      "name": "same_original_slot",
+      "pass": true
+    },
+    {
+      "name": "author29_exact_reproduction",
+      "pass": true
+    },
+    {
+      "name": "checker_inputs_whole_members",
+      "pass": true
+    },
+    {
+      "name": "frozen_34_call_closed_frontier",
+      "pass": true
+    },
+    {
+      "name": "body_GO_only_attaches_to_existing_state",
+      "pass": true
+    },
+    {
+      "name": "once_marker_before_dispatch",
+      "pass": true
+    },
+    {
+      "name": "original_8K_new_binary_16K",
+      "pass": true
+    },
+    {
+      "name": "whole_payload_cap_and_SHA_EOF",
+      "pass": true
+    },
+    {
+      "name": "no_new_process_INFO_or_target_reuse",
+      "pass": true
+    },
+    {
+      "name": "one_body_finite_original_observer",
+      "pass": true
+    },
+    {
+      "name": "review_is_not_actual_body_or_test",
+      "pass": true
+    }
+  ],
+  "sourcePacket": "03c5150b1f6438a84a026bf1ee2d84f354580280",
+  "journal": {
+    "blob": "e12d33cfa8170256dd0e9575192cac3a15afc2ba",
+    "bytes": 31242,
+    "sha256": "ebe21b7466dd79ad1c050161699bcb92fade6bd0f63832e5ed6a3c55cd298e55"
+  },
+  "exactRequest": {
+    "blob": "8e7a4856de578ea88d188e5b21831ba5f43af9c1",
+    "bytes": 428,
+    "sha256": "49a8de3340efe023b42bbc2cbd6a3bea5831976814ef6f7346112f20c992642b"
+  },
+  "expectedReport": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1/result.public.json",
+    "bytes": 49775,
+    "sha256": "47748eadb948f08973d7de202272823cd5f031ed99ec62286868236a8cbaa318",
+    "version": "66306:33202271:49775:1793974567959218921:1793974567959218921",
+    "infoOperation": "081575224fe6c414c2c1da7b451f3d00a54cfc513bdcca0c1980e40581bc276d",
+    "infoNative": {
+      "blob": "8c996ffb4877cb71d6b9721f57b7f3ffab40860e",
+      "bytes": 480,
+      "sha256": "8edfc11c65702adb295417234d5880ac22f7983c4da6832f446f8e3515a1b1ca"
+    },
+    "full9Strings": [
+      "66306",
+      "33202271",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "49775",
+      "1793974567959218921",
+      "1793974567959218921"
+    ]
+  },
+  "author29Reproduced": true,
+  "actualReportBodyRead": false,
+  "newNativeCalls": 0
+}

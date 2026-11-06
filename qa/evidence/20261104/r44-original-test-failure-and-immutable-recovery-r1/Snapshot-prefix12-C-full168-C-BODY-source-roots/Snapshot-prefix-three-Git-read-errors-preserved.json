@@ -1,0 +1,35 @@
+[
+  {
+    "requestedBlob": "000834e52443f31490a7879e0cdb1854248b1b15",
+    "context": "initial read-only lookup of derived native text as a standalone Git object",
+    "originalSDKPin": {
+      "blob": "e29c207758d4c774a30e93068d840967f2b7cd6b",
+      "bytes": 617,
+      "sha256": "d62f54fee07e365fca37f4a79662e88646d97a91452d72b5f37746e03fac29c0"
+    },
+    "originalSDK": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"GitHub API error 404: {\\\"message\\\":\\\"Not Found\\\",\\\"documentation_url\\\":\\\"https://docs.github.com/rest/git/blobs#get-a-blob\\\",\\\"status\\\":\\\"404\\\"}\"\n    }\n  ],\n  \"structuredContent\": {\n    \"error\": \"GitHub API error 404: {\\\"message\\\":\\\"Not Found\\\",\\\"documentation_url\\\":\\\"https://docs.github.com/rest/git/blobs#get-a-blob\\\",\\\"status\\\":\\\"404\\\"}\",\n    \"error_code\": \"NOT_FOUND\",\n    \"error_data\": {\n      \"message\": \"Not Found\",\n      \"documentation_url\": \"https://docs.github.com/rest/git/blobs#get-a-blob\",\n      \"status\": \"404\"\n    }\n  },\n  \"isError\": true\n}\n",
+    "resolution": "exact original parent SDK/payload content[0].text; no Native call or retry"
+  },
+  {
+    "requestedBlob": "02734e6558d1d52bf1ff4a33066944bf48f74e15",
+    "context": "initial read-only lookup of derived native text as a standalone Git object",
+    "originalSDKPin": {
+      "blob": "e29c207758d4c774a30e93068d840967f2b7cd6b",
+      "bytes": 617,
+      "sha256": "d62f54fee07e365fca37f4a79662e88646d97a91452d72b5f37746e03fac29c0"
+    },
+    "originalSDK": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"GitHub API error 404: {\\\"message\\\":\\\"Not Found\\\",\\\"documentation_url\\\":\\\"https://docs.github.com/rest/git/blobs#get-a-blob\\\",\\\"status\\\":\\\"404\\\"}\"\n    }\n  ],\n  \"structuredContent\": {\n    \"error\": \"GitHub API error 404: {\\\"message\\\":\\\"Not Found\\\",\\\"documentation_url\\\":\\\"https://docs.github.com/rest/git/blobs#get-a-blob\\\",\\\"status\\\":\\\"404\\\"}\",\n    \"error_code\": \"NOT_FOUND\",\n    \"error_data\": {\n      \"message\": \"Not Found\",\n      \"documentation_url\": \"https://docs.github.com/rest/git/blobs#get-a-blob\",\n      \"status\": \"404\"\n    }\n  },\n  \"isError\": true\n}\n",
+    "resolution": "exact original parent SDK/payload content[0].text; no Native call or retry"
+  },
+  {
+    "requestedBlob": "036bd6d6049084acd44aaece0822c52329a3523a",
+    "context": "initial read-only lookup of derived native text as a standalone Git object",
+    "originalSDKPin": {
+      "blob": "e29c207758d4c774a30e93068d840967f2b7cd6b",
+      "bytes": 617,
+      "sha256": "d62f54fee07e365fca37f4a79662e88646d97a91452d72b5f37746e03fac29c0"
+    },
+    "originalSDK": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"GitHub API error 404: {\\\"message\\\":\\\"Not Found\\\",\\\"documentation_url\\\":\\\"https://docs.github.com/rest/git/blobs#get-a-blob\\\",\\\"status\\\":\\\"404\\\"}\"\n    }\n  ],\n  \"structuredContent\": {\n    \"error\": \"GitHub API error 404: {\\\"message\\\":\\\"Not Found\\\",\\\"documentation_url\\\":\\\"https://docs.github.com/rest/git/blobs#get-a-blob\\\",\\\"status\\\":\\\"404\\\"}\",\n    \"error_code\": \"NOT_FOUND\",\n    \"error_data\": {\n      \"message\": \"Not Found\",\n      \"documentation_url\": \"https://docs.github.com/rest/git/blobs#get-a-blob\",\n      \"status\": \"404\"\n    }\n  },\n  \"isError\": true\n}\n",
+    "resolution": "exact original parent SDK/payload content[0].text; no Native call or retry"
+  }
+]

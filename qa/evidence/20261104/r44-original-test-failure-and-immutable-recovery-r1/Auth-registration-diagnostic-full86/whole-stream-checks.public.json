@@ -1,0 +1,41 @@
+{
+  "pureV8": true,
+  "checks": [
+    {
+      "name": "job",
+      "passed": true
+    },
+    {
+      "name": "stdoutHex",
+      "passed": true
+    },
+    {
+      "name": "stdoutOffsets",
+      "passed": true
+    },
+    {
+      "name": "stderrHex",
+      "passed": true
+    },
+    {
+      "name": "stderrOffsets",
+      "passed": true
+    },
+    {
+      "name": "stdout13957",
+      "passed": true
+    },
+    {
+      "name": "stderr0",
+      "passed": true
+    },
+    {
+      "name": "allObserversClosed",
+      "passed": true
+    },
+    {
+      "name": "12Calls",
+      "passed": true
+    }
+  ]
+}

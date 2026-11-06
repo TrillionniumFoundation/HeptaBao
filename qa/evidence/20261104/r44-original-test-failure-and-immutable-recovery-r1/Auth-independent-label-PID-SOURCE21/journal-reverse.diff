@@ -1,0 +1,24 @@
+--- a/pid-observation-r2-journal.js
++++ b/identity-r1-journal.js
+@@ -5,9 +5,9 @@
+  * Every original SDK is store'd, serialized, Git-created once and whole-read
+  * before isError or native text is inspected.
+  */
++const GF_SLOT = "owner_authbus_home_r2_current_pid_identity_gitfirst_r1";
++const GF_REQUEST = {blob:"cfe54ac6b630277b0cb100ffd9fe7d7e30a316d2",
++ bytes:97208,sha256:"7b89f6591bc7e0f43f6ebd144b5325e70b8bb9242438034d4c492d14be133baf"};
+-const GF_SLOT = "owner_authbus_home_r2_current_pid_observation_gitfirst_r2";
+-const GF_REQUEST = {blob:"a5848db0ad380f240dc6f780f612034c3b76475a",
+- bytes:100604,sha256:"9925e3cc5e0bb691d5e0e144db9747c1e57989bf87da6151120e30dbca637ee7"};
+ 
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {
+@@ -46,7 +46,7 @@
+   gfNeed(s.job!==null && s.activeObserver===null,"original_job_no_unclosed_observer");
+   gfNeed(Object.keys(q).sort().join(",")==="idempotency_key,operation"
+     && typeof q.idempotency_key==="string" && q.idempotency_key.length<=128
++    && /^heptabao-mac-current-home-pid-identity-6a1ee2c4-/.test(q.idempotency_key),
+-    && /^heptabao-mac-current-home-pid-observation-a414b14b-/.test(q.idempotency_key),
+     "bounded_original_observer_key");
+   const op=q.operation,a=op?.arguments;
+   gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"

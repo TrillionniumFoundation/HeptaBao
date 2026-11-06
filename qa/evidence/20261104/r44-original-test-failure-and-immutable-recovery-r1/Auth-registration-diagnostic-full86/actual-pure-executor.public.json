@@ -1,0 +1,20 @@
+{
+  "executed": true,
+  "engine": "functions.exec V8",
+  "runtimeCalls": 0,
+  "pythonExecuted": false,
+  "SDKModuleExecuted": false,
+  "verifier": {
+    "blob": "6e551e3abbf09e0473dba8463b925ef207efe425",
+    "bytes": 11010,
+    "sha256": "abec99cba3f11d9d6d09e12c1a31205c3e6628b15261b9e31f5070c85f0de5f0"
+  },
+  "result": {
+    "blob": "b383ddd6b94a9daa091f86539c9d4e2799bdb920",
+    "bytes": 21602,
+    "sha256": "1163ec2ccce95900c2edbf9d48310a6e368af1a487bbe101e9284e14e14e1120"
+  },
+  "passed": true,
+  "checkCount": 207,
+  "firstRunOfThisVerifier": true
+}

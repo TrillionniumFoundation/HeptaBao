@@ -1,0 +1,93 @@
+{
+  "schema": "heptabao.root.PKI025b-original-report-file-INFO-GO.r44",
+  "authorization": "GO",
+  "scope": "build_result_file_info_only",
+  "userAuthorization": "Continuation of the user-authorized HeptaBao blocker diagnosis; read only the original failed build's exact public report metadata.",
+  "owner": "/root/ha_validation",
+  "original_job": "1a1b10cad9b-fc05-7560",
+  "host": "rog",
+  "sourcePacket": "167e48e740541344a9b719bfda9c5285078d7c8d",
+  "sourceQualification": {
+    "blob": "2291adcd060e5a1940bfaed7e35763ef1a9078e3",
+    "bytes": 2222,
+    "sha256": "d06aa9bddccadf5eec293c80325b34431ca562a41cb0c2791f580f357b266daf"
+  },
+  "rootSourceChecks": 18,
+  "authorChecksReproduced": 39,
+  "terminalQualification": {
+    "blob": "7e13974f8a7cf9bf4cf35333432b7a72194ff689",
+    "bytes": 3152,
+    "sha256": "ad06cf34dc211c5d3b0e77fdede0b5dedd8ff8087c9f700177c7c7dd020eb127"
+  },
+  "exact_request": {
+    "blob": "464277d021b666996c5788b038497e1157dc82c9",
+    "bytes": 294,
+    "sha256": "771ec011b8c64a3df402dabc99d02337fc873f850d0d46a24d5a846efba42047"
+  },
+  "journal": {
+    "blob": "792b1555449a82012596fb765da4e841585b0e20",
+    "bytes": 26557,
+    "sha256": "16907a9c20a8610199ea72bbf8da476b61ffd942dfb0fb97dad33ea2305b2741"
+  },
+  "slot": "jwt_pki_025b05a3_build149_gitfirst_r2",
+  "action": "authorize_build_result_info",
+  "maximum_file_info_starts": 1,
+  "binary_read_authorized": false,
+  "new_process_authorized": false,
+  "existingSlotMustNotBeReinitialized": true,
+  "report": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1/result.public.json",
+    "whole_sha256": "47748eadb948f08973d7de202272823cd5f031ed99ec62286868236a8cbaa318",
+    "size": null,
+    "version": null,
+    "permission_mode": 384,
+    "uid": 1000,
+    "gid": 1000,
+    "link_count": 1,
+    "maximum_size": 1048576
+  },
+  "observations": {
+    "originalReturnedFileInfoOperationOnly": true,
+    "maximumOperationStatusCalls": 8,
+    "immutablePageBytes": 8192,
+    "maximumImmutablePages": 128,
+    "maximumSerializedPayloadBytes": 1048576,
+    "oneNativeCallOrOwnedFuture": true,
+    "unknownKeepsLane": true,
+    "noAutomaticReplay": true
+  },
+  "archivalProtocol": {
+    "wholeThisGORequestIntentArmedBeforeCall": true,
+    "originalSDKWholeBeforeParse": true,
+    "losslessVersionAndFull9": true,
+    "rootNativeCalls": 0
+  },
+  "laneAllocation": {
+    "before": {
+      "A": 0,
+      "B": 1,
+      "C": 0,
+      "root": 0
+    },
+    "during": {
+      "A": 0,
+      "B": 1,
+      "C": 1,
+      "root": 0
+    },
+    "maximum": 2,
+    "afterClosedInfoHold": true
+  },
+  "excluded": [
+    "new process or build",
+    "binary_read/report body until separately exact actual-version binding",
+    "target reuse",
+    "production or client traffic changes",
+    "legacy deletion"
+  ],
+  "after": "Return original INFO metadata and all original admission/status/page evidence, then release this lane at the known closed boundary. Report size/version are actual-only; prepare exact version-bound body request separately.",
+  "actualTestsQualified": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

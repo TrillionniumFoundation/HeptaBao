@@ -1,0 +1,90 @@
+{
+  "schema": "heptabao.root-independent-label-pid-source.r2",
+  "passed": true,
+  "checks": 15,
+  "rows": [
+    {
+      "name": "author62_exact",
+      "passed": true
+    },
+    {
+      "name": "before_exact_reviewed_source",
+      "passed": true
+    },
+    {
+      "name": "after_source_exact",
+      "passed": true
+    },
+    {
+      "name": "seven_strict_hunks_both",
+      "passed": true
+    },
+    {
+      "name": "journal_two_strict_hunks",
+      "passed": true
+    },
+    {
+      "name": "request_exact_source_and_pin",
+      "passed": true
+    },
+    {
+      "name": "request_only_stdin_key_changed",
+      "passed": true
+    },
+    {
+      "name": "Mac_absolute_interpreter_deadline60",
+      "passed": true
+    },
+    {
+      "name": "runtime_trigger_original_whole",
+      "passed": true
+    },
+    {
+      "name": "no_cleanup_or_private_expansion",
+      "passed": true
+    },
+    {
+      "name": "seven_path_prefix_original",
+      "passed": true
+    },
+    {
+      "name": "original_final_cleanup_exact",
+      "passed": true
+    },
+    {
+      "name": "no_ESRCH_historical_exit_claim",
+      "passed": true
+    },
+    {
+      "name": "new_pair_guard_shortcircuits_null",
+      "passed": true
+    },
+    {
+      "name": "two_registration_mappings_before_eligibility",
+      "passed": true
+    }
+  ],
+  "source": {
+    "blob": "873fd511a30f70bfeba0a661f13952e122e40d94",
+    "bytes": 97960,
+    "sha256": "a414b14bc90f9b1839331a4d1414b195e3ac675811944eb3a274537c531fe1c4"
+  },
+  "request": {
+    "blob": "a5848db0ad380f240dc6f780f612034c3b76475a",
+    "bytes": 100604,
+    "sha256": "9925e3cc5e0bb691d5e0e144db9747c1e57989bf87da6151120e30dbca637ee7"
+  },
+  "journal": {
+    "blob": "bacb6c8837b11a3c3e879c7cef8da5a7bce69124",
+    "bytes": 19066,
+    "sha256": "69ec43c2da1007248ecd1874e5c33a35e5c8ced05b08f839fefdde72b26bff82"
+  },
+  "binding": {
+    "sha256": "8697f5ee3f9f02727a171b5b1e82510517490da1c7aaca05641bbd7897254180",
+    "native_fingerprint": "9698490726184059506",
+    "canonicalBytes": 100538
+  },
+  "sourceOnly": true,
+  "NativeCalls": 0,
+  "managedScopeQualified": false
+}

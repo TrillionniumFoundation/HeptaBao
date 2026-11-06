@@ -1,0 +1,69 @@
+{
+  "schema": "heptabao.formatted23-file16-body-page0-known-future-release.v1",
+  "originalGO": "25ea12c4406a12ba5ce263b10a2723f73276d74b",
+  "rootResume": "9b378d9160ec4ab96a59046efafa949e4de50984",
+  "originalSlot": "snapshot_2379_formatted23_readonly_gitfirst_r1",
+  "lane": {
+    "nativeCallsInFlight": 0,
+    "ownedNativeFuturesActive": 0,
+    "released": true
+  },
+  "state": {
+    "paused": true,
+    "pending": "sf23-r1-f16-b00-p0",
+    "pendingCalled": true,
+    "nextInfoIndex": 17,
+    "nextInfoSubmitted": false,
+    "wholeFiles": 16,
+    "wholeBytes": 1184165,
+    "completePayloadObservers": 46,
+    "originalCallRecords": 226
+  },
+  "current": {
+    "fileIndex": 16,
+    "name": "service_snapshot_forward_wire.rs",
+    "infoComplete": true,
+    "bodyOriginalOperation": "9037480fbf014345c1d2bbe1894020e30602a9adb2d8c1a864f6eff35368f1b0",
+    "bodyNativeFutureCompleted": true,
+    "bodyOwnedFutureActive": false,
+    "immutablePageDeliveryUnknown": true,
+    "originalPagesReceived": 0,
+    "originalFailedPage": {
+      "callKey": "sf23-r1-f16-b00-p0",
+      "request": {
+        "blob": "bfd96536330ccc3704a2ba596203edf3680a0702",
+        "bytes": 122,
+        "sha256": "ede3d944c75b34dbcc7cf3b644e9d8374496f8348d375e792d565141c92b2ef5"
+      },
+      "SDK": {
+        "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+        "bytes": 248,
+        "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+      },
+      "armTree": "e8b011038b5afae7a1df8bb9d78bacfe3d118074"
+    },
+    "originalCompletedStatus": {
+      "blob": "237b2709d1ca13c6b56fdd4be8012920bac38b7a",
+      "bytes": 802,
+      "sha256": "9b667dd791f4fb7a67710f127b0b4475d9c15ca9b5e09b45c67f22410bc769b3"
+    },
+    "bodyReadNativeAdmissionMustNotRepeat": true
+  },
+  "sameErrorContentIsNotSameCall": {
+    "previousCallKey": "sf23-r1-f10-info-p0",
+    "currentCallKey": "sf23-r1-f16-b00-p0",
+    "sameSDKBlob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+    "separateCallRowsPreserved": true
+  },
+  "originalPriorFailuresPreserved": true,
+  "sourceFinalVerifierRemainsStrict": "The previously frozen verifier correctly rejects this newly observed second failed call; no generic exception has been added.",
+  "actionsAfterError": {
+    "newNative": 0,
+    "retry": 0,
+    "newAdmission": 0,
+    "newPath": 0,
+    "sourceChanges": 0
+  },
+  "final23Qualified": false,
+  "productFailureInferred": false
+}

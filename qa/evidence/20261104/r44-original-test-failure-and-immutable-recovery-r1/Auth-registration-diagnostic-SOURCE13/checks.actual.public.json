@@ -1,0 +1,340 @@
+{
+  "schema": "heptabao.current-home-r2-registration-readonly-static-checks.v1",
+  "passed": true,
+  "checkCount": 80,
+  "checks": [
+    {
+      "name": "candidate exact pin",
+      "passed": true
+    },
+    {
+      "name": "exact stdin request",
+      "passed": true
+    },
+    {
+      "name": "exact regular interpreter",
+      "passed": true
+    },
+    {
+      "name": "fixed Python stdin argv",
+      "passed": true
+    },
+    {
+      "name": "fixed user cwd",
+      "passed": true
+    },
+    {
+      "name": "outer60",
+      "passed": true
+    },
+    {
+      "name": "host mac",
+      "passed": true
+    },
+    {
+      "name": "source-key binding",
+      "passed": true
+    },
+    {
+      "name": "current original parser byte exact",
+      "passed": true
+    },
+    {
+      "name": "parser error allowlist bounded_launchctl_print",
+      "passed": true
+    },
+    {
+      "name": "parser error allowlist strict",
+      "passed": true
+    },
+    {
+      "name": "parser error allowlist exact_launchctl_target",
+      "passed": true
+    },
+    {
+      "name": "parser error allowlist plain_fixed_launchctl_argument",
+      "passed": true
+    },
+    {
+      "name": "parser error allowlist bounded_launchctl_arguments",
+      "passed": true
+    },
+    {
+      "name": "parser error allowlist one_launchctl_arguments_block",
+      "passed": true
+    },
+    {
+      "name": "parser error allowlist unique_launchctl_field",
+      "passed": true
+    },
+    {
+      "name": "parser error allowlist balanced_launchctl_print",
+      "passed": true
+    },
+    {
+      "name": "parser error allowlist one_complete_launchctl_record",
+      "passed": true
+    },
+    {
+      "name": "parser error allowlist complete_launchctl_arguments",
+      "passed": true
+    },
+    {
+      "name": "parser error allowlist typed_launchctl_integer",
+      "passed": true
+    },
+    {
+      "name": "parser error allowlist actual_launchctl_pid",
+      "passed": true
+    },
+    {
+      "name": "only old EX_CONFIG normalization retained",
+      "passed": true
+    },
+    {
+      "name": "diagnostic-only never-exited equality",
+      "passed": true
+    },
+    {
+      "name": "numeric rejected-field projection",
+      "passed": true
+    },
+    {
+      "name": "fixed same registration before public prefix",
+      "passed": true
+    },
+    {
+      "name": "unchanged IO method meta",
+      "passed": true
+    },
+    {
+      "name": "unchanged IO method open_fd",
+      "passed": true
+    },
+    {
+      "name": "unchanged IO method close_one",
+      "passed": true
+    },
+    {
+      "name": "unchanged IO method check_dir",
+      "passed": true
+    },
+    {
+      "name": "unchanged IO method check_all",
+      "passed": true
+    },
+    {
+      "name": "unchanged IO method close",
+      "passed": true
+    },
+    {
+      "name": "unchanged IO method public",
+      "passed": true
+    },
+    {
+      "name": "pending before open",
+      "passed": true
+    },
+    {
+      "name": "returned registration exception unknown",
+      "passed": true
+    },
+    {
+      "name": "close loop critical",
+      "passed": true
+    },
+    {
+      "name": "no IO write method",
+      "passed": true
+    },
+    {
+      "name": "no IO mkdir method",
+      "passed": true
+    },
+    {
+      "name": "zero write cap and methods",
+      "passed": true
+    },
+    {
+      "name": "whole private stdio blocked",
+      "passed": true
+    },
+    {
+      "name": "prefix read same FD",
+      "passed": true
+    },
+    {
+      "name": "prefix first LF bound",
+      "passed": true
+    },
+    {
+      "name": "prefix first6 custody fence",
+      "passed": true
+    },
+    {
+      "name": "prefix append limits",
+      "passed": true
+    },
+    {
+      "name": "prefix no raw hash in result",
+      "passed": true
+    },
+    {
+      "name": "no tail stability claim",
+      "passed": true
+    },
+    {
+      "name": "fixed T5 device",
+      "passed": true
+    },
+    {
+      "name": "original Signals/Commands loader byte exact",
+      "passed": true
+    },
+    {
+      "name": "only original two owned-command modules",
+      "passed": true
+    },
+    {
+      "name": "module whole mac_owned_unreaped_r1",
+      "passed": true
+    },
+    {
+      "name": "module current byte equality mac_owned_unreaped_r1",
+      "passed": true
+    },
+    {
+      "name": "module whole mac_owned_commands_r1",
+      "passed": true
+    },
+    {
+      "name": "module current byte equality mac_owned_commands_r1",
+      "passed": true
+    },
+    {
+      "name": "45s shared deadline",
+      "passed": true
+    },
+    {
+      "name": "35s helper admission",
+      "passed": true
+    },
+    {
+      "name": "two fixed print calls",
+      "passed": true
+    },
+    {
+      "name": "no direct PID helper or libproc introduced",
+      "passed": true
+    },
+    {
+      "name": "only exact launchctl print",
+      "passed": true
+    },
+    {
+      "name": "no managed signal or spawn APIs",
+      "passed": true
+    },
+    {
+      "name": "no private capsule path",
+      "passed": true
+    },
+    {
+      "name": "private plan only in exact argv string",
+      "passed": true
+    },
+    {
+      "name": "closed wrapper-error codes",
+      "passed": true
+    },
+    {
+      "name": "13 boolean field allowlist",
+      "passed": true
+    },
+    {
+      "name": "unknown keys not enumerated into output",
+      "passed": true
+    },
+    {
+      "name": "candidate digest only equality output",
+      "passed": true
+    },
+    {
+      "name": "candidate not terminal",
+      "passed": true
+    },
+    {
+      "name": "first LF post-finally tag source-derived",
+      "passed": true
+    },
+    {
+      "name": "restored handlers before final pending",
+      "passed": true
+    },
+    {
+      "name": "final deadline after close",
+      "passed": true
+    },
+    {
+      "name": "always preserve managed unknown",
+      "passed": true
+    },
+    {
+      "name": "two roots exact",
+      "passed": true
+    },
+    {
+      "name": "three pinned controls",
+      "passed": true
+    },
+    {
+      "name": "server wrapper original full9",
+      "passed": true
+    },
+    {
+      "name": "plist fresh-only inode explicit",
+      "passed": true
+    },
+    {
+      "name": "public plist reconstruction matches actual SHA",
+      "passed": true
+    },
+    {
+      "name": "17 original argv reconstructed",
+      "passed": true
+    },
+    {
+      "name": "exact HOME current full9",
+      "passed": true
+    },
+    {
+      "name": "new journal slot",
+      "passed": true
+    },
+    {
+      "name": "journal only three literal bindings",
+      "passed": true
+    },
+    {
+      "name": "strict source forward",
+      "passed": true
+    },
+    {
+      "name": "strict journal forward",
+      "passed": true
+    }
+  ],
+  "scope": "Pure V8 byte/source/input verification only; Python not parsed or executed, no Native calls, no observed launchctl integer value and no runtime qualification.",
+  "NativeCalls": 0,
+  "PythonExecution": false,
+  "sourcePin": {
+    "blob": "ef3b05165ba0b0fbce2c5f2c493502ee61080c7d",
+    "bytes": 83726,
+    "sha256": "c00164e1191c0e3744fae01859eb6a5eab04e51c29945812542591d2f1343a92"
+  },
+  "requestPin": {
+    "blob": "b60cd5e90c8ed8ee706f7b28d385cdeb2555ff69",
+    "bytes": 86104,
+    "sha256": "a2d8048df444a6a0185959f184fd318112d048f2af3ff61408f61e027b86fcf4"
+  }
+}

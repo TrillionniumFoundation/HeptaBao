@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.current-home-r2-identity-original-fixed-pins.r1",
+  "source21Tree": "af2a0454dff4937b095779079f4ecbfebc963c73",
+  "source": {
+    "blob": "a938ba9fd034a6ba4b66300fd88e61383ab1be32",
+    "bytes": 94611,
+    "sha256": "6a1ee2c4bc31c4d55d2fde24eaa17c644037dd18c5a9853bba2a35035609e566"
+  },
+  "request": {
+    "blob": "cfe54ac6b630277b0cb100ffd9fe7d7e30a316d2",
+    "bytes": 97208,
+    "sha256": "7b89f6591bc7e0f43f6ebd144b5325e70b8bb9242438034d4c492d14be133baf"
+  },
+  "journal": {
+    "blob": "a4397a47257178ccf98374b694edd4d04903896a",
+    "bytes": 19059,
+    "sha256": "42ad555c661fc46f4c577c15fc40aebc036b56a754db3349be5aaea72f6f3bc5"
+  },
+  "rootSourceReview": {
+    "blob": "ad10d6bfe0d3e3281ae89c8e7d6da2db3eb0de5e",
+    "bytes": 3402,
+    "sha256": "302119d75ad70e0e26ab3c5ded13eac02777c7bce45052322767426614eb90ed"
+  },
+  "nativeBinding": {
+    "sha256": "f9621ac37f677fdd6c411224005fac66fac40a9517ceacffb2d0c83af8dd8f64",
+    "fingerprint": "17969954890120134621"
+  },
+  "priorRegistrationDiagnostic": {
+    "tree": "061b2fe4336d34e50943fd216c2b2166df1b3a64",
+    "stdout": "c984004abb7a5259246308a4c95af7de675f058c",
+    "qualifiedRoot": "74562ffa04fbb190508857fb3b4d483a6a255ca9"
+  },
+  "historicalManagedUnknownUnchanged": true
+}

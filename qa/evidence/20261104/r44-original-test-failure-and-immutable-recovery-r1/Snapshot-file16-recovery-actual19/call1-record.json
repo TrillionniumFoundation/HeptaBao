@@ -1,0 +1,69 @@
+{
+  "kind": "operation_result",
+  "requestRaw": "{\n  \"operation_id\": \"9037480fbf014345c1d2bbe1894020e30602a9adb2d8c1a864f6eff35368f1b0\",\n  \"offset\": 16384,\n  \"limit\": 16384\n}\n",
+  "requestPin": {
+    "blob": "e8e02d4f7df4c84326ffc9dd6afe2214f259dfaa",
+    "bytes": 126,
+    "sha256": "4a3e718c669eba3c21959467da53b2378bca734e768944c0e79657264eba37fe"
+  },
+  "phase": "accepted",
+  "called": true,
+  "armed": {
+    "tree": "d94a7ede89a6272708aa7ba786d7753af57820dc",
+    "entries": [
+      {
+        "path": "armed.json",
+        "blob": "1f2f561c4a1fe5b2edc4f484c8922819ed6bf5f5",
+        "bytes": 909,
+        "sha256": "600064c7fd39e37d2c33a8606022d0c581248d483ecf0776f9f3bf2876538b15",
+        "whole": true
+      },
+      {
+        "path": "intent.json",
+        "blob": "e57fb1bf7cb5d930ac4ab6d053bbec0a08ebcc46",
+        "bytes": 772,
+        "sha256": "521238c4d82f031d906f576650ff9c5c21de64f9558634cb1f41c2aa0c6ab7ff",
+        "whole": true
+      },
+      {
+        "path": "request.json",
+        "blob": "e8e02d4f7df4c84326ffc9dd6afe2214f259dfaa",
+        "bytes": 126,
+        "sha256": "4a3e718c669eba3c21959467da53b2378bca734e768944c0e79657264eba37fe",
+        "whole": true
+      }
+    ],
+    "count": 3,
+    "bytes": 1807,
+    "whole": true,
+    "localDurableJournal": false,
+    "runtimeAuthorized": false
+  },
+  "sdkPin": {
+    "blob": "ab951d5714b22f194c6f341b5b5a5e656ae01348",
+    "bytes": 8916,
+    "sha256": "147f3c4ec1a596e71b60423745caa6a4fec0e2d16ad0717b82f103dc89e61d53"
+  },
+  "sdkArchive": {
+    "tree": "305b22b6673f411178f14dc9f9c9fc09dfa0cc7c",
+    "entries": [
+      {
+        "path": "original.sdk.json",
+        "blob": "ab951d5714b22f194c6f341b5b5a5e656ae01348",
+        "bytes": 8916,
+        "sha256": "147f3c4ec1a596e71b60423745caa6a4fec0e2d16ad0717b82f103dc89e61d53",
+        "whole": true
+      }
+    ],
+    "count": 1,
+    "bytes": 8916,
+    "whole": true,
+    "localDurableJournal": false,
+    "runtimeAuthorized": false
+  },
+  "nativePin": {
+    "blob": "5e6ca1b7872823de1447f77b14d223b6e8aad7a8",
+    "bytes": 8745,
+    "sha256": "32f4bd00da70bb126554b79471c17b8d3a3b25d75ab9c52473f8bafd88aed4a7"
+  }
+}

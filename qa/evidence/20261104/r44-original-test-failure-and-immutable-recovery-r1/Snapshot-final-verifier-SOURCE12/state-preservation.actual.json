@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.formatted23-verifier-state-preservation.v1",
+  "initial": {
+    "blob": "4e2143f94098dbeabe0a2990123dee380645b65a",
+    "bytes": 1934059,
+    "sha256": "7251b4d80853ff81bf78525aef53c7637dc2946a6982f63939623d93d2b07c08"
+  },
+  "final": {
+    "blob": "4e2143f94098dbeabe0a2990123dee380645b65a",
+    "bytes": 1934059,
+    "sha256": "7251b4d80853ff81bf78525aef53c7637dc2946a6982f63939623d93d2b07c08"
+  },
+  "unchanged": true,
+  "nativeCalls": 0,
+  "liveStateMutations": 0
+}

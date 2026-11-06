@@ -1,0 +1,87 @@
+{
+  "schema": "heptabao.root-original-report-minimum.r1",
+  "passed": true,
+  "checks": 17,
+  "rows": [
+    {
+      "name": "original_report_body_operation",
+      "passed": true
+    },
+    {
+      "name": "original_future_closed",
+      "passed": true
+    },
+    {
+      "name": "payload_complete",
+      "passed": true
+    },
+    {
+      "name": "whole_report_hash",
+      "passed": true
+    },
+    {
+      "name": "original_payload_matches_report",
+      "passed": true
+    },
+    {
+      "name": "exact_range_eof",
+      "passed": true
+    },
+    {
+      "name": "same_version_path",
+      "passed": true
+    },
+    {
+      "name": "release_closed",
+      "passed": true
+    },
+    {
+      "name": "known_original_source",
+      "passed": true
+    },
+    {
+      "name": "failure_with_runtime_started",
+      "passed": true
+    },
+    {
+      "name": "normal_release_and_shared_compile_passed",
+      "passed": true
+    },
+    {
+      "name": "shared_compile_within_original3600",
+      "passed": true
+    },
+    {
+      "name": "two_test_processes_only",
+      "passed": true
+    },
+    {
+      "name": "eight_owned_children_reaped",
+      "passed": true
+    },
+    {
+      "name": "retained_prior_artifacts_unchanged",
+      "passed": true
+    },
+    {
+      "name": "no_invented_final_source_binary_checks",
+      "passed": true
+    },
+    {
+      "name": "production_and_full_regressions_not_done",
+      "passed": true
+    }
+  ],
+  "report": {
+    "blob": "5bf4476672f08c251826efc1dc9833af30bdd5b4",
+    "bytes": 49775,
+    "sha256": "47748eadb948f08973d7de202272823cd5f031ed99ec62286868236a8cbaa318"
+  },
+  "runtimeTestProcesses": 2,
+  "successfulTestProcesses": 1,
+  "failedTestProcesses": 1,
+  "fullSuiteQualified": false,
+  "observationLaneReleased": true,
+  "targetReuseQualified": false,
+  "fullReplacement": false
+}

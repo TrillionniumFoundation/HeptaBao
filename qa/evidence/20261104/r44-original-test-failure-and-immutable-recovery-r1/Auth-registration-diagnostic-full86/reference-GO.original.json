@@ -1,0 +1,415 @@
+{
+  "schema": "heptabao.root.exact-original-Mac-registration-readonly-GO.r44",
+  "decision": "GO_ONE_EXACT_ORIGINAL_INSTANCE_READONLY_DIAGNOSTIC",
+  "userAuthorization": "Continue original user-authorized blocker resolution; finite read-only diagnosis of the failed owned QA registration, without production cutover or cleanup.",
+  "owner": "/root/authbus_migration",
+  "sourcePacket": "2860e9d735170756e27a01cc808230c83d491ea8",
+  "sourceQualification": {
+    "blob": "d9514b8f2ff9470605df1f3c6ec7deebde0bd4df",
+    "bytes": 4030,
+    "sha256": "fd71ca32b6c58e2f9fe4b2f28ef818a567446f0ef87c03b04150de8970d2ca7a"
+  },
+  "sourceChecks": 30,
+  "originalRuntimeFullPacket": "4a3bafecbc966aed7c6b14538c1403a1076598dd",
+  "originalRuntimeRootQualification": {
+    "blob": "1208fbe37f61e01e7324f8bef1b6fc6db9f5b4a5",
+    "bytes": 32162,
+    "sha256": "ea6db23190b816f88c4b7a88e66079bb01cccd6e5abb7b0a435285e89f7e0497"
+  },
+  "priorManagedScope": "UNKNOWN",
+  "exactProcessStart": {
+    "blob": "b60cd5e90c8ed8ee706f7b28d385cdeb2555ff69",
+    "bytes": 86104,
+    "sha256": "a2d8048df444a6a0185959f184fd318112d048f2af3ff61408f61e027b86fcf4"
+  },
+  "exactSource": {
+    "blob": "ef3b05165ba0b0fbce2c5f2c493502ee61080c7d",
+    "bytes": 83726,
+    "sha256": "c00164e1191c0e3744fae01859eb6a5eab04e51c29945812542591d2f1343a92"
+  },
+  "nativeBinding": {
+    "sha256": "0cba0fc5a4a36878fbe00b05ba456288fe57a72245ea8e2bbf4623a9f94dc17c",
+    "native_fingerprint": "917062815668463736",
+    "canonicalBytes": 86041
+  },
+  "host": "mac",
+  "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+  "argv": [
+    "-I",
+    "-S",
+    "-B",
+    "-"
+  ],
+  "cwd": "/Users/qianqi",
+  "stdinIsExactWholeSource": true,
+  "idempotency_key": "heptabao-mac-current-home-registration-c00164e1-20261106-r1",
+  "maximumBusinessStarts": 1,
+  "journal": {
+    "blob": "a9a5ff810daa677c32d3c9bfe302b560d7ac4591",
+    "bytes": 19060,
+    "sha256": "ce71fbb98ac77b93ff65f2ed1ca3f7d80e1a6eacaa6995a8506acfec82f26e8a"
+  },
+  "slot": "owner_authbus_home_r2_registration_readonly_gitfirst_r1",
+  "observerKeyPrefix": "heptabao-mac-current-home-registration-c00164e1-",
+  "scope": {
+    "host": "mac",
+    "label": "org.heptabao.qa.mac-authbus-4e808-home-r2.server",
+    "target": "gui/501/org.heptabao.qa.mac-authbus-4e808-home-r2.server",
+    "generation": "server-initial",
+    "originalJob": "1a1b0e85206-fc05-73e1",
+    "sameOriginalRegistration": true,
+    "bootstrap": false,
+    "bootout": false,
+    "signalsToManagedProcess": false,
+    "managedReaping": false,
+    "privatePlanOrCapsuleRead": false,
+    "stderrBodyRead": false,
+    "credentialRead": false,
+    "SDKOrFactory": false,
+    "productRetry": false,
+    "privateStdoutProjectionFirstLfOnly": true,
+    "firstBoundedReadMayContainTail": true,
+    "stdioTailExported": false
+  },
+  "fixedPublicControls": {
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14": {
+      "identity": [
+        "16777233",
+        "587518380",
+        "501",
+        "80",
+        "33261",
+        "1",
+        "34640",
+        "1793798038915516382",
+        "1793798038915695047"
+      ],
+      "bytes": 34640,
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+    },
+    "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2/mac_current_server_owner_r1.py": {
+      "bytes": 14052,
+      "identity": [
+        "16777233",
+        "593160542",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "14052",
+        "1793964565557957451",
+        "1793964565557957451"
+      ],
+      "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2/mac_current_server_owner_r1.py",
+      "sha256": "34aa6a9799419573dfc8cf6b63f479162b3e9e316dc391d54c5f0c0c54cdedb1"
+    },
+    "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2/server-initial.plist": {
+      "identity": null,
+      "bytes": 3970,
+      "sha256": "9c804e84dea6d5648ffac531ab41536fb6d4f245409fd1f393423dbaf448d454"
+    }
+  },
+  "fixedAdditionalPaths": [
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/launchd/server-initial.ready.public.json",
+      "maximum": 8192,
+      "mode": "0600",
+      "uid": 501,
+      "nlink": 1,
+      "body": "whole public producer JSON; only fixed typed projection",
+      "absence": "only exact ENOENT for this path, not historic absence"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/launchd/server-initial.exec-ready.public.json",
+      "maximum": 65536,
+      "mode": "0600",
+      "uid": 501,
+      "nlink": 1,
+      "body": "whole public pre-finally candidate JSON; typed projection, no terminal or exec claim"
+    },
+    {
+      "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2/server-initial.stdout.private",
+      "maximumContainer": 2097152,
+      "maximumFirstChunk": 65536,
+      "maximumRepeatedPrefix": 65536,
+      "body": "First read is min(65536, observed size), then only the first LF prefix is reread through the same FD. Bytes after LF inside the first bounded block may have been read, but are discarded; no raw, hash, tail or second line is exported.",
+      "firstLfMayLackGenerationOnEarlyError": true
+    },
+    {
+      "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2/server-initial.stderr.private",
+      "maximumContainer": 2097152,
+      "body": "NONE; full9 metadata and finite size only"
+    }
+  ],
+  "rootBindings": {
+    "home": {
+      "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2",
+      "full9": [
+        "16777233",
+        "593160541",
+        "501",
+        "20",
+        "16832",
+        "7",
+        "224",
+        "1793969379294575499",
+        "1793969379294575499"
+      ],
+      "source": "actual report.homeControlFinal.currentRootIdentity"
+    },
+    "sharedParentFirst5": {
+      "/": [
+        "16777233",
+        "2",
+        "0",
+        "0",
+        "16877"
+      ],
+      "/opt": [
+        "16777233",
+        "18335",
+        "0",
+        "0",
+        "16877"
+      ],
+      "/Volumes": [
+        "16777233",
+        "18336",
+        "0",
+        "0",
+        "16877"
+      ],
+      "/opt/homebrew": [
+        "16777233",
+        "10827966",
+        "501",
+        "80",
+        "16877"
+      ],
+      "/Volumes/T5": [
+        "16777244",
+        "2",
+        "0",
+        "0",
+        "16893"
+      ],
+      "/opt/homebrew/Cellar": [
+        "16777233",
+        "10827980",
+        "501",
+        "80",
+        "16893"
+      ],
+      "/Volumes/T5/hepta-vnext-recovery-20261013": [
+        "16777244",
+        "64176096",
+        "501",
+        "20",
+        "16832"
+      ],
+      "/opt/homebrew/Cellar/python@3.14": [
+        "16777233",
+        "13738376",
+        "501",
+        "80",
+        "16877"
+      ],
+      "/opt/homebrew/Cellar/python@3.14/3.14.3_1": [
+        "16777233",
+        "13278341",
+        "501",
+        "80",
+        "16877"
+      ],
+      "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks": [
+        "16777233",
+        "13278344",
+        "501",
+        "80",
+        "16877"
+      ],
+      "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework": [
+        "16777233",
+        "13278345",
+        "501",
+        "80",
+        "16877"
+      ],
+      "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions": [
+        "16777233",
+        "13278349",
+        "501",
+        "80",
+        "16877"
+      ],
+      "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14": [
+        "16777233",
+        "13278350",
+        "501",
+        "80",
+        "16877"
+      ],
+      "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin": [
+        "16777233",
+        "13278368",
+        "501",
+        "80",
+        "16877"
+      ],
+      "/Users": [
+        "16777233",
+        "18326",
+        "0",
+        "80",
+        "16877"
+      ],
+      "/Users/qianqi": [
+        "16777233",
+        "6929812",
+        "501",
+        "20",
+        "16877"
+      ],
+      "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2": [
+        "16777233",
+        "593160541",
+        "501",
+        "20",
+        "16832"
+      ]
+    },
+    "volumeAnchorsFull9": {
+      "/": [
+        "16777233",
+        "2",
+        "0",
+        "0",
+        "16877",
+        "22",
+        "704",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "/Volumes": [
+        "16777233",
+        "18336",
+        "0",
+        "0",
+        "16877",
+        "5",
+        "160",
+        "1793100597756515591",
+        "1793100597756515591"
+      ],
+      "/Volumes/T5": [
+        "16777244",
+        "2",
+        "0",
+        "0",
+        "16893",
+        "12",
+        "384",
+        "1793152973144260495",
+        "1793152973144260495"
+      ]
+    },
+    "actualVolumeDevice": "16777244",
+    "t5WorkAndLaunchdDirectoryInodesPreviouslyPinned": false,
+    "t5PublicChildrenFreshObservationOnly": true,
+    "noUUIDHelperOrPrivateRead": true
+  },
+  "originalParserRetainedByteExact": true,
+  "neverExitedIsOnlyDiagnosticEqualityCandidate": true,
+  "offendingFieldOrValueNotYetObserved": true,
+  "budgets": {
+    "softSeconds": 45,
+    "helperAdmissionEndSeconds": 35,
+    "perPrintClippedSeconds": 10,
+    "outerSeconds": 60,
+    "directPrintCalls": 2,
+    "commandReturnedBytes": 1048576,
+    "perCommandPerStreamBytes": 65536,
+    "applicationReadBytes": 262144,
+    "applicationReadCalls": 256,
+    "metadata": 4096,
+    "returnedFdAttempts": 64,
+    "writeCalls": 0,
+    "writeBytes": 0,
+    "outputBytes": 65536,
+    "plannedProcessStatusMaximum": 8,
+    "plannedTerminalStreamReadsMaximum": 8,
+    "processReadLimit": 16384,
+    "immutablePageLimit": 8192,
+    "perObserverStatusMaximum": 8
+  },
+  "observations": {
+    "originalReturnedJobOnly": true,
+    "maximumProcessStatusObservers": 8,
+    "maximumOperationStatusCallsPerObserver": 8,
+    "maximumProcessReadObservers": 8,
+    "processReadPerStreamBytes": 16384,
+    "maximumObservedBytesPerStream": 131072,
+    "immutablePageBytes": 8192,
+    "maximumImmutablePagesPerObserver": 128,
+    "maximumSerializedOriginalPayloadBytes": 1048576,
+    "closeEachObserverBeforeNext": true,
+    "onlyProcessStatusAndProcessRead": true,
+    "actualTerminalAuthorityAndContiguousCursors": true,
+    "unknownNeverGrantsReplay": true
+  },
+  "archivalProtocol": {
+    "wholeThisExactGOBeforeFreshSlotInitialization": true,
+    "wholeRequestIntentArmedBeforeEachNative": true,
+    "invokeOnlyAcrossIndependentCallBoundary": true,
+    "wholeOriginalSDKBeforeParse": true,
+    "rootNativeCalls": 0,
+    "maximumRuntimeLanes": 2,
+    "maximumNativeCallOrOwnedFuturePerLane": 1,
+    "unknownKeepsLane": true
+  },
+  "laneActivation": {
+    "verifiedBRelease": {
+      "blob": "806aa85a0bdd893409618fe3796a84a31f862b6d",
+      "bytes": 3057,
+      "sha256": "451c699bed52fb5e81a06724ba5c3fd66cab0d4b9ee063570d51cfbc3f31d4d1"
+    },
+    "allocationBefore": {
+      "A": 0,
+      "B": 0,
+      "C": 1,
+      "root": 0
+    },
+    "allocationDuring": {
+      "A": 1,
+      "B": 0,
+      "C": 1,
+      "root": 0
+    },
+    "BRemainHoldBeforeINFO12": true,
+    "ROGCargoWindowStillCExclusive": true
+  },
+  "qualificationBoundary": {
+    "diagnosticSuccessIsOnlyBoundedObservationAndOwnResourceClosure": true,
+    "registrationClosureClaimed": false,
+    "managedLineageClosureClaimed": false,
+    "readThenExecAtomicityClaimed": false,
+    "currentCredentialCycleSuccess": false,
+    "rawPrivateStdoutOrHashExportAllowed": false,
+    "firstBoundedPrefixMayContainPostLfBytes": true,
+    "privatePlanCapsuleBodyReadAllowed": false
+  },
+  "afterRun": "Preserve original authority and complete public output; close only original Native observers. Report observed fixed integer rejection/value classification and original public-file states. No automatic parse change, bootstrap, bootout, credential operation or cleanup.",
+  "excluded": [
+    "bootstrap/bootout/managed signal/managed reap",
+    "new service or business retry",
+    "private plan/capsule/credential-file body reads",
+    "stderr body or stdout tail export",
+    "directory discovery or unrelated files",
+    "Cargo/fixture/download/production changes",
+    "legacy deletion"
+  ],
+  "fullReplacement": false,
+  "productionCutoverAuthorized": false,
+  "legacyCleanupAuthorized": false,
+  "allClientsAndBackupsMigrated": false
+}

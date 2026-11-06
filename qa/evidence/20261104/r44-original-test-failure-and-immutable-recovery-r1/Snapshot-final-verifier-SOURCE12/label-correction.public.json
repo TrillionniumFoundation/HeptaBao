@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.formatted23-verifier-preparation-correction.v1",
+  "before": {
+    "blob": "cca66eed09ed2adcc60d1e0954d9583788d17787",
+    "bytes": 29109,
+    "sha256": "fd0a78a1ad87d5d145f04ad3a04fbe9794ab69a860388089519f64cacbb645a2"
+  },
+  "after": {
+    "blob": "6b10754735685ad3708c60f6baec369a3ac88359",
+    "bytes": 29158,
+    "sha256": "a499ea4f9898c8c1e0838855ba84e895a3bfbbafa260ba65db9e73b1fd09d086"
+  },
+  "singleExactReplacement": {
+    "before": "  const oi=runObserver(label+\"-info\",row.infoRaw,\"file_info\"),v=oi.v,md=v.metadata,parts=typeof v.version===\"string\"?v.version.split(\":\"):[];",
+    "after": "  const infoLabel=i===0?\"sf23-r1-i00\":label+\"-info\";\n  const oi=runObserver(infoLabel,row.infoRaw,\"file_info\"),v=oi.v,md=v.metadata,parts=typeof v.version===\"string\"?v.version.split(\":\"):[];"
+  },
+  "reason": "Actual original first INFO call is sf23-r1-i00; only the first INFO label assumption was corrected. No original history changed.",
+  "inspectionError": {
+    "name": "TypeError",
+    "message": "Cannot read properties of undefined (reading 'requestRaw')",
+    "pureInspectionOnly": true,
+    "incorrectAssumedKey": "sf23-r1-f00-info-admit",
+    "actualKey": "sf23-r1-i00-admit"
+  },
+  "newRuntimeCalls": 0,
+  "liveStateMutations": 0
+}

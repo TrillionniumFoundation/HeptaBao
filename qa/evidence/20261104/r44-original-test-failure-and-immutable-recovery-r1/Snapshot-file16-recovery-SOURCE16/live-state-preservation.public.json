@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.formatted23-body16-recovery-source-state-preservation.v1",
+  "before": {
+    "blob": "bab9dd6dd5b4c7b901ff643541d569c00ffe4484",
+    "bytes": 2076059,
+    "sha256": "fb313302a14b4f44274a3577b01f2d98a52f36aaa0a7e1c7ecb9ea7abce80085"
+  },
+  "after": {
+    "blob": "bab9dd6dd5b4c7b901ff643541d569c00ffe4484",
+    "bytes": 2076059,
+    "sha256": "fb313302a14b4f44274a3577b01f2d98a52f36aaa0a7e1c7ecb9ea7abce80085"
+  },
+  "unchanged": true,
+  "newNativeCalls": 0,
+  "newSlotInitialized": false
+}

@@ -1,0 +1,14 @@
+{
+  "state": "SOURCE_ONLY",
+  "issuesCorrectedBeforeFirstSubmission": [
+    "private_read returns bytes; now explicitly decodeUTF8 with8192cap before constructingClient",
+    "fresh-root marker prevents failure publication into an already-existing root",
+    "post-owner exact-source full9/canonical path guard",
+    "closed EntryFailure codes only"
+  ],
+  "newEntryPythonCompiled": false,
+  "componentExecuted": false,
+  "payloadMembersWholeChecked": 11,
+  "existingHelpersChanged": 0,
+  "NativeCalls": 0
+}

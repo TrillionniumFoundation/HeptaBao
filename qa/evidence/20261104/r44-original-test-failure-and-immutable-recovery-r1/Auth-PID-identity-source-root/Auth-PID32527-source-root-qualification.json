@@ -1,0 +1,136 @@
+{
+  "schema": "heptabao.root.fixed-original-PID32527-readonly-SOURCE21-qualification.r44",
+  "passed": true,
+  "checkCount": 24,
+  "checks": [
+    {
+      "name": "whole_SOURCE21",
+      "pass": true
+    },
+    {
+      "name": "exact_source_request_journal",
+      "pass": true
+    },
+    {
+      "name": "original_diagnostic_source_retained",
+      "pass": true
+    },
+    {
+      "name": "nine_source_hunks_exact_forward_reverse",
+      "pass": true
+    },
+    {
+      "name": "two_journal_hunks_exact_forward_reverse",
+      "pass": true
+    },
+    {
+      "name": "author62_exact_reproduction",
+      "pass": true
+    },
+    {
+      "name": "request_only_source_and_key_changed",
+      "pass": true
+    },
+    {
+      "name": "fixed_original_PID_from_new_actual_report",
+      "pass": true
+    },
+    {
+      "name": "two_exact_print_mapping_checks",
+      "pass": true
+    },
+    {
+      "name": "immutable_API_source_child_count_unit",
+      "pass": true
+    },
+    {
+      "name": "fixed_libproc_targets_only",
+      "pass": true
+    },
+    {
+      "name": "exact_numeric_ABI_offsets",
+      "pass": true
+    },
+    {
+      "name": "arg1_complete_struct_and_errno",
+      "pass": true
+    },
+    {
+      "name": "numeric_path_child_caps",
+      "pass": true
+    },
+    {
+      "name": "calls_registered_and_errno_captured",
+      "pass": true
+    },
+    {
+      "name": "self_crosscheck_and_stable_lifetime",
+      "pass": true
+    },
+    {
+      "name": "only_three_known_path_boolean_exports",
+      "pass": true
+    },
+    {
+      "name": "private_argv_and_child_pids_not_exported",
+      "pass": true
+    },
+    {
+      "name": "no_managed_signal_or_reap_added",
+      "pass": true
+    },
+    {
+      "name": "original_deadlines_and_IO_caps",
+      "pass": true
+    },
+    {
+      "name": "two_clipped_four_second_windows",
+      "pass": true
+    },
+    {
+      "name": "mismatch_and_unreturned_call_preserve_UNKNOWN",
+      "pass": true
+    },
+    {
+      "name": "original_managed_scope_not_closed",
+      "pass": true
+    },
+    {
+      "name": "strict_old_parser_still_diagnostic_only",
+      "pass": true
+    }
+  ],
+  "packet": "af2a0454dff4937b095779079f4ecbfebc963c73",
+  "source": {
+    "blob": "a938ba9fd034a6ba4b66300fd88e61383ab1be32",
+    "bytes": 94611,
+    "sha256": "6a1ee2c4bc31c4d55d2fde24eaa17c644037dd18c5a9853bba2a35035609e566"
+  },
+  "request": {
+    "blob": "cfe54ac6b630277b0cb100ffd9fe7d7e30a316d2",
+    "bytes": 97208,
+    "sha256": "7b89f6591bc7e0f43f6ebd144b5325e70b8bb9242438034d4c492d14be133baf"
+  },
+  "journal": {
+    "blob": "a4397a47257178ccf98374b694edd4d04903896a",
+    "bytes": 19059,
+    "sha256": "42ad555c661fc46f4c577c15fc40aebc036b56a754db3349be5aaea72f6f3bc5"
+  },
+  "slot": "owner_authbus_home_r2_current_pid_identity_gitfirst_r1",
+  "nativeBinding": {
+    "sha256": "f9621ac37f677fdd6c411224005fac66fac40a9517ceacffb2d0c83af8dd8f64",
+    "native_fingerprint": "17969954890120134621",
+    "canonicalBytes": 97145
+  },
+  "sourceApiReference": {
+    "blob": "c3e7369f886fbb7bbc8d77f8fca9ecc943bb5f4e",
+    "bytes": 28996,
+    "sha256": "5c8a771427e04c5e1d55c4cdf5a077f3b52c5be4a091683b970084bfdda76df2"
+  },
+  "author62Reproduced": true,
+  "scope": "source and ABI contract review only; current process identity still unobserved",
+  "managedScope": "UNKNOWN",
+  "pythonOrLibprocExecuted": false,
+  "newNativeCalls": 0,
+  "cleanupAuthorized": false
+}

@@ -1,0 +1,420 @@
+{
+  "schema": "heptabao.r44-validation-state.v1",
+  "as_of_UTC": "2026-11-06 15:08:00 UTC",
+  "previous_validation_commit": "5733a11714677d542fa9a8dbed260364c68f14cf",
+  "prefix": "qa/evidence/20261104/r44-original-test-failure-and-immutable-recovery-r1",
+  "task_continues": true,
+  "full_OpenBao_2_7_1_replacement": false,
+  "production_cutover": false,
+  "all_current_clients_and_backup_paths_migrated": false,
+  "legacy_cleanup": false,
+  "qualified_product_baseline": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "qualified_prior_scopes": {
+      "Mac_normal": 61,
+      "ROG_normal": 61,
+      "Mac_KV2_full34": 31,
+      "X230_KV2_full34": 31,
+      "real_Mac_ROG_Pocket4_HA": 98,
+      "independent_cold_restart": 12,
+      "X230_comparison": {
+        "profiles": 69,
+        "numeric_status_exact": 67,
+        "normalized_PKI_cases": 2
+      }
+    },
+    "no_qualification_transfer_to_unbuilt_JWT_candidate": true
+  },
+  "prior_real_LAN_scope": "Mac192.168.0.8/ROG.10/Pocket4.9 real-process SIGKILL, election, ReadIndex, quorum loss, durable cold restart98+12; not physical power removal; no transfer of qualification to new uncompiled source.",
+  "current_product_candidate": {
+    "commit": "025b05a340de841b8161c1120344e86eae30eb97",
+    "tree": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+    "combined_snapshot_candidate_frozen": false,
+    "new_production_release_built": true,
+    "new_full_suite_passed": false
+  },
+  "AuthBus": {
+    "original_business_job": "mac/1a1b0e85206-fc05-73e1",
+    "original_business_job_failed_before_business": true,
+    "business_phases_completed": 0,
+    "first_readonly_diagnostic": {
+      "job": "mac/1a1b12864e2-fc05-765c",
+      "tree": "061b2fe4336d34e50943fd216c2b2166df1b3a64",
+      "root": {
+        "blob": "74562ffa04fbb190508857fb3b4d483a6a255ca9",
+        "bytes": 7775,
+        "sha256": "2582d4ed177f1b01e685f14daf8a0581cf6987f9038ccdbe3a3c3ee5aa170fe3"
+      },
+      "author_checks": 207,
+      "root_checks": 66,
+      "prints": 2,
+      "observed_PID": 32527,
+      "observed_state": "running",
+      "rejected_literal": "(never exited)",
+      "ready_and_exec_ready": "ENOENT",
+      "stdout_and_stderr_bytes": 0,
+      "owned_helpers_and_FDs_closed": true,
+      "managed_scope_closed": false
+    },
+    "parser_patch": {
+      "tree": "5245358633c2cf458b56578e586840d34fc930d1",
+      "root": {
+        "blob": "6894db9c0fd311ae098fd9aaa2ac3e30747cf9fe",
+        "bytes": 2190,
+        "sha256": "4c55840159c8a4a9d6d89827db36fe6172d6e1ba9e11b297641b1fd1d2b4301f"
+      },
+      "source_only": true,
+      "Python_executed": false,
+      "behavior": "Only last exit code literal (never exited) maps to None; numeric pid/runs and zero-success check remain strict."
+    },
+    "fixed_pid_identity_diagnostic": {
+      "job": "mac/1a1b148990b-fc05-7784",
+      "tree": "206c42ff194bb7d43bea3636d3d504968a4b68a7",
+      "root": {
+        "blob": "abcedc9dcfa325948984ff6cc31c75cecf0cda6b",
+        "bytes": 1937,
+        "sha256": "c94c958a9c14d02a86694c5db04f90819f15861d59fd9757961e7dbd4ab0854c"
+      },
+      "author_checks": 159,
+      "root_checks": 21,
+      "original_calls": 9,
+      "original_observers": 2,
+      "original_pages": 4,
+      "terminal": "failed",
+      "exit_code": 1,
+      "stdout_bytes": 6920,
+      "first_print_exit_code": 113,
+      "registration_absent": true,
+      "PID_metadata": null,
+      "error": "current_pid_exact_registration_mapping",
+      "public_file_observations_reached": false,
+      "observation_lane_closed": true,
+      "owned_FDs_closed": 17,
+      "owned_helpers_reaped": 1,
+      "managed_scope": "UNKNOWN",
+      "historical_exit_or_reap_proven": false
+    },
+    "next_independent_label_PID_source": {
+      "tree": "9bfe0ab239cc4920b51e18797accc8debab77b72",
+      "root": {
+        "blob": "acbf98a5eecee3b444b70ab54761e39839fc1922",
+        "bytes": 2103,
+        "sha256": "3d35b23cb8dbf9a87a686f00c2a89ebe69bc52b421e51ca9a753ddf78ecbc1ae"
+      },
+      "source_only": true,
+      "GO_issued_at_cutoff": false,
+      "scope": "Observe exact fixed label and PID independently, two prints and existing seven public paths; ESRCH preserves UNKNOWN; no signal, bootout, private capsule or new service."
+    },
+    "current_credential_cycle_qualified": false,
+    "J3160_used": false,
+    "production_changed": false
+  },
+  "snapshot": {
+    "original_formatted23_GO": "25ea12c4406a12ba5ce263b10a2723f73276d74b",
+    "prior_prefix12": {
+      "tree": "b313c1e214900126ca9d2c85558ac7e24888bb96",
+      "root": {
+        "blob": "ba177ffbcfd882c2fad7e34ff93ecbfe2ae91a6a",
+        "bytes": 2103,
+        "sha256": "c1a07fddc6bf5e86e85a931f1eaa1450ec2cc1c7b60312ba1663963f929b137a"
+      },
+      "original_blob_bytes_reproduced": 1066,
+      "original_prefix_checks_exact": 12434,
+      "targeted_cases": 18,
+      "known_history_checks": 504,
+      "whole_files": 12,
+      "whole_bytes": 1132623,
+      "qualified_as_final23": false
+    },
+    "second_delivery_failure": {
+      "tree": "d4d3b0541dbb06cf809c987d19bfe8702938009d",
+      "root": {
+        "blob": "557023960b1b922cb2862745a1ccf10265ba0488",
+        "bytes": 3428,
+        "sha256": "cc93adf690ff35d2b8b7cceaf14d7b90d04e7289ff3385c4a6503dbea02e4b03"
+      },
+      "call": "sf23-r1-f16-b00-p0",
+      "phase": "native_interpretation_refused",
+      "called": true,
+      "operation": "9037480fbf014345c1d2bbe1894020e30602a9adb2d8c1a864f6eff35368f1b0",
+      "original_future_completed_inactive": true,
+      "original_page_delivery": "UNKNOWN",
+      "MCP_error": -32603,
+      "remote_product_failure_inferred": false
+    },
+    "exact_recovery": {
+      "tree": "5aea752641f3c23c9cf708e3e82796d42b1b3609",
+      "root": {
+        "blob": "60d57c3bad10ba449f567dcb23939f4481e91c0b",
+        "bytes": 3490,
+        "sha256": "49ac2280696930b9a7164c9561a5ac044aac381a9e341fff5e19908799f67f3e"
+      },
+      "root_checks": 21,
+      "GO": {
+        "blob": "748716dc20b7d61a5fe773aaefc44ba9d4a9ddac",
+        "bytes": 3876,
+        "sha256": "affe4439b1649e907d1df5be0a4bed06a0ed59d27ae6e8dba14d91d4527ca593"
+      },
+      "new_original_result_calls": 2,
+      "new_admissions": 0,
+      "new_status_calls": 0,
+      "sequence": [
+        "original failed p0 retained",
+        "recovery1 offset0",
+        "original p2 offset16384"
+      ],
+      "payload_bytes": 22426,
+      "file_bytes": 16474,
+      "file_sha256": "865e1c316cec0890b3a28076b95a00eedff366bae9d0949899afe23fa044fa75",
+      "file_version": "66306:31236012:16474:1793956738925595332:1793956738925595332"
+    },
+    "latest_root_qualified_boundary": {
+      "whole_files": 17,
+      "whole_bytes": 1200639,
+      "closed_observers": 47,
+      "total_original_call_rows": 228,
+      "next_index": 17,
+      "remaining_files": 6,
+      "remaining_original_bytes": 145998
+    },
+    "old_INFO10_failure_and_recovery_preserved": true,
+    "old_file7_Git_failure_preserved": true,
+    "all23_whole_qualified": false,
+    "all49_overlay_qualified": false,
+    "new_Cargo_or_product_tests": 0,
+    "original_table_continuation_active": true
+  },
+  "JWT_PKI": {
+    "original_job": "rog/1a1b10cad9b-fc05-7560",
+    "terminal": "failed",
+    "exit_code": 1,
+    "timed_out": false,
+    "terminal_full_tree": "8ab6851525ce0843e95db8f5a19ea4582b084ce8",
+    "terminal_root": {
+      "blob": "d146be02af987131a6fe470251d40cc3d8fe69a8",
+      "bytes": 17663,
+      "sha256": "6897a5a8e93b2c59fb1ec0ed4d11e79aa6acd4ae6dc05de6128a194f45f7600c"
+    },
+    "original_build_calls": 31,
+    "original_build_observers": 10,
+    "original_build_pages": 10,
+    "author_original_chain_checks": 403,
+    "root_original_chain_checks": 168,
+    "report_tree": "3079e97e1f59af5642fd6b445d6e42315e050e6b",
+    "report_root": {
+      "blob": "ca59212da37901d0afcd79d98ece67f1afec85e2",
+      "bytes": 4540,
+      "sha256": "058e83a1b92f4de767a05f049f44578f1ba411d344f12c21f513a083038ea66a"
+    },
+    "report": {
+      "blob": "5bf4476672f08c251826efc1dc9833af30bdd5b4",
+      "bytes": 49775,
+      "sha256": "47748eadb948f08973d7de202272823cd5f031ed99ec62286868236a8cbaa318"
+    },
+    "report_author_checks": 87,
+    "report_root_checks": 35,
+    "normal_release": {
+      "exit_code": 0,
+      "elapsed_seconds": 632.5493019470014,
+      "cap_seconds": 1800,
+      "server": {
+        "bytes": 110629104,
+        "sha256": "5511c7d9fb6d7232ac4a07966ab0efa09a8ab691c342a3925283a5ac95c0ffd1"
+      },
+      "seed": {
+        "bytes": 102517296,
+        "sha256": "8e5b8c8477397f11f888aba3b3e427c5c5c80f273623f685a5a68dea34ab8fdf"
+      }
+    },
+    "shared_compile": {
+      "commands": [
+        {
+          "label": "ordinary-no-default-check",
+          "exit_code": 0
+        },
+        {
+          "label": "file-libtest-build",
+          "exit_code": 0
+        },
+        {
+          "label": "default-libtest-build",
+          "exit_code": 0
+        }
+      ],
+      "elapsed_seconds": 2161.133432406001,
+      "original_cap_seconds": 3600,
+      "deadline_reset": false
+    },
+    "actual_tests": {
+      "runtime_started": true,
+      "families_entered": 1,
+      "test_processes": 2,
+      "successful_processes": 1,
+      "failed_processes": 1,
+      "first": "service::native_auth::jwt_tests::native_jwt_local_service_token_identity_renewal_and_cold_reopen",
+      "second": "service::native_auth::jwt_tests::native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta",
+      "second_exit_code": 101,
+      "second_elapsed_seconds": 0.07728586898883805,
+      "planned_unique": 149,
+      "planned_profile_instances": 166,
+      "full_suite_passed": false,
+      "exact_assertion_text": null
+    },
+    "direct_children_reaped": 8,
+    "remaining_group_rows": 0,
+    "retained_prior_artifacts_before_after_equal": true,
+    "final_source_unchanged_field_present": false,
+    "final_binaries_unchanged_field_present": false,
+    "exclusive_Cargo_target_reuse_qualified": false,
+    "next_logs": {
+      "source_tree": "ad311f110c2f5f4b74266e6a0cbb56de62539adb",
+      "root": {
+        "blob": "88bed13945991edf45ff45b998b1079a3dbd856c",
+        "bytes": 1928,
+        "sha256": "410f8184c729ddd51e391dcc0b7246aa9eacf4466b03ca65129ce347203ffcd2"
+      },
+      "GO": {
+        "blob": "974549696545a0f5c3a4348458c0e124cb93ff89",
+        "bytes": 4014,
+        "sha256": "db09623a2a136c00a9fb5d3b71bf70047726fb1da5b484215c04e09c1e88d041"
+      },
+      "status_at_cutoff": "Two exact original test log INFO observations in progress; no log BODY authorized yet."
+    },
+    "production_changed": false,
+    "new_formal34_or_LAN_rerun": false
+  },
+  "official271_oracle": {
+    "entry_R2_tree": "4558f286a88f1d56e7df91b1aa2259dbf23f17dc",
+    "journal_tree": "66c39b32bef91db80ac5c630958aba6958205284",
+    "root": {
+      "blob": "34db965e0e915052ba5da3a5b0ed804e3da6bdc6",
+      "bytes": 4185,
+      "sha256": "3e8dd8bba9e6804f6cdd4d055fac2f8f0c2cd1981236ce8c3643c1b8097f1495"
+    },
+    "source_checks": 32,
+    "author_entry_checks": 24,
+    "GO_issued": false,
+    "runtime_cases": 0,
+    "official_cases_planned": 23,
+    "candidate_HTTP12_cases_run": 0,
+    "artifact_source": "Official v2.7.1 existing X230 archive and binary; current presence and bytes must be checked at fixture execution.",
+    "local_owner_absolute_seconds": 360,
+    "proposed_new_outer_seconds": 390,
+    "source_fixes": [
+      "Chunk every os.write at 65536 bytes",
+      "Separate actual extra health attempted/completed counters from static request maximum"
+    ],
+    "public_RSA_only": true,
+    "JWT_ACL_draft2_source_contradiction_preserved": true
+  },
+  "integratedCandidate": {
+    "source_base": "025b05a340de841b8161c1120344e86eae30eb97",
+    "snapshot_overlay_leaves": 49,
+    "formatted_changed_bodies": 23,
+    "unchanged_frozen_reuse": 26,
+    "disjoint_newer_025b_leaves_retained": 5,
+    "strict_PKI_400_expectations_retained": true,
+    "expected_final_leaf_count": 3930,
+    "expected_final_bytes": 62498221,
+    "exact_regression_inventory": {
+      "unique": 237,
+      "profile_instances": 254,
+      "groups": 18,
+      "scope": "SOURCE inventory only; no actual list/compile/test result"
+    },
+    "runner_source_packet": "9bdb3eb3c6aac221d51d14a4a8f3bcc24e75f7e6",
+    "runner_root_qualification": {
+      "blob": "59c355473a02931facc459b051ceedc8202ba465",
+      "bytes": 5141,
+      "sha256": "0cdfb3b80b35d7499f235336dc725ea62e03d835ddb819ce4249f990fe4cca3c"
+    },
+    "stage_interface_packet": "2c399616f1f1faf03dd4e43ba68b0f99c549b777",
+    "stage_interface_root_qualification": {
+      "blob": "f73a5a403f7dd5a8680693f4419834cee5ea282f",
+      "bytes": 2251,
+      "sha256": "114bf02bcfd55c36297d1f3d823a8cb9a5da3b7e76d22ec03454dfac6be053c7"
+    },
+    "unbound_launcher_bytes": 39538,
+    "unchanged_launcher_cap": 40000,
+    "final_literal_binding_must_be_remeasured": true,
+    "reference_stage_reuse": "Existing2379 stager with exact future identity/ancestry/index literals, one schema and one purpose literal adaptation; old495 and failed12 fences and original time/size limits preserved.",
+    "commit": null,
+    "tree": null,
+    "exact_stage_request": null,
+    "build_submitted": false,
+    "tests_executed": false
+  },
+  "history_preserved": {
+    "R42_cutoff_unknowns_not_rewritten": true,
+    "old_BODY0_lost_ACK_record_immutable": true,
+    "actual_reconciliation_reused_true_kept_separate": true,
+    "INFO10_original_page_delivery_error_kept": true,
+    "Mac_original_failed_runtime_kept": true,
+    "pure_verifier_errors_kept_separate_from_Native_or_product_outcomes": true,
+    "root_INFO4_blob_reader_errors_recovered_only_from_whole_original_SDKs": true,
+    "no_uncertain_Native_mutation_replayed": true
+  },
+  "remaining_gates": [
+    {
+      "gate": "KV2",
+      "current": "Historical4e808 formal34MiB Mac31/31 and X23031/31 retained.",
+      "required": "Final integrated binary exact offline migration/export/import/snapshot/restore/cold-CAS/delete/undelete/destroy and CLI leader/standby paths; complete backup path migration."
+    },
+    {
+      "gate": "HA",
+      "current": "Historical4e808 real Mac/ROG/Pocket4 98+12 retained; SIGKILL/election/quorum/ReadIndex/cold restart scope.",
+      "required": "Repeat with final candidate bytes on all three hosts, persistence/restart and original failure cases. Existing result does not claim physical power loss."
+    },
+    {
+      "gate": "AuthBus",
+      "current": "Original Mac business worker failed before HTTP; first fresh diagnostic isolated never-exited parser sentinel, next found exact registration missing before PID sampling.",
+      "required": "Current independent label/PID/public-file observation, evidenced fresh owned scope, then trusted AppRole/TLS/KV/Policy/renew/revoke/restart/rollback without J3160."
+    },
+    {
+      "gate": "per-client-cutover",
+      "current": "No production cutover qualified.",
+      "required": "Every current Mac/ROG/Pocket4/X230 consumer inventory and real credential R/W/restart/rollback, then individually switch with evidence."
+    },
+    {
+      "gate": "legacy-cleanup",
+      "current": "Not authorized by completed migration evidence; no deletion performed.",
+      "required": "All current clients and backup paths migrated first; preserve required evidence/recovery assets and keep only latest qualified service after gate."
+    }
+  ],
+  "baseline_evidence_limits_preserved": [
+    "Mac/X230 formal34MiB31/31 is scoped to4e808 baseline; no current candidate qualification inheritance.",
+    "X23069 remains67 exact plus2 normalized PKI until actual new HTTP oracle.",
+    "RealLAN prior98+12 does not cover new snapshot forwarding, rawOpenBao archive interoperability or current production cutover.",
+    "H2 prior H01-H03 small archive/ALPN scope does not establish34MiB H2 or multi-host new CLI restore.",
+    "Native database,Kubernetes,RabbitMQ,ACME/EAB,KMS/HSM,root/rekey/plugin/namespace/admin capability gaps remain.",
+    "Current inventory and every real client restart/rollback plus every backup migration must precede old-service and asset removal."
+  ],
+  "next_work": [
+    "Read the two exact original failed-test log bodies after actual INFO, locate the assertion, and fix the evidenced source or test-contract defect.",
+    "Finish original formatted23 collection and exact two-failure-aware final verification, then freeze the combined product commit/tree.",
+    "Observe Mac fixed label/PID/public files independently; preserve historical UNKNOWN and establish a fresh uniquely owned AuthBus validation scope only from current evidence.",
+    "Run official2.7.1 ACL23 on X230 from the verified source, then resolve the JWT-only policy contradiction without weakening global ACL checks.",
+    "Build and run the integrated237unique/254profile exact suite, strictHTTP12, formal34MiB Mac/X230, and real Mac/ROG/Pocket4 failover/ReadIndex/persistence/restart on the final identical bytes.",
+    "Finish actual current client and backup-path inventory, each credential R/W/restart/rollback, then sequential cutover; cleanup only after all dependencies migrated."
+  ],
+  "publication": {
+    "index_totals": {
+      "packets": 37,
+      "files": 773,
+      "bytes": 13399936,
+      "allWhole": true
+    },
+    "source_checks_are_not_product_tests": true,
+    "checkpoint_not_completion": true
+  },
+  "root_Runtime_calls": 0,
+  "maximum_Runtime_lanes": 2,
+  "local_executor_available": false,
+  "current_lanes_at_cutoff": {
+    "A": 0,
+    "B": 1,
+    "C": 1,
+    "root": 0
+  }
+}

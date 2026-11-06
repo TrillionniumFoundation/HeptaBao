@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-mac-current-home-registration-c00164e1-status-01",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1b12864e2-fc05-765c"
+    }
+  }
+}

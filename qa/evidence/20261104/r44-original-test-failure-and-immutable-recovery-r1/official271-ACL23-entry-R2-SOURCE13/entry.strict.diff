@@ -1,0 +1,41 @@
+--- a/entry.py
++++ b/entry.py
+@@ -168,7 +168,7 @@
+         view = memoryview(data)
+         while view:
+             check_deadline()
+-            written = os.write(fd, view)
++            written = os.write(fd, view[:65536])
+             need(written > 0, "short_owned_write")
+             view = view[written:]
+         os.fsync(fd)
+@@ -218,6 +218,7 @@
+     old_handlers, old_mask = {}, os.umask(0o077)
+     source_rows, owner, oracle, executor = [], None, None, None
+     root_created = False
++    extra_live_health_attempted, extra_live_health_completed = 0, 0
+     component, identity, capture, original_owner_receipt = None, None, None, None
+     artifact_before, artifact_after, failure = None, None, None
+     report_pin, stage = None, "self_and_fixed_payload"
+@@ -306,7 +307,9 @@
+                 token = private_read(oracle["token_file"], limit=8192).decode("utf-8").strip()
+                 client = Client(oracle["address"], oracle["ca_file"], token, timeout=15)
+                 owner.remaining()
++                extra_live_health_attempted = 1
+                 health = client.health()
++                extra_live_health_completed = 1
+                 identity = launcher.verify_selected_oracle(
+                     oracle, health, version=VERSION, raft_storage=False)
+ 
+@@ -361,7 +364,10 @@
+             "admin_and_case_wire_records": executor.calls.records if executor is not None else [],
+             "acl_requests_observed": len(executor.calls.records) if executor is not None else 0,
+             "acl_request_cap": ACL_REQUEST_CAP,
+-            "startup_source_upper_bound": 103, "extra_live_health_requests": 1,
++            "startup_source_upper_bound": 103,
++            "extra_live_health_requests": {"maximum": 1,
++                                           "attempted": extra_live_health_attempted,
++                                           "completed": extra_live_health_completed},
+             "startup_requests_actual_count": None,
+             "original_owner": original_owner_receipt,
+             "original_deadline_ns": UNTIL_NS, "deadline_reset": False,

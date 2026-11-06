@@ -1,0 +1,37 @@
+--- a/journal.js
++++ b/journal.js
+@@ -5,9 +5,8 @@
+  * Every original SDK is store'd, serialized, Git-created once and whole-read
+  * before isError or native text is inspected.
+  */
+-const GF_SLOT = "jwt_pki_025b05a3_build149_gitfirst_r2";
+-const GF_REQUEST = {blob:"dab29b2b82ae23e24c5f78865553c140e9bab5de",
+- bytes:859,sha256:"bd5ffba6dce783ee4af25654a246a144ed8edc1c86111ad62460125d9100da53"};
++const GF_SLOT = "official271_x230_acl23_oracle_gitfirst_r1";
++const GF_REQUEST = {"blob":"90b68f243c6dfc77cedce08b6d1095ffdd1a79a1","bytes":164440,"sha256":"f03764a69cd820e1e31409fb5c9d08523f4df98c4c28078eb5bf7ed8b56df9d8"};
+ 
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {
+@@ -46,11 +45,11 @@
+   gfNeed(s.job!==null && s.activeObserver===null,"original_job_no_unclosed_observer");
+   gfNeed(Object.keys(q).sort().join(",")==="idempotency_key,operation"
+     && typeof q.idempotency_key==="string" && q.idempotency_key.length<=128
+-    && /^heptabao-native-jwt-pki-025b05a3-build149-observe-r2-/.test(q.idempotency_key),
++    && /^heptabao-official271-x230-acl23-oracle-observe-r1-/.test(q.idempotency_key),
+     "bounded_original_observer_key");
+   const op=q.operation,a=op?.arguments;
+   gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"
+-    && a && a.host==="rog" && a.job_id===s.job,"same_original_job_only");
++    && a && a.host==="x230" && a.job_id===s.job,"same_original_job_only");
+   if(op.tool==="process_status") {
+    gfNeed(Object.keys(a).sort().join(",")==="host,job_id","exact_status_arguments");
+   } else {
+@@ -162,7 +161,7 @@
+   const v=parseLosslessIntegers(nativeRaw),q=JSON.parse(c.requestRaw);
+   if(c.kind==="process_start") {
+    gfNeed(v.audit_recorded===true && v.local_record_pending===false && v.reused===false
+-    && v.launch?.ok===true && v.job?.host==="rog" && v.job.execution_mode==="operator"
++    && v.launch?.ok===true && v.job?.host==="x230" && v.job.execution_mode==="operator"
+     && v.job.idempotency_key===q.idempotency_key && v.job.executable===q.executable
+     && v.job.cwd===q.cwd && JSON.stringify(v.job.args)===JSON.stringify(q.args)
+     && v.job.request_digest===s.digest && gfIntegerText(v.job.request_fingerprint)===s.fingerprint

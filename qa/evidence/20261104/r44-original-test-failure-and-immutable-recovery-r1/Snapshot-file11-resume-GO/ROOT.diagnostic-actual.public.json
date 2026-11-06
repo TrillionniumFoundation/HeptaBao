@@ -1,0 +1,127 @@
+{
+  "schema": "heptabao.root.original-Mac-registration-diagnostic-minimal-actual-and-lane-release.r44",
+  "pass": true,
+  "checks": 19,
+  "results": [
+    {
+      "name": "whole_minimal10",
+      "pass": true
+    },
+    {
+      "name": "exact_GO_source_request_binding",
+      "pass": true
+    },
+    {
+      "name": "original_START_SDK_exact_native",
+      "pass": true
+    },
+    {
+      "name": "unique_original_diagnostic_job_and_lossless_binding",
+      "pass": true
+    },
+    {
+      "name": "original_authority_succeeded_zero_full_durable",
+      "pass": true
+    },
+    {
+      "name": "complete_original_stdout_and_stderr_pins",
+      "pass": true
+    },
+    {
+      "name": "exact_authority_pin",
+      "pass": true
+    },
+    {
+      "name": "observer0:closed_original_ID",
+      "pass": true
+    },
+    {
+      "name": "observer1:closed_original_ID",
+      "pass": true
+    },
+    {
+      "name": "A0_exact_observer_release",
+      "pass": true
+    },
+    {
+      "name": "diagnostic_complete_within_original45",
+      "pass": true
+    },
+    {
+      "name": "two_exact_original_registered_objects",
+      "pass": true
+    },
+    {
+      "name": "fresh_observed_exact_never_exited_rejection",
+      "pass": true
+    },
+    {
+      "name": "same_live_launchctl_PID32527_runs1_state_running",
+      "pass": true
+    },
+    {
+      "name": "ready_and_exec_ready_actual_ENOENT_only",
+      "pass": true
+    },
+    {
+      "name": "original_stdio_currently_zero_bytes_no_firstLF",
+      "pass": true
+    },
+    {
+      "name": "all22_application_FDs_and2_direct_helpers_closed",
+      "pass": true
+    },
+    {
+      "name": "application_readonly_with_accurate_output_boundary",
+      "pass": true
+    },
+    {
+      "name": "managed_UNKNOWN_and_history_preserved",
+      "pass": true
+    }
+  ],
+  "packet": "e913422fb77d079400227418cf6fbdf2fc807148",
+  "job": "mac/1a1b12864e2-fc05-765c",
+  "release": {
+    "blob": "d846642508d838f27e0023ecbefedee960cbbd75",
+    "bytes": 2996,
+    "sha256": "8f1753be9c8ecf1bb10fd578c21239a48a7cc26a80c851e77fba9a6f456731f7"
+  },
+  "authority": {
+    "blob": "5dc726a070b83aea0d47d1f9541ce756e30bfa80",
+    "bytes": 733,
+    "sha256": "dd55af74180c9d81be4837ebfe9f40f90ff711143ae97907ac14924eed7a161d"
+  },
+  "stdout": {
+    "blob": "c984004abb7a5259246308a4c95af7de675f058c",
+    "bytes": 13957,
+    "sha256": "34aae719f4c78aba02341c93d596b7af65a0d98a0831b4b649a09975ebafed15"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "fresh_observed_blocker": {
+    "field": "last exit code",
+    "value": "(never exited)",
+    "original_parser_rejection": "typed_launchctl_integer",
+    "PID": 32527,
+    "runs": 1,
+    "launchctl_state": "running",
+    "known_same_registration": true,
+    "ready_present": false,
+    "exec_ready_present": false,
+    "stdio_bytes": 0
+  },
+  "historical_failed_raw_print_reconstructed": false,
+  "original_managed_scope": "UNKNOWN",
+  "A_observation_lane_released": true,
+  "full12call_transport_root_qualification": false,
+  "scope": "Minimal actual original receipt, fixed field observation, and Native observer lane release; full original12call packet is still pending",
+  "business_credential_cycles": 0,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

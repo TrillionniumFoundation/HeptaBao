@@ -1,0 +1,69 @@
+{
+  "schema": "heptabao.root.HTTP-current-record-component-SOURCE-review.r44",
+  "pass": true,
+  "checks": 11,
+  "results": [
+    {
+      "name": "whole_component3",
+      "pass": true
+    },
+    {
+      "name": "component_and_original_observer_exact",
+      "pass": true
+    },
+    {
+      "name": "unchanged_real_run_original_pki12_routing",
+      "pass": true
+    },
+    {
+      "name": "four_classes_eight_variants_source",
+      "pass": true
+    },
+    {
+      "name": "stale_same_case_418_history_and_wrong_case_429",
+      "pass": true
+    },
+    {
+      "name": "original_exception_object_and_single_routing",
+      "pass": true
+    },
+    {
+      "name": "finally_restores_original_suite_call",
+      "pass": true
+    },
+    {
+      "name": "exact_case_local_record_selector_in_original",
+      "pass": true
+    },
+    {
+      "name": "each_original_status_or_null_checked_exactly",
+      "pass": true
+    },
+    {
+      "name": "no_Client_socket_fixture_or_subprocess_creation",
+      "pass": true
+    },
+    {
+      "name": "source_identity_must_be_verified_by_future_caller",
+      "pass": true
+    }
+  ],
+  "packet": "ad27bea60ade3f4b8b7b23b57a5fa10424a9e608",
+  "component": {
+    "blob": "158c65b4d0b1ecae87cb640ffaaf564de551980f",
+    "bytes": 5355,
+    "sha256": "660c8f55649861a3765b7b320d4c1abf2e7eba4ebac2f2290bee29eabeaff3f9"
+  },
+  "observer": {
+    "blob": "c928d3750a3cdb05d3702f269b31026136e7a496",
+    "bytes": 13664,
+    "sha256": "1952270dba831b0e21e2291df8178e9557e7ff76fc83a2e8dc70cbf46eb7d4e9"
+  },
+  "planned_classes": 4,
+  "planned_variants": 8,
+  "actual_Python_tests_executed": 0,
+  "actual_HTTP_requests": 0,
+  "product_case_count": 0,
+  "qualification": "Source review only; actual Python component execution pending",
+  "root_Runtime_calls": 0
+}

@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r44-C-official271-ACL23-R2-source-root",
+  "records": [
+    {
+      "name": "X230-official271-ACL23-root-SOURCE-qualification.json",
+      "blob": "34db965e0e915052ba5da3a5b0ed804e3da6bdc6",
+      "bytes": 4185,
+      "sha256": "3e8dd8bba9e6804f6cdd4d055fac2f8f0c2cd1981236ce8c3643c1b8097f1495"
+    },
+    {
+      "name": "X230-official271-ACL23-root-SOURCE-verifier.js",
+      "blob": "0c1c68ee3015f57d0778ed4364e6e7ccdf538605",
+      "bytes": 10617,
+      "sha256": "045c523a191aae3acc27009b5a9c62a31fa51871ca3752ed327d1c3bbfdc46b1"
+    },
+    {
+      "name": "X230-official271-ACL23-author24-reproduced.json",
+      "blob": "683d581c98de684d1345dfaaa8b25c646cc8be85",
+      "bytes": 2312,
+      "sha256": "6982e9599a08e8f55de9f1f3282ff1b9a26b3ff6cbf3801a4dd6f0256fad697d"
+    },
+    {
+      "name": "X230-official271-ACL23-root-prerequisite-shape-error-preserved.json",
+      "blob": "2edce1a5875d5465aa473aeb01403110cc370453",
+      "bytes": 15791,
+      "sha256": "6740280205267c848ec81629eb18f5846b1b87fb5a90218fd3b78d6d314214f5"
+    }
+  ],
+  "expected_data_tree": "da703ae076bc364f38f7b0301fdb4a0a053cf198",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

@@ -1,0 +1,273 @@
+{
+  "schema": "heptabao.formatted23-body16-page0-recovery-source-checks.v1",
+  "passed": true,
+  "checks": 65,
+  "rows": [
+    {
+      "name": "exact_before",
+      "passed": true
+    },
+    {
+      "name": "exact_after",
+      "passed": true
+    },
+    {
+      "name": "exact_added_function",
+      "passed": true
+    },
+    {
+      "name": "only_one_new_function_and_dispatch_line",
+      "passed": true
+    },
+    {
+      "name": "new_function_has_no_Native_tool_call",
+      "passed": true
+    },
+    {
+      "name": "exact_two_hunks",
+      "passed": true
+    },
+    {
+      "name": "strict_forward",
+      "passed": true
+    },
+    {
+      "name": "strict_reverse",
+      "passed": true
+    },
+    {
+      "name": "exact_original_known_closed_body16:accepted",
+      "passed": true
+    },
+    {
+      "name": "exact_original_known_closed_body16:one_Git_arm_only",
+      "passed": true
+    },
+    {
+      "name": "exact_original_known_closed_body16:original_request_unchanged",
+      "passed": true
+    },
+    {
+      "name": "exact_original_known_closed_body16:old_failed_row_unchanged",
+      "passed": true
+    },
+    {
+      "name": "exact_original_known_closed_body16:prior_INFO10_unchanged",
+      "passed": true
+    },
+    {
+      "name": "exact_original_known_closed_body16:new_uncalled_pending_only",
+      "passed": true
+    },
+    {
+      "name": "exact_original_known_closed_body16:all_Native_counters_unchanged",
+      "passed": true
+    },
+    {
+      "name": "exact_original_known_closed_body16:future_still_closed",
+      "passed": true
+    },
+    {
+      "name": "unwhole_GO:exact_rejection",
+      "passed": true
+    },
+    {
+      "name": "unwhole_GO:no_Native_or_extra_Git",
+      "passed": true
+    },
+    {
+      "name": "wrong_scope:exact_rejection",
+      "passed": true
+    },
+    {
+      "name": "wrong_scope:no_Native_or_extra_Git",
+      "passed": true
+    },
+    {
+      "name": "operation_start_permission:exact_rejection",
+      "passed": true
+    },
+    {
+      "name": "operation_start_permission:no_Native_or_extra_Git",
+      "passed": true
+    },
+    {
+      "name": "operation_status_permission:exact_rejection",
+      "passed": true
+    },
+    {
+      "name": "operation_status_permission:no_Native_or_extra_Git",
+      "passed": true
+    },
+    {
+      "name": "wrong_page_width:exact_rejection",
+      "passed": true
+    },
+    {
+      "name": "wrong_page_width:no_Native_or_extra_Git",
+      "passed": true
+    },
+    {
+      "name": "wrong_operation:exact_rejection",
+      "passed": true
+    },
+    {
+      "name": "wrong_operation:no_Native_or_extra_Git",
+      "passed": true
+    },
+    {
+      "name": "wrong_key:exact_rejection",
+      "passed": true
+    },
+    {
+      "name": "wrong_key:no_Native_or_extra_Git",
+      "passed": true
+    },
+    {
+      "name": "wrong_failed_call_pin:exact_rejection",
+      "passed": true
+    },
+    {
+      "name": "wrong_failed_call_pin:no_Native_or_extra_Git",
+      "passed": true
+    },
+    {
+      "name": "original_called_reset:exact_rejection",
+      "passed": true
+    },
+    {
+      "name": "original_called_reset:no_Native_or_extra_Git",
+      "passed": true
+    },
+    {
+      "name": "original_failed_row_rewritten:exact_rejection",
+      "passed": true
+    },
+    {
+      "name": "original_failed_row_rewritten:no_Native_or_extra_Git",
+      "passed": true
+    },
+    {
+      "name": "second_recovery:exact_rejection",
+      "passed": true
+    },
+    {
+      "name": "second_recovery:no_Native_or_extra_Git",
+      "passed": true
+    },
+    {
+      "name": "active_Native_call:exact_rejection",
+      "passed": true
+    },
+    {
+      "name": "active_Native_call:no_Native_or_extra_Git",
+      "passed": true
+    },
+    {
+      "name": "actual_version_rewritten:exact_rejection",
+      "passed": true
+    },
+    {
+      "name": "actual_version_rewritten:no_Native_or_extra_Git",
+      "passed": true
+    },
+    {
+      "name": "body_path_rewritten:exact_rejection",
+      "passed": true
+    },
+    {
+      "name": "body_path_rewritten:no_Native_or_extra_Git",
+      "passed": true
+    },
+    {
+      "name": "future_not_closed:exact_rejection",
+      "passed": true
+    },
+    {
+      "name": "future_not_closed:no_Native_or_extra_Git",
+      "passed": true
+    },
+    {
+      "name": "received_page_discard:exact_rejection",
+      "passed": true
+    },
+    {
+      "name": "received_page_discard:no_Native_or_extra_Git",
+      "passed": true
+    },
+    {
+      "name": "original_page_counter_reset:exact_rejection",
+      "passed": true
+    },
+    {
+      "name": "original_page_counter_reset:no_Native_or_extra_Git",
+      "passed": true
+    },
+    {
+      "name": "later_INFO_started:exact_rejection",
+      "passed": true
+    },
+    {
+      "name": "later_INFO_started:no_Native_or_extra_Git",
+      "passed": true
+    },
+    {
+      "name": "old_INFO10_deleted:exact_rejection",
+      "passed": true
+    },
+    {
+      "name": "old_INFO10_deleted:no_Native_or_extra_Git",
+      "passed": true
+    },
+    {
+      "name": "old_INFO10_flag_cleared:exact_rejection",
+      "passed": true
+    },
+    {
+      "name": "old_INFO10_flag_cleared:no_Native_or_extra_Git",
+      "passed": true
+    },
+    {
+      "name": "original_status_corrupt:exact_rejection",
+      "passed": true
+    },
+    {
+      "name": "original_status_corrupt:no_Native_or_extra_Git",
+      "passed": true
+    },
+    {
+      "name": "Git_arm_unknown:exact_rejection",
+      "passed": true
+    },
+    {
+      "name": "Git_arm_unknown:no_Native_or_extra_Git",
+      "passed": true
+    },
+    {
+      "name": "Git_arm_unknown:old_failed_pending_preserved",
+      "passed": true
+    },
+    {
+      "name": "Git_arm_not_whole:exact_rejection",
+      "passed": true
+    },
+    {
+      "name": "Git_arm_not_whole:no_Native_or_extra_Git",
+      "passed": true
+    },
+    {
+      "name": "Git_arm_not_whole:old_failed_pending_preserved",
+      "passed": true
+    },
+    {
+      "name": "fixture_not_mutated",
+      "passed": true
+    }
+  ],
+  "testMode": "Pure V8 selected prepare function with fake Git; no gfInvoke/gfAccept/Runtime or actual Git mutation. This is not a runtime authorization.",
+  "realNativeCalls": 0,
+  "realGitMutations": 0,
+  "positiveFakeArmCount": 1,
+  "negativeCases": 23,
+  "final23Qualified": false
+}

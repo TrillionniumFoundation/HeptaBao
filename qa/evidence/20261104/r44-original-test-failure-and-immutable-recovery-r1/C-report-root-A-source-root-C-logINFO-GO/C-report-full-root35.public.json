@@ -1,0 +1,165 @@
+{
+  "schema": "heptabao.root-original-report-full-chain.r1",
+  "passed": true,
+  "checks": 35,
+  "rows": [
+    {
+      "name": "root17_minimum",
+      "passed": true
+    },
+    {
+      "name": "author87_exact",
+      "passed": true
+    },
+    {
+      "name": "exact_original_body_GO",
+      "passed": true
+    },
+    {
+      "name": "exact_executed_journal",
+      "passed": true
+    },
+    {
+      "name": "original_report_body_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "original_report_body_call_jwt-pki-025b-build149-r2-result-body0-admit",
+      "passed": true
+    },
+    {
+      "name": "original_report_body_armed_tree_jwt-pki-025b-build149-r2-result-body0-admit",
+      "passed": true
+    },
+    {
+      "name": "original_report_body_call_jwt-pki-025b-build149-r2-result-body0-status0",
+      "passed": true
+    },
+    {
+      "name": "original_report_body_armed_tree_jwt-pki-025b-build149-r2-result-body0-status0",
+      "passed": true
+    },
+    {
+      "name": "original_report_body_call_jwt-pki-025b-build149-r2-result-body0-page0",
+      "passed": true
+    },
+    {
+      "name": "original_report_body_armed_tree_jwt-pki-025b-build149-r2-result-body0-page0",
+      "passed": true
+    },
+    {
+      "name": "original_report_body_call_jwt-pki-025b-build149-r2-result-body0-page1",
+      "passed": true
+    },
+    {
+      "name": "original_report_body_armed_tree_jwt-pki-025b-build149-r2-result-body0-page1",
+      "passed": true
+    },
+    {
+      "name": "original_report_body_call_jwt-pki-025b-build149-r2-result-body0-page2",
+      "passed": true
+    },
+    {
+      "name": "original_report_body_armed_tree_jwt-pki-025b-build149-r2-result-body0-page2",
+      "passed": true
+    },
+    {
+      "name": "original_report_body_call_jwt-pki-025b-build149-r2-result-body0-page3",
+      "passed": true
+    },
+    {
+      "name": "original_report_body_armed_tree_jwt-pki-025b-build149-r2-result-body0-page3",
+      "passed": true
+    },
+    {
+      "name": "original_report_body_call_jwt-pki-025b-build149-r2-result-body0-page4",
+      "passed": true
+    },
+    {
+      "name": "original_report_body_armed_tree_jwt-pki-025b-build149-r2-result-body0-page4",
+      "passed": true
+    },
+    {
+      "name": "original_report_body_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "original_report_body_observer_8a6ff767b74a82cc46818dd50f52f2599317f267cdf384ca5523e7f7f80798c7",
+      "passed": true
+    },
+    {
+      "name": "original_report_body_page_8a6ff767b74a82cc46818dd50f52f2599317f267cdf384ca5523e7f7f80798c7_0",
+      "passed": true
+    },
+    {
+      "name": "original_report_body_page_8a6ff767b74a82cc46818dd50f52f2599317f267cdf384ca5523e7f7f80798c7_16384",
+      "passed": true
+    },
+    {
+      "name": "original_report_body_page_8a6ff767b74a82cc46818dd50f52f2599317f267cdf384ca5523e7f7f80798c7_32768",
+      "passed": true
+    },
+    {
+      "name": "original_report_body_page_8a6ff767b74a82cc46818dd50f52f2599317f267cdf384ca5523e7f7f80798c7_49152",
+      "passed": true
+    },
+    {
+      "name": "original_report_body_page_8a6ff767b74a82cc46818dd50f52f2599317f267cdf384ca5523e7f7f80798c7_65536",
+      "passed": true
+    },
+    {
+      "name": "original_report_body_payload_8a6ff767b74a82cc46818dd50f52f2599317f267cdf384ca5523e7f7f80798c7",
+      "passed": true
+    },
+    {
+      "name": "original_report_body_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "exact_GO_request",
+      "passed": true
+    },
+    {
+      "name": "original41_12_complete",
+      "passed": true
+    },
+    {
+      "name": "original34_calls_exact",
+      "passed": true
+    },
+    {
+      "name": "original11_observers_exact",
+      "passed": true
+    },
+    {
+      "name": "new_observer_exact_release",
+      "passed": true
+    },
+    {
+      "name": "failure_log_SHA_precise",
+      "passed": true
+    },
+    {
+      "name": "missing_final_fences_not_filled",
+      "passed": true
+    }
+  ],
+  "sourcePacket": "3079e97e1f59af5642fd6b445d6e42315e050e6b",
+  "report": {
+    "blob": "5bf4476672f08c251826efc1dc9833af30bdd5b4",
+    "bytes": 49775,
+    "sha256": "47748eadb948f08973d7de202272823cd5f031ed99ec62286868236a8cbaa318"
+  },
+  "originalCalls": 7,
+  "originalObservers": 1,
+  "originalPages": 5,
+  "author87ExactlyReproduced": true,
+  "testProcessesObserved": 2,
+  "testProcessExit0": 1,
+  "testProcessExit101": 1,
+  "compilationFailed": false,
+  "suitePassed": false,
+  "observationLaneReleased": true,
+  "targetReuseQualified": false,
+  "fullReplacement": false
+}

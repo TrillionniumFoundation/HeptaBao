@@ -1,0 +1,696 @@
+{
+  "schema": "heptabao.root.PKI025b-original-BUILD-full198-qualification.r44",
+  "passed": true,
+  "checkCount": 168,
+  "checks": [
+    {
+      "name": "whole_198_three_tree_packet",
+      "pass": true
+    },
+    {
+      "name": "whole_manifest_197_payloads",
+      "pass": true
+    },
+    {
+      "name": "original_GO_and_minimal_unchanged",
+      "pass": true
+    },
+    {
+      "name": "same_state_at_later_INFO_boundary",
+      "pass": true
+    },
+    {
+      "name": "author403_exact_reproduction",
+      "pass": true
+    },
+    {
+      "name": "call_index_1",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_1",
+      "pass": true
+    },
+    {
+      "name": "call_index_2",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_2",
+      "pass": true
+    },
+    {
+      "name": "call_index_3",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_3",
+      "pass": true
+    },
+    {
+      "name": "call_index_4",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_4",
+      "pass": true
+    },
+    {
+      "name": "call_index_5",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_5",
+      "pass": true
+    },
+    {
+      "name": "call_index_6",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_6",
+      "pass": true
+    },
+    {
+      "name": "call_index_7",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_7",
+      "pass": true
+    },
+    {
+      "name": "call_index_8",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_8",
+      "pass": true
+    },
+    {
+      "name": "call_index_9",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_9",
+      "pass": true
+    },
+    {
+      "name": "call_index_10",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_10",
+      "pass": true
+    },
+    {
+      "name": "call_index_11",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_11",
+      "pass": true
+    },
+    {
+      "name": "call_index_12",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_12",
+      "pass": true
+    },
+    {
+      "name": "call_index_13",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_13",
+      "pass": true
+    },
+    {
+      "name": "call_index_14",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_14",
+      "pass": true
+    },
+    {
+      "name": "call_index_15",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_15",
+      "pass": true
+    },
+    {
+      "name": "call_index_16",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_16",
+      "pass": true
+    },
+    {
+      "name": "call_index_17",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_17",
+      "pass": true
+    },
+    {
+      "name": "call_index_18",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_18",
+      "pass": true
+    },
+    {
+      "name": "call_index_19",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_19",
+      "pass": true
+    },
+    {
+      "name": "call_index_20",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_20",
+      "pass": true
+    },
+    {
+      "name": "call_index_21",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_21",
+      "pass": true
+    },
+    {
+      "name": "call_index_22",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_22",
+      "pass": true
+    },
+    {
+      "name": "call_index_23",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_23",
+      "pass": true
+    },
+    {
+      "name": "call_index_24",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_24",
+      "pass": true
+    },
+    {
+      "name": "call_index_25",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_25",
+      "pass": true
+    },
+    {
+      "name": "call_index_26",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_26",
+      "pass": true
+    },
+    {
+      "name": "call_index_27",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_27",
+      "pass": true
+    },
+    {
+      "name": "call_index_28",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_28",
+      "pass": true
+    },
+    {
+      "name": "call_index_29",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_29",
+      "pass": true
+    },
+    {
+      "name": "call_index_30",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_30",
+      "pass": true
+    },
+    {
+      "name": "call_index_31",
+      "pass": true
+    },
+    {
+      "name": "SDK_tree_31",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_unique_calls",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-start",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-start",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-authority0-admit",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-authority0-admit",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-authority0-status0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-authority0-status0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-authority0-page0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-authority0-page0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-authority1-admit",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-authority1-admit",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-authority1-status0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-authority1-status0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-authority1-page0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-authority1-page0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-authority2-admit",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-authority2-admit",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-authority2-status0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-authority2-status0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-authority2-page0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-authority2-page0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-authority3-admit",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-authority3-admit",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-authority3-status0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-authority3-status0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-authority3-page0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-authority3-page0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-authority4-admit",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-authority4-admit",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-authority4-status0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-authority4-status0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-authority4-page0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-authority4-page0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-streams0-admit",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-streams0-admit",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-streams0-status0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-streams0-status0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-streams0-page0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-streams0-page0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-authority5-admit",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-authority5-admit",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-authority5-status0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-authority5-status0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-authority5-page0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-authority5-page0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-authority6-admit",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-authority6-admit",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-authority6-status0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-authority6-status0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-authority6-page0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-authority6-page0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-authority7-admit",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-authority7-admit",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-authority7-status0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-authority7-status0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-authority7-page0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-authority7-page0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-streams1-admit",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-streams1-admit",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-streams1-status0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-streams1-status0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_call_jwt-pki-025b-build149-r2-streams1-page0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_armed_tree_jwt-pki-025b-build149-r2-streams1-page0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_observer_unique",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_observer_c1e56ee48f719b62322b7eaf1027e0e0eb65ab3c6afa72365fff0b52a4e68db1",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_page_c1e56ee48f719b62322b7eaf1027e0e0eb65ab3c6afa72365fff0b52a4e68db1_0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_payload_c1e56ee48f719b62322b7eaf1027e0e0eb65ab3c6afa72365fff0b52a4e68db1",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_observer_d10a3e53bd59eeab49353289af1869821717c4a3be84886e9888a933d58518b8",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_page_d10a3e53bd59eeab49353289af1869821717c4a3be84886e9888a933d58518b8_0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_payload_d10a3e53bd59eeab49353289af1869821717c4a3be84886e9888a933d58518b8",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_observer_e7583a14c97010c7255ce74bebc762464d3f4a92dd58c50b57a0b2f9a360c119",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_page_e7583a14c97010c7255ce74bebc762464d3f4a92dd58c50b57a0b2f9a360c119_0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_payload_e7583a14c97010c7255ce74bebc762464d3f4a92dd58c50b57a0b2f9a360c119",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_observer_0998a96b45944af00e7d5985dcf9c04e63e40da37af83e98104165392b6dd6f5",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_page_0998a96b45944af00e7d5985dcf9c04e63e40da37af83e98104165392b6dd6f5_0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_payload_0998a96b45944af00e7d5985dcf9c04e63e40da37af83e98104165392b6dd6f5",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_observer_fd54b7cfbb3f9f7dfa15c60316b7cd50683dbc0aa9d50c9f6c17025a1cf4677c",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_page_fd54b7cfbb3f9f7dfa15c60316b7cd50683dbc0aa9d50c9f6c17025a1cf4677c_0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_payload_fd54b7cfbb3f9f7dfa15c60316b7cd50683dbc0aa9d50c9f6c17025a1cf4677c",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_observer_6474824e1dd0a3e7bc88b89df4a4bee2252ba0faa17e7de50d13a9749fa1b214",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_page_6474824e1dd0a3e7bc88b89df4a4bee2252ba0faa17e7de50d13a9749fa1b214_0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_payload_6474824e1dd0a3e7bc88b89df4a4bee2252ba0faa17e7de50d13a9749fa1b214",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_observer_90129695c93d70f93f9e56c6fc848902f9ec0d5e6ef36e44b43d999240ef7d36",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_page_90129695c93d70f93f9e56c6fc848902f9ec0d5e6ef36e44b43d999240ef7d36_0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_payload_90129695c93d70f93f9e56c6fc848902f9ec0d5e6ef36e44b43d999240ef7d36",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_observer_0cf8a889a2eed549d9be94309159cef393d640a105f3628cab842630fb428974",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_page_0cf8a889a2eed549d9be94309159cef393d640a105f3628cab842630fb428974_0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_payload_0cf8a889a2eed549d9be94309159cef393d640a105f3628cab842630fb428974",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_observer_f77aa68f8a68c67e8974cbe693229081f95e89b987597a389c2a2cd735dbb317",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_page_f77aa68f8a68c67e8974cbe693229081f95e89b987597a389c2a2cd735dbb317_0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_payload_f77aa68f8a68c67e8974cbe693229081f95e89b987597a389c2a2cd735dbb317",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_observer_4210ef035b3e82d0fc97df2e3b945f6a610bc651bbd26944641bdec6e3de7a29",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_page_4210ef035b3e82d0fc97df2e3b945f6a610bc651bbd26944641bdec6e3de7a29_0",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_payload_4210ef035b3e82d0fc97df2e3b945f6a610bc651bbd26944641bdec6e3de7a29",
+      "pass": true
+    },
+    {
+      "name": "PKI025b_original_full31_all_observer_calls_accounted",
+      "pass": true
+    },
+    {
+      "name": "exact_typed_original_start",
+      "pass": true
+    },
+    {
+      "name": "original_call_inventory",
+      "pass": true
+    },
+    {
+      "name": "observer_scope_and_budgets",
+      "pass": true
+    },
+    {
+      "name": "original_journal_and_source_identity",
+      "pass": true
+    },
+    {
+      "name": "original_checker_failure_preserved",
+      "pass": true
+    },
+    {
+      "name": "detailed_report_not_promoted",
+      "pass": true
+    }
+  ],
+  "packet": "8ab6851525ce0843e95db8f5a19ea4582b084ce8",
+  "originalJob": "rog/1a1b10cad9b-fc05-7560",
+  "author403Reproduced": true,
+  "originalCalls": 31,
+  "originalObservers": 10,
+  "originalPages": 10,
+  "stdoutBytes": 2216,
+  "stderrBytes": 0,
+  "actualTerminalState": "failed",
+  "actualExitCode": 1,
+  "fullOriginalObservationChainQualified": true,
+  "normalReleasePhaseObserved": true,
+  "detailedReportQualified": false,
+  "runtimeTestPassCount": null,
+  "cargoTargetReuseQualified": false,
+  "newNativeCalls": 0,
+  "fullReplacement": false
+}

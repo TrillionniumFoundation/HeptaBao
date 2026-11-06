@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r44-BODY16-exact-original-recovery-root",
+  "records": [
+    {
+      "name": "root-verifier.js",
+      "blob": "9a97ceb791a511fb86df07ad032dfb7761ea027b",
+      "bytes": 4696,
+      "sha256": "7e317a634d4b1324245b6eae129d1dd87c815b9a730bb8c364240e3801ecd27e"
+    },
+    {
+      "name": "root-qualification.public.json",
+      "blob": "60d57c3bad10ba449f567dcb23939f4481e91c0b",
+      "bytes": 3490,
+      "sha256": "49ac2280696930b9a7164c9561a5ac044aac381a9e341fff5e19908799f67f3e"
+    }
+  ],
+  "expected_data_tree": "97f487fdab6f3e4bd51607497f25ba6758d50f3d",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

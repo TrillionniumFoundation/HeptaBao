@@ -1,0 +1,107 @@
+{
+  "schema": "heptabao.oracle-entry-r2.source-checks.v1",
+  "checks": [
+    {
+      "name": "four_hunks",
+      "pass": true
+    },
+    {
+      "name": "strict_forward",
+      "pass": true
+    },
+    {
+      "name": "strict_reverse",
+      "pass": true
+    },
+    {
+      "name": "unique_edit_3",
+      "pass": true
+    },
+    {
+      "name": "unique_edit_4",
+      "pass": true
+    },
+    {
+      "name": "unique_edit_5",
+      "pass": true
+    },
+    {
+      "name": "unique_edit_6",
+      "pass": true
+    },
+    {
+      "name": "only_four_declared_sites",
+      "pass": true
+    },
+    {
+      "name": "unchanged_stdin_all11_inputs",
+      "pass": true
+    },
+    {
+      "name": "unchanged_host_exe_cwd_outer",
+      "pass": true
+    },
+    {
+      "name": "only_request_source_selfhash_key",
+      "pass": true
+    },
+    {
+      "name": "exact_inline_source_selfhash",
+      "pass": true
+    },
+    {
+      "name": "exact_request_raw",
+      "pass": true
+    },
+    {
+      "name": "absolute360_and_all_original_budgets",
+      "pass": true
+    },
+    {
+      "name": "root_ports_runid_unchanged",
+      "pass": true
+    },
+    {
+      "name": "fixed_helper_pins_unchanged",
+      "pass": true
+    },
+    {
+      "name": "write_chunk_64KiB",
+      "pass": true
+    },
+    {
+      "name": "per_entry_counter_initialization",
+      "pass": true
+    },
+    {
+      "name": "attempt_before_call_completed_after_return",
+      "pass": true
+    },
+    {
+      "name": "exactly_one_attempt_and_return_site",
+      "pass": true
+    },
+    {
+      "name": "reported_maximum_not_claimed_attempt",
+      "pass": true
+    },
+    {
+      "name": "startup_actual_stays_unknown",
+      "pass": true
+    },
+    {
+      "name": "typed_native_binding",
+      "pass": true
+    },
+    {
+      "name": "not_Runtime_or_Python_execution",
+      "pass": true
+    }
+  ],
+  "passed": 24,
+  "failed": 0,
+  "scope": "V8 source/diff/request only; no Python, OpenSSL, OpenBao, HTTP or native call",
+  "Native": 0,
+  "product_cases_executed": 0,
+  "component_variants_executed": 0
+}

@@ -1,0 +1,119 @@
+{
+  "schema": "heptabao.formatted23-final-verifier-targeted-tests.v1",
+  "passed": true,
+  "cases": 18,
+  "rows": [
+    {
+      "name": "exact_original_seven_call_history",
+      "passed": true,
+      "checks": 504,
+      "scope": "Only preserved known failures, exact recovery arms and original call-envelope identities. No final23 qualification."
+    },
+    {
+      "name": "deleted_failed_row_rejected",
+      "passed": true,
+      "error": "known_failed_row_required",
+      "expected": "known_failed_row_required"
+    },
+    {
+      "name": "failed_row_marked_accepted_rejected",
+      "passed": true,
+      "error": "known_failed_row_required",
+      "expected": "known_failed_row_required"
+    },
+    {
+      "name": "failed_call_flag_reset_rejected",
+      "passed": true,
+      "error": "known_failed_row_required",
+      "expected": "known_failed_row_required"
+    },
+    {
+      "name": "failed_SDK_changed_to_success_rejected",
+      "passed": true,
+      "error": "known_failed_sdk_exact",
+      "expected": "known_failed_sdk_exact"
+    },
+    {
+      "name": "failed_original_SDK_omitted_rejected",
+      "passed": true,
+      "error": "original_timeout_SDK:text_present",
+      "expected": "original_timeout_SDK:text_present"
+    },
+    {
+      "name": "failed_record_extra_rewrite_rejected",
+      "passed": true,
+      "error": "failed_call_snapshot_unchanged",
+      "expected": "failed_call_snapshot_unchanged"
+    },
+    {
+      "name": "recovery_same_id_request_changed_rejected",
+      "passed": true,
+      "error": "recovery_original_same_request",
+      "expected": "recovery_original_same_request"
+    },
+    {
+      "name": "fourth_arm_leaf_dropped_rejected",
+      "passed": true,
+      "error": "recovery_exact_four_leaf_arm:exact_paths",
+      "expected": "recovery_exact_four_leaf_arm:exact_paths"
+    },
+    {
+      "name": "second_recovery_call_rejected",
+      "passed": true,
+      "error": "no_unapproved_recovery_keys",
+      "expected": "no_unapproved_recovery_keys"
+    },
+    {
+      "name": "second_native_error_rejected",
+      "passed": true,
+      "error": "only_one_nonaccepted_historical_call",
+      "expected": "only_one_nonaccepted_historical_call"
+    },
+    {
+      "name": "recovery_old_failure_flag_cleared_rejected",
+      "passed": true,
+      "error": "recovery_state_does_not_clear_old",
+      "expected": "recovery_state_does_not_clear_old"
+    },
+    {
+      "name": "file7_archive_error_erased_rejected",
+      "passed": true,
+      "error": "file7_final_original_call_preserved",
+      "expected": "file7_final_original_call_preserved"
+    },
+    {
+      "name": "file7_original_called_reset_rejected",
+      "passed": true,
+      "error": "file7_final_original_call_preserved",
+      "expected": "file7_final_original_call_preserved"
+    },
+    {
+      "name": "file7_original_Git_error_omitted_rejected",
+      "passed": true,
+      "error": "file7_original_Git_error:text_present",
+      "expected": "file7_original_Git_error:text_present"
+    },
+    {
+      "name": "new_unapproved_Git_failure_exception_rejected",
+      "passed": true,
+      "error": "no_extra_Git_failure_exceptions",
+      "expected": "no_extra_Git_failure_exceptions"
+    },
+    {
+      "name": "ordinary_success_row_with_error_SDK_rejected",
+      "passed": true,
+      "error": "sf23-r1-f10-info-admit:success_original_SDK",
+      "expected": "sf23-r1-f10-info-admit:success_original_SDK"
+    },
+    {
+      "name": "current12_cannot_qualify_final23",
+      "passed": true,
+      "error": "final23_requires_all_files",
+      "expected": "final23_requires_all_files"
+    }
+  ],
+  "fixtureWholePreserved": true,
+  "newRuntimeCalls": 0,
+  "productCasesRun": 0,
+  "final23Qualified": false
+}

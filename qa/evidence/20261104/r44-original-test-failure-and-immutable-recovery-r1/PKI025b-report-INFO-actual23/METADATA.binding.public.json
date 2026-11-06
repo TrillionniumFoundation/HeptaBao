@@ -1,0 +1,25 @@
+{
+  "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1/result.public.json",
+  "size": 49775,
+  "sha256": "47748eadb948f08973d7de202272823cd5f031ed99ec62286868236a8cbaa318",
+  "version": "66306:33202271:49775:1793974567959218921:1793974567959218921",
+  "nativeText": {
+    "blob": "8c996ffb4877cb71d6b9721f57b7f3ffab40860e",
+    "bytes": 480,
+    "sha256": "8edfc11c65702adb295417234d5880ac22f7983c4da6832f446f8e3515a1b1ca"
+  },
+  "originalOperation": "081575224fe6c414c2c1da7b451f3d00a54cfc513bdcca0c1980e40581bc276d",
+  "full9Strings": [
+    "66306",
+    "33202271",
+    "1000",
+    "1000",
+    "33152",
+    "1",
+    "49775",
+    "1793974567959218921",
+    "1793974567959218921"
+  ],
+  "regularFileFromNativeFileInfoContract": true,
+  "binaryReadAuthorized": false
+}

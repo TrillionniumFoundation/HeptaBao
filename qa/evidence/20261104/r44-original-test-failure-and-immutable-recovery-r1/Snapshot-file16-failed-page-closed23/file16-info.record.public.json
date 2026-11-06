@@ -1,0 +1,32 @@
+{
+  "index": 16,
+  "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_forward_wire.rs",
+  "size": 16474,
+  "sha256": "865e1c316cec0890b3a28076b95a00eedff366bae9d0949899afe23fa044fa75",
+  "version": "66306:31236012:16474:1793956738925595332:1793956738925595332",
+  "originalOperation": "1c9f9418c519a2b618d0313158fbcdb84583304fb62d3587778161b3835f391b",
+  "full9Strings": [
+    "66306",
+    "31236012",
+    "1000",
+    "1000",
+    "33152",
+    "1",
+    "16474",
+    "1793956738925595332",
+    "1793956738925595332"
+  ],
+  "firstOutputIdentityObservation": true,
+  "originalSourceInputIdentityReused": false,
+  "regularFileFromNativeFileInfoContract": true,
+  "nativeText": {
+    "blob": "aa823b5ecd033c7ddb2c572935c1036dceeec557",
+    "bytes": 505,
+    "sha256": "9f420a359cec2172066e558074fd33817eda192a32941602952fd6149e676402"
+  },
+  "originalPayload": {
+    "blob": "c4a0eeaf84462cf3df04809c05e0d40a2fb897ae",
+    "bytes": 622,
+    "sha256": "07f3a2c6dab603631d97847bf2ff70eae254ed1feada2a4fe39c39690aa81122"
+  }
+}

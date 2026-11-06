@@ -1,0 +1,345 @@
+{
+  "schema": "heptabao.root.025b-original149-166-exact-BUILD-GO.v1",
+  "authorization": "GO",
+  "agent": "/root/ha_validation",
+  "scope": "one_original_build_and_exact149_unique166_profile_tests",
+  "source_packet": "01f0b72fc115ee76371ffddc504c8970575e2e34",
+  "source_review": {
+    "blob": "a5efb43a3b3d7f60999c7e2c13f522d9705f3eb7",
+    "bytes": 2924,
+    "sha256": "1e52ec86372585622e0f53783b332ee012a3cebc86c2d0c49e311a36eb44ffdb"
+  },
+  "source_review_checks": 14,
+  "exact_request": {
+    "blob": "dab29b2b82ae23e24c5f78865553c140e9bab5de",
+    "bytes": 859,
+    "sha256": "bd5ffba6dce783ee4af25654a246a144ed8edc1c86111ad62460125d9100da53"
+  },
+  "native_binding": {
+    "sha256": "527c6f94dadb62d7f4ff1168adecc80f2b1af2feef6891e28a3bcb2b1673388d",
+    "native_fingerprint": "5943748293339865815",
+    "canonicalBytes": 749
+  },
+  "helpers": {
+    "pure": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    "archive": {
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    "correctProcessBinding": {
+      "blob": "82e81aef13d858c865ea05dd762056553a3d1cc6",
+      "bytes": 659,
+      "sha256": "e98c61fceb6eecdd55e6244ad43939320114809163afee67a6b8657235dae042"
+    }
+  },
+  "journal": {
+    "slot": "jwt_pki_025b05a3_build149_gitfirst_r2",
+    "source": {
+      "blob": "bcb88527395732519b1db1ddc59312b54059d93e",
+      "bytes": 19045,
+      "sha256": "95f5a682db5695a6b95e7268c33c350bc2f7cb11fea660e971c08cc984af10c7"
+    },
+    "strictDiff": {
+      "blob": "bb8217f03acfe448017237725aed5d7eb2d12e7d",
+      "bytes": 1341,
+      "sha256": "e86decf4d4997031a57a75cfd873fdc66c2b8f5db227e1276215ffbed0fcb686"
+    },
+    "oldGenericSource": {
+      "blob": "510a46984f60f31458cdcb95dc7f36b9b83454ce",
+      "bytes": 19060,
+      "sha256": "6160378d180d4327bff2ba876e1ecdfb391389d1fe502ccbb7a3d73d52540d7f"
+    },
+    "literalBindingGroups": 5
+  },
+  "start": {
+    "maximumCalls": 1,
+    "idempotencyKey": "heptabao-native-jwt-pki-025b05a3-build149-r2-efec176c",
+    "host": "rog",
+    "executable": "/usr/bin/python3",
+    "request": {
+      "host": "rog",
+      "executable": "/usr/bin/python3",
+      "args": [
+        "-I",
+        "-S",
+        "-B",
+        "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/launch_native_jwt_build.py",
+        "--host",
+        "rog",
+        "--commit",
+        "025b05a340de841b8161c1120344e86eae30eb97",
+        "--tree",
+        "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+        "--stage-sha256",
+        "0a0b29dd3616b48b7f0ef5c04c1ffe53ebe752f6c2876671474da5a4eeab2eaf",
+        "--runner-sha256",
+        "d76b3d392c20bf4a7bbb7e8d8ea69abdfe3bb11f71a35075ba26ab948e778a50",
+        "--groups-sha256",
+        "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869",
+        "--controls-sha256",
+        "30cd7315341a685f3bf0b95b3938dd12e717d880ded7161d462f14e75c0eac61"
+      ],
+      "cwd": "/home/qian-qi",
+      "timeout_seconds": 12000,
+      "idempotency_key": "heptabao-native-jwt-pki-025b05a3-build149-r2-efec176c"
+    },
+    "rootObservedSubmitted": false
+  },
+  "source_commit": "025b05a340de841b8161c1120344e86eae30eb97",
+  "source_tree": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+  "source_stage_qualification": {
+    "blob": "6779c65882fc265ae6c4c0ba055b2f42132e59d8",
+    "bytes": 5974,
+    "sha256": "c3410ce8dc065f88258c9ac2960c0a098725721a0c316406c5207a21785ffcf7"
+  },
+  "controls_info_qualification": {
+    "blob": "61acf274f17beaadf75396e5f0dfdfe236a132f7",
+    "bytes": 14546,
+    "sha256": "25366808cbb781c89828e469572c58d554243019f721130ec8de5a3066d26aec"
+  },
+  "controls_body0_qualification": {
+    "blob": "eb9fca7b2e01729066ddbb14e05699d901a7520c",
+    "bytes": 3481,
+    "sha256": "b8f54ac90853d5fb40504ff0f5465c68529d26512e6794dba3b980c8bc6f9a1a"
+  },
+  "controls_remaining3_qualification": {
+    "blob": "7e8aa73f35024baf7b351728d85027802b49e683",
+    "bytes": 6456,
+    "sha256": "25ec8052e3b7235ebddde2a82896fbb79d13564d4672786dfd6c312827de2e62"
+  },
+  "actual_controls": [
+    {
+      "blob": "f8b36c8adccb493dfc6aa507856150ce8a6a764d",
+      "bytes": 30397,
+      "sha256": "d76b3d392c20bf4a7bbb7e8d8ea69abdfe3bb11f71a35075ba26ab948e778a50"
+    },
+    {
+      "blob": "419a805247448d46180890fb9cdd69c2832d4811",
+      "bytes": 38565,
+      "sha256": "efec176c08804a91adfd0160cdc092fad879d64ff594debe2fffe8008488d00c"
+    },
+    {
+      "blob": "5d563b1c7a1b7070395f6d8a03b512ddb019fae0",
+      "bytes": 19789,
+      "sha256": "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869"
+    },
+    {
+      "blob": "9fff12f23126ba08a5f4a3e137faefcdf689c1af",
+      "bytes": 1854,
+      "sha256": "30cd7315341a685f3bf0b95b3938dd12e717d880ded7161d462f14e75c0eac61"
+    }
+  ],
+  "actual_controls_metadata": [
+    {
+      "index": 0,
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/native_jwt_build.py",
+      "size": 30397,
+      "sha256": "d76b3d392c20bf4a7bbb7e8d8ea69abdfe3bb11f71a35075ba26ab948e778a50",
+      "version": "66306:33212340:30397:1793965550402189411:1793965550403278461",
+      "nativeText": {
+        "blob": "9cfffd12c038026416fcae6370c78cff0c17dd46",
+        "bytes": 466,
+        "sha256": "81fbf8bffb465a57091b6ca15842f92ac5f9536b3ede652ea7a94c4ec193f6d4"
+      },
+      "originalOperation": "e0b3516213ca2ce013bfc0288d2f641511f811b71f8ed4e08db682938e13860a",
+      "full9Strings": [
+        "66306",
+        "33212340",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "30397",
+        "1793965550402189411",
+        "1793965550403278461"
+      ],
+      "regularFileFromNativeFileInfoContract": true,
+      "binaryReadAuthorized": false
+    },
+    {
+      "index": 1,
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/launch_native_jwt_build.py",
+      "size": 38565,
+      "sha256": "efec176c08804a91adfd0160cdc092fad879d64ff594debe2fffe8008488d00c",
+      "version": "66306:33212341:38565:1793965550403677310:1793965550405279309",
+      "nativeText": {
+        "blob": "e916c0d81a20c8b9f32a8ed1bca44130bfa9aa75",
+        "bytes": 473,
+        "sha256": "b41f5f37602cdddced67aec0cac077825fc54b284dd6705b23d71d8f83c7a74f"
+      },
+      "originalOperation": "e8c754906784dc95c7d6f9f9db323c75f28d346c125b3b374a50b517ab950f87",
+      "full9Strings": [
+        "66306",
+        "33212341",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "38565",
+        "1793965550403677310",
+        "1793965550405279309"
+      ],
+      "regularFileFromNativeFileInfoContract": true,
+      "binaryReadAuthorized": false
+    },
+    {
+      "index": 2,
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/jwt-test-groups.public.json",
+      "size": 19789,
+      "sha256": "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869",
+      "version": "66306:33212342:19789:1793965550406347359:1793965550407346912",
+      "nativeText": {
+        "blob": "b34732e457d26b837f6d1b12cfac20da20c73008",
+        "bytes": 474,
+        "sha256": "23290cbbc6f64b88bf6c783667a918e0fb9743f6ad8f671635647cf626e116dc"
+      },
+      "originalOperation": "1b398fc015b5d944a3e80c2b4eb0fadd0d343fcf29e265cdedb600c77ae316ad",
+      "full9Strings": [
+        "66306",
+        "33212342",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "19789",
+        "1793965550406347359",
+        "1793965550407346912"
+      ],
+      "regularFileFromNativeFileInfoContract": true,
+      "binaryReadAuthorized": false
+    },
+    {
+      "index": 3,
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/inert-stage.result.public.json",
+      "size": 1854,
+      "sha256": "30cd7315341a685f3bf0b95b3938dd12e717d880ded7161d462f14e75c0eac61",
+      "version": "66306:33212343:1854:1793965550408095444:1793965550409072774",
+      "nativeText": {
+        "blob": "0e412fc445cebf2eef7ae5dfd76139fd04fe78ae",
+        "bytes": 475,
+        "sha256": "57458e39109c9ee5bff5bde9e5952e5d300b121f418da69a4e764e477afa1247"
+      },
+      "originalOperation": "9f565be95050449328b40b589e82270d644f88dc95a192de202c8de1f7e57a5a",
+      "full9Strings": [
+        "66306",
+        "33212343",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "1854",
+        "1793965550408095444",
+        "1793965550409072774"
+      ],
+      "regularFileFromNativeFileInfoContract": true,
+      "binaryReadAuthorized": false
+    }
+  ],
+  "target": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3",
+  "existing_nonblocking_target_flock": {
+    "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3/release/.cargo-lock",
+    "meaning": "Fresh nonblocking exclusive admission probe only; closed before same-PID exec, not a lifetime Cargo lock.",
+    "lifetimeLockClaimed": false
+  },
+  "budgets": {
+    "outerSeconds": 12000,
+    "releaseSeconds": 1800,
+    "threeCompileSharedSeconds": 3600,
+    "listSeconds": 30,
+    "fourFamiliesEachSeconds": 600,
+    "cleanupTermSeconds": 5,
+    "cleanupKillSeconds": 5,
+    "immutableResultPageBytes": 8192,
+    "streamBytesPerRead": 16384,
+    "payloadMaxBytes": 1048576
+  },
+  "bounded_observation_for_this_new_job": {
+    "note": "These numeric observation counts are new explicit limits of this GO. The original33b GO did not specify total status/read counts; the original worker/compile/test/cleanup deadlines and per-read/page limits stay unchanged.",
+    "maximumProcessStatusObservers": 256,
+    "maximumProcessReadObservers": 129,
+    "maximumOperationStatusCallsPerObserver": 8,
+    "maximumImmutableResultPagesPerObserver": 128,
+    "immutableResultPageBytes": 8192,
+    "maximumSerializedPayloadBytes": 1048576,
+    "streamBytesPerRead": 16384,
+    "maximumObservedBytesPerStream": 2097152,
+    "onlyReturnedOriginalJob": true,
+    "onlyProcessStatusAndProcessRead": true,
+    "contiguousOriginalStreamOffsets": true,
+    "completeEachObserverBeforeNext": true,
+    "noAutomaticRetry": true
+  },
+  "denominators": {
+    "uniqueNames": 149,
+    "profileInstances": 166,
+    "families": 4,
+    "profiles": [
+      "file",
+      "default"
+    ],
+    "full34OrLANOrComparison69OrNormal61Included": false,
+    "combined237_254Included": false
+  },
+  "execution": {
+    "singleSamePIDLauncherThenOriginalRunner": true,
+    "releaseNormalBinaries": true,
+    "ordinaryNoDefaultCheckIsNotATest": true,
+    "compileCommandsSharedOriginalDeadline": 3,
+    "exactListBeforeEveryTest": true,
+    "individualTestRunRequiresExit0AndActualOnePassedSummary": true,
+    "originalFail33bPreserved": true,
+    "body0UnknownHistoryPreserved": true
+  },
+  "sequence": [
+    "Whole-read this exact GO, source review and exact request before initializing the previously nonexistent slot.",
+    "Arm exact request with full immutable request/intent/armed proof, then one START across a separate boundary.",
+    "Whole-store original SDK before inspecting receipt. Unknown START remains unknown; never repeat it.",
+    "Observe only the actually returned original job within the new finite observation limits, one Native call or owned future at a time.",
+    "Collect terminal authority and complete bounded streams, then present exact final report path/hash if emitted. File-info/body reads need a separate exact readback scope."
+  ],
+  "lane_activation": {
+    "active": true,
+    "release_qualification": {
+      "blob": "34e925151f50d31e01eb4a17e8b77aa4278f44b6",
+      "bytes": 2120,
+      "sha256": "2d46a6646f9cefa802bb54aef92a4e8c8df2d620f2b93122cd57ac8258795371"
+    },
+    "current": {
+      "authbus_migration": 0,
+      "compatibility_audit": 1,
+      "ha_validation": 1,
+      "root": 0,
+      "total": 2
+    }
+  },
+  "target_serialization": {
+    "owner": "/root/ha_validation",
+    "request": {
+      "blob": "dab29b2b82ae23e24c5f78865553c140e9bab5de",
+      "bytes": 859,
+      "sha256": "bd5ffba6dce783ee4af25654a246a144ed8edc1c86111ad62460125d9100da53"
+    },
+    "rootSoleCargoTargetWindow": true,
+    "otherSharedTargetBuildsAuthorized": false,
+    "endsOnlyAfterOriginalJobAndOwnedCompileChildrenAreClosedOrAnExplicitRootDisposition": true
+  },
+  "excluded": [
+    "Other product candidates or source branches",
+    "Additional Cargo or fallback test commands",
+    "New baseline or reset deadlines",
+    "Production service/client changes",
+    "Mac managed-service reconciliation",
+    "New official fixture or network download",
+    "Cleanup of legacy services/binaries",
+    "Arbitrary file_info/binary_read"
+  ],
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r44-public-RSA-and-HTTP-component-source-roots",
+  "records": [
+    {
+      "name": "ROOT.public-RSA-SPKI.qualification.public.json",
+      "blob": "c7d3c36862f53653cc74b77f51818fbced790343",
+      "bytes": 1777,
+      "sha256": "daa005a3307cc7137ee62e2c4f11c130c2219ddb090b0970ed27d3df27a57321"
+    },
+    {
+      "name": "ROOT.HTTP-current-record-component.review.public.json",
+      "blob": "f900a42ab8b43119b47095e3efb1fa3c2db37a74",
+      "bytes": 1784,
+      "sha256": "a7759da768c6d2fe66837ed95ad0faac38b99dbe3a3516b23f3becb1ef7b7ffd"
+    },
+    {
+      "name": "ROOT.verifier.js",
+      "blob": "b2f11f2c93452c46b2ee0230bf4a9955e39192eb",
+      "bytes": 6467,
+      "sha256": "56d9f7a4dac5d947baccdeda70fef951de1ea30fd939af6fbd6b7f8c2cd66b69"
+    },
+    {
+      "name": "ROOT.RFC7517-public-RSA-excerpt.txt",
+      "blob": "46259ab153550259d7df0dd93859f0501590cf72",
+      "bytes": 561,
+      "sha256": "bbcacc3ca0f6ae9320cc76b7fcd11e432881dca6fa55b8abb085f7e4bd931742"
+    }
+  ],
+  "expected_data_tree": "283525a5304dc021a25d98949974a0b91541e7e5",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

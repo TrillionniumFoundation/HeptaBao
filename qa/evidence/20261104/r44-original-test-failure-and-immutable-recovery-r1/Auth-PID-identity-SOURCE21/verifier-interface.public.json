@@ -1,0 +1,24 @@
+{
+  "function": "checkFixedCurrentPidSource(input)",
+  "requirements": "owner_pure_source + owner_source_unified_helpers. Pure V8; no Python, SDK or Native.",
+  "inputPaths": {
+    "before": "controller.before.original.py",
+    "after": "controller.after.source.py",
+    "forward": "controller.forward.diff",
+    "reverse": "controller.reverse.diff",
+    "replacements": "JSON.parse(source-replacements.exact.public.json)",
+    "bsdInfo": "native.BsdInfo.exact.py",
+    "nativeObserver": "native.BsdInfo-donor.original.py",
+    "requestRaw": "request.exact.public.json",
+    "oldRequestRaw": "Reuse before SOURCE13 exact b60cd5e90c8ed8ee706f7b28d385cdeb2555ff69",
+    "oldJournal": "journal.before.original.js",
+    "journal": "journal.after.source.js",
+    "journalForward": "journal.forward.diff",
+    "journalReverse": "journal.reverse.diff",
+    "slotInitialized": false
+  },
+  "actualResult": "actual-source-checks.public.json",
+  "executed": true,
+  "checkCount": 62,
+  "PythonCompileOrComponentExecuted": false
+}

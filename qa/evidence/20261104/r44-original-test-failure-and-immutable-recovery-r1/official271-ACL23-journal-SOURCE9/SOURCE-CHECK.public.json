@@ -1,0 +1,13 @@
+{
+  "strictForwardWhole": true,
+  "strictReverseWhole": true,
+  "literalNormalizationWhole": true,
+  "changedSites": 5,
+  "logicalLiteralBindings": 7,
+  "hunks": 3,
+  "functionsChangedBeyondLiteralBindings": 0,
+  "slotInitialized": false,
+  "NativeCalls": 0,
+  "GitMutationCallsForRuntime": 0,
+  "actualPythonOrHTTPExecuted": false
+}

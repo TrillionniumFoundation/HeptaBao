@@ -1,0 +1,32 @@
+
+function qualifyFixedPidSource(p,old,input,author,api){
+ const checks=[],ck=(name,ok)=>checks.push({name,pass:ok===true}),pin=(raw,expected)=>{const m=gitBlobMeta(raw);return m.blob===expected.blob&&m.bytes===expected.bytes&&m.sha256===expected.sha256;};
+ const c=JSON.parse(p.raw["CONTRACT.public.json"]),q=JSON.parse(input.requestRaw),oq=JSON.parse(input.oldRequestRaw),s=input.after,m=p.raw["native.fixed-current-pid.methods.py"];
+ ck("whole_SOURCE21",p.audit.tree==="af2a0454dff4937b095779079f4ecbfebc963c73"&&p.pins.length===21&&p.pins.reduce((n,x)=>n+x.bytes,0)===464806);
+ ck("exact_source_request_journal",pin(s,c.source)&&pin(input.requestRaw,c.request)&&pin(input.journal,c.journal));
+ ck("original_diagnostic_source_retained",gitBlobMeta(input.before).blob==="ef3b05165ba0b0fbce2c5f2c493502ee61080c7d"&&Object.values(old.raw).includes(input.before)&&Object.values(old.raw).includes(input.oldJournal)&&Object.values(old.raw).includes(input.oldRequestRaw));
+ const f=strictApply(input.before,input.forward),r=strictApply(s,input.reverse),jf=strictApply(input.oldJournal,input.journalForward),jr=strictApply(input.journal,input.journalReverse);
+ ck("nine_source_hunks_exact_forward_reverse",f.hunks===9&&r.hunks===9&&f.text===s&&r.text===input.before);
+ ck("two_journal_hunks_exact_forward_reverse",jf.hunks===2&&jr.hunks===2&&jf.text===input.journal&&jr.text===input.oldJournal);
+ ck("author62_exact_reproduction",author.exactOriginal===true&&author.value.passed&&author.value.checkCount===62);
+ ck("request_only_source_and_key_changed",JSON.stringify({...q,stdin:oq.stdin,idempotency_key:oq.idempotency_key})===JSON.stringify(oq)&&q.stdin===s&&q.timeout_seconds===60);
+ ck("fixed_original_PID_from_new_actual_report",c.target.pid===32527&&c.target.historicalBirth===null&&JSON.parse(p.raw["fresh-registration.stdout.original.txt"]).prints.every(x=>x.projection.fieldFacts.pid.typedInteger===32527));
+ ck("two_exact_print_mapping_checks",s.includes("require_current_pid_mapping(first)")&&s.includes("require_current_pid_mapping(second)")&&m.includes("facts['runs']['typedInteger'] == 1")&&m.includes("all(print_record['projection']['fixedRegistrationFieldsMatch'].values())"));
+ ck("immutable_API_source_child_count_unit",api.blob==="c3e7369f886fbb7bbc8d77f8fca9ecc943bb5f4e"&&api.text.includes("proc_listchildpids(pid_t ppid, void * buffer, int buffersize)")&&api.text.slice(api.text.indexOf("proc_listchildpids("),api.text.indexOf("proc_pidinfo(")).includes("return numpids / sizeof(int);"));
+ ck("fixed_libproc_targets_only",m.includes("pid in (os.getpid(),EXPECTED_CURRENT_PID)")&&m.includes("len(self.rows) < 10")&&m.includes("ctypes.CDLL('/usr/lib/libproc.dylib', use_errno=True)"));
+ ck("exact_numeric_ABI_offsets",["ctypes.sizeof(BsdInfo) == 136","BsdInfo.pid.offset == 12","BsdInfo.ppid.offset == 16","BsdInfo.uid.offset == 20","BsdInfo.pgid.offset == 108","BsdInfo.birth_sec.offset == 120","BsdInfo.birth_usec.offset == 128"].every(x=>m.includes(x)));
+ ck("arg1_complete_struct_and_errno",m.includes("pid,3,1,ctypes.byref(info),ctypes.sizeof(info)")&&m.includes("count == 136 and number == 0 and info.pid == pid"));
+ ck("numeric_path_child_caps",c.budgets.addedExplicitLibproc.bsdinfoArg1===6&&c.budgets.addedExplicitLibproc.pidpath===2&&c.budgets.addedExplicitLibproc.directChildCount===2&&m.includes("0 <= count < len(children) and number == 0")&&m.includes("(ctypes.c_int * 32)()"));
+ ck("calls_registered_and_errno_captured",m.indexOf("self.rows.append(row)")<m.indexOf("value = function(*args)")&&m.includes("ctypes.set_errno(0)\n            value = function(*args)\n            number = ctypes.get_errno()"));
+ ck("self_crosscheck_and_stable_lifetime",m.includes("self.verify_self")===false&&m.includes("def verify_self")&&m.includes("('pid','ppid','pgid','uid','gid','birthSec','birthUsec')")&&m.includes("self.lifetime(first) == self.lifetime(second)"));
+ ck("only_three_known_path_boolean_exports",m.includes("'kernelPython':image ==")&&m.includes("'launcherPython':image ==")&&m.includes("'knownServerBinary':image ==")&&!m.includes("'path':image")&&!m.includes("decode("));
+ ck("private_argv_and_child_pids_not_exported",m.includes("'otherProcessArgumentsRead':False")&&m.includes("'childPidsPublished':False")&&m.includes("'childProcessesFollowed':False")&&m.includes("'rawUnknownPathPublished':False"));
+ ck("no_managed_signal_or_reap_added",!m.includes("os.kill")&&!m.includes("killpg")&&!m.includes("Popen")&&!m.includes("waitpid")&&c.target.signalAuthorized===false&&c.target.bootoutAuthorized===false);
+ ck("original_deadlines_and_IO_caps",c.budgets.sharedSeconds===45&&c.budgets.helperAdmissionEndSeconds===35&&c.budgets.outerSeconds===60&&c.budgets.applicationFdAttemptCap===64&&c.budgets.applicationReadBytes===262144&&c.budgets.applicationWriteBytes===0&&c.budgets.applicationWriteCalls===0&&c.budgets.launchctlPrintCalls===2);
+ ck("two_clipped_four_second_windows",s.split("time.monotonic_ns()+4000000000").length===3&&s.includes("min(PARENT_UNTIL_NS,HELPER_ADMISSION_END_NS,")&&c.budgets.addedExplicitLibproc.individualSynchronousCCallPreemptionClaimed===false);
+ ck("mismatch_and_unreturned_call_preserve_UNKNOWN",s.includes("not result['currentIdentityQualifiedForFutureCleanupReview']")&&s.includes("or sampler is None or not result['currentPidMetadata']['allAttemptedCallsReturned']")&&s.includes("or result['currentIdentityOutcomeUnknown']"));
+ ck("original_managed_scope_not_closed",s.includes("'registrationClosureClaimed':False,'currentManagedScopeStillUnknown':True")&&s.includes("'pidExitOrReapClaimed':False,'currentIdentityIsOriginalReadyIdentityClaimed':False"));
+ ck("strict_old_parser_still_diagnostic_only",input.after.includes("typed_launchctl_integer")&&!input.after.includes("fields[name]=None"));
+ const binding=processStartBinding(q);
+ return {schema:"heptabao.root.fixed-original-PID32527-readonly-SOURCE21-qualification.r44",passed:checks.every(x=>x.pass),checkCount:checks.length,checks,packet:p.audit.tree,source:c.source,request:c.request,journal:c.journal,slot:c.slot,nativeBinding:{sha256:binding.sha256,native_fingerprint:binding.native_fingerprint,canonicalBytes:utf8Bytes(binding.canonical).length},sourceApiReference:{blob:api.blob,bytes:api.bytes,sha256:api.sha256},author62Reproduced:true,scope:"source and ABI contract review only; current process identity still unobserved",managedScope:"UNKNOWN",pythonOrLibprocExecuted:false,newNativeCalls:0,cleanupAuthorized:false};
+}

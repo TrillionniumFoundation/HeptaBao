@@ -1,0 +1,141 @@
+{
+  "schema": "heptabao.fixed-current-authbus-pid-readonly-source.v1",
+  "status": "SOURCE_ONLY_NOT_INITIALIZED_NOT_DISPATCHED",
+  "source": {
+    "blob": "a938ba9fd034a6ba4b66300fd88e61383ab1be32",
+    "bytes": 94611,
+    "sha256": "6a1ee2c4bc31c4d55d2fde24eaa17c644037dd18c5a9853bba2a35035609e566"
+  },
+  "request": {
+    "blob": "cfe54ac6b630277b0cb100ffd9fe7d7e30a316d2",
+    "bytes": 97208,
+    "sha256": "7b89f6591bc7e0f43f6ebd144b5325e70b8bb9242438034d4c492d14be133baf"
+  },
+  "journal": {
+    "blob": "a4397a47257178ccf98374b694edd4d04903896a",
+    "bytes": 19059,
+    "sha256": "42ad555c661fc46f4c577c15fc40aebc036b56a754db3349be5aaea72f6f3bc5"
+  },
+  "slot": "owner_authbus_home_r2_current_pid_identity_gitfirst_r1",
+  "target": {
+    "host": "mac",
+    "jobLabel": "org.heptabao.qa.mac-authbus-4e808-home-r2.server",
+    "pid": 32527,
+    "pidSource": "fresh current registration diagnostic c984004abb7a5259246308a4c95af7de675f058c; both prints",
+    "historicalBirth": null,
+    "signalAuthorized": false,
+    "bootoutAuthorized": false
+  },
+  "budgets": {
+    "sharedSeconds": 45,
+    "helperAdmissionEndSeconds": 35,
+    "outerSeconds": 60,
+    "applicationFdAttemptCap": 64,
+    "applicationMetadataCap": 4096,
+    "applicationReadBytes": 262144,
+    "applicationReadCalls": 256,
+    "applicationWriteBytes": 0,
+    "applicationWriteCalls": 0,
+    "launchctlPrintCalls": 2,
+    "eachPrintSeconds": 10,
+    "addedExplicitLibproc": {
+      "bsdinfoArg1": 6,
+      "pidpath": 2,
+      "directChildCount": 2,
+      "totalCalls": 10,
+      "knownPidTargets": [
+        "self",
+        32527
+      ],
+      "blocks": [
+        {
+          "kind": "self-two-plus-first-target-pair",
+          "maxSeconds": 4
+        },
+        {
+          "kind": "second-target-pair",
+          "maxSeconds": 4
+        }
+      ],
+      "clippedToOriginal35And45": true,
+      "individualSynchronousCCallPreemptionClaimed": false,
+      "excludesOriginalCommandsInternalOperations": true
+    },
+    "nativeObserver": {
+      "processStatusMax": 8,
+      "processReadMax": 8,
+      "eachObserverStatusMax": 8,
+      "eachObserverPageMax": 128,
+      "pageBytes": 8192,
+      "serializedPayloadCap": 1048576,
+      "processReadBytes": 16384,
+      "eachStreamObservedCap": 131072
+    }
+  },
+  "unchanged": [
+    "FixedIO and all its returned-FD/unknown/once-close fences",
+    "original Commands/Signals embedded whole modules",
+    "two exact launchctl print commands",
+    "original strict parse_print (diagnostic still exposes original refusal)",
+    "original fixed HOME/T5 directory objects and seven fixed application leaves",
+    "first-LF bounded allowlist, no tail export or stderr body",
+    "45/35/60 deadlines and application I/O caps"
+  ],
+  "addedProjection": {
+    "numeric": [
+      "pid",
+      "ppid",
+      "pgid",
+      "uid",
+      "gid",
+      "birthSec",
+      "birthUsec",
+      "status",
+      "exitStatusNumeric",
+      "flagsNumeric"
+    ],
+    "path": [
+      "kernelPython boolean",
+      "launcherPython boolean",
+      "knownServerBinary boolean"
+    ],
+    "childCountOnly": true,
+    "childPidsPublished": false,
+    "otherPathPublished": false,
+    "processArgumentsRead": false,
+    "bsdExitStatusInterpretedAsLaunchdExit": false,
+    "epochClaim": "fresh current lifetime only; not original ready identity"
+  },
+  "admissionForFutureReview": {
+    "beforeAndAfterSameLifetime": true,
+    "currentLabelMappingSameFixedPid": true,
+    "uid501": true,
+    "pgidMatchesPid": true,
+    "kernelImageExactBoolean": true,
+    "directChildrenZeroBoth": true,
+    "actualResultRequired": true,
+    "noCurrentCleanupAuthorization": true
+  },
+  "failureBoundary": "Any nonmatching path, nonzero/ambiguous errno, short struct, changed birth, changed label mapping or nonempty direct children preserves identity qualification false/UNKNOWN. Own FD/helper closure is reported separately. ESRCH is not translated into exit, reap, absence or managed closure.",
+  "history": {
+    "currentManagedScopeStillUnknown": true,
+    "originalFailureRewritten": false,
+    "originalRegistrationClosureClaimed": false,
+    "originalPrivateCapsuleRead": false
+  },
+  "sourceApiBasis": {
+    "existingBsdInfoDonor": {
+      "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+      "bytes": 13423,
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+    },
+    "appleReferencesInDonor": [
+      "xnu/bsd/sys/proc_info.h blob718a69fcf5340f547893ed8dc85908f253c1ce81",
+      "xnu/libsyscall/wrappers/libproc/libproc.h blob602e4fe897d1fc5a7ceacc372c78f184ea242bfe",
+      "xnu/libsyscall/wrappers/libproc/libproc.c blobc3e7369f886fbb7bbc8d77f8fca9ecc943bb5f4e"
+    ],
+    "priorFiniteArg1ActualRoot": "56129f46fd94d072e301c4e558481efd817aed55",
+    "sourceNotCurrentKernelQualification": true
+  },
+  "rootGo": null
+}

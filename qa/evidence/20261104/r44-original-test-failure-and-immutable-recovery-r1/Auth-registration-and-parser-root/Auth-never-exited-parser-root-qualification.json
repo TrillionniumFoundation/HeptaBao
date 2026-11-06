@@ -1,0 +1,98 @@
+{
+  "schema": "heptabao.root.never-exited-parser-SOURCE11-review.r44",
+  "passed": true,
+  "checkCount": 19,
+  "checks": [
+    {
+      "name": "whole_SOURCE11",
+      "pass": true
+    },
+    {
+      "name": "exact_original_manager",
+      "pass": true
+    },
+    {
+      "name": "exact_after_manager",
+      "pass": true
+    },
+    {
+      "name": "one_hunk_forward_and_reverse",
+      "pass": true
+    },
+    {
+      "name": "strict_forward_exact",
+      "pass": true
+    },
+    {
+      "name": "strict_reverse_exact",
+      "pass": true
+    },
+    {
+      "name": "exact_three_line_delta",
+      "pass": true
+    },
+    {
+      "name": "only_last_exit_literal_branch",
+      "pass": true
+    },
+    {
+      "name": "not_success_zero_or_false",
+      "pass": true
+    },
+    {
+      "name": "pid_runs_integer_validation_unchanged",
+      "pass": true
+    },
+    {
+      "name": "EX_CONFIG_78_unchanged",
+      "pass": true
+    },
+    {
+      "name": "success_consumer_strict_zero_unchanged",
+      "pass": true
+    },
+    {
+      "name": "all_outside_parser_unchanged",
+      "pass": true
+    },
+    {
+      "name": "component_extracts_only_selected_AST",
+      "pass": true
+    },
+    {
+      "name": "component_none_cannot_pass_consumer",
+      "pass": true
+    },
+    {
+      "name": "component_retains_numeric_and_rejected_literals",
+      "pass": true
+    },
+    {
+      "name": "source_scan_scope_explicit",
+      "pass": true
+    },
+    {
+      "name": "only_original_success_literal_use",
+      "pass": true
+    },
+    {
+      "name": "fresh_observation_supports_literal",
+      "pass": true
+    }
+  ],
+  "before": {
+    "blob": "03c8f2e6472a2b52dad789c28bacc28022c87dc0",
+    "bytes": 58452,
+    "sha256": "8feb3f9db05fa59986409c6c1306b48213102c7deaae6035219afa959add5ae4"
+  },
+  "after": {
+    "blob": "3f259a4b085394fba0658359575aa0d74b9757e2",
+    "bytes": 58584,
+    "sha256": "1d69a93a3111238424f90b02ffe44f6f3e9c3eb704aa8044625de7c17978f78f"
+  },
+  "scope": "mechanical source delta and unchanged strict-zero consumer; no Python or product runtime",
+  "pythonComponentExecuted": false,
+  "managedScope": "UNKNOWN",
+  "credentialCycleSuccess": false,
+  "newNativeCalls": 0
+}

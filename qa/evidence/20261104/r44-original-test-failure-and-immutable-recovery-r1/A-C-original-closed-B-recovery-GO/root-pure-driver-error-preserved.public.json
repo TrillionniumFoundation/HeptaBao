@@ -1,0 +1,8 @@
+{
+  "error": "ReferenceError: helper is not defined",
+  "phase": "pure verification driver before root check invocation",
+  "authorA159Reproduced": true,
+  "NativeCalls": 0,
+  "GitMutations": 0,
+  "fix": "Provide the pure helper source as an explicit driver parameter; evidence bytes unchanged."
+}

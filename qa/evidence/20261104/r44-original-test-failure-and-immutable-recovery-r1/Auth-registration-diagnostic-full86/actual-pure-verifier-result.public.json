@@ -1,0 +1,849 @@
+{
+  "schema": "heptabao.current-registration-diagnostic-original-chain-verification.v1",
+  "passed": true,
+  "checkCount": 207,
+  "checks": [
+    {
+      "name": "original_job",
+      "pass": true
+    },
+    {
+      "name": "journal_closed",
+      "pass": true
+    },
+    {
+      "name": "twelve_original_calls",
+      "pass": true
+    },
+    {
+      "name": "two_original_observers",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-registration-start:called_once_accepted",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-registration-start:request_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-registration-start:SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-registration-start:native_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-registration-start:SDK_nonerror_exact_native",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-registration-start:intent",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-registration-start:armed",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-registration-start:whole_armed_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-registration-start:whole_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "exact_request",
+      "pass": true
+    },
+    {
+      "name": "actual_ACK",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-admit:called_once_accepted",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-admit:request_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-admit:SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-admit:native_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-admit:SDK_nonerror_exact_native",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-admit:intent",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-admit:armed",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-admit:whole_armed_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-admit:whole_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-admit:original_job",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-admit:fresh_observer_ACK",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-state-01:called_once_accepted",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-state-01:request_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-state-01:SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-state-01:native_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-state-01:SDK_nonerror_exact_native",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-state-01:intent",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-state-01:armed",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-state-01:whole_armed_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-state-01:whole_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-state-01:sameID_closed",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-page-00000:called_once_accepted",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-page-00000:request_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-page-00000:SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-page-00000:native_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-page-00000:SDK_nonerror_exact_native",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-page-00000:intent",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-page-00000:armed",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-page-00000:whole_armed_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-page-00000:whole_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-page-00000:immutable_identity",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-page-00000:page_bound",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-page-00000:extent_EOF",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-admit:called_once_accepted",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-admit:request_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-admit:SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-admit:native_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-admit:SDK_nonerror_exact_native",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-admit:intent",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-admit:armed",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-admit:whole_armed_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-admit:whole_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-admit:original_job",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-admit:fresh_observer_ACK",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-state-01:called_once_accepted",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-state-01:request_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-state-01:SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-state-01:native_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-state-01:SDK_nonerror_exact_native",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-state-01:intent",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-state-01:armed",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-state-01:whole_armed_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-state-01:whole_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-state-01:sameID_closed",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-00000:called_once_accepted",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-00000:request_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-00000:SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-00000:native_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-00000:SDK_nonerror_exact_native",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-00000:intent",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-00000:armed",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-00000:whole_armed_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-00000:whole_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-00000:immutable_identity",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-00000:page_bound",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-00000:extent_EOF",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-08192:called_once_accepted",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-08192:request_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-08192:SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-08192:native_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-08192:SDK_nonerror_exact_native",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-08192:intent",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-08192:armed",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-08192:whole_armed_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-08192:whole_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-08192:immutable_identity",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-08192:page_bound",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-08192:extent_EOF",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-16384:called_once_accepted",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-16384:request_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-16384:SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-16384:native_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-16384:SDK_nonerror_exact_native",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-16384:intent",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-16384:armed",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-16384:whole_armed_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-16384:whole_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-16384:immutable_identity",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-16384:page_bound",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-16384:extent_EOF",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-24576:called_once_accepted",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-24576:request_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-24576:SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-24576:native_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-24576:SDK_nonerror_exact_native",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-24576:intent",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-24576:armed",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-24576:whole_armed_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-24576:whole_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-24576:immutable_identity",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-24576:page_bound",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-24576:extent_EOF",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-32768:called_once_accepted",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-32768:request_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-32768:SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-32768:native_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-32768:SDK_nonerror_exact_native",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-32768:intent",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-32768:armed",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-32768:whole_armed_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-32768:whole_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-32768:immutable_identity",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-32768:page_bound",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-32768:extent_EOF",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-40960:called_once_accepted",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-40960:request_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-40960:SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-40960:native_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-40960:SDK_nonerror_exact_native",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-40960:intent",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-40960:armed",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-40960:whole_armed_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-40960:whole_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-40960:immutable_identity",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-40960:page_bound",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-40960:extent_EOF",
+      "pass": true
+    },
+    {
+      "name": "exact_call_counts",
+      "pass": true
+    },
+    {
+      "name": "7c8c3417327bf2c4256f73b25ccadb3dfaf550e3d5da6b2505eab73f4ecdda09:admission_tool",
+      "pass": true
+    },
+    {
+      "name": "7c8c3417327bf2c4256f73b25ccadb3dfaf550e3d5da6b2505eab73f4ecdda09:status_closed",
+      "pass": true
+    },
+    {
+      "name": "7c8c3417327bf2c4256f73b25ccadb3dfaf550e3d5da6b2505eab73f4ecdda09:page_count",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-page-00000:contiguous",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-status-01-page-00000:stable_total_digest",
+      "pass": true
+    },
+    {
+      "name": "7c8c3417327bf2c4256f73b25ccadb3dfaf550e3d5da6b2505eab73f4ecdda09:whole_payload",
+      "pass": true
+    },
+    {
+      "name": "7c8c3417327bf2c4256f73b25ccadb3dfaf550e3d5da6b2505eab73f4ecdda09:payload_tree",
+      "pass": true
+    },
+    {
+      "name": "7c8c3417327bf2c4256f73b25ccadb3dfaf550e3d5da6b2505eab73f4ecdda09:native_envelope",
+      "pass": true
+    },
+    {
+      "name": "7c8c3417327bf2c4256f73b25ccadb3dfaf550e3d5da6b2505eab73f4ecdda09:native_whole",
+      "pass": true
+    },
+    {
+      "name": "7c8c3417327bf2c4256f73b25ccadb3dfaf550e3d5da6b2505eab73f4ecdda09:native_job",
+      "pass": true
+    },
+    {
+      "name": "7c8c3417327bf2c4256f73b25ccadb3dfaf550e3d5da6b2505eab73f4ecdda09:authority",
+      "pass": true
+    },
+    {
+      "name": "cdbd7665f0bcab929bce636007819d7905738ef258774a74b7b06fd9feea7c8d:admission_tool",
+      "pass": true
+    },
+    {
+      "name": "cdbd7665f0bcab929bce636007819d7905738ef258774a74b7b06fd9feea7c8d:status_closed",
+      "pass": true
+    },
+    {
+      "name": "cdbd7665f0bcab929bce636007819d7905738ef258774a74b7b06fd9feea7c8d:page_count",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-00000:contiguous",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-00000:stable_total_digest",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-08192:contiguous",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-08192:stable_total_digest",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-16384:contiguous",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-16384:stable_total_digest",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-24576:contiguous",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-24576:stable_total_digest",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-32768:contiguous",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-32768:stable_total_digest",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-40960:contiguous",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-reg-streams-01-page-40960:stable_total_digest",
+      "pass": true
+    },
+    {
+      "name": "cdbd7665f0bcab929bce636007819d7905738ef258774a74b7b06fd9feea7c8d:whole_payload",
+      "pass": true
+    },
+    {
+      "name": "cdbd7665f0bcab929bce636007819d7905738ef258774a74b7b06fd9feea7c8d:payload_tree",
+      "pass": true
+    },
+    {
+      "name": "cdbd7665f0bcab929bce636007819d7905738ef258774a74b7b06fd9feea7c8d:native_envelope",
+      "pass": true
+    },
+    {
+      "name": "cdbd7665f0bcab929bce636007819d7905738ef258774a74b7b06fd9feea7c8d:native_whole",
+      "pass": true
+    },
+    {
+      "name": "cdbd7665f0bcab929bce636007819d7905738ef258774a74b7b06fd9feea7c8d:native_job",
+      "pass": true
+    },
+    {
+      "name": "cdbd7665f0bcab929bce636007819d7905738ef258774a74b7b06fd9feea7c8d:native_read_cap",
+      "pass": true
+    },
+    {
+      "name": "cdbd7665f0bcab929bce636007819d7905738ef258774a74b7b06fd9feea7c8d:stdout:hex_text",
+      "pass": true
+    },
+    {
+      "name": "cdbd7665f0bcab929bce636007819d7905738ef258774a74b7b06fd9feea7c8d:stdout:extent",
+      "pass": true
+    },
+    {
+      "name": "cdbd7665f0bcab929bce636007819d7905738ef258774a74b7b06fd9feea7c8d:stdout:contiguous",
+      "pass": true
+    },
+    {
+      "name": "cdbd7665f0bcab929bce636007819d7905738ef258774a74b7b06fd9feea7c8d:stdout:EOF",
+      "pass": true
+    },
+    {
+      "name": "cdbd7665f0bcab929bce636007819d7905738ef258774a74b7b06fd9feea7c8d:stderr:hex_text",
+      "pass": true
+    },
+    {
+      "name": "cdbd7665f0bcab929bce636007819d7905738ef258774a74b7b06fd9feea7c8d:stderr:extent",
+      "pass": true
+    },
+    {
+      "name": "cdbd7665f0bcab929bce636007819d7905738ef258774a74b7b06fd9feea7c8d:stderr:contiguous",
+      "pass": true
+    },
+    {
+      "name": "cdbd7665f0bcab929bce636007819d7905738ef258774a74b7b06fd9feea7c8d:stderr:EOF",
+      "pass": true
+    },
+    {
+      "name": "observer_counts",
+      "pass": true
+    },
+    {
+      "name": "complete_original_streams",
+      "pass": true
+    },
+    {
+      "name": "terminal_authority",
+      "pass": true
+    },
+    {
+      "name": "terminal_full_lengths",
+      "pass": true
+    },
+    {
+      "name": "own_observation_complete",
+      "pass": true
+    },
+    {
+      "name": "managed_scope_unknown_preserved",
+      "pass": true
+    },
+    {
+      "name": "history_preserved",
+      "pass": true
+    },
+    {
+      "name": "read_only_scope",
+      "pass": true
+    },
+    {
+      "name": "original_budget",
+      "pass": true
+    },
+    {
+      "name": "all22_FDs",
+      "pass": true
+    },
+    {
+      "name": "two_direct_helpers",
+      "pass": true
+    },
+    {
+      "name": "helper_known_exit0",
+      "pass": true
+    },
+    {
+      "name": "signals_restored",
+      "pass": true
+    },
+    {
+      "name": "two_fresh_prints",
+      "pass": true
+    },
+    {
+      "name": "print1:exact_registration",
+      "pass": true
+    },
+    {
+      "name": "print1:strict_original_failure",
+      "pass": true
+    },
+    {
+      "name": "print1:only_observed_literal",
+      "pass": true
+    },
+    {
+      "name": "print1:numeric_pid_runs",
+      "pass": true
+    },
+    {
+      "name": "print2:exact_registration",
+      "pass": true
+    },
+    {
+      "name": "print2:strict_original_failure",
+      "pass": true
+    },
+    {
+      "name": "print2:only_observed_literal",
+      "pass": true
+    },
+    {
+      "name": "print2:numeric_pid_runs",
+      "pass": true
+    },
+    {
+      "name": "fixed_ready_ENOENT",
+      "pass": true
+    },
+    {
+      "name": "fixed_stdout_empty",
+      "pass": true
+    },
+    {
+      "name": "fixed_stderr_metadata_only",
+      "pass": true
+    }
+  ],
+  "nativeCalls": {
+    "process_start": 1,
+    "operation_start": 2,
+    "operation_status": 2,
+    "operation_result": 7
+  },
+  "statusObservers": 1,
+  "readObservers": 1,
+  "stdoutBytes": 13957,
+  "stderrBytes": 0,
+  "scope": "original_finite_observation_chain_and_typed_fresh_public_projection",
+  "managedScopeQualifiedClosed": false,
+  "productSuccess": false,
+  "newNativeCalls": 0
+}

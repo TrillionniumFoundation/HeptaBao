@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r44-A-registration-full-and-parser-source",
+  "records": [
+    {
+      "name": "Auth-registration-full-root-qualification.json",
+      "blob": "74562ffa04fbb190508857fb3b4d483a6a255ca9",
+      "bytes": 7775,
+      "sha256": "2582d4ed177f1b01e685f14daf8a0581cf6987f9038ccdbe3a3c3ee5aa170fe3"
+    },
+    {
+      "name": "Auth-registration-full-root-verifier.js",
+      "blob": "a512628806d6b9af2860661042b086ba9e5b541e",
+      "bytes": 6153,
+      "sha256": "603b9e2a73284be670d310b128d0d5e3d700fb27a182e6bb421bd2f255f481f6"
+    },
+    {
+      "name": "Auth-registration-author207-reproduced.json",
+      "blob": "7ad11790369ddc18c1f6b725ee436353f286196c",
+      "bytes": 23338,
+      "sha256": "01d912254f2c4f8544fe7234401e73ce2996c224d78d1f30caa13235dce47d3d"
+    },
+    {
+      "name": "Auth-never-exited-parser-root-qualification.json",
+      "blob": "6894db9c0fd311ae098fd9aaa2ac3e30747cf9fe",
+      "bytes": 2190,
+      "sha256": "4c55840159c8a4a9d6d89827db36fe6172d6e1ba9e11b297641b1fd1d2b4301f"
+    },
+    {
+      "name": "Auth-never-exited-parser-root-verifier.js",
+      "blob": "600d5ceb41d3c26c933faf496a49a33e749d4e62",
+      "bytes": 3721,
+      "sha256": "459b7ebf6f4ad38cfb2ede1fe5c4cf1fd4cb1869fe1e4f50044020b082ac0038"
+    }
+  ],
+  "expected_data_tree": "0457ed58df7e1531c772b3ef6c1263bca5f29e91",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

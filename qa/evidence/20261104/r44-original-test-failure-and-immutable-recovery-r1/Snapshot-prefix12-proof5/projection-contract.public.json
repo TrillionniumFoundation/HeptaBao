@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.formatted23-verifier-bounded-test-projection.v1",
+  "scope": "Temporary pure test projection only: current 12 files / 37 original observers / 194 original calls. All per-call, immutable-page, metadata, range-byte and whole-file guards remain byte-identical to final source.",
+  "literalEdits": [
+    [
+      "s.outputFiles?.length===23",
+      "s.outputFiles?.length===12"
+    ],
+    [
+      "s.admissionsCalled===59&&s.completedObservers?.length===59",
+      "s.admissionsCalled===37&&s.completedObservers?.length===37"
+    ],
+    [
+      "&&s.infoStarted.every(x=>x===true)",
+      "&&s.infoStarted.slice(0,12).every(x=>x===true)&&s.infoStarted.slice(12).every(x=>x===false)"
+    ],
+    [
+      "s.bodyBytes===1346637",
+      "s.bodyBytes===1132623"
+    ],
+    [
+      "for(let i=0;i<outputs.length;i++){",
+      "for(let i=0;i<12;i++){"
+    ],
+    [
+      "observerIndex===59&&seenIds.size===59&&seenAdmissionKeys.size===59&&actualBytes===1346637",
+      "observerIndex===37&&seenIds.size===37&&seenAdmissionKeys.size===37&&actualBytes===1132623"
+    ]
+  ],
+  "tail": "Stop after all current original call ordering and all37 original observers accounted; omit the final49 mapping, which requires future 11 changed bodies. No projection is an authorized journal or final qualification.",
+  "originalFirstINFOCallLabel": "sf23-r1-i00",
+  "finalSourceCorrectedToMatchActualLabel": true,
+  "newRuntimeCalls": 0,
+  "liveStateMutations": 0
+}

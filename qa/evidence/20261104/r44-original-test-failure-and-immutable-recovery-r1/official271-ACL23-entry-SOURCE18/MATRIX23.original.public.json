@@ -1,0 +1,351 @@
+{
+  "schema": "heptabao.native-jwt.acl-oracle.matrix.v1",
+  "status": "SOURCE_ONLY_UNBOUND",
+  "case_count": 23,
+  "not_part_of_comparison69": true,
+  "matrix": [
+    {
+      "id": "delete-none",
+      "method": "DELETE",
+      "path": "auth/jwt-acl/role/delete-none",
+      "capabilities": [],
+      "official_source_prediction": 403,
+      "R2_source_prediction": 403,
+      "precondition": "Unique existing role with exact common projection; actor is a real valid nonroot service token.",
+      "postcondition": "204 must remove exactly its role; rejection must preserve its role and complete common config/role projection.",
+      "actual_official_status": null,
+      "actual_heptabao_status": null,
+      "normalize_status": false
+    },
+    {
+      "id": "delete-update",
+      "method": "DELETE",
+      "path": "auth/jwt-acl/role/delete-update",
+      "capabilities": [
+        "update"
+      ],
+      "official_source_prediction": 403,
+      "R2_source_prediction": 403,
+      "precondition": "Unique existing role with exact common projection; actor is a real valid nonroot service token.",
+      "postcondition": "204 must remove exactly its role; rejection must preserve its role and complete common config/role projection.",
+      "actual_official_status": null,
+      "actual_heptabao_status": null,
+      "normalize_status": false
+    },
+    {
+      "id": "delete-update-sudo",
+      "method": "DELETE",
+      "path": "auth/jwt-acl/role/delete-update-sudo",
+      "capabilities": [
+        "update",
+        "sudo"
+      ],
+      "official_source_prediction": 403,
+      "R2_source_prediction": 204,
+      "precondition": "Unique existing role with exact common projection; actor is a real valid nonroot service token.",
+      "postcondition": "204 must remove exactly its role; rejection must preserve its role and complete common config/role projection.",
+      "actual_official_status": null,
+      "actual_heptabao_status": null,
+      "normalize_status": false
+    },
+    {
+      "id": "delete-delete",
+      "method": "DELETE",
+      "path": "auth/jwt-acl/role/delete-delete",
+      "capabilities": [
+        "delete"
+      ],
+      "official_source_prediction": 204,
+      "R2_source_prediction": 403,
+      "precondition": "Unique existing role with exact common projection; actor is a real valid nonroot service token.",
+      "postcondition": "204 must remove exactly its role; rejection must preserve its role and complete common config/role projection.",
+      "actual_official_status": null,
+      "actual_heptabao_status": null,
+      "normalize_status": false
+    },
+    {
+      "id": "delete-delete-sudo",
+      "method": "DELETE",
+      "path": "auth/jwt-acl/role/delete-delete-sudo",
+      "capabilities": [
+        "delete",
+        "sudo"
+      ],
+      "official_source_prediction": 204,
+      "R2_source_prediction": 403,
+      "precondition": "Unique existing role with exact common projection; actor is a real valid nonroot service token.",
+      "postcondition": "204 must remove exactly its role; rejection must preserve its role and complete common config/role projection.",
+      "actual_official_status": null,
+      "actual_heptabao_status": null,
+      "normalize_status": false
+    },
+    {
+      "id": "collection-bare-get-none",
+      "method": "GET",
+      "path": "auth/jwt-acl/role",
+      "capabilities": [],
+      "official_source_prediction": 403,
+      "R2_source_prediction": 403,
+      "precondition": "Known nonempty unique role inventory; valid nonroot token, no default policy.",
+      "postcondition": "Read-only: full common config/role state unchanged; successful keys exactly match the seeded inventory.",
+      "actual_official_status": null,
+      "actual_heptabao_status": null,
+      "normalize_status": false
+    },
+    {
+      "id": "collection-bare-get-read",
+      "method": "GET",
+      "path": "auth/jwt-acl/role",
+      "capabilities": [
+        "read"
+      ],
+      "official_source_prediction": 405,
+      "R2_source_prediction": 403,
+      "precondition": "Known nonempty unique role inventory; valid nonroot token, no default policy.",
+      "postcondition": "Read-only: full common config/role state unchanged; successful keys exactly match the seeded inventory.",
+      "actual_official_status": null,
+      "actual_heptabao_status": null,
+      "normalize_status": false
+    },
+    {
+      "id": "collection-bare-get-list",
+      "method": "GET",
+      "path": "auth/jwt-acl/role",
+      "capabilities": [
+        "list"
+      ],
+      "official_source_prediction": 403,
+      "R2_source_prediction": 200,
+      "precondition": "Known nonempty unique role inventory; valid nonroot token, no default policy.",
+      "postcondition": "Read-only: full common config/role state unchanged; successful keys exactly match the seeded inventory.",
+      "actual_official_status": null,
+      "actual_heptabao_status": null,
+      "normalize_status": false
+    },
+    {
+      "id": "collection-list-query-none",
+      "method": "GET",
+      "path": "auth/jwt-acl/role?list=true",
+      "capabilities": [],
+      "official_source_prediction": 403,
+      "R2_source_prediction": 403,
+      "precondition": "Known nonempty unique role inventory; valid nonroot token, no default policy.",
+      "postcondition": "Read-only: full common config/role state unchanged; successful keys exactly match the seeded inventory.",
+      "actual_official_status": null,
+      "actual_heptabao_status": null,
+      "normalize_status": false
+    },
+    {
+      "id": "collection-list-query-read",
+      "method": "GET",
+      "path": "auth/jwt-acl/role?list=true",
+      "capabilities": [
+        "read"
+      ],
+      "official_source_prediction": 403,
+      "R2_source_prediction": 403,
+      "precondition": "Known nonempty unique role inventory; valid nonroot token, no default policy.",
+      "postcondition": "Read-only: full common config/role state unchanged; successful keys exactly match the seeded inventory.",
+      "actual_official_status": null,
+      "actual_heptabao_status": null,
+      "normalize_status": false
+    },
+    {
+      "id": "collection-list-query-list",
+      "method": "GET",
+      "path": "auth/jwt-acl/role?list=true",
+      "capabilities": [
+        "list"
+      ],
+      "official_source_prediction": 200,
+      "R2_source_prediction": 200,
+      "precondition": "Known nonempty unique role inventory; valid nonroot token, no default policy.",
+      "postcondition": "Read-only: full common config/role state unchanged; successful keys exactly match the seeded inventory.",
+      "actual_official_status": null,
+      "actual_heptabao_status": null,
+      "normalize_status": false
+    },
+    {
+      "id": "collection-list-method-none",
+      "method": "LIST",
+      "path": "auth/jwt-acl/role",
+      "capabilities": [],
+      "official_source_prediction": 403,
+      "R2_source_prediction": 403,
+      "precondition": "Known nonempty unique role inventory; valid nonroot token, no default policy.",
+      "postcondition": "Read-only: full common config/role state unchanged; successful keys exactly match the seeded inventory.",
+      "actual_official_status": null,
+      "actual_heptabao_status": null,
+      "normalize_status": false
+    },
+    {
+      "id": "collection-list-method-read",
+      "method": "LIST",
+      "path": "auth/jwt-acl/role",
+      "capabilities": [
+        "read"
+      ],
+      "official_source_prediction": 403,
+      "R2_source_prediction": 403,
+      "precondition": "Known nonempty unique role inventory; valid nonroot token, no default policy.",
+      "postcondition": "Read-only: full common config/role state unchanged; successful keys exactly match the seeded inventory.",
+      "actual_official_status": null,
+      "actual_heptabao_status": null,
+      "normalize_status": false
+    },
+    {
+      "id": "collection-list-method-list",
+      "method": "LIST",
+      "path": "auth/jwt-acl/role",
+      "capabilities": [
+        "list"
+      ],
+      "official_source_prediction": 200,
+      "R2_source_prediction": 200,
+      "precondition": "Known nonempty unique role inventory; valid nonroot token, no default policy.",
+      "postcondition": "Read-only: full common config/role state unchanged; successful keys exactly match the seeded inventory.",
+      "actual_official_status": null,
+      "actual_heptabao_status": null,
+      "normalize_status": false
+    },
+    {
+      "id": "existing-post-none",
+      "method": "POST",
+      "path": "auth/jwt-acl/role/existing-none",
+      "capabilities": [],
+      "official_source_prediction": 403,
+      "R2_source_prediction": 403,
+      "precondition": "This unique role already exists, so official ExistenceCheck selects Update; request changes only the shared audience marker.",
+      "postcondition": "204 installs exact shared role projection; rejection leaves original shared projection unchanged.",
+      "actual_official_status": null,
+      "actual_heptabao_status": null,
+      "normalize_status": false
+    },
+    {
+      "id": "existing-post-update",
+      "method": "POST",
+      "path": "auth/jwt-acl/role/existing-update",
+      "capabilities": [
+        "update"
+      ],
+      "official_source_prediction": 204,
+      "R2_source_prediction": 403,
+      "precondition": "This unique role already exists, so official ExistenceCheck selects Update; request changes only the shared audience marker.",
+      "postcondition": "204 installs exact shared role projection; rejection leaves original shared projection unchanged.",
+      "actual_official_status": null,
+      "actual_heptabao_status": null,
+      "normalize_status": false
+    },
+    {
+      "id": "existing-post-update-sudo",
+      "method": "POST",
+      "path": "auth/jwt-acl/role/existing-update-sudo",
+      "capabilities": [
+        "update",
+        "sudo"
+      ],
+      "official_source_prediction": 204,
+      "R2_source_prediction": 204,
+      "precondition": "This unique role already exists, so official ExistenceCheck selects Update; request changes only the shared audience marker.",
+      "postcondition": "204 installs exact shared role projection; rejection leaves original shared projection unchanged.",
+      "actual_official_status": null,
+      "actual_heptabao_status": null,
+      "normalize_status": false
+    },
+    {
+      "id": "fresh-post-create",
+      "method": "POST",
+      "path": "auth/jwt-acl/role/fresh-create",
+      "capabilities": [
+        "create"
+      ],
+      "official_source_prediction": 204,
+      "R2_source_prediction": 403,
+      "precondition": "This unique role is confirmed absent, so official ExistenceCheck selects Create.",
+      "postcondition": "204 creates exact common role projection; rejection preserves absence and all other roles.",
+      "actual_official_status": null,
+      "actual_heptabao_status": null,
+      "normalize_status": false
+    },
+    {
+      "id": "fresh-post-update-sudo",
+      "method": "POST",
+      "path": "auth/jwt-acl/role/fresh-update-sudo",
+      "capabilities": [
+        "update",
+        "sudo"
+      ],
+      "official_source_prediction": 403,
+      "R2_source_prediction": 204,
+      "precondition": "This unique role is confirmed absent, so official ExistenceCheck selects Create.",
+      "postcondition": "204 creates exact common role projection; rejection preserves absence and all other roles.",
+      "actual_official_status": null,
+      "actual_heptabao_status": null,
+      "normalize_status": false
+    },
+    {
+      "id": "fresh-post-create-update-sudo",
+      "method": "POST",
+      "path": "auth/jwt-acl/role/fresh-create-update-sudo",
+      "capabilities": [
+        "create",
+        "update",
+        "sudo"
+      ],
+      "official_source_prediction": 204,
+      "R2_source_prediction": 204,
+      "precondition": "This unique role is confirmed absent, so official ExistenceCheck selects Create.",
+      "postcondition": "204 creates exact common role projection; rejection preserves absence and all other roles.",
+      "actual_official_status": null,
+      "actual_heptabao_status": null,
+      "normalize_status": false
+    },
+    {
+      "id": "config-post-none",
+      "method": "POST",
+      "path": "auth/jwt-acl/config",
+      "capabilities": [],
+      "official_source_prediction": 403,
+      "R2_source_prediction": 403,
+      "precondition": "Config already has the exact shared local public key and algorithms; write uses the same key with a unique valid bound_issuer marker.",
+      "postcondition": "204 installs shared config fields only; rejection preserves exact previous common projection. Admin resets only to known baseline before next independent cell.",
+      "actual_official_status": null,
+      "actual_heptabao_status": null,
+      "normalize_status": false
+    },
+    {
+      "id": "config-post-update",
+      "method": "POST",
+      "path": "auth/jwt-acl/config",
+      "capabilities": [
+        "update"
+      ],
+      "official_source_prediction": 204,
+      "R2_source_prediction": 403,
+      "precondition": "Config already has the exact shared local public key and algorithms; write uses the same key with a unique valid bound_issuer marker.",
+      "postcondition": "204 installs shared config fields only; rejection preserves exact previous common projection. Admin resets only to known baseline before next independent cell.",
+      "actual_official_status": null,
+      "actual_heptabao_status": null,
+      "normalize_status": false
+    },
+    {
+      "id": "config-post-update-sudo",
+      "method": "POST",
+      "path": "auth/jwt-acl/config",
+      "capabilities": [
+        "update",
+        "sudo"
+      ],
+      "official_source_prediction": 204,
+      "R2_source_prediction": 204,
+      "precondition": "Config already has the exact shared local public key and algorithms; write uses the same key with a unique valid bound_issuer marker.",
+      "postcondition": "204 installs shared config fields only; rejection preserves exact previous common projection. Admin resets only to known baseline before next independent cell.",
+      "actual_official_status": null,
+      "actual_heptabao_status": null,
+      "normalize_status": false
+    }
+  ],
+  "raw_status_equality_required_for_parity": true,
+  "known_R2_divergences_preserved": true,
+  "actual_cases_executed": 0
+}

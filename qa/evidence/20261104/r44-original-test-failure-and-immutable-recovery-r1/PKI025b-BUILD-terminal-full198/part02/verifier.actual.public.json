@@ -1,0 +1,1631 @@
+{
+  "schema": "heptabao.025b.original-build-terminal-chain-checks.v1",
+  "passed": 403,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "31_original_calls",
+      "pass": true
+    },
+    {
+      "name": "10_returned_observers",
+      "pass": true
+    },
+    {
+      "name": "no_pending_or_active",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-start:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-start:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-start:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-start:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-start:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-start:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-start:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-start:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-start:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-admit:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-admit:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-admit:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-admit:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-admit:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-admit:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-admit:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-admit:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-admit:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-status0:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-status0:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-status0:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-status0:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-status0:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-status0:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-status0:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-status0:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-status0:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-page0:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-page0:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-page0:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-page0:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-page0:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-page0:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-page0:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-page0:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-page0:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-admit:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-admit:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-admit:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-admit:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-admit:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-admit:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-admit:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-admit:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-admit:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-status0:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-status0:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-status0:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-status0:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-status0:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-status0:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-status0:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-status0:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-status0:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-page0:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-page0:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-page0:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-page0:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-page0:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-page0:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-page0:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-page0:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-page0:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-admit:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-admit:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-admit:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-admit:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-admit:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-admit:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-admit:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-admit:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-admit:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-status0:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-status0:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-status0:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-status0:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-status0:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-status0:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-status0:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-status0:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-status0:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-page0:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-page0:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-page0:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-page0:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-page0:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-page0:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-page0:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-page0:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-page0:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority3-admit:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority3-admit:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority3-admit:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority3-admit:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority3-admit:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority3-admit:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority3-admit:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority3-admit:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority3-admit:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority3-status0:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority3-status0:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority3-status0:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority3-status0:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority3-status0:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority3-status0:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority3-status0:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority3-status0:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority3-status0:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority3-page0:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority3-page0:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority3-page0:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority3-page0:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority3-page0:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority3-page0:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority3-page0:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority3-page0:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority3-page0:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority4-admit:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority4-admit:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority4-admit:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority4-admit:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority4-admit:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority4-admit:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority4-admit:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority4-admit:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority4-admit:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority4-status0:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority4-status0:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority4-status0:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority4-status0:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority4-status0:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority4-status0:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority4-status0:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority4-status0:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority4-status0:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority4-page0:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority4-page0:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority4-page0:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority4-page0:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority4-page0:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority4-page0:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority4-page0:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority4-page0:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority4-page0:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams0-admit:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams0-admit:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams0-admit:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams0-admit:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams0-admit:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams0-admit:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams0-admit:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams0-admit:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams0-admit:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams0-status0:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams0-status0:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams0-status0:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams0-status0:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams0-status0:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams0-status0:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams0-status0:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams0-status0:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams0-status0:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams0-page0:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams0-page0:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams0-page0:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams0-page0:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams0-page0:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams0-page0:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams0-page0:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams0-page0:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams0-page0:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority5-admit:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority5-admit:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority5-admit:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority5-admit:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority5-admit:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority5-admit:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority5-admit:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority5-admit:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority5-admit:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority5-status0:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority5-status0:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority5-status0:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority5-status0:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority5-status0:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority5-status0:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority5-status0:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority5-status0:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority5-status0:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority5-page0:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority5-page0:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority5-page0:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority5-page0:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority5-page0:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority5-page0:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority5-page0:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority5-page0:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority5-page0:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority6-admit:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority6-admit:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority6-admit:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority6-admit:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority6-admit:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority6-admit:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority6-admit:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority6-admit:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority6-admit:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority6-status0:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority6-status0:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority6-status0:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority6-status0:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority6-status0:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority6-status0:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority6-status0:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority6-status0:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority6-status0:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority6-page0:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority6-page0:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority6-page0:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority6-page0:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority6-page0:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority6-page0:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority6-page0:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority6-page0:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority6-page0:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority7-admit:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority7-admit:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority7-admit:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority7-admit:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority7-admit:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority7-admit:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority7-admit:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority7-admit:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority7-admit:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority7-status0:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority7-status0:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority7-status0:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority7-status0:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority7-status0:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority7-status0:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority7-status0:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority7-status0:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority7-status0:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority7-page0:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority7-page0:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority7-page0:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority7-page0:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority7-page0:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority7-page0:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority7-page0:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority7-page0:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority7-page0:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams1-admit:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams1-admit:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams1-admit:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams1-admit:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams1-admit:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams1-admit:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams1-admit:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams1-admit:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams1-admit:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams1-status0:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams1-status0:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams1-status0:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams1-status0:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams1-status0:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams1-status0:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams1-status0:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams1-status0:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams1-status0:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams1-page0:request_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams1-page0:sdk_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams1-page0:native_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams1-page0:sdk_saved_before_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams1-page0:exact_armed_identity",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams1-page0:arm_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams1-page0:arm_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams1-page0:arm_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-streams1-page0:once_accepted",
+      "pass": true
+    },
+    {
+      "name": "exactly_one_process_start",
+      "pass": true
+    },
+    {
+      "name": "unique_start_binding",
+      "pass": true
+    },
+    {
+      "name": "c1e56ee48f719b62322b7eaf1027e0e0eb65ab3c6afa72365fff0b52a4e68db1:one_admission",
+      "pass": true
+    },
+    {
+      "name": "c1e56ee48f719b62322b7eaf1027e0e0eb65ab3c6afa72365fff0b52a4e68db1:original_admission",
+      "pass": true
+    },
+    {
+      "name": "c1e56ee48f719b62322b7eaf1027e0e0eb65ab3c6afa72365fff0b52a4e68db1:one_status",
+      "pass": true
+    },
+    {
+      "name": "c1e56ee48f719b62322b7eaf1027e0e0eb65ab3c6afa72365fff0b52a4e68db1:known_closed",
+      "pass": true
+    },
+    {
+      "name": "c1e56ee48f719b62322b7eaf1027e0e0eb65ab3c6afa72365fff0b52a4e68db1:one_original_page",
+      "pass": true
+    },
+    {
+      "name": "c1e56ee48f719b62322b7eaf1027e0e0eb65ab3c6afa72365fff0b52a4e68db1:immutable_page",
+      "pass": true
+    },
+    {
+      "name": "c1e56ee48f719b62322b7eaf1027e0e0eb65ab3c6afa72365fff0b52a4e68db1:full_payload_SHA_EOF",
+      "pass": true
+    },
+    {
+      "name": "c1e56ee48f719b62322b7eaf1027e0e0eb65ab3c6afa72365fff0b52a4e68db1:original_native_success",
+      "pass": true
+    },
+    {
+      "name": "c1e56ee48f719b62322b7eaf1027e0e0eb65ab3c6afa72365fff0b52a4e68db1:native_byte_exact",
+      "pass": true
+    },
+    {
+      "name": "c1e56ee48f719b62322b7eaf1027e0e0eb65ab3c6afa72365fff0b52a4e68db1:same_job",
+      "pass": true
+    },
+    {
+      "name": "d10a3e53bd59eeab49353289af1869821717c4a3be84886e9888a933d58518b8:one_admission",
+      "pass": true
+    },
+    {
+      "name": "d10a3e53bd59eeab49353289af1869821717c4a3be84886e9888a933d58518b8:original_admission",
+      "pass": true
+    },
+    {
+      "name": "d10a3e53bd59eeab49353289af1869821717c4a3be84886e9888a933d58518b8:one_status",
+      "pass": true
+    },
+    {
+      "name": "d10a3e53bd59eeab49353289af1869821717c4a3be84886e9888a933d58518b8:known_closed",
+      "pass": true
+    },
+    {
+      "name": "d10a3e53bd59eeab49353289af1869821717c4a3be84886e9888a933d58518b8:one_original_page",
+      "pass": true
+    },
+    {
+      "name": "d10a3e53bd59eeab49353289af1869821717c4a3be84886e9888a933d58518b8:immutable_page",
+      "pass": true
+    },
+    {
+      "name": "d10a3e53bd59eeab49353289af1869821717c4a3be84886e9888a933d58518b8:full_payload_SHA_EOF",
+      "pass": true
+    },
+    {
+      "name": "d10a3e53bd59eeab49353289af1869821717c4a3be84886e9888a933d58518b8:original_native_success",
+      "pass": true
+    },
+    {
+      "name": "d10a3e53bd59eeab49353289af1869821717c4a3be84886e9888a933d58518b8:native_byte_exact",
+      "pass": true
+    },
+    {
+      "name": "d10a3e53bd59eeab49353289af1869821717c4a3be84886e9888a933d58518b8:same_job",
+      "pass": true
+    },
+    {
+      "name": "e7583a14c97010c7255ce74bebc762464d3f4a92dd58c50b57a0b2f9a360c119:one_admission",
+      "pass": true
+    },
+    {
+      "name": "e7583a14c97010c7255ce74bebc762464d3f4a92dd58c50b57a0b2f9a360c119:original_admission",
+      "pass": true
+    },
+    {
+      "name": "e7583a14c97010c7255ce74bebc762464d3f4a92dd58c50b57a0b2f9a360c119:one_status",
+      "pass": true
+    },
+    {
+      "name": "e7583a14c97010c7255ce74bebc762464d3f4a92dd58c50b57a0b2f9a360c119:known_closed",
+      "pass": true
+    },
+    {
+      "name": "e7583a14c97010c7255ce74bebc762464d3f4a92dd58c50b57a0b2f9a360c119:one_original_page",
+      "pass": true
+    },
+    {
+      "name": "e7583a14c97010c7255ce74bebc762464d3f4a92dd58c50b57a0b2f9a360c119:immutable_page",
+      "pass": true
+    },
+    {
+      "name": "e7583a14c97010c7255ce74bebc762464d3f4a92dd58c50b57a0b2f9a360c119:full_payload_SHA_EOF",
+      "pass": true
+    },
+    {
+      "name": "e7583a14c97010c7255ce74bebc762464d3f4a92dd58c50b57a0b2f9a360c119:original_native_success",
+      "pass": true
+    },
+    {
+      "name": "e7583a14c97010c7255ce74bebc762464d3f4a92dd58c50b57a0b2f9a360c119:native_byte_exact",
+      "pass": true
+    },
+    {
+      "name": "e7583a14c97010c7255ce74bebc762464d3f4a92dd58c50b57a0b2f9a360c119:same_job",
+      "pass": true
+    },
+    {
+      "name": "0998a96b45944af00e7d5985dcf9c04e63e40da37af83e98104165392b6dd6f5:one_admission",
+      "pass": true
+    },
+    {
+      "name": "0998a96b45944af00e7d5985dcf9c04e63e40da37af83e98104165392b6dd6f5:original_admission",
+      "pass": true
+    },
+    {
+      "name": "0998a96b45944af00e7d5985dcf9c04e63e40da37af83e98104165392b6dd6f5:one_status",
+      "pass": true
+    },
+    {
+      "name": "0998a96b45944af00e7d5985dcf9c04e63e40da37af83e98104165392b6dd6f5:known_closed",
+      "pass": true
+    },
+    {
+      "name": "0998a96b45944af00e7d5985dcf9c04e63e40da37af83e98104165392b6dd6f5:one_original_page",
+      "pass": true
+    },
+    {
+      "name": "0998a96b45944af00e7d5985dcf9c04e63e40da37af83e98104165392b6dd6f5:immutable_page",
+      "pass": true
+    },
+    {
+      "name": "0998a96b45944af00e7d5985dcf9c04e63e40da37af83e98104165392b6dd6f5:full_payload_SHA_EOF",
+      "pass": true
+    },
+    {
+      "name": "0998a96b45944af00e7d5985dcf9c04e63e40da37af83e98104165392b6dd6f5:original_native_success",
+      "pass": true
+    },
+    {
+      "name": "0998a96b45944af00e7d5985dcf9c04e63e40da37af83e98104165392b6dd6f5:native_byte_exact",
+      "pass": true
+    },
+    {
+      "name": "0998a96b45944af00e7d5985dcf9c04e63e40da37af83e98104165392b6dd6f5:same_job",
+      "pass": true
+    },
+    {
+      "name": "fd54b7cfbb3f9f7dfa15c60316b7cd50683dbc0aa9d50c9f6c17025a1cf4677c:one_admission",
+      "pass": true
+    },
+    {
+      "name": "fd54b7cfbb3f9f7dfa15c60316b7cd50683dbc0aa9d50c9f6c17025a1cf4677c:original_admission",
+      "pass": true
+    },
+    {
+      "name": "fd54b7cfbb3f9f7dfa15c60316b7cd50683dbc0aa9d50c9f6c17025a1cf4677c:one_status",
+      "pass": true
+    },
+    {
+      "name": "fd54b7cfbb3f9f7dfa15c60316b7cd50683dbc0aa9d50c9f6c17025a1cf4677c:known_closed",
+      "pass": true
+    },
+    {
+      "name": "fd54b7cfbb3f9f7dfa15c60316b7cd50683dbc0aa9d50c9f6c17025a1cf4677c:one_original_page",
+      "pass": true
+    },
+    {
+      "name": "fd54b7cfbb3f9f7dfa15c60316b7cd50683dbc0aa9d50c9f6c17025a1cf4677c:immutable_page",
+      "pass": true
+    },
+    {
+      "name": "fd54b7cfbb3f9f7dfa15c60316b7cd50683dbc0aa9d50c9f6c17025a1cf4677c:full_payload_SHA_EOF",
+      "pass": true
+    },
+    {
+      "name": "fd54b7cfbb3f9f7dfa15c60316b7cd50683dbc0aa9d50c9f6c17025a1cf4677c:original_native_success",
+      "pass": true
+    },
+    {
+      "name": "fd54b7cfbb3f9f7dfa15c60316b7cd50683dbc0aa9d50c9f6c17025a1cf4677c:native_byte_exact",
+      "pass": true
+    },
+    {
+      "name": "fd54b7cfbb3f9f7dfa15c60316b7cd50683dbc0aa9d50c9f6c17025a1cf4677c:same_job",
+      "pass": true
+    },
+    {
+      "name": "6474824e1dd0a3e7bc88b89df4a4bee2252ba0faa17e7de50d13a9749fa1b214:one_admission",
+      "pass": true
+    },
+    {
+      "name": "6474824e1dd0a3e7bc88b89df4a4bee2252ba0faa17e7de50d13a9749fa1b214:original_admission",
+      "pass": true
+    },
+    {
+      "name": "6474824e1dd0a3e7bc88b89df4a4bee2252ba0faa17e7de50d13a9749fa1b214:one_status",
+      "pass": true
+    },
+    {
+      "name": "6474824e1dd0a3e7bc88b89df4a4bee2252ba0faa17e7de50d13a9749fa1b214:known_closed",
+      "pass": true
+    },
+    {
+      "name": "6474824e1dd0a3e7bc88b89df4a4bee2252ba0faa17e7de50d13a9749fa1b214:one_original_page",
+      "pass": true
+    },
+    {
+      "name": "6474824e1dd0a3e7bc88b89df4a4bee2252ba0faa17e7de50d13a9749fa1b214:immutable_page",
+      "pass": true
+    },
+    {
+      "name": "6474824e1dd0a3e7bc88b89df4a4bee2252ba0faa17e7de50d13a9749fa1b214:full_payload_SHA_EOF",
+      "pass": true
+    },
+    {
+      "name": "6474824e1dd0a3e7bc88b89df4a4bee2252ba0faa17e7de50d13a9749fa1b214:original_native_success",
+      "pass": true
+    },
+    {
+      "name": "6474824e1dd0a3e7bc88b89df4a4bee2252ba0faa17e7de50d13a9749fa1b214:native_byte_exact",
+      "pass": true
+    },
+    {
+      "name": "6474824e1dd0a3e7bc88b89df4a4bee2252ba0faa17e7de50d13a9749fa1b214:same_job",
+      "pass": true
+    },
+    {
+      "name": "90129695c93d70f93f9e56c6fc848902f9ec0d5e6ef36e44b43d999240ef7d36:one_admission",
+      "pass": true
+    },
+    {
+      "name": "90129695c93d70f93f9e56c6fc848902f9ec0d5e6ef36e44b43d999240ef7d36:original_admission",
+      "pass": true
+    },
+    {
+      "name": "90129695c93d70f93f9e56c6fc848902f9ec0d5e6ef36e44b43d999240ef7d36:one_status",
+      "pass": true
+    },
+    {
+      "name": "90129695c93d70f93f9e56c6fc848902f9ec0d5e6ef36e44b43d999240ef7d36:known_closed",
+      "pass": true
+    },
+    {
+      "name": "90129695c93d70f93f9e56c6fc848902f9ec0d5e6ef36e44b43d999240ef7d36:one_original_page",
+      "pass": true
+    },
+    {
+      "name": "90129695c93d70f93f9e56c6fc848902f9ec0d5e6ef36e44b43d999240ef7d36:immutable_page",
+      "pass": true
+    },
+    {
+      "name": "90129695c93d70f93f9e56c6fc848902f9ec0d5e6ef36e44b43d999240ef7d36:full_payload_SHA_EOF",
+      "pass": true
+    },
+    {
+      "name": "90129695c93d70f93f9e56c6fc848902f9ec0d5e6ef36e44b43d999240ef7d36:original_native_success",
+      "pass": true
+    },
+    {
+      "name": "90129695c93d70f93f9e56c6fc848902f9ec0d5e6ef36e44b43d999240ef7d36:native_byte_exact",
+      "pass": true
+    },
+    {
+      "name": "90129695c93d70f93f9e56c6fc848902f9ec0d5e6ef36e44b43d999240ef7d36:same_job",
+      "pass": true
+    },
+    {
+      "name": "0cf8a889a2eed549d9be94309159cef393d640a105f3628cab842630fb428974:one_admission",
+      "pass": true
+    },
+    {
+      "name": "0cf8a889a2eed549d9be94309159cef393d640a105f3628cab842630fb428974:original_admission",
+      "pass": true
+    },
+    {
+      "name": "0cf8a889a2eed549d9be94309159cef393d640a105f3628cab842630fb428974:one_status",
+      "pass": true
+    },
+    {
+      "name": "0cf8a889a2eed549d9be94309159cef393d640a105f3628cab842630fb428974:known_closed",
+      "pass": true
+    },
+    {
+      "name": "0cf8a889a2eed549d9be94309159cef393d640a105f3628cab842630fb428974:one_original_page",
+      "pass": true
+    },
+    {
+      "name": "0cf8a889a2eed549d9be94309159cef393d640a105f3628cab842630fb428974:immutable_page",
+      "pass": true
+    },
+    {
+      "name": "0cf8a889a2eed549d9be94309159cef393d640a105f3628cab842630fb428974:full_payload_SHA_EOF",
+      "pass": true
+    },
+    {
+      "name": "0cf8a889a2eed549d9be94309159cef393d640a105f3628cab842630fb428974:original_native_success",
+      "pass": true
+    },
+    {
+      "name": "0cf8a889a2eed549d9be94309159cef393d640a105f3628cab842630fb428974:native_byte_exact",
+      "pass": true
+    },
+    {
+      "name": "0cf8a889a2eed549d9be94309159cef393d640a105f3628cab842630fb428974:same_job",
+      "pass": true
+    },
+    {
+      "name": "f77aa68f8a68c67e8974cbe693229081f95e89b987597a389c2a2cd735dbb317:one_admission",
+      "pass": true
+    },
+    {
+      "name": "f77aa68f8a68c67e8974cbe693229081f95e89b987597a389c2a2cd735dbb317:original_admission",
+      "pass": true
+    },
+    {
+      "name": "f77aa68f8a68c67e8974cbe693229081f95e89b987597a389c2a2cd735dbb317:one_status",
+      "pass": true
+    },
+    {
+      "name": "f77aa68f8a68c67e8974cbe693229081f95e89b987597a389c2a2cd735dbb317:known_closed",
+      "pass": true
+    },
+    {
+      "name": "f77aa68f8a68c67e8974cbe693229081f95e89b987597a389c2a2cd735dbb317:one_original_page",
+      "pass": true
+    },
+    {
+      "name": "f77aa68f8a68c67e8974cbe693229081f95e89b987597a389c2a2cd735dbb317:immutable_page",
+      "pass": true
+    },
+    {
+      "name": "f77aa68f8a68c67e8974cbe693229081f95e89b987597a389c2a2cd735dbb317:full_payload_SHA_EOF",
+      "pass": true
+    },
+    {
+      "name": "f77aa68f8a68c67e8974cbe693229081f95e89b987597a389c2a2cd735dbb317:original_native_success",
+      "pass": true
+    },
+    {
+      "name": "f77aa68f8a68c67e8974cbe693229081f95e89b987597a389c2a2cd735dbb317:native_byte_exact",
+      "pass": true
+    },
+    {
+      "name": "f77aa68f8a68c67e8974cbe693229081f95e89b987597a389c2a2cd735dbb317:same_job",
+      "pass": true
+    },
+    {
+      "name": "4210ef035b3e82d0fc97df2e3b945f6a610bc651bbd26944641bdec6e3de7a29:one_admission",
+      "pass": true
+    },
+    {
+      "name": "4210ef035b3e82d0fc97df2e3b945f6a610bc651bbd26944641bdec6e3de7a29:original_admission",
+      "pass": true
+    },
+    {
+      "name": "4210ef035b3e82d0fc97df2e3b945f6a610bc651bbd26944641bdec6e3de7a29:one_status",
+      "pass": true
+    },
+    {
+      "name": "4210ef035b3e82d0fc97df2e3b945f6a610bc651bbd26944641bdec6e3de7a29:known_closed",
+      "pass": true
+    },
+    {
+      "name": "4210ef035b3e82d0fc97df2e3b945f6a610bc651bbd26944641bdec6e3de7a29:one_original_page",
+      "pass": true
+    },
+    {
+      "name": "4210ef035b3e82d0fc97df2e3b945f6a610bc651bbd26944641bdec6e3de7a29:immutable_page",
+      "pass": true
+    },
+    {
+      "name": "4210ef035b3e82d0fc97df2e3b945f6a610bc651bbd26944641bdec6e3de7a29:full_payload_SHA_EOF",
+      "pass": true
+    },
+    {
+      "name": "4210ef035b3e82d0fc97df2e3b945f6a610bc651bbd26944641bdec6e3de7a29:original_native_success",
+      "pass": true
+    },
+    {
+      "name": "4210ef035b3e82d0fc97df2e3b945f6a610bc651bbd26944641bdec6e3de7a29:native_byte_exact",
+      "pass": true
+    },
+    {
+      "name": "4210ef035b3e82d0fc97df2e3b945f6a610bc651bbd26944641bdec6e3de7a29:same_job",
+      "pass": true
+    },
+    {
+      "name": "eight_authority_two_streams",
+      "pass": true
+    },
+    {
+      "name": "authority0_running",
+      "pass": true
+    },
+    {
+      "name": "authority1_running",
+      "pass": true
+    },
+    {
+      "name": "authority2_running",
+      "pass": true
+    },
+    {
+      "name": "authority3_running",
+      "pass": true
+    },
+    {
+      "name": "authority4_running",
+      "pass": true
+    },
+    {
+      "name": "authority5_running",
+      "pass": true
+    },
+    {
+      "name": "authority6_running",
+      "pass": true
+    },
+    {
+      "name": "original_failed_terminal_complete",
+      "pass": true
+    },
+    {
+      "name": "6474824e1dd0a3e7bc88b89df4a4bee2252ba0faa17e7de50d13a9749fa1b214:stdout_range_hex_text",
+      "pass": true
+    },
+    {
+      "name": "6474824e1dd0a3e7bc88b89df4a4bee2252ba0faa17e7de50d13a9749fa1b214:stderr_range_hex_text",
+      "pass": true
+    },
+    {
+      "name": "4210ef035b3e82d0fc97df2e3b945f6a610bc651bbd26944641bdec6e3de7a29:stdout_range_hex_text",
+      "pass": true
+    },
+    {
+      "name": "4210ef035b3e82d0fc97df2e3b945f6a610bc651bbd26944641bdec6e3de7a29:stderr_range_hex_text",
+      "pass": true
+    },
+    {
+      "name": "whole_2216_stdout",
+      "pass": true
+    },
+    {
+      "name": "stderr_empty",
+      "pass": true
+    },
+    {
+      "name": "terminal_stream_EOF",
+      "pass": true
+    },
+    {
+      "name": "three_actual_rows",
+      "pass": true
+    },
+    {
+      "name": "planned149_166_only",
+      "pass": true
+    },
+    {
+      "name": "final_report_identity_claim",
+      "pass": true
+    }
+  ],
+  "original_calls": 31,
+  "original_observers": 10,
+  "pages": 10,
+  "stdout_bytes": 2216,
+  "stderr_bytes": 0,
+  "original_build_exit_code": 1,
+  "normal_release_phase_observed": true,
+  "actual_detailed_report_observed": false,
+  "actual_test_results": null,
+  "product_test_pass_count": null,
+  "new_native_calls": 0,
+  "source_execution": false
+}

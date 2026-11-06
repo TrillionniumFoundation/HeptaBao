@@ -1,0 +1,72 @@
+{
+  "schema": "heptabao.oracle-official271-x230.Gitfirst-journal-source.v1",
+  "state": "SOURCE_ONLY_NO_NATIVE_GO",
+  "slot": "official271_x230_acl23_oracle_gitfirst_r1",
+  "journal": {
+    "blob": "131bdd5fd616cc1e9e7d182b51cbf7ad7fe1d9db",
+    "bytes": 19055,
+    "sha256": "a2371e0a1dd8931d6e539a577d92079760714f79e07ea6ff77c6e3ba1976b15b"
+  },
+  "request": {
+    "blob": "90b68f243c6dfc77cedce08b6d1095ffdd1a79a1",
+    "bytes": 164440,
+    "sha256": "f03764a69cd820e1e31409fb5c9d08523f4df98c4c28078eb5bf7ed8b56df9d8"
+  },
+  "host": "x230",
+  "typed": {
+    "sha256": "416c6f5326e8343b637bc06c6a80ab2c9aec439ff85e953b908ac2838cc9b94b",
+    "fingerprint_decimal": "4714265312875787323"
+  },
+  "observer_key_prefix": "heptabao-official271-x230-acl23-oracle-observe-r1-",
+  "source": {
+    "blob": "0c4aac9d0494a0f42014606ecad96887ff391dde",
+    "bytes": 18330,
+    "sha256": "03f5f32674767bd55cd52e50606fd3f430dc8c87bd953778398888df6834f1e3"
+  },
+  "diff": {
+    "blob": "581cfec4802c367cdb7e7c4b290b1c1475d635f3",
+    "bytes": 2253,
+    "sha256": "9830faaa76611188d5fff21132fc4073fc6f426221326aa6a7e68a680a42c6f0"
+  },
+  "hunks": 3,
+  "before": {
+    "blob": "bcb88527395732519b1db1ddc59312b54059d93e",
+    "bytes": 19045,
+    "sha256": "95f5a682db5695a6b95e7268c33c350bc2f7cb11fea660e971c08cc984af10c7"
+  },
+  "literal_sites": 5,
+  "original_all_function_bodies_unchanged_after_literal_normalization": true,
+  "no_Git_or_Native_invoked_by_loading": true,
+  "Runtime_authorized": false,
+  "entry_source_packet": "4558f286a88f1d56e7df91b1aa2259dbf23f17dc",
+  "loading_executes_no_calls": true,
+  "required_sequence": [
+    "Whole exact separate root GO and request.",
+    "Initialize this fresh oracle slot only after its separate GO; existing BUILD slot remains untouched.",
+    "Prepare one original process_start request/intent/armed and complete external whole archive, then independent model boundary.",
+    "Invoke once and whole SDK before interpretation; only original returned job status/read and original returned operation IDs.",
+    "After terminal and full streams, hold at closed boundary. Actual report metadata/body requires separate scope."
+  ],
+  "proposed_explicit_observation_limits": {
+    "process_status": 32,
+    "process_read": 129,
+    "operation_status_per_observer": 8,
+    "immutable_pages_per_observer": 128,
+    "immutable_page_bytes": 8192,
+    "payload_cap_bytes": 1048576,
+    "per_stream_read_bytes": 16384,
+    "total_per_stream_bytes": 2097152,
+    "native_calls_or_future": 1,
+    "root_must_explicitly_approve": true
+  },
+  "unchanged": {
+    "archive": "b093fdbf655511f7db94be2d95555606141bbb42",
+    "pure": "b6890e8b7217c546bec073dcb04988fc37652721",
+    "all_original_journal_function_bodies": true,
+    "original_SDK_whole_before_parse": true,
+    "unknown_stops_no_replay": true
+  },
+  "metadata_or_body_authorized": false,
+  "Cargo_authorized": false,
+  "original_025b_BUILD_modified": false
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.original-chain-verifier-interface.r1",
+  "engine": "Pure V8; no filesystem, process, SDK, network, fixture or product execution",
+  "requiredDefinitionsFrom": "pure-helpers.original.js",
+  "verifier": "verify-original-chain.js",
+  "entryPoint": "verifyCurrentIdentityOriginalEvidence(input)",
+  "input": {
+    "state": "journal-final-state.original.json",
+    "calls": "original-calls.index.public.json maps every callKey to requestRaw/intentRaw/armedRaw/sdkRaw/nativeRaw exact strings",
+    "payloads": "original-observers.index.public.json maps every operation ID to payloadRaw/nativeRaw exact strings",
+    "authorityRaw": "actual--authority.original.json",
+    "stdoutRaw": "actual--stdout.original.txt",
+    "stderrRaw": "actual--stderr.original.txt"
+  },
+  "result": "actual-pure-verifier-result.public.json",
+  "performedOnceInFunctionsExec": true,
+  "checkCount": 159,
+  "notAProductTest": true
+}

@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r44-B-file16-future-closed-and-C-report-BODY-GO",
+  "records": [
+    {
+      "name": "Snapshot-file16-known-closed-page-failure-root-qualification.json",
+      "blob": "557023960b1b922cb2862745a1ccf10265ba0488",
+      "bytes": 3428,
+      "sha256": "cc93adf690ff35d2b8b7cceaf14d7b90d04e7289ff3385c4a6503dbea02e4b03"
+    },
+    {
+      "name": "Snapshot-file16-known-closed-page-failure-root-verifier.js",
+      "blob": "791557726f875a57d2a5c6ce93744d4f21fcf244",
+      "bytes": 5546,
+      "sha256": "548c6e98dc0b0240fd679042c669ac77941c882f56f64f40b2f088e7ccb9bda7"
+    },
+    {
+      "name": "Snapshot-file16-root-checker-first-shape-error-preserved.json",
+      "blob": "3e59963173c6fb94a18c0b41b8eb4e7c48bbc9f2",
+      "bytes": 9609,
+      "sha256": "36793c71e422b9b2bd0a07097d4add0c16f50dbf759240574c22075ff76a3188"
+    },
+    {
+      "name": "PKI025b-original-report-BODY-GO.json",
+      "blob": "1a7918b731f11184d50573fc40e191f2b844768c",
+      "bytes": 3940,
+      "sha256": "7cd5ceeb137a6c420a6ef31d8a3c0c30151c5ab455709f838b9c9e64d5b6b9aa"
+    }
+  ],
+  "expected_data_tree": "058d3c43a14f7394158674a64d40ef9119951265",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

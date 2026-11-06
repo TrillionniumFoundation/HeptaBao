@@ -1,0 +1,219 @@
+--- a/identity-r1.py
++++ b/pid-observation-r2.py
+@@ -584,7 +584,7 @@
+     ]
+ 
+ class FixedCurrentPid:
++    """Finite metadata for self and fixed historical PID 32527, independent of current label presence."""
+-    """Finite metadata only for self and the actual label-mapped PID 32527."""
+     def __init__(self):
+         self.rows = []
+         self.numeric_calls = 0
+@@ -630,21 +630,26 @@
+         self.check_time(until_ns)
+         return value,number
+ 
++    def numeric(self, pid, until_ns, *, observe_only=False):
+-    def numeric(self, pid, until_ns):
+         need(self.numeric_calls < 6,'current_pid_numeric_call_cap')
+         self.numeric_calls += 1
+         info = BsdInfo()
+         count,number = self.call('bsdinfo-arg1',pid,until_ns,self.lib.proc_pidinfo,
+                                  pid,3,1,ctypes.byref(info),ctypes.sizeof(info))
++        complete = count == 136 and number == 0 and info.pid == pid
++        if observe_only and not complete:
++            return {'classification':('esrch_returned' if count == 0 and number == errno.ESRCH
++                                      else 'incomplete_numeric_result'),'metadata':None}
++        need(complete,'current_pid_complete_numeric_sample')
+-        need(count == 136 and number == 0 and info.pid == pid,
+-             'current_pid_complete_numeric_sample')
+         value = {'pid':int(info.pid),'ppid':int(info.ppid),'pgid':int(info.pgid),
+                  'uid':int(info.uid),'gid':int(info.gid),'birthSec':int(info.birth_sec),
+                  'birthUsec':int(info.birth_usec),'status':int(info.status),
+                  'exitStatusNumeric':int(info.xstatus),'flagsNumeric':int(info.flags)}
++        shape = value['pid'] > 1 and value['birthSec'] > 0 and 0 <= value['birthUsec'] < 1000000
++        if observe_only and not shape:
++            return {'classification':'incomplete_numeric_result','metadata':None}
++        need(shape,'current_pid_numeric_shape')
++        return {'classification':'complete','metadata':value} if observe_only else value
+-        need(value['pid'] > 1 and value['birthSec'] > 0 and 0 <= value['birthUsec'] < 1000000,
+-             'current_pid_numeric_shape')
+-        return value
+ 
+     def lifetime(self, value):
+         return tuple(value[key] for key in ('pid','ppid','pgid','uid','gid','birthSec','birthUsec'))
+@@ -663,35 +668,62 @@
+              'current_pid_pair_sequence')
+         self.check_time(until_ns)
+         pair = {'ordinal':ordinal,'pid':EXPECTED_CURRENT_PID,'before':None,'after':None,
++                'beforeClassification':None,'afterClassification':None,
+                 'imageMatches':None,'directChildCount':None,'sameLifetimeWithinPair':False,
++                'pathResult':'not_attempted_without_complete_before',
++                'childCountResult':'not_attempted_without_complete_before',
++                'classification':'incomplete','otherPathOrChildPidsPublished':False,
++                'qualifiedKnownPython':False,'pidExitOrHistoricalReapClaimed':False}
+-                'otherPathOrChildPidsPublished':False,'qualifiedKnownPython':False}
+         self.pairs.append(pair)
++        first_observed = self.numeric(EXPECTED_CURRENT_PID,until_ns,observe_only=True)
++        first = first_observed['metadata']
++        pair['beforeClassification'] = first_observed['classification']
+-        first = self.numeric(EXPECTED_CURRENT_PID,until_ns)
+         pair['before'] = first
++        if first is not None:
++            need(self.path_calls < 2,'current_pid_path_call_cap')
++            self.path_calls += 1
++            path_buffer = ctypes.create_string_buffer(4096)
++            count,number = self.call('pidpath-known-bools',EXPECTED_CURRENT_PID,until_ns,
++                self.lib.proc_pidpath,EXPECTED_CURRENT_PID,path_buffer,len(path_buffer))
++            if 0 < count < len(path_buffer) and number == 0:
++                image = path_buffer.value
++                pair['imageMatches'] = {'kernelPython':image == KERNEL_PYTHON_IMAGE.encode('ascii'),
++                                        'launcherPython':image == PYTHON.encode('ascii'),
++                                        'knownServerBinary':image == KNOWN_SERVER_BINARY.encode('ascii')}
++                pair['pathResult'] = 'complete'
++            else:
++                pair['pathResult'] = ('esrch_returned' if count == 0 and number == errno.ESRCH
++                                      else 'incomplete_result')
++            need(self.child_calls < 2,'current_pid_child_count_cap')
++            self.child_calls += 1
++            children = (ctypes.c_int * 32)()
++            count,number = self.call('direct-child-count-only',EXPECTED_CURRENT_PID,until_ns,
++                self.lib.proc_listchildpids,EXPECTED_CURRENT_PID,children,ctypes.sizeof(children))
++            if 0 <= count < len(children) and number == 0 and all(children[i] > 1 for i in range(count)):
++                pair['directChildCount'] = int(count)
++                pair['childCountResult'] = 'complete'
++            else:
++                pair['childCountResult'] = ('esrch_returned' if count <= 0 and number == errno.ESRCH
++                                            else 'incomplete_result')
++        second_observed = self.numeric(EXPECTED_CURRENT_PID,until_ns,observe_only=True)
++        second = second_observed['metadata']
++        pair['afterClassification'] = second_observed['classification']
+-        need(self.path_calls < 2,'current_pid_path_call_cap')
+-        self.path_calls += 1
+-        path_buffer = ctypes.create_string_buffer(4096)
+-        count,number = self.call('pidpath-known-bools',EXPECTED_CURRENT_PID,until_ns,
+-            self.lib.proc_pidpath,EXPECTED_CURRENT_PID,path_buffer,len(path_buffer))
+-        need(0 < count < len(path_buffer) and number == 0,'current_pid_complete_path')
+-        image = path_buffer.value
+-        pair['imageMatches'] = {'kernelPython':image == KERNEL_PYTHON_IMAGE.encode('ascii'),
+-                                'launcherPython':image == PYTHON.encode('ascii'),
+-                                'knownServerBinary':image == KNOWN_SERVER_BINARY.encode('ascii')}
+-        need(self.child_calls < 2,'current_pid_child_count_cap')
+-        self.child_calls += 1
+-        children = (ctypes.c_int * 32)()
+-        count,number = self.call('direct-child-count-only',EXPECTED_CURRENT_PID,until_ns,
+-            self.lib.proc_listchildpids,EXPECTED_CURRENT_PID,children,ctypes.sizeof(children))
+-        need(0 <= count < len(children) and number == 0,'current_pid_complete_child_count')
+-        need(all(children[i] > 1 for i in range(count)),'current_pid_child_count_shape')
+-        pair['directChildCount'] = int(count)
+-        second = self.numeric(EXPECTED_CURRENT_PID,until_ns)
+         pair['after'] = second
++        pair['sameLifetimeWithinPair'] = bool(first is not None and second is not None
++                                              and self.lifetime(first) == self.lifetime(second))
++        if first is not None and second is not None:
++            pair['classification'] = ('same_current_lifetime' if pair['sameLifetimeWithinPair']
++                                       else 'current_lifetime_changed')
++        elif pair['beforeClassification'] == pair['afterClassification'] == 'esrch_returned':
++            pair['classification'] = 'esrch_returned_twice'
++        elif pair['beforeClassification'] == pair['afterClassification'] == 'incomplete_numeric_result':
++            pair['classification'] = 'incomplete_numeric_results'
++        else:
++            pair['classification'] = 'mixed_numeric_results'
++        pair['qualifiedKnownPython'] = bool(pair['sameLifetimeWithinPair']
++            and pair['pathResult'] == pair['childCountResult'] == 'complete'
++            and first['uid'] == 501 and first['pgid'] == EXPECTED_CURRENT_PID
++            and pair['imageMatches']['kernelPython'])
+-        pair['sameLifetimeWithinPair'] = self.lifetime(first) == self.lifetime(second)
+-        need(pair['sameLifetimeWithinPair'],'current_pid_lifetime_changed')
+-        pair['qualifiedKnownPython'] = bool(first['uid'] == 501 and first['pgid'] == EXPECTED_CURRENT_PID
+-                                           and pair['imageMatches']['kernelPython'])
+         self.check_time(until_ns)
+         return pair
+ 
+@@ -706,16 +738,18 @@
+                 'nativeLibraryLoaderInternalFdsNotEnumerated':True,
+                 'bsdExitStatusIsNotLaunchdExitCode':True}
+ 
++def classify_current_pid_mapping(print_record):
++    if print_record['registrationAbsent']:
++        return {'classification':'exact_missing_registration','sameFixedRunningPid':False}
++    projection = print_record['projection']
++    fixed = projection['scanComplete'] and all(projection['fixedRegistrationFieldsMatch'].values())
++    facts = projection['fieldFacts']
++    mapped = bool(fixed and facts['pid']['unique']
++        and facts['pid']['typedInteger'] == EXPECTED_CURRENT_PID
++        and facts['runs']['unique'] and facts['runs']['typedInteger'] == 1
++        and facts['state']['unique'] and facts['state']['knownState'] == 'running')
++    return {'classification':('exact_fixed_running_pid' if mapped
++                               else 'present_not_fixed_running_pid'),'sameFixedRunningPid':mapped}
+-def require_current_pid_mapping(print_record):
+-    need(not print_record['registrationAbsent']
+-         and print_record['projection']['scanComplete']
+-         and all(print_record['projection']['fixedRegistrationFieldsMatch'].values()),
+-         'current_pid_exact_registration_mapping')
+-    facts = print_record['projection']['fieldFacts']
+-    need(facts['pid']['unique'] and facts['pid']['typedInteger'] == EXPECTED_CURRENT_PID
+-         and facts['runs']['unique'] and facts['runs']['typedInteger'] == 1
+-         and facts['state']['unique'] and facts['state']['knownState'] == 'running',
+-         'current_pid_current_running_mapping')
+ 
+ 
+ def strict_json(raw):
+@@ -867,13 +901,15 @@
+     sampler = None
+     saved = {}
+     stage = 'entry'
++    result = {'schema':'heptabao.current-home-r2-server-pid-observation-readonly.r2',
+-    result = {'schema':'heptabao.current-home-r2-server-identity-readonly.r1',
+         'ok':False,'observationComplete':False,'outcomeUnknown':False,
+         'label':LABEL,'target':TARGET,'pinnedInputs':[],'prints':[],'publicFiles':{},
+         'sharedSeconds':45,'helperAdmissionEndSeconds':35,'outerSeconds':60,
+         'historicalFailedPrintBytesRecovered':False,'historicalFailureRewritten':False,
+         'registrationClosureClaimed':False,'currentManagedScopeStillUnknown':True,
+         'currentIdentityKernelMetadataComplete':False,'currentKnownPythonIdentityMatched':False,
++        'currentPidSamplingCompleted':False,'registrationMappings':[],
++        'currentLabelMappingSameFixedPidBoth':False,'labelAndFixedPidObservationsIndependent':True,
+         'sameCurrentLifetimeAcrossSamples':False,'currentDirectChildrenEmptyBoth':False,
+         'currentIdentityQualifiedForFutureCleanupReview':False,'currentIdentityOutcomeUnknown':True,
+         'pidExitOrReapClaimed':False,'currentIdentityIsOriginalReadyIdentityClaimed':False,
+@@ -909,7 +945,7 @@
+                  all(first['projection']['fixedRegistrationFieldsMatch'].values()),
+                  'diagnostic_same_current_registration_source')
+         stage = 'fixed_current_pid_before'
++        result['registrationMappings'].append(classify_current_pid_mapping(first))
+-        require_current_pid_mapping(first)
+         sampler = FixedCurrentPid()
+         native_until_first = min(PARENT_UNTIL_NS,HELPER_ADMISSION_END_NS,time.monotonic_ns()+4000000000)
+         sampler.verify_self(native_until_first)
+@@ -947,18 +983,26 @@
+         result['currentLabelAbsentBoth'] = first['registrationAbsent'] and second['registrationAbsent']
+         result['strictParserAcceptedBoth'] = first_value is not None and second_value is not None
+         stage = 'fixed_current_pid_after'
++        result['registrationMappings'].append(classify_current_pid_mapping(second))
+-        require_current_pid_mapping(second)
+         native_until_second = min(PARENT_UNTIL_NS,HELPER_ADMISSION_END_NS,time.monotonic_ns()+4000000000)
+         identity_second = sampler.pair(2,native_until_second)
++        result['currentPidSamplingCompleted'] = True
++        result['currentIdentityKernelMetadataComplete'] = all(
++            pair['beforeClassification'] == pair['afterClassification'] == 'complete'
++            and pair['pathResult'] == pair['childCountResult'] == 'complete'
++            for pair in (identity_first,identity_second))
++        result['sameCurrentLifetimeAcrossSamples'] = bool(
++            identity_first['sameLifetimeWithinPair'] and identity_second['sameLifetimeWithinPair']
++            and sampler.lifetime(identity_first['before']) == sampler.lifetime(identity_second['after']))
+-        result['currentIdentityKernelMetadataComplete'] = True
+-        result['sameCurrentLifetimeAcrossSamples'] = (sampler.lifetime(identity_first['before'])
+-            == sampler.lifetime(identity_second['after']))
+         result['currentKnownPythonIdentityMatched'] = bool(result['sameCurrentLifetimeAcrossSamples']
+             and identity_first['qualifiedKnownPython'] and identity_second['qualifiedKnownPython'])
+         result['currentDirectChildrenEmptyBoth'] = (
+             identity_first['directChildCount'] == identity_second['directChildCount'] == 0)
++        result['currentLabelMappingSameFixedPidBoth'] = all(
++            row['sameFixedRunningPid'] for row in result['registrationMappings'])
+         result['currentIdentityQualifiedForFutureCleanupReview'] = bool(
++            result['currentLabelMappingSameFixedPidBoth'] and result['currentIdentityKernelMetadataComplete']
++            and result['currentKnownPythonIdentityMatched'] and result['currentDirectChildrenEmptyBoth'])
+-            result['currentKnownPythonIdentityMatched'] and result['currentDirectChildrenEmptyBoth'])
+         stage = 'final_fixed_file_fences'
+         for path,held in held_inputs.items():
+             check_leaf_metadata(io,path,held)

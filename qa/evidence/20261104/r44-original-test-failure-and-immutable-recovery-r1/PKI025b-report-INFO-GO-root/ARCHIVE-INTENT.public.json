@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r44-C-original-report-INFO-GO",
+  "records": [
+    {
+      "name": "PKI025b-report-INFO-root-qualification.json",
+      "blob": "2291adcd060e5a1940bfaed7e35763ef1a9078e3",
+      "bytes": 2222,
+      "sha256": "d06aa9bddccadf5eec293c80325b34431ca562a41cb0c2791f580f357b266daf"
+    },
+    {
+      "name": "PKI025b-report-INFO-root-verifier.js",
+      "blob": "4af81dddf30512ef27098e3d48f1e291b842c7e3",
+      "bytes": 4678,
+      "sha256": "3c82a6b96dbbbffcb50e960c4f4df9e0364d4b777cb517da82f1e771b5e45699"
+    },
+    {
+      "name": "PKI025b-report-INFO-author39-reproduced.json",
+      "blob": "b9ba4b861cdc00e25c2e81877f2c5f10facd8444",
+      "bytes": 3582,
+      "sha256": "e913264f480103b5d4a0d6bc5d1d769be2f3b76ed2ed01eb100aa156466e5c89"
+    },
+    {
+      "name": "PKI025b-report-INFO-GO.json",
+      "blob": "76b1a05485c31ae0cce7a819859b0b7db689a2ca",
+      "bytes": 3171,
+      "sha256": "36cc7dfb18074c283df2a978cc4419b042847dee968fac34e5c018e1032fe1c4"
+    }
+  ],
+  "expected_data_tree": "efadcb0702ab9d904c4deb5bdfbc20c09bd56bc0",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

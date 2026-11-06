@@ -1,0 +1,2029 @@
+{
+  "schema": "heptabao.formatted23-known-history-validation.v1",
+  "passed": true,
+  "checks": 504,
+  "rows": [
+    {
+      "name": "pure_mode",
+      "passed": true
+    },
+    {
+      "name": "state_object",
+      "passed": true
+    },
+    {
+      "name": "frozen_journal:pin",
+      "passed": true
+    },
+    {
+      "name": "frozen_journal:text_present",
+      "passed": true
+    },
+    {
+      "name": "frozen_journal:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "fixed_table_declaration",
+      "passed": true
+    },
+    {
+      "name": "fixed_table_geometry",
+      "passed": true
+    },
+    {
+      "name": "original_GO:pin",
+      "passed": true
+    },
+    {
+      "name": "original_GO:text_present",
+      "passed": true
+    },
+    {
+      "name": "original_GO:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "original_go_identity",
+      "passed": true
+    },
+    {
+      "name": "original_formatter_job",
+      "passed": true
+    },
+    {
+      "name": "known_failed_row_required",
+      "passed": true
+    },
+    {
+      "name": "failed_request:pin",
+      "passed": true
+    },
+    {
+      "name": "failed_request:text_present",
+      "passed": true
+    },
+    {
+      "name": "failed_request:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "known_failed_request_exact",
+      "passed": true
+    },
+    {
+      "name": "failed_request_same_closed_id",
+      "passed": true
+    },
+    {
+      "name": "known_failed_sdk_exact",
+      "passed": true
+    },
+    {
+      "name": "original_timeout_SDK:pin",
+      "passed": true
+    },
+    {
+      "name": "original_timeout_SDK:text_present",
+      "passed": true
+    },
+    {
+      "name": "original_timeout_SDK:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "original_minus32603_timeout_not_deleted",
+      "passed": true
+    },
+    {
+      "name": "failed_original_arm:whole_record",
+      "passed": true
+    },
+    {
+      "name": "failed_original_arm:exact_paths",
+      "passed": true
+    },
+    {
+      "name": "failed_original_arm:bounded_flat_tree",
+      "passed": true
+    },
+    {
+      "name": "failed_original_arm:unique_paths",
+      "passed": true
+    },
+    {
+      "name": "failed_original_arm:armed.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "failed_original_arm:armed.json:pin",
+      "passed": true
+    },
+    {
+      "name": "failed_original_arm:armed.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "failed_original_arm:armed.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "failed_original_arm:intent.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "failed_original_arm:intent.json:pin",
+      "passed": true
+    },
+    {
+      "name": "failed_original_arm:intent.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "failed_original_arm:intent.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "failed_original_arm:request.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "failed_original_arm:request.json:pin",
+      "passed": true
+    },
+    {
+      "name": "failed_original_arm:request.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "failed_original_arm:request.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "failed_original_arm:merkle",
+      "passed": true
+    },
+    {
+      "name": "failed_original_SDK_archive:whole_record",
+      "passed": true
+    },
+    {
+      "name": "failed_original_SDK_archive:exact_paths",
+      "passed": true
+    },
+    {
+      "name": "failed_original_SDK_archive:bounded_flat_tree",
+      "passed": true
+    },
+    {
+      "name": "failed_original_SDK_archive:unique_paths",
+      "passed": true
+    },
+    {
+      "name": "failed_original_SDK_archive:original.sdk.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "failed_original_SDK_archive:original.sdk.json:pin",
+      "passed": true
+    },
+    {
+      "name": "failed_original_SDK_archive:original.sdk.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "failed_original_SDK_archive:original.sdk.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "failed_original_SDK_archive:merkle",
+      "passed": true
+    },
+    {
+      "name": "failed_original_arm_pins",
+      "passed": true
+    },
+    {
+      "name": "captured_failed_call:pin",
+      "passed": true
+    },
+    {
+      "name": "captured_failed_call:text_present",
+      "passed": true
+    },
+    {
+      "name": "captured_failed_call:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "failed_call_snapshot_unchanged",
+      "passed": true
+    },
+    {
+      "name": "only_one_nonaccepted_historical_call",
+      "passed": true
+    },
+    {
+      "name": "recovery_original_same_request",
+      "passed": true
+    },
+    {
+      "name": "recovery_exact_four_leaf_arm:whole_record",
+      "passed": true
+    },
+    {
+      "name": "recovery_exact_four_leaf_arm:exact_paths",
+      "passed": true
+    },
+    {
+      "name": "recovery_exact_four_leaf_arm:bounded_flat_tree",
+      "passed": true
+    },
+    {
+      "name": "recovery_exact_four_leaf_arm:unique_paths",
+      "passed": true
+    },
+    {
+      "name": "recovery_exact_four_leaf_arm:armed.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "recovery_exact_four_leaf_arm:armed.json:pin",
+      "passed": true
+    },
+    {
+      "name": "recovery_exact_four_leaf_arm:armed.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "recovery_exact_four_leaf_arm:armed.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "recovery_exact_four_leaf_arm:intent.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "recovery_exact_four_leaf_arm:intent.json:pin",
+      "passed": true
+    },
+    {
+      "name": "recovery_exact_four_leaf_arm:intent.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "recovery_exact_four_leaf_arm:intent.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "recovery_exact_four_leaf_arm:original-failed-call.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "recovery_exact_four_leaf_arm:original-failed-call.json:pin",
+      "passed": true
+    },
+    {
+      "name": "recovery_exact_four_leaf_arm:original-failed-call.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "recovery_exact_four_leaf_arm:original-failed-call.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "recovery_exact_four_leaf_arm:request.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "recovery_exact_four_leaf_arm:request.json:pin",
+      "passed": true
+    },
+    {
+      "name": "recovery_exact_four_leaf_arm:request.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "recovery_exact_four_leaf_arm:request.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "recovery_exact_four_leaf_arm:merkle",
+      "passed": true
+    },
+    {
+      "name": "recovery_exact_immutable_arm_tree",
+      "passed": true
+    },
+    {
+      "name": "recovery_exact_immutable_arm_leaves",
+      "passed": true
+    },
+    {
+      "name": "recovery_intent:pin",
+      "passed": true
+    },
+    {
+      "name": "recovery_intent:text_present",
+      "passed": true
+    },
+    {
+      "name": "recovery_intent:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "recovery_armed:pin",
+      "passed": true
+    },
+    {
+      "name": "recovery_armed:text_present",
+      "passed": true
+    },
+    {
+      "name": "recovery_armed:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "recovery_intent_once_no_native_admission",
+      "passed": true
+    },
+    {
+      "name": "recovery_armed_once",
+      "passed": true
+    },
+    {
+      "name": "recovery_GO:pin",
+      "passed": true
+    },
+    {
+      "name": "recovery_GO:text_present",
+      "passed": true
+    },
+    {
+      "name": "recovery_GO:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "recovery_go_exact_scope",
+      "passed": true
+    },
+    {
+      "name": "recovery_state_GO:pin",
+      "passed": true
+    },
+    {
+      "name": "recovery_state_GO:text_present",
+      "passed": true
+    },
+    {
+      "name": "recovery_state_GO:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "recovery_state_does_not_clear_old",
+      "passed": true
+    },
+    {
+      "name": "file7_recovery_GO:pin",
+      "passed": true
+    },
+    {
+      "name": "file7_recovery_GO:text_present",
+      "passed": true
+    },
+    {
+      "name": "file7_recovery_GO:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "file7_before:pin",
+      "passed": true
+    },
+    {
+      "name": "file7_before:text_present",
+      "passed": true
+    },
+    {
+      "name": "file7_before:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "file7_readonly_reconcile:pin",
+      "passed": true
+    },
+    {
+      "name": "file7_readonly_reconcile:text_present",
+      "passed": true
+    },
+    {
+      "name": "file7_readonly_reconcile:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "file7_original_Git_error:pin",
+      "passed": true
+    },
+    {
+      "name": "file7_original_Git_error:text_present",
+      "passed": true
+    },
+    {
+      "name": "file7_original_Git_error:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "file7_original_Git_create:pin",
+      "passed": true
+    },
+    {
+      "name": "file7_original_Git_create:text_present",
+      "passed": true
+    },
+    {
+      "name": "file7_original_Git_create:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "file7_Git_reconcile_SDK:pin",
+      "passed": true
+    },
+    {
+      "name": "file7_Git_reconcile_SDK:text_present",
+      "passed": true
+    },
+    {
+      "name": "file7_Git_reconcile_SDK:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "file7_error_is_Git_not_Native",
+      "passed": true
+    },
+    {
+      "name": "file7_original_arm_create_already_acknowledged",
+      "passed": true
+    },
+    {
+      "name": "file7_exact_GO_and_original_pending",
+      "passed": true
+    },
+    {
+      "name": "file7_before_native_page_not_called",
+      "passed": true
+    },
+    {
+      "name": "file7_final_original_call_preserved",
+      "passed": true
+    },
+    {
+      "name": "file7_reconciled_original_arm:whole_record",
+      "passed": true
+    },
+    {
+      "name": "file7_reconciled_original_arm:exact_paths",
+      "passed": true
+    },
+    {
+      "name": "file7_reconciled_original_arm:bounded_flat_tree",
+      "passed": true
+    },
+    {
+      "name": "file7_reconciled_original_arm:unique_paths",
+      "passed": true
+    },
+    {
+      "name": "file7_reconciled_original_arm:armed.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "file7_reconciled_original_arm:armed.json:pin",
+      "passed": true
+    },
+    {
+      "name": "file7_reconciled_original_arm:armed.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "file7_reconciled_original_arm:armed.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "file7_reconciled_original_arm:intent.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "file7_reconciled_original_arm:intent.json:pin",
+      "passed": true
+    },
+    {
+      "name": "file7_reconciled_original_arm:intent.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "file7_reconciled_original_arm:intent.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "file7_reconciled_original_arm:request.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "file7_reconciled_original_arm:request.json:pin",
+      "passed": true
+    },
+    {
+      "name": "file7_reconciled_original_arm:request.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "file7_reconciled_original_arm:request.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "file7_reconciled_original_arm:merkle",
+      "passed": true
+    },
+    {
+      "name": "file7_same_arm_no_mutation_retry",
+      "passed": true
+    },
+    {
+      "name": "file7_only_readonly_tree_reconcile",
+      "passed": true
+    },
+    {
+      "name": "file7_exact_Git_tree_readback",
+      "passed": true
+    },
+    {
+      "name": "no_unapproved_recovery_keys",
+      "passed": true
+    },
+    {
+      "name": "no_extra_Git_failure_exceptions",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:row_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:called_once_recorded",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:request:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:request:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:request:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:request_whole",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:arm:whole_record",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:arm:exact_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:arm:bounded_flat_tree",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:arm:unique_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:arm:armed.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:arm:armed.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:arm:armed.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:arm:armed.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:arm:intent.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:arm:intent.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:arm:intent.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:arm:intent.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:arm:request.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:arm:request.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:arm:request.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:arm:request.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:arm:merkle",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:request_inside_arm",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:intent:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:intent:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:intent:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:intent_exact_bytes",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:armed:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:armed:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:armed:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:armed_exact_bytes",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:SDK_archive:whole_record",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:SDK_archive:exact_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:SDK_archive:bounded_flat_tree",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:SDK_archive:unique_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:SDK_archive:original.sdk.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:SDK_archive:original.sdk.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:SDK_archive:original.sdk.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:SDK_archive:original.sdk.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:SDK_archive:merkle",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:exact_original_SDK_leaf",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:SDK:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:SDK:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:SDK:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:success_phase",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:success_original_SDK",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:native:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:native:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:native:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:native_text_whole",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit:no_generic_recovery_property",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:row_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:called_once_recorded",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:request:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:request:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:request:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:request_whole",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:arm:whole_record",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:arm:exact_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:arm:bounded_flat_tree",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:arm:unique_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:arm:armed.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:arm:armed.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:arm:armed.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:arm:armed.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:arm:intent.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:arm:intent.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:arm:intent.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:arm:intent.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:arm:request.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:arm:request.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:arm:request.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:arm:request.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:arm:merkle",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:request_inside_arm",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:intent:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:intent:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:intent:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:intent_exact_bytes",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:armed:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:armed:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:armed:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:armed_exact_bytes",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:SDK_archive:whole_record",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:SDK_archive:exact_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:SDK_archive:bounded_flat_tree",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:SDK_archive:unique_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:SDK_archive:original.sdk.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:SDK_archive:original.sdk.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:SDK_archive:original.sdk.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:SDK_archive:original.sdk.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:SDK_archive:merkle",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:exact_original_SDK_leaf",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:SDK:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:SDK:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:SDK:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:success_phase",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:success_original_SDK",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:native:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:native:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:native:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:native_text_whole",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0:no_generic_recovery_property",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:row_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:called_once_recorded",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:request:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:request:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:request:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:request_whole",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:arm:whole_record",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:arm:exact_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:arm:bounded_flat_tree",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:arm:unique_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:arm:armed.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:arm:armed.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:arm:armed.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:arm:armed.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:arm:intent.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:arm:intent.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:arm:intent.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:arm:intent.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:arm:request.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:arm:request.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:arm:request.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:arm:request.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:arm:merkle",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:request_inside_arm",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:intent:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:intent:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:intent:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:intent_exact_bytes",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:armed:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:armed:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:armed:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:armed_exact_bytes",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:SDK_archive:whole_record",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:SDK_archive:exact_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:SDK_archive:bounded_flat_tree",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:SDK_archive:unique_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:SDK_archive:original.sdk.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:SDK_archive:original.sdk.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:SDK_archive:original.sdk.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:SDK_archive:original.sdk.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:SDK_archive:merkle",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:exact_original_SDK_leaf",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:SDK:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:SDK:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:SDK:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:success_phase",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:success_original_SDK",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:native:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:native:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:native:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:native_text_whole",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-p0:no_generic_recovery_property",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:row_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:called_once_recorded",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:request:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:request:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:request:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:request_whole",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:arm:whole_record",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:arm:exact_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:arm:bounded_flat_tree",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:arm:unique_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:arm:armed.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:arm:armed.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:arm:armed.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:arm:armed.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:arm:intent.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:arm:intent.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:arm:intent.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:arm:intent.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:arm:request.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:arm:request.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:arm:request.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:arm:request.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:arm:merkle",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:request_inside_arm",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:intent:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:intent:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:intent:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:intent_exact_bytes",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:armed:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:armed:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:armed:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:armed_exact_bytes",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:SDK_archive:whole_record",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:SDK_archive:exact_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:SDK_archive:bounded_flat_tree",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:SDK_archive:unique_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:SDK_archive:original.sdk.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:SDK_archive:original.sdk.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:SDK_archive:original.sdk.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:SDK_archive:original.sdk.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:SDK_archive:merkle",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:exact_original_SDK_leaf",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:SDK:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:SDK:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:SDK:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:success_phase",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:success_original_SDK",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:native:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:native:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:native:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:native_text_whole",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-admit:no_generic_recovery_property",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:row_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:called_once_recorded",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:request:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:request:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:request:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:request_whole",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:arm:whole_record",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:arm:exact_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:arm:bounded_flat_tree",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:arm:unique_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:arm:armed.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:arm:armed.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:arm:armed.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:arm:armed.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:arm:intent.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:arm:intent.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:arm:intent.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:arm:intent.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:arm:request.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:arm:request.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:arm:request.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:arm:request.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:arm:merkle",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:request_inside_arm",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:intent:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:intent:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:intent:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:intent_exact_bytes",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:armed:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:armed:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:armed:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:armed_exact_bytes",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:SDK_archive:whole_record",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:SDK_archive:exact_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:SDK_archive:bounded_flat_tree",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:SDK_archive:unique_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:SDK_archive:original.sdk.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:SDK_archive:original.sdk.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:SDK_archive:original.sdk.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:SDK_archive:original.sdk.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:SDK_archive:merkle",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:exact_original_SDK_leaf",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:SDK:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:SDK:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:SDK:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:success_phase",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:success_original_SDK",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:native:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:native:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:native:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:native_text_whole",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-s0:no_generic_recovery_property",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:row_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:called_once_recorded",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:request:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:request:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:request:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:request_whole",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:arm:whole_record",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:arm:exact_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:arm:bounded_flat_tree",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:arm:unique_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:arm:armed.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:arm:armed.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:arm:armed.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:arm:armed.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:arm:intent.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:arm:intent.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:arm:intent.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:arm:intent.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:arm:request.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:arm:request.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:arm:request.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:arm:request.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:arm:merkle",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:request_inside_arm",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:intent:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:intent:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:intent:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:intent_exact_bytes",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:armed:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:armed:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:armed:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:armed_exact_bytes",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:SDK_archive:whole_record",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:SDK_archive:exact_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:SDK_archive:bounded_flat_tree",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:SDK_archive:unique_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:SDK_archive:original.sdk.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:SDK_archive:original.sdk.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:SDK_archive:original.sdk.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:SDK_archive:original.sdk.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:SDK_archive:merkle",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:exact_original_SDK_leaf",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:SDK:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:SDK:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:SDK:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0:only_known_failure",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:row_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:called_once_recorded",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:request:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:request:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:request:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:request_whole",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:arm:whole_record",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:arm:exact_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:arm:bounded_flat_tree",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:arm:unique_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:arm:armed.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:arm:armed.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:arm:armed.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:arm:armed.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:arm:intent.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:arm:intent.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:arm:intent.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:arm:intent.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:arm:original-failed-call.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:arm:original-failed-call.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:arm:original-failed-call.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:arm:original-failed-call.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:arm:request.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:arm:request.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:arm:request.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:arm:request.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:arm:merkle",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:request_inside_arm",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:SDK_archive:whole_record",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:SDK_archive:exact_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:SDK_archive:bounded_flat_tree",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:SDK_archive:unique_paths",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:SDK_archive:original.sdk.json:flat_path",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:SDK_archive:original.sdk.json:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:SDK_archive:original.sdk.json:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:SDK_archive:original.sdk.json:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:SDK_archive:merkle",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:exact_original_SDK_leaf",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:SDK:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:SDK:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:SDK:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:success_phase",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:success_original_SDK",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:native:pin",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:native:text_present",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:native:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:native_text_whole",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f10-info-p0-recovery1:no_generic_recovery_property",
+      "passed": true
+    },
+    {
+      "name": "info10_original_known_closed_status:pin",
+      "passed": true
+    },
+    {
+      "name": "info10_original_known_closed_status:text_present",
+      "passed": true
+    },
+    {
+      "name": "info10_original_known_closed_status:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "info10_original_future_closed_before_failure",
+      "passed": true
+    },
+    {
+      "name": "info10_recovery_same_immutable_page",
+      "passed": true
+    },
+    {
+      "name": "info10_recovery_actual_payload_bytes",
+      "passed": true
+    },
+    {
+      "name": "info10_recovery_payload:pin",
+      "passed": true
+    },
+    {
+      "name": "info10_recovery_payload:text_present",
+      "passed": true
+    },
+    {
+      "name": "info10_recovery_payload:whole_identity",
+      "passed": true
+    },
+    {
+      "name": "info10_recovery_closed_original_INFO_once",
+      "passed": true
+    }
+  ],
+  "scope": "Only preserved known failures, exact recovery arms and original call-envelope identities. No final23 qualification.",
+  "final23Qualified": false,
+  "nativeFailureCalls": 1,
+  "immutablePageRecoveryCalls": 1,
+  "gitArmFailureRecords": 1,
+  "newRuntimeCalls": 0
+}

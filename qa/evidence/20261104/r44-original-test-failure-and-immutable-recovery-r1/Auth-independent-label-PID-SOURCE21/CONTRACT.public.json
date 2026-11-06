@@ -1,0 +1,251 @@
+{
+  "schema": "heptabao.fixed-current-authbus-label-and-pid-independent-readonly-source.r2",
+  "status": "SOURCE_ONLY_NO_ROOT_GO_SLOT_NOT_INITIALIZED_NOT_DISPATCHED",
+  "source": {
+    "blob": "873fd511a30f70bfeba0a661f13952e122e40d94",
+    "bytes": 97960,
+    "sha256": "a414b14bc90f9b1839331a4d1414b195e3ac675811944eb3a274537c531fe1c4"
+  },
+  "request": {
+    "blob": "a5848db0ad380f240dc6f780f612034c3b76475a",
+    "bytes": 100604,
+    "sha256": "9925e3cc5e0bb691d5e0e144db9747c1e57989bf87da6151120e30dbca637ee7"
+  },
+  "journal": {
+    "blob": "bacb6c8837b11a3c3e879c7cef8da5a7bce69124",
+    "bytes": 19066,
+    "sha256": "69ec43c2da1007248ecd1874e5c33a35e5c8ced05b08f839fefdde72b26bff82"
+  },
+  "slot": "owner_authbus_home_r2_current_pid_observation_gitfirst_r2",
+  "requestKey": "heptabao-mac-current-home-pid-observation-a414b14b-20261106-r2",
+  "base": {
+    "source21Tree": "af2a0454dff4937b095779079f4ecbfebc963c73",
+    "source": {
+      "blob": "a938ba9fd034a6ba4b66300fd88e61383ab1be32",
+      "bytes": 94611,
+      "sha256": "6a1ee2c4bc31c4d55d2fde24eaa17c644037dd18c5a9853bba2a35035609e566"
+    },
+    "request": {
+      "blob": "cfe54ac6b630277b0cb100ffd9fe7d7e30a316d2",
+      "bytes": 97208,
+      "sha256": "7b89f6591bc7e0f43f6ebd144b5325e70b8bb9242438034d4c492d14be133baf"
+    },
+    "journal": {
+      "blob": "a4397a47257178ccf98374b694edd4d04903896a",
+      "bytes": 19059,
+      "sha256": "42ad555c661fc46f4c577c15fc40aebc036b56a754db3349be5aaea72f6f3bc5"
+    },
+    "sourceRootReview": "ad10d6bfe0d3e3281ae89c8e7d6da2db3eb0de5e"
+  },
+  "actualTrigger": {
+    "tree": "206c42ff194bb7d43bea3636d3d504968a4b68a7",
+    "job": "1a1b148990b-fc05-7784",
+    "stdout": {
+      "blob": "07d3343ba42540de230b3601e605ee6c30af7535",
+      "bytes": 6920,
+      "sha256": "31faf614bcb64eeb5e6339bd73ce7025a92df424ef7a846c728ebee548fd3040"
+    },
+    "exitCode": 1,
+    "errorCode": "current_pid_exact_registration_mapping",
+    "firstExactPrint": {
+      "exitCode": 113,
+      "stdoutBytes": 0,
+      "stderrBytes": 115,
+      "registrationAbsent": true
+    },
+    "newExplicitLibprocNotReached": {
+      "basis": "exact-source control flow, not a separately measured syscall counter",
+      "sourceLines": [
+        911,
+        912,
+        913,
+        914,
+        915,
+        916
+      ]
+    },
+    "currentPidMetadata": null,
+    "historicalStateRewritten": false
+  },
+  "target": {
+    "host": "mac",
+    "jobLabel": "org.heptabao.qa.mac-authbus-4e808-home-r2.server",
+    "pid": 32527,
+    "pidSource": "fresh current registration diagnostic c984004abb7a5259246308a4c95af7de675f058c; both prints",
+    "historicalBirth": null,
+    "signalAuthorized": false,
+    "bootoutAuthorized": false,
+    "currentRegistrationRequiredToReadFixedPid": false,
+    "currentRegistrationRequiredForFutureIdentityQualification": true
+  },
+  "budgets": {
+    "sharedSeconds": 45,
+    "helperAdmissionEndSeconds": 35,
+    "outerSeconds": 60,
+    "applicationFdAttemptCap": 64,
+    "applicationMetadataCap": 4096,
+    "applicationReadBytes": 262144,
+    "applicationReadCalls": 256,
+    "applicationWriteBytes": 0,
+    "applicationWriteCalls": 0,
+    "launchctlPrintCalls": 2,
+    "eachPrintSeconds": 10,
+    "addedExplicitLibproc": {
+      "bsdinfoArg1": 6,
+      "pidpath": 2,
+      "directChildCount": 2,
+      "totalCalls": 10,
+      "knownPidTargets": [
+        "self",
+        32527
+      ],
+      "blocks": [
+        {
+          "kind": "self-two-plus-first-target-pair",
+          "maxSeconds": 4
+        },
+        {
+          "kind": "second-target-pair",
+          "maxSeconds": 4
+        }
+      ],
+      "clippedToOriginal35And45": true,
+      "individualSynchronousCCallPreemptionClaimed": false,
+      "excludesOriginalCommandsInternalOperations": true
+    },
+    "nativeObserver": {
+      "processStatusMax": 8,
+      "processReadMax": 8,
+      "eachObserverStatusMax": 8,
+      "eachObserverPageMax": 128,
+      "pageBytes": 8192,
+      "serializedPayloadCap": 1048576,
+      "processReadBytes": 16384,
+      "eachStreamObservedCap": 131072
+    }
+  },
+  "unchanged": [
+    "FixedIO and all its returned-FD/unknown/once-close fences",
+    "original Commands/Signals embedded whole modules",
+    "two exact launchctl print commands",
+    "original strict parse_print (diagnostic still exposes original refusal)",
+    "original fixed HOME/T5 directory objects and seven fixed application leaves",
+    "first-LF bounded allowlist, no tail export or stderr body",
+    "45/35/60 deadlines and application I/O caps"
+  ],
+  "changed": [
+    "Registration mapping is a closed classification instead of an early gate that skips independent fixed-PID and public-file observations when the exact label is missing.",
+    "Self numeric samples remain strict. Fixed PID numeric results admit no identity on ESRCH, short/other return, errno, pid mismatch or malformed numeric shape; they record a closed classification and null metadata.",
+    "Each target pair always attempts its second numeric sample within the original clipped deadline. Image comparison and child count occur only after a complete first numeric sample, with their original maximum counts.",
+    "Both original prints, public fixed-path observation and final fences remain in order. Complete identity qualification still requires both current label mappings, same current lifetime, known kernel Python and zero direct children.",
+    "The original final resource closure and outcomeUnknown derivation remain byte-exact; no absence/ESRCH branch clears identity UNKNOWN or claims historic reap."
+  ],
+  "outputAdditions": {
+    "registrationMappingClassification": [
+      "exact_missing_registration",
+      "exact_fixed_running_pid",
+      "present_not_fixed_running_pid"
+    ],
+    "targetNumericClassification": [
+      "complete",
+      "esrch_returned",
+      "incomplete_numeric_result"
+    ],
+    "targetPairClassification": [
+      "incomplete",
+      "same_current_lifetime",
+      "current_lifetime_changed",
+      "esrch_returned_twice",
+      "incomplete_numeric_results",
+      "mixed_numeric_results"
+    ],
+    "pathOrChildCountResult": [
+      "not_attempted_without_complete_before",
+      "complete",
+      "esrch_returned",
+      "incomplete_result"
+    ],
+    "numericMetadata": [
+      "pid",
+      "ppid",
+      "pgid",
+      "uid",
+      "gid",
+      "birthSec",
+      "birthUsec",
+      "status",
+      "exitStatusNumeric",
+      "flagsNumeric"
+    ],
+    "imageComparisonBooleans": [
+      "kernelPython boolean",
+      "launcherPython boolean",
+      "knownServerBinary boolean"
+    ],
+    "returnedOtherPathOrChildPids": false,
+    "newBooleans": [
+      "currentPidSamplingCompleted",
+      "currentLabelMappingSameFixedPidBoth",
+      "labelAndFixedPidObservationsIndependent"
+    ],
+    "initialOrPartialValuesMayBeNull": true
+  },
+  "privateBoundary": "The same seven fixed application paths include the private stdout container: only the original bounded first prefix/first-LF allowlist is read/projected. Tail may enter that first bounded block but is not exported; stderr remains metadata-only. No private plan/capsule/credential body.",
+  "eligibility": {
+    "beforeAndAfterSameLifetime": true,
+    "currentLabelMappingSameFixedPid": true,
+    "uid501": true,
+    "pgidMatchesPid": true,
+    "kernelImageExactBoolean": true,
+    "directChildrenZeroBoth": true,
+    "actualResultRequired": true,
+    "noCurrentCleanupAuthorization": true,
+    "allOriginalFinalFencesAndOwnClosureStillRequired": true,
+    "oldBirthKnown": false
+  },
+  "classificationBoundary": "observationComplete may describe completed fixed observations while outcomeUnknown remains true and exit is nonzero. ESRCH returned twice or exact label missing twice does not establish historical exit/reap/managed closure. A current stable identity is not the original ready identity.",
+  "history": {
+    "currentManagedScopeStillUnknown": true,
+    "originalFailureRewritten": false,
+    "originalRegistrationClosureClaimed": false,
+    "originalPrivateCapsuleRead": false
+  },
+  "sourceApiBasis": {
+    "existingBsdInfoDonor": {
+      "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+      "bytes": 13423,
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+    },
+    "appleReferencesInDonor": [
+      "xnu/bsd/sys/proc_info.h blob718a69fcf5340f547893ed8dc85908f253c1ce81",
+      "xnu/libsyscall/wrappers/libproc/libproc.h blob602e4fe897d1fc5a7ceacc372c78f184ea242bfe",
+      "xnu/libsyscall/wrappers/libproc/libproc.c blobc3e7369f886fbb7bbc8d77f8fca9ecc943bb5f4e"
+    ],
+    "priorFiniteArg1ActualRoot": "56129f46fd94d072e301c4e558481efd817aed55",
+    "sourceNotCurrentKernelQualification": true
+  },
+  "exactDifferences": {
+    "sourceForwardHunks": 7,
+    "sourceReverseHunks": 7,
+    "journalForwardHunks": 2,
+    "journalReverseHunks": 2,
+    "requestOnlySourceAndIdempotencyKey": true
+  },
+  "validation": {
+    "newPureV8MechanicalChecks": 62,
+    "passed": true,
+    "oldAuthor62Rerun": false,
+    "pythonCompiled": false,
+    "pythonExecuted": false,
+    "sdkExecuted": false,
+    "nativeExecuted": false
+  },
+  "cleanupCore": {
+    "tree": "4104c1c5df4b19c06496faabca8483ff6eff7d94",
+    "bindingReady": false,
+    "actualIdentity": null,
+    "dispatchable": false,
+    "notPartOfThisCandidate": true
+  },
+  "rootGo": null
+}

@@ -1,0 +1,122 @@
+{
+  "schema": "heptabao.025b-original-build-report-file-info-source.v1",
+  "status": "SOURCE_ONLY_SEPARATE_ROOT_GO_REQUIRED",
+  "original_job": {
+    "host": "rog",
+    "id": "1a1b10cad9b-fc05-7560"
+  },
+  "slot": "jwt_pki_025b05a3_build149_gitfirst_r2",
+  "action": "authorize_build_result_info",
+  "scope": "build_result_file_info_only",
+  "exact_request": {
+    "blob": "464277d021b666996c5788b038497e1157dc82c9",
+    "bytes": 294,
+    "sha256": "771ec011b8c64a3df402dabc99d02337fc873f850d0d46a24d5a846efba42047"
+  },
+  "journal": {
+    "blob": "792b1555449a82012596fb765da4e841585b0e20",
+    "bytes": 26557,
+    "sha256": "16907a9c20a8610199ea72bbf8da476b61ffd942dfb0fb97dad33ea2305b2741"
+  },
+  "before": {
+    "blob": "21496c37dd8101299d875ffb2a9d10fa675d291e",
+    "bytes": 24791,
+    "sha256": "5235a51a3eb828174a545fa929a5ca3f72bb5254e86175805f7a34e3d0bf1960"
+  },
+  "original_current_journal": {
+    "blob": "bcb88527395732519b1db1ddc59312b54059d93e",
+    "bytes": 19045,
+    "sha256": "95f5a682db5695a6b95e7268c33c350bc2f7cb11fea660e971c08cc984af10c7"
+  },
+  "diff": {
+    "blob": "d028e8d6f6b17f3a43ba27b09bbed16c2be545f3",
+    "bytes": 8484,
+    "sha256": "7ab2e91d787180ae137787ed5c298326b652af5e5ab09e118447ef21d8ffeaae"
+  },
+  "changes": {
+    "strict_hunks": 3,
+    "mechanical_replacements": 9,
+    "definitions_changed": [
+      "gfAuthorizeStageResultInfoOnly",
+      "gfValidateRequest: key-prefix literal only"
+    ],
+    "reasons": [
+      "Bind existing 025b original job, request, slot, fixed report path and actual final stdout report hash.",
+      "Replace the old one-read/two-row guard with the two actual continuous reads 0..1809 and 1809..2216, and three raw rows.",
+      "Require all original 31 calls and 10 returned observers closed before one separately authorized file_info.",
+      "All SDK archival, original-ID status, 8192-byte immutable pages, once marker, lossless full9 and metadata checks otherwise unchanged."
+    ]
+  },
+  "prerequisites": [
+    {
+      "id": "f77aa68f8a68c67e8974cbe693229081f95e89b987597a389c2a2cd735dbb317",
+      "tool": "process_status",
+      "nativeText": {
+        "blob": "70a4cab58f85094d28f93e9e339820705d158bad",
+        "bytes": 728,
+        "sha256": "96041410ccbf6753e23c8747e61ccf27b8743e6c4e0722ed7dad3f70bce64f41"
+      }
+    },
+    {
+      "id": "6474824e1dd0a3e7bc88b89df4a4bee2252ba0faa17e7de50d13a9749fa1b214",
+      "tool": "process_read",
+      "nativeText": {
+        "blob": "ac67c05434aad175e3b6babde7307d74ba77f4e3",
+        "bytes": 5878,
+        "sha256": "e4b62b107dc08c184ccddf09444bfee7b289d61449279d9a5cc66fcde4c4aa5f"
+      }
+    },
+    {
+      "id": "4210ef035b3e82d0fc97df2e3b945f6a610bc651bbd26944641bdec6e3de7a29",
+      "tool": "process_read",
+      "nativeText": {
+        "blob": "673ca1c6aac2a91ec9e9db885c3b45841764ec81",
+        "bytes": 1572,
+        "sha256": "33737364a534dd2526841f15b1fe31819c1b1427e615cf3c7a5ce1f880443485"
+      }
+    }
+  ],
+  "terminal_minimal_whole_tree": "1ae0793d6f1ad35da4fc0f1a08721afa538b220e",
+  "root_terminal_qualification": {
+    "blob": "7e13974f8a7cf9bf4cf35333432b7a72194ff689",
+    "tree": "e28f3edd09ea51759c6ae0b8f7fae60a864be646",
+    "checks": 31
+  },
+  "expected": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1/result.public.json",
+    "whole_sha256": "47748eadb948f08973d7de202272823cd5f031ed99ec62286868236a8cbaa318",
+    "size": null,
+    "version": null,
+    "metadata_platform": "linux",
+    "permission_mode": 384,
+    "full_mode": 33152,
+    "uid": 1000,
+    "gid": 1000,
+    "link_count": 1,
+    "maximum_size": 1048576
+  },
+  "limits": {
+    "file_info_starts": 1,
+    "operation_status_per_observer": 8,
+    "immutable_page_bytes": 8192,
+    "immutable_pages_per_observer": 128,
+    "payload_bytes": 1048576,
+    "single_call_or_future": true
+  },
+  "new_process_authorized": false,
+  "binary_read_authorized": false,
+  "target_reuse_authorized": false,
+  "product_test_qualification": false,
+  "unknowns": {
+    "failure_cause": null,
+    "runtime_tests_started": null,
+    "actual_test_results": null,
+    "detailed_children_or_target": null
+  },
+  "guard_validation": {
+    "passed": 39,
+    "actual_runtime_calls": 0,
+    "actual_host_metadata_calls": 0
+  },
+  "history": "Original 33b INFO source, current 025b original build, all earlier UNKNOWN/error histories and failed attempt directories remain immutable. No new build or source change."
+}

@@ -1,0 +1,82 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r44-C-terminal-minimal-root-lane",
+  "records": [
+    {
+      "name": "PKI025b-terminal-minimal-root-qualification.json",
+      "blob": "7e13974f8a7cf9bf4cf35333432b7a72194ff689",
+      "bytes": 3152,
+      "sha256": "ad06cf34dc211c5d3b0e77fdede0b5dedd8ff8087c9f700177c7c7dd020eb127"
+    },
+    {
+      "name": "PKI025b-terminal-minimal-root-verifier.js",
+      "blob": "e27264a7b7c95a6b68d11adaf85a635936127b9a",
+      "bytes": 5762,
+      "sha256": "f3fb3482bbc63d995aeacf6beaceccc40570f53fea20cab8ad11ac061dd49b84"
+    },
+    {
+      "name": "closed-status-00.original.sdk.json",
+      "blob": "b8b0c40894821541649ed90c76a8a8bab0d3a29c",
+      "bytes": 980,
+      "sha256": "d850f762fa072da0200e13de5ad7a1179e3c9dfe05ca4f06e099bc56b04ff9a6"
+    },
+    {
+      "name": "closed-status-01.original.sdk.json",
+      "blob": "1213d3491cb32bfd6e613837696bc7a3f3fce30a",
+      "bytes": 980,
+      "sha256": "33a5da9708fa9044a1e3e4e0b11b63090c9416e8b75ba9b5ba60373206c382fd"
+    },
+    {
+      "name": "closed-status-02.original.sdk.json",
+      "blob": "0cb7ebddb58272388f3abae2c20bceecaae6f4dc",
+      "bytes": 980,
+      "sha256": "6a96d7914bda17682844a671df0d6fa7b70f6ec12a0b510d87920a2c7b3892b8"
+    },
+    {
+      "name": "closed-status-03.original.sdk.json",
+      "blob": "9ffa1b6cbde2c5c385e1ad75790130db4b4a9e7d",
+      "bytes": 980,
+      "sha256": "341e7c1a30dd4930745fb3acf4c87b50e9a9f3aeea006555932d9c4cd4075d78"
+    },
+    {
+      "name": "closed-status-04.original.sdk.json",
+      "blob": "a158795e0d9a82e33365456347287deb76afc0af",
+      "bytes": 980,
+      "sha256": "76668b6d97c2389ced7273528920c07d2cb417d6b2a1a6041abcf1d59501360d"
+    },
+    {
+      "name": "closed-status-05.original.sdk.json",
+      "blob": "783c23c3eae7998e2ffb4b6e62629c103229602f",
+      "bytes": 978,
+      "sha256": "b1ca94314569ad14cb4c41a8db03dff0a9447231ffa2c3d5daf6ccbb79e363cf"
+    },
+    {
+      "name": "closed-status-06.original.sdk.json",
+      "blob": "d7633437c82f41171851148dc7dd30b8376989e0",
+      "bytes": 980,
+      "sha256": "be2b899800a0ef6c69fb2bd412a46dd0430a5a374a283d3eed8f2a7e45ed7909"
+    },
+    {
+      "name": "closed-status-07.original.sdk.json",
+      "blob": "d86cd47e4944ee85a2fb26b361809b67bceba778",
+      "bytes": 980,
+      "sha256": "460af068288f5af710888623dfefee7606383a8fb61f48d0353afc829f47a3ef"
+    },
+    {
+      "name": "closed-status-08.original.sdk.json",
+      "blob": "5b577bd6654243b829417ea707ecfe9a12d8f7a5",
+      "bytes": 980,
+      "sha256": "64e5c2d0692698cb4b6dc857602d1d56d11c55113fb0ba6c962f097b83abc0ea"
+    },
+    {
+      "name": "closed-status-09.original.sdk.json",
+      "blob": "212459d7a7248fca520636ff030ea29237cb634c",
+      "bytes": 978,
+      "sha256": "2293124a4d9d6e1333c4a2217273fff87d5708217453d66b2d7f2a4493b85ea7"
+    }
+  ],
+  "expected_data_tree": "b5289f984ea9affcca31f9d4cc8b4e40d222a0f5",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

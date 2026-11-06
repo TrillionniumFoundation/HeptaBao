@@ -1,0 +1,97 @@
+{
+  "schema": "heptabao.root-current-identity-original-qualification.r1",
+  "passed": true,
+  "checks": 21,
+  "rows": [
+    {
+      "name": "full_original159_reproduced",
+      "passed": true
+    },
+    {
+      "name": "GO_original_whole",
+      "passed": true
+    },
+    {
+      "name": "exact_original_job",
+      "passed": true
+    },
+    {
+      "name": "lossless_fingerprint",
+      "passed": true
+    },
+    {
+      "name": "exact_typed_digest",
+      "passed": true
+    },
+    {
+      "name": "terminal_failed_not_success",
+      "passed": true
+    },
+    {
+      "name": "whole_durable_streams",
+      "passed": true
+    },
+    {
+      "name": "whole_exact_stdout",
+      "passed": true
+    },
+    {
+      "name": "stderr_empty",
+      "passed": true
+    },
+    {
+      "name": "journal_no_active_call_future",
+      "passed": true
+    },
+    {
+      "name": "one_print_only",
+      "passed": true
+    },
+    {
+      "name": "original_exact_print_exit113",
+      "passed": true
+    },
+    {
+      "name": "mapping_refusal_stage",
+      "passed": true
+    },
+    {
+      "name": "no_PID_sample_or_public_file_result",
+      "passed": true
+    },
+    {
+      "name": "identity_and_managed_unknown_preserved",
+      "passed": true
+    },
+    {
+      "name": "helper_closed_reaped",
+      "passed": true
+    },
+    {
+      "name": "17_application_FDs_closed",
+      "passed": true
+    },
+    {
+      "name": "no_write_or_signal",
+      "passed": true
+    },
+    {
+      "name": "no_private_or_business_effect",
+      "passed": true
+    },
+    {
+      "name": "bounded_deadlines",
+      "passed": true
+    },
+    {
+      "name": "release_not_managed_closure",
+      "passed": true
+    }
+  ],
+  "originalFullTree": "206c42ff194bb7d43bea3636d3d504968a4b68a7",
+  "original159Reproduced": true,
+  "nativeObservationLaneReleased": true,
+  "currentPIDQualified": false,
+  "historicalManagedScopeClosed": false,
+  "fullReplacement": false
+}

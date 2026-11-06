@@ -1,0 +1,8 @@
+{
+  "error": "Error: flat_public_text_entry",
+  "stage": "flat entry name validation before any Git mutation",
+  "cause": "The existing flat archive helper rejects slash-separated names.",
+  "correction": "Use flat names; preserve original stdout, stderr, SDK, authority and release bytes.",
+  "nativeCallsAdded": 0,
+  "gitMutationAdmittedBeforeCorrection": false
+}

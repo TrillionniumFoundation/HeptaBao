@@ -1,0 +1,85 @@
+--- a/journal.js
++++ b/journal.js
+@@ -5,14 +5,14 @@
+  * Every original SDK is store'd, serialized, Git-created once and whole-read
+  * before isError or native text is inspected.
+  */
+-const GF_SLOT = "jwt_pki_33b814c7_build149_compiler_logs_info_gitfirst_r1";
+-const GF_PRIOR_SLOT = "jwt_pki_33b814c7_build149_body_tail_retrieval_r1";
+-const GF_PRIOR_PIN = {"blob":"89dc4a1a78028d99ae0ac3d626564532d2f40098","bytes":80686,"sha256":"b227ac22523c59737f83f38da259e1139f6e8a62b483749be8a9cf6c0f3e4387"};
+-const GF_ORIGINAL_SLOT = "jwt_pki_33b814c7_build149_gitfirst_r1";
+-const GF_ORIGINAL_STATE = {"blob":"04567ecf3260b0cb341332f34ba0ba969cf6e3cc","bytes":120307,"sha256":"323ab85f815ecb7670f364f8f804b5f5117fd4b182ebe4727a885ab06f248ece"};
+-const GF_ORIGINAL_RESULT = {"blob":"a2d510b9305c2f2f18caffa1a65454d5c8c0aceb","bytes":36998,"sha256":"aa8a8623cc955adb64ab386387d15ad2204febc0fd526392d20cd0ab6c9638a6","tree":"80d572bec4a316e06f47956f4a04bb8e83ee79bd"};
+-const GF_LOG_TARGETS = [{"role":"compiler-stderr","path":"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/normal-release-build.stderr","sha256":"448047e67b8d3c033a8fa211de8dfd7d2fe6265a4f01f0cc23f044da90964964"},{"role":"compiler-json-stdout","path":"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/normal-release-build.stdout","sha256":"153e265453949927ff1268931cf26050e6ceff8b5ca53668ce83ce1e90c5332b"}];
+-const GF_REQUESTS = [{"blob":"e5b3ea23a8f43797a4e456f0751b9ab0431f3cd8","bytes":302,"sha256":"fd34b35b1bddbcfd1dc278fcd3639463ab55593433167cef7bed24e14d7dd1ba"},{"blob":"008beb6807a40811762b005eb20cd396755775eb","bytes":302,"sha256":"b5ca40d49a832a6b5b022a03ea2b75b53bdaaf2b75a6e799684a4cc3d56ccf86"}];
++const GF_SLOT = "jwt_pki_025b05a3_build149_failed_test2_logs_info_gitfirst_r1";
++const GF_PRIOR_SLOT = "jwt_pki_025b05a3_build149_gitfirst_r2";
++const GF_PRIOR_PIN = {"blob":"0de1e779d07917e4aab2e75cc571bdd14742ac60","bytes":135910,"sha256":"0185be3350a5b23748e39e8db8867b6eb95932e42a690de8650256d21fa989e7"};
++const GF_ORIGINAL_SLOT = "jwt_pki_025b05a3_build149_gitfirst_r2";
++const GF_ORIGINAL_STATE = {"blob":"0de1e779d07917e4aab2e75cc571bdd14742ac60","bytes":135910,"sha256":"0185be3350a5b23748e39e8db8867b6eb95932e42a690de8650256d21fa989e7"};
++const GF_ORIGINAL_RESULT = {"blob":"5bf4476672f08c251826efc1dc9833af30bdd5b4","bytes":49775,"sha256":"47748eadb948f08973d7de202272823cd5f031ed99ec62286868236a8cbaa318","tree":"e68190618b8a9a1655f9f63277e8b16c8acaa167"};
++const GF_LOG_TARGETS = [{"role":"test-stderr","path":"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1/native-jwt-pki-file17-2.stderr","sha256":"9829d15840c80e4a69ccf1afeab7025cd42dc94c421c3421271c973c801167cf"},{"role":"test-stdout","path":"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1/native-jwt-pki-file17-2.stdout","sha256":"baaffbccd60cd36f53810a4a49dc1ca9ae55883a1abb21253d29970d8dbf79ad"}];
++const GF_REQUESTS = [{"blob":"9544655b6318cbce522c99f5e3249cb2778abbbe","bytes":311,"sha256":"89191105baec90a3834d074985a5f6b8a028e47e34f5ad7c8fa8b300d6dcfa13"},{"blob":"f54c0e83145aa26e5482738b6c4ddcdc9b956dd3","bytes":311,"sha256":"88db304a9452f4d97155de290025c34facb9749ed23dcb50dc7cf352cf214458"}];
+ const GF_LOG_METADATA_MAX_BYTES = 1048576;
+ 
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+@@ -39,8 +39,8 @@
+  gfNeed(load(GF_SLOT)===undefined,"existing_or_armed_context_must_be_recovered_not_reinitialized");
+  gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin),"exact_whole_new_root_go");
+  const g=JSON.parse(goRaw);
+- gfNeed(g.authorization==="GO" && g.scope==="build_compile_logs_file_info_only"
+-   && g.original_job==="1a1b029a998-fc05-6eb2"
++ gfNeed(g.authorization==="GO" && g.scope==="build_failed_test_logs_file_info_only"
++   && g.original_job==="1a1b10cad9b-fc05-7560"
+    && g.maximum_file_info_operations===2 && g.maximum_process_start_calls===0
+    && g.maximum_binary_read_operations===0
+    && Array.isArray(g.exact_requests) && g.exact_requests.length===2
+@@ -50,24 +50,34 @@
+  gfNeed(gfMetaEquals(priorStateRaw,GF_PRIOR_PIN),"exact_completed_immutable_retrieval_state");
+  const prior=JSON.parse(priorStateRaw),live=load(GF_PRIOR_SLOT);
+  gfNeed(live && JSON.stringify(live,null,2)+"\n"===priorStateRaw
+-   && prior.complete===true && prior.pending===null && prior.nativeCallInFlight===false
+-   && prior.nextIndex===2 && prior.paused===false
+-   && prior.originalFutureCompletedInactive===true
+-   && prior.originalOperation==="7ef06d88b0a289f89193813a2f1e20c865818515a4842c816bd1a47eff2fe0a0"
+-   && Object.values(prior.calls).length===2
+-   && Object.values(prior.calls).every(c=>c.phase==="accepted"&&c.sdkArchive.whole===true),
+-   "previous_whole_body_retrieval_closed_no_new_effect");
++   && prior.pending===null && prior.activeObserver===null
++   && prior.nativeCallInFlight===false && prior.paused===false
++   && prior.startCalled===true && prior.job==="1a1b10cad9b-fc05-7560"
++   && Object.keys(prior.calls).length===41 && prior.completedObservers.length===12
++   && prior.completedObservers.every(o=>o.completedInactive===true)
++   && Object.values(prior.calls).every(c=>c.phase==="accepted"&&c.sdkArchive.whole===true)
++   && prior.stageResultBody?.originalOperation==="8a6ff767b74a82cc46818dd50f52f2599317f267cdf384ca5523e7f7f80798c7"
++   && prior.stageResultBody.body.blob===GF_ORIGINAL_RESULT.blob,
++   "previous_original_build_and_whole_body_closed_no_new_effect");
+  gfNeed(gfMetaEquals(JSON.stringify(load(GF_ORIGINAL_SLOT),null,2)+"\n",GF_ORIGINAL_STATE),
+    "old_paused_error_history_unchanged");
+- const body=load(GF_PRIOR_SLOT+":body_original");
++ const body=load(GF_PRIOR_SLOT+":stage_result_body_original");
+  gfNeed(gfMetaEquals(body,GF_ORIGINAL_RESULT),"original_failed_build_report_whole");
+  const result=parseLosslessIntegers(body);
+- gfNeed(result.status==="failed" && result.failure==="normal production binary compilation failed"
+-   && result.source_commit==="33b814c7034ec853151b1ff13e7529c83f65ea70"
+-   && result.normal_release_build.exit_code===101
+-   && result.normal_release_build.stderr_sha256===GF_LOG_TARGETS[0].sha256
+-   && result.normal_release_build.stdout_sha256===GF_LOG_TARGETS[1].sha256,
+-   "logs_bind_actual_failed_compile_SHA");
++ const family=result.group_results?.[0],test=family?.tests?.[1];
++ gfNeed(result.status==="failed" && result.failure_type==="AssertionError" && result.failure===""
++   && result.source_commit==="025b05a340de841b8161c1120344e86eae30eb97"
++   && result.source_tree==="1d8160c9385f8053b9a683cc1834da0f912e2d37"
++   && result.normal_release_build.exit_code===0 && result.runtime_tests_started===true
++   && result.group_results.length===1 && family.label==="native-jwt-pki-file17"
++   && family.tests.length===2 && family.tests[0].tests.exit_code===0
++   && test.name==="service::native_auth::jwt_tests::native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta"
++   && test.tests.label==="native-jwt-pki-file17-2"
++   && test.tests.exit_code===101 && test.tests.timed_out===false
++   && test.tests.direct_child_reaped===true && test.tests.remaining.length===0
++   && test.tests.stderr_sha256===GF_LOG_TARGETS[0].sha256
++   && test.tests.stdout_sha256===GF_LOG_TARGETS[1].sha256,
++   "logs_bind_actual_failed_second_test_SHA");
+  store(GF_SLOT,{rootGoWhole:true,goRaw,goPin,digest:null,fingerprint:null,job:null,
+   startCalled:false,pending:null,activeObserver:null,nativeCallInFlight:false,
+   paused:false,calls:{},completedObservers:[],nextStdout:0,nextStderr:0,

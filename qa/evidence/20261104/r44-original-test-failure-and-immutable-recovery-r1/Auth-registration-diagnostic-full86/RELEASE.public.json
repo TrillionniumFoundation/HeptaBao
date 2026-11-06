@@ -1,0 +1,89 @@
+{
+  "schema": "heptabao.authbus-home-r2-original-diagnostic-observation-release.v1",
+  "job": {
+    "host": "mac",
+    "job_id": "1a1b12864e2-fc05-765c"
+  },
+  "rootGo": {
+    "blob": "5b49bee04a4203169b7858f2e1be1b93f96d6b37",
+    "bytes": 12606,
+    "sha256": "4bb984fea4bfb036e6d937e2a0044464811d42652cf7b9d40c3a46fa7064cfd3"
+  },
+  "source": {
+    "blob": "ef3b05165ba0b0fbce2c5f2c493502ee61080c7d",
+    "bytes": 83726,
+    "sha256": "c00164e1191c0e3744fae01859eb6a5eab04e51c29945812542591d2f1343a92"
+  },
+  "request": {
+    "blob": "b60cd5e90c8ed8ee706f7b28d385cdeb2555ff69",
+    "bytes": 86104,
+    "sha256": "a2d8048df444a6a0185959f184fd318112d048f2af3ff61408f61e027b86fcf4"
+  },
+  "status": "succeeded",
+  "exitCode": 0,
+  "originalCalls": 12,
+  "originalObservers": 2,
+  "originalImmutablePages": 7,
+  "observers": [
+    {
+      "id": "7c8c3417327bf2c4256f73b25ccadb3dfaf550e3d5da6b2505eab73f4ecdda09",
+      "tool": "process_status",
+      "payload": {
+        "blob": "95a63de02958872111e1e9b25aada9623e86f706",
+        "bytes": 912,
+        "sha256": "1d48813240f47de1690cb78157dc9f3160310ac37b1649e9d17715e3a350debe"
+      },
+      "payloadTree": "2acee1ba02208cc26b8b6f43471d1ea30de9df3e",
+      "nativeText": {
+        "blob": "5dc726a070b83aea0d47d1f9541ce756e30bfa80",
+        "bytes": 733,
+        "sha256": "dd55af74180c9d81be4837ebfe9f40f90ff711143ae97907ac14924eed7a161d"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "cdbd7665f0bcab929bce636007819d7905738ef258774a74b7b06fd9feea7c8d",
+      "tool": "process_read",
+      "payload": {
+        "blob": "b434198e6f4d1c0a15f5f689d43e198cff882298",
+        "bytes": 46430,
+        "sha256": "5bad4b03f9fb5e3ba5c5cd730e38add7bda3610ed0876bf74a0b0a3091e08c89"
+      },
+      "payloadTree": "36e5a17c48143ffe624f9b8b8ac4ac38a11fd57f",
+      "nativeText": {
+        "blob": "d4d2026600596c5c9c0292cd78b47caea30119e4",
+        "bytes": 43561,
+        "sha256": "ff69b1b51a8d98bd0c41dfbf4d386f40b941a2423446ea1a16703e63e96e387e"
+      },
+      "pages": 6,
+      "completedInactive": true
+    }
+  ],
+  "stdout": {
+    "blob": "c984004abb7a5259246308a4c95af7de675f058c",
+    "bytes": 13957,
+    "sha256": "34aae719f4c78aba02341c93d596b7af65a0d98a0831b4b649a09975ebafed15"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "authority": {
+    "blob": "5dc726a070b83aea0d47d1f9541ce756e30bfa80",
+    "bytes": 733,
+    "sha256": "dd55af74180c9d81be4837ebfe9f40f90ff711143ae97907ac14924eed7a161d"
+  },
+  "pending": null,
+  "nativeCallInFlight": false,
+  "activeObserver": null,
+  "knownNativeFutures": 0,
+  "observationLaneReleased": true,
+  "originalManagedRegistrationClosed": false,
+  "originalManagedLineageClosed": false,
+  "currentManagedScopeStillUnknown": true,
+  "noNativeReplay": true,
+  "noBusinessOrCleanupDispatched": true,
+  "allUnknownHistoryRetained": true
+}

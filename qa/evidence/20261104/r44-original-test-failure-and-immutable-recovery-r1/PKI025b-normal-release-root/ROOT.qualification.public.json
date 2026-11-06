@@ -1,0 +1,194 @@
+{
+  "schema": "heptabao.root.original025b-normal-release-stage-qualification.r44",
+  "pass": true,
+  "checks": 26,
+  "results": [
+    {
+      "name": "whole_stage21",
+      "pass": true
+    },
+    {
+      "name": "release_stage_unique_calls",
+      "pass": true
+    },
+    {
+      "name": "release_stage_call_jwt-pki-025b-build149-r2-streams0-admit",
+      "pass": true
+    },
+    {
+      "name": "release_stage_armed_tree_jwt-pki-025b-build149-r2-streams0-admit",
+      "pass": true
+    },
+    {
+      "name": "release_stage_call_jwt-pki-025b-build149-r2-streams0-status0",
+      "pass": true
+    },
+    {
+      "name": "release_stage_armed_tree_jwt-pki-025b-build149-r2-streams0-status0",
+      "pass": true
+    },
+    {
+      "name": "release_stage_call_jwt-pki-025b-build149-r2-streams0-page0",
+      "pass": true
+    },
+    {
+      "name": "release_stage_armed_tree_jwt-pki-025b-build149-r2-streams0-page0",
+      "pass": true
+    },
+    {
+      "name": "release_stage_observer_unique",
+      "pass": true
+    },
+    {
+      "name": "release_stage_observer_6474824e1dd0a3e7bc88b89df4a4bee2252ba0faa17e7de50d13a9749fa1b214",
+      "pass": true
+    },
+    {
+      "name": "release_stage_page_6474824e1dd0a3e7bc88b89df4a4bee2252ba0faa17e7de50d13a9749fa1b214_0",
+      "pass": true
+    },
+    {
+      "name": "release_stage_payload_6474824e1dd0a3e7bc88b89df4a4bee2252ba0faa17e7de50d13a9749fa1b214",
+      "pass": true
+    },
+    {
+      "name": "release_stage_all_observer_calls_accounted",
+      "pass": true
+    },
+    {
+      "name": "only_original_job_read0_0_16384",
+      "pass": true
+    },
+    {
+      "name": "SDK0:original_one_leaf_Merkle",
+      "pass": true
+    },
+    {
+      "name": "SDK1:original_one_leaf_Merkle",
+      "pass": true
+    },
+    {
+      "name": "SDK2:original_one_leaf_Merkle",
+      "pass": true
+    },
+    {
+      "name": "original_payload_one_leaf_Merkle",
+      "pass": true
+    },
+    {
+      "name": "native_original_job",
+      "pass": true
+    },
+    {
+      "name": "stdout:original_hex_text_and_pin_exact",
+      "pass": true
+    },
+    {
+      "name": "stderr:original_hex_text_and_pin_exact",
+      "pass": true
+    },
+    {
+      "name": "exact_two_reported_phase_lines",
+      "pass": true
+    },
+    {
+      "name": "exact025b_source_and_declared149_166",
+      "pass": true
+    },
+    {
+      "name": "reported_normal_server_seed_exact",
+      "pass": true
+    },
+    {
+      "name": "strict_current_stream_cursor",
+      "pass": true
+    },
+    {
+      "name": "phase_not_final_qualification",
+      "pass": true
+    }
+  ],
+  "packet": "63d6c4e34904cc10367d2f261497cb26001b171e",
+  "job": "rog/1a1b10cad9b-fc05-7560",
+  "stdout": {
+    "blob": "f8cdff6f7fd13dfc36dee01e1a7fad40b3111432",
+    "bytes": 1809,
+    "sha256": "f69f92efcde342121d877ad2cbbc24216584ce96597f3172c34d1462da257ab8"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "original_observer": {
+    "id": "6474824e1dd0a3e7bc88b89df4a4bee2252ba0faa17e7de50d13a9749fa1b214",
+    "tool": "process_read",
+    "payload": {
+      "blob": "858486e7ece7291001d16e01158a332fdc5b3500",
+      "bytes": 6272,
+      "sha256": "b494073fc6b8238eab2bb417ee26785c429ecd63c3f789b6af9925baffba342b"
+    },
+    "payloadTree": "cb15e1e1563e9b21cbc0e047403e7ae18bb6dca1",
+    "nativeText": {
+      "blob": "ac67c05434aad175e3b6babde7307d74ba77f4e3",
+      "bytes": 5878,
+      "sha256": "e4b62b107dc08c184ccddf09444bfee7b289d61449279d9a5cc66fcde4c4aa5f"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "reported_phase": "normal-production-release-built",
+  "reported_artifacts": {
+    "heptabao-server": {
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1/artifacts/heptabao-server",
+      "sha256": "5511c7d9fb6d7232ac4a07966ab0efa09a8ab691c342a3925283a5ac95c0ffd1",
+      "bytes": 110629104,
+      "compiler_executable": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3/release/heptabao-server",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": true,
+        "overflow_checks": true,
+        "test": false
+      },
+      "fresh": false
+    },
+    "heptabao-seed": {
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1/artifacts/heptabao-seed",
+      "sha256": "8e5b8c8477397f11f888aba3b3e427c5c5c80f273623f685a5a68dea34ab8fdf",
+      "bytes": 102517296,
+      "compiler_executable": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3/release/heptabao-seed",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": true,
+        "overflow_checks": true,
+        "test": false
+      },
+      "fresh": false
+    }
+  },
+  "reported_build_receipt_SHA256": "7a11b5267dfdfb03b81b82d1295bfcfdfbeab166b9000a410db28bf0df6a8c2f",
+  "scope": "Original emitted release phase and exact delivered chunk only; not terminal authority, artifact metadata, final build report, or test qualification",
+  "next_stream_offsets": {
+    "stdout": 1809,
+    "stderr": 0
+  },
+  "actual_tests_qualified": null,
+  "final_build_qualified": false,
+  "Cargo_window_released": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

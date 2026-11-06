@@ -1,0 +1,69 @@
+{
+  "passed": true,
+  "checkCount": 15,
+  "checks": [
+    {
+      "name": "original_exact_blob",
+      "pass": true
+    },
+    {
+      "name": "forward_single_hunk",
+      "pass": true
+    },
+    {
+      "name": "reverse_single_hunk",
+      "pass": true
+    },
+    {
+      "name": "forward_exact",
+      "pass": true
+    },
+    {
+      "name": "reverse_exact",
+      "pass": true
+    },
+    {
+      "name": "only_three_lines",
+      "pass": true
+    },
+    {
+      "name": "scoped_to_last_exit",
+      "pass": true
+    },
+    {
+      "name": "never_not_zero",
+      "pass": true
+    },
+    {
+      "name": "pid_runs_strict_loop_unchanged",
+      "pass": true
+    },
+    {
+      "name": "regex_unchanged",
+      "pass": true
+    },
+    {
+      "name": "existing78_unchanged",
+      "pass": true
+    },
+    {
+      "name": "consumer_zero_unchanged",
+      "pass": true
+    },
+    {
+      "name": "finalmanager_requirements_unchanged",
+      "pass": true
+    },
+    {
+      "name": "all_nonparser_source_unchanged",
+      "pass": true
+    },
+    {
+      "name": "component_selected_AST_only",
+      "pass": true
+    }
+  ],
+  "pureV8": true,
+  "pythonComponentExecuted": false,
+  "newNativeCalls": 0
+}

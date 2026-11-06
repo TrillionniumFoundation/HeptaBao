@@ -1,0 +1,161 @@
+{
+  "schema": "heptabao.X230-official271-acl23.exact-entry-source.r1",
+  "state": "SOURCE_ONLY_NO_RUNTIME_GO",
+  "purpose": "One official-only ACL23 raw-status observation using unchanged original Linux Owner and official launcher; no candidate and no HTTP12 product case.",
+  "source": {
+    "blob": "a6ad473c6a9ffebc14473d37843276f6abc147c9",
+    "bytes": 17963,
+    "sha256": "023ee56f9fe0a51a5c85099b7a94c267191592bbd688ec091fe0abf94c7ab1f0"
+  },
+  "request": {
+    "blob": "4e00ec4bbeac039bae47aef7142c668dc7e3db8a",
+    "bytes": 164061,
+    "sha256": "47670c8ba5025777b21dc5832c082d69c7fbf06b39c158d1ac4eaf70ba138b8b"
+  },
+  "payload": {
+    "blob": "2ee56776f68a733f94dff17671fe32c1a5b8b6b0",
+    "bytes": 134374,
+    "sha256": "49e17724c2087cbc6f15fd5a37f8fc0e0d37c649ebc0273627540aabe75141d0"
+  },
+  "typed": {
+    "sha256": "350f5e4c799bdce815002750b990ac220e8950e647038fe49d111013b16f217e",
+    "fingerprint_decimal": "3823378291211623656",
+    "canonical_bytes": 163997
+  },
+  "host": "x230",
+  "fixedRoot": "/home/qian/heptabao-official271-acl23-oracle-20261106-r1",
+  "loopbackHttpsPort": 23623,
+  "clusterPort": 23624,
+  "run_id": "official271-acl23-r1",
+  "officialVersion": "2.7.1",
+  "freshArtifactGate": "Actual fixed canonical path/full9 snapshot before/after plus unchanged verify_inputs whole archive+binary+unique regular bao member, original Owner executable proof and selected live TLS/cluster/version.",
+  "historicalReference": {
+    "tree": "1c742a87b5615d30022db344873892d44de2cdbd",
+    "rootReference": "7d6c498def2f453190569a135965d9867a741081",
+    "freshPresence": null
+  },
+  "immutableInputs": {
+    "source/qa/openbao-acceptance/owned_process.py": {
+      "blob": "64793384ee1fd7db5081ac4ebb7e9dd354757889",
+      "bytes": 28442,
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0"
+    },
+    "source/qa/openbao-acceptance/official_openbao_launcher.py": {
+      "blob": "d7ac02bceeb6ec0751c3ff0d2ec6126e36ac8405",
+      "bytes": 20008,
+      "sha256": "5c11b432e1180fb40394fab382da774cf4171bf51431aab7e5823068cfba01d6"
+    },
+    "source/qa/openbao-acceptance/bao_http.py": {
+      "blob": "a3afa32fb83a1f214e4d05dc928c39f29090d647",
+      "bytes": 2349,
+      "sha256": "6c617b587640ceacfcae0f91ee928ee068193ae012ecb305541e3007315c328f"
+    },
+    "source/qa/openbao-acceptance/raw_status_observer.py": {
+      "blob": "c928d3750a3cdb05d3702f269b31026136e7a496",
+      "bytes": 13664,
+      "sha256": "1952270dba831b0e21e2291df8178e9557e7ff76fc83a2e8dc70cbf46eb7d4e9"
+    },
+    "source/qa/openbao-acceptance/acl23_executor.py": {
+      "blob": "cb70eb45d483299702b73331caa360fa96d9d13a",
+      "bytes": 15599,
+      "sha256": "e96451d450224abfa7eeda34622b26b1d21493867b4344aa254709348515bfc4"
+    },
+    "source/qa/openbao-acceptance/current_record_component.py": {
+      "blob": "158c65b4d0b1ecae87cb640ffaaf564de551980f",
+      "bytes": 5355,
+      "sha256": "660c8f55649861a3765b7b320d4c1abf2e7eba4ebac2f2290bee29eabeaff3f9"
+    },
+    "source/clients/python/heptabao/__init__.py": {
+      "blob": "856df0cad90c9fe3bcac80b3662e4d7259592ca5",
+      "bytes": 194,
+      "sha256": "6b48603fea77708df5e51b71cda53f488241b3c3f3cccb60158434cbdec219b2"
+    },
+    "source/clients/python/heptabao/transport.py": {
+      "blob": "76ba79c5c8da10881337f7e9eee1e0fbd54f490b",
+      "bytes": 21936,
+      "sha256": "fbf797ed819364f39fca60fb1d61032d29a43feb3c275de8f6b37c2f9e88429f"
+    },
+    "source/clients/python/heptabao/consistency.py": {
+      "blob": "19ab60eab7e1f8f909dcead6e0a0f487f1324b61",
+      "bytes": 4836,
+      "sha256": "657d81f48895ec4bb4e27199fcd3b7125d8fc2cb9899f777945ef2e831519abe"
+    },
+    "MATRIX23.original.public.json": {
+      "blob": "7364a32a2341a56b0730ad3486c72bdbd6de53c4",
+      "bytes": 14285,
+      "sha256": "59e3c9519e59e7ae26cde512a8171d39e2175e8bb24f12039222218570ebe6f8"
+    },
+    "PUBLIC-KEY.pem": {
+      "blob": "0699a557f6f8b51d1b9a8187b1ed89084f76aa25",
+      "bytes": 451,
+      "sha256": "db4837a2caba18729628ca629eeb44f452a55d5a9aa1f7bad7c2357ed0217938"
+    }
+  },
+  "layout": "Eleven exact public inputs create-only within new0700 root; nine Python modules maintain qa/openbao-acceptance and clients/python layout. No import from mutable historical checkout; old source root is not used.",
+  "sourcePreservation": "All helper bytes unchanged; only the one fixed entry is new. Post-owner original source canonical paths/full9 must equal initial held-write/readback results.",
+  "budgets": {
+    "originalOwnerSeconds": 360,
+    "deadlineAtEntryMonotonicStart": true,
+    "cleanupWithinOriginalDeadline": true,
+    "httpMaximumSeconds": 15,
+    "startupOriginalHealthPollMaximum": 100,
+    "aclHTTPMaximum": 853,
+    "launcherStartupSourceUpperBound": 103,
+    "extraSelectedHealthMaximum": 1,
+    "sourceInputBytes": 127119,
+    "stdinExactBytes": 134374,
+    "reportMaximumBytes": 1048576,
+    "newEntryDescriptorsMaximum": 12,
+    "perReadWriteChunkMaximum": 65536,
+    "maximumReadbackBytes": 1175695,
+    "RuntimeOuterSecondsProposal": 390,
+    "outerNote": "This is a new explicit SOURCE proposal, not an inherited or approved budget. The semantic Owner/entry success deadline remains absolute360 including cleanup and publication; 390 is only proposed transport outer cap."
+  },
+  "components": {
+    "tree": "ad27bea60ade3f4b8b7b23b57a5fa10424a9e608",
+    "source": "158c65b4d0b1ecae87cb640ffaaf564de551980f",
+    "classes": 4,
+    "variants": 8,
+    "peer": "ddfa0549c0c9e6895e51f93e447b2f28550f0076",
+    "productCases": 0,
+    "executed": false
+  },
+  "publicKey": {
+    "tree": "b68cc18e046029d9a8185733d6a2e32c8ea58c08",
+    "blob": "0699a557f6f8b51d1b9a8187b1ed89084f76aa25",
+    "bytes": 451,
+    "sha256": "db4837a2caba18729628ca629eeb44f452a55d5a9aa1f7bad7c2357ed0217938",
+    "type": "RSA2048/e65537/SPKI",
+    "primary": "RFC7517 Appendix A.1",
+    "runtimeParsed": false
+  },
+  "publication": {
+    "path": "/home/qian/heptabao-official271-acl23-oracle-20261106-r1/result.public.json",
+    "mode": "0600",
+    "createOnly": true,
+    "postFinallyVerdict": "terminal stdout after bootstrap signal restoration and all12 entry FDs closed; original Owner receipt independently contains child closure.",
+    "actualSize": null,
+    "actualSHA": null,
+    "actualVersion": null
+  },
+  "behavior": {
+    "normalizesRawStatus": false,
+    "changesMatrix": false,
+    "addsDefaultToActor": false,
+    "retriesWrites": false,
+    "downloadFallback": false,
+    "foreignSignal": false,
+    "oldFull34Rerun": false,
+    "candidateStarts": 0,
+    "oracleStartsMaximum": 1,
+    "oldRootsMutated": false,
+    "rootTokenOrRawSecretPublished": false
+  },
+  "limits": [
+    "Python syntax/actual component execution remain unobserved because local executor unavailable and no fixture Runtime GO.",
+    "957 is a source-derived request maximum (853 ACL plus104 startup/selected-health); startup actual count is not intercepted or claimed.",
+    "Capture completion is not pair parity. Preserve any mismatch and partial/no-ACK outcome; no expected status rewriting.",
+    "Runtime observation journal and exact dispatch authority are separate; this packet grants no admission."
+  ],
+  "current025bBuildUnchanged": true
+}

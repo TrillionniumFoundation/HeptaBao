@@ -1,0 +1,258 @@
+{
+  "schema": "heptabao.fixed-current-pid-readonly-source-checks.v1",
+  "passed": true,
+  "checkCount": 62,
+  "checks": [
+    {
+      "name": "exact_before",
+      "pass": true
+    },
+    {
+      "name": "forward_strict",
+      "pass": true
+    },
+    {
+      "name": "reverse_strict",
+      "pass": true
+    },
+    {
+      "name": "eleven_local_replacements_only",
+      "pass": true
+    },
+    {
+      "name": "old_definition_exact:ProbeRefused",
+      "pass": true
+    },
+    {
+      "name": "old_definition_exact:need",
+      "pass": true
+    },
+    {
+      "name": "old_definition_exact:sha",
+      "pass": true
+    },
+    {
+      "name": "old_definition_exact:encoded",
+      "pass": true
+    },
+    {
+      "name": "old_definition_exact:identity",
+      "pass": true
+    },
+    {
+      "name": "old_definition_exact:error_projection",
+      "pass": true
+    },
+    {
+      "name": "old_definition_exact:FixedIO",
+      "pass": true
+    },
+    {
+      "name": "old_definition_exact:restore_handlers",
+      "pass": true
+    },
+    {
+      "name": "old_definition_exact:parse_print",
+      "pass": true
+    },
+    {
+      "name": "old_definition_exact:missing_service",
+      "pass": true
+    },
+    {
+      "name": "old_definition_exact:remaining",
+      "pass": true
+    },
+    {
+      "name": "old_definition_exact:load_readonly_helpers",
+      "pass": true
+    },
+    {
+      "name": "old_definition_exact:fixed_field_projection",
+      "pass": true
+    },
+    {
+      "name": "old_definition_exact:strict_json",
+      "pass": true
+    },
+    {
+      "name": "old_definition_exact:typed_number",
+      "pass": true
+    },
+    {
+      "name": "old_definition_exact:process_claim_projection",
+      "pass": true
+    },
+    {
+      "name": "old_definition_exact:file_json_projection",
+      "pass": true
+    },
+    {
+      "name": "old_definition_exact:check_leaf_metadata",
+      "pass": true
+    },
+    {
+      "name": "old_definition_exact:read_pinned",
+      "pass": true
+    },
+    {
+      "name": "old_definition_exact:observe_public_json",
+      "pass": true
+    },
+    {
+      "name": "old_definition_exact:safe_commands_public",
+      "pass": true
+    },
+    {
+      "name": "ReadOnlyControl_exact_body",
+      "pass": true
+    },
+    {
+      "name": "three_new_definitions",
+      "pass": true
+    },
+    {
+      "name": "BsdInfo_exact_current_public_source",
+      "pass": true
+    },
+    {
+      "name": "BsdInfo_donor_exact",
+      "pass": true
+    },
+    {
+      "name": "nativeObserver_source_pin",
+      "pass": true
+    },
+    {
+      "name": "fixed_PID",
+      "pass": true
+    },
+    {
+      "name": "fixed_libproc_library",
+      "pass": true
+    },
+    {
+      "name": "exact136_ABI_offsets",
+      "pass": true
+    },
+    {
+      "name": "arg1_not_sourceReader_arg0",
+      "pass": true
+    },
+    {
+      "name": "one_native_dispatch_gate",
+      "pass": true
+    },
+    {
+      "name": "no_raw_unknown_path_output",
+      "pass": true
+    },
+    {
+      "name": "exact_three_image_bools",
+      "pass": true
+    },
+    {
+      "name": "numeric6_path2_children2",
+      "pass": true
+    },
+    {
+      "name": "bounded_direct_children_no_follow",
+      "pass": true
+    },
+    {
+      "name": "errno_immediate_capture",
+      "pass": true
+    },
+    {
+      "name": "C_call_registered_before_invocation",
+      "pass": true
+    },
+    {
+      "name": "C_call_signal_protected",
+      "pass": true
+    },
+    {
+      "name": "no_pretended_absence",
+      "pass": true
+    },
+    {
+      "name": "same_lifetime_path_interval",
+      "pass": true
+    },
+    {
+      "name": "same_lifetime_across_snapshots",
+      "pass": true
+    },
+    {
+      "name": "self_crosscheck",
+      "pass": true
+    },
+    {
+      "name": "two_shared4s_windows_only",
+      "pass": true
+    },
+    {
+      "name": "first_window_self_and_target_shared",
+      "pass": true
+    },
+    {
+      "name": "two_print_mappings",
+      "pass": true
+    },
+    {
+      "name": "registration_mapping_no_stale_PID_only",
+      "pass": true
+    },
+    {
+      "name": "qualified_kernel_uid_pgid",
+      "pass": true
+    },
+    {
+      "name": "no_child_follows_or_PID_signals",
+      "pass": true
+    },
+    {
+      "name": "new_unknown_propagates",
+      "pass": true
+    },
+    {
+      "name": "managed_unknown_remains",
+      "pass": true
+    },
+    {
+      "name": "no_reap_or_old_identity_claim",
+      "pass": true
+    },
+    {
+      "name": "original_budget_constants",
+      "pass": true
+    },
+    {
+      "name": "exact_stdin_source",
+      "pass": true
+    },
+    {
+      "name": "only_source_key_request_changes",
+      "pass": true
+    },
+    {
+      "name": "journal_forward_strict",
+      "pass": true
+    },
+    {
+      "name": "journal_reverse_strict",
+      "pass": true
+    },
+    {
+      "name": "journal_exact_request_pin",
+      "pass": true
+    },
+    {
+      "name": "new_slot_absent_source_only",
+      "pass": true
+    }
+  ],
+  "pythonExecuted": false,
+  "newNativeCalls": 0,
+  "scope": "strict source binding and finite call budget only"
+}

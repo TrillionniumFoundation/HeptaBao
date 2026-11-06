@@ -1,0 +1,153 @@
+{
+  "schema": "heptabao.formatted23-body16-actual-recovery-boundary.v1",
+  "rootGo": {
+    "blob": "748716dc20b7d61a5fe773aaefc44ba9d4a9ddac",
+    "bytes": 3876,
+    "sha256": "affe4439b1649e907d1df5be0a4bed06a0ed59d27ae6e8dba14d91d4527ca593"
+  },
+  "originalFailurePacket": "d4d3b0541dbb06cf809c987d19bfe8702938009d",
+  "originalFailureRootQualification": "557023960b1b922cb2862745a1ccf10265ba0488",
+  "nativeCallsDuringRecovery": 2,
+  "additionalAdmissionCalls": 0,
+  "additionalStatusCalls": 0,
+  "originalOperation": "9037480fbf014345c1d2bbe1894020e30602a9adb2d8c1a864f6eff35368f1b0",
+  "recoveryCall": "sf23-r1-f16-b00-p0-recovery1",
+  "originalNextPageCall": "sf23-r1-f16-b00-p2",
+  "originalFailedCallPreserved": {
+    "kind": "operation_result",
+    "requestRaw": "{\n  \"operation_id\": \"9037480fbf014345c1d2bbe1894020e30602a9adb2d8c1a864f6eff35368f1b0\",\n  \"offset\": 0,\n  \"limit\": 16384\n}\n",
+    "requestPin": {
+      "blob": "bfd96536330ccc3704a2ba596203edf3680a0702",
+      "bytes": 122,
+      "sha256": "ede3d944c75b34dbcc7cf3b644e9d8374496f8348d375e792d565141c92b2ef5"
+    },
+    "phase": "native_interpretation_refused",
+    "called": true,
+    "armed": {
+      "tree": "e8b011038b5afae7a1df8bb9d78bacfe3d118074",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "43ed038a5671e4bbf09618666cdcc5927c93af8a",
+          "bytes": 909,
+          "sha256": "e824ce983920fb04fca568ef220872e8b721ec176bffb1d6a71c0d8e991577ad",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "c2da3072d60dc571f278199dbc0674e8f21ab4eb",
+          "bytes": 772,
+          "sha256": "793f6eb36a48274b05bdd06a8721f868603f69962a08ccea9d80aa46b20716fc",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "bfd96536330ccc3704a2ba596203edf3680a0702",
+          "bytes": 122,
+          "sha256": "ede3d944c75b34dbcc7cf3b644e9d8374496f8348d375e792d565141c92b2ef5",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1803,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "sdkPin": {
+      "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+      "bytes": 248,
+      "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+    },
+    "sdkArchive": {
+      "tree": "e675db61e07e6dfbb6d7f12b44e0f33c3fc4d6bc",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+          "bytes": 248,
+          "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 248,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "interpretationFailure": "Error: native_tool_error_preserved_stop"
+  },
+  "oldInfo10FailurePreserved": "native_interpretation_refused",
+  "oldInfo10RecoveryPreserved": "accepted",
+  "oldGitFailurePreserved": "Error: git_tree_read_error_preserved",
+  "pending": null,
+  "paused": false,
+  "nativeCallInFlight": false,
+  "activeObserver": null,
+  "closedObserver": {
+    "id": "9037480fbf014345c1d2bbe1894020e30602a9adb2d8c1a864f6eff35368f1b0",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "bcd7de73f0cb9df355f9f6a4cfecfaa92b974bac",
+      "bytes": 22426,
+      "sha256": "81f367d597ff8b4ee63e3673edc1aad74e381f90f4415ede3edd8cc2c77bc753"
+    },
+    "payloadTree": "e18da5becc31c42fe6ce0df253491a0cc007dff4",
+    "nativeText": {
+      "blob": "15fa12c9e9fbb8832b3a5fb911f72a8eba4cbcc5",
+      "bytes": 22323,
+      "sha256": "bf0324f330231ba8890455451f7ba5c058e25558071f981f9c44c8178de60b44"
+    },
+    "pages": 2,
+    "completedInactive": true
+  },
+  "wholeFile": {
+    "index": 16,
+    "name": "service_snapshot_forward_wire.rs",
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_forward_wire.rs",
+    "body": {
+      "blob": "a06777634573628646661f75d2d3d060d16e06f8",
+      "bytes": 16474,
+      "sha256": "865e1c316cec0890b3a28076b95a00eedff366bae9d0949899afe23fa044fa75"
+    },
+    "bodyTree": "61d3a245c5d621ffe5939a33421c0dc5cd32d734",
+    "version": "66306:31236012:16474:1793956738925595332:1793956738925595332",
+    "full9Strings": [
+      "66306",
+      "31236012",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "16474",
+      "1793956738925595332",
+      "1793956738925595332"
+    ],
+    "metadataOperation": "1c9f9418c519a2b618d0313158fbcdb84583304fb62d3587778161b3835f391b",
+    "ranges": [
+      {
+        "offset": 0,
+        "next": 16474,
+        "limit": 16474,
+        "chunkSha256": "865e1c316cec0890b3a28076b95a00eedff366bae9d0949899afe23fa044fa75",
+        "originalOperation": "9037480fbf014345c1d2bbe1894020e30602a9adb2d8c1a864f6eff35368f1b0",
+        "nativeText": {
+          "blob": "15fa12c9e9fbb8832b3a5fb911f72a8eba4cbcc5",
+          "bytes": 22323,
+          "sha256": "bf0324f330231ba8890455451f7ba5c058e25558071f981f9c44c8178de60b44"
+        }
+      }
+    ],
+    "wholeUTF8DecodedAfterByteSHA": true,
+    "semanticQualification": false
+  },
+  "completedFiles": 17,
+  "completedObservers": 47,
+  "admissionsCalled": 47,
+  "callRows": 228,
+  "bodyBytes": 1200639,
+  "nextInfo17Submitted": false,
+  "continueOriginalScope": true,
+  "noCargo": true
+}

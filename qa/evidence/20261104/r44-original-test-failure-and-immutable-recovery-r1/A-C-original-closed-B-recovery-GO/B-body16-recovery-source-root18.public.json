@@ -1,0 +1,84 @@
+{
+  "schema": "heptabao.root-formatted23-body16-recovery-source.r1",
+  "passed": true,
+  "checks": 18,
+  "rows": [
+    {
+      "name": "author65_exact",
+      "passed": true
+    },
+    {
+      "name": "before_original_journal",
+      "passed": true
+    },
+    {
+      "name": "after_exact_journal",
+      "passed": true
+    },
+    {
+      "name": "all_existing_source_unchanged",
+      "passed": true
+    },
+    {
+      "name": "exact_input_bytes",
+      "passed": true
+    },
+    {
+      "name": "strict_forward_two_hunks",
+      "passed": true
+    },
+    {
+      "name": "strict_reverse_two_hunks",
+      "passed": true
+    },
+    {
+      "name": "metadata_review_only",
+      "passed": true
+    },
+    {
+      "name": "immutable_page_exact",
+      "passed": true
+    },
+    {
+      "name": "original_failed_request_exact",
+      "passed": true
+    },
+    {
+      "name": "original_failed_called_and_pin",
+      "passed": true
+    },
+    {
+      "name": "known_closed_root25",
+      "passed": true
+    },
+    {
+      "name": "no_new_read_or_status",
+      "passed": true
+    },
+    {
+      "name": "prior_INFO10_not_deleted",
+      "passed": true
+    },
+    {
+      "name": "16_whole_files_not_final23",
+      "passed": true
+    },
+    {
+      "name": "one_closed_original_observer",
+      "passed": true
+    },
+    {
+      "name": "no_Native_in_prepare",
+      "passed": true
+    },
+    {
+      "name": "source_work_no_live_state_change",
+      "passed": true
+    }
+  ],
+  "author65Exact": true,
+  "sourceTree": "f1370549e1d3ff48bd9f0fa4adcd22172078dcb5",
+  "sourceOnly": true,
+  "newNativeCalls": 0,
+  "final23Qualified": false
+}

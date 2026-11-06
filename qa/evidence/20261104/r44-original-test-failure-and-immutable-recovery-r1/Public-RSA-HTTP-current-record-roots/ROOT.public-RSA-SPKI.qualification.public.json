@@ -1,0 +1,68 @@
+{
+  "schema": "heptabao.root.public-RSA-SPKI-source-qualification.r44",
+  "pass": true,
+  "checks": 10,
+  "results": [
+    {
+      "name": "whole_original_public_key7",
+      "pass": true
+    },
+    {
+      "name": "root_primary_A1_public_parameters_exact",
+      "pass": true
+    },
+    {
+      "name": "author_derivation_exact_reproduced",
+      "pass": true
+    },
+    {
+      "name": "PEM_451_whole_exact",
+      "pass": true
+    },
+    {
+      "name": "strict_PEM_frame_and_DER294",
+      "pass": true
+    },
+    {
+      "name": "outer_sequence_algorithm_and_bitstring",
+      "pass": true
+    },
+    {
+      "name": "rsaEncryption_oid_and_NULL_exact",
+      "pass": true
+    },
+    {
+      "name": "PKCS1_canonical270_and_two_positive_integers",
+      "pass": true
+    },
+    {
+      "name": "modulus2048_and_exponent65537_roundtrip",
+      "pass": true
+    },
+    {
+      "name": "public_config_only_no_runtime_parse_claim",
+      "pass": true
+    }
+  ],
+  "packet": "b68cc18e046029d9a8185733d6a2e32c8ea58c08",
+  "primary_source": "https://www.rfc-editor.org/rfc/rfc7517.txt",
+  "section": "Appendix A.1, public RSA example only",
+  "root_excerpt": {
+    "blob": "46259ab153550259d7df0dd93859f0501590cf72",
+    "bytes": 561,
+    "sha256": "bbcacc3ca0f6ae9320cc76b7fcd11e432881dca6fa55b8abb085f7e4bd931742"
+  },
+  "pem": {
+    "blob": "0699a557f6f8b51d1b9a8187b1ed89084f76aa25",
+    "bytes": 451,
+    "sha256": "db4837a2caba18729628ca629eeb44f452a55d5a9aa1f7bad7c2357ed0217938"
+  },
+  "DER_bytes": 294,
+  "RSA_bits": 2048,
+  "exponent": 65537,
+  "qualification": "Pure public derivation and independent DER parsing; runtime OpenSSL/OpenBao parsing remains pending",
+  "private_key_used": false,
+  "new_HTTP_requests": 0,
+  "product_tests": 0,
+  "root_Runtime_calls": 0
+}

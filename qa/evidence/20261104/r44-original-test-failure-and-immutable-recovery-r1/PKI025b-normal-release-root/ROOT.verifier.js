@@ -1,0 +1,21 @@
+function rootQualifyReleaseStage(f){
+ const p=f.packet,raw=p.raw,state=JSON.parse(raw["STATE.public.json"]),n=JSON.parse(raw["native.original.json"]),checks=[],ck=(name,pass)=>checks.push({name,pass:!!pass}),eq=(a,b)=>JSON.stringify(a)===JSON.stringify(b),byBlob=new Map(Object.values(raw).map(t=>[gitBlobMeta(t).blob,t]));
+ ck("whole_stage21",p.audit.whole&&p.audit.files===21&&p.audit.bytes===51674);
+ const calls=state.calls.map((c,i)=>{const k=String(i+1).padStart(2,"0");return {key:c.key,kind:c.kind,phase:"accepted",requestPin:c.request,sdkPin:c.sdk,nativePin:c.native,requestText:raw["call"+k+".request.json"],intentText:raw["call"+k+".intent.json"],armedText:raw["call"+k+".armed.json"],sdkText:raw["call"+k+".sdk.original.json"],nativeText:raw["call"+k+".native.original.json"],armedTree:c.armedTree};});
+ const cs=verifyOriginalJournal({label:"release_stage",calls,observers:[state.observer],blob:x=>byBlob.get(x),goPins:[f.goPins],pageLimit:()=>8192,ck});
+ ck("only_original_job_read0_0_16384",cs.length===3&&cs[0].q.operation.tool==="process_read"&&cs[0].q.operation.arguments.host==="rog"&&cs[0].q.operation.arguments.job_id==="1a1b10cad9b-fc05-7560"&&cs[0].q.operation.arguments.stdout_offset===0&&cs[0].q.operation.arguments.stderr_offset===0&&cs[0].q.operation.arguments.limit===16384);
+ for(let i=0;i<3;i++)ck("SDK"+i+":original_one_leaf_Merkle",immediateTreeSha([{path:"original.sdk.json",mode:"100644",type:"blob",sha:gitBlobMeta(calls[i].sdkText).blob}])===state.calls[i].sdkTree);
+ ck("original_payload_one_leaf_Merkle",immediateTreeSha([{path:"payload.original.json",mode:"100644",type:"blob",sha:gitBlobMeta(raw["payload.original.json"]).blob}])===state.observer.payloadTree);
+ ck("native_original_job",n.job_id===state.job&&state.job==="1a1b10cad9b-fc05-7560"&&eq(gitBlobMeta(raw["native.original.json"]),state.observer.nativeText));
+ for(const name of ["stdout","stderr"]){
+  const x=n[name],bytes=[];for(let i=0;i<x.bytes_hex.length;i+=2)bytes.push(parseInt(x.bytes_hex.slice(i,i+2),16));
+  ck(name+":original_hex_text_and_pin_exact",utf8Text(bytes)===x.text&&x.text===raw[name+".original.txt"]&&eq(gitBlobMeta(x.text),state[name])&&x.offset===0&&x.next_offset===bytes.length&&bytes.length<=16384);
+ }
+ const lines=raw["stdout.original.txt"].trimEnd().split("\n").map(x=>JSON.parse(x));
+ ck("exact_two_reported_phase_lines",lines.length===2&&eq(lines,state.actualLines)&&lines[0].status==="preflight-admitted"&&lines[1].phase==="normal-production-release-built");
+ ck("exact025b_source_and_declared149_166",lines.every(x=>x.source_commit==="025b05a340de841b8161c1120344e86eae30eb97"&&x.source_tree==="1d8160c9385f8053b9a683cc1834da0f912e2d37")&&lines[0].unique_test_count===149&&lines[0].profile_instance_test_count===166);
+ ck("reported_normal_server_seed_exact",lines[1].artifacts["heptabao-server"].bytes===110629104&&lines[1].artifacts["heptabao-server"].sha256==="5511c7d9fb6d7232ac4a07966ab0efa09a8ab691c342a3925283a5ac95c0ffd1"&&lines[1].artifacts["heptabao-seed"].bytes===102517296&&lines[1].artifacts["heptabao-seed"].sha256==="8e5b8c8477397f11f888aba3b3e427c5c5c80f273623f685a5a68dea34ab8fdf");
+ ck("strict_current_stream_cursor",state.streamOffsets.stdout===1809&&state.streamOffsets.stderr===0&&state.readFutureClosed===true&&state.nativeCallInFlight===false&&state.observer.completedInactive===true);
+ ck("phase_not_final_qualification",state.terminalObserved===false&&state.testsActual===null&&state.buildReportObserved===false&&state.artifactIndependentMetadataObserved===false&&state.CargoWindowReleased===false);
+ return {schema:"heptabao.root.original025b-normal-release-stage-qualification.r44",pass:checks.every(x=>x.pass),checks:checks.length,results:checks,packet:p.audit.tree,job:"rog/"+state.job,stdout:state.stdout,stderr:state.stderr,original_observer:state.observer,reported_phase:"normal-production-release-built",reported_artifacts:lines[1].artifacts,reported_build_receipt_SHA256:lines[1].native_build_receipt_sha256,scope:"Original emitted release phase and exact delivered chunk only; not terminal authority, artifact metadata, final build report, or test qualification",next_stream_offsets:state.streamOffsets,actual_tests_qualified:null,final_build_qualified:false,Cargo_window_released:false,full_replacement:false,production_cutover:false,legacy_cleanup:false,root_Runtime_calls:0};
+}

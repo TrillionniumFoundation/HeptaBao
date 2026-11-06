@@ -1,0 +1,12 @@
+--- a/statement-r2.py
++++ b/statement-r1.py
+@@ -721,8 +721,7 @@
+         'historicalFailedPrintBytesRecovered':False,'historicalFailureRewritten':False,
+         'registrationClosureClaimed':False,'currentManagedScopeStillUnknown':True,
+         'bootstrapBootoutOrSignalCalled':False,'managedProcessReaped':False,
++        'privatePlansCapsuleOrCredentialsRead':False,'stdioTailOrStderrBodyRead':False,
+-        'privatePlansCapsuleOrCredentialsRead':False,'stderrBodyRead':False,
+-        'stdioTailExported':False,'noReadsBeyondFirstBoundedPrefix':True,
+         'sdkFactoryProviderOrRefreshCalled':False,'newFilesOrDirectoriesCreated':False,
+         'productBusinessOrCleanupDispatched':False}
+     try:

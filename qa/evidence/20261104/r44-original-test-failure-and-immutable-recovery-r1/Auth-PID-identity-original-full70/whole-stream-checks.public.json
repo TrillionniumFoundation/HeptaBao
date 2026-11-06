@@ -1,0 +1,88 @@
+{
+  "schema": "heptabao.current-home-r2-identity-original-minimum-checks.r1",
+  "passed": true,
+  "check_count": 20,
+  "checks": [
+    {
+      "name": "authority_exact_job",
+      "pass": true
+    },
+    {
+      "name": "known_failure_exit_1",
+      "pass": true
+    },
+    {
+      "name": "authority_full_durable_confirmed",
+      "pass": true
+    },
+    {
+      "name": "authority_exact_sizes",
+      "pass": true
+    },
+    {
+      "name": "no_truncated_streams",
+      "pass": true
+    },
+    {
+      "name": "both_streams_exact_eof",
+      "pass": true
+    },
+    {
+      "name": "whole_stdout_size",
+      "pass": true
+    },
+    {
+      "name": "whole_stderr_empty",
+      "pass": true
+    },
+    {
+      "name": "no_active_native_call_or_observer",
+      "pass": true
+    },
+    {
+      "name": "nine_original_calls_accepted",
+      "pass": true
+    },
+    {
+      "name": "two_original_observers_inactive",
+      "pass": true
+    },
+    {
+      "name": "four_original_pages",
+      "pass": true
+    },
+    {
+      "name": "report_known_mapping_refusal",
+      "pass": true
+    },
+    {
+      "name": "one_exact_missing_print_observation",
+      "pass": true
+    },
+    {
+      "name": "no_identity_result",
+      "pass": true
+    },
+    {
+      "name": "unknown_and_no_managed_closure",
+      "pass": true
+    },
+    {
+      "name": "seventeen_returned_fds_closed",
+      "pass": true
+    },
+    {
+      "name": "one_direct_helper_closed",
+      "pass": true
+    },
+    {
+      "name": "no_effects_private_or_business",
+      "pass": true
+    },
+    {
+      "name": "original_deadline_and_restore",
+      "pass": true
+    }
+  ],
+  "scope": "Original known failure, entire streams, and observation/direct-resource closure only; no current PID or managed closure qualification."
+}

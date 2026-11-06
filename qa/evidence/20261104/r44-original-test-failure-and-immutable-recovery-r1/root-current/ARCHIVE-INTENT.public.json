@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r44-checkpoint-root-current",
+  "records": [
+    {
+      "name": "README.md",
+      "blob": "81d6eab05e6777fe853a0134593d7bc7968cc0f5",
+      "bytes": 8723,
+      "sha256": "e9c5ba60c09bbe6990e2e13c01f6aa1fad180f56baf1b62305d8c2fe02161f54"
+    },
+    {
+      "name": "STATE.public.json",
+      "blob": "8972ed1e43111e05774c9e2a7ab35b04f9fdd8ac",
+      "bytes": 17573,
+      "sha256": "800e261fd1b8817ab42efe870d76bfa9f4e18379c977c57d6d89ff6de81b0bec"
+    },
+    {
+      "name": "INDEX.public.json",
+      "blob": "2dd6ab715f5ca78e1df03dc4265cfdcc0cbd613b",
+      "bytes": 206117,
+      "sha256": "f2fec5f83a1cbc3648b25b78c82634efd9c42558772d9143cbadf2882c91b588"
+    },
+    {
+      "name": "verify-index.js",
+      "blob": "4a92d6a721562bf4d07cb44cfa1bd92654b3eb36",
+      "bytes": 1125,
+      "sha256": "34492966295a4bd7fe67230f1b5c9e1c8b0e6695f06856786dd885c515095a15"
+    },
+    {
+      "name": "INDEX-qualification.public.json",
+      "blob": "f167611451ff8dd8db765a3368d8046c8c8191f0",
+      "bytes": 7670,
+      "sha256": "9ab7e41285913a918df17cdbc48e179373f19e183a9283a7caf30357604344c0"
+    },
+    {
+      "name": "pure-helpers.js",
+      "blob": "25eb67a1def4c90ed8a6b1308ca2494228587c1c",
+      "bytes": 6684,
+      "sha256": "54047677f4bbcd0d6565b89a58a8b14c483c7988309b7ea010b6408765f60e45"
+    },
+    {
+      "name": "tree-helpers.js",
+      "blob": "6c5bd52313333acd4abd635085c4019af4462b78",
+      "bytes": 1386,
+      "sha256": "24874d625143ea1ee457d6ff35121d80c13985531836ab08788beb7511610935"
+    }
+  ],
+  "expected_data_tree": "eafbd11ada4671abaef38b266882d7ffcab0ccc7",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

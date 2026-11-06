@@ -1,0 +1,133 @@
+{
+  "schema": "heptabao.025b-original-failed-test2-log-metadata-source.v1",
+  "status": "SOURCE_ONLY_NO_RUNTIME_GO",
+  "scope": "build_failed_test_logs_file_info_only",
+  "original_job": "1a1b10cad9b-fc05-7560",
+  "new_slot": "jwt_pki_025b05a3_build149_failed_test2_logs_info_gitfirst_r1",
+  "entry_action": "initialize",
+  "source": {
+    "blob": "ae8aebd99035e038de6fe65d963878e72a4bb245",
+    "bytes": 24478,
+    "sha256": "2578abe066b44fdf049b21141b0d10201a9544e86085010e6cd5ab3843dbb737"
+  },
+  "before_reference": {
+    "blob": "850d83d091d21699713f26dba9489e0789c9bc12",
+    "bytes": 23663,
+    "sha256": "82456b23001187d1b86b3bd23e82c8a70b4baac74d5642a5f91982f527716667"
+  },
+  "diff": {
+    "blob": "c7811585ffefecad8d896a66ac666c411ad28fe9",
+    "bytes": 7566,
+    "sha256": "c966db604ed1d9078718012c39ed634cce37b20ad433d3b9bcb3fc1e8ce3eba2"
+  },
+  "strict_hunks": 3,
+  "changed_function": "gfInitializeOnlyAfterRootGO; all other original functions byte-exact",
+  "original_context": {
+    "slot": "jwt_pki_025b05a3_build149_gitfirst_r2",
+    "state": {
+      "blob": "0de1e779d07917e4aab2e75cc571bdd14742ac60",
+      "bytes": 135910,
+      "sha256": "0185be3350a5b23748e39e8db8867b6eb95932e42a690de8650256d21fa989e7"
+    },
+    "read_only": true,
+    "two_legacy_internal_aliases_refer_to_this_same_actual_closed_context": true
+  },
+  "body_original": {
+    "blob": "5bf4476672f08c251826efc1dc9833af30bdd5b4",
+    "bytes": 49775,
+    "sha256": "47748eadb948f08973d7de202272823cd5f031ed99ec62286868236a8cbaa318"
+  },
+  "body_packet": "3079e97e1f59af5642fd6b445d6e42315e050e6b",
+  "root_body_min17": {
+    "blob": "525294a9961a1550000aec907c7bc217f89bda16",
+    "bytes": 1832,
+    "sha256": "0ffb759948abc62a9dd16dce4ba777366d80e383ec6059f418b3b2f8f60c381b"
+  },
+  "actual_failure": {
+    "name": "service::native_auth::jwt_tests::native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta",
+    "label": "native-jwt-pki-file17-2",
+    "exit_code": 101,
+    "timed_out": false,
+    "exact_assertion_unknown": true
+  },
+  "path_derivation": {
+    "report_actual_parent": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1",
+    "runner": {
+      "blob": "f8b36c8adccb493dfc6aa507856150ce8a6a764d",
+      "bytes": 30397,
+      "sha256": "d76b3d392c20bf4a7bbb7e8d8ea69abdfe3bb11f71a35075ba26ab948e778a50"
+    },
+    "original_owned_function": "output / (label + '.stdout') and output / (label + '.stderr'), create-only; only the actual failed record label is used",
+    "no_directory_search": true
+  },
+  "targets": [
+    {
+      "role": "test-stderr",
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1/native-jwt-pki-file17-2.stderr",
+      "sha256": "9829d15840c80e4a69ccf1afeab7025cd42dc94c421c3421271c973c801167cf",
+      "size": null,
+      "version": null,
+      "full9": null,
+      "metadata_observed": false,
+      "body_observed": false,
+      "expected_permission_mode": 384,
+      "expected_full_mode": 33152,
+      "uid": 1000,
+      "gid": 1000,
+      "link_count": 1
+    },
+    {
+      "role": "test-stdout",
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1/native-jwt-pki-file17-2.stdout",
+      "sha256": "baaffbccd60cd36f53810a4a49dc1ca9ae55883a1abb21253d29970d8dbf79ad",
+      "size": null,
+      "version": null,
+      "full9": null,
+      "metadata_observed": false,
+      "body_observed": false,
+      "expected_permission_mode": 384,
+      "expected_full_mode": 33152,
+      "uid": 1000,
+      "gid": 1000,
+      "link_count": 1
+    }
+  ],
+  "exact_requests": [
+    {
+      "blob": "9544655b6318cbce522c99f5e3249cb2778abbbe",
+      "bytes": 311,
+      "sha256": "89191105baec90a3834d074985a5f6b8a028e47e34f5ad7c8fa8b300d6dcfa13"
+    },
+    {
+      "blob": "f54c0e83145aa26e5482738b6c4ddcdc9b956dd3",
+      "bytes": 311,
+      "sha256": "88db304a9452f4d97155de290025c34facb9749ed23dcb50dc7cf352cf214458"
+    }
+  ],
+  "order": [
+    "test-stderr",
+    "test-stdout"
+  ],
+  "limits": {
+    "file_info_operations": 2,
+    "native_calls_or_owned_future": 1,
+    "operation_status_per_id": 8,
+    "immutable_pages_per_id": 128,
+    "immutable_page_bytes": 8192,
+    "immutable_payload_bytes": 1048576,
+    "metadata_file_size_admission_cap": 1048576,
+    "process_start": 0,
+    "binary_read": 0,
+    "Cargo": 0,
+    "automatic_retry": false
+  },
+  "metadata_cap_note": "file_info is an independent full-file hash observation. The1MiB size predicate is checked only after the original payload is whole; it does not authorize any body or fallback.",
+  "history": "The old33b reference remains immutable. The current original025b BUILD context is completely closed and pinned. Both retained legacy prerequisite aliases deliberately name that same current context; no old paused slot is initialized, rewritten or claimed recovered.",
+  "semantic_qualification": {
+    "actual_assertion_text": null,
+    "new_run": false,
+    "target_reuse": false
+  },
+  "pure_checks": 37,
+  "Native_submitted": 0
+}

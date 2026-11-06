@@ -1,0 +1,370 @@
+{
+  "schema": "heptabao.025b-original-report-body-and-limited-semantics.v1",
+  "passed": 87,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "seven_original_calls",
+      "pass": true
+    },
+    {
+      "name": "old34_and_closed11_preserved",
+      "pass": true
+    },
+    {
+      "name": "current41_and_closed12",
+      "pass": true
+    },
+    {
+      "name": "no_future_pending_or_error",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-admit:request",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-admit:SDK",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-admit:native",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-admit:armed_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-admit:armed_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-admit:armed_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-admit:once_whole",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-status0:request",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-status0:SDK",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-status0:native",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-status0:armed_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-status0:armed_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-status0:armed_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-status0:once_whole",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page0:request",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page0:SDK",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page0:native",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page0:armed_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page0:armed_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page0:armed_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page0:once_whole",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page1:request",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page1:SDK",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page1:native",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page1:armed_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page1:armed_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page1:armed_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page1:once_whole",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page2:request",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page2:SDK",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page2:native",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page2:armed_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page2:armed_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page2:armed_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page2:once_whole",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page3:request",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page3:SDK",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page3:native",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page3:armed_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page3:armed_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page3:armed_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page3:once_whole",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page4:request",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page4:SDK",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page4:native",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page4:armed_armed.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page4:armed_intent.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page4:armed_request.json",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page4:once_whole",
+      "pass": true
+    },
+    {
+      "name": "unique_actual_binary_admission",
+      "pass": true
+    },
+    {
+      "name": "actual_completed_inactive",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page0:original_page",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page0:extent",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page1:original_page",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page1:extent",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page1:stable_payload",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page2:original_page",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page2:extent",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page2:stable_payload",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page3:original_page",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page3:extent",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page3:stable_payload",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page4:original_page",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page4:extent",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-result-body0-page4:stable_payload",
+      "pass": true
+    },
+    {
+      "name": "66801_whole_payload",
+      "pass": true
+    },
+    {
+      "name": "original_result_success",
+      "pass": true
+    },
+    {
+      "name": "original_binary_exact_identity",
+      "pass": true
+    },
+    {
+      "name": "49775_whole_report",
+      "pass": true
+    },
+    {
+      "name": "source_and_failed_status",
+      "pass": true
+    },
+    {
+      "name": "normal_release_command0",
+      "pass": true
+    },
+    {
+      "name": "all_three_compile_commands0",
+      "pass": true
+    },
+    {
+      "name": "original_shared_compile_deadline",
+      "pass": true
+    },
+    {
+      "name": "only_first_family_entered",
+      "pass": true
+    },
+    {
+      "name": "two_actual_test_processes",
+      "pass": true
+    },
+    {
+      "name": "first_test_process0",
+      "pass": true
+    },
+    {
+      "name": "second_test_process101",
+      "pass": true
+    },
+    {
+      "name": "eight_original_commands",
+      "pass": true
+    },
+    {
+      "name": "eight_custody_cleanup_matches",
+      "pass": true
+    },
+    {
+      "name": "original_command_group_empty_and_reaped",
+      "pass": true
+    },
+    {
+      "name": "retained_fences_exact_before_after",
+      "pass": true
+    },
+    {
+      "name": "outer_receipt_in_original_budget",
+      "pass": true
+    },
+    {
+      "name": "no_final_source_or_binary_fence_claim_in_report",
+      "pass": true
+    }
+  ],
+  "new_native_calls": 0,
+  "original_body_calls": 7,
+  "pages": 5,
+  "body_bytes": 49775,
+  "normal_release_build_exit0": true,
+  "three_compile_commands_exit0": true,
+  "observed_test_processes": 2,
+  "observed_process_exit0": 1,
+  "observed_process_exit101": 1,
+  "planned_unique_tests": 149,
+  "planned_profile_tests": 166,
+  "full_test_qualification": false,
+  "exact_assertion_text_pending_original_test_logs": true,
+  "final_source_or_binary_fences_observed": false,
+  "target_reuse_authorized": false
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.pure-source-executor.r2",
+  "executedEntryPoint": "verifyIndependentLabelPidSource(input)",
+  "verifier": {
+    "blob": "6fe79b8921daf9dca6e974f2e165970fa9a9b8be",
+    "bytes": 7345,
+    "sha256": "3a0ebc5e776afaaca223d13c9bad337405e4c5e6621987a4547635c867a138e3"
+  },
+  "result": {
+    "blob": "41cb6f7ba4d80dd3479041e2e862e19d19681a13",
+    "bytes": 5285,
+    "sha256": "456d187ba0bcee7aa9641cf5bb671d467ee308c04d5f4ca5ff4e03a6e1452ed9"
+  },
+  "performedOnceInFunctionsExec": true,
+  "passed": true,
+  "actualCheckCount": 62,
+  "originalR1Author62Rerun": false,
+  "pythonExecuted": false,
+  "sourceCompiled": false,
+  "productOrFixtureExecuted": false,
+  "newNativeCalls": 0
+}
