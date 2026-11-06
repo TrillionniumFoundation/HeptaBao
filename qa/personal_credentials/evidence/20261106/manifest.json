@@ -1481,6 +1481,58 @@
       "bytes": 44256,
       "sha256": "546419bbabda93a8cdce6619d128082797663e9bfa306889ceed58d2d14b7469",
       "transformation": "Byte-identical newly completed original qualification/review packet; every manifest member length and SHA-256 verified, with original requests, source identities, outputs and explicit scope limits retained."
+    },
+    {
+      "file": "android-r10-c7-r11-public-history.tar.gz",
+      "sha256": "572718b1b104639be990a9d2864f82d44e26b6fbb1a4225216deacdbd318ca6e",
+      "bytes": 367949,
+      "transformation": "Aggregate of six byte-identical original candidate/build/failed-phone/internal-review packets, original release and summary records, plus derived integrity and scope summaries; both phone profiles remain failed 2-of-12."
+    },
+    {
+      "file": "broker-poll-fix-linux-public-evidence.tar.gz",
+      "sha256": "d7ed5ab00f26758990283ef13c8b78f1206412d2b0127ad118614a7a9715f161",
+      "bytes": 608098,
+      "transformation": "Independent Linux execution of the final three-file bounded-read overlay: locked offline build and original13 plus six real socket regressions passed 19/19. Preserves controller r1 pre-build failure, complete selected compile/test outputs, sources and Runtime bindings. No Linux fmt/Clippy or whole-workspace qualification claimed."
+    },
+    {
+      "file": "ci-3ada-core-originals.tar.gz",
+      "sha256": "d2d48402f728369248f6a83b01a7b7d3131b3def75367228811bb93ce0322887",
+      "bytes": 27860,
+      "transformation": "New container of the original decoded core job log, three byte-identical reconstructed receipts and serialized observed tool status. Scope is source 3ada83a synthetic core only; no full replacement or mobile/macOS qualification.",
+      "github_job_id": 127944540662,
+      "github_run_id": 42233353626
+    },
+    {
+      "file": "ci-3ada-result.public.json",
+      "sha256": "73ff4b769c1491b96ea4d601055292a969ae7bdb36e18fba07e35425cded5d3b",
+      "bytes": 1979,
+      "transformation": "Original receipt bytes reconstructed from the decoded job-log envelope with its original SHA-256 verified. Exact source 3ada83a synthetic-core result; stronger qualification flags remain false.",
+      "github_job_id": 127944540662,
+      "github_run_id": 42233353626
+    },
+    {
+      "file": "mac-broker-read-fix-public-evidence.tar.gz",
+      "sha256": "ca795e2dbd4875cd8caa43d7a60dae861ca0722d56a80792db30a09895d94311",
+      "bytes": 655019,
+      "transformation": "Original Mac Unix/TCP read diagnostics and both fixed-source candidate executions; IPC-only 16/19 remains failed, final shared-deadline repair passed original13 plus six regressions 19/19. Includes exact Runtime source/output bindings; excludes binaries/private owner state and duplicate source tar outputs. No browser or production claim."
+    },
+    {
+      "file": "mac-preparation-and-original-selected-build-history.tar.gz",
+      "sha256": "6d7aa596ba3d92d476f819c88888dc624a550b69e3db1a1a9f39550423236e91",
+      "bytes": 250312,
+      "transformation": "New outer container preserving three unchanged public Mac originals: r5b prefetch 145/157, failed LAN12 with zero accepted connections, and selected-three-crate 375-cache build with original broker 4/13, vault 14/14 and edge 1 plus process 4 results. Linux-native eight unsupported; unavailable 037225 original not reconstructed. Later fixed-source 19-case results remain separate."
+    },
+    {
+      "file": "passkey-r8-final-internal-peer-review-r1.tar.gz",
+      "sha256": "04386b19f665122a539f398100ce7d08d9dfcc79a0a40d44dcce39de1befef94",
+      "bytes": 426809,
+      "transformation": "Internal synthesis preserving seven original peer packets, selected Runtime bindings, original failures and final release; 121 host-only consistency checks are not phone cases or external audit. Original profile 16/18 plus three separate supplements 3/3; P4 remains unqualified."
+    },
+    {
+      "file": "passkey-r8-final-public-evidence.tar.gz",
+      "sha256": "6c387d0ce79540abf24b13713da3b3c649f491c8eb59d8bdba4f3face28d2c9f",
+      "bytes": 1139206,
+      "transformation": "New grouping container retaining the unchanged 55facc phone packet, original receipts, local integrity verification and actual Runtime binding, plus explicit unapplied documentation drafts. Original 18-case ledger remains 16 passed/2 failed; three separate supplements passed 3/3. G08 causal limit, M05 audit gap, unobserved materializer terminal, same-device-only recovery and unqualified P4 scope remain."
     }
   ]
 }

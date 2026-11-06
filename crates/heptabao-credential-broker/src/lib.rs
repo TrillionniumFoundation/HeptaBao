@@ -773,16 +773,15 @@ fn execute(c: &Credential, op: &Operation) -> Result<Receipt> {
     let started = Instant::now();
     let mut line = Zeroizing::new(Vec::new());
     while line.len() < 128 {
-        if started.elapsed() >= IO_TIMEOUT {
-            return Err(Error("upstream_timeout"));
-        }
         let mut b = [0u8; 1];
-        let remaining = IO_TIMEOUT.saturating_sub(started.elapsed());
-        if remaining.is_zero() {
-            return Err(Error("upstream_timeout"));
-        }
-        io(stream.set_read_timeout(Some(remaining)))?;
-        io(stream.read_exact(&mut b))?;
+        read_bounded(
+            &stream,
+            &mut b,
+            started,
+            IO_TIMEOUT,
+            Error("upstream_timeout"),
+            Error("io_failure"),
+        )?;
         line.push(b[0]);
         if line.ends_with(b"\r\n") {
             break;
@@ -805,21 +804,57 @@ fn execute(c: &Credential, op: &Operation) -> Result<Receipt> {
     result.http_success = Some((200..=299).contains(&status));
     Ok(result)
 }
-fn read_bounded(
-    stream: &mut UnixStream,
+fn read_bounded<Fd: std::os::fd::AsFd>(
+    stream: &Fd,
     mut bytes: &mut [u8],
     started: Instant,
     timeout: Duration,
+    timeout_error: Error,
+    eof_error: Error,
 ) -> Result<()> {
+    use rustix::{
+        event::{PollFd, PollFlags, Timespec, poll},
+        io::Errno,
+        net::{RecvFlags, recv},
+    };
+
     while !bytes.is_empty() {
         let remaining = timeout.saturating_sub(started.elapsed());
         if remaining.is_zero() {
-            return Err(Error("request_timeout"));
+            return Err(timeout_error);
         }
-        io(stream.set_read_timeout(Some(remaining)))?;
-        let count = io(stream.read(bytes))?;
+        // A peer may close after queuing a complete response. Updating
+        // SO_RCVTIMEO on a fully closed socket can fail on Darwin even though
+        // queued bytes remain readable. Use a per-call nonblocking
+        // receive and readiness wait without changing the socket's mode.
+        let count = match recv(stream, &mut *bytes, RecvFlags::DONTWAIT) {
+            Ok((count, _)) => count,
+            Err(Errno::INTR) => continue,
+            Err(Errno::AGAIN) => {
+                let remaining = timeout.saturating_sub(started.elapsed());
+                if remaining.is_zero() {
+                    return Err(timeout_error);
+                }
+                let wait = Timespec::try_from(remaining).map_err(|_| Error("io_failure"))?;
+                let mut fds = [PollFd::new(stream, PollFlags::IN)];
+                match poll(&mut fds, Some(&wait)) {
+                    Ok(_) if fds[0].revents().contains(PollFlags::NVAL) => {
+                        return Err(Error("io_failure"));
+                    }
+                    // HUP can accompany queued data; recv decides data vs EOF.
+                    Ok(_) | Err(Errno::INTR) => continue,
+                    Err(_) => return Err(Error("io_failure")),
+                }
+            }
+            Err(_) => return Err(Error("io_failure")),
+        };
+        // poll may round its timeout up, and the process may be descheduled.
+        // Neither case allows a late final read to turn into success.
+        if started.elapsed() >= timeout {
+            return Err(timeout_error);
+        }
         if count == 0 {
-            return Err(Error("incomplete_frame"));
+            return Err(eof_error);
         }
         bytes = &mut bytes[count..];
     }
@@ -828,15 +863,33 @@ fn read_bounded(
 fn read_frame(stream: &mut UnixStream, timeout: Duration) -> Result<Zeroizing<Vec<u8>>> {
     let started = Instant::now();
     let mut size = [0u8; 4];
-    read_bounded(stream, &mut size, started, timeout)?;
+    read_bounded(
+        stream,
+        &mut size,
+        started,
+        timeout,
+        Error("request_timeout"),
+        Error("incomplete_frame"),
+    )?;
     let size = u32::from_be_bytes(size) as usize;
     if size == 0 || size > MAX_MESSAGE {
         return Err(Error("invalid_frame"));
     }
     let mut bytes = Zeroizing::new(vec![0; size]);
-    read_bounded(stream, &mut bytes, started, timeout)?;
+    read_bounded(
+        stream,
+        &mut bytes,
+        started,
+        timeout,
+        Error("request_timeout"),
+        Error("incomplete_frame"),
+    )?;
     Ok(bytes)
 }
+
+#[cfg(test)]
+mod frame_read_tests;
+
 fn write_frame(stream: &mut UnixStream, bytes: &[u8]) -> Result<()> {
     if bytes.is_empty() || bytes.len() > MAX_MESSAGE {
         return Err(Error("invalid_frame"));

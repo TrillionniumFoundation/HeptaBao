@@ -138,6 +138,13 @@ The client deliberately does not expose the body.
 Malformed or slow peers produce durable unknown outcomes. Signature outputs are
 public cryptographic artifacts; their original request binding is retained.
 
+Frame reads share one monotonic deadline across the header and body. The HTTP
+status line has a separate five-second total read budget. Readiness waits and
+per-call nonblocking receives preserve those budgets when a peer closes after
+queuing a reply, including on Darwin. EOF before a complete frame or status line
+is refused; temporary unavailability and interrupted calls do not extend the
+deadline. The reader never changes the socket's global blocking mode.
+
 CLI `execute` exits nonzero for broker denials, unknown outcomes and non-2xx
 HTTP receipts. It retains the fixed error code or durable receipt as JSON on
 stdout. Local input/transport failures use a fixed JSON error on stderr. A

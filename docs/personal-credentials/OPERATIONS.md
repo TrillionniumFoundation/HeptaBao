@@ -124,10 +124,18 @@ pairing protocol. Do not deploy the store as an unauthenticated network endpoint
    newer ciphertext with an older backup: that can discard valid writes.
    Restore old state into another root and explicitly reconcile it if needed.
 
-This is the required procedure, not a completed upgrade/rollback rehearsal.
-Cross-version format migration, signed release distribution and automated
-rollback are not yet qualified. A format compatibility failure must stop the
-switch and retain both candidates.
+The separately frozen format-1 broker pair completed 27/27 real upgrade and
+rollback checks, including a SIGKILL after target contact, preservation of
+unknown results and exact expiry/revocation/target denials. The
+[original receipt](../../qa/personal_credentials/evidence/20261106/broker-upgrade-r1.public.json)
+and [complete original packet](../../qa/personal_credentials/evidence/20261106/broker-upgrade-r1-remote-originals.tar.gz)
+bind that result to the two tested executables and the trusted-owner loopback
+scope. It does not qualify a client/provider switch or a different version pair.
+
+The procedure above remains required for each proposed installation. Cross-version
+format migration, signed release distribution and automated rollback are not yet
+qualified. A format compatibility failure must stop the switch and retain both
+candidates.
 
 ## Incident handling and support boundary
 
@@ -141,7 +149,8 @@ other consumers.
 
 Before expanding real adoption, the release needs an independent security
 review, a deployed task-identity isolation boundary, supported-platform
-compatibility receipts, an actual upgrade/rollback rehearsal, sustained
-stability observations and named operational ownership. Internal parallel
+compatibility receipts, upgrade/rollback evidence for the exact proposed
+artifact pair and state format, sustained stability observations and named
+operational ownership. Internal parallel
 review and finite synthetic tests do not satisfy independent external review
 or long-term operational evidence.

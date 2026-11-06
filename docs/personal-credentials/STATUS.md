@@ -14,11 +14,11 @@ from implementation in progress.
 | Phase | Implemented and observed | Remaining boundary |
 | --- | --- | --- |
 | P0: selected credential service | Normal Linux server entry point, loopback TLS/private CA, Shamir, root-namespace KV2, userpass and scoped tokens: **57/57**, including real expiry/revocation, ACL denials, SIGKILL and cold recovery. The separately frozen r3 QA revision passed all three complete destructive, network-partition and replay-epoch profiles against that original server binary. | This is the fixed single-node/three-node synthetic scope. Older r1/r2 failures remain recorded; full compatibility, other snapshot regressions and broad replacement remain HOLD. |
-| P1: agent/developer use | Executable Rust CLI/SDK, local socket broker, exact-operation owner grants, controlled loopback API use, SSHSIG and actual `git commit -S` followed by `git verify-commit`. The separately frozen Ed25519-only build passed **13/13 integration tests**, including all original eleven tests and real RSA/ECDSA rejection. Durable unknown outcomes are never automatically retried. | Task/run labels are owner-issued, not attested HeptaRuntime identities. Current runtime aliases use the same trusted OS account. External HTTPS APIs and SSH login are unsupported. |
-| P2: personal vault | Encrypted login/note/API entries, password generation, RFC-vector TOTP, local health, bounded sessions, offline CLI, encrypted backup/recovery, explicit JSON import/export and password change. Independent process and actual SIGKILL recovery observed. | Linux/Unix private local filesystem, trusted owner account; no hostile-owner isolation, hardware anti-rollback, third-party import or independent security review. |
-| P3: daily clients | Real headed Chromium/native-host login and rejection profile: **26/26**. Physical two-device opaque synchronization: **14 stages and 18 authenticated transfers** across ai395 and ROG retained conflicting edits and restored both histories. Native backpressure fix: **8/8**. | The latest c6/QA12 Android run r9 failed after **1/12** completed checks. Browser observation covers the fixed Chrome 157 Linux combination. Sync is an explicit CLI workflow, not an automatic daemon or field merger. |
-| P4: extended vault | Android native Passkey provider and CredentialManager fixture implemented. The r7 phone ledger has **8 passed, 1 failed, 9 blocked**, including actual CredentialManager creation with independent RP registration and ordinary encrypted backup. Separate host format/cryptography and RP results retain their original scope. | Phone authentication failed; reset, recovery and stale-backup cases were not qualified. The r8 fixture adds its required normal permission and starts a new eighteen-case observation. Credential exchange, sharing, device revocation and additional browsers/platforms remain unsupported. |
-| P5: production adoption | The fixed old/new broker binaries completed **27/27** real same-format upgrade/rollback checks, including interrupted-operation fencing and exact denial behavior. Published `7e77aa3` passed synthetic-core CI and both workflow-trust combinations. The clean `c447536` Python preflight passed 1988 tests with five explicit platform skips. | The `2280c36` full workflow retained three HA failures before cancellation; `7e77aa3` has not passed the full gate. Independent security review, measured long-term stability, signed releases, arbitrary-version/data-format migration and operational support remain incomplete. |
+| P1: agent/developer use | Executable Rust CLI/SDK, local socket broker, exact-operation owner grants, controlled loopback API use, SSHSIG and actual `git commit -S` followed by `git verify-commit`. The bounded-read repair passed **19/19 on Linux and separately 19/19 on macOS**: the original thirteen tests plus six real socket regressions. Durable unknown outcomes are never automatically retried. | Task/run labels are owner-issued, not attested HeptaRuntime identities. Current runtime aliases use the same trusted OS account. External HTTPS APIs and SSH login are unsupported. |
+| P2: personal vault | Encrypted login/note/API entries, password generation, RFC-vector TOTP, local health, bounded sessions, offline CLI, encrypted backup/recovery, explicit JSON import/export and password change. Independent process and actual SIGKILL recovery observed. The separate frozen macOS vault passed **14/14**. | The observed Linux and macOS CLI/filesystem combinations trust the owner account; no hostile-owner isolation, hardware anti-rollback, third-party import or independent security review. |
+| P3: daily clients | Real headed Chromium/native-host login and rejection profile: **26/26**. Physical two-device opaque synchronization: **14 stages and 18 authenticated transfers** across ai395 and ROG retained conflicting edits and restored both histories. Native backpressure fix: **8/8**. | The latest c7/QA14 Android run r11 failed after **2/12** completed checks, as did c6/QA13 run r10. The authorization-rejection cause remains undetermined. Browser observation covers the fixed Chrome 157 Linux combination. Sync is an explicit CLI workflow, not an automatic daemon or field merger. |
+| P4: extended vault | The fixed Android native fixture completed real CredentialManager create/get, ordinary encrypted SAF backup, same-device app-data reset/new-process restore, and independent RP stale-backup rejection. The r8 original ledger remains **16 passed, 2 failed**; three separately declared supplements passed **3/3**. | Original G07/G10 failures and G08's causal limit remain recorded; M05 has a launch-audit gap. This is one synthetic native fixture and same-device recovery, not physical two-device Passkey migration. Credential exchange, sharing, device revocation and additional platforms remain unsupported. **P4 remains unqualified.** |
+| P5: production adoption | The fixed old/new broker binaries completed **27/27** real same-format upgrade/rollback checks, including interrupted-operation fencing and exact denial behavior. Published `3ada83a` passed its own synthetic-core CI and both workflow-trust combinations. The clean `c447536` Python preflight passed 1988 tests with five explicit platform skips. | The `2280c36` full workflow retained three HA failures before cancellation; `7e77aa3` was cancelled and `3ada83a` has not passed the full gate. Independent security review, measured long-term stability, signed releases, arbitrary-version/data-format migration and operational support remain incomplete. |
 
 These are separate acceptance boundaries. For example, a real local Git signing
 test does not establish a malicious same-account agent cannot read owner files;
@@ -50,7 +50,10 @@ pass an integrity check. It grants no authenticity or qualification authority.
 | Observed artifact | SHA-256 |
 | --- | --- |
 | ROG normal `heptabao-server` build | `c27a0c223d227d3b2b5292e1e3ab6cf0230562baee36b6465b22a7ddf17be172` |
-| ai395 final broker | `389cc15a0926ef9f30cd149b56424a484dfad600a308252ed111f2869b5b9175` |
+| ai395 original broker | `389cc15a0926ef9f30cd149b56424a484dfad600a308252ed111f2869b5b9175` |
+| ai395 bounded-read repair broker | `6f9324480fb9e9f9ce08a182cd9822d5236cb866146578d5851845719319d9f5` |
+| macOS bounded-read repair broker | `efa4b1f9394f3a2afc8d63d3812e9e8997b6809c16feb34dc168519d58e5b466` |
+| macOS frozen `c447536` vault | `237d8e1f5f5bc6e6a6754dd678487e5b8b6feabf7991bc81d3a69f94056dad97` |
 | ai395 final vault | `b0cccc3c204d6be5e2e20ee5830e34cb1242d3ac03ea42cd3b7e26a3ea416358` |
 | ai395 final browser host | `e6eaa6210b6d8a6480a20d4d1be65c221c548e08803ed76558a7b72eb3cd2f7d` |
 | ai395 final sync CLI | `c82a17b0c148423b6223dd4a77540cd9c188f354c76309944cbb2091f2836663` |
@@ -326,6 +329,42 @@ product APK are unchanged. The [host packet](../../qa/personal_credentials/evide
 retains both candidates, all original outputs and the counterexample failures.
 No QA13 phone success is inferred from this host evidence.
 
+The subsequent c6/QA13 run r10 completed the actual ciphertext import and
+locked-fill rejection, then failed at the wrong-master-password case: the
+driver expected `Unlock failed`, while AuthActivity showed `Authorization
+rejected`. It remains **2/12**, with no successful fill or later case inferred.
+The elapsed whole-profile time includes an earlier request and is not proof
+that the current request's 120-second lifetime expired. The later diagnostic
+MainActivity decision also follows a lifecycle change and cannot identify the
+original rejection branch.
+
+Candidate c7 adds only closed diagnostic codes and state bits around existing
+authorization/lifecycle decisions; it retains the existing guards, lifetime and
+operation order. QA14 extends only the diagnostic code filter. Its original
+SDK build completed 50 commands, the actual Rust/Java format checks passed
+12/12, and the separately decoded APK review passed 12/12. The candidate's
+first host packet used a colliding test filename; the corrected second packet
+renames the new lifecycle test so the original diagnostic tests are preserved.
+Both original packets remain available.
+
+Actual c7/QA14 run r11 again completed only import and locked-fill rejection,
+then encountered the same `Authorization rejected` text in the wrong-master
+case: **2/12**, failed, with a complete durable Runtime result and no timeout.
+Its failure-time filtered provider log result is `available: true, codes: []`.
+The driver did not retain raw byte counts, discarded-line counts or the process
+identity relationship between Auth entry and collection. This result cannot
+show whether events were absent, discarded or collected from a later process;
+it cannot choose the pre-KDF or post-KDF rejection branch. No self-Autofill,
+cancellation, process restart or actual timer-expiry cause is established.
+
+The [r10/c7/r11 history packet](../../qa/personal_credentials/evidence/20261106/android-r10-c7-r11-public-history.tar.gz)
+retains six byte-identical candidate, build, failed-phone and internal-review
+archives, the additional read-only log-gap review and the original release
+observations. Both phone runs restored the original Autofill setting and
+confirmed all three owned packages absent from installed and retained-package
+queries. Those observations apply to each recorded handoff. The next c8/QA15
+candidate is diagnostic work in progress and has no inherited phone result.
+
 Passkey candidate r4 has 28 source files matching its original build inventory.
 It implements a separate Android credential provider for one pinned native
 fixture and relying-party ID. Its password-protected `.hbv` store preserves the
@@ -475,16 +514,93 @@ resolved to the exact original file digest. Cleanup verified all three original
 settings, installed/retained absence of the three owned packages, removal of
 owned documents/media entries and reverse mapping, and a closed RP listener.
 
-The r8 product delta is that one fixture manifest permission. All other product
-source bytes and the `b16e8291` provider APK are unchanged. Its new build receipt
+The r8 product delta is the fixture's normal
+`CREDENTIAL_MANAGER_SET_ALLOWED_PROVIDERS` permission. All other product
+source bytes and the `b16e8291` provider APK are unchanged. Build receipt
 `97a6daec...` records 33 successful SDK commands and separately verifies all
-three newly signed fixture APK manifests and certificates. The r7 provider's
-host/DEX evidence is explicitly reused as older evidence, not reported as a new
-r8 host execution. The new phone declaration retains all eighteen cases and
-pins new input/reset helpers, artifact identities and backup roles. Its
+three new fixture APK manifests and certificates. The r7 provider's host/DEX
+evidence is reused with its original identity; it is not a new r8 host
+execution. The r8 declaration retains all eighteen cases and pins the new
+input/reset helpers, artifact identities and backup roles. The
 [ingress packet](../../qa/personal_credentials/evidence/20261106/passkey-r8-ingress-originals.tar.gz)
-preserves the exact new build and author host controls. A new phone run must
-establish every claimed r8 result.
+preserves the new build and author host controls.
+
+The completed r8 original ledger records **16 passed and 2 failed**, with all
+eighteen cases executed and none blocked or missing. Actual Android
+CredentialManager create and get responses were accepted by the independent
+RP. Ordinary SAF exported and read back an encrypted backup. M05 then cleared
+only the initially absent, exact-owned provider's app data under its reviewed
+checkpoint, observed a new process, and restored through ordinary SAF. M06
+authenticated the same credential and SPKI public key with the RP counter
+advancing from 1 to 2 and authenticator flags 29 after restore. This is same-device OS
+app-data reset/new-process recovery; it does not establish physical two-device
+Passkey migration or direct inspection of a private store's inode.
+
+G11 used a separately observed current recovery backup and retained the actual
+older M04 ciphertext as stale input. Its separately admitted single reset and
+ordinary SAF restoration produced a real CredentialManager assertion that the
+RP rejected with `counter_rollback_or_replay`; the accepted key and counter
+stayed unchanged. Counters advanced only through ordinary create/get operations
+and RP validation. Neither side's counter was manually altered to obtain the
+result. Both M05 and G11 retain their individual intent, result and completion
+witness; no third reset or uncertain reset replay was performed.
+
+Original G07 and G10 remain failed. G07's one-Back controller did not establish
+the final cancellation callback within the admitted original request window.
+G10 reached `choose_backup_destination_first`, because an earlier Write had
+already consumed the destination, and did not test wrong-key rejection.
+The original G08 report remains present with an explicit causal limitation:
+its refusal also followed a previously consumed destination, so that result
+alone did not prove clearing a newly selected, unconsumed destination.
+
+Three separate one-case supplements then passed **3/3**, without changing the
+original eighteen-case denominator. Fresh G07 observed the same request's
+Operation Back followed by the system chooser Back, the exact cancellation
+callback, unchanged RP acceptance and the original 180/300-second timing
+bounds. Fresh G08 selected an unconsumed target before beginning a new picker
+and cancelling; Write was refused and the nonempty target digest stayed
+unchanged. Fresh G10 used a newly selected target, reached
+`wrong_key_or_corrupt` and preserved that target. The 615-byte ciphertext used
+to make these two targets nonempty was explicit QA fixture preparation, not a
+product export. The unconsumed-target statement is their precondition; G10's
+attempted Write consumes the selected URI when it begins.
+
+G02's original Runtime job remains failed with exit 1: after the actual
+wrong-password rejection and timing assertions, its create-only report writer
+collided with an existing control-result filename. An independently reviewed,
+read-only reconciliation supplies the case's behavior result; no phone action
+was repeated. G11's auxiliary export also retains its original mistaken summary
+reference and the distinct correction pointing to the actual new backup
+receipt. Neither original result was rewritten.
+
+M05's ordinary-restore launch reported `audit_recorded=false`. Later product
+success and a durable terminal outcome do not repair that control-plane audit
+gap. The host-only output-materialization job
+`1a1b1b76f32-fc05-7a72` has no observed terminal status; its files were separately
+read and hashed. The later final packet job `1a1b1c54169-fc05-7abe` completed
+successfully with exit zero and durable, complete output. That separate
+success does not supply the earlier job's missing terminal observation.
+
+The [r8 final public packet](../../qa/personal_credentials/evidence/20261106/passkey-r8-final-public-evidence.tar.gz)
+groups the unchanged original phone archive, its manifest/receipt/assessment,
+the local integrity verification and the actual archive Runtime binding.
+The original inner archive has 1,744 regular members, including originals and
+explicit derived summaries. It retains all 34 tracked run invocations and
+terminal observations, exact stdout/stderr bytes, 1,195 public phase records,
+frozen sources, original failures and supplements. Canonical structured
+metadata copies are distinguished from original source and log bytes.
+The [final internal peer packet](../../qa/personal_credentials/evidence/20261106/passkey-r8-final-internal-peer-review-r1.tar.gz)
+adds selected original Runtime bindings and 121 host-only consistency checks.
+These are not phone test cases or an external security review.
+
+Final cleanup and an independent release observation verified all three
+original settings, installed/retained absence of all three owned packages,
+the absent owned reverse mapping and all twelve owned synthetic files, six
+directories and corresponding MediaStore rows absent. The original RP emitted
+its stopped message and reached terminal state before document cleanup.
+All tracked phone jobs were terminal before handoff. This qualifies only the
+stated synthetic native-fixture observations on the current device:
+`p4_qualified=false` and `production_qualified=false` remain explicit.
 
 The archived r4 packet contains the complete eighteen-case ledger, cleanup and
 correction receipts, a twenty-four-attempt index and five actual QA source
@@ -522,11 +638,12 @@ provenance. It does not claim a password-path read in that later observation.
 | Frozen mobile artifact | SHA-256 | Current evidence boundary |
 | --- | --- | --- |
 | Autofill candidate 5 provider APK | `5c643afa5a08c6e8dd0baf751fe56dadf0f66947284d119d2da7051f4ab88ff8` | Build/decoded manifest and 12 host format checks; its r6 and r7 phone profiles each failed after 1/12 checks. |
-| Autofill candidate 6 provider APK | `10028da82fede388096362d0bf2c6d106bd1e8823a12c17c022f8115adcf262a` | Separate build, 12 host format checks and 12 actual-APK checks; QA11/r8 and QA12/r9 each failed after 1/12. QA12 reached the actual menu touch. |
+| Autofill candidate 6 provider APK | `10028da82fede388096362d0bf2c6d106bd1e8823a12c17c022f8115adcf262a` | Separate build, 12 host format checks and 12 actual-APK checks; QA11/r8 and QA12/r9 each failed after 1/12. QA13/r10 completed 2/12 before authorization rejection. |
+| Autofill candidate 7 provider APK | `164c10fbc97b6db8e6f3dbe1e435f37dae64ec25aae319d0ecda8f10bf5b7c20` | Diagnostic-only candidate: actual SDK build, 12 Rust/Java format checks and 12 decoded-APK checks passed; QA14/r11 failed after 2/12 with an empty filtered log result and an undetermined authorization-rejection cause. |
 | Passkey r4 provider APK | `e96218bc0ab1c228120471d5168a336e6b526bfd5e39e1a0a533335300d7c6e8` | Build/decoded manifest and 10 host checks; phone import failed before any credential creation, with all eighteen cases retained. |
 | Passkey r5b provider APK | `9985457ba13ddef5c286c6017d6c675cb0e64bafa97f119516a3fc4fcce5fc3a` | Separately fixed source/build and 10 host checks; its first ordinary-SAF phone import returned `operation_failed` before password entry. |
 | Passkey r6 provider APK | `0240a545d9ed9518201cfda945a26c5f7dc8742534d1ab21d5e84f23bf9c4ac7` | Separate diagnostic build and 10 host checks; phone M01 failed PUBLISH_LINK/EACCES, cleanup passed, sixteen blocked. |
-| Passkey r7 provider APK | `b16e82916330fac6909f82696089798c3ec76d7b4058fe9290e7e841b9e00459` | Separate storage-fix build, 10 host checks and actual DEX inspection; r7 phone 8 passed, 1 failed, 9 blocked. Reused unchanged for the new r8 fixture observation. |
+| Passkey r7/r8 provider APK | `b16e82916330fac6909f82696089798c3ec76d7b4058fe9290e7e841b9e00459` | The unchanged r7 provider retains its separate storage build, 10 host checks and DEX evidence. Original r7 phone: 8 passed, 1 failed, 9 blocked. With the newly permissioned r8 fixtures: original 18-case ledger 16 passed/2 failed, plus three independent supplements 3/3; original G08's causal limit, M05 audit gap and unqualified P4 scope remain explicit. |
 
 ### Case-bound synthetic reset helper
 
@@ -627,7 +744,27 @@ Its three bounded core receipts were recovered from original log lines with
 all original SHA-256 values verified. At the 13:34 UTC observation,
 [full replacement 42215657729](https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/42215657729)
 was still running complete locked Rust workspace tests in both combinations.
-No newer source inherits these results. This draft remains unmerged.
+That workflow was subsequently cancelled after publication of the next source;
+its terminal cancellation was observed at 14:43 UTC. No newer source inherits
+its earlier successful steps.
+
+Source `3ada83a7b1008948a1b24a2e8cf585ee89357336`, tree
+`6196647cf9d8e3811347b95e5f984b5c1234ca70`, passed its own
+[synthetic core 42233353626](https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/42233353626)
+and both combinations of
+[workflow trust 42233353627](https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/42233353627).
+All three core receipts were recovered from the original decoded job-log
+envelopes with their original byte lengths and SHA-256 values verified. The
+[original core packet](../../qa/personal_credentials/evidence/20261106/ci-3ada-core-originals.tar.gz)
+and [core result](../../qa/personal_credentials/evidence/20261106/ci-3ada-result.public.json)
+retain the exact source, build and artifact bindings and the explicit false
+flags for broader qualifications. The later recorded observation of
+[full replacement 42233353960](https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/42233353960)
+showed twelve successful steps in both source combinations, including complete
+locked Rust workspace tests, strict Clippy and documentation; the real TLS
+service step was in progress. It has no passing full result. The
+later bounded-read source overlay does not inherit that older source's CI
+results. This draft remains unmerged.
 
 ### Real same-format broker upgrade and rollback
 
@@ -647,7 +784,7 @@ that two-binary, same-format, trusted-owner loopback exercise. It does not
 qualify an installer, signed release, arbitrary rollback, data-format migration,
 physical power loss or long-term production stability.
 
-### macOS remains unqualified
+### macOS selected clients and the bounded-read repair
 
 The separate clean `c447536` Mac source was recovered without changing its
 tree. Earlier attempts retained the tool-path failure, network timeout and
@@ -659,6 +796,56 @@ attempt; the lockfile, selected features and test gates are not relaxed.
 The [available Mac originals](../../qa/personal_credentials/evidence/20261106/mac-r2-r4-available-originals.tar.gz)
 retain fifteen exact source, preparation, inventory and failed-run files. This
 partial recovery does not claim all earlier command logs are available.
+
+Subsequent public-archive preparation retained its failures: the second HTTP
+prefetch held 145 of 157 selected versions, while a separate local-link attempt
+accepted no connections and supplied no new archives. A private cache with
+375 of the lockfile's 387 registry versions was then sufficient for the actual
+selected Darwin build. The twelve absent archives were not required by those
+three selected crates; no complete-workspace cache or build is claimed.
+The [available preparation and original build packet](../../qa/personal_credentials/evidence/20261106/mac-preparation-and-original-selected-build-history.tar.gz)
+preserves three unchanged original archives and explicitly identifies the
+unavailable first-prefetch archive. No missing individual output is recreated.
+
+Against unchanged `c447536` source on macOS arm64/Rust 1.98.0, formatting,
+strict Clippy, all four CLI builds and test compilation passed. Actual vault
+tests passed 14/14, the edge library passed 1/1 and its independent Python
+process profile passed 4/4. The original broker passed only 4/13. The
+Linux-specific eight-case native-backpressure profile explicitly refused this
+platform; it is unsupported here, not eight Mac passes. No Mac browser
+integration was observed.
+
+Per-stage diagnostics located a Darwin `EINVAL` at a read-timeout update after
+the reply header had already been received. A controlled TCP comparison also
+failed at a later timeout update when the peer closed with an unread request
+body; the fully drained-body control read the complete status successfully.
+The original r2 diagnostic had supplied the CLI `issue` arguments in the wrong
+order. Its `invalid_ttl` and incomplete diagnostic remain recorded as a caller
+mistake, not a product defect.
+
+The repair waits for readiness and uses a per-call nonblocking receive, without
+changing socket blocking mode or ignoring timeout-setting errors. Frame header
+and body retain their original shared deadline; the upstream status line keeps
+its five-second budget and 128-byte bound. Interrupted reads and temporary
+unavailability do not restart the budget. A final successful read after the
+deadline is refused, and a closed peer's queued bytes remain readable before
+EOF is classified. Target, grant, revocation and durable-unknown behavior are
+unchanged.
+
+The first IPC-only candidate passed 16/19 and retained three HTTP failures.
+The final three-file overlay, including `lib.rs` SHA-256
+`3617799f6de0368fa3b4b4c1343510fe9d202ee3a31fc0e067eb312c40732001`,
+passed **19/19 independently on both macOS and Linux**. This comprises all
+thirteen original broker tests and six real Unix-socket regressions for queued
+peer closure, truncated frames, invalid size, fragmentation, a silent peer and
+the shared header/body deadline. Both platforms completed locked offline
+builds. Formatting and strict Clippy were additionally executed on Mac; the
+Linux packet does not claim those checks. Original source and frozen artifacts
+remained unchanged. The new overlay is separately identified from the original clean
+source. The [Mac original evidence and Runtime bindings](../../qa/personal_credentials/evidence/20261106/mac-broker-read-fix-public-evidence.tar.gz)
+and [Linux original evidence](../../qa/personal_credentials/evidence/20261106/broker-poll-fix-linux-public-evidence.tar.gz)
+retain failed attempts alongside the successful profiles. These results do not
+expand browser support, Runtime identity attestation or production scope.
 
 ### Separately observed Python integration preflight
 

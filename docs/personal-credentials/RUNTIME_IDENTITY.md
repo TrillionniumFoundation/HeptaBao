@@ -45,6 +45,25 @@ holders share that scope, or to a native stdio session. They explicitly do not
 claim authenticated ChatGPT caller isolation. Process and PTY ownership retain
 the trusted operator-account scope.
 
+### Follow-up check of exposed tool contracts
+
+A later read-only check of the exposed tool descriptions found
+`execution_shadow_admit`. It validates and hashes a canonical execution intent,
+but requires `final_use.state = not_granted` and explicitly does not start a
+process, grant FinalUse or acknowledge an effect. Its caller-supplied
+`principal`, `run_id` and `generation` fields are not an authenticated task
+identity or a broker-verifiable attestation.
+
+The rechecked `process_start` input still has no task-attestation, audience or
+proof-of-possession field. `privileged_action` can restrict execution to an
+administrator-configured symbolic action; that action boundary does not prove
+the identity of a calling workload.
+
+This follow-up did not invoke those tools or reread host configuration. The
+actual operator-mode observations above remain the deployment evidence. The
+isolated Linux source route below still lacks qualification of a corresponding
+deployed binary, policy and broker-facing workload-identity verification path.
+
 ## Source reviewed and deployment boundary
 
 The repository's default branch was observed at
