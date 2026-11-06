@@ -1,0 +1,17 @@
+{
+  "metadata": {
+    "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "gid": 1000,
+    "link_count": 1,
+    "metadata_platform": "linux",
+    "mode": 384,
+    "uid": 1000,
+    "xattr_names": [],
+    "xattr_sha256": {}
+  },
+  "mode": 384,
+  "path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r8/result.public.json",
+  "sha256": "9cf27fbf78f3f976fb6397a693b1fa18ec3965bbea84d58cb0f8773aa4f2a5ff",
+  "size": 108456,
+  "version": "66306:35944837:108456:1793971322858151296:1793971322860151305"
+}

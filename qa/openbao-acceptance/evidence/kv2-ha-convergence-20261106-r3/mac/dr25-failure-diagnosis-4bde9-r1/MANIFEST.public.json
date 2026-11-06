@@ -1,0 +1,81 @@
+{
+  "actual_dr_job": "1a1b137be71-fc05-76fa",
+  "actual_dr_status": "failed",
+  "all_custody_gaps_empty": true,
+  "all_original_children_waited_once": true,
+  "derived_note_revision": {
+    "original_runtime_streams_script_request_start_and_terminals_unchanged": true,
+    "prior_manifest_sha256": "6cc86d6dde2cc2110bf34568971e8dc9e6816459ec4afa03262d362b778416ac",
+    "prior_reconciliation_sha256": "ee6707d97f640d19ce5138dff63aca9b32adced58319f03b3df3d6c08db4f6ac",
+    "reason": "Clarify string-label grammar suppression, including the valid slash-containing expected state_format; no original observation changes."
+  },
+  "files": [
+    {
+      "bytes": 8291,
+      "path": "projection-controller.py",
+      "sha256": "366fab583ed996bcc105858f109a206dea1f5c002a040e8568ea2ec7c8d920a8",
+      "source": "exact read-only executed stdin source"
+    },
+    {
+      "bytes": 9191,
+      "path": "runtime-request.recovered.json",
+      "sha256": "0b78761adf6d7562b9041df890a026a7c6b603e8fc0dc4bb5ba8089540aba428",
+      "source": "explicit safe local derivation / parsed tool metadata"
+    },
+    {
+      "bytes": 1176,
+      "path": "runtime-start.recovered.json",
+      "sha256": "6ee6aa8473187c5e451373fd1115d455c781c63416fff717b1e6db55d6a287c2",
+      "source": "explicit safe local derivation / parsed tool metadata"
+    },
+    {
+      "bytes": 736,
+      "path": "runtime-terminal.recovered.json",
+      "sha256": "576775eaf805834aabed66d44c653ab480968b1baadb469f1fa390a4c7fb65ad",
+      "source": "explicit safe local derivation / parsed tool metadata"
+    },
+    {
+      "bytes": 727,
+      "path": "actual-dr-runtime-terminal.recovered.json",
+      "sha256": "02d9f8fb1fc7fd0f10bad670b19fea8165c1912068b5d969498b666a0d6e4142",
+      "source": "explicit safe local derivation / parsed tool metadata"
+    },
+    {
+      "bytes": 180368,
+      "path": "safe-projection.stdout.original",
+      "sha256": "3eae11fc92329b25a830957f8c183f3d552c34489a3efa169adfcf5609ea6442",
+      "source": "durable lossless process_read 1a1b141a2cd-fc05-774a; safe projection only"
+    },
+    {
+      "bytes": 0,
+      "path": "safe-projection.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "durable lossless process_read 1a1b141a2cd-fc05-774a"
+    },
+    {
+      "bytes": 3423,
+      "path": "INDEPENDENT_CUSTODY_RECONCILIATION.public.json",
+      "sha256": "3d5e7cc7548f1fc769114f230bb6ed2bbd25bc4d207b447a56882a43baeb0365",
+      "source": "independent full safe projection parsing and per-child reconciliation"
+    },
+    {
+      "bytes": 300,
+      "path": "SERVER_SHA_METADATA_RECONCILIATION.public.json",
+      "sha256": "e005dda2bf6d153dd60094077c6ae96708184b516dc08d6bccb48f71e78636aa",
+      "source": "safe existing build manifest/receipt/native metadata/Cargo reconciliation only"
+    }
+  ],
+  "metadata_serialization_note": "Tool metadata materialized from returned parsed objects; projection streams preserve the exact durable original byte sequences.",
+  "no_live_members_before_original_reap": true,
+  "private_archive_hashes_included": false,
+  "private_process_output_included": false,
+  "private_seal_identity_values_included": false,
+  "private_summary_body_included": false,
+  "process_custody_original_count": 277,
+  "product_rerun": false,
+  "projection_job": "1a1b141a2cd-fc05-774a",
+  "read_only": true,
+  "safe_projection_stdout_bytes": 180368,
+  "safe_projection_stdout_sha256": "3eae11fc92329b25a830957f8c183f3d552c34489a3efa169adfcf5609ea6442",
+  "schema": "heptabao.dr25-safe-diagnosis-evidence-manifest.v1"
+}

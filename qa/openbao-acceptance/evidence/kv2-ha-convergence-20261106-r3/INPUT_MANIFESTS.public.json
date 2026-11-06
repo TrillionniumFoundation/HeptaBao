@@ -1,0 +1,77 @@
+{
+  "mac4bde_actual_dr_failure_archive_pending": false,
+  "mac4bde_actual_dr_safe_diagnosis_pending": false,
+  "mac4bde_complete_archive_pending": false,
+  "packages": [
+    {
+      "files_including_manifest": 180,
+      "manifest": "mac/build-test-09c14-r1/MANIFEST.public.json",
+      "manifest_sha256": "741ec04cb974cd9eefa7e774d149e12a18aea5560716a46fee7cab5c0315827e",
+      "package": "mac/build-test-09c14-r1"
+    },
+    {
+      "files_including_manifest": 21,
+      "manifest": "mac/default-policy-fixture-formatter-r1/MANIFEST.public.json",
+      "manifest_sha256": "10a4d4fd5401e837ffa0308891deeb3f05f7a90f1afc1237f97b957f0e5cd49d",
+      "package": "mac/default-policy-fixture-formatter-r1"
+    },
+    {
+      "bytes": 94718,
+      "file": "formal-source-audit/AUDIT.public.json",
+      "kind": "independently_reviewed_allowlist_projection",
+      "package": "formal-source-audit",
+      "raw_receipts_and_credential_dependent_fingerprints_included": false,
+      "sha256": "9e8554f09830f1ac15b3f0a35454677293776326c33d659fb3ceb1f0412e6a27"
+    },
+    {
+      "files_including_manifest": 112,
+      "manifest": "rog/build-test-r8/COMPLETE_LOG_MANIFEST.public.json",
+      "manifest_sha256": "8719f2db54ceccfc81e73f024e77af1e9be847e3fdab72807f64db3721eb2b4e",
+      "package": "rog/build-test-r8"
+    },
+    {
+      "files_including_manifest": 206,
+      "manifest": "mac/build-test-4bde9-r1/COMPLETE_LOG_MANIFEST.public.json",
+      "manifest_sha256": "c52518bea56b74c95bfed6f8ee8442e4ba1dfe1ee52f42be9dc56a2205891f6b",
+      "package": "mac/build-test-4bde9-r1"
+    },
+    {
+      "files_including_manifest": 36,
+      "manifest": "mac/dr25-source-stage-4bde9-r1/MANIFEST.public.json",
+      "manifest_sha256": "ef3315e2c4202a22f82a124a2e72c0d094f67773ce9a7ca93eeacf751db55b88",
+      "package": "mac/dr25-source-stage-4bde9-r1"
+    },
+    {
+      "files_including_manifest": 7,
+      "manifest": "mac/dr25-prepare-4bde9-r1/MANIFEST.public.json",
+      "manifest_sha256": "f412a0b61183bf28efa37ca2efd30ce086793c4360f7299778904fb05bda0220",
+      "package": "mac/dr25-prepare-4bde9-r1"
+    },
+    {
+      "files_including_manifest": 38,
+      "manifest": "rog/source-prep-r9/MANIFEST.public.json",
+      "manifest_sha256": "41e99f436929d6ea9a8192d76ddc4834639b12b81080742547ff3173149ab10e",
+      "package": "rog/source-prep-r9"
+    },
+    {
+      "files_including_manifest": 19,
+      "manifest": "rog/build-test-r9/MANIFEST.public.json",
+      "manifest_sha256": "086c2696682dba7f4d6532c0a379d757d108ce03b3f779438698c68de621574a",
+      "package": "rog/build-test-r9"
+    },
+    {
+      "files_including_manifest": 7,
+      "manifest": "mac/dr25-execution-4bde9-r1/MANIFEST.terminal.public.json",
+      "manifest_sha256": "a32395eb6d1a5ab5eca25eaff438da9f9ea58288c9e723c28e410f909ef17e63",
+      "package": "mac/dr25-execution-4bde9-r1"
+    },
+    {
+      "files_including_manifest": 10,
+      "manifest": "mac/dr25-failure-diagnosis-4bde9-r1/MANIFEST.public.json",
+      "manifest_sha256": "8b27394e95db3ef96ab7bdae2aeefd3361161ca651ae56e14847044665f327d8",
+      "package": "mac/dr25-failure-diagnosis-4bde9-r1"
+    }
+  ],
+  "rog09_full_archive_pending": false,
+  "schema": "heptabao.convergence-r3.input-package-pins.v1"
+}

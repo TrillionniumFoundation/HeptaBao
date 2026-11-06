@@ -1,0 +1,126 @@
+{
+  "actual_dr_job": "1a1b137be71-fc05-76fa",
+  "actual_dr_terminal": {
+    "at_unix_ms": 1793974640560,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a1b137be71-fc05-76fa",
+    "launch_nonce": "c6ff01243fc58da67f10d638fa745c0b",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 178,
+        "stored": 178
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "archive": {
+    "cli_at_least_34mib": false,
+    "cli_state_bytes": 9009418,
+    "minimum_bytes_34mib": 35651584,
+    "normal_http_at_least_34mib": false,
+    "normal_http_state_bytes": 9009418,
+    "seal_identity_both_present": true,
+    "seal_identity_equal": true,
+    "state_format_projection_note": "Non-string values and strings outside the label grammar are suppressed; the valid expected state_format heptabao-encrypted-object-backup/HBV6PK01 contains /, so null is not evidence of a missing or invalid original value."
+  },
+  "baseline": {
+    "qualified": false,
+    "recorded_check_count": 21,
+    "recorded_failed_count": 0,
+    "recorded_passed_count": 21,
+    "required_count": 31,
+    "status": "failed"
+  },
+  "custody_top": {
+    "children_count": 277,
+    "failed": false,
+    "finished": true,
+    "interrupted": false,
+    "original_count": 277,
+    "passed_process_custody": true
+  },
+  "dr": {
+    "checks": [
+      {
+        "case": "independent_backup_filesystem_verified",
+        "passed": true
+      },
+      {
+        "case": "input_source_and_binaries_pinned",
+        "passed": true
+      },
+      {
+        "case": "preactivation_seed_export_pinned",
+        "passed": true
+      },
+      {
+        "case": "official_cli_v6_save_complete",
+        "passed": true
+      },
+      {
+        "case": "complete_v6_archive_seal_binding",
+        "passed": false
+      }
+    ],
+    "failed_check_count": 1,
+    "observed_check_count": 5,
+    "passed_check_count": 4,
+    "required_count": 25,
+    "status": "failed"
+  },
+  "independent_custody_counts": {
+    "children": 277,
+    "exec_admitted": 277,
+    "no_live_before_reap": 277,
+    "returncode_counts": {
+      "-9": 3,
+      "0": 251,
+      "1": 23
+    },
+    "wait_completed": 277,
+    "wait_once": 277,
+    "zero_gaps": 277,
+    "zero_live_at_leader_exit": 277,
+    "zero_live_before_original_reap": 277
+  },
+  "only_safe_projection_retrieved": true,
+  "private_archive_hash_or_seal_values_retrieved": false,
+  "private_summary_raw_retrieved": false,
+  "product_rerun": false,
+  "projection_complete": true,
+  "projection_job": "1a1b141a2cd-fc05-774a",
+  "projection_stdout_bytes": 180368,
+  "projection_stdout_sha256": "3eae11fc92329b25a830957f8c183f3d552c34489a3efa169adfcf5609ea6442",
+  "schema": "heptabao.dr25-safe-diagnosis-independent-reconciliation.v1",
+  "scope": {
+    "authbus_qualified": false,
+    "formal_kv2_qualified": false,
+    "full_replacement_qualified": false,
+    "physical_ha_qualified": false,
+    "resource_benchmark_qualified": false
+  }
+}

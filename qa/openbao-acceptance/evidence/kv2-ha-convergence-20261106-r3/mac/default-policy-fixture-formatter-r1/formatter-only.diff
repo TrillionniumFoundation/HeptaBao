@@ -1,0 +1,45 @@
+--- input.original.rs
++++ formatted.rs
+@@ -506,7 +506,10 @@
+     );
+     let role = f.admin("GET", ROLE, json!({}))?;
+     status(&role, 200);
+-    assert_eq!(role.body["data"]["policies"], json!(["default", "native-jwt"]));
++    assert_eq!(
++        role.body["data"]["policies"],
++        json!(["default", "native-jwt"])
++    );
+     assert_eq!(
+         role.body["data"]["token_policies"],
+         json!(["default", "native-jwt"])
+@@ -515,18 +518,20 @@
+     // Preserve the prior actor as a negative control: no_default_policy=true
+     // removes default even if it were explicitly requested in the policy list.
+     let missing_default = f.token_with_policies(&["jwt-role-manager", "native-jwt"])?;
+-    let manager = f.token_with_policy_options(
+-        &["default", "jwt-role-manager", "native-jwt"],
+-        false,
+-    )?;
+-    let no_sudo = f.token_with_policy_options(
+-        &["default", "jwt-role-no-sudo", "native-jwt"],
+-        false,
+-    )?;
++    let manager =
++        f.token_with_policy_options(&["default", "jwt-role-manager", "native-jwt"], false)?;
++    let no_sudo =
++        f.token_with_policy_options(&["default", "jwt-role-no-sudo", "native-jwt"], false)?;
+     for (actor, expected) in [
+         (&missing_default, json!(["jwt-role-manager", "native-jwt"])),
+-        (&manager, json!(["default", "jwt-role-manager", "native-jwt"])),
+-        (&no_sudo, json!(["default", "jwt-role-no-sudo", "native-jwt"])),
++        (
++            &manager,
++            json!(["default", "jwt-role-manager", "native-jwt"]),
++        ),
++        (
++            &no_sudo,
++            json!(["default", "jwt-role-no-sudo", "native-jwt"]),
++        ),
+     ] {
+         let lookup = f.actor(actor, "GET", "auth/token/lookup-self", json!({}))?;
+         status(&lookup, 200);

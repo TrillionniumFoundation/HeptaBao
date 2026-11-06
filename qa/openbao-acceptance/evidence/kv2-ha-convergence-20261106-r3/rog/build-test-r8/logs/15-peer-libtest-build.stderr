@@ -1,0 +1,4 @@
+   Compiling heptabao-filesystem-guard v0.1.0 (/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source-09c14-r8/crates/heptabao-filesystem-guard)
+   Compiling heptabao-raft-runtime v0.1.0 (/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source-09c14-r8/crates/heptabao-raft-runtime)
+   Compiling heptabao-ha-service v0.1.0 (/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source-09c14-r8/crates/heptabao-ha-service)
+    Finished `release` profile [optimized] target(s) in 1m 42s

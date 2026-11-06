@@ -1,0 +1,25 @@
+
+running 15 tests
+test service::native_auth::jwt_tests::native_jwt_and_userpass_token_api_targets_keep_real_owner_and_renewal_in_both_directions ... ok
+test service::native_auth::jwt_tests::native_jwt_identity_failure_does_not_export_witness_or_token_and_next_login_is_fresh ... ok
+test service::native_auth::jwt_tests::native_jwt_local_service_token_identity_renewal_and_cold_reopen ... ok
+test service::native_auth::jwt_tests::native_jwt_native_owner_capacity_veto_after_authentication_keeps_the_old_root ... ok
+test service::native_auth::jwt_tests::native_jwt_original_assertion_expiry_after_commit_withholds_reply_without_rollback ... ok
+test service::native_auth::jwt_tests::native_jwt_original_assertion_expiry_before_publication_keeps_auth_identity_atomic ... ok
+test service::native_auth::jwt_tests::native_jwt_post_audit_response_and_original_deadline_cannot_be_rebound ... ok
+test service::native_auth::jwt_tests::native_jwt_post_audit_revocation_cannot_replace_the_original_publication_proof ... ok
+test service::native_auth::jwt_tests::native_jwt_post_commit_audit_failure_keeps_whole_root_and_recovery_required ... ok
+test service::native_auth::jwt_tests::native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta ... ok
+test service::native_auth::jwt_tests::native_jwt_role_operations_keep_the_existing_legacy_acl_contract ... FAILED
+test service::native_auth::jwt_tests::native_jwt_token_api_batch_owner_preserves_real_parent_binding_across_cold_reopen ... ok
+test service::native_auth::jwt_tests::native_jwt_token_api_profile_rejects_mount_label_without_real_issuer_or_parent_graph ... ok
+test service::native_auth::jwt_tests::native_jwt_token_api_revoke_orphan_keeps_own_issuer_but_mount_retirement_still_revokes ... ok
+test service::native_auth::jwt_tests::native_jwt_token_api_service_descendants_keep_own_renewal_and_parent_revocation ... ok
+
+failures:
+
+failures:
+    service::native_auth::jwt_tests::native_jwt_role_operations_keep_the_existing_legacy_acl_contract
+
+test result: FAILED. 14 passed; 1 failed; 0 ignored; 0 measured; 3577 filtered out; finished in 22.77s
+

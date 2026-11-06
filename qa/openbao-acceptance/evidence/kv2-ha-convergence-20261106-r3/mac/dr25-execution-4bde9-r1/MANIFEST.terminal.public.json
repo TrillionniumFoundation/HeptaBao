@@ -1,0 +1,48 @@
+{
+  "authbus_qualified": false,
+  "automatic_product_rerun": false,
+  "cancelled": false,
+  "exit_code": 1,
+  "files": [
+    {
+      "bytes": 2142,
+      "path": "result.public.json",
+      "sha256": "5513b8ba10c7b79547b9a9d284b9ad352d8710e26fb5b3c71798c92d57635f88"
+    },
+    {
+      "bytes": 744,
+      "path": "runtime-request.original.json",
+      "sha256": "12acec2fd6312dbd3b34afbd4454a3bd66571319587e819445053d9a7a642def"
+    },
+    {
+      "bytes": 1531,
+      "path": "runtime-start.original.json",
+      "sha256": "9df87064d2dd3f8477621490a59b34159ffd10f925c8f72fe984aed72b581b0c"
+    },
+    {
+      "bytes": 0,
+      "path": "runtime-stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 178,
+      "path": "runtime-stdout.original",
+      "sha256": "0ebf0550b1498c98444bce49e5369c5af17f94dc25eae396d612ea585ab1958f"
+    },
+    {
+      "bytes": 726,
+      "path": "runtime-terminal.original.json",
+      "sha256": "9d25bd939a487d048b0931c2019faa1aaa94d2acb80a97b7482c0110dcc52993"
+    }
+  ],
+  "formal_kv2_qualified": false,
+  "full_replacement_qualified": false,
+  "ha_qualified": false,
+  "job_id": "1a1b137be71-fc05-76fa",
+  "private_artifacts_retained_remotely": true,
+  "private_controller_outputs_or_summary_fingerprints_downloaded": false,
+  "safe_runtime_streams_complete": true,
+  "schema": "heptabao.mac-dr25-4bde9-actual-terminal-evidence.v1",
+  "state": "failed",
+  "timed_out": false
+}

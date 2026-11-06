@@ -1,0 +1,22 @@
+{
+  "base_commit": "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+  "base_tree": "dfb0df97a2c74b1c0154f45342f3debb0ce438ab",
+  "bundle": {
+    "bytes": 1393,
+    "device": 16777244,
+    "inode": 72708501,
+    "sha256": "9808cfef28ce90733b636e81aed122aeeaf4fe81e0f34b1b84dde7e0ab0e11cd"
+  },
+  "clone_no_hardlinks": true,
+  "control": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1",
+  "dr_started": false,
+  "prepare_only_executed": false,
+  "product_started": false,
+  "production_authority": false,
+  "runtime_outer_seconds": 60,
+  "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-dr25-4bde9-r1",
+  "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "source_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "work_seconds": 52,
+  "wrapper_sha256": "b92051069e399539ced31139c1b0c39ad3595b8b05bba88390bedc09c86d98bc"
+}

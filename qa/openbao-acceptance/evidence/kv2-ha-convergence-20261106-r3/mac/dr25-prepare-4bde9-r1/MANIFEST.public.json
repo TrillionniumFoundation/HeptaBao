@@ -1,0 +1,44 @@
+{
+  "cancelled": false,
+  "dr_started": false,
+  "exit_code": 0,
+  "files": [
+    {
+      "bytes": 33085,
+      "path": "prepared-binding.public.json",
+      "representation": "canonical wrapper encode(prepared), verified against actual prepared_sha256",
+      "sha256": "0709194a4dcecee3d91274ebc7185487623ec00e1910306be0928a641b1bae19"
+    },
+    {
+      "bytes": 667,
+      "path": "runtime-request.original.json",
+      "sha256": "36b2819b2e69dea72ed9948f139fe81b1c7287834d7fd340012ebc7def50df30"
+    },
+    {
+      "bytes": 1467,
+      "path": "runtime-start.original.json",
+      "sha256": "d3db76023489192acb8415d4ffe3bae8a66ad1b23b5822c64049ab4321549fa6"
+    },
+    {
+      "bytes": 0,
+      "path": "runtime-stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 34038,
+      "path": "runtime-stdout.original",
+      "sha256": "c2c773658dd0491b6b1eb3024b6b7decc2a8e9b007429535da357ef900e7325c"
+    },
+    {
+      "bytes": 733,
+      "path": "runtime-terminal.original.json",
+      "sha256": "ffc2f9eb37b4e5e3f85d01db60cdd2601d63fabd6d5991458b9826ca8fe71371"
+    }
+  ],
+  "job_id": "1a1b132edcf-fc05-76de",
+  "product_started": false,
+  "production_authority": false,
+  "schema": "heptabao.mac-dr25-4bde9-prepare-evidence.v1",
+  "state": "succeeded",
+  "timed_out": false
+}

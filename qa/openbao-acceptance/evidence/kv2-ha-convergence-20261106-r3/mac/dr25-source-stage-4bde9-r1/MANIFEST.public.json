@@ -1,0 +1,218 @@
+{
+  "cancelled": false,
+  "dr_started": false,
+  "exit_code": 0,
+  "files": [
+    {
+      "bytes": 0,
+      "path": "01-base-before-head.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/01-base-before-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "01-base-before-head.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/01-base-before-head.stdout",
+      "sha256": "cbca82f96c596676837671b5583ea9c2441ea570772691ab08bd7793006b8c3c"
+    },
+    {
+      "bytes": 0,
+      "path": "02-base-before-tree.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/02-base-before-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "02-base-before-tree.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/02-base-before-tree.stdout",
+      "sha256": "18c777797a67e409a17c9768491abf99db2b21b1c489bfba477d5bc3dea3ff29"
+    },
+    {
+      "bytes": 0,
+      "path": "03-base-before-status.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/03-base-before-status.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "03-base-before-status.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/03-base-before-status.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 131,
+      "path": "04-clone.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/04-clone.stderr",
+      "sha256": "6d952717f44fcf3f4b1148acc66af4276ce758e9da32e7c3e0ba378640fe75e1"
+    },
+    {
+      "bytes": 0,
+      "path": "04-clone.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/04-clone.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 136,
+      "path": "05-bundle-verify.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/05-bundle-verify.stderr",
+      "sha256": "3ef61f450f60f25d5f97673b3b6d1f183cf6c364c76e0533fe2c3d1cdc1052d7"
+    },
+    {
+      "bytes": 190,
+      "path": "05-bundle-verify.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/05-bundle-verify.stdout",
+      "sha256": "17f5c9fb6c2b4b1c917f18e2153023caba6bccf5eb2afe35437344df69b0b9e9"
+    },
+    {
+      "bytes": 211,
+      "path": "06-fetch-bundle.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/06-fetch-bundle.stderr",
+      "sha256": "b39abfcb058d3d57a76ebc959ffc906e3ec11d93b9f65adbbd6169dfa05962d7"
+    },
+    {
+      "bytes": 0,
+      "path": "06-fetch-bundle.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/06-fetch-bundle.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 207,
+      "path": "07-checkout.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/07-checkout.stderr",
+      "sha256": "593ba8a41c290ac5f15bc723088c16f622875e2ac5bc6c5e5d90ba80474a28d4"
+    },
+    {
+      "bytes": 0,
+      "path": "07-checkout.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/07-checkout.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "08-source-head.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/08-source-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "08-source-head.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/08-source-head.stdout",
+      "sha256": "798ea711ddde846d7f1fe86738651bfe5fabbbb7bac5ee756af0c2929b3dfe3e"
+    },
+    {
+      "bytes": 0,
+      "path": "09-source-tree.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/09-source-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "09-source-tree.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/09-source-tree.stdout",
+      "sha256": "ace072102d6b0ad7e10013f16b7bcf5dc48d0344dd364b1f83691a7c3672eafc"
+    },
+    {
+      "bytes": 0,
+      "path": "10-source-status.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/10-source-status.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "10-source-status.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/10-source-status.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "11-base-after-head.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/11-base-after-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "11-base-after-head.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/11-base-after-head.stdout",
+      "sha256": "cbca82f96c596676837671b5583ea9c2441ea570772691ab08bd7793006b8c3c"
+    },
+    {
+      "bytes": 0,
+      "path": "12-base-after-tree.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/12-base-after-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "12-base-after-tree.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/12-base-after-tree.stdout",
+      "sha256": "18c777797a67e409a17c9768491abf99db2b21b1c489bfba477d5bc3dea3ff29"
+    },
+    {
+      "bytes": 0,
+      "path": "13-base-after-status.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/13-base-after-status.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "13-base-after-status.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/13-base-after-status.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 22623,
+      "path": "dr25_mac_fixed_wrapper.py",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/dr25_mac_fixed_wrapper.py",
+      "sha256": "b92051069e399539ced31139c1b0c39ad3595b8b05bba88390bedc09c86d98bc"
+    },
+    {
+      "bytes": 948,
+      "path": "intent.public.json",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/intent.public.json",
+      "sha256": "4c982b89831fa1f2e6dc21c2d8a9bf743359a33ddb357c1ac7e97587eb22ee8d"
+    },
+    {
+      "bytes": 37523,
+      "path": "result.public.json",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/result.public.json",
+      "sha256": "f8db146a01a5e9d99108283bff5b2e6cc987d29d9aa566d3a90e98366106849c"
+    },
+    {
+      "bytes": 37434,
+      "path": "runtime-request.original.json",
+      "sha256": "26ef2497f1624ded642397b88443e032932b9f34cdcf0549d33bea79f68965d4"
+    },
+    {
+      "bytes": 38230,
+      "path": "runtime-start.original.json",
+      "sha256": "5f006a7bf0c26a6fcc422da964170298c7e7991e8e606992763533fb20dcd196"
+    },
+    {
+      "bytes": 0,
+      "path": "runtime-stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 25723,
+      "path": "runtime-stdout.original",
+      "sha256": "4b3fc56a635cddaed094147bfe6742ad6f4a0123af83fd020e661a21e9b85d86"
+    },
+    {
+      "bytes": 733,
+      "path": "runtime-terminal.original.json",
+      "sha256": "23390e3b1ddbbb4496da846f39d33d120557d6fa45c853f2d04122dfb7285b04"
+    },
+    {
+      "bytes": 36299,
+      "path": "stage-controller.original.py",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/stage-controller.original.py",
+      "sha256": "73a3ac958ab57a925661a365190edfa11533bf9de146dc87c2d5c57d11f065c0"
+    }
+  ],
+  "job_id": "1a1b1311acc-fc05-76cc",
+  "product_started": false,
+  "production_authority": false,
+  "schema": "heptabao.mac-dr25-4bde9-stage-evidence.v1",
+  "state": "succeeded",
+  "timed_out": false
+}

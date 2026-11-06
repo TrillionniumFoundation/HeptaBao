@@ -1,0 +1,2 @@
+Previous HEAD position was 868439e6 test: observe native JWT identity and preserve orphan token semantics
+HEAD is now at 09c14eae test(auth): correct native JWT fixture preconditions and provenance controls

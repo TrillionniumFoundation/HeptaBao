@@ -1,0 +1,36 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "import hashlib,json,os,subprocess,sys,time\nfrom pathlib import Path\nstart=time.monotonic()\nsource=Path(\"/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source-09c14-r8\")\nexpected={'head':'09c14eae7a3b52dee8ce3af3175dad5900ac59ec','tree':'dfb0df97a2c74b1c0154f45342f3debb0ce438ab'}\nreport={'schema':'heptabao.rog-postterminal-source-preservation.v1','source':str(source),'read_only':True,'service_started':False,'test_rerun':False,'checks':{}}\ndef git(label,args):\n p=subprocess.run(['/usr/bin/git','--no-optional-locks','-c','core.hooksPath=/dev/null',*args],cwd=source,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=15,check=False)\n report['checks'][label]={'exit_code':p.returncode,'stderr_bytes':len(p.stderr),'stderr_sha256':hashlib.sha256(p.stderr).hexdigest()}\n if p.returncode or p.stderr: raise RuntimeError('git_'+label+'_failed')\n return p.stdout.decode().strip()\ntry:\n head=git('head',['rev-parse','HEAD']);tree=git('tree',['rev-parse','HEAD^{tree}'])\n clean=git('clean',['status','--porcelain=v1','--untracked-files=all'])\n report.update(head=head,tree=tree,clean=not clean,dirty_entry_count=len(clean.splitlines()))\n report['matches_candidate']=head==expected['head'] and tree==expected['tree'] and not clean\n report['status']='passed' if report['matches_candidate'] else 'failed'\nexcept BaseException as e:\n report.update(status='failed',error_type=type(e).__name__)\nfinally:\n report['seconds']=round(time.monotonic()-start,6)\n print(json.dumps(report,sort_keys=True),flush=True)\nsys.exit(0 if report['status']=='passed' else 1)\n"
+    ],
+    "created_unix_ms": 1793971583688,
+    "cwd": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "rog",
+    "id": "1a1b109fac8-fc05-753f",
+    "idempotency_key": "heptabao-rog-09c14-r8-postterminal-readonly-source-preservation-20261106-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1b109fac8-fc05-753f",
+    "request_digest": "bc988f409f8f8484b9819b2631b3e9a4c9d63557546820502fcf2ce67a3dd154",
+    "request_fingerprint": 13589769383308134000,
+    "ssh_target": "rog-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b109fac8-fc05-753f"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1b109fac8-fc05-753f"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

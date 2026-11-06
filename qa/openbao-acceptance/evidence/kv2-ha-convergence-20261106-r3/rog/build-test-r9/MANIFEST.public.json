@@ -1,0 +1,97 @@
+{
+  "controller_or_compiler_or_tests_executed": false,
+  "files": [
+    {
+      "bytes": 1208,
+      "path": "attempt-assessment.public.json",
+      "sha256": "10bcb34c6cd26f761600c430ec13ed6a713285944c736d4b5bcb34fe734fa932"
+    },
+    {
+      "bytes": 98939,
+      "path": "bootstrap.py",
+      "sha256": "bae7280d77935448d2e64d013bc523cc7ea79fd68b563d5b486fc088004e18c9"
+    },
+    {
+      "bytes": 3301,
+      "path": "collision-observation/controller.py",
+      "sha256": "664d71ea18cbc1761bcdda7b653b407ab9362ee0b2d1052d37d84c43fae4acfa"
+    },
+    {
+      "bytes": 474,
+      "path": "collision-observation/observed-preparation-claim.public.json",
+      "sha256": "bccdf83d2590ed89a5f08e202d374098e24acdaf3fb7f2702ba8b52f47a29ed7"
+    },
+    {
+      "bytes": 4893,
+      "path": "collision-observation/observed-preparation.result.public.json",
+      "sha256": "8d4b9befc07d0d24e51b91209438daae1b0eb9337f6bc038629609b0953ef3bf"
+    },
+    {
+      "bytes": 6091,
+      "path": "collision-observation/observed-prepare_source.py",
+      "sha256": "d71733e202dbfc53ab6f240ee74e73ba3b487246b270bdcffe2b4879ec703eee"
+    },
+    {
+      "bytes": 3648,
+      "path": "collision-observation/runtime-request.original.json",
+      "sha256": "7533642a592238063b87b9760c531b485ac55a9a4dd02b8310d87d61744df99b"
+    },
+    {
+      "bytes": 1023,
+      "path": "collision-observation/runtime-start.original.json",
+      "sha256": "dfb5ea41afa0606cfc6b62cec196bd0e36857c15e50db44f186776f87be1ee57"
+    },
+    {
+      "bytes": 0,
+      "path": "collision-observation/runtime-stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 6162,
+      "path": "collision-observation/runtime-stdout.original",
+      "sha256": "a1300938be6ec3c9c80300f501b842e09030dae65c6061f688af25682fa9db4e"
+    },
+    {
+      "bytes": 731,
+      "path": "collision-observation/runtime-terminal.original.json",
+      "sha256": "4c3d8ad9fb4ed2e2a6625e9311ba8af89b4f4605930c5d36344b14c45d4a637d"
+    },
+    {
+      "bytes": 21709,
+      "path": "controller.py",
+      "sha256": "63766f5474b17804eb4550690a96ed6a41e736ff926cec56f0154713a9818aa8"
+    },
+    {
+      "bytes": 99276,
+      "path": "runtime-request.original.json",
+      "sha256": "524fd3ab874d4ec1ad3edbc36302493d8380fbefa5e890ecceeeaa1e81f29c52"
+    },
+    {
+      "bytes": 1014,
+      "path": "runtime-start.original.json",
+      "sha256": "cda53b47767186686db3c308b7c7f747621abeb57f6f23189cc004b84d34be3d"
+    },
+    {
+      "bytes": 304,
+      "path": "runtime-stderr.original",
+      "sha256": "f84fd652b85e50ac4599a02310bc77bb4da1ac3f110360caee4ce9a07dcb3a7a"
+    },
+    {
+      "bytes": 0,
+      "path": "runtime-stdout.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 726,
+      "path": "runtime-terminal.original.json",
+      "sha256": "b59e5e26cb572e3671ea45d0e3b3d42dda6d3a07213b072820f8c2349b79fab2"
+    },
+    {
+      "bytes": 50277,
+      "path": "test-selection.public.json",
+      "sha256": "c65a567a7e93c65557b73d63a0f7715dab4a8047f4fa89dd0da8d26a87adf763"
+    }
+  ],
+  "raw_streams_complete": true,
+  "schema": "heptabao.rog-r9-bootstrap-failure-evidence.v1"
+}

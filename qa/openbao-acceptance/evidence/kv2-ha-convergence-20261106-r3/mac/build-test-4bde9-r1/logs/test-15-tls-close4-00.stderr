@@ -1,0 +1,3 @@
+HBHTTP-RESPONSE-WRITE-FAILURE io_kind=broken_pipe accepted_plaintext_bytes=0 flush_attempted=false original_deadline_expired=false
+HBHTTP-RESPONSE-WRITE-FAILURE io_kind=timed_out accepted_plaintext_bytes=258 flush_attempted=true original_deadline_expired=false
+HBHTTP-TLS-CLOSE-FAILURE io_kind=TimedOut original_deadline_expired=true

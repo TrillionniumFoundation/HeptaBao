@@ -1,0 +1,218 @@
+{
+  "compiler_started": false,
+  "cooperative_lock_removed": false,
+  "elapsed_seconds": 3.255598618008662,
+  "new_source": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source-4bde9-r9",
+  "new_source_clean": true,
+  "old_after": {
+    "clean": true,
+    "directory_identity": [
+      66306,
+      35309477,
+      1000,
+      1000,
+      16832
+    ],
+    "failed_receipt_sha256": "9cf27fbf78f3f976fb6397a693b1fa18ec3965bbea84d58cb0f8773aa4f2a5ff",
+    "head": "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+    "tree": "dfb0df97a2c74b1c0154f45342f3debb0ce438ab"
+  },
+  "old_before": {
+    "clean": true,
+    "directory_identity": [
+      66306,
+      35309477,
+      1000,
+      1000,
+      16832
+    ],
+    "failed_receipt_sha256": "9cf27fbf78f3f976fb6397a693b1fa18ec3965bbea84d58cb0f8773aa4f2a5ff",
+    "head": "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+    "tree": "dfb0df97a2c74b1c0154f45342f3debb0ce438ab"
+  },
+  "old_source_preserved": true,
+  "original_preparation_seconds": 150,
+  "production_changed": false,
+  "schema": "heptabao.fresh-clean-source-preparation.v1",
+  "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "source_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "status": "passed",
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "label": "00-before-head",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "cbca82f96c596676837671b5583ea9c2441ea570772691ab08bd7793006b8c3c"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "label": "00-before-tree",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "18c777797a67e409a17c9768491abf99db2b21b1c489bfba477d5bc3dea3ff29"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "label": "00-before-clean",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "gc.auto=0",
+        "clone",
+        "--no-hardlinks",
+        "--no-checkout",
+        "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source-09c14-r8",
+        "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source-4bde9-r9"
+      ],
+      "exit_code": 0,
+      "label": "01-clone",
+      "stderr_sha256": "84a8fe77944c16af31eb27622946cc682b976805389cfb9dec79094d2016196e",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "bundle",
+        "verify",
+        "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/candidate.bundle"
+      ],
+      "exit_code": 0,
+      "label": "02-bundle-verify",
+      "stderr_sha256": "992a8b3d3910c25574a2fc71600b79e74f9d0213c45be675530b2bbb4e60066a",
+      "stdout_sha256": "17f5c9fb6c2b4b1c917f18e2153023caba6bccf5eb2afe35437344df69b0b9e9"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "gc.auto=0",
+        "fetch",
+        "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/candidate.bundle",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "label": "03-fetch",
+      "stderr_sha256": "bfe0d173173d04e8bce98936ee21dd90e20788aba9b7f6bda5930e4ace621db5",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "checkout",
+        "--detach",
+        "4bde9aee03fcd27c59e13607e529b1cee594b249"
+      ],
+      "exit_code": 0,
+      "label": "04-checkout",
+      "stderr_sha256": "2bdb076c2e2ff3a97ff87f63a8707a0274050764899573c066bf7befc620b885",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "label": "05-head",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "798ea711ddde846d7f1fe86738651bfe5fabbbb7bac5ee756af0c2929b3dfe3e"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "label": "06-tree",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "ace072102d6b0ad7e10013f16b7bcf5dc48d0344dd364b1f83691a7c3672eafc"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD^"
+      ],
+      "exit_code": 0,
+      "label": "06-parent",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "cbca82f96c596676837671b5583ea9c2441ea570772691ab08bd7793006b8c3c"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "label": "07-clean",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "fsck",
+        "--full",
+        "--strict"
+      ],
+      "exit_code": 0,
+      "label": "08-fsck",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "06d08a38c9d941e05bbdee406c042e53c9cb8cdffe667744881aab4b43447be3"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "label": "09-after-head",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "cbca82f96c596676837671b5583ea9c2441ea570772691ab08bd7793006b8c3c"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "label": "09-after-tree",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "18c777797a67e409a17c9768491abf99db2b21b1c489bfba477d5bc3dea3ff29"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "label": "09-after-clean",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

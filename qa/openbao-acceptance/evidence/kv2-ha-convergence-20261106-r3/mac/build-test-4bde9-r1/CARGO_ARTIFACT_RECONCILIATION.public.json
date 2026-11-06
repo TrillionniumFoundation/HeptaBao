@@ -1,0 +1,100 @@
+{
+  "artifacts": [
+    {
+      "artifact": "heptabao-ha-service-libtest",
+      "build_log": "logs/15-peer-libtest-build.stdout",
+      "build_log_sha256": "f649c9014a88255c59178eea3f5923645220c55e9cf0252e4542ecd6d9bfaaf9",
+      "features": [
+        "default",
+        "native-v6-peer-ingress"
+      ],
+      "fresh": false,
+      "matching_compiler_artifact_events": 1,
+      "package_id": "path+file:///Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-4bde9-r1/crates/heptabao-ha-service#0.1.0",
+      "profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": true
+      },
+      "retained_bytes": 17068112,
+      "retained_sha256": "3c5fd3113ff107db07c833c4d7c80070f29e3bbd1937928af670f1bb6bd2e6f0",
+      "src_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-4bde9-r1/crates/heptabao-ha-service/src/lib.rs"
+    },
+    {
+      "artifact": "heptabao-seed",
+      "build_log": "logs/13-normal-release-build.stdout",
+      "build_log_sha256": "cff482cfca9143a6199c2688e9fda57193750105c5137cae82a98bb38eb36960",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "fresh": false,
+      "matching_compiler_artifact_events": 1,
+      "package_id": "path+file:///Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-4bde9-r1/crates/heptabao-server#0.1.0",
+      "profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": false
+      },
+      "retained_bytes": 86355760,
+      "retained_sha256": "203c7af52c0f9aa4ca71e591c1428acac9382f3c4105036a494631b0e1cae8e7",
+      "src_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-4bde9-r1/crates/heptabao-server/src/bin/heptabao-seed.rs"
+    },
+    {
+      "artifact": "heptabao-server",
+      "build_log": "logs/13-normal-release-build.stdout",
+      "build_log_sha256": "cff482cfca9143a6199c2688e9fda57193750105c5137cae82a98bb38eb36960",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "fresh": false,
+      "matching_compiler_artifact_events": 1,
+      "package_id": "path+file:///Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-4bde9-r1/crates/heptabao-server#0.1.0",
+      "profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": false
+      },
+      "retained_bytes": 92359328,
+      "retained_sha256": "5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c",
+      "src_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-4bde9-r1/crates/heptabao-server/src/main.rs"
+    },
+    {
+      "artifact": "heptabao-server-libtest",
+      "build_log": "logs/14-server-libtest-build.stdout",
+      "build_log_sha256": "a2a1d53994b50e6b196f434d8a5c9189d5804f0ba0189a07af1149f9fea2b1b5",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "fresh": false,
+      "matching_compiler_artifact_events": 1,
+      "package_id": "path+file:///Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-4bde9-r1/crates/heptabao-server#0.1.0",
+      "profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": true
+      },
+      "retained_bytes": 154608832,
+      "retained_sha256": "823b6590c23d736d61d03ec6f27e44f258b0766096737bdc26e73fa0113a5b1b",
+      "src_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-4bde9-r1/crates/heptabao-server/src/lib.rs"
+    }
+  ],
+  "independent_native_retained_file_info_matches": 4,
+  "resource_benchmark_qualified": false,
+  "schema": "heptabao.mac-normal-cargo-source-artifact-binding.v1",
+  "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "source_tree": "f08493a23f8ea0637073651231865ea9607b790e"
+}

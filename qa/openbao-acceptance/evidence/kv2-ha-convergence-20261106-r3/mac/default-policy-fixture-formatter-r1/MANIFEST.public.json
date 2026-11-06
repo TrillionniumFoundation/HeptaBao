@@ -1,0 +1,176 @@
+{
+  "all_fifteen_names_retained": true,
+  "artifact_names_relative_to_manifest": true,
+  "cancelled": false,
+  "controller_seconds": 0.3924123332835734,
+  "custody_originals": 3,
+  "custody_passed": true,
+  "existing_source_inputs_unchanged": true,
+  "files": [
+    {
+      "bytes": 44034,
+      "name": "input.original.rs",
+      "origin": "exact_remote_file_bytes",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt09-default-policy-rustfmt-r1/input.original.rs",
+      "sha256": "fb1bfb7ceaa21fbd5ebdbae53ad4c7a2697b00742a44ef7bdadb531407be80fb",
+      "version": "16777244:72708251:44034:1793971187009800835:1793971187009800835"
+    },
+    {
+      "bytes": 42377,
+      "name": "base09.original.rs",
+      "origin": "exact_remote_file_bytes",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt09-default-policy-rustfmt-r1/base09.original.rs",
+      "sha256": "d36bd868975958093c50218ad1e06b20a58b5156a37cd58718dfdc1654c1f156",
+      "version": "16777244:72708252:42377:1793971187010184627:1793971187010184627"
+    },
+    {
+      "bytes": 17,
+      "name": "rustfmt.toml",
+      "origin": "exact_remote_file_bytes",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt09-default-policy-rustfmt-r1/rustfmt.toml",
+      "sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584",
+      "version": "16777244:72708253:17:1793971187010547418:1793971187010547418"
+    },
+    {
+      "bytes": 45,
+      "name": "01-version.stdout",
+      "origin": "exact_remote_file_bytes",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt09-default-policy-rustfmt-r1/01-version.stdout",
+      "sha256": "f0e7a732a40b95640a1d26e3f12b8260eab948c6b5cf346eb4ec8eeac6c48bfe",
+      "version": "16777244:72708255:45:1793971187143832055:1793971187143832055"
+    },
+    {
+      "bytes": 0,
+      "name": "01-version.stderr",
+      "origin": "exact_remote_file_bytes",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt09-default-policy-rustfmt-r1/01-version.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "16777244:72708256:0:1793971187024926786:1793971187024926786"
+    },
+    {
+      "bytes": 0,
+      "name": "02-format.stdout",
+      "origin": "exact_remote_file_bytes",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt09-default-policy-rustfmt-r1/02-format.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "16777244:72708257:0:1793971187187896156:1793971187187896156"
+    },
+    {
+      "bytes": 0,
+      "name": "02-format.stderr",
+      "origin": "exact_remote_file_bytes",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt09-default-policy-rustfmt-r1/02-format.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "16777244:72708258:0:1793971187187945865:1793971187187945865"
+    },
+    {
+      "bytes": 0,
+      "name": "03-check.stdout",
+      "origin": "exact_remote_file_bytes",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt09-default-policy-rustfmt-r1/03-check.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "16777244:72708259:0:1793971187289228019:1793971187289228019"
+    },
+    {
+      "bytes": 0,
+      "name": "03-check.stderr",
+      "origin": "exact_remote_file_bytes",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt09-default-policy-rustfmt-r1/03-check.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "16777244:72708260:0:1793971187289301060:1793971187289301060"
+    },
+    {
+      "bytes": 44096,
+      "name": "service_native_jwt_tests.formatted.rs",
+      "origin": "exact_remote_file_bytes",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt09-default-policy-rustfmt-r1/service_native_jwt_tests.formatted.rs",
+      "sha256": "1571d88838fb127509cdbe24a7e7b5402453ec4cb1dbb784d56753aa2f49e584",
+      "version": "16777244:72708263:44096:1793971187373264557:1793971187373264557"
+    },
+    {
+      "bytes": 1796,
+      "name": "formatter-only.diff",
+      "origin": "exact_remote_file_bytes",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt09-default-policy-rustfmt-r1/formatter-only.diff",
+      "sha256": "8ee0c500d14a91ae3e764cc0f07e35cafb3458fab5d5457d32538431611f5a20",
+      "version": "16777244:72708261:1796:1793971187369682642:1793971187369682642"
+    },
+    {
+      "bytes": 3549,
+      "name": "default-policy-fixture-fix.formatted.patch",
+      "origin": "exact_remote_file_bytes",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt09-default-policy-rustfmt-r1/default-policy-fixture-fix.formatted.patch",
+      "sha256": "dc7831af0c753ee7b4cc0864a0c83e2fa3e61eb544fee445cbd993764a344eae",
+      "version": "16777244:72708262:3549:1793971187372986599:1793971187372986599"
+    },
+    {
+      "bytes": 12397,
+      "name": "result.public.json",
+      "origin": "exact_remote_file_bytes",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt09-default-policy-rustfmt-r1/result.public.json",
+      "sha256": "3cf4f31e0c99716ca42b3a26403711c4c2b1f30664b02ccba7ec2fcc82d99329",
+      "version": "16777244:72708264:12397:1793971187377786763:1793971187377786763"
+    },
+    {
+      "bytes": 731,
+      "name": "runtime-terminal.original.json",
+      "origin": "exact_native_runtime_terminal_response",
+      "sha256": "d066224446224cc6869ffd87deabc645ede8cf4ac4e46e671bf682384f8bd46c"
+    },
+    {
+      "bytes": 9311,
+      "name": "runtime-stdout.original",
+      "origin": "exact_complete_lossless_stream",
+      "sha256": "620c7732bddbccff7023200696fdd41cd2d60febe3122eb97c7699623fac4256"
+    },
+    {
+      "bytes": 0,
+      "name": "runtime-stderr.original",
+      "origin": "exact_complete_lossless_stream",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 59876,
+      "name": "runtime-request.recovered.json",
+      "origin": "original_parsed_request_reserialized",
+      "sha256": "143fc155ebccc29e559a019c04877a2f62eabec6e832f9d85024d013c6e4441d"
+    },
+    {
+      "bytes": 1216,
+      "name": "runtime-start.recovered.json",
+      "origin": "original_parsed_start_reserialized",
+      "sha256": "8fe5dc2414940803a99cfdd215372d2065ee1a80abd3117d5a3eb0851f78ffa8"
+    },
+    {
+      "bytes": 55985,
+      "name": "controller.original.py",
+      "origin": "exact_submitted_controller_from_session_store",
+      "sha256": "ee2d0d5bddecfad05fe1e4cbba310efa11aed53cf502d4fba2f2349de2f64d4f"
+    },
+    {
+      "bytes": 2146,
+      "name": "binding-change.review.json",
+      "origin": "derived_static_recovery_review",
+      "sha256": "1dacc4227c36e0425146722b2ac2ee3ea417a33f129e70f244952a6e62d19e1d"
+    }
+  ],
+  "format_check_unchanged": true,
+  "formatted_sha256": "1571d88838fb127509cdbe24a7e7b5402453ec4cb1dbb784d56753aa2f49e584",
+  "formatter_diff_sha256": "8ee0c500d14a91ae3e764cc0f07e35cafb3458fab5d5457d32538431611f5a20",
+  "full_patch_sha256": "dc7831af0c753ee7b4cc0864a0c83e2fa3e61eb544fee445cbd993764a344eae",
+  "input_sha256": "fb1bfb7ceaa21fbd5ebdbae53ad4c7a2697b00742a44ef7bdadb531407be80fb",
+  "job_id": "1a1b103ec2e-fc05-74eb",
+  "original_outer_seconds": 60,
+  "original_work_seconds": 52,
+  "private_transport_excluded": true,
+  "product_or_dr_started": false,
+  "qualification_scope": "Actual pinned formatter/check/custody only; no product/libtest/107 qualification.",
+  "recovered_after_environment_loss_without_rerun": true,
+  "runtime_exit_code": 0,
+  "runtime_terminal": "succeeded",
+  "rustfmt_sha256": "ca9cbe15a4add6baf62d8ce177015c9c48f209ebcf4364416b1953142e8701f8",
+  "rustfmt_version": "rustfmt 1.9.0-stable (88d9e12ae1 2026-08-18)",
+  "schema": "heptabao.mac-pinned-rustfmt-evidence.v1",
+  "source_base_commit": "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+  "timed_out": false
+}

@@ -1,0 +1,82 @@
+{
+  "all_function_class_ast_unchanged": true,
+  "all_other_module_ast_unchanged": true,
+  "literal_binding_changes": [
+    {
+      "line": 5,
+      "new": {
+        "bytes": 44034,
+        "sha256": "fb1bfb7ceaa21fbd5ebdbae53ad4c7a2697b00742a44ef7bdadb531407be80fb"
+      },
+      "old": {
+        "bytes": 42377,
+        "sha256": "d36bd868975958093c50218ad1e06b20a58b5156a37cd58718dfdc1654c1f156"
+      }
+    },
+    {
+      "line": 6,
+      "new": "fb1bfb7ceaa21fbd5ebdbae53ad4c7a2697b00742a44ef7bdadb531407be80fb",
+      "old": "d36bd868975958093c50218ad1e06b20a58b5156a37cd58718dfdc1654c1f156"
+    },
+    {
+      "line": 7,
+      "new": "d36bd868975958093c50218ad1e06b20a58b5156a37cd58718dfdc1654c1f156",
+      "old": "3c146567bc9cea6e26beaa7da9719edf698218a3cccf9b93c29f034d7b49f44d"
+    },
+    {
+      "line": 10,
+      "new": "source-09c14-r1",
+      "old": "source-868-r1"
+    },
+    {
+      "line": 11,
+      "new": "control/jwt09-default-policy-rustfmt-r1",
+      "old": "control/jwt868-fixture-rustfmt-r1"
+    },
+    {
+      "line": 61,
+      "new": "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+      "old": "868439e6df9f12291842898763ccba581e346bfb"
+    },
+    {
+      "line": 77,
+      "new": 42377,
+      "old": 39999
+    },
+    {
+      "line": 122,
+      "new": 42377,
+      "old": 39999
+    },
+    {
+      "line": 126,
+      "new": 44034,
+      "old": 42377
+    },
+    {
+      "line": 86,
+      "new": "base09.original.rs",
+      "old": "base868.original.rs"
+    },
+    {
+      "line": 117,
+      "new": "default-policy-fixture-fix.formatted.patch",
+      "old": "three-fixture-fixes.formatted.patch"
+    },
+    {
+      "line": 82,
+      "new": 44034,
+      "old": 42377
+    },
+    {
+      "line": 129,
+      "new": 44034,
+      "old": 42377
+    }
+  ],
+  "new_controller_sha256": "ee2d0d5bddecfad05fe1e4cbba310efa11aed53cf502d4fba2f2349de2f64d4f",
+  "no_product_or_rust_test_execution": true,
+  "old_controller_sha256": "82d9c34251487c03888b7f32b75c7ab500ea960cf3d57d17ee85199225d7460b",
+  "recreated_from_exact_frozen_session_controller_bytes_after_environment_loss": true,
+  "schema": "heptabao.pinned-rustfmt-input-rebind.v1"
+}

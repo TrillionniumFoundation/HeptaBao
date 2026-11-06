@@ -1,0 +1,15 @@
+
+running 10 tests
+test native_snapshot_body::tests::snapshot_stream_consumer_cannot_finish_with_unread_archive_bytes ... ok
+test native_snapshot_body::tests::snapshot_stream_declared_oversize_is_rejected_before_payload ... ok
+test native_snapshot_body::tests::snapshot_stream_empty_body_requires_explicit_end_and_eof ... ok
+test native_snapshot_body::tests::snapshot_stream_encoder_checks_one_rejecting_eof_byte_at_exact_cap ... ok
+test native_snapshot_body::tests::snapshot_stream_end_digest_and_trailing_wire_bytes_are_rejected ... ok
+test native_snapshot_body::tests::snapshot_stream_exact_payload_without_end_is_not_complete ... ok
+test native_snapshot_body::tests::snapshot_stream_original_expired_deadline_precedes_io ... ok
+test native_snapshot_body::tests::snapshot_stream_roundtrip_crosses_ordinary_frame_limit_once ... ok
+test native_snapshot_body::tests::snapshot_stream_short_chunk_cannot_be_followed_by_data ... ok
+test native_snapshot_body::tests::snapshot_stream_tls_eof_error_after_valid_end_cannot_mint_binding ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 109 filtered out; finished in 0.00s
+

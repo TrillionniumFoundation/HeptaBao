@@ -1,0 +1,15 @@
+{
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "-c",
+    "import pathlib,hashlib,os,json,stat\nroot=pathlib.Path(\"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1\")\nassert os.geteuid()==501 and root.resolve(strict=True)==root and stat.S_IMODE(root.stat().st_mode)==0o700 and root.stat().st_dev==16777244\nout=root/'build-test-4bde9-r1'\nassert sorted(p.name for p in out.iterdir())==['test-selection.public.json']\nassert not (root/'source-4bde9-r1').exists()\npins=[(root/'control/mac_build_test_4bde9_r1.py','76ab52614563287bdfe41cb9738c6992ae9360b3e34463c3b788701132a42d7c',32288),(out/'test-selection.public.json','7da0b1e3efe257b66d31d50af7c1327a4d320c512c1c8f82df30020898c66595',46133),(root/'control/candidate-4bde9-from-09c14.bundle','9808cfef28ce90733b636e81aed122aeeaf4fe81e0f34b1b84dde7e0ab0e11cd',1393)]\nfor path,sha,size in pins:\n info=path.lstat()\n assert stat.S_ISREG(info.st_mode) and info.st_uid==501 and info.st_nlink==1 and info.st_size==size\n assert path.resolve(strict=True)==path and hashlib.sha256(path.read_bytes()).hexdigest()==sha\n path.chmod(0o600)\nout.chmod(0o700)\npython='/opt/homebrew/bin/python3'\nassert hashlib.sha256(pathlib.Path(python).read_bytes()).hexdigest()=='cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13'\nprint(json.dumps({'event':'launch-pins-verified','source_commit':'4bde9aee03fcd27c59e13607e529b1cee594b249','expected_tests':107,'outer_seconds':8280,'controller_sha256':'76ab52614563287bdfe41cb9738c6992ae9360b3e34463c3b788701132a42d7c'}),flush=True)\nos.execv(python,[python,'-I','-S','-B',str(root/'control/mac_build_test_4bde9_r1.py')])\n"
+  ],
+  "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1",
+  "executable": "/usr/bin/python3",
+  "host": "mac",
+  "idempotency_key": "heptabao-mac-convergence-4bde9-normal-release-libtests107-20261106-r1",
+  "nice": 5,
+  "timeout_seconds": 8280
+}

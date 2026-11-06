@@ -1,0 +1,658 @@
+{
+  "accepted_completed_group_cases": 88,
+  "actual_rows": [
+    {
+      "log": "logs/test-00-ssh25-00.stdout",
+      "log_sha256": "d220fd4970bcbbbfac691651ab04f9c903a85060e7290392009d8c72bc5d7376",
+      "status": "ok",
+      "test": "ha_forward::native_ssh_tests::native_ssh_reply_profile_does_not_upgrade_ordinary_suffix_or_shrink_large_json"
+    },
+    {
+      "log": "logs/test-00-ssh25-00.stdout",
+      "log_sha256": "d220fd4970bcbbbfac691651ab04f9c903a85060e7290392009d8c72bc5d7376",
+      "status": "ok",
+      "test": "ha_forward::native_ssh_tests::native_ssh_reply_profile_refuses_missing_ingress_nonce_or_wrong_root_get"
+    },
+    {
+      "log": "logs/test-00-ssh25-00.stdout",
+      "log_sha256": "d220fd4970bcbbbfac691651ab04f9c903a85060e7290392009d8c72bc5d7376",
+      "status": "ok",
+      "test": "ha_forward::native_ssh_tests::native_ssh_reply_profile_rejects_wire_downgrade_and_missing_or_unknown_metadata"
+    },
+    {
+      "log": "logs/test-00-ssh25-00.stdout",
+      "log_sha256": "d220fd4970bcbbbfac691651ab04f9c903a85060e7290392009d8c72bc5d7376",
+      "status": "ok",
+      "test": "ha_forward::native_ssh_tests::native_ssh_reply_profile_retains_original_ingress_nonce_and_custom_route"
+    },
+    {
+      "log": "logs/test-00-ssh25-00.stdout",
+      "log_sha256": "d220fd4970bcbbbfac691651ab04f9c903a85060e7290392009d8c72bc5d7376",
+      "status": "ok",
+      "test": "service::native_auth::ssh_tests::archive::native_ssh_actual_archive_restore_preserves_otp_consumption_ca_and_observed_issuer_floor"
+    },
+    {
+      "log": "logs/test-00-ssh25-00.stdout",
+      "log_sha256": "d220fd4970bcbbbfac691651ab04f9c903a85060e7290392009d8c72bc5d7376",
+      "status": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_actual_audit_cannot_refresh_original_deadline_or_repeat_signature"
+    },
+    {
+      "log": "logs/test-00-ssh25-00.stdout",
+      "log_sha256": "d220fd4970bcbbbfac691651ab04f9c903a85060e7290392009d8c72bc5d7376",
+      "status": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_actual_audit_io_failure_never_returns_the_signed_private_reply"
+    },
+    {
+      "log": "logs/test-00-ssh25-00.stdout",
+      "log_sha256": "d220fd4970bcbbbfac691651ab04f9c903a85060e7290392009d8c72bc5d7376",
+      "status": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_actual_audited_otp_retains_original_precise_issuer_expiry"
+    },
+    {
+      "log": "logs/test-00-ssh25-00.stdout",
+      "log_sha256": "d220fd4970bcbbbfac691651ab04f9c903a85060e7290392009d8c72bc5d7376",
+      "status": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_actual_audited_reply_cannot_follow_recreated_mount_incarnation"
+    },
+    {
+      "log": "logs/test-00-ssh25-00.stdout",
+      "log_sha256": "d220fd4970bcbbbfac691651ab04f9c903a85060e7290392009d8c72bc5d7376",
+      "status": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_after_actual_audit_actor_revocation_never_delivers_otp"
+    },
+    {
+      "log": "logs/test-00-ssh25-00.stdout",
+      "log_sha256": "d220fd4970bcbbbfac691651ab04f9c903a85060e7290392009d8c72bc5d7376",
+      "status": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_after_actual_audit_changed_status_does_not_bypass_or_resign"
+    },
+    {
+      "log": "logs/test-00-ssh25-00.stdout",
+      "log_sha256": "d220fd4970bcbbbfac691651ab04f9c903a85060e7290392009d8c72bc5d7376",
+      "status": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_and_pki_original_idle_retire_both_without_touching_ca_or_kv"
+    },
+    {
+      "log": "logs/test-00-ssh25-00.stdout",
+      "log_sha256": "d220fd4970bcbbbfac691651ab04f9c903a85060e7290392009d8c72bc5d7376",
+      "status": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_child_and_response_wrap_ownership_remain_explicitly_closed"
+    },
+    {
+      "log": "logs/test-00-ssh25-00.stdout",
+      "log_sha256": "d220fd4970bcbbbfac691651ab04f9c903a85060e7290392009d8c72bc5d7376",
+      "status": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_consumed_verify_rechecks_original_issuer_after_actual_audit"
+    },
+    {
+      "log": "logs/test-00-ssh25-00.stdout",
+      "log_sha256": "d220fd4970bcbbbfac691651ab04f9c903a85060e7290392009d8c72bc5d7376",
+      "status": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_formal_acl_nonrenewable_revoke_and_segment_prefix"
+    },
+    {
+      "log": "logs/test-00-ssh25-00.stdout",
+      "log_sha256": "d220fd4970bcbbbfac691651ab04f9c903a85060e7290392009d8c72bc5d7376",
+      "status": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_formal_batch_expiry_is_clipped_persistent_and_not_revivable"
+    },
+    {
+      "log": "logs/test-00-ssh25-00.stdout",
+      "log_sha256": "d220fd4970bcbbbfac691651ab04f9c903a85060e7290392009d8c72bc5d7376",
+      "status": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_formal_ca_real_signature_cold_typed_public_transport"
+    },
+    {
+      "log": "logs/test-00-ssh25-00.stdout",
+      "log_sha256": "d220fd4970bcbbbfac691651ab04f9c903a85060e7290392009d8c72bc5d7376",
+      "status": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_formal_disabled_login_identity_stays_retired_after_reenable_and_cold"
+    },
+    {
+      "log": "logs/test-00-ssh25-00.stdout",
+      "log_sha256": "d220fd4970bcbbbfac691651ab04f9c903a85060e7290392009d8c72bc5d7376",
+      "status": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_formal_otp_promotion_cold_verify_and_replay"
+    },
+    {
+      "log": "logs/test-00-ssh25-00.stdout",
+      "log_sha256": "d220fd4970bcbbbfac691651ab04f9c903a85060e7290392009d8c72bc5d7376",
+      "status": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_formal_registry_tune_retire_and_recreate_preserves_other_graphs"
+    },
+    {
+      "log": "logs/test-00-ssh25-00.stdout",
+      "log_sha256": "d220fd4970bcbbbfac691651ab04f9c903a85060e7290392009d8c72bc5d7376",
+      "status": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_public_reply_cannot_lose_affine_transport_after_audit"
+    },
+    {
+      "log": "logs/test-00-ssh25-00.stdout",
+      "log_sha256": "d220fd4970bcbbbfac691651ab04f9c903a85060e7290392009d8c72bc5d7376",
+      "status": "ok",
+      "test": "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_actual_ca_signature_and_raw_public_cold_readindex"
+    },
+    {
+      "log": "logs/test-00-ssh25-00.stdout",
+      "log_sha256": "d220fd4970bcbbbfac691651ab04f9c903a85060e7290392009d8c72bc5d7376",
+      "status": "ok",
+      "test": "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_custom_public_reply_transport_keeps_kv_json"
+    },
+    {
+      "log": "logs/test-00-ssh25-00.stdout",
+      "log_sha256": "d220fd4970bcbbbfac691651ab04f9c903a85060e7290392009d8c72bc5d7376",
+      "status": "ok",
+      "test": "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_forwarded_otp_election_cold_consume_and_replay"
+    },
+    {
+      "log": "logs/test-00-ssh25-00.stdout",
+      "log_sha256": "d220fd4970bcbbbfac691651ab04f9c903a85060e7290392009d8c72bc5d7376",
+      "status": "ok",
+      "test": "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_lost_quorum_cannot_issue_sign_or_disclose_public_key"
+    },
+    {
+      "log": "logs/test-01-mount1-00.stdout",
+      "log_sha256": "9cd4a925c4ab6a9662dfec8cf8b8de22a796ebe79a6206a5d413442de668c133",
+      "status": "ok",
+      "test": "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs"
+    },
+    {
+      "log": "logs/test-02-redirect5-00.stdout",
+      "log_sha256": "e9fa61c4fd7bcd9152a95c209bb3e36d95788dbc68d4654ab1a37949045b6b13",
+      "status": "ok",
+      "test": "http::snapshot::redirect_tests::native_http_redirect_complete_head_preserves_short_writes_and_transport_errors"
+    },
+    {
+      "log": "logs/test-02-redirect5-00.stdout",
+      "log_sha256": "e9fa61c4fd7bcd9152a95c209bb3e36d95788dbc68d4654ab1a37949045b6b13",
+      "status": "ok",
+      "test": "http::snapshot::redirect_tests::native_http_redirect_has_exact_safe_location_and_no_upload_read_or_response_body"
+    },
+    {
+      "log": "logs/test-02-redirect5-00.stdout",
+      "log_sha256": "e9fa61c4fd7bcd9152a95c209bb3e36d95788dbc68d4654ab1a37949045b6b13",
+      "status": "ok",
+      "test": "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_first_record_is_complete_with_unread_upload"
+    },
+    {
+      "log": "logs/test-02-redirect5-00.stdout",
+      "log_sha256": "e9fa61c4fd7bcd9152a95c209bb3e36d95788dbc68d4654ab1a37949045b6b13",
+      "status": "ok",
+      "test": "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_flush_retains_original_deadline_failure"
+    },
+    {
+      "log": "logs/test-02-redirect5-00.stdout",
+      "log_sha256": "e9fa61c4fd7bcd9152a95c209bb3e36d95788dbc68d4654ab1a37949045b6b13",
+      "status": "ok",
+      "test": "http::snapshot::redirect_tests::native_redirect_target_keeps_existing_query_validation_and_rejects_header_injection"
+    },
+    {
+      "log": "logs/test-03-actor2-00.stdout",
+      "log_sha256": "3f5fc06df3e55370a4291b377f758208674c71f56dedd7213857eb6622d9ca7c",
+      "status": "ok",
+      "test": "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_keeps_shorter_original_scope_after_actual_aead"
+    },
+    {
+      "log": "logs/test-03-actor2-00.stdout",
+      "log_sha256": "3f5fc06df3e55370a4291b377f758208674c71f56dedd7213857eb6622d9ca7c",
+      "status": "ok",
+      "test": "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_rechecks_original_actor_after_actual_aead"
+    },
+    {
+      "log": "logs/test-04-ordinary5-00.stdout",
+      "log_sha256": "a8e136f2a1635294981446c5b6cf8364ee16907c40f05450964a7f65bb9e29f3",
+      "status": "ok",
+      "test": "http::response_coalescing_tests::ordinary_http_complete_small_prefix_keeps_body_and_bounded_metadata"
+    },
+    {
+      "log": "logs/test-04-ordinary5-00.stdout",
+      "log_sha256": "a8e136f2a1635294981446c5b6cf8364ee16907c40f05450964a7f65bb9e29f3",
+      "status": "ok",
+      "test": "http::response_coalescing_tests::ordinary_http_original_head_no_body_chunked_and_large_raw_framing_remain"
+    },
+    {
+      "log": "logs/test-04-ordinary5-00.stdout",
+      "log_sha256": "a8e136f2a1635294981446c5b6cf8364ee16907c40f05450964a7f65bb9e29f3",
+      "status": "ok",
+      "test": "http::response_coalescing_tests::ordinary_http_prefix_keeps_partial_writes_and_original_io_failures"
+    },
+    {
+      "log": "logs/test-04-ordinary5-00.stdout",
+      "log_sha256": "a8e136f2a1635294981446c5b6cf8364ee16907c40f05450964a7f65bb9e29f3",
+      "status": "ok",
+      "test": "http::response_coalescing_tests::ordinary_http_tcp_tls_first_record_contains_full_small_response_with_unread_upload"
+    },
+    {
+      "log": "logs/test-04-ordinary5-00.stdout",
+      "log_sha256": "a8e136f2a1635294981446c5b6cf8364ee16907c40f05450964a7f65bb9e29f3",
+      "status": "ok",
+      "test": "http::response_coalescing_tests::ordinary_http_tcp_tls_response_preserves_original_expired_deadline"
+    },
+    {
+      "log": "logs/test-05-no_forward6-00.stdout",
+      "log_sha256": "9a269dc379fa84e4cdbc1d887a9eaf2e505b84267f058f3046c6cbcdb72a28d9",
+      "status": "ok",
+      "test": "http::no_forward_tests::no_forward271_binding_and_wire_metadata_cannot_replay_original_ingress"
+    },
+    {
+      "log": "logs/test-05-no_forward6-00.stdout",
+      "log_sha256": "9a269dc379fa84e4cdbc1d887a9eaf2e505b84267f058f3046c6cbcdb72a28d9",
+      "status": "ok",
+      "test": "http::no_forward_tests::no_forward271_header_uses_first_value_and_preserves_original_target"
+    },
+    {
+      "log": "logs/test-05-no_forward6-00.stdout",
+      "log_sha256": "9a269dc379fa84e4cdbc1d887a9eaf2e505b84267f058f3046c6cbcdb72a28d9",
+      "status": "ok",
+      "test": "service::legacy_immutable_kv::tests::no_forward271_keeps_actual_legacy_local_readindex_get"
+    },
+    {
+      "log": "logs/test-05-no_forward6-00.stdout",
+      "log_sha256": "9a269dc379fa84e4cdbc1d887a9eaf2e505b84267f058f3046c6cbcdb72a28d9",
+      "status": "ok",
+      "test": "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_keeps_local_routes_and_does_not_consume_actor"
+    },
+    {
+      "log": "logs/test-05-no_forward6-00.stdout",
+      "log_sha256": "9a269dc379fa84e4cdbc1d887a9eaf2e505b84267f058f3046c6cbcdb72a28d9",
+      "status": "ok",
+      "test": "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_original_deadline_and_real_response_audit_withhold_location"
+    },
+    {
+      "log": "logs/test-05-no_forward6-00.stdout",
+      "log_sha256": "9a269dc379fa84e4cdbc1d887a9eaf2e505b84267f058f3046c6cbcdb72a28d9",
+      "status": "ok",
+      "test": "service::request_redirect_tests::no_forward271_capsule_keeps_origin_codec_audit_and_original_deadline"
+    },
+    {
+      "log": "logs/test-06-legacy-ingress7-00.stdout",
+      "log_sha256": "5afc9017039fa4caf19cc1e87fc8d2c40460d91d2ccfe24d6c72ee88895e0d1a",
+      "status": "ok",
+      "test": "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms"
+    },
+    {
+      "log": "logs/test-06-legacy-ingress7-01.stdout",
+      "log_sha256": "863d92dd52cda1a8a4f8f51f52420e17ee77f62ada1103b680645a10db26a0be",
+      "status": "ok",
+      "test": "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_rejects_actual_new_request_nonce_or_selected_root"
+    },
+    {
+      "log": "logs/test-06-legacy-ingress7-02.stdout",
+      "log_sha256": "62f2f03c7e9976abfee907547e75cf8d02f018485cbf507a5264fc6cf9ed1e46",
+      "status": "ok",
+      "test": "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_actual_failed_repair_closes_reselection_before_any_result"
+    },
+    {
+      "log": "logs/test-06-legacy-ingress7-03.stdout",
+      "log_sha256": "6384d3c8f5d24ebeeaac207cad4bd55f8ed84e89f3278255fda2efc7478bc4e8",
+      "status": "ok",
+      "test": "ha::native_v6_runtime::request_timing_tests::native_request_timing_failure_has_only_bounded_static_metadata"
+    },
+    {
+      "log": "logs/test-06-legacy-ingress7-04.stdout",
+      "log_sha256": "def1b8dd9c4a68c4e869deff7f5e5e9860f6d8a2fe261b6704dfb2f0f6f9a700",
+      "status": "ok",
+      "test": "ha::native_v6_runtime::request_timing_tests::native_request_timing_sixty_four_buckets_preserve_existing_aggregates"
+    },
+    {
+      "log": "logs/test-06-legacy-ingress7-05.stdout",
+      "log_sha256": "ea64f6b5025616c942592650157a45c4bac5efdbd6b8f003206ff3a49ec6f7bc",
+      "status": "ok",
+      "test": "ha::native_v6_runtime::request_timing_tests::native_request_timing_observes_deadlines_but_preserves_once_only_results"
+    },
+    {
+      "log": "logs/test-06-legacy-ingress7-06.stdout",
+      "log_sha256": "f5efaa6f08fd9a7da841d698abe73b1fce613672c8a2fc85557ada96ba0e52a8",
+      "status": "ok",
+      "test": "ha::native_v6_runtime::request_timing_tests::native_request_timing_phase_advance_is_distinct_from_operation_success"
+    },
+    {
+      "log": "logs/test-07-legacy-cold-h2-9-00.stdout",
+      "log_sha256": "9da5df74bfe38f80ad6d62468ecaafe0da0701743ac5398ee9a0eba26b63cd19",
+      "status": "ok",
+      "test": "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_once_and_owned_result_identity"
+    },
+    {
+      "log": "logs/test-07-legacy-cold-h2-9-01.stdout",
+      "log_sha256": "85bb0d5fb256a9d56921fff25acc63d09cb94d025eb42e27ef2e9b12e62fe897",
+      "status": "ok",
+      "test": "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_nested_source_and_inner_results"
+    },
+    {
+      "log": "logs/test-07-legacy-cold-h2-9-02.stdout",
+      "log_sha256": "1a48cf049ca023df454f632fcc69b70da59437b0883243252f0a7dd918222cfc",
+      "status": "ok",
+      "test": "service::native_v6_ha_install::tests::native_ha_install_batches_actual_readindex_cold_missing_and_corrupt_file"
+    },
+    {
+      "log": "logs/test-07-legacy-cold-h2-9-03.stdout",
+      "log_sha256": "10a3770e9dea200e576021bc18e8f1ce24893a9bcc7aa8a24b8dcca19e2aae97",
+      "status": "ok",
+      "test": "http::h2_transport::sync_worker_tests::h2_sync_worker_is_unentered_and_retains_outer_context"
+    },
+    {
+      "log": "logs/test-07-legacy-cold-h2-9-04.stdout",
+      "log_sha256": "8c306e424dc65afa96ccdf1a723f250994ecc647c826ba120337832ca5076504",
+      "status": "ok",
+      "test": "http::h2_transport::sync_worker_tests::h2_sync_worker_expired_deadline_never_calls_work"
+    },
+    {
+      "log": "logs/test-07-legacy-cold-h2-9-05.stdout",
+      "log_sha256": "e310d8a6ace3a3a1e7df77d5093cbeacd29239d316919f01bbef7713b518c5dc",
+      "status": "ok",
+      "test": "http::h2_transport::sync_worker_tests::h2_sync_worker_preserves_inner_result"
+    },
+    {
+      "log": "logs/test-07-legacy-cold-h2-9-06.stdout",
+      "log_sha256": "0459ef3b314ffdfceb2f22170954caaaf7b8e9bd14bbc5627593d01ba92710a5",
+      "status": "ok",
+      "test": "http::h2_transport::sync_worker_tests::h2_sync_worker_joins_panicked_work_and_drops_capture"
+    },
+    {
+      "log": "logs/test-07-legacy-cold-h2-9-07.stdout",
+      "log_sha256": "c4c9d65524416345c887fac09703fa31fe5ec07aee102d030e5afc3ef130e5c7",
+      "status": "ok",
+      "test": "http::h2_transport::sync_worker_tests::h2_sync_worker_does_not_authorize_nested_runtime_context"
+    },
+    {
+      "log": "logs/test-07-legacy-cold-h2-9-08.stdout",
+      "log_sha256": "452052e33a5d57955564570ea661b6101e4d9fdb83c0765b9cc6cd2adf3b01df",
+      "status": "ok",
+      "test": "http::h2_transport::sync_worker_tests::h2_sync_worker_cancelled_waiter_retains_blocking_capacity"
+    },
+    {
+      "log": "logs/test-08-legacy-same-root1-00.stdout",
+      "log_sha256": "c8f4f2d1c7db8f6414b51ec85b5127b9fe81ab91e6051efadf67a92729fd2bc3",
+      "status": "ok",
+      "test": "service::native_v6_ha_install::tests::same_root_republication_tests::native_ha_same_root_republication_advances_warm_and_cold_cursors"
+    },
+    {
+      "log": "logs/test-09-snapshot-body10-00.stdout",
+      "log_sha256": "37ee7e76198fec5dd079c851adc6459e6d7e363c5565a122bf0a67976779a499",
+      "status": "ok",
+      "test": "native_snapshot_body::tests::snapshot_stream_consumer_cannot_finish_with_unread_archive_bytes"
+    },
+    {
+      "log": "logs/test-09-snapshot-body10-00.stdout",
+      "log_sha256": "37ee7e76198fec5dd079c851adc6459e6d7e363c5565a122bf0a67976779a499",
+      "status": "ok",
+      "test": "native_snapshot_body::tests::snapshot_stream_declared_oversize_is_rejected_before_payload"
+    },
+    {
+      "log": "logs/test-09-snapshot-body10-00.stdout",
+      "log_sha256": "37ee7e76198fec5dd079c851adc6459e6d7e363c5565a122bf0a67976779a499",
+      "status": "ok",
+      "test": "native_snapshot_body::tests::snapshot_stream_empty_body_requires_explicit_end_and_eof"
+    },
+    {
+      "log": "logs/test-09-snapshot-body10-00.stdout",
+      "log_sha256": "37ee7e76198fec5dd079c851adc6459e6d7e363c5565a122bf0a67976779a499",
+      "status": "ok",
+      "test": "native_snapshot_body::tests::snapshot_stream_encoder_checks_one_rejecting_eof_byte_at_exact_cap"
+    },
+    {
+      "log": "logs/test-09-snapshot-body10-00.stdout",
+      "log_sha256": "37ee7e76198fec5dd079c851adc6459e6d7e363c5565a122bf0a67976779a499",
+      "status": "ok",
+      "test": "native_snapshot_body::tests::snapshot_stream_end_digest_and_trailing_wire_bytes_are_rejected"
+    },
+    {
+      "log": "logs/test-09-snapshot-body10-00.stdout",
+      "log_sha256": "37ee7e76198fec5dd079c851adc6459e6d7e363c5565a122bf0a67976779a499",
+      "status": "ok",
+      "test": "native_snapshot_body::tests::snapshot_stream_exact_payload_without_end_is_not_complete"
+    },
+    {
+      "log": "logs/test-09-snapshot-body10-00.stdout",
+      "log_sha256": "37ee7e76198fec5dd079c851adc6459e6d7e363c5565a122bf0a67976779a499",
+      "status": "ok",
+      "test": "native_snapshot_body::tests::snapshot_stream_original_expired_deadline_precedes_io"
+    },
+    {
+      "log": "logs/test-09-snapshot-body10-00.stdout",
+      "log_sha256": "37ee7e76198fec5dd079c851adc6459e6d7e363c5565a122bf0a67976779a499",
+      "status": "ok",
+      "test": "native_snapshot_body::tests::snapshot_stream_roundtrip_crosses_ordinary_frame_limit_once"
+    },
+    {
+      "log": "logs/test-09-snapshot-body10-00.stdout",
+      "log_sha256": "37ee7e76198fec5dd079c851adc6459e6d7e363c5565a122bf0a67976779a499",
+      "status": "ok",
+      "test": "native_snapshot_body::tests::snapshot_stream_short_chunk_cannot_be_followed_by_data"
+    },
+    {
+      "log": "logs/test-09-snapshot-body10-00.stdout",
+      "log_sha256": "37ee7e76198fec5dd079c851adc6459e6d7e363c5565a122bf0a67976779a499",
+      "status": "ok",
+      "test": "native_snapshot_body::tests::snapshot_stream_tls_eof_error_after_valid_end_cannot_mint_binding"
+    },
+    {
+      "log": "logs/test-10-snapshot-peer7-00.stdout",
+      "log_sha256": "0113f44474cc571e3103fe3b4887d6b4b05e6691af99af2b1c2968e176ed8278",
+      "status": "ok",
+      "test": "authenticated_peer_frame::snapshot::tests::snapshot_peer_actual_mtls_bare_tcp_eof_cannot_finalize_upload"
+    },
+    {
+      "log": "logs/test-10-snapshot-peer7-00.stdout",
+      "log_sha256": "0113f44474cc571e3103fe3b4887d6b4b05e6691af99af2b1c2968e176ed8278",
+      "status": "ok",
+      "test": "authenticated_peer_frame::snapshot::tests::snapshot_peer_actual_mtls_terminal_rejection_consumes_no_upload"
+    },
+    {
+      "log": "logs/test-10-snapshot-peer7-00.stdout",
+      "log_sha256": "0113f44474cc571e3103fe3b4887d6b4b05e6691af99af2b1c2968e176ed8278",
+      "status": "ok",
+      "test": "authenticated_peer_frame::snapshot::tests::snapshot_peer_actual_mtls_upload_close_notify_allows_opposite_download"
+    },
+    {
+      "log": "logs/test-10-snapshot-peer7-00.stdout",
+      "log_sha256": "0113f44474cc571e3103fe3b4887d6b4b05e6691af99af2b1c2968e176ed8278",
+      "status": "ok",
+      "test": "authenticated_peer_frame::snapshot::tests::snapshot_peer_actual_mtls_wrong_selected_leaf_never_admits_body"
+    },
+    {
+      "log": "logs/test-10-snapshot-peer7-00.stdout",
+      "log_sha256": "0113f44474cc571e3103fe3b4887d6b4b05e6691af99af2b1c2968e176ed8278",
+      "status": "ok",
+      "test": "authenticated_peer_frame::snapshot::tests::snapshot_peer_expired_deadline_refuses_before_connect"
+    },
+    {
+      "log": "logs/test-10-snapshot-peer7-00.stdout",
+      "log_sha256": "0113f44474cc571e3103fe3b4887d6b4b05e6691af99af2b1c2968e176ed8278",
+      "status": "ok",
+      "test": "authenticated_peer_frame::snapshot::tests::snapshot_peer_original_frame_still_uses_only_old_callback"
+    },
+    {
+      "log": "logs/test-10-snapshot-peer7-00.stdout",
+      "log_sha256": "0113f44474cc571e3103fe3b4887d6b4b05e6691af99af2b1c2968e176ed8278",
+      "status": "ok",
+      "test": "authenticated_peer_frame::snapshot::tests::snapshot_peer_ready_veto_reads_no_upload_and_cannot_extend_deadline"
+    },
+    {
+      "log": "logs/test-11-snapshot-actor2-00.stdout",
+      "log_sha256": "e5abcf499788ebd1d3d241cc95c45923ff40b25063f512ff8bfefe586227147f",
+      "status": "ok",
+      "test": "auth::forward_actor::snapshot_tests::snapshot_actor_final_use_remains_delivery_only_without_second_admission"
+    },
+    {
+      "log": "logs/test-11-snapshot-actor2-00.stdout",
+      "log_sha256": "e5abcf499788ebd1d3d241cc95c45923ff40b25063f512ff8bfefe586227147f",
+      "status": "ok",
+      "test": "auth::forward_actor::snapshot_tests::snapshot_actor_original_auth_is_distinct_from_a_new_restored_owner"
+    },
+    {
+      "log": "logs/test-12-snapshot-wire4-00.stdout",
+      "log_sha256": "080c2a24405d16858b18820a824288b907d965eb0e174dabf26e7535cdb6bb0a",
+      "status": "ok",
+      "test": "service::snapshot_transfer::forward::wire::tests::snapshot_publication_actual_byte_witnesses_bind_save_and_restore"
+    },
+    {
+      "log": "logs/test-12-snapshot-wire4-00.stdout",
+      "log_sha256": "080c2a24405d16858b18820a824288b907d965eb0e174dabf26e7535cdb6bb0a",
+      "status": "ok",
+      "test": "service::snapshot_transfer::forward::wire::tests::snapshot_publication_metadata_and_original_owner_mutations_are_rejected"
+    },
+    {
+      "log": "logs/test-12-snapshot-wire4-00.stdout",
+      "log_sha256": "080c2a24405d16858b18820a824288b907d965eb0e174dabf26e7535cdb6bb0a",
+      "status": "ok",
+      "test": "service::snapshot_transfer::forward::wire::tests::snapshot_publication_valid_mac_cannot_substitute_a_binary_body"
+    },
+    {
+      "log": "logs/test-12-snapshot-wire4-00.stdout",
+      "log_sha256": "080c2a24405d16858b18820a824288b907d965eb0e174dabf26e7535cdb6bb0a",
+      "status": "ok",
+      "test": "service::snapshot_transfer::forward::wire::tests::snapshot_ready_rejects_retarget_replay_and_non_snapshot_routes"
+    },
+    {
+      "log": "logs/test-13-snapshot-audit4-00.stdout",
+      "log_sha256": "baa4fdfc2de5ce84c6ff1c670a8b3a3adf752a2833acf6564dfa15241144d0b9",
+      "status": "ok",
+      "test": "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_first_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen"
+    },
+    {
+      "log": "logs/test-13-snapshot-audit4-00.stdout",
+      "log_sha256": "baa4fdfc2de5ce84c6ff1c670a8b3a3adf752a2833acf6564dfa15241144d0b9",
+      "status": "ok",
+      "test": "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_second_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen"
+    },
+    {
+      "log": "logs/test-13-snapshot-audit4-00.stdout",
+      "log_sha256": "baa4fdfc2de5ce84c6ff1c670a8b3a3adf752a2833acf6564dfa15241144d0b9",
+      "status": "ok",
+      "test": "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_source_publication_audit_veto_keeps_real_restore_after_cold_reopen"
+    },
+    {
+      "log": "logs/test-13-snapshot-audit4-00.stdout",
+      "log_sha256": "baa4fdfc2de5ce84c6ff1c670a8b3a3adf752a2833acf6564dfa15241144d0b9",
+      "status": "ok",
+      "test": "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_unverified_attempt_audit_failure_cannot_mint_root_authority"
+    },
+    {
+      "log": "logs/test-14-native-jwt15-00.stdout",
+      "log_sha256": "c1e9acedca2351b249f76b1e9632dd5aea35fc892a5c1e4404c3fed806d5f883",
+      "status": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_and_userpass_token_api_targets_keep_real_owner_and_renewal_in_both_directions"
+    },
+    {
+      "log": "logs/test-14-native-jwt15-00.stdout",
+      "log_sha256": "c1e9acedca2351b249f76b1e9632dd5aea35fc892a5c1e4404c3fed806d5f883",
+      "status": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_identity_failure_does_not_export_witness_or_token_and_next_login_is_fresh"
+    },
+    {
+      "log": "logs/test-14-native-jwt15-00.stdout",
+      "log_sha256": "c1e9acedca2351b249f76b1e9632dd5aea35fc892a5c1e4404c3fed806d5f883",
+      "status": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_local_service_token_identity_renewal_and_cold_reopen"
+    },
+    {
+      "log": "logs/test-14-native-jwt15-00.stdout",
+      "log_sha256": "c1e9acedca2351b249f76b1e9632dd5aea35fc892a5c1e4404c3fed806d5f883",
+      "status": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_native_owner_capacity_veto_after_authentication_keeps_the_old_root"
+    },
+    {
+      "log": "logs/test-14-native-jwt15-00.stdout",
+      "log_sha256": "c1e9acedca2351b249f76b1e9632dd5aea35fc892a5c1e4404c3fed806d5f883",
+      "status": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_original_assertion_expiry_after_commit_withholds_reply_without_rollback"
+    },
+    {
+      "log": "logs/test-14-native-jwt15-00.stdout",
+      "log_sha256": "c1e9acedca2351b249f76b1e9632dd5aea35fc892a5c1e4404c3fed806d5f883",
+      "status": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_original_assertion_expiry_before_publication_keeps_auth_identity_atomic"
+    },
+    {
+      "log": "logs/test-14-native-jwt15-00.stdout",
+      "log_sha256": "c1e9acedca2351b249f76b1e9632dd5aea35fc892a5c1e4404c3fed806d5f883",
+      "status": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_post_audit_response_and_original_deadline_cannot_be_rebound"
+    },
+    {
+      "log": "logs/test-14-native-jwt15-00.stdout",
+      "log_sha256": "c1e9acedca2351b249f76b1e9632dd5aea35fc892a5c1e4404c3fed806d5f883",
+      "status": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_post_audit_revocation_cannot_replace_the_original_publication_proof"
+    },
+    {
+      "log": "logs/test-14-native-jwt15-00.stdout",
+      "log_sha256": "c1e9acedca2351b249f76b1e9632dd5aea35fc892a5c1e4404c3fed806d5f883",
+      "status": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_post_commit_audit_failure_keeps_whole_root_and_recovery_required"
+    },
+    {
+      "log": "logs/test-14-native-jwt15-00.stdout",
+      "log_sha256": "c1e9acedca2351b249f76b1e9632dd5aea35fc892a5c1e4404c3fed806d5f883",
+      "status": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta"
+    },
+    {
+      "log": "logs/test-14-native-jwt15-00.stdout",
+      "log_sha256": "c1e9acedca2351b249f76b1e9632dd5aea35fc892a5c1e4404c3fed806d5f883",
+      "status": "FAILED",
+      "test": "service::native_auth::jwt_tests::native_jwt_role_operations_keep_the_existing_legacy_acl_contract"
+    },
+    {
+      "log": "logs/test-14-native-jwt15-00.stdout",
+      "log_sha256": "c1e9acedca2351b249f76b1e9632dd5aea35fc892a5c1e4404c3fed806d5f883",
+      "status": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_token_api_batch_owner_preserves_real_parent_binding_across_cold_reopen"
+    },
+    {
+      "log": "logs/test-14-native-jwt15-00.stdout",
+      "log_sha256": "c1e9acedca2351b249f76b1e9632dd5aea35fc892a5c1e4404c3fed806d5f883",
+      "status": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_token_api_profile_rejects_mount_label_without_real_issuer_or_parent_graph"
+    },
+    {
+      "log": "logs/test-14-native-jwt15-00.stdout",
+      "log_sha256": "c1e9acedca2351b249f76b1e9632dd5aea35fc892a5c1e4404c3fed806d5f883",
+      "status": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_token_api_revoke_orphan_keeps_own_issuer_but_mount_retirement_still_revokes"
+    },
+    {
+      "log": "logs/test-14-native-jwt15-00.stdout",
+      "log_sha256": "c1e9acedca2351b249f76b1e9632dd5aea35fc892a5c1e4404c3fed806d5f883",
+      "status": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_token_api_service_descendants_keep_own_renewal_and_parent_revocation"
+    }
+  ],
+  "authbus_qualified": false,
+  "denominator": 107,
+  "dynamic_enumeration_exactly_matches_required": true,
+  "failed": [
+    "service::native_auth::jwt_tests::native_jwt_role_operations_keep_the_existing_legacy_acl_contract"
+  ],
+  "formal_kv2_qualified": false,
+  "full_replacement_qualified": false,
+  "missing": [
+    "http::tls_close_tests::http1_abrupt_tls_eof_is_rejected_after_complete_http_response",
+    "http::tls_close_tests::http1_completed_replies_end_with_verified_tls_close_notify",
+    "http::tls_close_tests::http1_reply_writer_propagates_write_and_flush_failures",
+    "http::tls_close_tests::http1_terminal_close_rejects_expired_original_deadline"
+  ],
+  "new_artifacts_independently_verified": 4,
+  "no_rerun_performed": true,
+  "not_qualified_cases": 19,
+  "observed": {
+    "failed": 1,
+    "ignored": 0,
+    "measured": 0,
+    "passed": 102
+  },
+  "observed_executed": 103,
+  "old_artifacts_independently_verified": 17,
+  "physical_ha_qualified": false,
+  "postterminal_source_clean": true,
+  "receipt_sha256": "9cf27fbf78f3f976fb6397a693b1fa18ec3965bbea84d58cb0f8773aa4f2a5ff",
+  "registered_owned_groups_gone": 47,
+  "schema": "heptabao.original-libtest-case-reconciliation.v1",
+  "selection_sha256": "d7f6d0971e7a6b3e0096e50a1e3d607bff851ce2295563ad068b80adf2294bfd",
+  "source_commit": "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+  "source_parent": "868439e6df9f12291842898763ccba581e346bfb",
+  "source_tree": "dfb0df97a2c74b1c0154f45342f3debb0ce438ab",
+  "top_level_owned_group_flag_absent": true
+}

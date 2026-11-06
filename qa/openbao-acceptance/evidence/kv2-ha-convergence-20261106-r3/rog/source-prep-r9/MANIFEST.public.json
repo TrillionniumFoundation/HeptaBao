@@ -1,0 +1,268 @@
+{
+  "cancelled": false,
+  "exit_code": 0,
+  "files": [
+    {
+      "bytes": 0,
+      "path": "00-before-clean.stderr",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/00-before-clean.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "00-before-clean.stdout",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/00-before-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "00-before-head.stderr",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/00-before-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "00-before-head.stdout",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/00-before-head.stdout",
+      "sha256": "cbca82f96c596676837671b5583ea9c2441ea570772691ab08bd7793006b8c3c"
+    },
+    {
+      "bytes": 0,
+      "path": "00-before-tree.stderr",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/00-before-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "00-before-tree.stdout",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/00-before-tree.stdout",
+      "sha256": "18c777797a67e409a17c9768491abf99db2b21b1c489bfba477d5bc3dea3ff29"
+    },
+    {
+      "bytes": 94,
+      "path": "01-clone.stderr",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/01-clone.stderr",
+      "sha256": "84a8fe77944c16af31eb27622946cc682b976805389cfb9dec79094d2016196e"
+    },
+    {
+      "bytes": 0,
+      "path": "01-clone.stdout",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/01-clone.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 108,
+      "path": "02-bundle-verify.stderr",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/02-bundle-verify.stderr",
+      "sha256": "992a8b3d3910c25574a2fc71600b79e74f9d0213c45be675530b2bbb4e60066a"
+    },
+    {
+      "bytes": 190,
+      "path": "02-bundle-verify.stdout",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/02-bundle-verify.stdout",
+      "sha256": "17f5c9fb6c2b4b1c917f18e2153023caba6bccf5eb2afe35437344df69b0b9e9"
+    },
+    {
+      "bytes": 155,
+      "path": "03-fetch.stderr",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/03-fetch.stderr",
+      "sha256": "bfe0d173173d04e8bce98936ee21dd90e20788aba9b7f6bda5930e4ace621db5"
+    },
+    {
+      "bytes": 0,
+      "path": "03-fetch.stdout",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/03-fetch.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 209,
+      "path": "04-checkout.stderr",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/04-checkout.stderr",
+      "sha256": "2bdb076c2e2ff3a97ff87f63a8707a0274050764899573c066bf7befc620b885"
+    },
+    {
+      "bytes": 0,
+      "path": "04-checkout.stdout",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/04-checkout.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "05-head.stderr",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/05-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "05-head.stdout",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/05-head.stdout",
+      "sha256": "798ea711ddde846d7f1fe86738651bfe5fabbbb7bac5ee756af0c2929b3dfe3e"
+    },
+    {
+      "bytes": 0,
+      "path": "06-parent.stderr",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/06-parent.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "06-parent.stdout",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/06-parent.stdout",
+      "sha256": "cbca82f96c596676837671b5583ea9c2441ea570772691ab08bd7793006b8c3c"
+    },
+    {
+      "bytes": 0,
+      "path": "06-tree.stderr",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/06-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "06-tree.stdout",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/06-tree.stdout",
+      "sha256": "ace072102d6b0ad7e10013f16b7bcf5dc48d0344dd364b1f83691a7c3672eafc"
+    },
+    {
+      "bytes": 0,
+      "path": "07-clean.stderr",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/07-clean.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "07-clean.stdout",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/07-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "08-fsck.stderr",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/08-fsck.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 562,
+      "path": "08-fsck.stdout",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/08-fsck.stdout",
+      "sha256": "06d08a38c9d941e05bbdee406c042e53c9cb8cdffe667744881aab4b43447be3"
+    },
+    {
+      "bytes": 0,
+      "path": "09-after-clean.stderr",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/09-after-clean.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "09-after-clean.stdout",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/09-after-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "09-after-head.stderr",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/09-after-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "09-after-head.stdout",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/09-after-head.stdout",
+      "sha256": "cbca82f96c596676837671b5583ea9c2441ea570772691ab08bd7793006b8c3c"
+    },
+    {
+      "bytes": 0,
+      "path": "09-after-tree.stderr",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/09-after-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "09-after-tree.stdout",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/09-after-tree.stdout",
+      "sha256": "18c777797a67e409a17c9768491abf99db2b21b1c489bfba477d5bc3dea3ff29"
+    },
+    {
+      "bytes": 6798,
+      "path": "result.public.json",
+      "provenance": "exact retained remote file",
+      "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-r9-prep/result.public.json",
+      "sha256": "5bf54fa9f954dccf0593ef37d601028669bfe3c06e8bbac6657d06708b1de268"
+    },
+    {
+      "bytes": 7146,
+      "path": "runtime-request.original.json",
+      "provenance": "lossless JSON serialization of actual submitted request object",
+      "sha256": "872632787e97cb8edfa1f39258010867f8afa024a91fb400e446417051f8295b"
+    },
+    {
+      "bytes": 1060,
+      "path": "runtime-start.original.json",
+      "provenance": "exact Runtime returned JSON text",
+      "sha256": "cc04d5191eb6e2bf377a969735109ad06fafe3cd2f6a7440439584956c85346a"
+    },
+    {
+      "bytes": 0,
+      "path": "runtime-stderr.original",
+      "provenance": "exact controller or complete Runtime stream",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 5474,
+      "path": "runtime-stdout.original",
+      "provenance": "exact controller or complete Runtime stream",
+      "sha256": "41003ca7d1729c62a34c8cd3f9a8f0d9092944e9c8a67619f78ac9f5d38b880d"
+    },
+    {
+      "bytes": 731,
+      "path": "runtime-terminal.original.json",
+      "provenance": "exact Runtime returned JSON text",
+      "sha256": "c02a56c3c7d0700977e5c112dbc4a38622afd71d3708dbdd650176c901579182"
+    },
+    {
+      "bytes": 6724,
+      "path": "source-prep.py",
+      "provenance": "exact controller or complete Runtime stream",
+      "sha256": "ac373c36783b15ff16fefa4e19722c98f6c3334afcccd1a22b26372e58cf6058"
+    }
+  ],
+  "host": "rog",
+  "job_id": "1a1b11af0e7-fc05-75d1",
+  "production_changed": false,
+  "rust_compilation_executed": false,
+  "rust_tests_executed": false,
+  "schema": "heptabao.rog-r9-source-preparation-evidence.v1",
+  "source_preparation_only": true,
+  "state": "succeeded",
+  "timed_out": false
+}

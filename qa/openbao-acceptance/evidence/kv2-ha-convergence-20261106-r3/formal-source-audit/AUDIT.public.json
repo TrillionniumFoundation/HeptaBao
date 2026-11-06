@@ -1,0 +1,2676 @@
+{
+  "authbus_accepted_by_this_audit": false,
+  "created_utc": "2026-11-06T13:46:06.694991+00:00",
+  "ha_accepted_by_this_audit": false,
+  "hosts": {
+    "mac": {
+      "backup_candidates": [
+        {
+          "bytes": 6986526720,
+          "dev": 16777244,
+          "exists": true,
+          "gid": 20,
+          "inode": 71443741,
+          "kind": "file",
+          "mode": "0o600",
+          "nlink": 1,
+          "observation_round": "r6",
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-main-current-encrypted-custody-20261102-r2/encrypted-current-main.tar",
+          "uid": 501
+        },
+        {
+          "bytes": 304644,
+          "dev": 16777244,
+          "exists": true,
+          "gid": 20,
+          "inode": 71443740,
+          "kind": "file",
+          "mode": "0o600",
+          "nlink": 1,
+          "observation_round": "r6",
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-main-current-encrypted-custody-20261102-r2/source-map.public.json",
+          "uid": 501
+        }
+      ],
+      "config_bindings": [
+        {
+          "file_metadata": {
+            "bytes": 902,
+            "dev": 16777244,
+            "exists": true,
+            "gid": 20,
+            "inode": 72430081,
+            "kind": "file",
+            "mode": "0o600",
+            "nlink": 1,
+            "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/config/server.json",
+            "uid": 501
+          },
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/config/server.json",
+          "selected_fields": [
+            {
+              "field": "audit_file",
+              "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/node/audit.jsonl"
+            },
+            {
+              "field": "data_dir",
+              "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/node/state"
+            },
+            {
+              "field": "listen",
+              "value": "192.168.0.8:8200"
+            },
+            {
+              "field": "storage.native_v6_raft.node_id",
+              "value": "mac"
+            },
+            {
+              "field": "storage.native_v6_raft.path",
+              "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/node"
+            },
+            {
+              "field": "tls_cert_file",
+              "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/tls/tls.crt"
+            },
+            {
+              "field": "tls_key_file",
+              "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/tls/tls.key"
+            }
+          ]
+        },
+        {
+          "file_metadata": {
+            "bytes": 1738,
+            "dev": 16777244,
+            "exists": true,
+            "gid": 20,
+            "inode": 72430112,
+            "kind": "file",
+            "mode": "0o600",
+            "nlink": 1,
+            "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/config/ha.json",
+            "uid": 501
+          },
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/config/ha.json",
+          "selected_fields": [
+            {
+              "field": "ca_file",
+              "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/tls/ca.crt"
+            },
+            {
+              "field": "cert_file",
+              "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/tls/tls.crt"
+            },
+            {
+              "field": "key_file",
+              "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/tls/tls.key"
+            },
+            {
+              "field": "listen",
+              "value": "192.168.0.8:8201"
+            },
+            {
+              "field": "node_id",
+              "value": 1
+            },
+            {
+              "field": "peers.1.address",
+              "value": "192.168.0.8:8201"
+            },
+            {
+              "field": "peers.1.server_name",
+              "value": "MacBook-Pro.local"
+            },
+            {
+              "field": "peers.2.address",
+              "value": "192.168.0.10:8201"
+            },
+            {
+              "field": "peers.2.server_name",
+              "value": "qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA"
+            },
+            {
+              "field": "peers.3.address",
+              "value": "192.168.0.9:8201"
+            },
+            {
+              "field": "peers.3.server_name",
+              "value": "alex-G1628-04"
+            },
+            {
+              "field": "raft_dir",
+              "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/node/raft"
+            },
+            {
+              "field": "replication_key_file",
+              "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/tls/replication.key"
+            }
+          ]
+        }
+      ],
+      "current_manager_observations": [
+        {
+          "kind": "exact_staged_labels_in_current_bootstrap",
+          "requested_labels": [
+            "org.heptabao.node",
+            "org.heptabao.qa.mac-authbus-4e808-owner-r1.server"
+          ],
+          "returncode": 0,
+          "scope": "current bootstrap only; other domains not read",
+          "selected": [
+            {
+              "label": "org.heptabao.qa.mac-authbus-4e808-owner-r1.server",
+              "last_exit_status": 78,
+              "pid": null
+            }
+          ]
+        }
+      ],
+      "empty_production_directories": [
+        {
+          "cap_hit": false,
+          "entries_observed": 0,
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/node/data",
+          "scope": "exact directory at observation only"
+        },
+        {
+          "cap_hit": false,
+          "entries_observed": 0,
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/node/raft",
+          "scope": "exact directory at observation only"
+        },
+        {
+          "cap_hit": false,
+          "entries_observed": 0,
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/node/state",
+          "scope": "exact directory at observation only"
+        }
+      ],
+      "historical_receipt_attestations": [
+        {
+          "bytes": 1737,
+          "historical_receipt_attestation": {
+            "activation_created": false,
+            "ok": true,
+            "schema": "heptabao.mac-offline-node-prepared.v1",
+            "seed_initialized": false,
+            "service_loaded": false,
+            "service_started": false,
+            "source_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+            "source_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+            "traffic_cutover": false
+          },
+          "observation_round": "r5",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/prepared.public.json"
+        },
+        {
+          "bytes": 2174,
+          "historical_receipt_attestation": {
+            "ok": true,
+            "schema": "heptabao.staged-state-path-correction.v1",
+            "service_started": false,
+            "source_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+            "traffic_cutover": false
+          },
+          "observation_round": "r5",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/state-path-correction.public.json"
+        },
+        {
+          "bytes": 397,
+          "historical_receipt_attestation": {
+            "ok": true,
+            "schema": "heptabao.cross-os-seed-helper-stage.v1",
+            "service_started": false
+          },
+          "observation_round": "r5",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/control/seed-cross-os-source-staged-61ff-r1.public.json"
+        },
+        {
+          "bytes": 397,
+          "historical_receipt_attestation": {
+            "ok": true,
+            "schema": "heptabao.cross-os-seed-helper-stage.v1",
+            "service_started": false
+          },
+          "observation_round": "r5",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/control/seed-cross-os-source-staged-61ff-r2.public.json"
+        },
+        {
+          "bytes": 5386,
+          "historical_receipt_attestation": {
+            "all_owned_children_stopped": true,
+            "client_changed": false,
+            "credential_source_changed": false,
+            "j3160_contacted": false,
+            "native_v6_activated": false,
+            "ok": false,
+            "production_node_state_populated": false,
+            "production_service_started": false,
+            "production_start_qualified": false,
+            "schema": "heptabao.private-recoverable-seed-preparation.v1",
+            "secret_shares": 3,
+            "secret_threshold": 2,
+            "shares_distributed": false,
+            "source": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+            "split_custody_qualified": false,
+            "tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336"
+          },
+          "observation_round": "r5",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/authority/seed-custody/bootstrap-61ff8bef-r1/result.public.json"
+        },
+        {
+          "bytes": 6466,
+          "historical_receipt_attestation": {
+            "all_owned_children_stopped": true,
+            "client_changed": false,
+            "credential_source_changed": false,
+            "j3160_contacted": false,
+            "native_v6_activated": false,
+            "ok": false,
+            "production_node_state_populated": false,
+            "production_service_started": false,
+            "production_start_qualified": false,
+            "schema": "heptabao.private-recoverable-seed-preparation.v1",
+            "secret_shares": 3,
+            "secret_threshold": 2,
+            "shares_distributed": false,
+            "source": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+            "split_custody_qualified": false,
+            "tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336"
+          },
+          "observation_round": "r5",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/authority/seed-custody/bootstrap-61ff8bef-r2/result.public.json"
+        },
+        {
+          "bytes": 39007,
+          "historical_receipt_attestation": {
+            "all_owned_children_stopped": true,
+            "client_changed": false,
+            "credential_source_changed": false,
+            "j3160_contacted": false,
+            "native_v6_activated": false,
+            "ok": true,
+            "production_node_state_populated": false,
+            "production_service_started": false,
+            "production_start_qualified": false,
+            "schema": "heptabao.private-recoverable-seed-preparation.v1",
+            "secret_shares": 3,
+            "secret_threshold": 2,
+            "shares_distributed": false,
+            "source": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+            "split_custody_qualified": false,
+            "tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336"
+          },
+          "observation_round": "r5",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/authority/seed-custody/bootstrap-61ff8bef-r3/result.public.json"
+        },
+        {
+          "bytes": 2467,
+          "historical_receipt_attestation": {
+            "client_changed": false,
+            "j3160_contacted": false,
+            "ok": true,
+            "production_start_qualified": false,
+            "schema": "heptabao.mac-to-linux-seed-controller.v1"
+          },
+          "observation_round": "r5",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/authority/seed-custody/cross-os-rog-61ff-r2/result.public.json"
+        },
+        {
+          "bytes": 20536,
+          "historical_receipt_attestation": {
+            "all_owned_children_stopped": true,
+            "client_changed": false,
+            "credential_source_changed": false,
+            "j3160_contacted": false,
+            "native_v6_activated": false,
+            "ok": true,
+            "production_node_state_populated": false,
+            "production_service_started": false,
+            "production_start_qualified": false,
+            "schema": "heptabao.mac-to-linux-seed-cold-recovery.v1",
+            "secret_shares": 3,
+            "secret_threshold": 2,
+            "shares_distributed": false,
+            "source": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+            "split_custody_qualified": false,
+            "tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336"
+          },
+          "observation_round": "r5",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/authority/seed-custody/cross-os-rog-61ff-r2/linux-result.public.json"
+        },
+        {
+          "bytes": 304644,
+          "historical_receipt_attestation": {
+            "schema": "heptabao.current-encrypted-only-transport-source-map.r1"
+          },
+          "observation_round": "r7",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-main-current-encrypted-custody-20261102-r2/source-map.public.json"
+        },
+        {
+          "bytes": 7547,
+          "historical_receipt_attestation": {
+            "production_changed": false,
+            "schema": "heptabao.mac-registered-startup-backup-projection.v1"
+          },
+          "observation_round": "r7",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/Users/qianqi/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-r1.public.json"
+        },
+        {
+          "bytes": 304644,
+          "historical_receipt_attestation": {
+            "historicalCipherQualified": false,
+            "keyOrPlaintextIncluded": false,
+            "onlyMetadataManifestDecrypted": true,
+            "schema": "heptabao.current-encrypted-only-transport-source-map.r1",
+            "sourceCipherFilesHeldNoAtimeDoubleHashMetadata10Exact": true,
+            "sourceDirectoryMetadata9Exact": true,
+            "sourceFreshnessOnlyAtCapture": true,
+            "tarFullHashAndIndependentParseHashExact": true
+          },
+          "observation_round": "r8",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-main-current-encrypted-custody-20261102-r2/source-map.public.json"
+        }
+      ],
+      "production_named_root": {
+        "bytes": 384,
+        "dev": 16777244,
+        "exists": true,
+        "gid": 20,
+        "inode": 72412530,
+        "kind": "directory",
+        "mode": "0o700",
+        "nlink": 12,
+        "observation_round": "r5",
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1",
+        "uid": 501
+      },
+      "real_client_store_candidates": [
+        {
+          "exists": false,
+          "path": "/Users/qianqi/.openclaw/agents/main/agent/auth-profiles.json"
+        },
+        {
+          "exists": false,
+          "path": "/Users/qianqi/.openclaw/agents/main/agent/auth-state.json"
+        },
+        {
+          "bytes": 2469126144,
+          "dev": 16777233,
+          "exists": true,
+          "gid": 20,
+          "inode": 567262038,
+          "kind": "file",
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/Users/qianqi/.openclaw/agents/main/agent/openclaw-agent.sqlite",
+          "uid": 501
+        },
+        {
+          "exists": false,
+          "path": "/Users/qianqi/.openclaw/agents/main/agent/openclaw-agent.sqlite-shm"
+        },
+        {
+          "exists": false,
+          "path": "/Users/qianqi/.openclaw/agents/main/agent/openclaw-agent.sqlite-wal"
+        }
+      ],
+      "real_source_qualified_for_current_migration": false,
+      "release_executables": [
+        {
+          "bytes": 90045552,
+          "dev": 16777244,
+          "exists": true,
+          "gid": 20,
+          "inode": 72412545,
+          "kind": "file",
+          "mode": "0o700",
+          "nlink": 1,
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/release/heptabao-server",
+          "sha256": "d8a9e827a8c0dc0403df24783ea15849bbad88ca88c52985d1cdca0e4d75bd20",
+          "stable_identity": true,
+          "uid": 501
+        }
+      ],
+      "service_templates": [
+        {
+          "ExitTimeOut": 20,
+          "KeepAlive": true,
+          "RunAtLoad": true,
+          "ThrottleInterval": 30,
+          "WorkingDirectory": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1",
+          "argument_count": 13,
+          "file_metadata": {
+            "bytes": 2496,
+            "dev": 16777244,
+            "exists": true,
+            "gid": 20,
+            "inode": 72430087,
+            "kind": "file",
+            "mode": "0o600",
+            "nlink": 1,
+            "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/service/org.heptabao.node.plist",
+            "uid": 501
+          },
+          "interpreter": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+          "label": "org.heptabao.node",
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/service/org.heptabao.node.plist"
+        },
+        {
+          "ExitTimeOut": 10,
+          "KeepAlive": false,
+          "RunAtLoad": true,
+          "WorkingDirectory": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1",
+          "argument_count": 17,
+          "file_metadata": {
+            "bytes": 3984,
+            "dev": 16777244,
+            "exists": true,
+            "gid": 20,
+            "inode": 72671221,
+            "kind": "file",
+            "mode": "0o600",
+            "nlink": 1,
+            "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.plist",
+            "uid": 501
+          },
+          "interpreter": "/opt/homebrew/bin/python3",
+          "label": "org.heptabao.qa.mac-authbus-4e808-owner-r1.server",
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.plist"
+        }
+      ],
+      "service_wrapper_bindings": [
+        {
+          "definition": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/service/org.heptabao.node.plist",
+          "flags": [
+            "-c",
+            "--stage",
+            "--stage-sha256"
+          ],
+          "paths_in_own_root": [
+            "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/release/heptabao_mac_node_start.py",
+            "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/control/stage.private.json"
+          ],
+          "raw_arguments_omitted": true
+        }
+      ],
+      "volume_identity_observations": [
+        {
+          "identity": {
+            "DeviceIdentifier": "disk7s1",
+            "DiskUUID": "FB804D1B-24CB-4D6E-AEA7-A9E180807758",
+            "FilesystemType": "apfs",
+            "Internal": false,
+            "MountPoint": "/Volumes/T5",
+            "VolumeName": "T5",
+            "VolumeUUID": "FB804D1B-24CB-4D6E-AEA7-A9E180807758"
+          },
+          "metadata": {
+            "bytes": 384,
+            "dev": 16777244,
+            "exists": true,
+            "gid": 0,
+            "inode": 2,
+            "kind": "directory",
+            "mode": "0o775",
+            "nlink": 12,
+            "path": "/Volumes/T5",
+            "uid": 0
+          },
+          "target": "/Volumes/T5"
+        },
+        {
+          "identity": {
+            "DeviceIdentifier": "disk3s5",
+            "DiskUUID": "66612ABB-2CE6-4BDE-8B11-8104E60307CC",
+            "FilesystemType": "apfs",
+            "Internal": true,
+            "MountPoint": "/System/Volumes/Data",
+            "VolumeName": "Data",
+            "VolumeUUID": "66612ABB-2CE6-4BDE-8B11-8104E60307CC"
+          },
+          "metadata": {
+            "bytes": 800,
+            "dev": 16777233,
+            "exists": true,
+            "gid": 0,
+            "inode": 1152921500311879682,
+            "kind": "directory",
+            "mode": "0o755",
+            "nlink": 25,
+            "path": "/System/Volumes/Data",
+            "uid": 0
+          },
+          "target": "/System/Volumes/Data"
+        }
+      ],
+      "wrapper_exec_contract": "existing staged wrapper passes both --config and --ha-config"
+    },
+    "pocket4": {
+      "additional_private_agent_paths": "retained in private r6 original; account-bearing path omitted from public projection",
+      "additional_private_agent_store_observed": true,
+      "capture_locator_payload_opened": false,
+      "client_source_capture_locator": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-full-r2/live/main-source-auth.private.json",
+      "config_bindings": [
+        {
+          "file_metadata": {
+            "bytes": 751,
+            "dev": 66306,
+            "exists": true,
+            "gid": 1000,
+            "inode": 44076423,
+            "kind": "file",
+            "mode": "0o600",
+            "nlink": 1,
+            "path": "/home/alex/heptabao-production-20261104-r1/config/server.json",
+            "uid": 1000
+          },
+          "path": "/home/alex/heptabao-production-20261104-r1/config/server.json",
+          "selected_fields": [
+            {
+              "field": "audit_file",
+              "path": "/home/alex/heptabao-production-20261104-r1/node/audit.jsonl"
+            },
+            {
+              "field": "data_dir",
+              "path": "/home/alex/heptabao-production-20261104-r1/node/state"
+            },
+            {
+              "field": "listen",
+              "value": "192.168.0.9:8200"
+            },
+            {
+              "field": "storage.native_v6_raft.node_id",
+              "value": "pocket4"
+            },
+            {
+              "field": "storage.native_v6_raft.path",
+              "path": "/home/alex/heptabao-production-20261104-r1/node"
+            },
+            {
+              "field": "tls_cert_file",
+              "path": "/home/alex/heptabao-production-20261104-r1/tls/tls.crt"
+            },
+            {
+              "field": "tls_key_file",
+              "path": "/home/alex/heptabao-production-20261104-r1/tls/tls.key"
+            }
+          ]
+        },
+        {
+          "file_metadata": {
+            "bytes": 1584,
+            "dev": 66306,
+            "exists": true,
+            "gid": 1000,
+            "inode": 44076947,
+            "kind": "file",
+            "mode": "0o600",
+            "nlink": 1,
+            "path": "/home/alex/heptabao-production-20261104-r1/config/ha.json",
+            "uid": 1000
+          },
+          "path": "/home/alex/heptabao-production-20261104-r1/config/ha.json",
+          "selected_fields": [
+            {
+              "field": "ca_file",
+              "path": "/home/alex/heptabao-production-20261104-r1/tls/ca.crt"
+            },
+            {
+              "field": "cert_file",
+              "path": "/home/alex/heptabao-production-20261104-r1/tls/tls.crt"
+            },
+            {
+              "field": "key_file",
+              "path": "/home/alex/heptabao-production-20261104-r1/tls/tls.key"
+            },
+            {
+              "field": "listen",
+              "value": "192.168.0.9:8201"
+            },
+            {
+              "field": "node_id",
+              "value": 3
+            },
+            {
+              "field": "peers.1.address",
+              "value": "192.168.0.8:8201"
+            },
+            {
+              "field": "peers.1.server_name",
+              "value": "MacBook-Pro.local"
+            },
+            {
+              "field": "peers.2.address",
+              "value": "192.168.0.10:8201"
+            },
+            {
+              "field": "peers.2.server_name",
+              "value": "qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA"
+            },
+            {
+              "field": "peers.3.address",
+              "value": "192.168.0.9:8201"
+            },
+            {
+              "field": "peers.3.server_name",
+              "value": "alex-G1628-04"
+            },
+            {
+              "field": "raft_dir",
+              "path": "/home/alex/heptabao-production-20261104-r1/node/raft"
+            },
+            {
+              "field": "replication_key_file",
+              "path": "/home/alex/heptabao-production-20261104-r1/tls/replication.key"
+            }
+          ]
+        }
+      ],
+      "current_manager_observations": [
+        {
+          "kind": "exact_staged_units_user",
+          "properties": [
+            {
+              "ActiveState": "inactive",
+              "ControlGroup": "",
+              "DropInPaths": "",
+              "FragmentPath": "",
+              "Group": "",
+              "Id": "heptabao-node.service",
+              "LoadState": "not-found",
+              "MainPID": "0",
+              "SubState": "dead",
+              "UnitFileState": "",
+              "User": "",
+              "WorkingDirectory": ""
+            }
+          ],
+          "returncode": 0
+        },
+        {
+          "kind": "exact_staged_units_system",
+          "properties": [
+            {
+              "ActiveState": "inactive",
+              "ControlGroup": "",
+              "DropInPaths": "",
+              "FragmentPath": "",
+              "Group": "",
+              "Id": "heptabao-node.service",
+              "LoadState": "not-found",
+              "MainPID": "0",
+              "SubState": "dead",
+              "UnitFileState": "",
+              "User": "",
+              "WorkingDirectory": ""
+            }
+          ],
+          "returncode": 0
+        },
+        {
+          "kind": "known_authbus_manager",
+          "returncode": 0,
+          "selected": {
+            "ActiveState": "inactive",
+            "DropInPaths": "/home/alex/.config/systemd/user/openclaw-gateway.service.d/30-telegram-spooled-handler-timeout.conf /home/alex/.config/systemd/user/openclaw-gateway.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf",
+            "FragmentPath": "/home/alex/.config/systemd/user/openclaw-gateway.service",
+            "Id": "openclaw-gateway.service",
+            "LoadState": "loaded",
+            "MainPID": "0",
+            "SubState": "dead",
+            "UnitFileState": "enabled"
+          }
+        },
+        {
+          "kind": "known_authbus_manager",
+          "returncode": 0,
+          "selected": {
+            "ActiveState": "inactive",
+            "DropInPaths": "/home/alex/.config/systemd/user/openclaw-authbus-restart-when-idle.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf",
+            "FragmentPath": "/home/alex/.config/systemd/user/openclaw-authbus-restart-when-idle.service",
+            "Id": "openclaw-authbus-restart-when-idle.service",
+            "LoadState": "loaded",
+            "MainPID": "0",
+            "SubState": "dead",
+            "UnitFileState": "static"
+          }
+        }
+      ],
+      "empty_production_directories": [
+        {
+          "cap_hit": false,
+          "entries_observed": 0,
+          "path": "/home/alex/heptabao-production-20261104-r1/node/data",
+          "scope": "exact directory at observation only"
+        },
+        {
+          "cap_hit": false,
+          "entries_observed": 0,
+          "path": "/home/alex/heptabao-production-20261104-r1/node/raft",
+          "scope": "exact directory at observation only"
+        },
+        {
+          "cap_hit": false,
+          "entries_observed": 0,
+          "path": "/home/alex/heptabao-production-20261104-r1/node/state",
+          "scope": "exact directory at observation only"
+        }
+      ],
+      "historical_receipt_attestations": [],
+      "production_named_root": {
+        "bytes": 4096,
+        "dev": 66306,
+        "exists": true,
+        "gid": 1000,
+        "inode": 44075388,
+        "kind": "directory",
+        "mode": "0o700",
+        "nlink": 9,
+        "observation_round": "r4",
+        "path": "/home/alex/heptabao-production-20261104-r1",
+        "uid": 1000
+      },
+      "protected_authbus_locations": [
+        {
+          "bytes": 21250,
+          "dev": 66306,
+          "exists": true,
+          "gid": 1000,
+          "inode": 31327275,
+          "kind": "file",
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/alex/.openclaw/openclaw.json",
+          "uid": 1000
+        },
+        {
+          "bytes": 4096,
+          "dev": 66306,
+          "exists": true,
+          "gid": 1000,
+          "inode": 31593009,
+          "kind": "directory",
+          "mode": "0o700",
+          "nlink": 2,
+          "path": "/home/alex/.openclaw/credentials/authbus",
+          "uid": 1000
+        },
+        {
+          "bytes": 1834,
+          "dev": 66306,
+          "exists": true,
+          "gid": 1000,
+          "inode": 31593027,
+          "kind": "file",
+          "mode": "0o644",
+          "nlink": 1,
+          "path": "/home/alex/.openclaw/credentials/authbus/ca.crt",
+          "uid": 1000
+        },
+        {
+          "bytes": 36,
+          "dev": 66306,
+          "exists": true,
+          "gid": 1000,
+          "inode": 31625386,
+          "kind": "file",
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/alex/.openclaw/credentials/authbus/role_id",
+          "uid": 1000
+        },
+        {
+          "bytes": 36,
+          "dev": 66306,
+          "exists": true,
+          "gid": 1000,
+          "inode": 31625387,
+          "kind": "file",
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/alex/.openclaw/credentials/authbus/secret_id",
+          "uid": 1000
+        },
+        {
+          "bytes": 4096,
+          "dev": 66306,
+          "exists": true,
+          "gid": 1000,
+          "inode": 31761846,
+          "kind": "directory",
+          "mode": "0o700",
+          "nlink": 2,
+          "path": "/home/alex/heptabao-authbus-persistent-guard-hb3-r1",
+          "uid": 1000
+        },
+        {
+          "bytes": 154,
+          "dev": 66306,
+          "exists": true,
+          "gid": 1000,
+          "inode": 32162411,
+          "kind": "file",
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/alex/.openclaw/authbus/status.json",
+          "uid": 1000
+        },
+        {
+          "bytes": 372,
+          "dev": 66306,
+          "exists": true,
+          "gid": 1000,
+          "inode": 32112770,
+          "kind": "file",
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/alex/.openclaw/authbus/applied-profiles.json",
+          "uid": 1000
+        },
+        {
+          "bytes": 174,
+          "dev": 66306,
+          "exists": true,
+          "gid": 1000,
+          "inode": 32112660,
+          "kind": "file",
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/alex/.openclaw/authbus/publish-baseline.json",
+          "uid": 1000
+        },
+        {
+          "exists": false,
+          "path": "/home/alex/.openclaw/authbus/refresh-backoff.json"
+        },
+        {
+          "bytes": 73,
+          "dev": 66306,
+          "exists": true,
+          "gid": 1000,
+          "inode": 32112812,
+          "kind": "file",
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/alex/.openclaw/authbus/bad-refresh-quarantine.json",
+          "uid": 1000
+        },
+        {
+          "exists": false,
+          "path": "/home/alex/.openclaw/authbus/lease-epochs.json"
+        }
+      ],
+      "real_client_store_candidates": [
+        {
+          "exists": false,
+          "path": "/home/alex/.openclaw/agents/main/agent/auth-profiles.json"
+        },
+        {
+          "exists": false,
+          "path": "/home/alex/.openclaw/agents/main/agent/auth-state.json"
+        },
+        {
+          "bytes": 399716352,
+          "dev": 66306,
+          "exists": true,
+          "gid": 1000,
+          "inode": 32125117,
+          "kind": "file",
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/alex/.openclaw/agents/main/agent/openclaw-agent.sqlite",
+          "uid": 1000
+        },
+        {
+          "bytes": 32768,
+          "dev": 66306,
+          "exists": true,
+          "gid": 1000,
+          "inode": 32132492,
+          "kind": "file",
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/alex/.openclaw/agents/main/agent/openclaw-agent.sqlite-shm",
+          "uid": 1000
+        },
+        {
+          "bytes": 0,
+          "dev": 66306,
+          "exists": true,
+          "gid": 1000,
+          "inode": 32114299,
+          "kind": "file",
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/alex/.openclaw/agents/main/agent/openclaw-agent.sqlite-wal",
+          "uid": 1000
+        }
+      ],
+      "real_source_qualified_for_current_migration": false,
+      "release_executables": [
+        {
+          "bytes": 107991504,
+          "dev": 66306,
+          "exists": true,
+          "gid": 1000,
+          "inode": 44075399,
+          "kind": "file",
+          "mode": "0o700",
+          "nlink": 1,
+          "path": "/home/alex/heptabao-production-20261104-r1/release/heptabao-server",
+          "sha256": "7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba",
+          "stable_identity": true,
+          "uid": 1000
+        }
+      ],
+      "service_templates": [
+        {
+          "NoNewPrivileges": "yes",
+          "Restart": "on-failure",
+          "Type": "simple",
+          "UMask": "0077",
+          "WantedBy": "default.target",
+          "WorkingDirectory": "/home/alex/heptabao-production-20261104-r1",
+          "file_metadata": {
+            "bytes": 2060,
+            "dev": 66306,
+            "exists": true,
+            "gid": 1000,
+            "inode": 44077205,
+            "kind": "file",
+            "mode": "0o600",
+            "nlink": 1,
+            "path": "/home/alex/heptabao-production-20261104-r1/service/heptabao-node.service",
+            "uid": 1000
+          },
+          "path": "/home/alex/heptabao-production-20261104-r1/service/heptabao-node.service"
+        }
+      ],
+      "service_wrapper_bindings": [
+        {
+          "definition": "/home/alex/heptabao-production-20261104-r1/service/heptabao-node.service",
+          "flags": [
+            "-c",
+            "--stage",
+            "--stage-sha256"
+          ],
+          "paths_in_own_root": [
+            "/home/alex/heptabao-production-20261104-r1/release/heptabao_linux_node_start.py",
+            "/home/alex/heptabao-production-20261104-r1/control/stage.private.json"
+          ],
+          "raw_arguments_omitted": true
+        }
+      ],
+      "volume_identity_observations": [
+        {
+          "identity": {
+            "filesystems": [
+              {
+                "fstype": "ext4",
+                "source": "/dev/nvme0n1p2",
+                "target": "/",
+                "uuid": "01c27223-3933-481e-9836-7bd0ef1be8c9"
+              }
+            ]
+          },
+          "metadata": {
+            "bytes": 143360,
+            "dev": 66306,
+            "exists": true,
+            "gid": 1000,
+            "inode": 31326210,
+            "kind": "directory",
+            "mode": "0o750",
+            "nlink": 1369,
+            "path": "/home/alex",
+            "uid": 1000
+          },
+          "target": "/home/alex"
+        },
+        {
+          "identity": {
+            "filesystems": [
+              {
+                "fstype": "ext4",
+                "source": "/dev/nvme0n1p2",
+                "target": "/",
+                "uuid": "01c27223-3933-481e-9836-7bd0ef1be8c9"
+              }
+            ]
+          },
+          "metadata": {
+            "bytes": 12288,
+            "dev": 66306,
+            "exists": true,
+            "gid": 0,
+            "inode": 110231559,
+            "kind": "directory",
+            "mode": "0o755",
+            "nlink": 187,
+            "path": "/var/lib",
+            "uid": 0
+          },
+          "target": "/var/lib"
+        },
+        {
+          "identity": {
+            "filesystems": [
+              {
+                "fstype": "ext4",
+                "source": "/dev/nvme0n1p2",
+                "target": "/",
+                "uuid": "01c27223-3933-481e-9836-7bd0ef1be8c9"
+              }
+            ]
+          },
+          "metadata": {
+            "bytes": 12288,
+            "dev": 66306,
+            "exists": true,
+            "gid": 0,
+            "inode": 76546049,
+            "kind": "directory",
+            "mode": "0o755",
+            "nlink": 158,
+            "path": "/etc",
+            "uid": 0
+          },
+          "target": "/etc"
+        }
+      ],
+      "wrapper_exec_contract": "existing staged wrapper passes both --config and --ha-config"
+    },
+    "rog": {
+      "config_bindings": [
+        {
+          "file_metadata": {
+            "bytes": 765,
+            "dev": 66306,
+            "exists": true,
+            "gid": 1000,
+            "inode": 28488171,
+            "kind": "file",
+            "mode": "0o600",
+            "nlink": 1,
+            "path": "/home/qian-qi/heptabao-production-20261104-r1/config/server.json",
+            "uid": 1000
+          },
+          "path": "/home/qian-qi/heptabao-production-20261104-r1/config/server.json",
+          "selected_fields": [
+            {
+              "field": "audit_file",
+              "path": "/home/qian-qi/heptabao-production-20261104-r1/node/audit.jsonl"
+            },
+            {
+              "field": "data_dir",
+              "path": "/home/qian-qi/heptabao-production-20261104-r1/node/state"
+            },
+            {
+              "field": "listen",
+              "value": "192.168.0.10:8200"
+            },
+            {
+              "field": "storage.native_v6_raft.node_id",
+              "value": "rog"
+            },
+            {
+              "field": "storage.native_v6_raft.path",
+              "path": "/home/qian-qi/heptabao-production-20261104-r1/node"
+            },
+            {
+              "field": "tls_cert_file",
+              "path": "/home/qian-qi/heptabao-production-20261104-r1/tls/tls.crt"
+            },
+            {
+              "field": "tls_key_file",
+              "path": "/home/qian-qi/heptabao-production-20261104-r1/tls/tls.key"
+            }
+          ]
+        },
+        {
+          "file_metadata": {
+            "bytes": 1600,
+            "dev": 66306,
+            "exists": true,
+            "gid": 1000,
+            "inode": 28490292,
+            "kind": "file",
+            "mode": "0o600",
+            "nlink": 1,
+            "path": "/home/qian-qi/heptabao-production-20261104-r1/config/ha.json",
+            "uid": 1000
+          },
+          "path": "/home/qian-qi/heptabao-production-20261104-r1/config/ha.json",
+          "selected_fields": [
+            {
+              "field": "ca_file",
+              "path": "/home/qian-qi/heptabao-production-20261104-r1/tls/ca.crt"
+            },
+            {
+              "field": "cert_file",
+              "path": "/home/qian-qi/heptabao-production-20261104-r1/tls/tls.crt"
+            },
+            {
+              "field": "key_file",
+              "path": "/home/qian-qi/heptabao-production-20261104-r1/tls/tls.key"
+            },
+            {
+              "field": "listen",
+              "value": "192.168.0.10:8201"
+            },
+            {
+              "field": "node_id",
+              "value": 2
+            },
+            {
+              "field": "peers.1.address",
+              "value": "192.168.0.8:8201"
+            },
+            {
+              "field": "peers.1.server_name",
+              "value": "MacBook-Pro.local"
+            },
+            {
+              "field": "peers.2.address",
+              "value": "192.168.0.10:8201"
+            },
+            {
+              "field": "peers.2.server_name",
+              "value": "qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA"
+            },
+            {
+              "field": "peers.3.address",
+              "value": "192.168.0.9:8201"
+            },
+            {
+              "field": "peers.3.server_name",
+              "value": "alex-G1628-04"
+            },
+            {
+              "field": "raft_dir",
+              "path": "/home/qian-qi/heptabao-production-20261104-r1/node/raft"
+            },
+            {
+              "field": "replication_key_file",
+              "path": "/home/qian-qi/heptabao-production-20261104-r1/tls/replication.key"
+            }
+          ]
+        }
+      ],
+      "current_manager_observations": [
+        {
+          "kind": "exact_staged_units_user",
+          "properties": [
+            {
+              "ActiveState": "inactive",
+              "ControlGroup": "",
+              "DropInPaths": "",
+              "FragmentPath": "",
+              "Group": "",
+              "Id": "heptabao-node.service",
+              "LoadState": "not-found",
+              "MainPID": "0",
+              "SubState": "dead",
+              "UnitFileState": "",
+              "User": "",
+              "WorkingDirectory": ""
+            }
+          ],
+          "returncode": 0
+        },
+        {
+          "kind": "exact_staged_units_system",
+          "properties": [
+            {
+              "ActiveState": "inactive",
+              "ControlGroup": "",
+              "DropInPaths": "",
+              "FragmentPath": "",
+              "Group": "",
+              "Id": "heptabao-node.service",
+              "LoadState": "not-found",
+              "MainPID": "0",
+              "SubState": "dead",
+              "UnitFileState": "",
+              "User": "",
+              "WorkingDirectory": ""
+            }
+          ],
+          "returncode": 0
+        }
+      ],
+      "empty_production_directories": [
+        {
+          "cap_hit": false,
+          "entries_observed": 0,
+          "path": "/home/qian-qi/heptabao-production-20261104-r1/node/data",
+          "scope": "exact directory at observation only"
+        },
+        {
+          "cap_hit": false,
+          "entries_observed": 0,
+          "path": "/home/qian-qi/heptabao-production-20261104-r1/node/raft",
+          "scope": "exact directory at observation only"
+        },
+        {
+          "cap_hit": false,
+          "entries_observed": 0,
+          "path": "/home/qian-qi/heptabao-production-20261104-r1/node/state",
+          "scope": "exact directory at observation only"
+        }
+      ],
+      "historical_receipt_attestations": [
+        {
+          "bytes": 1282,
+          "historical_receipt_attestation": {
+            "activation_created": false,
+            "ok": true,
+            "schema": "heptabao.linux-service-offline-prepared.v1",
+            "seed_initialized": false,
+            "service_loaded": false,
+            "service_started": false,
+            "source_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+            "source_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+            "traffic_cutover": false
+          },
+          "observation_round": "r5",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/home/qian-qi/heptabao-production-20261104-r1/service-prepared.public.json"
+        },
+        {
+          "bytes": 714,
+          "historical_receipt_attestation": {
+            "ok": true,
+            "schema": "heptabao.staged-state-path-correction.v1",
+            "service_started": false,
+            "source_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+            "traffic_cutover": false
+          },
+          "observation_round": "r5",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/home/qian-qi/heptabao-production-20261104-r1/state-path-correction.public.json"
+        },
+        {
+          "bytes": 507,
+          "historical_receipt_attestation": {
+            "ok": true,
+            "schema": "heptabao.cross-os-seed-helper-stage.v1",
+            "service_started": false
+          },
+          "observation_round": "r5",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/home/qian-qi/heptabao-production-20261104-r1/control/seed-cross-os-source-staged-61ff-r2.public.json"
+        },
+        {
+          "bytes": 20536,
+          "historical_receipt_attestation": {
+            "all_owned_children_stopped": true,
+            "client_changed": false,
+            "credential_source_changed": false,
+            "j3160_contacted": false,
+            "native_v6_activated": false,
+            "ok": true,
+            "production_node_state_populated": false,
+            "production_service_started": false,
+            "production_start_qualified": false,
+            "schema": "heptabao.mac-to-linux-seed-cold-recovery.v1",
+            "secret_shares": 3,
+            "secret_threshold": 2,
+            "shares_distributed": false,
+            "source": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+            "split_custody_qualified": false,
+            "tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336"
+          },
+          "observation_round": "r5",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/home/qian-qi/heptabao-production-20261104-r1/control/seed-cold-recovery-rog-61ff-r2/result.public.json"
+        },
+        {
+          "bytes": 997,
+          "historical_receipt_attestation": {
+            "all_clients_and_backups_migrated": false,
+            "full_inventory_qualified": false,
+            "historical_backup_payloads_read": false,
+            "production_changed": false,
+            "read_only_source_inspection": true,
+            "restore_executed": false,
+            "roots_bounded_complete": true,
+            "schema": "heptabao.exact-backup-entry-inventory.v1",
+            "source_limit_hit": false
+          },
+          "observation_round": "r7",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/home/qian-qi/heptabao-exact-backup-entry-audit-20261104-r1/result.public.json"
+        }
+      ],
+      "production_named_root": {
+        "bytes": 4096,
+        "dev": 66306,
+        "exists": true,
+        "gid": 1000,
+        "inode": 28480885,
+        "kind": "directory",
+        "mode": "0o700",
+        "nlink": 9,
+        "observation_round": "r5",
+        "path": "/home/qian-qi/heptabao-production-20261104-r1",
+        "uid": 1000
+      },
+      "real_client_store_candidates": [
+        {
+          "exists": false,
+          "path": "/home/qian-qi/.openclaw/agents/main/agent/auth-profiles.json"
+        },
+        {
+          "exists": false,
+          "path": "/home/qian-qi/.openclaw/agents/main/agent/auth-state.json"
+        },
+        {
+          "bytes": 2788634624,
+          "dev": 66306,
+          "exists": true,
+          "gid": 1000,
+          "inode": 27005459,
+          "kind": "file",
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/qian-qi/.openclaw/agents/main/agent/openclaw-agent.sqlite",
+          "uid": 1000
+        },
+        {
+          "bytes": 32768,
+          "dev": 66306,
+          "exists": true,
+          "gid": 1000,
+          "inode": 27003871,
+          "kind": "file",
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/qian-qi/.openclaw/agents/main/agent/openclaw-agent.sqlite-shm",
+          "uid": 1000
+        },
+        {
+          "bytes": 20632,
+          "dev": 66306,
+          "exists": true,
+          "gid": 1000,
+          "inode": 27000980,
+          "kind": "file",
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/qian-qi/.openclaw/agents/main/agent/openclaw-agent.sqlite-wal",
+          "uid": 1000
+        }
+      ],
+      "real_source_qualified_for_current_migration": false,
+      "release_executables": [
+        {
+          "bytes": 107991504,
+          "dev": 66306,
+          "exists": true,
+          "gid": 1000,
+          "inode": 28485188,
+          "kind": "file",
+          "mode": "0o700",
+          "nlink": 1,
+          "path": "/home/qian-qi/heptabao-production-20261104-r1/release/heptabao-server",
+          "sha256": "7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba",
+          "stable_identity": true,
+          "uid": 1000
+        }
+      ],
+      "service_templates": [
+        {
+          "NoNewPrivileges": "yes",
+          "Restart": "on-failure",
+          "Type": "simple",
+          "UMask": "0077",
+          "WantedBy": "default.target",
+          "WorkingDirectory": "/home/qian-qi/heptabao-production-20261104-r1",
+          "file_metadata": {
+            "bytes": 2075,
+            "dev": 66306,
+            "exists": true,
+            "gid": 1000,
+            "inode": 28490297,
+            "kind": "file",
+            "mode": "0o600",
+            "nlink": 1,
+            "path": "/home/qian-qi/heptabao-production-20261104-r1/service/heptabao-node.service",
+            "uid": 1000
+          },
+          "path": "/home/qian-qi/heptabao-production-20261104-r1/service/heptabao-node.service"
+        }
+      ],
+      "service_wrapper_bindings": [
+        {
+          "definition": "/home/qian-qi/heptabao-production-20261104-r1/service/heptabao-node.service",
+          "flags": [
+            "-c",
+            "--stage",
+            "--stage-sha256"
+          ],
+          "paths_in_own_root": [
+            "/home/qian-qi/heptabao-production-20261104-r1/release/heptabao_linux_node_start.py",
+            "/home/qian-qi/heptabao-production-20261104-r1/control/stage.private.json"
+          ],
+          "raw_arguments_omitted": true
+        }
+      ],
+      "volume_identity_observations": [
+        {
+          "identity": {
+            "filesystems": [
+              {
+                "fstype": "ext4",
+                "source": "/dev/nvme0n1p2",
+                "target": "/",
+                "uuid": "f700098c-b5b1-42a1-8c80-abed9f85ebf8"
+              }
+            ]
+          },
+          "metadata": {
+            "bytes": 57344,
+            "dev": 66306,
+            "exists": true,
+            "gid": 1000,
+            "inode": 27000834,
+            "kind": "directory",
+            "mode": "0o755",
+            "nlink": 504,
+            "path": "/home/qian-qi",
+            "uid": 1000
+          },
+          "target": "/home/qian-qi"
+        },
+        {
+          "identity": {
+            "filesystems": [
+              {
+                "fstype": "ext4",
+                "source": "/dev/nvme0n1p2",
+                "target": "/",
+                "uuid": "f700098c-b5b1-42a1-8c80-abed9f85ebf8"
+              }
+            ]
+          },
+          "metadata": {
+            "bytes": 12288,
+            "dev": 66306,
+            "exists": true,
+            "gid": 0,
+            "inode": 19660807,
+            "kind": "directory",
+            "mode": "0o755",
+            "nlink": 97,
+            "path": "/var/lib",
+            "uid": 0
+          },
+          "target": "/var/lib"
+        },
+        {
+          "identity": {
+            "filesystems": [
+              {
+                "fstype": "ext4",
+                "source": "/dev/nvme0n1p2",
+                "target": "/",
+                "uuid": "f700098c-b5b1-42a1-8c80-abed9f85ebf8"
+              }
+            ]
+          },
+          "metadata": {
+            "bytes": 12288,
+            "dev": 66306,
+            "exists": true,
+            "gid": 0,
+            "inode": 41156609,
+            "kind": "directory",
+            "mode": "0o755",
+            "nlink": 176,
+            "path": "/etc",
+            "uid": 0
+          },
+          "target": "/etc"
+        }
+      ],
+      "wrapper_exec_contract": "existing staged wrapper passes both --config and --ha-config"
+    },
+    "x230": {
+      "backup_candidates": [
+        {
+          "bytes": 4096,
+          "dev": 2053,
+          "exists": true,
+          "gid": 1000,
+          "inode": 3031022,
+          "kind": "directory",
+          "mode": "0o700",
+          "nlink": 3,
+          "observation_round": "r7",
+          "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/ciphertext-archive",
+          "uid": 1000
+        },
+        {
+          "bytes": 4096,
+          "dev": 2053,
+          "exists": true,
+          "gid": 1000,
+          "inode": 3032368,
+          "kind": "directory",
+          "mode": "0o700",
+          "nlink": 4,
+          "observation_round": "r6",
+          "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/restored-capture",
+          "uid": 1000
+        }
+      ],
+      "config_bindings": [],
+      "container_executable_observation_error": {
+        "errno": 13,
+        "type": "PermissionError"
+      },
+      "container_executable_sha256_verified": false,
+      "container_pid_layers": {
+        "bao_child_pid": 2031533,
+        "bao_ppid": 2031520,
+        "bao_start_ticks": 35455670,
+        "docker_init_pid": 2031520,
+        "init_start_ticks": 35455661,
+        "scope": "r3 original /proc numeric lineage and cgroup; no argv or environment"
+      },
+      "current_manager_observations": [],
+      "empty_production_directories": [],
+      "exact_client_main_path_observed_absent": "/home/qian/.openclaw/agents/main/agent",
+      "historical_receipt_attestations": [
+        {
+          "bytes": 2089,
+          "historical_receipt_attestation": {
+            "schema": "heptabao.x230-normal-7071-formal34-controller.v1",
+            "source_commit": "70714605c39014bea93545f7f6aa4217d2a23544",
+            "source_tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f",
+            "status": "failed"
+          },
+          "observation_round": "r5",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/home/qian/heptabao-kv2-formal34-61ff-7071-20261104-r1/evidence/full34-r1/intent.public.json"
+        },
+        {
+          "bytes": 90674,
+          "historical_receipt_attestation": {
+            "production_authority": false,
+            "schema": "heptabao.openbao271-kv2-lossless-native-live.v1",
+            "source_commit": "70714605c39014bea93545f7f6aa4217d2a23544",
+            "source_tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f",
+            "status": "passed"
+          },
+          "observation_round": "r5",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/home/qian/heptabao-kv2-formal34-61ff-7071-20261104-r1/evidence/full34-r1/summary.public.json"
+        },
+        {
+          "bytes": 954,
+          "historical_receipt_attestation": {
+            "schema": "heptabao.offhost-cipher-input-binding.v1",
+            "status": "passed"
+          },
+          "observation_round": "r7",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/input-binding.public.json"
+        },
+        {
+          "bytes": 5390,
+          "historical_receipt_attestation": {
+            "schema": "heptabao.offhost-captured-backup-recovery.v1",
+            "status": "passed"
+          },
+          "observation_round": "r7",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/recovery.public.json"
+        },
+        {
+          "bytes": 1241,
+          "historical_receipt_attestation": {
+            "schema": "heptabao.offhost-recovery-bound-execution.v1",
+            "status": "passed"
+          },
+          "observation_round": "r7",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/restore-execution.public.json"
+        },
+        {
+          "bytes": 1192,
+          "historical_receipt_attestation": {
+            "ok": true,
+            "schema": "heptabao.closed-current-snapshot-fernet-chunks.v1",
+            "status": "passed"
+          },
+          "observation_round": "r7",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/restore-module.public.json"
+        },
+        {
+          "bytes": 717,
+          "historical_receipt_attestation": {
+            "schema": "heptabao.offhost-cipher-transport-copy.v1"
+          },
+          "observation_round": "r7",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport-copy.public.json"
+        },
+        {
+          "bytes": 1245,
+          "historical_receipt_attestation": {
+            "schema": "heptabao.offhost-recovery-bound-execution.v1",
+            "status": "passed"
+          },
+          "observation_round": "r7",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport-execution.public.json"
+        },
+        {
+          "bytes": 1247,
+          "historical_receipt_attestation": {
+            "schema": "heptabao.offhost-captured-cipher-transport-verification.v1",
+            "status": "passed"
+          },
+          "observation_round": "r7",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport-verify.public.json"
+        },
+        {
+          "bytes": 996,
+          "historical_receipt_attestation": {
+            "all_clients_and_backups_migrated": false,
+            "full_inventory_qualified": false,
+            "historical_backup_payloads_read": false,
+            "production_changed": false,
+            "read_only_source_inspection": true,
+            "restore_executed": false,
+            "roots_bounded_complete": true,
+            "schema": "heptabao.exact-backup-entry-inventory.v1",
+            "source_limit_hit": false
+          },
+          "observation_round": "r7",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/home/qian/heptabao-exact-backup-entry-audit-20261104-r1/result.public.json"
+        },
+        {
+          "bytes": 2912,
+          "historical_receipt_attestation": {
+            "all_clients_and_backups_migrated": false,
+            "full_inventory_qualified": false,
+            "production_changed": false,
+            "schema": "heptabao.paper-backup-source-ownership-assessment.v1"
+          },
+          "observation_round": "r7",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/home/qian/heptabao-exact-backup-entry-audit-20261104-r1/public-review-r1/public/assessment.public.json"
+        },
+        {
+          "bytes": 2089,
+          "historical_receipt_attestation": {
+            "full34_qualified": false,
+            "production_changed": false,
+            "schema": "heptabao.x230-normal-7071-formal34-controller.v1",
+            "source_commit": "70714605c39014bea93545f7f6aa4217d2a23544",
+            "source_tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f",
+            "status": "failed",
+            "synthetic_only": true,
+            "v6_ha_qualified": false
+          },
+          "observation_round": "r7",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/home/qian/heptabao-kv2-formal34-61ff-7071-20261104-r1/evidence/full34-r1/intent.public.json"
+        },
+        {
+          "bytes": 90674,
+          "historical_receipt_attestation": {
+            "api_history_qualified": true,
+            "full34_qualified": true,
+            "official_version": "2.7.1",
+            "production_authority": false,
+            "replacement_authority": false,
+            "schema": "heptabao.openbao271-kv2-lossless-native-live.v1",
+            "source_commit": "70714605c39014bea93545f7f6aa4217d2a23544",
+            "source_tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f",
+            "status": "passed",
+            "synthetic_only": true,
+            "v6_ha_qualified": false
+          },
+          "observation_round": "r7",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/home/qian/heptabao-kv2-formal34-61ff-7071-20261104-r1/evidence/full34-r1/summary.public.json"
+        },
+        {
+          "bytes": 954,
+          "historical_receipt_attestation": {
+            "captureDate": "2026-11-02",
+            "credentialValuesPublished": false,
+            "currentCredentialValidityQualified": false,
+            "currentSdkRecoveryQualified": false,
+            "fullCurrentInventoryQualified": false,
+            "keyTransferred": false,
+            "lanCopyComplete": true,
+            "liveSourceDatabaseOpened": false,
+            "onlyDeclaredCapturedBackup": true,
+            "productionChanged": false,
+            "productionCutoverQualified": false,
+            "providerCalled": false,
+            "restoreStarted": false,
+            "schema": "heptabao.offhost-cipher-input-binding.v1",
+            "sdkCalled": false,
+            "stage": "full_tar_and_map_digest",
+            "status": "passed",
+            "tarBytes": 6986526720
+          },
+          "observation_round": "r8",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/input-binding.public.json"
+        },
+        {
+          "bytes": 5390,
+          "historical_receipt_attestation": {
+            "captureDate": "2026-11-02",
+            "coldNonemptyDatabases": 7,
+            "credentialValuesPublished": false,
+            "currentCredentialValidityQualified": false,
+            "currentSdkRecoveryQualified": false,
+            "exactCapturedAuthStores": 6,
+            "fullCurrentInventoryQualified": false,
+            "keyIdentity9Unchanged": true,
+            "keyTransferred": false,
+            "liveSourceDatabaseOpened": false,
+            "moduleRestore": {
+              "allDeclaredCapturePathPresenceDigestSizeBindingsVerified": true,
+              "allRestoredFileBytesAndAbsenceExact": true,
+              "authenticatedAllCiphertextBeforeDestinationCreation": true,
+              "chunks": 1260,
+              "files": 23,
+              "fullHostSafetyInventoryQualified": false,
+              "historicalRecoveryClaimed": false,
+              "ok": true,
+              "plaintextBytes": 5239055378,
+              "productionChanged": false,
+              "schema": "heptabao.closed-current-snapshot-fernet-chunks.v1",
+              "sdkRecoveryQualified": false
+            },
+            "noSidecarsCreated": true,
+            "offhostCapturedBackupRecoveryQualified": true,
+            "onlyDeclaredCapturedBackup": true,
+            "originalRestoreBudgetSeconds": 300,
+            "originalRestoreDeadlinePreserved": true,
+            "privateRestoreRetained": true,
+            "productionChanged": false,
+            "productionCutoverQualified": false,
+            "providerCalled": false,
+            "schema": "heptabao.offhost-captured-backup-recovery.v1",
+            "sdkCalled": false,
+            "stage": "offhost_captured_backup_verified",
+            "status": "passed"
+          },
+          "observation_round": "r8",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/recovery.public.json"
+        },
+        {
+          "bytes": 1192,
+          "historical_receipt_attestation": {
+            "allDeclaredCapturePathPresenceDigestSizeBindingsVerified": true,
+            "allRestoredFileBytesAndAbsenceExact": true,
+            "authenticatedAllCiphertextBeforeDestinationCreation": true,
+            "budgetSeconds": 300,
+            "captureDate": "2026-11-02",
+            "chunks": 1260,
+            "credentialValuesPublished": false,
+            "currentCredentialValidityQualified": false,
+            "currentSdkRecoveryQualified": false,
+            "files": 23,
+            "fullCurrentInventoryQualified": false,
+            "fullHostSafetyInventoryQualified": false,
+            "historicalRecoveryClaimed": false,
+            "keyTransferred": false,
+            "liveSourceDatabaseOpened": false,
+            "ok": true,
+            "onlyDeclaredCapturedBackup": true,
+            "plaintextBytes": 5239055378,
+            "productionChanged": false,
+            "productionCutoverQualified": false,
+            "providerCalled": false,
+            "schema": "heptabao.closed-current-snapshot-fernet-chunks.v1",
+            "sdkCalled": false,
+            "sdkRecoveryQualified": false,
+            "stage": "module_restore_complete",
+            "status": "passed"
+          },
+          "observation_round": "r8",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/restore-module.public.json"
+        },
+        {
+          "bytes": 1241,
+          "historical_receipt_attestation": {
+            "controllerTimedOut": false,
+            "exitCode": 0,
+            "liveSourceOrProviderAccess": false,
+            "originalRestoreBudgetSeconds": 300,
+            "phase": "restore",
+            "schema": "heptabao.offhost-recovery-bound-execution.v1",
+            "sourceUnchanged": true,
+            "status": "passed"
+          },
+          "observation_round": "r8",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/restore-execution.public.json"
+        },
+        {
+          "bytes": 1247,
+          "historical_receipt_attestation": {
+            "allExtractedFilesFsynced": true,
+            "allMemberSizesAndHashesExact": true,
+            "allMembersRegular": true,
+            "captureDate": "2026-11-02",
+            "ciphertextBytes": 6985778296,
+            "credentialValuesPublished": false,
+            "currentCredentialValidityQualified": false,
+            "currentSdkRecoveryQualified": false,
+            "exclusiveCreateAndPrivateModes": true,
+            "extractedCipherFiles": 1261,
+            "fullCurrentInventoryQualified": false,
+            "keyTransferred": false,
+            "liveSourceDatabaseOpened": false,
+            "noExtraOrDuplicateMembers": true,
+            "onlyDeclaredCapturedBackup": true,
+            "productionChanged": false,
+            "productionCutoverQualified": false,
+            "providerCalled": false,
+            "restoreStarted": false,
+            "schema": "heptabao.offhost-captured-cipher-transport-verification.v1",
+            "sdkCalled": false,
+            "stage": "whitelist_extraction_complete",
+            "status": "passed",
+            "tarBytes": 6986526720
+          },
+          "observation_round": "r8",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport-verify.public.json"
+        },
+        {
+          "bytes": 717,
+          "historical_receipt_attestation": {
+            "exitCode": 0,
+            "originalRestoreBudgetSeconds": 300,
+            "plaintextCopied": false,
+            "schema": "heptabao.offhost-cipher-transport-copy.v1",
+            "secretKeyCopied": false,
+            "sourceIdentity9Unchanged": true,
+            "sourceTarExpectedBytes": 6986526720,
+            "stage": "ciphertext_copy_finished",
+            "strictHostKeyChecking": true
+          },
+          "observation_round": "r8",
+          "original_sha256_binding": "private receipt-bindings index; omitted from public projection",
+          "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport-copy.public.json"
+        }
+      ],
+      "production_named_root": {
+        "exists": false,
+        "observation_round": "r3",
+        "path": "/home/qian/heptabao-production-20261104-r1"
+      },
+      "real_client_store_candidates": [
+        {
+          "exists": false,
+          "path": "/home/qian/.openclaw/agents/main/agent/auth-profiles.json"
+        },
+        {
+          "exists": false,
+          "path": "/home/qian/.openclaw/agents/main/agent/auth-state.json"
+        },
+        {
+          "exists": false,
+          "path": "/home/qian/.openclaw/agents/main/agent/openclaw-agent.sqlite"
+        },
+        {
+          "exists": false,
+          "path": "/home/qian/.openclaw/agents/main/agent/openclaw-agent.sqlite-shm"
+        },
+        {
+          "exists": false,
+          "path": "/home/qian/.openclaw/agents/main/agent/openclaw-agent.sqlite-wal"
+        }
+      ],
+      "real_source_qualified_for_current_migration": false,
+      "release_executables": [],
+      "retained_openbao_container": {
+        "configured_user": "openbao",
+        "dev_flag_scope": "Exact argument flags only; config or environment mode remains unobserved.",
+        "executable": "docker-entrypoint.sh",
+        "explicit_dev_flag": true,
+        "id": "f67985499a16bc15917152d8083b9aa985edcbea868e3f15bdcef3aea6ab0bb9",
+        "image_id": "sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
+        "image_reference": "ghcr.io/openbao/openbao:2.7.1",
+        "mounts": [],
+        "name": "/heptabao-openbao271-oracle-r46",
+        "network_mode": "none",
+        "network_ports": {},
+        "pid": 2031520,
+        "port_bindings": {},
+        "restart_count": 0,
+        "restart_policy": {
+          "MaximumRetryCount": 0,
+          "Name": "no"
+        },
+        "running": true,
+        "status": "running",
+        "working_dir": "/"
+      },
+      "service_templates": [],
+      "service_wrapper_bindings": [],
+      "volume_identity_observations": [
+        {
+          "identity": {
+            "filesystems": [
+              {
+                "fstype": "ext4",
+                "source": "/dev/sda5",
+                "target": "/",
+                "uuid": "06c4cf1a-c797-478d-9299-e5226a85ae8e"
+              }
+            ]
+          },
+          "metadata": {
+            "bytes": 61440,
+            "dev": 2053,
+            "exists": true,
+            "gid": 1000,
+            "inode": 14417922,
+            "kind": "directory",
+            "mode": "0o755",
+            "nlink": 608,
+            "path": "/home/qian",
+            "uid": 1000
+          },
+          "target": "/home/qian"
+        },
+        {
+          "identity": {
+            "filesystems": [
+              {
+                "fstype": "ext4",
+                "source": "/dev/sda5",
+                "target": "/",
+                "uuid": "06c4cf1a-c797-478d-9299-e5226a85ae8e"
+              }
+            ]
+          },
+          "metadata": {
+            "bytes": 4096,
+            "dev": 2053,
+            "exists": true,
+            "gid": 0,
+            "inode": 13893646,
+            "kind": "directory",
+            "mode": "0o755",
+            "nlink": 97,
+            "path": "/var/lib",
+            "uid": 0
+          },
+          "target": "/var/lib"
+        },
+        {
+          "identity": {
+            "filesystems": [
+              {
+                "fstype": "ext4",
+                "source": "/dev/sda5",
+                "target": "/",
+                "uuid": "06c4cf1a-c797-478d-9299-e5226a85ae8e"
+              }
+            ]
+          },
+          "metadata": {
+            "bytes": 12288,
+            "dev": 2053,
+            "exists": true,
+            "gid": 0,
+            "inode": 1835009,
+            "kind": "directory",
+            "mode": "0o755",
+            "nlink": 165,
+            "path": "/etc",
+            "uid": 0
+          },
+          "target": "/etc"
+        }
+      ],
+      "wrapper_exec_contract": null
+    }
+  },
+  "legacy_cleanup_authorized_by_this_audit": false,
+  "limits_and_corrections": [
+    {
+      "id": "scoped_absence",
+      "text": "No matching service or file in a named scope is not proof of absence on an entire machine."
+    },
+    {
+      "id": "staged_is_not_formal",
+      "text": "Production-named directories are old native_v6_raft staging. Their exact data/raft/state directories were empty; none is accepted ordinary native_v6_file production storage."
+    },
+    {
+      "id": "mac_ps_r1",
+      "text": "r1 used ps comm. Apple primary implementation may read argument space internally; strict no-argv-read is not established for that observation. r2 used kernel ucomm. No actual credential leak is asserted."
+    },
+    {
+      "id": "docker_pid_layers_r2",
+      "text": "r2 compared Docker init PID with the bao child PID and reported original_process_changed. This equality test was invalid. r3 retained actual parent/child start ticks and common container cgroup; executable hash remains permission-denied."
+    },
+    {
+      "id": "receipt_caps",
+      "text": "r4 receipt selection reached its cap before some final results. r5/r7/r8 exact-final reads supplement but do not erase prior gaps. Oversized generic dependency reports remain unparsed; historical references are not an exhaustive current writer census."
+    },
+    {
+      "id": "source_map_cap",
+      "text": "The 304644-byte named public source-map was read with an explicit 524288-byte cap in r7/r8; all jobs retained 52/60-second deadlines. Its 1261-entry list was counted, not fully revalidated or publicly reproduced."
+    },
+    {
+      "id": "path_projection_r6",
+      "text": "A historical multi-path DropInPaths string was stat'ed as one string and a Mac reference was stat'ed on X230. Those absent rows are not evidence the actual individual/remote targets are absent; current Pocket manager projection lists each actual drop-in path separately."
+    },
+    {
+      "id": "leaf_symlinks",
+      "text": "Collectors refuse a symlink leaf where documented; this does not assert all path ancestors or ACLs were independently verified."
+    },
+    {
+      "id": "historical_attestation",
+      "text": "Historical passed receipts were read and artifact-bound. This audit did not rerun their recovery, open any database/key or verify current credential validity."
+    },
+    {
+      "id": "receipt_fingerprints_private",
+      "text": "Original receipt hashes and raw tool results may bind earlier credential-dependent fingerprints. They remain private. Public artifacts contain an explicit allowlist projection, code/binary hashes and file metadata only."
+    },
+    {
+      "id": "source_semantics",
+      "text": "Client SQLite/auth-profile stores and a captured application backup are source candidates for actual business data. They are not established authoritative OpenBao KV2 history, mount UUID, version/tombstone or current credential provenance."
+    }
+  ],
+  "observation_jobs": [
+    {
+      "cancelled": false,
+      "collector_status": "completed_bounded_observation",
+      "exit_code": 0,
+      "gaps": [],
+      "host": "mac",
+      "job_id": "1a1b0bcc514-fc05-727d",
+      "output_durable": true,
+      "round": "r1",
+      "started_utc": "2026-11-06T12:02:17.443835+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 23771,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    },
+    {
+      "cancelled": false,
+      "collector_status": "completed_bounded_observation",
+      "exit_code": 0,
+      "gaps": [],
+      "host": "mac",
+      "job_id": "1a1b0c78984-fc05-72db",
+      "output_durable": true,
+      "round": "r2",
+      "started_utc": "2026-11-06T12:13:55.508861+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 15582,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    },
+    {
+      "cancelled": false,
+      "collector_status": "completed_bounded_observation",
+      "exit_code": 0,
+      "gaps": [],
+      "host": "mac",
+      "job_id": "1a1b0db34e9-fc05-735f",
+      "output_durable": true,
+      "round": "r3",
+      "started_utc": "2026-11-06T12:35:19.559474+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 17864,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    },
+    {
+      "cancelled": false,
+      "collector_status": "completed_with_explicit_gaps",
+      "exit_code": 0,
+      "gaps": [
+        {
+          "phase": "receipt_discovery",
+          "type": "file_cap_hit"
+        },
+        {
+          "cap_hit": true,
+          "error": null,
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/authority/seed-custody/bootstrap-61ff8bef-r3/journal",
+          "phase": "directory"
+        }
+      ],
+      "host": "mac",
+      "job_id": "1a1b0e1e5b8-fc05-7398",
+      "output_durable": true,
+      "round": "r4",
+      "started_utc": "2026-11-06T12:42:37.072325+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 88950,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    },
+    {
+      "cancelled": false,
+      "collector_status": "completed_bounded_observation",
+      "exit_code": 0,
+      "gaps": [],
+      "host": "mac",
+      "job_id": "1a1b0eb813e-fc05-73fe",
+      "output_durable": true,
+      "round": "r5",
+      "started_utc": "2026-11-06T12:53:06.697632+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 32038,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    },
+    {
+      "cancelled": false,
+      "collector_status": "completed_with_explicit_gaps",
+      "exit_code": 0,
+      "gaps": [
+        {
+          "field": "references",
+          "phase": "receipt_projection",
+          "type": "list_cap_hit"
+        },
+        {
+          "errno": null,
+          "phase": "exact_public_receipt:/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-main-current-encrypted-custody-20261102-r2/source-map.public.json",
+          "type": "OSError"
+        }
+      ],
+      "host": "mac",
+      "job_id": "1a1b0ef5956-fc05-7425",
+      "output_durable": true,
+      "round": "r6",
+      "started_utc": "2026-11-06T12:57:24.883707+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 114508,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    },
+    {
+      "cancelled": false,
+      "collector_status": "completed_with_explicit_gaps",
+      "exit_code": 0,
+      "gaps": [
+        {
+          "field": "ciphertextFiles",
+          "phase": "projection",
+          "total_items": 1261,
+          "type": "collection_preview_cap"
+        }
+      ],
+      "host": "mac",
+      "job_id": "1a1b0f58582-fc05-7455",
+      "output_durable": true,
+      "round": "r7",
+      "started_utc": "2026-11-06T13:04:05.734861+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 11511,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    },
+    {
+      "cancelled": false,
+      "collector_status": "completed_bounded_observation",
+      "exit_code": 0,
+      "gaps": [],
+      "host": "mac",
+      "job_id": "1a1b0f93054-fc05-747f",
+      "output_durable": true,
+      "round": "r8",
+      "started_utc": "2026-11-06T13:08:03.563769+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 2353,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    },
+    {
+      "cancelled": false,
+      "collector_status": "completed_bounded_observation",
+      "exit_code": 0,
+      "gaps": [],
+      "host": "rog",
+      "job_id": "1a1b0bda6e5-fc05-7283",
+      "output_durable": true,
+      "round": "r1",
+      "started_utc": "2026-11-06T12:03:06.643982+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 73098,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    },
+    {
+      "cancelled": false,
+      "collector_status": "completed_bounded_observation",
+      "exit_code": 0,
+      "gaps": [],
+      "host": "rog",
+      "job_id": "1a1b0c7d54d-fc05-72e2",
+      "output_durable": true,
+      "round": "r2",
+      "started_utc": "2026-11-06T12:14:09.522126+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 43265,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    },
+    {
+      "cancelled": false,
+      "collector_status": "completed_bounded_observation",
+      "exit_code": 0,
+      "gaps": [],
+      "host": "rog",
+      "job_id": "1a1b0db67fd-fc05-7361",
+      "output_durable": true,
+      "round": "r3",
+      "started_utc": "2026-11-06T12:35:32.317733+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 13810,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    },
+    {
+      "cancelled": false,
+      "collector_status": "completed_with_explicit_gaps",
+      "exit_code": 0,
+      "gaps": [
+        {
+          "phase": "receipt_discovery",
+          "type": "file_cap_hit"
+        }
+      ],
+      "host": "rog",
+      "job_id": "1a1b0e26386-fc05-739f",
+      "output_durable": true,
+      "round": "r4",
+      "started_utc": "2026-11-06T12:43:09.897367+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 45243,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    },
+    {
+      "cancelled": false,
+      "collector_status": "completed_bounded_observation",
+      "exit_code": 0,
+      "gaps": [],
+      "host": "rog",
+      "job_id": "1a1b0ebbd3c-fc05-7402",
+      "output_durable": true,
+      "round": "r5",
+      "started_utc": "2026-11-06T12:53:22.782585+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 12328,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    },
+    {
+      "cancelled": false,
+      "collector_status": "completed_with_explicit_gaps",
+      "exit_code": 0,
+      "gaps": [
+        {
+          "errno": null,
+          "phase": "exact_public_receipt:/home/qian-qi/heptabao-client-dependency-audit-20261103-r1/dependencies.public.json",
+          "type": "OSError"
+        },
+        {
+          "errno": null,
+          "phase": "exact_public_receipt:/home/qian-qi/heptabao-cutover-cleanup-inventory-20261104-r1/prior-dependency-projection-r1.public.json",
+          "type": "OSError"
+        },
+        {
+          "field": "references",
+          "phase": "receipt_projection",
+          "type": "list_cap_hit"
+        }
+      ],
+      "host": "rog",
+      "job_id": "1a1b0efc1e0-fc05-742c",
+      "output_durable": true,
+      "round": "r6",
+      "started_utc": "2026-11-06T12:57:46.517972+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 101508,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    },
+    {
+      "cancelled": false,
+      "collector_status": "completed_bounded_observation",
+      "exit_code": 0,
+      "gaps": [],
+      "host": "rog",
+      "job_id": "1a1b0f5df95-fc05-745c",
+      "output_durable": true,
+      "round": "r7",
+      "started_utc": "2026-11-06T13:04:33.689728+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 3435,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    },
+    {
+      "cancelled": false,
+      "collector_status": "completed_bounded_observation",
+      "exit_code": 0,
+      "gaps": [],
+      "host": "pocket4",
+      "job_id": "1a1b0bd83fb-fc05-7281",
+      "output_durable": true,
+      "round": "r1",
+      "started_utc": "2026-11-06T12:02:53.455381+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 61342,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    },
+    {
+      "cancelled": false,
+      "collector_status": "completed_bounded_observation",
+      "exit_code": 0,
+      "gaps": [],
+      "host": "pocket4",
+      "job_id": "1a1b0c8518d-fc05-72e6",
+      "output_durable": true,
+      "round": "r2",
+      "started_utc": "2026-11-06T12:14:49.081555+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 15203,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    },
+    {
+      "cancelled": false,
+      "collector_status": "completed_bounded_observation",
+      "exit_code": 0,
+      "gaps": [],
+      "host": "pocket4",
+      "job_id": "1a1b0dbb137-fc05-7362",
+      "output_durable": true,
+      "round": "r3",
+      "started_utc": "2026-11-06T12:35:51.163908+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 13639,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    },
+    {
+      "cancelled": false,
+      "collector_status": "completed_bounded_observation",
+      "exit_code": 0,
+      "gaps": [],
+      "host": "pocket4",
+      "job_id": "1a1b0e2859c-fc05-73a0",
+      "output_durable": true,
+      "round": "r4",
+      "started_utc": "2026-11-06T12:43:22.374934+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 10465,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    },
+    {
+      "cancelled": false,
+      "collector_status": "completed_with_explicit_gaps",
+      "exit_code": 0,
+      "gaps": [
+        {
+          "errno": null,
+          "phase": "exact_public_receipt:/home/alex/heptabao-client-dependency-audit-20261103-r1/dependencies.public.json",
+          "type": "OSError"
+        },
+        {
+          "errno": null,
+          "phase": "exact_public_receipt:/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/prior-dependency-projection-r1.public.json",
+          "type": "OSError"
+        }
+      ],
+      "host": "pocket4",
+      "job_id": "1a1b0efecad-fc05-742f",
+      "output_durable": true,
+      "round": "r6",
+      "started_utc": "2026-11-06T12:57:57.089681+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 74785,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    },
+    {
+      "cancelled": false,
+      "collector_status": "completed_bounded_observation",
+      "exit_code": 0,
+      "gaps": [],
+      "host": "x230",
+      "job_id": "1a1b0bd551a-fc05-7280",
+      "output_durable": true,
+      "round": "r1",
+      "started_utc": "2026-11-06T12:02:41.614487+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 71912,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    },
+    {
+      "cancelled": false,
+      "collector_status": "completed_with_explicit_gaps",
+      "exit_code": 0,
+      "gaps": [
+        {
+          "phase": "container",
+          "type": "original_process_changed"
+        },
+        {
+          "errno": 13,
+          "phase": "exact_original_executable",
+          "type": "PermissionError"
+        }
+      ],
+      "host": "x230",
+      "job_id": "1a1b0c7f690-fc05-72e3",
+      "output_durable": true,
+      "round": "r2",
+      "started_utc": "2026-11-06T12:14:18.248423+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 11408,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    },
+    {
+      "cancelled": false,
+      "collector_status": "completed_bounded_observation",
+      "exit_code": 0,
+      "gaps": [],
+      "host": "x230",
+      "job_id": "1a1b0dbe9c4-fc05-7363",
+      "output_durable": true,
+      "round": "r3",
+      "started_utc": "2026-11-06T12:36:05.830739+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 2212,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    },
+    {
+      "cancelled": false,
+      "collector_status": "completed_bounded_observation",
+      "exit_code": 0,
+      "gaps": [],
+      "host": "x230",
+      "job_id": "1a1b0e22d14-fc05-739c",
+      "output_durable": true,
+      "round": "r4",
+      "started_utc": "2026-11-06T12:42:58.183860+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 3534,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    },
+    {
+      "cancelled": false,
+      "collector_status": "completed_with_explicit_gaps",
+      "exit_code": 0,
+      "gaps": [
+        {
+          "errno": null,
+          "phase": "exact_receipt:/home/qian/heptabao-kv2-formal34-61ff-7071-20261104-r1/evidence/full34-r1/result.public.json",
+          "type": "OSError"
+        }
+      ],
+      "host": "x230",
+      "job_id": "1a1b0ebf2db-fc05-7405",
+      "output_durable": true,
+      "round": "r5",
+      "started_utc": "2026-11-06T12:53:36.966383+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 41478,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    },
+    {
+      "cancelled": false,
+      "collector_status": "completed_with_explicit_gaps",
+      "exit_code": 0,
+      "gaps": [
+        {
+          "observed": 41,
+          "phase": "receipt_discovery",
+          "type": "file_cap_hit"
+        },
+        {
+          "errno": null,
+          "phase": "exact_public_receipt:/home/qian/heptabao-client-dependency-audit-20261103-r1/dependencies.public.json",
+          "type": "OSError"
+        }
+      ],
+      "host": "x230",
+      "job_id": "1a1b0f06389-fc05-7432",
+      "output_durable": true,
+      "round": "r6",
+      "started_utc": "2026-11-06T12:58:27.709716+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 104873,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    },
+    {
+      "cancelled": false,
+      "collector_status": "completed_with_explicit_gaps",
+      "exit_code": 0,
+      "gaps": [
+        {
+          "field": "mutations",
+          "phase": "projection",
+          "total_items": 95,
+          "type": "collection_preview_cap"
+        }
+      ],
+      "host": "x230",
+      "job_id": "1a1b0f67109-fc05-7464",
+      "output_durable": true,
+      "round": "r7",
+      "started_utc": "2026-11-06T13:05:09.533591+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 42242,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    },
+    {
+      "cancelled": false,
+      "collector_status": "completed_bounded_observation",
+      "exit_code": 0,
+      "gaps": [],
+      "host": "x230",
+      "job_id": "1a1b0f97ee6-fc05-7482",
+      "output_durable": true,
+      "round": "r8",
+      "started_utc": "2026-11-06T13:08:28.240778+00:00",
+      "state": "succeeded",
+      "stdout_bytes": 8259,
+      "terminal_publication_confirmed": true,
+      "timed_out": false
+    }
+  ],
+  "production_kv2_accepted": false,
+  "remaining_gates": [
+    {
+      "gate": "current_trusted_source",
+      "order": 1,
+      "required": "Identify authoritative non-J3160 source and complete business inventory; bind declared capture generation, credential provenance, source/mount mapping, versions and deletions where applicable. Existing application backup is dated 2026-11-02 and explicitly does not qualify current credentials/current full inventory."
+    },
+    {
+      "gate": "writers_and_sync",
+      "order": 2,
+      "required": "Identify all actual writers, local/remote clients, systemd/launchd/cron/timers/extensions and backup consumers; establish an observable freeze or consistent snapshot boundary. Existing ROG main WAL is nonempty; file stat or idle gateway alone is not a writer fence."
+    },
+    {
+      "gate": "formal_native_v6_file",
+      "order": 3,
+      "required": "After candidate qualification, continue within accepted existing roots with explicit ordinary native_v6_file config, latest pinned normal binary, manager ownership and protected custody; preserve staged HA config and original artifacts for rollback."
+    },
+    {
+      "gate": "business_restore_and_rollback",
+      "order": 4,
+      "required": "Migrate actual business source, independently recover with separate backup/key custody and old closure unavailable, verify complete declared inventory and old/new client behavior, cold restart and rollback. Synthetic full34/DR25 alone cannot satisfy this gate."
+    },
+    {
+      "gate": "remaining_user_sequence",
+      "order": 5,
+      "required": "Only then real multi-host HA, J3160-independent AuthBus and per-machine traffic cutover; delete legacy services/binaries/intermediates only after every client and backup path has independent migration evidence."
+    }
+  ],
+  "schema": "heptabao.formal-kv2-existing-host-roots-readonly-assessment.v1",
+  "scope": {
+    "collector_work_seconds": 52,
+    "configuration_and_prior_audit_receipts_parsed_locally": true,
+    "credential_key_or_database_contents_opened": false,
+    "existing_service_or_product_configuration_modified": false,
+    "host_names": [
+      "mac",
+      "rog",
+      "pocket4",
+      "x230"
+    ],
+    "original_receipt_digests_are_private_bindings": true,
+    "product_or_client_executed": false,
+    "provider_or_j3160_called": false,
+    "raw_environment_values_or_process_argv_published": false,
+    "runtime_seconds_per_job": 60,
+    "whole_host_exhaustiveness_claim": false
+  },
+  "status": "metadata_audit_complete_formal_kv2_not_qualified",
+  "traffic_cutover_performed": false
+}

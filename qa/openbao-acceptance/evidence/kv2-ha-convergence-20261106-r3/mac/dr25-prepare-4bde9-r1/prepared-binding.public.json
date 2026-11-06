@@ -1,0 +1,772 @@
+{
+  "backup_existing_parent": {
+    "device": 16777233,
+    "inode": 6929812,
+    "mode": 493,
+    "uid": 501
+  },
+  "build": {
+    "artifacts": {
+      "heptabao-seed": {
+        "bytes": 86355760,
+        "normal_features_profile_and_source_verified": true,
+        "sha256": "203c7af52c0f9aa4ca71e591c1428acac9382f3c4105036a494631b0e1cae8e7",
+        "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+        "source_tree": "f08493a23f8ea0637073651231865ea9607b790e"
+      },
+      "heptabao-server": {
+        "bytes": 92359328,
+        "normal_features_profile_and_source_verified": true,
+        "sha256": "5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c",
+        "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+        "source_tree": "f08493a23f8ea0637073651231865ea9607b790e"
+      }
+    },
+    "build_test_observations": {
+      "denominators": {
+        "ha_service_total": 17,
+        "http1_tls_new": 4,
+        "legacy_base": 44,
+        "legacy_cold_h2": 9,
+        "legacy_ingress": 7,
+        "legacy_same_root": 1,
+        "legacy_total": 61,
+        "native_jwt_new": 15,
+        "new_cases_total": 46,
+        "server_total": 90,
+        "snapshot_forward_new": 27,
+        "total_unique_cases": 107
+      },
+      "groups": [
+        {
+          "crate": "heptabao-server",
+          "enumeration": {
+            "matched_count": 25,
+            "matched_names": [
+              "ha_forward::native_ssh_tests::native_ssh_reply_profile_does_not_upgrade_ordinary_suffix_or_shrink_large_json",
+              "ha_forward::native_ssh_tests::native_ssh_reply_profile_refuses_missing_ingress_nonce_or_wrong_root_get",
+              "ha_forward::native_ssh_tests::native_ssh_reply_profile_rejects_wire_downgrade_and_missing_or_unknown_metadata",
+              "ha_forward::native_ssh_tests::native_ssh_reply_profile_retains_original_ingress_nonce_and_custom_route",
+              "service::native_auth::ssh_tests::archive::native_ssh_actual_archive_restore_preserves_otp_consumption_ca_and_observed_issuer_floor",
+              "service::native_auth::ssh_tests::native_ssh_actual_audit_cannot_refresh_original_deadline_or_repeat_signature",
+              "service::native_auth::ssh_tests::native_ssh_actual_audit_io_failure_never_returns_the_signed_private_reply",
+              "service::native_auth::ssh_tests::native_ssh_actual_audited_otp_retains_original_precise_issuer_expiry",
+              "service::native_auth::ssh_tests::native_ssh_actual_audited_reply_cannot_follow_recreated_mount_incarnation",
+              "service::native_auth::ssh_tests::native_ssh_after_actual_audit_actor_revocation_never_delivers_otp",
+              "service::native_auth::ssh_tests::native_ssh_after_actual_audit_changed_status_does_not_bypass_or_resign",
+              "service::native_auth::ssh_tests::native_ssh_and_pki_original_idle_retire_both_without_touching_ca_or_kv",
+              "service::native_auth::ssh_tests::native_ssh_child_and_response_wrap_ownership_remain_explicitly_closed",
+              "service::native_auth::ssh_tests::native_ssh_consumed_verify_rechecks_original_issuer_after_actual_audit",
+              "service::native_auth::ssh_tests::native_ssh_formal_acl_nonrenewable_revoke_and_segment_prefix",
+              "service::native_auth::ssh_tests::native_ssh_formal_batch_expiry_is_clipped_persistent_and_not_revivable",
+              "service::native_auth::ssh_tests::native_ssh_formal_ca_real_signature_cold_typed_public_transport",
+              "service::native_auth::ssh_tests::native_ssh_formal_disabled_login_identity_stays_retired_after_reenable_and_cold",
+              "service::native_auth::ssh_tests::native_ssh_formal_otp_promotion_cold_verify_and_replay",
+              "service::native_auth::ssh_tests::native_ssh_formal_registry_tune_retire_and_recreate_preserves_other_graphs",
+              "service::native_auth::ssh_tests::native_ssh_public_reply_cannot_lose_affine_transport_after_audit",
+              "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_actual_ca_signature_and_raw_public_cold_readindex",
+              "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_custom_public_reply_transport_keeps_kv_json",
+              "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_forwarded_otp_election_cold_consume_and_replay",
+              "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_lost_quorum_cannot_issue_sign_or_disclose_public_key"
+            ]
+          },
+          "expected_count": 25,
+          "label": "ssh25",
+          "passed": 25,
+          "results": [
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 25,
+              "reported_state": "ok"
+            }
+          ]
+        },
+        {
+          "crate": "heptabao-server",
+          "enumeration": {
+            "matched_count": 1,
+            "matched_names": [
+              "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs"
+            ]
+          },
+          "expected_count": 1,
+          "label": "mount1",
+          "passed": 1,
+          "results": [
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 1,
+              "reported_state": "ok"
+            }
+          ]
+        },
+        {
+          "crate": "heptabao-server",
+          "enumeration": {
+            "matched_count": 5,
+            "matched_names": [
+              "http::snapshot::redirect_tests::native_http_redirect_complete_head_preserves_short_writes_and_transport_errors",
+              "http::snapshot::redirect_tests::native_http_redirect_has_exact_safe_location_and_no_upload_read_or_response_body",
+              "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_first_record_is_complete_with_unread_upload",
+              "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_flush_retains_original_deadline_failure",
+              "http::snapshot::redirect_tests::native_redirect_target_keeps_existing_query_validation_and_rejects_header_injection"
+            ]
+          },
+          "expected_count": 5,
+          "label": "redirect5",
+          "passed": 5,
+          "results": [
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 5,
+              "reported_state": "ok"
+            }
+          ]
+        },
+        {
+          "crate": "heptabao-server",
+          "enumeration": {
+            "matched_count": 2,
+            "matched_names": [
+              "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_keeps_shorter_original_scope_after_actual_aead",
+              "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_rechecks_original_actor_after_actual_aead"
+            ]
+          },
+          "expected_count": 2,
+          "label": "actor2",
+          "passed": 2,
+          "results": [
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 2,
+              "reported_state": "ok"
+            }
+          ]
+        },
+        {
+          "crate": "heptabao-server",
+          "enumeration": {
+            "matched_count": 5,
+            "matched_names": [
+              "http::response_coalescing_tests::ordinary_http_complete_small_prefix_keeps_body_and_bounded_metadata",
+              "http::response_coalescing_tests::ordinary_http_original_head_no_body_chunked_and_large_raw_framing_remain",
+              "http::response_coalescing_tests::ordinary_http_prefix_keeps_partial_writes_and_original_io_failures",
+              "http::response_coalescing_tests::ordinary_http_tcp_tls_first_record_contains_full_small_response_with_unread_upload",
+              "http::response_coalescing_tests::ordinary_http_tcp_tls_response_preserves_original_expired_deadline"
+            ]
+          },
+          "expected_count": 5,
+          "label": "ordinary5",
+          "passed": 5,
+          "results": [
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 5,
+              "reported_state": "ok"
+            }
+          ]
+        },
+        {
+          "crate": "heptabao-server",
+          "enumeration": {
+            "matched_count": 6,
+            "matched_names": [
+              "http::no_forward_tests::no_forward271_binding_and_wire_metadata_cannot_replay_original_ingress",
+              "http::no_forward_tests::no_forward271_header_uses_first_value_and_preserves_original_target",
+              "service::legacy_immutable_kv::tests::no_forward271_keeps_actual_legacy_local_readindex_get",
+              "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_keeps_local_routes_and_does_not_consume_actor",
+              "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_original_deadline_and_real_response_audit_withhold_location",
+              "service::request_redirect_tests::no_forward271_capsule_keeps_origin_codec_audit_and_original_deadline"
+            ]
+          },
+          "expected_count": 6,
+          "label": "no_forward6",
+          "passed": 6,
+          "results": [
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 6,
+              "reported_state": "ok"
+            }
+          ]
+        },
+        {
+          "crate": "heptabao-server",
+          "enumeration": {
+            "matched_count": 7,
+            "matched_names": [
+              "ha::native_v6_runtime::request_timing_tests::native_request_timing_failure_has_only_bounded_static_metadata",
+              "ha::native_v6_runtime::request_timing_tests::native_request_timing_observes_deadlines_but_preserves_once_only_results",
+              "ha::native_v6_runtime::request_timing_tests::native_request_timing_phase_advance_is_distinct_from_operation_success",
+              "ha::native_v6_runtime::request_timing_tests::native_request_timing_sixty_four_buckets_preserve_existing_aggregates",
+              "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_actual_failed_repair_closes_reselection_before_any_result",
+              "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms",
+              "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_rejects_actual_new_request_nonce_or_selected_root"
+            ]
+          },
+          "expected_count": 7,
+          "label": "legacy-ingress7",
+          "passed": 7,
+          "results": [
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 1,
+              "reported_state": "ok"
+            },
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 1,
+              "reported_state": "ok"
+            },
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 1,
+              "reported_state": "ok"
+            },
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 1,
+              "reported_state": "ok"
+            },
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 1,
+              "reported_state": "ok"
+            },
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 1,
+              "reported_state": "ok"
+            },
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 1,
+              "reported_state": "ok"
+            }
+          ]
+        },
+        {
+          "crate": "heptabao-server",
+          "enumeration": {
+            "matched_count": 9,
+            "matched_names": [
+              "http::h2_transport::sync_worker_tests::h2_sync_worker_cancelled_waiter_retains_blocking_capacity",
+              "http::h2_transport::sync_worker_tests::h2_sync_worker_does_not_authorize_nested_runtime_context",
+              "http::h2_transport::sync_worker_tests::h2_sync_worker_expired_deadline_never_calls_work",
+              "http::h2_transport::sync_worker_tests::h2_sync_worker_is_unentered_and_retains_outer_context",
+              "http::h2_transport::sync_worker_tests::h2_sync_worker_joins_panicked_work_and_drops_capture",
+              "http::h2_transport::sync_worker_tests::h2_sync_worker_preserves_inner_result",
+              "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_nested_source_and_inner_results",
+              "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_once_and_owned_result_identity",
+              "service::native_v6_ha_install::tests::native_ha_install_batches_actual_readindex_cold_missing_and_corrupt_file"
+            ]
+          },
+          "expected_count": 9,
+          "label": "legacy-cold-h2-9",
+          "passed": 9,
+          "results": [
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 1,
+              "reported_state": "ok"
+            },
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 1,
+              "reported_state": "ok"
+            },
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 1,
+              "reported_state": "ok"
+            },
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 1,
+              "reported_state": "ok"
+            },
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 1,
+              "reported_state": "ok"
+            },
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 1,
+              "reported_state": "ok"
+            },
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 1,
+              "reported_state": "ok"
+            },
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 1,
+              "reported_state": "ok"
+            },
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 1,
+              "reported_state": "ok"
+            }
+          ]
+        },
+        {
+          "crate": "heptabao-server",
+          "enumeration": {
+            "matched_count": 1,
+            "matched_names": [
+              "service::native_v6_ha_install::tests::same_root_republication_tests::native_ha_same_root_republication_advances_warm_and_cold_cursors"
+            ]
+          },
+          "expected_count": 1,
+          "label": "legacy-same-root1",
+          "passed": 1,
+          "results": [
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 1,
+              "reported_state": "ok"
+            }
+          ]
+        },
+        {
+          "crate": "heptabao-ha-service",
+          "enumeration": {
+            "matched_count": 10,
+            "matched_names": [
+              "native_snapshot_body::tests::snapshot_stream_consumer_cannot_finish_with_unread_archive_bytes",
+              "native_snapshot_body::tests::snapshot_stream_declared_oversize_is_rejected_before_payload",
+              "native_snapshot_body::tests::snapshot_stream_empty_body_requires_explicit_end_and_eof",
+              "native_snapshot_body::tests::snapshot_stream_encoder_checks_one_rejecting_eof_byte_at_exact_cap",
+              "native_snapshot_body::tests::snapshot_stream_end_digest_and_trailing_wire_bytes_are_rejected",
+              "native_snapshot_body::tests::snapshot_stream_exact_payload_without_end_is_not_complete",
+              "native_snapshot_body::tests::snapshot_stream_original_expired_deadline_precedes_io",
+              "native_snapshot_body::tests::snapshot_stream_roundtrip_crosses_ordinary_frame_limit_once",
+              "native_snapshot_body::tests::snapshot_stream_short_chunk_cannot_be_followed_by_data",
+              "native_snapshot_body::tests::snapshot_stream_tls_eof_error_after_valid_end_cannot_mint_binding"
+            ]
+          },
+          "expected_count": 10,
+          "label": "snapshot-body10",
+          "passed": 10,
+          "results": [
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 10,
+              "reported_state": "ok"
+            }
+          ]
+        },
+        {
+          "crate": "heptabao-ha-service",
+          "enumeration": {
+            "matched_count": 7,
+            "matched_names": [
+              "authenticated_peer_frame::snapshot::tests::snapshot_peer_actual_mtls_bare_tcp_eof_cannot_finalize_upload",
+              "authenticated_peer_frame::snapshot::tests::snapshot_peer_actual_mtls_terminal_rejection_consumes_no_upload",
+              "authenticated_peer_frame::snapshot::tests::snapshot_peer_actual_mtls_upload_close_notify_allows_opposite_download",
+              "authenticated_peer_frame::snapshot::tests::snapshot_peer_actual_mtls_wrong_selected_leaf_never_admits_body",
+              "authenticated_peer_frame::snapshot::tests::snapshot_peer_expired_deadline_refuses_before_connect",
+              "authenticated_peer_frame::snapshot::tests::snapshot_peer_original_frame_still_uses_only_old_callback",
+              "authenticated_peer_frame::snapshot::tests::snapshot_peer_ready_veto_reads_no_upload_and_cannot_extend_deadline"
+            ]
+          },
+          "expected_count": 7,
+          "label": "snapshot-peer7",
+          "passed": 7,
+          "results": [
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 7,
+              "reported_state": "ok"
+            }
+          ]
+        },
+        {
+          "crate": "heptabao-server",
+          "enumeration": {
+            "matched_count": 2,
+            "matched_names": [
+              "auth::forward_actor::snapshot_tests::snapshot_actor_final_use_remains_delivery_only_without_second_admission",
+              "auth::forward_actor::snapshot_tests::snapshot_actor_original_auth_is_distinct_from_a_new_restored_owner"
+            ]
+          },
+          "expected_count": 2,
+          "label": "snapshot-actor2",
+          "passed": 2,
+          "results": [
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 2,
+              "reported_state": "ok"
+            }
+          ]
+        },
+        {
+          "crate": "heptabao-server",
+          "enumeration": {
+            "matched_count": 4,
+            "matched_names": [
+              "service::snapshot_transfer::forward::wire::tests::snapshot_publication_actual_byte_witnesses_bind_save_and_restore",
+              "service::snapshot_transfer::forward::wire::tests::snapshot_publication_metadata_and_original_owner_mutations_are_rejected",
+              "service::snapshot_transfer::forward::wire::tests::snapshot_publication_valid_mac_cannot_substitute_a_binary_body",
+              "service::snapshot_transfer::forward::wire::tests::snapshot_ready_rejects_retarget_replay_and_non_snapshot_routes"
+            ]
+          },
+          "expected_count": 4,
+          "label": "snapshot-wire4",
+          "passed": 4,
+          "results": [
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 4,
+              "reported_state": "ok"
+            }
+          ]
+        },
+        {
+          "crate": "heptabao-server",
+          "enumeration": {
+            "matched_count": 4,
+            "matched_names": [
+              "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_first_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen",
+              "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_second_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen",
+              "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_source_publication_audit_veto_keeps_real_restore_after_cold_reopen",
+              "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_unverified_attempt_audit_failure_cannot_mint_root_authority"
+            ]
+          },
+          "expected_count": 4,
+          "label": "snapshot-audit4",
+          "passed": 4,
+          "results": [
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 4,
+              "reported_state": "ok"
+            }
+          ]
+        },
+        {
+          "crate": "heptabao-server",
+          "enumeration": {
+            "matched_count": 15,
+            "matched_names": [
+              "service::native_auth::jwt_tests::native_jwt_and_userpass_token_api_targets_keep_real_owner_and_renewal_in_both_directions",
+              "service::native_auth::jwt_tests::native_jwt_identity_failure_does_not_export_witness_or_token_and_next_login_is_fresh",
+              "service::native_auth::jwt_tests::native_jwt_local_service_token_identity_renewal_and_cold_reopen",
+              "service::native_auth::jwt_tests::native_jwt_native_owner_capacity_veto_after_authentication_keeps_the_old_root",
+              "service::native_auth::jwt_tests::native_jwt_original_assertion_expiry_after_commit_withholds_reply_without_rollback",
+              "service::native_auth::jwt_tests::native_jwt_original_assertion_expiry_before_publication_keeps_auth_identity_atomic",
+              "service::native_auth::jwt_tests::native_jwt_post_audit_response_and_original_deadline_cannot_be_rebound",
+              "service::native_auth::jwt_tests::native_jwt_post_audit_revocation_cannot_replace_the_original_publication_proof",
+              "service::native_auth::jwt_tests::native_jwt_post_commit_audit_failure_keeps_whole_root_and_recovery_required",
+              "service::native_auth::jwt_tests::native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta",
+              "service::native_auth::jwt_tests::native_jwt_role_operations_keep_the_existing_legacy_acl_contract",
+              "service::native_auth::jwt_tests::native_jwt_token_api_batch_owner_preserves_real_parent_binding_across_cold_reopen",
+              "service::native_auth::jwt_tests::native_jwt_token_api_profile_rejects_mount_label_without_real_issuer_or_parent_graph",
+              "service::native_auth::jwt_tests::native_jwt_token_api_revoke_orphan_keeps_own_issuer_but_mount_retirement_still_revokes",
+              "service::native_auth::jwt_tests::native_jwt_token_api_service_descendants_keep_own_renewal_and_parent_revocation"
+            ]
+          },
+          "expected_count": 15,
+          "label": "native-jwt15",
+          "passed": 15,
+          "results": [
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 15,
+              "reported_state": "ok"
+            }
+          ]
+        },
+        {
+          "crate": "heptabao-server",
+          "enumeration": {
+            "matched_count": 4,
+            "matched_names": [
+              "http::tls_close_tests::http1_abrupt_tls_eof_is_rejected_after_complete_http_response",
+              "http::tls_close_tests::http1_completed_replies_end_with_verified_tls_close_notify",
+              "http::tls_close_tests::http1_reply_writer_propagates_write_and_flush_failures",
+              "http::tls_close_tests::http1_terminal_close_rejects_expired_original_deadline"
+            ]
+          },
+          "expected_count": 4,
+          "label": "tls-close4",
+          "passed": 4,
+          "results": [
+            {
+              "exact_denominator_passed": true,
+              "failed": 0,
+              "ignored": 0,
+              "measured": 0,
+              "passed": 4,
+              "reported_state": "ok"
+            }
+          ]
+        }
+      ],
+      "passed_cases": 107,
+      "selection_sha256": "7da0b1e3efe257b66d31d50af7c1327a4d320c512c1c8f82df30020898c66595"
+    },
+    "passed_cases": 107,
+    "source_and_artifacts_unchanged": true,
+    "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+    "source_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+    "status": "passed",
+    "toolchain_pins": {
+      "cargo": "1de2e84c15443b70444eecfa959ff9099dd8c1a5606b6d9ef5bc0ea9c25bc7f9",
+      "rustc": "a11618eca0956a8aa4372c2bc898690b513cbdfa2cb9125b2a5301e360ed5b49",
+      "rustfmt": "ca9cbe15a4add6baf62d8ce177015c9c48f209ebcf4364416b1953142e8701f8"
+    }
+  },
+  "http_seconds": 15,
+  "inputs": {
+    "build_log": {
+      "bytes": 440483,
+      "device": 16777244,
+      "inode": 72713729,
+      "links": 1,
+      "mode": 384,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-4bde9-r1/13-normal-release-build.stdout",
+      "sha256": "cff482cfca9143a6199c2688e9fda57193750105c5137cae82a98bb38eb36960",
+      "uid": 501
+    },
+    "custody": {
+      "bytes": 26131,
+      "device": 16777244,
+      "inode": 72719782,
+      "links": 1,
+      "mode": 384,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-dr25-4bde9-r1/qa/openbao-acceptance/kv2_dr_process_custody.py",
+      "sha256": "669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008",
+      "uid": 501
+    },
+    "full34": {
+      "bytes": 49393,
+      "device": 16777244,
+      "inode": 72719778,
+      "links": 1,
+      "mode": 384,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-dr25-4bde9-r1/qa/openbao-acceptance/kv2_271_lossless_native_live.py",
+      "sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581",
+      "uid": 501
+    },
+    "main": {
+      "bytes": 70045,
+      "device": 16777244,
+      "inode": 72719783,
+      "links": 1,
+      "mode": 384,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-dr25-4bde9-r1/qa/openbao-acceptance/kv2_native_fresh_directory_dr_live.py",
+      "sha256": "388f763d810e1694ce9fe3d4ce52325318aad8ec4fa4d87ebbcd6cfbe7f1f5a0",
+      "uid": 501
+    },
+    "oracle_archive": {
+      "bytes": 73965161,
+      "device": 16777244,
+      "inode": 65545462,
+      "links": 1,
+      "mode": 384,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/official-openbao-271-macos-20261016/oracle-official.tar.gz",
+      "sha256": "15625b5f69aee5bb4578b4e76e856a2141647342b0f8e5969a8875b44e0fbf91",
+      "uid": 501
+    },
+    "oracle_binary": {
+      "bytes": 177888914,
+      "device": 16777244,
+      "inode": 65550548,
+      "links": 1,
+      "mode": 448,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/official-openbao-271-macos-20261016/bao",
+      "sha256": "50c3588e64271171cc2147bddeace8ec2b6742f94fd3fe53baa60f6d938cda0c",
+      "uid": 501
+    },
+    "python": {
+      "bytes": 34640,
+      "device": 16777233,
+      "inode": 587518380,
+      "links": 1,
+      "mode": 493,
+      "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13",
+      "uid": 501
+    },
+    "receipt": {
+      "bytes": 181226,
+      "device": 16777244,
+      "inode": 72716079,
+      "links": 1,
+      "mode": 384,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-4bde9-r1/result.public.json",
+      "sha256": "90753d3b4f9b966c43d3e29919239f8d9aa879616c821a3d9ce0b6aa854054d6",
+      "uid": 501
+    },
+    "seed": {
+      "bytes": 86355760,
+      "device": 16777244,
+      "inode": 72715486,
+      "links": 1,
+      "mode": 448,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-4bde9-r1/artifacts/heptabao-seed",
+      "sha256": "203c7af52c0f9aa4ca71e591c1428acac9382f3c4105036a494631b0e1cae8e7",
+      "uid": 501
+    },
+    "selection": {
+      "bytes": 46133,
+      "device": 16777244,
+      "inode": 72708505,
+      "links": 1,
+      "mode": 384,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-4bde9-r1/test-selection.public.json",
+      "sha256": "7da0b1e3efe257b66d31d50af7c1327a4d320c512c1c8f82df30020898c66595",
+      "uid": 501
+    },
+    "server": {
+      "bytes": 92359328,
+      "device": 16777244,
+      "inode": 72715483,
+      "links": 1,
+      "mode": 448,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-4bde9-r1/artifacts/heptabao-server",
+      "sha256": "5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c",
+      "uid": 501
+    },
+    "wrapper": {
+      "bytes": 22623,
+      "device": 16777244,
+      "inode": 72716092,
+      "links": 1,
+      "mode": 384,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/dr25_mac_fixed_wrapper.py",
+      "sha256": "b92051069e399539ced31139c1b0c39ad3595b8b05bba88390bedc09c86d98bc",
+      "uid": 501
+    }
+  },
+  "migration_seconds": 360,
+  "outer_seconds": 1800,
+  "paths": {
+    "backup_parent": "/Users/qianqi/heptabao-dr25-backups-20261106-r1",
+    "key_parent": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/dr25-key-custody",
+    "out": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/dr25-execution-4bde9-r1",
+    "work": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/full34-dr25-r1"
+  },
+  "production_authority": false,
+  "root": {
+    "device": 16777244,
+    "inode": 72671466,
+    "mode": 448,
+    "uid": 501
+  },
+  "same_process_entry": true,
+  "schema": "heptabao.mac-dr25-fixed-inputs.v1",
+  "source": {
+    "commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+    "dirty": false,
+    "tree": "f08493a23f8ea0637073651231865ea9607b790e"
+  },
+  "volumes": [
+    {
+      "DeviceIdentifier": "disk7s1",
+      "FilesystemType": "apfs",
+      "Internal": false,
+      "MountPoint": "/Volumes/T5",
+      "VolumeUUID": "FB804D1B-24CB-4D6E-AEA7-A9E180807758"
+    },
+    {
+      "DeviceIdentifier": "disk3s5",
+      "FilesystemType": "apfs",
+      "Internal": true,
+      "MountPoint": "/System/Volumes/Data",
+      "VolumeUUID": "66612ABB-2CE6-4BDE-8B11-8104E60307CC"
+    }
+  ]
+}

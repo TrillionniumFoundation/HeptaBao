@@ -1,0 +1,23 @@
+{
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-4bde9-r1/dr25_mac_fixed_wrapper.py",
+    "--run",
+    "0709194a4dcecee3d91274ebc7185487623ec00e1910306be0928a641b1bae19",
+    "--build-receipt-sha256",
+    "90753d3b4f9b966c43d3e29919239f8d9aa879616c821a3d9ce0b6aa854054d6"
+  ],
+  "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1",
+  "env": {
+    "LANG": "C.UTF-8",
+    "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+    "TZ": "UTC"
+  },
+  "executable": "/opt/homebrew/bin/python3",
+  "host": "mac",
+  "idempotency_key": "heptabao-mac-full34-dr25-4bde9-r1-20261106",
+  "nice": 5,
+  "timeout_seconds": 1800
+}

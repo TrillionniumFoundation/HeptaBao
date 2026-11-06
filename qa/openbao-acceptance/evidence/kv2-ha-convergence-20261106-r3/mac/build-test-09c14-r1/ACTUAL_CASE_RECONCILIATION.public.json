@@ -1,0 +1,546 @@
+{
+  "actual_cases": [
+    {
+      "log": "test-14-native-jwt15-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_and_userpass_token_api_targets_keep_real_owner_and_renewal_in_both_directions"
+    },
+    {
+      "log": "test-14-native-jwt15-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_identity_failure_does_not_export_witness_or_token_and_next_login_is_fresh"
+    },
+    {
+      "log": "test-14-native-jwt15-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_local_service_token_identity_renewal_and_cold_reopen"
+    },
+    {
+      "log": "test-14-native-jwt15-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_native_owner_capacity_veto_after_authentication_keeps_the_old_root"
+    },
+    {
+      "log": "test-14-native-jwt15-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_original_assertion_expiry_after_commit_withholds_reply_without_rollback"
+    },
+    {
+      "log": "test-14-native-jwt15-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_original_assertion_expiry_before_publication_keeps_auth_identity_atomic"
+    },
+    {
+      "log": "test-14-native-jwt15-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_post_audit_response_and_original_deadline_cannot_be_rebound"
+    },
+    {
+      "log": "test-14-native-jwt15-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_post_audit_revocation_cannot_replace_the_original_publication_proof"
+    },
+    {
+      "log": "test-14-native-jwt15-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_post_commit_audit_failure_keeps_whole_root_and_recovery_required"
+    },
+    {
+      "log": "test-14-native-jwt15-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta"
+    },
+    {
+      "log": "test-14-native-jwt15-00.stdout",
+      "outcome": "FAILED",
+      "test": "service::native_auth::jwt_tests::native_jwt_role_operations_keep_the_existing_legacy_acl_contract"
+    },
+    {
+      "log": "test-14-native-jwt15-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_token_api_batch_owner_preserves_real_parent_binding_across_cold_reopen"
+    },
+    {
+      "log": "test-14-native-jwt15-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_token_api_profile_rejects_mount_label_without_real_issuer_or_parent_graph"
+    },
+    {
+      "log": "test-14-native-jwt15-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_token_api_revoke_orphan_keeps_own_issuer_but_mount_retirement_still_revokes"
+    },
+    {
+      "log": "test-14-native-jwt15-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::jwt_tests::native_jwt_token_api_service_descendants_keep_own_renewal_and_parent_revocation"
+    },
+    {
+      "log": "test-00-ssh25-00.stdout",
+      "outcome": "ok",
+      "test": "ha_forward::native_ssh_tests::native_ssh_reply_profile_does_not_upgrade_ordinary_suffix_or_shrink_large_json"
+    },
+    {
+      "log": "test-00-ssh25-00.stdout",
+      "outcome": "ok",
+      "test": "ha_forward::native_ssh_tests::native_ssh_reply_profile_refuses_missing_ingress_nonce_or_wrong_root_get"
+    },
+    {
+      "log": "test-00-ssh25-00.stdout",
+      "outcome": "ok",
+      "test": "ha_forward::native_ssh_tests::native_ssh_reply_profile_rejects_wire_downgrade_and_missing_or_unknown_metadata"
+    },
+    {
+      "log": "test-00-ssh25-00.stdout",
+      "outcome": "ok",
+      "test": "ha_forward::native_ssh_tests::native_ssh_reply_profile_retains_original_ingress_nonce_and_custom_route"
+    },
+    {
+      "log": "test-00-ssh25-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::ssh_tests::archive::native_ssh_actual_archive_restore_preserves_otp_consumption_ca_and_observed_issuer_floor"
+    },
+    {
+      "log": "test-00-ssh25-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_actual_audit_cannot_refresh_original_deadline_or_repeat_signature"
+    },
+    {
+      "log": "test-00-ssh25-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_actual_audit_io_failure_never_returns_the_signed_private_reply"
+    },
+    {
+      "log": "test-00-ssh25-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_actual_audited_otp_retains_original_precise_issuer_expiry"
+    },
+    {
+      "log": "test-00-ssh25-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_actual_audited_reply_cannot_follow_recreated_mount_incarnation"
+    },
+    {
+      "log": "test-00-ssh25-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_after_actual_audit_actor_revocation_never_delivers_otp"
+    },
+    {
+      "log": "test-00-ssh25-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_after_actual_audit_changed_status_does_not_bypass_or_resign"
+    },
+    {
+      "log": "test-00-ssh25-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_and_pki_original_idle_retire_both_without_touching_ca_or_kv"
+    },
+    {
+      "log": "test-00-ssh25-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_child_and_response_wrap_ownership_remain_explicitly_closed"
+    },
+    {
+      "log": "test-00-ssh25-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_consumed_verify_rechecks_original_issuer_after_actual_audit"
+    },
+    {
+      "log": "test-00-ssh25-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_formal_acl_nonrenewable_revoke_and_segment_prefix"
+    },
+    {
+      "log": "test-00-ssh25-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_formal_batch_expiry_is_clipped_persistent_and_not_revivable"
+    },
+    {
+      "log": "test-00-ssh25-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_formal_ca_real_signature_cold_typed_public_transport"
+    },
+    {
+      "log": "test-00-ssh25-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_formal_disabled_login_identity_stays_retired_after_reenable_and_cold"
+    },
+    {
+      "log": "test-00-ssh25-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_formal_otp_promotion_cold_verify_and_replay"
+    },
+    {
+      "log": "test-00-ssh25-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_formal_registry_tune_retire_and_recreate_preserves_other_graphs"
+    },
+    {
+      "log": "test-00-ssh25-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::ssh_tests::native_ssh_public_reply_cannot_lose_affine_transport_after_audit"
+    },
+    {
+      "log": "test-00-ssh25-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_actual_ca_signature_and_raw_public_cold_readindex"
+    },
+    {
+      "log": "test-00-ssh25-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_custom_public_reply_transport_keeps_kv_json"
+    },
+    {
+      "log": "test-00-ssh25-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_forwarded_otp_election_cold_consume_and_replay"
+    },
+    {
+      "log": "test-00-ssh25-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_lost_quorum_cannot_issue_sign_or_disclose_public_key"
+    },
+    {
+      "log": "test-01-mount1-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs"
+    },
+    {
+      "log": "test-02-redirect5-00.stdout",
+      "outcome": "ok",
+      "test": "http::snapshot::redirect_tests::native_http_redirect_complete_head_preserves_short_writes_and_transport_errors"
+    },
+    {
+      "log": "test-02-redirect5-00.stdout",
+      "outcome": "ok",
+      "test": "http::snapshot::redirect_tests::native_http_redirect_has_exact_safe_location_and_no_upload_read_or_response_body"
+    },
+    {
+      "log": "test-02-redirect5-00.stdout",
+      "outcome": "ok",
+      "test": "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_first_record_is_complete_with_unread_upload"
+    },
+    {
+      "log": "test-02-redirect5-00.stdout",
+      "outcome": "ok",
+      "test": "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_flush_retains_original_deadline_failure"
+    },
+    {
+      "log": "test-02-redirect5-00.stdout",
+      "outcome": "ok",
+      "test": "http::snapshot::redirect_tests::native_redirect_target_keeps_existing_query_validation_and_rejects_header_injection"
+    },
+    {
+      "log": "test-03-actor2-00.stdout",
+      "outcome": "ok",
+      "test": "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_keeps_shorter_original_scope_after_actual_aead"
+    },
+    {
+      "log": "test-03-actor2-00.stdout",
+      "outcome": "ok",
+      "test": "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_rechecks_original_actor_after_actual_aead"
+    },
+    {
+      "log": "test-04-ordinary5-00.stdout",
+      "outcome": "ok",
+      "test": "http::response_coalescing_tests::ordinary_http_complete_small_prefix_keeps_body_and_bounded_metadata"
+    },
+    {
+      "log": "test-04-ordinary5-00.stdout",
+      "outcome": "ok",
+      "test": "http::response_coalescing_tests::ordinary_http_original_head_no_body_chunked_and_large_raw_framing_remain"
+    },
+    {
+      "log": "test-04-ordinary5-00.stdout",
+      "outcome": "ok",
+      "test": "http::response_coalescing_tests::ordinary_http_prefix_keeps_partial_writes_and_original_io_failures"
+    },
+    {
+      "log": "test-04-ordinary5-00.stdout",
+      "outcome": "ok",
+      "test": "http::response_coalescing_tests::ordinary_http_tcp_tls_first_record_contains_full_small_response_with_unread_upload"
+    },
+    {
+      "log": "test-04-ordinary5-00.stdout",
+      "outcome": "ok",
+      "test": "http::response_coalescing_tests::ordinary_http_tcp_tls_response_preserves_original_expired_deadline"
+    },
+    {
+      "log": "test-07-legacy-cold-h2-9-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_once_and_owned_result_identity"
+    },
+    {
+      "log": "test-07-legacy-cold-h2-9-01.stdout",
+      "outcome": "ok",
+      "test": "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_nested_source_and_inner_results"
+    },
+    {
+      "log": "test-07-legacy-cold-h2-9-02.stdout",
+      "outcome": "ok",
+      "test": "service::native_v6_ha_install::tests::native_ha_install_batches_actual_readindex_cold_missing_and_corrupt_file"
+    },
+    {
+      "log": "test-07-legacy-cold-h2-9-03.stdout",
+      "outcome": "ok",
+      "test": "http::h2_transport::sync_worker_tests::h2_sync_worker_is_unentered_and_retains_outer_context"
+    },
+    {
+      "log": "test-07-legacy-cold-h2-9-04.stdout",
+      "outcome": "ok",
+      "test": "http::h2_transport::sync_worker_tests::h2_sync_worker_expired_deadline_never_calls_work"
+    },
+    {
+      "log": "test-07-legacy-cold-h2-9-05.stdout",
+      "outcome": "ok",
+      "test": "http::h2_transport::sync_worker_tests::h2_sync_worker_preserves_inner_result"
+    },
+    {
+      "log": "test-07-legacy-cold-h2-9-06.stdout",
+      "outcome": "ok",
+      "test": "http::h2_transport::sync_worker_tests::h2_sync_worker_joins_panicked_work_and_drops_capture"
+    },
+    {
+      "log": "test-07-legacy-cold-h2-9-07.stdout",
+      "outcome": "ok",
+      "test": "http::h2_transport::sync_worker_tests::h2_sync_worker_does_not_authorize_nested_runtime_context"
+    },
+    {
+      "log": "test-07-legacy-cold-h2-9-08.stdout",
+      "outcome": "ok",
+      "test": "http::h2_transport::sync_worker_tests::h2_sync_worker_cancelled_waiter_retains_blocking_capacity"
+    },
+    {
+      "log": "test-08-legacy-same-root1-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_v6_ha_install::tests::same_root_republication_tests::native_ha_same_root_republication_advances_warm_and_cold_cursors"
+    },
+    {
+      "log": "test-09-snapshot-body10-00.stdout",
+      "outcome": "ok",
+      "test": "native_snapshot_body::tests::snapshot_stream_consumer_cannot_finish_with_unread_archive_bytes"
+    },
+    {
+      "log": "test-09-snapshot-body10-00.stdout",
+      "outcome": "ok",
+      "test": "native_snapshot_body::tests::snapshot_stream_declared_oversize_is_rejected_before_payload"
+    },
+    {
+      "log": "test-09-snapshot-body10-00.stdout",
+      "outcome": "ok",
+      "test": "native_snapshot_body::tests::snapshot_stream_empty_body_requires_explicit_end_and_eof"
+    },
+    {
+      "log": "test-09-snapshot-body10-00.stdout",
+      "outcome": "ok",
+      "test": "native_snapshot_body::tests::snapshot_stream_encoder_checks_one_rejecting_eof_byte_at_exact_cap"
+    },
+    {
+      "log": "test-09-snapshot-body10-00.stdout",
+      "outcome": "ok",
+      "test": "native_snapshot_body::tests::snapshot_stream_end_digest_and_trailing_wire_bytes_are_rejected"
+    },
+    {
+      "log": "test-09-snapshot-body10-00.stdout",
+      "outcome": "ok",
+      "test": "native_snapshot_body::tests::snapshot_stream_exact_payload_without_end_is_not_complete"
+    },
+    {
+      "log": "test-09-snapshot-body10-00.stdout",
+      "outcome": "ok",
+      "test": "native_snapshot_body::tests::snapshot_stream_original_expired_deadline_precedes_io"
+    },
+    {
+      "log": "test-09-snapshot-body10-00.stdout",
+      "outcome": "ok",
+      "test": "native_snapshot_body::tests::snapshot_stream_roundtrip_crosses_ordinary_frame_limit_once"
+    },
+    {
+      "log": "test-09-snapshot-body10-00.stdout",
+      "outcome": "ok",
+      "test": "native_snapshot_body::tests::snapshot_stream_short_chunk_cannot_be_followed_by_data"
+    },
+    {
+      "log": "test-09-snapshot-body10-00.stdout",
+      "outcome": "ok",
+      "test": "native_snapshot_body::tests::snapshot_stream_tls_eof_error_after_valid_end_cannot_mint_binding"
+    },
+    {
+      "log": "test-10-snapshot-peer7-00.stdout",
+      "outcome": "ok",
+      "test": "authenticated_peer_frame::snapshot::tests::snapshot_peer_actual_mtls_bare_tcp_eof_cannot_finalize_upload"
+    },
+    {
+      "log": "test-10-snapshot-peer7-00.stdout",
+      "outcome": "ok",
+      "test": "authenticated_peer_frame::snapshot::tests::snapshot_peer_actual_mtls_terminal_rejection_consumes_no_upload"
+    },
+    {
+      "log": "test-10-snapshot-peer7-00.stdout",
+      "outcome": "ok",
+      "test": "authenticated_peer_frame::snapshot::tests::snapshot_peer_actual_mtls_upload_close_notify_allows_opposite_download"
+    },
+    {
+      "log": "test-10-snapshot-peer7-00.stdout",
+      "outcome": "ok",
+      "test": "authenticated_peer_frame::snapshot::tests::snapshot_peer_actual_mtls_wrong_selected_leaf_never_admits_body"
+    },
+    {
+      "log": "test-10-snapshot-peer7-00.stdout",
+      "outcome": "ok",
+      "test": "authenticated_peer_frame::snapshot::tests::snapshot_peer_expired_deadline_refuses_before_connect"
+    },
+    {
+      "log": "test-10-snapshot-peer7-00.stdout",
+      "outcome": "ok",
+      "test": "authenticated_peer_frame::snapshot::tests::snapshot_peer_original_frame_still_uses_only_old_callback"
+    },
+    {
+      "log": "test-10-snapshot-peer7-00.stdout",
+      "outcome": "ok",
+      "test": "authenticated_peer_frame::snapshot::tests::snapshot_peer_ready_veto_reads_no_upload_and_cannot_extend_deadline"
+    },
+    {
+      "log": "test-11-snapshot-actor2-00.stdout",
+      "outcome": "ok",
+      "test": "auth::forward_actor::snapshot_tests::snapshot_actor_final_use_remains_delivery_only_without_second_admission"
+    },
+    {
+      "log": "test-11-snapshot-actor2-00.stdout",
+      "outcome": "ok",
+      "test": "auth::forward_actor::snapshot_tests::snapshot_actor_original_auth_is_distinct_from_a_new_restored_owner"
+    },
+    {
+      "log": "test-12-snapshot-wire4-00.stdout",
+      "outcome": "ok",
+      "test": "service::snapshot_transfer::forward::wire::tests::snapshot_publication_actual_byte_witnesses_bind_save_and_restore"
+    },
+    {
+      "log": "test-12-snapshot-wire4-00.stdout",
+      "outcome": "ok",
+      "test": "service::snapshot_transfer::forward::wire::tests::snapshot_publication_metadata_and_original_owner_mutations_are_rejected"
+    },
+    {
+      "log": "test-12-snapshot-wire4-00.stdout",
+      "outcome": "ok",
+      "test": "service::snapshot_transfer::forward::wire::tests::snapshot_publication_valid_mac_cannot_substitute_a_binary_body"
+    },
+    {
+      "log": "test-12-snapshot-wire4-00.stdout",
+      "outcome": "ok",
+      "test": "service::snapshot_transfer::forward::wire::tests::snapshot_ready_rejects_retarget_replay_and_non_snapshot_routes"
+    },
+    {
+      "log": "test-13-snapshot-audit4-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_first_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen"
+    },
+    {
+      "log": "test-13-snapshot-audit4-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_second_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen"
+    },
+    {
+      "log": "test-13-snapshot-audit4-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_source_publication_audit_veto_keeps_real_restore_after_cold_reopen"
+    },
+    {
+      "log": "test-13-snapshot-audit4-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_unverified_attempt_audit_failure_cannot_mint_root_authority"
+    },
+    {
+      "log": "test-05-no_forward6-00.stdout",
+      "outcome": "ok",
+      "test": "http::no_forward_tests::no_forward271_binding_and_wire_metadata_cannot_replay_original_ingress"
+    },
+    {
+      "log": "test-05-no_forward6-00.stdout",
+      "outcome": "ok",
+      "test": "http::no_forward_tests::no_forward271_header_uses_first_value_and_preserves_original_target"
+    },
+    {
+      "log": "test-05-no_forward6-00.stdout",
+      "outcome": "ok",
+      "test": "service::legacy_immutable_kv::tests::no_forward271_keeps_actual_legacy_local_readindex_get"
+    },
+    {
+      "log": "test-05-no_forward6-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_keeps_local_routes_and_does_not_consume_actor"
+    },
+    {
+      "log": "test-05-no_forward6-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_original_deadline_and_real_response_audit_withhold_location"
+    },
+    {
+      "log": "test-05-no_forward6-00.stdout",
+      "outcome": "ok",
+      "test": "service::request_redirect_tests::no_forward271_capsule_keeps_origin_codec_audit_and_original_deadline"
+    },
+    {
+      "log": "test-06-legacy-ingress7-00.stdout",
+      "outcome": "ok",
+      "test": "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms"
+    },
+    {
+      "log": "test-06-legacy-ingress7-01.stdout",
+      "outcome": "ok",
+      "test": "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_rejects_actual_new_request_nonce_or_selected_root"
+    },
+    {
+      "log": "test-06-legacy-ingress7-02.stdout",
+      "outcome": "ok",
+      "test": "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_actual_failed_repair_closes_reselection_before_any_result"
+    },
+    {
+      "log": "test-06-legacy-ingress7-03.stdout",
+      "outcome": "ok",
+      "test": "ha::native_v6_runtime::request_timing_tests::native_request_timing_failure_has_only_bounded_static_metadata"
+    },
+    {
+      "log": "test-06-legacy-ingress7-04.stdout",
+      "outcome": "ok",
+      "test": "ha::native_v6_runtime::request_timing_tests::native_request_timing_sixty_four_buckets_preserve_existing_aggregates"
+    },
+    {
+      "log": "test-06-legacy-ingress7-05.stdout",
+      "outcome": "ok",
+      "test": "ha::native_v6_runtime::request_timing_tests::native_request_timing_observes_deadlines_but_preserves_once_only_results"
+    },
+    {
+      "log": "test-06-legacy-ingress7-06.stdout",
+      "outcome": "ok",
+      "test": "ha::native_v6_runtime::request_timing_tests::native_request_timing_phase_advance_is_distinct_from_operation_success"
+    }
+  ],
+  "actual_executed": 103,
+  "actual_failed": 1,
+  "actual_ignored": 0,
+  "actual_passed": 102,
+  "authbus_qualified": false,
+  "authoritative_status": "failed",
+  "completed_group_passes": 88,
+  "dr_executed": false,
+  "exact_new_artifact_metadata_matched": true,
+  "exit_code": 1,
+  "formal_kv2_qualified": false,
+  "independent_source_clean": true,
+  "missing_cases": [
+    "http::tls_close_tests::http1_abrupt_tls_eof_is_rejected_after_complete_http_response",
+    "http::tls_close_tests::http1_completed_replies_end_with_verified_tls_close_notify",
+    "http::tls_close_tests::http1_reply_writer_propagates_write_and_flush_failures",
+    "http::tls_close_tests::http1_terminal_close_rejects_expired_original_deadline"
+  ],
+  "physical_ha_qualified": false,
+  "product107_qualified": false,
+  "production_changed": false,
+  "receipt_sha256": "8016b4b4a804b0ba0e2ab441ecddf3a7f846e425b0ef7eba25b3e48ea826eb54",
+  "required_unique": 107,
+  "resource_benchmark_qualified": false,
+  "schema": "heptabao.mac09c14.original-log-case-reconciliation.v1",
+  "selection_sha256": "97c5c2ab931db0623c3c788b8cc0dbda238d0ad346144f4626aac07effd1fc25",
+  "source_commit": "09c14eae7a3b52dee8ce3af3175dad5900ac59ec"
+}

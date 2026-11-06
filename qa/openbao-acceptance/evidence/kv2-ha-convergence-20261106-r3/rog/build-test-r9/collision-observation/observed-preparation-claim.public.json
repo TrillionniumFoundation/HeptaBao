@@ -1,0 +1,10 @@
+{
+  "control": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r9",
+  "created_at_utc": "2026-11-06T13:52:05.811272+00:00",
+  "formal_build_started": false,
+  "production_changed": false,
+  "schema": "heptabao.rog-candidate-preparation-claim.v1",
+  "source": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source-6d456-r9",
+  "source_commit": "6d4562e75d72bcd71d13addb72174440a87e8041",
+  "source_tree": "ad2a5d2bd8c54c25d32917f391015b47b83990f0"
+}

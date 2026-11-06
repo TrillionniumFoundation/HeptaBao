@@ -1,0 +1,28 @@
+{
+  "cancelled": false,
+  "compiler_started": false,
+  "controller_executed": false,
+  "existing_directory_modified_by_this_attempt": false,
+  "existing_files_deleted_or_overwritten": false,
+  "existing_output": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r9",
+  "existing_output_origin": "Observed separate candidate preparation; actor identity not inferred.",
+  "expected_cases_not_run": 107,
+  "external_compiler_observed": true,
+  "failure": "fresh_output_directory_already_exists",
+  "job_id": "1a1b123c4b4-fc05-762c",
+  "observed_other_candidate": "6d4562e75d72bcd71d13addb72174440a87e8041",
+  "other_python_cwd_in_convergence_root_observed": false,
+  "production_changed": false,
+  "read_only_collision_probe_job": "1a1b1284a3d-fc05-765b",
+  "retry_of_failed_job_performed": false,
+  "runtime_exit_code": 1,
+  "schema": "heptabao.rog-r9-bootstrap-failure-assessment.v1",
+  "source_preparation_still_bound": {
+    "job_id": "1a1b11af0e7-fc05-75d1",
+    "receipt_sha256": "5bf54fa9f954dccf0593ef37d601028669bfe3c06e8bbac6657d06708b1de268"
+  },
+  "status": "bootstrap_failed_before_controller",
+  "test_cases_executed": 0,
+  "timed_out": false,
+  "whole_host_idle_claimed": false
+}

@@ -1,0 +1,96 @@
+{"event": "controller_installed", "controller_sha256": "56b4696cc252d50d3ddeb9edad90465654e011045d2e3d9feba5919d42247c7f", "selection_sha256": "d7f6d0971e7a6b3e0096e50a1e3d607bff851ce2295563ad068b80adf2294bfd", "bundle_sha256": "1343cc508548e8cad01f0ba5271d563fbf17725fd8a264f232db1ccdded0cc0d"}
+{"event": "step_started", "step": "00-source-head", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-source-head", "exit_code": 0, "timed_out": false, "seconds": 0.034123}
+{"event": "step_started", "step": "01-preserved-format-diff", "budget_seconds": 30}
+{"event": "step_finished", "step": "01-preserved-format-diff", "exit_code": 0, "timed_out": false, "seconds": 0.146871}
+{"event": "step_started", "step": "02-untracked", "budget_seconds": 30}
+{"event": "step_finished", "step": "02-untracked", "exit_code": 0, "timed_out": false, "seconds": 0.026913}
+{"event": "step_started", "step": "03-bundle-verify", "budget_seconds": 30}
+{"event": "step_finished", "step": "03-bundle-verify", "exit_code": 0, "timed_out": false, "seconds": 0.026475}
+{"event": "step_started", "step": "04-fetch", "budget_seconds": 30}
+{"event": "step_finished", "step": "04-fetch", "exit_code": 0, "timed_out": false, "seconds": 0.027072}
+{"event": "step_started", "step": "05-canonical-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "05-canonical-tree", "exit_code": 0, "timed_out": false, "seconds": 0.026952}
+{"event": "step_started", "step": "06-canonical-parent", "budget_seconds": 30}
+{"event": "step_finished", "step": "06-canonical-parent", "exit_code": 0, "timed_out": false, "seconds": 0.026407}
+{"event": "step_started", "step": "07-stage-exact-format", "budget_seconds": 30}
+{"event": "step_finished", "step": "07-stage-exact-format", "exit_code": 0, "timed_out": false, "seconds": 0.147127}
+{"event": "step_started", "step": "08-format-working-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "08-format-working-tree", "exit_code": 0, "timed_out": false, "seconds": 0.028057}
+{"event": "step_started", "step": "09-checkout-canonical", "budget_seconds": 30}
+{"event": "step_finished", "step": "09-checkout-canonical", "exit_code": 0, "timed_out": false, "seconds": 0.034798}
+{"event": "step_started", "step": "10-clean-source", "budget_seconds": 30}
+{"event": "step_finished", "step": "10-clean-source", "exit_code": 0, "timed_out": false, "seconds": 0.029576}
+{"event": "step_started", "step": "11-fsck", "budget_seconds": 60}
+{"event": "step_finished", "step": "11-fsck", "exit_code": 0, "timed_out": false, "seconds": 2.856542}
+{"event": "step_started", "step": "12-format-check", "budget_seconds": 60}
+{"event": "step_finished", "step": "12-format-check", "exit_code": 0, "timed_out": false, "seconds": 5.45616}
+{"event": "step_started", "step": "13-normal-release-build", "budget_seconds": 1800}
+{"event": "step_finished", "step": "13-normal-release-build", "exit_code": 0, "timed_out": false, "seconds": 651.970117}
+{"event": "step_started", "step": "14-server-libtest-build", "budget_seconds": 3600}
+{"event": "step_finished", "step": "14-server-libtest-build", "exit_code": 0, "timed_out": false, "seconds": 1135.36698}
+{"event": "step_started", "step": "15-peer-libtest-build", "budget_seconds": 3600}
+{"event": "step_finished", "step": "15-peer-libtest-build", "exit_code": 0, "timed_out": false, "seconds": 102.442028}
+{"event": "step_started", "step": "heptabao-server-list", "budget_seconds": 30}
+{"event": "step_finished", "step": "heptabao-server-list", "exit_code": 0, "timed_out": false, "seconds": 0.046737}
+{"event": "step_started", "step": "heptabao-ha-service-list", "budget_seconds": 30}
+{"event": "step_finished", "step": "heptabao-ha-service-list", "exit_code": 0, "timed_out": false, "seconds": 0.035778}
+{"event": "step_started", "step": "test-00-ssh25-00", "budget_seconds": 599.989}
+{"event": "step_finished", "step": "test-00-ssh25-00", "exit_code": 0, "timed_out": false, "seconds": 43.25864}
+{"event": "step_started", "step": "test-01-mount1-00", "budget_seconds": 599.999}
+{"event": "step_finished", "step": "test-01-mount1-00", "exit_code": 0, "timed_out": false, "seconds": 0.299035}
+{"event": "step_started", "step": "test-02-redirect5-00", "budget_seconds": 599.999}
+{"event": "step_finished", "step": "test-02-redirect5-00", "exit_code": 0, "timed_out": false, "seconds": 0.15039}
+{"event": "step_started", "step": "test-03-actor2-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-03-actor2-00", "exit_code": 0, "timed_out": false, "seconds": 10.128816}
+{"event": "step_started", "step": "test-04-ordinary5-00", "budget_seconds": 599.999}
+{"event": "step_finished", "step": "test-04-ordinary5-00", "exit_code": 0, "timed_out": false, "seconds": 0.071656}
+{"event": "step_started", "step": "test-05-no_forward6-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-05-no_forward6-00", "exit_code": 0, "timed_out": false, "seconds": 8.180801}
+{"event": "step_started", "step": "test-06-legacy-ingress7-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-00", "exit_code": 0, "timed_out": false, "seconds": 0.095298}
+{"event": "step_started", "step": "test-06-legacy-ingress7-01", "budget_seconds": 599.897}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-01", "exit_code": 0, "timed_out": false, "seconds": 0.095577}
+{"event": "step_started", "step": "test-06-legacy-ingress7-02", "budget_seconds": 599.794}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-02", "exit_code": 0, "timed_out": false, "seconds": 0.09466}
+{"event": "step_started", "step": "test-06-legacy-ingress7-03", "budget_seconds": 599.693}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-03", "exit_code": 0, "timed_out": false, "seconds": 0.026888}
+{"event": "step_started", "step": "test-06-legacy-ingress7-04", "budget_seconds": 599.66}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-04", "exit_code": 0, "timed_out": false, "seconds": 0.027876}
+{"event": "step_started", "step": "test-06-legacy-ingress7-05", "budget_seconds": 599.626}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-05", "exit_code": 0, "timed_out": false, "seconds": 0.036499}
+{"event": "step_started", "step": "test-06-legacy-ingress7-06", "budget_seconds": 599.582}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-06", "exit_code": 0, "timed_out": false, "seconds": 0.036525}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-00", "budget_seconds": 599.997}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-00", "exit_code": 0, "timed_out": false, "seconds": 0.037693}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-01", "budget_seconds": 599.953}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-01", "exit_code": 0, "timed_out": false, "seconds": 0.03749}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-02", "budget_seconds": 599.909}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-02", "exit_code": 0, "timed_out": false, "seconds": 0.601762}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-03", "budget_seconds": 599.301}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-03", "exit_code": 0, "timed_out": false, "seconds": 0.026816}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-04", "budget_seconds": 599.268}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-04", "exit_code": 0, "timed_out": false, "seconds": 0.026814}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-05", "budget_seconds": 599.234}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-05", "exit_code": 0, "timed_out": false, "seconds": 0.029103}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-06", "budget_seconds": 599.199}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-06", "exit_code": 0, "timed_out": false, "seconds": 0.035493}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-07", "budget_seconds": 599.157}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-07", "exit_code": 0, "timed_out": false, "seconds": 0.038075}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-08", "budget_seconds": 599.112}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-08", "exit_code": 0, "timed_out": false, "seconds": 0.036936}
+{"event": "step_started", "step": "test-08-legacy-same-root1-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-08-legacy-same-root1-00", "exit_code": 0, "timed_out": false, "seconds": 0.800124}
+{"event": "step_started", "step": "test-09-snapshot-body10-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-09-snapshot-body10-00", "exit_code": 0, "timed_out": false, "seconds": 0.027655}
+{"event": "step_started", "step": "test-10-snapshot-peer7-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-10-snapshot-peer7-00", "exit_code": 0, "timed_out": false, "seconds": 0.797041}
+{"event": "step_started", "step": "test-11-snapshot-actor2-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-11-snapshot-actor2-00", "exit_code": 0, "timed_out": false, "seconds": 0.027342}
+{"event": "step_started", "step": "test-12-snapshot-wire4-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-12-snapshot-wire4-00", "exit_code": 0, "timed_out": false, "seconds": 0.027189}
+{"event": "step_started", "step": "test-13-snapshot-audit4-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-13-snapshot-audit4-00", "exit_code": 0, "timed_out": false, "seconds": 13.71593}
+{"event": "step_started", "step": "test-14-native-jwt15-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-14-native-jwt15-00", "exit_code": 101, "timed_out": false, "seconds": 8.632667}
+{"event": "terminal", "status": "failed", "failure": "native-jwt15_exact_test_result_failed", "executed_passed_cases": 88, "result": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r8/result.public.json"}

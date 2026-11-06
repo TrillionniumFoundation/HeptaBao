@@ -1,0 +1,44 @@
+[
+  {
+    "batch": 3,
+    "operation": "read_multiple_files",
+    "product_rerun": false,
+    "reason": "MCP request timed out"
+  },
+  {
+    "artifact": "heptabao-seed",
+    "operation": "file_info",
+    "product_rerun": false,
+    "reason": "MCP request timed out"
+  },
+  {
+    "artifact": "heptabao-server",
+    "operation": "file_info",
+    "product_rerun": false,
+    "reason": "MCP request timed out"
+  },
+  {
+    "artifact": "r7_868_heptabao-ha-service-libtest",
+    "operation": "file_info",
+    "product_rerun": false,
+    "reason": "MCP request timed out"
+  },
+  {
+    "artifact": "r7_868_heptabao-server",
+    "operation": "file_info",
+    "product_rerun": false,
+    "reason": "MCP request timed out"
+  },
+  {
+    "artifact": "retained_r2_heptabao-server",
+    "operation": "file_info",
+    "product_rerun": false,
+    "reason": "MCP request timed out"
+  },
+  {
+    "artifact": "retained_r4_heptabao-ha-service-libtest",
+    "operation": "file_info",
+    "product_rerun": false,
+    "reason": "MCP request timed out"
+  }
+]
