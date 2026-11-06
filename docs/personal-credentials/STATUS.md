@@ -20,7 +20,7 @@ creation, authentication, transfer and recovery combinations.
 | P0: selected credential service | Normal Linux server entry point, loopback TLS/private CA, Shamir, root-namespace KV2, userpass and scoped tokens: **57/57**, including real expiry/revocation, ACL denials, SIGKILL and cold recovery. The separately frozen r3 QA revision passed all three complete destructive, network-partition and replay-epoch profiles against that original server binary. | This is the fixed single-node/three-node synthetic scope. Older r1/r2 failures remain recorded; full compatibility, other snapshot regressions and broad replacement remain HOLD. |
 | P1: agent/developer use | Executable Rust CLI/SDK, local socket broker, exact-operation owner grants, controlled loopback API use, SSHSIG and actual `git commit -S` followed by `git verify-commit`. The bounded-read repair passed **19/19 on Linux and separately 19/19 on macOS**: the original thirteen tests plus six real socket regressions. Durable unknown outcomes are never automatically retried. | Task/run labels are owner-issued, not attested HeptaRuntime identities. Current runtime aliases use the same trusted OS account. External HTTPS APIs and SSH login are unsupported. |
 | P2: personal vault | Encrypted login/note/API entries, password generation, RFC-vector TOTP, local health, bounded sessions, offline CLI, encrypted backup/recovery, explicit JSON import/export and password change. Independent process and actual SIGKILL recovery observed. The separate frozen macOS vault passed **14/14**. | The observed Linux and macOS CLI/filesystem combinations trust the owner account; no hostile-owner isolation, hardware anti-rollback, third-party import or independent security review. |
-| P3: daily clients | Real headed Chromium/native-host login and rejection profile: **26/26**. Physical two-device opaque synchronization: **14 stages and 18 authenticated transfers** across ai395 and ROG retained conflicting edits and restored both histories. Native backpressure fix: **8/8**. Android c9/QA15 run r13 completed import, locked-fill refusal, wrong-master refusal and an actual system fill/login: **4/12**. | The Android twelve-case profile remains failed. r13 stopped at the cached-dataset UI wait; c9/QA16 r14 stopped earlier at a late return-menu/title observation after **1/12**. Their cases are not combined into a passing profile. Earlier r10/r11/r12 failures remain recorded. Browser observation covers the fixed Chrome 157 Linux combination. Sync is an explicit CLI workflow, not an automatic daemon or field merger. |
+| P3: daily clients | Real headed Chromium/native-host login and rejection profile: **26/26**. Physical two-device opaque synchronization: **14 stages and 18 authenticated transfers** across ai395 and ROG retained conflicting edits and restored both histories. Native backpressure fix: **8/8**. Android c9/QA17 run r15 passed seven original cases, including actual system fill/login, the cached-dataset attempt, explicit lock and actual expiry refusal: **7/12**. | r15 remains a failed profile at the cancellation-cause observation. r13's 4/12 and r14's 1/12 remain separate failures, with no combined passing denominator. The remaining device cases have not passed. Browser observation covers the fixed Chrome 157 Linux combination. Sync is an explicit CLI workflow, not an automatic daemon or field merger. |
 | P4: extended vault | The fixed Android native fixture completed real CredentialManager create/get, ordinary encrypted SAF backup, same-device app-data reset/new-process restore, and independent RP stale-backup rejection. The r8 original ledger remains **16 passed, 2 failed**; three separately declared supplements passed **3/3**. | Original G07/G10 failures and G08's causal limit remain recorded; M05 has a launch-audit gap. This is one synthetic native fixture and same-device recovery, not physical two-device Passkey migration. Credential exchange, sharing, device revocation and additional platforms remain unsupported. **P4 remains unqualified.** |
 | P5: production adoption | The fixed old/new broker binaries completed **27/27** real same-format upgrade/rollback checks. A separate **30-minute, 60-cycle** trial on the bounded-read Linux broker completed 491 protocol requests, 60 distinct effects each exactly once, and recovery through seven sequential broker processes. Published `3ada83a` passed its own synthetic-core CI and both workflow-trust combinations. The clean `c447536` Python preflight passed 1988 tests with five explicit platform skips. | The short trial does not establish long-term reliability or load capacity. The `2280c36` full workflow retained three HA failures before cancellation; `7e77aa3` was cancelled and `3ada83a` has not passed the full gate. Independent security review, measured long-term stability, signed releases, arbitrary-version/data-format migration and operational support remain incomplete. |
 
@@ -439,13 +439,56 @@ The new return-observation correction must keep the original title deadline,
 original fixture identity and at-most-one Back rule. Neither the earlier r13
 login nor the QA16 host controls are inherited by this failed run.
 
-The [c9/r13 and QA16/r14 follow-up evidence](../../qa/personal_credentials/evidence/20261106/android-autofill-followup-public-evidence.tar.gz)
+The [c9/r13-r15 follow-up evidence](../../qa/personal_credentials/evidence/20261106/android-autofill-followup-public-evidence.tar.gz)
 retains the exact SDK/host packets, source manifests, original launch and
-terminal responses, both failed reports and independent release checks.
+terminal responses, the separate failed reports and independent release checks.
 The r14 release restored the original setting and confirmed all three owned
 packages absent from both installed and retained-package queries. Its original
 release SHA-256 is
 `43a9b17388afff04e901dd79d404514543b23e5ef1cae5ad553d4c560a19068d`.
+
+QA17 adds bounded observation of late popups during the existing return-title
+and cached-username waits. Each retains its original 25-second deadline; the
+return path may use its original guarded Back at most once, while cached
+refocus never dismisses the menu. Both inspect for plaintext first and retain
+the original fixture identity, fresh sample checks and uncertain-input refusal.
+Controlled execution reproduced the earlier return failure on QA16 and the
+second cached-wait failure on QA17's first candidate. The final candidate's
+sixteen new controls and original 76 related controls passed; the first
+candidate and both failure reproductions remain preserved. Root integration
+also ran the exact new sixteen-test CI command and the remaining unchanged
+eight driver, twelve original diagnostic and 46 popup controls against the
+same final driver. These are host tests with their own scopes.
+
+Actual c9/QA17 run r15, Runtime job `1a1b24f7af3-fc05-7d77`, completed **7/12**
+before failing at `cancel_cause_not_observed`. All seven passes belong to this
+run. Its cache case observed the late locked popup, actually attempted that
+presentation, observed no plaintext dataset and verified fresh empty fields;
+the authentication activity did not reappear. Explicit lock was refused within
+the original pre-expiry boundary, and the expiry case observed refusal after
+25.452 seconds from the observed unlock. The final driver SHA-256 is
+`45fa318c76b61faed221257dcd90a2365ad88ba3079ebac3acf85e40113e9fd7`;
+the complete 78,590-byte report is
+`50c5f796a474721437b058457dc8247fe760f30f9bf55e6677a92f8e046570dc`.
+
+The cancellation case reached its global decision check and observed
+`memory_locked` instead of the required `background_locked`. Its collected
+closed events include a matched Auth-pause cancellation that clears pending
+and unlocked state, followed by trim events with empty state. The actual
+`onTrimMemory` path always advances the generation, clears login material and
+sets the global decision to `memory_locked`. This is consistent with an
+overwritten diagnostic; queued logs still do not prove request identity or
+repair the failed case. A new cancellation observation must be tied to the
+specific request/action and preserve the original timing and actual fill
+refusal assertions. The remaining five original cases have no pass in r15.
+
+r15 failed with exit one, no timeout and complete durable output. Its independent
+release job `1a1b2577db6-fc05-7d9b` succeeded with exit zero; the 1201-byte release
+is SHA-256
+`6c313c0ae8aa36d4ed063ee1780166878d0a16c1a8c66b8e70ed7aa5e0817bca`.
+The original setting was restored and all three owned installed/retained-package
+queries confirmed absence before the phone was assigned to the separate r9
+Passkey profile. That new profile does not inherit any old Passkey result.
 
 Passkey candidate r4 has 28 source files matching its original build inventory.
 It implements a separate Android credential provider for one pinned native
@@ -723,7 +766,7 @@ provenance. It does not claim a password-path read in that later observation.
 | Autofill candidate 6 provider APK | `10028da82fede388096362d0bf2c6d106bd1e8823a12c17c022f8115adcf262a` | Separate build, 12 host format checks and 12 actual-APK checks; QA11/r8 and QA12/r9 each failed after 1/12. QA13/r10 completed 2/12 before authorization rejection. |
 | Autofill candidate 7 provider APK | `164c10fbc97b6db8e6f3dbe1e435f37dae64ec25aae319d0ecda8f10bf5b7c20` | Diagnostic-only candidate: actual SDK build, 12 Rust/Java format checks and 12 decoded-APK checks passed; QA14/r11 failed after 2/12 with an empty filtered log result and an undetermined authorization-rejection cause. |
 | Autofill candidate 8 provider APK | `169024553982fb538347ff2a10537a33cdbe94635ac4991fa55b4cc163e9f2c3` | Diagnostic-only follow-up: actual SDK build and separate 12/12 format and 12/12 decoded-APK checks passed. QA15/r12 failed after 2/12; the new diagnostic exposed a pre-unlock missing challenge after an unrelated service rejection. |
-| Autofill candidate 9 provider APK | `45bc67b20fe7dbadc61710681feaf12d65f619befe85fde801d4cb7f6ffcde9f` | Request-ownership repair: separate SDK, 12/12 format and 12/12 decoded-APK checks passed. QA15/r13 passed four original cases including actual login, then failed at the cached-dataset UI wait. |
+| Autofill candidate 9 provider APK | `45bc67b20fe7dbadc61710681feaf12d65f619befe85fde801d4cb7f6ffcde9f` | Request-ownership repair: separate SDK, 12/12 format and 12/12 decoded-APK checks passed. Its three original profiles remain separate failures: QA15/r13 4/12, QA16/r14 1/12 and QA17/r15 7/12. r15 includes actual login, cached-dataset, explicit-lock and expiry observations, then stops at the cancellation-cause check. |
 | Passkey r4 provider APK | `e96218bc0ab1c228120471d5168a336e6b526bfd5e39e1a0a533335300d7c6e8` | Build/decoded manifest and 10 host checks; phone import failed before any credential creation, with all eighteen cases retained. |
 | Passkey r5b provider APK | `9985457ba13ddef5c286c6017d6c675cb0e64bafa97f119516a3fc4fcce5fc3a` | Separately fixed source/build and 10 host checks; its first ordinary-SAF phone import returned `operation_failed` before password entry. |
 | Passkey r6 provider APK | `0240a545d9ed9518201cfda945a26c5f7dc8742534d1ab21d5e84f23bf9c4ac7` | Separate diagnostic build and 10 host checks; phone M01 failed PUBLISH_LINK/EACCES, cleanup passed, sixteen blocked. |
@@ -844,11 +887,14 @@ and [core result](../../qa/personal_credentials/evidence/20261106/ci-3ada-result
 retain the exact source, build and artifact bindings and the explicit false
 flags for broader qualifications. The later recorded observation of
 [full replacement 42233353960](https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/42233353960)
-at 19:04 UTC showed twenty-seven successful steps in both source combinations,
+at 19:42 UTC showed thirty-five successful steps in both source combinations,
 including complete locked Rust workspace tests, strict Clippy, documentation,
-the real TLS service, the declared provider profiles and audit transports.
-The bounded state-saturation/capacity-recovery step was in progress. It has no
-passing full result. The
+the real TLS service, the declared provider profiles, audit transports,
+capacity recovery and the preceding declared HA profiles. The exact-base to
+candidate HA rolling-upgrade step was in progress. It has no
+passing full result. The [later validation observations](../../qa/personal_credentials/evidence/20261106/validation-followup-public-evidence.tar.gz)
+retain the original API responses and returned log text; those returned logs
+are not asserted to be complete or current live logs. The
 later bounded-read source overlay does not inherit that older source's CI
 results. This draft remains unmerged.
 
@@ -967,12 +1013,24 @@ thirteen original broker tests and six real Unix-socket regressions for queued
 peer closure, truncated frames, invalid size, fragmentation, a silent peer and
 the shared header/body deadline. Both platforms completed locked offline
 builds. Formatting and strict Clippy were additionally executed on Mac; the
-Linux packet does not claim those checks. Original source and frozen artifacts
+original Linux nineteen-test packet does not claim those checks. Original source and frozen artifacts
 remained unchanged. The new overlay is separately identified from the original clean
 source. The [Mac original evidence and Runtime bindings](../../qa/personal_credentials/evidence/20261106/mac-broker-read-fix-public-evidence.tar.gz)
 and [Linux original evidence](../../qa/personal_credentials/evidence/20261106/broker-poll-fix-linux-public-evidence.tar.gz)
 retain failed attempts alongside the successful profiles. These results do not
 expand browser support, Runtime identity attestation or production scope.
+
+The separate Linux lint follow-up then executed `cargo fmt` with `--check`
+and locked, offline `cargo clippy --all-targets -- -D warnings` for the broker
+against that exact repaired source. Both commands exited zero; their owned
+top-level processes were reaped. All 4076 source files matched the original
+candidate manifest before and after, and the qualified `6f932448` executable
+remained unchanged. Runtime job `1a1b2609b0f-fc05-7dc9` succeeded with complete
+durable output and no timeout. Its original receipt is SHA-256
+`4c70d5df7b9b86ce6e20a833f1d9f229698b27fb4e791412f90aae95387c976f`
+in the [separate validation evidence](../../qa/personal_credentials/evidence/20261106/validation-followup-public-evidence.tar.gz).
+This follow-up ran zero functional tests and zero product operations; it does
+not recount the earlier nineteen tests or qualify the entire newer source tree.
 
 ### Separately observed Python integration preflight
 

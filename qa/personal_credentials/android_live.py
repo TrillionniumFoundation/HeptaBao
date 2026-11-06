@@ -727,6 +727,29 @@ class Device:
                 raise Failed("fixture_return_foreground_changed")
             time.sleep(0.05)
 
+    def _wait_return_title(self, deadline):
+        # Observe a delayed popup within the original title budget. Its UI only
+        # selects the branch; the complete system/parent/record binding is still
+        # repeated by return_to_fixture before any ordinary Back input.
+        self.last_wait = {"text": "HeptaBao synthetic native login", "description": None}
+        while True:
+            if time.monotonic() >= deadline:
+                raise Failed("expected_ui_missing")
+            nodes = self.ui()
+            if time.monotonic() >= deadline:
+                raise Failed("expected_ui_missing")
+            if any(node.get("text", "").casefold() == "fill synthetic login once" for node in nodes):
+                raise Failed("cached_plaintext_dataset_visible")
+            current = self.last_public_ui.get("foreground")
+            if current == AUTOFILL_POPUP:
+                return None
+            if current != (self.expected_fixture, ACTIVITY):
+                raise Failed("fixture_return_foreground_changed")
+            for node in nodes:
+                if node.get("text", "").casefold() == "heptabao synthetic native login":
+                    return node
+            time.sleep(0.25)
+
     def return_to_fixture(self, origin):
         if origin not in {"after_auth_cancel", "after_auth_fill", "before_fixture_verification"}:
             raise Failed("fixture_return_origin_out_of_scope")
@@ -738,49 +761,66 @@ class Device:
             if self._expected_fixture_session is None:
                 raise Failed("original_fixture_session_unavailable")
             surface = self._wait_return_surface()
-            if surface == AUTOFILL_POPUP:
-                self.return_phase = "bind_return_popup_before_ui"
-                before, session, metadata = self._return_snapshot("popup", self._expected_fixture_session)
-                self.return_phase = "inspect_return_popup_presentation"
-                nodes = self.ui()
-                if any(node.get("text", "").casefold() == "fill synthetic login once" for node in nodes):
-                    raise Failed("cached_plaintext_dataset_visible")
-                menus = [node for node in nodes if node.get("resource-id") == PROVIDER + ":id/presentation_text"]
-                if (len(menus) != 1 or menus[0].get("package") != PROVIDER
-                        or menus[0].get("text", "").casefold() != "unlock heptabao locally"
-                        or menus[0].get("enabled") != "true"):
-                    raise Failed("fixture_return_popup_presentation_unrecognized")
-                self.return_phase = "recheck_return_popup_before_back"
-                latest, latest_session, metadata = self._return_snapshot("popup", session)
-                if latest != before or latest_session != session:
-                    raise FocusUnavailable("fixture_return_popup_changed")
-                elapsed_ms = (time.monotonic_ns() - self._ui_finished_ns) / 1e6
-                event["dump_end_to_back_start_ms"] = round(elapsed_ms)
-                event["focus_metadata_before_back"] = metadata
-                if elapsed_ms >= 1000:
-                    raise Failed("fixture_return_popup_sample_stale")
-                self.return_phase = "dismiss_bound_return_popup_once"
-                event["back_command_count"] = 1  # An uncertain input is never retried.
-                started = time.monotonic_ns()
-                self.shell("input", "keyevent", "KEYCODE_BACK")
-                event["back_command_completed"] = True
-                event["back_command_ms"] = round((time.monotonic_ns() - started) / 1e6)
-                self.return_phase = "observe_fixture_after_back"
-                self._wait_return_surface(after_back=True)
-                _, _, metadata = self._return_snapshot("fixture", session)
-                event["same_parent_session_after_back"] = True
-            else:
-                self.return_phase = "bind_direct_fixture_return"
+            title_deadline = None
+            while True:
+                if title_deadline is not None and time.monotonic() >= title_deadline:
+                    raise Failed("expected_ui_missing")
+                if surface == AUTOFILL_POPUP:
+                    if event["back_command_count"] != 0:
+                        raise Failed("fixture_return_popup_reappeared")
+                    self.return_phase = "bind_return_popup_before_ui"
+                    before, session, metadata = self._return_snapshot("popup", self._expected_fixture_session)
+                    self.return_phase = "inspect_return_popup_presentation"
+                    nodes = self.ui()
+                    if any(node.get("text", "").casefold() == "fill synthetic login once" for node in nodes):
+                        raise Failed("cached_plaintext_dataset_visible")
+                    menus = [node for node in nodes if node.get("resource-id") == PROVIDER + ":id/presentation_text"]
+                    if (len(menus) != 1 or menus[0].get("package") != PROVIDER
+                            or menus[0].get("text", "").casefold() != "unlock heptabao locally"
+                            or menus[0].get("enabled") != "true"):
+                        raise Failed("fixture_return_popup_presentation_unrecognized")
+                    self.return_phase = "recheck_return_popup_before_back"
+                    latest, latest_session, metadata = self._return_snapshot("popup", session)
+                    if latest != before or latest_session != session:
+                        raise FocusUnavailable("fixture_return_popup_changed")
+                    elapsed_ms = (time.monotonic_ns() - self._ui_finished_ns) / 1e6
+                    event["dump_end_to_back_start_ms"] = round(elapsed_ms)
+                    event["focus_metadata_before_back"] = metadata
+                    if elapsed_ms >= 1000:
+                        raise Failed("fixture_return_popup_sample_stale")
+                    if title_deadline is not None and time.monotonic() >= title_deadline:
+                        raise Failed("expected_ui_missing")
+                    self.return_phase = "dismiss_bound_return_popup_once"
+                    event["back_command_count"] = 1  # An uncertain input is never retried.
+                    started = time.monotonic_ns()
+                    self.shell("input", "keyevent", "KEYCODE_BACK")
+                    event["back_command_completed"] = True
+                    event["back_command_ms"] = round((time.monotonic_ns() - started) / 1e6)
+                    self.return_phase = "observe_fixture_after_back"
+                    self._wait_return_surface(after_back=True)
+                    _, _, metadata = self._return_snapshot("fixture", session)
+                    event["same_parent_session_after_back"] = True
+                else:
+                    self.return_phase = "bind_direct_fixture_return"
+                    _, _, metadata = self._return_snapshot("fixture", self._expected_fixture_session)
+                event["focus_metadata_after_return"] = metadata
+                self.return_phase = "observe_returned_fixture_title"
+                if title_deadline is None:
+                    title_deadline = time.monotonic() + 25
+                node = self._wait_return_title(title_deadline)
+                if node is None:
+                    event["late_popup_during_title_observation"] = True
+                    surface = AUTOFILL_POPUP
+                    continue
+                self.assert_fixture(node)
+                self.return_phase = "recheck_fixture_identity_after_title"
                 _, _, metadata = self._return_snapshot("fixture", self._expected_fixture_session)
-            event["focus_metadata_after_return"] = metadata
-            self.return_phase = "observe_returned_fixture_title"
-            self.assert_fixture(self.wait(text="HeptaBao synthetic native login"))
-            self.return_phase = "recheck_fixture_identity_after_title"
-            _, _, metadata = self._return_snapshot("fixture", self._expected_fixture_session)
-            event["focus_metadata_after_title"] = metadata
-            event["result"] = "returned_to_original_fixture"
-            self.return_phase = "returned_to_original_fixture"
-            return event
+                if time.monotonic() >= title_deadline:
+                    raise Failed("expected_ui_missing")
+                event["focus_metadata_after_title"] = metadata
+                event["result"] = "returned_to_original_fixture"
+                self.return_phase = "returned_to_original_fixture"
+                return event
         except FocusUnavailable as error:
             event["result"] = "refused"; event["reason"] = str(error)
             raise Failed("fixture_return_identity_unavailable") from None
@@ -796,6 +836,28 @@ class Device:
             raise Failed("fixture_node_package_changed")
         return component
 
+    def _wait_cached_username(self, deadline):
+        # Observe the same field or its bound system popup without dismissing
+        # either or creating a new Autofill request. The original budget is fixed.
+        self.last_wait = {"text": None, "description": "Synthetic username"}
+        while True:
+            if time.monotonic() >= deadline:
+                raise Failed("expected_ui_missing")
+            nodes = self.ui()
+            if time.monotonic() >= deadline:
+                raise Failed("expected_ui_missing")
+            if any(node.get("text", "").casefold() == "fill synthetic login once" for node in nodes):
+                raise Failed("cached_plaintext_dataset_visible")
+            current = self.last_public_ui.get("foreground")
+            if current == AUTOFILL_POPUP:
+                return None
+            if current != (GOOD, ACTIVITY):
+                raise Failed("cached_refocus_foreground_changed")
+            for node in nodes:
+                if node.get("content-desc") == "Synthetic username":
+                    return node
+            time.sleep(0.25)
+
     def cached_refocus(self):
         # Clearing an already focused field may itself reopen Autofill UI. Keep
         # the original window/Activity/task/owner; never dismiss a plaintext menu
@@ -807,40 +869,57 @@ class Device:
             self._return_snapshot("fixture", original)
             self.tap(text="Clear fields")
             surface = self._wait_return_surface()
-            if surface == AUTOFILL_POPUP:
-                before, session, _ = self._return_snapshot("popup", original)
-                nodes = self.ui()
-                if any(node.get("text", "").casefold() == "fill synthetic login once" for node in nodes):
-                    raise Failed("cached_plaintext_dataset_visible")
-                menus = [node for node in nodes if node.get("resource-id") == PROVIDER + ":id/presentation_text"]
-                if (len(menus) != 1 or menus[0].get("package") != PROVIDER
-                        or menus[0].get("text", "").casefold() != "unlock heptabao locally"
-                        or menus[0].get("enabled") != "true"):
-                    raise Failed("cached_popup_presentation_unrecognized")
-                latest, latest_session, _ = self._return_snapshot("popup", original)
-                if latest != before or latest_session != session:
-                    raise FocusUnavailable("cached_popup_changed")
-                return {"path": "bound_popup_after_clear", "username_touch_count": 0,
+            username_deadline = None
+            late_popup = False
+            while True:
+                if username_deadline is not None and time.monotonic() >= username_deadline:
+                    raise Failed("expected_ui_missing")
+                if surface == AUTOFILL_POPUP:
+                    before, session, _ = self._return_snapshot("popup", original)
+                    nodes = self.ui()
+                    if any(node.get("text", "").casefold() == "fill synthetic login once" for node in nodes):
+                        raise Failed("cached_plaintext_dataset_visible")
+                    menus = [node for node in nodes if node.get("resource-id") == PROVIDER + ":id/presentation_text"]
+                    if (len(menus) != 1 or menus[0].get("package") != PROVIDER
+                            or menus[0].get("text", "").casefold() != "unlock heptabao locally"
+                            or menus[0].get("enabled") != "true"):
+                        raise Failed("cached_popup_presentation_unrecognized")
+                    latest, latest_session, _ = self._return_snapshot("popup", original)
+                    if latest != before or latest_session != session:
+                        raise FocusUnavailable("cached_popup_changed")
+                    if username_deadline is not None and time.monotonic() >= username_deadline:
+                        raise Failed("expected_ui_missing")
+                    return {"path": "bound_popup_after_clear", "username_touch_count": 0,
+                            "late_popup_during_username_observation": late_popup,
+                            "same_fixture_wms_identity": True, "autofill_internal_session_id_observed": False}
+                if surface != (GOOD, ACTIVITY):
+                    raise Failed("cached_refocus_foreground_changed")
+                if username_deadline is None:
+                    username_deadline = time.monotonic() + 25
+                node = self._wait_cached_username(username_deadline)
+                if node is None:
+                    late_popup = True
+                    surface = AUTOFILL_POPUP
+                    continue
+                self.assert_fixture(node)
+                self._return_snapshot("fixture", original)
+                bounds = re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]", node.get("bounds", ""))
+                if (node.get("resource-id") != GOOD + ":id/login_username"
+                        or node.get("enabled") != "true" or bounds is None):
+                    raise Failed("cached_username_target_unavailable")
+                left, top, right, bottom = map(int, bounds.groups())
+                if right <= left or bottom <= top:
+                    raise Failed("cached_username_bounds_invalid")
+                if (time.monotonic_ns() - self._ui_finished_ns) / 1e6 >= 1000:
+                    raise Failed("cached_username_sample_stale")
+                if time.monotonic() >= username_deadline:
+                    raise Failed("expected_ui_missing")
+                # One ordinary touch using this fresh, bound node; no retry after
+                # uncertain input. shell() binds actual input argv to display 0.
+                self.shell("input", "tap", str((left + right) // 2), str((top + bottom) // 2))
+                return {"path": "fresh_username_touch_after_clear", "username_touch_count": 1,
+                        "late_popup_during_username_observation": False,
                         "same_fixture_wms_identity": True, "autofill_internal_session_id_observed": False}
-            if surface != (GOOD, ACTIVITY):
-                raise Failed("cached_refocus_foreground_changed")
-            node = self.wait(description="Synthetic username")
-            self.assert_fixture(node)
-            self._return_snapshot("fixture", original)
-            bounds = re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]", node.get("bounds", ""))
-            if (node.get("resource-id") != GOOD + ":id/login_username"
-                    or node.get("enabled") != "true" or bounds is None):
-                raise Failed("cached_username_target_unavailable")
-            left, top, right, bottom = map(int, bounds.groups())
-            if right <= left or bottom <= top:
-                raise Failed("cached_username_bounds_invalid")
-            if (time.monotonic_ns() - self._ui_finished_ns) / 1e6 >= 1000:
-                raise Failed("cached_username_sample_stale")
-            # One ordinary touch using this fresh, bound node; no retry after an
-            # uncertain input. shell() binds the actual input argv to display 0.
-            self.shell("input", "tap", str((left + right) // 2), str((top + bottom) // 2))
-            return {"path": "fresh_username_touch_after_clear", "username_touch_count": 1,
-                    "same_fixture_wms_identity": True, "autofill_internal_session_id_observed": False}
         except FocusUnavailable:
             raise Failed("cached_refocus_identity_unavailable") from None
 

@@ -109,11 +109,13 @@ request that has not created a challenge must not erase another request's
 pending authorization; conversely, its own pending challenge or handoff must
 be invalidated on failure. Inspect scheduler failure, replaced requests,
 cancellation races and handoff ownership together. The paired host regression
-uses controlled Android stubs. The real r13 login observation and failed r14
-return-UI observation retain separate phone results; neither supplies the
-uncompleted twelve-case refusal profile. Closed diagnostic fields and previous
-global decisions must not become authorization inputs or be treated as causal
-request identity.
+uses controlled Android stubs. The real r13 login observation, failed r14
+return-UI observation and r15's seven passes before its cancellation-cause
+failure retain separate phone results; none supplies a completed twelve-case
+refusal profile. The later cancellation check must distinguish a request's
+actual invalidation from an overwritten global status. Closed diagnostic fields
+and previous global decisions must not become authorization inputs or be
+treated as causal request identity.
 
 The Passkey preview needs browser-independent native caller verification,
 one-time selection tickets, exact final-request binding, UP/UV semantics,

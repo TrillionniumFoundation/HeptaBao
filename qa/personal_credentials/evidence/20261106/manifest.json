@@ -1548,9 +1548,15 @@
     },
     {
       "file": "android-autofill-followup-public-evidence.tar.gz",
-      "sha256": "55d4ae9e35db36e834c0f9aad7f3d73ca709f8698bd8d82ba688a8b70fe8b07d",
-      "bytes": 504570,
-      "transformation": "Byte-identical c9/r13 and QA16/r14 follow-up grouping with fixed source/build, host counterexamples, original failed phone results, releases and independent root readbacks. r13 remains 4/12 and r14 remains 1/12; no combined passing denominator or production qualification."
+      "sha256": "3b9acaecf79e586559d70285cbd77b9a4953a93d92fe910f0e21d769910481d2",
+      "bytes": 945810,
+      "transformation": "Byte-identical r3 follow-up aggregate preserving its previous r2 archive, QA17 candidates and failure reproductions, actual r15 terminal/report/release, and independent root readbacks. Original c9 profiles remain separate failures: r13 4/12, r14 1/12, r15 7/12. No cancelled-case pass is inferred from diagnostic logs."
+    },
+    {
+      "file": "validation-followup-public-evidence.tar.gz",
+      "bytes": 669637,
+      "sha256": "fc0f96952cd4dfe3bd6484a8c59030efec16a76413dc09bf5481ce7a900f5636",
+      "transformation": "Original separate Linux formatting and strict Clippy execution on the unchanged repaired broker source, plus exact older-3ada GitHub observations. The full head/merge workflow was still in progress after 35 successful steps per combination at the recorded time; no complete or inherited qualification is asserted."
     }
   ]
 }

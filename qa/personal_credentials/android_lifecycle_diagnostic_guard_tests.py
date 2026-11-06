@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 
 
 DRIVER = Path(__file__).with_name("android_live.py")
-REVIEWED_QA16_NON_DIAGNOSTIC_AST = "9d311ce0be1a5529bae49bbfd057ec21f8a2c7aebf3b4a24469c3500d1b768d7"
+REVIEWED_QA17_NON_DIAGNOSTIC_AST = "efe9ae5ecfbd0091bbf528912eb5797989dfcde84a31f2143e8794d28d54949f"
 EXTERNAL_EVENTS = []
 
 
@@ -123,7 +123,7 @@ class DiagnosticFilterChecks(unittest.TestCase):
         self.assertFalse(result["log_delivery_order_is_event_order"])
         self.assertNotIn("CANARY", repr(result))
 
-    def test_all_non_diagnostic_driver_ast_and_twelve_cases_match_qa16(self):
+    def test_all_non_diagnostic_driver_ast_and_twelve_cases_match_qa17(self):
         tree = ast.parse(DRIVER.read_text())
         attrs = {"_authorization_pid", "_authorization_pid_case", "_authorization_pid_sample_ns"}
 
@@ -146,7 +146,7 @@ class DiagnosticFilterChecks(unittest.TestCase):
 
         tree = RemoveOnlyObservations().visit(tree)
         digest = hashlib.sha256(ast.dump(tree, include_attributes=False).encode()).hexdigest()
-        self.assertEqual(digest, REVIEWED_QA16_NON_DIAGNOSTIC_AST)
+        self.assertEqual(digest, REVIEWED_QA17_NON_DIAGNOSTIC_AST)
         self.assertEqual(len(driver.EXPECTED_CASES), 12)
         self.assertEqual(len(set(driver.EXPECTED_CASES)), 12)
         self.assertEqual(EXTERNAL_EVENTS, [])
