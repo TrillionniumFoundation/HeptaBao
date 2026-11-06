@@ -1,0 +1,199 @@
+{
+  "schema": "heptabao.mac-fixed-log-query-original-closure-release.r1",
+  "status": "FAIL_KNOWN_PROJECTION_NOT_QUALIFIED",
+  "rootGo": {
+    "blob": "8e3d1e1e21fb20105a959cbd928e7b61a0717bdb",
+    "bytes": 8986,
+    "sha256": "84ebb312a396cfb5639521951b1b3a8364902bdae08bb5dc0a597f1975af0012"
+  },
+  "source": {
+    "blob": "7f4821ab3e5de33849e0c92e63bdf9d1d54b44d6",
+    "bytes": 49892,
+    "sha256": "2b0945bcf77dd872172a85262ba5f4ce133b22b9bb3d62d9575630a9cbff7e89"
+  },
+  "request": {
+    "blob": "3a0afddfc2f44a180ccacb3c2fdd4114784717da",
+    "bytes": 50735,
+    "sha256": "8e5c0586388a6ce2dfa68d792c2735fa4bd09fca9bbcfbcaab75c958c32e860a"
+  },
+  "job": "1a1af3333c8-fc05-66b3",
+  "host": "mac",
+  "authority": {
+    "blob": "77792bd85dda01678e940bc622393a84cffff93b",
+    "bytes": 728,
+    "sha256": "a81983d0d2dc9a9f92b8386b8af521588182fbece9dfff53eccad41d4e52ffdd"
+  },
+  "exit": 1,
+  "full": true,
+  "durable": true,
+  "terminalPublicationConfirmed": true,
+  "stdout": {
+    "blob": "9192b9104866148e823721ff5ca3e7a639419e49",
+    "bytes": 3534,
+    "sha256": "00002e40048299fa117f95424a8e326ba776139ff5c79e800d6323fbd1361370"
+  },
+  "stderrBytes": 0,
+  "observedFailure": {
+    "code": "one_log_message_semantics",
+    "type": "HelpRefused"
+  },
+  "queryExecuted": true,
+  "actualChild": {
+    "exitCode": 0,
+    "stdoutBytes": 817,
+    "stderrBytes": 0,
+    "completeBeforeDeadline": true,
+    "elapsedSeconds": 2.1743342499248683
+  },
+  "projectionQualified": false,
+  "unknownLogTextOrHashPublished": false,
+  "actualMessageKeyTypeOrConflictNotDistinguished": true,
+  "toolCurrentWhole": {
+    "bytes": 807536,
+    "execByPathIsNotAtomicExecByFd": true,
+    "sameHeldFileRetainedThroughChildCleanup": true,
+    "sha256": "2fa7b04615546f0964dd1ddedab04a07e3e026f76959e7f44cbd30bfa48a5974",
+    "wholeCurrentFileObserved": true
+  },
+  "closure": {
+    "allApplicationDescriptorsClosed": true,
+    "applicationDescriptorRows": 4,
+    "allOwnedLogChildrenClosed": true,
+    "commands": {
+      "allOwnedCommandsStopped": true,
+      "commands": [
+        {
+          "argv": [
+            "/usr/bin/log",
+            "show",
+            "--start",
+            "2026-11-06 00:45:18+0000",
+            "--end",
+            "2026-11-06 00:45:21+0000",
+            "--style",
+            "ndjson",
+            "--predicate",
+            "process = \"launchd\" AND message CONTAINS \"org.heptabao.qa.mac-authbus-4e808-owner-r1.server\"",
+            "--info",
+            "--debug",
+            "--no-pager"
+          ],
+          "cleanup": {
+            "allGroupRowsEmptyAfterReap": true,
+            "cleanupCaps": {
+              "group": 3,
+              "psMax": 4,
+              "term": 1,
+              "wait": 5
+            },
+            "custody": {
+              "captured_exit": null,
+              "ps": {
+                "pgid": 56140,
+                "pid": 56140,
+                "ppid": 56133,
+                "start": "Fri Nov  6 12:52:14 2026    ",
+                "uid": 501
+              },
+              "sid_observed_while_live": 56140
+            },
+            "directChildReaped": true,
+            "elapsedSeconds": 0.049700125120580196,
+            "exitCode": 0,
+            "initialLiveGroup": [],
+            "ok": true,
+            "outcomeUnknown": false,
+            "ownedLiveGroupEmptyBeforeReap": true,
+            "pgid": 56140,
+            "pid": 56140,
+            "postReapSignalSent": false,
+            "remainingGroupRows": [],
+            "retainedExit": {
+              "code": 1,
+              "pid": 56140,
+              "signo": 20,
+              "status": 0
+            },
+            "signals": [],
+            "stopAttempted": true
+          },
+          "commandDeadlineMonotonic": 2826590.848588541,
+          "completeBeforeDeadline": true,
+          "elapsedSeconds": 2.1743342499248683,
+          "errorCode": null,
+          "errorType": null,
+          "exitCode": 0,
+          "label": "fixed-owned-label-three-second-log",
+          "outcomeUnknown": false,
+          "pid": 56140,
+          "stderrBytes": 0,
+          "stdoutBytes": 817,
+          "streamsClosed": true
+        }
+      ],
+      "unknownCommandCount": 0
+    },
+    "pendingSignalAfterRestore": null,
+    "closeErrors": [],
+    "signalRestoreErrors": [],
+    "deadlineMetAfterClosure": true,
+    "elapsedSeconds": 2.1830725828185678,
+    "metadataCalls": 32
+  },
+  "originalObservers": [
+    {
+      "id": "f477101741cebdd0d47cbe0be3d74c89258fc5fa53e46568fdf30a4f83fd41db",
+      "tool": "process_status",
+      "payload": {
+        "blob": "1fd057a28908c3954039aba65b223c8aee6c0abe",
+        "bytes": 907,
+        "sha256": "5ce213ac510a7650ca8acbefa1d8193c67edc0f106799af2c8c9f6db2208b27e"
+      },
+      "payloadTree": "408dc129b418326d7b2761c772124b19e4dd8a04",
+      "nativeText": {
+        "blob": "77792bd85dda01678e940bc622393a84cffff93b",
+        "bytes": 728,
+        "sha256": "a81983d0d2dc9a9f92b8386b8af521588182fbece9dfff53eccad41d4e52ffdd"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "59f71c6619e45b0b254490577a7dd71b39ed324bc7bf1f802ceb19f51a4f4b97",
+      "tool": "process_read",
+      "payload": {
+        "blob": "a10d2d65d2deea00117d1a0fb44241347ad3e7c6",
+        "bytes": 12249,
+        "sha256": "626876a0974f96085d826f468a80883699a84021ceefcd505487ca784631b3b7"
+      },
+      "payloadTree": "2fd5a6075c9ebdfb86eb1ef4ce787070c1cf4e8c",
+      "nativeText": {
+        "blob": "e63dba256039e1e19c3fdfb87b3263fbff21bbb9",
+        "bytes": 11320,
+        "sha256": "8f19a5bc0ef30326733f8f3b8f00d3a9684911b501ca0b9367ea7b72872c24fd"
+      },
+      "pages": 2,
+      "completedInactive": true
+    }
+  ],
+  "nativeCalls": 8,
+  "immutablePages": 3,
+  "callInFlight": false,
+  "activeNativeFutures": 0,
+  "pending": null,
+  "activeObserver": null,
+  "paused": false,
+  "laneAReleased": true,
+  "noReplay": true,
+  "noNewQuery": true,
+  "noScopeExpansion": true,
+  "historicalUnknowns": {
+    "oldRegistration": "NOT_CLOSED",
+    "lineage": "NOT_QUALIFIED",
+    "oldGit8916": "UNKNOWN"
+  },
+  "startupCauseQualified": false,
+  "cleanupAuthorized": false,
+  "sdkExecuted": false,
+  "privateCapsuleRead": false
+}

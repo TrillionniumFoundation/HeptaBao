@@ -1,0 +1,10 @@
+{
+  "schema": "heptabao.cli-phaseb-aggregate-Git-only-recovery.v1",
+  "oldExpectedTree": "75ff6983c667aa524100e19258693f7e0bf1b982",
+  "oldCreate": "UNKNOWN; original 422 timeout preserved; never repeated",
+  "readonlyReconcile": "one exact expected-tree read returned 422 invalid object; does not prove no create or partial effect",
+  "newPlan": "Build new grouped immutable call subtrees, with different final layout including this error record; original bytes and Native qualifications unchanged",
+  "nativeCalls": 0,
+  "release": "29ae92c85c5b8e67a45862f46d71476642090471",
+  "wholeReport": "0b2edd60185b80817c3c7f1378b914ae914ab21e"
+}

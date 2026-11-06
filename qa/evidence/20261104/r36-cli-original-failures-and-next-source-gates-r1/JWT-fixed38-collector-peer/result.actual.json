@@ -1,0 +1,122 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "source_exact",
+      "passed": true
+    },
+    {
+      "name": "fixed38",
+      "passed": true
+    },
+    {
+      "name": "input_bytes",
+      "passed": true
+    },
+    {
+      "name": "original_shared_read_cap",
+      "passed": true
+    },
+    {
+      "name": "literal_rows_equal_fixed_inputs",
+      "passed": true
+    },
+    {
+      "name": "prior_full9_only_two",
+      "passed": true
+    },
+    {
+      "name": "request_source_exact",
+      "passed": true
+    },
+    {
+      "name": "unique_journal_literal:const GF_SLOT = \"jwt_e3af_rog_fo",
+      "passed": true
+    },
+    {
+      "name": "unique_journal_literal:const GF_REQUEST = {blob:\"0ec62f",
+      "passed": true
+    },
+    {
+      "name": "unique_journal_literal:/^heptabao-native-jwt-e3afc157-f",
+      "passed": true
+    },
+    {
+      "name": "only_three_journal_replacements",
+      "passed": true
+    },
+    {
+      "name": "journal_forward_strict",
+      "passed": true
+    },
+    {
+      "name": "journal_reverse_strict",
+      "passed": true
+    },
+    {
+      "name": "ledger_before_open_and_postcheck",
+      "passed": true
+    },
+    {
+      "name": "signal_only_marks",
+      "passed": true
+    },
+    {
+      "name": "once_close_before_os_close",
+      "passed": true
+    },
+    {
+      "name": "failure_close_ledger_in_finally",
+      "passed": true
+    },
+    {
+      "name": "returned_bytes_accounted_before_postcheck",
+      "passed": true
+    },
+    {
+      "name": "full9_input_and_single_link",
+      "passed": true
+    },
+    {
+      "name": "report_readback_uses_same_counter",
+      "passed": true
+    },
+    {
+      "name": "inputs_close_before_publish",
+      "passed": true
+    },
+    {
+      "name": "report_create_only",
+      "passed": true
+    },
+    {
+      "name": "actual_bidirectional_reconstruction",
+      "passed": true
+    },
+    {
+      "name": "postclosure_success_predicate",
+      "passed": true
+    },
+    {
+      "name": "success_read_calls_fit256",
+      "passed": true
+    },
+    {
+      "name": "success_bytes_with_report_fit_shared_cap",
+      "passed": true
+    },
+    {
+      "name": "acquisitions_and_peak",
+      "passed": true
+    }
+  ],
+  "checkCount": 27,
+  "originalSource": "6346d622e31526522459ae4c1a2cdc858369d2ed",
+  "sourceReadLines": 609,
+  "theoreticalSuccessfulReadCallsIncludingMaxReport": 129,
+  "pythonExecuted": false,
+  "pythonCompiled": false,
+  "authorCheckerRun": false,
+  "runtimeCalls": 0,
+  "sourceOnly": true
+}

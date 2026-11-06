@@ -1,0 +1,323 @@
+{
+  "schema": "heptabao.native-snapshot-standby-binary-forwarding.source-proposal.v1",
+  "status": "ARCHITECTURE_ONLY_NOT_IMPLEMENTED",
+  "author": "compatibility_audit",
+  "candidateBaseline": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255"
+  },
+  "actualFailureSource": {
+    "blob": "0b2edd60185b80817c3c7f1378b914ae914ab21e",
+    "bytes": 848065,
+    "sha256": "d5c691d23b513a2a63916792bbe21178e2b34799e6adbd20ddf88cdf6147bc48"
+  },
+  "actualAggregateTree": "871aa23bfee256e91247fbb7e6d42c4cb82d181d",
+  "scopes": {
+    "runtimeCalls": 0,
+    "productionEdits": 0,
+    "candidateCommitCreated": false,
+    "componentExecutions": 0,
+    "releaseBuilds": 0,
+    "endpointAllowlist": [
+      "GET sys/storage/raft/snapshot",
+      "HEAD sys/storage/raft/snapshot",
+      "POST sys/storage/raft/snapshot",
+      "PUT sys/storage/raft/snapshot",
+      "POST sys/storage/raft/snapshot-force",
+      "PUT sys/storage/raft/snapshot-force"
+    ],
+    "queryScope": "Only the existing empty-query save/restore forms enter the new stream profile. Existing inspect/cancel pending restore, snapshot-repair, lossless-export and native-large remain on their existing explicit paths.",
+    "forceSemantics": "Preserve existing same-seal/native restore rules and cross-seal rejection. No new force acceptance; B05 continues with no force flag.",
+    "oldEvidenceImmutable": true,
+    "oldBusinessReplay": false,
+    "officialClientModified": false,
+    "ordinaryForwardingWireUnchanged": true,
+    "noRuntimeAuthorization": true,
+    "noImplementedProtocolClaim": true
+  },
+  "sourceFindings": [
+    {
+      "id": "S01",
+      "claim": "Standby native snapshot currently returns an audited trusted-origin 307 before actor admission or body staging.",
+      "source": "service_snapshot_transfer.rs",
+      "lines": [
+        374,
+        485
+      ]
+    },
+    {
+      "id": "S02",
+      "claim": "Official v2.7.1 httpRequestWithContext performs a second Do but returns the first Response; ResetJSONBody does not rewind a body without BodyBytes.",
+      "sources": [
+        "official/api/client.go:1707-1765",
+        "official/api/request.go:59-89"
+      ]
+    },
+    {
+      "id": "S03",
+      "claim": "Existing ordinary forward completion response digest covers JSON Response and headers, not external file bytes.",
+      "source": "ha_forward_completion.rs",
+      "lines": [
+        194,
+        225
+      ]
+    },
+    {
+      "id": "S04",
+      "claim": "AuthenticatedPeerFrame and its callback currently require a bounded complete Vec request/response, so they cannot stream an archive by changing only a route.",
+      "source": "ha-service/authenticated_peer_frame.rs",
+      "lines": [
+        6,
+        150
+      ]
+    },
+    {
+      "id": "S05",
+      "claim": "Snapshot source and historical restore have distinct owner/final audit rules; restore uses the retained original Auth and newly committed epoch.",
+      "sources": [
+        "service_snapshot_v6_ha.rs:197-309",
+        "service_snapshot_v6_ha_restore.rs:772-904"
+      ]
+    },
+    {
+      "id": "S06",
+      "claim": "Current H2 snapshot ingress collects a body up to 32 MiB before the native logical pipeline; this proposal does not remove that existing bound.",
+      "source": "http_h2.rs",
+      "lines": [
+        174,
+        283
+      ]
+    },
+    {
+      "id": "S07",
+      "claim": "No-forward preference is an original-ingress-bound routing preference; any first nonempty header value including false or 0 disables forwarding.",
+      "source": "request_metadata_local_redirect.rs",
+      "lines": [
+        32,
+        98
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D01",
+      "decision": "Extend only default native snapshot standby handling with a typed affine forwarding plan; direct leader execution retains the current native plan and finalization."
+    },
+    {
+      "id": "D02",
+      "decision": "Use the configured cluster peer endpoint and enrolled peer identity. Do not proxy arbitrary API origins or trust client/SDK Location/Host as a peer endpoint."
+    },
+    {
+      "id": "D03",
+      "decision": "One peer connection, one logical admission, one transfer, one final response. Leader change or unsupported peer profile never causes a second target/attempt or redirect fallback."
+    },
+    {
+      "id": "D04",
+      "decision": "Explicit source/target/cluster/hop binding and exact selected server certificate pin are verified before forwarding token, certificate metadata or archive bytes."
+    },
+    {
+      "id": "D05",
+      "decision": "Receiver independently admits original token/namespace/policy once; standby performs no second finite-use persistence. A valid peer is not the end-user Actor."
+    },
+    {
+      "id": "D06",
+      "decision": "Add an authenticated bounded stream branch to the peer transport. Keep the old full-frame branch and limits byte-for-byte equivalent where untouched."
+    },
+    {
+      "id": "D07",
+      "decision": "Use a dedicated binary completion descriptor and snapshot completion variants. Never append a file to an otherwise valid ordinary JSON receipt."
+    },
+    {
+      "id": "D08",
+      "decision": "Hold downloaded bytes in a private unlinked SnapshotFile until full peer termination, descriptor/hash proof, local owner/catch-up and terminal audit gates have succeeded. Do not emit a success HTTP head early."
+    },
+    {
+      "id": "D09",
+      "decision": "Preserve explicit original-ingress no-forward preference as trusted 307. Preserve unsupported/nonempty-query paths on their existing explicit behavior."
+    }
+  ],
+  "transport": {
+    "direction": "one enrolled standby -> one configured elected leader, response returns over the same authenticated connection",
+    "negotiation": "An explicit native snapshot stream profile. Unknown/version mismatch is a terminal rejection; no fallback or retransmission.",
+    "authenticationBeforeSecrets": [
+      "CA chain and configured peer server name",
+      "strict existing Raft ALPN",
+      "selected target enrolled server leaf pin under existing accepted rotation policy",
+      "receiver maps actual authenticated client leaf to source NodeId",
+      "cluster/direction/source/target/hop=1 all match actual authenticated and local identities"
+    ],
+    "prelude": [
+      "version/profile, fresh nonce, cluster, source and target",
+      "method, exact canonical route and admitted query data",
+      "original namespace/token/wrap TTL/origin/certificate/logical metadata using existing per-field validation",
+      "declared upload length when the original HTTP framing makes it available; absence does not remove the archive cap",
+      "relative remaining allowance clamped to receiver original accept-origin deadline; no cross-host Instant serialization"
+    ],
+    "preludeAndTerminalMetadataMaxBytes": 1048576,
+    "bodyFrame": {
+      "maxPayloadBytes": 65536,
+      "requireFullNonFinalChunks": true,
+      "monotonicSequence": true,
+      "checkedTotalAddition": true,
+      "mandatoryEnd": true,
+      "allowImplicitSocketEOF": false,
+      "endFields": [
+        "frame_count",
+        "total_bytes",
+        "sha256"
+      ],
+      "oneTransferOnly": true,
+      "noTrailingFrames": true
+    },
+    "requestBinding": "Domain-separated canonical prelude digest plus final verified upload count/digest (zero for download). A nonce permits prelude admission, but final completion cannot be minted until the exact body END is verified.",
+    "hashPurpose": "Integrity and exact response/request binding inside mutually authenticated custody; a hash alone grants no Actor, storage or retry authority.",
+    "uploadFlow": [
+      "authenticated prelude",
+      "leader native actor admission exactly once",
+      "explicit admitted/rejected reply",
+      "single original body reader -> bounded peer chunks",
+      "receiver END/count/SHA verified before native import can see EOF",
+      "original native restore finalization and audit",
+      "dedicated completed response or preserved reconciliation outcome"
+    ],
+    "downloadFlow": [
+      "authenticated prelude",
+      "leader native actor admission exactly once",
+      "original native snapshot generation into held SnapshotFile",
+      "original native source/final audit gate plus bound descriptor",
+      "bounded peer file transfer",
+      "standby whole file/END/digest/receipt gate",
+      "local authenticated catch-up and final delivery audit",
+      "original HTTP writer receives the held file"
+    ],
+    "emptyBodyAndHead": "HEAD binds the same status/representation descriptor without transmitting body bytes; illegal request bodies and upload/response direction mismatches are rejected.",
+    "earlyRejection": "A peer can reject before accepting upload; the ingress never starts a second upload or drains an unbounded rejected body. Existing HTTP close/error handling remains bounded.",
+    "noEffectInference": "After original metadata is sent, transport failure may include Actor/token-use persistence or restore effects; absent an authenticated completed outcome never means no effect."
+  },
+  "completion": {
+    "ordinaryJSONDigestUnchanged": true,
+    "proposedTypes": [
+      "SnapshotForwardPlan",
+      "AuthenticatedSnapshotStream",
+      "VerifiedSnapshotBodyEnd",
+      "CompletedSnapshotReceipt"
+    ],
+    "descriptorFields": [
+      "profile/domain",
+      "request_nonce",
+      "final_request_digest",
+      "cluster",
+      "source",
+      "target",
+      "method",
+      "route",
+      "namespace_binding",
+      "response_status",
+      "semantic_response_headers",
+      "body_kind",
+      "representation_length",
+      "transferred_length",
+      "body_sha256"
+    ],
+    "commonPublicationFields": [
+      "StateIdentity",
+      "clock_floor",
+      "precise_clock_flag",
+      "response_audit_sequence_and_MAC",
+      "committed_application_prefix",
+      "applied_index",
+      "owner_projection",
+      "domain_separated_publication_MAC"
+    ],
+    "variants": {
+      "download": "Only existing complete_native_ha_snapshot_delivery success may mint DownloadCompleted. Bind exported root/generation separately from the allowed observation-only terminal successor, plus exact archive descriptor.",
+      "restore": "Only existing complete_native_ha_historical_delivery success may mint HistoricalRestoreCompleted. Bind original admission identity and Actor witness/authorization provenance, operation digest, committed restored root/epoch and actual terminal successor. This proof authorizes only delivery of this completed response, never re-upload, re-publish, a new current read, or a new Actor.",
+      "rejection": "Bounded authenticated terminal rejection must retain exact native error semantics. A rejection receipt does not certify successful transfer or no previous admission effect.",
+      "uncertain": "Retain native recovery_reference/root_attempted/retry_allowed=false where produced; missing final proof or delivery veto cannot become success."
+    },
+    "nativePlanLifetime": "Do not drop or consume the original SnapshotTransferPlan/NativeHaReadProof/NativeHaHistoricalReceipt before completion fields are minted after existing owner/audit/clock checks.",
+    "currentActorCaution": "Historical restore intentionally checks retained original Auth and an actual new activation/epoch. Do not mechanically substitute current-restored-Auth ordinary forwarding checks or compare a rotated legitimate owner to the pre-restore owner.",
+    "ingressDelivery": "Verify current HA Arc, authenticated committed prefix and publication MAC, then catch up under the original deadline and actual local seal/barrier owner. Capture the new local delivery capsule only after verified installation. Preserve pre-audit and post-audit veto checks; discard held response on failure.",
+    "localTransitionProof": "A historical restore receipt must prove the specific old-to-new publication from the leader's existing typed receipt. Local catch-up does not re-run restore or consume the token again; unrelated owner changes continue to veto.",
+    "noWeakening": "No boolean OR accepting either legacy/current Actor; no unsigned archive descriptor; no unauthenticated response used as completion; no reuse of old generic completion constructor for a file."
+  },
+  "ownership": {
+    "noServiceWriterAcrossNetworkIO": true,
+    "noHaControlGuardAcrossStreamIO": true,
+    "receiverWorkers": "Use existing actual peer OS-thread worker and forwarding-slot capacity, retain the permit through final transfer/flush/drop. Do not consume reserved ReadIndex/root-pull/native slots or spawn an unowned thread.",
+    "ingressWorkers": "Keep existing H1 worker/H2 outer spawn_blocking + scoped plain worker and original deadline. No join on the reactor and no detached archive task.",
+    "spool": "Reuse SnapshotSpool/SnapshotLease and immediately unlinked descriptor-backed SnapshotFile. Existing single busy lease is per Service, not a global 16/32 claim. Bind any new standby spool ownership to the affine forwarding plan.",
+    "cancellation": "Peer close, reset, cancellation, panic or deadline drops the unique transport/file/lease and retains uncertain-effect classification after admission. Slot release waits for actual worker termination, not only awaiter cancellation.",
+    "emittedBytes": "Gate before first success response byte; already emitted bytes cannot be recalled. Subsequent write/close failure does not grant retry or reclassify remote effects."
+  },
+  "limits": {
+    "maxForwardMetadataBytes": 1048576,
+    "proposedChunkPayloadBytes": 65536,
+    "maxNativeStateBytes": 136314880,
+    "maxV6SnapshotStateBytes": 1210322980,
+    "maxV6HASnapshotStateBytes": 2487754824,
+    "maxNativeArchiveWithCurrentNativeHAFeatures": 2488803400,
+    "currentHttp2SnapshotBodyBytes": 33554432,
+    "proposedMaximumDataFrames": 37977,
+    "archiveLimitExpression": "MAX_NATIVE_ARCHIVE = MAX_SNAPSHOT_ENTRY + 1024*1024; use original feature-dependent typed constant, no larger limit",
+    "memory": "O(65536 + existing bounded metadata + fixed TLS buffer), no archive-sized Vec/base64",
+    "disk": "At most one additional archive-sized held spool at the standby for a download, subject to the existing per-Service lease and actual configured concurrency",
+    "time": "Ingress original absolute request deadline clipped by existing configured forward_timeout; receiver deadline begins at actual TCP admission and clips again to smaller received remaining allowance. Every read/write/hash/spool/catch-up/audit uses the same decreasing deadline.",
+    "noRaisedBudget": true,
+    "noPerChunkDeadlineReset": true,
+    "noGlobalConcurrencyClaim": true,
+    "noNewProductQualification": true
+  },
+  "proposedCodeSeams": [
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "change": "Add typed standby Forward admission for the allowlist; preserve direct Execute, explicit Redirect, native plan and error semantics."
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot.rs",
+      "change": "Dispatch the new affine Forward plan using the original body reader/deadline; hand only finalized Json/File back to existing writers."
+    },
+    {
+      "path": "crates/heptabao-server/src/ha.rs",
+      "change": "Capture configured endpoint and exact pin under short control custody; register a dedicated snapshot stream handler and retain existing forwarding permits; no leader chase."
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/authenticated_peer_frame.rs and a new bounded snapshot stream module",
+      "change": "Add explicit authenticated stream branch/capability without exposing an unauthenticated raw stream or altering old frame profiles."
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_forward_completion.rs plus dedicated snapshot-completion module",
+      "change": "Share unchanged publication primitives only where their byte semantics remain valid; add distinct binary descriptor/domain/variants rather than widening ordinary response_digest."
+    },
+    {
+      "path": "crates/heptabao-server/src/service_forward_delivery.rs plus dedicated snapshot-delivery module",
+      "change": "Reuse the existing authenticated-prefix/catch-up/fence model with separate historical-restore semantics, never manufacture a replacement original Actor."
+    },
+    {
+      "path": "crates/heptabao-server/src/http.rs",
+      "change": "Register the weak Service snapshot handler; preserve HTTP parsing and H2 worker setup."
+    }
+  ],
+  "futureValidation": {
+    "testsNotYetWrittenOrExecuted": true,
+    "necessaryComponents": [
+      "Wrong pin/ALPN/source/target/cluster/hop rejects before protected bytes or native admission; exact valid peer is accepted.",
+      "Original finite-use Actor admitted once; namespace/policy rejection and original no-forward preference retain behavior.",
+      "Default save and upload cross the old 1 MiB ordinary-frame size using fixed chunks, exact END/count/hash and no whole-archive Vec.",
+      "Truncated body, mismatched final digest/count, extra frame, expired original deadline and transport cancellation never publish a successful completion or leak custody.",
+      "Download or historical restore final owner/clock/audit veto prevents a success delivery; a committed-but-undelivered restore retains reconciliation and retry prohibition.",
+      "Historical restore with legitimate epoch/Auth replacement exercises its original-Actor completion variant; old generic current-Actor shortcut is not accepted.",
+      "Leader changes before admission or during original finalization cause one terminal attempt; no implicit redirect/retry.",
+      "Original H1 and H2 current input-boundary behavior remains; no assertion of larger H2 streaming support."
+    ],
+    "fixtureDelta": "Version only the audit topology classifier to distinguish exact ingress+leader forwarded terminal pairs from a single direct pair and the old 307 pattern. Keep all CLI invocations, no manual redirect/retry, B04 exit0+valid archive+known200 and B05 exit0+known200/204+exact all-node baseline plus original cold-restart checks.",
+    "actualQualificationRequired": "New reviewed source, fresh normal candidate/binaries and exact authorized fresh PhaseB B01-B05; independent H2 and larger archive evidence remain separate. Existing 4e results are not transferred to a successor.",
+    "noNewCaseCountCredit": true
+  },
+  "unresolvedImplementationProofs": [
+    "Concrete API for stream dispatch must not expose the TLS socket outside authenticated private ownership or bypass reserved worker capacity.",
+    "Exact terminal binary publication format and the historical-restore original-Actor/epoch variant require source review before code.",
+    "The follower's allowed owner transition during authenticated historical catch-up must be tied to the exact published operation, not an arbitrary current owner replacement.",
+    "The new fixture audit association needs explicit versioned topology and, if introduced, a closed nonsecret forward correlation field. It must not invent a request identity from adjacent logs."
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.binary-forwarding-completion-peer-references.v1",
+  "sources": [
+    {
+      "name": "completion",
+      "blob": "ba0306a44de2c507e251241e6c443151549ef7d1",
+      "bytes": 29836,
+      "sha256": "4bd82380b247cc51fc72f97400fdc8b7b7336e4c6c9749f6617fa28c1128d2ce"
+    },
+    {
+      "name": "delivery",
+      "blob": "3203475bf2d08dde01570b8fe473e6343cdc4c4f",
+      "bytes": 28987,
+      "sha256": "8581fa455395fcdf3933e67360c677d2f53bdcefa8c86c4199d6c7948cad5e26"
+    }
+  ],
+  "runtime_calls": 0,
+  "full_new_candidate_reviewed": false
+}

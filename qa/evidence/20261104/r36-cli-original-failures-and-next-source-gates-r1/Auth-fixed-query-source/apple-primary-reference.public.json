@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.fixed-log-query.apple-primary-reference.r1",
+  "url": "https://developer.apple.com/videos/play/wwdc2022/10119/",
+  "title": "Optimize your use of Core Data and CloudKit — WWDC22 session 10119",
+  "fetchedSourceRefs": [
+    "turn48view1",
+    "turn49view0",
+    "turn49view1"
+  ],
+  "sectionTime": "24:36",
+  "sectionTitle": "Display logs with log show",
+  "sourceLineWindow": [
+    481,
+    486
+  ],
+  "quotedCodeFile": "apple-primary-code-window.txt",
+  "use": "Primary Apple example documents process/message fields, predicate composition, and an explicit start/end log show query. The exact installed executable's accepted flags and date format are separately established by actual.help.txt.",
+  "limits": "This code sample does not prove installed NDJSON row schema, retained log presence, this QA label's cause, or that an empty result implies absence. No tool help or log query has been rerun for this reference."
+}

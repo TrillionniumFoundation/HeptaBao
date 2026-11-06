@@ -1,0 +1,667 @@
+{
+  "schema": "heptabao.source-reference-only-checks.v1",
+  "checks": [
+    {
+      "id": "raw:root",
+      "passed": true
+    },
+    {
+      "id": "direct_merkle:root",
+      "passed": true
+    },
+    {
+      "id": "raw:crates",
+      "passed": true
+    },
+    {
+      "id": "direct_merkle:crates",
+      "passed": true
+    },
+    {
+      "id": "raw:server",
+      "passed": true
+    },
+    {
+      "id": "direct_merkle:server",
+      "passed": true
+    },
+    {
+      "id": "raw:src",
+      "passed": true
+    },
+    {
+      "id": "direct_merkle:src",
+      "passed": true
+    },
+    {
+      "id": "raw:haService",
+      "passed": true
+    },
+    {
+      "id": "direct_merkle:haService",
+      "passed": true
+    },
+    {
+      "id": "root",
+      "passed": true
+    },
+    {
+      "id": "root_crates",
+      "passed": true
+    },
+    {
+      "id": "crates_server",
+      "passed": true
+    },
+    {
+      "id": "server_src",
+      "passed": true
+    },
+    {
+      "id": "crates_ha",
+      "passed": true
+    },
+    {
+      "id": "source_present:official/api/client.go",
+      "passed": true
+    },
+    {
+      "id": "whole:official/api/client.go",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:official/api/client.go:375",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:official/api/client.go:375",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:official/api/client.go:1707",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:official/api/client.go:1707",
+      "passed": true
+    },
+    {
+      "id": "source_present:official/api/sys_raft.go",
+      "passed": true
+    },
+    {
+      "id": "whole:official/api/sys_raft.go",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:official/api/sys_raft.go:169",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:official/api/sys_raft.go:169",
+      "passed": true
+    },
+    {
+      "id": "source_present:official/api/request.go",
+      "passed": true
+    },
+    {
+      "id": "whole:official/api/request.go",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:official/api/request.go:59",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:official/api/request.go:59",
+      "passed": true
+    },
+    {
+      "id": "member:product/service_snapshot_transfer.rs",
+      "passed": true
+    },
+    {
+      "id": "source_present:product/service_snapshot_transfer.rs",
+      "passed": true
+    },
+    {
+      "id": "whole:product/service_snapshot_transfer.rs",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/service_snapshot_transfer.rs:374",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/service_snapshot_transfer.rs:374",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/service_snapshot_transfer.rs:487",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/service_snapshot_transfer.rs:487",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/service_snapshot_transfer.rs:723",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/service_snapshot_transfer.rs:723",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/service_snapshot_transfer.rs:845",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/service_snapshot_transfer.rs:845",
+      "passed": true
+    },
+    {
+      "id": "member:product/http_snapshot.rs",
+      "passed": true
+    },
+    {
+      "id": "source_present:product/http_snapshot.rs",
+      "passed": true
+    },
+    {
+      "id": "whole:product/http_snapshot.rs",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/http_snapshot.rs:56",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/http_snapshot.rs:56",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/http_snapshot.rs:338",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/http_snapshot.rs:338",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/http_snapshot.rs:399",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/http_snapshot.rs:399",
+      "passed": true
+    },
+    {
+      "id": "member:product/ha.rs",
+      "passed": true
+    },
+    {
+      "id": "source_present:product/ha.rs",
+      "passed": true
+    },
+    {
+      "id": "whole:product/ha.rs",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/ha.rs:110",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/ha.rs:110",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/ha.rs:679",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/ha.rs:679",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/ha.rs:990",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/ha.rs:990",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/ha.rs:1457",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/ha.rs:1457",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/ha.rs:1591",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/ha.rs:1591",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/ha.rs:788",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/ha.rs:788",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/ha.rs:917",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/ha.rs:917",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/ha.rs:2822",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/ha.rs:2822",
+      "passed": true
+    },
+    {
+      "id": "member:product/ha_forward.rs",
+      "passed": true
+    },
+    {
+      "id": "source_present:product/ha_forward.rs",
+      "passed": true
+    },
+    {
+      "id": "whole:product/ha_forward.rs",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/ha_forward.rs:42",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/ha_forward.rs:42",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/ha_forward.rs:1388",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/ha_forward.rs:1388",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/ha_forward.rs:1500",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/ha_forward.rs:1500",
+      "passed": true
+    },
+    {
+      "id": "member:product/ha_forward_completion.rs",
+      "passed": true
+    },
+    {
+      "id": "source_present:product/ha_forward_completion.rs",
+      "passed": true
+    },
+    {
+      "id": "whole:product/ha_forward_completion.rs",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/ha_forward_completion.rs:19",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/ha_forward_completion.rs:19",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/ha_forward_completion.rs:75",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/ha_forward_completion.rs:75",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/ha_forward_completion.rs:194",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/ha_forward_completion.rs:194",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/ha_forward_completion.rs:373",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/ha_forward_completion.rs:373",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/ha_forward_completion.rs:656",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/ha_forward_completion.rs:656",
+      "passed": true
+    },
+    {
+      "id": "member:product/service_forward_delivery.rs",
+      "passed": true
+    },
+    {
+      "id": "source_present:product/service_forward_delivery.rs",
+      "passed": true
+    },
+    {
+      "id": "whole:product/service_forward_delivery.rs",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/service_forward_delivery.rs:217",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/service_forward_delivery.rs:217",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/service_forward_delivery.rs:287",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/service_forward_delivery.rs:287",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/service_forward_delivery.rs:508",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/service_forward_delivery.rs:508",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/service_forward_delivery.rs:576",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/service_forward_delivery.rs:576",
+      "passed": true
+    },
+    {
+      "id": "member:product/http.rs",
+      "passed": true
+    },
+    {
+      "id": "source_present:product/http.rs",
+      "passed": true
+    },
+    {
+      "id": "whole:product/http.rs",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/http.rs:148",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/http.rs:148",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/http.rs:642",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/http.rs:642",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/http.rs:1023",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/http.rs:1023",
+      "passed": true
+    },
+    {
+      "id": "member:product/http_h2.rs",
+      "passed": true
+    },
+    {
+      "id": "source_present:product/http_h2.rs",
+      "passed": true
+    },
+    {
+      "id": "whole:product/http_h2.rs",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/http_h2.rs:174",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/http_h2.rs:174",
+      "passed": true
+    },
+    {
+      "id": "member:product/snapshot_file.rs",
+      "passed": true
+    },
+    {
+      "id": "source_present:product/snapshot_file.rs",
+      "passed": true
+    },
+    {
+      "id": "whole:product/snapshot_file.rs",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/snapshot_file.rs:22",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/snapshot_file.rs:22",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/snapshot_file.rs:203",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/snapshot_file.rs:203",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/snapshot_file.rs:281",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/snapshot_file.rs:281",
+      "passed": true
+    },
+    {
+      "id": "member:ha-service/authenticated_peer_frame.rs",
+      "passed": true
+    },
+    {
+      "id": "source_present:ha-service/authenticated_peer_frame.rs",
+      "passed": true
+    },
+    {
+      "id": "whole:ha-service/authenticated_peer_frame.rs",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:ha-service/authenticated_peer_frame.rs:6",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:ha-service/authenticated_peer_frame.rs:6",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:ha-service/authenticated_peer_frame.rs:51",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:ha-service/authenticated_peer_frame.rs:51",
+      "passed": true
+    },
+    {
+      "id": "member:ha-service/lib.rs",
+      "passed": true
+    },
+    {
+      "id": "source_present:ha-service/lib.rs",
+      "passed": true
+    },
+    {
+      "id": "whole:ha-service/lib.rs",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:ha-service/lib.rs:754",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:ha-service/lib.rs:754",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:ha-service/lib.rs:828",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:ha-service/lib.rs:828",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:ha-service/lib.rs:918",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:ha-service/lib.rs:918",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:ha-service/lib.rs:1213",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:ha-service/lib.rs:1213",
+      "passed": true
+    },
+    {
+      "id": "source_present:qa/phaseb_controller_r3.py",
+      "passed": true
+    },
+    {
+      "id": "whole:qa/phaseb_controller_r3.py",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:qa/phaseb_controller_r3.py:654",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:qa/phaseb_controller_r3.py:654",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:qa/phaseb_controller_r3.py:773",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:qa/phaseb_controller_r3.py:773",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:qa/phaseb_controller_r3.py:870",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:qa/phaseb_controller_r3.py:870",
+      "passed": true
+    },
+    {
+      "id": "member:product/service_snapshot_v6_ha.rs",
+      "passed": true
+    },
+    {
+      "id": "source_present:product/service_snapshot_v6_ha.rs",
+      "passed": true
+    },
+    {
+      "id": "whole:product/service_snapshot_v6_ha.rs",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/service_snapshot_v6_ha.rs:197",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/service_snapshot_v6_ha.rs:197",
+      "passed": true
+    },
+    {
+      "id": "member:product/service_snapshot_v6_ha_restore.rs",
+      "passed": true
+    },
+    {
+      "id": "source_present:product/service_snapshot_v6_ha_restore.rs",
+      "passed": true
+    },
+    {
+      "id": "whole:product/service_snapshot_v6_ha_restore.rs",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/service_snapshot_v6_ha_restore.rs:772",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/service_snapshot_v6_ha_restore.rs:772",
+      "passed": true
+    },
+    {
+      "id": "member:product/request_metadata_local_redirect.rs",
+      "passed": true
+    },
+    {
+      "id": "source_present:product/request_metadata_local_redirect.rs",
+      "passed": true
+    },
+    {
+      "id": "whole:product/request_metadata_local_redirect.rs",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bounds:product/request_metadata_local_redirect.rs:32",
+      "passed": true
+    },
+    {
+      "id": "excerpt_bytes:product/request_metadata_local_redirect.rs:32",
+      "passed": true
+    }
+  ],
+  "RuntimeCalls": 0,
+  "productionCodeExecuted": false
+}

@@ -1,0 +1,5 @@
+{
+  "name": "ReferenceError",
+  "message": "b64 is not defined",
+  "scope": "Offline helper export selection before publisher generation; no candidate mutation, Git or Runtime occurred."
+}

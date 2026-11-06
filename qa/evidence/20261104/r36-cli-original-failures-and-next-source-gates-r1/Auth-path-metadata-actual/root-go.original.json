@@ -1,0 +1,190 @@
+{
+  "schema": "heptabao.root-GO.AuthBus-fixed-path-metadata-readonly.v1",
+  "authorization": "GO",
+  "as_of_UTC": "2026-11-06 03:44:32 UTC",
+  "agent": "/root/authbus_migration",
+  "purpose": "One bounded metadata-only observation of the original owned Mac launchd paths and fixed original Python alias; startup cause remains unqualified unless separately evidenced",
+  "source_packet": "d361caf1f759deaad5b9a85ad9e04369dd0f1248",
+  "source_review": {
+    "blob": "f12fc50ed339f06abfdc639975a00357cb3be43c",
+    "bytes": 2848,
+    "sha256": "55db391072e3e9b028e5f3f4a0889cfd958afb73de522dd7ad52b6523b01e09b"
+  },
+  "journal_packet": "17fba4e4d6e0183a2e4fd9d982bc6327c8b88e25",
+  "helpers": {
+    "native": {
+      "blob": "7155415142bbb38846bcf51748fde86307a5ddaf",
+      "bytes": 19046,
+      "sha256": "b213ba7bfacd158ce105ac29be7a909926b921d712d3f5d241eb7d8dfdf06c91"
+    },
+    "archive": {
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    "pure": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    }
+  },
+  "exact_request": {
+    "blob": "843965aae4fc29a5d840a1c84c51184dc32ae7ef",
+    "bytes": 14343,
+    "sha256": "76500b2218e329bc76bb8a29bfa485101e4954756f752d0d34cc38869fbc80f0"
+  },
+  "source": {
+    "blob": "01ae2abc5df2fac1b2606455a0233665068df79c",
+    "bytes": 13507,
+    "sha256": "bb9f9e1c6e7b0cb6365cf9647510e533562593dc3714aca468784b22b6699899"
+  },
+  "native_binding": {
+    "sha256": "17dcdc9709e625d48eefed87e6a77518aa47414db2181480e3f2b725454c53c0",
+    "native_fingerprint": "1719491699012937172",
+    "typed_stdin_field": "stdin"
+  },
+  "start": {
+    "host": "mac",
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-"
+    ],
+    "cwd": "/Users/qianqi",
+    "timeout_seconds": 60,
+    "idempotency_key": "heptabao-mac-owned-launchd-path-metadata-bb9f9e1c-20261106-r1",
+    "maximum_START_count": 1
+  },
+  "closed_paths": {
+    "alias": "/opt/homebrew/bin/python3",
+    "regular": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "wrapper": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_server_owner_r1.py",
+    "workingDirectory": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1",
+    "stdout": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.stdout.private",
+    "stderr": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.stderr.private"
+  },
+  "closed_directory_parents": [
+    "/",
+    "/opt",
+    "/Volumes",
+    "/opt/homebrew",
+    "/Volumes/T5",
+    "/opt/homebrew/bin",
+    "/opt/homebrew/Cellar",
+    "/Volumes/T5/hepta-vnext-recovery-20261013",
+    "/opt/homebrew/Cellar/python@3.14",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1",
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa",
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks",
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework",
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions",
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14",
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin"
+  ],
+  "regular_expected_full9": [
+    "16777233",
+    "587518380",
+    "501",
+    "80",
+    "33261",
+    "1",
+    "34640",
+    "1793798038915516382",
+    "1793798038915695047"
+  ],
+  "original_anchor_objects": {
+    "/": [
+      "16777233",
+      "2",
+      "0",
+      "0",
+      "16877"
+    ],
+    "/Volumes": [
+      "16777233",
+      "18336",
+      "0",
+      "0",
+      "16877"
+    ],
+    "/Volumes/T5": [
+      "16777244",
+      "2",
+      "0",
+      "0",
+      "16893"
+    ]
+  },
+  "scope": {
+    "fixedDirectoryAndLeafReadOnlyOpen": "18 exact directories+4 regular leaves, O_RDONLY|NOFOLLOW|NONBLOCK; directories also O_DIRECTORY. No file read/pread/hash.",
+    "alias": "Only exact original alias named lstat twice, up to two readlink calls, two fixed-path follow-stat calls, one access probe. Kernel may resolve its chain; no application traversal/open/admission of returned target paths.",
+    "privateStdio": "Only fixed leaf metadata/fstat and W_OK observation; zero contents, no write/open-write.",
+    "permissions": "Current observer's UID/group mode bits and effective-ID os.access if supported; absence of support is reported and never replaced with guessed launchd/TCC evidence.",
+    "finalBinding": "Full9 at named/FD open and final checks; exact five-field original T5 anchor object identities, no fresh diskutil/UUID claim."
+  },
+  "budgets": {
+    "sharedSeconds": 5,
+    "outerSeconds": 60,
+    "maxMetadataCalls": 256,
+    "expectedSuccessMetadataCalls": 115,
+    "maxAccessCalls": 24,
+    "expectedAccessCalls": 23,
+    "maxReadlinkCalls": 2,
+    "maxLinkBytesPerCall": 4096,
+    "maxLinkBytesAggregate": 8192,
+    "maxApplicationFdRowsAndPeak": 22,
+    "stdoutMaxBytes": 65536,
+    "fileBodyBytes": 0,
+    "applicationChildren": 0,
+    "networkCalls": 0,
+    "serviceMutations": 0
+  },
+  "journal": {
+    "slot": "owner_launchd_path_metadata_gitfirst_r1",
+    "call_key_prefix": "launchd-path-metadata-",
+    "observer_key_prefix": "heptabao-mac-owned-launchd-path-metadata-bb9f9e1c-",
+    "invoke_only_through": "gfRun",
+    "maximum_native_call_future_per_lane": 1,
+    "maximum_Runtime_lanes": 2,
+    "process_read": 16384,
+    "immutable_page": 8192,
+    "original_payload": 1048576,
+    "sequence": [
+      "Whole exact GO and correct typed stdin binding",
+      "Fresh slot initialize once; exact request/intent/armed externally whole",
+      "Independent model boundary then one original process_start",
+      "Retain full returned SDK externally whole before any isError/native interpretation",
+      "Only actual returned original job status/streams; only original observer ID status/next8192 pages; close full payload SHA/EOF and inactive future before next observer"
+    ],
+    "unknown": "Retain and stop; exact read-only Git reconciliation only; no replay, key substitution or automatic unpause"
+  },
+  "qualifications_required": [
+    "Actual authority exit0/full durable stdout",
+    "Every returned FD closed, handlers restored, no pending signal, final5second deadline and actual finite counters",
+    "No claim of current file SHA/loaded code/launchd or TCC permission from metadata",
+    "Original registration/historical lineage and original Git UNKNOWN preserved"
+  ],
+  "excluded": [
+    "file bodies or private credentials",
+    "filesystem scan",
+    "log query or log help process",
+    "bootout/restart/chmod/TCC changes",
+    "new AuthBus worker/business replay",
+    "production cutover",
+    "legacy cleanup"
+  ],
+  "lane_disposition": {
+    "A": "One metadata diagnostic lane",
+    "B": "CLI13 body SOURCE until A closes or lane reassigned",
+    "C": "One existing JWT body original observation",
+    "root": "0Runtime"
+  },
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

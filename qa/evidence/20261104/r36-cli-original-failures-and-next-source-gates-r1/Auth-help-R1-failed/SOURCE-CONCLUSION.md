@@ -1,0 +1,5 @@
+# Actual log help failure boundary
+
+The original fixed child returned exit64 with stdout0/stderr2246, completed before its original deadline and was reaped with an empty owned group. The wrapper rejected at help_projection's known-zero predicate before any output-text recognition. No child stderr body or hash was published. This packet therefore proves neither the contents of those2246 bytes nor the help syntax. The registered old QA label and its historical lineage remain unclosed/unqualified.
+
+The tool's exact807536-byte whole hash was checked before invocation while held, and all4 application FDs closed once after the child. The actual32 metadata operations are consistent with failure before the normal-path post-projection check; they must not be described as the40-operation successful help contract. The command is not replayed. A separately reviewed successor could classify only known completed exit0/stdout or exit64/stderr with strict fixed help grammar and full closure, without treating arbitrary nonzero output as help. No such successor execution is authorized by this actual packet.

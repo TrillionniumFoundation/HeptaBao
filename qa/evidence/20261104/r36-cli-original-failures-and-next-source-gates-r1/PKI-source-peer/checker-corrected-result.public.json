@@ -1,0 +1,107 @@
+{
+  "schema": "authbus.peer.pki400.strict-source.v1",
+  "scope": "Pure source reconstruction only; no Rust/Python candidate execution",
+  "checks": [
+    {
+      "name": "pki.strict_forward_whole",
+      "passed": true,
+      "detail": {
+        "hunks": 1
+      }
+    },
+    {
+      "name": "pki.strict_inverse_whole",
+      "passed": true
+    },
+    {
+      "name": "tests.strict_forward_whole",
+      "passed": true,
+      "detail": {
+        "hunks": 1
+      }
+    },
+    {
+      "name": "tests.strict_inverse_whole",
+      "passed": true
+    },
+    {
+      "name": "acceptance.strict_forward_whole",
+      "passed": true,
+      "detail": {
+        "hunks": 1
+      }
+    },
+    {
+      "name": "acceptance.strict_inverse_whole",
+      "passed": true
+    },
+    {
+      "name": "pki.only_lease_lookup_modified",
+      "passed": true
+    },
+    {
+      "name": "pki.lookup_read_only_self",
+      "passed": true
+    },
+    {
+      "name": "pki.exact_two_invalid_errors",
+      "passed": true
+    },
+    {
+      "name": "tests.only_two_appended_tests",
+      "passed": true
+    },
+    {
+      "name": "tests.request_clock_advance_original",
+      "passed": true
+    },
+    {
+      "name": "tests.cold_preserves_now",
+      "passed": true
+    },
+    {
+      "name": "tests.two_precondition_valid_lookup",
+      "passed": true
+    },
+    {
+      "name": "tests.expiration_advance_before_both",
+      "passed": true
+    },
+    {
+      "name": "tests.revoke_sync_true",
+      "passed": true
+    },
+    {
+      "name": "tests.retained_certificate_each",
+      "passed": true
+    },
+    {
+      "name": "acceptance.sleep_unchanged",
+      "passed": true
+    },
+    {
+      "name": "acceptance.actual_numeric_retained",
+      "passed": true
+    },
+    {
+      "name": "acceptance.two_exact400",
+      "passed": true
+    },
+    {
+      "name": "official.missing_lease_invalid_request",
+      "passed": true
+    },
+    {
+      "name": "official.invalid_request_http400",
+      "passed": true
+    }
+  ],
+  "runtimeCalls": 0,
+  "compiled": false,
+  "passed": true,
+  "check_count": 21,
+  "prior_checker_error": {
+    "check": "tests.only_two_appended_tests",
+    "reason": "The first checker cut from a test marker after the added blank line, leaving one inserted newline. Correct comparison uses the original archive-module offset and exact common prefix/tail; no candidate change."
+  }
+}

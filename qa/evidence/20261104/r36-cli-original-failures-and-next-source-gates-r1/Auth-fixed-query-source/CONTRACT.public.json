@@ -1,0 +1,233 @@
+{
+  "schema": "heptabao.fixed-owned-launchd-original-window-query.source.r1",
+  "status": "SOURCE_ONLY_NO_RUNTIME_GO",
+  "source": {
+    "blob": "7f4821ab3e5de33849e0c92e63bdf9d1d54b44d6",
+    "bytes": 49892,
+    "sha256": "2b0945bcf77dd872172a85262ba5f4ce133b22b9bb3d62d9575630a9cbff7e89"
+  },
+  "request": {
+    "blob": "3a0afddfc2f44a180ccacb3c2fdd4114784717da",
+    "bytes": 50735,
+    "sha256": "8e5c0586388a6ce2dfa68d792c2735fa4bd09fca9bbcfbcaab75c958c32e860a"
+  },
+  "journal": {
+    "blob": "e8d81fc234877a0a38e7207c2127d277e5db82b3",
+    "bytes": 19049,
+    "sha256": "80efc84a45ae533518dd8106039ea3e4772c8e6ced906d78924aba4e77bf34db"
+  },
+  "slot": "owner_launchd_fixed_log_projection_gitfirst_r1",
+  "key": "heptabao-mac-owned-launchd-fixed-log-2b0945bc-20261106-r1",
+  "host": "mac",
+  "exactArgv": [
+    "/usr/bin/log",
+    "show",
+    "--start",
+    "2026-11-06 00:45:18+0000",
+    "--end",
+    "2026-11-06 00:45:21+0000",
+    "--style",
+    "ndjson",
+    "--predicate",
+    "process = \"launchd\" AND message CONTAINS \"org.heptabao.qa.mac-authbus-4e808-owner-r1.server\"",
+    "--info",
+    "--debug",
+    "--no-pager"
+  ],
+  "originalJob": "1a1ae51309d-fc05-5ef8",
+  "originalLabel": "org.heptabao.qa.mac-authbus-4e808-owner-r1.server",
+  "timeWindow": {
+    "schema": "heptabao.original-owned-bootstrap-time-window.source.r1",
+    "originalJob": "1a1ae51309d-fc05-5ef8",
+    "ack": {
+      "blob": "5d76fca8fcedb3abc4765ad9c9f3c5a4678280e2",
+      "bytes": 6200,
+      "sha256": "eb1da610a70177b87161fda4c37fd80d984b135d5715d04128eaa00fa48b5b86"
+    },
+    "authority": {
+      "blob": "0e29e80053b2ad291101f53c8ffcc24f485680ac",
+      "bytes": 732,
+      "sha256": "f402631c37f87c2e8928f321682a0a8d03d9efcb0d005eb0151c48b6c2429df6"
+    },
+    "stdout": {
+      "blob": "99f88a10ed877dcf23aaafc56fd3e69c31a5a2d1",
+      "bytes": 132132,
+      "sha256": "feae46e33bc62427b8317780cf38ca73acd80124b1ad157caa20cbb0f3677748"
+    },
+    "jobCreatedUnixMs": 1793925918877,
+    "terminalPublicationUnixMs": 1793925920735,
+    "rawJobWindowMilliseconds": 1858,
+    "conservativeRoundedStartUnixMs": 1793925918000,
+    "conservativeRoundedEndUnixMs": 1793925921000,
+    "utcStart": "2026-11-06T00:45:18.000Z",
+    "utcEnd": "2026-11-06T00:45:21.000Z",
+    "maximumWindowMilliseconds": 3000,
+    "bootstrapIntentFileMtimeNs": "1793925920565520047",
+    "bootstrapCommand": {
+      "argv": [
+        "/bin/launchctl",
+        "bootstrap",
+        "gui/501",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.plist"
+      ],
+      "pid": 82492,
+      "commandDeadlineMonotonic": 2811777.446800166,
+      "elapsedSeconds": 0.04866733402013779,
+      "exitCode": 0
+    },
+    "qualification": "Conservative wall-clock envelope from same original job ACK creation and terminal publication, supported by bootstrap-intent record; not an exact wall-clock timestamp for posix_spawn. No timezone inferred from ps lstart and no guessed monotonic-to-epoch conversion."
+  },
+  "toolCurrentBindingOriginal": {
+    "blob": "d3cefcb531f3deea5a156189d381b11f8c70fa7b",
+    "bytes": 411,
+    "sha256": "8b1ed8e54007466045ebf6527ed102d709c54f8a3e10dd8e7b5f5b41b791efe4"
+  },
+  "actualHelp": {
+    "blob": "b9aa9171753f6746ada5ab639333d1e2091fb32e",
+    "bytes": 2246,
+    "sha256": "74d4578c6fd671200607673230f85fa546ce2f52cd7c34bd53a796657f82047c",
+    "parentJob": "1a1af1fec8d-fc05-65f7",
+    "parentExit": 0,
+    "childExit": 64,
+    "sourceStream": "stderr",
+    "fullPacket": "2e49e80774b13339d9fb7d77df92a415f386a331"
+  },
+  "bounds": {
+    "sharedSeconds": 45,
+    "childSeconds": 10,
+    "outerSeconds": 60,
+    "cleanup": {
+      "term": 1,
+      "wait": 5,
+      "group": 3,
+      "psMax": 4
+    },
+    "applicationDescriptorRows": 4,
+    "metadataCalls": 64,
+    "codeReadCalls": 129,
+    "codeReadCapBytes": 8388608,
+    "pinnedToolBytes": 807536,
+    "acceptedCombinedStdoutStderrBytes": 65536,
+    "maximumNonblankNdjsonRows": 64,
+    "maximumUtf8BytesPerNdjsonLine": 8192,
+    "maximumPublicReportBytes": 131072,
+    "immutablePageBytes": 8192
+  },
+  "hardFailurePolicy": {
+    "overflow": "Never truncate or slice to make the accepted projection fit. Any combined stream, row-count or line-size excess rejects the result.",
+    "unknownFraming": "Unrecognized NDJSON, non-object rows, duplicate keys, nonfinite constants, absent/conflicting message or process fields, nonexact label, or out-of-window timestamp rejects the result. No fallback.",
+    "logExit": "Only a known complete child exit 0 and empty stderr may yield a projection; exit 64 is not accepted for query.",
+    "deadline": "Original child execution/capture deadline is clipped to the shared absolute 45-second deadline; unchanged owned cleanup uses 1/5/3 with psMax4. Parent closure and post-flush deadline still determine success.",
+    "pipeReadBoundary": "Unchanged Commands reads fixed 65536-byte pipe blocks then enforces each stream's cap. It may retain a crossing block before refusing. 65536 is an acceptance/stream bound, not a promise of maximum bytes returned by all syscalls.",
+    "actualLogInternalIo": "The native tool's datastore/IPC access is not syscall-traced or assigned a byte-scan bound. Scope is the exact original label, process, 3-second time interval, bounded outputs and duration."
+  },
+  "acceptedOutput": {
+    "recordKeys": [
+      "ordinal",
+      "exactOriginalLabel",
+      "processIsLaunchd",
+      "withinOriginalWindow",
+      "categoryMentions",
+      "errnoSymbolMentions",
+      "explicitErrnoNumberMentions",
+      "knownPathMentions",
+      "recognizedErrorVocabulary"
+    ],
+    "categories": [
+      "spawn_or_exec_mentioned",
+      "working_directory_mentioned",
+      "stdio_mentioned",
+      "permission_error_mentioned",
+      "missing_path_error_mentioned",
+      "configuration_error_mentioned",
+      "privacy_or_sandbox_mentioned"
+    ],
+    "errnoSymbols": [
+      "EPERM",
+      "ENOENT",
+      "EIO",
+      "ENOEXEC",
+      "EACCES",
+      "ENOTDIR",
+      "EINVAL"
+    ],
+    "explicitErrnoNumbers": [
+      1,
+      2,
+      5,
+      8,
+      13,
+      20,
+      22
+    ],
+    "knownMessagePaths": {
+      "python_alias": "/opt/homebrew/bin/python3",
+      "regular_python": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "wrapper": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_server_owner_r1.py",
+      "working_directory": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1",
+      "plist": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.plist",
+      "stdout": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.stdout.private",
+      "stderr": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.stderr.private"
+    },
+    "rawText": false,
+    "rawOrUnknownTextHash": false,
+    "type": "Boolean lexical mentions only; no asserted cause, no parsed arbitrary dynamic value. Output command timing/exit/stdoutBytes/stderrBytes/custody/FD closure remains original.",
+    "noMatch": "An empty complete result does not prove absence, original launch failure cause, or historical lineage closure."
+  },
+  "originalUnchanged": {
+    "pythonDefinitions": [
+      "need",
+      "sha",
+      "identity",
+      "remaining",
+      "public_error",
+      "load_helpers",
+      "metadata",
+      "admit_binding",
+      "open_fixed",
+      "verify_all",
+      "hash_tool",
+      "command_public",
+      "close_rows"
+    ],
+    "full9ToolAndParents": true,
+    "heldToolThroughCleanup": true,
+    "execByPathIsNotAtomicExecByFd": true,
+    "embeddedHelpersWholeSame": true,
+    "journalChangesOnly": [
+      "GF_SLOT literal",
+      "GF_REQUEST actual pin",
+      "observer key prefix"
+    ],
+    "journalOuterCatchPreserved": true,
+    "gitSdkImmutableHistoryPreserved": true
+  },
+  "forbidden": {
+    "sdkExecution": true,
+    "privateCapsuleRead": true,
+    "credentialRead": true,
+    "configurationWrite": true,
+    "launchdMutation": true,
+    "oldPidSignal": true,
+    "cleanup": true,
+    "directoryScan": true,
+    "permissionOrTccChange": true,
+    "automaticRetry": true,
+    "oldJobReplay": true
+  },
+  "qualification": {
+    "pythonCompiled": false,
+    "pythonOrSdkExecuted": false,
+    "runtimeSubmitted": false,
+    "selectedOwnerQualified": false,
+    "startupCauseQualified": false,
+    "oldRegistrationClosed": false,
+    "historicalLineageClosed": false,
+    "sourceBindingOnly": true
+  },
+  "preservedHistory": {
+    "oldHelpR1KnownFail": "1a1af179989-fc05-65b0 / full59 84167aba44fdaa25f309d19129d5d7b92c65042a",
+    "oldWorker": "1a1ae51309d-fc05-5ef8 remains known exit 1 / typed_launchctl_integer with label/lineage unclosed.",
+    "originalGitCreateUnknown": "8916feb2a335fcf5fd7d47b55d39dd57b8465ab5"
+  }
+}

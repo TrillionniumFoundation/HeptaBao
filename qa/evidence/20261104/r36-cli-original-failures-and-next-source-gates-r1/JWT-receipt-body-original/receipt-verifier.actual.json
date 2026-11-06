@@ -1,0 +1,225 @@
+{
+  "schema": "heptabao.jwt-formatter-receipt.semantic-checks.v1",
+  "passed": 53,
+  "checks": [
+    {
+      "name": "whole actual receipt",
+      "pass": true
+    },
+    {
+      "name": "exact formatter source",
+      "pass": true
+    },
+    {
+      "name": "exact successful schema",
+      "pass": true
+    },
+    {
+      "name": "source identity exact unformatted commit",
+      "pass": true
+    },
+    {
+      "name": "original50 and60",
+      "pass": true
+    },
+    {
+      "name": "no product or compile",
+      "pass": true
+    },
+    {
+      "name": "nine fixed inputs and caps",
+      "pass": true
+    },
+    {
+      "name": "current source fully pinned",
+      "pass": true
+    },
+    {
+      "name": "same nine source observations",
+      "pass": true
+    },
+    {
+      "name": "source full9 field order",
+      "pass": true
+    },
+    {
+      "name": "fixed source auth.rs",
+      "pass": true
+    },
+    {
+      "name": "lossless source ns auth.rs",
+      "pass": true
+    },
+    {
+      "name": "fixed source auth_native_jwt.rs",
+      "pass": true
+    },
+    {
+      "name": "lossless source ns auth_native_jwt.rs",
+      "pass": true
+    },
+    {
+      "name": "fixed source auth_native_v6_routes.rs",
+      "pass": true
+    },
+    {
+      "name": "lossless source ns auth_native_v6_routes.rs",
+      "pass": true
+    },
+    {
+      "name": "fixed source federated_auth.rs",
+      "pass": true
+    },
+    {
+      "name": "lossless source ns federated_auth.rs",
+      "pass": true
+    },
+    {
+      "name": "fixed source federated_native_jwt.rs",
+      "pass": true
+    },
+    {
+      "name": "lossless source ns federated_native_jwt.rs",
+      "pass": true
+    },
+    {
+      "name": "fixed source service.rs",
+      "pass": true
+    },
+    {
+      "name": "lossless source ns service.rs",
+      "pass": true
+    },
+    {
+      "name": "fixed source service_native_auth.rs",
+      "pass": true
+    },
+    {
+      "name": "lossless source ns service_native_auth.rs",
+      "pass": true
+    },
+    {
+      "name": "fixed source service_native_jwt_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lossless source ns service_native_jwt_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "fixed source service_native_userpass_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lossless source ns service_native_userpass_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "tool before/after same",
+      "pass": true
+    },
+    {
+      "name": "config before/after same",
+      "pass": true
+    },
+    {
+      "name": "nine original children",
+      "pass": true
+    },
+    {
+      "name": "child0 terminal/custody",
+      "pass": true
+    },
+    {
+      "name": "child1 terminal/custody",
+      "pass": true
+    },
+    {
+      "name": "child2 terminal/custody",
+      "pass": true
+    },
+    {
+      "name": "child3 terminal/custody",
+      "pass": true
+    },
+    {
+      "name": "child4 terminal/custody",
+      "pass": true
+    },
+    {
+      "name": "child5 terminal/custody",
+      "pass": true
+    },
+    {
+      "name": "child6 terminal/custody",
+      "pass": true
+    },
+    {
+      "name": "child7 terminal/custody",
+      "pass": true
+    },
+    {
+      "name": "child8 terminal/custody",
+      "pass": true
+    },
+    {
+      "name": "all nine files ordered",
+      "pass": true
+    },
+    {
+      "name": "file contract auth.rs",
+      "pass": true
+    },
+    {
+      "name": "file contract auth_native_jwt.rs",
+      "pass": true
+    },
+    {
+      "name": "file contract auth_native_v6_routes.rs",
+      "pass": true
+    },
+    {
+      "name": "file contract federated_auth.rs",
+      "pass": true
+    },
+    {
+      "name": "file contract federated_native_jwt.rs",
+      "pass": true
+    },
+    {
+      "name": "file contract service.rs",
+      "pass": true
+    },
+    {
+      "name": "file contract service_native_auth.rs",
+      "pass": true
+    },
+    {
+      "name": "file contract service_native_jwt_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "file contract service_native_userpass_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "original terminal summary agrees exactly",
+      "pass": true
+    },
+    {
+      "name": "six actual changes",
+      "pass": true
+    },
+    {
+      "name": "no reported fence error",
+      "pass": true
+    }
+  ],
+  "changedFiles": 6,
+  "sourceBytes": 1221466,
+  "formattedBytes": 1228699,
+  "all38IndependentOutputObservations": false,
+  "newCargoQualified": false,
+  "Runtime": 0,
+  "productCases": 0
+}

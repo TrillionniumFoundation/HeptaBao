@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r36-jwt-fixed38-collector-root-source-and-GO",
+  "records": [
+    {
+      "name": "ROOT-SOURCE-REVIEW.public.json",
+      "blob": "7849c96a789fb68a255203f1d8e079ef0f7ee438",
+      "bytes": 6180,
+      "sha256": "5d50c747957683a804efdeefbe54666cbaf21299968af334a5071a9301b5d659"
+    },
+    {
+      "name": "ROOT-GO.public.json",
+      "blob": "fd29c6c49233feb8b6dee5e0999b04c346e8e848",
+      "bytes": 22920,
+      "sha256": "397671b10c128f6e7506d08f1ffbe9f06fd404266050a95e99a1ede439b9f5af"
+    },
+    {
+      "name": "root-source-verifier.js",
+      "blob": "712e7f2b0a52affa2239bc99d84d4569ea48c677",
+      "bytes": 12087,
+      "sha256": "4a31df8ef2b94f17561456c861094f5d2520943ee7f4cfeefedc70aba485c7ef"
+    },
+    {
+      "name": "root-source-verifier.R1.original.js",
+      "blob": "5867f8c6e3c28bc4b573d5aeb26b07735458f75a",
+      "bytes": 12154,
+      "sha256": "429cd52ac5059b8626c954a49e1a816f3cbf14e32aba14bf4113a9d90ede0f27"
+    },
+    {
+      "name": "root-source-verifier.R2.original.js",
+      "blob": "9d2cbc515978c06a9214e9a6b63996fd9ff6846d",
+      "bytes": 12090,
+      "sha256": "4ba8826a754409fe51915c60ae8da779ec0e2b127272389b86787f733a7d409c"
+    },
+    {
+      "name": "checker-corrections.public.json",
+      "blob": "3aae7f2fa852b4ea27a3465e41b2b0460740ccdb",
+      "bytes": 619,
+      "sha256": "08ceba6aee6505d02aacae96167f578ae593455917df253f8f339cf578440e0f"
+    },
+    {
+      "name": "README.md",
+      "blob": "170073ce91e4c544c9f61e11b5c3d4274657bb16",
+      "bytes": 1296,
+      "sha256": "f68d3a184b534b4a019d6684678223aa4f64c55a2feb52c922b630ab47bdee61"
+    }
+  ],
+  "expected_data_tree": "7decfed969df516a8c00712d04ef6c8683259670",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

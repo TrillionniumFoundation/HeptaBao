@@ -1,0 +1,39 @@
+{
+  "schema": "heptabao.formatter38-source-references.v1",
+  "core": {
+    "tree": "29a662e9ee89cc79d72af954f1334a4ab890918e",
+    "count": 16,
+    "bytes": 225488,
+    "whole": true
+  },
+  "original_formatter_source_packet": {
+    "tree": "a97c73a2c260e727154d0f3e877005fcb6876985",
+    "count": 27
+  },
+  "original_formatter_actual": {
+    "tree": "18e2b1a310b5b6e6022633504a612b95b9841da1",
+    "count": 56
+  },
+  "original_receipt_info_actual": {
+    "tree": "429d2a298f33f0575125b2fe2b1276547bacb2e0",
+    "count": 23
+  },
+  "original_receipt_body_actual": {
+    "tree": "0e2fd3d9a1a47ee9c2944e0974a9a4ddf9989906",
+    "count": 34
+  },
+  "root_receipt_qualification": {
+    "blob": "cc5d3f87307e89cc01df208c72aa683f8f1184d3",
+    "bytes": 6106,
+    "sha256": "3fcabc479b74b6f9be3aea7a1b337fc77cffaa4e0e983f22b35447585f809459"
+  },
+  "old_plan_read38_submitted": 0,
+  "collector_submitted": 0,
+  "new_report_metadata_submitted": 0,
+  "root_go_required": true,
+  "build_gate_unchanged": {
+    "unique": 147,
+    "profile_instances": 162
+  },
+  "pki_candidate_not_merged": true
+}

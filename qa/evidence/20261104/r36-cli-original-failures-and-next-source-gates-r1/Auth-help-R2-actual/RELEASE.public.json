@@ -1,0 +1,116 @@
+{
+  "schema": "heptabao.mac-log-help-protocol.actual-release.r2",
+  "status": "PASS_PUBLIC_HELP_ONLY",
+  "rootGo": {
+    "blob": "7022f38d01407c76023dd3db5c0cc6339a356def",
+    "bytes": 6757,
+    "sha256": "78eb19d7d20a5f74106aa538fe6e786071c66dc27438d36025a33cef3efa97e2"
+  },
+  "job": "1a1af1fec8d-fc05-65f7",
+  "host": "mac",
+  "authority": {
+    "blob": "22b003303836ad3b44e4248a5786ef63c0d43755",
+    "bytes": 731,
+    "sha256": "614bc486e39eccc939a087fba02c26ba7368bbbba18a76a1786d1615cea873dd"
+  },
+  "exit": 0,
+  "full": true,
+  "durable": true,
+  "terminalPublicationConfirmed": true,
+  "stdout": {
+    "blob": "0ecd59133d00bd483ebe6e1a6cd92fa049e19c2a",
+    "bytes": 5627,
+    "sha256": "c50effc64b6c75c4cbe328f847eb36e7668aa31388b023518b181910f13b2ed7"
+  },
+  "stderrBytes": 0,
+  "help": {
+    "blob": "b9aa9171753f6746ada5ab639333d1e2091fb32e",
+    "bytes": 2246,
+    "sha256": "74d4578c6fd671200607673230f85fa546ce2f52cd7c34bd53a796657f82047c",
+    "sourceStream": "stderr",
+    "actualChildExit": 64,
+    "recognizedOptions": {
+      "--end": true,
+      "--predicate": true,
+      "--start": true,
+      "--style": true
+    }
+  },
+  "toolCurrentWhole": {
+    "bytes": 807536,
+    "execByPathIsNotAtomicExecByFd": true,
+    "sameHeldFileRetainedThroughChildCleanup": true,
+    "sha256": "2fa7b04615546f0964dd1ddedab04a07e3e026f76959e7f44cbd30bfa48a5974",
+    "wholeCurrentFileObserved": true
+  },
+  "closure": {
+    "applicationFDs": 4,
+    "allOnceClosed": true,
+    "originalChildren": 1,
+    "allReaped": true,
+    "remainingGroupRows": [],
+    "allStreamsClosed": true,
+    "outcomeUnknown": false,
+    "metadata": 40,
+    "codeReadCalls": 14,
+    "codeBytesReturned": 807536,
+    "elapsedSeconds": 0.05237712524831295,
+    "deadlineMetAfterClosure": true
+  },
+  "originalObservers": [
+    {
+      "id": "b3d67c7fa29c2e6a8a8d06a8d5b5ca637735ef9013299ba3bc94374fdfffcef0",
+      "tool": "process_status",
+      "payload": {
+        "blob": "ce2c2cf8517b0911b79534a3dd4b22dd7c2a9de5",
+        "bytes": 910,
+        "sha256": "82747dc494332527786ee0f3a6976a7add1fcc37d47021322ea3a0e45f271e3e"
+      },
+      "payloadTree": "349f6df77f78de84d0139e17349b42b099375a52",
+      "nativeText": {
+        "blob": "22b003303836ad3b44e4248a5786ef63c0d43755",
+        "bytes": 731,
+        "sha256": "614bc486e39eccc939a087fba02c26ba7368bbbba18a76a1786d1615cea873dd"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "28137ce2d3491df40b7d12ded610295d48f5db62eb2675ad3556254eb40b4ad7",
+      "tool": "process_read",
+      "payload": {
+        "blob": "f54fc7ab8722bf604ae49e031af4841991099a53",
+        "bytes": 18603,
+        "sha256": "169517725da3fdb2b6dac3ffb993739e1a25114b12b9841180ca3fd756bc1278"
+      },
+      "payloadTree": "cee5c7444b6eb6cba5f232c0bab6817d269e7dce",
+      "nativeText": {
+        "blob": "2cb25d06f7f316d205c1eafb1c3714bdfbe1c9f3",
+        "bytes": 17624,
+        "sha256": "44a221d368a0d3a14e8570179641e0d21274a87501ad1387e075023849e70dc8"
+      },
+      "pages": 3,
+      "completedInactive": true
+    }
+  ],
+  "nativeCalls": 9,
+  "immutablePages": 4,
+  "callInFlight": 0,
+  "activeNativeFutures": 0,
+  "pending": null,
+  "activeObserver": null,
+  "paused": false,
+  "laneAReleased": true,
+  "oldR1FailurePreserved": true,
+  "historicalUnknowns": {
+    "registration": "NOT_CLOSED",
+    "lineage": "NOT_QUALIFIED",
+    "git8916": "UNKNOWN"
+  },
+  "logQueryExecuted": false,
+  "oldLabelCleanupAttempted": false,
+  "privateCapsuleRead": false,
+  "sdkExecuted": false,
+  "startupCauseQualified": false,
+  "noFurtherNativeGO": true
+}

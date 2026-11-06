@@ -1,0 +1,102 @@
+--- a/journal.path-metadata.before.js
++++ b/journal.log-info.after.js
+@@ -5,9 +5,9 @@
+  * Every original SDK is store'd, serialized, Git-created once and whole-read
+  * before isError or native text is inspected.
+  */
++const GF_SLOT = "owner_launchd_log_info_gitfirst_r1";
++const GF_REQUEST = {blob:"a4b6cada1d58f18e07d6aac7d989f67a17819038",
++ bytes:211,sha256:"b97c097473e6ccd9ca93c9053dd924e499f350b5a51b5e1b9c7bf8f3a67c3212"};
+-const GF_SLOT = "owner_launchd_path_metadata_gitfirst_r1";
+-const GF_REQUEST = {blob:"843965aae4fc29a5d840a1c84c51184dc32ae7ef",
+- bytes:14343,sha256:"76500b2218e329bc76bb8a29bfa485101e4954756f752d0d34cc38869fbc80f0"};
+ 
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {
+@@ -26,39 +26,46 @@
+    && /^-?[0-9]+$/.test(value.$exactInteger),"lossless_integer_token");
+  return value.$exactInteger;
+ }
++function gfInitializeOnlyAfterRootGO({goRaw,goPin,goWholeReadback,priorStateRaw}) {
+-function gfInitializeOnlyAfterRootGO({goRaw,goPin,goWholeReadback,digest,fingerprint}) {
+  gfNeed(load(GF_SLOT)===undefined,"existing_or_armed_context_must_be_recovered_not_reinitialized");
++ gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin),"exact_whole_new_root_go");
++ const priorSlot="owner_launchd_path_metadata_gitfirst_r1";
++ const priorPin={"blob":"1ac5978247d3ff3ad440e841e23c6da906f6c1b0","bytes":55220,"sha256":"bddc93625d140a360eaf843c7ed09317233a9dff500500c13ccf86bf941a079a"};
++ gfNeed(gfMetaEquals(priorStateRaw,priorPin),"exact_prior_closed_metadata_snapshot");
++ const prior=JSON.parse(priorStateRaw),live=load(priorSlot);
++ gfNeed(live && JSON.stringify(live,null,2)+"\n"===priorStateRaw,
++        "old_live_context_unchanged_before_new_scope");
++ gfNeed(prior.rootGoWhole===true && prior.job==="1a1aef60ea2-fc05-648b"
++   && prior.startCalled===true && prior.paused===false && prior.pending===null
++   && prior.activeObserver===null && prior.nativeCallInFlight===false
++   && prior.completedObservers.length===2
++   && prior.completedObservers.every(o=>o.completedInactive===true)
++   && prior.nextStdout===14496 && prior.nextStderr===0,"prior_two_original_observers_closed");
++ // This is a separate file_info authorization, never a new process_start or a reinitialization.
++ store(GF_SLOT,{rootGoWhole:true,goRaw,goPin,digest:null,fingerprint:null,job:null,
+- gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin),"exact_whole_root_go");
+- gfNeed(/^[0-9a-f]{64}$/.test(digest) && /^[0-9]{1,20}$/.test(fingerprint),
+-        "root_independently_bound_native_identity");
+- // The caller must supply the separately reviewed actual GO, not the SOURCE contract.
+- store(GF_SLOT,{rootGoWhole:true,goRaw,goPin,digest,fingerprint,job:null,
+   startCalled:false,pending:null,activeObserver:null,nativeCallInFlight:false,
+   paused:false,calls:{},completedObservers:[],nextStdout:0,nextStderr:0,
++  localJournalAvailable:false,gitFirstExplicitlyRequiredByThisRootGO:true,
++  priorClosedContext:{slot:priorSlot,state:priorPin,job:prior.job},
++  onlyFixedLogFileInfo:true});
+-  localJournalAvailable:false,gitFirstExplicitlyRequiredByThisRootGO:true});
+ }
+ function gfValidateRequest(s,kind,q,raw) {
+  gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null,"single_call_boundary");
+  if(kind==="process_start") {
++  throw new Error("metadata_scope_has_no_process_start_authorization");
+-  gfNeed(!s.startCalled && s.job===null && s.activeObserver===null
+-    && gfMetaEquals(raw,GF_REQUEST),"one_exact_diagnostic_start");
+  } else if(kind==="operation_start") {
++  gfNeed(s.onlyFixedLogFileInfo===true && s.job===null && s.activeObserver===null
++    && s.completedObservers.length===0
++    && !Object.values(s.calls).some(c=>c.kind==="operation_start"),
++    "one_fixed_metadata_admission_only");
++  gfNeed(gfMetaEquals(raw,GF_REQUEST)
++    && Object.keys(q).sort().join(",")==="idempotency_key,operation",
++    "one_exact_log_file_info_request");
+-  gfNeed(s.job!==null && s.activeObserver===null,"original_job_no_unclosed_observer");
+-  gfNeed(Object.keys(q).sort().join(",")==="idempotency_key,operation"
+-    && typeof q.idempotency_key==="string" && q.idempotency_key.length<=128
+-    && /^heptabao-mac-owned-launchd-path-metadata-bb9f9e1c-/.test(q.idempotency_key),
+-    "bounded_original_observer_key");
+   const op=q.operation,a=op?.arguments;
+   gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"
++    && op.tool==="file_info" && a
++    && Object.keys(a).sort().join(",")==="host,path"
++    && a.host==="mac" && a.path==="/usr/bin/log","fixed_log_metadata_path_only");
+-    && a && a.host==="mac" && a.job_id===s.job,"same_original_job_only");
+-  if(op.tool==="process_status") {
+-   gfNeed(Object.keys(a).sort().join(",")==="host,job_id","exact_status_arguments");
+-  } else {
+-   gfNeed(op.tool==="process_read"
+-     && Object.keys(a).sort().join(",")==="host,job_id,limit,stderr_offset,stdout_offset"
+-     && a.limit===16384 && a.stdout_offset===s.nextStdout
+-     && a.stderr_offset===s.nextStderr,"original_stream_cursors_and_cap");
+-  }
+  } else if(kind==="operation_status") {
+   gfNeed(s.activeObserver && !s.activeObserver.futureClosed
+    && Object.keys(q).join(",")==="operation_id"
+@@ -233,7 +240,15 @@
+   gfNeed(p.resultType==="complete" && p.isError===false
+     && p.content?.length===1 && p.content[0].type==="text","original_native_result_success");
+   const nativeRaw=p.content[0].text,v=parseLosslessIntegers(nativeRaw);
++  if(a.tool==="file_info") {
++   gfNeed(s.onlyFixedLogFileInfo===true && a.request.operation.arguments.host==="mac"
++     && a.request.operation.arguments.path==="/usr/bin/log" && v.path==="/usr/bin/log"
++     && Number.isSafeInteger(v.size) && v.size>=0
++     && typeof v.version==="string" && /^[0-9]+(?::[0-9]+){4}$/.test(v.version)
++     && typeof v.sha256==="string" && /^[a-f0-9]{64}$/.test(v.sha256)
++     && Number.isSafeInteger(v.mode) && v.metadata?.metadata_platform==="darwin",
++     "same_fixed_original_file_info_native_result");
++  } else gfNeed(v.job_id===s.job,"original_job_native_result_binding");
+-  gfNeed(v.job_id===s.job,"original_job_native_result_binding");
+   if(a.tool==="process_read") {
+    for(const stream of ["stdout","stderr"]) {
+     const row=v[stream],asked=a.request.operation.arguments[stream+"_offset"];

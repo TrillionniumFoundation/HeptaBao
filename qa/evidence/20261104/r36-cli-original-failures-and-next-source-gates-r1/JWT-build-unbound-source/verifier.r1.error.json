@@ -1,0 +1,5 @@
+{
+  "name": "Error",
+  "message": "all new12 retained pins outside cache",
+  "stack": "Error: all new12 retained pins outside cache\n    at ck (eval at <anonymous> (exec_main.mjs:61:18), <anonymous>:5:63)\n    at verifyJwtBuildDrafts (eval at <anonymous> (exec_main.mjs:61:18), <anonymous>:55:2)\n    at eval (eval at <anonymous> (exec_main.mjs:61:18), <anonymous>:57:3)\n    at exec_main.mjs:61:75"
+}

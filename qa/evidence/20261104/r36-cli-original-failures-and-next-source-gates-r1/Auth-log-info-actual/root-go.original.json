@@ -1,0 +1,109 @@
+{
+  "schema": "heptabao.root-GO.Mac-single-fixed-log-tool-file-info.v1",
+  "authorization": "GO",
+  "as_of_UTC": "2026-11-06 04:10:12 UTC",
+  "agent": "/root/authbus_migration",
+  "purpose": "Observe the exact installed /usr/bin/log regular target metadata and whole SHA before deriving an identity-bound public help source",
+  "source_packet": "cfe8d14826b442f897dc11de3117b0c731b52d65",
+  "source_review": {
+    "blob": "30c0d5eaf1c18df16d4c9613ca16c0a9b98ec7b8",
+    "bytes": 2566,
+    "sha256": "c7c7773585b026c4f49f95b38f088afe3b4c6a8a7d5166074182de6eafc8247b"
+  },
+  "exact_request": {
+    "blob": "a4b6cada1d58f18e07d6aac7d989f67a17819038",
+    "bytes": 211,
+    "sha256": "b97c097473e6ccd9ca93c9053dd924e499f350b5a51b5e1b9c7bf8f3a67c3212"
+  },
+  "request": {
+    "idempotency_key": "heptabao-mac-owned-launchd-log-tool-info-00940fa4-20261106-r1",
+    "operation": {
+      "tool": "file_info",
+      "arguments": {
+        "host": "mac",
+        "path": "/usr/bin/log"
+      }
+    }
+  },
+  "maximum_native_operation_starts": 1,
+  "maximum_process_starts": 0,
+  "prior_original_job": "mac/1a1aef60ea2-fc05-648b",
+  "prior_actual_qualification": {
+    "blob": "4c63acf5b37fa6743c7d325a0a119e37540af83a",
+    "bytes": 7923,
+    "sha256": "760e25765ccf686ea433352bfa1663494c3be60bb86b8000318e58dcd50ef6f5"
+  },
+  "prior_closed_context": {
+    "blob": "1ac5978247d3ff3ad440e841e23c6da906f6c1b0",
+    "bytes": 55220,
+    "sha256": "bddc93625d140a360eaf843c7ed09317233a9dff500500c13ccf86bf941a079a"
+  },
+  "old_slot": "owner_launchd_path_metadata_gitfirst_r1",
+  "new_slot": "owner_launchd_log_info_gitfirst_r1",
+  "helpers": {
+    "native": {
+      "blob": "f51079fe3f72378e4868af185a088bdc398d5e45",
+      "bytes": 20145,
+      "sha256": "6549e8f700476020fb3d05cf60d1f5a3e6fe4d958fcce75b579242778730b2c5"
+    },
+    "archive": {
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    "pure": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    }
+  },
+  "sequence": [
+    "Verify exact new GO and exact original closed prior context before a separate fresh slot; prior context remains byte-identical",
+    "Whole request/intent/armed externally before one unique original operation_start and independent model boundary",
+    "Returned original SDK externally whole before any parsing or isError; retain UNKNOWN and stop if acknowledgment is absent",
+    "Only returned original operation ID status and next immutable 8192-byte pages, original 1MiB payload cap",
+    "Whole original payload SHA/EOF plus inactive closure before pure help derivation"
+  ],
+  "scope": {
+    "host": "mac",
+    "path": "/usr/bin/log",
+    "native_tool": "file_info",
+    "purpose_API_whole_hash_cost": true,
+    "pure_stat_only": false,
+    "body_export": false,
+    "content_hash_work_not_bounded_by_prospective_8MiB_help_cap": true
+  },
+  "limits": {
+    "max_native_calls_or_future_per_lane": 1,
+    "max_Runtime_lanes": 2,
+    "immutable_page_bytes": 8192,
+    "original_payload_bytes": 1048576
+  },
+  "lane_activation": "A may activate now; B continues one original CLI body lane; C formatter originals closed; root0Runtime",
+  "C_release_qualification": {
+    "blob": "fa9e8030d8f5e5e460cf7b73c603c11d41d17ec8",
+    "bytes": 5806,
+    "sha256": "e63cf09b8662e82d04fc203c1b0ea86fe79e3ba62a0aed032e481c45e23568a1"
+  },
+  "after_actual_metadata": "Close and archive original metadata first, derive concrete help source/request only; no help or log query execution is authorized by this GO",
+  "excluded": [
+    "process_start",
+    "log help execution",
+    "log show or stream query",
+    "private capsule or credentials",
+    "old label cleanup",
+    "permission/TCC changes",
+    "production or provider changes",
+    "Native replay or re-key"
+  ],
+  "preserve_historical_unknowns": {
+    "oldLabelRegistration": "NOT_CLOSED",
+    "originalLineage": "NOT_QUALIFIED",
+    "git8916": "UNKNOWN",
+    "old11754": "UNCHANGED"
+  },
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

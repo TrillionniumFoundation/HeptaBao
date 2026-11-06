@@ -1,0 +1,64 @@
+{
+  "schema": "heptabao.native-snapshot-body-code-slice.source.v1",
+  "status": "SOURCE_NOT_FORMATTED_NOT_COMPILED_NOT_EXECUTED",
+  "baselineCommit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "baselineTree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "architecture": "bcde44a90cb096361dd9f4edb61e5d9228893a68",
+  "originalLib": {
+    "blob": "6e8947315c14e50c2424de90b11c99888e7bd0a5",
+    "bytes": 84895,
+    "sha256": "f7eac8103954260134e244a1d5d5bf0045ed74f0d7123a01ac5f0b6b7089e7b8"
+  },
+  "candidateLib": {
+    "blob": "5d719d0c2e7a6fe23cec58f71ca5b78883a3f03a",
+    "bytes": 85208,
+    "sha256": "325ab34c1aeb4993402067cfaa0b28acb96aebc8a59cedb7d1ab521beac92ed5"
+  },
+  "libDiff": {
+    "blob": "7c3972f4bc02429bc88d18c92cc39cc7dbfc6aad",
+    "bytes": 701,
+    "sha256": "d9ae99c6f47d027bb52276a1b441a439dd738202a6eba007cc82c547f75a2a17"
+  },
+  "newModule": {
+    "path": "crates/heptabao-ha-service/src/native_snapshot_body.rs",
+    "blob": "bbf14e2500ffbfe36a0ef24ca0e19240e88d319e",
+    "bytes": 15545,
+    "sha256": "c5371d4d81da56be70655bd618d7fbe321ca52df531cd30f33b92dd014a903a5"
+  },
+  "newTests": {
+    "path": "crates/heptabao-ha-service/src/native_snapshot_body_tests.rs",
+    "blob": "fbaa67b64fd10377039096f04072868efdf88542",
+    "bytes": 7450,
+    "sha256": "c656de0f4ef9b627210e46323f2436adc4b3392d8097cfddcfdc29f2661054dc",
+    "count": 10,
+    "executed": 0
+  },
+  "preciseScope": "Binary framing/data integrity only; no authenticated peer, end-user Actor, storage capability, completion publication or transport registration is implemented by this slice.",
+  "implementation": [
+    "bounded fixed DATA frames",
+    "explicit terminal count and SHA256",
+    "actual underlying EOF required before VerifiedSnapshotBody",
+    "error latch prevents recovery into success",
+    "same original Instant checked around every I/O attempt",
+    "constant memory independent of archive size",
+    "one rejecting EOF byte at exact cap"
+  ],
+  "preserved": [
+    "original library bytes except one module/reexport insertion",
+    "original generic/JSON peer transport",
+    "all original product snapshot and CLI code",
+    "original actual B04/B05 failure",
+    "no Cargo.lock or dependency change"
+  ],
+  "remaining": [
+    "pinned mTLS stream branch and close-notify semantics",
+    "actual native Service admission and owner integration",
+    "dedicated binary publication and historical original-auth/epoch proof",
+    "strict fixture topology-only adjustment",
+    "format/compile/necessary actual components and fresh official CLI qualification"
+  ],
+  "runtimeCalls": 0,
+  "productionRefUpdates": 0,
+  "compiled": false,
+  "testsExecuted": 0
+}

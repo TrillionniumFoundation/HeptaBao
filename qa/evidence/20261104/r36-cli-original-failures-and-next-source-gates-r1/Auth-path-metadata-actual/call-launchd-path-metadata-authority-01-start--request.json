@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-mac-owned-launchd-path-metadata-bb9f9e1c-authority-01-20261106-r1",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1aef60ea2-fc05-648b"
+    }
+  }
+}

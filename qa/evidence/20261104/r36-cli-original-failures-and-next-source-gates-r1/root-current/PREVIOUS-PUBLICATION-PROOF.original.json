@@ -1,0 +1,64 @@
+{
+  "schema": "heptabao.root-R35-additive-publication-proof.v1",
+  "as_of_UTC": "2026-11-06 03:53:06 UTC",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "branch": "codex/heptabao-validation-20261104",
+  "commit": "3fad6ab8d3eda6cad1c7e95458f8eba026c1c524",
+  "sole_parent": "ca5d2a042d869ae17a61f77cdfead82b26b68344",
+  "tree": "d9e6100e4747b0e732488fed096256360cc9c5ae",
+  "exact_ref_readback": "3fad6ab8d3eda6cad1c7e95458f8eba026c1c524",
+  "new_prefix": "qa/evidence/20261104/r35-h2-qualified-cli-standby-blocker-and-jwt-source-r1",
+  "new_prefix_tree": "11afbb471bd4debae1e6006c7a4a124a59f88435",
+  "root_current_tree": "042aea2771e710d790c8bbd0b0e9b3adc211e94d",
+  "whole_original_packet_mounts": 20,
+  "whole_original_packet_leaves": 858,
+  "whole_original_packet_bytes": 9004366,
+  "root_current_leaf_count": 31,
+  "verified_five_layers": [
+    {
+      "name": "prefix",
+      "sha": "11afbb471bd4debae1e6006c7a4a124a59f88435",
+      "entries": 21,
+      "whole": true
+    },
+    {
+      "name": "day",
+      "sha": "df7098de76d0c858f01bf969648d71cd14e83899",
+      "entries": 112,
+      "whole": true
+    },
+    {
+      "name": "evidence",
+      "sha": "7df6b011bbb44f399986967bcff7d0a1e6a112d8",
+      "entries": 1,
+      "whole": true
+    },
+    {
+      "name": "qa",
+      "sha": "d335eaf76f56999a8eac56e7726d23e4600669f2",
+      "entries": 3,
+      "whole": true
+    },
+    {
+      "name": "root",
+      "sha": "d9e6100e4747b0e732488fed096256360cc9c5ae",
+      "entries": 26,
+      "whole": true
+    }
+  ],
+  "mutation_counts": {
+    "prefix_tree": 1,
+    "root_tree": 1,
+    "commit": 1,
+    "nonforce_CAS": 1
+  },
+  "all_previous_paths_unchanged": true,
+  "no_product_source_changes": true,
+  "no_deletions": true,
+  "full_replacement": false,
+  "production_cutover": false,
+  "all_clients_and_backup_paths_migrated": false,
+  "legacy_cleanup": false,
+  "task_continues": true,
+  "root_Runtime_calls": 0
+}

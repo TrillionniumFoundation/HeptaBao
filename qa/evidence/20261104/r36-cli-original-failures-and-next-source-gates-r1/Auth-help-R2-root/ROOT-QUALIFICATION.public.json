@@ -1,0 +1,232 @@
+{
+  "schema": "heptabao.root-qualification.mac-public-log-help-protocol-R2.v1",
+  "passed": true,
+  "status": "PASS_PUBLIC_HELP_ONLY",
+  "whole_packet": {
+    "tree": "2e49e80774b13339d9fb7d77df92a415f386a331",
+    "files": 65,
+    "bytes": 367915,
+    "merkle": {
+      "root_sha": "2e49e80774b13339d9fb7d77df92a415f386a331",
+      "trees_verified": 1,
+      "leaf_count": 65
+    },
+    "whole": true
+  },
+  "job": "mac/1a1af1fec8d-fc05-65f7",
+  "original_calls": 9,
+  "closed_observers": 2,
+  "immutable_pages": 4,
+  "help": {
+    "blob": "b9aa9171753f6746ada5ab639333d1e2091fb32e",
+    "bytes": 2246,
+    "sha256": "74d4578c6fd671200607673230f85fa546ce2f52cd7c34bd53a796657f82047c",
+    "sourceStream": "stderr",
+    "actualChildExit": 64,
+    "recognizedOptions": {
+      "--end": true,
+      "--predicate": true,
+      "--start": true,
+      "--style": true
+    }
+  },
+  "actual_child_exit": 64,
+  "parent_exit": 0,
+  "check_count": 45,
+  "checks": [
+    {
+      "name": "whole65_original_help_R2",
+      "passed": true
+    },
+    {
+      "name": "exact_GO_source_and_journal",
+      "passed": true
+    },
+    {
+      "name": "helpR2_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "helpR2_call_log-help-protocol-r2-start",
+      "passed": true
+    },
+    {
+      "name": "helpR2_armed_tree_log-help-protocol-r2-start",
+      "passed": true
+    },
+    {
+      "name": "helpR2_call_log-help-r2-authority-start",
+      "passed": true
+    },
+    {
+      "name": "helpR2_armed_tree_log-help-r2-authority-start",
+      "passed": true
+    },
+    {
+      "name": "helpR2_call_log-help-r2-authority-status-0",
+      "passed": true
+    },
+    {
+      "name": "helpR2_armed_tree_log-help-r2-authority-status-0",
+      "passed": true
+    },
+    {
+      "name": "helpR2_call_log-help-r2-authority-page-000000",
+      "passed": true
+    },
+    {
+      "name": "helpR2_armed_tree_log-help-r2-authority-page-000000",
+      "passed": true
+    },
+    {
+      "name": "helpR2_call_log-help-r2-streams-start",
+      "passed": true
+    },
+    {
+      "name": "helpR2_armed_tree_log-help-r2-streams-start",
+      "passed": true
+    },
+    {
+      "name": "helpR2_call_log-help-r2-streams-status-0",
+      "passed": true
+    },
+    {
+      "name": "helpR2_armed_tree_log-help-r2-streams-status-0",
+      "passed": true
+    },
+    {
+      "name": "helpR2_call_log-help-r2-streams-page-000000",
+      "passed": true
+    },
+    {
+      "name": "helpR2_armed_tree_log-help-r2-streams-page-000000",
+      "passed": true
+    },
+    {
+      "name": "helpR2_call_log-help-r2-streams-page-008192",
+      "passed": true
+    },
+    {
+      "name": "helpR2_armed_tree_log-help-r2-streams-page-008192",
+      "passed": true
+    },
+    {
+      "name": "helpR2_call_log-help-r2-streams-page-016384",
+      "passed": true
+    },
+    {
+      "name": "helpR2_armed_tree_log-help-r2-streams-page-016384",
+      "passed": true
+    },
+    {
+      "name": "helpR2_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "helpR2_observer_b3d67c7fa29c2e6a8a8d06a8d5b5ca637735ef9013299ba3bc94374fdfffcef0",
+      "passed": true
+    },
+    {
+      "name": "helpR2_page_b3d67c7fa29c2e6a8a8d06a8d5b5ca637735ef9013299ba3bc94374fdfffcef0_0",
+      "passed": true
+    },
+    {
+      "name": "helpR2_payload_b3d67c7fa29c2e6a8a8d06a8d5b5ca637735ef9013299ba3bc94374fdfffcef0",
+      "passed": true
+    },
+    {
+      "name": "helpR2_observer_28137ce2d3491df40b7d12ded610295d48f5db62eb2675ad3556254eb40b4ad7",
+      "passed": true
+    },
+    {
+      "name": "helpR2_page_28137ce2d3491df40b7d12ded610295d48f5db62eb2675ad3556254eb40b4ad7_0",
+      "passed": true
+    },
+    {
+      "name": "helpR2_page_28137ce2d3491df40b7d12ded610295d48f5db62eb2675ad3556254eb40b4ad7_8192",
+      "passed": true
+    },
+    {
+      "name": "helpR2_page_28137ce2d3491df40b7d12ded610295d48f5db62eb2675ad3556254eb40b4ad7_16384",
+      "passed": true
+    },
+    {
+      "name": "helpR2_payload_28137ce2d3491df40b7d12ded610295d48f5db62eb2675ad3556254eb40b4ad7",
+      "passed": true
+    },
+    {
+      "name": "helpR2_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "original9_calls_single_START_two_observers_four_pages",
+      "passed": true
+    },
+    {
+      "name": "single_START_exact_request_and_native_binding",
+      "passed": true
+    },
+    {
+      "name": "only_original_job_status_and_streams",
+      "passed": true
+    },
+    {
+      "name": "parent_terminal_zero_full_durable",
+      "passed": true
+    },
+    {
+      "name": "original5627_stdout_zero_stderr",
+      "passed": true
+    },
+    {
+      "name": "new_protocol_actual64_stderr2246",
+      "passed": true
+    },
+    {
+      "name": "actual_whole_strict_public_help",
+      "passed": true
+    },
+    {
+      "name": "actual_help_supports_followup_option_spellings",
+      "passed": true
+    },
+    {
+      "name": "original_child_reaped_group_empty",
+      "passed": true
+    },
+    {
+      "name": "actual_four_application_FDs_closed",
+      "passed": true
+    },
+    {
+      "name": "held_tool_full9_and_whole_SHA",
+      "passed": true
+    },
+    {
+      "name": "original_budgets_and_actual_counts",
+      "passed": true
+    },
+    {
+      "name": "original_observers_closed_no_pending",
+      "passed": true
+    },
+    {
+      "name": "prior_failure_unknowns_and_scope_preserved",
+      "passed": true
+    }
+  ],
+  "scope": {
+    "public_help_qualified": true,
+    "query_authorized": false,
+    "startup_cause_qualified": false,
+    "historical_lineage_qualified": false,
+    "full_replacement": false,
+    "production_cutover": false,
+    "legacy_cleanup": false
+  },
+  "limitations": [
+    "Help options do not establish predicate field names; exact query SOURCE still requires primary-source grammar binding.",
+    "Original R1 failed output remains failed and its unknown stderr was not reconstructed.",
+    "Same held tool was checked but exec by pathname is not atomic exec by FD; tool-internal IO was not syscall traced."
+  ]
+}

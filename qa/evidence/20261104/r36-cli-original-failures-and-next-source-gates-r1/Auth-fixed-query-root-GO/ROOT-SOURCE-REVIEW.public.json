@@ -1,0 +1,162 @@
+{
+  "schema": "heptabao.root-source-review.Mac-fixed-launchd-query.v1",
+  "passed": true,
+  "check_count": 26,
+  "checks": [
+    {
+      "name": "whole29_source_packet",
+      "passed": true
+    },
+    {
+      "name": "actual_help_prerequisite_root45",
+      "passed": true
+    },
+    {
+      "name": "exact_source_request_journal_pins",
+      "passed": true
+    },
+    {
+      "name": "exact_original_R2_source_and_request_and_journal",
+      "passed": true
+    },
+    {
+      "name": "source_strict_forward_inverse",
+      "passed": true
+    },
+    {
+      "name": "journal_strict_forward_inverse",
+      "passed": true
+    },
+    {
+      "name": "same_exact_python_host_cwd_args_outer",
+      "passed": true
+    },
+    {
+      "name": "embedded_owner_and_Commands_whole_unchanged",
+      "passed": true
+    },
+    {
+      "name": "thirteen_original_Python_definitions_byte_exact",
+      "passed": true
+    },
+    {
+      "name": "journal_only_slot_request_and_observer_prefix_changed",
+      "passed": true
+    },
+    {
+      "name": "single_exact_label_launchd_three_second_query",
+      "passed": true
+    },
+    {
+      "name": "installed_actual_help_all_query_options",
+      "passed": true
+    },
+    {
+      "name": "primary_predicate_reference_and_root_open",
+      "passed": true
+    },
+    {
+      "name": "original_worker_evidence_whole_pinned",
+      "passed": true
+    },
+    {
+      "name": "original_clock_window_rounded_exactly_three_seconds",
+      "passed": true
+    },
+    {
+      "name": "original_bootstrap_evidence_in_window",
+      "passed": true
+    },
+    {
+      "name": "same_actual_tool_full9_binding",
+      "passed": true
+    },
+    {
+      "name": "original_absolute_budgets_unchanged",
+      "passed": true
+    },
+    {
+      "name": "hard_combined_and_record_and_line_bounds",
+      "passed": true
+    },
+    {
+      "name": "known_zero_complete_empty_stderr_only",
+      "passed": true
+    },
+    {
+      "name": "exact_label_process_timezone_and_window_before_projection",
+      "passed": true
+    },
+    {
+      "name": "strict_NDJSON_no_duplicate_conflicting_or_nonfinite_values",
+      "passed": true
+    },
+    {
+      "name": "closed_projection_and_no_unknown_text_hash",
+      "passed": true
+    },
+    {
+      "name": "seven_path_mentions_only",
+      "passed": true
+    },
+    {
+      "name": "single_child_query_and_original_cleanup_finally",
+      "passed": true
+    },
+    {
+      "name": "source_does_not_claim_execution_or_cause",
+      "passed": true
+    }
+  ],
+  "source_packet": {
+    "tree": "235b4397bf26a2e19ed83996a7b36a6729fcd4e5",
+    "files": 29,
+    "bytes": 524986,
+    "merkle": {
+      "root_sha": "235b4397bf26a2e19ed83996a7b36a6729fcd4e5",
+      "trees_verified": 1,
+      "leaf_count": 29
+    },
+    "whole": true
+  },
+  "source": {
+    "blob": "7f4821ab3e5de33849e0c92e63bdf9d1d54b44d6",
+    "bytes": 49892,
+    "sha256": "2b0945bcf77dd872172a85262ba5f4ce133b22b9bb3d62d9575630a9cbff7e89"
+  },
+  "request": {
+    "blob": "3a0afddfc2f44a180ccacb3c2fdd4114784717da",
+    "bytes": 50735,
+    "sha256": "8e5c0586388a6ce2dfa68d792c2735fa4bd09fca9bbcfbcaab75c958c32e860a"
+  },
+  "journal": {
+    "blob": "e8d81fc234877a0a38e7207c2127d277e5db82b3",
+    "bytes": 19049,
+    "sha256": "80efc84a45ae533518dd8106039ea3e4772c8e6ced906d78924aba4e77bf34db"
+  },
+  "native_binding": {
+    "sha256": "a4df3dbcb46359e9df251ca48b4c0ae59c25c4cb17576608d01bc0880c93d6e7",
+    "native_fingerprint": "11880282222716213737",
+    "typed_stdin_field": "stdin"
+  },
+  "actual_help_qualification": {
+    "blob": "7c584599c9d1275e06f1c91b27d80dd3c12ef6d3",
+    "bytes": 5996,
+    "sha256": "81320fbb2097411be4ef28931b7de964170925a6ee5dddbc80211da7140ea425"
+  },
+  "primary_predicate_root_refs": [
+    "turn50view0",
+    "turn51view0"
+  ],
+  "scope": "SOURCE only: fixed original label/process/three-second window and closed lexical projection.",
+  "limitations": [
+    "Actual installed NDJSON schema and retained log presence are unobserved.",
+    "An empty projection does not prove absence; lexical mention categories do not establish root cause.",
+    "The old command helper may retain one crossing pipe block before refusal; accepted combined output is capped at 65536 bytes.",
+    "Native log datastore/IPC scanning is not syscall-traced; no new filesystem or TCC permission changes."
+  ],
+  "runtime_calls": 0,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false
+}

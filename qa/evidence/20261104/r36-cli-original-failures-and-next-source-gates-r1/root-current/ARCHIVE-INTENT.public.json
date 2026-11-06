@@ -1,0 +1,70 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r36-checkpoint-root-current",
+  "records": [
+    {
+      "name": "STATE.public.json",
+      "blob": "5a3f1f69bc2afd13b50a99e63825d3ea0e9baa4d",
+      "bytes": 10902,
+      "sha256": "7ab46c9c9d7026b6ad6e3dfcb7c2850376df71d9d37896fb96b0935fabea9b6e"
+    },
+    {
+      "name": "README.md",
+      "blob": "ede5d9907e4f9d388b9ebf247363a863d70163a8",
+      "bytes": 5678,
+      "sha256": "8262cfd5200d400ce0b01e5f4574826d27ac140013b17efdb78d38269fc7c378"
+    },
+    {
+      "name": "MOUNTS.public.json",
+      "blob": "34c68045064beb8f19a8fb2f0b5e63e5113966f0",
+      "bytes": 15111,
+      "sha256": "9537cc642d2392891f67844eba27168980fe74d6f0eeb9b0412e8987aa59c2d0"
+    },
+    {
+      "name": "PREVIOUS-PUBLICATION-PROOF.original.json",
+      "blob": "000da3c99b5561a6e066c212cae33148fa19a09c",
+      "bytes": 1926,
+      "sha256": "41c5972911ee8f0555479a57c3eca16212dcf482ec849548ba46661a0d003339"
+    },
+    {
+      "name": "Auth-path-root68.original.json",
+      "blob": "4c63acf5b37fa6743c7d325a0a119e37540af83a",
+      "bytes": 7923,
+      "sha256": "760e25765ccf686ea433352bfa1663494c3be60bb86b8000318e58dcd50ef6f5"
+    },
+    {
+      "name": "Auth-log-info-root14.original.json",
+      "blob": "64bffd85bc096a61c32931c0f29e18e33673f1e9",
+      "bytes": 2553,
+      "sha256": "7922206aa8bcd2604e2461010ab8bcdb2693f178719b6e7004abd260145a4efa"
+    },
+    {
+      "name": "JWT-stage-root38.original.json",
+      "blob": "fa0a83fb172bb5a04a95ed8ab65de2e3dd724c13",
+      "bytes": 5149,
+      "sha256": "e4018f44b979938295eb202acf2205a6fbad12d178c85134d24af10579f676d1"
+    },
+    {
+      "name": "JWT-formatter-transport-root43.original.json",
+      "blob": "fa9e8030d8f5e5e460cf7b73c603c11d41d17ec8",
+      "bytes": 5806,
+      "sha256": "e63cf09b8662e82d04fc203c1b0ea86fe79e3ba62a0aed032e481c45e23568a1"
+    },
+    {
+      "name": "PKI-enclosing-engine.original.rs",
+      "blob": "d4eb181702573cab33fb48de07765a47d870c713",
+      "bytes": 153342,
+      "sha256": "75e46bb5a44d4934f064003f78450208cf65a0c58a08c69d83138391629c5cf3"
+    },
+    {
+      "name": "PKI-mapper-source-supplement.public.json",
+      "blob": "5e9c507f4183169a4fc02e2edf2491c3adad6be6",
+      "bytes": 648,
+      "sha256": "cc364b9779d844d56483d038573cb31b0eab80026cc314e6c582a70487f01ae7"
+    }
+  ],
+  "expected_data_tree": "130f32b76ce266ad7ee51539231ea920303b7692",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

@@ -1,0 +1,87 @@
+--- a/crates/heptabao-server/src/service_native_pki_tests.rs
++++ b/crates/heptabao-server/src/service_native_pki_tests.rs
+@@ -1181,5 +1181,84 @@
+     f.sentinel()
+ }
+ 
++
++#[test]
++fn native_pki_formal_expired_lease_lookup_matches_openbao_271_400_and_cold() -> TestResult {
++    let mut f = Fixture::new()?;
++    let before = f.root()?;
++    let mut issued = f.admin(
++        "POST",
++        "pki/issue/web",
++        json!({"common_name":"short.example.test","ttl":"2s"}),
++    )?;
++    status(&issued, 200);
++    let lease = text(&issued, "/lease_id")?;
++    let serial = text(&issued, "/data/serial_number")?;
++    let certificate = text(&issued, "/data/certificate")?;
++    assert_eq!(issued.body["lease_duration"], 2);
++    erase_json(&mut issued.body);
++    status(
++        &f.admin("POST", "sys/leases/lookup", json!({"lease_id":lease}))?,
++        200,
++    );
++    f.now += 3;
++    for cold in [false, true] {
++        if cold {
++            f = f.restart()?;
++        }
++        let missing = f.admin("POST", "sys/leases/lookup", json!({"lease_id":lease}))?;
++        status(&missing, 400);
++        assert!(
++            missing.body["errors"]
++                .as_array()
++                .is_some_and(|errors| !errors.is_empty())
++        );
++        assert!(missing.body.get("data").is_none());
++        let retained = f.actor("", "GET", &format!("pki/cert/{serial}"), json!({}))?;
++        status(&retained, 200);
++        assert_eq!(retained.body["data"]["certificate"], certificate);
++    }
++    f.graphs_unchanged(&before)?;
++    f.sentinel()
++}
++
++#[test]
++fn native_pki_formal_revoked_lease_lookup_matches_openbao_271_400_and_cold() -> TestResult {
++    let mut f = Fixture::new()?;
++    let before = f.root()?;
++    let admin = Zeroizing::new(f.admin.to_string());
++    let mut issued = f.issue(&admin)?;
++    let lease = text(&issued, "/lease_id")?;
++    let serial = text(&issued, "/data/serial_number")?;
++    let certificate = text(&issued, "/data/certificate")?;
++    erase_json(&mut issued.body);
++    status(
++        &f.admin("POST", "sys/leases/lookup", json!({"lease_id":lease}))?,
++        200,
++    );
++    status(
++        &f.admin("POST", "sys/leases/revoke", json!({"lease_id":lease,"sync":true}))?,
++        204,
++    );
++    for cold in [false, true] {
++        if cold {
++            f = f.restart()?;
++        }
++        let missing = f.admin("POST", "sys/leases/lookup", json!({"lease_id":lease}))?;
++        status(&missing, 400);
++        assert!(
++            missing.body["errors"]
++                .as_array()
++                .is_some_and(|errors| !errors.is_empty())
++        );
++        assert!(missing.body.get("data").is_none());
++        let retained = f.actor("", "GET", &format!("pki/cert/{serial}"), json!({}))?;
++        status(&retained, 200);
++        assert_eq!(retained.body["data"]["certificate"], certificate);
++    }
++    f.graphs_unchanged(&before)?;
++    f.sentinel()
++}
++
+ #[path = "service_native_pki_archive_tests.rs"]
+ mod archive;

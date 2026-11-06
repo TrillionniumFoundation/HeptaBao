@@ -1,0 +1,15 @@
+{
+  "schema": "heptabao.PKI-enclosing-error-mapper-source-supplement.v1",
+  "source_commit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+  "path": "crates/heptabao-server/src/engines.rs",
+  "source": {
+    "blob": "d4eb181702573cab33fb48de07765a47d870c713",
+    "bytes": 153342,
+    "sha256": "75e46bb5a44d4934f064003f78450208cf65a0c58a08c69d83138391629c5cf3"
+  },
+  "exact_bad_function": "fn bad(message: &str) -> EngineError {\n    error(400, message)\n}",
+  "exact_not_found_function": "fn not_found() -> EngineError {\n    error(404, \"no value found\")\n}",
+  "source_only": true,
+  "compiled": false,
+  "actual_status_test_executed": false
+}

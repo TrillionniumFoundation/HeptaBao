@@ -1,0 +1,226 @@
+use super::*;
+use std::io::Cursor;
+use std::time::Duration;
+
+type TestResult = Result<(), Box<dyn std::error::Error>>;
+
+fn deadline() -> Instant {
+    Instant::now() + Duration::from_secs(2)
+}
+
+fn encoded(input: &[u8], maximum: u64) -> io::Result<(Vec<u8>, EncodedSnapshotBody)> {
+    let mut output = Vec::new();
+    let binding = encode_snapshot_body(
+        &mut Cursor::new(input),
+        &mut output,
+        SnapshotBodyLimits::new(maximum)?,
+        deadline(),
+    )?;
+    Ok((output, binding))
+}
+
+fn invalid_data(result: io::Result<usize>) -> TestResult {
+    let error = result.err().ok_or("unexpected successful stream read")?;
+    assert_eq!(error.kind(), io::ErrorKind::InvalidData);
+    Ok(())
+}
+
+#[test]
+fn snapshot_stream_roundtrip_crosses_ordinary_frame_limit_once() -> TestResult {
+    let data: Vec<u8> = (0..(1024 * 1024 + 19))
+        .map(|index| (index % 251) as u8)
+        .collect();
+    let (wire, sent) = encoded(&data, data.len() as u64)?;
+    let mut reader = SnapshotBodyReader::new(
+        Cursor::new(wire),
+        SnapshotBodyLimits::new(data.len() as u64)?,
+        deadline(),
+    )?;
+    let mut actual = Vec::new();
+    reader.read_to_end(&mut actual)?;
+    let received = reader.finish()?;
+    assert_eq!(actual, data);
+    assert_eq!(received.bytes(), sent.bytes());
+    assert_eq!(received.frames(), 17);
+    assert_eq!(received.sha256(), sent.sha256());
+    Ok(())
+}
+
+#[test]
+fn snapshot_stream_empty_body_requires_explicit_end_and_eof() -> TestResult {
+    let (wire, sent) = encoded(&[], 0)?;
+    assert_eq!(wire.len(), MAGIC.len() + 45);
+    let mut reader =
+        SnapshotBodyReader::new(Cursor::new(wire), SnapshotBodyLimits::new(0)?, deadline())?;
+    let mut byte = [0_u8; 1];
+    assert_eq!(reader.read(&mut byte)?, 0);
+    let received = reader.finish()?;
+    assert_eq!(received.bytes(), 0);
+    assert_eq!(received.frames(), 0);
+    assert_eq!(received.sha256(), sent.sha256());
+    Ok(())
+}
+
+#[test]
+fn snapshot_stream_exact_payload_without_end_is_not_complete() -> TestResult {
+    let (mut wire, _) = encoded(b"exact", 5)?;
+    let end = wire.len().checked_sub(45).ok_or("terminal absent")?;
+    wire.truncate(end);
+    let mut reader =
+        SnapshotBodyReader::new(Cursor::new(wire), SnapshotBodyLimits::new(5)?, deadline())?;
+    let mut actual = [0_u8; 5];
+    reader.read_exact(&mut actual)?;
+    assert_eq!(&actual, b"exact");
+    let error = reader.finish().err().ok_or("missing END was accepted")?;
+    assert_eq!(error.kind(), io::ErrorKind::UnexpectedEof);
+    Ok(())
+}
+
+#[test]
+fn snapshot_stream_end_digest_and_trailing_wire_bytes_are_rejected() -> TestResult {
+    let (valid, _) = encoded(b"body", 4)?;
+    let mut wrong_digest = valid.clone();
+    *wrong_digest.last_mut().ok_or("digest absent")? ^= 1;
+    let mut reader = SnapshotBodyReader::new(
+        Cursor::new(wrong_digest),
+        SnapshotBodyLimits::new(4)?,
+        deadline(),
+    )?;
+    invalid_data(reader.read_to_end(&mut Vec::new()))?;
+
+    let mut trailing = valid;
+    trailing.push(0);
+    let mut reader = SnapshotBodyReader::new(
+        Cursor::new(trailing),
+        SnapshotBodyLimits::new(4)?,
+        deadline(),
+    )?;
+    invalid_data(reader.read_to_end(&mut Vec::new()))?;
+    Ok(())
+}
+
+#[test]
+fn snapshot_stream_declared_oversize_is_rejected_before_payload() -> TestResult {
+    let mut wire = MAGIC.to_vec();
+    wire.push(DATA);
+    wire.extend_from_slice(&0_u32.to_be_bytes());
+    wire.extend_from_slice(&2_u32.to_be_bytes());
+    wire.extend_from_slice(b"ab");
+    let mut input = Cursor::new(wire);
+    {
+        let mut reader =
+            SnapshotBodyReader::new(&mut input, SnapshotBodyLimits::new(1)?, deadline())?;
+        invalid_data(reader.read(&mut [0_u8; 1]))?;
+        invalid_data(reader.read(&mut [0_u8; 1]))?;
+    }
+    assert_eq!(input.position(), 17);
+    assert!(SnapshotBodyLimits::new(MAX_SNAPSHOT_BODY_BYTES + 1).is_err());
+    Ok(())
+}
+
+#[test]
+fn snapshot_stream_short_chunk_cannot_be_followed_by_data() -> TestResult {
+    let mut wire = MAGIC.to_vec();
+    for (sequence, data) in [(0_u32, b"a".as_slice()), (1_u32, b"b".as_slice())] {
+        wire.push(DATA);
+        wire.extend_from_slice(&sequence.to_be_bytes());
+        wire.extend_from_slice(&(data.len() as u32).to_be_bytes());
+        wire.extend_from_slice(data);
+    }
+    let mut reader = SnapshotBodyReader::new(
+        Cursor::new(wire),
+        SnapshotBodyLimits::new(2 * SNAPSHOT_BODY_CHUNK_BYTES as u64)?,
+        deadline(),
+    )?;
+    invalid_data(reader.read_to_end(&mut Vec::new()))?;
+    Ok(())
+}
+
+#[test]
+fn snapshot_stream_consumer_cannot_finish_with_unread_archive_bytes() -> TestResult {
+    let (wire, _) = encoded(b"remaining", 9)?;
+    let mut reader =
+        SnapshotBodyReader::new(Cursor::new(wire), SnapshotBodyLimits::new(9)?, deadline())?;
+    assert_eq!(reader.read(&mut [0_u8; 1])?, 1);
+    let error = reader.finish().err().ok_or("partial consumer was accepted")?;
+    assert_eq!(error.kind(), io::ErrorKind::InvalidData);
+    Ok(())
+}
+
+#[derive(Debug)]
+struct NoAuthenticatedClose {
+    wire: Cursor<Vec<u8>>,
+}
+
+impl Read for NoAuthenticatedClose {
+    fn read(&mut self, output: &mut [u8]) -> io::Result<usize> {
+        if self.wire.position() == self.wire.get_ref().len() as u64 {
+            return Err(io::Error::new(
+                io::ErrorKind::UnexpectedEof,
+                "synthetic TLS close-notify absent",
+            ));
+        }
+        self.wire.read(output)
+    }
+}
+
+#[test]
+fn snapshot_stream_tls_eof_error_after_valid_end_cannot_mint_binding() -> TestResult {
+    let (wire, _) = encoded(b"full", 4)?;
+    let mut reader = SnapshotBodyReader::new(
+        NoAuthenticatedClose { wire: Cursor::new(wire) },
+        SnapshotBodyLimits::new(4)?,
+        deadline(),
+    )?;
+    let mut exact = [0_u8; 4];
+    reader.read_exact(&mut exact)?;
+    assert_eq!(&exact, b"full");
+    let error = reader.finish().err().ok_or("unauthenticated closure was accepted")?;
+    assert_eq!(error.kind(), io::ErrorKind::UnexpectedEof);
+    Ok(())
+}
+
+#[test]
+fn snapshot_stream_original_expired_deadline_precedes_io() -> TestResult {
+    let expired = Instant::now();
+    let mut source = Cursor::new(b"x".as_slice());
+    let mut output = Vec::new();
+    let error = encode_snapshot_body(
+        &mut source,
+        &mut output,
+        SnapshotBodyLimits::new(1)?,
+        expired,
+    )
+    .err()
+    .ok_or("expired encoder was accepted")?;
+    assert_eq!(error.kind(), io::ErrorKind::TimedOut);
+    assert_eq!(source.position(), 0);
+    assert!(output.is_empty());
+
+    let (wire, _) = encoded(b"x", 1)?;
+    let mut input = Cursor::new(wire);
+    let error = SnapshotBodyReader::new(&mut input, SnapshotBodyLimits::new(1)?, expired)
+        .err()
+        .ok_or("expired decoder was accepted")?;
+    assert_eq!(error.kind(), io::ErrorKind::TimedOut);
+    assert_eq!(input.position(), 0);
+    Ok(())
+}
+
+#[test]
+fn snapshot_stream_encoder_checks_one_rejecting_eof_byte_at_exact_cap() -> TestResult {
+    let mut source = Cursor::new(b"four".as_slice());
+    let mut output = Vec::new();
+    let error = encode_snapshot_body(
+        &mut source,
+        &mut output,
+        SnapshotBodyLimits::new(3)?,
+        deadline(),
+    )
+    .err()
+    .ok_or("over-limit source was accepted")?;
+    assert_eq!(error.kind(), io::ErrorKind::InvalidData);
+    assert_eq!(source.position(), 4);
+    assert_eq!(output.as_slice(), MAGIC.as_slice());
+    Ok(())
+}

@@ -1,0 +1,10 @@
+{
+  "schema": "heptabao.source-packet-local-validation-note.v1",
+  "originalAttempt": "snapshot-standby-forward-architecture-docs-r1",
+  "error": "flat_public_text_entry",
+  "phase": "before archival admission and before Git tools",
+  "oldOnceMarkerExists": false,
+  "NativeCalls": 0,
+  "GitMutationCallsForRejectedAttempt": 0,
+  "correction": "Only public artifact filenames flattened; every source/document byte remains identical."
+}

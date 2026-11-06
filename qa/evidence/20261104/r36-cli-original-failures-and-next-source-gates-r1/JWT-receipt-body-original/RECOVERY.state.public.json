@@ -1,0 +1,1190 @@
+{
+  "rootGoWhole": true,
+  "goRaw": "{\n  \"schema\": \"heptabao.root-GO.JWT-nine-fixed-source-copy-formatter.v1\",\n  \"authorization\": \"GO\",\n  \"as_of_UTC\": \"2026-11-06 03:56:06 UTC\",\n  \"agent\": \"/root/ha_validation\",\n  \"purpose\": \"Format nine pinned canonical Rust source copies into one new owned root, preserving the actual independent checkout; require immutable formatted successor if any bytes change before Cargo\",\n  \"source_packet\": \"a97c73a2c260e727154d0f3e877005fcb6876985\",\n  \"source_review\": {\n    \"blob\": \"3deb8494ddd4476b84e4ff0f122f93a554a57479\",\n    \"bytes\": 2953,\n    \"sha256\": \"deba903bcf6de0ad8a3de233c06920461b3b872940c7d69e171175c3b2c56d16\"\n  },\n  \"journal_packet\": \"0a081ed538570a1d5a83d2117a20c5f1e17f8907\",\n  \"journal_review\": {\n    \"blob\": \"97aa99918b5e0eb8d54132e6c5bf939ae9187370\",\n    \"bytes\": 1513,\n    \"sha256\": \"63a07b4fb2baa72181aa8ee4d4894cffaabd39225fe9565cc491c0b175b11280\"\n  },\n  \"actual_stage_prerequisite\": {\n    \"original_job\": \"rog/1a1aed43ac9-fc05-62ec\",\n    \"original_report\": {\n      \"blob\": \"75b57b2aeff043a0114a987e96ab7a9e73d521f0\",\n      \"bytes\": 27581,\n      \"sha256\": \"0bf4e76a64ded7fa9ff5af683252cbe6e19f055766fb9004345bbc2c265c4666\"\n    },\n    \"root_qualification\": {\n      \"blob\": \"fa0a83fb172bb5a04a95ed8ab65de2e3dd724c13\",\n      \"bytes\": 5149,\n      \"sha256\": \"e4018f44b979938295eb202acf2205a6fbad12d178c85134d24af10579f676d1\"\n    },\n    \"passed\": true,\n    \"actual57_children_closed\": true,\n    \"original_observers_closed\": true,\n    \"canonical_full_index\": \"d545c2109362dc3f74d85ade2e66717d7b1ff9dd630842982f2ae3215e121dea\"\n  },\n  \"source\": {\n    \"blob\": \"1266e75033bee0962b0d77d3c35ee19ec53086db\",\n    \"bytes\": 10532,\n    \"sha256\": \"f12b91c2bffd7d466b0f9912fbdd6f62360ce66a008757a7c2ee9c02ab4d21c3\"\n  },\n  \"exact_request\": {\n    \"blob\": \"0ec62f939a62a2a23c73e33d25f1043957aeeb58\",\n    \"bytes\": 12372,\n    \"sha256\": \"1ad41c45534f842fdd7010ab184db3f46460f87f8ead786efc142461b709bc91\"\n  },\n  \"input_manifest\": {\n    \"blob\": \"78c52454968a69636287eeab88ce328a77bff534\",\n    \"bytes\": 1211,\n    \"sha256\": \"24a0808820c0f3596011eddd20e48190ab2ba63edecf30e230a0802e2d702c5c\"\n  },\n  \"native_binding\": {\n    \"sha256\": \"97b92b61a47d93f1a7a871d7ae2ce3bb08e3c26a67c2302947a464704a654839\",\n    \"native_fingerprint\": \"10932817268790105073\",\n    \"typed_stdin_field\": \"stdin\"\n  },\n  \"start\": {\n    \"host\": \"rog\",\n    \"executable\": \"/usr/bin/python3\",\n    \"args\": [\n      \"-I\",\n      \"-S\",\n      \"-B\",\n      \"-c\",\n      \"import hashlib,json,os,signal,stat,subprocess,sys,time\\nfrom pathlib import Path\\nSTART=time.monotonic(); LIMIT=50.0\\nROOT=Path('/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1')\\nSRC=ROOT\\nSOURCE=Path('/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/source/crates/heptabao-server/src')\\nFMT=Path('/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt')\\nFMT_SHA='5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877'\\nEXPECTED={\\\"auth.rs\\\":[\\\"f28541658b6663ebdfed8d5fc4f019c976f2daf24bc372961e17755ebc2ad601\\\",\\\"6fe0c3a8af3af126be3217143c85519e9b6d9abf7fcbc33f08e6b553ba5a7c97\\\"],\\\"auth_native_jwt.rs\\\":[None,\\\"d28cc6af7a1ef30fecb704ac9d3917a2c54ad8d6f8ac1cb77e6f75eca9de5042\\\"],\\\"auth_native_v6_routes.rs\\\":[\\\"c5a932161eaeced8bef1c5dcd0a869ba9895bc0cafb9f4d80967cc7a21641c01\\\",\\\"9114c08a472dfde56837f6bbccf565e471ee2b5286980efb906c3121c71d1761\\\"],\\\"federated_auth.rs\\\":[\\\"177477696829aee63cf7d8fa68ebcc6f1c556f90814d877cec70a17a6981b097\\\",\\\"8ac92cf16e18ceccb479322103228142fea413f6ce7ecbcfd9e908ed07bd1cdb\\\"],\\\"federated_native_jwt.rs\\\":[\\\"d0c673be357721547d5eb1db95fbac48104e30a22420b4b1efb0635fefcaa6fa\\\",\\\"255ec883fbb055fdfaea3d8f771fb723a4bb5b524d87f846dcc197dd5e46e92e\\\"],\\\"service.rs\\\":[\\\"2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2\\\",\\\"5953adcb817a2210cc2b5266ec145632e7a263d39b7c61b2811e4c9d1ece289a\\\"],\\\"service_native_auth.rs\\\":[\\\"dbf07f20dc30ac077761c6ec01936c7f7cd03a3687409d60cca674d4b2ed11cf\\\",\\\"877d158852e1e47dea0f65e3207592db1226fd92ba50d51f698f2f31d657c1a2\\\"],\\\"service_native_jwt_tests.rs\\\":[None,\\\"f7ca5c2c6e67717287887d31d5d8d40459f5ed6fb40524e5d026c95ee07fa48b\\\"],\\\"service_native_userpass_tests.rs\\\":[\\\"a8eaf62664654721252a4df34400d5ecffdf836b9e23b280b38a270776e9e995\\\",\\\"750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea\\\"]}\\nSOURCE_SIZES={\\\"auth.rs\\\":397709,\\\"auth_native_jwt.rs\\\":17391,\\\"auth_native_v6_routes.rs\\\":21959,\\\"federated_auth.rs\\\":56677,\\\"federated_native_jwt.rs\\\":7709,\\\"service.rs\\\":519054,\\\"service_native_auth.rs\\\":142316,\\\"service_native_jwt_tests.rs\\\":33059,\\\"service_native_userpass_tests.rs\\\":25592}\\nFORMAT_OUTPUT_CAPS={\\\"auth.rs\\\":524288,\\\"auth_native_jwt.rs\\\":262144,\\\"auth_native_v6_routes.rs\\\":262144,\\\"federated_auth.rs\\\":262144,\\\"federated_native_jwt.rs\\\":262144,\\\"service.rs\\\":655360,\\\"service_native_auth.rs\\\":262144,\\\"service_native_jwt_tests.rs\\\":262144,\\\"service_native_userpass_tests.rs\\\":262144}\\nFORMAT_CONFIG=b'edition = \\\"2024\\\"\\\\n'\\nFORMAT_CONFIG_SHA='f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584'\\nos.umask(0o077)\\ndef remain():\\n r=LIMIT-(time.monotonic()-START)\\n if r<=0: raise RuntimeError('format_total_deadline')\\n return r\\ndef sha(b): return hashlib.sha256(b).hexdigest()\\ndef read_pin(p,expected_bytes=None):\\n fd=os.open(p,os.O_RDONLY|os.O_NOFOLLOW)\\n try:\\n  a=os.fstat(fd)\\n  if not stat.S_ISREG(a.st_mode) or a.st_uid!=os.getuid() or a.st_nlink!=1 or not 0<a.st_size<=8*1024*1024: raise RuntimeError('input_custody')\\n  if expected_bytes is not None and a.st_size!=expected_bytes: raise RuntimeError('source_size_pin')\\n  out=bytearray()\\n  while True:\\n   remain();part=os.read(fd,65536)\\n   if not part: break\\n   out.extend(part)\\n  b=os.fstat(fd);n=os.lstat(p)\\n  keys=lambda s:(s.st_dev,s.st_ino,s.st_size,s.st_mtime_ns,s.st_ctime_ns,s.st_mode,s.st_uid,s.st_gid,s.st_nlink)\\n  if keys(a)!=keys(b) or keys(a)!=keys(n): raise RuntimeError('input_changed')\\n  return bytes(out),{'path':str(p),'sha256':sha(out),'bytes':len(out),'identity':list(keys(a))}\\n finally: os.close(fd)\\ndef write_new(p,b):\\n fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)\\n try:\\n  view=memoryview(b)\\n  while view:\\n   remain();n=os.write(fd,view)\\n   if n<=0: raise RuntimeError('short_write')\\n   view=view[n:]\\n  os.fsync(fd)\\n finally: os.close(fd)\\ndef sync_dir(p):\\n fd=os.open(p,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)\\n try: os.fsync(fd)\\n finally: os.close(fd)\\nreport={'schema':'heptabao.native-jwt-input-rustfmt.v1','status':'failed','productExecuted':False,\\n 'compileExecuted':False,'productionChanged':False,'sourceCommit':'e3afc157447d35c861f275a761b29da3e42aff8e',\\n 'sourceTree':'5497775d9d473541e13e1603be8c893a3e27681b','sourceIdentityIsBaseOnly':False,\\n 'uncommittedCandidateInputs':False,'edition':'2024',\\n 'sourcePath':str(SOURCE),'sourceInputTotalBytes':1221466,\\n 'fixedFormattedOutputCaps':FORMAT_OUTPUT_CAPS,\\n 'sourceIdentityFields':['dev','ino','size','mtime_ns','ctime_ns','full_mode','uid','gid','nlink'],\\n 'internalSeconds':50,'newRemoteSupervisorSeconds':60,'files':[],'children':[]}\\ncreated=False;tool_before=None;config_before=None;source_before={}\\ntry:\\n raw=sys.stdin.buffer.read(262145)\\n if len(raw)>262144: raise RuntimeError('input_size')\\n carrier=json.loads(raw)\\n if set(carrier)!=set(EXPECTED): raise RuntimeError('input_names')\\n if SOURCE.resolve(strict=True)!=SOURCE: raise RuntimeError('source_parent_symlink')\\n data={}\\n for name in EXPECTED:\\n  if carrier[name]!={'bytes':SOURCE_SIZES[name],'sha256':EXPECTED[name][1]}: raise RuntimeError('source_manifest_pin')\\n  path=SOURCE/name\\n  if path.resolve(strict=True)!=path: raise RuntimeError('source_symlink')\\n  original,pin=read_pin(path,SOURCE_SIZES[name])\\n  if len(original)!=SOURCE_SIZES[name] or sha(original)!=EXPECTED[name][1]: raise RuntimeError('candidate_input_pin')\\n  source_before[name]=pin\\n  data[name]=original.decode('utf-8')\\n report['sourceInputsBefore']=source_before\\n report['inputCarrierSha256']=sha(raw)\\n if FMT.resolve(strict=True)!=FMT: raise RuntimeError('rustfmt_parent_symlink')\\n tool_bytes,tool_before=read_pin(FMT)\\n if sha(tool_bytes)!=FMT_SHA: raise RuntimeError('rustfmt_pin')\\n report['rustfmtBefore']=tool_before\\n report['originalSourceProvenance']='Nine fixed files from exact independent e3afc157 checkout; source is only read, formatting writes owned copies'\\n report['inputOriginalAndCandidatePins']=EXPECTED\\n ROOT.mkdir(mode=0o700);created=True\\n (ROOT/'candidate').mkdir(mode=0o700);(ROOT/'formatted').mkdir(mode=0o700)\\n write_new(ROOT/'rustfmt.toml',FORMAT_CONFIG)\\n config_bytes,config_before=read_pin(ROOT/'rustfmt.toml')\\n if config_bytes!=FORMAT_CONFIG or sha(config_bytes)!=FORMAT_CONFIG_SHA: raise RuntimeError('format_config_pin')\\n report['formatConfigurationBefore']=config_before\\n report['repositoryRustfmtConfigPresent']=False\\n report['ownedConfiguration']='Edition 2024 only; all other rustfmt defaults; explicit config path excludes ambient parent configuration'\\n for name in EXPECTED:\\n  text=data[name];write_new(ROOT/'candidate'/name,text.encode())\\n  argv=[str(FMT),'--config-path',str(ROOT/'rustfmt.toml'),'--edition','2024','--emit','stdout']\\n  p=subprocess.Popen(argv,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,\\n      cwd=str(SRC),env={'PATH':'/usr/bin:/bin','LANG':'C.UTF-8'},start_new_session=False)\\n  child={'pid':p.pid,'argv':argv,'cwd':str(SRC),'timeoutSeconds':10,'stopped':False,'newProcessGroupCreated':False}\\n  report['children'].append(child)\\n  try:\\n   child['pgid']=os.getpgid(p.pid)\\n   child['supervisorGroup']=os.getpgrp()\\n   if child['pgid']!=child['supervisorGroup']: raise RuntimeError('child_escaped_supervisor_group')\\n   out,err=p.communicate(text.encode(),timeout=min(10.0,remain()))\\n  except BaseException:\\n   if p.poll() is None:\\n    p.kill()\\n    p.wait(timeout=min(5.0,remain()))\\n   child.update(exitCode=p.returncode,reaped=p.returncode is not None)\\n   child['stopped']=child['reaped']\\n   raise\\n  child.update(exitCode=p.returncode,reaped=True)\\n  child['stopped']=True\\n  if len(err)>65536: raise RuntimeError('formatted_stderr_bound')\\n  write_new(ROOT/(name+'.rustfmt.stderr'),err)\\n  if p.returncode!=0 or not child['stopped']: raise RuntimeError('rustfmt_failed_or_group_remaining')\\n  write_new(ROOT/(name+'.rustfmt.stdout'),out)\\n  if len(out)>FORMAT_OUTPUT_CAPS[name] or not out.startswith(text.splitlines()[0].encode()+b'\\\\n'): raise RuntimeError('formatted_output_shape')\\n  write_new(ROOT/'formatted'/name,out)\\n  report['files'].append({'name':name,'beforeSha256':sha(text.encode()),'beforeBytes':len(text.encode()),\\n      'afterSha256':sha(out),'afterBytes':len(out),'stderrBytes':len(err),'stderrSha256':sha(err)})\\n sync_dir(ROOT/'candidate');sync_dir(ROOT/'formatted');sync_dir(ROOT)\\n remain();report['status']='passed'\\nexcept BaseException as e:\\n report['errorType']=type(e).__name__;report['error']=str(e)\\nfinally:\\n report['sourceInputsAfter']={}\\n for name,before_pin in source_before.items():\\n  try:\\n   path=SOURCE/name\\n   if path.resolve(strict=True)!=path: raise RuntimeError('source_symlink')\\n   original,after_pin=read_pin(path,SOURCE_SIZES[name])\\n   report['sourceInputsAfter'][name]=after_pin\\n   if sha(original)!=EXPECTED[name][1] or after_pin!=before_pin: raise RuntimeError('source_changed')\\n  except BaseException as e:\\n   report['sourceFenceError']=type(e).__name__+':'+str(e);report['status']='failed'\\n report['allFixedSourceInputsUnchanged']=len(source_before)==len(EXPECTED) and report['sourceInputsAfter']==source_before\\n if not report['allFixedSourceInputsUnchanged']: report['status']='failed'\\n if tool_before is not None:\\n  try:\\n   report['rustfmtAfter']=read_pin(FMT)[1]\\n   if report['rustfmtAfter']!=tool_before: raise RuntimeError('rustfmt_changed')\\n  except BaseException as e:\\n   report['fenceError']=type(e).__name__+':'+str(e);report['status']='failed'\\n if config_before is not None:\\n  try:\\n   config_bytes,report['formatConfigurationAfter']=read_pin(ROOT/'rustfmt.toml')\\n   if config_bytes!=FORMAT_CONFIG or report['formatConfigurationAfter']!=config_before: raise RuntimeError('format_config_changed')\\n  except BaseException as e:\\n   report['configFenceError']=type(e).__name__+':'+str(e);report['status']='failed'\\n report['elapsedSeconds']=time.monotonic()-START\\n report['withinDeadline']=report['elapsedSeconds']<LIMIT\\n report['allOwnedStopped']=all(x.get('stopped') is True for x in report['children'])\\n if not report['withinDeadline'] or not report['allOwnedStopped']: report['status']='failed'\\n if created:\\n  try:\\n   write_new(ROOT/'result.public.json',(json.dumps(report,sort_keys=True,indent=2)+'\\\\n').encode())\\n   sync_dir(ROOT)\\n  except BaseException as e:\\n   report['publicationError']=type(e).__name__;report['status']='failed'\\n print(json.dumps({'status':report['status'],'root':str(ROOT),'files':report['files'],\\n   'allOwnedStopped':report['allOwnedStopped'],'elapsedSeconds':time.monotonic()-START,\\n   'withinDeadline':time.monotonic()-START<LIMIT,'error':report.get('error'),'publicationError':report.get('publicationError')},sort_keys=True),flush=True)\\nsys.exit(0 if report['status']=='passed' and time.monotonic()-START<LIMIT else 1)\\n\"\n    ],\n    \"cwd\": \"/home/qian-qi\",\n    \"timeout_seconds\": 60,\n    \"idempotency_key\": \"heptabao-native-jwt-e3afc157-format-20261106-r1-f12b91c2\",\n    \"maximum_START_count\": 1\n  },\n  \"source_commit\": \"e3afc157447d35c861f275a761b29da3e42aff8e\",\n  \"source_tree\": \"5497775d9d473541e13e1603be8c893a3e27681b\",\n  \"readonly_source_directory\": \"/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/source/crates/heptabao-server/src\",\n  \"new_create_only_root\": \"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1\",\n  \"nine_source_pins\": {\n    \"auth.rs\": {\n      \"blob\": \"19646b7848e5588d72f5514400d607696549611d\",\n      \"bytes\": 397709,\n      \"sha256\": \"6fe0c3a8af3af126be3217143c85519e9b6d9abf7fcbc33f08e6b553ba5a7c97\"\n    },\n    \"auth_native_jwt.rs\": {\n      \"blob\": \"2e76f906edefb92406328459fd6c5711dfa7ad2b\",\n      \"bytes\": 17391,\n      \"sha256\": \"d28cc6af7a1ef30fecb704ac9d3917a2c54ad8d6f8ac1cb77e6f75eca9de5042\"\n    },\n    \"auth_native_v6_routes.rs\": {\n      \"blob\": \"6bb16ad15f43d0ca908438b4fb26d44d625f476b\",\n      \"bytes\": 21959,\n      \"sha256\": \"9114c08a472dfde56837f6bbccf565e471ee2b5286980efb906c3121c71d1761\"\n    },\n    \"federated_auth.rs\": {\n      \"blob\": \"21c48f7d50d30076d1aae82d51ce2b782a9739dc\",\n      \"bytes\": 56677,\n      \"sha256\": \"8ac92cf16e18ceccb479322103228142fea413f6ce7ecbcfd9e908ed07bd1cdb\"\n    },\n    \"federated_native_jwt.rs\": {\n      \"blob\": \"0b4f4b18be19951e6744e1202f2fb1561351add2\",\n      \"bytes\": 7709,\n      \"sha256\": \"255ec883fbb055fdfaea3d8f771fb723a4bb5b524d87f846dcc197dd5e46e92e\"\n    },\n    \"service.rs\": {\n      \"blob\": \"c75adfe47637c5b2b559e515a754521e93238445\",\n      \"bytes\": 519054,\n      \"sha256\": \"5953adcb817a2210cc2b5266ec145632e7a263d39b7c61b2811e4c9d1ece289a\"\n    },\n    \"service_native_auth.rs\": {\n      \"blob\": \"c4b356de7c082b396e7e26024f567fb5337a55bb\",\n      \"bytes\": 142316,\n      \"sha256\": \"877d158852e1e47dea0f65e3207592db1226fd92ba50d51f698f2f31d657c1a2\"\n    },\n    \"service_native_jwt_tests.rs\": {\n      \"blob\": \"89f3ce081c94e08446a15b11fdc76a1d724ab09e\",\n      \"bytes\": 33059,\n      \"sha256\": \"f7ca5c2c6e67717287887d31d5d8d40459f5ed6fb40524e5d026c95ee07fa48b\"\n    },\n    \"service_native_userpass_tests.rs\": {\n      \"blob\": \"0aafabbd9af4d381808f73efd2cba76e6eef3558\",\n      \"bytes\": 25592,\n      \"sha256\": \"750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea\"\n    }\n  },\n  \"formatter\": {\n    \"path\": \"/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt\",\n    \"sha256\": \"5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877\",\n    \"edition\": \"2024\",\n    \"new_fixed_config_only\": true,\n    \"canonical_ambient_rustfmt_configs\": 0\n  },\n  \"budgets\": {\n    \"shared_seconds\": 50,\n    \"each_child_seconds\": 10,\n    \"outer_seconds\": 60,\n    \"stdin_cap\": 262144,\n    \"source_bytes\": 1221466,\n    \"per_file_output_caps\": {\n      \"auth.rs\": 524288,\n      \"auth_native_jwt.rs\": 262144,\n      \"auth_native_v6_routes.rs\": 262144,\n      \"federated_auth.rs\": 262144,\n      \"federated_native_jwt.rs\": 262144,\n      \"service.rs\": 655360,\n      \"service_native_auth.rs\": 262144,\n      \"service_native_jwt_tests.rs\": 262144,\n      \"service_native_userpass_tests.rs\": 262144\n    },\n    \"stderr_per_file\": 65536,\n    \"original_cleanup_caps_unchanged\": true\n  },\n  \"future_fixed_output_reads\": {\n    \"authorized\": false,\n    \"source_plan\": {\n      \"blob\": \"b073f3be7b85cdaf462dd99938fc8603151b0be3\",\n      \"bytes\": 15053,\n      \"sha256\": \"0f4a4671f710b8ffffd6a96e8fc4d2f856e1e0c55ad4831de3c66ff1f248c032\"\n    },\n    \"receipt_admission_cap\": 65536,\n    \"success_observation_bytes_cap\": 7906155,\n    \"cap_is_observation_refusal_not_runtime_write_limit\": true,\n    \"requires_actual_terminal_and_separate_exact_file_info_body_scope\": true\n  },\n  \"journal\": {\n    \"slot\": \"jwt_e3af_rog_formatter_gitfirst_r1\",\n    \"native\": {\n      \"blob\": \"044ad2b54eac035d156b404c2f56196964cfe33f\",\n      \"bytes\": 19041,\n      \"sha256\": \"8f46725a5b48779a141ce153557a4db0798bcc85426b9f2d88ad31b160e98e8d\"\n    },\n    \"archive\": {\n      \"blob\": \"b093fdbf655511f7db94be2d95555606141bbb42\",\n      \"bytes\": 5957,\n      \"sha256\": \"8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397\"\n    },\n    \"pure\": {\n      \"blob\": \"b6890e8b7217c546bec073dcb04988fc37652721\",\n      \"bytes\": 6685,\n      \"sha256\": \"44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432\"\n    },\n    \"call_key_prefix\": \"jwt-e3af-rog-formatter-\",\n    \"observer_key_prefix\": \"heptabao-native-jwt-e3afc157-formatter-observe-r1-\",\n    \"only_entry\": \"gfRun\",\n    \"process_read_limit\": 16384,\n    \"original_immutable_page_limit\": 8192,\n    \"original_payload_cap\": 1048576,\n    \"max_native_call_future_per_lane\": 1,\n    \"max_Runtime_lanes\": 2,\n    \"sequence\": [\n      \"Whole exact GO then initialize one fresh formatter context with correct typed stdin digest/fingerprint\",\n      \"Exact request/intent/armed externally whole before independent model boundary\",\n      \"One actual process_start and returned SDK externally whole before parse\",\n      \"Only actual original rog job process_status/process_read and original operation ID status/next8192 pages\",\n      \"Full original payload SHA/EOF and inactive observer closure before new admission\"\n    ],\n    \"unknown\": \"Preserve original SDK/exception and stop; readonly exact Git reconciliation only; no repeated create, Native replay, re-key or automatic unpause\"\n  },\n  \"requires_actual_post_run\": [\n    \"Authority exit0/full/durable and complete final output\",\n    \"Nine original child exit0/reaped/groupempty under original deadlines\",\n    \"Source nine/tool/config before-after identities and hashes unchanged\",\n    \"Exact known outputs and receipt; no source qualification solely from metadata\",\n    \"Any byte change creates new frozen source commit before build\"\n  ],\n  \"lane_disposition\": {\n    \"A\": \"Metadata original observers closed,0Runtime;SOURCE next only\",\n    \"B\": \"One CLI13 original body lane\",\n    \"C\": \"One formatter lane now activated\",\n    \"root\": \"0Runtime\"\n  },\n  \"excluded\": [\n    \"editing original source checkout\",\n    \"Cargo/compilation/tests/server start\",\n    \"production changes\",\n    \"unbound output read or directory scan\",\n    \"replaying old stager or failed build\",\n    \"legacy deletion\"\n  ],\n  \"full_replacement\": false,\n  \"production_cutover\": false,\n  \"legacy_cleanup\": false,\n  \"root_Runtime_calls\": 0\n}\n",
+  "goPin": {
+    "blob": "e04895a8ccb5327e69be8d69a41a44b10a22ee78",
+    "bytes": 19544,
+    "sha256": "86cc62e0dc9e1278c974d423b839a0fda92882e5ba141c8c1208a326808b16b8"
+  },
+  "digest": "97b92b61a47d93f1a7a871d7ae2ce3bb08e3c26a67c2302947a464704a654839",
+  "fingerprint": "10932817268790105073",
+  "job": "1a1af017fae-fc05-64f1",
+  "startCalled": true,
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "paused": false,
+  "calls": {
+    "jwt-e3af-rog-formatter-start-r1": {
+      "kind": "process_start",
+      "requestRaw": "{\n  \"host\": \"rog\",\n  \"executable\": \"/usr/bin/python3\",\n  \"args\": [\n    \"-I\",\n    \"-S\",\n    \"-B\",\n    \"-c\",\n    \"import hashlib,json,os,signal,stat,subprocess,sys,time\\nfrom pathlib import Path\\nSTART=time.monotonic(); LIMIT=50.0\\nROOT=Path('/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1')\\nSRC=ROOT\\nSOURCE=Path('/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/source/crates/heptabao-server/src')\\nFMT=Path('/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt')\\nFMT_SHA='5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877'\\nEXPECTED={\\\"auth.rs\\\":[\\\"f28541658b6663ebdfed8d5fc4f019c976f2daf24bc372961e17755ebc2ad601\\\",\\\"6fe0c3a8af3af126be3217143c85519e9b6d9abf7fcbc33f08e6b553ba5a7c97\\\"],\\\"auth_native_jwt.rs\\\":[None,\\\"d28cc6af7a1ef30fecb704ac9d3917a2c54ad8d6f8ac1cb77e6f75eca9de5042\\\"],\\\"auth_native_v6_routes.rs\\\":[\\\"c5a932161eaeced8bef1c5dcd0a869ba9895bc0cafb9f4d80967cc7a21641c01\\\",\\\"9114c08a472dfde56837f6bbccf565e471ee2b5286980efb906c3121c71d1761\\\"],\\\"federated_auth.rs\\\":[\\\"177477696829aee63cf7d8fa68ebcc6f1c556f90814d877cec70a17a6981b097\\\",\\\"8ac92cf16e18ceccb479322103228142fea413f6ce7ecbcfd9e908ed07bd1cdb\\\"],\\\"federated_native_jwt.rs\\\":[\\\"d0c673be357721547d5eb1db95fbac48104e30a22420b4b1efb0635fefcaa6fa\\\",\\\"255ec883fbb055fdfaea3d8f771fb723a4bb5b524d87f846dcc197dd5e46e92e\\\"],\\\"service.rs\\\":[\\\"2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2\\\",\\\"5953adcb817a2210cc2b5266ec145632e7a263d39b7c61b2811e4c9d1ece289a\\\"],\\\"service_native_auth.rs\\\":[\\\"dbf07f20dc30ac077761c6ec01936c7f7cd03a3687409d60cca674d4b2ed11cf\\\",\\\"877d158852e1e47dea0f65e3207592db1226fd92ba50d51f698f2f31d657c1a2\\\"],\\\"service_native_jwt_tests.rs\\\":[None,\\\"f7ca5c2c6e67717287887d31d5d8d40459f5ed6fb40524e5d026c95ee07fa48b\\\"],\\\"service_native_userpass_tests.rs\\\":[\\\"a8eaf62664654721252a4df34400d5ecffdf836b9e23b280b38a270776e9e995\\\",\\\"750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea\\\"]}\\nSOURCE_SIZES={\\\"auth.rs\\\":397709,\\\"auth_native_jwt.rs\\\":17391,\\\"auth_native_v6_routes.rs\\\":21959,\\\"federated_auth.rs\\\":56677,\\\"federated_native_jwt.rs\\\":7709,\\\"service.rs\\\":519054,\\\"service_native_auth.rs\\\":142316,\\\"service_native_jwt_tests.rs\\\":33059,\\\"service_native_userpass_tests.rs\\\":25592}\\nFORMAT_OUTPUT_CAPS={\\\"auth.rs\\\":524288,\\\"auth_native_jwt.rs\\\":262144,\\\"auth_native_v6_routes.rs\\\":262144,\\\"federated_auth.rs\\\":262144,\\\"federated_native_jwt.rs\\\":262144,\\\"service.rs\\\":655360,\\\"service_native_auth.rs\\\":262144,\\\"service_native_jwt_tests.rs\\\":262144,\\\"service_native_userpass_tests.rs\\\":262144}\\nFORMAT_CONFIG=b'edition = \\\"2024\\\"\\\\n'\\nFORMAT_CONFIG_SHA='f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584'\\nos.umask(0o077)\\ndef remain():\\n r=LIMIT-(time.monotonic()-START)\\n if r<=0: raise RuntimeError('format_total_deadline')\\n return r\\ndef sha(b): return hashlib.sha256(b).hexdigest()\\ndef read_pin(p,expected_bytes=None):\\n fd=os.open(p,os.O_RDONLY|os.O_NOFOLLOW)\\n try:\\n  a=os.fstat(fd)\\n  if not stat.S_ISREG(a.st_mode) or a.st_uid!=os.getuid() or a.st_nlink!=1 or not 0<a.st_size<=8*1024*1024: raise RuntimeError('input_custody')\\n  if expected_bytes is not None and a.st_size!=expected_bytes: raise RuntimeError('source_size_pin')\\n  out=bytearray()\\n  while True:\\n   remain();part=os.read(fd,65536)\\n   if not part: break\\n   out.extend(part)\\n  b=os.fstat(fd);n=os.lstat(p)\\n  keys=lambda s:(s.st_dev,s.st_ino,s.st_size,s.st_mtime_ns,s.st_ctime_ns,s.st_mode,s.st_uid,s.st_gid,s.st_nlink)\\n  if keys(a)!=keys(b) or keys(a)!=keys(n): raise RuntimeError('input_changed')\\n  return bytes(out),{'path':str(p),'sha256':sha(out),'bytes':len(out),'identity':list(keys(a))}\\n finally: os.close(fd)\\ndef write_new(p,b):\\n fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)\\n try:\\n  view=memoryview(b)\\n  while view:\\n   remain();n=os.write(fd,view)\\n   if n<=0: raise RuntimeError('short_write')\\n   view=view[n:]\\n  os.fsync(fd)\\n finally: os.close(fd)\\ndef sync_dir(p):\\n fd=os.open(p,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)\\n try: os.fsync(fd)\\n finally: os.close(fd)\\nreport={'schema':'heptabao.native-jwt-input-rustfmt.v1','status':'failed','productExecuted':False,\\n 'compileExecuted':False,'productionChanged':False,'sourceCommit':'e3afc157447d35c861f275a761b29da3e42aff8e',\\n 'sourceTree':'5497775d9d473541e13e1603be8c893a3e27681b','sourceIdentityIsBaseOnly':False,\\n 'uncommittedCandidateInputs':False,'edition':'2024',\\n 'sourcePath':str(SOURCE),'sourceInputTotalBytes':1221466,\\n 'fixedFormattedOutputCaps':FORMAT_OUTPUT_CAPS,\\n 'sourceIdentityFields':['dev','ino','size','mtime_ns','ctime_ns','full_mode','uid','gid','nlink'],\\n 'internalSeconds':50,'newRemoteSupervisorSeconds':60,'files':[],'children':[]}\\ncreated=False;tool_before=None;config_before=None;source_before={}\\ntry:\\n raw=sys.stdin.buffer.read(262145)\\n if len(raw)>262144: raise RuntimeError('input_size')\\n carrier=json.loads(raw)\\n if set(carrier)!=set(EXPECTED): raise RuntimeError('input_names')\\n if SOURCE.resolve(strict=True)!=SOURCE: raise RuntimeError('source_parent_symlink')\\n data={}\\n for name in EXPECTED:\\n  if carrier[name]!={'bytes':SOURCE_SIZES[name],'sha256':EXPECTED[name][1]}: raise RuntimeError('source_manifest_pin')\\n  path=SOURCE/name\\n  if path.resolve(strict=True)!=path: raise RuntimeError('source_symlink')\\n  original,pin=read_pin(path,SOURCE_SIZES[name])\\n  if len(original)!=SOURCE_SIZES[name] or sha(original)!=EXPECTED[name][1]: raise RuntimeError('candidate_input_pin')\\n  source_before[name]=pin\\n  data[name]=original.decode('utf-8')\\n report['sourceInputsBefore']=source_before\\n report['inputCarrierSha256']=sha(raw)\\n if FMT.resolve(strict=True)!=FMT: raise RuntimeError('rustfmt_parent_symlink')\\n tool_bytes,tool_before=read_pin(FMT)\\n if sha(tool_bytes)!=FMT_SHA: raise RuntimeError('rustfmt_pin')\\n report['rustfmtBefore']=tool_before\\n report['originalSourceProvenance']='Nine fixed files from exact independent e3afc157 checkout; source is only read, formatting writes owned copies'\\n report['inputOriginalAndCandidatePins']=EXPECTED\\n ROOT.mkdir(mode=0o700);created=True\\n (ROOT/'candidate').mkdir(mode=0o700);(ROOT/'formatted').mkdir(mode=0o700)\\n write_new(ROOT/'rustfmt.toml',FORMAT_CONFIG)\\n config_bytes,config_before=read_pin(ROOT/'rustfmt.toml')\\n if config_bytes!=FORMAT_CONFIG or sha(config_bytes)!=FORMAT_CONFIG_SHA: raise RuntimeError('format_config_pin')\\n report['formatConfigurationBefore']=config_before\\n report['repositoryRustfmtConfigPresent']=False\\n report['ownedConfiguration']='Edition 2024 only; all other rustfmt defaults; explicit config path excludes ambient parent configuration'\\n for name in EXPECTED:\\n  text=data[name];write_new(ROOT/'candidate'/name,text.encode())\\n  argv=[str(FMT),'--config-path',str(ROOT/'rustfmt.toml'),'--edition','2024','--emit','stdout']\\n  p=subprocess.Popen(argv,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,\\n      cwd=str(SRC),env={'PATH':'/usr/bin:/bin','LANG':'C.UTF-8'},start_new_session=False)\\n  child={'pid':p.pid,'argv':argv,'cwd':str(SRC),'timeoutSeconds':10,'stopped':False,'newProcessGroupCreated':False}\\n  report['children'].append(child)\\n  try:\\n   child['pgid']=os.getpgid(p.pid)\\n   child['supervisorGroup']=os.getpgrp()\\n   if child['pgid']!=child['supervisorGroup']: raise RuntimeError('child_escaped_supervisor_group')\\n   out,err=p.communicate(text.encode(),timeout=min(10.0,remain()))\\n  except BaseException:\\n   if p.poll() is None:\\n    p.kill()\\n    p.wait(timeout=min(5.0,remain()))\\n   child.update(exitCode=p.returncode,reaped=p.returncode is not None)\\n   child['stopped']=child['reaped']\\n   raise\\n  child.update(exitCode=p.returncode,reaped=True)\\n  child['stopped']=True\\n  if len(err)>65536: raise RuntimeError('formatted_stderr_bound')\\n  write_new(ROOT/(name+'.rustfmt.stderr'),err)\\n  if p.returncode!=0 or not child['stopped']: raise RuntimeError('rustfmt_failed_or_group_remaining')\\n  write_new(ROOT/(name+'.rustfmt.stdout'),out)\\n  if len(out)>FORMAT_OUTPUT_CAPS[name] or not out.startswith(text.splitlines()[0].encode()+b'\\\\n'): raise RuntimeError('formatted_output_shape')\\n  write_new(ROOT/'formatted'/name,out)\\n  report['files'].append({'name':name,'beforeSha256':sha(text.encode()),'beforeBytes':len(text.encode()),\\n      'afterSha256':sha(out),'afterBytes':len(out),'stderrBytes':len(err),'stderrSha256':sha(err)})\\n sync_dir(ROOT/'candidate');sync_dir(ROOT/'formatted');sync_dir(ROOT)\\n remain();report['status']='passed'\\nexcept BaseException as e:\\n report['errorType']=type(e).__name__;report['error']=str(e)\\nfinally:\\n report['sourceInputsAfter']={}\\n for name,before_pin in source_before.items():\\n  try:\\n   path=SOURCE/name\\n   if path.resolve(strict=True)!=path: raise RuntimeError('source_symlink')\\n   original,after_pin=read_pin(path,SOURCE_SIZES[name])\\n   report['sourceInputsAfter'][name]=after_pin\\n   if sha(original)!=EXPECTED[name][1] or after_pin!=before_pin: raise RuntimeError('source_changed')\\n  except BaseException as e:\\n   report['sourceFenceError']=type(e).__name__+':'+str(e);report['status']='failed'\\n report['allFixedSourceInputsUnchanged']=len(source_before)==len(EXPECTED) and report['sourceInputsAfter']==source_before\\n if not report['allFixedSourceInputsUnchanged']: report['status']='failed'\\n if tool_before is not None:\\n  try:\\n   report['rustfmtAfter']=read_pin(FMT)[1]\\n   if report['rustfmtAfter']!=tool_before: raise RuntimeError('rustfmt_changed')\\n  except BaseException as e:\\n   report['fenceError']=type(e).__name__+':'+str(e);report['status']='failed'\\n if config_before is not None:\\n  try:\\n   config_bytes,report['formatConfigurationAfter']=read_pin(ROOT/'rustfmt.toml')\\n   if config_bytes!=FORMAT_CONFIG or report['formatConfigurationAfter']!=config_before: raise RuntimeError('format_config_changed')\\n  except BaseException as e:\\n   report['configFenceError']=type(e).__name__+':'+str(e);report['status']='failed'\\n report['elapsedSeconds']=time.monotonic()-START\\n report['withinDeadline']=report['elapsedSeconds']<LIMIT\\n report['allOwnedStopped']=all(x.get('stopped') is True for x in report['children'])\\n if not report['withinDeadline'] or not report['allOwnedStopped']: report['status']='failed'\\n if created:\\n  try:\\n   write_new(ROOT/'result.public.json',(json.dumps(report,sort_keys=True,indent=2)+'\\\\n').encode())\\n   sync_dir(ROOT)\\n  except BaseException as e:\\n   report['publicationError']=type(e).__name__;report['status']='failed'\\n print(json.dumps({'status':report['status'],'root':str(ROOT),'files':report['files'],\\n   'allOwnedStopped':report['allOwnedStopped'],'elapsedSeconds':time.monotonic()-START,\\n   'withinDeadline':time.monotonic()-START<LIMIT,'error':report.get('error'),'publicationError':report.get('publicationError')},sort_keys=True),flush=True)\\nsys.exit(0 if report['status']=='passed' and time.monotonic()-START<LIMIT else 1)\\n\"\n  ],\n  \"cwd\": \"/home/qian-qi\",\n  \"stdin\": \"{\\n  \\\"auth.rs\\\": {\\n    \\\"bytes\\\": 397709,\\n    \\\"sha256\\\": \\\"6fe0c3a8af3af126be3217143c85519e9b6d9abf7fcbc33f08e6b553ba5a7c97\\\"\\n  },\\n  \\\"auth_native_jwt.rs\\\": {\\n    \\\"bytes\\\": 17391,\\n    \\\"sha256\\\": \\\"d28cc6af7a1ef30fecb704ac9d3917a2c54ad8d6f8ac1cb77e6f75eca9de5042\\\"\\n  },\\n  \\\"auth_native_v6_routes.rs\\\": {\\n    \\\"bytes\\\": 21959,\\n    \\\"sha256\\\": \\\"9114c08a472dfde56837f6bbccf565e471ee2b5286980efb906c3121c71d1761\\\"\\n  },\\n  \\\"federated_auth.rs\\\": {\\n    \\\"bytes\\\": 56677,\\n    \\\"sha256\\\": \\\"8ac92cf16e18ceccb479322103228142fea413f6ce7ecbcfd9e908ed07bd1cdb\\\"\\n  },\\n  \\\"federated_native_jwt.rs\\\": {\\n    \\\"bytes\\\": 7709,\\n    \\\"sha256\\\": \\\"255ec883fbb055fdfaea3d8f771fb723a4bb5b524d87f846dcc197dd5e46e92e\\\"\\n  },\\n  \\\"service.rs\\\": {\\n    \\\"bytes\\\": 519054,\\n    \\\"sha256\\\": \\\"5953adcb817a2210cc2b5266ec145632e7a263d39b7c61b2811e4c9d1ece289a\\\"\\n  },\\n  \\\"service_native_auth.rs\\\": {\\n    \\\"bytes\\\": 142316,\\n    \\\"sha256\\\": \\\"877d158852e1e47dea0f65e3207592db1226fd92ba50d51f698f2f31d657c1a2\\\"\\n  },\\n  \\\"service_native_jwt_tests.rs\\\": {\\n    \\\"bytes\\\": 33059,\\n    \\\"sha256\\\": \\\"f7ca5c2c6e67717287887d31d5d8d40459f5ed6fb40524e5d026c95ee07fa48b\\\"\\n  },\\n  \\\"service_native_userpass_tests.rs\\\": {\\n    \\\"bytes\\\": 25592,\\n    \\\"sha256\\\": \\\"750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea\\\"\\n  }\\n}\\n\",\n  \"timeout_seconds\": 60,\n  \"idempotency_key\": \"heptabao-native-jwt-e3afc157-format-20261106-r1-f12b91c2\"\n}\n",
+      "requestPin": {
+        "blob": "0ec62f939a62a2a23c73e33d25f1043957aeeb58",
+        "bytes": 12372,
+        "sha256": "1ad41c45534f842fdd7010ab184db3f46460f87f8ead786efc142461b709bc91"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "88c00729dfce5c6e490422fb938b7566ab842ad1",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "5e9b8967634ac496472dd96c2a287998ac9c755c",
+            "bytes": 840,
+            "sha256": "9f423f07dffe1dea0934dce556120c3655af3a1cfe5e8f6e3a94a285549569ce",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "8675f421046b139f0ea7a8b11f05b243c43bbb95",
+            "bytes": 703,
+            "sha256": "4c51527e9a12b1599707b8bd0bd0726072d01e5dad828393bdc4a8963e5b1c52",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "0ec62f939a62a2a23c73e33d25f1043957aeeb58",
+            "bytes": 12372,
+            "sha256": "1ad41c45534f842fdd7010ab184db3f46460f87f8ead786efc142461b709bc91",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 13915,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "3b55189230860f42b99630f1b438fc591c9a8608",
+        "bytes": 12394,
+        "sha256": "87fac51d39b8bb49301f25dbc8d4c4349807ee0371c541c08814ae5357604356"
+      },
+      "sdkArchive": {
+        "tree": "96cb5e9a49fc7f5f80916139bb6c1227e9ea8b0b",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "3b55189230860f42b99630f1b438fc591c9a8608",
+            "bytes": 12394,
+            "sha256": "87fac51d39b8bb49301f25dbc8d4c4349807ee0371c541c08814ae5357604356",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 12394,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "a51a4950e51c03ad489289352c2f7d385fa4c909",
+        "bytes": 11805,
+        "sha256": "8c96a7a9923813ce26c884b28110489bd4ccd06dc0364385667967a725803c95"
+      }
+    },
+    "jwt-e3af-rog-formatter-authority0-start-r1": {
+      "kind": "operation_start",
+      "requestRaw": "{\"idempotency_key\":\"heptabao-native-jwt-e3afc157-formatter-observe-r1-authority0\",\"operation\":{\"tool\":\"process_status\",\"arguments\":{\"host\":\"rog\",\"job_id\":\"1a1af017fae-fc05-64f1\"}}}\n",
+      "requestPin": {
+        "blob": "c6bcea2740b33d48d2436819e30ed2f2ef473a3c",
+        "bytes": 181,
+        "sha256": "b30f3a56a52c8b749fbd4a7052d4d2d14df6191a31d3543282075570098d8e3a"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "dc200692adfd3e6882f4455689a506cd6fabd3e9",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "3001f512b17a03024a707ba767693e9740a5fda3",
+            "bytes": 870,
+            "sha256": "c5d57ecaba8b8b41ff1480076ea1bc81af320842db050823b8d57bcc2770ba45",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "e0ba41b3094f423ff8a471c32f368ed72633a0fd",
+            "bytes": 733,
+            "sha256": "4024c779b9a22964298de6674e684b331f0ebcc0215f87fbfeb6627854771eca",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "c6bcea2740b33d48d2436819e30ed2f2ef473a3c",
+            "bytes": 181,
+            "sha256": "b30f3a56a52c8b749fbd4a7052d4d2d14df6191a31d3543282075570098d8e3a",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1784,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "c78b69d34901c06a0b914136f5805d1ba64ddab3",
+        "bytes": 709,
+        "sha256": "0260a691aaea0ddce09db7bd29495be7b393e413b3c7da7830e1135ad7e891b4"
+      },
+      "sdkArchive": {
+        "tree": "0d9de61e710ad0a379f0e97e164261e50f71c9ae",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "c78b69d34901c06a0b914136f5805d1ba64ddab3",
+            "bytes": 709,
+            "sha256": "0260a691aaea0ddce09db7bd29495be7b393e413b3c7da7830e1135ad7e891b4",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 709,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "a61b0f2a6776165e6d68ce94929ef59216ad7cf9",
+        "bytes": 548,
+        "sha256": "cb4b059b5b44b5922b2857b8bedc70b890af146c80a0d1609f2b604973c4fe8a"
+      }
+    },
+    "jwt-e3af-rog-formatter-authority0-status0-r1": {
+      "kind": "operation_status",
+      "requestRaw": "{\"operation_id\":\"98d70ee2791b5caee12e75ce5def1aa09bc18e57527316a068c6dbfb23bbd8fe\"}\n",
+      "requestPin": {
+        "blob": "a8011b8ead6ef154dafbd99849426e2086d490ef",
+        "bytes": 84,
+        "sha256": "dcfa472de5efc987d3bf6fe98b17894d6117967722357e73cccac7f30fd6f505"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "cbe6366ece951d689e51a1304e8c4f7b7ae39e31",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "7f6a355efcb76121020704b06e9b9593f91bae96",
+            "bytes": 934,
+            "sha256": "c74f97e54f51e541521d093107f74b70cc9d907d521bbea136596055a0fe7cfb",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "0de4f23b702ff1cb116ddff3383adad4ada6291a",
+            "bytes": 797,
+            "sha256": "643db262d45c18ecc784b39624be169852f842277f5c42577605db6229222e5e",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "a8011b8ead6ef154dafbd99849426e2086d490ef",
+            "bytes": 84,
+            "sha256": "dcfa472de5efc987d3bf6fe98b17894d6117967722357e73cccac7f30fd6f505",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1815,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "736a7d472ae6bc2b97b9212f21b72b4b37cf58c0",
+        "bytes": 980,
+        "sha256": "73f6f5fb134e4e7572eacc938ce2db9ac5bff906c554a0408ab41e13e1bc4a56"
+      },
+      "sdkArchive": {
+        "tree": "3b0d881bb11b3a35b8e45ebe8d2e65cdbf81cf90",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "736a7d472ae6bc2b97b9212f21b72b4b37cf58c0",
+            "bytes": 980,
+            "sha256": "73f6f5fb134e4e7572eacc938ce2db9ac5bff906c554a0408ab41e13e1bc4a56",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 980,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "1eecd742bf1264aaec134e52227d1bc0e50b082b",
+        "bytes": 805,
+        "sha256": "3cf9dc745658a4e57e36e2b8f1b00f243c9d7840b1203e94e3e2db1e8d80accb"
+      }
+    },
+    "jwt-e3af-rog-formatter-authority0-page0-r1": {
+      "kind": "operation_result",
+      "requestRaw": "{\"operation_id\":\"98d70ee2791b5caee12e75ce5def1aa09bc18e57527316a068c6dbfb23bbd8fe\",\"offset\":0,\"limit\":8192}\n",
+      "requestPin": {
+        "blob": "e86dde908da06505c26741b7f8c4059b73b05475",
+        "bytes": 108,
+        "sha256": "43cef3489e74a03dac3626467f28bc5499024ad2cca97498459eec8686dbb446"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "9c4ccf2727015e293bca2b0f5a0377e6203556e8",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "4f634925c710a928d9fa5826c9e64a9380f1fb29",
+            "bytes": 933,
+            "sha256": "f73e06bc16997445e6ca8521ccd77cea414a9a8d7ec8282189ff8ac7945c16cf",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "f0176a4ef71898d0d3da13edbefebf69b036e323",
+            "bytes": 796,
+            "sha256": "f90d03baef551b57729230064cdc6ba61299fb4d66ac5d8a4050dc492df4ee10",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "e86dde908da06505c26741b7f8c4059b73b05475",
+            "bytes": 108,
+            "sha256": "43cef3489e74a03dac3626467f28bc5499024ad2cca97498459eec8686dbb446",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1837,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "839b4fc2bbba961046b7f21216c1d55ff46ba524",
+        "bytes": 2068,
+        "sha256": "7ca31bc82a790af558e13962fd9f00bc3b568d3f61b4171f041511cf215d154d"
+      },
+      "sdkArchive": {
+        "tree": "437eaf020ee9de4e9cb82de7ac946dbb4536f438",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "839b4fc2bbba961046b7f21216c1d55ff46ba524",
+            "bytes": 2068,
+            "sha256": "7ca31bc82a790af558e13962fd9f00bc3b568d3f61b4171f041511cf215d154d",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 2068,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "37f6da7ae1c8e5a300cb278830158a8202a9ba8c",
+        "bytes": 1897,
+        "sha256": "91fa3e2b514af59c5fb57e718a09ea6c472b0e6ef6dd42c84644e7075d2f620c"
+      }
+    },
+    "jwt-e3af-rog-formatter-streams0-start-r1": {
+      "kind": "operation_start",
+      "requestRaw": "{\"idempotency_key\":\"heptabao-native-jwt-e3afc157-formatter-observe-r1-streams0\",\"operation\":{\"tool\":\"process_read\",\"arguments\":{\"host\":\"rog\",\"job_id\":\"1a1af017fae-fc05-64f1\",\"stdout_offset\":0,\"stderr_offset\":0,\"limit\":16384}}}\n",
+      "requestPin": {
+        "blob": "6ced49e31dfbe49f12a17565b41aad0403acc2d2",
+        "bytes": 227,
+        "sha256": "3672f1b9f53da92734595681fc5bea9ee169fac4387ab0afb4dade4da209b75e"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "fc768e0518fc7d0e760a7900956c17532948dbf1",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "ac3b0692158be199ad970ecc8595a0a5f18f227c",
+            "bytes": 868,
+            "sha256": "98ece035cc55c4eef7d75ba08b0340d4df95176b9a756070200b6e768ddcf72c",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "657375695d266fbf9a3356785c6fa900b2a8d57e",
+            "bytes": 731,
+            "sha256": "29c96336eaab7ca366bbc4ae975df754366f855f893480b5086bd0fddb5880eb",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "6ced49e31dfbe49f12a17565b41aad0403acc2d2",
+            "bytes": 227,
+            "sha256": "3672f1b9f53da92734595681fc5bea9ee169fac4387ab0afb4dade4da209b75e",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1826,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "59e7521997606e2457400640a0e3704c2ff144a6",
+        "bytes": 707,
+        "sha256": "975c38ae9683c096f50d1f72cb61c6af74b21a57b6f7145acf2c68c0b924c427"
+      },
+      "sdkArchive": {
+        "tree": "851ca4d81f99d949dc48f442b9068a84a67046db",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "59e7521997606e2457400640a0e3704c2ff144a6",
+            "bytes": 707,
+            "sha256": "975c38ae9683c096f50d1f72cb61c6af74b21a57b6f7145acf2c68c0b924c427",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 707,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "aa862c065ef8c2e7049955ed666d1b2f90d5a905",
+        "bytes": 546,
+        "sha256": "bb7dd54de20610705727bb990d0266dd462324193fa2fa6d8076e60706875aa1"
+      }
+    },
+    "jwt-e3af-rog-formatter-streams0-status0-r1": {
+      "kind": "operation_status",
+      "requestRaw": "{\"operation_id\":\"5d9dae6568337a91abe3ceb329fe7318c71ae130a63f535451f604d9b82815f0\"}\n",
+      "requestPin": {
+        "blob": "64c909b58e51ce32cd0cc76de207486b1e57fee5",
+        "bytes": 84,
+        "sha256": "2bcf7594595721064188bc9522c88abcc05b272a2030348bc4d2faf9efe5ff2f"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "ff7983bc1af535c081db1b0d3c8418ea09b8df95",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "2adecd4c7da35eb790e2096ab48b2a7f02112b22",
+            "bytes": 932,
+            "sha256": "7ac00cfadcb432a03993a03fb8704ff94f0453e5bb8fa8aa4654ff7a422a31ee",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "2cb9a39695f7a6ac53eb97e14b290ad6a5178c43",
+            "bytes": 795,
+            "sha256": "a7122518bd8fdd15a6831807c9bd69b2cfdac87f8661f75b98917cf79924598c",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "64c909b58e51ce32cd0cc76de207486b1e57fee5",
+            "bytes": 84,
+            "sha256": "2bcf7594595721064188bc9522c88abcc05b272a2030348bc4d2faf9efe5ff2f",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1811,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "92183656413f5b9f827d6b3f65c9ccc56e47fb07",
+        "bytes": 978,
+        "sha256": "fca9f0dd9bef410023c82114d1c22f1bb937b46ff2365dba131c8613c9f9176c"
+      },
+      "sdkArchive": {
+        "tree": "02bc5c171579a1823c365339169ed0f784342fc2",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "92183656413f5b9f827d6b3f65c9ccc56e47fb07",
+            "bytes": 978,
+            "sha256": "fca9f0dd9bef410023c82114d1c22f1bb937b46ff2365dba131c8613c9f9176c",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 978,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "a822cc7e9856fd202d496289a7f5a07f8552305e",
+        "bytes": 803,
+        "sha256": "f23f22a520f9857f92209bab6d0b0be97782139660c39578216033dae698dfc5"
+      }
+    },
+    "jwt-e3af-rog-formatter-streams0-page0-r1": {
+      "kind": "operation_result",
+      "requestRaw": "{\"operation_id\":\"5d9dae6568337a91abe3ceb329fe7318c71ae130a63f535451f604d9b82815f0\",\"offset\":0,\"limit\":8192}\n",
+      "requestPin": {
+        "blob": "97df09d0790a7d4b1f6f97d016f31da33c465da2",
+        "bytes": 108,
+        "sha256": "89de7b389bcbc1463c2f567ba18f005b434d691e8eac6e9ce74ab80316042451"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "ca5187e23a43253d5a381a7352a59856769fab0b",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "aeb84d86bb9b64dc1e3ca5e155bfc0b98135008f",
+            "bytes": 931,
+            "sha256": "dbb9e03e65b39446d343caf76de91193e08b4e54e7cefae9334c1b0472bbb220",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "29a689069ff4a7b871bb452805caeb39d563f785",
+            "bytes": 794,
+            "sha256": "b90baa9e6f69015f771378acea93d39f5bd41f24cc224f72905f1201d7c8ffca",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "97df09d0790a7d4b1f6f97d016f31da33c465da2",
+            "bytes": 108,
+            "sha256": "89de7b389bcbc1463c2f567ba18f005b434d691e8eac6e9ce74ab80316042451",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1833,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "8a0d10ac9b7e1cf37ab9fad8f31242518c12c767",
+        "bytes": 11780,
+        "sha256": "6f64515b9e4fdb0b401157c5cc2ebb72de171a498fc52146d318345782d180c8"
+      },
+      "sdkArchive": {
+        "tree": "4afa1b69ba71a8e603051d9ff69e9f236d90ddf1",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "8a0d10ac9b7e1cf37ab9fad8f31242518c12c767",
+            "bytes": 11780,
+            "sha256": "6f64515b9e4fdb0b401157c5cc2ebb72de171a498fc52146d318345782d180c8",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 11780,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "0202bc74cfb7927443b0e2ebcc6c64eac2a06c15",
+        "bytes": 11609,
+        "sha256": "ef6642dd7ff625d1a0da2ea2fb35bc4ddb99d20c874f67646b593c261ab2cc38"
+      }
+    },
+    "jwt-e3af-rog-formatter-streams0-page8192-r1": {
+      "kind": "operation_result",
+      "requestRaw": "{\"operation_id\":\"5d9dae6568337a91abe3ceb329fe7318c71ae130a63f535451f604d9b82815f0\",\"offset\":8192,\"limit\":8192}\n",
+      "requestPin": {
+        "blob": "2731cb692ceb9a47b976882e50f099104a34b227",
+        "bytes": 111,
+        "sha256": "daf39fffac431d35e22eb3a85d6a49f9d841b03be6ea7a9bec26f185c2d13b41"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "9175f0e9af841aab50516db50ba6b847703e2aec",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "5ac64b223a262201f93965f27b8b544d36f6e17d",
+            "bytes": 934,
+            "sha256": "d078cb4fdba856d7550e052bdea6ef3eb2f2fe7daabd4febd975422e8b7db5fc",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "7ef860a5511c9486f4f29e572cedc8e88ff500a9",
+            "bytes": 797,
+            "sha256": "1e604f3153250df892afa91f659e2467475ec9b6b877e6608f4f4ae0c371041b",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "2731cb692ceb9a47b976882e50f099104a34b227",
+            "bytes": 111,
+            "sha256": "daf39fffac431d35e22eb3a85d6a49f9d841b03be6ea7a9bec26f185c2d13b41",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1842,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "172b49de437c6f6ac8364230e503a71c525834a3",
+        "bytes": 4839,
+        "sha256": "ffea9507e6d2485374f2acd1f4fe52f95e2c0449964f2c74873a8c78dcdf4ccf"
+      },
+      "sdkArchive": {
+        "tree": "a0e45c14f334ee08127b4733c287097800600993",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "172b49de437c6f6ac8364230e503a71c525834a3",
+            "bytes": 4839,
+            "sha256": "ffea9507e6d2485374f2acd1f4fe52f95e2c0449964f2c74873a8c78dcdf4ccf",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 4839,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "155991990d03fd2ab58ed3920ae1f6c16605652e",
+        "bytes": 4668,
+        "sha256": "3b212588d2c0f35561aebd2474c03e1a226a1c9591bd544f26dc6bb6832d2782"
+      }
+    },
+    "jwt-e3af-format-receipt-info0-start-r1": {
+      "kind": "operation_start",
+      "requestRaw": "{\"idempotency_key\":\"heptabao-native-jwt-e3afc157-formatter-observe-r1-receipt-info0\",\"operation\":{\"tool\":\"file_info\",\"arguments\":{\"host\":\"rog\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/result.public.json\"}}}\n",
+      "requestPin": {
+        "blob": "2faaeb3baee3581a5161fff11f8f5d60318ff9c4",
+        "bytes": 236,
+        "sha256": "5b1a7d40e76cf7fc6be383528fdfd523fc7df189d78f3fbeac33b77c6876d8d8"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "a3b25ea52c7fcfddda2dab3f05db8fc0429dbbf4",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "ec0bef8b41d30461594f7e8791fedb904148cf97",
+            "bytes": 865,
+            "sha256": "7ac8e76bad64807767a96634c26f4c68d7e97e059202a180e403ac9b23eeaf6f",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "9bc6c7abb77939a80f8f4c78af72a6ed2f4985b4",
+            "bytes": 728,
+            "sha256": "035d1ce82d6ac09b1bc70e2e9997c1d0658e6a6dc17a14a3a6c134d4abb86bbf",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "2faaeb3baee3581a5161fff11f8f5d60318ff9c4",
+            "bytes": 236,
+            "sha256": "5b1a7d40e76cf7fc6be383528fdfd523fc7df189d78f3fbeac33b77c6876d8d8",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1829,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "454dee8bbdbc591ae1678df10a03459609e93f34",
+        "bytes": 704,
+        "sha256": "780c4604c7bd8484deac53fdcbe385db8808b17ee77b5ffbaf6ac8af59a12d53"
+      },
+      "sdkArchive": {
+        "tree": "74f5cd61cb23c059b6a0365e4ef05d60b152fcd1",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "454dee8bbdbc591ae1678df10a03459609e93f34",
+            "bytes": 704,
+            "sha256": "780c4604c7bd8484deac53fdcbe385db8808b17ee77b5ffbaf6ac8af59a12d53",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 704,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "1237a40fe2a43d2bfca40fee79fa1688e519d4c4",
+        "bytes": 543,
+        "sha256": "a91952629830c78af46453feddfd8158fa31e7d396037da09ec2c2d3464827ee"
+      }
+    },
+    "jwt-e3af-format-receipt-info0-status0-r1": {
+      "kind": "operation_status",
+      "requestRaw": "{\"operation_id\":\"be969ff66181d7b8e77c373f94425fda8a6474cd6480aba3c46f2a6dcd55a539\"}\n",
+      "requestPin": {
+        "blob": "5acde77c15c11eb317b8ce8e2ce5b67d5ad6b69d",
+        "bytes": 84,
+        "sha256": "a0ab5752e9b4a3b4948c5368cdbdc8690508d497badaa5b415dcd55cba3da39a"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "2382db99965c538064918e9e36bf52e1f0714510",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "93ad9599b17b23c3cbfae6be92afc9d6f7e0d064",
+            "bytes": 929,
+            "sha256": "c3a7c2150b87cfeeb5bb2c18c10a16895daad6464b8eed812c71e5183f9ab24c",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "9ae4b6bf6abf94e63401e61ee0bd76388adef788",
+            "bytes": 792,
+            "sha256": "e676319e670d120fa26f2f2eec2a477588f3979a0f22971383b4980f42718921",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "5acde77c15c11eb317b8ce8e2ce5b67d5ad6b69d",
+            "bytes": 84,
+            "sha256": "a0ab5752e9b4a3b4948c5368cdbdc8690508d497badaa5b415dcd55cba3da39a",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1805,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "e7033f02713d513bb45a057cdbb67322d3bddf5e",
+        "bytes": 975,
+        "sha256": "4c41104ce8d594a5a2ba66679c36f7fbab9f514504feec2dca9dd009a7668182"
+      },
+      "sdkArchive": {
+        "tree": "676ccf5a8384e1c012ebcd7109cd028bab9cb360",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "e7033f02713d513bb45a057cdbb67322d3bddf5e",
+            "bytes": 975,
+            "sha256": "4c41104ce8d594a5a2ba66679c36f7fbab9f514504feec2dca9dd009a7668182",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 975,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "696637919ec30b986c2b787404a504f1d61240d1",
+        "bytes": 800,
+        "sha256": "91a846e3a71b31e8a14da88922263bc0ed6b1e361defd95db0b3037ddb7086f4"
+      }
+    },
+    "jwt-e3af-format-receipt-info0-page0-r1": {
+      "kind": "operation_result",
+      "requestRaw": "{\"operation_id\":\"be969ff66181d7b8e77c373f94425fda8a6474cd6480aba3c46f2a6dcd55a539\",\"offset\":0,\"limit\":8192}\n",
+      "requestPin": {
+        "blob": "29c248f101e722aad2442260f70415000790b697",
+        "bytes": 108,
+        "sha256": "6858003a3a06469e2eaa0b144fc2c0014d6571fb34a0ff13f6047d4053e64696"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "bf75f49a96138637515137f1004043cdafa04a9e",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "91617b0d01df9863d3a7e7752ef0db1ebca0bf9c",
+            "bytes": 928,
+            "sha256": "f8bc48a5b1b4a6ee1136c9447de24d77c8752319a504d8b88bcee755c1416956",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "bf2eefed2671692f0a30965334b166f07ea732c7",
+            "bytes": 791,
+            "sha256": "2879e25d4a3aabd40ebd814f4488c2de3bd4fdc78c6ea18a4795dc7d97519127",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "29c248f101e722aad2442260f70415000790b697",
+            "bytes": 108,
+            "sha256": "6858003a3a06469e2eaa0b144fc2c0014d6571fb34a0ff13f6047d4053e64696",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1827,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "4af55faab80a3021db1fc4fcce518f1508a8af5a",
+        "bytes": 1632,
+        "sha256": "113bc6f98ab4b3e344af2b462f8c0f201290687e1dc8ecd9a2e5171d3adbd734"
+      },
+      "sdkArchive": {
+        "tree": "579939f98c84fa1866f32e68e5738a30e44cd269",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "4af55faab80a3021db1fc4fcce518f1508a8af5a",
+            "bytes": 1632,
+            "sha256": "113bc6f98ab4b3e344af2b462f8c0f201290687e1dc8ecd9a2e5171d3adbd734",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 1632,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "f5ecbf4f5981d73c4b1af4dbbf36192ed676741c",
+        "bytes": 1461,
+        "sha256": "d455b52f9b1143b99aafc84b57b1540abcae8ec72686312875a1d5b6e44b7d63"
+      }
+    },
+    "jwt-e3af-format-receipt-body0-start-r1": {
+      "kind": "operation_start",
+      "requestRaw": "{\"idempotency_key\":\"heptabao-native-jwt-e3afc157-formatter-observe-r1-receipt-body0\",\"operation\":{\"tool\":\"binary_read\",\"arguments\":{\"host\":\"rog\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/result.public.json\",\"offset\":0,\"limit\":22202,\"expected_version\":\"66306:30541013:22202:1793937480615144693:1793937480615144693\"}}}\n",
+      "requestPin": {
+        "blob": "6d9356b029e17f02287de08ab5d1c3d84a9537b3",
+        "bytes": 345,
+        "sha256": "daddafc8c6e3f131a33c7fb31eb7cd2cadd591e48f585178b0309b62f9de322c"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "12baf100c0350f36c2442dc9f7492fa7d483cbac",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "a40131831be7fee60f0f3143ab0405db73104aed",
+            "bytes": 865,
+            "sha256": "c809d45401194a0a67d64060b2bca992818082358355188cb490bec89dc49c64",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "28fc2163a00151d228f6278106ddd4b71182251b",
+            "bytes": 728,
+            "sha256": "6e3e45a75acbbd18e46eb8c1cca625c4e47e322b23dd68695d9669b9c76ad247",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "6d9356b029e17f02287de08ab5d1c3d84a9537b3",
+            "bytes": 345,
+            "sha256": "daddafc8c6e3f131a33c7fb31eb7cd2cadd591e48f585178b0309b62f9de322c",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1938,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "9ee93911fee7ada42f1689ff86a8936e51aaa336",
+        "bytes": 706,
+        "sha256": "28582f51b2a84c6662617505a39e937df780d07b763af7355fc9714bb2846f57"
+      },
+      "sdkArchive": {
+        "tree": "40202d0242f2cb77e520d586cd5f6c4c498e194f",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "9ee93911fee7ada42f1689ff86a8936e51aaa336",
+            "bytes": 706,
+            "sha256": "28582f51b2a84c6662617505a39e937df780d07b763af7355fc9714bb2846f57",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 706,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "4bec5ae0d251b9f3334bc07572bb8a1a9cbc49f2",
+        "bytes": 545,
+        "sha256": "7d7396cdaabc4ee35458cef482159e3b76eabc41e9253d5644936569e59ebd4b"
+      }
+    },
+    "jwt-e3af-format-receipt-body0-status0-r1": {
+      "kind": "operation_status",
+      "requestRaw": "{\"operation_id\":\"1e45405574780d6cc2cf00b9451a18c5cc321b7ddf7bf8b94c214e11a5df73e0\"}\n",
+      "requestPin": {
+        "blob": "83d216fe352c540d27226f7915b893c397c1f992",
+        "bytes": 84,
+        "sha256": "1f596c1121260714de51071b9d9599c35dc1b607333c9521ab9e606334baa7e8"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "8d50e11209e33bcdbc255f6cd315936d4b047c70",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "97fc48f5e49e4e53bf041f076d3f5d0ab5439101",
+            "bytes": 929,
+            "sha256": "d0a91cbe646dff521ec3686c667a1861f12f6f3eafd0764a9b470e96c6faf0bf",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "3eef982a1cf599f20657373dea1e40e703955049",
+            "bytes": 792,
+            "sha256": "dbeb8ef47ebe622284e7756dc1088028b85661ab5e2b3b77413331d89ed5720e",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "83d216fe352c540d27226f7915b893c397c1f992",
+            "bytes": 84,
+            "sha256": "1f596c1121260714de51071b9d9599c35dc1b607333c9521ab9e606334baa7e8",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1805,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "afda806d1cfc06429a68ab11e639d2850481a115",
+        "bytes": 977,
+        "sha256": "7acacd29fcedaffe0dfa9df7781dbdea14decf68d61ec4cb98058a50eb4e739a"
+      },
+      "sdkArchive": {
+        "tree": "02a113bb9adea32b456b30fb17760ac3db578040",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "afda806d1cfc06429a68ab11e639d2850481a115",
+            "bytes": 977,
+            "sha256": "7acacd29fcedaffe0dfa9df7781dbdea14decf68d61ec4cb98058a50eb4e739a",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 977,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "38227cb334f6a3a7faeba5724e863db6ff996f8a",
+        "bytes": 802,
+        "sha256": "7d3f5aa70af155993c66fb4b37432b011ebd28fe747467b9d4fdbe15635787c1"
+      }
+    },
+    "jwt-e3af-format-receipt-body0-page0-r1": {
+      "kind": "operation_result",
+      "requestRaw": "{\"operation_id\":\"1e45405574780d6cc2cf00b9451a18c5cc321b7ddf7bf8b94c214e11a5df73e0\",\"offset\":0,\"limit\":16384}\n",
+      "requestPin": {
+        "blob": "cf3e38c45bb31ed6254a380c5579a193380e8b81",
+        "bytes": 109,
+        "sha256": "fb526730575de43bd5b072702aef984f6523f64d3e37fb783f923f03e72b8142"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "7b69b44bb60c69a46f60baf5f51ead9522649f10",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "6e13825a53bd1cd0369f6fd175d212fc7dcc458e",
+            "bytes": 928,
+            "sha256": "1d271b9510219e6ee35d751a1f487757c7881771c83a91609cc6f8f7de7d6a7a",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "a5edb31f4a5bf88653326257598f7a59d8b5c266",
+            "bytes": 791,
+            "sha256": "748fac427dcd8bf3df23b4f7b91dce168d1234e62dd1ee725d614dd8a2ec1362",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "cf3e38c45bb31ed6254a380c5579a193380e8b81",
+            "bytes": 109,
+            "sha256": "fb526730575de43bd5b072702aef984f6523f64d3e37fb783f923f03e72b8142",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1828,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "99a95987ccd511bacaf1d25e4dd393c8dbd8608f",
+        "bytes": 22705,
+        "sha256": "0b2804542cce63119b3f8e8773f0c094a8a7dffa6b5ca265e66153e592818319"
+      },
+      "sdkArchive": {
+        "tree": "43736b9ffa88d5ef4045a284b8916dbc024f998b",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "99a95987ccd511bacaf1d25e4dd393c8dbd8608f",
+            "bytes": 22705,
+            "sha256": "0b2804542cce63119b3f8e8773f0c094a8a7dffa6b5ca265e66153e592818319",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 22705,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "3ba6699e7172a3184e615bfd183ff57ddcba7e35",
+        "bytes": 22534,
+        "sha256": "5271f6fa1dcf050346aba717b9efecb8c87f9e982ed3940e31f8b167763a4b00"
+      }
+    },
+    "jwt-e3af-format-receipt-body0-page16384-r1": {
+      "kind": "operation_result",
+      "requestRaw": "{\"operation_id\":\"1e45405574780d6cc2cf00b9451a18c5cc321b7ddf7bf8b94c214e11a5df73e0\",\"offset\":16384,\"limit\":16384}\n",
+      "requestPin": {
+        "blob": "2adb8a38e18f17192acef545829bf94bbd9c72df",
+        "bytes": 113,
+        "sha256": "e8f1e287b6e09873fb57f6cf6b17a2d3ef806c8980587ad190cd23ffbfa9e8f5"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "238afc25c3dd91d7b85ca1291e1b7b4a5f2aec89",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "44df462ce2278d2611fd40f52c1de6bdd2a5a984",
+            "bytes": 932,
+            "sha256": "d07f8ebbe6e4f290085c780392c6cff549d9265dde49f07b9609bfc6b5205732",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "eba6088566bf2422c793f73dd3949d84eb3c7536",
+            "bytes": 795,
+            "sha256": "3a0f686da566da995235bce37dec40e13e792cbf3a95210bafc81cbecd068688",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "2adb8a38e18f17192acef545829bf94bbd9c72df",
+            "bytes": 113,
+            "sha256": "e8f1e287b6e09873fb57f6cf6b17a2d3ef806c8980587ad190cd23ffbfa9e8f5",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1840,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "6167006c1467cbfec8b72c57c2a5c7fd9a3c30fb",
+        "bytes": 19048,
+        "sha256": "b5120345bfc0c64a56d98fdc07d2cb2a58505ff213706899c71dd2ef4f59b59e"
+      },
+      "sdkArchive": {
+        "tree": "2778c4c4b18b55871cd868be65b5b3e7638d3e4b",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "6167006c1467cbfec8b72c57c2a5c7fd9a3c30fb",
+            "bytes": 19048,
+            "sha256": "b5120345bfc0c64a56d98fdc07d2cb2a58505ff213706899c71dd2ef4f59b59e",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 19048,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "4f7bac1ee765ec488e689b19cac83beaed149931",
+        "bytes": 18877,
+        "sha256": "5cd4a5773227638aa91d5841e58cf73117228e251c874ba2626fe4dce773a551"
+      }
+    }
+  },
+  "completedObservers": [
+    {
+      "id": "98d70ee2791b5caee12e75ce5def1aa09bc18e57527316a068c6dbfb23bbd8fe",
+      "tool": "process_status",
+      "payload": {
+        "blob": "ea2f764efeea070f8797cf297f61959579886957",
+        "bytes": 910,
+        "sha256": "ee1b6f672666d2356d408eb423e8089ae51a47c280cb014a22266aef3998a2b1"
+      },
+      "payloadTree": "a2925ef9155b1d5bfd6eb896576eb28ff25108f6",
+      "nativeText": {
+        "blob": "9e275b37f8f33d2ede10dd49fc87444d8d2736bf",
+        "bytes": 731,
+        "sha256": "cf9eca556bf6c35a47f66c55526af65783ce5274713927e262b0dc24903aaf49"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "5d9dae6568337a91abe3ceb329fe7318c71ae130a63f535451f604d9b82815f0",
+      "tool": "process_read",
+      "payload": {
+        "blob": "2f8eb64c73870fd87da2b909883cdf068abe96fc",
+        "bytes": 11175,
+        "sha256": "f8dc3d56e0e77657fc5a783e4ca12b1207cf4b42246f8e6917dc59edca516fb6"
+      },
+      "payloadTree": "eda6d37c5b18bfc15eb8d86346e274e04fbf41ee",
+      "nativeText": {
+        "blob": "26a01ec7906084181c6406b3e31805d5714f8191",
+        "bytes": 10598,
+        "sha256": "0c9ff839b36970601f9cd0f46c37998537d0008dec790113ddb19ff494ddee24"
+      },
+      "pages": 2,
+      "completedInactive": true
+    },
+    {
+      "id": "be969ff66181d7b8e77c373f94425fda8a6474cd6480aba3c46f2a6dcd55a539",
+      "tool": "file_info",
+      "payload": {
+        "blob": "f39406c52748d2d4d51dfd5711c93fc19ff6fcad",
+        "bytes": 585,
+        "sha256": "383c0f0343dfe9eda0bb68c74dbf2fab146b5e4ad2373963d1913a631e3ecd49"
+      },
+      "payloadTree": "e3e1f9a887fe10073b5556fb064c036b61bad83a",
+      "nativeText": {
+        "blob": "cb38af7975d33515c1591d0f40a417269c7a0847",
+        "bytes": 468,
+        "sha256": "1202fd1418717d4fec2e77f67d251e58d5beb49420e007df648d6b9ea7c78b84"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "1e45405574780d6cc2cf00b9451a18c5cc321b7ddf7bf8b94c214e11a5df73e0",
+      "tool": "binary_read",
+      "payload": {
+        "blob": "78ac80a35b06089dc06a299f78b2afc8081d2b2b",
+        "bytes": 30025,
+        "sha256": "c0d143a09f48b11a96e36e3a8c7f3d95e25e3096c405589c3a1836ae164f060e"
+      },
+      "payloadTree": "90e982295305e2dcf2c29741baf31cb07c2e120b",
+      "nativeText": {
+        "blob": "6c978f0e72b8cbda2f6c93a71462d44f521c3086",
+        "bytes": 29922,
+        "sha256": "a7d317a24bc964ee14f7d79e9e91775b9951961e075f5ecde5e887c02c8562ee"
+      },
+      "pages": 2,
+      "completedInactive": true
+    }
+  ],
+  "nextStdout": 3352,
+  "nextStderr": 0,
+  "localJournalAvailable": false,
+  "gitFirstExplicitlyRequiredByThisRootGO": true,
+  "formatterReceiptInfoGO": {
+    "pin": {
+      "blob": "355a40325fd6cf9d0df6c8fd5f270ead4f719a97",
+      "bytes": 3753,
+      "sha256": "567c29f4781838ef5eb52f6977273aea85e684d6effeaa7e4be780f0e1e9af1b"
+    },
+    "raw": "{\n  \"schema\": \"heptabao.root-GO.JWT-formatter-receipt-file-info.v1\",\n  \"authorization\": \"GO\",\n  \"scope\": \"formatter_receipt_file_info_only\",\n  \"original_job\": \"1a1af017fae-fc05-64f1\",\n  \"maximum_file_info_starts\": 1,\n  \"binary_read_authorized\": false,\n  \"exact_request\": {\n    \"blob\": \"2faaeb3baee3581a5161fff11f8f5d60318ff9c4\",\n    \"bytes\": 236,\n    \"sha256\": \"5b1a7d40e76cf7fc6be383528fdfd523fc7df189d78f3fbeac33b77c6876d8d8\"\n  },\n  \"as_of_UTC\": \"2026-11-06 04:14:14 UTC\",\n  \"agent\": \"/root/ha_validation\",\n  \"source_packet\": \"dd438efc4e28ea6f708453946f15a20123a131e8\",\n  \"source_review\": {\n    \"blob\": \"9bde54a29eab7cdfe0f8534ffd60633a5931a73b\",\n    \"bytes\": 2422,\n    \"sha256\": \"b11f437b4c178b587551e23f7d6bc2f51be3a12930065d2b369082c1dff6c5b3\"\n  },\n  \"candidate\": {\n    \"blob\": \"d8d792caa494c8c2e084db5cea908d0833ce309f\",\n    \"bytes\": 24268,\n    \"sha256\": \"00917a449fcbed60a9c8fcdd98de18f956eccf692153ebb9709af220bbcf156b\"\n  },\n  \"existing_context\": \"jwt_e3af_rog_formatter_gitfirst_r1\",\n  \"initialize_allowed\": false,\n  \"original_job_host\": \"rog\",\n  \"original_formatter_transport_qualification\": {\n    \"blob\": \"fa9e8030d8f5e5e460cf7b73c603c11d41d17ec8\",\n    \"bytes\": 5806,\n    \"sha256\": \"e63cf09b8662e82d04fc203c1b0ea86fe79e3ba62a0aed032e481c45e23568a1\"\n  },\n  \"request\": {\n    \"idempotency_key\": \"heptabao-native-jwt-e3afc157-formatter-observe-r1-receipt-info0\",\n    \"operation\": {\n      \"tool\": \"file_info\",\n      \"arguments\": {\n        \"host\": \"rog\",\n        \"path\": \"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/result.public.json\"\n      }\n    }\n  },\n  \"helpers\": {\n    \"native\": {\n      \"blob\": \"d8d792caa494c8c2e084db5cea908d0833ce309f\",\n      \"bytes\": 24268,\n      \"sha256\": \"00917a449fcbed60a9c8fcdd98de18f956eccf692153ebb9709af220bbcf156b\"\n    },\n    \"archive\": {\n      \"blob\": \"b093fdbf655511f7db94be2d95555606141bbb42\",\n      \"bytes\": 5957,\n      \"sha256\": \"8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397\"\n    },\n    \"pure\": {\n      \"blob\": \"b6890e8b7217c546bec073dcb04988fc37652721\",\n      \"bytes\": 6685,\n      \"sha256\": \"44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432\"\n    }\n  },\n  \"admission\": {\n    \"path\": \"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/result.public.json\",\n    \"whole_file_admission_cap\": 65536,\n    \"cap_is_observation_refusal_not_runtime_writer_cap\": true,\n    \"linux_uid\": 1000,\n    \"linux_gid\": 1000,\n    \"mode\": 384,\n    \"nlink\": 1\n  },\n  \"sequence\": [\n    \"Use existing original closed formatter context; do not initialize or repeat START\",\n    \"Call only separate authorize_formatter_receipt_info with this whole GO\",\n    \"Whole exact request/intent/armed before independent boundary and unique file_info operation_start\",\n    \"Original SDK externally whole before parse; original returned ID status/next8192 pages only\",\n    \"Whole payload SHA/EOF and inactive closure; actual version/size/SHA then require separate body SOURCE and GO\"\n  ],\n  \"limits\": {\n    \"max_Runtime_lanes\": 2,\n    \"max_native_call_or_future_per_lane\": 1,\n    \"immutable_page_bytes\": 8192,\n    \"original_payload_bytes\": 1048576,\n    \"new_binary_reads\": 0\n  },\n  \"lane_activation\": \"C may activate now; A log-tool-info originals closed; B one CLI body lane; root0Runtime\",\n  \"A_release_qualification\": {\n    \"blob\": \"64bffd85bc096a61c32931c0f29e18e33673f1e9\",\n    \"bytes\": 2553,\n    \"sha256\": \"7922206aa8bcd2604e2461010ab8bcdb2693f178719b6e7004abd260145a4efa\"\n  },\n  \"excluded\": [\n    \"new process_start\",\n    \"binary_read\",\n    \"other37 formatter output reads\",\n    \"Cargo or Rust tests\",\n    \"production changes\",\n    \"Native replay or re-key\"\n  ],\n  \"full_replacement\": false,\n  \"production_cutover\": false,\n  \"legacy_cleanup\": false,\n  \"root_Runtime_calls\": 0\n}\n",
+    "whole": true
+  },
+  "formatterReceiptInfoStarted": true,
+  "formatterReceiptInfo": {
+    "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/result.public.json",
+    "size": 22202,
+    "sha256": "60776056ee93fa1fdb557233626ee392385bfe69c8335cd9bc8d236fb0974874",
+    "version": "66306:30541013:22202:1793937480615144693:1793937480615144693",
+    "nativeText": {
+      "blob": "cb38af7975d33515c1591d0f40a417269c7a0847",
+      "bytes": 468,
+      "sha256": "1202fd1418717d4fec2e77f67d251e58d5beb49420e007df648d6b9ea7c78b84"
+    },
+    "originalOperation": "be969ff66181d7b8e77c373f94425fda8a6474cd6480aba3c46f2a6dcd55a539",
+    "full9Strings": [
+      "66306",
+      "30541013",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "22202",
+      "1793937480615144693",
+      "1793937480615144693"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "formatterReceiptBodyGO": {
+    "pin": {
+      "blob": "521c06d38fc1947ba15d8cacaff43e2416ec5957",
+      "bytes": 4963,
+      "sha256": "f4b85f03d70360a26283f86d381b78aadd817295f74a4e89175d3a356993632a"
+    },
+    "raw": "{\n  \"schema\": \"heptabao.root-GO.JWT-original-formatter-receipt-body.v1\",\n  \"authorization\": \"GO\",\n  \"scope\": \"formatter_receipt_binary_read_only\",\n  \"original_job\": \"1a1af017fae-fc05-64f1\",\n  \"info_operation\": \"be969ff66181d7b8e77c373f94425fda8a6474cd6480aba3c46f2a6dcd55a539\",\n  \"maximum_binary_read_starts\": 1,\n  \"immutable_page_bytes\": 16384,\n  \"exact_request\": {\n    \"blob\": \"6d9356b029e17f02287de08ab5d1c3d84a9537b3\",\n    \"bytes\": 345,\n    \"sha256\": \"daddafc8c6e3f131a33c7fb31eb7cd2cadd591e48f585178b0309b62f9de322c\"\n  },\n  \"as_of_UTC\": \"2026-11-06 04:22:31 UTC\",\n  \"agent\": \"/root/ha_validation\",\n  \"source_packet\": \"4e33c31c01a20ce81f1efb7005241c2ed3045909\",\n  \"actual_info_packet\": \"429d2a298f33f0575125b2fe2b1276547bacb2e0\",\n  \"root_review\": {\n    \"blob\": \"05ca022552f5ea96a49907d5d453dfa64c18c9e8\",\n    \"bytes\": 3355,\n    \"sha256\": \"77ced07e9d780568fa4cbddfdcbdf1928eb2df0d51054fcf952d77af425bf43f\"\n  },\n  \"candidate\": {\n    \"blob\": \"8250297f5845ca6b7997a44454de9894d2990709\",\n    \"bytes\": 29141,\n    \"sha256\": \"6960fed2c65a9379fdca8b26d07cbe0c5b3bfa3fd8bf75b4cd67d667d31b6160\"\n  },\n  \"existing_context\": \"jwt_e3af_rog_formatter_gitfirst_r1\",\n  \"initialize_allowed\": false,\n  \"actual_metadata\": {\n    \"path\": \"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/result.public.json\",\n    \"size\": 22202,\n    \"sha256\": \"60776056ee93fa1fdb557233626ee392385bfe69c8335cd9bc8d236fb0974874\",\n    \"version\": \"66306:30541013:22202:1793937480615144693:1793937480615144693\",\n    \"nativeText\": {\n      \"blob\": \"cb38af7975d33515c1591d0f40a417269c7a0847\",\n      \"bytes\": 468,\n      \"sha256\": \"1202fd1418717d4fec2e77f67d251e58d5beb49420e007df648d6b9ea7c78b84\"\n    },\n    \"originalOperation\": \"be969ff66181d7b8e77c373f94425fda8a6474cd6480aba3c46f2a6dcd55a539\",\n    \"full9Strings\": [\n      \"66306\",\n      \"30541013\",\n      \"1000\",\n      \"1000\",\n      \"33152\",\n      \"1\",\n      \"22202\",\n      \"1793937480615144693\",\n      \"1793937480615144693\"\n    ],\n    \"regularFileFromNativeFileInfoContract\": true,\n    \"binaryReadAuthorized\": false\n  },\n  \"request\": {\n    \"idempotency_key\": \"heptabao-native-jwt-e3afc157-formatter-observe-r1-receipt-body0\",\n    \"operation\": {\n      \"tool\": \"binary_read\",\n      \"arguments\": {\n        \"host\": \"rog\",\n        \"path\": \"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/result.public.json\",\n        \"offset\": 0,\n        \"limit\": 22202,\n        \"expected_version\": \"66306:30541013:22202:1793937480615144693:1793937480615144693\"\n      }\n    }\n  },\n  \"helpers\": {\n    \"native\": {\n      \"blob\": \"8250297f5845ca6b7997a44454de9894d2990709\",\n      \"bytes\": 29141,\n      \"sha256\": \"6960fed2c65a9379fdca8b26d07cbe0c5b3bfa3fd8bf75b4cd67d667d31b6160\"\n    },\n    \"archive\": {\n      \"blob\": \"b093fdbf655511f7db94be2d95555606141bbb42\",\n      \"bytes\": 5957,\n      \"sha256\": \"8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397\"\n    },\n    \"pure\": {\n      \"blob\": \"b6890e8b7217c546bec073dcb04988fc37652721\",\n      \"bytes\": 6685,\n      \"sha256\": \"44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432\"\n    }\n  },\n  \"authorized_extent\": {\n    \"path\": \"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/result.public.json\",\n    \"offset\": 0,\n    \"limit\": 22202,\n    \"expected_version\": \"66306:30541013:22202:1793937480615144693:1793937480615144693\",\n    \"whole_sha256\": \"60776056ee93fa1fdb557233626ee392385bfe69c8335cd9bc8d236fb0974874\",\n    \"max_original_payload\": 1048576,\n    \"binary_chunk_upper_bound\": 65536,\n    \"new_binary_result_page\": 16384,\n    \"all_other_original_result_pages\": 8192,\n    \"old_process_stream_cap\": 16384\n  },\n  \"sequence\": [\n    \"Use existing original formatter context and separately authorize_formatter_receipt_body; no reinitialization\",\n    \"Whole exact request/intent/armed before independent boundary and single binary_read original operation_start\",\n    \"Original SDK externally whole before parse/isError; original returned ID status and next16K immutable pages for this new binary observer only\",\n    \"Preserve all eleven prior calls and original8K page requests; all other tools remain8K\",\n    \"Whole original payload SHA/EOF, inactive closure, exact22202 body/version/SHA then one external original file before semantic interpretation\"\n  ],\n  \"lane_activation\": \"C may activate now as second lane beside A unique log-help; B released0Runtime; root0Runtime\",\n  \"limits\": {\n    \"max_Runtime_lanes\": 2,\n    \"max_native_call_or_future_per_lane\": 1,\n    \"original_payload_cap\": 1048576,\n    \"new_binary_admissions\": 1,\n    \"new_file_info_admissions\": 0,\n    \"new_process_starts\": 0\n  },\n  \"unknown\": \"Preserve original evidence and stop; no Native replay, new key, widened path, or timeout\",\n  \"excluded\": [\n    \"other37 output files\",\n    \"formatter rerun\",\n    \"source checkout mutation\",\n    \"Cargo/test execution\",\n    \"production mutation\"\n  ],\n  \"full_replacement\": false,\n  \"production_cutover\": false,\n  \"legacy_cleanup\": false,\n  \"root_Runtime_calls\": 0\n}\n",
+    "whole": true
+  },
+  "formatterReceiptBodyStarted": true,
+  "formatterReceiptBody": {
+    "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/result.public.json",
+    "version": "66306:30541013:22202:1793937480615144693:1793937480615144693",
+    "body": {
+      "blob": "58827993343d76b96fc92b0bae47432710ffbedd",
+      "bytes": 22202,
+      "sha256": "60776056ee93fa1fdb557233626ee392385bfe69c8335cd9bc8d236fb0974874"
+    },
+    "originalOperation": "1e45405574780d6cc2cf00b9451a18c5cc321b7ddf7bf8b94c214e11a5df73e0",
+    "metadataOperation": "be969ff66181d7b8e77c373f94425fda8a6474cd6480aba3c46f2a6dcd55a539",
+    "originalPayload": {
+      "blob": "78ac80a35b06089dc06a299f78b2afc8081d2b2b",
+      "bytes": 30025,
+      "sha256": "c0d143a09f48b11a96e36e3a8c7f3d95e25e3096c405589c3a1836ae164f060e"
+    },
+    "semanticQualification": false
+  }
+}

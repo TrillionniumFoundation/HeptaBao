@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.cli-source-map.official-command-defaults-addendum.v1",
+  "previousMapTree": "849d7e18f97e919d233a41b6ae03676f133b20e4",
+  "RuntimeCalls": 0,
+  "productionEdits": 0,
+  "source": {
+    "path": "internal/command/base.go",
+    "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+    "url": "https://raw.githubusercontent.com/openbao/openbao/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/command/base.go",
+    "blob": "265291c95db2593a1e2655ac2e61281835127148",
+    "bytes": 21369,
+    "sha256": "0fc991b3187ca83bab231a771bdce62be2a2dd9888cd77eb2a5b3c824b5728cb"
+  },
+  "verifiedSourceFacts": [
+    {
+      "lines": [
+        79,
+        124
+      ],
+      "fact": "ClientWithoutToken uses api.DefaultConfig, ReadEnvironment, optional TLS setup, then api.NewClient."
+    },
+    {
+      "lines": [
+        129,
+        132
+      ],
+      "fact": "CLI sets MaxRetries0 if the retry environment variable is absent."
+    },
+    {
+      "lines": [
+        173,
+        179
+      ],
+      "fact": "Client calls ClientWithoutToken; early injected client is a test branch."
+    },
+    {
+      "lines": [
+        439,
+        446
+      ],
+      "fact": "disable-redirects defaultsfalse and describes honoring a single redirect."
+    }
+  ],
+  "exactBaseContainsSetCheckRedirect": false,
+  "previousDefaultAPIAnalysisStillConditional": true,
+  "actualCLIProtocolAndFailureCauseNotInferred": true
+}

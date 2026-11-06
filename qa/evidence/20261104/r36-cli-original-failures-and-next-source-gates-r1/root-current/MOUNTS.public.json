@@ -1,0 +1,517 @@
+{
+  "schema": "heptabao.R36-whole-packet-mounts.v1",
+  "mounts": [
+    {
+      "name": "CLI-original-full",
+      "sha": "871aa23bfee256e91247fbb7e6d42c4cb82d181d",
+      "audit": {
+        "tree": "871aa23bfee256e91247fbb7e6d42c4cb82d181d",
+        "files": 711,
+        "bytes": 8639016,
+        "merkle": {
+          "root_sha": "871aa23bfee256e91247fbb7e6d42c4cb82d181d",
+          "trees_verified": 401,
+          "leaf_count": 711
+        },
+        "whole": true
+      },
+      "label": "CLI-final-original-aggregate"
+    },
+    {
+      "name": "CLI-standby-source-map",
+      "sha": "849d7e18f97e919d233a41b6ae03676f133b20e4",
+      "audit": {
+        "tree": "849d7e18f97e919d233a41b6ae03676f133b20e4",
+        "files": 22,
+        "bytes": 545789,
+        "merkle": {
+          "root_sha": "849d7e18f97e919d233a41b6ae03676f133b20e4",
+          "trees_verified": 1,
+          "leaf_count": 22
+        },
+        "whole": true
+      },
+      "label": "CLI-standby-source-map"
+    },
+    {
+      "name": "CLI-official-command-entry",
+      "sha": "d43f6c8b68f45dcde97fd0b6be0b85def7340f86",
+      "audit": {
+        "tree": "d43f6c8b68f45dcde97fd0b6be0b85def7340f86",
+        "files": 2,
+        "bytes": 22781,
+        "merkle": {
+          "root_sha": "d43f6c8b68f45dcde97fd0b6be0b85def7340f86",
+          "trees_verified": 1,
+          "leaf_count": 2
+        },
+        "whole": true
+      },
+      "label": "CLI-official-command-entry-source"
+    },
+    {
+      "name": "CLI-binary-forward-architecture",
+      "sha": "bcde44a90cb096361dd9f4edb61e5d9228893a68",
+      "audit": {
+        "tree": "bcde44a90cb096361dd9f4edb61e5d9228893a68",
+        "files": 34,
+        "bytes": 1442760,
+        "merkle": {
+          "root_sha": "bcde44a90cb096361dd9f4edb61e5d9228893a68",
+          "trees_verified": 8,
+          "leaf_count": 34
+        },
+        "whole": true
+      },
+      "label": "CLI-binary-forward-architecture"
+    },
+    {
+      "name": "CLI-binary-stream-source",
+      "sha": "7de62910e72d95f8d4506437906dde6552662aae",
+      "audit": {
+        "tree": "7de62910e72d95f8d4506437906dde6552662aae",
+        "files": 8,
+        "bytes": 225446,
+        "merkle": {
+          "root_sha": "7de62910e72d95f8d4506437906dde6552662aae",
+          "trees_verified": 1,
+          "leaf_count": 8
+        },
+        "whole": true
+      },
+      "label": "CLI-binary-stream-source-slice"
+    },
+    {
+      "name": "CLI-completion-interface-peer",
+      "sha": "e8dc1a4898825c28c66d9c7e58d5f57d101a2d53",
+      "audit": {
+        "tree": "e8dc1a4898825c28c66d9c7e58d5f57d101a2d53",
+        "files": 3,
+        "bytes": 6923,
+        "merkle": {
+          "root_sha": "e8dc1a4898825c28c66d9c7e58d5f57d101a2d53",
+          "trees_verified": 1,
+          "leaf_count": 3
+        },
+        "whole": true
+      },
+      "label": "CLI-binary-forward-old-interface-peer"
+    },
+    {
+      "name": "Auth-path-metadata-actual",
+      "sha": "6e7d48193a79063b0ee8957d479128bce080e015",
+      "audit": {
+        "tree": "6e7d48193a79063b0ee8957d479128bce080e015",
+        "files": 82,
+        "bytes": 467893,
+        "merkle": {
+          "root_sha": "6e7d48193a79063b0ee8957d479128bce080e015",
+          "trees_verified": 1,
+          "leaf_count": 82
+        },
+        "whole": true
+      },
+      "label": "Auth-path-metadata-original-chain"
+    },
+    {
+      "name": "Auth-log-info-source",
+      "sha": "cfe8d14826b442f897dc11de3117b0c731b52d65",
+      "audit": {
+        "tree": "cfe8d14826b442f897dc11de3117b0c731b52d65",
+        "files": 24,
+        "bytes": 216525,
+        "merkle": {
+          "root_sha": "cfe8d14826b442f897dc11de3117b0c731b52d65",
+          "trees_verified": 1,
+          "leaf_count": 24
+        },
+        "whole": true
+      },
+      "label": "Auth-log-tool-info-source"
+    },
+    {
+      "name": "Auth-log-info-actual",
+      "sha": "ed647834727c1c51e1cf05328a3e1cf3fc28d107",
+      "audit": {
+        "tree": "ed647834727c1c51e1cf05328a3e1cf3fc28d107",
+        "files": 21,
+        "bytes": 37500,
+        "merkle": {
+          "root_sha": "ed647834727c1c51e1cf05328a3e1cf3fc28d107",
+          "trees_verified": 1,
+          "leaf_count": 21
+        },
+        "whole": true
+      },
+      "label": "Auth-log-tool-info-actual"
+    },
+    {
+      "name": "Auth-help-R1-source",
+      "sha": "25e15e5c7327de33a272057c7f0e17e51f4331fa",
+      "audit": {
+        "tree": "25e15e5c7327de33a272057c7f0e17e51f4331fa",
+        "files": 16,
+        "bytes": 190333,
+        "merkle": {
+          "root_sha": "25e15e5c7327de33a272057c7f0e17e51f4331fa",
+          "trees_verified": 1,
+          "leaf_count": 16
+        },
+        "whole": true
+      },
+      "label": "Auth-log-help-bound-source"
+    },
+    {
+      "name": "Auth-help-R1-failed",
+      "sha": "84167aba44fdaa25f309d19129d5d7b92c65042a",
+      "audit": {
+        "tree": "84167aba44fdaa25f309d19129d5d7b92c65042a",
+        "files": 59,
+        "bytes": 313694,
+        "merkle": {
+          "root_sha": "84167aba44fdaa25f309d19129d5d7b92c65042a",
+          "trees_verified": 1,
+          "leaf_count": 59
+        },
+        "whole": true
+      },
+      "label": "Auth-log-help-failed-original-chain"
+    },
+    {
+      "name": "Auth-help-R2-source",
+      "sha": "26c241488f6043f323e618de00f0cb746da2b4c3",
+      "audit": {
+        "tree": "26c241488f6043f323e618de00f0cb746da2b4c3",
+        "files": 17,
+        "bytes": 255563,
+        "merkle": {
+          "root_sha": "26c241488f6043f323e618de00f0cb746da2b4c3",
+          "trees_verified": 1,
+          "leaf_count": 17
+        },
+        "whole": true
+      },
+      "label": "Auth-log-help-protocol-r2-source"
+    },
+    {
+      "name": "Auth-help-R2-actual",
+      "sha": "2e49e80774b13339d9fb7d77df92a415f386a331",
+      "audit": {
+        "tree": "2e49e80774b13339d9fb7d77df92a415f386a331",
+        "files": 65,
+        "bytes": 367915,
+        "merkle": {
+          "root_sha": "2e49e80774b13339d9fb7d77df92a415f386a331",
+          "trees_verified": 1,
+          "leaf_count": 65
+        },
+        "whole": true
+      },
+      "label": "Auth-log-help-protocol-r2-actual"
+    },
+    {
+      "name": "Auth-fixed-query-source",
+      "sha": "235b4397bf26a2e19ed83996a7b36a6729fcd4e5",
+      "audit": {
+        "tree": "235b4397bf26a2e19ed83996a7b36a6729fcd4e5",
+        "files": 29,
+        "bytes": 524986,
+        "merkle": {
+          "root_sha": "235b4397bf26a2e19ed83996a7b36a6729fcd4e5",
+          "trees_verified": 1,
+          "leaf_count": 29
+        },
+        "whole": true
+      },
+      "label": "Auth-fixed-log-query-source"
+    },
+    {
+      "name": "Auth-fixed-query-known-failure",
+      "sha": "0626ebdfe63188ea215f97fe4c596f4765e9fe3c",
+      "audit": {
+        "tree": "0626ebdfe63188ea215f97fe4c596f4765e9fe3c",
+        "files": 59,
+        "bytes": 349811,
+        "merkle": {
+          "root_sha": "0626ebdfe63188ea215f97fe4c596f4765e9fe3c",
+          "trees_verified": 1,
+          "leaf_count": 59
+        },
+        "whole": true
+      },
+      "label": "Auth-fixed-log-query-failed-original-chain"
+    },
+    {
+      "name": "JWT-source-stage-full",
+      "sha": "955362547a8f2625bbbbd00a880babf3b1a78c0a",
+      "audit": {
+        "tree": "955362547a8f2625bbbbd00a880babf3b1a78c0a",
+        "files": 49,
+        "bytes": 470630,
+        "merkle": {
+          "root_sha": "955362547a8f2625bbbbd00a880babf3b1a78c0a",
+          "trees_verified": 1,
+          "leaf_count": 49
+        },
+        "whole": true
+      },
+      "label": "JWT-stage-body-original-chain"
+    },
+    {
+      "name": "JWT-formatter-original",
+      "sha": "18e2b1a310b5b6e6022633504a612b95b9841da1",
+      "audit": {
+        "tree": "18e2b1a310b5b6e6022633504a612b95b9841da1",
+        "files": 56,
+        "bytes": 278796,
+        "merkle": {
+          "root_sha": "18e2b1a310b5b6e6022633504a612b95b9841da1",
+          "trees_verified": 1,
+          "leaf_count": 56
+        },
+        "whole": true
+      },
+      "label": "JWT-formatter-original-chain"
+    },
+    {
+      "name": "JWT-receipt-info-source",
+      "sha": "dd438efc4e28ea6f708453946f15a20123a131e8",
+      "audit": {
+        "tree": "dd438efc4e28ea6f708453946f15a20123a131e8",
+        "files": 19,
+        "bytes": 238559,
+        "merkle": {
+          "root_sha": "dd438efc4e28ea6f708453946f15a20123a131e8",
+          "trees_verified": 1,
+          "leaf_count": 19
+        },
+        "whole": true
+      },
+      "label": "JWT-formatter-receipt-info-source"
+    },
+    {
+      "name": "JWT-receipt-info-actual",
+      "sha": "429d2a298f33f0575125b2fe2b1276547bacb2e0",
+      "audit": {
+        "tree": "429d2a298f33f0575125b2fe2b1276547bacb2e0",
+        "files": 23,
+        "bytes": 50992,
+        "merkle": {
+          "root_sha": "429d2a298f33f0575125b2fe2b1276547bacb2e0",
+          "trees_verified": 1,
+          "leaf_count": 23
+        },
+        "whole": true
+      },
+      "label": "JWT-formatter-receipt-info-actual"
+    },
+    {
+      "name": "JWT-receipt-body-source",
+      "sha": "4e33c31c01a20ce81f1efb7005241c2ed3045909",
+      "audit": {
+        "tree": "4e33c31c01a20ce81f1efb7005241c2ed3045909",
+        "files": 16,
+        "bytes": 230772,
+        "merkle": {
+          "root_sha": "4e33c31c01a20ce81f1efb7005241c2ed3045909",
+          "trees_verified": 1,
+          "leaf_count": 16
+        },
+        "whole": true
+      },
+      "label": "JWT-formatter-receipt-body-source"
+    },
+    {
+      "name": "JWT-receipt-body-original",
+      "sha": "0e2fd3d9a1a47ee9c2944e0974a9a4ddf9989906",
+      "audit": {
+        "tree": "0e2fd3d9a1a47ee9c2944e0974a9a4ddf9989906",
+        "files": 34,
+        "bytes": 356873,
+        "merkle": {
+          "root_sha": "0e2fd3d9a1a47ee9c2944e0974a9a4ddf9989906",
+          "trees_verified": 1,
+          "leaf_count": 34
+        },
+        "whole": true
+      },
+      "label": "JWT-formatter-receipt-body-original-chain"
+    },
+    {
+      "name": "JWT-fixed38-collector-source",
+      "sha": "0dcf428adc4dfd924b529949e89428af367c17c7",
+      "audit": {
+        "tree": "0dcf428adc4dfd924b529949e89428af367c17c7",
+        "files": 27,
+        "bytes": 513102,
+        "merkle": {
+          "root_sha": "0dcf428adc4dfd924b529949e89428af367c17c7",
+          "trees_verified": 1,
+          "leaf_count": 27
+        },
+        "whole": true
+      },
+      "label": "JWT-fixed38-collector-final-source"
+    },
+    {
+      "name": "JWT-fixed38-collector-peer",
+      "sha": "3b88c48666b1bd8b9296a30b52a36b503a178fd5",
+      "audit": {
+        "tree": "3b88c48666b1bd8b9296a30b52a36b503a178fd5",
+        "files": 9,
+        "bytes": 29779,
+        "merkle": {
+          "root_sha": "3b88c48666b1bd8b9296a30b52a36b503a178fd5",
+          "trees_verified": 1,
+          "leaf_count": 9
+        },
+        "whole": true
+      },
+      "label": "JWT-fixed38-collector-peer"
+    },
+    {
+      "name": "JWT-build-unbound-source",
+      "sha": "b267755db2745847fee6118dfefb3fff43b56ebe",
+      "audit": {
+        "tree": "b267755db2745847fee6118dfefb3fff43b56ebe",
+        "files": 26,
+        "bytes": 884202,
+        "merkle": {
+          "root_sha": "b267755db2745847fee6118dfefb3fff43b56ebe",
+          "trees_verified": 1,
+          "leaf_count": 26
+        },
+        "whole": true
+      },
+      "label": "JWT-build-unbound-source26"
+    },
+    {
+      "name": "PKI-source-peer",
+      "sha": "8e12d5e48948da51352a12f83b5b4a49679b2f93",
+      "audit": {
+        "tree": "8e12d5e48948da51352a12f83b5b4a49679b2f93",
+        "files": 4,
+        "bytes": 10951,
+        "merkle": {
+          "root_sha": "8e12d5e48948da51352a12f83b5b4a49679b2f93",
+          "trees_verified": 1,
+          "leaf_count": 4
+        },
+        "whole": true
+      },
+      "label": "PKI-source-peer-review"
+    },
+    {
+      "name": "CLI-root-qualification",
+      "sha": "97565ebfce44b9ade1c4603c525f512cd5c1ae04",
+      "audit": {
+        "tree": "97565ebfce44b9ade1c4603c525f512cd5c1ae04",
+        "files": 5,
+        "bytes": 132365,
+        "merkle": {
+          "root_sha": "97565ebfce44b9ade1c4603c525f512cd5c1ae04",
+          "trees_verified": 1,
+          "leaf_count": 5
+        },
+        "whole": true
+      },
+      "writer_key": "r36_CLI_actual_root_packet"
+    },
+    {
+      "name": "Auth-help-R2-root",
+      "sha": "353a4ff35cb687aaf57df77469b08bf792f0bf81",
+      "audit": {
+        "tree": "353a4ff35cb687aaf57df77469b08bf792f0bf81",
+        "files": 4,
+        "bytes": 18504,
+        "merkle": {
+          "root_sha": "353a4ff35cb687aaf57df77469b08bf792f0bf81",
+          "trees_verified": 1,
+          "leaf_count": 4
+        },
+        "whole": true
+      },
+      "writer_key": "r36_auth_help_r2_actual_root_packet"
+    },
+    {
+      "name": "Auth-fixed-query-root-GO",
+      "sha": "665b3b9b743efcfc5770fec8697d89b1e2e3f0ed",
+      "audit": {
+        "tree": "665b3b9b743efcfc5770fec8697d89b1e2e3f0ed",
+        "files": 5,
+        "bytes": 26067,
+        "merkle": {
+          "root_sha": "665b3b9b743efcfc5770fec8697d89b1e2e3f0ed",
+          "trees_verified": 1,
+          "leaf_count": 5
+        },
+        "whole": true
+      },
+      "writer_key": "r36_auth_fixed_log_query_root_packet"
+    },
+    {
+      "name": "Auth-fixed-query-root-failure",
+      "sha": "4553874ff66189092d0950d93e97232b1d53603f",
+      "audit": {
+        "tree": "4553874ff66189092d0950d93e97232b1d53603f",
+        "files": 4,
+        "bytes": 18373,
+        "merkle": {
+          "root_sha": "4553874ff66189092d0950d93e97232b1d53603f",
+          "trees_verified": 1,
+          "leaf_count": 4
+        },
+        "whole": true
+      },
+      "writer_key": "r36_auth_fixed_log_query_actual_root_packet"
+    },
+    {
+      "name": "JWT-receipt-root-qualification",
+      "sha": "0025bf8b70c0c9f698e8c6b0505af6a19304e90f",
+      "audit": {
+        "tree": "0025bf8b70c0c9f698e8c6b0505af6a19304e90f",
+        "files": 7,
+        "bytes": 39012,
+        "merkle": {
+          "root_sha": "0025bf8b70c0c9f698e8c6b0505af6a19304e90f",
+          "trees_verified": 1,
+          "leaf_count": 7
+        },
+        "whole": true
+      },
+      "writer_key": "r36_jwt_formatter_receipt_actual_root_packet"
+    },
+    {
+      "name": "JWT-fixed38-root-GO",
+      "sha": "3dc39675570bca083c784e6313b88a20b76592bb",
+      "audit": {
+        "tree": "3dc39675570bca083c784e6313b88a20b76592bb",
+        "files": 8,
+        "bytes": 69185,
+        "merkle": {
+          "root_sha": "3dc39675570bca083c784e6313b88a20b76592bb",
+          "trees_verified": 1,
+          "leaf_count": 8
+        },
+        "whole": true
+      },
+      "writer_key": "r36_jwt_fixed38_collector_source_root_packet"
+    },
+    {
+      "name": "PKI-exact400-source",
+      "sha": "6e4bf23de8f7fdac6dd9b152232a905bedb87744",
+      "audit": {
+        "tree": "6e4bf23de8f7fdac6dd9b152232a905bedb87744",
+        "files": 15,
+        "bytes": 769828,
+        "merkle": {
+          "root_sha": "6e4bf23de8f7fdac6dd9b152232a905bedb87744",
+          "trees_verified": 1,
+          "leaf_count": 15
+        },
+        "whole": true
+      },
+      "writer_key": "r35_pki_status_source_packet"
+    }
+  ]
+}

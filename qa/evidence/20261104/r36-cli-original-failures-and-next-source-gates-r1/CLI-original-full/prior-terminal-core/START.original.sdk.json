@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-S\",\n      \"-B\",\n      \"/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/qa/phaseb_controller_r3.py\",\n      \"--binding\",\n      \"/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/binding.private.json\",\n      \"--binding-sha256\",\n      \"7ef3458f4a54b74336941229307c0ffb6778e581c18b27518dc03a8fe6107eea\",\n      \"--run\",\n      \"--prepare-result-sha256\",\n      \"8d9809f9da2493cb7f9d1ae8855ff31dab8464cc3919ea7fcd02163087cac615\"\n    ],\n    \"created_unix_ms\": 1793935283730,\n    \"cwd\": \"/home/qian-qi/heptabao-ha-closure-20261103-r1\",\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3.12\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"desktop\",\n    \"id\": \"1a1aee01612-fc05-639b\",\n    \"idempotency_key\": \"heptabao-official271-phaseb-4e808-live-10816-20261105-r4\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1aee01612-fc05-639b\",\n    \"request_digest\": \"f670cf418c6ae40943b7f0224e09f0bd556ceb3b5975c377ad0e524a317f5cd7\",\n    \"request_fingerprint\": 17757921211157505033,\n    \"ssh_target\": \"desktop-ts\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1aee01612-fc05-639b\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1aee01612-fc05-639b\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

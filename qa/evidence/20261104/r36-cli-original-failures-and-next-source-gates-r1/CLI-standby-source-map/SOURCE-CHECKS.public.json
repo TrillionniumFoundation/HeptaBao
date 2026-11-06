@@ -1,0 +1,85 @@
+{
+  "pass": true,
+  "checks": 19,
+  "results": [
+    {
+      "name": "whole-official-save.go",
+      "pass": true
+    },
+    {
+      "name": "whole-official-restore.go",
+      "pass": true
+    },
+    {
+      "name": "whole-official-api-raft.go",
+      "pass": true
+    },
+    {
+      "name": "whole-official-api-client.go",
+      "pass": true
+    },
+    {
+      "name": "whole-official-api-request.go",
+      "pass": true
+    },
+    {
+      "name": "whole-official-api-response.go",
+      "pass": true
+    },
+    {
+      "name": "whole-current-http-snapshot.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical-current-http-snapshot.rs",
+      "pass": true
+    },
+    {
+      "name": "whole-current-snapshot-transfer.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical-current-snapshot-transfer.rs",
+      "pass": true
+    },
+    {
+      "name": "whole-current-snapshot-redirect-tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical-current-snapshot-redirect-tests.rs",
+      "pass": true
+    },
+    {
+      "name": "whole-current-http-h2.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical-current-http-h2.rs",
+      "pass": true
+    },
+    {
+      "name": "whole-actual-controller.py",
+      "pass": true
+    },
+    {
+      "name": "directTree-root",
+      "pass": true
+    },
+    {
+      "name": "directTree-crates",
+      "pass": true
+    },
+    {
+      "name": "directTree-server",
+      "pass": true
+    },
+    {
+      "name": "directTree-src_tree",
+      "pass": true
+    }
+  ],
+  "candidateOrProductCodeExecuted": false,
+  "RuntimeCalls": 0,
+  "scope": "Whole source identity, current canonical membership and four direct Git-tree hashes; not whole-regression or runtime."
+}

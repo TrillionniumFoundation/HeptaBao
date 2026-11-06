@@ -1,0 +1,227 @@
+{
+  "schema": "heptabao.root-source-review.JWT-fixed38-collector.v1",
+  "passed": true,
+  "check_count": 37,
+  "checks": [
+    {
+      "name": "whole_final27_and_core16",
+      "passed": true
+    },
+    {
+      "name": "final_source_request_journal_same_as_core",
+      "passed": true
+    },
+    {
+      "name": "whole_exact_primitive_pins",
+      "passed": true
+    },
+    {
+      "name": "actual_receipt_whole_and_prior_root41",
+      "passed": true
+    },
+    {
+      "name": "exact_inline_process_request_self_hash",
+      "passed": true
+    },
+    {
+      "name": "all_38_fixed_rows_exact_manifest",
+      "passed": true
+    },
+    {
+      "name": "fixed_quartet_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "fixed_quartet_auth_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "fixed_quartet_auth_native_v6_routes.rs",
+      "passed": true
+    },
+    {
+      "name": "fixed_quartet_federated_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "fixed_quartet_federated_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "fixed_quartet_service.rs",
+      "passed": true
+    },
+    {
+      "name": "fixed_quartet_service_native_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "fixed_quartet_service_native_jwt_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "fixed_quartet_service_native_userpass_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "config_and_receipt_exact_prior_full9",
+      "passed": true
+    },
+    {
+      "name": "unchanged_original_read_cap_and_success_bound",
+      "passed": true
+    },
+    {
+      "name": "original50_shared60_outer_fixed_limits",
+      "passed": true
+    },
+    {
+      "name": "six_exact_ancestor_input_directories",
+      "passed": true
+    },
+    {
+      "name": "no_children_network_directory_enumeration_or_delete",
+      "passed": true
+    },
+    {
+      "name": "all_leaf_reads_NOFOLLOW_NONBLOCK_readonly_and_full9",
+      "passed": true
+    },
+    {
+      "name": "FD_ledger_precedes_acquisition_and_once_close_marker_precedes_close",
+      "passed": true
+    },
+    {
+      "name": "read_count_and_byte_cap_shared_with_report",
+      "passed": true
+    },
+    {
+      "name": "all_inputs_whole_SHA_EOF_read_after_and_final_named_FD_fences",
+      "passed": true
+    },
+    {
+      "name": "strict_diff_real_forward_inverse_bytes_and_hashes",
+      "passed": true
+    },
+    {
+      "name": "strict_diff_LF_headers_offsets_context_and_counts",
+      "passed": true
+    },
+    {
+      "name": "all_38_inputs_closed_before_report_publication",
+      "passed": true
+    },
+    {
+      "name": "one_create_only_output_directory_and_report_no_fallback",
+      "passed": true
+    },
+    {
+      "name": "report_same_FD_full9_readback_fsync_and_namespace",
+      "passed": true
+    },
+    {
+      "name": "finally_closes_all_and_restores_handlers_umask",
+      "passed": true
+    },
+    {
+      "name": "report_does_not_claim_own_final_closure_or_atomic_input_snapshot",
+      "passed": true
+    },
+    {
+      "name": "journal_from_original_formatter_exact",
+      "passed": true
+    },
+    {
+      "name": "journal_two_hunk_strict_both_directions",
+      "passed": true
+    },
+    {
+      "name": "journal_only_slot_pin_prefix_changed",
+      "passed": true
+    },
+    {
+      "name": "journal_only_same_job_status_read_not_report_reads",
+      "passed": true
+    },
+    {
+      "name": "no_source_or_actual_qualification_claim",
+      "passed": true
+    },
+    {
+      "name": "correct_native_binding_independently_recomputed",
+      "passed": true
+    }
+  ],
+  "packet": {
+    "tree": "0dcf428adc4dfd924b529949e89428af367c17c7",
+    "files": 27,
+    "bytes": 513102,
+    "merkle": {
+      "root_sha": "0dcf428adc4dfd924b529949e89428af367c17c7",
+      "trees_verified": 1,
+      "leaf_count": 27
+    },
+    "whole": true
+  },
+  "source": {
+    "blob": "6346d622e31526522459ae4c1a2cdc858369d2ed",
+    "bytes": 40521,
+    "sha256": "104102c9c29e0cf795d20e364a69f4b9c75b78a36191bab720e7095c98b6ff81"
+  },
+  "exact_request": {
+    "blob": "0b31393bf3cdef056561fa1a57860083c628f16e",
+    "bytes": 45052,
+    "sha256": "b40a06b2b598e8e5b3e6c4505bbf130fd63ab0da26d8f7c9fc5d8c6c6c93a7c3"
+  },
+  "journal": {
+    "blob": "01360ba6d3026a67e9be2ffc11ccc40a53eaf7b8",
+    "bytes": 19049,
+    "sha256": "d4b51619a8481826e298af4461c28055edfe6fd37760d36c5aefac7b95341bf1"
+  },
+  "native_binding": {
+    "sha256": "73fb0992a1ea74e22585775b5ec5f6e5560c61f02a0f08b787d31ea0f1d6c49c",
+    "native_fingerprint": "8357284058902459618",
+    "typed_stdin_field": "stdin"
+  },
+  "prior_actual_receipt_qualification": {
+    "blob": "cc5d3f87307e89cc01df208c72aa683f8f1184d3",
+    "bytes": 6106,
+    "sha256": "3fcabc479b74b6f9be3aea7a1b337fc77cffaa4e0e983f22b35447585f809459"
+  },
+  "scope": {
+    "fixed_input_files": 38,
+    "input_bytes": 3701083,
+    "original_read_cap": 7906155,
+    "max_input_plus_report_read_bytes": 4749659,
+    "max_success_reads": 129,
+    "max_success_metadata": 273,
+    "total_fd_acquisitions": 46,
+    "max_held_fds": 44,
+    "child_count": 0,
+    "new_product_execution": false
+  },
+  "limits": {
+    "shared_seconds": 50,
+    "outer_seconds": 60,
+    "read_bytes": 7906155,
+    "per_read_bytes": 65536,
+    "read_calls": 256,
+    "metadata_calls": 320,
+    "fd_acquisitions": 46,
+    "peak_owned_fds": 44,
+    "diff_bytes": 786432,
+    "report_bytes": 1048576,
+    "stdout_bytes": 16384
+  },
+  "limitations": [
+    "Python has not been compiled or executed; this is a source review.",
+    "The 36 candidate/formatted/stdout/stderr file identities are first observations; only config and receipt have previously pinned full9.",
+    "Input observations are sequential. Input file descriptors are closed before publishing the report.",
+    "Report alone cannot qualify final descriptor closure; original terminal stdout and authority are required.",
+    "Difflib may compute before first yield; the 50-second checks and original60-second supervisor are the actual bounds, not a claim of hard preemption at every instruction."
+  ],
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

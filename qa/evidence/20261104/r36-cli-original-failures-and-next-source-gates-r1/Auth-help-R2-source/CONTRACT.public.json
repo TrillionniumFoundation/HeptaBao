@@ -1,0 +1,169 @@
+{
+  "schema": "heptabao.mac-owned-log-help-protocol-r2.SOURCE",
+  "status": "SOURCE_ONLY_NO_NEW_RUNTIME_GO",
+  "purpose": "Recognize only a bounded actual log show help stream under two explicit exit/stream protocols; obtain syntax for a separate later narrow log query.",
+  "originalFailure": {
+    "packet": "84167aba44fdaa25f309d19129d5d7b92c65042a",
+    "job": "1a1af179989-fc05-65b0",
+    "rootGo": {
+      "blob": "11f0eca6ddc5978298ae9b2fbdf01b5d10a0bddf",
+      "bytes": 5824,
+      "sha256": "c39708ac33c36b6629c0dc49ba037b4135761ab4d5b5f47e8ed10e392b4f80f0"
+    },
+    "stdout": {
+      "blob": "2ee89aebd7a70ee39ab6e280a70e1ea86629b2b2",
+      "bytes": 3029,
+      "sha256": "75c29053895a4d4797a29aaa32f9f746715860a566bedaa04091a12a12516b72"
+    },
+    "authority": {
+      "blob": "9a83ec9817dc5c1fb838e352c19a55151f25f8ed",
+      "bytes": 728,
+      "sha256": "b0e22b084d98724fe0d553b18807b6c64fc64bb56dd94dd053ee66408b16b361"
+    },
+    "result": "known wrapper exit1",
+    "actualChild": {
+      "argv": [
+        "/usr/bin/log",
+        "help",
+        "show"
+      ],
+      "exit": 64,
+      "stdoutBytes": 0,
+      "stderrBytes": 2246,
+      "body": "not exported and not retained as an independently readable file by the wrapper",
+      "helpSyntaxQualified": false
+    },
+    "preserved": true
+  },
+  "source": {
+    "blob": "5bbd852c3b8c49a3cc18a0dc716fe123f33c3726",
+    "bytes": 44719,
+    "sha256": "aed2df85d5e22ef9933fe342e981426e2fc5817d81212ee4b17987a0b563ae35"
+  },
+  "request": {
+    "blob": "af792bef88805ced91bbe214f753695c503463b5",
+    "bytes": 45429,
+    "sha256": "18d59fb7864c32dcd046f4eb96d732384be5b0ce862b703116de0c1d569f6e4d"
+  },
+  "journal": {
+    "blob": "25897aa7bab94445998d9fdd73ed07cb4a9ef151",
+    "bytes": 19054,
+    "sha256": "1f7f65f549d08d935e45e3c884e844435dafb3de16b41bd57e155c5c36effab8"
+  },
+  "oldSource": {
+    "blob": "72db261830c3ddd1c708705a95b635cd424738a5",
+    "bytes": 44232,
+    "sha256": "7a36fd5212c16d0069050083bcb80bebbe095afdf283a923a34d06daee1e827c"
+  },
+  "oldRequest": {
+    "blob": "fcf60636968e344833f0cfaf268a29a61981b452",
+    "bytes": 44918,
+    "sha256": "f7801d7c7c89b6982c528857b6eb13c1ae0ec0f632ab14d8ec8d44842e679e49"
+  },
+  "oldJournal": {
+    "blob": "16f07ceaeb1797a400871f2da06f2e5cdd47baf8",
+    "bytes": 19036,
+    "sha256": "358d75670890507051facd06811cfbee20309f8edaa455ea2e5ec7301aea1d18"
+  },
+  "newSlot": "owner_launchd_log_help_protocol_gitfirst_r2",
+  "newKey": "heptabao-mac-owned-launchd-log-help-protocol-aed2df85-20261106-r2",
+  "protocols": [
+    {
+      "exit": 0,
+      "chosenStream": "stdout",
+      "otherStreamMustBeEmpty": true
+    },
+    {
+      "exit": 64,
+      "chosenStream": "stderr",
+      "otherStreamMustBeEmpty": true
+    }
+  ],
+  "allOtherExits": "reject without candidate text/hash",
+  "successConjunction": [
+    "original Commands outcomeUnknown=false and completeBeforeDeadline",
+    "exclusive exit/stream protocol",
+    "chosen raw bytes 1..65536",
+    "strict ASCII with tab/CR/LF or printable ASCII only",
+    "first non-whitespace line exact usage/Usage: log show heading and optional whitespace-delimited suffix",
+    "four standalone option tokens --start --end --predicate --style",
+    "original post-projection and finally full9 fences",
+    "original child real reaping/group empty/streams closed",
+    "four application FD close ledger",
+    "signal restore/pending check, final45s and postflush deadline"
+  ],
+  "outputAdditions": [
+    "sourceStream",
+    "observedExitCode"
+  ],
+  "unchanged": {
+    "toolBinding": {
+      "path": "/usr/bin/log",
+      "version": "16777233:1152921500312572288:807536:1786589515000000000:1786589515000000000",
+      "size": 807536,
+      "sha256": "2fa7b04615546f0964dd1ddedab04a07e3e026f76959e7f44cbd30bfa48a5974",
+      "identity": [
+        "16777233",
+        "1152921500312572288",
+        "0",
+        "0",
+        "33261",
+        "1",
+        "807536",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "metadataOriginal": {
+        "blob": "d3cefcb531f3deea5a156189d381b11f8c70fa7b",
+        "bytes": 411,
+        "sha256": "8b1ed8e54007466045ebf6527ed102d709c54f8a3e10dd8e7b5f5b41b791efe4"
+      }
+    },
+    "argv": [
+      "/usr/bin/log",
+      "help",
+      "show"
+    ],
+    "regularPython": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "cwd": "/Users/qianqi",
+    "sharedSeconds": 45,
+    "helpSeconds": 10,
+    "outerSeconds": 60,
+    "cleanup": {
+      "term": 1,
+      "wait": 5,
+      "group": 3,
+      "psMax": 4
+    },
+    "maxHelpStream": 65536,
+    "originalCommandChunk": 65536,
+    "maximumReturnedBeforeOldBoundRejectionPerStream": 131072,
+    "publicOutput": 131072,
+    "fdRows": 4,
+    "metadataCap": 64,
+    "successMetadata": 40,
+    "codeMaximum": 8388608,
+    "codeReadCallsMax": 129,
+    "immutablePage": 8192,
+    "processReadLimit": 16384,
+    "oldTwoEmbeddedModules": "byte exact"
+  },
+  "journalChange": "Only slot/request pin/observer key prefix; original 13 function bodies unchanged after normalizing the one prefix string.",
+  "changedSource": "Only help_projection and main schema literal. Heading token boundaries strengthened in the same public projection; no extra I/O.",
+  "nativeDigestAndFingerprint": null,
+  "rootMustRecomputeCorrectTypedStdin": true,
+  "sourceExecuted": false,
+  "pythonCompilePerformed": false,
+  "componentExecution": false,
+  "runtimeCalls": 0,
+  "newHelpRunAuthorized": false,
+  "logQueryAuthorized": false,
+  "cleanupAuthorized": false,
+  "privateCapsuleRead": false,
+  "providerOrSDKExecution": false,
+  "historicalUnknowns": {
+    "registration": "NOT_CLOSED",
+    "lineage": "NOT_QUALIFIED",
+    "git8916": "UNKNOWN"
+  }
+}

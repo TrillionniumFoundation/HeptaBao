@@ -1,0 +1,228 @@
+{
+  "schema": "heptabao.root.JWT-formatter-transport-qualification.v1",
+  "scope": "Original unique formatter job terminal state and complete original stdout/stderr; actual receipt and independent file bytes remain pending",
+  "status": "passed",
+  "checks_passed": 43,
+  "checks": [
+    {
+      "name": "whole56_original_chain",
+      "passed": true
+    },
+    {
+      "name": "exact_GO_source_journal",
+      "passed": true
+    },
+    {
+      "name": "eight_unique_original_calls",
+      "passed": true
+    },
+    {
+      "name": "call_pins_jwt-e3af-rog-formatter-start-r1",
+      "passed": true
+    },
+    {
+      "name": "one_call_arm_jwt-e3af-rog-formatter-start-r1",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_native_jwt-e3af-rog-formatter-start-r1",
+      "passed": true
+    },
+    {
+      "name": "call_pins_jwt-e3af-rog-formatter-authority0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "one_call_arm_jwt-e3af-rog-formatter-authority0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_native_jwt-e3af-rog-formatter-authority0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "call_pins_jwt-e3af-rog-formatter-authority0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "one_call_arm_jwt-e3af-rog-formatter-authority0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_native_jwt-e3af-rog-formatter-authority0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "call_pins_jwt-e3af-rog-formatter-authority0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "one_call_arm_jwt-e3af-rog-formatter-authority0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_native_jwt-e3af-rog-formatter-authority0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "call_pins_jwt-e3af-rog-formatter-streams0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "one_call_arm_jwt-e3af-rog-formatter-streams0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_native_jwt-e3af-rog-formatter-streams0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "call_pins_jwt-e3af-rog-formatter-streams0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "one_call_arm_jwt-e3af-rog-formatter-streams0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_native_jwt-e3af-rog-formatter-streams0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "call_pins_jwt-e3af-rog-formatter-streams0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "one_call_arm_jwt-e3af-rog-formatter-streams0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_native_jwt-e3af-rog-formatter-streams0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "call_pins_jwt-e3af-rog-formatter-streams0-page8192-r1",
+      "passed": true
+    },
+    {
+      "name": "one_call_arm_jwt-e3af-rog-formatter-streams0-page8192-r1",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_native_jwt-e3af-rog-formatter-streams0-page8192-r1",
+      "passed": true
+    },
+    {
+      "name": "one_START_two_observers_three_pages",
+      "passed": true
+    },
+    {
+      "name": "exact_request_correct_typed_stdin_binding",
+      "passed": true
+    },
+    {
+      "name": "original_job_unique_launch",
+      "passed": true
+    },
+    {
+      "name": "original_observer_authority0",
+      "passed": true
+    },
+    {
+      "name": "page_authority0_0",
+      "passed": true
+    },
+    {
+      "name": "whole_payload_authority0",
+      "passed": true
+    },
+    {
+      "name": "original_observer_streams0",
+      "passed": true
+    },
+    {
+      "name": "page_streams0_0",
+      "passed": true
+    },
+    {
+      "name": "page_streams0_8192",
+      "passed": true
+    },
+    {
+      "name": "whole_payload_streams0",
+      "passed": true
+    },
+    {
+      "name": "terminal_success_full_durable",
+      "passed": true
+    },
+    {
+      "name": "exact_original_streams",
+      "passed": true
+    },
+    {
+      "name": "summary_success_only",
+      "passed": true
+    },
+    {
+      "name": "summary_nine_known_inputs_and_bounded_outputs",
+      "passed": true
+    },
+    {
+      "name": "six_changes_require_frozen_successor",
+      "passed": true
+    },
+    {
+      "name": "no_remaining_native_calls_or_observers",
+      "passed": true
+    }
+  ],
+  "original_job": "rog/1a1af017fae-fc05-64f1",
+  "original_chain": {
+    "tree": "18e2b1a310b5b6e6022633504a612b95b9841da1",
+    "files": 56,
+    "bytes": 278796,
+    "merkle": {
+      "root_sha": "18e2b1a310b5b6e6022633504a612b95b9841da1",
+      "trees_verified": 1,
+      "leaf_count": 56
+    },
+    "whole": true
+  },
+  "authority": {
+    "blob": "9e275b37f8f33d2ede10dd49fc87444d8d2736bf",
+    "bytes": 731,
+    "sha256": "cf9eca556bf6c35a47f66c55526af65783ce5274713927e262b0dc24903aaf49"
+  },
+  "stdout": {
+    "blob": "f2c15bb0600e84e4f76f76d10c4fbb8a744ef351",
+    "bytes": 3352,
+    "sha256": "207f828f9cf072b2e49021bb8213963c4404530a0348ac614452799a581a0212"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "root_GO": {
+    "blob": "e04895a8ccb5327e69be8d69a41a44b10a22ee78",
+    "bytes": 19544,
+    "sha256": "86cc62e0dc9e1278c974d423b839a0fda92882e5ba141c8c1208a326808b16b8"
+  },
+  "changed_files": [
+    "auth.rs",
+    "auth_native_jwt.rs",
+    "federated_native_jwt.rs",
+    "service.rs",
+    "service_native_auth.rs",
+    "service_native_jwt_tests.rs"
+  ],
+  "formatter_full_qualification": false,
+  "receipt_and_38_independent_outputs_pending": true,
+  "compiled": false,
+  "Rust_tests": 0,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

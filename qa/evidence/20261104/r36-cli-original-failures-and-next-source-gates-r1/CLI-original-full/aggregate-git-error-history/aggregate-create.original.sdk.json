@@ -1,0 +1,18 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "GitHub API error 422: {\"message\":\"Sorry, your request timed out.  It's likely that your input was too large to process.  Consider building the tree incrementally, or building the commits you need in a local clone of the repository and then pushing them to GitHub.\",\"documentation_url\":\"https://docs.github.com/rest/git/trees#create-a-tree\",\"status\":\"422\"}"
+    }
+  ],
+  "structuredContent": {
+    "error": "GitHub API error 422: {\"message\":\"Sorry, your request timed out.  It's likely that your input was too large to process.  Consider building the tree incrementally, or building the commits you need in a local clone of the repository and then pushing them to GitHub.\",\"documentation_url\":\"https://docs.github.com/rest/git/trees#create-a-tree\",\"status\":\"422\"}",
+    "error_code": "INVALID_ARGUMENT",
+    "error_data": {
+      "message": "Sorry, your request timed out.  It's likely that your input was too large to process.  Consider building the tree incrementally, or building the commits you need in a local clone of the repository and then pushing them to GitHub.",
+      "documentation_url": "https://docs.github.com/rest/git/trees#create-a-tree",
+      "status": "422"
+    }
+  },
+  "isError": true
+}

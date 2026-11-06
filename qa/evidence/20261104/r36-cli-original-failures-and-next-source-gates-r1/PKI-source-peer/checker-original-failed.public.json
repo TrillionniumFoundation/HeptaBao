@@ -1,0 +1,60 @@
+{
+  "schema": "authbus.peer.pki400.strict-source.v1",
+  "scope": "Pure source reconstruction only; no Rust/Python candidate execution",
+  "checks": [
+    {
+      "name": "pki.strict_forward_whole",
+      "passed": true,
+      "detail": {
+        "hunks": 1
+      }
+    },
+    {
+      "name": "pki.strict_inverse_whole",
+      "passed": true
+    },
+    {
+      "name": "tests.strict_forward_whole",
+      "passed": true,
+      "detail": {
+        "hunks": 1
+      }
+    },
+    {
+      "name": "tests.strict_inverse_whole",
+      "passed": true
+    },
+    {
+      "name": "acceptance.strict_forward_whole",
+      "passed": true,
+      "detail": {
+        "hunks": 1
+      }
+    },
+    {
+      "name": "acceptance.strict_inverse_whole",
+      "passed": true
+    },
+    {
+      "name": "pki.only_lease_lookup_modified",
+      "passed": true
+    },
+    {
+      "name": "pki.lookup_read_only_self",
+      "passed": true
+    },
+    {
+      "name": "pki.exact_two_invalid_errors",
+      "passed": true
+    },
+    {
+      "name": "tests.only_two_appended_tests",
+      "passed": false
+    }
+  ],
+  "runtimeCalls": 0,
+  "compiled": false,
+  "passed": false,
+  "error": "Error: tests.only_two_appended_tests",
+  "check_count": 10
+}

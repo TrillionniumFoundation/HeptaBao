@@ -1,0 +1,17 @@
+# Fixed formatter38 collector — SOURCE proposal
+
+This packet proposes one separate public observer. It has no Runtime GO. The prior receipt-body GO is exhausted and grants no collector execution.
+
+The observer reads only the 38 exact public formatter outputs. The original successful-observation read cap remains 7,906,155 bytes; its report readback shares that counter. Actual fixed inputs total 3,701,083 bytes. A 1 MiB report makes the successful total at most 4,749,659 bytes. The one 50-second deadline is never reset, and the proposed process outer cap is 60 seconds.
+
+All 38 input descriptors remain held until complete SHA/size/EOF checks, strict forward and reverse unified-diff reconstruction, and final named/FD full9 checks. They close once before any report publication. Six ancestor/input directory descriptors plus 38 files give peak 44; the later output directory/report bring total acquisitions to 46. Shared ancestors compare object identity (dev/ino/uid/gid/full-mode) while recording all nine fields. Three formatter-owned input directories and every file require full9 consistency. Only config and receipt have prior full9; the other 36 identities are first observations, not invented metadata.
+
+The report is one new create-only public file. It cannot prove its own final descriptor closure. The post-finally stdout, all once-close results, restored signal handlers/umask, elapsed budget and authoritative exit 0 must all close before any success claim. Failure keeps owned assets and never deletes, overwrites, replays or chooses another root. The report is not a formatter successor or build qualification by itself.
+
+Nine strict unified diffs reconstruct actual formatted files from the nine exact e3af canonical candidate bytes, then reconstruct the candidate bytes in reverse. Each actual stdout must equal its formatted file, each stderr must be empty, and config/receipt whole identities remain pinned. Reports preserve three unchanged files explicitly. Inputs are observed sequentially, not as an atomic filesystem snapshot; once-closed input files are not claimed held after report publication.
+
+The formatter receipt proves nine direct children exited 0 and were reaped in supervisor PGID 3894313. It does not prove nine independent process groups empty. This collector starts no child, runs no rustfmt/Cargo/compiler, opens no network, lists no directory and writes no input. Standard-library difflib can spend time before its first yield; checks surround and consume its yielded lines, while the unchanged 60-second Native supervisor remains the final external bound. No stronger latency promise is claimed.
+
+The journal is the original reviewed formatter Git-first journal with only slot, request pin and observer-key prefix literals changed. It admits only this exact process_start and subsequent same-job process_status/process_read observers. It does not admit report metadata/body reads; those require a later exact source/GO. The old explicit output-read plan is preserved in prior-formatter-root-go.original.json. Every returned SDK remains externally whole before isError/parse, UNKNOWN stops and does not authorize retries.
+
+Python execution/compilation and collector Runtime are zero. This is a new bounded observer source, not a claimed literal-only modification of the original formatter. Separate pure-contract/source checks follow without running the full module.

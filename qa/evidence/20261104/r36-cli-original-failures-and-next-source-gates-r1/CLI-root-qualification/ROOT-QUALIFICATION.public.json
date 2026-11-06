@@ -1,0 +1,1756 @@
+{
+  "schema": "heptabao.root-qualification.official271-CLI-phaseB-original.v1",
+  "evidence_qualified": true,
+  "compatibility_gate_passed": false,
+  "status": "KNOWN_COMPATIBILITY_FAILURES_B04_B05",
+  "check_count": 415,
+  "checks": [
+    {
+      "name": "whole711_aggregate_all401_Merkle_trees",
+      "passed": true
+    },
+    {
+      "name": "CLI_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-live-r4-start",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-live-r4-start",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-authority0-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-authority0-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-authority0-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-authority0-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-authority0-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-authority0-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-streams0-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-streams0-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-streams0-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-streams0-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-streams0-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-streams0-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-authority1-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-authority1-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-authority1-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-authority1-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-authority1-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-authority1-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-info0-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-info0-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-info0-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-info0-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-info0-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-info0-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body0-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body0-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body0-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body0-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body0-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body0-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body0-page1",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body0-page1",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body0-page2",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body0-page2",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body0-page3",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body0-page3",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body0-page4",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body0-page4",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body0-page5",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body0-page5",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body1-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body1-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body1-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body1-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body1-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body1-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body1-page1",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body1-page1",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body1-page2",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body1-page2",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body1-page3",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body1-page3",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body1-page4",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body1-page4",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body1-page5",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body1-page5",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body2-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body2-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body2-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body2-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body2-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body2-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body2-page1",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body2-page1",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body2-page2",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body2-page2",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body2-page3",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body2-page3",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body2-page4",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body2-page4",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body2-page5",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body2-page5",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body3-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body3-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body3-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body3-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body3-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body3-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body3-page1",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body3-page1",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body3-page2",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body3-page2",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body3-page3",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body3-page3",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body3-page4",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body3-page4",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body3-page5",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body3-page5",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body4-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body4-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body4-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body4-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body4-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body4-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body4-page1",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body4-page1",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body4-page2",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body4-page2",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body4-page3",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body4-page3",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body4-page4",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body4-page4",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body4-page5",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body4-page5",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body5-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body5-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body5-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body5-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body5-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body5-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body5-page1",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body5-page1",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body5-page2",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body5-page2",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body5-page3",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body5-page3",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body5-page4",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body5-page4",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body5-page5",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body5-page5",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body6-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body6-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body6-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body6-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body6-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body6-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body6-page1",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body6-page1",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body6-page2",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body6-page2",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body6-page3",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body6-page3",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body6-page4",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body6-page4",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body6-page5",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body6-page5",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body7-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body7-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body7-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body7-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body7-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body7-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body7-page1",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body7-page1",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body7-page2",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body7-page2",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body7-page3",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body7-page3",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body7-page4",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body7-page4",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body7-page5",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body7-page5",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body8-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body8-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body8-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body8-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body8-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body8-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body8-page1",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body8-page1",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body8-page2",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body8-page2",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body8-page3",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body8-page3",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body8-page4",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body8-page4",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body8-page5",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body8-page5",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body9-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body9-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body9-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body9-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body9-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body9-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body9-page1",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body9-page1",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body9-page2",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body9-page2",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body9-page3",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body9-page3",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body9-page4",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body9-page4",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body9-page5",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body9-page5",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body10-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body10-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body10-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body10-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body10-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body10-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body10-page1",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body10-page1",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body10-page2",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body10-page2",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body10-page3",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body10-page3",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body10-page4",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body10-page4",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body10-page5",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body10-page5",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body11-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body11-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body11-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body11-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body11-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body11-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body11-page1",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body11-page1",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body11-page2",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body11-page2",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body11-page3",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body11-page3",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body11-page4",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body11-page4",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body11-page5",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body11-page5",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body12-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body12-admit",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body12-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body12-status0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body12-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body12-page0",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body12-page1",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body12-page1",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body12-page2",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body12-page2",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body12-page3",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body12-page3",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body12-page4",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body12-page4",
+      "passed": true
+    },
+    {
+      "name": "CLI_call_cli-phaseb-r4-result-body12-page5",
+      "passed": true
+    },
+    {
+      "name": "CLI_armed_tree_cli-phaseb-r4-result-body12-page5",
+      "passed": true
+    },
+    {
+      "name": "CLI_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "CLI_observer_787dfa07d5b654af517708d8cd379656a27b5bfbcab79676828579b14a695e96",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_787dfa07d5b654af517708d8cd379656a27b5bfbcab79676828579b14a695e96_0",
+      "passed": true
+    },
+    {
+      "name": "CLI_payload_787dfa07d5b654af517708d8cd379656a27b5bfbcab79676828579b14a695e96",
+      "passed": true
+    },
+    {
+      "name": "CLI_observer_71998bdb33b089536cad2972e63a7f197abaab2bb06df31af74793f11ab4fb0e",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_71998bdb33b089536cad2972e63a7f197abaab2bb06df31af74793f11ab4fb0e_0",
+      "passed": true
+    },
+    {
+      "name": "CLI_payload_71998bdb33b089536cad2972e63a7f197abaab2bb06df31af74793f11ab4fb0e",
+      "passed": true
+    },
+    {
+      "name": "CLI_observer_b80260778857dbbe605ad2a69e9796f5b6afa6bbb5307861e1768cde447fb252",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_b80260778857dbbe605ad2a69e9796f5b6afa6bbb5307861e1768cde447fb252_0",
+      "passed": true
+    },
+    {
+      "name": "CLI_payload_b80260778857dbbe605ad2a69e9796f5b6afa6bbb5307861e1768cde447fb252",
+      "passed": true
+    },
+    {
+      "name": "CLI_observer_d460640d0f261bea9c17630eb911980d8dccaef5499b059d917bb02ac9f8e456",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_d460640d0f261bea9c17630eb911980d8dccaef5499b059d917bb02ac9f8e456_0",
+      "passed": true
+    },
+    {
+      "name": "CLI_payload_d460640d0f261bea9c17630eb911980d8dccaef5499b059d917bb02ac9f8e456",
+      "passed": true
+    },
+    {
+      "name": "CLI_observer_b22f36f21deb2f5cae682977de7b0b4df21eb15a98e06599ffc301382a60888f",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_b22f36f21deb2f5cae682977de7b0b4df21eb15a98e06599ffc301382a60888f_0",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_b22f36f21deb2f5cae682977de7b0b4df21eb15a98e06599ffc301382a60888f_16384",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_b22f36f21deb2f5cae682977de7b0b4df21eb15a98e06599ffc301382a60888f_32768",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_b22f36f21deb2f5cae682977de7b0b4df21eb15a98e06599ffc301382a60888f_49152",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_b22f36f21deb2f5cae682977de7b0b4df21eb15a98e06599ffc301382a60888f_65536",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_b22f36f21deb2f5cae682977de7b0b4df21eb15a98e06599ffc301382a60888f_81920",
+      "passed": true
+    },
+    {
+      "name": "CLI_payload_b22f36f21deb2f5cae682977de7b0b4df21eb15a98e06599ffc301382a60888f",
+      "passed": true
+    },
+    {
+      "name": "CLI_observer_f33ae38b76090ae907a91991d8d619f8a2c141fb00b37c223418b86f84acf082",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_f33ae38b76090ae907a91991d8d619f8a2c141fb00b37c223418b86f84acf082_0",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_f33ae38b76090ae907a91991d8d619f8a2c141fb00b37c223418b86f84acf082_16384",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_f33ae38b76090ae907a91991d8d619f8a2c141fb00b37c223418b86f84acf082_32768",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_f33ae38b76090ae907a91991d8d619f8a2c141fb00b37c223418b86f84acf082_49152",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_f33ae38b76090ae907a91991d8d619f8a2c141fb00b37c223418b86f84acf082_65536",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_f33ae38b76090ae907a91991d8d619f8a2c141fb00b37c223418b86f84acf082_81920",
+      "passed": true
+    },
+    {
+      "name": "CLI_payload_f33ae38b76090ae907a91991d8d619f8a2c141fb00b37c223418b86f84acf082",
+      "passed": true
+    },
+    {
+      "name": "CLI_observer_505f62e17815703550b5499e15c961ed0bb98d1888fb6b30ad38b33c3b51522d",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_505f62e17815703550b5499e15c961ed0bb98d1888fb6b30ad38b33c3b51522d_0",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_505f62e17815703550b5499e15c961ed0bb98d1888fb6b30ad38b33c3b51522d_16384",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_505f62e17815703550b5499e15c961ed0bb98d1888fb6b30ad38b33c3b51522d_32768",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_505f62e17815703550b5499e15c961ed0bb98d1888fb6b30ad38b33c3b51522d_49152",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_505f62e17815703550b5499e15c961ed0bb98d1888fb6b30ad38b33c3b51522d_65536",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_505f62e17815703550b5499e15c961ed0bb98d1888fb6b30ad38b33c3b51522d_81920",
+      "passed": true
+    },
+    {
+      "name": "CLI_payload_505f62e17815703550b5499e15c961ed0bb98d1888fb6b30ad38b33c3b51522d",
+      "passed": true
+    },
+    {
+      "name": "CLI_observer_a38071e45f6730f2a21adba4c03c07bfe50444fddbac095de0b6cdd86b492705",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_a38071e45f6730f2a21adba4c03c07bfe50444fddbac095de0b6cdd86b492705_0",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_a38071e45f6730f2a21adba4c03c07bfe50444fddbac095de0b6cdd86b492705_16384",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_a38071e45f6730f2a21adba4c03c07bfe50444fddbac095de0b6cdd86b492705_32768",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_a38071e45f6730f2a21adba4c03c07bfe50444fddbac095de0b6cdd86b492705_49152",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_a38071e45f6730f2a21adba4c03c07bfe50444fddbac095de0b6cdd86b492705_65536",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_a38071e45f6730f2a21adba4c03c07bfe50444fddbac095de0b6cdd86b492705_81920",
+      "passed": true
+    },
+    {
+      "name": "CLI_payload_a38071e45f6730f2a21adba4c03c07bfe50444fddbac095de0b6cdd86b492705",
+      "passed": true
+    },
+    {
+      "name": "CLI_observer_ae46ee9b07201b43afcce163f100f0c5ee5c6d32e21ac6f06bce6d5b55511fd2",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_ae46ee9b07201b43afcce163f100f0c5ee5c6d32e21ac6f06bce6d5b55511fd2_0",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_ae46ee9b07201b43afcce163f100f0c5ee5c6d32e21ac6f06bce6d5b55511fd2_16384",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_ae46ee9b07201b43afcce163f100f0c5ee5c6d32e21ac6f06bce6d5b55511fd2_32768",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_ae46ee9b07201b43afcce163f100f0c5ee5c6d32e21ac6f06bce6d5b55511fd2_49152",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_ae46ee9b07201b43afcce163f100f0c5ee5c6d32e21ac6f06bce6d5b55511fd2_65536",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_ae46ee9b07201b43afcce163f100f0c5ee5c6d32e21ac6f06bce6d5b55511fd2_81920",
+      "passed": true
+    },
+    {
+      "name": "CLI_payload_ae46ee9b07201b43afcce163f100f0c5ee5c6d32e21ac6f06bce6d5b55511fd2",
+      "passed": true
+    },
+    {
+      "name": "CLI_observer_7903c62109d1fa82a0fec7443e7bdf274b3e7200975905a09dcbd68dd088166d",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_7903c62109d1fa82a0fec7443e7bdf274b3e7200975905a09dcbd68dd088166d_0",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_7903c62109d1fa82a0fec7443e7bdf274b3e7200975905a09dcbd68dd088166d_16384",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_7903c62109d1fa82a0fec7443e7bdf274b3e7200975905a09dcbd68dd088166d_32768",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_7903c62109d1fa82a0fec7443e7bdf274b3e7200975905a09dcbd68dd088166d_49152",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_7903c62109d1fa82a0fec7443e7bdf274b3e7200975905a09dcbd68dd088166d_65536",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_7903c62109d1fa82a0fec7443e7bdf274b3e7200975905a09dcbd68dd088166d_81920",
+      "passed": true
+    },
+    {
+      "name": "CLI_payload_7903c62109d1fa82a0fec7443e7bdf274b3e7200975905a09dcbd68dd088166d",
+      "passed": true
+    },
+    {
+      "name": "CLI_observer_554c71f6ff3d9b8039e69f8b1b27a9768002a50a09665fea0c3e31e2240144dc",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_554c71f6ff3d9b8039e69f8b1b27a9768002a50a09665fea0c3e31e2240144dc_0",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_554c71f6ff3d9b8039e69f8b1b27a9768002a50a09665fea0c3e31e2240144dc_16384",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_554c71f6ff3d9b8039e69f8b1b27a9768002a50a09665fea0c3e31e2240144dc_32768",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_554c71f6ff3d9b8039e69f8b1b27a9768002a50a09665fea0c3e31e2240144dc_49152",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_554c71f6ff3d9b8039e69f8b1b27a9768002a50a09665fea0c3e31e2240144dc_65536",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_554c71f6ff3d9b8039e69f8b1b27a9768002a50a09665fea0c3e31e2240144dc_81920",
+      "passed": true
+    },
+    {
+      "name": "CLI_payload_554c71f6ff3d9b8039e69f8b1b27a9768002a50a09665fea0c3e31e2240144dc",
+      "passed": true
+    },
+    {
+      "name": "CLI_observer_14309f183a81d700ae94cc1328bd0ff9a24ef719144592d7e9a8cd805fc91bf4",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_14309f183a81d700ae94cc1328bd0ff9a24ef719144592d7e9a8cd805fc91bf4_0",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_14309f183a81d700ae94cc1328bd0ff9a24ef719144592d7e9a8cd805fc91bf4_16384",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_14309f183a81d700ae94cc1328bd0ff9a24ef719144592d7e9a8cd805fc91bf4_32768",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_14309f183a81d700ae94cc1328bd0ff9a24ef719144592d7e9a8cd805fc91bf4_49152",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_14309f183a81d700ae94cc1328bd0ff9a24ef719144592d7e9a8cd805fc91bf4_65536",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_14309f183a81d700ae94cc1328bd0ff9a24ef719144592d7e9a8cd805fc91bf4_81920",
+      "passed": true
+    },
+    {
+      "name": "CLI_payload_14309f183a81d700ae94cc1328bd0ff9a24ef719144592d7e9a8cd805fc91bf4",
+      "passed": true
+    },
+    {
+      "name": "CLI_observer_ce0e9d3e3f4796c45e4584a23c1d630d24ad53fffc46a0097c40c1dd8ee87e23",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_ce0e9d3e3f4796c45e4584a23c1d630d24ad53fffc46a0097c40c1dd8ee87e23_0",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_ce0e9d3e3f4796c45e4584a23c1d630d24ad53fffc46a0097c40c1dd8ee87e23_16384",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_ce0e9d3e3f4796c45e4584a23c1d630d24ad53fffc46a0097c40c1dd8ee87e23_32768",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_ce0e9d3e3f4796c45e4584a23c1d630d24ad53fffc46a0097c40c1dd8ee87e23_49152",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_ce0e9d3e3f4796c45e4584a23c1d630d24ad53fffc46a0097c40c1dd8ee87e23_65536",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_ce0e9d3e3f4796c45e4584a23c1d630d24ad53fffc46a0097c40c1dd8ee87e23_81920",
+      "passed": true
+    },
+    {
+      "name": "CLI_payload_ce0e9d3e3f4796c45e4584a23c1d630d24ad53fffc46a0097c40c1dd8ee87e23",
+      "passed": true
+    },
+    {
+      "name": "CLI_observer_d3da30f5a585a6901dec8bc6b4459ab72c75e3f7c35cdc31c5a254018de169b8",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_d3da30f5a585a6901dec8bc6b4459ab72c75e3f7c35cdc31c5a254018de169b8_0",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_d3da30f5a585a6901dec8bc6b4459ab72c75e3f7c35cdc31c5a254018de169b8_16384",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_d3da30f5a585a6901dec8bc6b4459ab72c75e3f7c35cdc31c5a254018de169b8_32768",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_d3da30f5a585a6901dec8bc6b4459ab72c75e3f7c35cdc31c5a254018de169b8_49152",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_d3da30f5a585a6901dec8bc6b4459ab72c75e3f7c35cdc31c5a254018de169b8_65536",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_d3da30f5a585a6901dec8bc6b4459ab72c75e3f7c35cdc31c5a254018de169b8_81920",
+      "passed": true
+    },
+    {
+      "name": "CLI_payload_d3da30f5a585a6901dec8bc6b4459ab72c75e3f7c35cdc31c5a254018de169b8",
+      "passed": true
+    },
+    {
+      "name": "CLI_observer_f3bba6a2e15ec5b302a50db79c5bd72d7127f0356e37a59286ef44081da6fe97",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_f3bba6a2e15ec5b302a50db79c5bd72d7127f0356e37a59286ef44081da6fe97_0",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_f3bba6a2e15ec5b302a50db79c5bd72d7127f0356e37a59286ef44081da6fe97_16384",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_f3bba6a2e15ec5b302a50db79c5bd72d7127f0356e37a59286ef44081da6fe97_32768",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_f3bba6a2e15ec5b302a50db79c5bd72d7127f0356e37a59286ef44081da6fe97_49152",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_f3bba6a2e15ec5b302a50db79c5bd72d7127f0356e37a59286ef44081da6fe97_65536",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_f3bba6a2e15ec5b302a50db79c5bd72d7127f0356e37a59286ef44081da6fe97_81920",
+      "passed": true
+    },
+    {
+      "name": "CLI_payload_f3bba6a2e15ec5b302a50db79c5bd72d7127f0356e37a59286ef44081da6fe97",
+      "passed": true
+    },
+    {
+      "name": "CLI_observer_b18501ffd1af2014a952866563000ce015b2ab53c0a89c60f1f98c680e4ffb96",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_b18501ffd1af2014a952866563000ce015b2ab53c0a89c60f1f98c680e4ffb96_0",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_b18501ffd1af2014a952866563000ce015b2ab53c0a89c60f1f98c680e4ffb96_16384",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_b18501ffd1af2014a952866563000ce015b2ab53c0a89c60f1f98c680e4ffb96_32768",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_b18501ffd1af2014a952866563000ce015b2ab53c0a89c60f1f98c680e4ffb96_49152",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_b18501ffd1af2014a952866563000ce015b2ab53c0a89c60f1f98c680e4ffb96_65536",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_b18501ffd1af2014a952866563000ce015b2ab53c0a89c60f1f98c680e4ffb96_81920",
+      "passed": true
+    },
+    {
+      "name": "CLI_payload_b18501ffd1af2014a952866563000ce015b2ab53c0a89c60f1f98c680e4ffb96",
+      "passed": true
+    },
+    {
+      "name": "CLI_observer_a05ef617f44f3d910190a945045caca568c8d05339900c9371904f7678baf0bf",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_a05ef617f44f3d910190a945045caca568c8d05339900c9371904f7678baf0bf_0",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_a05ef617f44f3d910190a945045caca568c8d05339900c9371904f7678baf0bf_16384",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_a05ef617f44f3d910190a945045caca568c8d05339900c9371904f7678baf0bf_32768",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_a05ef617f44f3d910190a945045caca568c8d05339900c9371904f7678baf0bf_49152",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_a05ef617f44f3d910190a945045caca568c8d05339900c9371904f7678baf0bf_65536",
+      "passed": true
+    },
+    {
+      "name": "CLI_page_a05ef617f44f3d910190a945045caca568c8d05339900c9371904f7678baf0bf_81920",
+      "passed": true
+    },
+    {
+      "name": "CLI_payload_a05ef617f44f3d910190a945045caca568c8d05339900c9371904f7678baf0bf",
+      "passed": true
+    },
+    {
+      "name": "CLI_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "exact_original117_calls17_observers82_pages",
+      "passed": true
+    },
+    {
+      "name": "original_single_START_exact_native_binding",
+      "passed": true
+    },
+    {
+      "name": "only_original_status_streams_and_exact_fileinfo",
+      "passed": true
+    },
+    {
+      "name": "original_terminal_exit1_known_failure_full_durable",
+      "passed": true
+    },
+    {
+      "name": "complete_original466_stdout_zero_stderr",
+      "passed": true
+    },
+    {
+      "name": "actual_fileinfo_matches_fixed_report",
+      "passed": true
+    },
+    {
+      "name": "exact_thirteen_original_binary_requests",
+      "passed": true
+    },
+    {
+      "name": "binary_range_0",
+      "passed": true
+    },
+    {
+      "name": "binary_range_1",
+      "passed": true
+    },
+    {
+      "name": "binary_range_2",
+      "passed": true
+    },
+    {
+      "name": "binary_range_3",
+      "passed": true
+    },
+    {
+      "name": "binary_range_4",
+      "passed": true
+    },
+    {
+      "name": "binary_range_5",
+      "passed": true
+    },
+    {
+      "name": "binary_range_6",
+      "passed": true
+    },
+    {
+      "name": "binary_range_7",
+      "passed": true
+    },
+    {
+      "name": "binary_range_8",
+      "passed": true
+    },
+    {
+      "name": "binary_range_9",
+      "passed": true
+    },
+    {
+      "name": "binary_range_10",
+      "passed": true
+    },
+    {
+      "name": "binary_range_11",
+      "passed": true
+    },
+    {
+      "name": "binary_range_12",
+      "passed": true
+    },
+    {
+      "name": "whole848065_report_once_UTF8_after_byte_join",
+      "passed": true
+    },
+    {
+      "name": "actual_current_candidate_and_input_binding",
+      "passed": true
+    },
+    {
+      "name": "known_completed_compatibility_failures_not_unknown",
+      "passed": true
+    },
+    {
+      "name": "416_controller_invariants_are_not_compatibility_denominator",
+      "passed": true
+    },
+    {
+      "name": "258_original_HTTP_intents_and_outcomes_closed",
+      "passed": true
+    },
+    {
+      "name": "six_actions_within_original300_seconds",
+      "passed": true
+    },
+    {
+      "name": "lossless_input_full_identities_before_after_unchanged",
+      "passed": true
+    },
+    {
+      "name": "original_budgets_preserved",
+      "passed": true
+    },
+    {
+      "name": "exact_normal_server_official_CLI_and_controller",
+      "passed": true
+    },
+    {
+      "name": "exact_five_cases_in_order",
+      "passed": true
+    },
+    {
+      "name": "B01_one_known_default_CLI_with_verified_TLS",
+      "passed": true
+    },
+    {
+      "name": "B01_all_three_node_identity_fences",
+      "passed": true
+    },
+    {
+      "name": "B01_complete_known_audit_pairs_without_framing_overclaim",
+      "passed": true
+    },
+    {
+      "name": "B02_one_known_default_CLI_with_verified_TLS",
+      "passed": true
+    },
+    {
+      "name": "B02_all_three_node_identity_fences",
+      "passed": true
+    },
+    {
+      "name": "B02_complete_known_audit_pairs_without_framing_overclaim",
+      "passed": true
+    },
+    {
+      "name": "B03_one_known_default_CLI_with_verified_TLS",
+      "passed": true
+    },
+    {
+      "name": "B03_all_three_node_identity_fences",
+      "passed": true
+    },
+    {
+      "name": "B03_complete_known_audit_pairs_without_framing_overclaim",
+      "passed": true
+    },
+    {
+      "name": "B04_one_known_default_CLI_with_verified_TLS",
+      "passed": true
+    },
+    {
+      "name": "B04_all_three_node_identity_fences",
+      "passed": true
+    },
+    {
+      "name": "B04_complete_known_audit_pairs_without_framing_overclaim",
+      "passed": true
+    },
+    {
+      "name": "B05_one_known_default_CLI_with_verified_TLS",
+      "passed": true
+    },
+    {
+      "name": "B05_all_three_node_identity_fences",
+      "passed": true
+    },
+    {
+      "name": "B05_complete_known_audit_pairs_without_framing_overclaim",
+      "passed": true
+    },
+    {
+      "name": "B01_valid_native_save_positive_control",
+      "passed": true
+    },
+    {
+      "name": "B03_valid_native_save_positive_control",
+      "passed": true
+    },
+    {
+      "name": "independent_A_B_archives_exact_sizes_SHA_generations",
+      "passed": true
+    },
+    {
+      "name": "B02_actual_valid_prior_archive_full9_unchanged",
+      "passed": true
+    },
+    {
+      "name": "B05_actual_valid_prior_archive_full9_unchanged",
+      "passed": true
+    },
+    {
+      "name": "B02_real_leader_restore_success_all_three_nodes",
+      "passed": true
+    },
+    {
+      "name": "B04_real_standby_save_failure_no_valid_archive",
+      "passed": true
+    },
+    {
+      "name": "B05_real_standby_restore_false_success",
+      "passed": true
+    },
+    {
+      "name": "two_authorized_cold_restarts_no_reseed_or_second_upload",
+      "passed": true
+    },
+    {
+      "name": "283_unique_owned_children_reaped_empty_with_original_terminal",
+      "passed": true
+    },
+    {
+      "name": "each_closed_PID_startticks_has_final_exact_exec_guard",
+      "passed": true
+    },
+    {
+      "name": "three_initial_empty_cmdlines_preserved_and_resolved",
+      "passed": true
+    },
+    {
+      "name": "old_Git_UNKNOWN_preserved_not_reclassified",
+      "passed": true
+    },
+    {
+      "name": "original_lane_fully_closed",
+      "passed": true
+    },
+    {
+      "name": "strict_qualification_limits",
+      "passed": true
+    },
+    {
+      "name": "controller_state_and_cold_assertions_use_actual_HTTP_values",
+      "passed": true
+    }
+  ],
+  "original_job": "desktop/1a1aee01612-fc05-639b",
+  "report": {
+    "blob": "0b2edd60185b80817c3c7f1378b914ae914ab21e",
+    "bytes": 848065,
+    "sha256": "d5c691d23b513a2a63916792bbe21178e2b34799e6adbd20ddf88cdf6147bc48"
+  },
+  "aggregate": {
+    "tree": "871aa23bfee256e91247fbb7e6d42c4cb82d181d",
+    "files": 711,
+    "bytes": 8639016,
+    "merkle": {
+      "root_sha": "871aa23bfee256e91247fbb7e6d42c4cb82d181d",
+      "trees_verified": 401,
+      "leaf_count": 711
+    },
+    "whole": true
+  },
+  "original_transport": {
+    "calls": 117,
+    "observers": 17,
+    "immutable_pages": 82,
+    "binary_ranges": 13,
+    "whole_report_bytes": 848065,
+    "single_process_START": true,
+    "terminal_exit": 1,
+    "full": true,
+    "durable": true,
+    "all_observers_inactive": true,
+    "all_283_owned_children_closed": true
+  },
+  "cases": [
+    {
+      "id": "B01",
+      "qualified": true,
+      "description": "Leader native snapshot save"
+    },
+    {
+      "id": "B02",
+      "qualified": true,
+      "description": "Leader restore of valid B01 archive; actual baseline on three nodes and same state after cold restart"
+    },
+    {
+      "id": "B03",
+      "qualified": true,
+      "description": "Second independent leader native snapshot save"
+    },
+    {
+      "id": "B04",
+      "qualified": false,
+      "cli_exit": 2,
+      "description": "Standby default save yields incomplete_snapshot and no output archive",
+      "audited_node_statuses": {
+        "node1": 200,
+        "node2": 307
+      }
+    },
+    {
+      "id": "B05",
+      "qualified": false,
+      "cli_exit": 0,
+      "description": "Standby default restore of VALID unchanged B03 archive leaves mutated state on all three nodes, including after cold restart",
+      "audited_node_statuses": {
+        "node1": 400,
+        "node2": 307
+      },
+      "actual_restored_baseline": false,
+      "actual_unchanged_mutated_state": true
+    }
+  ],
+  "dynamic_controller_invariants": {
+    "passed": 416,
+    "total": 416,
+    "is_full_replacement_case_denominator": false
+  },
+  "limitations": [
+    "One physical host with three real process nodes; this is not a new three-host LAN run.",
+    "Audit status arrays are grouped by node and do not establish cross-node event order or actual second-upload body bytes, ALPN or HTTP framing.",
+    "Audit MACs, route reversal from opaque fingerprints, native snapshot decryption and sealed-checksum cryptographic authentication were not independently performed by the observer.",
+    "Actual HTTP readback and cold-state comparisons are assertions of the unchanged pinned controller, whose source has been independently read; private credentials/state values are not exported.",
+    "OpenBao native Raft archive interchange is not claimed; archives contain native HeptaBao state.",
+    "The old Git create 75ff6983c667aa524100e19258693f7e0bf1b982 remains UNKNOWN; no Native business replay."
+  ],
+  "full_replacement": false,
+  "production_cutover": false,
+  "all_clients_and_backups_migrated": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

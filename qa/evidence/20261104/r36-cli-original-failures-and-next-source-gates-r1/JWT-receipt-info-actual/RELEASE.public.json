@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.jwt-formatter-receipt-info.release.v1",
+  "job": "1a1af017fae-fc05-64f1",
+  "operation": {
+    "id": "be969ff66181d7b8e77c373f94425fda8a6474cd6480aba3c46f2a6dcd55a539",
+    "tool": "file_info",
+    "payload": {
+      "blob": "f39406c52748d2d4d51dfd5711c93fc19ff6fcad",
+      "bytes": 585,
+      "sha256": "383c0f0343dfe9eda0bb68c74dbf2fab146b5e4ad2373963d1913a631e3ecd49"
+    },
+    "payloadTree": "e3e1f9a887fe10073b5556fb064c036b61bad83a",
+    "nativeText": {
+      "blob": "cb38af7975d33515c1591d0f40a417269c7a0847",
+      "bytes": 468,
+      "sha256": "1202fd1418717d4fec2e77f67d251e58d5beb49420e007df648d6b9ea7c78b84"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "rootGO": {
+    "blob": "355a40325fd6cf9d0df6c8fd5f270ead4f719a97",
+    "bytes": 3753,
+    "sha256": "567c29f4781838ef5eb52f6977273aea85e684d6effeaa7e4be780f0e1e9af1b"
+  },
+  "actual": {
+    "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/result.public.json",
+    "size": 22202,
+    "sha256": "60776056ee93fa1fdb557233626ee392385bfe69c8335cd9bc8d236fb0974874",
+    "version": "66306:30541013:22202:1793937480615144693:1793937480615144693",
+    "nativeText": {
+      "blob": "cb38af7975d33515c1591d0f40a417269c7a0847",
+      "bytes": 468,
+      "sha256": "1202fd1418717d4fec2e77f67d251e58d5beb49420e007df648d6b9ea7c78b84"
+    },
+    "originalOperation": "be969ff66181d7b8e77c373f94425fda8a6474cd6480aba3c46f2a6dcd55a539",
+    "full9Strings": [
+      "66306",
+      "30541013",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "22202",
+      "1793937480615144693",
+      "1793937480615144693"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "currentRuntimeCalls": 0,
+  "activeNativeFutures": 0,
+  "nextAdmissionAuthorized": false,
+  "pendingReceiptBody": true,
+  "pendingOther37Files": true,
+  "formatterReplayAllowed": false,
+  "sourceCommitQualified": false,
+  "RustExecuted": false,
+  "original8KPagesPreserved": true
+}

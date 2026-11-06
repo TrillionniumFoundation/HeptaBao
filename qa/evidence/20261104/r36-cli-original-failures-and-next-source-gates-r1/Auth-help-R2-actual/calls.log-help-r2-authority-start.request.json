@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-mac-owned-launchd-log-help-protocol-aed2df85-authority-r2",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1af1fec8d-fc05-65f7"
+    }
+  }
+}

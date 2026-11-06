@@ -1,0 +1,166 @@
+{
+  "schema": "heptabao.root-GO.Mac-identity-bound-public-log-help.v1",
+  "authorization": "GO",
+  "as_of_UTC": "2026-11-06 04:19:20 UTC",
+  "agent": "/root/authbus_migration",
+  "purpose": "Confirm the actual installed log show help syntax before binding an original-label three-second diagnostic query",
+  "source_packet": "25e15e5c7327de33a272057c7f0e17e51f4331fa",
+  "source_review": {
+    "blob": "e127df18f32e38d696ff00e95f9c31f276142a39",
+    "bytes": 3479,
+    "sha256": "d87c1b2100a535f743d1aa5b00b6bc49a0241476df97123c8feb41e048a723b5"
+  },
+  "actual_tool_metadata_qualification": {
+    "blob": "64bffd85bc096a61c32931c0f29e18e33673f1e9",
+    "bytes": 2553,
+    "sha256": "7922206aa8bcd2604e2461010ab8bcdb2693f178719b6e7004abd260145a4efa"
+  },
+  "source": {
+    "blob": "72db261830c3ddd1c708705a95b635cd424738a5",
+    "bytes": 44232,
+    "sha256": "7a36fd5212c16d0069050083bcb80bebbe095afdf283a923a34d06daee1e827c"
+  },
+  "exact_request": {
+    "blob": "fcf60636968e344833f0cfaf268a29a61981b452",
+    "bytes": 44918,
+    "sha256": "f7801d7c7c89b6982c528857b6eb13c1ae0ec0f632ab14d8ec8d44842e679e49"
+  },
+  "native_binding": {
+    "sha256": "f7688acdde84756f88f30f166e9bfc0ae8e96cc1ea61c2a9bbfd42799e47702d",
+    "native_fingerprint": "17827651741752259951",
+    "typed_stdin_field": "stdin"
+  },
+  "helpers": {
+    "native": {
+      "blob": "16f07ceaeb1797a400871f2da06f2e5cdd47baf8",
+      "bytes": 19036,
+      "sha256": "358d75670890507051facd06811cfbee20309f8edaa455ea2e5ec7301aea1d18"
+    },
+    "archive": {
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    "pure": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    }
+  },
+  "slot": "owner_launchd_log_help_gitfirst_r1",
+  "start": {
+    "host": "mac",
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-"
+    ],
+    "cwd": "/Users/qianqi",
+    "timeout_seconds": 60,
+    "idempotency_key": "heptabao-mac-owned-launchd-log-help-7a36fd52-20261106-r1",
+    "stdin_source": {
+      "blob": "72db261830c3ddd1c708705a95b635cd424738a5",
+      "bytes": 44232,
+      "sha256": "7a36fd5212c16d0069050083bcb80bebbe095afdf283a923a34d06daee1e827c"
+    },
+    "maximum_START_count": 1
+  },
+  "actual_tool_binding": {
+    "path": "/usr/bin/log",
+    "version": "16777233:1152921500312572288:807536:1786589515000000000:1786589515000000000",
+    "size": 807536,
+    "sha256": "2fa7b04615546f0964dd1ddedab04a07e3e026f76959e7f44cbd30bfa48a5974",
+    "identity": [
+      "16777233",
+      "1152921500312572288",
+      "0",
+      "0",
+      "33261",
+      "1",
+      "807536",
+      "1786589515000000000",
+      "1786589515000000000"
+    ],
+    "metadataOriginal": {
+      "blob": "d3cefcb531f3deea5a156189d381b11f8c70fa7b",
+      "bytes": 411,
+      "sha256": "8b1ed8e54007466045ebf6527ed102d709c54f8a3e10dd8e7b5f5b41b791efe4"
+    }
+  },
+  "scope": {
+    "exact_child_argv": [
+      "/usr/bin/log",
+      "help",
+      "show"
+    ],
+    "only_public_verified_help": true,
+    "application_fixed_FDs": 4,
+    "system_directories": [
+      "/",
+      "/usr",
+      "/usr/bin"
+    ],
+    "code_hash_bytes": 807536,
+    "success_code_reads_including_EOF": 14,
+    "metadata_cap": 64,
+    "planned_success_metadata": 40
+  },
+  "budgets": {
+    "shared_seconds": 45,
+    "help_child_seconds": 10,
+    "outer_seconds": 60,
+    "original_cleanup": {
+      "term": 1,
+      "wait": 5,
+      "group": 3,
+      "psMax": 4
+    },
+    "max_help_stream": 65536,
+    "original_command_chunk": 65536,
+    "original_pipe_return_before_bound_rejection_per_stream": 131072,
+    "max_public_stdout": 131072
+  },
+  "sequence": [
+    "Whole exact GO and fresh dedicated help context using supplied correct stdin digest/fingerprint",
+    "Whole exact request/intent/armed before independent model boundary and one process_start",
+    "Original returned SDK externally whole before parse/isError; unknown stops with no replay or new key",
+    "Only actual original mac job status/read and original observer ID status/next8192 immutable pages",
+    "Require original terminal0/full/durable, closed original helper custody/4 FDs, bounded public help text and tool full9/hash fences; no log query authorization from help"
+  ],
+  "limits": {
+    "max_Runtime_lanes": 2,
+    "max_native_call_or_future_per_lane": 1,
+    "process_stream_limit": 16384,
+    "immutable_page_bytes": 8192,
+    "original_payload_cap": 1048576
+  },
+  "lane_activation": "A may activate now; B all original CLI observers closed and released; C receipt-info original observer closed; C may later take the second lane only under exact GO; root0Runtime",
+  "requires_actual": [
+    "Root-owned actual log executable807536B whole SHA/full9 before help",
+    "One original help child actual known exit0 and complete_before_deadline",
+    "All four FD closure and original child owner closure",
+    "Only recognized ASCII help text with required options; unknown output text/hash withheld",
+    "Original45s shared deadline after closure and60s outer"
+  ],
+  "excluded": [
+    "log show or stream query",
+    "old QA label cleanup",
+    "private capsule/credential read",
+    "permission/TCC changes",
+    "provider/SDK actions",
+    "production mutation",
+    "unbound path or directory enumeration",
+    "replay/re-key"
+  ],
+  "historical_unknowns": {
+    "old_registration": "NOT_CLOSED",
+    "lineage": "NOT_QUALIFIED",
+    "git8916": "UNKNOWN"
+  },
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

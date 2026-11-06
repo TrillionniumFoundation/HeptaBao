@@ -1,0 +1,14 @@
+{
+  "schema": "heptabao.root-readonly-checker-corrections.v1",
+  "R1": {
+    "error": "Error: formatter_original_terminal_transport_previously_qualified",
+    "reason": "Prior qualification uses status=passed and checks_passed=43 rather than a passed boolean; exact prior blob is unchanged."
+  },
+  "R2": {
+    "error": "Error: reported_source_unchanged_auth.rs",
+    "reason": "Original readonly_source_directory already includes crates/heptabao-server/src; remove duplicate path suffix in checker."
+  },
+  "Native_calls": 0,
+  "product_source_changed": false,
+  "original_GO_and_source_changed": false
+}

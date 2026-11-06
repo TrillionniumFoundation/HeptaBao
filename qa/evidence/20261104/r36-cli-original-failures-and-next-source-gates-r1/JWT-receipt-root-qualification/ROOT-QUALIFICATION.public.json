@@ -1,0 +1,219 @@
+{
+  "schema": "heptabao.root-qualification.JWT-formatter-receipt-actual.v1",
+  "passed": true,
+  "status": "PASS_RECEIPT_TRANSPORT_AND_REPORTED_SEMANTICS_ONLY",
+  "packet": {
+    "tree": "0e2fd3d9a1a47ee9c2944e0974a9a4ddf9989906",
+    "files": 34,
+    "bytes": 356873,
+    "merkle": {
+      "root_sha": "0e2fd3d9a1a47ee9c2944e0974a9a4ddf9989906",
+      "trees_verified": 1,
+      "leaf_count": 34
+    },
+    "whole": true
+  },
+  "original_job": "rog/1a1af017fae-fc05-64f1",
+  "receipt": {
+    "blob": "58827993343d76b96fc92b0bae47432710ffbedd",
+    "bytes": 22202,
+    "sha256": "60776056ee93fa1fdb557233626ee392385bfe69c8335cd9bc8d236fb0974874"
+  },
+  "check_count": 41,
+  "checks": [
+    {
+      "name": "whole34_original_receipt_packet",
+      "passed": true
+    },
+    {
+      "name": "exact_prior_GO_and_journal",
+      "passed": true
+    },
+    {
+      "name": "receipt_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "receipt_call_jwt-e3af-format-receipt-body0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "receipt_armed_tree_jwt-e3af-format-receipt-body0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "receipt_call_jwt-e3af-format-receipt-body0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "receipt_armed_tree_jwt-e3af-format-receipt-body0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "receipt_call_jwt-e3af-format-receipt-body0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "receipt_armed_tree_jwt-e3af-format-receipt-body0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "receipt_call_jwt-e3af-format-receipt-body0-page16384-r1",
+      "passed": true
+    },
+    {
+      "name": "receipt_armed_tree_jwt-e3af-format-receipt-body0-page16384-r1",
+      "passed": true
+    },
+    {
+      "name": "receipt_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "receipt_observer_1e45405574780d6cc2cf00b9451a18c5cc321b7ddf7bf8b94c214e11a5df73e0",
+      "passed": true
+    },
+    {
+      "name": "receipt_page_1e45405574780d6cc2cf00b9451a18c5cc321b7ddf7bf8b94c214e11a5df73e0_0",
+      "passed": true
+    },
+    {
+      "name": "receipt_page_1e45405574780d6cc2cf00b9451a18c5cc321b7ddf7bf8b94c214e11a5df73e0_16384",
+      "passed": true
+    },
+    {
+      "name": "receipt_payload_1e45405574780d6cc2cf00b9451a18c5cc321b7ddf7bf8b94c214e11a5df73e0",
+      "passed": true
+    },
+    {
+      "name": "receipt_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "only_one_binary_admission_four_calls_no_process",
+      "passed": true
+    },
+    {
+      "name": "exact_actual_metadata_bound_extent",
+      "passed": true
+    },
+    {
+      "name": "whole_original_binary_22202_exact_SHA_and_version",
+      "passed": true
+    },
+    {
+      "name": "formatter_original_terminal_transport_previously_qualified",
+      "passed": true
+    },
+    {
+      "name": "actual_exact_canonical_source_identity",
+      "passed": true
+    },
+    {
+      "name": "reported_status_and_unchanged_original_deadlines",
+      "passed": true
+    },
+    {
+      "name": "lossless_full9_field_order",
+      "passed": true
+    },
+    {
+      "name": "exact_nine_source_names",
+      "passed": true
+    },
+    {
+      "name": "reported_source_unchanged_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "reported_source_unchanged_auth_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "reported_source_unchanged_auth_native_v6_routes.rs",
+      "passed": true
+    },
+    {
+      "name": "reported_source_unchanged_federated_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "reported_source_unchanged_federated_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "reported_source_unchanged_service.rs",
+      "passed": true
+    },
+    {
+      "name": "reported_source_unchanged_service_native_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "reported_source_unchanged_service_native_jwt_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "reported_source_unchanged_service_native_userpass_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "actual_source_and_formatted_byte_totals",
+      "passed": true
+    },
+    {
+      "name": "fixed_manifest_carrier",
+      "passed": true
+    },
+    {
+      "name": "actual_formatter_tool_full9_before_after",
+      "passed": true
+    },
+    {
+      "name": "actual_explicit_configuration_before_after",
+      "passed": true
+    },
+    {
+      "name": "nine_actual_direct_children_reaped_in_supervisor_group",
+      "passed": true
+    },
+    {
+      "name": "receipt_and_original_terminal_stdout_agree",
+      "passed": true
+    },
+    {
+      "name": "read_only_observer_released_without_extra_file_claim",
+      "passed": true
+    }
+  ],
+  "actual": {
+    "original_binary_calls": 4,
+    "pages": 2,
+    "receipt_bytes": 22202,
+    "direct_children": 9,
+    "all_direct_children_reaped": true,
+    "all_in_same_supervisor_PGID": 3894313,
+    "formatted_reported_bytes": 1228699,
+    "changed_files": 6,
+    "unchanged_files": 3
+  },
+  "scope": {
+    "receipt_independently_whole": true,
+    "other37_files_independently_observed": false,
+    "full_formatted_outputs_qualified": false,
+    "compiled": false,
+    "product_tests_run": false,
+    "full_replacement": false,
+    "production_cutover": false,
+    "legacy_cleanup": false
+  },
+  "GO_wording_clarification": {
+    "original_GO": "e04895a8ccb5327e69be8d69a41a44b10a22ee78",
+    "original_source": "1266e75033bee0962b0d77d3c35ee19ec53086db",
+    "preserved_original_GO": true,
+    "issue": "Original post-run wording requested nine child groupempty outcomes; the approved source used start_new_session=False.",
+    "actual_supported_scope": "Nine direct child processes exited 0 and were reaped while retaining the Native supervisor PGID. Nine separate child process-group-empty observations were not made.",
+    "independent_per_child_group_empty_qualified": false
+  },
+  "next_step": "Separately bound fixed38 read-only collector and exact diff/wholeSHA reconstruction; no formatting replay or Cargo authority from this receipt."
+}

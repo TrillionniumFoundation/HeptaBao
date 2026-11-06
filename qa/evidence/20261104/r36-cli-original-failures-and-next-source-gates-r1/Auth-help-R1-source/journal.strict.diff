@@ -1,0 +1,24 @@
+--- a/journal.path-metadata.before.js
++++ b/journal.log-help.after.js
+@@ -5,9 +5,9 @@
+  * Every original SDK is store'd, serialized, Git-created once and whole-read
+  * before isError or native text is inspected.
+  */
++const GF_SLOT = "owner_launchd_log_help_gitfirst_r1";
++const GF_REQUEST = {blob:"fcf60636968e344833f0cfaf268a29a61981b452",
++ bytes:44918,sha256:"f7801d7c7c89b6982c528857b6eb13c1ae0ec0f632ab14d8ec8d44842e679e49"};
+-const GF_SLOT = "owner_launchd_path_metadata_gitfirst_r1";
+-const GF_REQUEST = {blob:"843965aae4fc29a5d840a1c84c51184dc32ae7ef",
+- bytes:14343,sha256:"76500b2218e329bc76bb8a29bfa485101e4954756f752d0d34cc38869fbc80f0"};
+ 
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {
+@@ -46,7 +46,7 @@
+   gfNeed(s.job!==null && s.activeObserver===null,"original_job_no_unclosed_observer");
+   gfNeed(Object.keys(q).sort().join(",")==="idempotency_key,operation"
+     && typeof q.idempotency_key==="string" && q.idempotency_key.length<=128
++    && /^heptabao-mac-owned-launchd-log-help-7a36fd52-/.test(q.idempotency_key),
+-    && /^heptabao-mac-owned-launchd-path-metadata-bb9f9e1c-/.test(q.idempotency_key),
+     "bounded_original_observer_key");
+   const op=q.operation,a=op?.arguments;
+   gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"

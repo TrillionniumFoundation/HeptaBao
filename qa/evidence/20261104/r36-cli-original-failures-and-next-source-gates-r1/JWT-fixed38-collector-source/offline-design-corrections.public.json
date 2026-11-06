@@ -1,0 +1,8 @@
+[
+  {
+    "code": "shared-directory-open-pair",
+    "before": "full9 equals at first pair",
+    "after": "first5 equals for the three shared ancestors; both full9 recorded; owned three directories remain full9",
+    "runtime": 0
+  }
+]

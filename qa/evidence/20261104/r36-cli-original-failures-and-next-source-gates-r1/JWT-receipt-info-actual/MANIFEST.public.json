@@ -1,0 +1,142 @@
+{
+  "schema": "heptabao.actual-packet.manifest.v1",
+  "entries": [
+    {
+      "path": "CALL-INDEX.public.json",
+      "blob": "8e75bb80c177597128b505ee77391b276dfd25d7",
+      "bytes": 2381,
+      "sha256": "9af3b2b3cfaf0a585b7b3bf7e80c299f82ca67a0303877be1f06534ad28102e6"
+    },
+    {
+      "path": "CLOSURE.public.json",
+      "blob": "c57b30f0909b3ee4a5807237ad94de65fbf99496",
+      "bytes": 559,
+      "sha256": "8556f91d8d433e43df40c83cbb88118f5e01c29dd9910fb18315719bab8782c7"
+    },
+    {
+      "path": "RELEASE.public.json",
+      "blob": "ea6f09bbb0032f56739db2b2837307ee95cabcc5",
+      "bytes": 2013,
+      "sha256": "8da93ad3ff21db39e0d9916b1d441b47b0257d18c42800a67f08b066eebc4010"
+    },
+    {
+      "path": "ROOT-GO.original.json",
+      "blob": "355a40325fd6cf9d0df6c8fd5f270ead4f719a97",
+      "bytes": 3753,
+      "sha256": "567c29f4781838ef5eb52f6977273aea85e684d6effeaa7e4be780f0e1e9af1b"
+    },
+    {
+      "path": "file_info.native.original.json",
+      "blob": "cb38af7975d33515c1591d0f40a417269c7a0847",
+      "bytes": 468,
+      "sha256": "1202fd1418717d4fec2e77f67d251e58d5beb49420e007df648d6b9ea7c78b84"
+    },
+    {
+      "path": "journal.native.source.js",
+      "blob": "d8d792caa494c8c2e084db5cea908d0833ce309f",
+      "bytes": 24268,
+      "sha256": "00917a449fcbed60a9c8fcdd98de18f956eccf692153ebb9709af220bbcf156b"
+    },
+    {
+      "path": "jwt-e3af-format-receipt-info0-page0-r1.armed.json",
+      "blob": "91617b0d01df9863d3a7e7752ef0db1ebca0bf9c",
+      "bytes": 928,
+      "sha256": "f8bc48a5b1b4a6ee1136c9447de24d77c8752319a504d8b88bcee755c1416956"
+    },
+    {
+      "path": "jwt-e3af-format-receipt-info0-page0-r1.intent.json",
+      "blob": "bf2eefed2671692f0a30965334b166f07ea732c7",
+      "bytes": 791,
+      "sha256": "2879e25d4a3aabd40ebd814f4488c2de3bd4fdc78c6ea18a4795dc7d97519127"
+    },
+    {
+      "path": "jwt-e3af-format-receipt-info0-page0-r1.original.native.json",
+      "blob": "f5ecbf4f5981d73c4b1af4dbbf36192ed676741c",
+      "bytes": 1461,
+      "sha256": "d455b52f9b1143b99aafc84b57b1540abcae8ec72686312875a1d5b6e44b7d63"
+    },
+    {
+      "path": "jwt-e3af-format-receipt-info0-page0-r1.original.sdk.json",
+      "blob": "4af55faab80a3021db1fc4fcce518f1508a8af5a",
+      "bytes": 1632,
+      "sha256": "113bc6f98ab4b3e344af2b462f8c0f201290687e1dc8ecd9a2e5171d3adbd734"
+    },
+    {
+      "path": "jwt-e3af-format-receipt-info0-page0-r1.request.json",
+      "blob": "29c248f101e722aad2442260f70415000790b697",
+      "bytes": 108,
+      "sha256": "6858003a3a06469e2eaa0b144fc2c0014d6571fb34a0ff13f6047d4053e64696"
+    },
+    {
+      "path": "jwt-e3af-format-receipt-info0-start-r1.armed.json",
+      "blob": "ec0bef8b41d30461594f7e8791fedb904148cf97",
+      "bytes": 865,
+      "sha256": "7ac8e76bad64807767a96634c26f4c68d7e97e059202a180e403ac9b23eeaf6f"
+    },
+    {
+      "path": "jwt-e3af-format-receipt-info0-start-r1.intent.json",
+      "blob": "9bc6c7abb77939a80f8f4c78af72a6ed2f4985b4",
+      "bytes": 728,
+      "sha256": "035d1ce82d6ac09b1bc70e2e9997c1d0658e6a6dc17a14a3a6c134d4abb86bbf"
+    },
+    {
+      "path": "jwt-e3af-format-receipt-info0-start-r1.original.native.json",
+      "blob": "1237a40fe2a43d2bfca40fee79fa1688e519d4c4",
+      "bytes": 543,
+      "sha256": "a91952629830c78af46453feddfd8158fa31e7d396037da09ec2c2d3464827ee"
+    },
+    {
+      "path": "jwt-e3af-format-receipt-info0-start-r1.original.sdk.json",
+      "blob": "454dee8bbdbc591ae1678df10a03459609e93f34",
+      "bytes": 704,
+      "sha256": "780c4604c7bd8484deac53fdcbe385db8808b17ee77b5ffbaf6ac8af59a12d53"
+    },
+    {
+      "path": "jwt-e3af-format-receipt-info0-start-r1.request.json",
+      "blob": "2faaeb3baee3581a5161fff11f8f5d60318ff9c4",
+      "bytes": 236,
+      "sha256": "5b1a7d40e76cf7fc6be383528fdfd523fc7df189d78f3fbeac33b77c6876d8d8"
+    },
+    {
+      "path": "jwt-e3af-format-receipt-info0-status0-r1.armed.json",
+      "blob": "93ad9599b17b23c3cbfae6be92afc9d6f7e0d064",
+      "bytes": 929,
+      "sha256": "c3a7c2150b87cfeeb5bb2c18c10a16895daad6464b8eed812c71e5183f9ab24c"
+    },
+    {
+      "path": "jwt-e3af-format-receipt-info0-status0-r1.intent.json",
+      "blob": "9ae4b6bf6abf94e63401e61ee0bd76388adef788",
+      "bytes": 792,
+      "sha256": "e676319e670d120fa26f2f2eec2a477588f3979a0f22971383b4980f42718921"
+    },
+    {
+      "path": "jwt-e3af-format-receipt-info0-status0-r1.original.native.json",
+      "blob": "696637919ec30b986c2b787404a504f1d61240d1",
+      "bytes": 800,
+      "sha256": "91a846e3a71b31e8a14da88922263bc0ed6b1e361defd95db0b3037ddb7086f4"
+    },
+    {
+      "path": "jwt-e3af-format-receipt-info0-status0-r1.original.sdk.json",
+      "blob": "e7033f02713d513bb45a057cdbb67322d3bddf5e",
+      "bytes": 975,
+      "sha256": "4c41104ce8d594a5a2ba66679c36f7fbab9f514504feec2dca9dd009a7668182"
+    },
+    {
+      "path": "jwt-e3af-format-receipt-info0-status0-r1.request.json",
+      "blob": "5acde77c15c11eb317b8ce8e2ce5b67d5ad6b69d",
+      "bytes": 84,
+      "sha256": "a0ab5752e9b4a3b4948c5368cdbdc8690508d497badaa5b415dcd55cba3da39a"
+    },
+    {
+      "path": "payload.original.json",
+      "blob": "f39406c52748d2d4d51dfd5711c93fc19ff6fcad",
+      "bytes": 585,
+      "sha256": "383c0f0343dfe9eda0bb68c74dbf2fab146b5e4ad2373963d1913a631e3ecd49"
+    }
+  ],
+  "newNativeAdmissions": 1,
+  "observations": 1,
+  "originalCalls": 3,
+  "originalPages": 1,
+  "wholeReceiptObserved": false
+}

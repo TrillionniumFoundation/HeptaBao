@@ -1,0 +1,59 @@
+{
+  "schema": "heptabao.authbus-independent-peer.fixed38-collector.r1",
+  "conclusion": "NO_NEW_SOURCE_BLOCKER_IN_REQUESTED_SCOPE",
+  "inputTree": "29a662e9ee89cc79d72af954f1334a4ab890918e",
+  "wholeFiles": 16,
+  "wholeBytes": 225488,
+  "merkleTrees": 1,
+  "source": {
+    "blob": "6346d622e31526522459ae4c1a2cdc858369d2ed",
+    "bytes": 40521,
+    "sha256": "104102c9c29e0cf795d20e364a69f4b9c75b78a36191bab720e7095c98b6ff81"
+  },
+  "scope": "Read all 609 source lines; focus on acquired descriptors, pending signals, once-close, full9/name fences, exact input/report read accounting, strict bidirectional diff reconstruction and create-only publication. No candidate, Python, author checker or host execution.",
+  "findings": [
+    {
+      "sourceLines": "68-211 / 254-277 / 580-605",
+      "finding": "Ledger entry exists before each os.open; returned FD is stored before the post-open check. The installed signal handler only marks pending and does not raise, so cancellation after open is handled by the same recorded FD in main finally. An exception before c.files/directory maps are updated does not remove the global ledger entry."
+    },
+    {
+      "sourceLines": "148-164 / 447-456 / 580-589",
+      "finding": "close_attempted is set before os.close. A close error is recorded once, is never retried, and prevents all_closed/success. All 38 input FDs close after final held/name full9 checks and before publication; failed close or pending cancellation prevents report creation."
+    },
+    {
+      "sourceLines": "218-284 / 447-456 / 508-516",
+      "finding": "Shared /, /home, /home/qian-qi use the explicit first-five object identity while recording all9; the three formatter-owned input directories and all38 files use full9. Input files are O_RDONLY/NOFOLLOW, regular0600, uid/gid1000, nlink1, exact size/hash. Only two inputs have prior full9; the other36 are first observations, not claimed prior identity pins."
+    },
+    {
+      "sourceLines": "166-179 / 286-313 / 470-521",
+      "finding": "Every returned read byte is accounted before the post-read deadline check. Input and report readback share 7906155; the requested count is bounded by remaining budget. Successful 3701083 inputs plus maximum1048576 report is4749659 and theoretical input+max-report reads129 <=256, including EOF calls. Scope is sequential observed bytes, not an atomic filesystem snapshot."
+    },
+    {
+      "sourceLines": "322-376 / 406-445",
+      "finding": "Patch validation checks exact file headers, monotonic old/new offsets, range/count limits and context bytes. Reverse mode swaps hunk ranges and +/-; both rebuilt outputs must exactly match actual bytes and hashes. Stdout must equal formatted bytes; stderr must be empty. No collector function was executed for this review."
+    },
+    {
+      "sourceLines": "470-521 / 523-605",
+      "finding": "Only the fixed new output directory and O_EXCL public report can be written. Existing output namespace refuses; no replacement/deletion/fallback. Report readback is same FD with full9/named checks. Six initial directories+38 files give peak44; later output directory/report make total46 after input close. Final stdout/authority, not the pre-finally report, must prove all closes, handler/umask restoration, pending-signal absence and the original50-second shared deadline; post-flush time is checked again."
+    },
+    {
+      "sourceLines": "journal.diff",
+      "finding": "Strict forward/reverse whole reconstruction succeeds; only slot, exact request pin and observer-key prefix change. The journal still admits only the exact process_start and same-job status/read. Report metadata/body has no implicit admission."
+    }
+  ],
+  "limits": [
+    "No actual38-read observation, report creation or closure is claimed.",
+    "No Rust/Cargo/compiler/product execution or formatter qualification is inferred.",
+    "Synchronous difflib/syscalls are not individually preempted; the documented50/60 deadlines remain.",
+    "The earlier formatter nine direct-child reaps do not become nine independent group-empty proofs."
+  ],
+  "verification": {
+    "pureTextChecks": 27,
+    "passed": true,
+    "pythonCompiled": false,
+    "pythonOrComponentExecuted": false,
+    "authorCheckerRun": false,
+    "runtimeCalls": 0
+  },
+  "checkerHistory": "Initial pure text check for close-before-publish matched the earlier function definition; fixed only the checker to match the indented main call. Original failed verifier/error and correction are included; collector source unchanged."
+}

@@ -1,0 +1,4 @@
+{
+  "name": "SyntaxError",
+  "message": "Identifier 'read' has already been declared"
+}

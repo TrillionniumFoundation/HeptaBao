@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r36-cli-phaseb-original-full-root-qualification",
+  "records": [
+    {
+      "name": "ROOT-QUALIFICATION.public.json",
+      "blob": "e36c81a7222c41a9ba4e327e340d2d5d2d2bfc33",
+      "bytes": 46661,
+      "sha256": "ab785befebad9e6f67fb5ba9022d63f86a9f8bb481c3247fe06069dc8d65c83b"
+    },
+    {
+      "name": "root-verifier.js",
+      "blob": "114b7dd4e28bf0f7e9b86bc25774cd61b384ce8f",
+      "bytes": 21442,
+      "sha256": "3e8983553590a5a68b71a0c6340fd7a40d5d8469b2aa53778793953496d20a9a"
+    },
+    {
+      "name": "controller.original.py",
+      "blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+      "bytes": 61210,
+      "sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c"
+    },
+    {
+      "name": "README.md",
+      "blob": "da390f4d499e4b5ba03d623cda6f177477722a68",
+      "bytes": 1894,
+      "sha256": "724300be68b1b74031b9d8c530d866e18317a2be4a4a820ddb0413665e4e6417"
+    }
+  ],
+  "expected_data_tree": "c10d6aca23a128a116af2eb38dff0e67bdcd94ed",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

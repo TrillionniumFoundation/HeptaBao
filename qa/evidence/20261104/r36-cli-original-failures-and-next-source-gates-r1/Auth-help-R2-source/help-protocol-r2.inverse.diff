@@ -1,0 +1,48 @@
+--- a/b/log-help-protocol-r2.py
++++ b/a/log-help-r1.py
+@@ -164,28 +164,18 @@
+             'execByPathIsNotAtomicExecByFd': True}
+ 
+ def help_projection(out, err, row):
++    need(not row['outcomeUnknown'] and row['completeBeforeDeadline']
++         and row['exitCode'] == 0 and not err, 'log_help_known_zero_complete')
++    need(0 < len(out) <= MAX_HELP_STREAM, 'bounded_help_stdout')
++    value = out.decode('ascii', 'strict')
+-    need(not row['outcomeUnknown'] and row['completeBeforeDeadline'],
+-         'log_help_known_complete')
+-    if row['exitCode'] == 0 and not err:
+-        source_stream, raw = 'stdout', out
+-    elif row['exitCode'] == 64 and not out:
+-        source_stream, raw = 'stderr', err
+-    else:
+-        raise HelpRefused('log_help_output_protocol')
+-    need(0 < len(raw) <= MAX_HELP_STREAM, 'bounded_help_candidate_stream')
+-    value = raw.decode('ascii', 'strict')
+     need(all(ch in '\t\n\r' or 32 <= ord(ch) <= 126 for ch in value),
+          'public_help_ascii_only')
+     stripped = value.lstrip()
++    need(stripped.startswith('usage: log show') or stripped.startswith('Usage: log show'),
++         'fixed_show_help_heading')
++    options = {name: name in value for name in ('--start', '--end', '--predicate', '--style')}
+-    heading = stripped.splitlines()[0] if stripped else ''
+-    need(re.fullmatch(r'(?:usage|Usage):[ \t]+log[ \t]+show(?:[ \t]+[^\r\n]*)?', heading)
+-         is not None, 'fixed_show_help_heading')
+-    options = {name: re.search(r'(?<![A-Za-z0-9_-])' + re.escape(name)
+-                              + r'(?![A-Za-z0-9_-])', value) is not None
+-               for name in ('--start', '--end', '--predicate', '--style')}
+     need(all(options.values()), 'required_show_help_options_observed')
++    return {'argv': HELP_ARGV, 'bytes': len(out), 'sha256': sha(out),
+-    return {'argv': HELP_ARGV, 'bytes': len(raw), 'sha256': sha(raw),
+-            'sourceStream': source_stream, 'observedExitCode': row['exitCode'],
+             'publicHelpText': value, 'observedOptionTokens': options,
+             'logQueryExecuted': False, 'querySyntaxStillRequiresExactFollowupBinding': True}
+ 
+@@ -218,7 +208,7 @@
+     original_handlers = {}
+     installed = False
+     complete = False
++    result = {'schema': 'heptabao.mac-owned-log-help.r1',
+-    result = {'schema': 'heptabao.mac-owned-log-help-protocol.r2',
+         'ok': False, 'outcomeUnknown': False, 'newSharedSeconds': 45, 'outerSeconds': 60,
+         'exactHelpArgv': HELP_ARGV, 'logQueryExecuted': False, 'directoryEnumeration': False,
+         'directApplicationPrivateFileOrCapsuleRead': False, 'serviceMutationAttempted': False,

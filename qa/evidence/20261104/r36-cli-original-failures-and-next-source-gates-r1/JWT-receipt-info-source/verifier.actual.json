@@ -1,0 +1,389 @@
+{
+  "schema": "heptabao.formatter-receipt-info.selected-source-checks.v1",
+  "checks": [
+    {
+      "name": "one new explicit authorization function",
+      "pass": true
+    },
+    {
+      "name": "whole original definition gfNeed",
+      "pass": true
+    },
+    {
+      "name": "whole original definition gfMetaEquals",
+      "pass": true
+    },
+    {
+      "name": "whole original definition gfState",
+      "pass": true
+    },
+    {
+      "name": "whole original definition gfSave",
+      "pass": true
+    },
+    {
+      "name": "whole original definition gfIntegerText",
+      "pass": true
+    },
+    {
+      "name": "whole original definition gfInitializeOnlyAfterRootGO",
+      "pass": true
+    },
+    {
+      "name": "whole original definition gfAcceptArchivedSDK",
+      "pass": true
+    },
+    {
+      "name": "whole original definition gfReconcileSameGitArchiveReadOnly",
+      "pass": true
+    },
+    {
+      "name": "exact replacement count existing formatter slot",
+      "pass": true
+    },
+    {
+      "name": "exact replacement count original exact formatter request",
+      "pass": true
+    },
+    {
+      "name": "exact replacement count one fixed receipt path",
+      "pass": true
+    },
+    {
+      "name": "exact replacement count original receipt observation cap",
+      "pass": true
+    },
+    {
+      "name": "exact replacement count one new exact metadata request",
+      "pass": true
+    },
+    {
+      "name": "exact replacement count two actual formatter closed native prerequisites",
+      "pass": true
+    },
+    {
+      "name": "exact replacement count same actual formatter job",
+      "pass": true
+    },
+    {
+      "name": "exact replacement count separate exact metadata GO scope",
+      "pass": true
+    },
+    {
+      "name": "exact replacement count actual formatter summary contract",
+      "pass": true
+    },
+    {
+      "name": "exact replacement count original formatter observer prefix",
+      "pass": true
+    },
+    {
+      "name": "exact replacement count receipt identifier",
+      "pass": true
+    },
+    {
+      "name": "exact replacement count receipt cap identifier",
+      "pass": true
+    },
+    {
+      "name": "exact replacement count metadata request identifier",
+      "pass": true
+    },
+    {
+      "name": "exact replacement count actual prerequisites identifier",
+      "pass": true
+    },
+    {
+      "name": "exact replacement count new explicit action function",
+      "pass": true
+    },
+    {
+      "name": "exact replacement count new explicit action name",
+      "pass": true
+    },
+    {
+      "name": "exact replacement count separate once GO state",
+      "pass": true
+    },
+    {
+      "name": "exact replacement count separate once admission flag",
+      "pass": true
+    },
+    {
+      "name": "exact replacement count separate actual metadata state",
+      "pass": true
+    },
+    {
+      "name": "predecessor exact forward",
+      "pass": true
+    },
+    {
+      "name": "exact identifier inverse count separate actual metadata state",
+      "pass": true
+    },
+    {
+      "name": "exact inverse count separate once admission flag",
+      "pass": true
+    },
+    {
+      "name": "exact inverse count separate once GO state",
+      "pass": true
+    },
+    {
+      "name": "exact inverse count new explicit action name",
+      "pass": true
+    },
+    {
+      "name": "exact inverse count new explicit action function",
+      "pass": true
+    },
+    {
+      "name": "exact inverse count actual prerequisites identifier",
+      "pass": true
+    },
+    {
+      "name": "exact inverse count metadata request identifier",
+      "pass": true
+    },
+    {
+      "name": "exact inverse count receipt cap identifier",
+      "pass": true
+    },
+    {
+      "name": "exact inverse count receipt identifier",
+      "pass": true
+    },
+    {
+      "name": "exact inverse count original formatter observer prefix",
+      "pass": true
+    },
+    {
+      "name": "exact inverse count actual formatter summary contract",
+      "pass": true
+    },
+    {
+      "name": "exact inverse count separate exact metadata GO scope",
+      "pass": true
+    },
+    {
+      "name": "exact inverse count same actual formatter job",
+      "pass": true
+    },
+    {
+      "name": "exact inverse count two actual formatter closed native prerequisites",
+      "pass": true
+    },
+    {
+      "name": "exact inverse count one new exact metadata request",
+      "pass": true
+    },
+    {
+      "name": "exact inverse count original receipt observation cap",
+      "pass": true
+    },
+    {
+      "name": "exact inverse count one fixed receipt path",
+      "pass": true
+    },
+    {
+      "name": "exact inverse count original exact formatter request",
+      "pass": true
+    },
+    {
+      "name": "exact inverse count existing formatter slot",
+      "pass": true
+    },
+    {
+      "name": "predecessor exact inverse",
+      "pass": true
+    },
+    {
+      "name": "actual prior closed pins accepted",
+      "pass": true
+    },
+    {
+      "name": "exact receipt-info accepted",
+      "pass": true
+    },
+    {
+      "name": "reject re-authorize same context",
+      "pass": true
+    },
+    {
+      "name": "reject wrong actual job",
+      "pass": true
+    },
+    {
+      "name": "no save after rejected wrong actual job",
+      "pass": true
+    },
+    {
+      "name": "reject active original observer",
+      "pass": true
+    },
+    {
+      "name": "no save after rejected active original observer",
+      "pass": true
+    },
+    {
+      "name": "reject pending call",
+      "pass": true
+    },
+    {
+      "name": "no save after rejected pending call",
+      "pass": true
+    },
+    {
+      "name": "reject paused context",
+      "pass": true
+    },
+    {
+      "name": "no save after rejected paused context",
+      "pass": true
+    },
+    {
+      "name": "reject native in flight",
+      "pass": true
+    },
+    {
+      "name": "no save after rejected native in flight",
+      "pass": true
+    },
+    {
+      "name": "reject once started",
+      "pass": true
+    },
+    {
+      "name": "no save after rejected once started",
+      "pass": true
+    },
+    {
+      "name": "reject not original start",
+      "pass": true
+    },
+    {
+      "name": "no save after rejected not original start",
+      "pass": true
+    },
+    {
+      "name": "reject missing prior closure",
+      "pass": true
+    },
+    {
+      "name": "no save after rejected missing prior closure",
+      "pass": true
+    },
+    {
+      "name": "reject prior inactive false",
+      "pass": true
+    },
+    {
+      "name": "no save after rejected prior inactive false",
+      "pass": true
+    },
+    {
+      "name": "reject old stage scope",
+      "pass": true
+    },
+    {
+      "name": "reject binary permission",
+      "pass": true
+    },
+    {
+      "name": "reject two metadata starts",
+      "pass": true
+    },
+    {
+      "name": "reject wrong request pin",
+      "pass": true
+    },
+    {
+      "name": "reject not whole GO",
+      "pass": true
+    },
+    {
+      "name": "reject changed original native bytes",
+      "pass": true
+    },
+    {
+      "name": "reject metadata second admission",
+      "pass": true
+    },
+    {
+      "name": "reject original formatter GO only",
+      "pass": true
+    },
+    {
+      "name": "reject wrong path",
+      "pass": true
+    },
+    {
+      "name": "reject wrong host",
+      "pass": true
+    },
+    {
+      "name": "reject extra argument",
+      "pass": true
+    },
+    {
+      "name": "reject wrong key",
+      "pass": true
+    },
+    {
+      "name": "reject binary_read",
+      "pass": true
+    },
+    {
+      "name": "metadata full mode uses OR",
+      "pass": true
+    },
+    {
+      "name": "decimal nanoseconds unchanged",
+      "pass": true
+    },
+    {
+      "name": "reject over receipt cap",
+      "pass": true
+    },
+    {
+      "name": "reject native full mode confused",
+      "pass": true
+    },
+    {
+      "name": "reject wrong uid",
+      "pass": true
+    },
+    {
+      "name": "reject multiple links",
+      "pass": true
+    },
+    {
+      "name": "reject wrong version size",
+      "pass": true
+    },
+    {
+      "name": "reject rounded exponent ns",
+      "pass": true
+    },
+    {
+      "name": "once flag before original Native dispatch",
+      "pass": true
+    },
+    {
+      "name": "info cap is original planned receipt cap",
+      "pass": true
+    },
+    {
+      "name": "old immutable page cap unchanged",
+      "pass": true
+    },
+    {
+      "name": "explicit action only",
+      "pass": true
+    }
+  ],
+  "passed": 95,
+  "failed": 0,
+  "execution": "only selected pure authorization/request/metadata guards with mocked state; no full journal, IO, Runtime, Python or Rust",
+  "newRuntimeCalls": 0
+}

@@ -1,0 +1,63 @@
+{
+  "forward": true,
+  "reverse": true,
+  "hunks": 8,
+  "defs": [
+    {
+      "name": "gfAcceptArchivedSDK",
+      "unchanged": false
+    },
+    {
+      "name": "gfAuthorizeCliResultInfoOnly",
+      "unchanged": true
+    },
+    {
+      "name": "gfCloseOriginalObserver",
+      "unchanged": false
+    },
+    {
+      "name": "gfInitializeOnlyAfterRootGO",
+      "unchanged": true
+    },
+    {
+      "name": "gfIntegerText",
+      "unchanged": true
+    },
+    {
+      "name": "gfInvokePreparedOnce",
+      "unchanged": false
+    },
+    {
+      "name": "gfMetaEquals",
+      "unchanged": true
+    },
+    {
+      "name": "gfNeed",
+      "unchanged": true
+    },
+    {
+      "name": "gfPrepareOne",
+      "unchanged": false
+    },
+    {
+      "name": "gfReconcileSameGitArchiveReadOnly",
+      "unchanged": true
+    },
+    {
+      "name": "gfRun",
+      "unchanged": false
+    },
+    {
+      "name": "gfSave",
+      "unchanged": true
+    },
+    {
+      "name": "gfState",
+      "unchanged": true
+    },
+    {
+      "name": "gfValidateRequest",
+      "unchanged": false
+    }
+  ]
+}

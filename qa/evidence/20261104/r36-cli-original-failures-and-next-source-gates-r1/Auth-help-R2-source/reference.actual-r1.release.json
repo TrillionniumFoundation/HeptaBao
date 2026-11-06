@@ -1,0 +1,110 @@
+{
+  "schema": "heptabao.mac-log-help.actual-known-failure-release.r1",
+  "rootGo": {
+    "blob": "11f0eca6ddc5978298ae9b2fbdf01b5d10a0bddf",
+    "bytes": 5824,
+    "sha256": "c39708ac33c36b6629c0dc49ba037b4135761ab4d5b5f47e8ed10e392b4f80f0"
+  },
+  "job": "1a1af179989-fc05-65b0",
+  "host": "mac",
+  "status": "FAIL_KNOWN",
+  "actualExitCode": 1,
+  "outputComplete": true,
+  "outputDurable": true,
+  "terminalPublicationConfirmed": true,
+  "stdout": {
+    "blob": "2ee89aebd7a70ee39ab6e280a70e1ea86629b2b2",
+    "bytes": 3029,
+    "sha256": "75c29053895a4d4797a29aaa32f9f746715860a566bedaa04091a12a12516b72"
+  },
+  "stderr": {
+    "bytes": 0
+  },
+  "error": {
+    "code": "log_help_known_zero_complete",
+    "type": "HelpRefused"
+  },
+  "observedHelpChild": {
+    "argv": [
+      "/usr/bin/log",
+      "help",
+      "show"
+    ],
+    "exitCode": 64,
+    "stdoutBytes": 0,
+    "stderrBytes": 2246,
+    "streamsClosed": true,
+    "directChildReaped": true,
+    "remainingGroupRows": [],
+    "postReapSignalSent": false,
+    "rawHelpTextReturned": false,
+    "helpSyntaxQualified": false
+  },
+  "ownedClosure": {
+    "applicationFds": 4,
+    "allClosed": true,
+    "helpChildren": 1,
+    "outcomeUnknown": false,
+    "elapsedSeconds": 0.09291975013911724,
+    "deadlineMetAfterClosure": true,
+    "metadata": 32,
+    "codeBytesReturned": 807536,
+    "codeReadCalls": 14
+  },
+  "originalObservers": [
+    {
+      "id": "660ed1d5b3a2ac78e48240b26e8206ae6f60a24339f62eea61f23ef2931ba48d",
+      "tool": "process_status",
+      "payload": {
+        "blob": "b3924db4dcb34e534dafe552efcd6cd4b8608cd5",
+        "bytes": 907,
+        "sha256": "e56bf1856c95aaf9a2819ad09974437bf4cf267aec4e9c2810b0703f3ff9a042"
+      },
+      "payloadTree": "80b920a94a9cffabadae07805748a6e39b809021",
+      "nativeText": {
+        "blob": "9a83ec9817dc5c1fb838e352c19a55151f25f8ed",
+        "bytes": 728,
+        "sha256": "b0e22b084d98724fe0d553b18807b6c64fc64bb56dd94dd053ee66408b16b361"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "7a605cb2bef9dba796c9f6b798e85297c02aee02c78c5adb28b4cb5abb8e81b9",
+      "tool": "process_read",
+      "payload": {
+        "blob": "333b5c1f88393dc512f0f157cc639ce1ff33f556",
+        "bytes": 10560,
+        "sha256": "969004712fc1a50852a34455fb80168e9145f9c389828890bae04ea679592308"
+      },
+      "payloadTree": "17b6cff298c3f801757af9cc27f5d1f04b3ae317",
+      "nativeText": {
+        "blob": "25d119dd15d8181174837dcaa37d1dfa10ea2335",
+        "bytes": 9747,
+        "sha256": "c6f180875f44033ba54ba419d99520244c10e44e3392022f22bbdd394267695d"
+      },
+      "pages": 2,
+      "completedInactive": true
+    }
+  ],
+  "nativeCalls": 8,
+  "immutablePages": 3,
+  "noReplayedCalls": true,
+  "nativeCallsInFlight": 0,
+  "ownedNativeFuturesActive": 0,
+  "activeObserver": null,
+  "pending": null,
+  "paused": false,
+  "laneAReleased": true,
+  "furtherNativeAuthorized": false,
+  "historicalUnknowns": {
+    "oldQaRegistration": "NOT_CLOSED",
+    "oldLineage": "NOT_QUALIFIED",
+    "oldGit8916": "UNKNOWN"
+  },
+  "logQueryExecuted": false,
+  "cleanupExecuted": false,
+  "privateCapsuleRead": false,
+  "sdkOrProviderExecuted": false,
+  "interpretation": "The help wrapper rejected nonzero child exit before recognizing any text. Child64/stderr2246 is observed; no text or hash of that stream was exported, so its content and exact syntax remain unqualified."
+}

@@ -1,0 +1,317 @@
+{
+  "schema": "heptabao.root-AuthBus-fixed-path-metadata-actual-qualification.v1",
+  "packet": {
+    "tree": "6e7d48193a79063b0ee8957d479128bce080e015",
+    "files": 82,
+    "bytes": 467893,
+    "merkle": {
+      "root_sha": "6e7d48193a79063b0ee8957d479128bce080e015",
+      "trees_verified": 1,
+      "leaf_count": 82
+    },
+    "whole": true
+  },
+  "actual_job": "mac/1a1aef60ea2-fc05-648b",
+  "checks": [
+    {
+      "name": "whole_original82",
+      "passed": true
+    },
+    {
+      "name": "exact_original_GO_source_journal",
+      "passed": true
+    },
+    {
+      "name": "twelve_original_calls_two_observers",
+      "passed": true
+    },
+    {
+      "name": "original_pins_launchd-path-metadata-start-r1",
+      "passed": true
+    },
+    {
+      "name": "once_whole_arm_launchd-path-metadata-start-r1",
+      "passed": true
+    },
+    {
+      "name": "SDK_original_native_launchd-path-metadata-start-r1",
+      "passed": true
+    },
+    {
+      "name": "original_pins_launchd-path-metadata-authority-01-start",
+      "passed": true
+    },
+    {
+      "name": "once_whole_arm_launchd-path-metadata-authority-01-start",
+      "passed": true
+    },
+    {
+      "name": "SDK_original_native_launchd-path-metadata-authority-01-start",
+      "passed": true
+    },
+    {
+      "name": "original_pins_launchd-path-metadata-authority-01-status-0",
+      "passed": true
+    },
+    {
+      "name": "once_whole_arm_launchd-path-metadata-authority-01-status-0",
+      "passed": true
+    },
+    {
+      "name": "SDK_original_native_launchd-path-metadata-authority-01-status-0",
+      "passed": true
+    },
+    {
+      "name": "original_pins_launchd-path-metadata-authority-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "once_whole_arm_launchd-path-metadata-authority-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "SDK_original_native_launchd-path-metadata-authority-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "original_pins_launchd-path-metadata-streams-01-start",
+      "passed": true
+    },
+    {
+      "name": "once_whole_arm_launchd-path-metadata-streams-01-start",
+      "passed": true
+    },
+    {
+      "name": "SDK_original_native_launchd-path-metadata-streams-01-start",
+      "passed": true
+    },
+    {
+      "name": "original_pins_launchd-path-metadata-streams-01-status-0",
+      "passed": true
+    },
+    {
+      "name": "once_whole_arm_launchd-path-metadata-streams-01-status-0",
+      "passed": true
+    },
+    {
+      "name": "SDK_original_native_launchd-path-metadata-streams-01-status-0",
+      "passed": true
+    },
+    {
+      "name": "original_pins_launchd-path-metadata-streams-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "once_whole_arm_launchd-path-metadata-streams-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "SDK_original_native_launchd-path-metadata-streams-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "original_pins_launchd-path-metadata-streams-01-page-008192",
+      "passed": true
+    },
+    {
+      "name": "once_whole_arm_launchd-path-metadata-streams-01-page-008192",
+      "passed": true
+    },
+    {
+      "name": "SDK_original_native_launchd-path-metadata-streams-01-page-008192",
+      "passed": true
+    },
+    {
+      "name": "original_pins_launchd-path-metadata-streams-01-page-016384",
+      "passed": true
+    },
+    {
+      "name": "once_whole_arm_launchd-path-metadata-streams-01-page-016384",
+      "passed": true
+    },
+    {
+      "name": "SDK_original_native_launchd-path-metadata-streams-01-page-016384",
+      "passed": true
+    },
+    {
+      "name": "original_pins_launchd-path-metadata-streams-01-page-024576",
+      "passed": true
+    },
+    {
+      "name": "once_whole_arm_launchd-path-metadata-streams-01-page-024576",
+      "passed": true
+    },
+    {
+      "name": "SDK_original_native_launchd-path-metadata-streams-01-page-024576",
+      "passed": true
+    },
+    {
+      "name": "original_pins_launchd-path-metadata-streams-01-page-032768",
+      "passed": true
+    },
+    {
+      "name": "once_whole_arm_launchd-path-metadata-streams-01-page-032768",
+      "passed": true
+    },
+    {
+      "name": "SDK_original_native_launchd-path-metadata-streams-01-page-032768",
+      "passed": true
+    },
+    {
+      "name": "original_pins_launchd-path-metadata-streams-01-page-040960",
+      "passed": true
+    },
+    {
+      "name": "once_whole_arm_launchd-path-metadata-streams-01-page-040960",
+      "passed": true
+    },
+    {
+      "name": "SDK_original_native_launchd-path-metadata-streams-01-page-040960",
+      "passed": true
+    },
+    {
+      "name": "closed_call_kind_counts",
+      "passed": true
+    },
+    {
+      "name": "one_actual_start_binding",
+      "passed": true
+    },
+    {
+      "name": "authoritative_complete_durable_exit0",
+      "passed": true
+    },
+    {
+      "name": "two_original_observers_closed",
+      "passed": true
+    },
+    {
+      "name": "one_admission_process_status",
+      "passed": true
+    },
+    {
+      "name": "contiguous_original_pages_process_status",
+      "passed": true
+    },
+    {
+      "name": "whole_native_payload_process_status",
+      "passed": true
+    },
+    {
+      "name": "inactive_process_status",
+      "passed": true
+    },
+    {
+      "name": "one_admission_process_read",
+      "passed": true
+    },
+    {
+      "name": "contiguous_original_pages_process_read",
+      "passed": true
+    },
+    {
+      "name": "whole_native_payload_process_read",
+      "passed": true
+    },
+    {
+      "name": "inactive_process_read",
+      "passed": true
+    },
+    {
+      "name": "stream_exact_stdout",
+      "passed": true
+    },
+    {
+      "name": "authority_extent_stdout",
+      "passed": true
+    },
+    {
+      "name": "stream_exact_stderr",
+      "passed": true
+    },
+    {
+      "name": "authority_extent_stderr",
+      "passed": true
+    },
+    {
+      "name": "stdout14496_stderr0",
+      "passed": true
+    },
+    {
+      "name": "known_postclosure_within5seconds",
+      "passed": true
+    },
+    {
+      "name": "exact22_fixed_paths_in_order",
+      "passed": true
+    },
+    {
+      "name": "all22_returned_FDs_closed_once",
+      "passed": true
+    },
+    {
+      "name": "full9_decimal_strings_and_regular_pin",
+      "passed": true
+    },
+    {
+      "name": "only_observer_access_supported_allowed",
+      "passed": true
+    },
+    {
+      "name": "actual_alias_target_equals_regular_and_stable",
+      "passed": true
+    },
+    {
+      "name": "alias_not_single_hop_no_unknown_text_export",
+      "passed": true
+    },
+    {
+      "name": "zero_bodies_children_mutation",
+      "passed": true
+    },
+    {
+      "name": "exact_actual_syscall_budgets",
+      "passed": true
+    },
+    {
+      "name": "original_stdio_still_empty_metadata",
+      "passed": true
+    },
+    {
+      "name": "no_unwarranted_startup_content_or_old_closure_claim",
+      "passed": true
+    },
+    {
+      "name": "no_inflight_final_context",
+      "passed": true
+    }
+  ],
+  "check_count": 68,
+  "passed": true,
+  "findings": {
+    "fixed_paths": 22,
+    "all_returned_FDs_closed": true,
+    "alias_target_same_regular_full9": true,
+    "alias_single_lexical_hop": false,
+    "all_current_observer_access_checks_allowed": true,
+    "metadata_calls": 115,
+    "access_calls": 23,
+    "readlink_calls": 2,
+    "retained_link_bytes": 84,
+    "original_stdout_file_size": 0,
+    "original_stderr_file_size": 0,
+    "file_body_bytes": 0,
+    "children_created": 0,
+    "elapsed_seconds": 0.036547333002090454,
+    "startup_cause_qualified": false,
+    "launchd_or_TCC_access_qualified": false,
+    "current_code_whole_hash_qualified": false,
+    "original_registration_closed": false,
+    "historical_lineage_unknown_preserved": true
+  },
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0,
+  "as_of_UTC": "2026-11-06 03:58:16 UTC"
+}

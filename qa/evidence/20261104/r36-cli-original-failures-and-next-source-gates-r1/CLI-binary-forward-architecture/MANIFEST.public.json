@@ -1,0 +1,32 @@
+{
+  "schema": "heptabao.native-snapshot-standby-architecture.packet.v1",
+  "status": "SOURCE_ONLY_NOT_IMPLEMENTED",
+  "candidate": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "docsTree": "5af86d3cac1d5b91c322f6126109cd7d89c00eaf",
+  "sourceCount": 18,
+  "sourceExcerpts": 50,
+  "pureSourcePinChecks": 165,
+  "actualReport": {
+    "blob": "0b2edd60185b80817c3c7f1378b914ae914ab21e",
+    "bytes": 848065,
+    "sha256": "d5c691d23b513a2a63916792bbe21178e2b34799e6adbd20ddf88cdf6147bc48"
+  },
+  "actualEvidenceTree": "871aa23bfee256e91247fbb7e6d42c4cb82d181d",
+  "readme": {
+    "blob": "6b7aece3ebead53ee187149eafda2103f786c1d9",
+    "bytes": 14157,
+    "sha256": "0a4942e0e18e169cba29ce76fe204d728e0c51afa9efef27696c2dce0a06b92c"
+  },
+  "contract": {
+    "blob": "6e8fe7fb1dc84431845c2cf034c82f9eb5d08f8b",
+    "bytes": 19206,
+    "sha256": "b3e734d386e259650442ae102ad8a3fda543d2359b6a32256997d97a3a0872f1"
+  },
+  "filesWholeVerifiedFromOriginalSources": true,
+  "RuntimeCalls": 0,
+  "productionEdits": 0,
+  "compiled": false,
+  "tested": false,
+  "noQualificationCredit": true
+}

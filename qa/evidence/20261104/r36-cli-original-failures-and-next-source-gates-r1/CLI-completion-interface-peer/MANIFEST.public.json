@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.public-peer-packet.v1",
+  "files": [
+    {
+      "path": "REVIEW.md",
+      "blob": "c29e8ffd77c5fc7f940333ab8e9e105cd9b1648d",
+      "bytes": 5879,
+      "sha256": "ceb8368e5775183a61c218d09e3e100702804ad7e0c488613d640c0ab6b0602d"
+    },
+    {
+      "path": "REFERENCES.public.json",
+      "blob": "aa0b1669fb9a18808fdaaf993b64c251f0c78e63",
+      "bytes": 562,
+      "sha256": "c247db12dafc16146a569cfe3764c803dd7570064df1e93d7c0746360e59fc0c"
+    }
+  ]
+}

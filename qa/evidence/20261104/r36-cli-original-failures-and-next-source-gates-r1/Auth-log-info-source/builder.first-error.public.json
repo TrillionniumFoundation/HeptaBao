@@ -1,0 +1,8 @@
+{
+  "stage": "source_diff_output_shape",
+  "name": "TypeError",
+  "message": "diff.match is not a function",
+  "nativeCalls": 0,
+  "gitMutations": 0,
+  "sourceCandidatesChangedAfterError": false
+}

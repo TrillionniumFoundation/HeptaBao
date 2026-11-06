@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.formatter-receipt-body.release.v1",
+  "job": "1a1af017fae-fc05-64f1",
+  "body": {
+    "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/result.public.json",
+    "version": "66306:30541013:22202:1793937480615144693:1793937480615144693",
+    "body": {
+      "blob": "58827993343d76b96fc92b0bae47432710ffbedd",
+      "bytes": 22202,
+      "sha256": "60776056ee93fa1fdb557233626ee392385bfe69c8335cd9bc8d236fb0974874"
+    },
+    "originalOperation": "1e45405574780d6cc2cf00b9451a18c5cc321b7ddf7bf8b94c214e11a5df73e0",
+    "metadataOperation": "be969ff66181d7b8e77c373f94425fda8a6474cd6480aba3c46f2a6dcd55a539",
+    "originalPayload": {
+      "blob": "78ac80a35b06089dc06a299f78b2afc8081d2b2b",
+      "bytes": 30025,
+      "sha256": "c0d143a09f48b11a96e36e3a8c7f3d95e25e3096c405589c3a1836ae164f060e"
+    },
+    "semanticQualification": false
+  },
+  "rootGO": {
+    "blob": "521c06d38fc1947ba15d8cacaff43e2416ec5957",
+    "bytes": 4963,
+    "sha256": "f4b85f03d70360a26283f86d381b78aadd817295f74a4e89175d3a356993632a"
+  },
+  "currentNativeCalls": 0,
+  "activeNativeFutures": 0,
+  "originalBinaryAdmissions": 1,
+  "originalCalls": 4,
+  "originalPages": 2,
+  "allOtherOriginalObserversClosed": true,
+  "semanticQualification": false,
+  "other37FilesObserved": false,
+  "newAdmissionAuthorized": false
+}

@@ -1,0 +1,90 @@
+[
+  {
+    "callKey": "jwt-e3af-format-receipt-body0-start-r1",
+    "kind": "operation_start",
+    "request": {
+      "blob": "6d9356b029e17f02287de08ab5d1c3d84a9537b3",
+      "bytes": 345,
+      "sha256": "daddafc8c6e3f131a33c7fb31eb7cd2cadd591e48f585178b0309b62f9de322c"
+    },
+    "armedTree": "12baf100c0350f36c2442dc9f7492fa7d483cbac",
+    "sdk": {
+      "blob": "9ee93911fee7ada42f1689ff86a8936e51aaa336",
+      "bytes": 706,
+      "sha256": "28582f51b2a84c6662617505a39e937df780d07b763af7355fc9714bb2846f57"
+    },
+    "sdkTree": "40202d0242f2cb77e520d586cd5f6c4c498e194f",
+    "native": {
+      "blob": "4bec5ae0d251b9f3334bc07572bb8a1a9cbc49f2",
+      "bytes": 545,
+      "sha256": "7d7396cdaabc4ee35458cef482159e3b76eabc41e9253d5644936569e59ebd4b"
+    },
+    "phase": "accepted"
+  },
+  {
+    "callKey": "jwt-e3af-format-receipt-body0-status0-r1",
+    "kind": "operation_status",
+    "request": {
+      "blob": "83d216fe352c540d27226f7915b893c397c1f992",
+      "bytes": 84,
+      "sha256": "1f596c1121260714de51071b9d9599c35dc1b607333c9521ab9e606334baa7e8"
+    },
+    "armedTree": "8d50e11209e33bcdbc255f6cd315936d4b047c70",
+    "sdk": {
+      "blob": "afda806d1cfc06429a68ab11e639d2850481a115",
+      "bytes": 977,
+      "sha256": "7acacd29fcedaffe0dfa9df7781dbdea14decf68d61ec4cb98058a50eb4e739a"
+    },
+    "sdkTree": "02a113bb9adea32b456b30fb17760ac3db578040",
+    "native": {
+      "blob": "38227cb334f6a3a7faeba5724e863db6ff996f8a",
+      "bytes": 802,
+      "sha256": "7d3f5aa70af155993c66fb4b37432b011ebd28fe747467b9d4fdbe15635787c1"
+    },
+    "phase": "accepted"
+  },
+  {
+    "callKey": "jwt-e3af-format-receipt-body0-page0-r1",
+    "kind": "operation_result",
+    "request": {
+      "blob": "cf3e38c45bb31ed6254a380c5579a193380e8b81",
+      "bytes": 109,
+      "sha256": "fb526730575de43bd5b072702aef984f6523f64d3e37fb783f923f03e72b8142"
+    },
+    "armedTree": "7b69b44bb60c69a46f60baf5f51ead9522649f10",
+    "sdk": {
+      "blob": "99a95987ccd511bacaf1d25e4dd393c8dbd8608f",
+      "bytes": 22705,
+      "sha256": "0b2804542cce63119b3f8e8773f0c094a8a7dffa6b5ca265e66153e592818319"
+    },
+    "sdkTree": "43736b9ffa88d5ef4045a284b8916dbc024f998b",
+    "native": {
+      "blob": "3ba6699e7172a3184e615bfd183ff57ddcba7e35",
+      "bytes": 22534,
+      "sha256": "5271f6fa1dcf050346aba717b9efecb8c87f9e982ed3940e31f8b167763a4b00"
+    },
+    "phase": "accepted"
+  },
+  {
+    "callKey": "jwt-e3af-format-receipt-body0-page16384-r1",
+    "kind": "operation_result",
+    "request": {
+      "blob": "2adb8a38e18f17192acef545829bf94bbd9c72df",
+      "bytes": 113,
+      "sha256": "e8f1e287b6e09873fb57f6cf6b17a2d3ef806c8980587ad190cd23ffbfa9e8f5"
+    },
+    "armedTree": "238afc25c3dd91d7b85ca1291e1b7b4a5f2aec89",
+    "sdk": {
+      "blob": "6167006c1467cbfec8b72c57c2a5c7fd9a3c30fb",
+      "bytes": 19048,
+      "sha256": "b5120345bfc0c64a56d98fdc07d2cb2a58505ff213706899c71dd2ef4f59b59e"
+    },
+    "sdkTree": "2778c4c4b18b55871cd868be65b5b3e7638d3e4b",
+    "native": {
+      "blob": "4f7bac1ee765ec488e689b19cac83beaed149931",
+      "bytes": 18877,
+      "sha256": "5cd4a5773227638aa91d5841e58cf73117228e251c874ba2626fe4dce773a551"
+    },
+    "phase": "accepted"
+  }
+]

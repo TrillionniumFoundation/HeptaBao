@@ -1,0 +1,54 @@
+[
+  {
+    "name": "body exact metadata",
+    "pass": true
+  },
+  {
+    "name": "source commit",
+    "pass": true
+  },
+  {
+    "name": "source tree",
+    "pass": true
+  },
+  {
+    "name": "sole parent",
+    "pass": true
+  },
+  {
+    "name": "source prepared clean",
+    "pass": true
+  },
+  {
+    "name": "3916 full index",
+    "pass": true
+  },
+  {
+    "name": "all actual child records closed",
+    "pass": true
+  },
+  {
+    "name": "unique actual child labels and pid",
+    "pass": true
+  },
+  {
+    "name": "unchanged old source",
+    "pass": true
+  },
+  {
+    "name": "unchanged failed observer",
+    "pass": true
+  },
+  {
+    "name": "no build runtime",
+    "pass": true
+  },
+  {
+    "name": "original budgets",
+    "pass": true
+  },
+  {
+    "name": "closed observer and lane",
+    "pass": true
+  }
+]

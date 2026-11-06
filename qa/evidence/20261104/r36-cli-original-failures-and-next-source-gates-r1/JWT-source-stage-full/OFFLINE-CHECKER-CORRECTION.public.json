@@ -1,0 +1,10 @@
+{
+  "source": "first offline report check",
+  "message": "Error: all children closed",
+  "causePending": false,
+  "wasRuntimeCall": false,
+  "wasCandidateExecution": false,
+  "cause": "Offline checker assumed previous stage count 56; this actual report has labels 000 through 056 inclusive = 57. All 57 actual child records are reaped, exit 0 and empty. No runtime request/source changed.",
+  "actualCount": 57,
+  "incorrectAssumption": 56
+}

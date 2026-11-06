@@ -1,0 +1,211 @@
+{
+  "schema": "heptabao.CLI-B04-B05.source-problem-map.v1",
+  "sourceOnly": true,
+  "RuntimeCalls": 0,
+  "productionEdits": 0,
+  "official": {
+    "tag": "v2.7.1",
+    "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+    "tagReceipt": {
+      "blob": "fec1f5c7b872bff8e89c620c3ad84b7d2851c6f3",
+      "bytes": 331,
+      "sha256": "6917fda36c3093a3ec884c6240f2aac24e101c61970c86be8cd4e7872db995c0"
+    }
+  },
+  "product": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "membership": [
+      {
+        "component": "root",
+        "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+        "directTreeVerified": true,
+        "raw": {
+          "blob": "d84759b462aa64baa4a3cddc42ddfb7720ae31ed",
+          "bytes": 6009,
+          "sha256": "f0e8cea5313f1aa420cc2f65d4cbc52819731e02aada87cc1ab3ecfea5e85c55"
+        },
+        "next": {
+          "path": "crates",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "fd50f52f2beb3cef919ad86194955a3e32090e80",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/fd50f52f2beb3cef919ad86194955a3e32090e80"
+        }
+      },
+      {
+        "component": "crates",
+        "tree": "fd50f52f2beb3cef919ad86194955a3e32090e80",
+        "directTreeVerified": true,
+        "raw": {
+          "blob": "1985a178b8d115ac8e3cd743e2022352aea2ceff",
+          "bytes": 11560,
+          "sha256": "b2a7ef72fc9a7c030614fda84548b0fe3ebdccc33a55447f676e1d238cd90034"
+        },
+        "next": {
+          "path": "heptabao-server",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "19f9a6ab211357e04e17266636279843921be619",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/19f9a6ab211357e04e17266636279843921be619"
+        }
+      },
+      {
+        "component": "server",
+        "tree": "19f9a6ab211357e04e17266636279843921be619",
+        "directTreeVerified": true,
+        "raw": {
+          "blob": "d451557bdb42dd1f72e58908ff0a16d2cb70e619",
+          "bytes": 2044,
+          "sha256": "9c8e26c3e0db8b610605c4eab0b6cf4137a8a8aa2da9da55f78226dfc4adadcf"
+        },
+        "next": {
+          "path": "src",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "de426e481e192ca774a4c9fef252d8c1d4b71b92",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/de426e481e192ca774a4c9fef252d8c1d4b71b92"
+        }
+      },
+      {
+        "component": "src_tree",
+        "tree": "de426e481e192ca774a4c9fef252d8c1d4b71b92",
+        "directTreeVerified": true,
+        "raw": {
+          "blob": "3699af29d93cd62df4ab05bb9aca8e81c5f68d25",
+          "bytes": 196638,
+          "sha256": "31f42f6ae1fe14a1e787dea28aca513e97d6ad580ba199795d31b2483cd51b24"
+        }
+      }
+    ]
+  },
+  "actualBoundary": {
+    "job": "1a1aee01612-fc05-639b",
+    "terminalCore": "32e2f8b06c3db1cdf3ca66fc25cc2a20a7313159",
+    "infoPacket": "cb046a3da9c962abac8019114333cedbb02f5741",
+    "exitCode": 1,
+    "stdoutBytes": 466,
+    "reportedB04": false,
+    "reportedB05": false,
+    "fullBodyRead": false,
+    "caseQualification": false,
+    "rootCauseAssigned": false
+  },
+  "cases": [
+    {
+      "case": "B04",
+      "argv": "bao operator raft snapshot save <new private B04 output>",
+      "role": "Actual standby selected from current roles",
+      "qualification": [
+        "Known one CLI process, no retry/manual redirect",
+        "Complete unique audit request/response pairs; if redirect, one target307 plus one non307 terminal",
+        "CLI exit0 AND output archive valid AND terminal server status200"
+      ],
+      "pendingActual": [
+        "CLI returncode/error_class",
+        "per-node audit statuses and target/leader",
+        "output size/hash/archive checks",
+        "explicit Location value or observation availability",
+        "actual ALPN/framing availability"
+      ]
+    },
+    {
+      "case": "B05",
+      "argv": "bao operator raft snapshot restore <independent valid B03 archive B>",
+      "force": false,
+      "restoreInput": "B03 separate leader save; never failed B04 output",
+      "before": "One CAS2 mutation to version3",
+      "qualification": [
+        "Known one CLI process and input unchanged",
+        "CLI exit0 AND terminal200/204 AND exact original state restored on all nodes",
+        "Cold restart preserves actual verified state"
+      ],
+      "knownFailureBoundary": "Terminal400/403 with exact unchanged pre-restore mutated state is known rejection, remains unqualified.",
+      "pendingActual": [
+        "CLI returncode/error_class",
+        "per-node audit307/non307 status",
+        "restore input before/after",
+        "restore_readback restored vs unchanged; all version/value/metadata checks",
+        "cold result and individual owned cleanup"
+      ]
+    }
+  ],
+  "staticMechanisms": [
+    {
+      "id": "O1",
+      "sources": [
+        "official-api-client.go:1713-1760"
+      ],
+      "fact": "httpRequestWithContext stores result from first response; on301/302/307 uses one second Do(req) but discards its response and returns first result."
+    },
+    {
+      "id": "O2",
+      "sources": [
+        "official-api-response.go:31-36"
+      ],
+      "fact": "Response.Error accepts200..399, so first307 alone is not API error."
+    },
+    {
+      "id": "O3",
+      "sources": [
+        "official-api-raft.go:176-240"
+      ],
+      "fact": "Save copies returned result body and requires nonempty SHA256SUMS.sealed in gzip/tar."
+    },
+    {
+      "id": "O4",
+      "sources": [
+        "official-api-raft.go:250-265",
+        "official-api-request.go:60-65"
+      ],
+      "fact": "Restore supplies io.NopCloser(file reader); ResetJSONBody does nothing when BodyBytes=nil. The shown redirect code does not rewind this file or replace req.Body."
+    },
+    {
+      "id": "O5",
+      "sources": [
+        "official-restore.go:47-51",
+        "official-api-raft.go:250-259"
+      ],
+      "fact": "force defaultsfalse; true only chooses snapshot-force route here and still uses the same request helper. Current fixture passes no-force."
+    },
+    {
+      "id": "P1",
+      "sources": [
+        "current-snapshot-transfer.rs:402-437"
+      ],
+      "fact": "Native standby observes configured leader, records307 and returns Redirect before native authentication/token-use/staging and ordinary JSON HA forwarding."
+    },
+    {
+      "id": "P2",
+      "sources": [
+        "current-http-snapshot.rs:99-140",
+        "current-http-snapshot.rs:338-360"
+      ],
+      "fact": "Native redirect writes trusted origin+checked original target with307 andContent-Length0; branch bypasses snapshot reader/spool and ordinary JSON forwarding frame."
+    },
+    {
+      "id": "P3",
+      "sources": [
+        "current-http-h2.rs:201-283",
+        "current-http-h2.rs:356-395"
+      ],
+      "fact": "H2 first collects a bounded request body then calls shared parsed-request path and serializes NativeReply. H1 unread-upload statement is not a claim that actual unknown-ALPN CLI left its body unread."
+    }
+  ],
+  "conditionalQuestions": [
+    "If B04 audit shows307 then200 but CLI reports incomplete_snapshot and invalid/empty output, compare with O1/O2/O3; do not infer this before actual full report.",
+    "If B05 has307 then400/403 plus unchanged mutated state, distinguish known server rejection from CLI exit, then examine O1/O2/O4. No current source-only claim about bytes actually consumed on redirected request.",
+    "If Location or wire framing/ALPN are not observed, keep them unobserved. Audit pairing does not fill those fields.",
+    "If all prior state mutations/restore/cold paths are accounted but casefalse, repair scope must preserve those exact classifications and budgets, not weaken predicates or substitute a leader URL."
+  ],
+  "constraints": [
+    "No new test run or CLI replay",
+    "No private CLI stderr body retrieval",
+    "No force/redirect/env override",
+    "No budget enlargement",
+    "No assigning current flags to old B01 UNKNOWN",
+    "No transport protocol inferred from separate H2 qualification",
+    "No source mutation in this packet",
+    "No whole2.7.1 qualification"
+  ]
+}

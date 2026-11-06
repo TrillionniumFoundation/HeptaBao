@@ -1,0 +1,42 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/qa/phaseb_controller_r3.py",
+      "--binding",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/binding.private.json",
+      "--binding-sha256",
+      "7ef3458f4a54b74336941229307c0ffb6778e581c18b27518dc03a8fe6107eea",
+      "--run",
+      "--prepare-result-sha256",
+      "8d9809f9da2493cb7f9d1ae8855ff31dab8464cc3919ea7fcd02163087cac615"
+    ],
+    "created_unix_ms": 1793935283730,
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "env_keys": [],
+    "executable": "/usr/bin/python3.12",
+    "execution_mode": "operator",
+    "host": "desktop",
+    "id": "1a1aee01612-fc05-639b",
+    "idempotency_key": "heptabao-official271-phaseb-4e808-live-10816-20261105-r4",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1aee01612-fc05-639b",
+    "request_digest": "f670cf418c6ae40943b7f0224e09f0bd556ceb3b5975c377ad0e524a317f5cd7",
+    "request_fingerprint": 17757921211157505033,
+    "ssh_target": "desktop-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1aee01612-fc05-639b"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1aee01612-fc05-639b"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

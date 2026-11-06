@@ -1,0 +1,45 @@
+{
+  "schema": "heptabao.log-info-help.selected-pure-checks.r1",
+  "actualNativeCalls": 0,
+  "actualFilesystemCalls": 0,
+  "actualSignals": 0,
+  "actualChildProcesses": 0,
+  "actualLogToolExecuted": false,
+  "pythonTemplateExecutedOrCompiled": false,
+  "checks": [
+    {
+      "name": "exact_unique_file_info_allowed",
+      "pass": true
+    },
+    {
+      "name": "process_start_refused",
+      "pass": true
+    },
+    {
+      "name": "different_path_refused",
+      "pass": true
+    },
+    {
+      "name": "second_metadata_admission_refused",
+      "pass": true
+    },
+    {
+      "name": "fake_root_hardlinked_tool_derives_full9_and_stdin",
+      "pass": true
+    },
+    {
+      "name": "version_size_mismatch_refused",
+      "pass": true
+    },
+    {
+      "name": "nonroot_tool_refused",
+      "pass": true
+    },
+    {
+      "name": "active_future_refused",
+      "pass": true
+    }
+  ],
+  "passed": 8,
+  "complete": true
+}

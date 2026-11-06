@@ -1,0 +1,80 @@
+{
+  "schema": "heptabao.root-GO.JWT-stage-one-version-bound-body.v1",
+  "authorization": "GO",
+  "scope": "stage_result_binary_read_only",
+  "as_of_UTC": "2026-11-06 03:40:46 UTC",
+  "agent": "/root/ha_validation",
+  "original_job": "1a1aed43ac9-fc05-62ec",
+  "info_operation": "2d07d9698ca3b85a8adde0aad7acb28f9fa514e0d23d17346ae03c074a582394",
+  "maximum_binary_read_starts": 1,
+  "exact_request": {
+    "blob": "53891d75942f028f9511f61724474fc58d3343e6",
+    "bytes": 434,
+    "sha256": "dbe7886be6f77f2c69b0070593e56c24b26f011b3761eb6a7154038070078193"
+  },
+  "source_packet": "c89eb8011a27382823b40a81934ef8124a1ca188",
+  "source_review": {
+    "blob": "5f3ac01079a2da6a42f2d8407b3a200cedf19b60",
+    "bytes": 5072,
+    "sha256": "ca0fdc77598c78562c02255e80274524ac5884153048d235be610e2b328a6949"
+  },
+  "candidate": {
+    "blob": "703a403a43fbd8ce8db9d0e30c21b77d13982900",
+    "bytes": 28250,
+    "sha256": "ac12e9659a0f1aeb182fd0a211a7621d8ce3f7730aa44060b27eacad1645acd3"
+  },
+  "existing_context": "jwt_e3af_rog_source_gitfirst_r1",
+  "initialize_again": false,
+  "actual_binding": {
+    "path": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/control/stage-result.public.json",
+    "bytes": 27581,
+    "sha256": "0bf4e76a64ded7fa9ff5af683252cbe6e19f055766fb9004345bbc2c265c4666",
+    "version": "66306:28749310:27581:1793934521373633707:1793934521373633707",
+    "infoOperation": "2d07d9698ca3b85a8adde0aad7acb28f9fa514e0d23d17346ae03c074a582394",
+    "infoNative": {
+      "blob": "730a1f4b8e2389082c2fd3ef595624953022ed83",
+      "bytes": 482,
+      "sha256": "e8232bba16919229ade7d06866a74991507b9db5e11948d5bbdd2894750e3804"
+    }
+  },
+  "host": "rog",
+  "range": {
+    "offset": 0,
+    "limit": 27581,
+    "expected_version": "66306:28749310:27581:1793934521373633707:1793934521373633707"
+  },
+  "unchanged_limits": {
+    "binary_chunk": 65536,
+    "report_admission": 150000,
+    "payload": 1048576,
+    "immutable_page": 8192,
+    "max_native_call_future_per_lane": 1,
+    "max_Runtime_lanes": 2
+  },
+  "sequence": [
+    "Whole this exact GO before authorize_stage_result_body on original existing slot",
+    "Exact request/intent/armed external whole before independent model boundary",
+    "One original binary_read operation_start; returned SDK immutable external whole before any interpretation",
+    "Only same returned operation status and next8192 original immutable pages; full payload SHA/EOF and inactive close",
+    "Decoded exact27581 report body SHA/version must match original file_info; preserve whole original text before semantic review"
+  ],
+  "failure": "Retain any error/UNKNOWN; no Native replay, re-key, metadata refresh or automatic unpause",
+  "excluded": [
+    "process_start",
+    "formatter",
+    "build",
+    "new source mutation",
+    "production cutover",
+    "legacy deletion"
+  ],
+  "lane_disposition": {
+    "A": "0 Runtime SOURCE-only",
+    "B": "one CLI fixedreport file_info lane",
+    "C": "one JWT fixedreport body lane",
+    "root": "0 Runtime"
+  },
+  "source_stage_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false
+}

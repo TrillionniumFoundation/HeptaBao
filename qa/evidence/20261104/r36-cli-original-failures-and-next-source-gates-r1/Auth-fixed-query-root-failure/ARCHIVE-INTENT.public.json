@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r36-auth-fixed-log-query-known-failure-root",
+  "records": [
+    {
+      "name": "ROOT-QUALIFICATION.public.json",
+      "blob": "3052edd4796424a82b909e75c295fd5530836714",
+      "bytes": 6066,
+      "sha256": "6424d64e4bd5524c26df21f6ee10f682b2964fb358bbb1938e42d8bd5cb0f0a1"
+    },
+    {
+      "name": "root-verifier.js",
+      "blob": "691258b806b08cb98503fc2e863b4a6e80072930",
+      "bytes": 10400,
+      "sha256": "b271e155d3d08a84269e65b9e579a2a8cec49f0966daf2cffab10bd1df16aa7f"
+    },
+    {
+      "name": "README.md",
+      "blob": "e676bde0c9a79cbd19349357fb1e5e236bb1399e",
+      "bytes": 971,
+      "sha256": "2c65bc0edb4bfe028dc1365c2801a1e5cbe47603d1bbedc29f23651404e3c3ce"
+    }
+  ],
+  "expected_data_tree": "afbe402acabfb149b46f8f812af68b58867759fd",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

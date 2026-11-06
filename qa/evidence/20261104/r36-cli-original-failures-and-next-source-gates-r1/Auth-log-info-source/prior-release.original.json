@@ -1,0 +1,200 @@
+{
+  "schema": "heptabao.mac-owned-launchd-path-metadata.actual-release.r1",
+  "go": {
+    "blob": "23346a3a59028fc9f88aa5d25d616af638e7426e",
+    "bytes": 7681,
+    "sha256": "e05e15be4eee817137ac0e2f16e3cdbece0a49f54f4bc77152dae6f3877e5df5"
+  },
+  "request": {
+    "blob": "843965aae4fc29a5d840a1c84c51184dc32ae7ef",
+    "bytes": 14343,
+    "sha256": "76500b2218e329bc76bb8a29bfa485101e4954756f752d0d34cc38869fbc80f0"
+  },
+  "host": "mac",
+  "job_id": "1a1aef60ea2-fc05-648b",
+  "diagnosticAuthority": {
+    "blob": "29d005720e6169b48a800dfb6d82fdf3a718abd2",
+    "bytes": 733,
+    "sha256": "c0a2cc40ba9d6913111572658d87845437e7957bd5965bab1dad10a7157e1b04"
+  },
+  "stdout": {
+    "blob": "0100baa28c769c2744ffa87c0f568a8648d628be",
+    "bytes": 14496,
+    "sha256": "d9cd6de255ad81df4355e53d58f4465505ddc34d1dd5c2047c313e4c228108fd"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "streams": {
+    "blob": "df4d00045ccbb65a7702b22ea32c20bc54803d6e",
+    "bytes": 45416,
+    "sha256": "47cf2257652eccd5d52c0904927593a28aa5526e9c9a1f6f8275b9623ff41165"
+  },
+  "originalObservers": [
+    {
+      "id": "369a85fbf9523efdfa79d72cd4237cc6ae24a58ff5aa9b8d81a6b78ab6005d4b",
+      "tool": "process_status",
+      "payload": {
+        "blob": "bbc888f09e08ecf26788ed0626e3f84aeee134dd",
+        "bytes": 912,
+        "sha256": "d6d4a770650cf8be652573f64540ea64cd0a9d9638f91fed5777852981b60b37"
+      },
+      "payloadTree": "ce4cedd6e577acec91c3824075b2e98e1cd889f9",
+      "nativeText": {
+        "blob": "29d005720e6169b48a800dfb6d82fdf3a718abd2",
+        "bytes": 733,
+        "sha256": "c0a2cc40ba9d6913111572658d87845437e7957bd5965bab1dad10a7157e1b04"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "0f41e2ad513243e55321e4fc567de66f179929c753415419f44e9fde76f4fd30",
+      "tool": "process_read",
+      "payload": {
+        "blob": "e17fb99f69877421838d33bffe65bd7e72b66a7c",
+        "bytes": 48761,
+        "sha256": "890c3b7df8af3732d35674233423869ed0bdec94a22a03229bd1ecfc91de31b8"
+      },
+      "payloadTree": "bbec893d3203d206b3d978e80e4c46c40a1b03e4",
+      "nativeText": {
+        "blob": "df4d00045ccbb65a7702b22ea32c20bc54803d6e",
+        "bytes": 45416,
+        "sha256": "47cf2257652eccd5d52c0904927593a28aa5526e9c9a1f6f8275b9623ff41165"
+      },
+      "pages": 6,
+      "completedInactive": true
+    }
+  ],
+  "returnedObserverCount": 2,
+  "immutablePageCount": 7,
+  "nativeCallsActive": 0,
+  "nativeFuturesActive": 0,
+  "pending": null,
+  "allOriginalObserversCompletedInactive": true,
+  "diagnosticKnownExitCode": 0,
+  "diagnosticStdoutComplete": true,
+  "diagnosticStderrComplete": true,
+  "diagnosticApplicationDescriptorsClosed": 22,
+  "metadataCalls": 115,
+  "accessCalls": 23,
+  "readlinkCalls": 2,
+  "readlinkBytes": 84,
+  "elapsedSeconds": 0.036547333002090454,
+  "privateBodyBytesRead": 0,
+  "publicBodyBytesRead": 0,
+  "childrenCreated": 0,
+  "serviceMutations": 0,
+  "actualFindings": {
+    "aliasTargetsExactKnownRegularInterpreter": true,
+    "aliasSingleLexicalHopEqualsRegularPath": false,
+    "allFixedPathsObservedAndStable": true,
+    "allCurrentObserverAccessChecksAllowed": true,
+    "originalStdoutSize": "0",
+    "originalStderrSize": "0"
+  },
+  "qualification": {
+    "startupCauseQualified": false,
+    "launchdAccessContextQualified": false,
+    "currentCodeWholeHashQualified": false,
+    "originalRegistrationClosed": false,
+    "historicalLineageClosed": false
+  },
+  "historicalUnknownPreserved": {
+    "originalWorker": "mac/1a1ae51309d-fc05-5ef8",
+    "originalLabel": "gui/501/org.heptabao.qa.mac-authbus-4e808-owner-r1.server",
+    "oldGitExpectedTree": "8916feb2a335fcf5fd7d47b55d39dd57b8465ab5",
+    "oldGitMutationResult": "UNKNOWN",
+    "unknown11754": "UNCHANGED"
+  },
+  "laneAReleased": true,
+  "nextActions": "SOURCE_ONLY_NO_NATIVE_ADMISSION",
+  "checks": [
+    {
+      "name": "streams_both_eof",
+      "pass": true
+    },
+    {
+      "name": "stdout_offset_and_size",
+      "pass": true
+    },
+    {
+      "name": "stdout_hex_utf8_equal",
+      "pass": true
+    },
+    {
+      "name": "stderr_empty",
+      "pass": true
+    },
+    {
+      "name": "authority_job",
+      "pass": true
+    },
+    {
+      "name": "authority_exit_zero",
+      "pass": true
+    },
+    {
+      "name": "authority_complete_durable",
+      "pass": true
+    },
+    {
+      "name": "metadata_ok_known",
+      "pass": true
+    },
+    {
+      "name": "deadline",
+      "pass": true
+    },
+    {
+      "name": "22_rows",
+      "pass": true
+    },
+    {
+      "name": "all_22_closed",
+      "pass": true
+    },
+    {
+      "name": "all_access_current_context_true",
+      "pass": true
+    },
+    {
+      "name": "full9_strings",
+      "pass": true
+    },
+    {
+      "name": "alias_full9_target_matches",
+      "pass": true
+    },
+    {
+      "name": "alias_before_after_equal",
+      "pass": true
+    },
+    {
+      "name": "zero_body_children_mutation",
+      "pass": true
+    },
+    {
+      "name": "all_fd_closed_no_errors",
+      "pass": true
+    },
+    {
+      "name": "budgets",
+      "pass": true
+    },
+    {
+      "name": "startup_and_old_closure_unqualified",
+      "pass": true
+    },
+    {
+      "name": "two_observers_seven_pages",
+      "pass": true
+    },
+    {
+      "name": "no_current_inflight",
+      "pass": true
+    }
+  ]
+}

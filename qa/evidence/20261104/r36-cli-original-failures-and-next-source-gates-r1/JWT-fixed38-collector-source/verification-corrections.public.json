@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.offline-checker-corrections.v1",
+  "candidate_source_unchanged": true,
+  "journal_unchanged": true,
+  "runtime_calls": 0,
+  "failures": [
+    {
+      "attempt": 1,
+      "error": {
+        "name": "SyntaxError",
+        "message": "Identifier 'read' has already been declared"
+      },
+      "reason": "Verifier reused JavaScript const read for a Python method extract and a proposed stream request; parser rejected before any check. Renamed only verifier local stream request variable."
+    },
+    {
+      "attempt": 2,
+      "error": {
+        "name": "Error",
+        "message": "scope.os-call-set-closed"
+      },
+      "reason": "Verifier direct os.name(...) set incorrectly expected os.stat/os.fstat. Source intentionally passes those functions to the counted metadata wrapper. Corrected the direct-call set and explicitly requires both wrapper references."
+    }
+  ],
+  "final_actual_checks": 111,
+  "full_python_executed": false
+}

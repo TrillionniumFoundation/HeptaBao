@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-mac-owned-launchd-log-tool-info-00940fa4-20261106-r1",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "mac",
+      "path": "/usr/bin/log"
+    }
+  }
+}

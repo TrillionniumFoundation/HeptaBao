@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.root-source-checker-corrections.v1",
+  "R1": {
+    "error": "SyntaxError: Unexpected token 'j', \"json.loads\"... is not valid JSON",
+    "reason": "ROWS is a json.loads-quoted JSON carrier, requiring two decodes; align exact original journal pin, its actual conditional syntax, and whitespace matching."
+  },
+  "R2": {
+    "error": "Error: no_children_network_directory_enumeration_or_delete",
+    "reason": "A substring compile( matched re.compile; the corrected check excludes only bare eval/compile execution, not regex compilation."
+  },
+  "candidate_changed": false,
+  "Native_calls": 0
+}

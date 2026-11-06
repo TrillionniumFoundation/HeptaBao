@@ -1,0 +1,1798 @@
+{
+  "schema": "heptabao.native-jwt.r2.compile-runtime.SOURCE-inventory.v1",
+  "source_commit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+  "source_tree": "5497775d9d473541e13e1603be8c893a3e27681b",
+  "expected_new_names": 15,
+  "expected_existing_names": 132,
+  "unique_expected_names": 147,
+  "source_only_counts": true,
+  "Rust_tests_run": 0,
+  "old_qualified_counts_unchanged": true,
+  "normal61_rerun_requested": false,
+  "full34_LAN98plus12_comparison69_rerun_requested": false,
+  "feature_matrix": [
+    {
+      "features": [
+        "native-v6-storage"
+      ],
+      "expected_families": [
+        "native_jwt_new15"
+      ],
+      "test_instances": 15
+    },
+    {
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "expected_families": [
+        "native_jwt_new15",
+        "legacy_jwt",
+        "native_auth_identity"
+      ],
+      "test_instances": 147
+    }
+  ],
+  "planned_test_instances": 162,
+  "groups": [
+    {
+      "label": "native_jwt_new15",
+      "tests": [
+        "service::native_auth::jwt_tests::native_jwt_local_service_token_identity_renewal_and_cold_reopen",
+        "service::native_auth::jwt_tests::native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta",
+        "service::native_auth::jwt_tests::native_jwt_role_operations_keep_the_existing_legacy_acl_contract",
+        "service::native_auth::jwt_tests::native_jwt_identity_failure_does_not_export_witness_or_token_and_next_login_is_fresh",
+        "service::native_auth::jwt_tests::native_jwt_original_assertion_expiry_before_publication_keeps_auth_identity_atomic",
+        "service::native_auth::jwt_tests::native_jwt_native_owner_capacity_veto_after_authentication_keeps_the_old_root",
+        "service::native_auth::jwt_tests::native_jwt_original_assertion_expiry_after_commit_withholds_reply_without_rollback",
+        "service::native_auth::jwt_tests::native_jwt_post_commit_audit_failure_keeps_whole_root_and_recovery_required",
+        "service::native_auth::jwt_tests::native_jwt_post_audit_response_and_original_deadline_cannot_be_rebound",
+        "service::native_auth::jwt_tests::native_jwt_post_audit_revocation_cannot_replace_the_original_publication_proof",
+        "service::native_auth::jwt_tests::native_jwt_token_api_service_descendants_keep_own_renewal_and_parent_revocation",
+        "service::native_auth::jwt_tests::native_jwt_token_api_batch_owner_preserves_real_parent_binding_across_cold_reopen",
+        "service::native_auth::jwt_tests::native_jwt_token_api_revoke_orphan_keeps_own_issuer_but_mount_retirement_still_revokes",
+        "service::native_auth::jwt_tests::native_jwt_and_userpass_token_api_targets_keep_real_owner_and_renewal_in_both_directions",
+        "service::native_auth::jwt_tests::native_jwt_token_api_profile_rejects_mount_label_without_real_issuer_or_parent_graph"
+      ],
+      "runtime_seconds": 600,
+      "deadline_policy": "one shared original group deadline including all listing and runs; clipped to original 12000 outer"
+    },
+    {
+      "label": "legacy_jwt",
+      "tests": [
+        "auth::jwt_batch_tests::jwt_batch_null_empty_and_partial_updates_follow_generic_types_and_rejections_are_atomic",
+        "auth::jwt_batch_tests::jwt_batch_type_matrix_seals_after_identity_without_service_rows_and_allows_assertion_reuse",
+        "auth::jwt_batch_tests::jwt_display_name_removes_one_trailing_hyphen_and_keeps_the_full_bounded_subject",
+        "auth::jwt_batch_tests::jwt_legacy_absent_type_read_preserves_bytes_and_typed_state_requires_live_jwt_mount",
+        "auth::jwt_batch_tests::jwt_mount_forced_batch_calculates_ttl_before_discarding_service_period_and_uses",
+        "auth::jwt_batch_tests::jwt_rejected_role_creation_reads_as_empty_not_found_without_mutation",
+        "auth::tests::jwt_bound_claims_tests::jwt_bound_legacy_role_bytes_stay_exact_and_new_state_marker_survives_empty_bounds",
+        "auth::tests::jwt_bound_claims_tests::jwt_bound_login_uses_verified_original_claims_and_reopens_the_same_predicate",
+        "auth::tests::jwt_bound_claims_tests::jwt_bound_role_partial_updates_follow_observed_map_and_mode_semantics",
+        "auth::tests::jwt_bound_claims_tests::native_token_renewal_does_not_reapply_new_claim_rules",
+        "auth::tests::jwt_bound_claims_tests::remote_login_uses_common_bound_rules_and_fences_inflight_role_changes",
+        "auth::tests::jwt_config_and_role_readback_preserve_openbao_aliases",
+        "auth::tests::jwt_configuration_rejects_bad_keys_namespace_and_privilege_escalation",
+        "auth::tests::jwt_es256_login_uses_real_p256_signature_and_rejects_algorithm_confusion",
+        "auth::tests::jwt_jwks_config_accepts_public_ed25519_and_drives_login",
+        "auth::tests::jwt_jwks_rejects_private_symmetric_duplicate_and_mixed_key_material_without_mutation",
+        "auth::tests::jwt_login_composes_pinned_signature_policy_and_reusable_bearer_tokens",
+        "auth::tests::jwt_login_denies_invalid_trust_claims_headers_and_roles_without_mutation",
+        "auth::tests::jwt_login_tests::explicit_legacy_limits_remain_enforced_and_role_clock_takes_precedence",
+        "auth::tests::jwt_login_tests::jwt_role_leeway_readback_updates_and_signed_duration_types_are_bounded",
+        "auth::tests::jwt_login_tests::legacy_config_clock_grace_does_not_extend_expiry_without_explicit_role_override",
+        "auth::tests::jwt_login_tests::native_config_defaults_allow_optional_dates_reuse_and_unbounded_assertion_lifetime",
+        "auth::tests::jwt_renewal_tests::jwt_all_renewal_routes_require_the_live_role_without_rechecking_the_assertion",
+        "auth::tests::jwt_renewal_tests::jwt_current_role_and_mount_maxima_count_from_issue_time_and_can_increase",
+        "auth::tests::jwt_renewal_tests::jwt_legacy_positive_role_limits_survive_read_partial_update_and_reopen",
+        "auth::tests::jwt_renewal_tests::jwt_native_role_invalid_durations_are_atomic_and_persisted_limits_are_checked",
+        "auth::tests::jwt_renewal_tests::jwt_native_role_null_preserves_each_duration_but_zero_resets_it",
+        "auth::tests::jwt_renewal_tests::jwt_native_role_zero_defaults_issue_and_renew_using_current_mount_limits",
+        "auth::tests::jwt_renewal_tests::jwt_native_role_zero_max_tracks_mount_but_explicit_cap_stays_at_issue",
+        "auth::tests::jwt_renewal_tests::jwt_period_and_explicit_maximum_keep_distinct_lifetime_semantics",
+        "auth::tests::jwt_renewal_tests::jwt_provenance_validation_rejects_impossible_issuer_shapes",
+        "auth::tests::jwt_renewal_tests::jwt_role_api_issues_periodic_tokens_with_a_fixed_explicit_maximum",
+        "auth::tests::jwt_renewal_tests::jwt_token_api_descendants_do_not_inherit_role_and_ambiguous_legacy_orphans_fail_closed",
+        "auth::tests::jwt_renewal_tests::jwt_zero_service_ttl_does_not_relax_the_legacy_assertion_lifetime_limit",
+        "auth::tests::jwt_service_persists_tokens_and_allows_assertion_reuse_across_reopen",
+        "auth::tests::jwt_successful_native_login_retires_legacy_replay_without_rejecting_reuse",
+        "federated_auth::bound_claims::tests::every_bound_claim_is_required_and_empty_configuration_has_no_extra_predicate",
+        "federated_auth::bound_claims::tests::exact_claim_alternatives_preserve_types_and_scalar_number_coercion",
+        "federated_auth::bound_claims::tests::glob_has_only_star_and_checks_typed_alternatives_in_order",
+        "federated_auth::bound_claims::tests::pointers_follow_pinned_pointerstructure_escaping_and_base_zero_indices",
+        "federated_auth::native_jwt::tests::explicit_maximum_requires_real_signed_dates_and_cannot_use_synthetic_times",
+        "federated_auth::native_jwt::tests::native_leeways_apply_to_missing_times_and_clock_skew_to_all_times",
+        "federated_auth::native_jwt::tests::native_numeric_dates_optional_claims_and_default_synthesis_match_openbao",
+        "federated_auth::native_jwt::tests::native_reuse_does_not_relax_the_separate_strict_proof_contract",
+        "service::jwt_pem_tests::jwt_pem_authenticated_snapshot_prepare_and_final_commit_reject_active_retired_downgrade",
+        "service::jwt_pem_tests::jwt_pem_invalid_private_weak_wrong_curve_and_source_mix_leave_config_intact",
+        "service::jwt_pem_tests::jwt_pem_maintained_rsa_ec_ed_signatures_use_only_same_algorithm_keys",
+        "service::jwt_pem_tests::jwt_pem_namespace_reopen_renew_and_sticky_retirement_keep_existing_authority",
+        "service::jwt_pem_tests::jwt_pem_rs256_accepts_unbound_kid_only_in_pem_source_and_keeps_selected_alias",
+        "service::jwt_pem_tests::jwt_pem_source_replacement_vetoes_pending_remote_completion",
+        "service::jwt_pem_tests::jwt_pem_state_requires69_and_revalidates_public_key_binding_without_changing_legacy_bytes",
+        "service::jwt_renewal_tests::jwt_renewal_role_check_echo_and_wrapper_survive_restart",
+        "service::jwt_renewal_tests::jwt_schema_eighteen_fences_new_issuer_semantics_and_admits_real_legacy_records",
+        "service::jwt_renewal_tests::native_jwt_schema_nineteen_distinguishes_old_limits_new_defaults_and_leeways",
+        "service::jwt_user_claim_tests::jwt_user_claim_create_requires_selector_existing_updates_preserve_selector",
+        "service::jwt_user_claim_tests::jwt_user_claim_missing_nonstring_and_wrong_signature_publish_nothing",
+        "service::jwt_user_claim_tests::jwt_user_claim_mount_namespace_isolation_and_disabled_entity",
+        "service::jwt_user_claim_tests::jwt_user_claim_remote_entity_disable_vetoes_captured_completion",
+        "service::jwt_user_claim_tests::jwt_user_claim_remote_role_edit_vetoes_captured_completion",
+        "service::jwt_user_claim_tests::jwt_user_claim_reopen_role_edit_and_renewal_retain_issued_entity",
+        "service::jwt_user_claim_tests::jwt_user_claim_role_validation_preserves_previous_selector_and_subject_binding",
+        "service::jwt_user_claim_tests::jwt_user_claim_rs256_custom_alias_and_default_sub_are_distinct",
+        "service::jwt_user_claim_tests::jwt_user_claim_schema68_is_conditional_sticky_and_snapshot_protected"
+      ],
+      "runtime_seconds": 600,
+      "deadline_policy": "one shared original group deadline including all listing and runs; clipped to original 12000 outer"
+    },
+    {
+      "label": "native_auth_identity",
+      "tests": [
+        "auth::batch_issuance_tests::batch_all_twelve_mount_user_combinations_seal_only_after_identity_without_backing_tokens",
+        "auth::batch_issuance_tests::batch_authority_is_precreated_and_legacy_absence_is_preserved_until_explicit_publication",
+        "auth::batch_issuance_tests::batch_token_api_child_has_parent_and_cidrs_but_orphan_has_neither_and_no_backing_row",
+        "auth::batch_issuance_tests::batch_user_rejects_period_or_uses_atomically_but_forced_mount_discards_service_only_fields",
+        "auth::batch_issuance_tests::batch_userpass_mfa_consumes_one_shared_counter_before_grant",
+        "auth::batch_issuance_tests::pending_batch_requires_identity_and_keeps_old_archive_key_authority_without_token_map",
+        "auth::batch_principal_tests::batch_acl_denial_precedes_kind_errors_and_provider_renewal_is_never_prepared",
+        "auth::batch_principal_tests::batch_actor_can_use_a_service_wrapper_without_ever_becoming_that_wrapper",
+        "auth::batch_principal_tests::batch_authentication_is_read_only_and_requires_the_real_peer_without_service_backing",
+        "auth::batch_principal_tests::batch_authority_and_credentials_reopen_without_migrating_legacy_or_creating_tokens",
+        "auth::batch_principal_tests::batch_cubbyhole_existence_checks_precede_write_acl_but_other_operations_keep_acl",
+        "auth::batch_principal_tests::batch_entity_requires_request_identity_projection_and_uses_current_acl_documents",
+        "auth::batch_principal_tests::batch_revoke_orphan_and_empty_accessor_keep_token_api_authorization_order",
+        "auth::batch_principal_tests::batch_target_lookup_and_capabilities_do_not_apply_target_cidrs_to_administrator",
+        "auth::batch_principal_tests::existing_batch_principal_and_lease_projection_recheck_parent_ancestors_and_authority",
+        "auth::batch_principal_tests::typed_principal_keeps_the_service_final_use_capability_without_reopening_admission",
+        "auth::tests::accessors_allow_revocation_without_revealing_token",
+        "auth::tests::affine_request_principal_uses_live_subject_and_parent_time",
+        "auth::tests::disabling_auth_mount_revokes_its_tokens_and_children_and_erases_credentials",
+        "auth::tests::periodic_and_finite_tokens_renew_without_exceeding_explicit_maximum",
+        "auth::tests::token_creation_cannot_escalate_policies_or_skip_parent_without_sudo",
+        "auth::tests::token_lookup_reports_standard_expiry_for_all_selectors_and_after_renewal",
+        "auth::tests::token_parent_expiry_revoke_cascade_and_orphan_survival",
+        "auth::tests::token_revoke_orphan_tests::revoke_orphan_missing_target_is_invalid_request_without_damaging_live_children",
+        "auth::tests::token_revoke_orphan_tests::revoke_orphan_requires_sudo_before_target_resolution_without_mutating_edges",
+        "auth::tests::token_revoke_orphan_tests::revoke_orphan_severs_only_direct_children_and_survives_serialization",
+        "auth::tests::transaction_clone_failure_does_not_consume_source_state",
+        "service::native_auth::identity_tests::native_identity_actual_audit_keeps_exact_response_custody",
+        "service::native_auth::identity_tests::native_identity_delegated_acl_and_finite_actor_keep_original_authority",
+        "service::native_auth::identity_tests::native_identity_formal_crud_lookup_list_and_cold_reopen_preserve_kv",
+        "service::native_auth::identity_tests::native_identity_keeps_foreign_actor_wrapping_and_unowned_paths_closed",
+        "service::native_auth::identity_tests::native_identity_live_group_membership_controls_cg_after_cold_restart",
+        "service::native_auth::identity_tests::native_identity_owner_cannot_drop_kv_graph_or_flip_native_format",
+        "service::native_auth::tests::native_approle142_local_policy_kv_cas_renew_revoke_and_cold_reopen",
+        "service::native_auth::tests::native_authbus_approle_policy_kv_cas_renew_revoke_and_cold_reopen",
+        "service::native_auth::tests::native_cert_auth_uses_verified_tls_peer_and_survives_cold_reopen",
+        "service::native_auth::tests::native_token_lookup_keeps_real_control_group_admission_before_dispatch",
+        "service::native_auth::tests::native_token_target_expired_after_real_audit_withholds_lookup_and_accessor_reply",
+        "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_approle_failed_cidr_consumes_only_authenticated_sid_and_stays_cold",
+        "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_approle_file_first_issuance_sid_once_paired_catalog_and_cold",
+        "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_approle_file_original_sid_clock_expires_after_actual_audit",
+        "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_approle_file_post_audit_sid_destroy_vetoes_and_cannot_resurrect",
+        "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_file_actual_audit_body_and_error_status_tampering_cannot_release",
+        "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_file_actual_post_audit_policy_and_parent_revoke_veto_old_grant",
+        "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_token_api_file_inert_precise_grant_is_issued_once_and_never_authenticated",
+        "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_token_api_file_parent_revocation_survives_cold_without_backing",
+        "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_token_api_file_restricted_actor_rejected_and_last_use_consumed_once",
+        "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_token_api_file_role_suffix_and_orphan_keep_actual_claims",
+        "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_token_api_file_userpass_service_actor_keeps_independent_issuer",
+        "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_actual_audit_cannot_replace_the_original_deadline",
+        "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_actual_audited_status_tampering_erases_the_credential",
+        "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_actual_post_audit_catalog_commit_vetoes_original_delivery",
+        "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_actual_v5_promotion_does_not_reseal_or_reissue",
+        "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_catalog_before_and_after_issuance_moves_in_one_native_root",
+        "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_file_cold_keeps_exact_grant_without_service_backing",
+        "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_response_wrapper_cannot_hide_approle_issuer",
+        "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_response_wrapper_cannot_hide_token_api_issuer",
+        "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_response_wrapper_keeps_userpass_enrollment_closed",
+        "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_wrong_password_and_independent_token_api_owner_publish_only_real_grants",
+        "service::native_auth::userpass_tests::native_userpass_actual_audit_cannot_refresh_the_original_request_deadline",
+        "service::native_auth::userpass_tests::native_userpass_actual_audit_response_status_and_error_tampering_are_vetoed",
+        "service::native_auth::userpass_tests::native_userpass_actual_post_audit_revocation_vetoes_the_original_credential_reply",
+        "service::native_auth::userpass_tests::native_userpass_formal_acl_retains_admin_sudo_and_account_scope",
+        "service::native_auth::userpass_tests::native_userpass_formal_failed_login_lockout_is_durable_across_cold_open",
+        "service::native_auth::userpass_tests::native_userpass_formal_file_login_renew_cold_provenance_and_revoke",
+        "service::native_auth::userpass_tests::native_userpass_formal_finite_token_delivery_does_not_consume_an_extra_use",
+        "service::native_auth::userpass_tests::native_userpass_formal_mount_retirement_revokes_parent_child_and_keeps_floor",
+        "service::native_auth::userpass_tests::native_userpass_formal_source_promotion_keeps_real_preexisting_credentials",
+        "service::native_auth::userpass_tests::native_userpass_selector_keeps_other_providers_and_wrapped_login_closed"
+      ],
+      "runtime_seconds": 600,
+      "deadline_policy": "one shared original group deadline including all listing and runs; clipped to original 12000 outer"
+    }
+  ],
+  "existing": [
+    {
+      "name": "auth::jwt_batch_tests::jwt_display_name_removes_one_trailing_hyphen_and_keeps_the_full_bounded_subject",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_jwt_batch_tests.rs",
+        "blob": "4d5d6f20fac03439bb0cf3822772f92c8582fcd5",
+        "bytes": 10667,
+        "sha256": "37caeb1dc7c7a490cdf7cd5c671b634cb9e6fc398eb0534f5747a143fcd59909"
+      },
+      "declaration": "jwt_display_name_removes_one_trailing_hyphen_and_keeps_the_full_bounded_subject"
+    },
+    {
+      "name": "auth::jwt_batch_tests::jwt_batch_type_matrix_seals_after_identity_without_service_rows_and_allows_assertion_reuse",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_jwt_batch_tests.rs",
+        "blob": "4d5d6f20fac03439bb0cf3822772f92c8582fcd5",
+        "bytes": 10667,
+        "sha256": "37caeb1dc7c7a490cdf7cd5c671b634cb9e6fc398eb0534f5747a143fcd59909"
+      },
+      "declaration": "jwt_batch_type_matrix_seals_after_identity_without_service_rows_and_allows_assertion_reuse"
+    },
+    {
+      "name": "auth::jwt_batch_tests::jwt_batch_null_empty_and_partial_updates_follow_generic_types_and_rejections_are_atomic",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_jwt_batch_tests.rs",
+        "blob": "4d5d6f20fac03439bb0cf3822772f92c8582fcd5",
+        "bytes": 10667,
+        "sha256": "37caeb1dc7c7a490cdf7cd5c671b634cb9e6fc398eb0534f5747a143fcd59909"
+      },
+      "declaration": "jwt_batch_null_empty_and_partial_updates_follow_generic_types_and_rejections_are_atomic"
+    },
+    {
+      "name": "auth::jwt_batch_tests::jwt_rejected_role_creation_reads_as_empty_not_found_without_mutation",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_jwt_batch_tests.rs",
+        "blob": "4d5d6f20fac03439bb0cf3822772f92c8582fcd5",
+        "bytes": 10667,
+        "sha256": "37caeb1dc7c7a490cdf7cd5c671b634cb9e6fc398eb0534f5747a143fcd59909"
+      },
+      "declaration": "jwt_rejected_role_creation_reads_as_empty_not_found_without_mutation"
+    },
+    {
+      "name": "auth::jwt_batch_tests::jwt_mount_forced_batch_calculates_ttl_before_discarding_service_period_and_uses",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_jwt_batch_tests.rs",
+        "blob": "4d5d6f20fac03439bb0cf3822772f92c8582fcd5",
+        "bytes": 10667,
+        "sha256": "37caeb1dc7c7a490cdf7cd5c671b634cb9e6fc398eb0534f5747a143fcd59909"
+      },
+      "declaration": "jwt_mount_forced_batch_calculates_ttl_before_discarding_service_period_and_uses"
+    },
+    {
+      "name": "auth::jwt_batch_tests::jwt_legacy_absent_type_read_preserves_bytes_and_typed_state_requires_live_jwt_mount",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_jwt_batch_tests.rs",
+        "blob": "4d5d6f20fac03439bb0cf3822772f92c8582fcd5",
+        "bytes": 10667,
+        "sha256": "37caeb1dc7c7a490cdf7cd5c671b634cb9e6fc398eb0534f5747a143fcd59909"
+      },
+      "declaration": "jwt_legacy_absent_type_read_preserves_bytes_and_typed_state_requires_live_jwt_mount"
+    },
+    {
+      "name": "auth::tests::jwt_bound_claims_tests::jwt_bound_role_partial_updates_follow_observed_map_and_mode_semantics",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_jwt_bound_claims_tests.rs",
+        "blob": "f535fc1e829b29bbce7d687a1d70f4b24bebab6f",
+        "bytes": 10251,
+        "sha256": "e6fefcbdf8845f5e21e00df27c6adc54ea7103d001130f99e3772c0120878c66"
+      },
+      "declaration": "jwt_bound_role_partial_updates_follow_observed_map_and_mode_semantics"
+    },
+    {
+      "name": "auth::tests::jwt_bound_claims_tests::jwt_bound_login_uses_verified_original_claims_and_reopens_the_same_predicate",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_jwt_bound_claims_tests.rs",
+        "blob": "f535fc1e829b29bbce7d687a1d70f4b24bebab6f",
+        "bytes": 10251,
+        "sha256": "e6fefcbdf8845f5e21e00df27c6adc54ea7103d001130f99e3772c0120878c66"
+      },
+      "declaration": "jwt_bound_login_uses_verified_original_claims_and_reopens_the_same_predicate"
+    },
+    {
+      "name": "auth::tests::jwt_bound_claims_tests::jwt_bound_legacy_role_bytes_stay_exact_and_new_state_marker_survives_empty_bounds",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_jwt_bound_claims_tests.rs",
+        "blob": "f535fc1e829b29bbce7d687a1d70f4b24bebab6f",
+        "bytes": 10251,
+        "sha256": "e6fefcbdf8845f5e21e00df27c6adc54ea7103d001130f99e3772c0120878c66"
+      },
+      "declaration": "jwt_bound_legacy_role_bytes_stay_exact_and_new_state_marker_survives_empty_bounds"
+    },
+    {
+      "name": "auth::tests::jwt_bound_claims_tests::native_token_renewal_does_not_reapply_new_claim_rules",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_jwt_bound_claims_tests.rs",
+        "blob": "f535fc1e829b29bbce7d687a1d70f4b24bebab6f",
+        "bytes": 10251,
+        "sha256": "e6fefcbdf8845f5e21e00df27c6adc54ea7103d001130f99e3772c0120878c66"
+      },
+      "declaration": "native_token_renewal_does_not_reapply_new_claim_rules"
+    },
+    {
+      "name": "auth::tests::jwt_bound_claims_tests::remote_login_uses_common_bound_rules_and_fences_inflight_role_changes",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_jwt_bound_claims_tests.rs",
+        "blob": "f535fc1e829b29bbce7d687a1d70f4b24bebab6f",
+        "bytes": 10251,
+        "sha256": "e6fefcbdf8845f5e21e00df27c6adc54ea7103d001130f99e3772c0120878c66"
+      },
+      "declaration": "remote_login_uses_common_bound_rules_and_fences_inflight_role_changes"
+    },
+    {
+      "name": "auth::tests::jwt_login_tests::native_config_defaults_allow_optional_dates_reuse_and_unbounded_assertion_lifetime",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_jwt_login_tests.rs",
+        "blob": "cd763054cc534224c45fcabcc0909fc8efdf826e",
+        "bytes": 7906,
+        "sha256": "159985cf649861e3da2d936ff083a6a0ac4423b6146a6010d53f8d212c05dc29"
+      },
+      "declaration": "native_config_defaults_allow_optional_dates_reuse_and_unbounded_assertion_lifetime"
+    },
+    {
+      "name": "auth::tests::jwt_login_tests::explicit_legacy_limits_remain_enforced_and_role_clock_takes_precedence",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_jwt_login_tests.rs",
+        "blob": "cd763054cc534224c45fcabcc0909fc8efdf826e",
+        "bytes": 7906,
+        "sha256": "159985cf649861e3da2d936ff083a6a0ac4423b6146a6010d53f8d212c05dc29"
+      },
+      "declaration": "explicit_legacy_limits_remain_enforced_and_role_clock_takes_precedence"
+    },
+    {
+      "name": "auth::tests::jwt_login_tests::legacy_config_clock_grace_does_not_extend_expiry_without_explicit_role_override",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_jwt_login_tests.rs",
+        "blob": "cd763054cc534224c45fcabcc0909fc8efdf826e",
+        "bytes": 7906,
+        "sha256": "159985cf649861e3da2d936ff083a6a0ac4423b6146a6010d53f8d212c05dc29"
+      },
+      "declaration": "legacy_config_clock_grace_does_not_extend_expiry_without_explicit_role_override"
+    },
+    {
+      "name": "auth::tests::jwt_login_tests::jwt_role_leeway_readback_updates_and_signed_duration_types_are_bounded",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_jwt_login_tests.rs",
+        "blob": "cd763054cc534224c45fcabcc0909fc8efdf826e",
+        "bytes": 7906,
+        "sha256": "159985cf649861e3da2d936ff083a6a0ac4423b6146a6010d53f8d212c05dc29"
+      },
+      "declaration": "jwt_role_leeway_readback_updates_and_signed_duration_types_are_bounded"
+    },
+    {
+      "name": "auth::tests::jwt_renewal_tests::jwt_all_renewal_routes_require_the_live_role_without_rechecking_the_assertion",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_jwt_renewal_tests.rs",
+        "blob": "1848e849280e18baba481ed0ae5807b747ebe6d1",
+        "bytes": 25152,
+        "sha256": "5d06bf84d50d9510b550b512562f13d0aee3dd7ffad1161d6851a81008bab221"
+      },
+      "declaration": "jwt_all_renewal_routes_require_the_live_role_without_rechecking_the_assertion"
+    },
+    {
+      "name": "auth::tests::jwt_renewal_tests::jwt_current_role_and_mount_maxima_count_from_issue_time_and_can_increase",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_jwt_renewal_tests.rs",
+        "blob": "1848e849280e18baba481ed0ae5807b747ebe6d1",
+        "bytes": 25152,
+        "sha256": "5d06bf84d50d9510b550b512562f13d0aee3dd7ffad1161d6851a81008bab221"
+      },
+      "declaration": "jwt_current_role_and_mount_maxima_count_from_issue_time_and_can_increase"
+    },
+    {
+      "name": "auth::tests::jwt_renewal_tests::jwt_role_api_issues_periodic_tokens_with_a_fixed_explicit_maximum",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_jwt_renewal_tests.rs",
+        "blob": "1848e849280e18baba481ed0ae5807b747ebe6d1",
+        "bytes": 25152,
+        "sha256": "5d06bf84d50d9510b550b512562f13d0aee3dd7ffad1161d6851a81008bab221"
+      },
+      "declaration": "jwt_role_api_issues_periodic_tokens_with_a_fixed_explicit_maximum"
+    },
+    {
+      "name": "auth::tests::jwt_renewal_tests::jwt_period_and_explicit_maximum_keep_distinct_lifetime_semantics",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_jwt_renewal_tests.rs",
+        "blob": "1848e849280e18baba481ed0ae5807b747ebe6d1",
+        "bytes": 25152,
+        "sha256": "5d06bf84d50d9510b550b512562f13d0aee3dd7ffad1161d6851a81008bab221"
+      },
+      "declaration": "jwt_period_and_explicit_maximum_keep_distinct_lifetime_semantics"
+    },
+    {
+      "name": "auth::tests::jwt_renewal_tests::jwt_token_api_descendants_do_not_inherit_role_and_ambiguous_legacy_orphans_fail_closed",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_jwt_renewal_tests.rs",
+        "blob": "1848e849280e18baba481ed0ae5807b747ebe6d1",
+        "bytes": 25152,
+        "sha256": "5d06bf84d50d9510b550b512562f13d0aee3dd7ffad1161d6851a81008bab221"
+      },
+      "declaration": "jwt_token_api_descendants_do_not_inherit_role_and_ambiguous_legacy_orphans_fail_closed"
+    },
+    {
+      "name": "auth::tests::jwt_renewal_tests::jwt_provenance_validation_rejects_impossible_issuer_shapes",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_jwt_renewal_tests.rs",
+        "blob": "1848e849280e18baba481ed0ae5807b747ebe6d1",
+        "bytes": 25152,
+        "sha256": "5d06bf84d50d9510b550b512562f13d0aee3dd7ffad1161d6851a81008bab221"
+      },
+      "declaration": "jwt_provenance_validation_rejects_impossible_issuer_shapes"
+    },
+    {
+      "name": "auth::tests::jwt_renewal_tests::jwt_native_role_zero_defaults_issue_and_renew_using_current_mount_limits",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_jwt_renewal_tests.rs",
+        "blob": "1848e849280e18baba481ed0ae5807b747ebe6d1",
+        "bytes": 25152,
+        "sha256": "5d06bf84d50d9510b550b512562f13d0aee3dd7ffad1161d6851a81008bab221"
+      },
+      "declaration": "jwt_native_role_zero_defaults_issue_and_renew_using_current_mount_limits"
+    },
+    {
+      "name": "auth::tests::jwt_renewal_tests::jwt_native_role_null_preserves_each_duration_but_zero_resets_it",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_jwt_renewal_tests.rs",
+        "blob": "1848e849280e18baba481ed0ae5807b747ebe6d1",
+        "bytes": 25152,
+        "sha256": "5d06bf84d50d9510b550b512562f13d0aee3dd7ffad1161d6851a81008bab221"
+      },
+      "declaration": "jwt_native_role_null_preserves_each_duration_but_zero_resets_it"
+    },
+    {
+      "name": "auth::tests::jwt_renewal_tests::jwt_native_role_zero_max_tracks_mount_but_explicit_cap_stays_at_issue",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_jwt_renewal_tests.rs",
+        "blob": "1848e849280e18baba481ed0ae5807b747ebe6d1",
+        "bytes": 25152,
+        "sha256": "5d06bf84d50d9510b550b512562f13d0aee3dd7ffad1161d6851a81008bab221"
+      },
+      "declaration": "jwt_native_role_zero_max_tracks_mount_but_explicit_cap_stays_at_issue"
+    },
+    {
+      "name": "auth::tests::jwt_renewal_tests::jwt_native_role_invalid_durations_are_atomic_and_persisted_limits_are_checked",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_jwt_renewal_tests.rs",
+        "blob": "1848e849280e18baba481ed0ae5807b747ebe6d1",
+        "bytes": 25152,
+        "sha256": "5d06bf84d50d9510b550b512562f13d0aee3dd7ffad1161d6851a81008bab221"
+      },
+      "declaration": "jwt_native_role_invalid_durations_are_atomic_and_persisted_limits_are_checked"
+    },
+    {
+      "name": "auth::tests::jwt_renewal_tests::jwt_legacy_positive_role_limits_survive_read_partial_update_and_reopen",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_jwt_renewal_tests.rs",
+        "blob": "1848e849280e18baba481ed0ae5807b747ebe6d1",
+        "bytes": 25152,
+        "sha256": "5d06bf84d50d9510b550b512562f13d0aee3dd7ffad1161d6851a81008bab221"
+      },
+      "declaration": "jwt_legacy_positive_role_limits_survive_read_partial_update_and_reopen"
+    },
+    {
+      "name": "auth::tests::jwt_renewal_tests::jwt_zero_service_ttl_does_not_relax_the_legacy_assertion_lifetime_limit",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_jwt_renewal_tests.rs",
+        "blob": "1848e849280e18baba481ed0ae5807b747ebe6d1",
+        "bytes": 25152,
+        "sha256": "5d06bf84d50d9510b550b512562f13d0aee3dd7ffad1161d6851a81008bab221"
+      },
+      "declaration": "jwt_zero_service_ttl_does_not_relax_the_legacy_assertion_lifetime_limit"
+    },
+    {
+      "name": "service::jwt_pem_tests::jwt_pem_rs256_accepts_unbound_kid_only_in_pem_source_and_keeps_selected_alias",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/service_jwt_pem_tests.rs",
+        "blob": "db7e649929b37f2f4cad0a51c640bfd051bfcb43",
+        "bytes": 26283,
+        "sha256": "4d5745103a0f614cc438f8668ba2d69704d0fe92a2341795867287dee65860b3"
+      },
+      "declaration": "jwt_pem_rs256_accepts_unbound_kid_only_in_pem_source_and_keeps_selected_alias"
+    },
+    {
+      "name": "service::jwt_pem_tests::jwt_pem_maintained_rsa_ec_ed_signatures_use_only_same_algorithm_keys",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/service_jwt_pem_tests.rs",
+        "blob": "db7e649929b37f2f4cad0a51c640bfd051bfcb43",
+        "bytes": 26283,
+        "sha256": "4d5745103a0f614cc438f8668ba2d69704d0fe92a2341795867287dee65860b3"
+      },
+      "declaration": "jwt_pem_maintained_rsa_ec_ed_signatures_use_only_same_algorithm_keys"
+    },
+    {
+      "name": "service::jwt_pem_tests::jwt_pem_invalid_private_weak_wrong_curve_and_source_mix_leave_config_intact",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/service_jwt_pem_tests.rs",
+        "blob": "db7e649929b37f2f4cad0a51c640bfd051bfcb43",
+        "bytes": 26283,
+        "sha256": "4d5745103a0f614cc438f8668ba2d69704d0fe92a2341795867287dee65860b3"
+      },
+      "declaration": "jwt_pem_invalid_private_weak_wrong_curve_and_source_mix_leave_config_intact"
+    },
+    {
+      "name": "service::jwt_pem_tests::jwt_pem_namespace_reopen_renew_and_sticky_retirement_keep_existing_authority",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/service_jwt_pem_tests.rs",
+        "blob": "db7e649929b37f2f4cad0a51c640bfd051bfcb43",
+        "bytes": 26283,
+        "sha256": "4d5745103a0f614cc438f8668ba2d69704d0fe92a2341795867287dee65860b3"
+      },
+      "declaration": "jwt_pem_namespace_reopen_renew_and_sticky_retirement_keep_existing_authority"
+    },
+    {
+      "name": "service::jwt_pem_tests::jwt_pem_state_requires69_and_revalidates_public_key_binding_without_changing_legacy_bytes",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/service_jwt_pem_tests.rs",
+        "blob": "db7e649929b37f2f4cad0a51c640bfd051bfcb43",
+        "bytes": 26283,
+        "sha256": "4d5745103a0f614cc438f8668ba2d69704d0fe92a2341795867287dee65860b3"
+      },
+      "declaration": "jwt_pem_state_requires69_and_revalidates_public_key_binding_without_changing_legacy_bytes"
+    },
+    {
+      "name": "service::jwt_pem_tests::jwt_pem_source_replacement_vetoes_pending_remote_completion",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/service_jwt_pem_tests.rs",
+        "blob": "db7e649929b37f2f4cad0a51c640bfd051bfcb43",
+        "bytes": 26283,
+        "sha256": "4d5745103a0f614cc438f8668ba2d69704d0fe92a2341795867287dee65860b3"
+      },
+      "declaration": "jwt_pem_source_replacement_vetoes_pending_remote_completion"
+    },
+    {
+      "name": "service::jwt_pem_tests::jwt_pem_authenticated_snapshot_prepare_and_final_commit_reject_active_retired_downgrade",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/service_jwt_pem_tests.rs",
+        "blob": "db7e649929b37f2f4cad0a51c640bfd051bfcb43",
+        "bytes": 26283,
+        "sha256": "4d5745103a0f614cc438f8668ba2d69704d0fe92a2341795867287dee65860b3"
+      },
+      "declaration": "jwt_pem_authenticated_snapshot_prepare_and_final_commit_reject_active_retired_downgrade"
+    },
+    {
+      "name": "service::jwt_user_claim_tests::jwt_user_claim_rs256_custom_alias_and_default_sub_are_distinct",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/service_jwt_user_claim_tests.rs",
+        "blob": "ead5a7c0733c9ab70ec0e4b46ed610f1f67b7b5c",
+        "bytes": 27679,
+        "sha256": "1e69fedd1ff8821a06450a1d04f70f3bed008044ffa5c8b2174db99347c2c0f7"
+      },
+      "declaration": "jwt_user_claim_rs256_custom_alias_and_default_sub_are_distinct"
+    },
+    {
+      "name": "service::jwt_user_claim_tests::jwt_user_claim_missing_nonstring_and_wrong_signature_publish_nothing",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/service_jwt_user_claim_tests.rs",
+        "blob": "ead5a7c0733c9ab70ec0e4b46ed610f1f67b7b5c",
+        "bytes": 27679,
+        "sha256": "1e69fedd1ff8821a06450a1d04f70f3bed008044ffa5c8b2174db99347c2c0f7"
+      },
+      "declaration": "jwt_user_claim_missing_nonstring_and_wrong_signature_publish_nothing"
+    },
+    {
+      "name": "service::jwt_user_claim_tests::jwt_user_claim_mount_namespace_isolation_and_disabled_entity",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/service_jwt_user_claim_tests.rs",
+        "blob": "ead5a7c0733c9ab70ec0e4b46ed610f1f67b7b5c",
+        "bytes": 27679,
+        "sha256": "1e69fedd1ff8821a06450a1d04f70f3bed008044ffa5c8b2174db99347c2c0f7"
+      },
+      "declaration": "jwt_user_claim_mount_namespace_isolation_and_disabled_entity"
+    },
+    {
+      "name": "service::jwt_user_claim_tests::jwt_user_claim_reopen_role_edit_and_renewal_retain_issued_entity",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/service_jwt_user_claim_tests.rs",
+        "blob": "ead5a7c0733c9ab70ec0e4b46ed610f1f67b7b5c",
+        "bytes": 27679,
+        "sha256": "1e69fedd1ff8821a06450a1d04f70f3bed008044ffa5c8b2174db99347c2c0f7"
+      },
+      "declaration": "jwt_user_claim_reopen_role_edit_and_renewal_retain_issued_entity"
+    },
+    {
+      "name": "service::jwt_user_claim_tests::jwt_user_claim_schema68_is_conditional_sticky_and_snapshot_protected",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/service_jwt_user_claim_tests.rs",
+        "blob": "ead5a7c0733c9ab70ec0e4b46ed610f1f67b7b5c",
+        "bytes": 27679,
+        "sha256": "1e69fedd1ff8821a06450a1d04f70f3bed008044ffa5c8b2174db99347c2c0f7"
+      },
+      "declaration": "jwt_user_claim_schema68_is_conditional_sticky_and_snapshot_protected"
+    },
+    {
+      "name": "service::jwt_user_claim_tests::jwt_user_claim_remote_role_edit_vetoes_captured_completion",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/service_jwt_user_claim_tests.rs",
+        "blob": "ead5a7c0733c9ab70ec0e4b46ed610f1f67b7b5c",
+        "bytes": 27679,
+        "sha256": "1e69fedd1ff8821a06450a1d04f70f3bed008044ffa5c8b2174db99347c2c0f7"
+      },
+      "declaration": "jwt_user_claim_remote_role_edit_vetoes_captured_completion"
+    },
+    {
+      "name": "service::jwt_user_claim_tests::jwt_user_claim_remote_entity_disable_vetoes_captured_completion",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/service_jwt_user_claim_tests.rs",
+        "blob": "ead5a7c0733c9ab70ec0e4b46ed610f1f67b7b5c",
+        "bytes": 27679,
+        "sha256": "1e69fedd1ff8821a06450a1d04f70f3bed008044ffa5c8b2174db99347c2c0f7"
+      },
+      "declaration": "jwt_user_claim_remote_entity_disable_vetoes_captured_completion"
+    },
+    {
+      "name": "service::jwt_user_claim_tests::jwt_user_claim_role_validation_preserves_previous_selector_and_subject_binding",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/service_jwt_user_claim_tests.rs",
+        "blob": "ead5a7c0733c9ab70ec0e4b46ed610f1f67b7b5c",
+        "bytes": 27679,
+        "sha256": "1e69fedd1ff8821a06450a1d04f70f3bed008044ffa5c8b2174db99347c2c0f7"
+      },
+      "declaration": "jwt_user_claim_role_validation_preserves_previous_selector_and_subject_binding"
+    },
+    {
+      "name": "service::jwt_user_claim_tests::jwt_user_claim_create_requires_selector_existing_updates_preserve_selector",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/service_jwt_user_claim_tests.rs",
+        "blob": "ead5a7c0733c9ab70ec0e4b46ed610f1f67b7b5c",
+        "bytes": 27679,
+        "sha256": "1e69fedd1ff8821a06450a1d04f70f3bed008044ffa5c8b2174db99347c2c0f7"
+      },
+      "declaration": "jwt_user_claim_create_requires_selector_existing_updates_preserve_selector"
+    },
+    {
+      "name": "service::jwt_renewal_tests::jwt_renewal_role_check_echo_and_wrapper_survive_restart",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/service_jwt_renewal_tests.rs",
+        "blob": "808a6538e01458e232afb5286142098ab305e1b2",
+        "bytes": 14093,
+        "sha256": "274429a69c1adcf96a6ff1874d9d228a4a20416808b4ce6476d4150213b5de3c"
+      },
+      "declaration": "jwt_renewal_role_check_echo_and_wrapper_survive_restart"
+    },
+    {
+      "name": "service::jwt_renewal_tests::jwt_schema_eighteen_fences_new_issuer_semantics_and_admits_real_legacy_records",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/service_jwt_renewal_tests.rs",
+        "blob": "808a6538e01458e232afb5286142098ab305e1b2",
+        "bytes": 14093,
+        "sha256": "274429a69c1adcf96a6ff1874d9d228a4a20416808b4ce6476d4150213b5de3c"
+      },
+      "declaration": "jwt_schema_eighteen_fences_new_issuer_semantics_and_admits_real_legacy_records"
+    },
+    {
+      "name": "service::jwt_renewal_tests::native_jwt_schema_nineteen_distinguishes_old_limits_new_defaults_and_leeways",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/service_jwt_renewal_tests.rs",
+        "blob": "808a6538e01458e232afb5286142098ab305e1b2",
+        "bytes": 14093,
+        "sha256": "274429a69c1adcf96a6ff1874d9d228a4a20416808b4ce6476d4150213b5de3c"
+      },
+      "declaration": "native_jwt_schema_nineteen_distinguishes_old_limits_new_defaults_and_leeways"
+    },
+    {
+      "name": "federated_auth::native_jwt::tests::native_numeric_dates_optional_claims_and_default_synthesis_match_openbao",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/federated_native_jwt_tests.rs",
+        "blob": "1e28281433bb511e60cd2ecdf851757c80975c30",
+        "bytes": 5813,
+        "sha256": "c23441d29afd0ab267cee70874047f525913b04533364358a8587f4003521cec"
+      },
+      "declaration": "native_numeric_dates_optional_claims_and_default_synthesis_match_openbao"
+    },
+    {
+      "name": "federated_auth::native_jwt::tests::native_leeways_apply_to_missing_times_and_clock_skew_to_all_times",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/federated_native_jwt_tests.rs",
+        "blob": "1e28281433bb511e60cd2ecdf851757c80975c30",
+        "bytes": 5813,
+        "sha256": "c23441d29afd0ab267cee70874047f525913b04533364358a8587f4003521cec"
+      },
+      "declaration": "native_leeways_apply_to_missing_times_and_clock_skew_to_all_times"
+    },
+    {
+      "name": "federated_auth::native_jwt::tests::native_reuse_does_not_relax_the_separate_strict_proof_contract",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/federated_native_jwt_tests.rs",
+        "blob": "1e28281433bb511e60cd2ecdf851757c80975c30",
+        "bytes": 5813,
+        "sha256": "c23441d29afd0ab267cee70874047f525913b04533364358a8587f4003521cec"
+      },
+      "declaration": "native_reuse_does_not_relax_the_separate_strict_proof_contract"
+    },
+    {
+      "name": "federated_auth::native_jwt::tests::explicit_maximum_requires_real_signed_dates_and_cannot_use_synthetic_times",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/federated_native_jwt_tests.rs",
+        "blob": "1e28281433bb511e60cd2ecdf851757c80975c30",
+        "bytes": 5813,
+        "sha256": "c23441d29afd0ab267cee70874047f525913b04533364358a8587f4003521cec"
+      },
+      "declaration": "explicit_maximum_requires_real_signed_dates_and_cannot_use_synthetic_times"
+    },
+    {
+      "name": "federated_auth::bound_claims::tests::exact_claim_alternatives_preserve_types_and_scalar_number_coercion",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/federated_jwt_bound_claims_tests.rs",
+        "blob": "81ed1402b18ffa00be9549fe7bdb52d80c2446d1",
+        "bytes": 5783,
+        "sha256": "308dbce31d65b064706296a3ae62e078a882ab7974b7a8b1f8b8cc15d493d07b"
+      },
+      "declaration": "exact_claim_alternatives_preserve_types_and_scalar_number_coercion"
+    },
+    {
+      "name": "federated_auth::bound_claims::tests::glob_has_only_star_and_checks_typed_alternatives_in_order",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/federated_jwt_bound_claims_tests.rs",
+        "blob": "81ed1402b18ffa00be9549fe7bdb52d80c2446d1",
+        "bytes": 5783,
+        "sha256": "308dbce31d65b064706296a3ae62e078a882ab7974b7a8b1f8b8cc15d493d07b"
+      },
+      "declaration": "glob_has_only_star_and_checks_typed_alternatives_in_order"
+    },
+    {
+      "name": "federated_auth::bound_claims::tests::pointers_follow_pinned_pointerstructure_escaping_and_base_zero_indices",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/federated_jwt_bound_claims_tests.rs",
+        "blob": "81ed1402b18ffa00be9549fe7bdb52d80c2446d1",
+        "bytes": 5783,
+        "sha256": "308dbce31d65b064706296a3ae62e078a882ab7974b7a8b1f8b8cc15d493d07b"
+      },
+      "declaration": "pointers_follow_pinned_pointerstructure_escaping_and_base_zero_indices"
+    },
+    {
+      "name": "federated_auth::bound_claims::tests::every_bound_claim_is_required_and_empty_configuration_has_no_extra_predicate",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/federated_jwt_bound_claims_tests.rs",
+        "blob": "81ed1402b18ffa00be9549fe7bdb52d80c2446d1",
+        "bytes": 5783,
+        "sha256": "308dbce31d65b064706296a3ae62e078a882ab7974b7a8b1f8b8cc15d493d07b"
+      },
+      "declaration": "every_bound_claim_is_required_and_empty_configuration_has_no_extra_predicate"
+    },
+    {
+      "name": "auth::batch_issuance_tests::batch_all_twelve_mount_user_combinations_seal_only_after_identity_without_backing_tokens",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_batch_issuance_tests.rs",
+        "blob": "b354daf90d980fa115507b10252f24dd4a8c562b",
+        "bytes": 12966,
+        "sha256": "d3671bb893b3867d96f800c5b5de88580254f5852b394b4163ebf00ad4789056"
+      },
+      "declaration": "batch_all_twelve_mount_user_combinations_seal_only_after_identity_without_backing_tokens"
+    },
+    {
+      "name": "auth::batch_issuance_tests::batch_user_rejects_period_or_uses_atomically_but_forced_mount_discards_service_only_fields",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_batch_issuance_tests.rs",
+        "blob": "b354daf90d980fa115507b10252f24dd4a8c562b",
+        "bytes": 12966,
+        "sha256": "d3671bb893b3867d96f800c5b5de88580254f5852b394b4163ebf00ad4789056"
+      },
+      "declaration": "batch_user_rejects_period_or_uses_atomically_but_forced_mount_discards_service_only_fields"
+    },
+    {
+      "name": "auth::batch_issuance_tests::batch_token_api_child_has_parent_and_cidrs_but_orphan_has_neither_and_no_backing_row",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_batch_issuance_tests.rs",
+        "blob": "b354daf90d980fa115507b10252f24dd4a8c562b",
+        "bytes": 12966,
+        "sha256": "d3671bb893b3867d96f800c5b5de88580254f5852b394b4163ebf00ad4789056"
+      },
+      "declaration": "batch_token_api_child_has_parent_and_cidrs_but_orphan_has_neither_and_no_backing_row"
+    },
+    {
+      "name": "auth::batch_issuance_tests::batch_authority_is_precreated_and_legacy_absence_is_preserved_until_explicit_publication",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_batch_issuance_tests.rs",
+        "blob": "b354daf90d980fa115507b10252f24dd4a8c562b",
+        "bytes": 12966,
+        "sha256": "d3671bb893b3867d96f800c5b5de88580254f5852b394b4163ebf00ad4789056"
+      },
+      "declaration": "batch_authority_is_precreated_and_legacy_absence_is_preserved_until_explicit_publication"
+    },
+    {
+      "name": "auth::batch_issuance_tests::pending_batch_requires_identity_and_keeps_old_archive_key_authority_without_token_map",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_batch_issuance_tests.rs",
+        "blob": "b354daf90d980fa115507b10252f24dd4a8c562b",
+        "bytes": 12966,
+        "sha256": "d3671bb893b3867d96f800c5b5de88580254f5852b394b4163ebf00ad4789056"
+      },
+      "declaration": "pending_batch_requires_identity_and_keeps_old_archive_key_authority_without_token_map"
+    },
+    {
+      "name": "auth::batch_issuance_tests::batch_userpass_mfa_consumes_one_shared_counter_before_grant",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_batch_issuance_tests.rs",
+        "blob": "b354daf90d980fa115507b10252f24dd4a8c562b",
+        "bytes": 12966,
+        "sha256": "d3671bb893b3867d96f800c5b5de88580254f5852b394b4163ebf00ad4789056"
+      },
+      "declaration": "batch_userpass_mfa_consumes_one_shared_counter_before_grant"
+    },
+    {
+      "name": "auth::batch_principal_tests::batch_authentication_is_read_only_and_requires_the_real_peer_without_service_backing",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_batch_principal_tests.rs",
+        "blob": "5e63d4d9d928b0204eb136917d7a3e3cf3568249",
+        "bytes": 18979,
+        "sha256": "dfa68af1c1a4ed36af4aa222f2772377507f8cfa8798c2b031fefceb26817578"
+      },
+      "declaration": "batch_authentication_is_read_only_and_requires_the_real_peer_without_service_backing"
+    },
+    {
+      "name": "auth::batch_principal_tests::batch_target_lookup_and_capabilities_do_not_apply_target_cidrs_to_administrator",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_batch_principal_tests.rs",
+        "blob": "5e63d4d9d928b0204eb136917d7a3e3cf3568249",
+        "bytes": 18979,
+        "sha256": "dfa68af1c1a4ed36af4aa222f2772377507f8cfa8798c2b031fefceb26817578"
+      },
+      "declaration": "batch_target_lookup_and_capabilities_do_not_apply_target_cidrs_to_administrator"
+    },
+    {
+      "name": "auth::batch_principal_tests::batch_acl_denial_precedes_kind_errors_and_provider_renewal_is_never_prepared",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_batch_principal_tests.rs",
+        "blob": "5e63d4d9d928b0204eb136917d7a3e3cf3568249",
+        "bytes": 18979,
+        "sha256": "dfa68af1c1a4ed36af4aa222f2772377507f8cfa8798c2b031fefceb26817578"
+      },
+      "declaration": "batch_acl_denial_precedes_kind_errors_and_provider_renewal_is_never_prepared"
+    },
+    {
+      "name": "auth::batch_principal_tests::existing_batch_principal_and_lease_projection_recheck_parent_ancestors_and_authority",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_batch_principal_tests.rs",
+        "blob": "5e63d4d9d928b0204eb136917d7a3e3cf3568249",
+        "bytes": 18979,
+        "sha256": "dfa68af1c1a4ed36af4aa222f2772377507f8cfa8798c2b031fefceb26817578"
+      },
+      "declaration": "existing_batch_principal_and_lease_projection_recheck_parent_ancestors_and_authority"
+    },
+    {
+      "name": "auth::batch_principal_tests::batch_entity_requires_request_identity_projection_and_uses_current_acl_documents",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_batch_principal_tests.rs",
+        "blob": "5e63d4d9d928b0204eb136917d7a3e3cf3568249",
+        "bytes": 18979,
+        "sha256": "dfa68af1c1a4ed36af4aa222f2772377507f8cfa8798c2b031fefceb26817578"
+      },
+      "declaration": "batch_entity_requires_request_identity_projection_and_uses_current_acl_documents"
+    },
+    {
+      "name": "auth::batch_principal_tests::batch_authority_and_credentials_reopen_without_migrating_legacy_or_creating_tokens",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_batch_principal_tests.rs",
+        "blob": "5e63d4d9d928b0204eb136917d7a3e3cf3568249",
+        "bytes": 18979,
+        "sha256": "dfa68af1c1a4ed36af4aa222f2772377507f8cfa8798c2b031fefceb26817578"
+      },
+      "declaration": "batch_authority_and_credentials_reopen_without_migrating_legacy_or_creating_tokens"
+    },
+    {
+      "name": "auth::batch_principal_tests::batch_actor_can_use_a_service_wrapper_without_ever_becoming_that_wrapper",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_batch_principal_tests.rs",
+        "blob": "5e63d4d9d928b0204eb136917d7a3e3cf3568249",
+        "bytes": 18979,
+        "sha256": "dfa68af1c1a4ed36af4aa222f2772377507f8cfa8798c2b031fefceb26817578"
+      },
+      "declaration": "batch_actor_can_use_a_service_wrapper_without_ever_becoming_that_wrapper"
+    },
+    {
+      "name": "auth::batch_principal_tests::typed_principal_keeps_the_service_final_use_capability_without_reopening_admission",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_batch_principal_tests.rs",
+        "blob": "5e63d4d9d928b0204eb136917d7a3e3cf3568249",
+        "bytes": 18979,
+        "sha256": "dfa68af1c1a4ed36af4aa222f2772377507f8cfa8798c2b031fefceb26817578"
+      },
+      "declaration": "typed_principal_keeps_the_service_final_use_capability_without_reopening_admission"
+    },
+    {
+      "name": "auth::batch_principal_tests::batch_cubbyhole_existence_checks_precede_write_acl_but_other_operations_keep_acl",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_batch_principal_tests.rs",
+        "blob": "5e63d4d9d928b0204eb136917d7a3e3cf3568249",
+        "bytes": 18979,
+        "sha256": "dfa68af1c1a4ed36af4aa222f2772377507f8cfa8798c2b031fefceb26817578"
+      },
+      "declaration": "batch_cubbyhole_existence_checks_precede_write_acl_but_other_operations_keep_acl"
+    },
+    {
+      "name": "auth::batch_principal_tests::batch_revoke_orphan_and_empty_accessor_keep_token_api_authorization_order",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_batch_principal_tests.rs",
+        "blob": "5e63d4d9d928b0204eb136917d7a3e3cf3568249",
+        "bytes": 18979,
+        "sha256": "dfa68af1c1a4ed36af4aa222f2772377507f8cfa8798c2b031fefceb26817578"
+      },
+      "declaration": "batch_revoke_orphan_and_empty_accessor_keep_token_api_authorization_order"
+    },
+    {
+      "name": "auth::tests::token_revoke_orphan_tests::revoke_orphan_severs_only_direct_children_and_survives_serialization",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_token_revoke_orphan_tests.rs",
+        "blob": "e0a6a423617355203ee721065413218e7afd72ec",
+        "bytes": 6189,
+        "sha256": "860de11e8f32b9d29e662b57a91818084ff84e880e0cf5c71ee648aecea988c8"
+      },
+      "declaration": "revoke_orphan_severs_only_direct_children_and_survives_serialization"
+    },
+    {
+      "name": "auth::tests::token_revoke_orphan_tests::revoke_orphan_requires_sudo_before_target_resolution_without_mutating_edges",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_token_revoke_orphan_tests.rs",
+        "blob": "e0a6a423617355203ee721065413218e7afd72ec",
+        "bytes": 6189,
+        "sha256": "860de11e8f32b9d29e662b57a91818084ff84e880e0cf5c71ee648aecea988c8"
+      },
+      "declaration": "revoke_orphan_requires_sudo_before_target_resolution_without_mutating_edges"
+    },
+    {
+      "name": "auth::tests::token_revoke_orphan_tests::revoke_orphan_missing_target_is_invalid_request_without_damaging_live_children",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_token_revoke_orphan_tests.rs",
+        "blob": "e0a6a423617355203ee721065413218e7afd72ec",
+        "bytes": 6189,
+        "sha256": "860de11e8f32b9d29e662b57a91818084ff84e880e0cf5c71ee648aecea988c8"
+      },
+      "declaration": "revoke_orphan_missing_target_is_invalid_request_without_damaging_live_children"
+    },
+    {
+      "name": "service::native_auth::identity_tests::native_identity_formal_crud_lookup_list_and_cold_reopen_preserve_kv",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_identity_tests.rs",
+        "blob": "7529ef9abc27ae08b56e4749cf2000a1afb926bb",
+        "bytes": 23532,
+        "sha256": "75bf0f7d6218b1d166bcaf63cfb4c48559b99b59b737771f3bdf6bc41fc8fd5b"
+      },
+      "declaration": "native_identity_formal_crud_lookup_list_and_cold_reopen_preserve_kv"
+    },
+    {
+      "name": "service::native_auth::identity_tests::native_identity_delegated_acl_and_finite_actor_keep_original_authority",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_identity_tests.rs",
+        "blob": "7529ef9abc27ae08b56e4749cf2000a1afb926bb",
+        "bytes": 23532,
+        "sha256": "75bf0f7d6218b1d166bcaf63cfb4c48559b99b59b737771f3bdf6bc41fc8fd5b"
+      },
+      "declaration": "native_identity_delegated_acl_and_finite_actor_keep_original_authority"
+    },
+    {
+      "name": "service::native_auth::identity_tests::native_identity_keeps_foreign_actor_wrapping_and_unowned_paths_closed",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_identity_tests.rs",
+        "blob": "7529ef9abc27ae08b56e4749cf2000a1afb926bb",
+        "bytes": 23532,
+        "sha256": "75bf0f7d6218b1d166bcaf63cfb4c48559b99b59b737771f3bdf6bc41fc8fd5b"
+      },
+      "declaration": "native_identity_keeps_foreign_actor_wrapping_and_unowned_paths_closed"
+    },
+    {
+      "name": "service::native_auth::identity_tests::native_identity_actual_audit_keeps_exact_response_custody",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_identity_tests.rs",
+        "blob": "7529ef9abc27ae08b56e4749cf2000a1afb926bb",
+        "bytes": 23532,
+        "sha256": "75bf0f7d6218b1d166bcaf63cfb4c48559b99b59b737771f3bdf6bc41fc8fd5b"
+      },
+      "declaration": "native_identity_actual_audit_keeps_exact_response_custody"
+    },
+    {
+      "name": "service::native_auth::identity_tests::native_identity_owner_cannot_drop_kv_graph_or_flip_native_format",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_identity_tests.rs",
+        "blob": "7529ef9abc27ae08b56e4749cf2000a1afb926bb",
+        "bytes": 23532,
+        "sha256": "75bf0f7d6218b1d166bcaf63cfb4c48559b99b59b737771f3bdf6bc41fc8fd5b"
+      },
+      "declaration": "native_identity_owner_cannot_drop_kv_graph_or_flip_native_format"
+    },
+    {
+      "name": "service::native_auth::identity_tests::native_identity_live_group_membership_controls_cg_after_cold_restart",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_identity_tests.rs",
+        "blob": "7529ef9abc27ae08b56e4749cf2000a1afb926bb",
+        "bytes": 23532,
+        "sha256": "75bf0f7d6218b1d166bcaf63cfb4c48559b99b59b737771f3bdf6bc41fc8fd5b"
+      },
+      "declaration": "native_identity_live_group_membership_controls_cg_after_cold_restart"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::native_userpass_formal_source_promotion_keeps_real_preexisting_credentials",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_userpass_tests.rs",
+        "blob": "0aafabbd9af4d381808f73efd2cba76e6eef3558",
+        "bytes": 25592,
+        "sha256": "750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea"
+      },
+      "declaration": "native_userpass_formal_source_promotion_keeps_real_preexisting_credentials"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::native_userpass_formal_file_login_renew_cold_provenance_and_revoke",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_userpass_tests.rs",
+        "blob": "0aafabbd9af4d381808f73efd2cba76e6eef3558",
+        "bytes": 25592,
+        "sha256": "750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea"
+      },
+      "declaration": "native_userpass_formal_file_login_renew_cold_provenance_and_revoke"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::native_userpass_formal_mount_retirement_revokes_parent_child_and_keeps_floor",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_userpass_tests.rs",
+        "blob": "0aafabbd9af4d381808f73efd2cba76e6eef3558",
+        "bytes": 25592,
+        "sha256": "750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea"
+      },
+      "declaration": "native_userpass_formal_mount_retirement_revokes_parent_child_and_keeps_floor"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::native_userpass_formal_failed_login_lockout_is_durable_across_cold_open",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_userpass_tests.rs",
+        "blob": "0aafabbd9af4d381808f73efd2cba76e6eef3558",
+        "bytes": 25592,
+        "sha256": "750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea"
+      },
+      "declaration": "native_userpass_formal_failed_login_lockout_is_durable_across_cold_open"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::native_userpass_formal_acl_retains_admin_sudo_and_account_scope",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_userpass_tests.rs",
+        "blob": "0aafabbd9af4d381808f73efd2cba76e6eef3558",
+        "bytes": 25592,
+        "sha256": "750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea"
+      },
+      "declaration": "native_userpass_formal_acl_retains_admin_sudo_and_account_scope"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::native_userpass_formal_finite_token_delivery_does_not_consume_an_extra_use",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_userpass_tests.rs",
+        "blob": "0aafabbd9af4d381808f73efd2cba76e6eef3558",
+        "bytes": 25592,
+        "sha256": "750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea"
+      },
+      "declaration": "native_userpass_formal_finite_token_delivery_does_not_consume_an_extra_use"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::native_userpass_actual_audit_response_status_and_error_tampering_are_vetoed",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_userpass_tests.rs",
+        "blob": "0aafabbd9af4d381808f73efd2cba76e6eef3558",
+        "bytes": 25592,
+        "sha256": "750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea"
+      },
+      "declaration": "native_userpass_actual_audit_response_status_and_error_tampering_are_vetoed"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::native_userpass_actual_audit_cannot_refresh_the_original_request_deadline",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_userpass_tests.rs",
+        "blob": "0aafabbd9af4d381808f73efd2cba76e6eef3558",
+        "bytes": 25592,
+        "sha256": "750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea"
+      },
+      "declaration": "native_userpass_actual_audit_cannot_refresh_the_original_request_deadline"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::native_userpass_actual_post_audit_revocation_vetoes_the_original_credential_reply",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_userpass_tests.rs",
+        "blob": "0aafabbd9af4d381808f73efd2cba76e6eef3558",
+        "bytes": 25592,
+        "sha256": "750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea"
+      },
+      "declaration": "native_userpass_actual_post_audit_revocation_vetoes_the_original_credential_reply"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::native_userpass_selector_keeps_other_providers_and_wrapped_login_closed",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_userpass_tests.rs",
+        "blob": "0aafabbd9af4d381808f73efd2cba76e6eef3558",
+        "bytes": 25592,
+        "sha256": "750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea"
+      },
+      "declaration": "native_userpass_selector_keeps_other_providers_and_wrapped_login_closed"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_file_cold_keeps_exact_grant_without_service_backing",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_userpass_batch_tests.rs",
+        "blob": "41d038b0465cc6c5e6caa3995efc05f3bb2a3170",
+        "bytes": 19896,
+        "sha256": "2438399e58d0267afb13da8953595ecc1931c0a7b4eae5bc940e849c21db25c5"
+      },
+      "declaration": "native_userpass_batch_file_cold_keeps_exact_grant_without_service_backing"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_actual_v5_promotion_does_not_reseal_or_reissue",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_userpass_batch_tests.rs",
+        "blob": "41d038b0465cc6c5e6caa3995efc05f3bb2a3170",
+        "bytes": 19896,
+        "sha256": "2438399e58d0267afb13da8953595ecc1931c0a7b4eae5bc940e849c21db25c5"
+      },
+      "declaration": "native_userpass_batch_actual_v5_promotion_does_not_reseal_or_reissue"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_catalog_before_and_after_issuance_moves_in_one_native_root",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_userpass_batch_tests.rs",
+        "blob": "41d038b0465cc6c5e6caa3995efc05f3bb2a3170",
+        "bytes": 19896,
+        "sha256": "2438399e58d0267afb13da8953595ecc1931c0a7b4eae5bc940e849c21db25c5"
+      },
+      "declaration": "native_userpass_batch_catalog_before_and_after_issuance_moves_in_one_native_root"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_wrong_password_and_independent_token_api_owner_publish_only_real_grants",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_userpass_batch_tests.rs",
+        "blob": "41d038b0465cc6c5e6caa3995efc05f3bb2a3170",
+        "bytes": 19896,
+        "sha256": "2438399e58d0267afb13da8953595ecc1931c0a7b4eae5bc940e849c21db25c5"
+      },
+      "declaration": "native_userpass_batch_wrong_password_and_independent_token_api_owner_publish_only_real_grants"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_actual_post_audit_catalog_commit_vetoes_original_delivery",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_userpass_batch_tests.rs",
+        "blob": "41d038b0465cc6c5e6caa3995efc05f3bb2a3170",
+        "bytes": 19896,
+        "sha256": "2438399e58d0267afb13da8953595ecc1931c0a7b4eae5bc940e849c21db25c5"
+      },
+      "declaration": "native_userpass_batch_actual_post_audit_catalog_commit_vetoes_original_delivery"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_actual_audited_status_tampering_erases_the_credential",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_userpass_batch_tests.rs",
+        "blob": "41d038b0465cc6c5e6caa3995efc05f3bb2a3170",
+        "bytes": 19896,
+        "sha256": "2438399e58d0267afb13da8953595ecc1931c0a7b4eae5bc940e849c21db25c5"
+      },
+      "declaration": "native_userpass_batch_actual_audited_status_tampering_erases_the_credential"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_actual_audit_cannot_replace_the_original_deadline",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_userpass_batch_tests.rs",
+        "blob": "41d038b0465cc6c5e6caa3995efc05f3bb2a3170",
+        "bytes": 19896,
+        "sha256": "2438399e58d0267afb13da8953595ecc1931c0a7b4eae5bc940e849c21db25c5"
+      },
+      "declaration": "native_userpass_batch_actual_audit_cannot_replace_the_original_deadline"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_response_wrapper_cannot_hide_token_api_issuer",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_userpass_batch_tests.rs",
+        "blob": "41d038b0465cc6c5e6caa3995efc05f3bb2a3170",
+        "bytes": 19896,
+        "sha256": "2438399e58d0267afb13da8953595ecc1931c0a7b4eae5bc940e849c21db25c5"
+      },
+      "declaration": "native_userpass_batch_response_wrapper_cannot_hide_token_api_issuer"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_response_wrapper_cannot_hide_approle_issuer",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_userpass_batch_tests.rs",
+        "blob": "41d038b0465cc6c5e6caa3995efc05f3bb2a3170",
+        "bytes": 19896,
+        "sha256": "2438399e58d0267afb13da8953595ecc1931c0a7b4eae5bc940e849c21db25c5"
+      },
+      "declaration": "native_userpass_batch_response_wrapper_cannot_hide_approle_issuer"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_response_wrapper_keeps_userpass_enrollment_closed",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_userpass_batch_tests.rs",
+        "blob": "41d038b0465cc6c5e6caa3995efc05f3bb2a3170",
+        "bytes": 19896,
+        "sha256": "2438399e58d0267afb13da8953595ecc1931c0a7b4eae5bc940e849c21db25c5"
+      },
+      "declaration": "native_userpass_batch_response_wrapper_keeps_userpass_enrollment_closed"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_approle_file_first_issuance_sid_once_paired_catalog_and_cold",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_batch_issuer_tests.rs",
+        "blob": "01534c3292b0630c1fe2a9edd3a28fdc4195895f",
+        "bytes": 20967,
+        "sha256": "28144bd6361a3855f94ecb48732de9b7232da2dbed1788eba1702232a143c641"
+      },
+      "declaration": "native_batch_approle_file_first_issuance_sid_once_paired_catalog_and_cold"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_approle_failed_cidr_consumes_only_authenticated_sid_and_stays_cold",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_batch_issuer_tests.rs",
+        "blob": "01534c3292b0630c1fe2a9edd3a28fdc4195895f",
+        "bytes": 20967,
+        "sha256": "28144bd6361a3855f94ecb48732de9b7232da2dbed1788eba1702232a143c641"
+      },
+      "declaration": "native_batch_approle_failed_cidr_consumes_only_authenticated_sid_and_stays_cold"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_token_api_file_parent_revocation_survives_cold_without_backing",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_batch_issuer_tests.rs",
+        "blob": "01534c3292b0630c1fe2a9edd3a28fdc4195895f",
+        "bytes": 20967,
+        "sha256": "28144bd6361a3855f94ecb48732de9b7232da2dbed1788eba1702232a143c641"
+      },
+      "declaration": "native_batch_token_api_file_parent_revocation_survives_cold_without_backing"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_token_api_file_role_suffix_and_orphan_keep_actual_claims",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_batch_issuer_tests.rs",
+        "blob": "01534c3292b0630c1fe2a9edd3a28fdc4195895f",
+        "bytes": 20967,
+        "sha256": "28144bd6361a3855f94ecb48732de9b7232da2dbed1788eba1702232a143c641"
+      },
+      "declaration": "native_batch_token_api_file_role_suffix_and_orphan_keep_actual_claims"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_token_api_file_inert_precise_grant_is_issued_once_and_never_authenticated",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_batch_issuer_tests.rs",
+        "blob": "01534c3292b0630c1fe2a9edd3a28fdc4195895f",
+        "bytes": 20967,
+        "sha256": "28144bd6361a3855f94ecb48732de9b7232da2dbed1788eba1702232a143c641"
+      },
+      "declaration": "native_batch_token_api_file_inert_precise_grant_is_issued_once_and_never_authenticated"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_token_api_file_restricted_actor_rejected_and_last_use_consumed_once",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_batch_issuer_tests.rs",
+        "blob": "01534c3292b0630c1fe2a9edd3a28fdc4195895f",
+        "bytes": 20967,
+        "sha256": "28144bd6361a3855f94ecb48732de9b7232da2dbed1788eba1702232a143c641"
+      },
+      "declaration": "native_batch_token_api_file_restricted_actor_rejected_and_last_use_consumed_once"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_file_actual_post_audit_policy_and_parent_revoke_veto_old_grant",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_batch_issuer_tests.rs",
+        "blob": "01534c3292b0630c1fe2a9edd3a28fdc4195895f",
+        "bytes": 20967,
+        "sha256": "28144bd6361a3855f94ecb48732de9b7232da2dbed1788eba1702232a143c641"
+      },
+      "declaration": "native_batch_file_actual_post_audit_policy_and_parent_revoke_veto_old_grant"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_approle_file_post_audit_sid_destroy_vetoes_and_cannot_resurrect",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_batch_issuer_tests.rs",
+        "blob": "01534c3292b0630c1fe2a9edd3a28fdc4195895f",
+        "bytes": 20967,
+        "sha256": "28144bd6361a3855f94ecb48732de9b7232da2dbed1788eba1702232a143c641"
+      },
+      "declaration": "native_batch_approle_file_post_audit_sid_destroy_vetoes_and_cannot_resurrect"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_approle_file_original_sid_clock_expires_after_actual_audit",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_batch_issuer_tests.rs",
+        "blob": "01534c3292b0630c1fe2a9edd3a28fdc4195895f",
+        "bytes": 20967,
+        "sha256": "28144bd6361a3855f94ecb48732de9b7232da2dbed1788eba1702232a143c641"
+      },
+      "declaration": "native_batch_approle_file_original_sid_clock_expires_after_actual_audit"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_file_actual_audit_body_and_error_status_tampering_cannot_release",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_batch_issuer_tests.rs",
+        "blob": "01534c3292b0630c1fe2a9edd3a28fdc4195895f",
+        "bytes": 20967,
+        "sha256": "28144bd6361a3855f94ecb48732de9b7232da2dbed1788eba1702232a143c641"
+      },
+      "declaration": "native_batch_file_actual_audit_body_and_error_status_tampering_cannot_release"
+    },
+    {
+      "name": "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_token_api_file_userpass_service_actor_keeps_independent_issuer",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_batch_issuer_tests.rs",
+        "blob": "01534c3292b0630c1fe2a9edd3a28fdc4195895f",
+        "bytes": 20967,
+        "sha256": "28144bd6361a3855f94ecb48732de9b7232da2dbed1788eba1702232a143c641"
+      },
+      "declaration": "native_batch_token_api_file_userpass_service_actor_keeps_independent_issuer"
+    },
+    {
+      "name": "service::native_auth::tests::native_authbus_approle_policy_kv_cas_renew_revoke_and_cold_reopen",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_auth_tests.rs",
+        "blob": "c28391e43c4d81d9219655216b0f3a378ca24dc5",
+        "bytes": 34677,
+        "sha256": "53b66da1b73e30667c43405769ff6c77430bb441aa7f2ae528980c9ff57aafce"
+      },
+      "declaration": "native_authbus_approle_policy_kv_cas_renew_revoke_and_cold_reopen"
+    },
+    {
+      "name": "service::native_auth::tests::native_approle142_local_policy_kv_cas_renew_revoke_and_cold_reopen",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_auth_tests.rs",
+        "blob": "c28391e43c4d81d9219655216b0f3a378ca24dc5",
+        "bytes": 34677,
+        "sha256": "53b66da1b73e30667c43405769ff6c77430bb441aa7f2ae528980c9ff57aafce"
+      },
+      "declaration": "native_approle142_local_policy_kv_cas_renew_revoke_and_cold_reopen"
+    },
+    {
+      "name": "service::native_auth::tests::native_token_target_expired_after_real_audit_withholds_lookup_and_accessor_reply",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_auth_tests.rs",
+        "blob": "c28391e43c4d81d9219655216b0f3a378ca24dc5",
+        "bytes": 34677,
+        "sha256": "53b66da1b73e30667c43405769ff6c77430bb441aa7f2ae528980c9ff57aafce"
+      },
+      "declaration": "native_token_target_expired_after_real_audit_withholds_lookup_and_accessor_reply"
+    },
+    {
+      "name": "service::native_auth::tests::native_token_lookup_keeps_real_control_group_admission_before_dispatch",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_auth_tests.rs",
+        "blob": "c28391e43c4d81d9219655216b0f3a378ca24dc5",
+        "bytes": 34677,
+        "sha256": "53b66da1b73e30667c43405769ff6c77430bb441aa7f2ae528980c9ff57aafce"
+      },
+      "declaration": "native_token_lookup_keeps_real_control_group_admission_before_dispatch"
+    },
+    {
+      "name": "service::native_auth::tests::native_cert_auth_uses_verified_tls_peer_and_survives_cold_reopen",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/service_native_auth_tests.rs",
+        "blob": "c28391e43c4d81d9219655216b0f3a378ca24dc5",
+        "bytes": 34677,
+        "sha256": "53b66da1b73e30667c43405769ff6c77430bb441aa7f2ae528980c9ff57aafce"
+      },
+      "declaration": "native_cert_auth_uses_verified_tls_peer_and_survives_cold_reopen"
+    },
+    {
+      "name": "auth::tests::jwt_login_composes_pinned_signature_policy_and_reusable_bearer_tokens",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_tests.rs",
+        "blob": "4e175a1b54bceaf63c90751544f26ba667ff4890",
+        "bytes": 120792,
+        "sha256": "9324cd42b62c03fbfd36b886276c75cf3bee883d73bfa54889590110624e5704"
+      },
+      "declaration": "jwt_login_composes_pinned_signature_policy_and_reusable_bearer_tokens"
+    },
+    {
+      "name": "auth::tests::jwt_login_denies_invalid_trust_claims_headers_and_roles_without_mutation",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_tests.rs",
+        "blob": "4e175a1b54bceaf63c90751544f26ba667ff4890",
+        "bytes": 120792,
+        "sha256": "9324cd42b62c03fbfd36b886276c75cf3bee883d73bfa54889590110624e5704"
+      },
+      "declaration": "jwt_login_denies_invalid_trust_claims_headers_and_roles_without_mutation"
+    },
+    {
+      "name": "auth::tests::jwt_successful_native_login_retires_legacy_replay_without_rejecting_reuse",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_tests.rs",
+        "blob": "4e175a1b54bceaf63c90751544f26ba667ff4890",
+        "bytes": 120792,
+        "sha256": "9324cd42b62c03fbfd36b886276c75cf3bee883d73bfa54889590110624e5704"
+      },
+      "declaration": "jwt_successful_native_login_retires_legacy_replay_without_rejecting_reuse"
+    },
+    {
+      "name": "auth::tests::jwt_configuration_rejects_bad_keys_namespace_and_privilege_escalation",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_tests.rs",
+        "blob": "4e175a1b54bceaf63c90751544f26ba667ff4890",
+        "bytes": 120792,
+        "sha256": "9324cd42b62c03fbfd36b886276c75cf3bee883d73bfa54889590110624e5704"
+      },
+      "declaration": "jwt_configuration_rejects_bad_keys_namespace_and_privilege_escalation"
+    },
+    {
+      "name": "auth::tests::jwt_config_and_role_readback_preserve_openbao_aliases",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_tests.rs",
+        "blob": "4e175a1b54bceaf63c90751544f26ba667ff4890",
+        "bytes": 120792,
+        "sha256": "9324cd42b62c03fbfd36b886276c75cf3bee883d73bfa54889590110624e5704"
+      },
+      "declaration": "jwt_config_and_role_readback_preserve_openbao_aliases"
+    },
+    {
+      "name": "auth::tests::jwt_es256_login_uses_real_p256_signature_and_rejects_algorithm_confusion",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_tests.rs",
+        "blob": "4e175a1b54bceaf63c90751544f26ba667ff4890",
+        "bytes": 120792,
+        "sha256": "9324cd42b62c03fbfd36b886276c75cf3bee883d73bfa54889590110624e5704"
+      },
+      "declaration": "jwt_es256_login_uses_real_p256_signature_and_rejects_algorithm_confusion"
+    },
+    {
+      "name": "auth::tests::jwt_service_persists_tokens_and_allows_assertion_reuse_across_reopen",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_tests.rs",
+        "blob": "4e175a1b54bceaf63c90751544f26ba667ff4890",
+        "bytes": 120792,
+        "sha256": "9324cd42b62c03fbfd36b886276c75cf3bee883d73bfa54889590110624e5704"
+      },
+      "declaration": "jwt_service_persists_tokens_and_allows_assertion_reuse_across_reopen"
+    },
+    {
+      "name": "auth::tests::jwt_jwks_config_accepts_public_ed25519_and_drives_login",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_tests.rs",
+        "blob": "4e175a1b54bceaf63c90751544f26ba667ff4890",
+        "bytes": 120792,
+        "sha256": "9324cd42b62c03fbfd36b886276c75cf3bee883d73bfa54889590110624e5704"
+      },
+      "declaration": "jwt_jwks_config_accepts_public_ed25519_and_drives_login"
+    },
+    {
+      "name": "auth::tests::jwt_jwks_rejects_private_symmetric_duplicate_and_mixed_key_material_without_mutation",
+      "family": "legacy_jwt",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_tests.rs",
+        "blob": "4e175a1b54bceaf63c90751544f26ba667ff4890",
+        "bytes": 120792,
+        "sha256": "9324cd42b62c03fbfd36b886276c75cf3bee883d73bfa54889590110624e5704"
+      },
+      "declaration": "jwt_jwks_rejects_private_symmetric_duplicate_and_mixed_key_material_without_mutation"
+    },
+    {
+      "name": "auth::tests::token_parent_expiry_revoke_cascade_and_orphan_survival",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_tests.rs",
+        "blob": "4e175a1b54bceaf63c90751544f26ba667ff4890",
+        "bytes": 120792,
+        "sha256": "9324cd42b62c03fbfd36b886276c75cf3bee883d73bfa54889590110624e5704"
+      },
+      "declaration": "token_parent_expiry_revoke_cascade_and_orphan_survival"
+    },
+    {
+      "name": "auth::tests::token_creation_cannot_escalate_policies_or_skip_parent_without_sudo",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_tests.rs",
+        "blob": "4e175a1b54bceaf63c90751544f26ba667ff4890",
+        "bytes": 120792,
+        "sha256": "9324cd42b62c03fbfd36b886276c75cf3bee883d73bfa54889590110624e5704"
+      },
+      "declaration": "token_creation_cannot_escalate_policies_or_skip_parent_without_sudo"
+    },
+    {
+      "name": "auth::tests::periodic_and_finite_tokens_renew_without_exceeding_explicit_maximum",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_tests.rs",
+        "blob": "4e175a1b54bceaf63c90751544f26ba667ff4890",
+        "bytes": 120792,
+        "sha256": "9324cd42b62c03fbfd36b886276c75cf3bee883d73bfa54889590110624e5704"
+      },
+      "declaration": "periodic_and_finite_tokens_renew_without_exceeding_explicit_maximum"
+    },
+    {
+      "name": "auth::tests::accessors_allow_revocation_without_revealing_token",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_tests.rs",
+        "blob": "4e175a1b54bceaf63c90751544f26ba667ff4890",
+        "bytes": 120792,
+        "sha256": "9324cd42b62c03fbfd36b886276c75cf3bee883d73bfa54889590110624e5704"
+      },
+      "declaration": "accessors_allow_revocation_without_revealing_token"
+    },
+    {
+      "name": "auth::tests::affine_request_principal_uses_live_subject_and_parent_time",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_tests.rs",
+        "blob": "4e175a1b54bceaf63c90751544f26ba667ff4890",
+        "bytes": 120792,
+        "sha256": "9324cd42b62c03fbfd36b886276c75cf3bee883d73bfa54889590110624e5704"
+      },
+      "declaration": "affine_request_principal_uses_live_subject_and_parent_time"
+    },
+    {
+      "name": "auth::tests::disabling_auth_mount_revokes_its_tokens_and_children_and_erases_credentials",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_tests.rs",
+        "blob": "4e175a1b54bceaf63c90751544f26ba667ff4890",
+        "bytes": 120792,
+        "sha256": "9324cd42b62c03fbfd36b886276c75cf3bee883d73bfa54889590110624e5704"
+      },
+      "declaration": "disabling_auth_mount_revokes_its_tokens_and_children_and_erases_credentials"
+    },
+    {
+      "name": "auth::tests::transaction_clone_failure_does_not_consume_source_state",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_tests.rs",
+        "blob": "4e175a1b54bceaf63c90751544f26ba667ff4890",
+        "bytes": 120792,
+        "sha256": "9324cd42b62c03fbfd36b886276c75cf3bee883d73bfa54889590110624e5704"
+      },
+      "declaration": "transaction_clone_failure_does_not_consume_source_state"
+    },
+    {
+      "name": "auth::tests::token_lookup_reports_standard_expiry_for_all_selectors_and_after_renewal",
+      "family": "native_auth_identity",
+      "source": {
+        "path": "crates/heptabao-server/src/auth_tests.rs",
+        "blob": "4e175a1b54bceaf63c90751544f26ba667ff4890",
+        "bytes": 120792,
+        "sha256": "9324cd42b62c03fbfd36b886276c75cf3bee883d73bfa54889590110624e5704"
+      },
+      "declaration": "token_lookup_reports_standard_expiry_for_all_selectors_and_after_renewal"
+    }
+  ],
+  "new_regressions": {
+    "schema": "heptabao.native-jwt.r2.regressions.v1",
+    "source_pin": {
+      "blob": "89f3ce081c94e08446a15b11fdc76a1d724ab09e",
+      "bytes": 33059,
+      "sha256": "f7ca5c2c6e67717287887d31d5d8d40459f5ed6fb40524e5d026c95ee07fa48b"
+    },
+    "count": 15,
+    "unchanged_R1_count": 10,
+    "unchanged_R1_prefix": {
+      "blob": "c8db0cef315605b9b220bef8a7993fc84dffa321",
+      "bytes": 23058,
+      "sha256": "4db9027a12d50068b1f6e9e7e86af6810d375749336a231a8212ed1bd5c5b581"
+    },
+    "tests": [
+      {
+        "name": "native_jwt_local_service_token_identity_renewal_and_cold_reopen",
+        "required_observation": "real local service login, same assertion twice, one entity, cold value, expired-assertion renewal after key rotation, revoke/unmount",
+        "limit": "Missing Token API child/batch/mixed-origin cases are separately flagged.",
+        "execution": "NOT_RUN",
+        "scope": "unchanged R1 source"
+      },
+      {
+        "name": "native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta",
+        "required_observation": "remote JWT/batch JWT/bad signature fail closed; complete relevant Auth/Identity projection unchanged",
+        "limit": "Does not test Token API batch issuance by a JWT actor.",
+        "execution": "NOT_RUN",
+        "scope": "unchanged R1 source"
+      },
+      {
+        "name": "native_jwt_role_operations_keep_the_existing_legacy_acl_contract",
+        "required_observation": "current legacy role collection GET/list and named DELETE/update+sudo; no-sudo denial",
+        "limit": "Not an OpenBao ACL oracle result.",
+        "execution": "NOT_RUN",
+        "scope": "unchanged R1 source"
+      },
+      {
+        "name": "native_jwt_identity_failure_does_not_export_witness_or_token_and_next_login_is_fresh",
+        "required_observation": "disabled actual Identity after verification; no returned witness/token; later fresh success",
+        "limit": "No synthetic Identity grant/witness.",
+        "execution": "NOT_RUN",
+        "scope": "unchanged R1 source"
+      },
+      {
+        "name": "native_jwt_original_assertion_expiry_before_publication_keeps_auth_identity_atomic",
+        "required_observation": "original assertion expires after real authentication before plan; logical root unchanged and cold check",
+        "limit": "No claim that every lower-level unknown I/O writes zero bytes.",
+        "execution": "NOT_RUN",
+        "scope": "unchanged R1 source"
+      },
+      {
+        "name": "native_jwt_native_owner_capacity_veto_after_authentication_keeps_the_old_root",
+        "required_observation": "real owner-capacity gate 507 after authentication; root fits but candidate does not",
+        "limit": "Known prepublication capacity veto, not unknown I/O injection.",
+        "execution": "NOT_RUN",
+        "scope": "unchanged R1 source"
+      },
+      {
+        "name": "native_jwt_original_assertion_expiry_after_commit_withholds_reply_without_rollback",
+        "required_observation": "real committed root; assertion expiry during actual audit vetoes delivery",
+        "limit": "Committed root remains, no rollback.",
+        "execution": "NOT_RUN",
+        "scope": "unchanged R1 source"
+      },
+      {
+        "name": "native_jwt_post_commit_audit_failure_keeps_whole_root_and_recovery_required",
+        "required_observation": "actual mandatory audit capacity failure; complete root retained/recovery required",
+        "limit": "No automatic retry or token reissue.",
+        "execution": "NOT_RUN",
+        "scope": "unchanged R1 source"
+      },
+      {
+        "name": "native_jwt_post_audit_response_and_original_deadline_cannot_be_rebound",
+        "required_observation": "audited status tamper plus original deadline expiry",
+        "limit": "No replacement deadline/proof.",
+        "execution": "NOT_RUN",
+        "scope": "unchanged R1 source"
+      },
+      {
+        "name": "native_jwt_post_audit_revocation_cannot_replace_the_original_publication_proof",
+        "required_observation": "actual owner/proof held across separately authorized real revoke; stale delivery rejected",
+        "limit": "Actual original proof reused only for rejection; cold revoked token denied.",
+        "execution": "NOT_RUN",
+        "scope": "unchanged R1 source"
+      },
+      {
+        "name": "native_jwt_token_api_service_descendants_keep_own_renewal_and_parent_revocation",
+        "required_observation": "Real JWT parent, service child and grandchild; cold entity/path; child renewal after role deletion/assertion expiry; original direct JWT renewal rejection; parent revoke and cold denial.",
+        "scope": "R2 new independent source",
+        "execution": "NOT_RUN"
+      },
+      {
+        "name": "native_jwt_token_api_batch_owner_preserves_real_parent_binding_across_cold_reopen",
+        "required_observation": "Actual TokenApi batch grants from JWT parent and TokenApi service child, existing sealed issuer/lifecycle; cold use, non-renewability and parent revocation.",
+        "scope": "R2 new independent source",
+        "execution": "NOT_RUN"
+      },
+      {
+        "name": "native_jwt_token_api_revoke_orphan_keeps_own_issuer_but_mount_retirement_still_revokes",
+        "required_observation": "Real revoke-orphan, child's own renewal after role deletion/cold reopen, then mount-disable retirement and cold rejection.",
+        "scope": "R2 new independent source",
+        "execution": "NOT_RUN"
+      },
+      {
+        "name": "native_jwt_and_userpass_token_api_targets_keep_real_owner_and_renewal_in_both_directions",
+        "required_observation": "Real JWT/Userpass logins, cross-target renewal with same credentials and cold cross-revocation; independent JWT survivor.",
+        "scope": "R2 new independent source",
+        "execution": "NOT_RUN"
+      },
+      {
+        "name": "native_jwt_token_api_profile_rejects_mount_label_without_real_issuer_or_parent_graph",
+        "required_observation": "Seven negative detached format/profile values from actual issued child; no forged state installed; real fixture and child unchanged.",
+        "scope": "R2 new independent source",
+        "execution": "NOT_RUN"
+      }
+    ],
+    "exact_names": [
+      "service::native_auth::jwt_tests::native_jwt_local_service_token_identity_renewal_and_cold_reopen",
+      "service::native_auth::jwt_tests::native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta",
+      "service::native_auth::jwt_tests::native_jwt_role_operations_keep_the_existing_legacy_acl_contract",
+      "service::native_auth::jwt_tests::native_jwt_identity_failure_does_not_export_witness_or_token_and_next_login_is_fresh",
+      "service::native_auth::jwt_tests::native_jwt_original_assertion_expiry_before_publication_keeps_auth_identity_atomic",
+      "service::native_auth::jwt_tests::native_jwt_native_owner_capacity_veto_after_authentication_keeps_the_old_root",
+      "service::native_auth::jwt_tests::native_jwt_original_assertion_expiry_after_commit_withholds_reply_without_rollback",
+      "service::native_auth::jwt_tests::native_jwt_post_commit_audit_failure_keeps_whole_root_and_recovery_required",
+      "service::native_auth::jwt_tests::native_jwt_post_audit_response_and_original_deadline_cannot_be_rebound",
+      "service::native_auth::jwt_tests::native_jwt_post_audit_revocation_cannot_replace_the_original_publication_proof",
+      "service::native_auth::jwt_tests::native_jwt_token_api_service_descendants_keep_own_renewal_and_parent_revocation",
+      "service::native_auth::jwt_tests::native_jwt_token_api_batch_owner_preserves_real_parent_binding_across_cold_reopen",
+      "service::native_auth::jwt_tests::native_jwt_token_api_revoke_orphan_keeps_own_issuer_but_mount_retirement_still_revokes",
+      "service::native_auth::jwt_tests::native_jwt_and_userpass_token_api_targets_keep_real_owner_and_renewal_in_both_directions",
+      "service::native_auth::jwt_tests::native_jwt_token_api_profile_rejects_mount_label_without_real_issuer_or_parent_graph"
+    ],
+    "Rust_tests_executed": 0,
+    "qualified_denominators_changed": false
+  }
+}

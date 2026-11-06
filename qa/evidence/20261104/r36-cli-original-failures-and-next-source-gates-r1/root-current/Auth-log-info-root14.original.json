@@ -1,0 +1,105 @@
+{
+  "schema": "heptabao.root.Mac-log-tool-file-info-actual-qualification.v1",
+  "status": "passed",
+  "checks_passed": 14,
+  "checks": [
+    {
+      "name": "whole21_original_chain",
+      "passed": true
+    },
+    {
+      "name": "exact_new_metadata_GO",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_and_once_arm_owned-log-info-start-r1--",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_and_once_arm_owned-log-info-status-0--",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_and_once_arm_owned-log-info-page-000000--",
+      "passed": true
+    },
+    {
+      "name": "exact_one_info_request",
+      "passed": true
+    },
+    {
+      "name": "original_same_operation_inactive",
+      "passed": true
+    },
+    {
+      "name": "original_one_page_full_payload",
+      "passed": true
+    },
+    {
+      "name": "original_payload_to_info",
+      "passed": true
+    },
+    {
+      "name": "actual_fixed_root_owned_executable_metadata",
+      "passed": true
+    },
+    {
+      "name": "full9_lossless_string_version",
+      "passed": true
+    },
+    {
+      "name": "three_calls_no_process_or_pending",
+      "passed": true
+    },
+    {
+      "name": "prior_context_bound_separately",
+      "passed": true
+    },
+    {
+      "name": "no_help_log_or_cleanup_claim",
+      "passed": true
+    }
+  ],
+  "packet": {
+    "tree": "ed647834727c1c51e1cf05328a3e1cf3fc28d107",
+    "files": 21,
+    "bytes": 37500,
+    "merkle": {
+      "root_sha": "ed647834727c1c51e1cf05328a3e1cf3fc28d107",
+      "trees_verified": 1,
+      "leaf_count": 21
+    },
+    "whole": true
+  },
+  "operation_id": "9046699b261f2ef2f76485e33dc80b433684b7321efb0fbc8889a553365d3261",
+  "metadata": {
+    "blob": "d3cefcb531f3deea5a156189d381b11f8c70fa7b",
+    "bytes": 411,
+    "sha256": "8b1ed8e54007466045ebf6527ed102d709c54f8a3e10dd8e7b5f5b41b791efe4"
+  },
+  "tool": {
+    "path": "/usr/bin/log",
+    "bytes": 807536,
+    "sha256": "2fa7b04615546f0964dd1ddedab04a07e3e026f76959e7f44cbd30bfa48a5974",
+    "version": "16777233:1152921500312572288:807536:1786589515000000000:1786589515000000000",
+    "full9": [
+      "16777233",
+      "1152921500312572288",
+      "0",
+      "0",
+      "33261",
+      "1",
+      "807536",
+      "1786589515000000000",
+      "1786589515000000000"
+    ]
+  },
+  "all_original_observers_closed": true,
+  "help_executed": false,
+  "startup_cause_known": false,
+  "old_label_registration_closed": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

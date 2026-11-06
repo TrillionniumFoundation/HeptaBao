@@ -1,0 +1,196 @@
+{
+  "schema": "heptabao.root-JWT-source-stage-complete-actual-qualification.v1",
+  "packet": {
+    "tree": "955362547a8f2625bbbbd00a880babf3b1a78c0a",
+    "files": 49,
+    "bytes": 470630,
+    "merkle": {
+      "root_sha": "955362547a8f2625bbbbd00a880babf3b1a78c0a",
+      "trees_verified": 1,
+      "leaf_count": 49
+    },
+    "whole": true
+  },
+  "original_source_stage_job": "rog/1a1aed43ac9-fc05-62ec",
+  "source_commit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+  "source_tree": "5497775d9d473541e13e1603be8c893a3e27681b",
+  "report": {
+    "blob": "75b57b2aeff043a0114a987e96ab7a9e73d521f0",
+    "bytes": 27581,
+    "sha256": "0bf4e76a64ded7fa9ff5af683252cbe6e19f055766fb9004345bbc2c265c4666"
+  },
+  "checks": [
+    {
+      "name": "whole49_original_chain",
+      "passed": true
+    },
+    {
+      "name": "exact_current_body_GO_and_journal",
+      "passed": true
+    },
+    {
+      "name": "seven_calls_one_body_five_pages",
+      "passed": true
+    },
+    {
+      "name": "original_pins_jwt-e3af-rog-source-result-body0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "once_arm_and_originalSDK_jwt-e3af-rog-source-result-body0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "original_pins_jwt-e3af-rog-source-result-body0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "once_arm_and_originalSDK_jwt-e3af-rog-source-result-body0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "original_pins_jwt-e3af-rog-source-result-body0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "once_arm_and_originalSDK_jwt-e3af-rog-source-result-body0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "original_pins_jwt-e3af-rog-source-result-body0-page8192-r1",
+      "passed": true
+    },
+    {
+      "name": "once_arm_and_originalSDK_jwt-e3af-rog-source-result-body0-page8192-r1",
+      "passed": true
+    },
+    {
+      "name": "original_pins_jwt-e3af-rog-source-result-body0-page16384-r1",
+      "passed": true
+    },
+    {
+      "name": "once_arm_and_originalSDK_jwt-e3af-rog-source-result-body0-page16384-r1",
+      "passed": true
+    },
+    {
+      "name": "original_pins_jwt-e3af-rog-source-result-body0-page24576-r1",
+      "passed": true
+    },
+    {
+      "name": "once_arm_and_originalSDK_jwt-e3af-rog-source-result-body0-page24576-r1",
+      "passed": true
+    },
+    {
+      "name": "original_pins_jwt-e3af-rog-source-result-body0-page32768-r1",
+      "passed": true
+    },
+    {
+      "name": "once_arm_and_originalSDK_jwt-e3af-rog-source-result-body0-page32768-r1",
+      "passed": true
+    },
+    {
+      "name": "exact_one_current_body_admission",
+      "passed": true
+    },
+    {
+      "name": "body_future_closed",
+      "passed": true
+    },
+    {
+      "name": "page_0",
+      "passed": true
+    },
+    {
+      "name": "page_8192",
+      "passed": true
+    },
+    {
+      "name": "page_16384",
+      "passed": true
+    },
+    {
+      "name": "page_24576",
+      "passed": true
+    },
+    {
+      "name": "page_32768",
+      "passed": true
+    },
+    {
+      "name": "whole_original_payload_SHA_EOF",
+      "passed": true
+    },
+    {
+      "name": "actual_body_extent_version_independent_metadata",
+      "passed": true
+    },
+    {
+      "name": "original_stage_transport_independently_qualified",
+      "passed": true
+    },
+    {
+      "name": "actual_clean_exact_candidate",
+      "passed": true
+    },
+    {
+      "name": "exact_stager_carrier_and_roots",
+      "passed": true
+    },
+    {
+      "name": "independent3916_canonical_index_and_modes",
+      "passed": true
+    },
+    {
+      "name": "actual_independent_Git_no_alternates_links_fsck",
+      "passed": true
+    },
+    {
+      "name": "old_source_exact_before_after",
+      "passed": true
+    },
+    {
+      "name": "old_failed_observer_full_lossless_fences",
+      "passed": true
+    },
+    {
+      "name": "four_old_controls_inert_not_new_tests",
+      "passed": true
+    },
+    {
+      "name": "all57_actual_children_reaped_exit0_groupempty",
+      "passed": true
+    },
+    {
+      "name": "original_stage_deadlines_and_lossless_epoch",
+      "passed": true
+    },
+    {
+      "name": "incremental_bundle_not_standalone",
+      "passed": true
+    },
+    {
+      "name": "no_compile_formatter_Rust_tests_server_production",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "check_count": 38,
+  "qualified": "Exact isolated source staging and its closed original observations; no product build/runtime qualification",
+  "actual_children": 57,
+  "elapsed_seconds": 13.74311006302014,
+  "canonical_leaves": 3916,
+  "canonical_bytes": 62287650,
+  "canonical_index_sha256": "d545c2109362dc3f74d85ade2e66717d7b1ff9dd630842982f2ae3215e121dea",
+  "raw_command_files_independently_archived": false,
+  "incremental_bundle_full_raw_independently_archived": false,
+  "old_local_gaps_and_failures_preserved": true,
+  "formatter_executed": false,
+  "compile_executed": false,
+  "Rust_tests_executed": false,
+  "JWT_distributed_HA_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0,
+  "as_of_UTC": "2026-11-06 03:54:36 UTC"
+}

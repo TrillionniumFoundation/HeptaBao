@@ -1,0 +1,10 @@
+{
+  "schema": "heptabao.source-peer-local-checker-correction.r1",
+  "firstError": "inputs_close_before_publish",
+  "reason": "Unanchored text search matched the earlier function definition. Manual source ordering was correct. The corrected check selects the indented main invocation.",
+  "before": "src.indexOf(\"directory_after=recheck_inputs_and_close(c)\")<src.indexOf(\"publish_report(c,report)\")",
+  "after": "src.indexOf(\"directory_after=recheck_inputs_and_close(c)\")<src.indexOf(\"  publish_report(c,report)\")",
+  "collectorSourceChanged": false,
+  "pythonExecuted": false,
+  "runtimeCalls": 0
+}

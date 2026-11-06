@@ -1,0 +1,32 @@
+{
+  "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/artifacts/heptabao-seed": [
+    102145376,
+    "0edc8d3c1fb3b78a4b018f684bfc07269d273c72925582a849b68df6c003b6a6",
+    320
+  ],
+  "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/artifacts/heptabao-server": [
+    110219600,
+    "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+    320
+  ],
+  "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/retained-heptabao-server-libtest": [
+    187839640,
+    "7ea0be2f071a9bfe562c5a1d6a2cedf225cfdae23363a039be80fb7a42198725",
+    320
+  ],
+  "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/native-build.public.json": [
+    786,
+    "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+    384
+  ],
+  "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/normal-release-result.public.json": [
+    3192,
+    "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
+    384
+  ],
+  "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/result.public.json": [
+    57532,
+    "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475",
+    384
+  ]
+}

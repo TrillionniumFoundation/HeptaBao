@@ -1,0 +1,210 @@
+{
+  "schema": "heptabao.cli13-source-selected-guards.actual.v1",
+  "pass": true,
+  "checks": 50,
+  "results": [
+    {
+      "name": "new13authorization",
+      "pass": true
+    },
+    {
+      "name": "cannotAuthorizeTwice",
+      "pass": true
+    },
+    {
+      "name": "GOReject_original_job",
+      "pass": true
+    },
+    {
+      "name": "GOReject_info_operation",
+      "pass": true
+    },
+    {
+      "name": "GOReject_maximum_binary_read_starts",
+      "pass": true
+    },
+    {
+      "name": "GOReject_immutable_body_page_bytes",
+      "pass": true
+    },
+    {
+      "name": "GORejectReorderedRequests",
+      "pass": true
+    },
+    {
+      "name": "GORejectChangedVersion",
+      "pass": true
+    },
+    {
+      "name": "stateRejectChangedVersion",
+      "pass": true
+    },
+    {
+      "name": "activeObserverBlocksBodyAuthorization",
+      "pass": true
+    },
+    {
+      "name": "exactRange_0",
+      "pass": true
+    },
+    {
+      "name": "onceMarkerBlocksRepeatedRange_0",
+      "pass": true
+    },
+    {
+      "name": "exactRange_1",
+      "pass": true
+    },
+    {
+      "name": "onceMarkerBlocksRepeatedRange_1",
+      "pass": true
+    },
+    {
+      "name": "exactRange_2",
+      "pass": true
+    },
+    {
+      "name": "onceMarkerBlocksRepeatedRange_2",
+      "pass": true
+    },
+    {
+      "name": "exactRange_3",
+      "pass": true
+    },
+    {
+      "name": "onceMarkerBlocksRepeatedRange_3",
+      "pass": true
+    },
+    {
+      "name": "exactRange_4",
+      "pass": true
+    },
+    {
+      "name": "onceMarkerBlocksRepeatedRange_4",
+      "pass": true
+    },
+    {
+      "name": "exactRange_5",
+      "pass": true
+    },
+    {
+      "name": "onceMarkerBlocksRepeatedRange_5",
+      "pass": true
+    },
+    {
+      "name": "exactRange_6",
+      "pass": true
+    },
+    {
+      "name": "onceMarkerBlocksRepeatedRange_6",
+      "pass": true
+    },
+    {
+      "name": "exactRange_7",
+      "pass": true
+    },
+    {
+      "name": "onceMarkerBlocksRepeatedRange_7",
+      "pass": true
+    },
+    {
+      "name": "exactRange_8",
+      "pass": true
+    },
+    {
+      "name": "onceMarkerBlocksRepeatedRange_8",
+      "pass": true
+    },
+    {
+      "name": "exactRange_9",
+      "pass": true
+    },
+    {
+      "name": "onceMarkerBlocksRepeatedRange_9",
+      "pass": true
+    },
+    {
+      "name": "exactRange_10",
+      "pass": true
+    },
+    {
+      "name": "onceMarkerBlocksRepeatedRange_10",
+      "pass": true
+    },
+    {
+      "name": "exactRange_11",
+      "pass": true
+    },
+    {
+      "name": "onceMarkerBlocksRepeatedRange_11",
+      "pass": true
+    },
+    {
+      "name": "exactRange_12",
+      "pass": true
+    },
+    {
+      "name": "onceMarkerBlocksRepeatedRange_12",
+      "pass": true
+    },
+    {
+      "name": "exactBodyReject_offset",
+      "pass": true
+    },
+    {
+      "name": "exactBodyReject_limit",
+      "pass": true
+    },
+    {
+      "name": "exactBodyReject_path",
+      "pass": true
+    },
+    {
+      "name": "exactBodyReject_expected_version",
+      "pass": true
+    },
+    {
+      "name": "exactBodyReject_host",
+      "pass": true
+    },
+    {
+      "name": "rangeOrderReject",
+      "pass": true
+    },
+    {
+      "name": "noFourteenthRange",
+      "pass": true
+    },
+    {
+      "name": "correctPage_binary_read",
+      "pass": true
+    },
+    {
+      "name": "wrongPage_binary_read",
+      "pass": true
+    },
+    {
+      "name": "correctPage_file_info",
+      "pass": true
+    },
+    {
+      "name": "wrongPage_file_info",
+      "pass": true
+    },
+    {
+      "name": "correctPage_process_read",
+      "pass": true
+    },
+    {
+      "name": "wrongPage_process_read",
+      "pass": true
+    },
+    {
+      "name": "zeroToolInvocations",
+      "pass": true
+    }
+  ],
+  "NativeCalls": 0,
+  "localExecutorCalls": 0,
+  "scope": "Only new authorization/next-range/once/page branch. No archive/SDK/controller/product execution."
+}

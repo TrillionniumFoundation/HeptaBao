@@ -1,0 +1,37 @@
+{
+  "schema": "heptabao.native-jwt-source-stage-result-body.actual-packet.v1",
+  "originalJob": "1a1aed43ac9-fc05-62ec",
+  "body": {
+    "path": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/control/stage-result.public.json",
+    "version": "66306:28749310:27581:1793934521373633707:1793934521373633707",
+    "body": {
+      "blob": "75b57b2aeff043a0114a987e96ab7a9e73d521f0",
+      "bytes": 27581,
+      "sha256": "0bf4e76a64ded7fa9ff5af683252cbe6e19f055766fb9004345bbc2c265c4666"
+    },
+    "originalOperation": "6acd65e32fbc581b09fc08be49660b923519e61d761433355be76ad6d495a9e6",
+    "metadataOperation": "2d07d9698ca3b85a8adde0aad7acb28f9fa514e0d23d17346ae03c074a582394",
+    "originalPayload": {
+      "blob": "d56c1dcc33ef6c6760759f59d291872369cb7012",
+      "bytes": 37211,
+      "sha256": "bd2159587f08c73bb4b9355e846c45e30c7c1f413859f09a3df824f723efb8e1"
+    },
+    "semanticQualification": false
+  },
+  "bodyAllBytes": true,
+  "bodyReadCalls": 1,
+  "originalStatusCalls": 1,
+  "originalPages": 5,
+  "newProcessStarts": 0,
+  "allReturnedObserverClosed": true,
+  "currentCalls": 0,
+  "currentNativeFutures": 0,
+  "sourceReportChecks": 13,
+  "sourceStageRootQualificationPending": true,
+  "formatterExecuted": false,
+  "rustBuildExecuted": false,
+  "raw57CommandFilesIndependentlyArchived": false,
+  "offlineCheckerCorrection": "OFFLINE-CHECKER-CORRECTION.public.json",
+  "priorStage52": "50d59c2855d912d216f774ffeff5542f273a9af6",
+  "priorInfo24": "a2bc6e96254bb0c8213be33d07cb1f6d4d9e2b28"
+}

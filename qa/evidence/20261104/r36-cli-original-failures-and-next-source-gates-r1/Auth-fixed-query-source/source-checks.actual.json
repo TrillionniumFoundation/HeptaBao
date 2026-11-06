@@ -1,0 +1,533 @@
+{
+  "schema": "heptabao.fixed-log-query-source-pure-verifier.r1",
+  "passed": true,
+  "checkCount": 126,
+  "checks": [
+    {
+      "name": "exact_actual_help_source_base",
+      "passed": true
+    },
+    {
+      "name": "source_forward_whole",
+      "passed": true
+    },
+    {
+      "name": "source_inverse_whole",
+      "passed": true
+    },
+    {
+      "name": "journal_forward_whole",
+      "passed": true
+    },
+    {
+      "name": "journal_inverse_whole",
+      "passed": true
+    },
+    {
+      "name": "definition_present:need",
+      "passed": true
+    },
+    {
+      "name": "definition_present:need",
+      "passed": true
+    },
+    {
+      "name": "whole_original_definition:need",
+      "passed": true
+    },
+    {
+      "name": "definition_present:sha",
+      "passed": true
+    },
+    {
+      "name": "definition_present:sha",
+      "passed": true
+    },
+    {
+      "name": "whole_original_definition:sha",
+      "passed": true
+    },
+    {
+      "name": "definition_present:identity",
+      "passed": true
+    },
+    {
+      "name": "definition_present:identity",
+      "passed": true
+    },
+    {
+      "name": "whole_original_definition:identity",
+      "passed": true
+    },
+    {
+      "name": "definition_present:remaining",
+      "passed": true
+    },
+    {
+      "name": "definition_present:remaining",
+      "passed": true
+    },
+    {
+      "name": "whole_original_definition:remaining",
+      "passed": true
+    },
+    {
+      "name": "definition_present:public_error",
+      "passed": true
+    },
+    {
+      "name": "definition_present:public_error",
+      "passed": true
+    },
+    {
+      "name": "whole_original_definition:public_error",
+      "passed": true
+    },
+    {
+      "name": "definition_present:load_helpers",
+      "passed": true
+    },
+    {
+      "name": "definition_present:load_helpers",
+      "passed": true
+    },
+    {
+      "name": "whole_original_definition:load_helpers",
+      "passed": true
+    },
+    {
+      "name": "definition_present:metadata",
+      "passed": true
+    },
+    {
+      "name": "definition_present:metadata",
+      "passed": true
+    },
+    {
+      "name": "whole_original_definition:metadata",
+      "passed": true
+    },
+    {
+      "name": "definition_present:admit_binding",
+      "passed": true
+    },
+    {
+      "name": "definition_present:admit_binding",
+      "passed": true
+    },
+    {
+      "name": "whole_original_definition:admit_binding",
+      "passed": true
+    },
+    {
+      "name": "definition_present:open_fixed",
+      "passed": true
+    },
+    {
+      "name": "definition_present:open_fixed",
+      "passed": true
+    },
+    {
+      "name": "whole_original_definition:open_fixed",
+      "passed": true
+    },
+    {
+      "name": "definition_present:verify_all",
+      "passed": true
+    },
+    {
+      "name": "definition_present:verify_all",
+      "passed": true
+    },
+    {
+      "name": "whole_original_definition:verify_all",
+      "passed": true
+    },
+    {
+      "name": "definition_present:hash_tool",
+      "passed": true
+    },
+    {
+      "name": "definition_present:hash_tool",
+      "passed": true
+    },
+    {
+      "name": "whole_original_definition:hash_tool",
+      "passed": true
+    },
+    {
+      "name": "definition_present:command_public",
+      "passed": true
+    },
+    {
+      "name": "definition_present:command_public",
+      "passed": true
+    },
+    {
+      "name": "whole_original_definition:command_public",
+      "passed": true
+    },
+    {
+      "name": "definition_present:close_rows",
+      "passed": true
+    },
+    {
+      "name": "definition_present:close_rows",
+      "passed": true
+    },
+    {
+      "name": "whole_original_definition:close_rows",
+      "passed": true
+    },
+    {
+      "name": "one_line:BINDING_READY = ",
+      "passed": true
+    },
+    {
+      "name": "one_line:BINDING_READY = ",
+      "passed": true
+    },
+    {
+      "name": "unchanged_binding_or_budget:BINDING_READY = ",
+      "passed": true
+    },
+    {
+      "name": "one_line:LOG_BINDING = ",
+      "passed": true
+    },
+    {
+      "name": "one_line:LOG_BINDING = ",
+      "passed": true
+    },
+    {
+      "name": "unchanged_binding_or_budget:LOG_BINDING = ",
+      "passed": true
+    },
+    {
+      "name": "one_line:LOG_PATH = ",
+      "passed": true
+    },
+    {
+      "name": "one_line:LOG_PATH = ",
+      "passed": true
+    },
+    {
+      "name": "unchanged_binding_or_budget:LOG_PATH = ",
+      "passed": true
+    },
+    {
+      "name": "one_line:PYTHON = ",
+      "passed": true
+    },
+    {
+      "name": "one_line:PYTHON = ",
+      "passed": true
+    },
+    {
+      "name": "unchanged_binding_or_budget:PYTHON = ",
+      "passed": true
+    },
+    {
+      "name": "one_line:MODULES = ",
+      "passed": true
+    },
+    {
+      "name": "one_line:MODULES = ",
+      "passed": true
+    },
+    {
+      "name": "unchanged_binding_or_budget:MODULES = ",
+      "passed": true
+    },
+    {
+      "name": "one_line:START = ",
+      "passed": true
+    },
+    {
+      "name": "one_line:START = ",
+      "passed": true
+    },
+    {
+      "name": "unchanged_binding_or_budget:START = ",
+      "passed": true
+    },
+    {
+      "name": "one_line:UNTIL = ",
+      "passed": true
+    },
+    {
+      "name": "one_line:UNTIL = ",
+      "passed": true
+    },
+    {
+      "name": "unchanged_binding_or_budget:UNTIL = ",
+      "passed": true
+    },
+    {
+      "name": "one_line:MAX_CODE_BYTES = ",
+      "passed": true
+    },
+    {
+      "name": "one_line:MAX_CODE_BYTES = ",
+      "passed": true
+    },
+    {
+      "name": "unchanged_binding_or_budget:MAX_CODE_BYTES = ",
+      "passed": true
+    },
+    {
+      "name": "one_line:MAX_READ_CALLS = ",
+      "passed": true
+    },
+    {
+      "name": "one_line:MAX_READ_CALLS = ",
+      "passed": true
+    },
+    {
+      "name": "unchanged_binding_or_budget:MAX_READ_CALLS = ",
+      "passed": true
+    },
+    {
+      "name": "one_line:MAX_METADATA = ",
+      "passed": true
+    },
+    {
+      "name": "one_line:MAX_METADATA = ",
+      "passed": true
+    },
+    {
+      "name": "unchanged_binding_or_budget:MAX_METADATA = ",
+      "passed": true
+    },
+    {
+      "name": "one_line:MAX_FD_ROWS = ",
+      "passed": true
+    },
+    {
+      "name": "one_line:MAX_FD_ROWS = ",
+      "passed": true
+    },
+    {
+      "name": "unchanged_binding_or_budget:MAX_FD_ROWS = ",
+      "passed": true
+    },
+    {
+      "name": "one_line:MAX_PUBLIC_OUTPUT = ",
+      "passed": true
+    },
+    {
+      "name": "one_line:MAX_PUBLIC_OUTPUT = ",
+      "passed": true
+    },
+    {
+      "name": "unchanged_binding_or_budget:MAX_PUBLIC_OUTPUT = ",
+      "passed": true
+    },
+    {
+      "name": "max_capture_stream_same_65536",
+      "passed": true
+    },
+    {
+      "name": "one_line:MODULES = ",
+      "passed": true
+    },
+    {
+      "name": "exact_two_original_embedded_helpers",
+      "passed": true
+    },
+    {
+      "name": "embedded_whole:mac_owned_unreaped_r1",
+      "passed": true
+    },
+    {
+      "name": "embedded_whole:mac_owned_commands_r1",
+      "passed": true
+    },
+    {
+      "name": "request_only_source_and_new_key",
+      "passed": true
+    },
+    {
+      "name": "request_exact_stdin",
+      "passed": true
+    },
+    {
+      "name": "request_original_outer60",
+      "passed": true
+    },
+    {
+      "name": "request_source_and_key_binding",
+      "passed": true
+    },
+    {
+      "name": "one_line:QUERY_ARGV = ",
+      "passed": true
+    },
+    {
+      "name": "exact_fixed_argv13",
+      "passed": true
+    },
+    {
+      "name": "fixed_three_second_predicate",
+      "passed": true
+    },
+    {
+      "name": "help_text_is_actual_projection",
+      "passed": true
+    },
+    {
+      "name": "help_parent_success_with_full_closure",
+      "passed": true
+    },
+    {
+      "name": "actual_help_support:--start <date>",
+      "passed": true
+    },
+    {
+      "name": "actual_help_support:--end <date>",
+      "passed": true
+    },
+    {
+      "name": "actual_help_support:--predicate <predicate>",
+      "passed": true
+    },
+    {
+      "name": "actual_help_support:--style <style>",
+      "passed": true
+    },
+    {
+      "name": "actual_help_support:--[no-]debug",
+      "passed": true
+    },
+    {
+      "name": "actual_help_support:--[no-]info",
+      "passed": true
+    },
+    {
+      "name": "actual_help_support:--[no-]pager",
+      "passed": true
+    },
+    {
+      "name": "actual_help_support:ndjson",
+      "passed": true
+    },
+    {
+      "name": "actual_help_support:'Y-M-D H:m:s+zzzz'",
+      "passed": true
+    },
+    {
+      "name": "same_original_job_identity",
+      "passed": true
+    },
+    {
+      "name": "actual_time_origins",
+      "passed": true
+    },
+    {
+      "name": "original1858ms_to_conservative3000ms",
+      "passed": true
+    },
+    {
+      "name": "original_bootstrap_source_row",
+      "passed": true
+    },
+    {
+      "name": "original_label_and_unknown_not_closed",
+      "passed": true
+    },
+    {
+      "name": "new_timestamp_constants_exact",
+      "passed": true
+    },
+    {
+      "name": "definition_present:log_projection",
+      "passed": true
+    },
+    {
+      "name": "hard_combined_stream_refusal_before_projection",
+      "passed": true
+    },
+    {
+      "name": "known_exit_zero_and_empty_stderr",
+      "passed": true
+    },
+    {
+      "name": "hard_row_cap_and_per_line_cap",
+      "passed": true
+    },
+    {
+      "name": "no_projection_truncation_or_sort",
+      "passed": true
+    },
+    {
+      "name": "duplicate_json_and_nonfinite_refusal",
+      "passed": true
+    },
+    {
+      "name": "one_exact_label_and_process",
+      "passed": true
+    },
+    {
+      "name": "definition_present:log_timestamp_us",
+      "passed": true
+    },
+    {
+      "name": "exact_integer_time_bounds",
+      "passed": true
+    },
+    {
+      "name": "definition_present:command_public",
+      "passed": true
+    },
+    {
+      "name": "definition_present:command_public",
+      "passed": true
+    },
+    {
+      "name": "no_raw_or_hash_export",
+      "passed": true
+    },
+    {
+      "name": "explicit_nonqualification",
+      "passed": true
+    },
+    {
+      "name": "one_fixed_query_call",
+      "passed": true
+    },
+    {
+      "name": "original_child_owner_and_full_close_tail",
+      "passed": true
+    },
+    {
+      "name": "journal_only_slot_request_prefix",
+      "passed": true
+    },
+    {
+      "name": "new_slot_not_old_slot",
+      "passed": true
+    }
+  ],
+  "unchangedPythonDefinitions": [
+    "need",
+    "sha",
+    "identity",
+    "remaining",
+    "public_error",
+    "load_helpers",
+    "metadata",
+    "admit_binding",
+    "open_fixed",
+    "verify_all",
+    "hash_tool",
+    "command_public",
+    "close_rows"
+  ],
+  "sourceHunks": 7,
+  "journalHunks": 2,
+  "pythonEvaluated": false,
+  "pythonCompiled": false,
+  "componentOrSdkExecuted": false,
+  "runtimeCalls": 0,
+  "queryAuthorized": false
+}

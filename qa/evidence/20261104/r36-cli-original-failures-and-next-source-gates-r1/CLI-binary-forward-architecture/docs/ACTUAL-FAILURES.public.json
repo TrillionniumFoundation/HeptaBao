@@ -1,0 +1,568 @@
+{
+  "schema": "heptabao.native-snapshot-standby-actual-failure-map.v1",
+  "report": {
+    "blob": "0b2edd60185b80817c3c7f1378b914ae914ab21e",
+    "bytes": 848065,
+    "sha256": "d5c691d23b513a2a63916792bbe21178e2b34799e6adbd20ddf88cdf6147bc48"
+  },
+  "aggregateTree": "871aa23bfee256e91247fbb7e6d42c4cb82d181d",
+  "candidate": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "status": "completed_with_compatibility_failures",
+  "caseQualifications": {
+    "B01": true,
+    "B02": true,
+    "B03": true,
+    "B04": false,
+    "B05": false
+  },
+  "cases": [
+    {
+      "case": "B01",
+      "label": "leader_save_archive_A",
+      "command": "save",
+      "role": "leader",
+      "targetNode": 1,
+      "leaderBefore": 1,
+      "officialSha": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+      "defaultRedirect": true,
+      "controllerRetries": 0,
+      "manualRedirects": 0,
+      "process": {
+        "direct_child_reaped": true,
+        "elapsed_ms": 951.810775,
+        "error_class": "cli_success",
+        "pid": 2276157,
+        "private_capture_label": "0008-B01-official-cli",
+        "remaining": [],
+        "returncode": 0,
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "timed_out": false
+      },
+      "serverTerminal": {
+        "client_http_framing_observed": false,
+        "redirects_followed_by_controller": 0,
+        "server_boundary_known": true,
+        "single_cli_window_pair_pattern": true,
+        "statuses": [
+          200
+        ],
+        "terminal_status": 200
+      },
+      "auditPairs": [
+        {
+          "kind": "request",
+          "node": 1,
+          "request_sequence": 61,
+          "response_sequence": 62,
+          "same_opaque_fingerprint": true,
+          "status": 200
+        }
+      ],
+      "auditLimitations": {
+        "macAuthenticated": false,
+        "clientFraming": false,
+        "association": "single_owned_cli_window_without_other_controller_http",
+        "routeReversed": false
+      },
+      "archive": {
+        "archive_bytes": 39348,
+        "archive_sha256": "cd3ebe10f1ca35c7315069fd669b3df06d7a5ccf07029ed879dbc29e0d4fc4c9",
+        "archive_valid": true,
+        "exists": true,
+        "expanded_bytes": 43520,
+        "file": {
+          "bytes": 39348,
+          "ctime_ns": {
+            "$exactInteger": "1793935327651578678"
+          },
+          "device": 2050,
+          "gid": 1000,
+          "inode": 7882370,
+          "links": 1,
+          "mode": 384,
+          "mtime_ns": {
+            "$exactInteger": "1793935327651578678"
+          },
+          "sha256": "cd3ebe10f1ca35c7315069fd669b3df06d7a5ccf07029ed879dbc29e0d4fc4c9",
+          "uid": 1000
+        },
+        "format": "heptabao-native-ha-object-snapshot-v1",
+        "generation": 9,
+        "member_names": [
+          "meta.json",
+          "state.bin",
+          "SHA256SUMS",
+          "SHA256SUMS.sealed"
+        ],
+        "members": [
+          {
+            "bytes": 285,
+            "name": "meta.json",
+            "sha256": "c2c619ba141d8037d85fba15ba4b0ac7dcc856b14281e9cdc59eda8044cd4f71"
+          },
+          {
+            "bytes": 38797,
+            "name": "state.bin",
+            "sha256": "b7bc537fdd48d45d26365d5537667478bb4bcc6283724f69aede1006da966e7c"
+          },
+          {
+            "bytes": 152,
+            "name": "SHA256SUMS",
+            "sha256": "ce9f751f122c4eef24b7248d63711a37678cc5571939e3420299e233aba00db2"
+          },
+          {
+            "bytes": 184,
+            "name": "SHA256SUMS.sealed",
+            "sha256": "80049a2219674ca311b24de74384568f3af14c3e5755f35f98c3a56efb02a447"
+          }
+        ],
+        "official_openbao_state_format_claimed": false,
+        "seal_identity_sha256": "9112038ce2dea413598ba36bf62cdee3bff7e5e2bb7b4b5c1a21c2ae21f0245d",
+        "sealed_checksum_cryptographically_authenticated": false,
+        "state_bytes": 38797,
+        "state_decrypted_by_observer": false,
+        "state_format": "heptabao-encrypted-ha-object-backup/HBV6HA01"
+      },
+      "restoreReadback": null,
+      "restoreInputUnchanged": null,
+      "knownComplete": true,
+      "outcomeUnknown": false
+    },
+    {
+      "case": "B02",
+      "label": "leader_restore_archive_A",
+      "command": "restore",
+      "role": "leader",
+      "targetNode": 1,
+      "leaderBefore": 1,
+      "officialSha": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+      "defaultRedirect": true,
+      "controllerRetries": 0,
+      "manualRedirects": 0,
+      "process": {
+        "direct_child_reaped": true,
+        "elapsed_ms": 591.415016,
+        "error_class": "cli_success",
+        "pid": 2277934,
+        "private_capture_label": "0009-B02-official-cli",
+        "remaining": [],
+        "returncode": 0,
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "timed_out": false
+      },
+      "serverTerminal": {
+        "client_http_framing_observed": false,
+        "redirects_followed_by_controller": 0,
+        "server_boundary_known": true,
+        "single_cli_window_pair_pattern": true,
+        "statuses": [
+          200
+        ],
+        "terminal_status": 200
+      },
+      "auditPairs": [
+        {
+          "kind": "request",
+          "node": 1,
+          "request_sequence": 95,
+          "response_sequence": 96,
+          "same_opaque_fingerprint": true,
+          "status": 200
+        }
+      ],
+      "auditLimitations": {
+        "macAuthenticated": false,
+        "clientFraming": false,
+        "association": "single_owned_cli_window_without_other_controller_http",
+        "routeReversed": false
+      },
+      "archive": {
+        "archive_valid": false,
+        "exists": false
+      },
+      "restoreReadback": {
+        "actual_restored_baseline": true,
+        "actual_unchanged_mutated_state": false,
+        "case": "B02",
+        "cli_exit_zero": true,
+        "known_rejection": false,
+        "native_restore_qualified": true,
+        "no_replay": true,
+        "terminal_status": 200,
+        "version_values_metadata_exact_on_all_nodes": true
+      },
+      "restoreInputUnchanged": true,
+      "knownComplete": true,
+      "outcomeUnknown": false
+    },
+    {
+      "case": "B03",
+      "label": "leader_save_archive_B",
+      "command": "save",
+      "role": "leader",
+      "targetNode": 1,
+      "leaderBefore": 1,
+      "officialSha": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+      "defaultRedirect": true,
+      "controllerRetries": 0,
+      "manualRedirects": 0,
+      "process": {
+        "direct_child_reaped": true,
+        "elapsed_ms": 390.177567,
+        "error_class": "cli_success",
+        "pid": 2278852,
+        "private_capture_label": "0010-B03-official-cli",
+        "remaining": [],
+        "returncode": 0,
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "timed_out": false
+      },
+      "serverTerminal": {
+        "client_http_framing_observed": false,
+        "redirects_followed_by_controller": 0,
+        "server_boundary_known": true,
+        "single_cli_window_pair_pattern": true,
+        "statuses": [
+          200
+        ],
+        "terminal_status": 200
+      },
+      "auditPairs": [
+        {
+          "kind": "request",
+          "node": 1,
+          "request_sequence": 159,
+          "response_sequence": 160,
+          "same_opaque_fingerprint": true,
+          "status": 200
+        }
+      ],
+      "auditLimitations": {
+        "macAuthenticated": false,
+        "clientFraming": false,
+        "association": "single_owned_cli_window_without_other_controller_http",
+        "routeReversed": false
+      },
+      "archive": {
+        "archive_bytes": 41744,
+        "archive_sha256": "3da5eeeb04020f3753c54aef5ae19701052b21b4f9a7ed957dc4b311e1a1cd76",
+        "archive_valid": true,
+        "exists": true,
+        "expanded_bytes": 46080,
+        "file": {
+          "bytes": 41744,
+          "ctime_ns": {
+            "$exactInteger": "1793935357477678070"
+          },
+          "device": 2050,
+          "gid": 1000,
+          "inode": 7904304,
+          "links": 1,
+          "mode": 384,
+          "mtime_ns": {
+            "$exactInteger": "1793935357477678070"
+          },
+          "sha256": "3da5eeeb04020f3753c54aef5ae19701052b21b4f9a7ed957dc4b311e1a1cd76",
+          "uid": 1000
+        },
+        "format": "heptabao-native-ha-object-snapshot-v1",
+        "generation": 12,
+        "member_names": [
+          "meta.json",
+          "state.bin",
+          "SHA256SUMS",
+          "SHA256SUMS.sealed"
+        ],
+        "members": [
+          {
+            "bytes": 286,
+            "name": "meta.json",
+            "sha256": "81f82554a9b91acd545c6d6a499de3af592fe24e301d182e0a5a449e3b98bba6"
+          },
+          {
+            "bytes": 41150,
+            "name": "state.bin",
+            "sha256": "56c2b9f094e1fc61e2689bf52e13132a2efa47f8ecc3afa837fa502e3d68666e"
+          },
+          {
+            "bytes": 152,
+            "name": "SHA256SUMS",
+            "sha256": "c4a059b27537589b2bcdd5416d3d26c29f71ffed4b66af4bf60c2a54f75d8578"
+          },
+          {
+            "bytes": 184,
+            "name": "SHA256SUMS.sealed",
+            "sha256": "b98ffb75eb6fd22d33d12d43b5e49e30c2999c34d50efb7738e2805533ea2d42"
+          }
+        ],
+        "official_openbao_state_format_claimed": false,
+        "seal_identity_sha256": "9112038ce2dea413598ba36bf62cdee3bff7e5e2bb7b4b5c1a21c2ae21f0245d",
+        "sealed_checksum_cryptographically_authenticated": false,
+        "state_bytes": 41150,
+        "state_decrypted_by_observer": false,
+        "state_format": "heptabao-encrypted-ha-object-backup/HBV6HA01"
+      },
+      "restoreReadback": null,
+      "restoreInputUnchanged": null,
+      "knownComplete": true,
+      "outcomeUnknown": false
+    },
+    {
+      "case": "B04",
+      "label": "default_standby_save",
+      "command": "save",
+      "role": "standby",
+      "targetNode": 2,
+      "leaderBefore": 1,
+      "officialSha": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+      "defaultRedirect": true,
+      "controllerRetries": 0,
+      "manualRedirects": 0,
+      "process": {
+        "direct_child_reaped": true,
+        "elapsed_ms": 386.10038,
+        "error_class": "incomplete_snapshot",
+        "pid": 2278932,
+        "private_capture_label": "0011-B04-official-cli",
+        "remaining": [],
+        "returncode": 2,
+        "stderr_bytes": 86,
+        "stderr_sha256": "7adf86f04d4308e68812a0b328056b9990af2852d9420e7f579b6909a3d591ac",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "timed_out": false
+      },
+      "serverTerminal": {
+        "client_http_framing_observed": false,
+        "redirects_followed_by_controller": 0,
+        "server_boundary_known": true,
+        "single_cli_window_pair_pattern": true,
+        "statuses": [
+          200,
+          307
+        ],
+        "terminal_status": 200
+      },
+      "auditPairs": [
+        {
+          "kind": "request",
+          "node": 1,
+          "request_sequence": 161,
+          "response_sequence": 162,
+          "same_opaque_fingerprint": true,
+          "status": 200
+        },
+        {
+          "kind": "request",
+          "node": 2,
+          "request_sequence": 49,
+          "response_sequence": 50,
+          "same_opaque_fingerprint": true,
+          "status": 307
+        }
+      ],
+      "auditLimitations": {
+        "macAuthenticated": false,
+        "clientFraming": false,
+        "association": "single_owned_cli_window_without_other_controller_http",
+        "routeReversed": false
+      },
+      "archive": {
+        "archive_valid": false,
+        "exists": false
+      },
+      "restoreReadback": null,
+      "restoreInputUnchanged": null,
+      "knownComplete": true,
+      "outcomeUnknown": false
+    },
+    {
+      "case": "B05",
+      "label": "default_standby_restore_archive_B",
+      "command": "restore",
+      "role": "standby",
+      "targetNode": 2,
+      "leaderBefore": 1,
+      "officialSha": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+      "defaultRedirect": true,
+      "controllerRetries": 0,
+      "manualRedirects": 0,
+      "process": {
+        "direct_child_reaped": true,
+        "elapsed_ms": 350.749946,
+        "error_class": "cli_success",
+        "pid": 2279894,
+        "private_capture_label": "0012-B05-official-cli",
+        "remaining": [],
+        "returncode": 0,
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "timed_out": false
+      },
+      "serverTerminal": {
+        "client_http_framing_observed": false,
+        "redirects_followed_by_controller": 0,
+        "server_boundary_known": true,
+        "single_cli_window_pair_pattern": true,
+        "statuses": [
+          400,
+          307
+        ],
+        "terminal_status": 400
+      },
+      "auditPairs": [
+        {
+          "kind": "request",
+          "node": 1,
+          "request_sequence": 195,
+          "response_sequence": 196,
+          "same_opaque_fingerprint": true,
+          "status": 400
+        },
+        {
+          "kind": "request",
+          "node": 2,
+          "request_sequence": 61,
+          "response_sequence": 62,
+          "same_opaque_fingerprint": true,
+          "status": 307
+        }
+      ],
+      "auditLimitations": {
+        "macAuthenticated": false,
+        "clientFraming": false,
+        "association": "single_owned_cli_window_without_other_controller_http",
+        "routeReversed": false
+      },
+      "archive": {
+        "archive_valid": false,
+        "exists": false
+      },
+      "restoreReadback": {
+        "actual_restored_baseline": false,
+        "actual_unchanged_mutated_state": true,
+        "case": "B05",
+        "cli_exit_zero": true,
+        "known_rejection": true,
+        "native_restore_qualified": false,
+        "no_replay": true,
+        "terminal_status": 400,
+        "version_values_metadata_exact_on_all_nodes": true
+      },
+      "restoreInputUnchanged": true,
+      "knownComplete": true,
+      "outcomeUnknown": false
+    }
+  ],
+  "cold": [
+    {
+      "case": "B02",
+      "coldRestartCompleted": true,
+      "sameNativeStateAfterCold": true,
+      "activationRepeated": false,
+      "restoreUploadRepeated": false,
+      "knownTerminalAuthorizedRestart": true,
+      "prefixAndChainPreserved": true,
+      "stoppedBeforeRestart": [
+        {
+          "direct_child_reaped": true,
+          "node": 1,
+          "owned_stopped": true,
+          "pid": 2274301,
+          "remaining": [],
+          "start_ticks": 101297476,
+          "stop_terminal_captured": true,
+          "wait_returncode": -15
+        },
+        {
+          "direct_child_reaped": true,
+          "node": 2,
+          "owned_stopped": true,
+          "pid": 2274299,
+          "remaining": [],
+          "start_ticks": 101297475,
+          "stop_terminal_captured": true,
+          "wait_returncode": -15
+        },
+        {
+          "direct_child_reaped": true,
+          "node": 3,
+          "owned_stopped": true,
+          "pid": 2274300,
+          "remaining": [],
+          "start_ticks": 101297475,
+          "stop_terminal_captured": true,
+          "wait_returncode": -15
+        }
+      ]
+    },
+    {
+      "case": "B05",
+      "coldRestartCompleted": true,
+      "sameNativeStateAfterCold": true,
+      "activationRepeated": false,
+      "restoreUploadRepeated": false,
+      "knownTerminalAuthorizedRestart": true,
+      "prefixAndChainPreserved": true,
+      "stoppedBeforeRestart": [
+        {
+          "direct_child_reaped": true,
+          "node": 1,
+          "owned_stopped": true,
+          "pid": 2278286,
+          "remaining": [],
+          "start_ticks": 101300801,
+          "stop_terminal_captured": true,
+          "wait_returncode": -15
+        },
+        {
+          "direct_child_reaped": true,
+          "node": 2,
+          "owned_stopped": true,
+          "pid": 2278283,
+          "remaining": [],
+          "start_ticks": 101300800,
+          "stop_terminal_captured": true,
+          "wait_returncode": -15
+        },
+        {
+          "direct_child_reaped": true,
+          "node": 3,
+          "owned_stopped": true,
+          "pid": 2278284,
+          "remaining": [],
+          "start_ticks": 101300801,
+          "stop_terminal_captured": true,
+          "wait_returncode": -15
+        }
+      ]
+    }
+  ],
+  "cleanup": {
+    "records": 283,
+    "allReapedEmpty": true,
+    "allStopped": true,
+    "verifiedInputsUnchanged": true
+  },
+  "notObserved": [
+    "actual negotiated CLI ALPN",
+    "raw second request upload bytes",
+    "client raw response headers/Location",
+    "internal error text or exact inner path causing leader 400",
+    "cryptographic audit MAC verification by observer"
+  ],
+  "noPrivateStderrRead": true,
+  "noBusinessReplay": true
+}

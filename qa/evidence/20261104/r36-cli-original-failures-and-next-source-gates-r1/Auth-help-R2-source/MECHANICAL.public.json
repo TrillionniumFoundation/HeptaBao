@@ -1,0 +1,50 @@
+{
+  "schema": "heptabao.mac-log-help-r2.source-mechanical-proof.v1",
+  "performedIn": "pure JavaScript over immutable source strings",
+  "sourceForwardWhole": true,
+  "sourceInverseWhole": true,
+  "sourceHunks": 2,
+  "onlyHelpProjectionAndSchema": true,
+  "journalForwardWhole": true,
+  "journalInverseWhole": true,
+  "journalHunks": 2,
+  "onlyThreeJournalBindingLiterals": true,
+  "requestOnlyStdinAndNewKey": true,
+  "embeddedModulesUnchanged": true,
+  "oldGoAndActualFailureUnchanged": true,
+  "noCandidateModuleExecuted": true,
+  "noNewRuntime": true,
+  "sourcePins": {
+    "before": {
+      "blob": "72db261830c3ddd1c708705a95b635cd424738a5",
+      "bytes": 44232,
+      "sha256": "7a36fd5212c16d0069050083bcb80bebbe095afdf283a923a34d06daee1e827c"
+    },
+    "after": {
+      "blob": "5bbd852c3b8c49a3cc18a0dc716fe123f33c3726",
+      "bytes": 44719,
+      "sha256": "aed2df85d5e22ef9933fe342e981426e2fc5817d81212ee4b17987a0b563ae35"
+    },
+    "journalBefore": {
+      "blob": "16f07ceaeb1797a400871f2da06f2e5cdd47baf8",
+      "bytes": 19036,
+      "sha256": "358d75670890507051facd06811cfbee20309f8edaa455ea2e5ec7301aea1d18"
+    },
+    "journalAfter": {
+      "blob": "25897aa7bab94445998d9fdd73ed07cb4a9ef151",
+      "bytes": 19054,
+      "sha256": "1f7f65f549d08d935e45e3c884e844435dafb3de16b41bd57e155c5c36effab8"
+    },
+    "requestBefore": {
+      "blob": "fcf60636968e344833f0cfaf268a29a61981b452",
+      "bytes": 44918,
+      "sha256": "f7801d7c7c89b6982c528857b6eb13c1ae0ec0f632ab14d8ec8d44842e679e49"
+    },
+    "requestAfter": {
+      "blob": "af792bef88805ced91bbe214f753695c503463b5",
+      "bytes": 45429,
+      "sha256": "18d59fb7864c32dcd046f4eb96d732384be5b0ce862b703116de0c1d569f6e4d"
+    }
+  },
+  "limitations": "No actual help text or syntax is asserted. This proves source boundaries and strict reconstruction only."
+}

@@ -1,0 +1,276 @@
+{
+  "schema": "heptabao.native-jwt.formatter-receipt-body.selected-checks.v1",
+  "checks": [
+    {
+      "name": "one_before_one exact body capability after actual metadata",
+      "pass": true
+    },
+    {
+      "name": "one_before_closed exact version-bound binary_read route",
+      "pass": true
+    },
+    {
+      "name": "one_before_bind all body original-call intents to separate body GO",
+      "pass": true
+    },
+    {
+      "name": "one_before_one body invocation marker before native call",
+      "pass": true
+    },
+    {
+      "name": "one_before_exact original chunk/UTF8/whole SHA; preserve raw report before later semantics",
+      "pass": true
+    },
+    {
+      "name": "one_before_explicit body authorization through normal-return gfRun only",
+      "pass": true
+    },
+    {
+      "name": "one_before_new binary observer pages only; prior observer cap remains8192",
+      "pass": true
+    },
+    {
+      "name": "one_before_same new page cap checked on returned bytes",
+      "pass": true
+    },
+    {
+      "name": "forward_whole",
+      "pass": true
+    },
+    {
+      "name": "one_after_same new page cap checked on returned bytes",
+      "pass": true
+    },
+    {
+      "name": "one_after_new binary observer pages only; prior observer cap remains8192",
+      "pass": true
+    },
+    {
+      "name": "one_after_explicit body authorization through normal-return gfRun only",
+      "pass": true
+    },
+    {
+      "name": "one_after_exact original chunk/UTF8/whole SHA; preserve raw report before later semantics",
+      "pass": true
+    },
+    {
+      "name": "one_after_one body invocation marker before native call",
+      "pass": true
+    },
+    {
+      "name": "one_after_bind all body original-call intents to separate body GO",
+      "pass": true
+    },
+    {
+      "name": "one_after_closed exact version-bound binary_read route",
+      "pass": true
+    },
+    {
+      "name": "one_after_one exact body capability after actual metadata",
+      "pass": true
+    },
+    {
+      "name": "reverse_whole",
+      "pass": true
+    },
+    {
+      "name": "eight_diff_hunks",
+      "pass": true
+    },
+    {
+      "name": "one_new_15th_definition",
+      "pass": true
+    },
+    {
+      "name": "whole_original_definition_gfAuthorizeFormatterReceiptInfoOnly",
+      "pass": true
+    },
+    {
+      "name": "whole_original_definition_gfNeed",
+      "pass": true
+    },
+    {
+      "name": "whole_original_definition_gfMetaEquals",
+      "pass": true
+    },
+    {
+      "name": "whole_original_definition_gfState",
+      "pass": true
+    },
+    {
+      "name": "whole_original_definition_gfSave",
+      "pass": true
+    },
+    {
+      "name": "whole_original_definition_gfIntegerText",
+      "pass": true
+    },
+    {
+      "name": "whole_original_definition_gfInitializeOnlyAfterRootGO",
+      "pass": true
+    },
+    {
+      "name": "whole_original_definition_gfReconcileSameGitArchiveReadOnly",
+      "pass": true
+    },
+    {
+      "name": "no_body_under_info_GO",
+      "pass": true
+    },
+    {
+      "name": "new_exact_body_GO_and_request_accept",
+      "pass": true
+    },
+    {
+      "name": "no_second_body_capability",
+      "pass": true
+    },
+    {
+      "name": "no_second_body_START",
+      "pass": true
+    },
+    {
+      "name": "old_info_GO_cannot_grant_body",
+      "pass": true
+    },
+    {
+      "name": "unfinished_previous_observer",
+      "pass": true
+    },
+    {
+      "name": "changed_actual_metadata_version",
+      "pass": true
+    },
+    {
+      "name": "unclosed_actual_info",
+      "pass": true
+    },
+    {
+      "name": "GO_not_whole",
+      "pass": true
+    },
+    {
+      "name": "wrong_host",
+      "pass": true
+    },
+    {
+      "name": "wrong_path",
+      "pass": true
+    },
+    {
+      "name": "wrong_version",
+      "pass": true
+    },
+    {
+      "name": "wrong_offset",
+      "pass": true
+    },
+    {
+      "name": "larger_limit",
+      "pass": true
+    },
+    {
+      "name": "new_key",
+      "pass": true
+    },
+    {
+      "name": "extra_argument",
+      "pass": true
+    },
+    {
+      "name": "selected_binary_branch_exact",
+      "pass": true
+    },
+    {
+      "name": "historical_whole_exact_branch_accepts",
+      "pass": true
+    },
+    {
+      "name": "chunk_bad_version",
+      "pass": true
+    },
+    {
+      "name": "chunk_bad_path",
+      "pass": true
+    },
+    {
+      "name": "chunk_bad_extent",
+      "pass": true
+    },
+    {
+      "name": "chunk_missing_EOF",
+      "pass": true
+    },
+    {
+      "name": "chunk_wrong_hash",
+      "pass": true
+    },
+    {
+      "name": "chunk_corrupt_bytes",
+      "pass": true
+    },
+    {
+      "name": "chunk_wrong_size",
+      "pass": true
+    },
+    {
+      "name": "one_native_marker_before_dispatch",
+      "pass": true
+    },
+    {
+      "name": "SDK acceptance differs only by new binary page cap",
+      "pass": true
+    },
+    {
+      "name": "current_exact22202",
+      "pass": true
+    },
+    {
+      "name": "old 8192 permission is not implicit new16K approval",
+      "pass": true
+    },
+    {
+      "name": "new binary next16K page accepted",
+      "pass": true
+    },
+    {
+      "name": "old size not the frozen new page",
+      "pass": true
+    },
+    {
+      "name": "page above new cap",
+      "pass": true
+    },
+    {
+      "name": "prior file_info remains8192",
+      "pass": true
+    },
+    {
+      "name": "prior file_info not silently16K",
+      "pass": true
+    },
+    {
+      "name": "prior process_status remains8192",
+      "pass": true
+    },
+    {
+      "name": "prior process_status not silently16K",
+      "pass": true
+    },
+    {
+      "name": "prior process_read remains8192",
+      "pass": true
+    },
+    {
+      "name": "prior process_read not silently16K",
+      "pass": true
+    }
+  ],
+  "passed": 66,
+  "RuntimeCalls": 0,
+  "GitMutations": 0,
+  "actualStateMutated": false,
+  "fullCandidateModuleExecuted": false,
+  "bodyPositiveFixture": "Previously archived original e3af stage report binary response; formatter receipt body remains unread.",
+  "currentBodyObserved": false
+}

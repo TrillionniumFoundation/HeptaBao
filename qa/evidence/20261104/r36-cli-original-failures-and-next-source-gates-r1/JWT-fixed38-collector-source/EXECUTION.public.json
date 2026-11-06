@@ -1,0 +1,30 @@
+{
+  "schema": "heptabao.offline-v8-check-execution.v1",
+  "language": "V8 JavaScript",
+  "verifier": {
+    "blob": "36489a3ebf266561691a82c07dd0d7f852a7f37c",
+    "bytes": 16219,
+    "sha256": "fb41454ea1a708761148ab711b2705b7655cd35226f01bd96261802f7b827d5e"
+  },
+  "input": {
+    "blob": "4899cd1404509ad1153e28705f24e2bca6a49014",
+    "bytes": 217811,
+    "sha256": "ae8aa81cac5eae7b08ec381b6b111a7ace82a8c69927f2d98eba5f964976b584"
+  },
+  "actual_result": {
+    "blob": "57bcb61f2d2c1cb4d3ec3fe9e4a484dd4b9fedb4",
+    "bytes": 12222,
+    "sha256": "7ad7db5eb1ba5a652254a9daa1f94229960a28e30fb4b95e3275506af9fd1cb3"
+  },
+  "passed": true,
+  "checks": 111,
+  "selected_journal_functions_executed": [
+    "gfValidateRequest"
+  ],
+  "full_python_module_executed": false,
+  "python_compiled": false,
+  "native_calls": 0,
+  "product_test_cases": 0,
+  "caller": "new Function(pure + '\\n' + verifier + '\\nreturn verifyFormatter38Source;')()(input)",
+  "errors_retained": 2
+}

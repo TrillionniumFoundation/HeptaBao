@@ -1,0 +1,60 @@
+
+function verifyOriginalJournal({label,calls,observers,blob,goPins,pageLimit,ck}){
+ const eq=(s,p)=>{const m=gitBlobMeta(s);return m.blob===p.blob&&m.bytes===p.bytes&&m.sha256===p.sha256};
+ ck(label+"_unique_calls",new Set(calls.map(c=>c.key)).size===calls.length);
+ const cs=calls.map(c=>{
+  const qr=c.requestText,sr=c.sdkText,nr=c.nativeText,a=JSON.parse(c.armedText),it=JSON.parse(c.intentText),sdk=JSON.parse(sr);
+  const go=goPins.find(p=>p.blob===a.rootGo.blob);
+  ck(label+"_call_"+c.key,eq(qr,c.requestPin)&&eq(sr,c.sdkPin)&&eq(nr,c.nativePin)&&c.phase==="accepted"&&sdk.isError===false&&sdk.content.length===1&&sdk.content[0].type==="text"&&sdk.content[0].text===nr&&a.callKey===c.key&&it.callKey===c.key&&a.kind===c.kind&&it.kind===c.kind&&eq(qr,a.request)&&eq(qr,it.request)&&!!go&&JSON.stringify(a.rootGo)===JSON.stringify(it.rootGo)&&a.rootGo.bytes===go.bytes&&a.rootGo.sha256===go.sha256&&a.maximumNativeCalls===1&&it.maximumNativeCalls===1&&it.nativeNotYetCalled===true&&a.nativeNotYetCalled===true&&a.mayHaveDispatchedAfterThisCheckpoint===true&&a.lossOfAcknowledgmentNeverGrantsReplay===true);
+  if(c.armedTree)ck(label+"_armed_tree_"+c.key,immediateTreeSha([{path:"armed.json",mode:"100644",type:"blob",sha:gitBlobMeta(c.armedText).blob},{path:"intent.json",mode:"100644",type:"blob",sha:gitBlobMeta(c.intentText).blob},{path:"request.json",mode:"100644",type:"blob",sha:gitBlobMeta(qr).blob}])===c.armedTree);
+  return {c,q:JSON.parse(qr),n:parseLosslessIntegers(nr),a,it};
+ });
+ ck(label+"_observer_unique",new Set(observers.map(o=>o.id)).size===observers.length);
+ for(const o of observers){
+  const starts=cs.filter(x=>x.c.kind==="operation_start"&&x.n.operation_id===o.id),sts=cs.filter(x=>x.c.kind==="operation_status"&&x.q.operation_id===o.id),pages=cs.filter(x=>x.c.kind==="operation_result"&&x.q.operation_id===o.id).sort((a,b)=>a.q.offset-b.q.offset);
+  ck(label+"_observer_"+o.id,starts.length===1&&sts.length===1&&starts[0].n.reused===false&&starts[0].q.operation.tool===o.tool&&starts[0].n.tool_name===o.tool&&sts[0].n.operation_id===o.id&&sts[0].n.async_state==="completed"&&sts[0].n.result_state==="stored_observed"&&sts[0].n.owned_future_active===false&&sts[0].n.payload_available===true&&o.completedInactive===true&&pages.length===o.pages);
+  let bytes=[],offset=0;
+  for(const x of pages){const b=unb64(x.n.data_base64);ck(label+"_page_"+o.id+"_"+offset,x.n.operation_id===o.id&&x.q.offset===offset&&x.n.offset===offset&&x.q.limit===pageLimit(o)&&b.length>0&&b.length<=x.q.limit&&x.n.next_offset===offset+b.length&&x.n.immutable_snapshot===true&&x.n.payload_kind==="native_result"&&x.n.result_sha256===o.payload.sha256&&x.n.total_bytes===o.payload.bytes&&x.n.eof===(offset+b.length===o.payload.bytes));for(const z of b)bytes.push(z);offset+=b.length;}
+  const raw=utf8Text(bytes),payload=JSON.parse(raw);
+  ck(label+"_payload_"+o.id,offset===o.payload.bytes&&eq(raw,o.payload)&&raw===blob(o.payload.blob)&&payload.resultType==="complete"&&payload.isError===false&&payload.content.length===1&&payload.content[0].type==="text"&&eq(payload.content[0].text,o.nativeText)&&payload.content[0].text===blob(o.nativeText.blob));
+ }
+ ck(label+"_all_observer_calls_accounted",cs.filter(x=>x.c.kind!=="process_start").length===observers.reduce((n,o)=>n+o.pages+2,0)&&cs.filter(x=>x.c.kind==="operation_start").every(x=>observers.some(o=>o.id===x.n.operation_id)));
+ return cs;
+}
+
+function qualifyJwtFormatterReceiptActual(){
+ const p=load("r34_packet_JWT-formatter-receipt-body-original-chain"),r=p.raw,idx=JSON.parse(r["CALL-INDEX.public.json"]),rel=JSON.parse(r["RELEASE.public.json"]),obs=JSON.parse(r["BODY-CLOSURE.public.json"]),go=load("r35_jwt_formatter_receipt_body_GO"),fg=load("r34_jwt_formatter_GO").value,checks=[];
+ const ck=(name,v)=>{checks.push({name,passed:v===true});if(v!==true)throw Error(name)},eq=(s,p)=>{const m=gitBlobMeta(s);return m.blob===p.blob&&m.bytes===p.bytes&&m.sha256===p.sha256},same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+ const bm=Object.fromEntries(p.pins.map(x=>[x.blob,r[x.path]]));
+ ck("whole34_original_receipt_packet",p.audit.whole===true&&p.audit.files===34&&p.audit.bytes===356873);
+ ck("exact_prior_GO_and_journal",eq(r["ROOT-GO.original.json"],go)&&eq(r["journal.native.source.js"],go.value.candidate));
+ const calls=idx.map(c=>({key:c.callKey,kind:c.kind,phase:c.phase,requestPin:c.request,sdkPin:c.sdk,nativePin:c.native,requestText:r[c.callKey+".request.json"],sdkText:r[c.callKey+".original.sdk.json"],nativeText:r[c.callKey+".original.native.json"],armedText:r[c.callKey+".armed.json"],intentText:r[c.callKey+".intent.json"],armedTree:c.armedTree}));
+ const cs=verifyOriginalJournal({label:"receipt",calls,observers:[obs],blob:s=>bm[s],goPins:[go],pageLimit:()=>16384,ck});
+ ck("only_one_binary_admission_four_calls_no_process",cs.length===4&&cs.filter(x=>x.c.kind==="operation_start").length===1&&cs.every(x=>x.c.kind!=="process_start")&&obs.pages===2&&obs.payload.bytes===30025&&obs.payload.bytes<=1048576);
+ const start=cs.find(x=>x.c.kind==="operation_start"),q=start.q.operation.arguments;
+ ck("exact_actual_metadata_bound_extent",eq(start.c.requestText,go.value.exact_request)&&start.q.operation.tool==="binary_read"&&q.host==="rog"&&q.path===go.value.actual_metadata.path&&q.offset===0&&q.limit===22202&&q.expected_version===go.value.actual_metadata.version&&obs.id==="1e45405574780d6cc2cf00b9451a18c5cc321b7ddf7bf8b94c214e11a5df73e0");
+ const binary=JSON.parse(r["binary-read.native.original.json"]),bytes=unb64(binary.data_base64),body=utf8Text(bytes),v=parseLosslessIntegers(body);
+ ck("whole_original_binary_22202_exact_SHA_and_version",binary.offset===0&&binary.next_offset===22202&&binary.eof===true&&binary.path===q.path&&binary.size===22202&&binary.version===q.expected_version&&bytes.length===22202&&binary.chunk_sha256===go.value.actual_metadata.sha256&&sha256Latin1(byteString(bytes))===go.value.actual_metadata.sha256&&body===r["receipt.original.json"]&&eq(body,rel.body.body)&&body===load("r35_jwt_formatter_actual_receipt").text);
+ const prior=load("r34_jwt_formatter_transport_root_review");
+ ck("formatter_original_terminal_transport_previously_qualified",prior.value.status==="passed"&&prior.value.checks_passed===43&&prior.blob==="fa9e8030d8f5e5e460cf7b73c603c11d41d17ec8");
+ ck("actual_exact_canonical_source_identity",v.sourceCommit==="e3afc157447d35c861f275a761b29da3e42aff8e"&&v.sourceTree==="5497775d9d473541e13e1603be8c893a3e27681b"&&v.sourceCommit===fg.source_commit&&v.sourceTree===fg.source_tree&&v.sourcePath===fg.readonly_source_directory&&v.sourceIdentityIsBaseOnly===false&&v.uncommittedCandidateInputs===false);
+ ck("reported_status_and_unchanged_original_deadlines",v.status==="passed"&&v.withinDeadline===true&&v.allOwnedStopped===true&&v.allFixedSourceInputsUnchanged===true&&v.elapsedSeconds<50&&v.internalSeconds===50&&v.newRemoteSupervisorSeconds===60&&v.productExecuted===false&&v.compileExecuted===false&&v.productionChanged===false);
+ ck("lossless_full9_field_order",same(v.sourceIdentityFields,["dev","ino","size","mtime_ns","ctime_ns","full_mode","uid","gid","nlink"]));
+ const names=Object.keys(fg.nine_source_pins);
+ ck("exact_nine_source_names",names.length===9&&same(Object.keys(v.sourceInputsBefore).sort(),[...names].sort())&&same(Object.keys(v.sourceInputsAfter).sort(),[...names].sort())&&v.files.length===9&&new Set(v.files.map(x=>x.name)).size===9&&same(v.files.map(x=>x.name).sort(),[...names].sort()));
+ for(const name of names){
+  const before=v.sourceInputsBefore[name],after=v.sourceInputsAfter[name],pin=fg.nine_source_pins[name],f=v.files.find(x=>x.name===name),canonical=load("r34_jwt_formatter_nine_canonical")[name];
+  ck("reported_source_unchanged_"+name,same(before,after)&&before.identity.length===9&&before.identity[2]===pin.bytes&&before.identity[5]===33152&&before.identity[6]===1000&&before.identity[7]===1000&&before.identity[8]===1&&before.path===fg.readonly_source_directory+"/"+name&&before.bytes===pin.bytes&&before.sha256===pin.sha256&&eq(canonical.text,pin)&&v.inputOriginalAndCandidatePins[name][1]===pin.sha256&&f.beforeBytes===pin.bytes&&f.beforeSha256===pin.sha256&&Number.isInteger(f.afterBytes)&&f.afterBytes>0&&f.afterBytes<=v.fixedFormattedOutputCaps[name]&&/^[a-f0-9]{64}$/.test(f.afterSha256)&&f.stderrBytes===0&&f.stderrSha256==="e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
+ }
+ ck("actual_source_and_formatted_byte_totals",v.sourceInputTotalBytes===1221466&&v.files.reduce((n,f)=>n+f.beforeBytes,0)===1221466&&v.files.reduce((n,f)=>n+f.afterBytes,0)===1228699&&v.files.filter(f=>f.beforeSha256!==f.afterSha256).length===6);
+ ck("fixed_manifest_carrier",v.inputCarrierSha256===fg.input_manifest.sha256&&v.inputCarrierSha256==="24a0808820c0f3596011eddd20e48190ab2ba63edecf30e230a0802e2d702c5c");
+ ck("actual_formatter_tool_full9_before_after",same(v.rustfmtBefore,v.rustfmtAfter)&&v.rustfmtBefore.identity.length===9&&v.rustfmtBefore.bytes===5255144&&v.rustfmtBefore.sha256==="5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877"&&v.rustfmtBefore.path==="/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt");
+ const config=v.formatConfigurationBefore,root="/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1";
+ ck("actual_explicit_configuration_before_after",same(config,v.formatConfigurationAfter)&&config.bytes===17&&config.sha256===gitBlobMeta('edition = "2024"\n').sha256&&config.identity.length===9&&config.path===root+"/rustfmt.toml"&&v.edition==="2024"&&v.repositoryRustfmtConfigPresent===false);
+ const argv=[v.rustfmtBefore.path,"--config-path",root+"/rustfmt.toml","--edition","2024","--emit","stdout"];
+ ck("nine_actual_direct_children_reaped_in_supervisor_group",v.children.length===9&&new Set(v.children.map(x=>x.pid)).size===9&&v.children.every(x=>same(x.argv,argv)&&x.cwd===root&&x.exitCode===0&&x.reaped===true&&x.stopped===true&&x.newProcessGroupCreated===false&&x.pgid===3894313&&x.supervisorGroup===3894313&&x.timeoutSeconds===10));
+ const stdout=parseLosslessIntegers(load("r32_recovered_blob_f2c15bb0600e84e4f76f76d10c4fbb8a744ef351").text);
+ ck("receipt_and_original_terminal_stdout_agree",stdout.status==="passed"&&stdout.allOwnedStopped===true&&stdout.withinDeadline===true&&stdout.error===null&&stdout.publicationError===null&&same(stdout.files,v.files)&&stdout.elapsedSeconds<50);
+ ck("read_only_observer_released_without_extra_file_claim",rel.currentNativeCalls===0&&rel.activeNativeFutures===0&&rel.originalBinaryAdmissions===1&&rel.originalCalls===4&&rel.originalPages===2&&rel.allOtherOriginalObserversClosed===true&&rel.other37FilesObserved===false&&rel.newAdmissionAuthorized===false);
+ return {schema:"heptabao.root-qualification.JWT-formatter-receipt-actual.v1",passed:true,status:"PASS_RECEIPT_TRANSPORT_AND_REPORTED_SEMANTICS_ONLY",packet:p.audit,original_job:"rog/1a1af017fae-fc05-64f1",receipt:rel.body.body,check_count:checks.length,checks,actual:{original_binary_calls:4,pages:2,receipt_bytes:22202,direct_children:9,all_direct_children_reaped:true,all_in_same_supervisor_PGID:3894313,formatted_reported_bytes:1228699,changed_files:6,unchanged_files:3},scope:{receipt_independently_whole:true,other37_files_independently_observed:false,full_formatted_outputs_qualified:false,compiled:false,product_tests_run:false,full_replacement:false,production_cutover:false,legacy_cleanup:false},GO_wording_clarification:{original_GO:"e04895a8ccb5327e69be8d69a41a44b10a22ee78",original_source:"1266e75033bee0962b0d77d3c35ee19ec53086db",preserved_original_GO:true,issue:"Original post-run wording requested nine child groupempty outcomes; the approved source used start_new_session=False.",actual_supported_scope:"Nine direct child processes exited 0 and were reaped while retaining the Native supervisor PGID. Nine separate child process-group-empty observations were not made.",independent_per_child_group_empty_qualified:false},next_step:"Separately bound fixed38 read-only collector and exact diff/wholeSHA reconstruction; no formatting replay or Cargo authority from this receipt."};
+}

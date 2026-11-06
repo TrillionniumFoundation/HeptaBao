@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.log-help.reference-scope.r1",
+  "officialPrimaryUrl": "https://developer.apple.com/documentation/technotes/tn3163-understanding-the-synchronization-of-nspersistentcloudkitcontainer",
+  "officialSupport": "Apple TN3163 describes narrowing log queries with --start, --end and --predicate, and refers to the installed manual for detailed syntax.",
+  "doesNotProveInstalledBinaryOrHelpOutput": true,
+  "boundedHelpArgv": [
+    "/usr/bin/log",
+    "help",
+    "show"
+  ],
+  "helpOnlyUntilActualOptionsObserved": true,
+  "referenceRetrieval": {
+    "searchRef": "turn42search5",
+    "directPageRef": "turn44view0",
+    "markdownAttemptRef": "turn45view0",
+    "markdownResult": "unsupported text/markdown; not treated as retrieved page content"
+  },
+  "thirdPartySearchResultsNotUsedAsInstalledOrOfficialQualification": true
+}

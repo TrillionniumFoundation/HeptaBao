@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r36-auth-fixed-log-query-root-source-and-GO",
+  "records": [
+    {
+      "name": "ROOT-SOURCE-REVIEW.public.json",
+      "blob": "657c88b04224da1288176bfaee1f133bc154d8a9",
+      "bytes": 4447,
+      "sha256": "ca6c3c51705b6c489d2f42a51a1c2d3326658d94453f85d92852be2e5ca6304a"
+    },
+    {
+      "name": "ROOT-GO.public.json",
+      "blob": "8e3d1e1e21fb20105a959cbd928e7b61a0717bdb",
+      "bytes": 8986,
+      "sha256": "84ebb312a396cfb5639521951b1b3a8364902bdae08bb5dc0a597f1975af0012"
+    },
+    {
+      "name": "root-source-verifier.js",
+      "blob": "9b036e81f97f45fb91d50044efbb24ee503327a1",
+      "bytes": 10314,
+      "sha256": "32d4b3680fd0f416ce2b3f3ebc506d0830151449fe50f8fb843f14650612f214"
+    },
+    {
+      "name": "README.md",
+      "blob": "76b8d7d7c1ef91427446b23e09cab9037454fb90",
+      "bytes": 1164,
+      "sha256": "4163e316ada4d9acfa05e74b97a2dafcbc6bddccb063902092b27ba4e5daf926"
+    }
+  ],
+  "expected_data_tree": "5d54cee476f8610d600510c3fc2593f8f89d5f2e",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

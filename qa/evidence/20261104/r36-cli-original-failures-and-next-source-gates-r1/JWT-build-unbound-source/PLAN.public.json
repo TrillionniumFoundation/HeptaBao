@@ -1,0 +1,236 @@
+{
+  "schema": "heptabao.native-jwt-r2-build-controls.source.v1",
+  "status": "SOURCE_ONLY_UNBOUND",
+  "Runtime": 0,
+  "RustCompile": 0,
+  "PythonCompile": 0,
+  "BINDING_READY": false,
+  "baseProduct": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "qualificationTransfers": false
+  },
+  "unformattedJWT": {
+    "commit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+    "tree": "5497775d9d473541e13e1603be8c893a3e27681b",
+    "soleParent": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "sourceQualification": "fa0a83fb172bb5a04a95ed8ab65de2e3dd724c13"
+  },
+  "formatter": {
+    "job": "1a1af017fae-fc05-64f1",
+    "transportQualification": "fa9e8030d8f5e5e460cf7b73c603c11d41d17ec8",
+    "sixFilesSummaryChanged": true,
+    "full38OutputQualification": false
+  },
+  "finalBinding": {
+    "commit": null,
+    "tree": null,
+    "sourceStageRoot": null,
+    "sourceStageBodySha256": null,
+    "sourceStageAuthority": null,
+    "controlsReceiptSha256": null,
+    "controlsActualThreeFiles": null,
+    "NativeBuildRequest": null
+  },
+  "host": "rog",
+  "controlRoot": "/home/qian-qi/heptabao-native-jwt-r2-controls-20261106-r1",
+  "output": "/home/qian-qi/heptabao-native-jwt-r2-controls-20261106-r1/build-tests-r1",
+  "admission": "/home/qian-qi/heptabao-native-jwt-r2-controls-20261106-r1/build-control-r1",
+  "cargoTarget": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3",
+  "targetIdentityFirst5": [
+    66306,
+    31606588,
+    1000,
+    1000,
+    16832
+  ],
+  "components": {
+    "runner": {
+      "before": {
+        "blob": "5e50290e953939bfab3b095244a50a7eb77d092d",
+        "bytes": 35452,
+        "sha256": "93dd6190c7f081305defdbc1c49600974bfa581d943736c77798d51a1c8f54be"
+      },
+      "after": {
+        "blob": "2cdbb1cae846259368cf7cc1b9f685f7424c70a1",
+        "bytes": 30303,
+        "sha256": "41565b0c1fd33602f6fda340890c0a075b2a8f88075406282acd711e8e164e8b"
+      },
+      "diff": {
+        "blob": "268c8b2f6e1d80e7653a25e8b0a91b4a9ed7ea4d",
+        "bytes": 29105,
+        "sha256": "56284fe15dc95cd619d103a5af0ea50a6f9cc239c348556c21ca13cb61b71166"
+      },
+      "hunks": 7
+    },
+    "launcher": {
+      "before": {
+        "blob": "7b42cf15a40c4c16b5f473714baf7abea88bef1f",
+        "bytes": 35592,
+        "sha256": "8c0ba96f4953ba934d2dd067ef8bc7de2534f93181d99816fe38b056f564ab96"
+      },
+      "after": {
+        "blob": "ff5ff32ebedc33c000abdeaad9dc96e4a1b20754",
+        "bytes": 38330,
+        "sha256": "b8c56a8bcf36738d90c191aef011e5ee7d2f4112512e955bfe01b647eb6e15e5"
+      },
+      "diff": {
+        "blob": "bf8170c7840ea340958ffbbc54aae44cfeb3857d",
+        "bytes": 12044,
+        "sha256": "c299dad2096b31ef501adce3fa3e17fa828a52c5ea19ce746238a40540d27645"
+      },
+      "hunks": 10
+    },
+    "publisher": {
+      "before": {
+        "blob": "0f2da42f4f9d6e508146b18c53e3d0623586c024",
+        "bytes": 5029,
+        "sha256": "0eeac473e4cce47f6596a7c54380a0b3b0125256478d53bfe529b3d381cf8c0a"
+      },
+      "after": {
+        "blob": "0cceb9810030f93ac39b6baa9e6367391feea16e",
+        "bytes": 5166,
+        "sha256": "a7bc063922547d39faac3f1126da094441a347e0f4bf3f143f7bf370c8378977"
+      },
+      "diff": {
+        "blob": "7936fdb9ce1c06ebbaac350b24d30022b1f585f1",
+        "bytes": 2724,
+        "sha256": "547f5377d5822c879d7167edd4ae6ef7026b79b1b81fdb4007a4ad45a081401c"
+      },
+      "hunks": 3
+    }
+  },
+  "adaptation": {
+    "runner": "Original ten custody/resource helpers and failure/finally/terminal tail are byte-identical. Twelve retained assets use the same existing helper. Only admitted source/readiness, groups, compile/test body and denominator reporting differ.",
+    "launcher": "Original ten helper definitions remain, except one required source-controls path in preserve_failed_observer. Existing target-first5, missing-target refusal, all prior fences, nonblocking flock, same-PID exec and final deadline/cleanup tail remain.",
+    "publisher": "Same original five create-only/NOFOLLOW/identity/once-close/publish helpers; only readiness/root/schema/three exact input pins differ.",
+    "reasonForSeparateControls": "Actual e3af stage installed only historical 4e808 compile-only controls. Those controls cannot execute the new source. New controls use a fresh root and their own actual receipt; no added wrapper or hidden preparation layer."
+  },
+  "groups": {
+    "whole": {
+      "blob": "f68d94ebaad199d03b44ef3d791ba516bb31c420",
+      "bytes": 19325,
+      "sha256": "8651fc3043a14556734d2e1992ac941ffbd812671fa0f3486d8813084e5918ba"
+    },
+    "families": [
+      {
+        "label": "native-jwt-file15",
+        "libtest_profile": "file",
+        "names": 15,
+        "shared_seconds": 600
+      },
+      {
+        "label": "native-jwt-default15",
+        "libtest_profile": "default",
+        "names": 15,
+        "shared_seconds": 600
+      },
+      {
+        "label": "legacy-jwt-default63",
+        "libtest_profile": "default",
+        "names": 63,
+        "shared_seconds": 600
+      },
+      {
+        "label": "native-auth-identity-default69",
+        "libtest_profile": "default",
+        "names": 69,
+        "shared_seconds": 600
+      }
+    ],
+    "unique": 147,
+    "profileInstances": 162,
+    "newUnique": 15,
+    "newProfileInstances": 30,
+    "existingUnique": 132
+  },
+  "budgets": {
+    "release": 1800,
+    "compileShared": 3600,
+    "compileCommands": 3,
+    "listingMax": 30,
+    "familyShared": 600,
+    "families": 4,
+    "outer": 12000,
+    "cleanupTerm": 5,
+    "cleanupKill": 5,
+    "deadlineReset": false,
+    "publisherOuter": 60,
+    "publisherStdin": 262144,
+    "publisherPayloadActual": 117437
+  },
+  "retained": {
+    "oldDf026": 6,
+    "current4e808": 6,
+    "total": 12,
+    "allOutsideTarget": true,
+    "full9BeforeAfterAtActualAdmissionOnly": true,
+    "currentWholePins": {
+      "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/artifacts/heptabao-seed": [
+        102145376,
+        "0edc8d3c1fb3b78a4b018f684bfc07269d273c72925582a849b68df6c003b6a6",
+        320
+      ],
+      "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/artifacts/heptabao-server": [
+        110219600,
+        "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+        320
+      ],
+      "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/retained-heptabao-server-libtest": [
+        187839640,
+        "7ea0be2f071a9bfe562c5a1d6a2cedf225cfdae23363a039be80fb7a42198725",
+        320
+      ],
+      "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/native-build.public.json": [
+        786,
+        "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+        384
+      ],
+      "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/normal-release-result.public.json": [
+        3192,
+        "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
+        384
+      ],
+      "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/result.public.json": [
+        57532,
+        "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475",
+        384
+      ]
+    },
+    "actualSourceCore": "162336b81e26f391b12d2e6c860c6eb9cc2a9c71"
+  },
+  "scopeLimits": {
+    "FileV6NewTestFixture": true,
+    "defaultFeatureOnlyCompilesNativeHA": true,
+    "distributedJWT_HA_qualification": false,
+    "oldNormal61_full34_LAN98plus12_comparison69_rerun": false,
+    "PKI_candidateMerged": false,
+    "PKI_newTestsIncluded": false,
+    "officialJWT_ACL_oracle": false,
+    "fullReplacement": false,
+    "productionCutover": false
+  },
+  "nextGates": [
+    "Finish formatter38 actual output qualification",
+    "Freeze formatted successor commit/tree (and separately reviewed other production delta, if root chooses)",
+    "Independently stage that exact final tree; retain no old test inheritance",
+    "Literal-only bind final source and controls; root source/dispatch review",
+    "Create-only three-control publication and actual receipt/file identities",
+    "Exact original-cache build admission and real147/162 execution within original caps"
+  ],
+  "selectedChecks": {
+    "passed": 151,
+    "execution": "Pure V8 text/whole-diff/payload/guard contract checks. No Python AST compile, Rust compile, candidate module or Runtime execution."
+  },
+  "corrections": [
+    {
+      "name": "Publisher generator first helper export lookup",
+      "error": "b64 is not defined",
+      "fixed": "Use existing encodeBase64Bytes; no publisher candidate or Runtime produced by failed attempt."
+    },
+    {
+      "name": "Verifier first retained-table selector",
+      "error": "Expected array while source table is path-keyed object",
+      "fixed": "Read exact object keys and parse complete12-entry source map; candidate unchanged."
+    }
+  ]
+}

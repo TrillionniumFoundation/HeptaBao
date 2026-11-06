@@ -1,0 +1,63 @@
+--- a/publisher.before.py
++++ b/publisher.candidate.py
+@@ -1,27 +1,30 @@
+ #!/usr/bin/env python3
++"""Create-only distribution and compile-check of the three separately reviewed JWT build controls."""
+-"""Create-only distribution and compile-check of the three reviewed shared artifact controls."""
+ from pathlib import Path
+ import base64, hashlib, json, os, stat, sys, time
+ 
++BINDING_READY = False
++assert BINDING_READY, 'final formatted source and build control pins are not yet bound'
+ os.umask(0o077)
++PARENT = Path('/home/qian-qi')
++BASE = PARENT / 'heptabao-native-jwt-r2-controls-20261106-r1'
+-PARENT = Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')
+-BASE = PARENT / 'normal-cold-h2-x230-transfer-controls-r1'
+ created_base = False
+ RECEIPT = BASE / 'inert-stage.result.public.json'
+ PINS = {
++    "native_jwt_build.py": [
++        30303,
++        "41565b0c1fd33602f6fda340890c0a075b2a8f88075406282acd711e8e164e8b"
+-    "sender.py": [
+-        8862,
+-        "c649d82d09c52519a4b6f240ecd02d987941ad8bb8ab3f74f490afa9301fd742"
+     ],
++    "launch_native_jwt_build.py": [
++        38330,
++        "b8c56a8bcf36738d90c191aef011e5ee7d2f4112512e955bfe01b647eb6e15e5"
+-    "receiver.py": [
+-        29900,
+-        "fefacf7be6b9785e4be7de94584ec60245ddec87573f6404739730b97546275d"
+     ],
++    "jwt-test-groups.public.json": [
++        19325,
++        "8651fc3043a14556734d2e1992ac941ffbd812671fa0f3486d8813084e5918ba"
+-    "relay.py": [
+-        21085,
+-        "732fa7e74d859c48cd3844967409254e6f7cd44d4ceb148a20d2ea89ed07388f"
+     ]
+ }
++
+ def sha(raw):
+     return hashlib.sha256(raw).hexdigest()
+ def ident(s):
+@@ -84,7 +87,7 @@
+ assert os.getuid() == 1000 and PARENT.resolve(strict=True) == PARENT and PARENT.stat().st_uid == 1000
+ assert not os.path.lexists(BASE)
+ assert not os.path.lexists(RECEIPT)
++result = {'schema': 'heptabao.native-jwt-build-controls-inert.v1', 'status': 'failed',
+-result = {'schema': 'heptabao.df026-x230-normal7-inert-carrier.v1', 'status': 'failed',
+           'started_ns': time.time_ns(), 'files': [], 'source_executed': False,
+           'git_started': False, 'compiler_started': False, 'service_started': False,
+           'python_compile_only': True, 'artifact_transfer_started': False}
+@@ -92,7 +95,7 @@
+     incoming = sys.stdin.buffer.read(262145)
+     assert 0 < len(incoming) <= 262144
+     payload = json.loads(incoming)
++    assert set(payload) == {'schema', 'files'} and payload['schema'] == 'heptabao.native-jwt-build-control-inputs.v1'
+-    assert set(payload) == {'schema', 'files'} and payload['schema'] == 'heptabao.df026-x230-normal7-inputs.v1'
+     assert set(payload['files']) == set(PINS)
+     decoded = {}
+     for name, (length, digest) in PINS.items():

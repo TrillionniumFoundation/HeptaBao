@@ -1,0 +1,5 @@
+{
+  "name": "Error",
+  "message": "exact inverse count separate actual metadata state",
+  "stack": "Error: exact inverse count separate actual metadata state\n    at ck (exec_main.mjs:2:125)\n    at verifyFormatterReceiptInfo (exec_main.mjs:11:48)\n    at exec_main.mjs:59:18"
+}

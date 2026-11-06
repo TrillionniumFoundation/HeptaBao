@@ -1,0 +1,200 @@
+{
+  "schema": "heptabao.mac-owned-log-tool-info-and-help.source-contract.r1",
+  "status": "SOURCE_ONLY_UNSUBMITTED",
+  "sourceReason": {
+    "originalJob": "mac/1a1ae51309d-fc05-5ef8",
+    "actualFailure": "last exit code = 78: EX_CONFIG",
+    "diagnosticCauseKnown": false,
+    "latestPathMetadata": {
+      "tree": "6e7d48193a79063b0ee8957d479128bce080e015",
+      "stdout": {
+        "blob": "0100baa28c769c2744ffa87c0f568a8648d628be",
+        "bytes": 14496,
+        "sha256": "d9cd6de255ad81df4355e53d58f4465505ddc34d1dd5c2047c313e4c228108fd"
+      },
+      "aliasKnownRegularFull9Equal": true,
+      "all22CurrentObserverAccessChecksAllowed": true,
+      "originalStdioEmpty": true,
+      "launchdContextNotProven": true
+    }
+  },
+  "exactMetadata": {
+    "request": {
+      "blob": "a4b6cada1d58f18e07d6aac7d989f67a17819038",
+      "bytes": 211,
+      "sha256": "b97c097473e6ccd9ca93c9053dd924e499f350b5a51b5e1b9c7bf8f3a67c3212"
+    },
+    "requestValue": {
+      "idempotency_key": "heptabao-mac-owned-launchd-log-tool-info-00940fa4-20261106-r1",
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "mac",
+          "path": "/usr/bin/log"
+        }
+      }
+    },
+    "nativeOperationAdmissions": 1,
+    "nativeProcessStarts": 0,
+    "maxActiveCalls": 1,
+    "maxNativeFutures": 1,
+    "immutablePageBytes": 8192,
+    "originalPayloadCap": 1048576,
+    "scope": "purpose-built file_info: regular target metadata and whole SHA256; not pure stat, no content-body export",
+    "wholeHashWorkNotLimitedByLaterCodeReadCap": true,
+    "requireWholeOriginalClosedBeforeDerivation": true,
+    "newGORequired": true
+  },
+  "journal": {
+    "source": {
+      "blob": "f51079fe3f72378e4868af185a088bdc398d5e45",
+      "bytes": 20145,
+      "sha256": "6549e8f700476020fb3d05cf60d1f5a3e6fe4d958fcce75b579242778730b2c5"
+    },
+    "slot": "owner_launchd_log_info_gitfirst_r1",
+    "oldSlot": "owner_launchd_path_metadata_gitfirst_r1",
+    "oldState": {
+      "blob": "1ac5978247d3ff3ad440e841e23c6da906f6c1b0",
+      "bytes": 55220,
+      "sha256": "bddc93625d140a360eaf843c7ed09317233a9dff500500c13ccf86bf941a079a"
+    },
+    "oldStateMustRemainByteExact": true,
+    "initializationMustVerifyNewRootGOAndOldLiveClosedContext": true,
+    "newContextDoesNotReuseOldAuthorization": true,
+    "processStartAlwaysRejected": true,
+    "oneExactFileInfoOnly": true,
+    "oldInvokeAcceptCloseGuardsRetainedExceptFixedFileInfoNativeBinding": true,
+    "SDKExternalWholeBeforeParsing": true,
+    "gitMutationOnce": true,
+    "unknownStopsNoReplay": true,
+    "rootMayAuthorizeMetadataIndependently": true
+  },
+  "prospectiveHelp": {
+    "template": {
+      "blob": "a0c8f5cc84c0a330c80d5d6b11d4a54f7b4c7c35",
+      "bytes": 43758,
+      "sha256": "74db4b04c190c3c40e7f29a1acf7984faf6cbef292715d9fd5feb586bec3ce0a"
+    },
+    "bindingReady": false,
+    "binding": null,
+    "deriver": {
+      "blob": "fa36d3390edde49e88e7c3a15783d059c03179c4",
+      "bytes": 3653,
+      "sha256": "52d46faa3aee7af0cc21fdba3ce776b23cd63c4e04eea86b85c8b79475864a13"
+    },
+    "exactArgv": [
+      "/usr/bin/log",
+      "help",
+      "show"
+    ],
+    "rootDecisionAfterActualMetadata": "The pure deriver yields a new source and exact request; no automatic execution authorization is created.",
+    "fixedRegularInterpreter": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "cwd": "/Users/qianqi",
+    "outerSeconds": 60,
+    "sharedSuccessDeadlineSeconds": 45,
+    "helpCommandSeconds": 10,
+    "cleanupCaps": {
+      "term": 1,
+      "wait": 5,
+      "group": 3,
+      "psMax": 4
+    },
+    "successRequiresPostCleanupDeadlineAndZeroAuthority": true,
+    "fixedPublicCodePath": "/usr/bin/log",
+    "fixedAncestorPaths": [
+      "/",
+      "/usr",
+      "/usr/bin"
+    ],
+    "applicationDescriptorRows": 4,
+    "maxMetadataSyscalls": 64,
+    "plannedSuccessfulMetadataSyscalls": 40,
+    "maxCodeFileSize": 8388608,
+    "maxCodeReturnedBytes": 8388609,
+    "maxCodeReadSyscalls": 129,
+    "codeReadChunk": 65536,
+    "maxAcceptedHelpBytesPerStream": 65536,
+    "originalCommandReadChunk": 65536,
+    "maxReturnedPipeBytesBeforeOriginalBoundRejectionPerStream": 131072,
+    "maxReturnedPipeBytesBeforeOriginalBoundRejectionCombined": 262144,
+    "maxPublicStdout": 131072,
+    "actualToolEligibility": {
+      "regularThroughPurposeAPI": true,
+      "uid": 0,
+      "gid": "actual nonnegative integer",
+      "mode": "actual executable permission bits, no special/group-or-other-write bits",
+      "nlink": "exact actual integer >=1; no singleton assumption",
+      "bytes": "1..8MiB",
+      "sha256": "actual full SHA256",
+      "full9": "derived losslessly from raw version and metadata, held/named and before/after checks",
+      "symlinkTraversal": false
+    },
+    "codeHashReadScope": "One bounded whole hash of the exact tool; code bytes not emitted. Root-owned held file remains open until the help child is closed; path exec is not atomic fd exec.",
+    "rawHelpExportGate": "Known natural helper completion/exit0, empty stderr, bounded ASCII show-help heading and required option names; only then public help text/hash. Unexpected output/error text and hashes suppressed from final outer report.",
+    "toolInternalIoNotSyscallTraced": true,
+    "noLogShowOrStreamQuery": true,
+    "noPrivatePlanCapsuleCredentials": true,
+    "noServiceActionOrConfigChange": true,
+    "noSDKProvider": true,
+    "noDirectoryEnumeration": true,
+    "unknownStopsNoRetry": true,
+    "sourceOnly": true
+  },
+  "laterLogProjection": {
+    "status": "NOT_AUTHORIZED_NOT_BOUND",
+    "window": {
+      "schema": "heptabao.original-owned-bootstrap-time-window.source.r1",
+      "originalJob": "1a1ae51309d-fc05-5ef8",
+      "ack": {
+        "blob": "5d76fca8fcedb3abc4765ad9c9f3c5a4678280e2",
+        "bytes": 6200,
+        "sha256": "eb1da610a70177b87161fda4c37fd80d984b135d5715d04128eaa00fa48b5b86"
+      },
+      "authority": {
+        "blob": "0e29e80053b2ad291101f53c8ffcc24f485680ac",
+        "bytes": 732,
+        "sha256": "f402631c37f87c2e8928f321682a0a8d03d9efcb0d005eb0151c48b6c2429df6"
+      },
+      "stdout": {
+        "blob": "99f88a10ed877dcf23aaafc56fd3e69c31a5a2d1",
+        "bytes": 132132,
+        "sha256": "feae46e33bc62427b8317780cf38ca73acd80124b1ad157caa20cbb0f3677748"
+      },
+      "jobCreatedUnixMs": 1793925918877,
+      "terminalPublicationUnixMs": 1793925920735,
+      "rawJobWindowMilliseconds": 1858,
+      "conservativeRoundedStartUnixMs": 1793925918000,
+      "conservativeRoundedEndUnixMs": 1793925921000,
+      "utcStart": "2026-11-06T00:45:18.000Z",
+      "utcEnd": "2026-11-06T00:45:21.000Z",
+      "maximumWindowMilliseconds": 3000,
+      "bootstrapIntentFileMtimeNs": "1793925920565520047",
+      "bootstrapCommand": {
+        "argv": [
+          "/bin/launchctl",
+          "bootstrap",
+          "gui/501",
+          "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.plist"
+        ],
+        "pid": 82492,
+        "commandDeadlineMonotonic": 2811777.446800166,
+        "elapsedSeconds": 0.04866733402013779,
+        "exitCode": 0
+      },
+      "qualification": "Conservative wall-clock envelope from same original job ACK creation and terminal publication, supported by bootstrap-intent record; not an exact wall-clock timestamp for posix_spawn. No timezone inferred from ps lstart and no guessed monotonic-to-epoch conversion."
+    },
+    "predicateScope": "Exact original QA label, launchd only; fixed 3-second original envelope",
+    "maximumCandidateEvents": 32,
+    "proposedReturnedBytes": 65536,
+    "publicOutputs": "Exact-label match plus closed error categories/errno/known-path booleans only; unknown text/hash never exported.",
+    "actualHelpMustFirstConfirmInstalledOptions": true,
+    "noAdditionalLogQueryRequestInThisPacket": true
+  },
+  "historicalUnknowns": {
+    "oldLabelRegistration": "NOT_CLOSED",
+    "originalLineage": "NOT_QUALIFIED",
+    "git8916": "UNKNOWN",
+    "old11754": "UNCHANGED"
+  },
+  "nativeCallsMadeByThisSourceWork": 0
+}

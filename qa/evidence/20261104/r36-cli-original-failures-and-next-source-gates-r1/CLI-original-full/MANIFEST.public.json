@@ -1,0 +1,285 @@
+{
+  "schema": "heptabao.official271-phaseb-r4-complete-evidence-grafted.v2",
+  "host": "desktop",
+  "job": "1a1aee01612-fc05-639b",
+  "sourceCandidate": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "normalProductTree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "scope": "One original official 2.7.1 PhaseB live plus already authorized fixed public report evidence",
+  "counts": {
+    "businessStarts": 1,
+    "originalCalls": 117,
+    "closedOriginalObservers": 17,
+    "immutablePayloadPages": 82,
+    "publicReportRanges": 13,
+    "publicReportBytes": 848065,
+    "expectedAggregateLeaves": 711
+  },
+  "wholeReport": {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r4/result.public.json",
+    "version": "2050:7910322:848065:1793935422335117221:1793935422335117221",
+    "body": {
+      "blob": "0b2edd60185b80817c3c7f1378b914ae914ab21e",
+      "bytes": 848065,
+      "sha256": "d5c691d23b513a2a63916792bbe21178e2b34799e6adbd20ddf88cdf6147bc48"
+    },
+    "wholeTree": "f570ac2e3ba9751fe5c6c9379db3f70692c0f73d",
+    "originalOperations": [
+      "b22f36f21deb2f5cae682977de7b0b4df21eb15a98e06599ffc301382a60888f",
+      "f33ae38b76090ae907a91991d8d619f8a2c141fb00b37c223418b86f84acf082",
+      "505f62e17815703550b5499e15c961ed0bb98d1888fb6b30ad38b33c3b51522d",
+      "a38071e45f6730f2a21adba4c03c07bfe50444fddbac095de0b6cdd86b492705",
+      "ae46ee9b07201b43afcce163f100f0c5ee5c6d32e21ac6f06bce6d5b55511fd2",
+      "7903c62109d1fa82a0fec7443e7bdf274b3e7200975905a09dcbd68dd088166d",
+      "554c71f6ff3d9b8039e69f8b1b27a9768002a50a09665fea0c3e31e2240144dc",
+      "14309f183a81d700ae94cc1328bd0ff9a24ef719144592d7e9a8cd805fc91bf4",
+      "ce0e9d3e3f4796c45e4584a23c1d630d24ad53fffc46a0097c40c1dd8ee87e23",
+      "d3da30f5a585a6901dec8bc6b4459ab72c75e3f7c35cdc31c5a254018de169b8",
+      "f3bba6a2e15ec5b302a50db79c5bd72d7127f0356e37a59286ef44081da6fe97",
+      "b18501ffd1af2014a952866563000ce015b2ab53c0a89c60f1f98c680e4ffb96",
+      "a05ef617f44f3d910190a945045caca568c8d05339900c9371904f7678baf0bf"
+    ],
+    "metadataOperation": "d460640d0f261bea9c17630eb911980d8dccaef5499b059d917bb02ac9f8e456",
+    "semanticQualification": false
+  },
+  "callIndex": {
+    "blob": "6e3b7b50b6b3bd48d6a2a03653a5ad1de19e5d2e",
+    "bytes": 222767,
+    "sha256": "6e21091141b72559f44eb9650fa10ed1af09455de45a8c10a32f60d6e6d83a73"
+  },
+  "ownerRelease": {
+    "blob": "e34f2cca2f7e054b30477f96f014f838c207ffc9",
+    "bytes": 24294,
+    "sha256": "e4988b8c348332dee7050511a8f5d2d98287ddb0f3e7a4d7a482e4625d799ac2"
+  },
+  "observedTerminal": {
+    "exitCode": 1,
+    "status": "completed_with_compatibility_failures",
+    "producerCaseQualifications": {
+      "B01": true,
+      "B02": true,
+      "B03": true,
+      "B04": false,
+      "B05": false
+    },
+    "independentRootSemanticReview": false
+  },
+  "closure": {
+    "noActiveCall": true,
+    "noActiveFuture": true,
+    "noActiveObserver": true,
+    "noPending": true,
+    "allOriginalCallsAccepted": true,
+    "all283OwnedCleanupReapedEmpty": true,
+    "laneBReleasedToRoot": true
+  },
+  "layout": {
+    "calls": "original-call-batches/NN/<exact-call-key>/{armed,original-sdk}; armed includes exact request/intent/checkpoint",
+    "nativeDTOs": "original-native-dtos/<exact-call-key>.native.json",
+    "payloads": "observer-payloads/NN-<original-operation-id>",
+    "observerNative": "observer-native-originals/NN-<original-operation-id>.native.json",
+    "rangeRecovery": "range-recovery/00..12; duplicated references are not additional observations"
+  },
+  "grafts": [
+    {
+      "path": "original-call-batches/00",
+      "tree": "db9aa73e44db4d4e18243e87db0a6bd4ac5e8d66"
+    },
+    {
+      "path": "original-call-batches/01",
+      "tree": "7c610e5e15e081259ee143b6075b913f022c2e3b"
+    },
+    {
+      "path": "original-call-batches/02",
+      "tree": "01b3acfd80bf554be748262d600e237be5b44cd4"
+    },
+    {
+      "path": "original-call-batches/03",
+      "tree": "964a329de36cbbe5e77537bd2e0b890a2c82199c"
+    },
+    {
+      "path": "original-call-batches/04",
+      "tree": "652e01a31ceb05d77ac1059cee4ef9ce3d1a1cf9"
+    },
+    {
+      "path": "original-call-batches/05",
+      "tree": "ed9254b5710c60a4535a47ae58629ea6af74d7d1"
+    },
+    {
+      "path": "original-call-batches/06",
+      "tree": "8d003eea91ba1c141d9f4f6537ab3f94331d5bd2"
+    },
+    {
+      "path": "original-call-batches/07",
+      "tree": "8e2a74b2609dc500cb760825c38e1711f3eab4b2"
+    },
+    {
+      "path": "original-native-dtos",
+      "tree": "1d17bcc66f4cfaa42c8da02ed0e118a3b97159fd"
+    },
+    {
+      "path": "observer-native-originals",
+      "tree": "16514b99571b0eae41644e7d9c102b49a739370d"
+    },
+    {
+      "path": "observer-payloads/00-787dfa07d5b654af517708d8cd379656a27b5bfbcab79676828579b14a695e96",
+      "tree": "48eb2f637188e031ce4334819767b808cdc97113"
+    },
+    {
+      "path": "observer-payloads/01-71998bdb33b089536cad2972e63a7f197abaab2bb06df31af74793f11ab4fb0e",
+      "tree": "bd5a6ad9a038f4cba60b2975dad61fdf56cfa025"
+    },
+    {
+      "path": "observer-payloads/02-b80260778857dbbe605ad2a69e9796f5b6afa6bbb5307861e1768cde447fb252",
+      "tree": "47e87e20124df9d6e123bce312007dfcd94d5da1"
+    },
+    {
+      "path": "observer-payloads/03-d460640d0f261bea9c17630eb911980d8dccaef5499b059d917bb02ac9f8e456",
+      "tree": "237ba87aaa885bdcc0085d33f90677b28daafba7"
+    },
+    {
+      "path": "observer-payloads/04-b22f36f21deb2f5cae682977de7b0b4df21eb15a98e06599ffc301382a60888f",
+      "tree": "efb3acaeca0a23f286f25b4d763863c8b2566173"
+    },
+    {
+      "path": "observer-payloads/05-f33ae38b76090ae907a91991d8d619f8a2c141fb00b37c223418b86f84acf082",
+      "tree": "1f3227db254de1db7e2f639c91998dfcb821f902"
+    },
+    {
+      "path": "observer-payloads/06-505f62e17815703550b5499e15c961ed0bb98d1888fb6b30ad38b33c3b51522d",
+      "tree": "4155d43e798baf084fd1ddcbe7289e4f59472a8e"
+    },
+    {
+      "path": "observer-payloads/07-a38071e45f6730f2a21adba4c03c07bfe50444fddbac095de0b6cdd86b492705",
+      "tree": "39dbf43582ff618f7f078de709099f8e3c9f6d95"
+    },
+    {
+      "path": "observer-payloads/08-ae46ee9b07201b43afcce163f100f0c5ee5c6d32e21ac6f06bce6d5b55511fd2",
+      "tree": "bffd15874eaed8efb4612e24189bbae57d6aeb76"
+    },
+    {
+      "path": "observer-payloads/09-7903c62109d1fa82a0fec7443e7bdf274b3e7200975905a09dcbd68dd088166d",
+      "tree": "783aa2af325aea4cc79d76b3d722eb99e500fa5c"
+    },
+    {
+      "path": "observer-payloads/10-554c71f6ff3d9b8039e69f8b1b27a9768002a50a09665fea0c3e31e2240144dc",
+      "tree": "00f9f7982dce385769cd5573bba1a3594fba1028"
+    },
+    {
+      "path": "observer-payloads/11-14309f183a81d700ae94cc1328bd0ff9a24ef719144592d7e9a8cd805fc91bf4",
+      "tree": "d421492f4cd9bc64eca3eb72d8acfb3a6fb7396b"
+    },
+    {
+      "path": "observer-payloads/12-ce0e9d3e3f4796c45e4584a23c1d630d24ad53fffc46a0097c40c1dd8ee87e23",
+      "tree": "b3dd501cca9462931b7c829d68d024bcdc630f3f"
+    },
+    {
+      "path": "observer-payloads/13-d3da30f5a585a6901dec8bc6b4459ab72c75e3f7c35cdc31c5a254018de169b8",
+      "tree": "575581d87f37c70b58d53290f7414d618652d33a"
+    },
+    {
+      "path": "observer-payloads/14-f3bba6a2e15ec5b302a50db79c5bd72d7127f0356e37a59286ef44081da6fe97",
+      "tree": "36c2576750a3d4ad9571124977bdc2ff01b31711"
+    },
+    {
+      "path": "observer-payloads/15-b18501ffd1af2014a952866563000ce015b2ab53c0a89c60f1f98c680e4ffb96",
+      "tree": "930751ae425a14dc225942b0e0c80e329701ae88"
+    },
+    {
+      "path": "observer-payloads/16-a05ef617f44f3d910190a945045caca568c8d05339900c9371904f7678baf0bf",
+      "tree": "f8d0da6dd7a46058039c5073ed3bdb1034ebaf97"
+    },
+    {
+      "path": "range-recovery/00",
+      "tree": "26bee86081db782e91844b0f3750117843687548"
+    },
+    {
+      "path": "range-recovery/01",
+      "tree": "5d1b512ddf8b746975fe58012dfd4a8c25ca9d01"
+    },
+    {
+      "path": "range-recovery/02",
+      "tree": "2b2f6b81fd9b997940949833210c033b54480c56"
+    },
+    {
+      "path": "range-recovery/03",
+      "tree": "cc85d22601aa8f2cc29d8328dca3496f922542f3"
+    },
+    {
+      "path": "range-recovery/04",
+      "tree": "17d3843d33585c8dcb51e85016111a563389bb42"
+    },
+    {
+      "path": "range-recovery/05",
+      "tree": "a4622063647d61d58dc4b90bf1a8f76a793e0a7c"
+    },
+    {
+      "path": "range-recovery/06",
+      "tree": "199934b460ef800096cae43f07d5690449ff151c"
+    },
+    {
+      "path": "range-recovery/07",
+      "tree": "501015e860dbc13b8806528b8cbedaa27114de51"
+    },
+    {
+      "path": "range-recovery/08",
+      "tree": "be1a182ce7cefba429789015d6715ce67ea4a073"
+    },
+    {
+      "path": "range-recovery/09",
+      "tree": "b68a4d6991c08a1f6db71d450c5497add0823672"
+    },
+    {
+      "path": "range-recovery/10",
+      "tree": "98647e000f372626d892510a23353fd72850e43c"
+    },
+    {
+      "path": "range-recovery/11",
+      "tree": "9827de05e95b8b5140727e7abee489723a28fc3c"
+    },
+    {
+      "path": "range-recovery/12",
+      "tree": "a7117d81f1395bb7d5afc8625d1a058dbf0e6165"
+    },
+    {
+      "path": "prior-terminal-core",
+      "tree": "32e2f8b06c3db1cdf3ca66fc25cc2a20a7313159"
+    },
+    {
+      "path": "prior-metadata-actual",
+      "tree": "cb046a3da9c962abac8019114333cedbb02f5741"
+    },
+    {
+      "path": "body13-source",
+      "tree": "f8f655b805864650b773f4287cac7e592928d6a9"
+    },
+    {
+      "path": "whole-report",
+      "tree": "f570ac2e3ba9751fe5c6c9379db3f70692c0f73d"
+    },
+    {
+      "path": "owner-release",
+      "tree": "29ae92c85c5b8e67a45862f46d71476642090471"
+    },
+    {
+      "path": "aggregate-git-error-history",
+      "tree": "343a55a24c2c651b263d7b50d3c3a51120816011"
+    }
+  ],
+  "history": {
+    "oldB01UnknownPreserved": true,
+    "oldH2Git57bfUnknownPreserved": true,
+    "oldAggregateExpectedTree": "75ff6983c667aa524100e19258693f7e0bf1b982",
+    "oldAggregateCreate422UnknownPreserved": true,
+    "oldAggregateOneReadonly422Preserved": true,
+    "oldAggregateCreateNotRepeated": true,
+    "newLayoutDiffers": true
+  },
+  "limitations": [
+    "B04 failed with CLI exit2/incomplete_snapshot despite leader audit200 after standby307.",
+    "B05 CLI exit0 did not restore: leader audit400 and exact mutated state unchanged, including after cold restart.",
+    "Actual second-upload bytes, ALPN and internal 400 cause were not observed.",
+    "No private CLI stderr body was read.",
+    "No new Runtime request or business replay occurred during packaging.",
+    "No full replacement qualification is granted."
+  ]
+}

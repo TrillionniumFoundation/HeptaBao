@@ -1,0 +1,95 @@
+{
+  "schema": "heptabao.jwt-r2.formatter-receipt-info.source.v1",
+  "status": "SOURCE_ONLY",
+  "runtimeAuthorized": false,
+  "nativeCalls": 0,
+  "existingContext": "jwt_e3af_rog_formatter_gitfirst_r1",
+  "initializeAllowed": false,
+  "job": {
+    "host": "rog",
+    "id": "1a1af017fae-fc05-64f1",
+    "actualPacket": "18e2b1a310b5b6e6022633504a612b95b9841da1",
+    "rootTransportReview": "fa9e8030d8f5e5e460cf7b73c603c11d41d17ec8"
+  },
+  "candidate": {
+    "blob": "d8d792caa494c8c2e084db5cea908d0833ce309f",
+    "bytes": 24268,
+    "sha256": "00917a449fcbed60a9c8fcdd98de18f956eccf692153ebb9709af220bbcf156b"
+  },
+  "predecessorInfo": {
+    "blob": "5251b35f820ade2765d2266616b13d1ef1effc48",
+    "bytes": 23872,
+    "sha256": "32f6775ced13cc9e0c614c40e70dd762c25e76340d13bc3e3cdfddac2b342711"
+  },
+  "originalFormatterJournal": {
+    "blob": "044ad2b54eac035d156b404c2f56196964cfe33f",
+    "bytes": 19041,
+    "sha256": "8f46725a5b48779a141ce153557a4db0798bcc85426b9f2d88ad31b160e98e8d"
+  },
+  "exactRequest": {
+    "blob": "2faaeb3baee3581a5161fff11f8f5d60318ff9c4",
+    "bytes": 236,
+    "sha256": "5b1a7d40e76cf7fc6be383528fdfd523fc7df189d78f3fbeac33b77c6876d8d8"
+  },
+  "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/result.public.json",
+  "newAdmission": {
+    "tool": "file_info",
+    "maximum": 1,
+    "maximumWholeBytes": 65536,
+    "expectedMode": 384,
+    "expectedFullMode": 33152,
+    "uid": 1000,
+    "gid": 1000,
+    "nlink": 1,
+    "metadataVersion": null,
+    "wholeHash": null,
+    "wholeSize": null
+  },
+  "mandatorySeparateGO": {
+    "authorization": "GO",
+    "scope": "formatter_receipt_file_info_only",
+    "original_job": "1a1af017fae-fc05-64f1",
+    "maximum_file_info_starts": 1,
+    "binary_read_authorized": false,
+    "exact_request": {
+      "blob": "2faaeb3baee3581a5161fff11f8f5d60318ff9c4",
+      "bytes": 236,
+      "sha256": "5b1a7d40e76cf7fc6be383528fdfd523fc7df189d78f3fbeac33b77c6876d8d8"
+    }
+  },
+  "unchanged": {
+    "originalContext": true,
+    "original8CallsClosed": true,
+    "original2ObserversClosed": true,
+    "original3Pages8192": true,
+    "statusAndStreamsHelpers": true,
+    "sdkWholeBeforeParsing": true,
+    "unknownStopsNewAdmission": true,
+    "noReplay": true
+  },
+  "observationCaps": {
+    "originalResultPage": 8192,
+    "originalProcessStream": 16384,
+    "newBinaryReadAuthorized": false,
+    "new16KResultPagesAuthorized": false
+  },
+  "laterScope": {
+    "receiptBody": "Requires actual closed metadata and separately reviewed source/GO",
+    "fixed38Files": "Not in this metadata proposal",
+    "formattedCommit": "Required before any Cargo because six formatter summary entries changed"
+  },
+  "verifier": {
+    "checks": 95,
+    "selectedPureGuardsOnly": true,
+    "fullModuleExecution": false,
+    "Python": false,
+    "Rust": false,
+    "Runtime": false
+  },
+  "correction": {
+    "beforeCandidateChanged": false,
+    "firstVerifierFailure": "Inverse substring count confused formatterReceiptInfo with longer GO/Started identifiers",
+    "fix": "Token-boundary inverse for the metadata state only; fake metadata harness defines its own nativeRaw",
+    "originalErrorRetained": true
+  }
+}

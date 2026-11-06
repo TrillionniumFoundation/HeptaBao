@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.log-info-help.source-mechanical-proof.r1",
+  "beforeJournal": {
+    "blob": "7155415142bbb38846bcf51748fde86307a5ddaf",
+    "bytes": 19046,
+    "sha256": "b213ba7bfacd158ce105ac29be7a909926b921d712d3f5d241eb7d8dfdf06c91"
+  },
+  "afterJournal": {
+    "blob": "f51079fe3f72378e4868af185a088bdc398d5e45",
+    "bytes": 20145,
+    "sha256": "6549e8f700476020fb3d05cf60d1f5a3e6fe4d958fcce75b579242778730b2c5"
+  },
+  "journalDiff": {
+    "blob": "5405461c0fe72596e8c02cf76cb836d710a9a500",
+    "bytes": 6306,
+    "sha256": "d138ac925560968a3c429a7f22da5253de33706000c216bc10bf365853c56668"
+  },
+  "strictForward": true,
+  "strictInverse": true,
+  "changedFunctions": [
+    "gfInitializeOnlyAfterRootGO",
+    "gfValidateRequest",
+    "gfCloseOriginalObserver"
+  ],
+  "unchangedFunctions": [
+    "gfNeed",
+    "gfMetaEquals",
+    "gfState",
+    "gfSave",
+    "gfIntegerText",
+    "gfPrepareOne",
+    "gfInvokePreparedOnce",
+    "gfAcceptArchivedSDK",
+    "gfReconcileSameGitArchiveReadOnly",
+    "gfRun"
+  ],
+  "originalFunctionCount": 13,
+  "embedded": [
+    {
+      "name": "mac_owned_unreaped_r1",
+      "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+      "bytes": 10990,
+      "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d",
+      "wholeMatchesOriginal": true
+    },
+    {
+      "name": "mac_owned_commands_r1",
+      "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+      "bytes": 5965,
+      "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867",
+      "wholeMatchesOriginal": true
+    }
+  ],
+  "pythonExecution": false,
+  "pythonCompile": false,
+  "nativeCalls": 0,
+  "metadataSubmitted": false,
+  "helpSubmitted": false,
+  "selectedPureChecks": 8
+}

@@ -1,0 +1,13 @@
+--- a/help.unbound.py
++++ b/help.actual-bound.py
+@@ -6,8 +6,8 @@
+ from __future__ import annotations
+ import base64, hashlib, json, os, re, signal, stat, sys, time, types
+ 
++BINDING_READY = True
++LOG_BINDING = {"path":"/usr/bin/log","version":"16777233:1152921500312572288:807536:1786589515000000000:1786589515000000000","size":807536,"sha256":"2fa7b04615546f0964dd1ddedab04a07e3e026f76959e7f44cbd30bfa48a5974","identity":["16777233","1152921500312572288","0","0","33261","1","807536","1786589515000000000","1786589515000000000"],"metadataOriginal":{"blob":"d3cefcb531f3deea5a156189d381b11f8c70fa7b","bytes":411,"sha256":"8b1ed8e54007466045ebf6527ed102d709c54f8a3e10dd8e7b5f5b41b791efe4"}}
+-BINDING_READY = False
+-LOG_BINDING = None
+ LOG_PATH = '/usr/bin/log'
+ HELP_ARGV = [LOG_PATH, 'help', 'show']
+ PYTHON = '/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14'

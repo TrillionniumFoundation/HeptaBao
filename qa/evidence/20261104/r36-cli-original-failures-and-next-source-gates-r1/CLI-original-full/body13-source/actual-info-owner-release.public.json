@@ -1,0 +1,126 @@
+{
+  "schema": "heptabao.CLI.original-result-info-release.r1",
+  "sourceOnly": false,
+  "metadataOnly": true,
+  "originalJob": "1a1aee01612-fc05-639b",
+  "originalKnownExit": 1,
+  "knownCompatibilityFailureUnchanged": true,
+  "operation": {
+    "id": "d460640d0f261bea9c17630eb911980d8dccaef5499b059d917bb02ac9f8e456",
+    "tool": "file_info",
+    "payload": {
+      "blob": "30a2d1adf528090b5470db61126ceca41bbf82d8",
+      "bytes": 610,
+      "sha256": "b15d922174ad44d4d843236a17855edd9aa5d03bec8c07e933880a5a0a1019f9"
+    },
+    "payloadTree": "237ba87aaa885bdcc0085d33f90677b28daafba7",
+    "nativeText": {
+      "blob": "542ef29f4f09bb8c82ec204a42fa54a37d0bd051",
+      "bytes": 493,
+      "sha256": "1477c8d895cbd5dee3bec86efd5b09658ef73a51ae9f7153d7dd4cf217b5c457"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "metadata": {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r4/result.public.json",
+    "size": 848065,
+    "sha256": "d5c691d23b513a2a63916792bbe21178e2b34799e6adbd20ddf88cdf6147bc48",
+    "version": "2050:7910322:848065:1793935422335117221:1793935422335117221",
+    "nativeText": {
+      "blob": "542ef29f4f09bb8c82ec204a42fa54a37d0bd051",
+      "bytes": 493,
+      "sha256": "1477c8d895cbd5dee3bec86efd5b09658ef73a51ae9f7153d7dd4cf217b5c457"
+    },
+    "originalOperation": "d460640d0f261bea9c17630eb911980d8dccaef5499b059d917bb02ac9f8e456",
+    "full9Strings": [
+      "2050",
+      "7910322",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "848065",
+      "1793935422335117221",
+      "1793935422335117221"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "calls": [
+    {
+      "callKey": "cli-phaseb-r4-result-info0-admit",
+      "request": {
+        "blob": "39c26a97e1a1d27d4cea64c810232e47bc956c1f",
+        "bytes": 299,
+        "sha256": "f8ece50b14f479740b930ca708655e21e2d179b2d3a4b3c1f163000e7dabe651"
+      },
+      "armed": "b3d503129fac45eda8a11859cdfcdddf7829c7f4",
+      "SDK": {
+        "blob": "e214878421381506dca648cad3ec79e8637675d1",
+        "bytes": 704,
+        "sha256": "89135fafb92ad789e85d6543d610759989b9db08e3f55ddacff25ad545eecc8a"
+      },
+      "SDKtree": "97b6c6964009ead61089706168bd0c2d1960d572",
+      "native": {
+        "blob": "075d9de4421cf8f0e9579317647e548331b6f1af",
+        "bytes": 543,
+        "sha256": "190c90dfa343b64e598ade36b4987b0805d127db209c28d7bf557986d6fae5e3"
+      },
+      "phase": "accepted"
+    },
+    {
+      "callKey": "cli-phaseb-r4-result-info0-status0",
+      "request": {
+        "blob": "93b5c34116c5ab22c07cb09ad0b212c1a724c92e",
+        "bytes": 89,
+        "sha256": "6962eb3019b5628693735ae54f796cb88e2ac609c557a7080dd587423ab4c5ad"
+      },
+      "armed": "bb48ef55f14107df45821a44a4c5a42e1f19f993",
+      "SDK": {
+        "blob": "40689cae7ac97f865ad88a7f6dd5ef4f13f7d727",
+        "bytes": 975,
+        "sha256": "4de813ba04c19f147cc85bb539f5bfccf06ccd6f76258a29e46fdaff54263c9d"
+      },
+      "SDKtree": "516749c90a7e05b5f34414a093676bea7829a13f",
+      "native": {
+        "blob": "9187b8c9ff08750cc993c6c315f36d8df83ef6a9",
+        "bytes": 800,
+        "sha256": "446ffe76ea1b19d7e438ce280af66852175971573657fc68608fb012b0a236a0"
+      },
+      "phase": "accepted"
+    },
+    {
+      "callKey": "cli-phaseb-r4-result-info0-page0",
+      "request": {
+        "blob": "f66827012085f9f92bb39d53ed64ae65a9355623",
+        "bytes": 121,
+        "sha256": "2bf86ca226693678c6d0f8773d44fe61ad751b233ae68557133ff4af8589dbd7"
+      },
+      "armed": "718f520cd8dfd9a9fc8f119a20f815ae9bf79409",
+      "SDK": {
+        "blob": "958c920d55b52d90d2e1f1e16c1b5c861a799bd5",
+        "bytes": 1668,
+        "sha256": "c7d31fee06e4e50c2acf2ef1edb9e58ddc5a5026a009404b5f948205178af9ce"
+      },
+      "SDKtree": "6107b39633208a103c3f944367d9d3d41542d56d",
+      "native": {
+        "blob": "d8168fc9950073d75e57b276f9d47a4ac39804dd",
+        "bytes": 1497,
+        "sha256": "934e1e53db82b4953beca3c76b9049c68ea2c1dd4445ffba7bebcfb0398c71e7"
+      },
+      "phase": "accepted"
+    }
+  ],
+  "allCallsAccepted": true,
+  "activeObserver": null,
+  "pendingCall": null,
+  "nativeCallInFlight": false,
+  "currentNativeFuture": 0,
+  "bodyRequestsSubmitted": 0,
+  "binaryReadAuthorized": false,
+  "oldB01UnknownPreserved": true,
+  "oldGitUnknownPreserved": true,
+  "independentCaseQualification": false,
+  "remaining": "Exact version-bound body SOURCE and separate root GO."
+}

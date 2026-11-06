@@ -1,0 +1,23 @@
+{
+  "originalError": {
+    "stage": "source_diff_output_shape",
+    "name": "TypeError",
+    "message": "diff.match is not a function",
+    "nativeCalls": 0,
+    "gitMutations": 0,
+    "sourceCandidatesChangedAfterError": false
+  },
+  "correction": "Read sourceUnified return.raw and return.hunks; strict forward and inverse reconstruction now exact. One formatting newline added before else-if, no Native call or source behavior change.",
+  "strictForward": true,
+  "strictInverse": true,
+  "source": {
+    "blob": "f51079fe3f72378e4868af185a088bdc398d5e45",
+    "bytes": 20145,
+    "sha256": "6549e8f700476020fb3d05cf60d1f5a3e6fe4d958fcce75b579242778730b2c5"
+  },
+  "diff": {
+    "blob": "5405461c0fe72596e8c02cf76cb836d710a9a500",
+    "bytes": 6306,
+    "sha256": "d138ac925560968a3c429a7f22da5253de33706000c216bc10bf365853c56668"
+  }
+}

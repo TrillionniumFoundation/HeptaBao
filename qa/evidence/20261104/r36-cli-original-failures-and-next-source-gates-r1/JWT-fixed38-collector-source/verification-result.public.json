@@ -1,0 +1,571 @@
+{
+  "schema": "heptabao.formatter38-source-offline-verification.v1",
+  "passed": true,
+  "checks": [
+    {
+      "name": "collector.source-pin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "request.original-pin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "request.exact-host-executable-cwd",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "request.exact-inline-isolation-selfsha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "request.original-outer-60",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "request.unique-bounded-key",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "request.no-stdin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "rows.exact-source-literal",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "rows.fixed38-unique",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "rows.original-per-file-success-cap",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "rows.actual-input-byte-total",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "rows.fixed-public-root",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "rows.only-config-receipt-prior-full9",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "rows.full9-decimal-strings",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.0.fixed-role-order",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.0.candidate-receipt",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.0.formatted-receipt-stdout",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.0.stderr-empty-cap",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.1.fixed-role-order",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.1.candidate-receipt",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.1.formatted-receipt-stdout",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.1.stderr-empty-cap",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.2.fixed-role-order",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.2.candidate-receipt",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.2.formatted-receipt-stdout",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.2.stderr-empty-cap",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.3.fixed-role-order",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.3.candidate-receipt",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.3.formatted-receipt-stdout",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.3.stderr-empty-cap",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.4.fixed-role-order",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.4.candidate-receipt",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.4.formatted-receipt-stdout",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.4.stderr-empty-cap",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.5.fixed-role-order",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.5.candidate-receipt",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.5.formatted-receipt-stdout",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.5.stderr-empty-cap",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.6.fixed-role-order",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.6.candidate-receipt",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.6.formatted-receipt-stdout",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.6.stderr-empty-cap",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.7.fixed-role-order",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.7.candidate-receipt",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.7.formatted-receipt-stdout",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.7.stderr-empty-cap",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.8.fixed-role-order",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.8.candidate-receipt",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.8.formatted-receipt-stdout",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "quartet.8.stderr-empty-cap",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "receipt.source-actual",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "receipt.only-direct-reaped-not-independent-groups",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "source.deadline-single-initialization",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "source.no-reset-read-budget",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "read.global-byte-cap-before-os-read",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "read.returned-bytes-accounted-before-postcheck",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "read.one-byte-eof-probe-shares-cap",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "report.readback-same-read-budget",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "resource.maximum-success-read-bytes",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "resource.maximum-success-read-calls",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "resource.metadata-call-budget",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "fd.preallocated-ledger-before-acquire",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "fd.both-open-branches-register-before-postcheck",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "fd.close-marker-before-single-close",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "fd.close-error-never-retried",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "fd.final-cleanup-attempts-all-without-deadline-block",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "fd.input38-known-close-before-publication",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "fd.success-requires-all46",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "fd.peak44-and-acquisition46",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "signals.pending-only-handler",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "signals.finally-close-then-restore",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "signals.failed-restore-refuses-success",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "namespace.shared3-stable-object-owned3-full9",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "namespace.all-input-full9-with-ns",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "namespace.input-no-follow-regular-600-single-link",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "publish.sole-new-root-and-file",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "publish.no-delete-overwrite-or-retry",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "publish.same-fd-byte-readback",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "publish.report-not-self-qualified-final",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "output.final-stdout-postfinally-and-after-flush-deadline",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "output.failure-does-not-print-private-exception-body",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "scope.no-child-network-listing-private-path",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "scope.os-call-set-closed",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "diff.actual-both-opened-file-bytes",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "diff.fixed-headers-and-context3",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "diff.all-yielded-bytes-checked",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "diff.forward-and-reverse-byte-hash",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "diff.unchanged3-explicit",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "diff.strict-no-fuzz-exact-headers",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "journal.exact-after-pin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "journal.unique-literal.90",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "journal.unique-literal.91",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "journal.unique-literal.92",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "journal.only3-literal-slots",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "journal.diff-forward-whole",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "journal.diff-reverse-whole",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "journal.actual-guard-exact-start",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "journal.refuses-start-after-once",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "journal.refuses-request-byte-change",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "journal.actual-guard-same-job-status",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "journal.refuses-host-change",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "journal.refuses-job-change",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "journal.refuses-old-observer-prefix",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "journal.refuses-file-info-or-body-scope",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "journal.actual-guard-stream16384",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "journal.refuses-stream-offset-change",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "journal.refuses-stream-cap-change",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "journal.actual-guard-original-page8192",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "journal.refuses-page-cap-change",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "journal.refuses-page-before-native-closed",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "journal.selected-guards-no-Tools-no-state-mutation",
+      "pass": true,
+      "details": null
+    }
+  ],
+  "scope": {
+    "source_literal_controlflow_and_resource_checks": true,
+    "actual_selected_journal_guards": true,
+    "python_collector_execution": false,
+    "python_compilation": false,
+    "collector_runtime": false,
+    "product_cases": 0,
+    "strict_diff_runtime_correctness": "reviewed source; actual bidirectional reconstruction required inside the separately authorized observer",
+    "limitation": "No claim that lexical/source checks execute Python, perform OS custody, or qualify the 38 current output identities."
+  }
+}

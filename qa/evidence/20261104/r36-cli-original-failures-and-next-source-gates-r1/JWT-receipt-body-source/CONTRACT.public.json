@@ -1,0 +1,99 @@
+{
+  "schema": "heptabao.jwt-formatter-receipt-body.source.v1",
+  "status": "SOURCE_ONLY",
+  "runtimeAuthorized": false,
+  "currentNativeCalls": 0,
+  "existingContext": "jwt_e3af_rog_formatter_gitfirst_r1",
+  "initializeAllowed": false,
+  "originalJob": "1a1af017fae-fc05-64f1",
+  "candidate": {
+    "blob": "8250297f5845ca6b7997a44454de9894d2990709",
+    "bytes": 29141,
+    "sha256": "6960fed2c65a9379fdca8b26d07cbe0c5b3bfa3fd8bf75b4cd67d667d31b6160"
+  },
+  "before": {
+    "blob": "d8d792caa494c8c2e084db5cea908d0833ce309f",
+    "bytes": 24268,
+    "sha256": "00917a449fcbed60a9c8fcdd98de18f956eccf692153ebb9709af220bbcf156b"
+  },
+  "actualMetadataPacket": "429d2a298f33f0575125b2fe2b1276547bacb2e0",
+  "actualMetadata": {
+    "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/result.public.json",
+    "size": 22202,
+    "sha256": "60776056ee93fa1fdb557233626ee392385bfe69c8335cd9bc8d236fb0974874",
+    "version": "66306:30541013:22202:1793937480615144693:1793937480615144693",
+    "nativeText": {
+      "blob": "cb38af7975d33515c1591d0f40a417269c7a0847",
+      "bytes": 468,
+      "sha256": "1202fd1418717d4fec2e77f67d251e58d5beb49420e007df648d6b9ea7c78b84"
+    },
+    "originalOperation": "be969ff66181d7b8e77c373f94425fda8a6474cd6480aba3c46f2a6dcd55a539",
+    "full9Strings": [
+      "66306",
+      "30541013",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "22202",
+      "1793937480615144693",
+      "1793937480615144693"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "exactRequest": {
+    "blob": "6d9356b029e17f02287de08ab5d1c3d84a9537b3",
+    "bytes": 345,
+    "sha256": "daddafc8c6e3f131a33c7fb31eb7cd2cadd591e48f585178b0309b62f9de322c"
+  },
+  "mandatorySeparateGO": {
+    "authorization": "GO",
+    "scope": "formatter_receipt_binary_read_only",
+    "original_job": "1a1af017fae-fc05-64f1",
+    "info_operation": "be969ff66181d7b8e77c373f94425fda8a6474cd6480aba3c46f2a6dcd55a539",
+    "maximum_binary_read_starts": 1,
+    "immutable_page_bytes": 16384,
+    "exact_request": {
+      "blob": "6d9356b029e17f02287de08ab5d1c3d84a9537b3",
+      "bytes": 345,
+      "sha256": "daddafc8c6e3f131a33c7fb31eb7cd2cadd591e48f585178b0309b62f9de322c"
+    }
+  },
+  "scope": {
+    "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/result.public.json",
+    "offset": 0,
+    "limit": 22202,
+    "expected_version": "66306:30541013:22202:1793937480615144693:1793937480615144693",
+    "whole_sha256": "60776056ee93fa1fdb557233626ee392385bfe69c8335cd9bc8d236fb0974874",
+    "max_original_payload": 1048576,
+    "binary_chunk_upper_bound": 65536,
+    "new_binary_result_page": 16384,
+    "all_other_original_result_pages": 8192,
+    "old_process_stream_cap": 16384
+  },
+  "newPageScope": "Explicitly only the newly approved binary_read observer. The original eight formatter calls and three receipt-info calls remain archived with original 8192 page requests; all other tools retain8192.",
+  "prohibitions": {
+    "noProcessStart": true,
+    "noOther37Outputs": true,
+    "noNewFileInfo": true,
+    "noSourceMutation": true,
+    "noCargo": true,
+    "noTest": true,
+    "noReplay": true,
+    "noKeyChange": true
+  },
+  "differences": {
+    "hunks": 8,
+    "originalWholeDefinitions": 8,
+    "modifiedDefinitions": 6,
+    "newAuthorizationDefinitions": 1
+  },
+  "checks": {
+    "passed": 66,
+    "sourceOnly": true,
+    "selectedGuardsOnly": true,
+    "currentReceiptBodyRead": false,
+    "fixture": "Original e3af source-stage report used only as public byte fixture for selected binary result checks."
+  }
+}

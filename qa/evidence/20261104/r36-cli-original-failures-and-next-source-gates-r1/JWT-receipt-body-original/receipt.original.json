@@ -1,0 +1,705 @@
+{
+  "allFixedSourceInputsUnchanged": true,
+  "allOwnedStopped": true,
+  "children": [
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--config-path",
+        "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/rustfmt.toml",
+        "--edition",
+        "2024",
+        "--emit",
+        "stdout"
+      ],
+      "cwd": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1",
+      "exitCode": 0,
+      "newProcessGroupCreated": false,
+      "pgid": 3894313,
+      "pid": 3894321,
+      "reaped": true,
+      "stopped": true,
+      "supervisorGroup": 3894313,
+      "timeoutSeconds": 10
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--config-path",
+        "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/rustfmt.toml",
+        "--edition",
+        "2024",
+        "--emit",
+        "stdout"
+      ],
+      "cwd": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1",
+      "exitCode": 0,
+      "newProcessGroupCreated": false,
+      "pgid": 3894313,
+      "pid": 3894328,
+      "reaped": true,
+      "stopped": true,
+      "supervisorGroup": 3894313,
+      "timeoutSeconds": 10
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--config-path",
+        "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/rustfmt.toml",
+        "--edition",
+        "2024",
+        "--emit",
+        "stdout"
+      ],
+      "cwd": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1",
+      "exitCode": 0,
+      "newProcessGroupCreated": false,
+      "pgid": 3894313,
+      "pid": 3894329,
+      "reaped": true,
+      "stopped": true,
+      "supervisorGroup": 3894313,
+      "timeoutSeconds": 10
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--config-path",
+        "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/rustfmt.toml",
+        "--edition",
+        "2024",
+        "--emit",
+        "stdout"
+      ],
+      "cwd": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1",
+      "exitCode": 0,
+      "newProcessGroupCreated": false,
+      "pgid": 3894313,
+      "pid": 3894330,
+      "reaped": true,
+      "stopped": true,
+      "supervisorGroup": 3894313,
+      "timeoutSeconds": 10
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--config-path",
+        "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/rustfmt.toml",
+        "--edition",
+        "2024",
+        "--emit",
+        "stdout"
+      ],
+      "cwd": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1",
+      "exitCode": 0,
+      "newProcessGroupCreated": false,
+      "pgid": 3894313,
+      "pid": 3894331,
+      "reaped": true,
+      "stopped": true,
+      "supervisorGroup": 3894313,
+      "timeoutSeconds": 10
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--config-path",
+        "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/rustfmt.toml",
+        "--edition",
+        "2024",
+        "--emit",
+        "stdout"
+      ],
+      "cwd": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1",
+      "exitCode": 0,
+      "newProcessGroupCreated": false,
+      "pgid": 3894313,
+      "pid": 3894332,
+      "reaped": true,
+      "stopped": true,
+      "supervisorGroup": 3894313,
+      "timeoutSeconds": 10
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--config-path",
+        "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/rustfmt.toml",
+        "--edition",
+        "2024",
+        "--emit",
+        "stdout"
+      ],
+      "cwd": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1",
+      "exitCode": 0,
+      "newProcessGroupCreated": false,
+      "pgid": 3894313,
+      "pid": 3894333,
+      "reaped": true,
+      "stopped": true,
+      "supervisorGroup": 3894313,
+      "timeoutSeconds": 10
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--config-path",
+        "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/rustfmt.toml",
+        "--edition",
+        "2024",
+        "--emit",
+        "stdout"
+      ],
+      "cwd": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1",
+      "exitCode": 0,
+      "newProcessGroupCreated": false,
+      "pgid": 3894313,
+      "pid": 3894334,
+      "reaped": true,
+      "stopped": true,
+      "supervisorGroup": 3894313,
+      "timeoutSeconds": 10
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--config-path",
+        "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/rustfmt.toml",
+        "--edition",
+        "2024",
+        "--emit",
+        "stdout"
+      ],
+      "cwd": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1",
+      "exitCode": 0,
+      "newProcessGroupCreated": false,
+      "pgid": 3894313,
+      "pid": 3894335,
+      "reaped": true,
+      "stopped": true,
+      "supervisorGroup": 3894313,
+      "timeoutSeconds": 10
+    }
+  ],
+  "compileExecuted": false,
+  "edition": "2024",
+  "elapsedSeconds": 0.47531233297195286,
+  "files": [
+    {
+      "afterBytes": 398266,
+      "afterSha256": "9f366e631019e55aca61717a324bf13c1995797ed088b5b9d8b80c4a11914f7f",
+      "beforeBytes": 397709,
+      "beforeSha256": "6fe0c3a8af3af126be3217143c85519e9b6d9abf7fcbc33f08e6b553ba5a7c97",
+      "name": "auth.rs",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "afterBytes": 18771,
+      "afterSha256": "ca4325e8c853816855a332b85e1ae87fe24ccecdea375c3422cd25451fc49641",
+      "beforeBytes": 17391,
+      "beforeSha256": "d28cc6af7a1ef30fecb704ac9d3917a2c54ad8d6f8ac1cb77e6f75eca9de5042",
+      "name": "auth_native_jwt.rs",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "afterBytes": 21959,
+      "afterSha256": "9114c08a472dfde56837f6bbccf565e471ee2b5286980efb906c3121c71d1761",
+      "beforeBytes": 21959,
+      "beforeSha256": "9114c08a472dfde56837f6bbccf565e471ee2b5286980efb906c3121c71d1761",
+      "name": "auth_native_v6_routes.rs",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "afterBytes": 56677,
+      "afterSha256": "8ac92cf16e18ceccb479322103228142fea413f6ce7ecbcfd9e908ed07bd1cdb",
+      "beforeBytes": 56677,
+      "beforeSha256": "8ac92cf16e18ceccb479322103228142fea413f6ce7ecbcfd9e908ed07bd1cdb",
+      "name": "federated_auth.rs",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "afterBytes": 7772,
+      "afterSha256": "beed7767f9d0784fc023af725e38b4390fe9df7a68c5639e087f6f493dfe9547",
+      "beforeBytes": 7709,
+      "beforeSha256": "255ec883fbb055fdfaea3d8f771fb723a4bb5b524d87f846dcc197dd5e46e92e",
+      "name": "federated_native_jwt.rs",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "afterBytes": 519132,
+      "afterSha256": "6df7278a7b90363fe25a563e10e29db35f47868a2d1d1ea225c91c1b9b6add7d",
+      "beforeBytes": 519054,
+      "beforeSha256": "5953adcb817a2210cc2b5266ec145632e7a263d39b7c61b2811e4c9d1ece289a",
+      "name": "service.rs",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "afterBytes": 143153,
+      "afterSha256": "42a3080d030e6bc22318bf574e47209666f47aa7f336d91fef2c81f0c6b7e165",
+      "beforeBytes": 142316,
+      "beforeSha256": "877d158852e1e47dea0f65e3207592db1226fd92ba50d51f698f2f31d657c1a2",
+      "name": "service_native_auth.rs",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "afterBytes": 37377,
+      "afterSha256": "d16659cdb309644e8cf2ee2dcc6384671f034f49325152573f9d384076ab6feb",
+      "beforeBytes": 33059,
+      "beforeSha256": "f7ca5c2c6e67717287887d31d5d8d40459f5ed6fb40524e5d026c95ee07fa48b",
+      "name": "service_native_jwt_tests.rs",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "afterBytes": 25592,
+      "afterSha256": "750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea",
+      "beforeBytes": 25592,
+      "beforeSha256": "750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea",
+      "name": "service_native_userpass_tests.rs",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "fixedFormattedOutputCaps": {
+    "auth.rs": 524288,
+    "auth_native_jwt.rs": 262144,
+    "auth_native_v6_routes.rs": 262144,
+    "federated_auth.rs": 262144,
+    "federated_native_jwt.rs": 262144,
+    "service.rs": 655360,
+    "service_native_auth.rs": 262144,
+    "service_native_jwt_tests.rs": 262144,
+    "service_native_userpass_tests.rs": 262144
+  },
+  "formatConfigurationAfter": {
+    "bytes": 17,
+    "identity": [
+      66306,
+      30539974,
+      17,
+      1793937480154146135,
+      1793937480154146135,
+      33152,
+      1000,
+      1000,
+      1
+    ],
+    "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/rustfmt.toml",
+    "sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584"
+  },
+  "formatConfigurationBefore": {
+    "bytes": 17,
+    "identity": [
+      66306,
+      30539974,
+      17,
+      1793937480154146135,
+      1793937480154146135,
+      33152,
+      1000,
+      1000,
+      1
+    ],
+    "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/rustfmt.toml",
+    "sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584"
+  },
+  "inputCarrierSha256": "24a0808820c0f3596011eddd20e48190ab2ba63edecf30e230a0802e2d702c5c",
+  "inputOriginalAndCandidatePins": {
+    "auth.rs": [
+      "f28541658b6663ebdfed8d5fc4f019c976f2daf24bc372961e17755ebc2ad601",
+      "6fe0c3a8af3af126be3217143c85519e9b6d9abf7fcbc33f08e6b553ba5a7c97"
+    ],
+    "auth_native_jwt.rs": [
+      null,
+      "d28cc6af7a1ef30fecb704ac9d3917a2c54ad8d6f8ac1cb77e6f75eca9de5042"
+    ],
+    "auth_native_v6_routes.rs": [
+      "c5a932161eaeced8bef1c5dcd0a869ba9895bc0cafb9f4d80967cc7a21641c01",
+      "9114c08a472dfde56837f6bbccf565e471ee2b5286980efb906c3121c71d1761"
+    ],
+    "federated_auth.rs": [
+      "177477696829aee63cf7d8fa68ebcc6f1c556f90814d877cec70a17a6981b097",
+      "8ac92cf16e18ceccb479322103228142fea413f6ce7ecbcfd9e908ed07bd1cdb"
+    ],
+    "federated_native_jwt.rs": [
+      "d0c673be357721547d5eb1db95fbac48104e30a22420b4b1efb0635fefcaa6fa",
+      "255ec883fbb055fdfaea3d8f771fb723a4bb5b524d87f846dcc197dd5e46e92e"
+    ],
+    "service.rs": [
+      "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2",
+      "5953adcb817a2210cc2b5266ec145632e7a263d39b7c61b2811e4c9d1ece289a"
+    ],
+    "service_native_auth.rs": [
+      "dbf07f20dc30ac077761c6ec01936c7f7cd03a3687409d60cca674d4b2ed11cf",
+      "877d158852e1e47dea0f65e3207592db1226fd92ba50d51f698f2f31d657c1a2"
+    ],
+    "service_native_jwt_tests.rs": [
+      null,
+      "f7ca5c2c6e67717287887d31d5d8d40459f5ed6fb40524e5d026c95ee07fa48b"
+    ],
+    "service_native_userpass_tests.rs": [
+      "a8eaf62664654721252a4df34400d5ecffdf836b9e23b280b38a270776e9e995",
+      "750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea"
+    ]
+  },
+  "internalSeconds": 50,
+  "newRemoteSupervisorSeconds": 60,
+  "originalSourceProvenance": "Nine fixed files from exact independent e3afc157 checkout; source is only read, formatting writes owned copies",
+  "ownedConfiguration": "Edition 2024 only; all other rustfmt defaults; explicit config path excludes ambient parent configuration",
+  "productExecuted": false,
+  "productionChanged": false,
+  "repositoryRustfmtConfigPresent": false,
+  "rustfmtAfter": {
+    "bytes": 5255144,
+    "identity": [
+      66306,
+      28970682,
+      5255144,
+      1791677524979153708,
+      1791677525080580886,
+      33261,
+      1000,
+      1000,
+      1
+    ],
+    "path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+    "sha256": "5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877"
+  },
+  "rustfmtBefore": {
+    "bytes": 5255144,
+    "identity": [
+      66306,
+      28970682,
+      5255144,
+      1791677524979153708,
+      1791677525080580886,
+      33261,
+      1000,
+      1000,
+      1
+    ],
+    "path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+    "sha256": "5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877"
+  },
+  "schema": "heptabao.native-jwt-input-rustfmt.v1",
+  "sourceCommit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+  "sourceIdentityFields": [
+    "dev",
+    "ino",
+    "size",
+    "mtime_ns",
+    "ctime_ns",
+    "full_mode",
+    "uid",
+    "gid",
+    "nlink"
+  ],
+  "sourceIdentityIsBaseOnly": false,
+  "sourceInputTotalBytes": 1221466,
+  "sourceInputsAfter": {
+    "auth.rs": {
+      "bytes": 397709,
+      "identity": [
+        66306,
+        28747172,
+        397709,
+        1793934517004463174,
+        1793934517004463174,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/source/crates/heptabao-server/src/auth.rs",
+      "sha256": "6fe0c3a8af3af126be3217143c85519e9b6d9abf7fcbc33f08e6b553ba5a7c97"
+    },
+    "auth_native_jwt.rs": {
+      "bytes": 17391,
+      "identity": [
+        66306,
+        28747534,
+        17391,
+        1793934517011122906,
+        1793934517011122906,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/source/crates/heptabao-server/src/auth_native_jwt.rs",
+      "sha256": "d28cc6af7a1ef30fecb704ac9d3917a2c54ad8d6f8ac1cb77e6f75eca9de5042"
+    },
+    "auth_native_v6_routes.rs": {
+      "bytes": 21959,
+      "identity": [
+        66306,
+        28747541,
+        21959,
+        1793934517011122906,
+        1793934517011122906,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/source/crates/heptabao-server/src/auth_native_v6_routes.rs",
+      "sha256": "9114c08a472dfde56837f6bbccf565e471ee2b5286980efb906c3121c71d1761"
+    },
+    "federated_auth.rs": {
+      "bytes": 56677,
+      "identity": [
+        66306,
+        28747931,
+        56677,
+        1793934517025122788,
+        1793934517025122788,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/source/crates/heptabao-server/src/federated_auth.rs",
+      "sha256": "8ac92cf16e18ceccb479322103228142fea413f6ce7ecbcfd9e908ed07bd1cdb"
+    },
+    "federated_native_jwt.rs": {
+      "bytes": 7709,
+      "identity": [
+        66306,
+        28747934,
+        7709,
+        1793934517025122788,
+        1793934517025122788,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/source/crates/heptabao-server/src/federated_native_jwt.rs",
+      "sha256": "255ec883fbb055fdfaea3d8f771fb723a4bb5b524d87f846dcc197dd5e46e92e"
+    },
+    "service.rs": {
+      "bytes": 519054,
+      "identity": [
+        66306,
+        28748265,
+        519054,
+        1793934517033122720,
+        1793934517033122720,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/source/crates/heptabao-server/src/service.rs",
+      "sha256": "5953adcb817a2210cc2b5266ec145632e7a263d39b7c61b2811e4c9d1ece289a"
+    },
+    "service_native_auth.rs": {
+      "bytes": 142316,
+      "identity": [
+        66306,
+        28748434,
+        142316,
+        1793934517044122627,
+        1793934517044122627,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/source/crates/heptabao-server/src/service_native_auth.rs",
+      "sha256": "877d158852e1e47dea0f65e3207592db1226fd92ba50d51f698f2f31d657c1a2"
+    },
+    "service_native_jwt_tests.rs": {
+      "bytes": 33059,
+      "identity": [
+        66306,
+        28748481,
+        33059,
+        1793934517046122610,
+        1793934517046122610,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/source/crates/heptabao-server/src/service_native_jwt_tests.rs",
+      "sha256": "f7ca5c2c6e67717287887d31d5d8d40459f5ed6fb40524e5d026c95ee07fa48b"
+    },
+    "service_native_userpass_tests.rs": {
+      "bytes": 25592,
+      "identity": [
+        66306,
+        28748539,
+        25592,
+        1793934517049122584,
+        1793934517049122584,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/source/crates/heptabao-server/src/service_native_userpass_tests.rs",
+      "sha256": "750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea"
+    }
+  },
+  "sourceInputsBefore": {
+    "auth.rs": {
+      "bytes": 397709,
+      "identity": [
+        66306,
+        28747172,
+        397709,
+        1793934517004463174,
+        1793934517004463174,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/source/crates/heptabao-server/src/auth.rs",
+      "sha256": "6fe0c3a8af3af126be3217143c85519e9b6d9abf7fcbc33f08e6b553ba5a7c97"
+    },
+    "auth_native_jwt.rs": {
+      "bytes": 17391,
+      "identity": [
+        66306,
+        28747534,
+        17391,
+        1793934517011122906,
+        1793934517011122906,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/source/crates/heptabao-server/src/auth_native_jwt.rs",
+      "sha256": "d28cc6af7a1ef30fecb704ac9d3917a2c54ad8d6f8ac1cb77e6f75eca9de5042"
+    },
+    "auth_native_v6_routes.rs": {
+      "bytes": 21959,
+      "identity": [
+        66306,
+        28747541,
+        21959,
+        1793934517011122906,
+        1793934517011122906,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/source/crates/heptabao-server/src/auth_native_v6_routes.rs",
+      "sha256": "9114c08a472dfde56837f6bbccf565e471ee2b5286980efb906c3121c71d1761"
+    },
+    "federated_auth.rs": {
+      "bytes": 56677,
+      "identity": [
+        66306,
+        28747931,
+        56677,
+        1793934517025122788,
+        1793934517025122788,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/source/crates/heptabao-server/src/federated_auth.rs",
+      "sha256": "8ac92cf16e18ceccb479322103228142fea413f6ce7ecbcfd9e908ed07bd1cdb"
+    },
+    "federated_native_jwt.rs": {
+      "bytes": 7709,
+      "identity": [
+        66306,
+        28747934,
+        7709,
+        1793934517025122788,
+        1793934517025122788,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/source/crates/heptabao-server/src/federated_native_jwt.rs",
+      "sha256": "255ec883fbb055fdfaea3d8f771fb723a4bb5b524d87f846dcc197dd5e46e92e"
+    },
+    "service.rs": {
+      "bytes": 519054,
+      "identity": [
+        66306,
+        28748265,
+        519054,
+        1793934517033122720,
+        1793934517033122720,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/source/crates/heptabao-server/src/service.rs",
+      "sha256": "5953adcb817a2210cc2b5266ec145632e7a263d39b7c61b2811e4c9d1ece289a"
+    },
+    "service_native_auth.rs": {
+      "bytes": 142316,
+      "identity": [
+        66306,
+        28748434,
+        142316,
+        1793934517044122627,
+        1793934517044122627,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/source/crates/heptabao-server/src/service_native_auth.rs",
+      "sha256": "877d158852e1e47dea0f65e3207592db1226fd92ba50d51f698f2f31d657c1a2"
+    },
+    "service_native_jwt_tests.rs": {
+      "bytes": 33059,
+      "identity": [
+        66306,
+        28748481,
+        33059,
+        1793934517046122610,
+        1793934517046122610,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/source/crates/heptabao-server/src/service_native_jwt_tests.rs",
+      "sha256": "f7ca5c2c6e67717287887d31d5d8d40459f5ed6fb40524e5d026c95ee07fa48b"
+    },
+    "service_native_userpass_tests.rs": {
+      "bytes": 25592,
+      "identity": [
+        66306,
+        28748539,
+        25592,
+        1793934517049122584,
+        1793934517049122584,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/source/crates/heptabao-server/src/service_native_userpass_tests.rs",
+      "sha256": "750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea"
+    }
+  },
+  "sourcePath": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/source/crates/heptabao-server/src",
+  "sourceTree": "5497775d9d473541e13e1603be8c893a3e27681b",
+  "status": "passed",
+  "uncommittedCandidateInputs": false,
+  "withinDeadline": true
+}

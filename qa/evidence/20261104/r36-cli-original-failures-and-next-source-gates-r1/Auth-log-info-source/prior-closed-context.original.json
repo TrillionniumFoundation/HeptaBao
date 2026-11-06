@@ -1,0 +1,887 @@
+{
+  "rootGoWhole": true,
+  "goRaw": "{\n  \"schema\": \"heptabao.root-GO.AuthBus-fixed-path-metadata-readonly.v1\",\n  \"authorization\": \"GO\",\n  \"as_of_UTC\": \"2026-11-06 03:44:32 UTC\",\n  \"agent\": \"/root/authbus_migration\",\n  \"purpose\": \"One bounded metadata-only observation of the original owned Mac launchd paths and fixed original Python alias; startup cause remains unqualified unless separately evidenced\",\n  \"source_packet\": \"d361caf1f759deaad5b9a85ad9e04369dd0f1248\",\n  \"source_review\": {\n    \"blob\": \"f12fc50ed339f06abfdc639975a00357cb3be43c\",\n    \"bytes\": 2848,\n    \"sha256\": \"55db391072e3e9b028e5f3f4a0889cfd958afb73de522dd7ad52b6523b01e09b\"\n  },\n  \"journal_packet\": \"17fba4e4d6e0183a2e4fd9d982bc6327c8b88e25\",\n  \"helpers\": {\n    \"native\": {\n      \"blob\": \"7155415142bbb38846bcf51748fde86307a5ddaf\",\n      \"bytes\": 19046,\n      \"sha256\": \"b213ba7bfacd158ce105ac29be7a909926b921d712d3f5d241eb7d8dfdf06c91\"\n    },\n    \"archive\": {\n      \"blob\": \"b093fdbf655511f7db94be2d95555606141bbb42\",\n      \"bytes\": 5957,\n      \"sha256\": \"8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397\"\n    },\n    \"pure\": {\n      \"blob\": \"b6890e8b7217c546bec073dcb04988fc37652721\",\n      \"bytes\": 6685,\n      \"sha256\": \"44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432\"\n    }\n  },\n  \"exact_request\": {\n    \"blob\": \"843965aae4fc29a5d840a1c84c51184dc32ae7ef\",\n    \"bytes\": 14343,\n    \"sha256\": \"76500b2218e329bc76bb8a29bfa485101e4954756f752d0d34cc38869fbc80f0\"\n  },\n  \"source\": {\n    \"blob\": \"01ae2abc5df2fac1b2606455a0233665068df79c\",\n    \"bytes\": 13507,\n    \"sha256\": \"bb9f9e1c6e7b0cb6365cf9647510e533562593dc3714aca468784b22b6699899\"\n  },\n  \"native_binding\": {\n    \"sha256\": \"17dcdc9709e625d48eefed87e6a77518aa47414db2181480e3f2b725454c53c0\",\n    \"native_fingerprint\": \"1719491699012937172\",\n    \"typed_stdin_field\": \"stdin\"\n  },\n  \"start\": {\n    \"host\": \"mac\",\n    \"executable\": \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",\n    \"args\": [\n      \"-I\",\n      \"-S\",\n      \"-B\",\n      \"-\"\n    ],\n    \"cwd\": \"/Users/qianqi\",\n    \"timeout_seconds\": 60,\n    \"idempotency_key\": \"heptabao-mac-owned-launchd-path-metadata-bb9f9e1c-20261106-r1\",\n    \"maximum_START_count\": 1\n  },\n  \"closed_paths\": {\n    \"alias\": \"/opt/homebrew/bin/python3\",\n    \"regular\": \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",\n    \"wrapper\": \"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_server_owner_r1.py\",\n    \"workingDirectory\": \"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1\",\n    \"stdout\": \"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.stdout.private\",\n    \"stderr\": \"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.stderr.private\"\n  },\n  \"closed_directory_parents\": [\n    \"/\",\n    \"/opt\",\n    \"/Volumes\",\n    \"/opt/homebrew\",\n    \"/Volumes/T5\",\n    \"/opt/homebrew/bin\",\n    \"/opt/homebrew/Cellar\",\n    \"/Volumes/T5/hepta-vnext-recovery-20261013\",\n    \"/opt/homebrew/Cellar/python@3.14\",\n    \"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1\",\n    \"/opt/homebrew/Cellar/python@3.14/3.14.3_1\",\n    \"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd\",\n    \"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa\",\n    \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks\",\n    \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework\",\n    \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions\",\n    \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14\",\n    \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin\"\n  ],\n  \"regular_expected_full9\": [\n    \"16777233\",\n    \"587518380\",\n    \"501\",\n    \"80\",\n    \"33261\",\n    \"1\",\n    \"34640\",\n    \"1793798038915516382\",\n    \"1793798038915695047\"\n  ],\n  \"original_anchor_objects\": {\n    \"/\": [\n      \"16777233\",\n      \"2\",\n      \"0\",\n      \"0\",\n      \"16877\"\n    ],\n    \"/Volumes\": [\n      \"16777233\",\n      \"18336\",\n      \"0\",\n      \"0\",\n      \"16877\"\n    ],\n    \"/Volumes/T5\": [\n      \"16777244\",\n      \"2\",\n      \"0\",\n      \"0\",\n      \"16893\"\n    ]\n  },\n  \"scope\": {\n    \"fixedDirectoryAndLeafReadOnlyOpen\": \"18 exact directories+4 regular leaves, O_RDONLY|NOFOLLOW|NONBLOCK; directories also O_DIRECTORY. No file read/pread/hash.\",\n    \"alias\": \"Only exact original alias named lstat twice, up to two readlink calls, two fixed-path follow-stat calls, one access probe. Kernel may resolve its chain; no application traversal/open/admission of returned target paths.\",\n    \"privateStdio\": \"Only fixed leaf metadata/fstat and W_OK observation; zero contents, no write/open-write.\",\n    \"permissions\": \"Current observer's UID/group mode bits and effective-ID os.access if supported; absence of support is reported and never replaced with guessed launchd/TCC evidence.\",\n    \"finalBinding\": \"Full9 at named/FD open and final checks; exact five-field original T5 anchor object identities, no fresh diskutil/UUID claim.\"\n  },\n  \"budgets\": {\n    \"sharedSeconds\": 5,\n    \"outerSeconds\": 60,\n    \"maxMetadataCalls\": 256,\n    \"expectedSuccessMetadataCalls\": 115,\n    \"maxAccessCalls\": 24,\n    \"expectedAccessCalls\": 23,\n    \"maxReadlinkCalls\": 2,\n    \"maxLinkBytesPerCall\": 4096,\n    \"maxLinkBytesAggregate\": 8192,\n    \"maxApplicationFdRowsAndPeak\": 22,\n    \"stdoutMaxBytes\": 65536,\n    \"fileBodyBytes\": 0,\n    \"applicationChildren\": 0,\n    \"networkCalls\": 0,\n    \"serviceMutations\": 0\n  },\n  \"journal\": {\n    \"slot\": \"owner_launchd_path_metadata_gitfirst_r1\",\n    \"call_key_prefix\": \"launchd-path-metadata-\",\n    \"observer_key_prefix\": \"heptabao-mac-owned-launchd-path-metadata-bb9f9e1c-\",\n    \"invoke_only_through\": \"gfRun\",\n    \"maximum_native_call_future_per_lane\": 1,\n    \"maximum_Runtime_lanes\": 2,\n    \"process_read\": 16384,\n    \"immutable_page\": 8192,\n    \"original_payload\": 1048576,\n    \"sequence\": [\n      \"Whole exact GO and correct typed stdin binding\",\n      \"Fresh slot initialize once; exact request/intent/armed externally whole\",\n      \"Independent model boundary then one original process_start\",\n      \"Retain full returned SDK externally whole before any isError/native interpretation\",\n      \"Only actual returned original job status/streams; only original observer ID status/next8192 pages; close full payload SHA/EOF and inactive future before next observer\"\n    ],\n    \"unknown\": \"Retain and stop; exact read-only Git reconciliation only; no replay, key substitution or automatic unpause\"\n  },\n  \"qualifications_required\": [\n    \"Actual authority exit0/full durable stdout\",\n    \"Every returned FD closed, handlers restored, no pending signal, final5second deadline and actual finite counters\",\n    \"No claim of current file SHA/loaded code/launchd or TCC permission from metadata\",\n    \"Original registration/historical lineage and original Git UNKNOWN preserved\"\n  ],\n  \"excluded\": [\n    \"file bodies or private credentials\",\n    \"filesystem scan\",\n    \"log query or log help process\",\n    \"bootout/restart/chmod/TCC changes\",\n    \"new AuthBus worker/business replay\",\n    \"production cutover\",\n    \"legacy cleanup\"\n  ],\n  \"lane_disposition\": {\n    \"A\": \"One metadata diagnostic lane\",\n    \"B\": \"CLI13 body SOURCE until A closes or lane reassigned\",\n    \"C\": \"One existing JWT body original observation\",\n    \"root\": \"0Runtime\"\n  },\n  \"full_replacement\": false,\n  \"production_cutover\": false,\n  \"legacy_cleanup\": false,\n  \"root_Runtime_calls\": 0\n}\n",
+  "goPin": {
+    "blob": "23346a3a59028fc9f88aa5d25d616af638e7426e",
+    "bytes": 7681,
+    "sha256": "e05e15be4eee817137ac0e2f16e3cdbece0a49f54f4bc77152dae6f3877e5df5"
+  },
+  "digest": "17dcdc9709e625d48eefed87e6a77518aa47414db2181480e3f2b725454c53c0",
+  "fingerprint": "1719491699012937172",
+  "job": "1a1aef60ea2-fc05-648b",
+  "startCalled": true,
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "paused": false,
+  "calls": {
+    "launchd-path-metadata-start-r1": {
+      "kind": "process_start",
+      "requestRaw": "{\n  \"host\": \"mac\",\n  \"executable\": \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",\n  \"args\": [\n    \"-I\",\n    \"-S\",\n    \"-B\",\n    \"-\"\n  ],\n  \"cwd\": \"/Users/qianqi\",\n  \"timeout_seconds\": 60,\n  \"idempotency_key\": \"heptabao-mac-owned-launchd-path-metadata-bb9f9e1c-20261106-r1\",\n  \"stdin\": \"#!/usr/bin/env python3\\n\\\"\\\"\\\"SOURCE ONLY. Fixed metadata and permission observation, no service or file-body action.\\\"\\\"\\\"\\nfrom __future__ import annotations\\nimport json, os, signal, stat, sys, time\\n\\nPATHS = json.loads(\\\"{\\\\\\\"alias\\\\\\\":\\\\\\\"/opt/homebrew/bin/python3\\\\\\\",\\\\\\\"regular\\\\\\\":\\\\\\\"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14\\\\\\\",\\\\\\\"wrapper\\\\\\\":\\\\\\\"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_server_owner_r1.py\\\\\\\",\\\\\\\"workingDirectory\\\\\\\":\\\\\\\"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1\\\\\\\",\\\\\\\"stdout\\\\\\\":\\\\\\\"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.stdout.private\\\\\\\",\\\\\\\"stderr\\\\\\\":\\\\\\\"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.stderr.private\\\\\\\"}\\\")\\nDIRS = json.loads(\\\"[\\\\\\\"/\\\\\\\",\\\\\\\"/opt\\\\\\\",\\\\\\\"/Volumes\\\\\\\",\\\\\\\"/opt/homebrew\\\\\\\",\\\\\\\"/Volumes/T5\\\\\\\",\\\\\\\"/opt/homebrew/bin\\\\\\\",\\\\\\\"/opt/homebrew/Cellar\\\\\\\",\\\\\\\"/Volumes/T5/hepta-vnext-recovery-20261013\\\\\\\",\\\\\\\"/opt/homebrew/Cellar/python@3.14\\\\\\\",\\\\\\\"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1\\\\\\\",\\\\\\\"/opt/homebrew/Cellar/python@3.14/3.14.3_1\\\\\\\",\\\\\\\"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd\\\\\\\",\\\\\\\"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa\\\\\\\",\\\\\\\"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks\\\\\\\",\\\\\\\"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework\\\\\\\",\\\\\\\"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions\\\\\\\",\\\\\\\"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14\\\\\\\",\\\\\\\"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin\\\\\\\"]\\\")\\nREGULAR_IDENTITY = tuple([\\\"16777233\\\",\\\"587518380\\\",\\\"501\\\",\\\"80\\\",\\\"33261\\\",\\\"1\\\",\\\"34640\\\",\\\"1793798038915516382\\\",\\\"1793798038915695047\\\"])\\nANCHOR_OBJECTS = json.loads(\\\"{\\\\\\\"/\\\\\\\":[\\\\\\\"16777233\\\\\\\",\\\\\\\"2\\\\\\\",\\\\\\\"0\\\\\\\",\\\\\\\"0\\\\\\\",\\\\\\\"16877\\\\\\\"],\\\\\\\"/Volumes\\\\\\\":[\\\\\\\"16777233\\\\\\\",\\\\\\\"18336\\\\\\\",\\\\\\\"0\\\\\\\",\\\\\\\"0\\\\\\\",\\\\\\\"16877\\\\\\\"],\\\\\\\"/Volumes/T5\\\\\\\":[\\\\\\\"16777244\\\\\\\",\\\\\\\"2\\\\\\\",\\\\\\\"0\\\\\\\",\\\\\\\"0\\\\\\\",\\\\\\\"16893\\\\\\\"]}\\\")\\nSTART = time.monotonic()\\nUNTIL = START + 5.0\\nMAX_METADATA_CALLS = 256\\nMAX_ACCESS_CALLS = 24\\nMAX_READLINK_CALLS = 2\\nMAX_LINK_BYTES = 4096\\nMAX_FD_ROWS = 22\\nOUTPUT_CAP = 65536\\npending = None\\nstage = 'initial'\\nactive_ordinal = None\\ncounts = {'metadata': 0, 'access': 0, 'readlink': 0, 'linkBytes': 0}\\nrows = []\\nby_path = {}\\n\\nclass Refused(Exception):\\n    pass\\n\\ndef need(value, code):\\n    if not value:\\n        raise Refused(code)\\n\\ndef caught_signal(number, frame):\\n    global pending\\n    if pending is None:\\n        pending = number\\n\\ndef remaining():\\n    need(pending is None, 'pending_signal')\\n    need(time.monotonic() < UNTIL, 'metadata_absolute_deadline')\\n\\ndef consume(kind):\\n    remaining()\\n    cap = {'metadata': MAX_METADATA_CALLS, 'access': MAX_ACCESS_CALLS,\\n           'readlink': MAX_READLINK_CALLS}[kind]\\n    need(counts[kind] < cap, 'fixed_syscall_bound')\\n    counts[kind] += 1\\n\\ndef ident(value):\\n    return tuple(str(x) for x in (\\n        value.st_dev, value.st_ino, value.st_uid, value.st_gid, value.st_mode,\\n        value.st_nlink, value.st_size, value.st_mtime_ns, value.st_ctime_ns))\\n\\ndef metadata(fn, *args, **kwargs):\\n    consume('metadata')\\n    result = fn(*args, **kwargs)\\n    remaining()\\n    return result\\n\\ndef named(path):\\n    if path == '/':\\n        return metadata(os.lstat, '/')\\n    parent, name = os.path.split(path)\\n    return metadata(os.stat, name, dir_fd=by_path[parent]['fd'], follow_symlinks=False)\\n\\ndef modes(st):\\n    gids = set(os.getgroups()) | {os.getgid(), os.getegid()}\\n    shift = 6 if st.st_uid == os.geteuid() else 3 if st.st_gid in gids else 0\\n    bits = (stat.S_IMODE(st.st_mode) >> shift) & 7\\n    return {'uid': st.st_uid, 'gid': st.st_gid, 'mode': stat.S_IMODE(st.st_mode),\\n            'ownerClass': st.st_uid == os.geteuid(),\\n            'groupClass': st.st_uid != os.geteuid() and st.st_gid in gids,\\n            'dacReadBit': bool(bits & 4), 'dacWriteBit': bool(bits & 2),\\n            'dacExecuteOrSearchBit': bool(bits & 1),\\n            'notAclTccOrLaunchdProof': True}\\n\\ndef access_for_exact_path(path, mask):\\n    consume('access')\\n    if os.access not in os.supports_effective_ids:\\n        return {'effectiveIdsSupported': False, 'allowed': None}\\n    value = os.access(path, mask, effective_ids=True)\\n    remaining()\\n    return {'effectiveIdsSupported': True, 'allowed': bool(value),\\n            'observerContextOnly': True, 'launchdContextQualified': False}\\n\\ndef open_fixed(path, directory, access_mask):\\n    global stage, active_ordinal\\n    stage = 'fixed_named_before'\\n    active_ordinal = len(rows)\\n    need(path in DIRS or path in (PATHS['regular'], PATHS['wrapper'],\\n         PATHS['stdout'], PATHS['stderr']), 'closed_open_path')\\n    need(len(rows) < MAX_FD_ROWS, 'fixed_fd_row_cap')\\n    before = named(path)\\n    need(stat.S_ISDIR(before.st_mode) if directory else stat.S_ISREG(before.st_mode),\\n         'fixed_expected_type_no_symlink')\\n    row = {'ordinal': len(rows), 'path': path, 'directory': directory,\\n           'fd': None, 'openAttempted': False, 'created': False,\\n           'closeAttempted': False, 'closed': False, 'before': ident(before)}\\n    rows.append(row)  # Register an empty slot before open can return a descriptor.\\n    flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK\\n    if directory:\\n        flags |= os.O_DIRECTORY\\n    stage = 'fixed_readonly_metadata_fd_open'\\n    remaining()\\n    row['openAttempted'] = True\\n    if path == '/':\\n        row['fd'] = os.open('/', flags)\\n    else:\\n        parent, name = os.path.split(path)\\n        row['fd'] = os.open(name, flags, dir_fd=by_path[parent]['fd'])\\n    row['created'] = True\\n    # The installed handler only records pending; it never throws across registration.\\n    stage = 'fixed_fd_and_named_binding'\\n    current = metadata(os.fstat, row['fd'])\\n    need(ident(current) == row['before'] == ident(named(path)),\\n         'fixed_full9_around_open')\\n    by_path[path] = row\\n    if path in ANCHOR_OBJECTS:\\n        need(list(row['before'][:5]) == ANCHOR_OBJECTS[path],\\n             'original_t5_anchor_object_identity')\\n    if path == PATHS['regular']:\\n        need(row['before'] == REGULAR_IDENTITY, 'regular_python_previous_full9')\\n    if path.startswith('/Volumes/T5/'):\\n        need(str(before.st_dev) == ANCHOR_OBJECTS['/Volumes/T5'][0],\\n             'same_observed_t5_device')\\n    row['permissionBits'] = modes(current)\\n    row['access'] = access_for_exact_path(path, access_mask)\\n    return row\\n\\ndef readlink_fixed():\\n    consume('readlink')\\n    parent, name = os.path.split(PATHS['alias'])\\n    value = os.readlink(name, dir_fd=by_path[parent]['fd'])\\n    encoded = os.fsencode(value)\\n    counts['linkBytes'] += len(encoded)\\n    need(len(encoded) <= MAX_LINK_BYTES, 'bounded_symlink_text')\\n    remaining()\\n    return value\\n\\ndef observe_alias(result):\\n    global stage, active_ordinal\\n    active_ordinal = MAX_FD_ROWS\\n    stage = 'fixed_alias_before'\\n    before = named(PATHS['alias'])\\n    need(stat.S_ISLNK(before.st_mode) or stat.S_ISREG(before.st_mode),\\n         'original_alias_file_or_symlink')\\n    link = None\\n    if stat.S_ISLNK(before.st_mode):\\n        need(0 <= before.st_size <= MAX_LINK_BYTES, 'alias_metadata_link_bound')\\n        link = readlink_fixed()\\n    # These two exact-path stat calls let the kernel resolve the old alias.\\n    # No application target traversal/open, no new path admission or body read.\\n    stage = 'fixed_alias_follow_stat'\\n    first_target = metadata(os.stat, PATHS['alias'], follow_symlinks=True)\\n    permission = access_for_exact_path(PATHS['alias'], os.X_OK)\\n    second_target = metadata(os.stat, PATHS['alias'], follow_symlinks=True)\\n    if link is not None:\\n        need(link == readlink_fixed(), 'same_fixed_alias_link_twice')\\n    after = named(PATHS['alias'])\\n    need(ident(before) == ident(after), 'fixed_alias_full9_stable')\\n    need(ident(first_target) == ident(second_target), 'fixed_alias_target_stable')\\n    regular = metadata(os.fstat, by_path[PATHS['regular']]['fd'])\\n    one_hop = None if link is None else os.path.normpath(\\n        link if os.path.isabs(link) else os.path.join(os.path.dirname(PATHS['alias']), link))\\n    result['originalInterpreterAlias'] = {\\n        'path': PATHS['alias'], 'beforeIdentity': list(ident(before)),\\n        'afterIdentity': list(ident(after)), 'isSymlink': stat.S_ISLNK(before.st_mode),\\n        'stableAliasAndTarget': True, 'targetIsRegular': stat.S_ISREG(first_target.st_mode),\\n        'targetFull9EqualsObservedRegularInterpreter': ident(first_target) == ident(regular),\\n        'singleLexicalHopEqualsObservedRegularPath': one_hop == PATHS['regular'],\\n        'unknownLinkTextPublished': False, 'unknownLinkHashPublished': False,\\n        'permission': permission, 'sequentialNotAtomicResolution': True}\\n\\ndef recheck_all():\\n    global stage, active_ordinal\\n    stage = 'final_named_fd_full9'\\n    for row in rows:\\n        active_ordinal = row['ordinal']\\n        remaining()\\n        need(row['created'] and ident(metadata(os.fstat, row['fd'])) == row['before']\\n             == ident(named(row['path'])), 'fixed_full9_final_drift')\\n\\ndef public_error(error):\\n    number = getattr(error, 'errno', None)\\n    return {'type': type(error).__name__,\\n            'code': str(error) if isinstance(error, Refused) else None,\\n            'errno': number if type(number) is int and 0 <= number <= 4095 else None,\\n            'stage': stage, 'fixedPathOrdinal': active_ordinal,\\n            'messageOrDynamicFilenamePublished': False}\\n\\ndef main():\\n    global stage, active_ordinal\\n    previous = {}\\n    installed = []\\n    work_complete = False\\n    result = {'schema': 'heptabao.mac-owned-launchd-path-metadata.r1',\\n        'ok': False, 'outcomeUnknown': False, 'originalJob': '1a1ae51309d-fc05-5ef8',\\n        'target': 'gui/501/org.heptabao.qa.mac-authbus-4e808-owner-r1.server',\\n        'newSharedSeconds': 5, 'outerSeconds': 60,\\n        'privateFileBodyBytesRead': 0, 'publicFileBodyBytesRead': 0,\\n        'applicationChildrenCreated': 0, 'serviceMutationAttempted': False,\\n        'configurationChanged': False, 'directoryEnumerationPerformed': False,\\n        'sdkOrProviderExecuted': False, 'originalRegistrationClosureQualified': False,\\n        'historicalLineageClosureQualified': False, 'launchdStartupCauseQualified': False,\\n        'currentFileWholeHashObserved': False,\\n        'noHashQualificationFromMetadata': True,\\n        'observedContextIsNotLaunchdTccContext': True,\\n        'kernelAliasResolutionDoesNotAdmitOtherTargets': True,\\n        'syscallsAreSynchronousNotHardPreemptible': True}\\n    try:\\n        need(sys.platform == 'darwin' and os.getuid() == 501 and os.geteuid() == 501,\\n             'fixed_mac_observer_identity')\\n        need(sys.executable == PATHS['regular'], 'exact_observed_regular_interpreter')\\n        for sig in (signal.SIGTERM, signal.SIGINT):\\n            previous[sig] = signal.getsignal(sig)\\n            signal.signal(sig, caught_signal)\\n            installed.append(sig)\\n        for path in DIRS:\\n            open_fixed(path, True, os.X_OK)\\n        for name, permission in (('regular', os.X_OK), ('wrapper', os.R_OK),\\n                                 ('stdout', os.W_OK), ('stderr', os.W_OK)):\\n            open_fixed(PATHS[name], False, permission)\\n        observe_alias(result)\\n        recheck_all()\\n        work_complete = True\\n    except BaseException as error:\\n        result['error'] = public_error(error)\\n    finally:\\n        close_errors = []\\n        for row in reversed(rows):\\n            if row['fd'] is not None and not row['closeAttempted']:\\n                row['closeAttempted'] = True\\n                try:\\n                    os.close(row['fd'])\\n                    row['closed'] = True\\n                except BaseException as error:\\n                    close_errors.append({'ordinal': row['ordinal'], 'type': type(error).__name__})\\n        restore_errors = []\\n        for sig in reversed(installed):\\n            try:\\n                signal.signal(sig, previous[sig])\\n            except BaseException as error:\\n                restore_errors.append(type(error).__name__)\\n        result['closeErrors'] = close_errors\\n        result['signalRestoreErrors'] = restore_errors\\n    closed = all(row['fd'] is None or (row['closeAttempted'] and row['closed']) for row in rows)\\n    result['fixedPaths'] = [{k: v for k, v in row.items() if k != 'fd'} for row in rows]\\n    result['allReturnedApplicationDescriptorsClosed'] = closed\\n    result['applicationFdScopeDoesNotEnumerateInterpreterInternalFds'] = True\\n    result['pendingSignalAfterHandlerRestore'] = pending\\n    final_clock = time.monotonic()\\n    result['elapsedSeconds'] = final_clock - START\\n    result['deadlineMetAfterClosure'] = final_clock < UNTIL\\n    result['budget'] = dict(counts)\\n    result['outcomeUnknown'] = bool(not closed or result['closeErrors']\\n        or result['signalRestoreErrors'] or pending is not None)\\n    result['ok'] = bool(work_complete and not result['outcomeUnknown'] and final_clock < UNTIL)\\n    result['authoritativeExitZeroAndCompleteFinalStdoutRequired'] = True\\n    raw = (json.dumps(result, sort_keys=True, separators=(',', ':'), allow_nan=False)+'\\\\n').encode()\\n    if len(raw) > OUTPUT_CAP:\\n        return 1\\n    sys.stdout.buffer.write(raw)\\n    sys.stdout.buffer.flush()\\n    if time.monotonic() >= UNTIL or pending is not None:\\n        return 1\\n    return 0 if result['ok'] else 1\\n\\nif __name__ == '__main__':\\n    raise SystemExit(main())\\n\"\n}\n",
+      "requestPin": {
+        "blob": "843965aae4fc29a5d840a1c84c51184dc32ae7ef",
+        "bytes": 14343,
+        "sha256": "76500b2218e329bc76bb8a29bfa485101e4954756f752d0d34cc38869fbc80f0"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "e47793de61ace66e335d9fe28eeb0eed77bda7a8",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "bbd536310a1d44dc567326887249b7d7fd97880f",
+            "bytes": 838,
+            "sha256": "3dbfa2cc7d0d903fec5b23b2bcd6e94b93c333ca8f2b8469e73b72a78888adf9",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "3be315d456c73baef43f0dcdee4faa1917b9e0f6",
+            "bytes": 701,
+            "sha256": "f3176d49833ebbcb0dd6efc439c35c6e42dc7eaa30f774506b5f9d7958b5fa70",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "843965aae4fc29a5d840a1c84c51184dc32ae7ef",
+            "bytes": 14343,
+            "sha256": "76500b2218e329bc76bb8a29bfa485101e4954756f752d0d34cc38869fbc80f0",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 15882,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "a52d57aeddd0468f708af9ed327948cbbf9c67a5",
+        "bytes": 1427,
+        "sha256": "e630106baf05d111f8a9adc5d556568c2cacec9a593bc0f0749777662328829a"
+      },
+      "sdkArchive": {
+        "tree": "d417d248d10330bf99e176b27c309cab07f45c80",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "a52d57aeddd0468f708af9ed327948cbbf9c67a5",
+            "bytes": 1427,
+            "sha256": "e630106baf05d111f8a9adc5d556568c2cacec9a593bc0f0749777662328829a",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 1427,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "51519d43f555ed37067b1a3bdb9e9da64cce0148",
+        "bytes": 1179,
+        "sha256": "7a19972591a43ff5664bd42b238d8a07ca6d5f691252a8921a9d4e3d85891dae"
+      }
+    },
+    "launchd-path-metadata-authority-01-start": {
+      "kind": "operation_start",
+      "requestRaw": "{\n  \"idempotency_key\": \"heptabao-mac-owned-launchd-path-metadata-bb9f9e1c-authority-01-20261106-r1\",\n  \"operation\": {\n    \"tool\": \"process_status\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"job_id\": \"1a1aef60ea2-fc05-648b\"\n    }\n  }\n}\n",
+      "requestPin": {
+        "blob": "52c84908d5085631d266d7b2cfb8c84bbc09a73b",
+        "bytes": 240,
+        "sha256": "8da130c6ffd33ba647e025a5928639b307ba007880a7d603eb2f2fd8d5766b74"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "2c1c1b66dc92700b9641776ff681ef2814e3ba38",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "a8d0506325fb504cc152d8c198bb5e32d7592e4b",
+            "bytes": 867,
+            "sha256": "313349c46676762816c6ec9fbbf49391cb534af76eae72eaa0a6285becd5614f",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "19047e2f4de930ac8e7d55d5d1554d825298b9db",
+            "bytes": 730,
+            "sha256": "fb6f03fe33c413a785532084654a776698bbceb602d793386101e4c72e489751",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "52c84908d5085631d266d7b2cfb8c84bbc09a73b",
+            "bytes": 240,
+            "sha256": "8da130c6ffd33ba647e025a5928639b307ba007880a7d603eb2f2fd8d5766b74",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1837,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "8458ee2f937cbc9ef545737c52ada990b8731aba",
+        "bytes": 709,
+        "sha256": "0bafcd3d71661603861d29137c6260d5d834834139ee815f964fc197452fc657"
+      },
+      "sdkArchive": {
+        "tree": "cda25a21162d5936440ded8e7e8e8628580f7e85",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "8458ee2f937cbc9ef545737c52ada990b8731aba",
+            "bytes": 709,
+            "sha256": "0bafcd3d71661603861d29137c6260d5d834834139ee815f964fc197452fc657",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 709,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "206aa05393898f894f8188159a4147dda4e14c53",
+        "bytes": 548,
+        "sha256": "9b025ad00c072fe656d1384afd5e4c462e08889fe904dcc3ca2d13d9ce780c27"
+      }
+    },
+    "launchd-path-metadata-authority-01-status-0": {
+      "kind": "operation_status",
+      "requestRaw": "{\n  \"operation_id\": \"369a85fbf9523efdfa79d72cd4237cc6ae24a58ff5aa9b8d81a6b78ab6005d4b\"\n}\n",
+      "requestPin": {
+        "blob": "ce86ccc53950ee4ea12f46338d7539170abc51de",
+        "bytes": 89,
+        "sha256": "4e90e864987682ae6a61f200026291905f0db197509fb8d1be693588c91572d1"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "40b836ce38fe1bb439547c7f3051f8a63f027c81",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "188cc0fe138e821c9d90ce0b39004ec2222eadd1",
+            "bytes": 932,
+            "sha256": "9bfe787e5c96f9fa5009944671a5e45cfc2b4bc3fdf12a5fa72835d0b5db8a6e",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "2d3d6efbc8c3960da689a536d9ae6fb9d8d515c8",
+            "bytes": 795,
+            "sha256": "8b0ee7d4cc9e180556b22576b5154d97a9b216944f123b046ddbcbe450ef0c41",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "ce86ccc53950ee4ea12f46338d7539170abc51de",
+            "bytes": 89,
+            "sha256": "4e90e864987682ae6a61f200026291905f0db197509fb8d1be693588c91572d1",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1816,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "22b2136568a4f07ae89d09387e2b99252b73cdee",
+        "bytes": 980,
+        "sha256": "905ba37b94140567fde1626c2907b7a3ed62f22c8c7e525bab6658ef96d5dd0c"
+      },
+      "sdkArchive": {
+        "tree": "bca0ef547ee173bb54aeaa56a62afbf83cad9c2c",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "22b2136568a4f07ae89d09387e2b99252b73cdee",
+            "bytes": 980,
+            "sha256": "905ba37b94140567fde1626c2907b7a3ed62f22c8c7e525bab6658ef96d5dd0c",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 980,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "b65c04e50162c43bf635e9f01b2e481dc88b6f9f",
+        "bytes": 805,
+        "sha256": "50cad6e392c35f80753d3ff42c2114a9739231582836d200ff153a77bab0c265"
+      }
+    },
+    "launchd-path-metadata-authority-01-page-000000": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"369a85fbf9523efdfa79d72cd4237cc6ae24a58ff5aa9b8d81a6b78ab6005d4b\",\n  \"offset\": 0,\n  \"limit\": 8192\n}\n",
+      "requestPin": {
+        "blob": "d61100ff9343f966580cf14dac55a6b16cc2e77a",
+        "bytes": 121,
+        "sha256": "d71578312e865bcb4d3a6fbda89ff9d8c923f329d24a3e284bafb581329a60e4"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "1487188d133cce0110addd7221508e168ec06008",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "dbf5c9ce0360ea6b05dd7d5a55a58d235d78f18b",
+            "bytes": 936,
+            "sha256": "0aa2c1559239cb2ca9a400dd2c6e3df4f11c84e70db17550f976a74f0a0235d3",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "f1eb2a586d8deaba8101c7a3fdb15101f879e933",
+            "bytes": 799,
+            "sha256": "3aa64faf7054b63629bc8eb6d4a0f3d902128145057ea1cc9609c49bb5868164",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "d61100ff9343f966580cf14dac55a6b16cc2e77a",
+            "bytes": 121,
+            "sha256": "d71578312e865bcb4d3a6fbda89ff9d8c923f329d24a3e284bafb581329a60e4",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1856,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "8bd236b50f218152c85799de763cca73735706c7",
+        "bytes": 2068,
+        "sha256": "9e2c1f49500dabf1e3a5375beff6ef2f8d56daeedd73b7a535431c6183aa7ff5"
+      },
+      "sdkArchive": {
+        "tree": "32ef45cd1dbfa940b31a1bfc01eb7e96b65fc3a6",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "8bd236b50f218152c85799de763cca73735706c7",
+            "bytes": 2068,
+            "sha256": "9e2c1f49500dabf1e3a5375beff6ef2f8d56daeedd73b7a535431c6183aa7ff5",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 2068,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "48360c6197ae505a441623ba2fcc06dbe43b51d7",
+        "bytes": 1897,
+        "sha256": "f7c164a8cb87a1593fbbe3b58f82364d2eba97c4f935e29351f4e4291ac7b20f"
+      }
+    },
+    "launchd-path-metadata-streams-01-start": {
+      "kind": "operation_start",
+      "requestRaw": "{\n  \"idempotency_key\": \"heptabao-mac-owned-launchd-path-metadata-bb9f9e1c-streams-01-20261106-r1\",\n  \"operation\": {\n    \"tool\": \"process_read\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"job_id\": \"1a1aef60ea2-fc05-648b\",\n      \"limit\": 16384,\n      \"stdout_offset\": 0,\n      \"stderr_offset\": 0\n    }\n  }\n}\n",
+      "requestPin": {
+        "blob": "8d44e6297c68644ceb862a131a29f64dce07ad78",
+        "bytes": 310,
+        "sha256": "a104eb4786a5465fa84336ff96c6c84e07833efac9412dcaa04cad3c58c8c33c"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "a6812ec439c21453268e431162648d4ddc9526aa",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "881f3a45bf2e74c8ca4d20212824c8b5d12498d4",
+            "bytes": 865,
+            "sha256": "0e71478481043d6ce7527d0b1eb24c7b0bb76688761fa8ed51550ddd0557e40b",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "e51a34012fee2a81291d1884e555753de39f3bde",
+            "bytes": 728,
+            "sha256": "ce2535970589d00207d0e4cbd0626e186d14f482f5f6afc46b09082361e8c67a",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "8d44e6297c68644ceb862a131a29f64dce07ad78",
+            "bytes": 310,
+            "sha256": "a104eb4786a5465fa84336ff96c6c84e07833efac9412dcaa04cad3c58c8c33c",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1903,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "214942a3d9467363d33290c15a0765a9e2fdc2a1",
+        "bytes": 707,
+        "sha256": "044c1462412cc90fb7a955fb1d3316ea63579d0739368398928748ac54dce259"
+      },
+      "sdkArchive": {
+        "tree": "05ab5dff8b3b3eb905c189c9743973924f825df2",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "214942a3d9467363d33290c15a0765a9e2fdc2a1",
+            "bytes": 707,
+            "sha256": "044c1462412cc90fb7a955fb1d3316ea63579d0739368398928748ac54dce259",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 707,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "1e5495557e7b37653a3034b6d230cf93ab7b3bfc",
+        "bytes": 546,
+        "sha256": "7e2c385c519474b48b84bf23048790bc3a832598f3cdf3b2118a6c1b5d4c9405"
+      }
+    },
+    "launchd-path-metadata-streams-01-status-0": {
+      "kind": "operation_status",
+      "requestRaw": "{\n  \"operation_id\": \"0f41e2ad513243e55321e4fc567de66f179929c753415419f44e9fde76f4fd30\"\n}\n",
+      "requestPin": {
+        "blob": "6ddbb9d9a1cec2736cb8cd37b71461af088e19dc",
+        "bytes": 89,
+        "sha256": "ee2c5ef0cbe69833b27b9fdb11fe3df4511f849352d67dfd907f757c6ff26efe"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "070602fbd2cbe99965880c0d0a09d5989681e377",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "1c56295652d186c9af3631d79742e01ba3a0bba3",
+            "bytes": 930,
+            "sha256": "f519fc4928b6017a77481b8c38c3c5374898336a2d8c0f6ed9873600db67e253",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "5a7fecb58aaab03fbcc1b712c8e236d4d9ee70db",
+            "bytes": 793,
+            "sha256": "17ba3f2ac9f58d9f97d5ed004a3707b33c65e2d0688882b102846306353c40d8",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "6ddbb9d9a1cec2736cb8cd37b71461af088e19dc",
+            "bytes": 89,
+            "sha256": "ee2c5ef0cbe69833b27b9fdb11fe3df4511f849352d67dfd907f757c6ff26efe",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1812,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "7cd0711f4bba51db759d32fed0c9113a27f4d651",
+        "bytes": 978,
+        "sha256": "3ce87c82aa7f613a17dda5bb0df3de9775edb6c9c0ebaee50b0e3f1a2b08c8d6"
+      },
+      "sdkArchive": {
+        "tree": "f93560c78d04e82b48f2da0fb14b5099f5dd355a",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "7cd0711f4bba51db759d32fed0c9113a27f4d651",
+            "bytes": 978,
+            "sha256": "3ce87c82aa7f613a17dda5bb0df3de9775edb6c9c0ebaee50b0e3f1a2b08c8d6",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 978,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "43277ad5fc6a4a051c9896c60f3f448477b2d393",
+        "bytes": 803,
+        "sha256": "57bc8b76cc132bd27425398187031a5abbf16dd4e169ba8f948125f9bba22112"
+      }
+    },
+    "launchd-path-metadata-streams-01-page-000000": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"0f41e2ad513243e55321e4fc567de66f179929c753415419f44e9fde76f4fd30\",\n  \"offset\": 0,\n  \"limit\": 8192\n}\n",
+      "requestPin": {
+        "blob": "17a49f3da3dfae478e86a0e18424b8d437c879a7",
+        "bytes": 121,
+        "sha256": "75f6f769817beaf685b13a82b0d40fc0f57789a93f30a0e80e4692ce72aa6673"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "c053935bf3b7ec516a2b2e26ca1087f566ef55c8",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "3df431d0a9ae1f3faf4d5677352401b2b5878d16",
+            "bytes": 934,
+            "sha256": "c11000da167a60cc5c442e575d73e9af736302f3245f4f08f4d8bdb40174abd0",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "91eaecaf76a13259bf2d13aa02d3b5224c24ce54",
+            "bytes": 797,
+            "sha256": "0eb611f566889adc666551e2aefd21bb40d921eef32fb0ca449931b5772af153",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "17a49f3da3dfae478e86a0e18424b8d437c879a7",
+            "bytes": 121,
+            "sha256": "75f6f769817beaf685b13a82b0d40fc0f57789a93f30a0e80e4692ce72aa6673",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1852,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "3eee8f3bac45bb2557d5909f4703bc15defd361b",
+        "bytes": 11780,
+        "sha256": "d3ff94c4b9043a855c4f7792cdd2b72ef3e5e339b81c4bcd0e4ce911c11b3ce2"
+      },
+      "sdkArchive": {
+        "tree": "4aeb9f1db9b69e23921231781996ac2c6e5481a9",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "3eee8f3bac45bb2557d5909f4703bc15defd361b",
+            "bytes": 11780,
+            "sha256": "d3ff94c4b9043a855c4f7792cdd2b72ef3e5e339b81c4bcd0e4ce911c11b3ce2",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 11780,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "85de409d7c29c3dcaa4fd93ad1e677e33fcf3fa8",
+        "bytes": 11609,
+        "sha256": "807acea81eca3acf3a91a3665a7088d457cee3fc9082edb1f08176a8ec245973"
+      }
+    },
+    "launchd-path-metadata-streams-01-page-008192": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"0f41e2ad513243e55321e4fc567de66f179929c753415419f44e9fde76f4fd30\",\n  \"offset\": 8192,\n  \"limit\": 8192\n}\n",
+      "requestPin": {
+        "blob": "02da65ed7ae2efb930d5610dca8f03faa165a93e",
+        "bytes": 124,
+        "sha256": "a4342f5fe2dc56cff832770fd3e2b2835bb8e3b1619574671b3ba8443205d907"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "78e09c4ea5fdb579db93b161bcb512b827d6ac3d",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "66c9c2465e97f0046356a13bdccbaf30a0525f73",
+            "bytes": 934,
+            "sha256": "27a72bca1b73be0a76a3703e0592bededbabc0df5a421917ce02df9871418eb0",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "a58defe901197ddddcb0b291f4d2b2d3d04a7529",
+            "bytes": 797,
+            "sha256": "61faed7dd9bca44b11f4135726851451e54dd533aab967de37f7630a1d5352ac",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "02da65ed7ae2efb930d5610dca8f03faa165a93e",
+            "bytes": 124,
+            "sha256": "a4342f5fe2dc56cff832770fd3e2b2835bb8e3b1619574671b3ba8443205d907",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1855,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "4054c085618a72110bd3535e4a086b8f544f0cf3",
+        "bytes": 11784,
+        "sha256": "06df01b3460f9375ff83b709398e7de442f83076c8708fc20df38de755a3a395"
+      },
+      "sdkArchive": {
+        "tree": "b023fc3142079490c5702473deab78d2d762ac2f",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "4054c085618a72110bd3535e4a086b8f544f0cf3",
+            "bytes": 11784,
+            "sha256": "06df01b3460f9375ff83b709398e7de442f83076c8708fc20df38de755a3a395",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 11784,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "614bc0eee3a38c9562586cef00d60947419b1d3f",
+        "bytes": 11613,
+        "sha256": "65bd6c3de2abfdc1411d4611e090fa820f8d8cca66eafab8e412ca3a91615997"
+      }
+    },
+    "launchd-path-metadata-streams-01-page-016384": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"0f41e2ad513243e55321e4fc567de66f179929c753415419f44e9fde76f4fd30\",\n  \"offset\": 16384,\n  \"limit\": 8192\n}\n",
+      "requestPin": {
+        "blob": "5f4e218fc7c0cdc008a49f7a27502e1debdecd4e",
+        "bytes": 125,
+        "sha256": "55e92a84ada369b1326c77b94439968ca93b085e38715960966c6ff1cc7ac366"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "90a014e12219ee66463cdc6c60280a89825618ed",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "38b94e3a846f8b4f5c9ae36baf387605b33840f3",
+            "bytes": 934,
+            "sha256": "e71dfe492cb1901f140ba434109810c7847e91817ef784146917f8fe14af4ad6",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "175f93c6f7e0015b6aca95fbe65b688c807334c5",
+            "bytes": 797,
+            "sha256": "69360063a348ec95853d64e8d21269d7869a40d145ff08bced7b0ac4787e4a3f",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "5f4e218fc7c0cdc008a49f7a27502e1debdecd4e",
+            "bytes": 125,
+            "sha256": "55e92a84ada369b1326c77b94439968ca93b085e38715960966c6ff1cc7ac366",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1856,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "7a794772e29a99fb82067f8667f620bfa6d749d8",
+        "bytes": 11785,
+        "sha256": "41fbee517aefdd06cfeec0b6b79373ee94192528e70e6eba437b948d8f97b293"
+      },
+      "sdkArchive": {
+        "tree": "372c0bfa3400a89312f79afc1db6568f8ff21d70",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "7a794772e29a99fb82067f8667f620bfa6d749d8",
+            "bytes": 11785,
+            "sha256": "41fbee517aefdd06cfeec0b6b79373ee94192528e70e6eba437b948d8f97b293",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 11785,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "31689a36c5946fd72c3794264c70e2f260789bfd",
+        "bytes": 11614,
+        "sha256": "79a1de41a4730897e2d031fa4a3f324b5dd9609cfd720cf6a5b099a80476811f"
+      }
+    },
+    "launchd-path-metadata-streams-01-page-024576": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"0f41e2ad513243e55321e4fc567de66f179929c753415419f44e9fde76f4fd30\",\n  \"offset\": 24576,\n  \"limit\": 8192\n}\n",
+      "requestPin": {
+        "blob": "9a020fd3595df2169270489328b9fab47a263a52",
+        "bytes": 125,
+        "sha256": "6caf69a04a617cb3adf0e6c3d3e3fa75fe2500576650309d45f8fc1d0f700f66"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "117cd91a583610984cac088b5f034a726677da1e",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "9c55705c7b269e973acbcbe4b8faf04916b2a5a0",
+            "bytes": 934,
+            "sha256": "0e016e048cc032ec44daf2300bcbda14323a8cf4be769cd36b3461bb8205655f",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "ebfb9627cb4e22614e80a7296e8e12d9a2557743",
+            "bytes": 797,
+            "sha256": "4bde30ece03230bb0d3bdd5767b1a397e1aa2947202374c4f57d77597f7580c8",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "9a020fd3595df2169270489328b9fab47a263a52",
+            "bytes": 125,
+            "sha256": "6caf69a04a617cb3adf0e6c3d3e3fa75fe2500576650309d45f8fc1d0f700f66",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1856,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "ff9a14c86e117ce4ad796719eee4c5a6c50bc0ca",
+        "bytes": 11785,
+        "sha256": "46b7c4295359f51209a20f30799fb3e905acd21882ca6f9fabfc1e628a670788"
+      },
+      "sdkArchive": {
+        "tree": "1bf129d66fc0114e52fc46cc30b5d92b58a9766a",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "ff9a14c86e117ce4ad796719eee4c5a6c50bc0ca",
+            "bytes": 11785,
+            "sha256": "46b7c4295359f51209a20f30799fb3e905acd21882ca6f9fabfc1e628a670788",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 11785,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "4db35926dd3cba7eb43157401004803d96c9a1b0",
+        "bytes": 11614,
+        "sha256": "8ee8edb103be4ff983acc8fa48c0a2b5df9509aa48be2c6a0e48ea2041b0f47c"
+      }
+    },
+    "launchd-path-metadata-streams-01-page-032768": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"0f41e2ad513243e55321e4fc567de66f179929c753415419f44e9fde76f4fd30\",\n  \"offset\": 32768,\n  \"limit\": 8192\n}\n",
+      "requestPin": {
+        "blob": "05438d7ea6eacc38888f1a712db6a9bc7180d849",
+        "bytes": 125,
+        "sha256": "99f046c93b193d489f8c642c71584a95b6ae4a9c370e5b7ebccd50ae561d0f92"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "f99748da61a513f24a332a7fc1e095f48e02d2cc",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "95010caea458529d1bf587af3e6493ce4f6471e2",
+            "bytes": 934,
+            "sha256": "11011f4b18921b2658719d10d29ba25d785424f225913dbbfd4c4c18f9fe0457",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "29dc79c45eb8e2a79f92a806cb6c0c9c2fc2f13d",
+            "bytes": 797,
+            "sha256": "5c32dfa0c1e380121cebea63e3e46e8eeb45537a2ade8bc2996bb6f142e51b4f",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "05438d7ea6eacc38888f1a712db6a9bc7180d849",
+            "bytes": 125,
+            "sha256": "99f046c93b193d489f8c642c71584a95b6ae4a9c370e5b7ebccd50ae561d0f92",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1856,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "f126d025ca81c803148899e2f5f7cebe1ee296c2",
+        "bytes": 11785,
+        "sha256": "9a8fc56974cf553de2acf8ffe9d980ab2315820f477c9e66b952581c6455ff94"
+      },
+      "sdkArchive": {
+        "tree": "3e3e01a9de2d935a08ce08f1dd0c05b14fec77af",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "f126d025ca81c803148899e2f5f7cebe1ee296c2",
+            "bytes": 11785,
+            "sha256": "9a8fc56974cf553de2acf8ffe9d980ab2315820f477c9e66b952581c6455ff94",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 11785,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "674c2ebcab99eac58148d9a91afdd8a318576ac0",
+        "bytes": 11614,
+        "sha256": "63a43cba8f63a38caffcfff0bd8094ce09da2c7998887263b9aa325e525ebeab"
+      }
+    },
+    "launchd-path-metadata-streams-01-page-040960": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"0f41e2ad513243e55321e4fc567de66f179929c753415419f44e9fde76f4fd30\",\n  \"offset\": 40960,\n  \"limit\": 8192\n}\n",
+      "requestPin": {
+        "blob": "2789b9a1bfde3c5fb23dd399811b8768ab600e7e",
+        "bytes": 125,
+        "sha256": "f0655463f9d401b504ffa7acd0f1843177a73dc7969a79394627a48edd49aacc"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "6f72479a812fc8b1c2e6358be4ee9361fe66d8d3",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "ff4c48cc5664523825fd879b95ebecd654c75fd3",
+            "bytes": 934,
+            "sha256": "5897387655d35714e818195f69f20cdb943f529a634758269d4a465d93ced350",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "8a0073fbf774df202e59d57369bbe4aed53f02f7",
+            "bytes": 797,
+            "sha256": "1d486996ac5607100daf4cd6bb993f2f4f1dde68b6fd011a46312651207fa0da",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "2789b9a1bfde3c5fb23dd399811b8768ab600e7e",
+            "bytes": 125,
+            "sha256": "f0655463f9d401b504ffa7acd0f1843177a73dc7969a79394627a48edd49aacc",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1856,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "b71fc8b3b784fc3f9eb0ba75055e1ce7c372bb15",
+        "bytes": 11264,
+        "sha256": "549ba62a4497ecd4af27191ee83fbe36e184435082663da443c63122f8ea7d87"
+      },
+      "sdkArchive": {
+        "tree": "18b76d65377b0a605bcb3a8b4452dd6a529b2568",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "b71fc8b3b784fc3f9eb0ba75055e1ce7c372bb15",
+            "bytes": 11264,
+            "sha256": "549ba62a4497ecd4af27191ee83fbe36e184435082663da443c63122f8ea7d87",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 11264,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "2ea13d0033e8af589494a416301c546180c7167c",
+        "bytes": 11093,
+        "sha256": "85dc031646f2bcb79fed759ceb884bdc5d432e6215c519947992292d512f2b94"
+      }
+    }
+  },
+  "completedObservers": [
+    {
+      "id": "369a85fbf9523efdfa79d72cd4237cc6ae24a58ff5aa9b8d81a6b78ab6005d4b",
+      "tool": "process_status",
+      "payload": {
+        "blob": "bbc888f09e08ecf26788ed0626e3f84aeee134dd",
+        "bytes": 912,
+        "sha256": "d6d4a770650cf8be652573f64540ea64cd0a9d9638f91fed5777852981b60b37"
+      },
+      "payloadTree": "ce4cedd6e577acec91c3824075b2e98e1cd889f9",
+      "nativeText": {
+        "blob": "29d005720e6169b48a800dfb6d82fdf3a718abd2",
+        "bytes": 733,
+        "sha256": "c0a2cc40ba9d6913111572658d87845437e7957bd5965bab1dad10a7157e1b04"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "0f41e2ad513243e55321e4fc567de66f179929c753415419f44e9fde76f4fd30",
+      "tool": "process_read",
+      "payload": {
+        "blob": "e17fb99f69877421838d33bffe65bd7e72b66a7c",
+        "bytes": 48761,
+        "sha256": "890c3b7df8af3732d35674233423869ed0bdec94a22a03229bd1ecfc91de31b8"
+      },
+      "payloadTree": "bbec893d3203d206b3d978e80e4c46c40a1b03e4",
+      "nativeText": {
+        "blob": "df4d00045ccbb65a7702b22ea32c20bc54803d6e",
+        "bytes": 45416,
+        "sha256": "47cf2257652eccd5d52c0904927593a28aa5526e9c9a1f6f8275b9623ff41165"
+      },
+      "pages": 6,
+      "completedInactive": true
+    }
+  ],
+  "nextStdout": 14496,
+  "nextStderr": 0,
+  "localJournalAvailable": false,
+  "gitFirstExplicitlyRequiredByThisRootGO": true
+}

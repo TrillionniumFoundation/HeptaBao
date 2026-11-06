@@ -1,0 +1,391 @@
+{
+  "schema": "heptabao.cli-known-failure-version-pinned-body13.SOURCE.v1",
+  "sourceOnly": true,
+  "NativeCalls": 0,
+  "binaryReadAuthorized": false,
+  "existingContext": "official271_phaseb_live_gitfirst_r1",
+  "initialize": false,
+  "originalJob": "1a1aee01612-fc05-639b",
+  "originalExit": 1,
+  "terminalMeaning": "completed_with_compatibility_failures remains unchanged; no retry or qualification from flags.",
+  "before": {
+    "blob": "f0819073ffb9ee7e1a39135a3b6f41782e4aafdb",
+    "bytes": 24174,
+    "sha256": "b979ccb2bf61ae3795231b154e6d11f2573b4e5f603289185b9bcb4e482a57e1"
+  },
+  "after": {
+    "blob": "bfb93119d9e3bd6840f73023f605fa14e9f26790",
+    "bytes": 33512,
+    "sha256": "ee56cf9516ae2dfbfa9c7115bcd70c9a70a451173c0279f537f953c1accae0d7"
+  },
+  "diff": {
+    "blob": "56995a1e1c55d815540f951c25a9bd35a8dc8bfe",
+    "bytes": 13224,
+    "sha256": "811f67c2c599a799192adf95172a57f5afd0db8d80d42e64a7ac3241e07aeead",
+    "strictHunks": 8,
+    "strictForwardReverseWhole": true
+  },
+  "referenceSingleBody": {
+    "blob": "703a403a43fbd8ce8db9d0e30c21b77d13982900",
+    "role": "Shape only; no C host, exit0, 27581B, single-range, 150000 cap, or GO inherited."
+  },
+  "metadataActual": {
+    "packet": "cb046a3da9c962abac8019114333cedbb02f5741",
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r4/result.public.json",
+    "bytes": 848065,
+    "sha256": "d5c691d23b513a2a63916792bbe21178e2b34799e6adbd20ddf88cdf6147bc48",
+    "version": "2050:7910322:848065:1793935422335117221:1793935422335117221",
+    "infoOperation": "d460640d0f261bea9c17630eb911980d8dccaef5499b059d917bb02ac9f8e456",
+    "infoNative": {
+      "blob": "542ef29f4f09bb8c82ec204a42fa54a37d0bd051",
+      "bytes": 493,
+      "sha256": "1477c8d895cbd5dee3bec86efd5b09658ef73a51ae9f7153d7dd4cf217b5c457"
+    },
+    "full9Strings": [
+      "2050",
+      "7910322",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "848065",
+      "1793935422335117221",
+      "1793935422335117221"
+    ]
+  },
+  "exactRequests": [
+    {
+      "index": 0,
+      "offset": 0,
+      "limit": 65536,
+      "key": "heptabao-official271-phaseb-readonly-r4-result-body0",
+      "blob": "de991f70d3e36b072a2ef8b6ba8618561c19345b",
+      "bytes": 431,
+      "sha256": "dd6361d9c71ec00a8a8f73853f6ddb8fda71b957ceee53c7da614d036b7a1ddb"
+    },
+    {
+      "index": 1,
+      "offset": 65536,
+      "limit": 65536,
+      "key": "heptabao-official271-phaseb-readonly-r4-result-body1",
+      "blob": "96b42838e27e808c469b006a0d27a0423041a4f4",
+      "bytes": 435,
+      "sha256": "eb32b71b60b1db7f7a417e0329607801c3e1a12dbfdbd52f8421ca08a2f0e5c7"
+    },
+    {
+      "index": 2,
+      "offset": 131072,
+      "limit": 65536,
+      "key": "heptabao-official271-phaseb-readonly-r4-result-body2",
+      "blob": "944e6fafc756f77a8d2e58968ef2466a4b425ac7",
+      "bytes": 436,
+      "sha256": "261d89591ddffea380f94145fb8f9ce8cf38bb608452346f838c8c438147b492"
+    },
+    {
+      "index": 3,
+      "offset": 196608,
+      "limit": 65536,
+      "key": "heptabao-official271-phaseb-readonly-r4-result-body3",
+      "blob": "4f4672a9e97565a6441cc880a75464f041782503",
+      "bytes": 436,
+      "sha256": "4fdf7d22a2de2cf15c3e9dd77273dd197756df3e870d0da35edb04dfa45d0f21"
+    },
+    {
+      "index": 4,
+      "offset": 262144,
+      "limit": 65536,
+      "key": "heptabao-official271-phaseb-readonly-r4-result-body4",
+      "blob": "15d5ce9229cd5fb18d85b622c19ae5609d790fde",
+      "bytes": 436,
+      "sha256": "7f62427936ad398dc013bd62b18a3de2f887a31c70b724e2394484fc55ce6fe3"
+    },
+    {
+      "index": 5,
+      "offset": 327680,
+      "limit": 65536,
+      "key": "heptabao-official271-phaseb-readonly-r4-result-body5",
+      "blob": "089bfcc1b60101feed027fc7595b4ae881ccd2de",
+      "bytes": 436,
+      "sha256": "dd105ddf299f8d92685c43625360f8a9a1dc9fa5c44c1f35686901f5086104ea"
+    },
+    {
+      "index": 6,
+      "offset": 393216,
+      "limit": 65536,
+      "key": "heptabao-official271-phaseb-readonly-r4-result-body6",
+      "blob": "a9c63d43b53a57d4dce3462b5b7324087befad17",
+      "bytes": 436,
+      "sha256": "d140519283cdb758d9c2f24aa47c17d1f8e083a08dc266cea2ea04ea2438784a"
+    },
+    {
+      "index": 7,
+      "offset": 458752,
+      "limit": 65536,
+      "key": "heptabao-official271-phaseb-readonly-r4-result-body7",
+      "blob": "34e4859329666862b92a0430d80ceadef4d15de5",
+      "bytes": 436,
+      "sha256": "854de160c87b3c9ef0942bf200c76ed5beec196e60a8c4f639474078578d6f3d"
+    },
+    {
+      "index": 8,
+      "offset": 524288,
+      "limit": 65536,
+      "key": "heptabao-official271-phaseb-readonly-r4-result-body8",
+      "blob": "16ec952c6d3e839b2586a9dc2b2ef96792441f05",
+      "bytes": 436,
+      "sha256": "c859ba91d7fd32db2a1ba57e7a1a0310dcfcf2a399b7ffdac4898c998ae02b32"
+    },
+    {
+      "index": 9,
+      "offset": 589824,
+      "limit": 65536,
+      "key": "heptabao-official271-phaseb-readonly-r4-result-body9",
+      "blob": "d6f57b88121e16dd0967f7f8c01afaa977b13cb4",
+      "bytes": 436,
+      "sha256": "66902ac202169e18cd102b0205e05c72c61b48e70b5a6597ba7e72bfa9ed356e"
+    },
+    {
+      "index": 10,
+      "offset": 655360,
+      "limit": 65536,
+      "key": "heptabao-official271-phaseb-readonly-r4-result-body10",
+      "blob": "a63dbfdddf5fa7a72f857c286e096456661b255d",
+      "bytes": 437,
+      "sha256": "f2bdacb29ddb32a8aaea5aa619c74386e40b43570a081ae5a64bc6393ff059b0"
+    },
+    {
+      "index": 11,
+      "offset": 720896,
+      "limit": 65536,
+      "key": "heptabao-official271-phaseb-readonly-r4-result-body11",
+      "blob": "a5714c96ccc076fbbe2f9b4207a244cf9e4e0465",
+      "bytes": 437,
+      "sha256": "342263b295b146a66e1202769cf636174fe433cb03c7905f2d70f16ad3f1dd17"
+    },
+    {
+      "index": 12,
+      "offset": 786432,
+      "limit": 61633,
+      "key": "heptabao-official271-phaseb-readonly-r4-result-body12",
+      "blob": "dfc8dfb0a049fe7f70350edc3a7ae1da6675d4e9",
+      "bytes": 437,
+      "sha256": "4ffe37365405065e8a51433623abec4acc594f8701daada00ac127d24931e5f7"
+    }
+  ],
+  "rangeGeometry": {
+    "count": 13,
+    "whole": 848065,
+    "first12": 65536,
+    "last": 61633,
+    "oneFuture": true,
+    "observerClosureBeforeNext": true
+  },
+  "pageChange": {
+    "newBinaryReadObserversOnly": 16384,
+    "allPreviousObserverKinds": 8192,
+    "retainedPayloadCap": 1048576,
+    "nativeChunkCap": 65536,
+    "metadataFileAcceptanceCap": 4194304,
+    "existingBusinessBudgetUnchanged": true,
+    "exposedToolContract": {
+      "blob": "abf7e5931ae8a831989a38fc34e66f4a20f146b4",
+      "bytes": 2933,
+      "sha256": "af0051008b7e1e9bed84e67938cf1a8f16da504207739777f285d52180a0e6cf"
+    }
+  },
+  "requiredNewRootGO": {
+    "authorization": "GO",
+    "scope": "cli_result_binary_read_ranges_only",
+    "original_job": "1a1aee01612-fc05-639b",
+    "info_operation": "d460640d0f261bea9c17630eb911980d8dccaef5499b059d917bb02ac9f8e456",
+    "maximum_binary_read_starts": 13,
+    "immutable_body_page_bytes": 16384,
+    "fixed_report": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r4/result.public.json",
+      "bytes": 848065,
+      "sha256": "d5c691d23b513a2a63916792bbe21178e2b34799e6adbd20ddf88cdf6147bc48",
+      "version": "2050:7910322:848065:1793935422335117221:1793935422335117221"
+    },
+    "exact_requests": [
+      {
+        "blob": "de991f70d3e36b072a2ef8b6ba8618561c19345b",
+        "bytes": 431,
+        "sha256": "dd6361d9c71ec00a8a8f73853f6ddb8fda71b957ceee53c7da614d036b7a1ddb"
+      },
+      {
+        "blob": "96b42838e27e808c469b006a0d27a0423041a4f4",
+        "bytes": 435,
+        "sha256": "eb32b71b60b1db7f7a417e0329607801c3e1a12dbfdbd52f8421ca08a2f0e5c7"
+      },
+      {
+        "blob": "944e6fafc756f77a8d2e58968ef2466a4b425ac7",
+        "bytes": 436,
+        "sha256": "261d89591ddffea380f94145fb8f9ce8cf38bb608452346f838c8c438147b492"
+      },
+      {
+        "blob": "4f4672a9e97565a6441cc880a75464f041782503",
+        "bytes": 436,
+        "sha256": "4fdf7d22a2de2cf15c3e9dd77273dd197756df3e870d0da35edb04dfa45d0f21"
+      },
+      {
+        "blob": "15d5ce9229cd5fb18d85b622c19ae5609d790fde",
+        "bytes": 436,
+        "sha256": "7f62427936ad398dc013bd62b18a3de2f887a31c70b724e2394484fc55ce6fe3"
+      },
+      {
+        "blob": "089bfcc1b60101feed027fc7595b4ae881ccd2de",
+        "bytes": 436,
+        "sha256": "dd105ddf299f8d92685c43625360f8a9a1dc9fa5c44c1f35686901f5086104ea"
+      },
+      {
+        "blob": "a9c63d43b53a57d4dce3462b5b7324087befad17",
+        "bytes": 436,
+        "sha256": "d140519283cdb758d9c2f24aa47c17d1f8e083a08dc266cea2ea04ea2438784a"
+      },
+      {
+        "blob": "34e4859329666862b92a0430d80ceadef4d15de5",
+        "bytes": 436,
+        "sha256": "854de160c87b3c9ef0942bf200c76ed5beec196e60a8c4f639474078578d6f3d"
+      },
+      {
+        "blob": "16ec952c6d3e839b2586a9dc2b2ef96792441f05",
+        "bytes": 436,
+        "sha256": "c859ba91d7fd32db2a1ba57e7a1a0310dcfcf2a399b7ffdac4898c998ae02b32"
+      },
+      {
+        "blob": "d6f57b88121e16dd0967f7f8c01afaa977b13cb4",
+        "bytes": 436,
+        "sha256": "66902ac202169e18cd102b0205e05c72c61b48e70b5a6597ba7e72bfa9ed356e"
+      },
+      {
+        "blob": "a63dbfdddf5fa7a72f857c286e096456661b255d",
+        "bytes": 437,
+        "sha256": "f2bdacb29ddb32a8aaea5aa619c74386e40b43570a081ae5a64bc6393ff059b0"
+      },
+      {
+        "blob": "a5714c96ccc076fbbe2f9b4207a244cf9e4e0465",
+        "bytes": 437,
+        "sha256": "342263b295b146a66e1202769cf636174fe433cb03c7905f2d70f16ad3f1dd17"
+      },
+      {
+        "blob": "dfc8dfb0a049fe7f70350edc3a7ae1da6675d4e9",
+        "bytes": 437,
+        "sha256": "4ffe37365405065e8a51433623abec4acc594f8701daada00ac127d24931e5f7"
+      }
+    ]
+  },
+  "sequence": [
+    "Whole exact new GO then gfRun authorize_cli_result_body on existing context",
+    "For index0..12 only: gfRun prepare exact request; complete external arm whole then model boundary",
+    "One gfRun invoke; full original SDK store/Git create once/whole readback before accept",
+    "Only same returned operation status; completed/inactive before sequential immutable pages",
+    "Only binary_read pages use16384; each original payload SHA/EOF exact and whole archived",
+    "Decode each native range; check actual path/version/size/offset/next/eof/chunkSHA; do not UTF8-decode individual byte ranges",
+    "Last range joins all13 exact bytes, checks original848065/SHA, then UTF8 roundtrip and one whole result Git archive",
+    "Only after observer fully closes admit next range; semantic report qualification separate"
+  ],
+  "failure": "Any transport/native/Git unknown, version drift, missing/oversize/malformed/changed hash stops. No retry, new key, reset, file refresh, extra range or product call.",
+  "unchangedDefinitions": [
+    {
+      "name": "gfAcceptArchivedSDK",
+      "unchanged": false
+    },
+    {
+      "name": "gfAuthorizeCliResultInfoOnly",
+      "unchanged": true
+    },
+    {
+      "name": "gfCloseOriginalObserver",
+      "unchanged": false
+    },
+    {
+      "name": "gfInitializeOnlyAfterRootGO",
+      "unchanged": true
+    },
+    {
+      "name": "gfIntegerText",
+      "unchanged": true
+    },
+    {
+      "name": "gfInvokePreparedOnce",
+      "unchanged": false
+    },
+    {
+      "name": "gfMetaEquals",
+      "unchanged": true
+    },
+    {
+      "name": "gfNeed",
+      "unchanged": true
+    },
+    {
+      "name": "gfPrepareOne",
+      "unchanged": false
+    },
+    {
+      "name": "gfReconcileSameGitArchiveReadOnly",
+      "unchanged": true
+    },
+    {
+      "name": "gfRun",
+      "unchanged": false
+    },
+    {
+      "name": "gfSave",
+      "unchanged": true
+    },
+    {
+      "name": "gfState",
+      "unchanged": true
+    },
+    {
+      "name": "gfValidateRequest",
+      "unchanged": false
+    }
+  ],
+  "checks": {
+    "selectedNewGuards": 50,
+    "pureV8Only": true,
+    "NativeCalls": 0,
+    "localExecutorCalls": 0,
+    "definitionEquality": "8 of14 old functions whole; one new authorizer; six bounded old function changes."
+  },
+  "futureSteps": [
+    {
+      "action": "authorize_cli_result_body",
+      "inputs": "exact new root GO whole; no initialize"
+    },
+    {
+      "action": "prepare",
+      "kind": "operation_start",
+      "callKey": "cli-phaseb-r4-result-body0-admit",
+      "request": "de991f70d3e36b072a2ef8b6ba8618561c19345b"
+    },
+    {
+      "action": "invoke",
+      "after": "whole external armed boundary"
+    },
+    {
+      "action": "accept",
+      "after": "original SDK whole"
+    },
+    {
+      "action": "prepare/invoke/accept",
+      "kind": "same-ID status then actual sequential pages only"
+    },
+    {
+      "action": "close_observer",
+      "after": "full immutable payload EOF and SHA"
+    }
+  ],
+  "exclusions": [
+    "process_start/replay",
+    "CLI argument or source change",
+    "force flag change",
+    "alternate path",
+    "extra metadata",
+    "credentials/private CLI stderr",
+    "deadline or cleanup budget change",
+    "old UNKNOWN rewriting"
+  ]
+}

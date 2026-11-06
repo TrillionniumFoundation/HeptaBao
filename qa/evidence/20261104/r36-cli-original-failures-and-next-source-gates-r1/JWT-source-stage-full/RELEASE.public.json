@@ -1,0 +1,78 @@
+{
+  "schema": "heptabao.native-jwt-stage-body.actual-release.v1",
+  "sourceOnly": true,
+  "originalJob": "1a1aed43ac9-fc05-62ec",
+  "body": {
+    "path": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/control/stage-result.public.json",
+    "version": "66306:28749310:27581:1793934521373633707:1793934521373633707",
+    "body": {
+      "blob": "75b57b2aeff043a0114a987e96ab7a9e73d521f0",
+      "bytes": 27581,
+      "sha256": "0bf4e76a64ded7fa9ff5af683252cbe6e19f055766fb9004345bbc2c265c4666"
+    },
+    "originalOperation": "6acd65e32fbc581b09fc08be49660b923519e61d761433355be76ad6d495a9e6",
+    "metadataOperation": "2d07d9698ca3b85a8adde0aad7acb28f9fa514e0d23d17346ae03c074a582394",
+    "originalPayload": {
+      "blob": "d56c1dcc33ef6c6760759f59d291872369cb7012",
+      "bytes": 37211,
+      "sha256": "bd2159587f08c73bb4b9355e846c45e30c7c1f413859f09a3df824f723efb8e1"
+    },
+    "semanticQualification": false
+  },
+  "closedObserver": {
+    "id": "6acd65e32fbc581b09fc08be49660b923519e61d761433355be76ad6d495a9e6",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "d56c1dcc33ef6c6760759f59d291872369cb7012",
+      "bytes": 37211,
+      "sha256": "bd2159587f08c73bb4b9355e846c45e30c7c1f413859f09a3df824f723efb8e1"
+    },
+    "payloadTree": "cacad3a9df23e3adebe42155c4d16e6ff0a58988",
+    "nativeText": {
+      "blob": "dbe3569cbfe0e1b51332803de42f6d83671cdc4c",
+      "bytes": 37108,
+      "sha256": "d7369ae08628e0fd9f83e2544e96854eefcd4776362bf7802762b02d3563d177"
+    },
+    "pages": 5,
+    "completedInactive": true
+  },
+  "statusSDK": {
+    "blob": "ca79ddaa0c465af8eb5af1ce9bca9fb063621fdb",
+    "bytes": 977,
+    "sha256": "00811da4962a221da1a3b9055753939ba87c1b3c5b88555db4fc3bd93bb9909a"
+  },
+  "statusNative": {
+    "blob": "a3a51fe4b6429682860f2c095dbe7f9bc01ea445",
+    "bytes": 802,
+    "sha256": "f4df0d792d0a5854b93ba09eb14b695943c422fd9910a39ecff76a32d1a52dff"
+  },
+  "calls": 7,
+  "pages": 5,
+  "callInFlight": false,
+  "nativeFutureActive": false,
+  "bodyReads": 1,
+  "newProcessStarts": 0,
+  "sourceCommit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+  "sourceTree": "5497775d9d473541e13e1603be8c893a3e27681b",
+  "reportSourceChecks": 13,
+  "cleanupChildren": 57,
+  "elapsedSeconds": 13.74311006302014,
+  "fullWorktree": {
+    "all_tracked_worktree_blobs_and_modes_match": true,
+    "full_leaf_index_sha256": "d545c2109362dc3f74d85ade2e66717d7b1ff9dd630842982f2ae3215e121dea",
+    "index_matches_tree": true,
+    "tracked_bytes": 62287650,
+    "tracked_leaf_count": 3916
+  },
+  "oldSourceUnchanged": true,
+  "oldFailedObserverUnchanged": true,
+  "compilerStarted": false,
+  "formatterExecuted": false,
+  "rustTestsExecuted": false,
+  "serverStarted": false,
+  "rawCommandFilesIndependentlyArchived": false,
+  "stageQualification": "pending root semantic review; original report whole and original observer closed",
+  "formatterGO": false,
+  "buildGO": false,
+  "releaseToRoot": true
+}

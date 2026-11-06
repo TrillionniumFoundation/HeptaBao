@@ -1,0 +1,382 @@
+[
+  {
+    "name": "case-audit-predicates",
+    "file": "actual-controller.py",
+    "source": {
+      "file": "actual-controller.py",
+      "path": "phaseb_controller_r3.py",
+      "kind": "fixture",
+      "blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+      "bytes": 61210,
+      "sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c",
+      "primaryURL": null
+    },
+    "first": 654,
+    "last": 680,
+    "text": "        def audit_cli_terminal(self, audit: dict, command: str, target: int) -> dict:\n            pairs = audit[\"pairs\"]\n            complete = (audit[\"complete_known_request_response_pairs\"]\n                        and not audit[\"historical_delivery_veto_observed\"]\n                        and len(pairs) in (1, 2)\n                        and all(pair[\"kind\"] == \"request\" for pair in pairs)\n                        and len({pair[\"node\"] for pair in pairs}) == len(pairs)\n                        and sum(pair[\"node\"] == target for pair in pairs) == 1)\n            statuses = [pair[\"status\"] for pair in pairs]\n            redirects = [pair for pair in pairs if pair[\"status\"] == 307]\n            terminal = [pair for pair in pairs if pair[\"status\"] != 307]\n            if redirects:\n                complete = (complete and len(redirects) == 1 and redirects[0][\"node\"] == target\n                            and len(terminal) == 1)\n            else:\n                complete = complete and len(pairs) == 1 and len(terminal) == 1\n            status = terminal[0][\"status\"] if len(terminal) == 1 else None\n            # 202, conflicts and server failures may retain committed history\n            # with uncertain delivery. Never infer retry permission from them.\n            known_status = status in (200, 204, 400, 403, 404, 405)\n            if command == \"restore\":\n                known_status = status in (200, 204, 400, 403)\n            return {\"single_cli_window_pair_pattern\": bool(complete),\n                    \"terminal_status\": status, \"statuses\": statuses,\n                    \"server_boundary_known\": bool(complete and known_status),\n                    \"client_http_framing_observed\": False,\n                    \"redirects_followed_by_controller\": 0}\n",
+    "blob": "a4053a0b263e19c6189e8bbb3e7797d79be90ff5",
+    "bytes": 1763,
+    "sha256": "1cf0a1afcfa927a835ea469778f8732867ba214aa010455a50a0ed7bbcde709b"
+  },
+  {
+    "name": "case-cli-request-and-classification",
+    "file": "actual-controller.py",
+    "source": {
+      "file": "actual-controller.py",
+      "path": "phaseb_controller_r3.py",
+      "kind": "fixture",
+      "blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+      "bytes": 61210,
+      "sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c",
+      "primaryURL": null
+    },
+    "first": 682,
+    "last": 766,
+    "text": "        def cli_case(self, case_id: str, label: str, command: str, role: str,\n                     archive_input: Path | None = None) -> dict:\n            self.mutation_allowed()\n            self.binding.quick_fence(self.verified)\n            before_nodes = self.node_fence()\n            roles = self.roles(case_id + \"-before-cli\")\n            self.actual_leader = roles[\"actual_leader\"]\n            target = self.actual_leader if role == \"leader\" else next(\n                node for node in (1, 2, 3) if node != self.actual_leader)\n            directory = self.root / \"cases\" / case_id\n            directory.mkdir(mode=0o700)\n            output = self.private / (case_id + \".snapshot\")\n            input_fence = None\n            if command == \"restore\":\n                require(archive_input is not None and archive_input.parent == self.private,\n                        \"owned_verified_archive_input\")\n                archive, _ = evidence.archive_observation(archive_input, self.deadline())\n                self.check(case_id + \"_valid_real_native_input\", archive[\"archive_valid\"])\n                input_fence = archive[\"file\"]\n            before_audit = evidence.capture_audits(self.root, self.deadline())\n            until = min(self.deadline(), time.monotonic_ns() + 15_000_000_000)\n            intent = {\n                \"case\": case_id, \"label\": label, \"command\": command, \"role_before\": role,\n                \"actual_leader_before\": self.actual_leader, \"target_node\": target,\n                \"address\": \"https://127.0.0.1:%d\" % bm.API_PORTS[target],\n                \"path\": SNAPSHOT_ROUTE, \"cli_seconds\": 15, \"deadline_monotonic_ns\": until,\n                \"action_deadline_monotonic_ns\": self.action_until, \"started_unix_ns\": time.time_ns(),\n                \"official_cli_sha256\": bm.OFFICIAL_SHA, \"valid_restore_input\": command == \"restore\",\n                \"input_file\": input_fence, \"input_source\": \"actual_prior_native_cli_save\" if archive_input else None,\n                \"controller_retry_count\": 0, \"manual_redirect_count\": 0,\n                \"default_official_cli_redirect_behavior\": True, \"tls_skip_verify\": False,\n                \"private_credentials\": \"owned_synthetic_fixture_only\", \"before_nodes\": before_nodes,\n            }\n            write_json(directory / \"intent.public.json\", intent)\n            self.cli_intents.append(case_id)\n            self.cli_inflight = case_id\n            record = {\"case\": case_id, \"intent\": intent, \"outcome_unknown\": True}\n            process = None\n            try:\n                raw, _ = evidence.checked_bytes(self.private / \"bootstrap.json\", 64 * 1024,\n                                                 self.deadline(), owner=os.getuid())\n                bootstrap = evidence.decode_json(raw)\n                env = {\n                    \"PATH\": \"/usr/bin:/bin\", \"HOME\": str(self.private / \"cli-home\"),\n                    \"LANG\": \"C\", \"LC_ALL\": \"C\", \"BAO_ADDR\": intent[\"address\"],\n                    \"BAO_CACERT\": str(self.root / \"ca.crt\"), \"BAO_TOKEN\": bootstrap[\"root_token\"],\n                    \"BAO_CLIENT_TIMEOUT\": \"15s\", \"BAO_TLS_SKIP_VERIFY\": \"false\",\n                }\n                argv = [str(self.binding.cli), \"operator\", \"raft\", \"snapshot\", command,\n                        str(archive_input if command == \"restore\" else output)]\n                process = self.owner.invoke(argv, case_id + \"-official-cli\", until, env)\n                record[\"process\"] = process\n                self.deadline()\n                require(process[\"direct_child_reaped\"] and not process[\"remaining\"]\n                        and not process[\"timed_out\"] and process[\"returncode\"] in (0, 1, 2),\n                        \"unknown_cli_process_boundary\")\n                record[\"after_nodes\"] = self.node_fence()\n                audit = self.audit_window(before_audit)\n                record[\"audit\"] = audit\n                terminal = self.audit_cli_terminal(audit, command, target)\n                record[\"server_terminal\"] = terminal\n                if archive_input is not None:\n                    _, after_input = evidence.checked_bytes(archive_input, evidence.MAX_ARCHIVE,\n                                                              self.deadline(), owner=os.getuid())\n                    require(after_input == input_fence, \"restore_input_file_changed\")\n                    record[\"restore_input_unchanged\"] = True\n                output_observation, _ = evidence.archive_observation(output, self.deadline())\n                record[\"output\"] = output_observation\n                category = process[\"error_class\"]\n                # These are observed process/server outcomes. Audit does not\n                # stand in for TLS framing or a successful native restore.\n                recognized = (category == \"cli_success\"\n                              or command == \"save\" and category == \"incomplete_snapshot\"\n                              or category == \"api_400\")\n                require(terminal[\"server_boundary_known\"] and recognized,\n                        \"unknown_cli_or_server_boundary_no_replay\")\n                if process[\"returncode\"] == 0 and command == \"save\":\n                    require(output_observation[\"archive_valid\"], \"successful_save_file_not_complete\")\n                record[\"known_complete_business_terminal\"] = True\n                record[\"outcome_unknown\"] = False\n                record[\"cli_exit_zero\"] = process[\"returncode\"] == 0\n                record[\"archive_save_qualified\"] = bool(\n                    command == \"save\" and process[\"returncode\"] == 0\n                    and output_observation[\"archive_valid\"] and terminal[\"terminal_status\"] == 200)\n                record[\"restore_success_not_inferred_from_exit\"] = command == \"restore\"\n",
+    "blob": "bc5c43ef5f090cc6c2e0f1ad1e701df33ca21b46",
+    "bytes": 5740,
+    "sha256": "d1524adbe8bfce6c24f047e99f8e618fd5a33d687a001448af5d9a8e0d5d1292"
+  },
+  {
+    "name": "restore-state-qualification",
+    "file": "actual-controller.py",
+    "source": {
+      "file": "actual-controller.py",
+      "path": "phaseb_controller_r3.py",
+      "kind": "fixture",
+      "blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+      "bytes": 61210,
+      "sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c",
+      "primaryURL": null
+    },
+    "first": 781,
+    "last": 816,
+    "text": "        def finish_restore_readback(self, case_id: str, record: dict, before: dict) -> dict:\n            require(record.get(\"known_complete_business_terminal\") and not record[\"outcome_unknown\"]\n                    and self.cli_inflight is None, \"restore_readback_requires_known_terminal\")\n            # The CLI/server terminal is distinct from verified restoration.\n            # Keep an explicit pending boundary across all API/JSON/state\n            # checks; any unavailable or malformed observation is unknown.\n            self.operation_inflight = {\"kind\": \"restore_state_verification\", \"case\": case_id}\n            self.boundary_known = False\n            try:\n                actual = self.state_view(case_id + \"-after-cli\")\n                restored = actual == self.initial_state\n                unchanged = actual == before\n                terminal_status = record[\"server_terminal\"][\"terminal_status\"]\n                qualifies = bool(record[\"cli_exit_zero\"] and terminal_status in (200, 204) and restored)\n                known_rejection = terminal_status in (400, 403) and unchanged\n                # A success status with different state, or a rejection with an\n                # unaccounted mutation, is uncertain. Stop rather than restart it.\n                if not qualifies and not known_rejection:\n                    raise Failure(\"restore_terminal_state_unaccounted_no_replay\")\n                report = {\n                    \"case\": case_id, \"cli_exit_zero\": record[\"cli_exit_zero\"],\n                    \"terminal_status\": terminal_status, \"actual_restored_baseline\": restored,\n                    \"actual_unchanged_mutated_state\": unchanged, \"known_rejection\": known_rejection,\n                    \"native_restore_qualified\": qualifies, \"version_values_metadata_exact_on_all_nodes\": True,\n                    \"no_replay\": True,\n                }\n                write_json(self.root / (case_id + \"-restore-readback.public.json\"), report)\n                record[\"restore_readback\"] = report\n                self.operation_inflight = None\n                self.boundary_known = True\n            except BaseException:\n                self.outcome_unknown = True\n                self.boundary_known = False\n                raise\n            self.cold_restart(case_id, actual)\n            return report\n",
+    "blob": "26f217b48040267a10ad1a369d1431d39a1ecec2",
+    "bytes": 2317,
+    "sha256": "34fd882e7e376b678ff4fd1144fd2757949c4f37c69bd798f9f31c259d26735c"
+  },
+  {
+    "name": "separate-B03-archive-for-B05",
+    "file": "actual-controller.py",
+    "source": {
+      "file": "actual-controller.py",
+      "path": "phaseb_controller_r3.py",
+      "kind": "fixture",
+      "blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+      "bytes": 61210,
+      "sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c",
+      "primaryURL": null
+    },
+    "first": 870,
+    "last": 892,
+    "text": "            with self.action(\"B01_leader_save_archive_A\"):\n                a = self.cli_case(*CASES[0])\n                self.check(\"B01_leader_save_positive_control\", a[\"archive_save_qualified\"])\n                self.archive_a = self.private / \"B01.snapshot\"\n            with self.action(\"B02_leader_restore_archive_A\"):\n                before = self.mutate_version3(\"phaseb-r3-before-restore-A\", \"before-B02\")\n                result = self.cli_case(*CASES[1], archive_input=self.archive_a)\n                restored = self.finish_restore_readback(\"B02\", result, before)\n                self.check(\"B02_actual_leader_restore_positive_control\", restored[\"native_restore_qualified\"])\n            with self.action(\"B03_leader_save_archive_B\"):\n                b = self.cli_case(*CASES[2])\n                self.check(\"B03_independent_leader_save_positive_control\", b[\"archive_save_qualified\"])\n                self.archive_b = self.private / \"B03.snapshot\"\n                self.check(\"B03_distinct_archive_files\", self.archive_b != self.archive_a)\n            with self.action(\"B04_default_standby_save\"):\n                self.cli_case(*CASES[3])\n                # A recognized complete business failure is preserved. Archive B\n                # came from a separate verified leader save, so B05 need not\n                # substitute or retry the failed B04 save.\n            with self.action(\"B05_default_standby_restore_archive_B\"):\n                before = self.mutate_version3(\"phaseb-r3-before-restore-B\", \"before-B05\")\n                result = self.cli_case(*CASES[4], archive_input=self.archive_b)\n                self.finish_restore_readback(\"B05\", result, before)\n",
+    "blob": "41ea03c2c8ab92ae13a8f5cb4694218eee274fc4",
+    "bytes": 1668,
+    "sha256": "abebfbff6fc23cdb59d14a7605f3dc466b8e7c8784ffcb4d1afb32283de067d2"
+  },
+  {
+    "name": "official-save-wrapper",
+    "file": "official-save.go",
+    "source": {
+      "file": "official-save.go",
+      "path": "internal/command/operator_raft_snapshot_save.go",
+      "kind": "official",
+      "blob": "956e94060976ce724d46e03292af9816a9092655",
+      "bytes": 2643,
+      "sha256": "73fc84c655bc42a5185774fe860aea65d91541eb85b0459dc3709bd69798a118",
+      "primaryURL": "https://raw.githubusercontent.com/openbao/openbao/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/command/operator_raft_snapshot_save.go"
+    },
+    "first": 80,
+    "last": 102,
+    "text": "\n\tw := &lazyOpenWriter{\n\t\topenFunc: func() (io.WriteCloser, error) {\n\t\t\treturn os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0o600)\n\t\t},\n\t}\n\n\tclient, err := c.Client()\n\tif err != nil {\n\t\terr = errors.Join(err, w.Close())\n\t\tc.UI.Error(err.Error())\n\t\treturn 2\n\t}\n\n\terr = client.Sys().RaftSnapshot(w)\n\tif err != nil {\n\t\terr = errors.Join(err, w.Close())\n\t\tc.UI.Error(fmt.Sprintf(\"Error taking the snapshot: %s\", err))\n\t\treturn 2\n\t}\n\n\terr = w.Close()\n\tif err != nil {\n",
+    "blob": "b5db5bb1e5f9d971473c537359c4741e9abd448f",
+    "bytes": 472,
+    "sha256": "dc7b7bb79442f0032b4292e4067b8cb0143754005c88802b12a24ae2875b028e"
+  },
+  {
+    "name": "official-restore-default-force-and-call",
+    "file": "official-restore.go",
+    "source": {
+      "file": "official-restore.go",
+      "path": "internal/command/operator_raft_snapshot_restore.go",
+      "kind": "official",
+      "blob": "21b03a75c1cc0a705f6caab14cbd0dde404f35ef",
+      "bytes": 2531,
+      "sha256": "d000a315027a2d2331ecf0203bf5def2fb787dd58070050c4a27217e0b4671f2",
+      "primaryURL": "https://raw.githubusercontent.com/openbao/openbao/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/command/operator_raft_snapshot_restore.go"
+    },
+    "first": 42,
+    "last": 53,
+    "text": "func (c *OperatorRaftSnapshotRestoreCommand) Flags() *FlagSets {\n\tset := c.flagSet(FlagSetHTTP | FlagSetOutputFormat)\n\n\tf := set.NewFlagSet(\"Command Options\")\n\n\tf.BoolVar(&BoolVar{\n\t\tName:    \"force\",\n\t\tTarget:  &c.flagForce,\n\t\tDefault: false,\n\t\tUsage:   \"This bypasses checks ensuring the Autounseal or shamir keys are consistent with the snapshot data.\",\n\t})\n\n",
+    "blob": "5f079b8679b8913d902016a706ef1e8299e29e11",
+    "bytes": 362,
+    "sha256": "529a08987b9add1db27e279529809c1b9f50e0c1c81052f5e9365c310d3c7770"
+  },
+  {
+    "name": "official-restore-run",
+    "file": "official-restore.go",
+    "source": {
+      "file": "official-restore.go",
+      "path": "internal/command/operator_raft_snapshot_restore.go",
+      "kind": "official",
+      "blob": "21b03a75c1cc0a705f6caab14cbd0dde404f35ef",
+      "bytes": 2531,
+      "sha256": "d000a315027a2d2331ecf0203bf5def2fb787dd58070050c4a27217e0b4671f2",
+      "primaryURL": "https://raw.githubusercontent.com/openbao/openbao/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/command/operator_raft_snapshot_restore.go"
+    },
+    "first": 89,
+    "last": 112,
+    "text": "\tsnapReader, err := os.Open(snapFile)\n\tif err != nil {\n\t\tc.UI.Error(fmt.Sprintf(\"Error opening snapshot file: %s\", err))\n\t\treturn 2\n\t}\n\tdefer func() {\n\t\tif err := snapReader.Close(); err != nil {\n\t\t\tc.UI.Error(fmt.Sprintf(\"Error properly closing snapshot file: %s\", err))\n\t\t}\n\t}()\n\n\tclient, err := c.Client()\n\tif err != nil {\n\t\tc.UI.Error(err.Error())\n\t\treturn 2\n\t}\n\n\terr = client.Sys().RaftSnapshotRestore(snapReader, c.flagForce)\n\tif err != nil {\n\t\tc.UI.Error(fmt.Sprintf(\"Error installing the snapshot: %s\", err))\n\t\treturn 2\n\t}\n\n\treturn 0\n",
+    "blob": "be96b17ea8168e2da76606deb981c03ef0a07007",
+    "bytes": 542,
+    "sha256": "5b087247809dd828905f3f0d07d5006964261d4207fce2f9e41c8b7dd3d8b76a"
+  },
+  {
+    "name": "official-save-api",
+    "file": "official-api-raft.go",
+    "source": {
+      "file": "official-api-raft.go",
+      "path": "api/sys_raft.go",
+      "kind": "official",
+      "blob": "bf629633f16f7915f3587102be993463a3810122",
+      "bytes": 13131,
+      "sha256": "031e623e64ff54b82a2b19ae8ee3ba309a36b97db8ac8cd0d40f8fef764bdd9b",
+      "primaryURL": "https://raw.githubusercontent.com/openbao/openbao/a5db72cef75c24b920ade02065b18dd8eb666bac/api/sys_raft.go"
+    },
+    "first": 169,
+    "last": 240,
+    "text": "// RaftSnapshot wraps RaftSnapshotWithContext using context.Background.\nfunc (c *Sys) RaftSnapshot(snapWriter io.Writer) error {\n\treturn c.RaftSnapshotWithContext(context.Background(), snapWriter)\n}\n\n// RaftSnapshotWithContext invokes the API that takes the snapshot of the raft cluster and\n// writes it to the supplied io.Writer.\nfunc (c *Sys) RaftSnapshotWithContext(ctx context.Context, snapWriter io.Writer) error {\n\tr := c.c.NewRequest(http.MethodGet, \"/v1/sys/storage/raft/snapshot\")\n\tr.URL.RawQuery = r.Params.Encode()\n\n\tresp, err := c.c.httpRequestWithContext(ctx, r)\n\tif err != nil {\n\t\treturn err\n\t}\n\tdefer resp.Body.Close() //nolint:errcheck\n\n\t// Make sure that the last file in the archive, SHA256SUMS.sealed, is present\n\t// and non-empty.  This is to catch cases where the snapshot failed midstream,\n\t// e.g. due to a problem with the seal that prevented encryption of that file.\n\tvar wg sync.WaitGroup\n\twg.Add(1)\n\tvar verified bool\n\n\trPipe, wPipe := io.Pipe()\n\tdup := io.TeeReader(resp.Body, wPipe)\n\tgo func() {\n\t\tdefer func() {\n\t\t\tio.Copy(io.Discard, rPipe)\n\t\t\trPipe.Close()\n\t\t\twg.Done()\n\t\t}()\n\n\t\tuncompressed, err := gzip.NewReader(rPipe)\n\t\tif err != nil {\n\t\t\treturn\n\t\t}\n\n\t\tt := tar.NewReader(uncompressed)\n\t\tvar h *tar.Header\n\t\tfor {\n\t\t\th, err = t.Next()\n\t\t\tif err != nil {\n\t\t\t\treturn\n\t\t\t}\n\t\t\tif h.Name != \"SHA256SUMS.sealed\" {\n\t\t\t\tcontinue\n\t\t\t}\n\t\t\tvar b []byte\n\t\t\tb, err = io.ReadAll(t)\n\t\t\tif err != nil || len(b) == 0 {\n\t\t\t\treturn\n\t\t\t}\n\t\t\tverified = true\n\t\t\treturn\n\t\t}\n\t}()\n\n\t// Copy bytes from dup to snapWriter.  This will have a side effect that\n\t// everything read from dup will be written to wPipe.\n\t_, err = io.Copy(snapWriter, dup)\n\twPipe.Close()\n\tif err != nil {\n\t\trPipe.CloseWithError(err)\n\t\treturn err\n\t}\n\twg.Wait()\n\n\tif !verified {\n\t\treturn ErrIncompleteSnapshot\n\t}\n\treturn nil\n",
+    "blob": "82254442b6b46cd25c52cca4d7bd833887240395",
+    "bytes": 1807,
+    "sha256": "b095e930edfd5ad354d11d2fea8d5cd9133913d6a3d498c12abcbe8ec28905c9"
+  },
+  {
+    "name": "official-restore-api",
+    "file": "official-api-raft.go",
+    "source": {
+      "file": "official-api-raft.go",
+      "path": "api/sys_raft.go",
+      "kind": "official",
+      "blob": "bf629633f16f7915f3587102be993463a3810122",
+      "bytes": 13131,
+      "sha256": "031e623e64ff54b82a2b19ae8ee3ba309a36b97db8ac8cd0d40f8fef764bdd9b",
+      "primaryURL": "https://raw.githubusercontent.com/openbao/openbao/a5db72cef75c24b920ade02065b18dd8eb666bac/api/sys_raft.go"
+    },
+    "first": 243,
+    "last": 266,
+    "text": "// RaftSnapshotRestore wraps RaftSnapshotRestoreWithContext using context.Background.\nfunc (c *Sys) RaftSnapshotRestore(snapReader io.Reader, force bool) error {\n\treturn c.RaftSnapshotRestoreWithContext(context.Background(), snapReader, force)\n}\n\n// RaftSnapshotRestoreWithContext reads the snapshot from the io.Reader and installs that\n// snapshot, returning the cluster to the state defined by it.\nfunc (c *Sys) RaftSnapshotRestoreWithContext(ctx context.Context, snapReader io.Reader, force bool) error {\n\tpath := \"/v1/sys/storage/raft/snapshot\"\n\tif force {\n\t\tpath = \"/v1/sys/storage/raft/snapshot-force\"\n\t}\n\n\tr := c.c.NewRequest(http.MethodPost, path)\n\tr.Body = io.NopCloser(snapReader)\n\n\tresp, err := c.c.httpRequestWithContext(ctx, r)\n\tif err != nil {\n\t\treturn err\n\t}\n\tdefer resp.Body.Close() //nolint:errcheck\n\n\treturn nil\n}\n",
+    "blob": "b8e0f56f92ed38ced8552e34ac2c3a08479d9f8d",
+    "bytes": 832,
+    "sha256": "9fe6f3128988ee0f8f6df6d43995b466dbb55111137dac7bf06027ad20453d44"
+  },
+  {
+    "name": "official-redirect-defaults",
+    "file": "official-api-client.go",
+    "source": {
+      "file": "official-api-client.go",
+      "path": "api/client.go",
+      "kind": "official",
+      "blob": "0e543712e700bb96a5cfa087a5cec6a93497e951",
+      "bytes": 57092,
+      "sha256": "872130bed2153539415f333ef24abc434bdc3d0f0487a2676da9f83e9ec416fa",
+      "primaryURL": "https://raw.githubusercontent.com/openbao/openbao/a5db72cef75c24b920ade02065b18dd8eb666bac/api/client.go"
+    },
+    "first": 375,
+    "last": 385,
+    "text": "\t// Ensure redirects are not automatically followed\n\t// Note that this is sane for the API client as it has its own\n\t// redirect handling logic (and thus also for command/meta),\n\t// but in e.g. http_test actual redirect handling is necessary\n\tconfig.HttpClient.CheckRedirect = func(req *http.Request, via []*http.Request) error {\n\t\t// Returning this value causes the Go net library to not close the\n\t\t// response body and to nil out the error. Otherwise retry clients may\n\t\t// try three times on every redirect because it sees an error from this\n\t\t// function (to prevent redirects) passing through to it.\n\t\treturn http.ErrUseLastResponse\n\t}\n",
+    "blob": "9b841df411572588b91bf7e17690966eb8653aad",
+    "bytes": 642,
+    "sha256": "d9bb6f5eca16ca227422e2eac9d199393c9ebc54b9619926a6ae058940f56ad9"
+  },
+  {
+    "name": "official-one-redirect-response-selection",
+    "file": "official-api-client.go",
+    "source": {
+      "file": "official-api-client.go",
+      "path": "api/client.go",
+      "kind": "official",
+      "blob": "0e543712e700bb96a5cfa087a5cec6a93497e951",
+      "bytes": 57092,
+      "sha256": "872130bed2153539415f333ef24abc434bdc3d0f0487a2676da9f83e9ec416fa",
+      "primaryURL": "https://raw.githubusercontent.com/openbao/openbao/a5db72cef75c24b920ade02065b18dd8eb666bac/api/client.go"
+    },
+    "first": 1713,
+    "last": 1760,
+    "text": "\tvar result *Response\n\n\tresp, err := httpClient.Do(req)\n\n\tif resp != nil {\n\t\tresult = &Response{Response: resp}\n\t}\n\n\tif err != nil {\n\t\tif strings.Contains(err.Error(), \"tls: oversized\") {\n\t\t\terr = fmt.Errorf(\"%w\\n\\n\"+TLSErrorString, err) //nolint:staticcheck // user-facing error\n\t\t}\n\t\treturn result, err\n\t}\n\n\t// Check for a redirect, only allowing for a single redirect, if redirects aren't disabled\n\tif (resp.StatusCode == 301 || resp.StatusCode == 302 || resp.StatusCode == 307) && !disableRedirects {\n\t\t// Parse the updated location\n\t\trespLoc, err := resp.Location()\n\t\tif err != nil {\n\t\t\treturn result, fmt.Errorf(\"redirect failed: %s\", err)\n\t\t}\n\n\t\t// Ensure a protocol downgrade doesn't happen\n\t\tif req.URL.Scheme == \"https\" && respLoc.Scheme != \"https\" {\n\t\t\treturn result, errors.New(\"redirect would cause protocol downgrade\")\n\t\t}\n\n\t\t// Update the request\n\t\treq.URL = respLoc\n\n\t\t// Reset the request body if any\n\t\tif err := r.ResetJSONBody(); err != nil {\n\t\t\treturn result, fmt.Errorf(\"redirect failed: %s\", err)\n\t\t}\n\n\t\t// Retry the request\n\t\t_, err = httpClient.Do(req)\n\t\tif err != nil {\n\t\t\treturn result, fmt.Errorf(\"redirect failed: %s\", err)\n\t\t}\n\t}\n\n\tif err := result.Error(); err != nil {\n\t\treturn nil, err\n\t}\n\n\treturn result, nil\n",
+    "blob": "29e80b9313e2939765d095c33d94911a491875f7",
+    "bytes": 1242,
+    "sha256": "cb31eb74872814770ca68e5c8820664acee75f7793ba938ff50ea923bbf9b1da"
+  },
+  {
+    "name": "official-reset-json-body",
+    "file": "official-api-request.go",
+    "source": {
+      "file": "official-api-request.go",
+      "path": "api/request.go",
+      "kind": "official",
+      "blob": "65599503d1591f632d4a77a71725bc472d55c762",
+      "bytes": 3068,
+      "sha256": "85a54c98b6239f71c9889784457138768558098c386ef21ecbaec2b9bbda7a6e",
+      "primaryURL": "https://raw.githubusercontent.com/openbao/openbao/a5db72cef75c24b920ade02065b18dd8eb666bac/api/request.go"
+    },
+    "first": 43,
+    "last": 65,
+    "text": "// SetJSONBody is used to set a request body that is a JSON-encoded value.\nfunc (r *Request) SetJSONBody(val any) error {\n\tif val == nil {\n\t\treturn nil\n\t}\n\n\tbuf, err := json.Marshal(val)\n\tif err != nil {\n\t\treturn err\n\t}\n\n\tr.Obj = val\n\tr.BodyBytes = buf\n\treturn nil\n}\n\n// ResetJSONBody is used to reset the body for a redirect\nfunc (r *Request) ResetJSONBody() error {\n\tif r.BodyBytes == nil {\n\t\treturn nil\n\t}\n\treturn r.SetJSONBody(r.Obj)\n}\n",
+    "blob": "2e55b3975a13fac5ef7bdca8d24f641a9973fac1",
+    "bytes": 440,
+    "sha256": "59425366cc114de0e5b9091e691590d99c0a04e5343a8de25ab94c3499148e72"
+  },
+  {
+    "name": "official-response-status-classification",
+    "file": "official-api-response.go",
+    "source": {
+      "file": "official-api-response.go",
+      "path": "api/response.go",
+      "kind": "official",
+      "blob": "5c59259147cd3c29193ac2c7e7ef6410fc41c89d",
+      "bytes": 3875,
+      "sha256": "3fbdc07eb3bef2dfe15d7c7f609608b0c0e9d32513bdbbde1ae243ecf5deea26",
+      "primaryURL": "https://raw.githubusercontent.com/openbao/openbao/a5db72cef75c24b920ade02065b18dd8eb666bac/api/response.go"
+    },
+    "first": 28,
+    "last": 36,
+    "text": "// Error returns an error response if there is one. If there is an error,\n// this will fully consume the response body, but will not close it. The\n// body must still be closed manually.\nfunc (r *Response) Error() error {\n\t// 200 to 399 are okay status codes. 429 is the code for health status of\n\t// standby nodes, otherwise, 429 is treated as quota limit reached.\n\tif (r.StatusCode >= 200 && r.StatusCode < 400) || (r.StatusCode == 429 && r.Request.URL.Path == \"/v1/sys/health\") {\n\t\treturn nil\n\t}\n",
+    "blob": "d8e71afe7779da39e68a7a791fbbcfc4402b7c1a",
+    "bytes": 498,
+    "sha256": "a866d4312e58af08cee874583deb0eab20b49766d93efbf6898f0f19e7e7f40c"
+  },
+  {
+    "name": "product-native-standby-entry",
+    "file": "current-snapshot-transfer.rs",
+    "source": {
+      "file": "current-snapshot-transfer.rs",
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "kind": "product",
+      "blob": "6b94e34c223fac25858c1e7f82fb18c07abf0ef3",
+      "bytes": 50683,
+      "sha256": "022be62ccaf26a335103dc106be432d7b8896768cace056e649b65ca920e97b9",
+      "primaryURL": "https://raw.githubusercontent.com/TrillionniumFoundation/HeptaBao/4e808d0ecb1bcded22870a7ec960dfb2491cf6ec/crates/heptabao-server/src/service_snapshot_transfer.rs"
+    },
+    "first": 374,
+    "last": 458,
+    "text": "    pub(crate) fn begin_native_snapshot_before(\n        &mut self,\n        mut request: ServiceRequest<'_>,\n        deadline: Instant,\n    ) -> NativeSnapshotAdmission {\n        let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);\n        if crate::request_deadline::current().is_none_or(|limit| Instant::now() >= limit) {\n            erase_json(&mut request.body);\n            return NativeSnapshotAdmission::Execute(RequestExecution::Complete(Response::error(\n                503,\n                \"snapshot admission deadline exceeded\",\n            )));\n        }\n        let accepted = matches!(\n            request.path,\n            \"sys/storage/raft/snapshot\" | \"sys/storage/raft/snapshot-force\" | NATIVE_HA_REPAIR_PATH\n        );\n        #[cfg(feature = \"native-v6-storage\")]\n        let accepted = accepted\n            || (request.path == crate::engines::kv2_lossless_export::PATH\n                && matches!(request.method, \"GET\" | \"HEAD\"));\n        if !accepted {\n            erase_json(&mut request.body);\n            return NativeSnapshotAdmission::Execute(RequestExecution::Complete(Response::error(\n                400,\n                \"invalid native snapshot route\",\n            )));\n        }\n        // This is before authentication/finite-use persistence, staging and\n        // JSON HA forwarding. The receiving leader independently authorizes\n        // the original request; observing a leader never grants authority.\n        match self.configured_standby_destination() {\n            Ok(Some(origin)) => {\n                let now = SystemTime::now()\n                    .duration_since(UNIX_EPOCH)\n                    .unwrap_or(Duration::ZERO)\n                    .as_secs();\n                let fingerprint = self.request_fingerprint(\n                    request.method,\n                    request.path,\n                    request.namespace,\n                    request.token,\n                );\n                erase_json(&mut request.body);\n                if self\n                    .audit_event(\"request\", &fingerprint, now, None)\n                    .is_err()\n                {\n                    return NativeSnapshotAdmission::Execute(RequestExecution::Complete(\n                        Response::error(503, \"snapshot redirect audit unavailable\"),\n                    ));\n                }\n                if self\n                    .audit_event(\"response\", &fingerprint, now, Some(307))\n                    .is_err()\n                {\n                    crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);\n                    self.recovery_required = true;\n                    self.ha_activation = None;\n                    return NativeSnapshotAdmission::Execute(RequestExecution::Complete(\n                        Response::error(503, \"snapshot redirect response audit unavailable\"),\n                    ));\n                }\n                return NativeSnapshotAdmission::Redirect(origin);\n            }\n            Err(response) => {\n                erase_json(&mut request.body);\n                return NativeSnapshotAdmission::Execute(RequestExecution::Complete(response));\n            }\n            Ok(None) => {}\n        }\n        // Pair wall time and the monotonic anchor before reconciliation, audit,\n        // authentication and finite-use persistence can spend admission time.\n        let started = Instant::now();\n        let now = SystemTime::now()\n            .duration_since(UNIX_EPOCH)\n            .unwrap_or(Duration::ZERO);\n        let previous_clock = self.native_snapshot_clock.replace((started, now));\n        let previous = self.native_snapshot_transport;\n        self.native_snapshot_transport = true;\n        let result = self.begin_request_before(request, deadline, false);\n        self.native_snapshot_transport = previous;\n        self.native_snapshot_clock = previous_clock;\n        NativeSnapshotAdmission::Execute(result)\n    }\n",
+    "blob": "3ede3bf3983d41a738ee9cb8f194d339f15635f5",
+    "bytes": 3940,
+    "sha256": "3ee4927518663a2a7412255889b7d8225466e4e4a157254cf6aebfb1e4e70757"
+  },
+  {
+    "name": "product-trusted-destination",
+    "file": "current-snapshot-transfer.rs",
+    "source": {
+      "file": "current-snapshot-transfer.rs",
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "kind": "product",
+      "blob": "6b94e34c223fac25858c1e7f82fb18c07abf0ef3",
+      "bytes": 50683,
+      "sha256": "022be62ccaf26a335103dc106be432d7b8896768cace056e649b65ca920e97b9",
+      "primaryURL": "https://raw.githubusercontent.com/TrillionniumFoundation/HeptaBao/4e808d0ecb1bcded22870a7ec960dfb2491cf6ec/crates/heptabao-server/src/service_snapshot_transfer.rs"
+    },
+    "first": 460,
+    "last": 485,
+    "text": "    pub(super) fn configured_standby_destination(\n        &self,\n    ) -> Result<Option<TrustedSnapshotOrigin>, Response> {\n        let Some(process) = self.ha.as_ref() else {\n            return Ok(None);\n        };\n        if self.state.is_none() {\n            return Err(Response::error(503, \"server is sealed\"));\n        }\n        let process = process\n            .lock_for_request()\n            .map_err(|_| Response::error(503, \"HA process lock is unavailable\"))?;\n        let observation = process\n            .leader_status()\n            .map_err(|_| Response::error(503, \"HA leader state is unavailable\"))?;\n        let leader = observation\n            .leader\n            .ok_or_else(|| Response::error(503, \"HA cluster has no elected leader\"))?;\n        if leader == observation.local_id {\n            return Ok(None);\n        }\n        process\n            .api_address(leader)\n            .map(|origin| Some(TrustedSnapshotOrigin(origin.to_owned())))\n            .ok_or_else(|| Response::error(503, \"HA leader API address is unavailable\"))\n    }\n",
+    "blob": "8082d2959fb632fc66b20e52a146b15108310898",
+    "bytes": 1058,
+    "sha256": "918fef980c83ca6567f3843baf96e224767c648d2b751eb3c5062621c7ba5cb0"
+  },
+  {
+    "name": "product-redirect-wire",
+    "file": "current-http-snapshot.rs",
+    "source": {
+      "file": "current-http-snapshot.rs",
+      "path": "crates/heptabao-server/src/http_snapshot.rs",
+      "kind": "product",
+      "blob": "4a5743d757b79493400b712bf57a5fa552b50bda",
+      "bytes": 35170,
+      "sha256": "1cc98a78d6a037a47456b7c6b93dc13647a261e8217f12a6a4edff3d91fe41e2",
+      "primaryURL": "https://raw.githubusercontent.com/TrillionniumFoundation/HeptaBao/4e808d0ecb1bcded22870a7ec960dfb2491cf6ec/crates/heptabao-server/src/http_snapshot.rs"
+    },
+    "first": 99,
+    "last": 140,
+    "text": "            Self::Redirect {\n                origin,\n                target,\n                headers,\n            } => {\n                // An unread upload can still be in another TLS record. Build\n                // the complete head before the first transport write, instead\n                // of emitting the status/Location prefix as its own record.\n                // The fixed allowance covers the standard/date/timing headers;\n                // existing variable fields keep their original input bounds.\n                let capacity = origin\n                    .as_str()\n                    .len()\n                    .checked_add(target.as_str().len())\n                    .and_then(|size| size.checked_add(namespace.len()))\n                    .and_then(|size| size.checked_add(512))\n                    // Local routing may retain at most four original numeric\n                    // quota fields, each with a value of at most twenty digits.\n                    .and_then(|size| size.checked_add(if headers.is_empty() { 0 } else { 512 }))\n                    .ok_or_else(|| {\n                        io::Error::new(\n                            io::ErrorKind::InvalidInput,\n                            \"redirect header length overflow\",\n                        )\n                    })?;\n                let mut buffer = Zeroizing::new(vec![0; capacity]);\n                let used = {\n                    // Cursor over a fixed slice cannot grow the allocation.\n                    let mut header = io::Cursor::new(buffer.as_mut_slice());\n                    write!(\n                        header,\n                        \"HTTP/1.1 307 Temporary Redirect\\r\\nLocation: {}{}\\r\\nContent-Length: 0\\r\\n\",\n                        origin.as_str(),\n                        target.as_str(),\n                    )?;\n                    headers.write(&mut header)?;\n                    write_standard_headers(&mut header, namespace)?;\n                    header.write_all(b\"\\r\\n\")?;\n                    header.position() as usize\n                };\n                writer.write_all(&buffer[..used])?;\n                writer.flush()\n",
+    "blob": "ac58b28a869a0d3d6b12ad1c69b9a3dda3cbf8b5",
+    "bytes": 2134,
+    "sha256": "f2d2d5ce2bd0dea1b1f8fb944757ef67b214bb97183adfacd5173ad8b663ebc9"
+  },
+  {
+    "name": "product-native-reader-branch",
+    "file": "current-http-snapshot.rs",
+    "source": {
+      "file": "current-http-snapshot.rs",
+      "path": "crates/heptabao-server/src/http_snapshot.rs",
+      "kind": "product",
+      "blob": "4a5743d757b79493400b712bf57a5fa552b50bda",
+      "bytes": 35170,
+      "sha256": "1cc98a78d6a037a47456b7c6b93dc13647a261e8217f12a6a4edff3d91fe41e2",
+      "primaryURL": "https://raw.githubusercontent.com/TrillionniumFoundation/HeptaBao/4e808d0ecb1bcded22870a7ec960dfb2491cf6ec/crates/heptabao-server/src/http_snapshot.rs"
+    },
+    "first": 338,
+    "last": 379,
+    "text": "pub(super) fn execute(\n    service: &Arc<Mutex<Service>>,\n    request: ServiceRequest<'_>,\n    native: NativeRequest,\n    reader: &mut impl Read,\n    deadline: Instant,\n) -> NativeReply {\n    let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);\n    let execution = match lock_until(service, deadline) {\n        Ok(mut writer) => writer.begin_native_snapshot_before(request, deadline),\n        Err(_) => return NativeReply::Json(Response::error(503, \"snapshot admission unavailable\")),\n    };\n    let execution = match execution {\n        NativeSnapshotAdmission::Execute(execution) => execution,\n        NativeSnapshotAdmission::Redirect(origin) => {\n            // Do not read/replay the upload, allocate a spool or transport any\n            // archive in the ordinary bounded HA forwarding frame.\n            return NativeReply::Redirect {\n                origin,\n                target: RedirectTarget::Native(native.target),\n                headers: Default::default(),\n            };\n        }\n    };\n    let mut pending = match execution {\n        RequestExecution::Complete(response) => {\n            return rejected_upload_response(reader, native.body, deadline, response);\n        }\n        RequestExecution::External(pending) => pending,\n    };\n    #[cfg(feature = \"native-v6-storage\")]\n    let lossless_download = pending.has_lossless_download();\n    let (observation, file) = match BodyReader::new(reader, native.body, deadline) {\n        Ok(mut reader) => pending.execute_snapshot_transfer(&mut reader),\n        Err(_) => (\n            crate::service::ExternalEffectResult::SnapshotTransfer(Err(Response::error(\n                400,\n                \"invalid snapshot body framing\",\n            ))),\n            None,\n        ),\n    };\n",
+    "blob": "2a91facc771a321a5130bb06ed2406a89f0985a7",
+    "bytes": 1772,
+    "sha256": "3ec938eafb246222af42f5fb19572c4fc5a6994da8a9350754424636abdac14b"
+  },
+  {
+    "name": "product-H2-upload-and-shared-service",
+    "file": "current-http-h2.rs",
+    "source": {
+      "file": "current-http-h2.rs",
+      "path": "crates/heptabao-server/src/http_h2.rs",
+      "kind": "product",
+      "blob": "70db7e9c37f057ddb7a1a146e57d1697928d33ce",
+      "bytes": 14691,
+      "sha256": "4db2b72314f7f8c0fd7b271d57d359156bc6add9fdd25e8206d44eee45d20ed1",
+      "primaryURL": "https://raw.githubusercontent.com/TrillionniumFoundation/HeptaBao/4e808d0ecb1bcded22870a7ec960dfb2491cf6ec/crates/heptabao-server/src/http_h2.rs"
+    },
+    "first": 201,
+    "last": 283,
+    "text": "    let maximum = if matches!(\n        path,\n        \"/v1/sys/storage/raft/snapshot\" | \"/v1/sys/storage/raft/snapshot-force\"\n    ) {\n        MAX_SNAPSHOT_BODY\n    } else {\n        json_ingress_body_limit(\n            parts.method.as_str(),\n            path.strip_prefix(\"/v1/\").unwrap_or(\"\"),\n            parts\n                .headers\n                .get(::http::header::CONTENT_TYPE)\n                .and_then(|value| value.to_str().ok()),\n        )\n    };\n    let mut payload = Zeroizing::new(Vec::new());\n    while let Some(chunk) = body.data().await {\n        let chunk = chunk.map_err(|_| ())?;\n        if payload\n            .len()\n            .checked_add(chunk.len())\n            .is_none_or(|size| size > maximum)\n        {\n            let service = Arc::clone(&context.service);\n            let response = tokio::task::spawn_blocking(move || {\n                audited_wire_rejection(\n                    &service,\n                    &attempt,\n                    WireRejection::ParseRejected,\n                    413,\n                    \"request body exceeds limit\",\n                    deadline,\n                )\n            })\n            .await\n            .map_err(|_| ())?;\n            return send_reply(\n                sender,\n                snapshot::NativeReply::Json(response),\n                false,\n                \"\",\n                deadline,\n            )\n            .await;\n        }\n        payload.extend_from_slice(&chunk);\n        body.flow_control()\n            .release_capacity(chunk.len())\n            .map_err(|_| ())?;\n    }\n    let wire = request_wire(&parts, &payload);\n    let reply = tokio::task::spawn_blocking(move || {\n        run_unentered_service_worker(deadline, move || {\n            let (wire, rejection) = match wire {\n                Ok(wire) => (wire, None),\n                Err(error) => (Zeroizing::new(Vec::new()), Some(error)),\n            };\n            let mut source = io::Cursor::new(wire);\n            let parsed = match rejection {\n                Some(error) => Err(error),\n                None => read_request_with_ui(\n                    &mut source,\n                    deadline.saturating_duration_since(Instant::now()),\n                    true,\n                    context.ui_assets.is_some(),\n                ),\n            };\n            process_parsed_request(\n                &context.service,\n                context.ui_assets.as_deref(),\n                parsed,\n                &mut source,\n                context.certificates.clone(),\n                context.peer,\n                &attempt,\n                context.consistency,\n                deadline,\n            )\n        })\n    })\n    .await\n    .map_err(|_| ())??;\n    send_reply(sender, reply.0, reply.1, &reply.2, deadline).await\n",
+    "blob": "09c0bdf461bbfbb234b224314856a71aadc0b58a",
+    "bytes": 2771,
+    "sha256": "f4a7281928f114ea2104f715ae8cbacab5148f2ec96f1dc1bd33f8b251ea84b4"
+  },
+  {
+    "name": "product-H2-response",
+    "file": "current-http-h2.rs",
+    "source": {
+      "file": "current-http-h2.rs",
+      "path": "crates/heptabao-server/src/http_h2.rs",
+      "kind": "product",
+      "blob": "70db7e9c37f057ddb7a1a146e57d1697928d33ce",
+      "bytes": 14691,
+      "sha256": "4db2b72314f7f8c0fd7b271d57d359156bc6add9fdd25e8206d44eee45d20ed1",
+      "primaryURL": "https://raw.githubusercontent.com/TrillionniumFoundation/HeptaBao/4e808d0ecb1bcded22870a7ec960dfb2491cf6ec/crates/heptabao-server/src/http_h2.rs"
+    },
+    "first": 356,
+    "last": 395,
+    "text": "async fn send_reply(\n    mut sender: h2::server::SendResponse<Bytes>,\n    reply: snapshot::NativeReply,\n    head: bool,\n    namespace: &str,\n    deadline: Instant,\n) -> Result<(), ()> {\n    if Instant::now() >= deadline {\n        return Err(());\n    }\n    let mut wire = Zeroizing::new(Vec::new());\n    reply\n        .write_with_namespace(&mut *wire, head, namespace)\n        .map_err(|_| ())?;\n    let (response, payload) = response_frames(wire)?;\n    let mut output = sender\n        .send_response(response, payload.is_empty())\n        .map_err(|_| ())?;\n    let bytes = Bytes::from_owner(payload);\n    let mut offset = 0;\n    while offset < bytes.len() {\n        if Instant::now() >= deadline {\n            return Err(());\n        }\n        let requested = DATA_CHUNK.min(bytes.len() - offset);\n        output.reserve_capacity(requested);\n        let capacity = poll_fn(|cx| output.poll_capacity(cx))\n            .await\n            .ok_or(())?\n            .map_err(|_| ())?;\n        if capacity == 0 {\n            continue;\n        }\n        let count = requested.min(capacity);\n        let end = offset + count;\n        output\n            .send_data(bytes.slice(offset..end), end == bytes.len())\n            .map_err(|_| ())?;\n        offset = end;\n    }\n",
+    "blob": "0c9de1178ffb4dd943b4e87e8585da76080bb70f",
+    "bytes": 1259,
+    "sha256": "784c37eba2566ffd52faa5bbedaee0031a8492869b0bb38b966216fb22bc8c9c"
+  },
+  {
+    "name": "existing-redirect-invariant",
+    "file": "current-snapshot-redirect-tests.rs",
+    "source": {
+      "file": "current-snapshot-redirect-tests.rs",
+      "path": "crates/heptabao-server/src/service_snapshot_redirect_tests.rs",
+      "kind": "product",
+      "blob": "cf2e8fc89233e157e76201161e31926924181037",
+      "bytes": 6576,
+      "sha256": "2b1debf847e5d9af2849aef99f4c26d157e9493d25343603f987c380dabfe83c",
+      "primaryURL": "https://raw.githubusercontent.com/TrillionniumFoundation/HeptaBao/4e808d0ecb1bcded22870a7ec960dfb2491cf6ec/crates/heptabao-server/src/service_snapshot_redirect_tests.rs"
+    },
+    "first": 40,
+    "last": 89,
+    "text": "#[test]\nfn native_redirect_uses_configured_current_leader_without_consuming_uses_or_staging() -> TestResult\n{\n    let root = Root::new();\n    let mut service = root.service()?;\n    let (_, token) = bootstrap(&mut service)?;\n    let issued = call(\n        &mut service,\n        \"POST\",\n        \"auth/token/create\",\n        &token,\n        json!({\"policies\":[\"default\"],\"num_uses\":2,\"ttl\":600}),\n    );\n    assert_eq!(issued.status, 200);\n    let limited = issued.body[\"auth\"][\"client_token\"]\n        .as_str()\n        .ok_or(\"token\")?\n        .to_owned();\n    let cluster_id = service.state.as_ref().ok_or(\"state\")?.cluster_id.clone();\n    let cluster = Cluster::new(&root.path.join(\"raft\"), &cluster_id)?;\n    service.ha = Some(Arc::clone(&cluster.processes[1]));\n    let before = service.current_state_identity().map_err(|_| \"state\")?;\n    let generation = service.durable.as_ref().ok_or(\"durable\")?.generation();\n    let deadline = || Instant::now() + Duration::from_secs(5);\n    assert_eq!(\n        failure(admit(&mut service, \"GET\", \"\", deadline()))?.status,\n        503\n    );\n    cluster.configure_api_address(1, \"https://leader.example:8200/\")?;\n    for method in [\"GET\", \"HEAD\", \"POST\", \"PUT\"] {\n        for credential in [\"\", \"invalid\", limited.as_str()] {\n            match admit(&mut service, method, credential, deadline()) {\n                NativeSnapshotAdmission::Redirect(origin) => {\n                    assert_eq!(origin.as_str(), \"https://leader.example:8200\")\n                }\n                _ => return Err(\"standby must redirect native request\".into()),\n            }\n        }\n    }\n    assert!(service.snapshot_spool.is_none());\n    assert!(service.pending_snapshot_transfer.is_none());\n    assert_eq!(\n        service.durable.as_ref().ok_or(\"durable\")?.generation(),\n        generation\n    );\n    assert_eq!(\n        service.current_state_identity().map_err(|_| \"state\")?,\n        before\n    );\n    assert!(crate::request_deadline::current().is_none());\n",
+    "blob": "9b253cc6a77d1276943825b77bd568ba862d5229",
+    "bytes": 1981,
+    "sha256": "3d5f2d7828edd4ac6a1a0e759fe520fbc2341aece7b69b63a778df3584154f7f"
+  }
+]

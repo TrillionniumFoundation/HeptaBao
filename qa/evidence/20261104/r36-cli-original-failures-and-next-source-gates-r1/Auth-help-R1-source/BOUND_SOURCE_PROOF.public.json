@@ -1,0 +1,136 @@
+{
+  "schema": "heptabao.mac-log-help.actual-bound-source-proof.r1",
+  "template": {
+    "blob": "a0c8f5cc84c0a330c80d5d6b11d4a54f7b4c7c35",
+    "bytes": 43758,
+    "sha256": "74db4b04c190c3c40e7f29a1acf7984faf6cbef292715d9fd5feb586bec3ce0a"
+  },
+  "source": {
+    "blob": "72db261830c3ddd1c708705a95b635cd424738a5",
+    "bytes": 44232,
+    "sha256": "7a36fd5212c16d0069050083bcb80bebbe095afdf283a923a34d06daee1e827c"
+  },
+  "sourceDiff": {
+    "blob": "ba4f70c02f53f2f549258113c477bad1c511166c",
+    "bytes": 911,
+    "sha256": "bdb3e5c99d88bc628098d3797d989e4bcbf874bbe558f3c088bc75f7e71f7cc0"
+  },
+  "sourceHunks": 1,
+  "request": {
+    "blob": "fcf60636968e344833f0cfaf268a29a61981b452",
+    "bytes": 44918,
+    "sha256": "f7801d7c7c89b6982c528857b6eb13c1ae0ec0f632ab14d8ec8d44842e679e49"
+  },
+  "metadataActualTree": "ed647834727c1c51e1cf05328a3e1cf3fc28d107",
+  "actualInfo": {
+    "blob": "d3cefcb531f3deea5a156189d381b11f8c70fa7b",
+    "bytes": 411,
+    "sha256": "8b1ed8e54007466045ebf6527ed102d709c54f8a3e10dd8e7b5f5b41b791efe4"
+  },
+  "readyMeansOnlyActualToolIdentityBound": true,
+  "helpRuntimeQualified": false,
+  "queryRuntimeQualified": false,
+  "rootRuntimeGORequired": true,
+  "journalBefore": {
+    "blob": "7155415142bbb38846bcf51748fde86307a5ddaf",
+    "bytes": 19046,
+    "sha256": "b213ba7bfacd158ce105ac29be7a909926b921d712d3f5d241eb7d8dfdf06c91"
+  },
+  "journalAfter": {
+    "blob": "16f07ceaeb1797a400871f2da06f2e5cdd47baf8",
+    "bytes": 19036,
+    "sha256": "358d75670890507051facd06811cfbee20309f8edaa455ea2e5ec7301aea1d18"
+  },
+  "journalDiff": {
+    "blob": "ab2640c37ee183f5953aa860396b5e76f245a14b",
+    "bytes": 1329,
+    "sha256": "ec5ecd13c53ba63465da849caf400e6d24f590cce9b8493d651b258124f870a6"
+  },
+  "journalHunks": 2,
+  "exactJournalChanges": [
+    "GF_SLOT",
+    "GF_REQUEST bytes/blob/SHA",
+    "observer idempotency prefix"
+  ],
+  "unchangedFunctionBodiesAfterOnlyPrefixNormalization": true,
+  "originalFunctionCount": 13,
+  "unchangedFunctionsUnnormalized": [
+    {
+      "name": "gfNeed",
+      "equal": true
+    },
+    {
+      "name": "gfMetaEquals",
+      "equal": true
+    },
+    {
+      "name": "gfState",
+      "equal": true
+    },
+    {
+      "name": "gfSave",
+      "equal": true
+    },
+    {
+      "name": "gfIntegerText",
+      "equal": true
+    },
+    {
+      "name": "gfInitializeOnlyAfterRootGO",
+      "equal": true
+    },
+    {
+      "name": "gfValidateRequest",
+      "equal": false
+    },
+    {
+      "name": "gfPrepareOne",
+      "equal": true
+    },
+    {
+      "name": "gfInvokePreparedOnce",
+      "equal": true
+    },
+    {
+      "name": "gfAcceptArchivedSDK",
+      "equal": true
+    },
+    {
+      "name": "gfCloseOriginalObserver",
+      "equal": true
+    },
+    {
+      "name": "gfReconcileSameGitArchiveReadOnly",
+      "equal": true
+    },
+    {
+      "name": "gfRun",
+      "equal": true
+    }
+  ],
+  "originalArchiveHelper": {
+    "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+    "bytes": 5957,
+    "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+  },
+  "originalPureHelper": {
+    "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+    "bytes": 6685,
+    "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+  },
+  "nativeDigestFingerprint": "ROOT_MUST_COMPUTE_CORRECT_STDIN_BINDING_NOT_OLD_PUREBINDING",
+  "plannedToolFileBytes": 807536,
+  "toolVersion": "16777233:1152921500312572288:807536:1786589515000000000:1786589515000000000",
+  "macroBudget": {
+    "shared": 45,
+    "help": 10,
+    "outer": 60,
+    "cleanup": {
+      "term": 1,
+      "wait": 5,
+      "group": 3,
+      "psMax": 4
+    }
+  },
+  "nativeCallsMadeByDerivation": 0
+}

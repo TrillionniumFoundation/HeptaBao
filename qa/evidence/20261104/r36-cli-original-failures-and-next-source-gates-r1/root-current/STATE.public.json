@@ -1,0 +1,296 @@
+{
+  "schema": "heptabao.r36-original-cli-failure-qualified-and-next-source-gates.v1",
+  "as_of_UTC": "2026-11-06 05:10:30 UTC",
+  "previous_validation_commit": "3fad6ab8d3eda6cad1c7e95458f8eba026c1c524",
+  "previous_validation_tree": "d9e6100e4747b0e732488fed096256360cc9c5ae",
+  "prefix": "qa/evidence/20261104/r36-cli-original-failures-and-next-source-gates-r1",
+  "product_baseline": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "qualified_prior_scopes": {
+      "Mac_normal": 61,
+      "ROG_normal": 61,
+      "Mac_KV2_full34": 31,
+      "X230_KV2_full34": 31,
+      "real_Mac_ROG_Pocket4_HA": 98,
+      "independent_cold_restart": 12,
+      "X230_comparison": {
+        "profiles": 69,
+        "numeric_status_exact": 67,
+        "normalized_PKI_cases": 2
+      }
+    },
+    "no_qualification_transfer_to_unbuilt_JWT_candidate": true
+  },
+  "H2": {
+    "job": "desktop/1a1ae76aacd-fc05-5fb4",
+    "start_count": 1,
+    "exit_code": 0,
+    "full_durable": true,
+    "root_actual_checks": 121,
+    "root_qualification": "98643e27c05bf7ba738f741e298dc8b3cabc15ae",
+    "full_report": {
+      "blob": "a84e9c899cf23f03a3ebb76d9ce5206ceb2b908c",
+      "bytes": 465570,
+      "sha256": "6b51bc97ea77b2574eab86ddee638c69818773d54211c25bcb8a018c02ca107e"
+    },
+    "qualified_scenarios": [
+      "H01 HTTP1 control native archive",
+      "H02 actual TLS+ALPNh2 one upstream stream KV2v2 read",
+      "H03 actual TLS+ALPNh2 one upstream stream native archive download"
+    ],
+    "original_observers": 11,
+    "original_pages": 46,
+    "original_read_calls": 68,
+    "actual_owned_cleanup_records": 114,
+    "aggregate_tree": "9be9e1e28ba3bcec85d3d60087e38a43393baa05",
+    "aggregate_files": 399,
+    "limits": [
+      "One physical host and3process nodes",
+      "Not34MiB H2",
+      "Not officialCLI/restore qualification",
+      "Not rawOpenBao archive interchange",
+      "Not new realLAN/powercut qualification"
+    ],
+    "old_Git_UNKNOWN": "57bf417be264a07210b8d3a601c7d84354cbf801 preserved; only previously unreached native page continued once",
+    "changed_in_this_checkpoint": false
+  },
+  "CLI": {
+    "original_job": "desktop/1a1aee01612-fc05-639b",
+    "original_START_count": 1,
+    "exit": 1,
+    "full_durable": true,
+    "evidence_qualified": true,
+    "compatibility_gate_passed": false,
+    "root_checks": 415,
+    "root_qualification": "e36c81a7222c41a9ba4e327e340d2d5d2d2bfc33",
+    "whole_report": {
+      "blob": "0b2edd60185b80817c3c7f1378b914ae914ab21e",
+      "bytes": 848065,
+      "sha256": "d5c691d23b513a2a63916792bbe21178e2b34799e6adbd20ddf88cdf6147bc48"
+    },
+    "whole_aggregate": "871aa23bfee256e91247fbb7e6d42c4cb82d181d",
+    "aggregate_files": 711,
+    "aggregate_bytes": 8639016,
+    "original_calls": 117,
+    "closed_observers": 17,
+    "immutable_pages": 82,
+    "binary_ranges": 13,
+    "owned_children_closed": 283,
+    "case_qualifications": {
+      "B01": true,
+      "B02": true,
+      "B03": true,
+      "B04": false,
+      "B05": false
+    },
+    "B04": {
+      "CLI_exit": 2,
+      "diagnostic": "incomplete_snapshot",
+      "valid_archive": false,
+      "output_exists": false,
+      "node1_audit_status": 200,
+      "node2_audit_status": 307
+    },
+    "B05": {
+      "CLI_exit": 0,
+      "input_is_valid_unchanged_B03_archive": true,
+      "node1_audit_status": 400,
+      "node2_audit_status": 307,
+      "actual_baseline_restored": false,
+      "actual_mutated_state_unchanged": true,
+      "cold_restart_preserves_unchanged_state": true
+    },
+    "dynamic_invariants": {
+      "passed": 416,
+      "total": 416,
+      "not_full_replacement_denominator": true
+    },
+    "single_physical_host_three_process_nodes": true,
+    "audit_arrays_not_cross_node_temporal_or_framing_proof": true,
+    "old_Git_75ff_create_UNKNOWN_preserved": true,
+    "repair": {
+      "architecture_packet": "bcde44a90cb096361dd9f4edb61e5d9228893a68",
+      "concrete_binary_body_source_packet": "7de62910e72d95f8d4506437906dde6552662aae",
+      "body_tests_source_count": 10,
+      "formatted": false,
+      "compiled": false,
+      "tests_executed": false,
+      "service_completion_integration_complete": false,
+      "actual_mTLS_half_close_validation_complete": false,
+      "old_HTTP2_ingress_32MiB_limit_unchanged": true
+    }
+  },
+  "AuthBus": {
+    "original_job": "mac/1a1ae51309d-fc05-5ef8",
+    "original_exit": 1,
+    "original_business_operations": 0,
+    "original_label": "org.heptabao.qa.mac-authbus-4e808-owner-r1.server",
+    "EX_CONFIG_78_cause_qualified": false,
+    "old_registration_qualified": false,
+    "historical_lineage_qualified": false,
+    "path_metadata_actual": {
+      "root_checks": 68,
+      "qualification": "4c63acf5b37fa6743c7d325a0a119e37540af83a",
+      "does_not_prove_launchd_TCC_context": true
+    },
+    "log_tool_info_actual": {
+      "root_checks": 14,
+      "qualification": "64bffd85bc096a61c32931c0f29e18e33673f1e9"
+    },
+    "help_R1": {
+      "known_failure": true,
+      "parent_exit": 1,
+      "child_exit": 64,
+      "stderr_content_not_reconstructed": true
+    },
+    "help_R2": {
+      "job": "mac/1a1af1fec8d-fc05-65f7",
+      "root_checks": 45,
+      "qualification": "7c584599c9d1275e06f1c91b27d80dd3c12ef6d3",
+      "parent_exit": 0,
+      "child_exit": 64,
+      "public_help_bytes": 2246,
+      "help_only_qualified": true
+    },
+    "original_fixed_log_query": {
+      "job": "mac/1a1af3333c8-fc05-66b3",
+      "original_START_count": 1,
+      "root_checks": 40,
+      "qualification": "3052edd4796424a82b909e75c295fd5530836714",
+      "parent_exit": 1,
+      "child_exit": 0,
+      "child_stdout_bytes": 817,
+      "projection_error": "one_log_message_semantics",
+      "projection_qualified": false,
+      "raw_or_unknown_hash_published": false,
+      "all_owned_diagnostic_resources_closed": true,
+      "scope": "original label and launchd process in original3-second worker interval"
+    },
+    "next_fixed_schema_projection": "SOURCE preparation; no new query GO at this snapshot",
+    "original_label_cleanup_executed": false,
+    "private_capsule_read": false,
+    "J3160_contacted": false,
+    "AppRole_TLS_KV_Policy_renew_revoke_qualified": false,
+    "old_Git_8916_UNKNOWN_preserved": true
+  },
+  "JWT": {
+    "candidate_commit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+    "candidate_tree": "5497775d9d473541e13e1603be8c893a3e27681b",
+    "source_stage": {
+      "job": "rog/1a1aed43ac9-fc05-62ec",
+      "root_checks": 38,
+      "qualification": "fa0a83fb172bb5a04a95ed8ab65de2e3dd724c13",
+      "canonical_checkout_files": 3916,
+      "canonical_checkout_bytes": 62287650,
+      "full_source_stage_qualified": true
+    },
+    "formatter": {
+      "job": "rog/1a1af017fae-fc05-64f1",
+      "exit": 0,
+      "full_durable": true,
+      "transport_root_checks": 43,
+      "receipt_root_checks": 41,
+      "receipt_qualification": "cc5d3f87307e89cc01df208c72aa683f8f1184d3",
+      "receipt_bytes": 22202,
+      "changed_files": 6,
+      "unchanged_files": 3,
+      "nine_direct_children_reaped": true,
+      "nine_independent_child_groups_empty_qualified": false,
+      "full_formatted_outputs_qualified": false
+    },
+    "fixed38_collector": {
+      "source_packet": "0dcf428adc4dfd924b529949e89428af367c17c7",
+      "source_root_checks": 37,
+      "root_GO": "fd29c6c49233feb8b6dee5e0999b04c346e8e848",
+      "independent_source_peer": "d6e094e39ace01a6475e7a38909b23311e806245",
+      "job_owner_report": "rog/1a1af3d52ee-fc05-6701",
+      "owner_reported_original_terminal": {
+        "exit": 0,
+        "full": true,
+        "durable": true,
+        "stdout_bytes": 7947,
+        "stderr_bytes": 0
+      },
+      "root_full_actual_observation_qualified": false,
+      "original_streams_read_in_progress": true,
+      "report_independently_read": false,
+      "read_bytes_cap": 7906155,
+      "fixed_input_bytes": 3701083,
+      "total_fd_acquisitions": 46,
+      "shared_seconds": 50,
+      "outer_seconds": 60
+    },
+    "unbound_BUILD26": {
+      "packet": "b267755db2745847fee6118dfefb3fff43b56ebe",
+      "historical_planned_unique": 147,
+      "historical_planned_profile_instances": 162,
+      "final_source_binding_ready": false,
+      "compiled": false,
+      "tests_executed": false,
+      "PKI_tests_not_silently_added": true
+    },
+    "format_successor_commit_created": false,
+    "PKI_child_commit_created": false,
+    "official_JWT_role_ACL_exact_oracle_run": false,
+    "no_old_4e808_test_qualification_borrowed": true
+  },
+  "PKI": {
+    "original_comparison": {
+      "total": 69,
+      "numeric_exact": 67,
+      "normalized_status_cases": 2,
+      "old_results_unchanged": true
+    },
+    "source_candidate_packet": "6e4bf23de8f7fdac6dd9b152232a905bedb87744",
+    "source_peer": "daf43cf1e620d41c2c3e197b9e893484e23c8255",
+    "enclosing_bad_mapper_whole_source": {
+      "blob": "d4eb181702573cab33fb48de07765a47d870c713",
+      "bytes": 153342,
+      "sha256": "75e46bb5a44d4934f064003f78450208cf65a0c58a08c69d83138391629c5cf3"
+    },
+    "mapper_source_confirms_400": true,
+    "changed_production_branches": 2,
+    "new_native_test_sources": 2,
+    "acceptance_target_status": 400,
+    "original_TTL_seconds": 2,
+    "original_wait_seconds": 2.3,
+    "planned_existing_PKI_module_checks": 12,
+    "candidate_integrated": false,
+    "formatted": false,
+    "compiled": false,
+    "tests_executed": false,
+    "actual_400_qualification": false
+  },
+  "remaining_implementation_and_migration_gates": [
+    "CLI standby save and restore exact cause and repair",
+    "AuthBus actual trusted owner credential chain and five current consumers",
+    "Native JWT actual compilation/test plus precise official role ACL create/update/delete semantics",
+    "Other native auth/provider routes including OIDC/Kubernetes/MFA and SDK owners",
+    "Database/RabbitMQ/Kubernetes secret external effects",
+    "ACME/EAB/externalKMS/HSM PKI and Transit integration",
+    "Rekey/root generation/rotation and runtime plugin mutation",
+    "Protected namespace/nondefault Raft administration",
+    "Two exact PKI expired/revoked status oracles",
+    "Current per-client credential read/write, restart, rollback and traffic cutover",
+    "All current backup-path migration evidence before legacy cleanup"
+  ],
+  "full_OpenBao_2_7_1_replacement": false,
+  "production_cutover": false,
+  "all_current_clients_and_backup_paths_migrated": false,
+  "legacy_cleanup": false,
+  "PR159_merged": false,
+  "root_Runtime_calls": 0,
+  "max_Runtime_lanes": 2,
+  "local_executor_available": false,
+  "prior_unknowns_and_local_archive_gaps_preserved": true,
+  "publication": {
+    "add_one_evidence_subtree": true,
+    "mounted_packet_count": 32,
+    "mounted_file_count": 1463,
+    "mounted_bytes": 17744925,
+    "prior_documents_indexes_product_source_unchanged": true,
+    "deletions": 0
+  },
+  "task_continues": true
+}

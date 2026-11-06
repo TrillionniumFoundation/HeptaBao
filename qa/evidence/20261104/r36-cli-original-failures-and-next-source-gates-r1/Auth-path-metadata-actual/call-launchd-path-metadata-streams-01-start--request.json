@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-mac-owned-launchd-path-metadata-bb9f9e1c-streams-01-20261106-r1",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1aef60ea2-fc05-648b",
+      "limit": 16384,
+      "stdout_offset": 0,
+      "stderr_offset": 0
+    }
+  }
+}

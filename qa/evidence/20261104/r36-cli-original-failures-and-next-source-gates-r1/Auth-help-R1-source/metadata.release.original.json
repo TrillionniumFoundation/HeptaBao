@@ -1,0 +1,85 @@
+{
+  "schema": "heptabao.mac-log-tool-info.actual-release.r1",
+  "rootGo": {
+    "blob": "078c846764a87c1bfed72b447303cc94d6ce002a",
+    "bytes": 4261,
+    "sha256": "3ce070b09686c96fb2588e5b4823cba1711e41a51554861512585f2486c4b037"
+  },
+  "exactRequest": {
+    "blob": "a4b6cada1d58f18e07d6aac7d989f67a17819038",
+    "bytes": 211,
+    "sha256": "b97c097473e6ccd9ca93c9053dd924e499f350b5a51b5e1b9c7bf8f3a67c3212"
+  },
+  "host": "mac",
+  "path": "/usr/bin/log",
+  "operation": {
+    "id": "9046699b261f2ef2f76485e33dc80b433684b7321efb0fbc8889a553365d3261",
+    "tool": "file_info",
+    "payload": {
+      "blob": "b5a43226030c5804c2efc1258042cc67bd3b2fda",
+      "bytes": 528,
+      "sha256": "9a9f4bf9e43728bbf89163f7f19452682e5e371546d05d198997725e32e1a03a"
+    },
+    "payloadTree": "5382146484358af18a312bd02781ca3275f2c41b",
+    "nativeText": {
+      "blob": "d3cefcb531f3deea5a156189d381b11f8c70fa7b",
+      "bytes": 411,
+      "sha256": "8b1ed8e54007466045ebf6527ed102d709c54f8a3e10dd8e7b5f5b41b791efe4"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "actualInfo": {
+    "blob": "d3cefcb531f3deea5a156189d381b11f8c70fa7b",
+    "bytes": 411,
+    "sha256": "8b1ed8e54007466045ebf6527ed102d709c54f8a3e10dd8e7b5f5b41b791efe4"
+  },
+  "metadataValue": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 0,
+      "link_count": 1,
+      "metadata_platform": "darwin",
+      "mode": 493,
+      "uid": 0,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 493,
+    "path": "/usr/bin/log",
+    "sha256": "2fa7b04615546f0964dd1ddedab04a07e3e026f76959e7f44cbd30bfa48a5974",
+    "size": 807536,
+    "version": "16777233:1152921500312572288:807536:1786589515000000000:1786589515000000000"
+  },
+  "originalOperationStarts": 1,
+  "processStarts": 0,
+  "immutablePages": 1,
+  "nativeCalls": 3,
+  "nativeCallsActive": 0,
+  "nativeFuturesActive": 0,
+  "allOriginalObserversClosed": true,
+  "oldContextByteExact": true,
+  "oldContext": {
+    "blob": "1ac5978247d3ff3ad440e841e23c6da906f6c1b0",
+    "bytes": 55220,
+    "sha256": "bddc93625d140a360eaf843c7ed09317233a9dff500500c13ccf86bf941a079a"
+  },
+  "laneAReleased": true,
+  "helpDerivedSourceOnly": {
+    "source": {
+      "blob": "72db261830c3ddd1c708705a95b635cd424738a5",
+      "bytes": 44232,
+      "sha256": "7a36fd5212c16d0069050083bcb80bebbe095afdf283a923a34d06daee1e827c"
+    },
+    "request": {
+      "blob": "fcf60636968e344833f0cfaf268a29a61981b452",
+      "bytes": 44918,
+      "sha256": "f7801d7c7c89b6982c528857b6eb13c1ae0ec0f632ab14d8ec8d44842e679e49"
+    },
+    "helpExecuted": false,
+    "logQueryExecuted": false
+  },
+  "oldLabelRegistrationClosed": false,
+  "historicalLineageClosed": false,
+  "historicalUnknownPreserved": true
+}

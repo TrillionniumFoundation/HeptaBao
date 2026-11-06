@@ -1,0 +1,42 @@
+[
+  {
+    "label": "one exact body capability after actual metadata",
+    "before": "\nfunction gfNeed(value, code)",
+    "after": "\n/* One exact whole-report chunk after independently closed actual metadata.\n * Only this 22202-byte range is admitted; no body/listing fallback exists.\n */\nconst GF_FORMATTER_RECEIPT_BODY_REQUEST = {\"blob\":\"6d9356b029e17f02287de08ab5d1c3d84a9537b3\",\"bytes\":345,\"sha256\":\"daddafc8c6e3f131a33c7fb31eb7cd2cadd591e48f585178b0309b62f9de322c\"};\nconst GF_FORMATTER_RECEIPT_BODY_PAGE_BYTES = 16384;\nconst GF_FORMATTER_RECEIPT_BODY_EXPECTED = {\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/result.public.json\",\"bytes\":22202,\"sha256\":\"60776056ee93fa1fdb557233626ee392385bfe69c8335cd9bc8d236fb0974874\",\"version\":\"66306:30541013:22202:1793937480615144693:1793937480615144693\",\"infoOperation\":\"be969ff66181d7b8e77c373f94425fda8a6474cd6480aba3c46f2a6dcd55a539\",\"infoNative\":{\"blob\":\"cb38af7975d33515c1591d0f40a417269c7a0847\",\"bytes\":468,\"sha256\":\"1202fd1418717d4fec2e77f67d251e58d5beb49420e007df648d6b9ea7c78b84\"}};\n\nfunction gfAuthorizeFormatterReceiptBodyOnly({goRaw,goPin,goWholeReadback}) {\n const s=gfState(),need=GF_FORMATTER_RECEIPT_BODY_EXPECTED,info=s.formatterReceiptInfo;\n gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null\n   && s.activeObserver===null && s.job===\"1a1af017fae-fc05-64f1\"\n   && s.formatterReceiptInfoGO?.whole===true && s.formatterReceiptInfoStarted===true\n   && s.formatterReceiptBodyGO===undefined && s.formatterReceiptBodyStarted!==true,\n   \"closed_info_before_one_exact_body_GO\");\n gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin)\n   && goPin.blob!==s.goPin.blob && goPin.blob!==s.formatterReceiptInfoGO.pin.blob,\n   \"separate_whole_body_only_GO\");\n const g=JSON.parse(goRaw);\n gfNeed(g.authorization===\"GO\" && g.scope===\"formatter_receipt_binary_read_only\"\n   && g.original_job===s.job && g.info_operation===need.infoOperation\n   && g.maximum_binary_read_starts===1\n   && g.immutable_page_bytes===GF_FORMATTER_RECEIPT_BODY_PAGE_BYTES\n   && g.exact_request?.blob===GF_FORMATTER_RECEIPT_BODY_REQUEST.blob\n   && g.exact_request?.bytes===GF_FORMATTER_RECEIPT_BODY_REQUEST.bytes\n   && g.exact_request?.sha256===GF_FORMATTER_RECEIPT_BODY_REQUEST.sha256,\n   \"exact_new_root_body_scope\");\n const prior=s.completedObservers.find(o=>o.id===need.infoOperation);\n gfNeed(prior?.completedInactive===true && prior.tool===\"file_info\"\n   && prior.nativeText.blob===need.infoNative.blob\n   && gfMetaEquals(load(GF_SLOT+\":closed_native:\"+need.infoOperation),need.infoNative)\n   && info?.path===need.path && info.size===need.bytes && info.sha256===need.sha256\n   && info.version===need.version && info.originalOperation===need.infoOperation\n   && need.bytes>0 && need.bytes<=65536 && need.bytes<=GF_FORMATTER_RECEIPT_MAX_BYTES,\n   \"whole_current_info_identity_and_single_chunk\");\n s.formatterReceiptBodyGO={pin:goPin,raw:goRaw,whole:true};\n gfSave(s);\n return {originalJob:s.job,infoOperation:need.infoOperation,\n   exactRequest:GF_FORMATTER_RECEIPT_BODY_REQUEST,maximumBinaryReadStarts:1,wholeBytes:need.bytes};\n}\n\nfunction gfNeed(value, code)"
+  },
+  {
+    "label": "closed exact version-bound binary_read route",
+    "before": "  if(op.tool===\"file_info\") {\n   gfNeed(s.formatterReceiptInfoGO?.whole===true",
+    "after": "  if(op.tool===\"binary_read\") {\n   gfNeed(s.formatterReceiptBodyGO?.whole===true && s.formatterReceiptBodyStarted!==true\n     && gfMetaEquals(raw,GF_FORMATTER_RECEIPT_BODY_REQUEST)\n     && Object.keys(a).sort().join(\",\")===\"expected_version,host,limit,offset,path\"\n     && a.path===GF_FORMATTER_RECEIPT_BODY_EXPECTED.path && a.offset===0\n     && a.limit===GF_FORMATTER_RECEIPT_BODY_EXPECTED.bytes && a.limit<=65536\n     && a.expected_version===GF_FORMATTER_RECEIPT_BODY_EXPECTED.version,\n     \"one_exact_version_bound_whole_report_chunk\");\n  } else if(op.tool===\"file_info\") {\n   gfNeed(s.formatterReceiptInfoGO?.whole===true"
+  },
+  {
+    "label": "bind all body original-call intents to separate body GO",
+    "before": "  rootGo:(kind===\"operation_start\" && q.operation.tool===\"file_info\")\n    || s.activeObserver?.tool===\"file_info\" ? s.formatterReceiptInfoGO.pin : s.goPin,",
+    "after": "  rootGo:((kind===\"operation_start\" && q.operation.tool===\"binary_read\")\n    || s.activeObserver?.tool===\"binary_read\") ? s.formatterReceiptBodyGO.pin\n    : ((kind===\"operation_start\" && q.operation.tool===\"file_info\")\n      || s.activeObserver?.tool===\"file_info\") ? s.formatterReceiptInfoGO.pin : s.goPin,"
+  },
+  {
+    "label": "one body invocation marker before native call",
+    "before": " if(c.kind===\"operation_start\" && q.operation.tool===\"file_info\")s.formatterReceiptInfoStarted=true;\n gfSave(s);",
+    "after": " if(c.kind===\"operation_start\" && q.operation.tool===\"file_info\")s.formatterReceiptInfoStarted=true;\n if(c.kind===\"operation_start\" && q.operation.tool===\"binary_read\")s.formatterReceiptBodyStarted=true;\n gfSave(s);"
+  },
+  {
+    "label": "exact original chunk/UTF8/whole SHA; preserve raw report before later semantics",
+    "before": "  if(a.tool===\"file_info\") {\n   const md=v.metadata,parts=typeof v.version===\"string\"?v.version.split(\":\"):[];",
+    "after": "  if(a.tool===\"binary_read\") {\n   const need=GF_FORMATTER_RECEIPT_BODY_EXPECTED;\n   gfNeed(v.path===need.path && v.version===need.version && v.size===need.bytes\n     && v.offset===0 && v.next_offset===need.bytes && v.eof===true\n     && typeof v.data_base64===\"string\" && v.chunk_sha256===need.sha256,\n     \"whole_report_original_binary_extent\");\n   const bodyBytes=unb64(v.data_base64),bodyRaw=utf8Text(bodyBytes),bodyPin=gitBlobMeta(bodyRaw);\n   gfNeed(bodyBytes.length===need.bytes && bodyPin.bytes===need.bytes\n     && bodyPin.sha256===need.sha256,\"whole_report_actual_bytes_SHA\");\n   store(GF_SLOT+\":formatter_receipt_body_original\",bodyRaw);\n   s.formatterReceiptBody={path:need.path,version:need.version,body:bodyPin,\n     originalOperation:a.id,metadataOperation:need.infoOperation,\n     originalPayload:pin,semanticQualification:false};\n  } else if(a.tool===\"file_info\") {\n   const md=v.metadata,parts=typeof v.version===\"string\"?v.version.split(\":\"):[];"
+  },
+  {
+    "label": "explicit body authorization through normal-return gfRun only",
+    "before": "  else if(action===\"authorize_formatter_receipt_info\")value=gfAuthorizeFormatterReceiptInfoOnly(args);\n  else if(action===\"prepare\")",
+    "after": "  else if(action===\"authorize_formatter_receipt_info\")value=gfAuthorizeFormatterReceiptInfoOnly(args);\n  else if(action===\"authorize_formatter_receipt_body\")value=gfAuthorizeFormatterReceiptBodyOnly(args);\n  else if(action===\"prepare\")"
+  },
+  {
+    "label": "new binary observer pages only; prior observer cap remains8192",
+    "before": "q.operation_id===s.activeObserver.id && q.limit===8192",
+    "after": "q.operation_id===s.activeObserver.id\n   && q.limit===(s.activeObserver.tool===\"binary_read\" ? GF_FORMATTER_RECEIPT_BODY_PAGE_BYTES : 8192)"
+  },
+  {
+    "label": "same new page cap checked on returned bytes",
+    "before": "gfNeed(b.length<=8192 && v.next_offset===q.offset+b.length",
+    "after": "gfNeed(b.length<=(a.tool===\"binary_read\" ? GF_FORMATTER_RECEIPT_BODY_PAGE_BYTES : 8192)\n     && v.next_offset===q.offset+b.length"
+  }
+]
