@@ -1,0 +1,92 @@
+{
+  "schema": "heptabao.jwt-policy-empty.original23-coverage.v1",
+  "matrix_pin": {
+    "blob": "7364a32a2341a56b0730ad3486c72bdbd6de53c4",
+    "bytes": 14285,
+    "sha256": "59e3c9519e59e7ae26cde512a8171d39e2175e8bb24f12039222218570ebe6f8"
+  },
+  "common_role_pin": {
+    "blob": "44e935106eb66dac1bd32d76bd56de0baca7f298",
+    "bytes": 111,
+    "sha256": "7d816d3da051f8d64da1e43499ae631cff8949629d5da8bb93d18b880ad93df0"
+  },
+  "current_execution_source_pin": {
+    "blob": "3b2695829e4d8bc8688fd80f3f513fb550e56a1d",
+    "bytes": 15892,
+    "sha256": "60a2864887218041e3a718d765dc00d261be49510372af95233e8ae89c64e922"
+  },
+  "current_execution_source_statement": "Independent full source read corroborates C's pointer. This is exact request-construction evidence, not a claim that the pending official report has been fully received.",
+  "case_count": 23,
+  "case_ids": [
+    "delete-none",
+    "delete-update",
+    "delete-update-sudo",
+    "delete-delete",
+    "delete-delete-sudo",
+    "collection-bare-get-none",
+    "collection-bare-get-read",
+    "collection-bare-get-list",
+    "collection-list-query-none",
+    "collection-list-query-read",
+    "collection-list-query-list",
+    "collection-list-method-none",
+    "collection-list-method-read",
+    "collection-list-method-list",
+    "existing-post-none",
+    "existing-post-update",
+    "existing-post-update-sudo",
+    "fresh-post-create",
+    "fresh-post-update-sudo",
+    "fresh-post-create-update-sudo",
+    "config-post-none",
+    "config-post-update",
+    "config-post-update-sudo"
+  ],
+  "actual_results_consumed": 0,
+  "roles_receive_policy_fields": false,
+  "role_token_no_default_policy": false,
+  "root_role_or_login_case": false,
+  "nonempty_policy_delegation_update_case": false,
+  "explicit_modern_empty_case": false,
+  "explicit_legacy_empty_case": false,
+  "no_default_actor_issuance_and_independent_lookup_in_source": true,
+  "covered_source_questions": [
+    "original role existence -> create/update capability",
+    "delete permission and unchanged rejection state",
+    "collection read/list separation",
+    "config update permission",
+    "no-default actor interacting with omitted role policy fields",
+    "role readback policy presence/value projection"
+  ],
+  "relevant_role_positive_predictions_source_only": [
+    {
+      "id": "existing-post-update",
+      "official_source_status": 204,
+      "pending_draft2_source_status": 403
+    },
+    {
+      "id": "existing-post-update-sudo",
+      "official_source_status": 204,
+      "pending_draft2_source_status": 403
+    },
+    {
+      "id": "fresh-post-create",
+      "official_source_status": 204,
+      "pending_draft2_source_status": 403
+    },
+    {
+      "id": "fresh-post-create-update-sudo",
+      "official_source_status": 204,
+      "pending_draft2_source_status": 403
+    }
+  ],
+  "prediction_basis": "Current executor creates nonroot actors without default, seeds roles with omitted policy fields, and changes only the audience. Pending draft2 stores default and retains JWT writer-subset validation. These are source predictions awaiting actual result/status/state rows; the historical matrix's R2_source_prediction column describes an earlier baseline, not the pending draft2.",
+  "unproved_by_original23": [
+    "explicit empty modern/legacy update clearing",
+    "root role configuration then forbidden issuance",
+    "role token_no_default_policy false/true/default/weakly decoded forms",
+    "service and batch issued-policy lists",
+    "renewal after role policy changes",
+    "full policy normalization or alias-precedence compatibility"
+  ]
+}

@@ -1,0 +1,200 @@
+{
+  "schema": "heptabao.official271.r2.report-info.actual-checks.r1",
+  "pass": true,
+  "check_count": 43,
+  "checks": [
+    {
+      "name": "whole exact INFO GO",
+      "passed": true
+    },
+    {
+      "name": "exact INFO request and journal",
+      "passed": true
+    },
+    {
+      "name": "exact closed original prior state and stdout",
+      "passed": true
+    },
+    {
+      "name": "closed actual INFO state",
+      "passed": true
+    },
+    {
+      "name": "original seven calls retained",
+      "passed": true
+    },
+    {
+      "name": "two old closed observers retained",
+      "passed": true
+    },
+    {
+      "name": "only three new kinds",
+      "passed": true
+    },
+    {
+      "name": "call-0 request/SDK/native whole identities",
+      "passed": true
+    },
+    {
+      "name": "call-0 original accepted external boundary",
+      "passed": true
+    },
+    {
+      "name": "call-0 SDK text precedes interpretation",
+      "passed": true
+    },
+    {
+      "name": "call-0 separate INFO GO scoped intent",
+      "passed": true
+    },
+    {
+      "name": "call-0 exact armed boundary",
+      "passed": true
+    },
+    {
+      "name": "call-0 three-leaf arm Merkle",
+      "passed": true
+    },
+    {
+      "name": "call-0 one-leaf SDK Merkle",
+      "passed": true
+    },
+    {
+      "name": "call-1 request/SDK/native whole identities",
+      "passed": true
+    },
+    {
+      "name": "call-1 original accepted external boundary",
+      "passed": true
+    },
+    {
+      "name": "call-1 SDK text precedes interpretation",
+      "passed": true
+    },
+    {
+      "name": "call-1 separate INFO GO scoped intent",
+      "passed": true
+    },
+    {
+      "name": "call-1 exact armed boundary",
+      "passed": true
+    },
+    {
+      "name": "call-1 three-leaf arm Merkle",
+      "passed": true
+    },
+    {
+      "name": "call-1 one-leaf SDK Merkle",
+      "passed": true
+    },
+    {
+      "name": "call-2 request/SDK/native whole identities",
+      "passed": true
+    },
+    {
+      "name": "call-2 original accepted external boundary",
+      "passed": true
+    },
+    {
+      "name": "call-2 SDK text precedes interpretation",
+      "passed": true
+    },
+    {
+      "name": "call-2 separate INFO GO scoped intent",
+      "passed": true
+    },
+    {
+      "name": "call-2 exact armed boundary",
+      "passed": true
+    },
+    {
+      "name": "call-2 three-leaf arm Merkle",
+      "passed": true
+    },
+    {
+      "name": "call-2 one-leaf SDK Merkle",
+      "passed": true
+    },
+    {
+      "name": "one exact public file_info admission",
+      "passed": true
+    },
+    {
+      "name": "unique returned INFO ID",
+      "passed": true
+    },
+    {
+      "name": "known same ID closed/stored/inactive",
+      "passed": true
+    },
+    {
+      "name": "same ID one immutable page request",
+      "passed": true
+    },
+    {
+      "name": "whole immutable payload range",
+      "passed": true
+    },
+    {
+      "name": "whole immutable payload digest",
+      "passed": true
+    },
+    {
+      "name": "whole payload Merkle",
+      "passed": true
+    },
+    {
+      "name": "original success native envelope",
+      "passed": true
+    },
+    {
+      "name": "actual path/size/SHA exactly terminal",
+      "passed": true
+    },
+    {
+      "name": "actual Linux single-link permission/owner",
+      "passed": true
+    },
+    {
+      "name": "actual decimal native version",
+      "passed": true
+    },
+    {
+      "name": "independent full9 exactly original terminal",
+      "passed": true
+    },
+    {
+      "name": "closed state binds actual metadata",
+      "passed": true
+    },
+    {
+      "name": "body still unobserved and unauthorized",
+      "passed": true
+    },
+    {
+      "name": "C released with no future",
+      "passed": true
+    }
+  ],
+  "calls": 3,
+  "observers": 1,
+  "pages": 1,
+  "metadataBytes": 651803,
+  "metadataSHA256": "9048f3b5c854a190dadde86f5d7eec180c497313065bd70bd23a87124789a62d",
+  "actualVersion": "2053:2098461:651803:1793982810542000556:1793982810542000556",
+  "full9Strings": [
+    "2053",
+    "2098461",
+    "1000",
+    "1000",
+    "33152",
+    "1",
+    "651803",
+    "1793982810542000556",
+    "1793982810542000556"
+  ],
+  "RuntimeCallsByVerifier": 0,
+  "bodyReadByVerifier": false,
+  "ownerReceiptQualified": false,
+  "aclCaseResultsQualified": false
+}

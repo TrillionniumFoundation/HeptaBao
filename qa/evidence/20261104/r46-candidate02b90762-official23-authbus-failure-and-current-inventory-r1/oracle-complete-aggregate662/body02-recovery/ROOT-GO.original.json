@@ -1,0 +1,66 @@
+{
+  "schema": "heptabao.root.GO.oracle271.r2.BODY02.same-ID-recovery.r1",
+  "authorization": "GO",
+  "scope": "official271_r2_original_body02_same_id_status_reconciliation_only",
+  "original_job": "1a1b1b4fbfa-fc05-7a60",
+  "original_operation_id": "6220e2762757d7afa1ba315c7beb2a985c59c147ac7cb3852aa17ba9c21c7a9e",
+  "maximum_new_operation_status_calls": 1,
+  "original_operation_status_calls": 1,
+  "maximum_combined_operation_status_calls": 8,
+  "maximum_operation_result_calls": 128,
+  "maximum_operation_start_calls": 0,
+  "maximum_process_start_calls": 0,
+  "immutable_page_bytes": 16384,
+  "maximum_payload_bytes": 1048576,
+  "exact_status_request": {
+    "blob": "182980da62d3a27a098c8fb974e6a68dd7926318",
+    "bytes": 84,
+    "sha256": "f99d18d13005ea9de9e2426fcc8fbce4e668450f52fdd726234aa3f8e4cc7317"
+  },
+  "source_packet": "5d1e5f4ea55fb6f817c0e18a04240222aa09c1d8",
+  "source": {
+    "blob": "20a36582d7acf9d3675b9c31fd47e6ae72e7354a",
+    "bytes": 21016,
+    "sha256": "defc76fc73a4a3ab2fc8d4d8468b11d3410760268560c54c06682ae63b790cfd"
+  },
+  "original_paused_state": {
+    "blob": "652b0103388657f5515e30c077ce927c24b19cf2",
+    "bytes": 454676,
+    "sha256": "dd4a465e95e91c8aa23ddcde138d4541a52e79e7482297eb418bb89e16f83aa3"
+  },
+  "root_qualification": {
+    "blob": "f40feea4d843daa82a1513c434cf4cb3f4a419bb",
+    "bytes": 3137,
+    "sha256": "ce489ca543c213275bdc459d169e49a0a8dd2d766ef053446317b068a5f5f14d"
+  },
+  "parent_body_GO": {
+    "blob": "1bfd1fe525b4a3e426b303fe65ef1615150eca53",
+    "bytes": 3811,
+    "sha256": "583c500b3be6866097aca0a96507b7c7c294ab35ae5166b10c7cc6ee25996363"
+  },
+  "target_original_range": {
+    "path": "/home/qian/heptabao-official271-acl23-oracle-20261106-r2/result.public.json",
+    "bytes": 651803,
+    "sha256": "9048f3b5c854a190dadde86f5d7eec180c497313065bd70bd23a87124789a62d",
+    "version": "2053:2098461:651803:1793982810542000556:1793982810542000556",
+    "offset": 131072,
+    "limit": 65536
+  },
+  "maximum_simultaneous_native_calls_or_owned_futures": 1,
+  "new_binary_admission": false,
+  "handback_authorized": false,
+  "remaining_seven_new_body_requests_authorized_by_this_GO": false,
+  "preserve_old_original_slot_byte_exact": true,
+  "no_automatic_retry_after_failed_new_status": true,
+  "old_FAILED_and_UNKNOWN_records_preserved": true,
+  "lane": "C1",
+  "concurrent_lanes": {
+    "A": 0,
+    "B": 0,
+    "C": 1,
+    "root": 0
+  },
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

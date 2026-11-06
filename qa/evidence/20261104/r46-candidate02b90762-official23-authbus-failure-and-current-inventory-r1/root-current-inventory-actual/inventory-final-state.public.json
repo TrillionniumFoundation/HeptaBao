@@ -1,0 +1,203 @@
+{
+  "schema": "heptabao.root.basename-discovery.state.r1",
+  "rootGo": {
+    "blob": "af61dde0fb0fc7164a20aa4034bc698f39b75267",
+    "bytes": 1770,
+    "sha256": "7a106338e0a6a3f7922127ebdfc9625506b5ead70a196b5ab0ca2cdd8460a06e"
+  },
+  "goArchive": "2b81af4b9efac00d220170a0213348e7e8d11852",
+  "requests": [
+    {
+      "path": "request.consumer-basename.public.json",
+      "blob": "26306b1d348778e525242ef3c154a1e5c8945c0e",
+      "bytes": 835,
+      "sha256": "c4845bf89c5b7cd4f354d57b59527e27416a2023faaa0e640d4deef5ce1689ba"
+    },
+    {
+      "path": "request.backup-basename.public.json",
+      "blob": "1635a1db31b4ee3e1ac8083616d8a59ecc1b591c",
+      "bytes": 808,
+      "sha256": "6f87d83e72293588b301177d01c5cd39d93ea583c37b8e7b2d46ea7a6d3206d0"
+    },
+    {
+      "path": "request.system-unit-basename.public.json",
+      "blob": "72fd4a74df4e9b612dfd54f3c4a7bd52e014eb30",
+      "bytes": 426,
+      "sha256": "f9d1e702cc4d2fab9b1b9bfd1910c1adb2bf2d7328b36bbfc5e724ed777159ba"
+    }
+  ],
+  "calls": [
+    {
+      "key": "consumer-start",
+      "kind": "start",
+      "scope": "consumer",
+      "requestRaw": "{\n  \"host\": \"x230\",\n  \"root\": \"/home/qian\",\n  \"kind\": \"files\",\n  \"query\": \"(^|/)[^/]*(heptabao|openbao|vault|bao)[^/]*$\",\n  \"query_mode\": \"regex\",\n  \"ignore_case\": true,\n  \"include_hidden\": true,\n  \"early_termination\": false,\n  \"context_lines\": 0,\n  \"exclude_patterns\": [\n    \"**/.git/**\",\n    \"**/.ssh/**\",\n    \"**/.gnupg/**\",\n    \"**/.cache/**\",\n    \"**/node_modules/**\",\n    \"**/target/**\",\n    \"**/target-*/**\",\n    \"**/*token*\",\n    \"**/*credential*\",\n    \"**/*capsule*\",\n    \"**/*.key\",\n    \"**/*.pem\",\n    \"heptabao-same-root-publication-normal-20261105-r1/**\",\n    \"heptabao-native-20261030-5a1e-r5/**\"\n  ],\n  \"max_entries\": 4096,\n  \"max_results\": 128,\n  \"max_bytes\": 1048576,\n  \"timeout_seconds\": 15,\n  \"file_pattern\": \"*.service|*.timer|*.socket|*.hcl|*.conf|*.json|*.yaml|*.yml|*.toml|*.ini|*.sh|*.py|*.env|*bao*|*vault*\"\n}\n",
+      "arm": "094e1ba87f2d6554f389d4cfd46097ea5b1bba3c",
+      "phase": "accepted",
+      "dispatchCount": 1,
+      "sdk": {
+        "blob": "7c154bbe9ebca7609e719f31439ea192c9c589dd",
+        "bytes": 1285,
+        "sha256": "1672f2e8b6d6871a0187881dbd81e5b166fd596eb935e4cf71496bc5a9419711"
+      },
+      "sdkArchive": "2c8789067ea99210756af5593d19a2e0557219b8",
+      "native": {
+        "blob": "24b01aa361382a60d1913c23c2adec7a013b6a2e",
+        "bytes": 1068,
+        "sha256": "a9d0c7acbfd8fc23a7628c435e0702fc8c849db0e6c79da5fb2c7370095e30e8"
+      },
+      "nativeRaw": "{\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"committed_progressive_pages\":true,\"credential_metadata_resume\":true,\"effect_confirmed\":true,\"effect_outcome\":\"start_acknowledged\",\"limits\":{\"bytes\":1048576,\"entries\":4096,\"results\":128,\"seconds\":15},\"metadata_durability_confirmed\":true,\"metadata_resume_after_restart\":true,\"native\":{\"action\":\"start\",\"backend\":\"native_search_worker\",\"search_id\":\"4961e3b40d4376a767d796daaa2ccda560028564c7c87636cca82b116f2d8ced\",\"snapshot_ready\":false,\"state\":\"running\"},\"observed_state\":\"running\",\"ownership_scope\":\"authenticated_private_operator_credential\",\"reconcile_via\":\"search_results or search_list using this existing search_id; never relaunch automatically\",\"search\":{\"created_unix_ms\":1793987908771,\"host\":\"x230\",\"kind\":\"files\",\"reason\":null,\"root\":\"/home/qian\",\"search_id\":\"4961e3b40d4376a767d796daaa2ccda560028564c7c87636cca82b116f2d8ced\",\"state\":\"running\"},\"session_resume_after_restart\":false,\"terminal_pages_only\":false,\"unfinished_search_after_controller_restart\":\"interrupted_without_relaunch\"}"
+    },
+    {
+      "key": "consumer-page0",
+      "kind": "page",
+      "scope": "consumer",
+      "requestRaw": "{\n  \"search_id\": \"4961e3b40d4376a767d796daaa2ccda560028564c7c87636cca82b116f2d8ced\",\n  \"cursor\": 0,\n  \"limit\": 32\n}\n",
+      "intentRaw": "{\n  \"schema\": \"heptabao.original-call-intent.v1\",\n  \"call\": \"consumer-page0\",\n  \"tool\": \"search_results\",\n  \"request\": {\n    \"blob\": \"24d576a69bf95e4c6ff582a418834139b0257171\",\n    \"bytes\": 116,\n    \"sha256\": \"89f41b11b3e7c7f34a6a59fa65c24be80df80c3b6501001615c709f4112c2896\"\n  },\n  \"go\": {\n    \"blob\": \"af61dde0fb0fc7164a20aa4034bc698f39b75267\",\n    \"bytes\": 1770,\n    \"sha256\": \"7a106338e0a6a3f7922127ebdfc9625506b5ead70a196b5ab0ca2cdd8460a06e\"\n  },\n  \"originalCallOrdinal\": 2,\n  \"dispatchCount\": 0,\n  \"automaticRetry\": false\n}\n",
+      "arm": "3815e125c2d104b9332f1100ca8524bc3083d710",
+      "phase": "accepted",
+      "dispatchCount": 1,
+      "sdk": {
+        "blob": "8c6d91ec8fc9fc85b4453e13efc2a33113c05eb4",
+        "bytes": 1538,
+        "sha256": "d8226d64b2bbaa69cab2c3b70042a1103c80acd9d0b60c8dcc2605d7b760068c"
+      },
+      "sdkArchive": "3879af8c7e682d9a193e713ada9d93550850cb0a",
+      "native": {
+        "blob": "db806dd22f4f515eac74ad11600e5a3275a7a9d1",
+        "bytes": 1293,
+        "sha256": "fc6eef3161c7c2aa03c2ed7d8271355e6f536cf4901e1db87cd5eeb44de9267c"
+      },
+      "nativeRaw": "{\"authenticated_chatgpt_caller_isolation\":false,\"credential_metadata_resume\":true,\"metadata_resume_after_restart\":true,\"ownership_scope\":\"authenticated_private_operator_credential\",\"search\":{\"created_unix_ms\":1793987908771,\"host\":\"x230\",\"kind\":\"files\",\"reason\":\"entry_limit\",\"root\":\"/home/qian\",\"search_id\":\"4961e3b40d4376a767d796daaa2ccda560028564c7c87636cca82b116f2d8ced\",\"state\":\"limited\"},\"session_resume_after_restart\":false,\"snapshot\":{\"action\":\"results\",\"backend\":\"native_search_worker\",\"committed_result_bytes\":0,\"committed_results\":0,\"next_cursor\":null,\"progressive\":false,\"reason\":\"entry_limit\",\"results\":[],\"search_id\":\"4961e3b40d4376a767d796daaa2ccda560028564c7c87636cca82b116f2d8ced\",\"snapshot_ready\":true,\"state\":\"limited\",\"statistics\":{\"bytes\":0,\"coverage_complete\":false,\"coverage_reasons\":[\"entry_limit\"],\"coverage_scope\":\"selected_authorized_regular_single_link_files\",\"entries\":4096,\"extracted_documents\":0,\"files\":0,\"results\":0,\"skipped_binary_or_non_utf8\":0,\"skipped_document_invalid\":0,\"skipped_document_limited\":0,\"skipped_document_unavailable\":0,\"skipped_hardlinks\":0,\"skipped_large\":0,\"skipped_protected\":0,\"skipped_special\":0,\"skipped_symlinks\":0,\"traversal_complete\":false,\"unreadable\":0}},\"unfinished_search_after_controller_restart\":\"interrupted_without_relaunch\"}"
+    },
+    {
+      "key": "unit-start",
+      "kind": "start",
+      "scope": "unit",
+      "requestRaw": "{\n  \"host\": \"x230\",\n  \"root\": \"/etc/systemd/system\",\n  \"kind\": \"files\",\n  \"query\": \"(^|/)[^/]*(heptabao|openbao|vault|bao)[^/]*[.](service|timer|socket)$\",\n  \"query_mode\": \"regex\",\n  \"ignore_case\": true,\n  \"include_hidden\": false,\n  \"early_termination\": false,\n  \"context_lines\": 0,\n  \"file_pattern\": \"*.service|*.timer|*.socket\",\n  \"max_entries\": 4096,\n  \"max_results\": 128,\n  \"max_bytes\": 1048576,\n  \"timeout_seconds\": 15\n}\n",
+      "intentRaw": "{\n  \"schema\": \"heptabao.original-call-intent.v1\",\n  \"call\": \"unit-start\",\n  \"tool\": \"search_start\",\n  \"request\": {\n    \"blob\": \"72fd4a74df4e9b612dfd54f3c4a7bd52e014eb30\",\n    \"bytes\": 426,\n    \"sha256\": \"f9d1e702cc4d2fab9b1b9bfd1910c1adb2bf2d7328b36bbfc5e724ed777159ba\"\n  },\n  \"go\": {\n    \"blob\": \"af61dde0fb0fc7164a20aa4034bc698f39b75267\",\n    \"bytes\": 1770,\n    \"sha256\": \"7a106338e0a6a3f7922127ebdfc9625506b5ead70a196b5ab0ca2cdd8460a06e\"\n  },\n  \"originalCallOrdinal\": 3,\n  \"dispatchCount\": 0,\n  \"automaticRetry\": false\n}\n",
+      "arm": "ba2736733d5c76882225116c0df0826e81f137f3",
+      "phase": "accepted",
+      "dispatchCount": 1,
+      "sdk": {
+        "blob": "0751930e62ea461d0bba1ea54cad280619b9090d",
+        "bytes": 1294,
+        "sha256": "95359fe1e169edf4477f9f5205385b02b73072d35e97b1f38912f9096812aa3a"
+      },
+      "sdkArchive": "c69845eb021c23b6406c1d012c0898d1bd5ff922",
+      "native": {
+        "blob": "bb17d8a0845674c3df0748360eb68fb49fd339b4",
+        "bytes": 1077,
+        "sha256": "9f3f7255d4e6ad80fc17f4c71a2908ff46f43160c70202dc773ef6c2aefaaa98"
+      },
+      "nativeRaw": "{\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"committed_progressive_pages\":true,\"credential_metadata_resume\":true,\"effect_confirmed\":true,\"effect_outcome\":\"start_acknowledged\",\"limits\":{\"bytes\":1048576,\"entries\":4096,\"results\":128,\"seconds\":15},\"metadata_durability_confirmed\":true,\"metadata_resume_after_restart\":true,\"native\":{\"action\":\"start\",\"backend\":\"native_search_worker\",\"search_id\":\"a3b45beb18eeb5b45cd854fc8d9f2177d14669ac09c6cf53e2b61b6c5b252db0\",\"snapshot_ready\":false,\"state\":\"running\"},\"observed_state\":\"running\",\"ownership_scope\":\"authenticated_private_operator_credential\",\"reconcile_via\":\"search_results or search_list using this existing search_id; never relaunch automatically\",\"search\":{\"created_unix_ms\":1793988065847,\"host\":\"x230\",\"kind\":\"files\",\"reason\":null,\"root\":\"/etc/systemd/system\",\"search_id\":\"a3b45beb18eeb5b45cd854fc8d9f2177d14669ac09c6cf53e2b61b6c5b252db0\",\"state\":\"running\"},\"session_resume_after_restart\":false,\"terminal_pages_only\":false,\"unfinished_search_after_controller_restart\":\"interrupted_without_relaunch\"}"
+    },
+    {
+      "key": "unit-page0",
+      "kind": "page",
+      "scope": "unit",
+      "requestRaw": "{\n  \"search_id\": \"a3b45beb18eeb5b45cd854fc8d9f2177d14669ac09c6cf53e2b61b6c5b252db0\",\n  \"cursor\": 0,\n  \"limit\": 32\n}\n",
+      "intentRaw": "{\n  \"schema\": \"heptabao.original-call-intent.v1\",\n  \"call\": \"unit-page0\",\n  \"tool\": \"search_results\",\n  \"request\": {\n    \"blob\": \"4ceb6617d814937db41cb0d33f80ec5854ac0ad8\",\n    \"bytes\": 116,\n    \"sha256\": \"74c3dee42a2a4aa9613fdd4da85f73a19af3ab4f80ba87bf9303560dd91cf929\"\n  },\n  \"go\": {\n    \"blob\": \"af61dde0fb0fc7164a20aa4034bc698f39b75267\",\n    \"bytes\": 1770,\n    \"sha256\": \"7a106338e0a6a3f7922127ebdfc9625506b5ead70a196b5ab0ca2cdd8460a06e\"\n  },\n  \"originalCallOrdinal\": 4,\n  \"dispatchCount\": 0,\n  \"automaticRetry\": false\n}\n",
+      "arm": "63083f9616afabffb95ce7f377c4ede28e3b0ef3",
+      "phase": "accepted",
+      "dispatchCount": 1,
+      "sdk": {
+        "blob": "a552e87fcc00b0a23f6b2b1e4bbebcc6ffb91636",
+        "bytes": 1572,
+        "sha256": "01fc576861ce0a93dba2785b01b429c2b190d41716c3f2c6ea7a4227908f4ed3"
+      },
+      "sdkArchive": "a67b279e03d1a413d8bf2cdf79b096b903260701",
+      "native": {
+        "blob": "95d40f7ae1da2a34ee88d330914ae9f5e1260fd6",
+        "bytes": 1329,
+        "sha256": "0d7842e078d18dda365ebb549e65bd274676a9f751265fa9102678ad4776ab36"
+      },
+      "nativeRaw": "{\"authenticated_chatgpt_caller_isolation\":false,\"credential_metadata_resume\":true,\"metadata_resume_after_restart\":true,\"ownership_scope\":\"authenticated_private_operator_credential\",\"search\":{\"created_unix_ms\":1793988065847,\"host\":\"x230\",\"kind\":\"files\",\"reason\":null,\"root\":\"/etc/systemd/system\",\"search_id\":\"a3b45beb18eeb5b45cd854fc8d9f2177d14669ac09c6cf53e2b61b6c5b252db0\",\"state\":\"completed\"},\"session_resume_after_restart\":false,\"snapshot\":{\"action\":\"results\",\"backend\":\"native_search_worker\",\"committed_result_bytes\":55,\"committed_results\":1,\"next_cursor\":null,\"progressive\":false,\"reason\":null,\"results\":[{\"path\":\"openclaw-authbus-x230-openbao-proxy.service\"}],\"search_id\":\"a3b45beb18eeb5b45cd854fc8d9f2177d14669ac09c6cf53e2b61b6c5b252db0\",\"snapshot_ready\":true,\"state\":\"completed\",\"statistics\":{\"bytes\":0,\"coverage_complete\":true,\"coverage_reasons\":[],\"coverage_scope\":\"selected_authorized_regular_single_link_files\",\"entries\":257,\"extracted_documents\":0,\"files\":0,\"results\":1,\"skipped_binary_or_non_utf8\":0,\"skipped_document_invalid\":0,\"skipped_document_limited\":0,\"skipped_document_unavailable\":0,\"skipped_hardlinks\":0,\"skipped_large\":0,\"skipped_protected\":0,\"skipped_special\":0,\"skipped_symlinks\":195,\"traversal_complete\":true,\"unreadable\":0}},\"unfinished_search_after_controller_restart\":\"interrupted_without_relaunch\"}"
+    }
+  ],
+  "completedSearches": [
+    {
+      "scope": "consumer",
+      "id": "4961e3b40d4376a767d796daaa2ccda560028564c7c87636cca82b116f2d8ced",
+      "state": "limited",
+      "cursor": 0,
+      "terminalPages": 1,
+      "progressivePages": 0,
+      "rows": [],
+      "reason": "entry_limit",
+      "statistics": {
+        "bytes": 0,
+        "coverage_complete": false,
+        "coverage_reasons": [
+          "entry_limit"
+        ],
+        "coverage_scope": "selected_authorized_regular_single_link_files",
+        "entries": 4096,
+        "extracted_documents": 0,
+        "files": 0,
+        "results": 0,
+        "skipped_binary_or_non_utf8": 0,
+        "skipped_document_invalid": 0,
+        "skipped_document_limited": 0,
+        "skipped_document_unavailable": 0,
+        "skipped_hardlinks": 0,
+        "skipped_large": 0,
+        "skipped_protected": 0,
+        "skipped_special": 0,
+        "skipped_symlinks": 0,
+        "traversal_complete": false,
+        "unreadable": 0
+      },
+      "closed": true
+    },
+    {
+      "scope": "unit",
+      "id": "a3b45beb18eeb5b45cd854fc8d9f2177d14669ac09c6cf53e2b61b6c5b252db0",
+      "state": "completed",
+      "cursor": 0,
+      "terminalPages": 1,
+      "progressivePages": 0,
+      "rows": [
+        {
+          "path": "openclaw-authbus-x230-openbao-proxy.service"
+        }
+      ],
+      "reason": null,
+      "statistics": {
+        "bytes": 0,
+        "coverage_complete": true,
+        "coverage_reasons": [],
+        "coverage_scope": "selected_authorized_regular_single_link_files",
+        "entries": 257,
+        "extracted_documents": 0,
+        "files": 0,
+        "results": 1,
+        "skipped_binary_or_non_utf8": 0,
+        "skipped_document_invalid": 0,
+        "skipped_document_limited": 0,
+        "skipped_document_unavailable": 0,
+        "skipped_hardlinks": 0,
+        "skipped_large": 0,
+        "skipped_protected": 0,
+        "skipped_special": 0,
+        "skipped_symlinks": 195,
+        "traversal_complete": true,
+        "unreadable": 0
+      },
+      "closed": true
+    }
+  ],
+  "activeSearch": null,
+  "pending": null,
+  "nativeCallInFlight": false,
+  "rootLane": 0,
+  "notDispatched": [
+    {
+      "scope": "backup",
+      "sourceRequest": "1635a1db31b4ee3e1ac8083616d8a59ecc1b591c",
+      "reason": "Identical /home/qian traversal and entry budget reached 4096 before any selected file. Preserve original failed coverage; use bounded directory inventory to locate explicit production roots before another filename query."
+    }
+  ],
+  "completed": true,
+  "currentClientsAndBackupCoverageComplete": false
+}

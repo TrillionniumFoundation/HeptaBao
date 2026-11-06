@@ -1,0 +1,18 @@
+{
+  "fullVerifier": {
+    "originalError": {
+      "error": "Error: SDK_tree_1",
+      "NativeCalls": 0,
+      "GitMutations": 0
+    },
+    "actualSDKArchivePath": "original.sdk.json",
+    "source": "Original call sdkArchive.entries[0].path",
+    "originalNativeSDKChanged": false,
+    "originalHistoryChanged": false
+  },
+  "bindingHelper": {
+    "error": "ReferenceError: sha256Latin1 is not defined",
+    "scope": "Pure local identity derivation only; no Native or Git mutation",
+    "correction": "Load original pure SHA/UTF8 helpers before processStartBinding."
+  }
+}

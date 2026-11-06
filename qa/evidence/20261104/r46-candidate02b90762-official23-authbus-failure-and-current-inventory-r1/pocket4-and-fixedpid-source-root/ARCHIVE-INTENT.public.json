@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r45_Pocket4_actual_PID_source_roots_archive",
+  "records": [
+    {
+      "name": "pocket4-root-qualification.json",
+      "blob": "1b4416868916033f1fb0e892ae96a46e89737091",
+      "bytes": 2006,
+      "sha256": "8c2e1dd7d0ffa57937fe9a61fa8eaee4aa70e6c1c643f2921cdb3838058f8077"
+    },
+    {
+      "name": "pocket4-root-verifier.js",
+      "blob": "d406db35c78ea1cb10ec6e6ff29c80076f583e20",
+      "bytes": 3876,
+      "sha256": "d14c92e3c3f7ca348c2b2805d53b346de76543b1c2b3f4a43bb1100d6ed0fe31"
+    },
+    {
+      "name": "pocket4-root-original-verifier.js",
+      "blob": "3fbdcfad09dad6c8389098cd8a81e90d8f5425d5",
+      "bytes": 3232,
+      "sha256": "f0e316a82b2063960c97a0fabf155c2bf55cb93fc1ec6a4239decfeeac134479"
+    },
+    {
+      "name": "pocket4-root-correction.json",
+      "blob": "e97bf0e0982e8c9281f6e5337559d7f19cb9fe86",
+      "bytes": 426,
+      "sha256": "233a1bc8f827e09f9f1785e7073766808e4cb8b25326711a43d51d5aa6ee0672"
+    },
+    {
+      "name": "pid-source-root-qualification.json",
+      "blob": "3c20ace2039e56c30c524c6d79cad29d13bbf92d",
+      "bytes": 2188,
+      "sha256": "f5720df52ab08578a3dc9a9bbd236dffefbd36135c80bbf5678a9160867c9b8b"
+    },
+    {
+      "name": "pid-source-root-verifier.js",
+      "blob": "125fc0b4638ba5beb0753b73629e20a4cc3b1d01",
+      "bytes": 3177,
+      "sha256": "72ba834b4c56064aeb8a84d4791ac1b6cc6712d46311a241612d2cb860120328"
+    }
+  ],
+  "expected_data_tree": "fbd729277d1603c7fb2f73878a475ec7a404e714",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

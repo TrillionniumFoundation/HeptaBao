@@ -1,0 +1,51 @@
+--- a/crates/heptabao-server/src/service_jwt_pem_tests.rs
++++ b/crates/heptabao-server/src/service_jwt_pem_tests.rs
+@@ -50,21 +50,6 @@
+         json!({"role_type":"jwt","user_claim":"username","bound_subject":"original-sub","bound_audiences":["service"],"token_ttl":120,"token_max_ttl":600}),100).status==204,"custom role");
+     Ok(())
+ }
+-
+-fn historical_setup(service: &mut Service, admin: &str, ns: &str, mount: &str) -> TestResult {
+-    assert_eq!(
+-        call(service, ns, "POST", &format!("sys/auth/{mount}"), admin,
+-            json!({"type":"jwt"}), 100).status,
+-        204,
+-        "historical JWT mount"
+-    );
+-    super::jwt_policy_tests::historical_role(
+-        service, admin, ns, mount, "custom",
+-        json!({"role_type":"jwt","user_claim":"username","bound_subject":"original-sub",
+-            "bound_audiences":["service"],"token_ttl":120,"token_max_ttl":600}), 100,
+-    )
+-}
+-
+ fn config(
+     service: &mut Service,
+     admin: &str,
+@@ -404,7 +389,7 @@
+             == 200,
+         "namespace"
+     );
+-    historical_setup(&mut service, &admin, "team", "pemjwt")?;
++    setup(&mut service, &admin, "team", "pemjwt")?;
+     assert!(
+         config(
+             &mut service,
+@@ -522,7 +507,7 @@
+     let mut service = root.service()?;
+     let (_, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
+     let key = PKey::from_rsa(Rsa::generate(2048)?)?;
+-    historical_setup(&mut service, &admin, "", "pemjwt")?;
++    setup(&mut service, &admin, "", "pemjwt")?;
+     assert!(
+         call(
+             &mut service,
+@@ -745,7 +730,7 @@
+     let mut service = root.service()?;
+     let (_, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
+     let key = PKey::from_rsa(Rsa::generate(2048)?)?;
+-    historical_setup(&mut service, &admin, "", "pemjwt")?;
++    setup(&mut service, &admin, "", "pemjwt")?;
+     assert!(
+         service.state.as_ref().ok_or("state")?.schema == JWT_USER_CLAIM_STATE_SCHEMA,
+         "snapshot predecessor68"

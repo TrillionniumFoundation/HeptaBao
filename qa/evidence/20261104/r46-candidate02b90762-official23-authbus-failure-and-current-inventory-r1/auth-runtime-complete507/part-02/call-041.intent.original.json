@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.gitfirst.fixed-native-call-intent.r1",
+  "callKey": "home-r3-runtime-streams-06-admission",
+  "kind": "operation_start",
+  "request": {
+    "blob": "53a4c4461b76e95237679c9f81e14ae95909f24f",
+    "bytes": 302,
+    "sha256": "858666ca4245e9bca2c7bdd588a3c6da863ea64bd1b3b7cc52e425467f55e78d"
+  },
+  "rootGo": {
+    "blob": "179dadd5fda8192e78a5ae387e6a8ed768d4adab",
+    "bytes": 2981,
+    "sha256": "74fe23a30afc4efc34baa9a1413bd96f8936a615f101ae59a524fec304154db8"
+  },
+  "originalJob": "1a1b1d28dc2-fc05-7afe",
+  "originalOperation": null,
+  "maximumNativeCalls": 1,
+  "nativeNotYetCalled": true,
+  "lossOfAcknowledgmentNeverGrantsReplay": true,
+  "localFirstExplicitlyReplacedByExactRootGO": true
+}

@@ -1,0 +1,76 @@
+--- a/launcher.UNBOUND.py
++++ b/launcher.UNBOUND.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Preserve prior evidence and admit one frozen combined source and exact 246/268 matrix."""
++"""Preserve prior evidence and admit one frozen combined source and exact 237/254 matrix."""
+ from pathlib import Path
+ import argparse
+ import fcntl
+@@ -17,7 +17,7 @@
+ FINAL_TREE = None
+ SOURCE_STAGE_ROOT = None
+ SOURCE_STAGE_SCHEMA = 'heptabao.native-jwt-independent-source-stage.v1'
+-GROUPS_SHA256 = '7c0fb6c5b6819c2cab60f3044e0aec767ad8abbf22e31ff0f7fab742ea4cd786'
++GROUPS_SHA256 = 'a3c126e1833c7d46eac8b30030d24d620540786bbe2b38d21ed9891ca42ccb38'
+ OUTER_STARTED = time.monotonic()
+ ORIGINAL_OUTER_SECONDS = 12000
+ OUTER_UNTIL = OUTER_STARTED + ORIGINAL_OUTER_SECONDS
+@@ -483,7 +483,7 @@
+ assert not stage['formatter_executed'] and not stage['historical_controls_executed']
+ runner = CONTROL / RUNNER_NAME
+ _, runner_pin = read_bound(runner, args.runner_sha256, 40000)
+-groups_raw, groups_pin = read_bound(CONTROL / 'jwt-test-groups.public.json', args.groups_sha256, 33825)
++groups_raw, groups_pin = read_bound(CONTROL / 'jwt-test-groups.public.json', args.groups_sha256, 32163)
+ groups = json.loads(groups_raw)
+ assert stage['controls'][FAILED_AUTHORITY_NAME] == {'bytes': 726, 'sha256': FAILED_AUTHORITY_SHA}
+ assert stage['failed_observer_before'] == stage['failed_observer_after']
+@@ -491,8 +491,8 @@
+ PROFILE_CRATES = {'file': 'heptabao-server', 'default': 'heptabao-server',
+                   'ha-native-v6-peer-ingress': 'heptabao-ha-service'}
+ assert [(g['label'], g['libtest_profile'], len(g['tests'])) for g in groups] == [
+-    ("native-jwt-pki-file22", "file", 22), ("native-jwt-pki-default22", "default", 22),
+-    ("legacy-jwt-default67", "default", 67), ("native-auth-identity-default69", "default", 69),
++    ("native-jwt-pki-file17", "file", 17), ("native-jwt-pki-default17", "default", 17),
++    ("legacy-jwt-default63", "default", 63), ("native-auth-identity-default69", "default", 69),
+     ("snapshot-body10", "ha-native-v6-peer-ingress", 10), ("snapshot-peer7", "ha-native-v6-peer-ingress", 7),
+     ("snapshot-actor2", "default", 2), ("snapshot-wire4", "default", 4),
+     ("snapshot-service-audit4", "default", 4), ("ssh25", "default", 25),
+@@ -504,10 +504,10 @@
+            and g['runtime_seconds'] == 600 and g['libtest_profile'] in PROFILE_CRATES
+            and len(g['tests']) == len(set(g['tests'])) for g in groups)
+ assert groups[0]['tests'] == groups[1]['tests']
+-assert sum(len(g['tests']) for g in groups) == 268
+-assert len({(PROFILE_CRATES[g['libtest_profile']], name) for g in groups for name in g['tests']}) == 246
+-assert sum(len(g['tests']) for g in groups[:4]) == 180
+-assert len({n for g in groups[:4] for n in g['tests']}) == 158
++assert sum(len(g['tests']) for g in groups) == 254
++assert len({(PROFILE_CRATES[g['libtest_profile']], name) for g in groups for name in g['tests']}) == 237
++assert sum(len(g['tests']) for g in groups[:4]) == 166
++assert len({n for g in groups[:4] for n in g['tests']}) == 149
+ assert sum(len(g['tests']) for g in groups[4:9]) == 27
+ assert sum(len(g['tests']) for g in groups[9:]) == 61
+ controls_raw, controls_pin = read_bound(CONTROL / 'inert-stage.result.public.json',
+@@ -605,11 +605,10 @@
+                   normal_runner_argv=argv, original_release_build_cap_seconds=1800,
+                   original_libtest_build_cap_seconds=1800 if args.host == 'mac' else 3600,
+                   each_listing_cap_seconds=30, each_runtime_group_cap_seconds=600,
+-                  unique_test_count=246, profile_instance_test_count=268,
++                  unique_test_count=237, profile_instance_test_count=254,
+                   baseline_c_unique=149, baseline_c_profile_instances=166,
+-                  selected_jwt_pki_unique=158, selected_jwt_pki_instances=180,
+                   snapshot_components=23, snapshot_service_regressions=4, normal61_tests=61,
+-                  new_jwt_test_names=20, new_jwt_profile_instances=40, jwt_policy_legacy_additions=4,
++                  new_jwt_test_names=15, new_jwt_profile_instances=30,
+                   new_pki_test_names=2, new_pki_profile_instances=4,
+                   existing_auth_identity_test_names=132, compile_profiles=['file', 'default', 'ha-native-v6-peer-ingress'],
+                   default_features_do_not_qualify_distributed_jwt_ha=True,
+@@ -628,7 +627,7 @@
+                       'error_type': result.get('error_type')}), flush=True)
+     raise SystemExit(1)
+ print(json.dumps({'status': 'preflight-admitted', 'source_commit': args.commit,
+-                  'source_tree': args.tree, 'unique_test_count': 246, 'profile_instance_test_count': 268,
++                  'source_tree': args.tree, 'unique_test_count': 237, 'profile_instance_test_count': 254,
+                   'retained_r8_artifacts_verified': True, 'retained_r9_evidence_verified': True,
+                   'retained_r10_evidence_verified': True,
+                   'retained_failed_observer_verified': True,

@@ -1,0 +1,111 @@
+{
+  "metadata": [
+    {
+      "ordinal": 1,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/qa/mac_current_outer_wal_r1.py",
+      "bytes": 73918,
+      "sha256": "7f3bec1e572b624844fe5ba477dea895a2fcd94d6c9e4a88b5001f4d957a05d0",
+      "version": "16777244:72739433:73918:1793981090642500588:1793981090642506588",
+      "full9": [
+        "16777244",
+        "72739433",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "73918",
+        "1793981090642500588",
+        "1793981090642506588"
+      ],
+      "regularFileTypeSource": "file_info rejects symlinks and non-regular targets; mode is permission bits"
+    },
+    {
+      "ordinal": 2,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/candidate-current-manager-wal-r1.public.json",
+      "bytes": 7499,
+      "sha256": "2ca16e7421d9cfba8802029e6125a2efbdae39ac0a6a52ef1962fca864871d81",
+      "version": "16777244:72739447:7499:1793981090651310355:1793981090651318729",
+      "full9": [
+        "16777244",
+        "72739447",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "7499",
+        "1793981090651310355",
+        "1793981090651318729"
+      ],
+      "regularFileTypeSource": "file_info rejects symlinks and non-regular targets; mode is permission bits"
+    },
+    {
+      "ordinal": 3,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/inert-registry-wal-4e808-result.public.json",
+      "bytes": 15237,
+      "sha256": "d64535852bd697b0fd8f1cf314621d50236c0f398c068f8f4e276d480a1eedd3",
+      "version": "16777244:72739455:15237:1793981090656143173:1793981090656148839",
+      "full9": [
+        "16777244",
+        "72739455",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "15237",
+        "1793981090656143173",
+        "1793981090656148839"
+      ],
+      "regularFileTypeSource": "file_info rejects symlinks and non-regular targets; mode is permission bits"
+    }
+  ],
+  "requests": [
+    {
+      "ordinal": 1,
+      "targetOrdinal": 1,
+      "target": "outer",
+      "requestRaw": "{\n  \"idempotency_key\": \"heptabao-mac-home-r3-readback-0180bc98-body-01\",\n  \"operation\": {\n    \"tool\": \"binary_read\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"path\": \"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/qa/mac_current_outer_wal_r1.py\",\n      \"offset\": 0,\n      \"limit\": 65536,\n      \"expected_version\": \"16777244:72739433:73918:1793981090642500588:1793981090642506588\"\n    }\n  }\n}\n",
+      "requestPin": {
+        "blob": "c2d8a9b1af161a4d30a47401dd63bd591a3821a2",
+        "bytes": 433,
+        "sha256": "84d6353d34ea882aec34f574d873a8f4f97c5c23e05e1e8a07c68be7369bb309"
+      }
+    },
+    {
+      "ordinal": 2,
+      "targetOrdinal": 1,
+      "target": "outer",
+      "requestRaw": "{\n  \"idempotency_key\": \"heptabao-mac-home-r3-readback-0180bc98-body-02\",\n  \"operation\": {\n    \"tool\": \"binary_read\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"path\": \"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/qa/mac_current_outer_wal_r1.py\",\n      \"offset\": 65536,\n      \"limit\": 8382,\n      \"expected_version\": \"16777244:72739433:73918:1793981090642500588:1793981090642506588\"\n    }\n  }\n}\n",
+      "requestPin": {
+        "blob": "92d1ad9cf3ebd92b65feea56aed3447ca769c4c5",
+        "bytes": 436,
+        "sha256": "4199bad6ddf6ab432d49a0f58939c9dd5b70de195fffb0ff2b5eb5c3f0509fcf"
+      }
+    },
+    {
+      "ordinal": 3,
+      "targetOrdinal": 2,
+      "target": "candidate",
+      "requestRaw": "{\n  \"idempotency_key\": \"heptabao-mac-home-r3-readback-0180bc98-body-03\",\n  \"operation\": {\n    \"tool\": \"binary_read\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"path\": \"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/candidate-current-manager-wal-r1.public.json\",\n      \"offset\": 0,\n      \"limit\": 7499,\n      \"expected_version\": \"16777244:72739447:7499:1793981090651310355:1793981090651318729\"\n    }\n  }\n}\n",
+      "requestPin": {
+        "blob": "1743c5fc315b7cf283c97c07c5a8c613531227ff",
+        "bytes": 445,
+        "sha256": "aa871446c37f713e8c9fbd9e866cef0f0b0b68c06d39730e11d5bf0965d6a67e"
+      }
+    },
+    {
+      "ordinal": 4,
+      "targetOrdinal": 3,
+      "target": "receipt",
+      "requestRaw": "{\n  \"idempotency_key\": \"heptabao-mac-home-r3-readback-0180bc98-body-04\",\n  \"operation\": {\n    \"tool\": \"binary_read\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"path\": \"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/inert-registry-wal-4e808-result.public.json\",\n      \"offset\": 0,\n      \"limit\": 15237,\n      \"expected_version\": \"16777244:72739455:15237:1793981090656143173:1793981090656148839\"\n    }\n  }\n}\n",
+      "requestPin": {
+        "blob": "6443a13784ce88fcf64a5fdc2f35829f82b6b475",
+        "bytes": 446,
+        "sha256": "12359dc8b6871eb9daeab41dca3e8e8f47819b70288a259a29af7f9756c289d2"
+      }
+    }
+  ],
+  "totalBytes": 96654,
+  "bodyRequestVersionsComeFromActualInfos": true,
+  "NativeCalls": 0,
+  "runtimeGO": false
+}

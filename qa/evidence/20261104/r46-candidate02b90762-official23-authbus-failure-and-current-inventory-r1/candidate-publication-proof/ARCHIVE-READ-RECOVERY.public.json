@@ -1,0 +1,46 @@
+{
+  "originalPartial": {
+    "expectedTree": "f4d6feb635f4fd6b001915e0695a9fa8963ef0e9",
+    "verified": [
+      {
+        "path": "BRANCH-INTENT.public.json",
+        "blob": "f58b1fd0303852391ddf3af2329f3f34e166b079",
+        "bytes": 596,
+        "sha256": "53cfd983fd47336936e84bf4f527cb4ba9d7f8501c8723756744e0beb42c6701",
+        "whole": true
+      },
+      {
+        "path": "COMMIT-CREATE.original-SDK.json",
+        "blob": "2c8d3dcf26acebab199db6ca5c32c0be5e866ae1",
+        "bytes": 195,
+        "sha256": "3e79500d4e37485a2cb7ad1ffeb470f1bac1bda0183ca249ed0b1ba8b6c2f454",
+        "whole": true
+      },
+      {
+        "path": "COMMIT-READBACK.original-SDK.json",
+        "blob": "6005adaa69cd474cfae7b6e39ce17fcf993c8dd2",
+        "bytes": 5091,
+        "sha256": "6c77e2403a4af764091b01ee718c991ad4b0d13c2ffdda9b30f41a70c31adff3",
+        "whole": true
+      }
+    ],
+    "remaining": [
+      {
+        "path": "typed-stdin-binding.js",
+        "blob": "82e81aef13d858c865ea05dd762056553a3d1cc6",
+        "bytes": 659,
+        "sha256": "e98c61fceb6eecdd55e6244ad43939320114809163afee67a6b8657235dae042"
+      }
+    ],
+    "mutationMustNotRepeat": true
+  },
+  "completed": [
+    "BRANCH-INTENT.public.json",
+    "COMMIT-CREATE.original-SDK.json",
+    "COMMIT-READBACK.original-SDK.json",
+    "typed-stdin-binding.js"
+  ],
+  "failures": [],
+  "originalCreateTreeUnreplayed": true,
+  "branchMutationNotDispatched": true
+}

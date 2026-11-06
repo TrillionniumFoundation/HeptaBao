@@ -1,0 +1,318 @@
+{
+  "schema": "heptabao.official271.r2.ten-range-body-source-checks.r1",
+  "pass": true,
+  "check_count": 75,
+  "checks": [
+    {
+      "name": "strict forward source diff",
+      "passed": true
+    },
+    {
+      "name": "strict reverse source diff",
+      "passed": true
+    },
+    {
+      "name": "actual prior INFO closed and preserved",
+      "passed": true
+    },
+    {
+      "name": "actual independent INFO input pin",
+      "passed": true
+    },
+    {
+      "name": "actual version path size SHA",
+      "passed": true
+    },
+    {
+      "name": "actual full9 exact terminal",
+      "passed": true
+    },
+    {
+      "name": "exact ten new requests",
+      "passed": true
+    },
+    {
+      "name": "range 0 exact request pin",
+      "passed": true
+    },
+    {
+      "name": "range 0 contiguous bounded actual version",
+      "passed": true
+    },
+    {
+      "name": "range 0 fixed fresh key",
+      "passed": true
+    },
+    {
+      "name": "range 1 exact request pin",
+      "passed": true
+    },
+    {
+      "name": "range 1 contiguous bounded actual version",
+      "passed": true
+    },
+    {
+      "name": "range 1 fixed fresh key",
+      "passed": true
+    },
+    {
+      "name": "range 2 exact request pin",
+      "passed": true
+    },
+    {
+      "name": "range 2 contiguous bounded actual version",
+      "passed": true
+    },
+    {
+      "name": "range 2 fixed fresh key",
+      "passed": true
+    },
+    {
+      "name": "range 3 exact request pin",
+      "passed": true
+    },
+    {
+      "name": "range 3 contiguous bounded actual version",
+      "passed": true
+    },
+    {
+      "name": "range 3 fixed fresh key",
+      "passed": true
+    },
+    {
+      "name": "range 4 exact request pin",
+      "passed": true
+    },
+    {
+      "name": "range 4 contiguous bounded actual version",
+      "passed": true
+    },
+    {
+      "name": "range 4 fixed fresh key",
+      "passed": true
+    },
+    {
+      "name": "range 5 exact request pin",
+      "passed": true
+    },
+    {
+      "name": "range 5 contiguous bounded actual version",
+      "passed": true
+    },
+    {
+      "name": "range 5 fixed fresh key",
+      "passed": true
+    },
+    {
+      "name": "range 6 exact request pin",
+      "passed": true
+    },
+    {
+      "name": "range 6 contiguous bounded actual version",
+      "passed": true
+    },
+    {
+      "name": "range 6 fixed fresh key",
+      "passed": true
+    },
+    {
+      "name": "range 7 exact request pin",
+      "passed": true
+    },
+    {
+      "name": "range 7 contiguous bounded actual version",
+      "passed": true
+    },
+    {
+      "name": "range 7 fixed fresh key",
+      "passed": true
+    },
+    {
+      "name": "range 8 exact request pin",
+      "passed": true
+    },
+    {
+      "name": "range 8 contiguous bounded actual version",
+      "passed": true
+    },
+    {
+      "name": "range 8 fixed fresh key",
+      "passed": true
+    },
+    {
+      "name": "range 9 exact request pin",
+      "passed": true
+    },
+    {
+      "name": "range 9 contiguous bounded actual version",
+      "passed": true
+    },
+    {
+      "name": "range 9 fixed fresh key",
+      "passed": true
+    },
+    {
+      "name": "whole geometry 9x65536 plus61979",
+      "passed": true
+    },
+    {
+      "name": "one added body authorization only",
+      "passed": true
+    },
+    {
+      "name": "unchanged function gfNeed",
+      "passed": true
+    },
+    {
+      "name": "unchanged function gfMetaEquals",
+      "passed": true
+    },
+    {
+      "name": "unchanged function gfState",
+      "passed": true
+    },
+    {
+      "name": "unchanged function gfSave",
+      "passed": true
+    },
+    {
+      "name": "unchanged function gfIntegerText",
+      "passed": true
+    },
+    {
+      "name": "unchanged function gfInitializeOnlyAfterRootGO",
+      "passed": true
+    },
+    {
+      "name": "unchanged function gfAuthorizeOracleReportInfo",
+      "passed": true
+    },
+    {
+      "name": "unchanged function gfReconcileSameGitArchiveReadOnly",
+      "passed": true
+    },
+    {
+      "name": "whole existing SDK-before-parse dispatch mechanism retained",
+      "passed": true
+    },
+    {
+      "name": "prepare changes only new GO scope selection",
+      "passed": true
+    },
+    {
+      "name": "accept changes only new binary immutable page cap",
+      "passed": true
+    },
+    {
+      "name": "existing CLI13 exact range/whole hash/UTF8 close algorithm",
+      "passed": true
+    },
+    {
+      "name": "authorization preserves all original calls/observers",
+      "passed": true
+    },
+    {
+      "name": "authorization only new body state",
+      "passed": true
+    },
+    {
+      "name": "repeat body authorization refused",
+      "passed": true
+    },
+    {
+      "name": "process admission refused",
+      "passed": true
+    },
+    {
+      "name": "new INFO admission refused",
+      "passed": true
+    },
+    {
+      "name": "out-of-order range refused",
+      "passed": true
+    },
+    {
+      "name": "wrong version refused",
+      "passed": true
+    },
+    {
+      "name": "exact next range 0 admitted by pure guard",
+      "passed": true
+    },
+    {
+      "name": "exact next range 1 admitted by pure guard",
+      "passed": true
+    },
+    {
+      "name": "exact next range 2 admitted by pure guard",
+      "passed": true
+    },
+    {
+      "name": "exact next range 3 admitted by pure guard",
+      "passed": true
+    },
+    {
+      "name": "exact next range 4 admitted by pure guard",
+      "passed": true
+    },
+    {
+      "name": "exact next range 5 admitted by pure guard",
+      "passed": true
+    },
+    {
+      "name": "exact next range 6 admitted by pure guard",
+      "passed": true
+    },
+    {
+      "name": "exact next range 7 admitted by pure guard",
+      "passed": true
+    },
+    {
+      "name": "exact next range 8 admitted by pure guard",
+      "passed": true
+    },
+    {
+      "name": "exact next range 9 admitted by pure guard",
+      "passed": true
+    },
+    {
+      "name": "actual prepare admission arm uses BODY GO",
+      "passed": true
+    },
+    {
+      "name": "actual prepare preserves old INFO calls",
+      "passed": true
+    },
+    {
+      "name": "actual operation_status arm uses BODY GO",
+      "passed": true
+    },
+    {
+      "name": "actual operation_result arm uses BODY GO",
+      "passed": true
+    },
+    {
+      "name": "ninth status refused",
+      "passed": true
+    },
+    {
+      "name": "129th immutable page refused",
+      "passed": true
+    },
+    {
+      "name": "eleventh binary admission refused",
+      "passed": true
+    }
+  ],
+  "ranges": 10,
+  "wholeBytes": 651803,
+  "binaryChunkCap": 65536,
+  "newImmutablePageCap": 16384,
+  "statusPerID": 8,
+  "pagesPerID": 128,
+  "payloadCap": 1048576,
+  "NativeCalls": 0,
+  "PythonRuns": 0,
+  "bodyActualRead": false,
+  "sourceOnlyFakeArchives": true
+}

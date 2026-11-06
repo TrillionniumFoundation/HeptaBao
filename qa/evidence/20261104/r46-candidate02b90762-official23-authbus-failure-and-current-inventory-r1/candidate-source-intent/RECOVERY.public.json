@@ -1,0 +1,14 @@
+{
+  "observed_UTC": "2026-11-06 18:12:54 UTC",
+  "allRootV8KeysMissing": true,
+  "NativeInFlight": 0,
+  "NativeFutures": 0,
+  "candidateTreeMutationStarted": false,
+  "candidateCommitMutationStarted": false,
+  "candidateBranchMutationStarted": false,
+  "lastFailure": "ReferenceError: gitBlobMeta is not defined during helper initialization before any Git call",
+  "knownExpectedCandidateTree": "9781e9615ac5fb068d217241c74bb54bf87942cf",
+  "knownExpectedLeaves": 3932,
+  "knownExpectedBytes": 62537554,
+  "originalProofsRemainGit": true
+}

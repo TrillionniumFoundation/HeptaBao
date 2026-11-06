@@ -1,0 +1,8 @@
+{
+  "kind": "pure_v8_source_checker",
+  "error": "function cardinality policies=2",
+  "cause": "auth.rs contains both the global policy parser and another policies method; name-only lookup was ambiguous",
+  "candidateBytesChanged": false,
+  "nativeCalls": 0,
+  "resolution": "compare every occurrence in source order; select the global parser by its exact signature only where ordering is needed"
+}

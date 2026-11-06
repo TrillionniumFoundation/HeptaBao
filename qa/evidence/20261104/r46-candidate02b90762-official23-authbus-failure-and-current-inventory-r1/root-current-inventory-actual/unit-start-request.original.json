@@ -1,0 +1,16 @@
+{
+  "host": "x230",
+  "root": "/etc/systemd/system",
+  "kind": "files",
+  "query": "(^|/)[^/]*(heptabao|openbao|vault|bao)[^/]*[.](service|timer|socket)$",
+  "query_mode": "regex",
+  "ignore_case": true,
+  "include_hidden": false,
+  "early_termination": false,
+  "context_lines": 0,
+  "file_pattern": "*.service|*.timer|*.socket",
+  "max_entries": 4096,
+  "max_results": 128,
+  "max_bytes": 1048576,
+  "timeout_seconds": 15
+}

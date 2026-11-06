@@ -1,0 +1,122 @@
+{
+  "schema": "heptabao.fixed-PID-source-checks.r1",
+  "passed": true,
+  "count": 28,
+  "checks": [
+    {
+      "name": "known original PID and UID",
+      "passed": true
+    },
+    {
+      "name": "known original exact start identity",
+      "passed": true
+    },
+    {
+      "name": "historical launcher uses exact X230 Python path",
+      "passed": true
+    },
+    {
+      "name": "exact source embedded without wrappers",
+      "passed": true
+    },
+    {
+      "name": "fixed request host and cwd",
+      "passed": true
+    },
+    {
+      "name": "finite outer30 and no environment/stdin/shell additions",
+      "passed": true
+    },
+    {
+      "name": "key derived only from exact source pin",
+      "passed": true
+    },
+    {
+      "name": "fixed constants match actual row",
+      "passed": true
+    },
+    {
+      "name": "only fixed absolute proc paths",
+      "passed": true
+    },
+    {
+      "name": "read-only nofollow close-on-exec flags",
+      "passed": true
+    },
+    {
+      "name": "only allowed os syscall names",
+      "passed": true
+    },
+    {
+      "name": "no command execution or privilege change imports",
+      "passed": true
+    },
+    {
+      "name": "no builtin exec eval dynamic import or shell calls",
+      "passed": true
+    },
+    {
+      "name": "no discovery/retry while loop",
+      "passed": true
+    },
+    {
+      "name": "fixed leaf whitelist",
+      "passed": true
+    },
+    {
+      "name": "one bounded read and one EOF read per fixed file",
+      "passed": true
+    },
+    {
+      "name": "stat field22 uses rest19 after closing comm",
+      "passed": true
+    },
+    {
+      "name": "both real/effective uid and complete before-after arrays",
+      "passed": true
+    },
+    {
+      "name": "two independent identity reads around projections",
+      "passed": true
+    },
+    {
+      "name": "single readlink call site",
+      "passed": true
+    },
+    {
+      "name": "cgroup finite line/path caps",
+      "passed": true
+    },
+    {
+      "name": "exe finite public string cap",
+      "passed": true
+    },
+    {
+      "name": "projection released only after identity closure and close-error veto",
+      "passed": true
+    },
+    {
+      "name": "partial observation cannot set overall success",
+      "passed": true
+    },
+    {
+      "name": "finally closes held descriptor before JSON export",
+      "passed": true
+    },
+    {
+      "name": "shared soft5 output16KiB",
+      "passed": true
+    },
+    {
+      "name": "OSError exports errno but not arbitrary exception string",
+      "passed": true
+    },
+    {
+      "name": "no qualification from name/version or previous unknown",
+      "passed": true
+    }
+  ],
+  "python_compiled": false,
+  "python_executed": false,
+  "native_calls": 0
+}

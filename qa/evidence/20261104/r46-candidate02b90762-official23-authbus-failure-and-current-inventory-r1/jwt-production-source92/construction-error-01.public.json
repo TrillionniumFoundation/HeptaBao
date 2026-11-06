@@ -1,0 +1,6 @@
+{
+  "kind": "pure_v8_source_transform",
+  "error": "claim anchor",
+  "cause": "whole-file replacement was not unique; no candidate bytes or Native actions were changed",
+  "resolved_by": "scope replacement to named historical schema68 test"
+}

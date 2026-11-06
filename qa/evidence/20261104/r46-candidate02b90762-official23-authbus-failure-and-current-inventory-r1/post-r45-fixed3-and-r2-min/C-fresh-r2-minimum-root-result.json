@@ -1,0 +1,63 @@
+{
+  "schema": "heptabao.root-official271-fresh-r2-outer-minimum.r1",
+  "passed": true,
+  "checks": 11,
+  "rows": [
+    {
+      "name": "whole_minimum7",
+      "passed": true
+    },
+    {
+      "name": "exact_new_GO_and_original_job",
+      "passed": true
+    },
+    {
+      "name": "original_succeeded_zero",
+      "passed": true
+    },
+    {
+      "name": "whole_durable_terminal_output",
+      "passed": true
+    },
+    {
+      "name": "exact_original_stdout",
+      "passed": true
+    },
+    {
+      "name": "authority-status.sdk.original.json_completed_inactive",
+      "passed": true
+    },
+    {
+      "name": "streams-status.sdk.original.json_completed_inactive",
+      "passed": true
+    },
+    {
+      "name": "capture_and_entry12_closed",
+      "passed": true
+    },
+    {
+      "name": "exact_announced_public_report",
+      "passed": true
+    },
+    {
+      "name": "all_original_outer_calls_closed",
+      "passed": true
+    },
+    {
+      "name": "lane_release_not_product_pass",
+      "passed": true
+    }
+  ],
+  "packet": "ce3c48a294ff22474bac26d940b1ac8d468f2d78",
+  "originalJob": "1a1b1b4fbfa-fc05-7a60",
+  "exitCode": 0,
+  "currentCalls": 0,
+  "currentFutures": 0,
+  "reportBytes": 651803,
+  "actualACLCases": null,
+  "ownerReceiptQualified": false,
+  "fullOuterChainQualificationPending": true,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

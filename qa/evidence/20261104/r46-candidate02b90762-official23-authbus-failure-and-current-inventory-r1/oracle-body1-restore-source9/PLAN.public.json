@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.official271.r2.page0.same-arm-restore-proposal.r1",
+  "status": "SOURCE_ONLY_REQUIRES_NEW_EXACT_ROOT_GO",
+  "source": {
+    "blob": "7e0d9e66249dc8cfa19c9957a66288f43312014e",
+    "bytes": 2805,
+    "sha256": "079d6ca900bbf2f718639c66f44d43e13a34cfa6d2d4c0d1f3121470124b36c3"
+  },
+  "before": {
+    "blob": "551c671b614f169d938ea734a963c0a996258dbf",
+    "bytes": 346725,
+    "sha256": "fc5eddffa1ec12f067afbf5016d66924e23ed188b780618309fc554130e0a9fa"
+  },
+  "expectedAfter": {
+    "blob": "8d2dfab08450b092edf96f83004dcb59a9eb2bba",
+    "bytes": 347811,
+    "sha256": "9d072f1a2b834ef6539ff50af27c5fc5be234b26f0e90eea2c95fa08dc6500dd"
+  },
+  "actualReadOnlyReconciliation": {
+    "blob": "e58b4ef7bed4b32ed196726e19fdcff0801d2e53",
+    "bytes": 1007,
+    "sha256": "46a0ce5d5df69a0ae9d5e0b08607050b0f9f9ae1aeaa68bb87f10d82778a8475"
+  },
+  "originalFailurePacket": "c1d73181fdb8e6118aa12bc02e49c93b2ee36fcb",
+  "requiredGO": {
+    "authorization": "GO",
+    "scope": "official271_r2_body1_page0_git_arm_restore_only",
+    "original_operation": "5433a8b98b3015f338e147954b4d9910b5657f85730a4bc09de3a79129a88155",
+    "pending_call": "official271-x230-acl23-r2-body01-page000000",
+    "expected_tree": "2e7e1a66eec4e42a14ea0c350328f4f263842c20",
+    "original_request": "c466e0e87676208da9a08ad7630283696ec42cc8"
+  },
+  "scope": "Pure exact three-field restoration of a known-created, now whole-verified original arm. It issues neither Git nor Native calls.",
+  "after": "Persist restoration proof and confirm exact before/after; store only returned original slot. Separate model boundary then invoke the existing already armed operation_result once, using unchanged BODY journal/GO. Do not prepare, create, reset cursor, or repeat binary admission."
+}

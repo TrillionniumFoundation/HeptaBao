@@ -1,0 +1,7 @@
+{
+  "schema": "source_introspection_error",
+  "error": "TypeError: main.calls.at is not a function",
+  "cause": "assumed call-map was an array in read-only debug selector",
+  "source_or_state_modified": false,
+  "native_calls": 0
+}

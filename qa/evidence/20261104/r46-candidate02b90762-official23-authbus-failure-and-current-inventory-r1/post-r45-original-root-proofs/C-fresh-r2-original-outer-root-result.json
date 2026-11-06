@@ -1,0 +1,136 @@
+{
+  "schema": "heptabao.root-official271-fresh-r2-original-full.r1",
+  "passed": true,
+  "checks": 29,
+  "rows": [
+    {
+      "name": "whole55",
+      "passed": true
+    },
+    {
+      "name": "author88_exact",
+      "passed": true
+    },
+    {
+      "name": "root11_minimum_exact_stdout",
+      "passed": true
+    },
+    {
+      "name": "exact_original_GO_and_source",
+      "passed": true
+    },
+    {
+      "name": "official271_fresh_r2_original_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "official271_fresh_r2_original_call_official271-x230-acl23-r2-start",
+      "passed": true
+    },
+    {
+      "name": "official271_fresh_r2_original_armed_tree_official271-x230-acl23-r2-start",
+      "passed": true
+    },
+    {
+      "name": "official271_fresh_r2_original_call_official271-x230-acl23-r2-authority0-admit",
+      "passed": true
+    },
+    {
+      "name": "official271_fresh_r2_original_armed_tree_official271-x230-acl23-r2-authority0-admit",
+      "passed": true
+    },
+    {
+      "name": "official271_fresh_r2_original_call_official271-x230-acl23-r2-authority0-status0",
+      "passed": true
+    },
+    {
+      "name": "official271_fresh_r2_original_armed_tree_official271-x230-acl23-r2-authority0-status0",
+      "passed": true
+    },
+    {
+      "name": "official271_fresh_r2_original_call_official271-x230-acl23-r2-authority0-page0",
+      "passed": true
+    },
+    {
+      "name": "official271_fresh_r2_original_armed_tree_official271-x230-acl23-r2-authority0-page0",
+      "passed": true
+    },
+    {
+      "name": "official271_fresh_r2_original_call_official271-x230-acl23-r2-streams0-admit",
+      "passed": true
+    },
+    {
+      "name": "official271_fresh_r2_original_armed_tree_official271-x230-acl23-r2-streams0-admit",
+      "passed": true
+    },
+    {
+      "name": "official271_fresh_r2_original_call_official271-x230-acl23-r2-streams0-status0",
+      "passed": true
+    },
+    {
+      "name": "official271_fresh_r2_original_armed_tree_official271-x230-acl23-r2-streams0-status0",
+      "passed": true
+    },
+    {
+      "name": "official271_fresh_r2_original_call_official271-x230-acl23-r2-streams0-page0",
+      "passed": true
+    },
+    {
+      "name": "official271_fresh_r2_original_armed_tree_official271-x230-acl23-r2-streams0-page0",
+      "passed": true
+    },
+    {
+      "name": "official271_fresh_r2_original_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "official271_fresh_r2_original_observer_95ffff8579001c0641035b4c3cc1f453bf9751d1fa1213be6b6d405fb8ae005a",
+      "passed": true
+    },
+    {
+      "name": "official271_fresh_r2_original_page_95ffff8579001c0641035b4c3cc1f453bf9751d1fa1213be6b6d405fb8ae005a_0",
+      "passed": true
+    },
+    {
+      "name": "official271_fresh_r2_original_payload_95ffff8579001c0641035b4c3cc1f453bf9751d1fa1213be6b6d405fb8ae005a",
+      "passed": true
+    },
+    {
+      "name": "official271_fresh_r2_original_observer_f688543e38352312ee0e8ded4fb44d59cffd1e2e170680232a6c0c5a620a78f0",
+      "passed": true
+    },
+    {
+      "name": "official271_fresh_r2_original_page_f688543e38352312ee0e8ded4fb44d59cffd1e2e170680232a6c0c5a620a78f0_0",
+      "passed": true
+    },
+    {
+      "name": "official271_fresh_r2_original_payload_f688543e38352312ee0e8ded4fb44d59cffd1e2e170680232a6c0c5a620a78f0",
+      "passed": true
+    },
+    {
+      "name": "official271_fresh_r2_original_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "exact_original_START",
+      "passed": true
+    },
+    {
+      "name": "all_closed_and_no_case_inference",
+      "passed": true
+    }
+  ],
+  "packet": "add8a90793a5eceec69e98b389d8ce4dadca00df",
+  "job": "1a1b1b4fbfa-fc05-7a60",
+  "exitCode": 0,
+  "originalCalls": 7,
+  "originalObservers": 2,
+  "originalPages": 2,
+  "currentNativeCalls": 0,
+  "currentOwnedFutures": 0,
+  "actualACLCases": null,
+  "ownerReceiptQualified": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

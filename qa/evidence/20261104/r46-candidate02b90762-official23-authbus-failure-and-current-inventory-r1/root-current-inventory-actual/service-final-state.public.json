@@ -1,0 +1,48 @@
+{
+  "requestRaw": "{\n  \"host\": \"x230\",\n  \"services\": [\n    \"openclaw-authbus-x230-openbao-proxy.service\"\n  ]\n}\n",
+  "intentRaw": "{\n  \"call\": \"unit-status-once\",\n  \"tool\": \"service_status\",\n  \"request\": {\n    \"blob\": \"17b73efdc3c96fb8bf2d68d9d1a67598c6e41469\",\n    \"bytes\": 92,\n    \"sha256\": \"6d3f43b0dab2d6019de387fc7f9937b51ee877a251befe3350a5d2fc6965f547\"\n  },\n  \"go\": {\n    \"blob\": \"9f6feec23fbb0e9ca55eb2101eb61810ce3e3f76\",\n    \"bytes\": 707,\n    \"sha256\": \"80bbb97dad60e8166574d8d0eafe731006bf606a6cb8af24301a0b36e4c82942\"\n  },\n  \"dispatchCount\": 0,\n  \"automaticRetry\": false\n}\n",
+  "arm": "7c518073bca88b3790d99563e234448a6a6eea50",
+  "nativeCallInFlight": false,
+  "dispatchCount": 1,
+  "phase": "closed",
+  "rootLane": 0,
+  "sdk": {
+    "blob": "296b5137cc3f32e106de2f94b5b214df9bab4f07",
+    "bytes": 2259,
+    "sha256": "d3b8b37052765cf05c00be5c0b15c435418a1122a67d555e163ddb22457ee18e"
+  },
+  "sdkArchive": "0e70c38cf5cc6fefffc7c80ab0908de287ec8a18",
+  "native": {
+    "blob": "debd3ddf404e931f37b71c352ec581e4ffa8c1bc",
+    "bytes": 1898,
+    "sha256": "0769d06ccb6089ef92de32e540c01ce8e476555f711b4d9d6013d72985f6620d"
+  },
+  "nativeRaw": "{\n  \"services\": [\n    {\n      \"exit_code\": 0,\n      \"name\": \"openclaw-authbus-x230-openbao-proxy.service\",\n      \"observations\": [\n        {\n          \"exit_code\": 0,\n          \"observation_complete\": true,\n          \"properties\": {\n            \"ActiveState\": \"inactive\",\n            \"Description\": \"OpenClaw AuthBus X230-only OpenBao TCP proxy (Mac localhost)\",\n            \"ExecMainStatus\": \"0\",\n            \"InvocationID\": \"\",\n            \"LoadState\": \"loaded\",\n            \"MainPID\": \"0\",\n            \"Result\": \"success\",\n            \"SubState\": \"dead\",\n            \"UnitFileState\": \"disabled\"\n          },\n          \"properties_truncated\": [],\n          \"scope\": \"system\",\n          \"stderr\": \"\",\n          \"stderr_truncated\": false\n        },\n        {\n          \"exit_code\": 0,\n          \"observation_complete\": true,\n          \"properties\": {\n            \"ActiveState\": \"inactive\",\n            \"Description\": \"openclaw-authbus-x230-openbao-proxy.service\",\n            \"ExecMainStatus\": \"0\",\n            \"InvocationID\": \"\",\n            \"LoadState\": \"not-found\",\n            \"MainPID\": \"0\",\n            \"Result\": \"success\",\n            \"SubState\": \"dead\",\n            \"UnitFileState\": \"\"\n          },\n          \"properties_truncated\": [],\n          \"scope\": \"user\",\n          \"stderr\": \"\",\n          \"stderr_truncated\": false\n        }\n      ],\n      \"properties\": {\n        \"ActiveState\": \"inactive\",\n        \"Description\": \"OpenClaw AuthBus X230-only OpenBao TCP proxy (Mac localhost)\",\n        \"ExecMainStatus\": \"0\",\n        \"InvocationID\": \"\",\n        \"LoadState\": \"loaded\",\n        \"MainPID\": \"0\",\n        \"Result\": \"success\",\n        \"SubState\": \"dead\",\n        \"UnitFileState\": \"disabled\"\n      },\n      \"properties_truncated\": [],\n      \"resolution\": \"unique\",\n      \"resolution_complete\": true,\n      \"scope\": \"system\",\n      \"stderr\": \"\",\n      \"stderr_truncated\": false\n    }\n  ]\n}",
+  "summary": {
+    "system": {
+      "ActiveState": "inactive",
+      "Description": "OpenClaw AuthBus X230-only OpenBao TCP proxy (Mac localhost)",
+      "ExecMainStatus": "0",
+      "InvocationID": "",
+      "LoadState": "loaded",
+      "MainPID": "0",
+      "Result": "success",
+      "SubState": "dead",
+      "UnitFileState": "disabled"
+    },
+    "user": {
+      "ActiveState": "inactive",
+      "Description": "openclaw-authbus-x230-openbao-proxy.service",
+      "ExecMainStatus": "0",
+      "InvocationID": "",
+      "LoadState": "not-found",
+      "MainPID": "0",
+      "Result": "success",
+      "SubState": "dead",
+      "UnitFileState": ""
+    },
+    "nonAtomicScopes": true,
+    "productMutations": false,
+    "doesNotIdentifyLiveContainerBao": true
+  }
+}

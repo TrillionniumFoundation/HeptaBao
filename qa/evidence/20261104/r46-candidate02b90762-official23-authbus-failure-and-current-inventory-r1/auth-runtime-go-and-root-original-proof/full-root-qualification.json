@@ -1,0 +1,639 @@
+{
+  "schema": "heptabao.root.authbus.r3.fixed3.full-original-chain.qualification.r1",
+  "passed": true,
+  "checks": 151,
+  "rows": [
+    {
+      "name": "whole_full216",
+      "passed": true
+    },
+    {
+      "name": "all214_logical_paths_unique",
+      "passed": true
+    },
+    {
+      "name": "author88_exact",
+      "passed": true
+    },
+    {
+      "name": "root25_actual_bodies_and_source",
+      "passed": true
+    },
+    {
+      "name": "same35calls7observers",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-info-01-admission",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-info-01-admission",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-info-01-status-01",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-info-01-status-01",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-info-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-info-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-info-02-admission",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-info-02-admission",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-info-02-status-01",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-info-02-status-01",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-info-02-page-000000",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-info-02-page-000000",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-info-03-admission",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-info-03-admission",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-info-03-status-01",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-info-03-status-01",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-info-03-page-000000",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-info-03-page-000000",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-body-01-admission",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-body-01-admission",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-body-01-status-01",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-body-01-status-01",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-body-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-body-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-body-01-page-008192",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-body-01-page-008192",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-body-01-page-016384",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-body-01-page-016384",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-body-01-page-024576",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-body-01-page-024576",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-body-01-page-032768",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-body-01-page-032768",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-body-01-page-040960",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-body-01-page-040960",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-body-01-page-049152",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-body-01-page-049152",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-body-01-page-057344",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-body-01-page-057344",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-body-01-page-065536",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-body-01-page-065536",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-body-01-page-073728",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-body-01-page-073728",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-body-01-page-081920",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-body-01-page-081920",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-body-02-admission",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-body-02-admission",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-body-02-status-01",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-body-02-status-01",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-body-02-page-000000",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-body-02-page-000000",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-body-02-page-008192",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-body-02-page-008192",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-body-03-admission",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-body-03-admission",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-body-03-status-01",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-body-03-status-01",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-body-03-page-000000",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-body-03-page-000000",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-body-03-page-008192",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-body-03-page-008192",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-body-04-admission",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-body-04-admission",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-body-04-status-01",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-body-04-status-01",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-body-04-page-000000",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-body-04-page-000000",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-body-04-page-008192",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-body-04-page-008192",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_call_home-r3-readback-body-04-page-016384",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_armed_tree_home-r3-readback-body-04-page-016384",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_observer_52647f16a852a82dcacd7db33ff1ff1eeee1ae29a05879ecde848168109ae96e",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_page_52647f16a852a82dcacd7db33ff1ff1eeee1ae29a05879ecde848168109ae96e_0",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_payload_52647f16a852a82dcacd7db33ff1ff1eeee1ae29a05879ecde848168109ae96e",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_observer_f7b25584e6b62811955ea57f203ed84ff2f62d28848359fd65c7b173045cd45d",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_page_f7b25584e6b62811955ea57f203ed84ff2f62d28848359fd65c7b173045cd45d_0",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_payload_f7b25584e6b62811955ea57f203ed84ff2f62d28848359fd65c7b173045cd45d",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_observer_53edefc1e33963a13234ba8d7cee0eb80130d3e57b350be0ba05760417ca966f",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_page_53edefc1e33963a13234ba8d7cee0eb80130d3e57b350be0ba05760417ca966f_0",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_payload_53edefc1e33963a13234ba8d7cee0eb80130d3e57b350be0ba05760417ca966f",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_observer_9d2f53547b83d9e6f2f398f669a0ddb5b8181b4a2255f9b3d175be99af67e57b",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_page_9d2f53547b83d9e6f2f398f669a0ddb5b8181b4a2255f9b3d175be99af67e57b_0",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_page_9d2f53547b83d9e6f2f398f669a0ddb5b8181b4a2255f9b3d175be99af67e57b_8192",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_page_9d2f53547b83d9e6f2f398f669a0ddb5b8181b4a2255f9b3d175be99af67e57b_16384",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_page_9d2f53547b83d9e6f2f398f669a0ddb5b8181b4a2255f9b3d175be99af67e57b_24576",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_page_9d2f53547b83d9e6f2f398f669a0ddb5b8181b4a2255f9b3d175be99af67e57b_32768",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_page_9d2f53547b83d9e6f2f398f669a0ddb5b8181b4a2255f9b3d175be99af67e57b_40960",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_page_9d2f53547b83d9e6f2f398f669a0ddb5b8181b4a2255f9b3d175be99af67e57b_49152",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_page_9d2f53547b83d9e6f2f398f669a0ddb5b8181b4a2255f9b3d175be99af67e57b_57344",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_page_9d2f53547b83d9e6f2f398f669a0ddb5b8181b4a2255f9b3d175be99af67e57b_65536",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_page_9d2f53547b83d9e6f2f398f669a0ddb5b8181b4a2255f9b3d175be99af67e57b_73728",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_page_9d2f53547b83d9e6f2f398f669a0ddb5b8181b4a2255f9b3d175be99af67e57b_81920",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_payload_9d2f53547b83d9e6f2f398f669a0ddb5b8181b4a2255f9b3d175be99af67e57b",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_observer_de1ea267016aa322b31dc1c411f3c312147965604d8fbc134501041bac00fa89",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_page_de1ea267016aa322b31dc1c411f3c312147965604d8fbc134501041bac00fa89_0",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_page_de1ea267016aa322b31dc1c411f3c312147965604d8fbc134501041bac00fa89_8192",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_payload_de1ea267016aa322b31dc1c411f3c312147965604d8fbc134501041bac00fa89",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_observer_a1d6b7924d9c0139968ef4c59622589a31699e79801c5b3499e5ec9c147aa7f4",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_page_a1d6b7924d9c0139968ef4c59622589a31699e79801c5b3499e5ec9c147aa7f4_0",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_page_a1d6b7924d9c0139968ef4c59622589a31699e79801c5b3499e5ec9c147aa7f4_8192",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_payload_a1d6b7924d9c0139968ef4c59622589a31699e79801c5b3499e5ec9c147aa7f4",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_observer_a27e373a8d55dd0581873ece0cee465e6ca5bf790458a5e54d283e75535c26de",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_page_a27e373a8d55dd0581873ece0cee465e6ca5bf790458a5e54d283e75535c26de_0",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_page_a27e373a8d55dd0581873ece0cee465e6ca5bf790458a5e54d283e75535c26de_8192",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_page_a27e373a8d55dd0581873ece0cee465e6ca5bf790458a5e54d283e75535c26de_16384",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_payload_a27e373a8d55dd0581873ece0cee465e6ca5bf790458a5e54d283e75535c26de",
+      "passed": true
+    },
+    {
+      "name": "auth_r3_fixed3_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_1",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_2",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_3",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_4",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_5",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_6",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_7",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_8",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_9",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_10",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_11",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_12",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_13",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_14",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_15",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_16",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_17",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_18",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_19",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_20",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_21",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_22",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_23",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_24",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_25",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_26",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_27",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_28",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_29",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_30",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_31",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_32",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_33",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_34",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_35",
+      "passed": true
+    },
+    {
+      "name": "original_inert_closed_state_unchanged",
+      "passed": true
+    },
+    {
+      "name": "GO_original_identical",
+      "passed": true
+    },
+    {
+      "name": "zero_current_calls_futures",
+      "passed": true
+    }
+  ],
+  "packet": {
+    "tree": "a3d8d11df9a065faf7c555d14e45d1fdf5d82303",
+    "files": 216,
+    "bytes": 2300958,
+    "merkle": {
+      "root_sha": "a3d8d11df9a065faf7c555d14e45d1fdf5d82303",
+      "trees_verified": 3,
+      "leaf_count": 216
+    },
+    "whole": true
+  },
+  "sourceAndBodies": {
+    "blob": "4f5630b03dcf7cf78f1b2410e1a6478280fdefae",
+    "bytes": 3935,
+    "sha256": "49e422476cd37f7a0904d7e34ea7e2f66c1cce99188a22ae4c8129b03dd97524"
+  },
+  "authorCheckCount": 88,
+  "originalCalls": 35,
+  "originalOperations": 7,
+  "immutablePages": 21,
+  "decodedBodyBytes": 96654,
+  "allOriginalObserversClosed": true,
+  "NativeCallsInVerifier": 0,
+  "runtimeSubmitted": false,
+  "actualBusinessTests": 0,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

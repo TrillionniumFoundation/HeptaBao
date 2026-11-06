@@ -1,0 +1,17 @@
+{
+  "id": "8943429b0d90b7f7aad5e1effde5297864ea32ade9aa33d9f67411b2a01579cc",
+  "tool": "binary_read",
+  "payload": {
+    "blob": "2db0b2a55b404064efda08ce7dd0eda110e63960",
+    "bytes": 87807,
+    "sha256": "1c175202f25371f5a11befd37c4b5a22572d6d28afeba544ca1c91295b1941dd"
+  },
+  "payloadTree": "30b6f93241a2d5c8453ef4f65e8374c83c9fbd63",
+  "nativeText": {
+    "blob": "c5dec82c97ffbcade7bd98d3a4da8a6cd83e4333",
+    "bytes": 87704,
+    "sha256": "a9b8b98bdd71278a1bbd08542cfbf5e17698d2c83e52ed5eb1715451dc8b3d56"
+  },
+  "pages": 6,
+  "completedInactive": true
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "heptabao.root-current-inventory-source-qualification.r1",
+  "passed": true,
+  "checks": 8,
+  "rows": [
+    {
+      "name": "whole_SOURCE12",
+      "passed": true
+    },
+    {
+      "name": "pure_builder_exact_original_proposal",
+      "passed": true
+    },
+    {
+      "name": "four_exact_request_parameters",
+      "passed": true
+    },
+    {
+      "name": "current_tool_contracts_byte_equal",
+      "passed": true
+    },
+    {
+      "name": "no_dispatch_code",
+      "passed": true
+    },
+    {
+      "name": "bounded_filename_only_exact_root",
+      "passed": true
+    },
+    {
+      "name": "Pocket4_no_guessed_native_requests",
+      "passed": true
+    },
+    {
+      "name": "no_inventory_completion_or_credential_claim",
+      "passed": true
+    }
+  ],
+  "packet": "d3d0138061dfd710ade1e48bda7a556997d9839c",
+  "NativeCalls": 0,
+  "discoveryOnly": true,
+  "completeInventory": false,
+  "fullReplacement": false
+}

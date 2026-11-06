@@ -1,0 +1,164 @@
+{
+  "schema": "heptabao.x230.fixed-bao-process-identity-source.r1",
+  "status": "SOURCE_ONLY_UNCOMPILED_UNEXECUTED",
+  "source": {
+    "blob": "43a2c36f7d870a47ddbf0f8e182095763a60ed55",
+    "bytes": 9160,
+    "sha256": "0ffbc4ba49b5576f279436afc0b7d820e855305b8ee5e0cbbc12d99bc0d8dc80"
+  },
+  "exact_process_start_request": {
+    "blob": "14a30253613e70cd6a524bb6525b19ad5a293ad0",
+    "bytes": 9947,
+    "sha256": "e8dc466cbec31cb6fe105b7daccd4b6098c7bd6e687b999b8842aae7a4c92045"
+  },
+  "purpose": "Observe only the already returned PID start identity, executable symlink value and bounded cgroup public fields. No service, unit, container or executable version is inferred from a name.",
+  "fixed_identity": {
+    "host": "x230",
+    "pid": 2031533,
+    "boot_id": "b19bd1b9-4dbe-4335-96cf-ed98d393efea",
+    "start_ticks": 35455670,
+    "uid": 100
+  },
+  "identity_evidence": {
+    "original_native": {
+      "blob": "8ae0b817a361d7eee2aeb86f3759a2fc0a9ac1f8",
+      "bytes": 18474,
+      "sha256": "dc5a0bb4102e191c9858678bbf3208eff1613f6559e0b2323f1d63785496c600"
+    },
+    "original_sdk": {
+      "blob": "f8c58602de72e7924da9e2dd9ef8adeb1bdbf582",
+      "bytes": 20810,
+      "sha256": "f125363f698cda9f5270cc29ec4cc3516e1de1f591f3e7fb146938eb6e31ee4a"
+    },
+    "pointer": "/processes/107",
+    "exact_row": {
+      "identity": "linux:b19bd1b9-4dbe-4335-96cf-ed98d393efea:35455670",
+      "name": "bao",
+      "pid": 2031533,
+      "uid": 100
+    },
+    "root_qualification": {
+      "blob": "4dfc716a9f2faacf3b54dfd7dc61b1d8f6ecfe13",
+      "bytes": 7385,
+      "sha256": "69134ba95267fc99c9eb37cfed7d62590b72750366d8012b939fb4f86477dc75"
+    },
+    "original_full_packet": "0cfad195ee96a891dfe60d5fdb0f042fd4efd425"
+  },
+  "requested_identity_reads": [
+    {
+      "path": "/proc/sys/kernel/random/boot_id",
+      "times_at_most": 2,
+      "cap": 64,
+      "projection": "validated UUID"
+    },
+    {
+      "path": "/proc/2031533/stat",
+      "times_at_most": 2,
+      "cap": 4096,
+      "projection": "PID and start_ticks only; command-name bytes not exported"
+    },
+    {
+      "path": "/proc/2031533/status",
+      "times_at_most": 2,
+      "cap": 8192,
+      "projection": "four Uid integers only; other status content not exported"
+    },
+    {
+      "path": "/proc/2031533/cgroup",
+      "times_at_most": 1,
+      "cap": 4096,
+      "projection": "at most16 hierarchy/controllers/path records, path<=2048 bytes"
+    },
+    {
+      "path": "/proc/2031533/exe",
+      "readlink_at_most": 1,
+      "projection": "absolute symlink target text <=4096 UTF8 bytes; target file not opened or hashed"
+    }
+  ],
+  "fixed_order": [
+    "held proc directory open",
+    "independent before boot/stat/Uid and directory identity",
+    "one bounded cgroup read",
+    "one exe readlink only if preceding projection succeeded",
+    "independent after boot/stat/Uid and directory identity",
+    "once-close held descriptor",
+    "bounded public JSON stdout"
+  ],
+  "refusal_behavior": {
+    "before_identity_mismatch": "Stop before any exe/cgroup projection.",
+    "projection_errno_or_shape_failure": "Record original static stage/error code/errno; stop all remaining projection reads. No retry, sudo, alternative path or other PID.",
+    "after_on_projection_failure": "The planned independent after-identity read still runs if the soft deadline permits. It closes the same fixed observation; it is not an alternate projection or privilege fallback.",
+    "partial_result": "A successfully read cgroup may be released if later exe readlink is denied, but only after matching independent before/after identity and no explicit close error. Overall ok remains false and all_requested_public_fields_observed remains false.",
+    "identity_drift_or_after_failure": "Discard the entire public projection; preserve before/after identity facts, static error and explicit close-error facts.",
+    "output_cap": "Replace oversize public JSON with a small static failure; no truncated success output.",
+    "unknown": "Missing ACK or transport UNKNOWN stops new admissions. This SOURCE authorizes no automatic process_start retry, cancellation or replay."
+  },
+  "resource_bounds": {
+    "shared_soft_deadline_seconds": 5,
+    "proposed_native_outer_timeout_seconds": 30,
+    "max_regular_file_opens": 7,
+    "max_proc_directory_opens": 3,
+    "max_total_open_attempts": 10,
+    "max_regular_read_syscalls": 14,
+    "max_requested_regular_read_bytes_including_overflow_and_EOF_probes": 28814,
+    "max_readlink_syscalls": 1,
+    "max_exe_result_utf8_bytes": 4096,
+    "max_public_stdout_bytes": 16384,
+    "program_children": 0,
+    "target_signals": 0,
+    "target_writes": 0,
+    "scheduling_caveat": "The soft clock is checked around each fixed syscall; it cannot interrupt a blocked syscall. Native timeout/terminal/stream closure must be observed independently after any future approved execution."
+  },
+  "close_scope": "Each acquired local descriptor has a finally once-close path. Explicit close failures veto release; no broad resource-closure claim is inferred merely from an empty error list. A future run still needs the authoritative original job terminal and full streams.",
+  "atomicity": "Before/after equality is two sampled observations of one fixed PID/start tuple. It is not an atomic process snapshot, a guarantee against every transient credential change, or proof of binary content/version.",
+  "interpreter": {
+    "path": "/usr/bin/python3",
+    "historical_exact_request": {
+      "blob": "3839158cca7a7d543d8b277fc4df9f271d45ab83",
+      "bytes": 355,
+      "sha256": "235880f1326aa4d1848b2a9867c5915719c787bb9b58e90140b95838a7c49b69"
+    },
+    "historical_full34_qualification": {
+      "blob": "9fd3ec40974a0d7fc2eed14983fd8b621b6bc214",
+      "bytes": 4870,
+      "sha256": "76f7eef134bbb32d862417fd4e0834d67cb4eb5015c72bcd287b20565134c486"
+    },
+    "fresh_independent_full9": false,
+    "missing_or_refused": "Stop; no alternative interpreter or bootstrap."
+  },
+  "observation_proposal_only": {
+    "protocol": "Existing Git-first discipline: exact request+once intent whole before an independent call boundary, entire original SDK external whole before parsing; original job only.",
+    "authority_status_calls_at_most": 8,
+    "process_read_per_stream_limit": 16384,
+    "process_read_calls_at_most": 4,
+    "no_file_info_or_file_body_observers": true,
+    "new_observation_go_required": true
+  },
+  "excluded": [
+    "CRIU/checkpoint",
+    "argv/cmdline",
+    "environment",
+    "/proc target fd listing or bodies",
+    "configuration/private plan/capsule/token contents",
+    "exe binary body/hash/version execution",
+    "sudo or privilege fallback",
+    "directory/PID scanning",
+    "service status queries inferred from text",
+    "signals/cancellation/cleanup",
+    "product/fixture/consumer migration actions"
+  ],
+  "other_followup": {
+    "source9_tree": "0944e743781641109b178d824b2c8c26a239ba0e",
+    "network_request": {
+      "blob": "238fd0aa94cd040ee7ba5572a0794dd84f0ee4dd",
+      "bytes": 24,
+      "sha256": "2d2f4b9e3224c89b54307d102899b9efbf7ba7531cab1433e0583a12d62e8e0d"
+    },
+    "pocket4_physical_mapping_qualified": false
+  },
+  "native_submitted": false,
+  "new_context_initialized": false,
+  "go": null,
+  "production_or_migration_qualification": false,
+  "prior_unknowns_changed": false
+}

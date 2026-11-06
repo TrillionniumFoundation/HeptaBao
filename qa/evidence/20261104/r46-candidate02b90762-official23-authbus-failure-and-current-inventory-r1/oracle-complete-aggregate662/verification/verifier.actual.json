@@ -1,0 +1,3955 @@
+{
+  "schema": "heptabao.official271.ACL23.r2.offline-final-verification.r1",
+  "pass": true,
+  "check_count": 976,
+  "checks": [
+    {
+      "label": "whole exact original report before interpretation",
+      "pass": true
+    },
+    {
+      "label": "no remaining call or active future",
+      "pass": true
+    },
+    {
+      "label": "84 retained original main calls",
+      "pass": true
+    },
+    {
+      "label": "13 original observers known closed",
+      "pass": true
+    },
+    {
+      "label": "exact ten original body admissions and ranges",
+      "pass": true
+    },
+    {
+      "label": "84 main plus seven independent recovery calls",
+      "pass": true
+    },
+    {
+      "label": "original status delivery failure retained",
+      "pass": true
+    },
+    {
+      "label": "recovery status charged to original eight limit",
+      "pass": true
+    },
+    {
+      "label": "handback preserves all original 28 call records",
+      "pass": true
+    },
+    {
+      "label": "eight original calls for range 0",
+      "pass": true
+    },
+    {
+      "label": "closed original range observer 0",
+      "pass": true
+    },
+    {
+      "label": "range appended without rewriting 0",
+      "pass": true
+    },
+    {
+      "label": "original call record 0/0",
+      "pass": true
+    },
+    {
+      "label": "exact original request 0/0",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 0/0",
+      "pass": true
+    },
+    {
+      "label": "original arm 0/0",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 0/0",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 0/0",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 0/0",
+      "pass": true
+    },
+    {
+      "label": "one exact original binary admission 0",
+      "pass": true
+    },
+    {
+      "label": "original call record 0/1",
+      "pass": true
+    },
+    {
+      "label": "exact original request 0/1",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 0/1",
+      "pass": true
+    },
+    {
+      "label": "original arm 0/1",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 0/1",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 0/1",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 0/1",
+      "pass": true
+    },
+    {
+      "label": "original completed status 0",
+      "pass": true
+    },
+    {
+      "label": "original call record 0/2",
+      "pass": true
+    },
+    {
+      "label": "exact original request 0/2",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 0/2",
+      "pass": true
+    },
+    {
+      "label": "original arm 0/2",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 0/2",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 0/2",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 0/2",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 0/2",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 0/2",
+      "pass": true
+    },
+    {
+      "label": "original call record 0/3",
+      "pass": true
+    },
+    {
+      "label": "exact original request 0/3",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 0/3",
+      "pass": true
+    },
+    {
+      "label": "original arm 0/3",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 0/3",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 0/3",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 0/3",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 0/3",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 0/3",
+      "pass": true
+    },
+    {
+      "label": "original call record 0/4",
+      "pass": true
+    },
+    {
+      "label": "exact original request 0/4",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 0/4",
+      "pass": true
+    },
+    {
+      "label": "original arm 0/4",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 0/4",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 0/4",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 0/4",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 0/4",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 0/4",
+      "pass": true
+    },
+    {
+      "label": "original call record 0/5",
+      "pass": true
+    },
+    {
+      "label": "exact original request 0/5",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 0/5",
+      "pass": true
+    },
+    {
+      "label": "original arm 0/5",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 0/5",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 0/5",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 0/5",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 0/5",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 0/5",
+      "pass": true
+    },
+    {
+      "label": "original call record 0/6",
+      "pass": true
+    },
+    {
+      "label": "exact original request 0/6",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 0/6",
+      "pass": true
+    },
+    {
+      "label": "original arm 0/6",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 0/6",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 0/6",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 0/6",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 0/6",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 0/6",
+      "pass": true
+    },
+    {
+      "label": "original call record 0/7",
+      "pass": true
+    },
+    {
+      "label": "exact original request 0/7",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 0/7",
+      "pass": true
+    },
+    {
+      "label": "original arm 0/7",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 0/7",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 0/7",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 0/7",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 0/7",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 0/7",
+      "pass": true
+    },
+    {
+      "label": "full original immutable payload 0",
+      "pass": true
+    },
+    {
+      "label": "whole payload Merkle 0",
+      "pass": true
+    },
+    {
+      "label": "original binary native envelope 0",
+      "pass": true
+    },
+    {
+      "label": "range version and data binding 0",
+      "pass": true
+    },
+    {
+      "label": "eight original calls for range 1",
+      "pass": true
+    },
+    {
+      "label": "closed original range observer 1",
+      "pass": true
+    },
+    {
+      "label": "range appended without rewriting 1",
+      "pass": true
+    },
+    {
+      "label": "original call record 1/0",
+      "pass": true
+    },
+    {
+      "label": "exact original request 1/0",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 1/0",
+      "pass": true
+    },
+    {
+      "label": "original arm 1/0",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 1/0",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 1/0",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 1/0",
+      "pass": true
+    },
+    {
+      "label": "one exact original binary admission 1",
+      "pass": true
+    },
+    {
+      "label": "original call record 1/1",
+      "pass": true
+    },
+    {
+      "label": "exact original request 1/1",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 1/1",
+      "pass": true
+    },
+    {
+      "label": "original arm 1/1",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 1/1",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 1/1",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 1/1",
+      "pass": true
+    },
+    {
+      "label": "original completed status 1",
+      "pass": true
+    },
+    {
+      "label": "original call record 1/2",
+      "pass": true
+    },
+    {
+      "label": "exact original request 1/2",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 1/2",
+      "pass": true
+    },
+    {
+      "label": "original arm 1/2",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 1/2",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 1/2",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 1/2",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 1/2",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 1/2",
+      "pass": true
+    },
+    {
+      "label": "original call record 1/3",
+      "pass": true
+    },
+    {
+      "label": "exact original request 1/3",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 1/3",
+      "pass": true
+    },
+    {
+      "label": "original arm 1/3",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 1/3",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 1/3",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 1/3",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 1/3",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 1/3",
+      "pass": true
+    },
+    {
+      "label": "original call record 1/4",
+      "pass": true
+    },
+    {
+      "label": "exact original request 1/4",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 1/4",
+      "pass": true
+    },
+    {
+      "label": "original arm 1/4",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 1/4",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 1/4",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 1/4",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 1/4",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 1/4",
+      "pass": true
+    },
+    {
+      "label": "original call record 1/5",
+      "pass": true
+    },
+    {
+      "label": "exact original request 1/5",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 1/5",
+      "pass": true
+    },
+    {
+      "label": "original arm 1/5",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 1/5",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 1/5",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 1/5",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 1/5",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 1/5",
+      "pass": true
+    },
+    {
+      "label": "original call record 1/6",
+      "pass": true
+    },
+    {
+      "label": "exact original request 1/6",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 1/6",
+      "pass": true
+    },
+    {
+      "label": "original arm 1/6",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 1/6",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 1/6",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 1/6",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 1/6",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 1/6",
+      "pass": true
+    },
+    {
+      "label": "original call record 1/7",
+      "pass": true
+    },
+    {
+      "label": "exact original request 1/7",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 1/7",
+      "pass": true
+    },
+    {
+      "label": "original arm 1/7",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 1/7",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 1/7",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 1/7",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 1/7",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 1/7",
+      "pass": true
+    },
+    {
+      "label": "full original immutable payload 1",
+      "pass": true
+    },
+    {
+      "label": "whole payload Merkle 1",
+      "pass": true
+    },
+    {
+      "label": "original binary native envelope 1",
+      "pass": true
+    },
+    {
+      "label": "range version and data binding 1",
+      "pass": true
+    },
+    {
+      "label": "eight original calls for range 3",
+      "pass": true
+    },
+    {
+      "label": "closed original range observer 3",
+      "pass": true
+    },
+    {
+      "label": "range appended without rewriting 3",
+      "pass": true
+    },
+    {
+      "label": "original call record 3/0",
+      "pass": true
+    },
+    {
+      "label": "exact original request 3/0",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 3/0",
+      "pass": true
+    },
+    {
+      "label": "original arm 3/0",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 3/0",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 3/0",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 3/0",
+      "pass": true
+    },
+    {
+      "label": "one exact original binary admission 3",
+      "pass": true
+    },
+    {
+      "label": "original call record 3/1",
+      "pass": true
+    },
+    {
+      "label": "exact original request 3/1",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 3/1",
+      "pass": true
+    },
+    {
+      "label": "original arm 3/1",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 3/1",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 3/1",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 3/1",
+      "pass": true
+    },
+    {
+      "label": "original completed status 3",
+      "pass": true
+    },
+    {
+      "label": "original call record 3/2",
+      "pass": true
+    },
+    {
+      "label": "exact original request 3/2",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 3/2",
+      "pass": true
+    },
+    {
+      "label": "original arm 3/2",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 3/2",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 3/2",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 3/2",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 3/2",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 3/2",
+      "pass": true
+    },
+    {
+      "label": "original call record 3/3",
+      "pass": true
+    },
+    {
+      "label": "exact original request 3/3",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 3/3",
+      "pass": true
+    },
+    {
+      "label": "original arm 3/3",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 3/3",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 3/3",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 3/3",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 3/3",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 3/3",
+      "pass": true
+    },
+    {
+      "label": "original call record 3/4",
+      "pass": true
+    },
+    {
+      "label": "exact original request 3/4",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 3/4",
+      "pass": true
+    },
+    {
+      "label": "original arm 3/4",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 3/4",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 3/4",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 3/4",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 3/4",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 3/4",
+      "pass": true
+    },
+    {
+      "label": "original call record 3/5",
+      "pass": true
+    },
+    {
+      "label": "exact original request 3/5",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 3/5",
+      "pass": true
+    },
+    {
+      "label": "original arm 3/5",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 3/5",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 3/5",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 3/5",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 3/5",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 3/5",
+      "pass": true
+    },
+    {
+      "label": "original call record 3/6",
+      "pass": true
+    },
+    {
+      "label": "exact original request 3/6",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 3/6",
+      "pass": true
+    },
+    {
+      "label": "original arm 3/6",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 3/6",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 3/6",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 3/6",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 3/6",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 3/6",
+      "pass": true
+    },
+    {
+      "label": "original call record 3/7",
+      "pass": true
+    },
+    {
+      "label": "exact original request 3/7",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 3/7",
+      "pass": true
+    },
+    {
+      "label": "original arm 3/7",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 3/7",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 3/7",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 3/7",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 3/7",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 3/7",
+      "pass": true
+    },
+    {
+      "label": "full original immutable payload 3",
+      "pass": true
+    },
+    {
+      "label": "whole payload Merkle 3",
+      "pass": true
+    },
+    {
+      "label": "original binary native envelope 3",
+      "pass": true
+    },
+    {
+      "label": "range version and data binding 3",
+      "pass": true
+    },
+    {
+      "label": "eight original calls for range 4",
+      "pass": true
+    },
+    {
+      "label": "closed original range observer 4",
+      "pass": true
+    },
+    {
+      "label": "range appended without rewriting 4",
+      "pass": true
+    },
+    {
+      "label": "original call record 4/0",
+      "pass": true
+    },
+    {
+      "label": "exact original request 4/0",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 4/0",
+      "pass": true
+    },
+    {
+      "label": "original arm 4/0",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 4/0",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 4/0",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 4/0",
+      "pass": true
+    },
+    {
+      "label": "one exact original binary admission 4",
+      "pass": true
+    },
+    {
+      "label": "original call record 4/1",
+      "pass": true
+    },
+    {
+      "label": "exact original request 4/1",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 4/1",
+      "pass": true
+    },
+    {
+      "label": "original arm 4/1",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 4/1",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 4/1",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 4/1",
+      "pass": true
+    },
+    {
+      "label": "original completed status 4",
+      "pass": true
+    },
+    {
+      "label": "original call record 4/2",
+      "pass": true
+    },
+    {
+      "label": "exact original request 4/2",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 4/2",
+      "pass": true
+    },
+    {
+      "label": "original arm 4/2",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 4/2",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 4/2",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 4/2",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 4/2",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 4/2",
+      "pass": true
+    },
+    {
+      "label": "original call record 4/3",
+      "pass": true
+    },
+    {
+      "label": "exact original request 4/3",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 4/3",
+      "pass": true
+    },
+    {
+      "label": "original arm 4/3",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 4/3",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 4/3",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 4/3",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 4/3",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 4/3",
+      "pass": true
+    },
+    {
+      "label": "original call record 4/4",
+      "pass": true
+    },
+    {
+      "label": "exact original request 4/4",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 4/4",
+      "pass": true
+    },
+    {
+      "label": "original arm 4/4",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 4/4",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 4/4",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 4/4",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 4/4",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 4/4",
+      "pass": true
+    },
+    {
+      "label": "original call record 4/5",
+      "pass": true
+    },
+    {
+      "label": "exact original request 4/5",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 4/5",
+      "pass": true
+    },
+    {
+      "label": "original arm 4/5",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 4/5",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 4/5",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 4/5",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 4/5",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 4/5",
+      "pass": true
+    },
+    {
+      "label": "original call record 4/6",
+      "pass": true
+    },
+    {
+      "label": "exact original request 4/6",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 4/6",
+      "pass": true
+    },
+    {
+      "label": "original arm 4/6",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 4/6",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 4/6",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 4/6",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 4/6",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 4/6",
+      "pass": true
+    },
+    {
+      "label": "original call record 4/7",
+      "pass": true
+    },
+    {
+      "label": "exact original request 4/7",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 4/7",
+      "pass": true
+    },
+    {
+      "label": "original arm 4/7",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 4/7",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 4/7",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 4/7",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 4/7",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 4/7",
+      "pass": true
+    },
+    {
+      "label": "full original immutable payload 4",
+      "pass": true
+    },
+    {
+      "label": "whole payload Merkle 4",
+      "pass": true
+    },
+    {
+      "label": "original binary native envelope 4",
+      "pass": true
+    },
+    {
+      "label": "range version and data binding 4",
+      "pass": true
+    },
+    {
+      "label": "eight original calls for range 5",
+      "pass": true
+    },
+    {
+      "label": "closed original range observer 5",
+      "pass": true
+    },
+    {
+      "label": "range appended without rewriting 5",
+      "pass": true
+    },
+    {
+      "label": "original call record 5/0",
+      "pass": true
+    },
+    {
+      "label": "exact original request 5/0",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 5/0",
+      "pass": true
+    },
+    {
+      "label": "original arm 5/0",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 5/0",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 5/0",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 5/0",
+      "pass": true
+    },
+    {
+      "label": "one exact original binary admission 5",
+      "pass": true
+    },
+    {
+      "label": "original call record 5/1",
+      "pass": true
+    },
+    {
+      "label": "exact original request 5/1",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 5/1",
+      "pass": true
+    },
+    {
+      "label": "original arm 5/1",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 5/1",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 5/1",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 5/1",
+      "pass": true
+    },
+    {
+      "label": "original completed status 5",
+      "pass": true
+    },
+    {
+      "label": "original call record 5/2",
+      "pass": true
+    },
+    {
+      "label": "exact original request 5/2",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 5/2",
+      "pass": true
+    },
+    {
+      "label": "original arm 5/2",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 5/2",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 5/2",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 5/2",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 5/2",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 5/2",
+      "pass": true
+    },
+    {
+      "label": "original call record 5/3",
+      "pass": true
+    },
+    {
+      "label": "exact original request 5/3",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 5/3",
+      "pass": true
+    },
+    {
+      "label": "original arm 5/3",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 5/3",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 5/3",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 5/3",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 5/3",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 5/3",
+      "pass": true
+    },
+    {
+      "label": "original call record 5/4",
+      "pass": true
+    },
+    {
+      "label": "exact original request 5/4",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 5/4",
+      "pass": true
+    },
+    {
+      "label": "original arm 5/4",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 5/4",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 5/4",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 5/4",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 5/4",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 5/4",
+      "pass": true
+    },
+    {
+      "label": "original call record 5/5",
+      "pass": true
+    },
+    {
+      "label": "exact original request 5/5",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 5/5",
+      "pass": true
+    },
+    {
+      "label": "original arm 5/5",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 5/5",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 5/5",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 5/5",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 5/5",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 5/5",
+      "pass": true
+    },
+    {
+      "label": "original call record 5/6",
+      "pass": true
+    },
+    {
+      "label": "exact original request 5/6",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 5/6",
+      "pass": true
+    },
+    {
+      "label": "original arm 5/6",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 5/6",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 5/6",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 5/6",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 5/6",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 5/6",
+      "pass": true
+    },
+    {
+      "label": "original call record 5/7",
+      "pass": true
+    },
+    {
+      "label": "exact original request 5/7",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 5/7",
+      "pass": true
+    },
+    {
+      "label": "original arm 5/7",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 5/7",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 5/7",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 5/7",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 5/7",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 5/7",
+      "pass": true
+    },
+    {
+      "label": "full original immutable payload 5",
+      "pass": true
+    },
+    {
+      "label": "whole payload Merkle 5",
+      "pass": true
+    },
+    {
+      "label": "original binary native envelope 5",
+      "pass": true
+    },
+    {
+      "label": "range version and data binding 5",
+      "pass": true
+    },
+    {
+      "label": "eight original calls for range 6",
+      "pass": true
+    },
+    {
+      "label": "closed original range observer 6",
+      "pass": true
+    },
+    {
+      "label": "range appended without rewriting 6",
+      "pass": true
+    },
+    {
+      "label": "original call record 6/0",
+      "pass": true
+    },
+    {
+      "label": "exact original request 6/0",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 6/0",
+      "pass": true
+    },
+    {
+      "label": "original arm 6/0",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 6/0",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 6/0",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 6/0",
+      "pass": true
+    },
+    {
+      "label": "one exact original binary admission 6",
+      "pass": true
+    },
+    {
+      "label": "original call record 6/1",
+      "pass": true
+    },
+    {
+      "label": "exact original request 6/1",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 6/1",
+      "pass": true
+    },
+    {
+      "label": "original arm 6/1",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 6/1",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 6/1",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 6/1",
+      "pass": true
+    },
+    {
+      "label": "original completed status 6",
+      "pass": true
+    },
+    {
+      "label": "original call record 6/2",
+      "pass": true
+    },
+    {
+      "label": "exact original request 6/2",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 6/2",
+      "pass": true
+    },
+    {
+      "label": "original arm 6/2",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 6/2",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 6/2",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 6/2",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 6/2",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 6/2",
+      "pass": true
+    },
+    {
+      "label": "original call record 6/3",
+      "pass": true
+    },
+    {
+      "label": "exact original request 6/3",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 6/3",
+      "pass": true
+    },
+    {
+      "label": "original arm 6/3",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 6/3",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 6/3",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 6/3",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 6/3",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 6/3",
+      "pass": true
+    },
+    {
+      "label": "original call record 6/4",
+      "pass": true
+    },
+    {
+      "label": "exact original request 6/4",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 6/4",
+      "pass": true
+    },
+    {
+      "label": "original arm 6/4",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 6/4",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 6/4",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 6/4",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 6/4",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 6/4",
+      "pass": true
+    },
+    {
+      "label": "original call record 6/5",
+      "pass": true
+    },
+    {
+      "label": "exact original request 6/5",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 6/5",
+      "pass": true
+    },
+    {
+      "label": "original arm 6/5",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 6/5",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 6/5",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 6/5",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 6/5",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 6/5",
+      "pass": true
+    },
+    {
+      "label": "original call record 6/6",
+      "pass": true
+    },
+    {
+      "label": "exact original request 6/6",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 6/6",
+      "pass": true
+    },
+    {
+      "label": "original arm 6/6",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 6/6",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 6/6",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 6/6",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 6/6",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 6/6",
+      "pass": true
+    },
+    {
+      "label": "original call record 6/7",
+      "pass": true
+    },
+    {
+      "label": "exact original request 6/7",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 6/7",
+      "pass": true
+    },
+    {
+      "label": "original arm 6/7",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 6/7",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 6/7",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 6/7",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 6/7",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 6/7",
+      "pass": true
+    },
+    {
+      "label": "full original immutable payload 6",
+      "pass": true
+    },
+    {
+      "label": "whole payload Merkle 6",
+      "pass": true
+    },
+    {
+      "label": "original binary native envelope 6",
+      "pass": true
+    },
+    {
+      "label": "range version and data binding 6",
+      "pass": true
+    },
+    {
+      "label": "eight original calls for range 7",
+      "pass": true
+    },
+    {
+      "label": "closed original range observer 7",
+      "pass": true
+    },
+    {
+      "label": "range appended without rewriting 7",
+      "pass": true
+    },
+    {
+      "label": "original call record 7/0",
+      "pass": true
+    },
+    {
+      "label": "exact original request 7/0",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 7/0",
+      "pass": true
+    },
+    {
+      "label": "original arm 7/0",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 7/0",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 7/0",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 7/0",
+      "pass": true
+    },
+    {
+      "label": "one exact original binary admission 7",
+      "pass": true
+    },
+    {
+      "label": "original call record 7/1",
+      "pass": true
+    },
+    {
+      "label": "exact original request 7/1",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 7/1",
+      "pass": true
+    },
+    {
+      "label": "original arm 7/1",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 7/1",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 7/1",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 7/1",
+      "pass": true
+    },
+    {
+      "label": "original completed status 7",
+      "pass": true
+    },
+    {
+      "label": "original call record 7/2",
+      "pass": true
+    },
+    {
+      "label": "exact original request 7/2",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 7/2",
+      "pass": true
+    },
+    {
+      "label": "original arm 7/2",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 7/2",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 7/2",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 7/2",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 7/2",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 7/2",
+      "pass": true
+    },
+    {
+      "label": "original call record 7/3",
+      "pass": true
+    },
+    {
+      "label": "exact original request 7/3",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 7/3",
+      "pass": true
+    },
+    {
+      "label": "original arm 7/3",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 7/3",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 7/3",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 7/3",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 7/3",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 7/3",
+      "pass": true
+    },
+    {
+      "label": "original call record 7/4",
+      "pass": true
+    },
+    {
+      "label": "exact original request 7/4",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 7/4",
+      "pass": true
+    },
+    {
+      "label": "original arm 7/4",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 7/4",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 7/4",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 7/4",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 7/4",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 7/4",
+      "pass": true
+    },
+    {
+      "label": "original call record 7/5",
+      "pass": true
+    },
+    {
+      "label": "exact original request 7/5",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 7/5",
+      "pass": true
+    },
+    {
+      "label": "original arm 7/5",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 7/5",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 7/5",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 7/5",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 7/5",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 7/5",
+      "pass": true
+    },
+    {
+      "label": "original call record 7/6",
+      "pass": true
+    },
+    {
+      "label": "exact original request 7/6",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 7/6",
+      "pass": true
+    },
+    {
+      "label": "original arm 7/6",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 7/6",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 7/6",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 7/6",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 7/6",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 7/6",
+      "pass": true
+    },
+    {
+      "label": "original call record 7/7",
+      "pass": true
+    },
+    {
+      "label": "exact original request 7/7",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 7/7",
+      "pass": true
+    },
+    {
+      "label": "original arm 7/7",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 7/7",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 7/7",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 7/7",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 7/7",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 7/7",
+      "pass": true
+    },
+    {
+      "label": "full original immutable payload 7",
+      "pass": true
+    },
+    {
+      "label": "whole payload Merkle 7",
+      "pass": true
+    },
+    {
+      "label": "original binary native envelope 7",
+      "pass": true
+    },
+    {
+      "label": "range version and data binding 7",
+      "pass": true
+    },
+    {
+      "label": "eight original calls for range 8",
+      "pass": true
+    },
+    {
+      "label": "closed original range observer 8",
+      "pass": true
+    },
+    {
+      "label": "range appended without rewriting 8",
+      "pass": true
+    },
+    {
+      "label": "original call record 8/0",
+      "pass": true
+    },
+    {
+      "label": "exact original request 8/0",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 8/0",
+      "pass": true
+    },
+    {
+      "label": "original arm 8/0",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 8/0",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 8/0",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 8/0",
+      "pass": true
+    },
+    {
+      "label": "one exact original binary admission 8",
+      "pass": true
+    },
+    {
+      "label": "original call record 8/1",
+      "pass": true
+    },
+    {
+      "label": "exact original request 8/1",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 8/1",
+      "pass": true
+    },
+    {
+      "label": "original arm 8/1",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 8/1",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 8/1",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 8/1",
+      "pass": true
+    },
+    {
+      "label": "original completed status 8",
+      "pass": true
+    },
+    {
+      "label": "original call record 8/2",
+      "pass": true
+    },
+    {
+      "label": "exact original request 8/2",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 8/2",
+      "pass": true
+    },
+    {
+      "label": "original arm 8/2",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 8/2",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 8/2",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 8/2",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 8/2",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 8/2",
+      "pass": true
+    },
+    {
+      "label": "original call record 8/3",
+      "pass": true
+    },
+    {
+      "label": "exact original request 8/3",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 8/3",
+      "pass": true
+    },
+    {
+      "label": "original arm 8/3",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 8/3",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 8/3",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 8/3",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 8/3",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 8/3",
+      "pass": true
+    },
+    {
+      "label": "original call record 8/4",
+      "pass": true
+    },
+    {
+      "label": "exact original request 8/4",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 8/4",
+      "pass": true
+    },
+    {
+      "label": "original arm 8/4",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 8/4",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 8/4",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 8/4",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 8/4",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 8/4",
+      "pass": true
+    },
+    {
+      "label": "original call record 8/5",
+      "pass": true
+    },
+    {
+      "label": "exact original request 8/5",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 8/5",
+      "pass": true
+    },
+    {
+      "label": "original arm 8/5",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 8/5",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 8/5",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 8/5",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 8/5",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 8/5",
+      "pass": true
+    },
+    {
+      "label": "original call record 8/6",
+      "pass": true
+    },
+    {
+      "label": "exact original request 8/6",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 8/6",
+      "pass": true
+    },
+    {
+      "label": "original arm 8/6",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 8/6",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 8/6",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 8/6",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 8/6",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 8/6",
+      "pass": true
+    },
+    {
+      "label": "original call record 8/7",
+      "pass": true
+    },
+    {
+      "label": "exact original request 8/7",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 8/7",
+      "pass": true
+    },
+    {
+      "label": "original arm 8/7",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 8/7",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 8/7",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 8/7",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 8/7",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 8/7",
+      "pass": true
+    },
+    {
+      "label": "full original immutable payload 8",
+      "pass": true
+    },
+    {
+      "label": "whole payload Merkle 8",
+      "pass": true
+    },
+    {
+      "label": "original binary native envelope 8",
+      "pass": true
+    },
+    {
+      "label": "range version and data binding 8",
+      "pass": true
+    },
+    {
+      "label": "eight original calls for range 9",
+      "pass": true
+    },
+    {
+      "label": "closed original range observer 9",
+      "pass": true
+    },
+    {
+      "label": "range appended without rewriting 9",
+      "pass": true
+    },
+    {
+      "label": "original call record 9/0",
+      "pass": true
+    },
+    {
+      "label": "exact original request 9/0",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 9/0",
+      "pass": true
+    },
+    {
+      "label": "original arm 9/0",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 9/0",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 9/0",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 9/0",
+      "pass": true
+    },
+    {
+      "label": "one exact original binary admission 9",
+      "pass": true
+    },
+    {
+      "label": "original call record 9/1",
+      "pass": true
+    },
+    {
+      "label": "exact original request 9/1",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 9/1",
+      "pass": true
+    },
+    {
+      "label": "original arm 9/1",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 9/1",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 9/1",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 9/1",
+      "pass": true
+    },
+    {
+      "label": "original completed status 9",
+      "pass": true
+    },
+    {
+      "label": "original call record 9/2",
+      "pass": true
+    },
+    {
+      "label": "exact original request 9/2",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 9/2",
+      "pass": true
+    },
+    {
+      "label": "original arm 9/2",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 9/2",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 9/2",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 9/2",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 9/2",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 9/2",
+      "pass": true
+    },
+    {
+      "label": "original call record 9/3",
+      "pass": true
+    },
+    {
+      "label": "exact original request 9/3",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 9/3",
+      "pass": true
+    },
+    {
+      "label": "original arm 9/3",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 9/3",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 9/3",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 9/3",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 9/3",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 9/3",
+      "pass": true
+    },
+    {
+      "label": "original call record 9/4",
+      "pass": true
+    },
+    {
+      "label": "exact original request 9/4",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 9/4",
+      "pass": true
+    },
+    {
+      "label": "original arm 9/4",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 9/4",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 9/4",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 9/4",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 9/4",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 9/4",
+      "pass": true
+    },
+    {
+      "label": "original call record 9/5",
+      "pass": true
+    },
+    {
+      "label": "exact original request 9/5",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 9/5",
+      "pass": true
+    },
+    {
+      "label": "original arm 9/5",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 9/5",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 9/5",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 9/5",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 9/5",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 9/5",
+      "pass": true
+    },
+    {
+      "label": "original call record 9/6",
+      "pass": true
+    },
+    {
+      "label": "exact original request 9/6",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 9/6",
+      "pass": true
+    },
+    {
+      "label": "original arm 9/6",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 9/6",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 9/6",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 9/6",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 9/6",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 9/6",
+      "pass": true
+    },
+    {
+      "label": "original call record 9/7",
+      "pass": true
+    },
+    {
+      "label": "exact original request 9/7",
+      "pass": true
+    },
+    {
+      "label": "root GO and intent 9/7",
+      "pass": true
+    },
+    {
+      "label": "original arm 9/7",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 9/7",
+      "pass": true
+    },
+    {
+      "label": "whole SDK native exact 9/7",
+      "pass": true
+    },
+    {
+      "label": "SDK Merkle 9/7",
+      "pass": true
+    },
+    {
+      "label": "original immutable next page 9/7",
+      "pass": true
+    },
+    {
+      "label": "page bounds hash EOF 9/7",
+      "pass": true
+    },
+    {
+      "label": "full original immutable payload 9",
+      "pass": true
+    },
+    {
+      "label": "whole payload Merkle 9",
+      "pass": true
+    },
+    {
+      "label": "original binary native envelope 9",
+      "pass": true
+    },
+    {
+      "label": "range version and data binding 9",
+      "pass": true
+    },
+    {
+      "label": "nine normal observer original counts",
+      "pass": true
+    },
+    {
+      "label": "separately qualified recovered third range carried",
+      "pass": true
+    },
+    {
+      "label": "exact contiguous actual chunk 0",
+      "pass": true
+    },
+    {
+      "label": "exact contiguous actual chunk 1",
+      "pass": true
+    },
+    {
+      "label": "exact contiguous actual chunk 2",
+      "pass": true
+    },
+    {
+      "label": "exact contiguous actual chunk 3",
+      "pass": true
+    },
+    {
+      "label": "exact contiguous actual chunk 4",
+      "pass": true
+    },
+    {
+      "label": "exact contiguous actual chunk 5",
+      "pass": true
+    },
+    {
+      "label": "exact contiguous actual chunk 6",
+      "pass": true
+    },
+    {
+      "label": "exact contiguous actual chunk 7",
+      "pass": true
+    },
+    {
+      "label": "exact contiguous actual chunk 8",
+      "pass": true
+    },
+    {
+      "label": "exact contiguous actual chunk 9",
+      "pass": true
+    },
+    {
+      "label": "all ten source chunks reproduce exact whole report",
+      "pass": true
+    },
+    {
+      "label": "fixed 23 denominator and records",
+      "pass": true
+    },
+    {
+      "label": "original capture completed",
+      "pass": true
+    },
+    {
+      "label": "official side only, no normalization or parity promotion",
+      "pass": true
+    },
+    {
+      "label": "fresh original official identity",
+      "pass": true
+    },
+    {
+      "label": "fixed official artifact identity",
+      "pass": true
+    },
+    {
+      "label": "two actual artifact metadata snapshots stable",
+      "pass": true
+    },
+    {
+      "label": "artifact snapshot hash flag preserved",
+      "pass": true
+    },
+    {
+      "label": "eleven exact input files",
+      "pass": true
+    },
+    {
+      "label": "exact source pin source/qa/openbao-acceptance/owned_process.py",
+      "pass": true
+    },
+    {
+      "label": "input FD exactly closed source/qa/openbao-acceptance/owned_process.py",
+      "pass": true
+    },
+    {
+      "label": "exact source pin source/qa/openbao-acceptance/official_openbao_launcher.py",
+      "pass": true
+    },
+    {
+      "label": "input FD exactly closed source/qa/openbao-acceptance/official_openbao_launcher.py",
+      "pass": true
+    },
+    {
+      "label": "exact source pin source/qa/openbao-acceptance/bao_http.py",
+      "pass": true
+    },
+    {
+      "label": "input FD exactly closed source/qa/openbao-acceptance/bao_http.py",
+      "pass": true
+    },
+    {
+      "label": "exact source pin source/qa/openbao-acceptance/raw_status_observer.py",
+      "pass": true
+    },
+    {
+      "label": "input FD exactly closed source/qa/openbao-acceptance/raw_status_observer.py",
+      "pass": true
+    },
+    {
+      "label": "exact source pin source/qa/openbao-acceptance/acl23_executor.py",
+      "pass": true
+    },
+    {
+      "label": "input FD exactly closed source/qa/openbao-acceptance/acl23_executor.py",
+      "pass": true
+    },
+    {
+      "label": "exact source pin source/qa/openbao-acceptance/current_record_component.py",
+      "pass": true
+    },
+    {
+      "label": "input FD exactly closed source/qa/openbao-acceptance/current_record_component.py",
+      "pass": true
+    },
+    {
+      "label": "exact source pin source/clients/python/heptabao/__init__.py",
+      "pass": true
+    },
+    {
+      "label": "input FD exactly closed source/clients/python/heptabao/__init__.py",
+      "pass": true
+    },
+    {
+      "label": "exact source pin source/clients/python/heptabao/transport.py",
+      "pass": true
+    },
+    {
+      "label": "input FD exactly closed source/clients/python/heptabao/transport.py",
+      "pass": true
+    },
+    {
+      "label": "exact source pin source/clients/python/heptabao/consistency.py",
+      "pass": true
+    },
+    {
+      "label": "input FD exactly closed source/clients/python/heptabao/consistency.py",
+      "pass": true
+    },
+    {
+      "label": "exact source pin MATRIX23.original.public.json",
+      "pass": true
+    },
+    {
+      "label": "input FD exactly closed MATRIX23.original.public.json",
+      "pass": true
+    },
+    {
+      "label": "exact source pin PUBLIC-KEY.pem",
+      "pass": true
+    },
+    {
+      "label": "input FD exactly closed PUBLIC-KEY.pem",
+      "pass": true
+    },
+    {
+      "label": "post-publication all twelve entry FDs closed",
+      "pass": true
+    },
+    {
+      "label": "terminal report identity equals independent metadata",
+      "pass": true
+    },
+    {
+      "label": "strict actual 450-byte public PEM projection from 451-byte source",
+      "pass": true
+    },
+    {
+      "label": "actual HTTP request accounting",
+      "pass": true
+    },
+    {
+      "label": "frozen matrix identity 0",
+      "pass": true
+    },
+    {
+      "label": "actual raw HTTP status and complete one request 0",
+      "pass": true
+    },
+    {
+      "label": "real case actor proof 0",
+      "pass": true
+    },
+    {
+      "label": "complete twelve-role snapshot 0",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 0",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 0",
+      "pass": true
+    },
+    {
+      "label": "role operation retains configuration 0",
+      "pass": true
+    },
+    {
+      "label": "read or rejected operation unchanged 0",
+      "pass": true
+    },
+    {
+      "label": "original transition check recorded 0",
+      "pass": true
+    },
+    {
+      "label": "frozen matrix identity 1",
+      "pass": true
+    },
+    {
+      "label": "actual raw HTTP status and complete one request 1",
+      "pass": true
+    },
+    {
+      "label": "real case actor proof 1",
+      "pass": true
+    },
+    {
+      "label": "complete twelve-role snapshot 1",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 1",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 1",
+      "pass": true
+    },
+    {
+      "label": "role operation retains configuration 1",
+      "pass": true
+    },
+    {
+      "label": "read or rejected operation unchanged 1",
+      "pass": true
+    },
+    {
+      "label": "original transition check recorded 1",
+      "pass": true
+    },
+    {
+      "label": "frozen matrix identity 2",
+      "pass": true
+    },
+    {
+      "label": "actual raw HTTP status and complete one request 2",
+      "pass": true
+    },
+    {
+      "label": "real case actor proof 2",
+      "pass": true
+    },
+    {
+      "label": "complete twelve-role snapshot 2",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 2",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 2",
+      "pass": true
+    },
+    {
+      "label": "role operation retains configuration 2",
+      "pass": true
+    },
+    {
+      "label": "read or rejected operation unchanged 2",
+      "pass": true
+    },
+    {
+      "label": "original transition check recorded 2",
+      "pass": true
+    },
+    {
+      "label": "frozen matrix identity 3",
+      "pass": true
+    },
+    {
+      "label": "actual raw HTTP status and complete one request 3",
+      "pass": true
+    },
+    {
+      "label": "real case actor proof 3",
+      "pass": true
+    },
+    {
+      "label": "complete twelve-role snapshot 3",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 3",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 3",
+      "pass": true
+    },
+    {
+      "label": "role operation retains configuration 3",
+      "pass": true
+    },
+    {
+      "label": "other eleven roles unchanged 3",
+      "pass": true
+    },
+    {
+      "label": "exact successful delete 3",
+      "pass": true
+    },
+    {
+      "label": "original transition check recorded 3",
+      "pass": true
+    },
+    {
+      "label": "frozen matrix identity 4",
+      "pass": true
+    },
+    {
+      "label": "actual raw HTTP status and complete one request 4",
+      "pass": true
+    },
+    {
+      "label": "real case actor proof 4",
+      "pass": true
+    },
+    {
+      "label": "complete twelve-role snapshot 4",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 4",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 4",
+      "pass": true
+    },
+    {
+      "label": "role operation retains configuration 4",
+      "pass": true
+    },
+    {
+      "label": "other eleven roles unchanged 4",
+      "pass": true
+    },
+    {
+      "label": "exact successful delete 4",
+      "pass": true
+    },
+    {
+      "label": "original transition check recorded 4",
+      "pass": true
+    },
+    {
+      "label": "frozen matrix identity 5",
+      "pass": true
+    },
+    {
+      "label": "actual raw HTTP status and complete one request 5",
+      "pass": true
+    },
+    {
+      "label": "real case actor proof 5",
+      "pass": true
+    },
+    {
+      "label": "complete twelve-role snapshot 5",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 5",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 5",
+      "pass": true
+    },
+    {
+      "label": "role operation retains configuration 5",
+      "pass": true
+    },
+    {
+      "label": "read or rejected operation unchanged 5",
+      "pass": true
+    },
+    {
+      "label": "original transition check recorded 5",
+      "pass": true
+    },
+    {
+      "label": "frozen matrix identity 6",
+      "pass": true
+    },
+    {
+      "label": "actual raw HTTP status and complete one request 6",
+      "pass": true
+    },
+    {
+      "label": "real case actor proof 6",
+      "pass": true
+    },
+    {
+      "label": "complete twelve-role snapshot 6",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 6",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 6",
+      "pass": true
+    },
+    {
+      "label": "role operation retains configuration 6",
+      "pass": true
+    },
+    {
+      "label": "read or rejected operation unchanged 6",
+      "pass": true
+    },
+    {
+      "label": "original transition check recorded 6",
+      "pass": true
+    },
+    {
+      "label": "frozen matrix identity 7",
+      "pass": true
+    },
+    {
+      "label": "actual raw HTTP status and complete one request 7",
+      "pass": true
+    },
+    {
+      "label": "real case actor proof 7",
+      "pass": true
+    },
+    {
+      "label": "complete twelve-role snapshot 7",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 7",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 7",
+      "pass": true
+    },
+    {
+      "label": "role operation retains configuration 7",
+      "pass": true
+    },
+    {
+      "label": "read or rejected operation unchanged 7",
+      "pass": true
+    },
+    {
+      "label": "original transition check recorded 7",
+      "pass": true
+    },
+    {
+      "label": "frozen matrix identity 8",
+      "pass": true
+    },
+    {
+      "label": "actual raw HTTP status and complete one request 8",
+      "pass": true
+    },
+    {
+      "label": "real case actor proof 8",
+      "pass": true
+    },
+    {
+      "label": "complete twelve-role snapshot 8",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 8",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 8",
+      "pass": true
+    },
+    {
+      "label": "role operation retains configuration 8",
+      "pass": true
+    },
+    {
+      "label": "read or rejected operation unchanged 8",
+      "pass": true
+    },
+    {
+      "label": "original transition check recorded 8",
+      "pass": true
+    },
+    {
+      "label": "frozen matrix identity 9",
+      "pass": true
+    },
+    {
+      "label": "actual raw HTTP status and complete one request 9",
+      "pass": true
+    },
+    {
+      "label": "real case actor proof 9",
+      "pass": true
+    },
+    {
+      "label": "complete twelve-role snapshot 9",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 9",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 9",
+      "pass": true
+    },
+    {
+      "label": "role operation retains configuration 9",
+      "pass": true
+    },
+    {
+      "label": "read or rejected operation unchanged 9",
+      "pass": true
+    },
+    {
+      "label": "original transition check recorded 9",
+      "pass": true
+    },
+    {
+      "label": "frozen matrix identity 10",
+      "pass": true
+    },
+    {
+      "label": "actual raw HTTP status and complete one request 10",
+      "pass": true
+    },
+    {
+      "label": "real case actor proof 10",
+      "pass": true
+    },
+    {
+      "label": "complete twelve-role snapshot 10",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 10",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 10",
+      "pass": true
+    },
+    {
+      "label": "role operation retains configuration 10",
+      "pass": true
+    },
+    {
+      "label": "read or rejected operation unchanged 10",
+      "pass": true
+    },
+    {
+      "label": "original transition check recorded 10",
+      "pass": true
+    },
+    {
+      "label": "frozen matrix identity 11",
+      "pass": true
+    },
+    {
+      "label": "actual raw HTTP status and complete one request 11",
+      "pass": true
+    },
+    {
+      "label": "real case actor proof 11",
+      "pass": true
+    },
+    {
+      "label": "complete twelve-role snapshot 11",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 11",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 11",
+      "pass": true
+    },
+    {
+      "label": "role operation retains configuration 11",
+      "pass": true
+    },
+    {
+      "label": "read or rejected operation unchanged 11",
+      "pass": true
+    },
+    {
+      "label": "original transition check recorded 11",
+      "pass": true
+    },
+    {
+      "label": "frozen matrix identity 12",
+      "pass": true
+    },
+    {
+      "label": "actual raw HTTP status and complete one request 12",
+      "pass": true
+    },
+    {
+      "label": "real case actor proof 12",
+      "pass": true
+    },
+    {
+      "label": "complete twelve-role snapshot 12",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 12",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 12",
+      "pass": true
+    },
+    {
+      "label": "role operation retains configuration 12",
+      "pass": true
+    },
+    {
+      "label": "read or rejected operation unchanged 12",
+      "pass": true
+    },
+    {
+      "label": "original transition check recorded 12",
+      "pass": true
+    },
+    {
+      "label": "frozen matrix identity 13",
+      "pass": true
+    },
+    {
+      "label": "actual raw HTTP status and complete one request 13",
+      "pass": true
+    },
+    {
+      "label": "real case actor proof 13",
+      "pass": true
+    },
+    {
+      "label": "complete twelve-role snapshot 13",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 13",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 13",
+      "pass": true
+    },
+    {
+      "label": "role operation retains configuration 13",
+      "pass": true
+    },
+    {
+      "label": "read or rejected operation unchanged 13",
+      "pass": true
+    },
+    {
+      "label": "original transition check recorded 13",
+      "pass": true
+    },
+    {
+      "label": "frozen matrix identity 14",
+      "pass": true
+    },
+    {
+      "label": "actual raw HTTP status and complete one request 14",
+      "pass": true
+    },
+    {
+      "label": "real case actor proof 14",
+      "pass": true
+    },
+    {
+      "label": "complete twelve-role snapshot 14",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 14",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 14",
+      "pass": true
+    },
+    {
+      "label": "role operation retains configuration 14",
+      "pass": true
+    },
+    {
+      "label": "read or rejected operation unchanged 14",
+      "pass": true
+    },
+    {
+      "label": "original transition check recorded 14",
+      "pass": true
+    },
+    {
+      "label": "frozen matrix identity 15",
+      "pass": true
+    },
+    {
+      "label": "actual raw HTTP status and complete one request 15",
+      "pass": true
+    },
+    {
+      "label": "real case actor proof 15",
+      "pass": true
+    },
+    {
+      "label": "complete twelve-role snapshot 15",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 15",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 15",
+      "pass": true
+    },
+    {
+      "label": "role operation retains configuration 15",
+      "pass": true
+    },
+    {
+      "label": "other eleven roles unchanged 15",
+      "pass": true
+    },
+    {
+      "label": "exact successful role write 15",
+      "pass": true
+    },
+    {
+      "label": "original transition check recorded 15",
+      "pass": true
+    },
+    {
+      "label": "frozen matrix identity 16",
+      "pass": true
+    },
+    {
+      "label": "actual raw HTTP status and complete one request 16",
+      "pass": true
+    },
+    {
+      "label": "real case actor proof 16",
+      "pass": true
+    },
+    {
+      "label": "complete twelve-role snapshot 16",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 16",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 16",
+      "pass": true
+    },
+    {
+      "label": "role operation retains configuration 16",
+      "pass": true
+    },
+    {
+      "label": "other eleven roles unchanged 16",
+      "pass": true
+    },
+    {
+      "label": "exact successful role write 16",
+      "pass": true
+    },
+    {
+      "label": "original transition check recorded 16",
+      "pass": true
+    },
+    {
+      "label": "frozen matrix identity 17",
+      "pass": true
+    },
+    {
+      "label": "actual raw HTTP status and complete one request 17",
+      "pass": true
+    },
+    {
+      "label": "real case actor proof 17",
+      "pass": true
+    },
+    {
+      "label": "complete twelve-role snapshot 17",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 17",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 17",
+      "pass": true
+    },
+    {
+      "label": "role operation retains configuration 17",
+      "pass": true
+    },
+    {
+      "label": "other eleven roles unchanged 17",
+      "pass": true
+    },
+    {
+      "label": "exact successful role write 17",
+      "pass": true
+    },
+    {
+      "label": "original transition check recorded 17",
+      "pass": true
+    },
+    {
+      "label": "frozen matrix identity 18",
+      "pass": true
+    },
+    {
+      "label": "actual raw HTTP status and complete one request 18",
+      "pass": true
+    },
+    {
+      "label": "real case actor proof 18",
+      "pass": true
+    },
+    {
+      "label": "complete twelve-role snapshot 18",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 18",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 18",
+      "pass": true
+    },
+    {
+      "label": "role operation retains configuration 18",
+      "pass": true
+    },
+    {
+      "label": "read or rejected operation unchanged 18",
+      "pass": true
+    },
+    {
+      "label": "original transition check recorded 18",
+      "pass": true
+    },
+    {
+      "label": "frozen matrix identity 19",
+      "pass": true
+    },
+    {
+      "label": "actual raw HTTP status and complete one request 19",
+      "pass": true
+    },
+    {
+      "label": "real case actor proof 19",
+      "pass": true
+    },
+    {
+      "label": "complete twelve-role snapshot 19",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 19",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 19",
+      "pass": true
+    },
+    {
+      "label": "role operation retains configuration 19",
+      "pass": true
+    },
+    {
+      "label": "other eleven roles unchanged 19",
+      "pass": true
+    },
+    {
+      "label": "exact successful role write 19",
+      "pass": true
+    },
+    {
+      "label": "original transition check recorded 19",
+      "pass": true
+    },
+    {
+      "label": "frozen matrix identity 20",
+      "pass": true
+    },
+    {
+      "label": "actual raw HTTP status and complete one request 20",
+      "pass": true
+    },
+    {
+      "label": "real case actor proof 20",
+      "pass": true
+    },
+    {
+      "label": "complete twelve-role snapshot 20",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 20",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 20",
+      "pass": true
+    },
+    {
+      "label": "config operation retains all roles 20",
+      "pass": true
+    },
+    {
+      "label": "exact config transition 20",
+      "pass": true
+    },
+    {
+      "label": "original transition check recorded 20",
+      "pass": true
+    },
+    {
+      "label": "frozen matrix identity 21",
+      "pass": true
+    },
+    {
+      "label": "actual raw HTTP status and complete one request 21",
+      "pass": true
+    },
+    {
+      "label": "real case actor proof 21",
+      "pass": true
+    },
+    {
+      "label": "complete twelve-role snapshot 21",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 21",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 21",
+      "pass": true
+    },
+    {
+      "label": "config operation retains all roles 21",
+      "pass": true
+    },
+    {
+      "label": "exact config transition 21",
+      "pass": true
+    },
+    {
+      "label": "original transition check recorded 21",
+      "pass": true
+    },
+    {
+      "label": "frozen matrix identity 22",
+      "pass": true
+    },
+    {
+      "label": "actual raw HTTP status and complete one request 22",
+      "pass": true
+    },
+    {
+      "label": "real case actor proof 22",
+      "pass": true
+    },
+    {
+      "label": "complete twelve-role snapshot 22",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 22",
+      "pass": true
+    },
+    {
+      "label": "snapshot inventory equality 22",
+      "pass": true
+    },
+    {
+      "label": "config operation retains all roles 22",
+      "pass": true
+    },
+    {
+      "label": "exact config transition 22",
+      "pass": true
+    },
+    {
+      "label": "original transition check recorded 22",
+      "pass": true
+    },
+    {
+      "label": "original four-child owner closure",
+      "pass": true
+    },
+    {
+      "label": "original absolute 360 deadline honored",
+      "pass": true
+    },
+    {
+      "label": "four distinct originals and one server",
+      "pass": true
+    },
+    {
+      "label": "same original child waited once 211407",
+      "pass": true
+    },
+    {
+      "label": "exact original child custody closure 211407",
+      "pass": true
+    },
+    {
+      "label": "same original child waited once 211408",
+      "pass": true
+    },
+    {
+      "label": "exact original child custody closure 211408",
+      "pass": true
+    },
+    {
+      "label": "same original child waited once 211409",
+      "pass": true
+    },
+    {
+      "label": "exact original child custody closure 211409",
+      "pass": true
+    },
+    {
+      "label": "same original child waited once 211411",
+      "pass": true
+    },
+    {
+      "label": "exact original child custody closure 211411",
+      "pass": true
+    },
+    {
+      "label": "original server pidfd TERM",
+      "pass": true
+    },
+    {
+      "label": "eight actual component variants excluded from product denominator",
+      "pass": true
+    },
+    {
+      "label": "actual extra health and unknown startup count retained",
+      "pass": true
+    }
+  ],
+  "counts": {
+    "main_original_calls": 84,
+    "independent_recovery_calls": 7,
+    "total_original_native_calls": 91,
+    "original_observers": 13,
+    "body_original_admissions": 10,
+    "body_original_pages": 60,
+    "whole_report_bytes": 651803,
+    "official_ACL_cases": 23,
+    "component_variants": 8,
+    "component_product_cases": 0,
+    "actual_HTTP_requests": 838
+  },
+  "actual_status_counts": {
+    "200": 2,
+    "204": 8,
+    "403": 12,
+    "405": 1
+  },
+  "official_source_prediction_matches": 23,
+  "old_R2_source_prediction_differences": [
+    "delete-update-sudo",
+    "delete-delete",
+    "delete-delete-sudo",
+    "collection-bare-get-read",
+    "collection-bare-get-list",
+    "existing-post-update",
+    "fresh-post-create",
+    "fresh-post-update-sudo",
+    "config-post-update"
+  ],
+  "observed_role_policy_projections": [
+    {
+      "token_policies_present": true,
+      "token_policies": []
+    }
+  ],
+  "candidate_actual_cases": 0,
+  "parity_qualified": false,
+  "new_Native_calls_by_verifier": 0,
+  "carried_predecessors": {
+    "outer_and_INFO_root": "57ca985572a5efecc20b89ab5dc633a3409f44ea",
+    "recovery_handback_root": "a60b1ccebab5398ee2bd05a6be1a06839d65540e"
+  }
+}

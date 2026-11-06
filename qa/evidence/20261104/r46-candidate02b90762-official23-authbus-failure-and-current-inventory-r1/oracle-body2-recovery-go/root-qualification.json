@@ -1,0 +1,123 @@
+{
+  "schema": "heptabao.root.oracle271.r2.body02.same-ID-recovery-source.qualification.r1",
+  "passed": true,
+  "checks": 17,
+  "rows": [
+    {
+      "name": "both_packets_whole",
+      "passed": true
+    },
+    {
+      "name": "author39_exact",
+      "passed": true
+    },
+    {
+      "name": "exact_paused_original_state",
+      "passed": true
+    },
+    {
+      "name": "same_parent_BODY_GO",
+      "passed": true
+    },
+    {
+      "name": "exact_reviewed_recovery_source",
+      "passed": true
+    },
+    {
+      "name": "strict_source_forward_and_reverse",
+      "passed": true
+    },
+    {
+      "name": "original_request_SDK_official271-x230-acl23-r2-body02-admit",
+      "passed": true
+    },
+    {
+      "name": "original_arm_official271-x230-acl23-r2-body02-admit",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_tree_official271-x230-acl23-r2-body02-admit",
+      "passed": true
+    },
+    {
+      "name": "original_request_SDK_official271-x230-acl23-r2-body02-status0",
+      "passed": true
+    },
+    {
+      "name": "original_arm_official271-x230-acl23-r2-body02-status0",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_tree_official271-x230-acl23-r2-body02-status0",
+      "passed": true
+    },
+    {
+      "name": "one_original_admission_ACK_bound",
+      "passed": true
+    },
+    {
+      "name": "original_failed_status_remains_failed",
+      "passed": true
+    },
+    {
+      "name": "same_ID_status_only_no_reset",
+      "passed": true
+    },
+    {
+      "name": "original_version_and_third_range",
+      "passed": true
+    },
+    {
+      "name": "narrow_remaining_budget",
+      "passed": true
+    }
+  ],
+  "actualPacket": {
+    "tree": "677343f3b00aa92e0bbd0eb4b3371551993020e6",
+    "files": 16,
+    "bytes": 503205,
+    "merkle": {
+      "root_sha": "677343f3b00aa92e0bbd0eb4b3371551993020e6",
+      "trees_verified": 1,
+      "leaf_count": 16
+    },
+    "whole": true
+  },
+  "sourcePacket": {
+    "tree": "5d1e5f4ea55fb6f817c0e18a04240222aa09c1d8",
+    "files": 18,
+    "bytes": 552621,
+    "merkle": {
+      "root_sha": "5d1e5f4ea55fb6f817c0e18a04240222aa09c1d8",
+      "trees_verified": 1,
+      "leaf_count": 18
+    },
+    "whole": true
+  },
+  "originalOperation": "6220e2762757d7afa1ba315c7beb2a985c59c147ac7cb3852aa17ba9c21c7a9e",
+  "originalPausedState": {
+    "blob": "652b0103388657f5515e30c077ce927c24b19cf2",
+    "bytes": 454676,
+    "sha256": "dd4a465e95e91c8aa23ddcde138d4541a52e79e7482297eb418bb89e16f83aa3"
+  },
+  "source": {
+    "blob": "20a36582d7acf9d3675b9c31fd47e6ae72e7354a",
+    "bytes": 21016,
+    "sha256": "defc76fc73a4a3ab2fc8d4d8468b11d3410760268560c54c06682ae63b790cfd"
+  },
+  "newStatusRequest": {
+    "blob": "182980da62d3a27a098c8fb974e6a68dd7926318",
+    "bytes": 84,
+    "sha256": "f99d18d13005ea9de9e2426fcc8fbce4e668450f52fdd726234aa3f8e4cc7317"
+  },
+  "oldFailedStatusConsumed": 1,
+  "newStatusMaximum": 1,
+  "maximumCombinedStatus": 8,
+  "originalFutureClosureUnknown": true,
+  "actualRecoveredChunk": false,
+  "handbackAuthorized": false,
+  "NativeCalls": 0,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

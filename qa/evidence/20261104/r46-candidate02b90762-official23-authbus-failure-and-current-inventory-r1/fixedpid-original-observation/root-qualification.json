@@ -1,0 +1,90 @@
+{
+  "schema": "heptabao.root.fixedPID.actual-partial-observation.qualification.r1",
+  "passed": true,
+  "checks": 14,
+  "rows": [
+    {
+      "name": "source_readonly_qualification",
+      "passed": true
+    },
+    {
+      "name": "exactly_original_three_calls",
+      "passed": true
+    },
+    {
+      "name": "whole_original_SDK_root-fixedPID-start-01",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_archive_root-fixedPID-start-01",
+      "passed": true
+    },
+    {
+      "name": "whole_original_SDK_root-fixedPID-status-01",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_archive_root-fixedPID-status-01",
+      "passed": true
+    },
+    {
+      "name": "whole_original_SDK_root-fixedPID-read-01",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_archive_root-fixedPID-read-01",
+      "passed": true
+    },
+    {
+      "name": "original_failed_job_known_and_fully_delivered",
+      "passed": true
+    },
+    {
+      "name": "lossless_original_stdout_and_stderr",
+      "passed": true
+    },
+    {
+      "name": "original_PID_identity_stable",
+      "passed": true
+    },
+    {
+      "name": "explicit_permission_denied_partial",
+      "passed": true
+    },
+    {
+      "name": "bounded_public_cgroup_only",
+      "passed": true
+    },
+    {
+      "name": "closed_without_fallback",
+      "passed": true
+    }
+  ],
+  "originalJob": "1a1b1ed8329-fc05-7b8c",
+  "originalCalls": 3,
+  "sourceQualification": {
+    "blob": "3c20ace2039e56c30c524c6d79cad29d13bbf92d",
+    "bytes": 2188,
+    "sha256": "f5720df52ab08578a3dc9a9bbd236dffefbd36135c80bbf5678a9160867c9b8b"
+  },
+  "stdout": {
+    "blob": "6c032a2d08059840312b07f5ecb0104056881d49",
+    "bytes": 1470,
+    "sha256": "b3cd47643edf5e663e3a82f85407bf1a20992b041ad1ad0a2817a0f6844430b0"
+  },
+  "probeExitCode": 1,
+  "probeOK": false,
+  "processIdentityStable": true,
+  "cgroupObserved": true,
+  "executableLinkReadDeniedErrno": 13,
+  "executablePath": null,
+  "binaryVersion": null,
+  "completeProcessProjection": false,
+  "serviceMappingQualified": false,
+  "NativeCallsInVerifier": 0,
+  "currentNativeCalls": 0,
+  "currentOwnedFutures": 0,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

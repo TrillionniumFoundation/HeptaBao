@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.r46.root-current-link-correction.r1",
+  "earlier_unpublished_tree": "b695fb152dc54350c0538b193200a49783be0b29",
+  "scope": "one Markdown filename case correction only",
+  "before": "../fixedpid-original-observation/RELEASE.public.json",
+  "after": "../fixedpid-original-observation/release.public.json",
+  "root_readme_before": {
+    "blob": "a41781a95ba82abc0052ae731c9dfc03a8fc8a22",
+    "bytes": 6166,
+    "sha256": "20693990e8e6cd0f9ec10e09eb5aa1e96f2a61c4e0134a7275c7e2f4efcc94c3"
+  },
+  "root_readme_after": {
+    "blob": "f14985a86520218cc3cc39383686e9a5daa90fb6",
+    "bytes": 6166,
+    "sha256": "fc5f308f9209edb04a7296ba50f693bba02df775ed6d0fbb38512d8f370fcd29"
+  },
+  "exact_markdown_links": 11,
+  "all_links_resolve": true,
+  "cutoff_unchanged": true,
+  "runtime_authorization": false,
+  "all_other_original_inputs_unchanged": true,
+  "unchanged_original_files": 6,
+  "earlier_link_correction_count_label_fixed": true
+}

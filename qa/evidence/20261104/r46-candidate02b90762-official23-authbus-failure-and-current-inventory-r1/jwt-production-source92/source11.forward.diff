@@ -1,0 +1,13 @@
+--- a/crates/heptabao-server/src/auth_tests.rs
++++ b/crates/heptabao-server/src/auth_tests.rs
+@@ -3581,8 +3581,9 @@
+     );
+     assert_eq!(
+         role.body["data"]["token_policies"],
+-        json!(["default", "reader"])
++        json!(["reader"])
+     );
++    assert_eq!(role.body["data"]["token_no_default_policy"], false);
+ }
+ 
+ #[test]

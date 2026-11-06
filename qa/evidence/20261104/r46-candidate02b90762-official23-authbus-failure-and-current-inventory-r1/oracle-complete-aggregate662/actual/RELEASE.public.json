@@ -1,0 +1,81 @@
+{
+  "schema": "heptabao.official271.ACL23.r2.final-read-lane-release.r1",
+  "lane": "C",
+  "native_calls_in_flight": 0,
+  "active_native_futures": 0,
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "paused": false,
+  "original_main_slot": "official271_x230_acl23_oracle_gitfirst_r2",
+  "main_state": {
+    "blob": "974fa3c3661c2941f910b127505cb24675ef3e76",
+    "bytes": 1301829,
+    "sha256": "cd598267f40273c64e0259329af4d20a92eecb41774efd9522add78a22e794bb"
+  },
+  "original_observers_closed": 13,
+  "original_main_call_records": 84,
+  "recovery_call_records": 7,
+  "combined_native_call_records": 91,
+  "total_body_admissions": 10,
+  "total_body_ranges_closed": 10,
+  "total_report_bytes": 651803,
+  "report": {
+    "blob": "0605fa44d81ccb93e1d1f00a0f8f7a37f4bea897",
+    "bytes": 651803,
+    "sha256": "9048f3b5c854a190dadde86f5d7eec180c497313065bd70bd23a87124789a62d"
+  },
+  "report_whole_tree": "72e65bb1ed6909bf40d4d88bbc93d0d2c535faa2",
+  "body_version": "2053:2098461:651803:1793982810542000556:1793982810542000556",
+  "completed_body_operation_ids": [
+    "97ec0f9400d93019b1e459f6db580941680676a6b5633c31cbb9cb6626df1802",
+    "5433a8b98b3015f338e147954b4d9910b5657f85730a4bc09de3a79129a88155",
+    "6220e2762757d7afa1ba315c7beb2a985c59c147ac7cb3852aa17ba9c21c7a9e",
+    "50238311722cbf264f75f615112dbc6e5b38c25d93eebe7878450008dce5144a",
+    "7a17a9723fc8c7a97505edaf37a1d2afc03b62337370e3a4b27c79f3dbb298a8",
+    "8943429b0d90b7f7aad5e1effde5297864ea32ade9aa33d9f67411b2a01579cc",
+    "be6879be7b3f9a9809da1cfce8f68bf3717e5d1566b1eabb08b8a103e15b04dd",
+    "5bd15e837f1faf6d24500087a42759184716d85afbc7e35876119a4a69c6f60c",
+    "dba526bf65faac6083b872108e695943e48cccbd403ce9aaf0d09a369a77a2dd",
+    "5cd1b1d120ad0de242ffda9e9d24d14379c814540a3c1f773bdc1a1dbae9da41"
+  ],
+  "failed_status_record_preserved": "native_interpretation_refused",
+  "old_outer_failure_preserved": {
+    "schema": "heptabao.gitfirst.outer-caught-failure.r1",
+    "action": "accept",
+    "name": "Error",
+    "message": "native_tool_error_preserved_stop",
+    "automaticRetry": false,
+    "newAdmissionAllowed": false,
+    "returnedNormally": true
+  },
+  "recovery_context_unchanged": {
+    "blob": "5d9085aeb711d6aab60f88b6641eb22e5222d66d",
+    "bytes": 109798,
+    "sha256": "96f62783eb44cf88fea10f65393392ff9de5fd5c1b27ff10682f00edebc8bcf7"
+  },
+  "handback_proof": {
+    "schema": "heptabao.oracle271.r2.BODY02.exact-handback-applied.r1",
+    "rootGO": {
+      "blob": "bb2b94bb1f152bb9f890debfde83cb9808a87a5a",
+      "bytes": 2719,
+      "sha256": "de517150c314608a87292893580f58ff318a09f11ee026e8634ec4e9be92c129"
+    },
+    "proofTree": "12d4c8f204e869defb420343a497aceb750afe13",
+    "proof": {
+      "blob": "0e889c364c7071cc9bcb5a375986d95a14c03975",
+      "bytes": 2729,
+      "sha256": "ea3b85f67fbde8d35145a27004ff9b61668d98f5e5e2faadc6ba0f7e9ae5d270"
+    },
+    "after": {
+      "blob": "71de8bc336a360f5e3600c1c74072016714d4c48",
+      "bytes": 545600,
+      "sha256": "eb3d133b3f55b9f89b894503a39c0ffcf30f1cc8cc7f98299156fee0fda69a53"
+    },
+    "recoveryContextUnchanged": true,
+    "externalFailureHistoryUnchanged": true,
+    "newNativeCalls": 0,
+    "applicationCount": 1
+  },
+  "root_independent_content_qualification_pending": true
+}

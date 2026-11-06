@@ -1,0 +1,6 @@
+{
+  "error": "ReferenceError: immediateTreeSha is not defined",
+  "phase": "before prepared state or any tool invocation",
+  "mutationSubmitted": false,
+  "correction": "Load already frozen tree helper alongside pure helper; preserve unchanged GO and qualification bytes."
+}

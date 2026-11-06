@@ -1,0 +1,76 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r45_B_inventory_Cr2_INFO_actual_roots_archive",
+  "records": [
+    {
+      "name": "B-original-inventory-root-verifier.js",
+      "blob": "6a69119567b26ba94eba44381b0cdda42f089993",
+      "bytes": 6719,
+      "sha256": "624f8db9287b2c372cc8d59711a62dd2796d52cbf30a7821e2c301f50b0bf718"
+    },
+    {
+      "name": "B-original-inventory-root-result.json",
+      "blob": "4dfc716a9f2faacf3b54dfd7dc61b1d8f6ecfe13",
+      "bytes": 7385,
+      "sha256": "69134ba95267fc99c9eb37cfed7d62590b72750366d8012b939fb4f86477dc75"
+    },
+    {
+      "name": "B-root-original-GO-lookup-error.json",
+      "blob": "4a0297f7b27c6f45599e00842dce2da7a7e615ff",
+      "bytes": 6334,
+      "sha256": "86bb96fff67170a3d9ad8269b180033607c79c2d1d9d4b0e5a239de1b0f0a1ea"
+    },
+    {
+      "name": "B-root-tool-intent-shape-correction.json",
+      "blob": "7bb3296e603e1ee2a4e98df7bd5a6f38b25be642",
+      "bytes": 6490,
+      "sha256": "c8a454a4f6b4d0a84da4dfd5d861efe4b3ec754f001ef6a61b68323a345bfd7b"
+    },
+    {
+      "name": "root-store-key-collision-recovery.json",
+      "blob": "d2cab794ce603c706e37eebf388bd57785f3e73b",
+      "bytes": 515,
+      "sha256": "c085b163de17a98c86f3bff10badd9dc3fee075398b5bd6ec11a75d4326c9060"
+    },
+    {
+      "name": "C-fresh-r2-original-outer-root-verifier.js",
+      "blob": "e81124e9b3a0374a5558d7fd1c6c084be5fa72c4",
+      "bytes": 2099,
+      "sha256": "7a60adf111e5b91869337d27879c37876b9838f0ac2fe27852196b72394e685a"
+    },
+    {
+      "name": "C-fresh-r2-original-outer-root-result.json",
+      "blob": "4c5d546d40a87f3704f648047ca508bf2c6a9299",
+      "bytes": 3983,
+      "sha256": "8a5c09fe853d637a02acc18dc967369d99973aed56e0544523eb7bc30a94b77b"
+    },
+    {
+      "name": "C-fresh-r2-INFO-actual-root-verifier.js",
+      "blob": "bf6a1a8d37bc86e680d255b8d5a414108009a99e",
+      "bytes": 3595,
+      "sha256": "5c0a06279c6bd06c3ca8322077d298145e80e023f4a9fe1adfd72ebf65264862"
+    },
+    {
+      "name": "C-fresh-r2-INFO-actual-root-result.json",
+      "blob": "4c43efd2187a4a592ff6558cdabd746cb524a902",
+      "bytes": 3190,
+      "sha256": "78028b65216625c25933c0487af69ee4ed320fb4995896838ff6a2352a854398"
+    },
+    {
+      "name": "provisional-base-ancestry.public.json",
+      "blob": "6c8fbfb92fde478a8edbf90a7c13c8ea267d3228",
+      "bytes": 3202,
+      "sha256": "71cc0de1f39af08f32ce28bd7597ba4c12e7da6ac3a01e0c276213dbdf3b4355"
+    },
+    {
+      "name": "provisional-runtime-guard.public.json",
+      "blob": "901e03db0cd188d9aae62c39e6960c3e73aff7aa",
+      "bytes": 421,
+      "sha256": "d1c662bc9cabef1eb68e2ce44d30f7df6e5403705042b96521427a4d10464cb0"
+    }
+  ],
+  "expected_data_tree": "7128721cae9386fcf1d13c7d50307b0050687749",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

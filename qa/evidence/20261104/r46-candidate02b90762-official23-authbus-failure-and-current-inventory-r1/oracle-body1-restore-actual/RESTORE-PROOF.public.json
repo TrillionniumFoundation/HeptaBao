@@ -1,0 +1,39 @@
+{
+  "schema": "heptabao.official271.r2.same-arm-restore-proof-before-apply.r1",
+  "go": {
+    "blob": "936b059532050a7662755fc24f8e914fcffb6ea6",
+    "bytes": 2112,
+    "sha256": "bbb93538d7a18a93574627224ee2a6598cbc4a13724aaddb48920c3f3f370d89"
+  },
+  "source": {
+    "blob": "7e0d9e66249dc8cfa19c9957a66288f43312014e",
+    "bytes": 2805,
+    "sha256": "079d6ca900bbf2f718639c66f44d43e13a34cfa6d2d4c0d1f3121470124b36c3"
+  },
+  "before": {
+    "blob": "551c671b614f169d938ea734a963c0a996258dbf",
+    "bytes": 346725,
+    "sha256": "fc5eddffa1ec12f067afbf5016d66924e23ed188b780618309fc554130e0a9fa"
+  },
+  "after": {
+    "blob": "8d2dfab08450b092edf96f83004dcb59a9eb2bba",
+    "bytes": 347811,
+    "sha256": "9d072f1a2b834ef6539ff50af27c5fc5be234b26f0e90eea2c95fa08dc6500dd"
+  },
+  "reconciliation": {
+    "blob": "e58b4ef7bed4b32ed196726e19fdcff0801d2e53",
+    "bytes": 1007,
+    "sha256": "46a0ce5d5df69a0ae9d5e0b08607050b0f9f9ae1aeaa68bb87f10d82778a8475"
+  },
+  "exactThreeChangedFields": [
+    "calls.official271-x230-acl23-r2-body01-page000000.armed",
+    "calls.official271-x230-acl23-r2-body01-page000000.phase",
+    "paused"
+  ],
+  "oldFailureFieldsPreserved": true,
+  "pending": "official271-x230-acl23-r2-body01-page000000",
+  "called": false,
+  "nativeCalls": 0,
+  "newGitCreateForOriginalArm": 0,
+  "applyNotYetPerformed": true
+}

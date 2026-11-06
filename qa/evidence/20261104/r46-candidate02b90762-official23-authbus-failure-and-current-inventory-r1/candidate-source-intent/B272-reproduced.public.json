@@ -1,0 +1,1385 @@
+{
+  "schema": "heptabao.jwt-policy.source-verification.r1",
+  "pass": true,
+  "checkCount": 272,
+  "checks": [
+    {
+      "label": "twelve exact source leaves",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "ten existing leaves",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "two new leaves",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "uncommitted SOURCE-only",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole source present 0",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole actual before 0",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole after 0",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole forward diff 0",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole reverse diff 0",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict forward 0",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict forward reversal 0",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict reverse 0",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict reverse reversal 0",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "lexical delimiter balance only 0",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole source present 1",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole actual before 1",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole after 1",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole forward diff 1",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole reverse diff 1",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict forward 1",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict forward reversal 1",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict reverse 1",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict reverse reversal 1",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "lexical delimiter balance only 1",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole source present 2",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole after 2",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole forward diff 2",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole reverse diff 2",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict forward 2",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict forward reversal 2",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict reverse 2",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict reverse reversal 2",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "lexical delimiter balance only 2",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole source present 3",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole actual before 3",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole after 3",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole forward diff 3",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole reverse diff 3",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict forward 3",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict forward reversal 3",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict reverse 3",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict reverse reversal 3",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "lexical delimiter balance only 3",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole source present 4",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole actual before 4",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole after 4",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole forward diff 4",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole reverse diff 4",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict forward 4",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict forward reversal 4",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict reverse 4",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict reverse reversal 4",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "lexical delimiter balance only 4",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole source present 5",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole actual before 5",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole after 5",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole forward diff 5",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole reverse diff 5",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict forward 5",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict forward reversal 5",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict reverse 5",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict reverse reversal 5",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "lexical delimiter balance only 5",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole source present 6",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole actual before 6",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole after 6",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole forward diff 6",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole reverse diff 6",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict forward 6",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict forward reversal 6",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict reverse 6",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict reverse reversal 6",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "lexical delimiter balance only 6",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole source present 7",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole after 7",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole forward diff 7",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole reverse diff 7",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict forward 7",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict forward reversal 7",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict reverse 7",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict reverse reversal 7",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "lexical delimiter balance only 7",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole source present 8",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole actual before 8",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole after 8",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole forward diff 8",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole reverse diff 8",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict forward 8",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict forward reversal 8",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict reverse 8",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict reverse reversal 8",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "lexical delimiter balance only 8",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole source present 9",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole actual before 9",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole after 9",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole forward diff 9",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole reverse diff 9",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict forward 9",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict forward reversal 9",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict reverse 9",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict reverse reversal 9",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "lexical delimiter balance only 9",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole source present 10",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole actual before 10",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole after 10",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole forward diff 10",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole reverse diff 10",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict forward 10",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict forward reversal 10",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict reverse 10",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict reverse reversal 10",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "lexical delimiter balance only 10",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole source present 11",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole actual before 11",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole after 11",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole forward diff 11",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole reverse diff 11",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict forward 11",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict forward reversal 11",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict reverse 11",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "strict reverse reversal 11",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "lexical delimiter balance only 11",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "total candidate bytes",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "thirty-nine strict hunks including two additions",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole prior draft2 auth",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "actual c407 to draft2",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "draft2 reverse to c407",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "draft2 to candidate",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "candidate reverse to draft2",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only expected changed functions auth_native_jwt.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only expected added functions auth_native_jwt.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only expected removed functions auth_native_jwt.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only expected changed functions auth.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only expected added functions auth.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only expected removed functions auth.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only expected changed functions service.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only expected added functions service.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only expected removed functions service.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only expected changed functions service_identity.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only expected added functions service_identity.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only expected removed functions service_identity.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only expected changed functions service_backup_restore.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only expected added functions service_backup_restore.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only expected removed functions service_backup_restore.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only expected changed functions service_jwt_user_claim_tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only expected added functions service_jwt_user_claim_tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only expected removed functions service_jwt_user_claim_tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only expected changed functions service_jwt_pem_tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only expected added functions service_jwt_pem_tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only expected removed functions service_jwt_pem_tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only expected changed functions service_jwt_renewal_tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only expected added functions service_jwt_renewal_tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only expected removed functions service_jwt_renewal_tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only expected changed functions auth_tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only expected added functions auth_tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only expected removed functions auth_tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "global helper exists policies",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "all global helper occurrences unchanged policies",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "global helper exists validate_assignment",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "all global helper occurrences unchanged validate_assignment",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "Native original authority/delivery unchanged authorize_reply",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "Native original authority/delivery unchanged bind_response",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "Native original authority/delivery unchanged bind_successful_login",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "Native original authority/delivery unchanged admit_candidate",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "Native original authority/delivery unchanged native_v6_jwt_state_supported",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole preserved reference unchanged.auth_jwt_renewal.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "preserved reference is not modified unchanged.auth_jwt_renewal.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole preserved reference unchanged.auth_token_policies.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "preserved reference is not modified unchanged.auth_token_policies.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole preserved reference unchanged.Identity2.engine_identity.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "preserved reference is not modified unchanged.Identity2.engine_identity.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "role source capability required",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only JWT role no actor subset call",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "exactly one local assignment call removed",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "role flag read/write linked",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "root configuration not prematurely denied",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "root denied before identity/token construction",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "defaults before both issuance branches",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "service and batch share issued policies",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "historical None encoding preserved",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "local schema147 constant",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "reuse unchanged HTTP weak boolean",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "omitted update retains prior flag",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "new semantics tagged even raw empty/false",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "default injection never erases explicit default",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "suppression applied only at issuance",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "all namespace roles Some(false/true) require new reader",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "retained JWT grant also fences absent-default origin",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "reader maximum147",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "reader accepts147",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "admitted publication uses writer floor",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "writer floor remains sticky",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "publication rejects inherited or active downgrade",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "loader rejects active147 under lower label",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "format accepts147 explicitly",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "snapshot floor handles active and retired semantic owner",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "snapshot downgrade preserves400 guard type",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "new tests module connected",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "only incompatible old Native ACL test replaced",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "Native test15 to20 exact",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "retained Native test exact native_jwt_local_service_token_identity_renewal_and_cold_reopen",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "retained Native test exact native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "retained Native test exact native_jwt_identity_failure_does_not_export_witness_or_token_and_next_login_is_fresh",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "retained Native test exact native_jwt_original_assertion_expiry_before_publication_keeps_auth_identity_atomic",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "retained Native test exact native_jwt_native_owner_capacity_veto_after_authentication_keeps_the_old_root",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "retained Native test exact native_jwt_original_assertion_expiry_after_commit_withholds_reply_without_rollback",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "retained Native test exact native_jwt_post_commit_audit_failure_keeps_whole_root_and_recovery_required",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "retained Native test exact native_jwt_post_audit_response_and_original_deadline_cannot_be_rebound",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "retained Native test exact native_jwt_post_audit_revocation_cannot_replace_the_original_publication_proof",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "retained Native test exact native_jwt_token_api_service_descendants_keep_own_renewal_and_parent_revocation",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "retained Native test exact native_jwt_token_api_batch_owner_preserves_real_parent_binding_across_cold_reopen",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "retained Native test exact native_jwt_token_api_revoke_orphan_keeps_own_issuer_but_mount_retirement_still_revokes",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "retained Native test exact native_jwt_and_userpass_token_api_targets_keep_real_owner_and_renewal_in_both_directions",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "retained Native test exact native_jwt_token_api_profile_rejects_mount_label_without_real_issuer_or_parent_graph",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "Native batch501 remains an unsupported boundary",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "real no-default path-only ACL actor",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "actor grant independently looked up",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "real Native raw-policy/cold/defaultless issuance regression",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "actual update-only writer can save root while login denied",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "renewal keeps previously issued grant",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "four new legacy/schema regressions",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "legacy real Service issuance distinguished from Native",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "batch issuance checks token-storage separation",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "legacy issuance verified by lookup and cold reopen",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "schema regression covers rawemptySome(false) and true",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "namespace scan projection honestly bounded",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "real deletion/cold sticky floor checked",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "historical factory refuses new predecessor",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "historical factory only validates never-published new role",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "marker removal only before initial candidate publication",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "historical helper cannot relabel published owner",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "historical first commit retains real schema and install gates",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "all old test names retained service_jwt_user_claim_tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "all old test names retained service_jwt_pem_tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "all old test names retained service_jwt_renewal_tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "all old test names retained auth_tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "old missing-create JWT negative remains exact, not subset evidence",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "global token escalation negative unchanged",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "role readback raw reader and false",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole original149/166",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "proposed158/180 source",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "exact unique/profile delta",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "inventory removed name exact",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "inventory added names exact",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "unchanged family deadline native-jwt-pki-file22",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "no within-profile duplicates native-jwt-pki-file22",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "unchanged family deadline native-jwt-pki-default22",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "no within-profile duplicates native-jwt-pki-default22",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "unchanged family deadline legacy-jwt-default67",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "no within-profile duplicates legacy-jwt-default67",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "unchanged family deadline native-auth-identity-default69",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "no within-profile duplicates native-auth-identity-default69",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "entire Native auth/Identity group unchanged",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "old legacy63 kept in original order",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "exact Native declared names file",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "PKI two unchanged file",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "exact Native declared names default",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "PKI two unchanged default",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "prior combined ordered crate/profile/fullname exact",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "proposed combined ordered crate/profile/fullname exact",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole frozen prior combined254/237",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "exact combined268/246",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "fourteen later groups unchanged",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "eighty-eight later inventory rows including provenance unchanged",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "combined first four are proposed groups158",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "profiles change counts only",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "file22 default229 HA17",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "eighteen original600s families",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole original combined groups pin",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole original combined entries pin",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole proposed combined groups pin",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "label": "whole proposed combined entries pin",
+      "pass": true,
+      "detail": null
+    }
+  ],
+  "unchangedFunctionBodies": 611,
+  "files": 12,
+  "hunks": 39,
+  "sourceBytes": 1404403,
+  "priorUnique": 149,
+  "priorProfileEntries": 166,
+  "proposedUnique": 158,
+  "proposedProfileEntries": 180,
+  "deltaUnique": 9,
+  "deltaProfileEntries": 14,
+  "combinedUnique": 246,
+  "combinedProfileEntries": 268,
+  "lexicalNotRustAst": true,
+  "rustCompiled": false,
+  "rustTestsExecuted": 0,
+  "NativeCalls": 0,
+  "candidateCommit": null,
+  "fullReplacement": false
+}

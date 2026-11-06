@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r45_Pocket4_network_GO_archive",
+  "records": [
+    {
+      "name": "root-GO.json",
+      "blob": "a18a4132d7942fefaa22c919cb0447c047d1a624",
+      "bytes": 1613,
+      "sha256": "f0a4bfcc540d506100d09a6f947364e32fbd744a61c1c7cfc9bfaf226106c929"
+    }
+  ],
+  "expected_data_tree": "1ff45b16a7eba64b21d4a0ab975c6516769e169d",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

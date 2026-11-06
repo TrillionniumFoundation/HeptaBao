@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.root.exact-discovered-service-read.GO.r1",
+  "scope": "one exact current X230 service status discovered by original bounded unit name search",
+  "request": {
+    "blob": "17b73efdc3c96fb8bf2d68d9d1a67598c6e41469",
+    "bytes": 92,
+    "sha256": "6d3f43b0dab2d6019de387fc7f9937b51ee877a251befe3350a5d2fc6965f547"
+  },
+  "discoveryOriginalNative": {
+    "blob": "95d40f7ae1da2a34ee88d330914ae9f5e1260fd6",
+    "bytes": 1329,
+    "sha256": "0d7842e078d18dda365ebb549e65bd274676a9f751265fa9102678ad4776ab36"
+  },
+  "maximumCalls": 1,
+  "mutations": false,
+  "automaticRetry": false,
+  "originalIntentAndSDKWholeRequired": true,
+  "rootLane": 1,
+  "fullClientInventoryQualified": false
+}

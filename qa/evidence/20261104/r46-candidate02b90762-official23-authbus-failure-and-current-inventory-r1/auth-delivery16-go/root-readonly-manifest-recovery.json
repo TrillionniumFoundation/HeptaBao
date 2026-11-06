@@ -1,0 +1,11 @@
+{
+  "originalFailure": {
+    "path": "MANIFEST.public.json",
+    "blob": "2d9385c6feb0fc78b8a170d396478f7083d604ad",
+    "error": "read-only Git blob failed",
+    "treeSDK": "077ef92d5b80ddd6334148ac0ca53ba35de92daf"
+  },
+  "reconciliation": "Repeated only exact immutable Git reads; SOURCE25 whole verified",
+  "NativeCalls": 0,
+  "GitMutations": 0
+}

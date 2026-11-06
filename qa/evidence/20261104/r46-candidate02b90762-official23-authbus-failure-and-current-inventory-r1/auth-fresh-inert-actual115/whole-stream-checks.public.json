@@ -1,0 +1,66 @@
+[
+  {
+    "name": "original_job_0",
+    "pass": true
+  },
+  {
+    "name": "stdout_cursor_0",
+    "pass": true
+  },
+  {
+    "name": "stdout_dual_representation_0",
+    "pass": true
+  },
+  {
+    "name": "stdout_limit_0",
+    "pass": true
+  },
+  {
+    "name": "stderr_cursor_0",
+    "pass": true
+  },
+  {
+    "name": "stderr_dual_representation_0",
+    "pass": true
+  },
+  {
+    "name": "stderr_limit_0",
+    "pass": true
+  },
+  {
+    "name": "original_job_1",
+    "pass": true
+  },
+  {
+    "name": "stdout_cursor_1",
+    "pass": true
+  },
+  {
+    "name": "stdout_dual_representation_1",
+    "pass": true
+  },
+  {
+    "name": "stdout_limit_1",
+    "pass": true
+  },
+  {
+    "name": "stderr_cursor_1",
+    "pass": true
+  },
+  {
+    "name": "stderr_dual_representation_1",
+    "pass": true
+  },
+  {
+    "name": "stderr_limit_1",
+    "pass": true
+  },
+  {
+    "name": "authority_succeeded_full",
+    "pass": true
+  },
+  {
+    "name": "complete_exact_authority_extent",
+    "pass": true
+  }
+]

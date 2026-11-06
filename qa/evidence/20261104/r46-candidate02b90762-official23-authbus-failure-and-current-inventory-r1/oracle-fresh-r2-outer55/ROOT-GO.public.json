@@ -1,0 +1,179 @@
+{
+  "schema": "heptabao.root-official271-X230-ACL23-fresh-r2-GO.r45",
+  "authorization": "GO",
+  "decision": "GO_ONE_NEW_EXACT_OFFICIAL271_ORACLE_FIXTURE_R2",
+  "owner": "/root/ha_validation",
+  "userAuthorization": "Continue user-authorized complete OpenBao2.7.1 replacement validation with an isolated official reference fixture on X230.",
+  "sourcePacket": "929090b26d52522694ae8d62f33ac5641e823e7c",
+  "journalPacket": "929090b26d52522694ae8d62f33ac5641e823e7c",
+  "rootSourceQualification": {
+    "blob": "3958b06e41871ee7b77d6461f24b784b1b8de071",
+    "bytes": 2217,
+    "sha256": "1421bc84036bdab3791fd843c0b968ed462088053bbe83fe14531c8bd1e7c876"
+  },
+  "rootSourceChecks": 19,
+  "exactProcessStart": {
+    "blob": "e2a92c388ec7167f14b33cc9c2a03d82aae3bda4",
+    "bytes": 164759,
+    "sha256": "9ea5802b1ed39410eb2e83d5d7bebd6dfe44812271ac53da47863b884214f190"
+  },
+  "exactEntry": {
+    "blob": "446b3cff61ab8baf805d9868f57b150ff0a8ba4f",
+    "bytes": 18330,
+    "sha256": "300a2e20ac852d845f13905c21295bfda3221212688f2573cc4097714eb16855"
+  },
+  "exactPublicPayload": {
+    "blob": "d40d885470eec3db203a9c91f579e5b5b17ed098",
+    "bytes": 134677,
+    "sha256": "8a8681e59c5572ed01fa6e824c4a2e03692baceb8d272bba857431c9c5c8e30f"
+  },
+  "nativeBinding": {
+    "sha256": "7fa6526d31102a09e614e4334916934e335cf9105fd7181d08fb926a32eef0e0",
+    "native_fingerprint": "9198129917878872585",
+    "canonicalBytes": 164695
+  },
+  "host": "x230",
+  "executable": "/usr/bin/python3",
+  "cwd": "/home/qian",
+  "argvShape": [
+    "-I",
+    "-S",
+    "-B",
+    "-c",
+    "exactEntry",
+    "exactEntrySHA256"
+  ],
+  "stdinExactPublicPayload": true,
+  "idempotency_key": "heptabao-official271-x230-acl23-oracle-r2-300a2e20",
+  "maximumProcessStarts": 1,
+  "maximumOracleServiceStarts": 1,
+  "maximumCandidateStarts": 0,
+  "journal": {
+    "blob": "bfda2944a31309daa516957ce6169e7dd73bb7db",
+    "bytes": 19055,
+    "sha256": "ef4694d6e91ff9fd4dddd12c05676a983fcb9a226c44810b4f7547b8b4c922d5"
+  },
+  "slot": "official271_x230_acl23_oracle_gitfirst_r2",
+  "observerKeyPrefix": "heptabao-official271-x230-acl23-oracle-observe-r2-",
+  "fixedRoot": "/home/qian/heptabao-official271-acl23-oracle-20261106-r2",
+  "run_id": "official271-acl23-r2",
+  "ports": {
+    "https": 23625,
+    "cluster": 23626,
+    "loopbackOnly": true
+  },
+  "budgets": {
+    "originalOwnerSeconds": 360,
+    "deadlineAtEntryMonotonicStart": true,
+    "cleanupWithinOriginalDeadline": true,
+    "httpMaximumSeconds": 15,
+    "startupOriginalHealthPollMaximum": 100,
+    "aclHTTPMaximum": 853,
+    "launcherStartupSourceUpperBound": 103,
+    "extraSelectedHealthMaximum": 1,
+    "sourceInputBytes": 127412,
+    "stdinExactBytes": 134677,
+    "reportMaximumBytes": 1048576,
+    "newEntryDescriptorsMaximum": 12,
+    "perReadWriteChunkMaximum": 65536,
+    "maximumReadbackBytes": 1175988,
+    "RuntimeOuterSecondsProposal": 390,
+    "outerNote": "Exact fresh r2 transport outer cap390; unchanged original Owner/entry absolute360 includes all cleanup and publication.",
+    "RuntimeOuterSecondsApproved": 390,
+    "originalOwnerAbsoluteSecondsApproved": 360,
+    "noOwnerDeadlineReset": true,
+    "rawRequestMaximumIsStaticNotActual": true
+  },
+  "controls": {
+    "createOnlyRoot0700": true,
+    "elevenExactPublicInputs0600": true,
+    "nineModulesFromFreshFixedLayoutOnly": true,
+    "freshCanonicalPathsFull9AndWholeHashes": true,
+    "officialArchiveUniqueRegularBaoMember": true,
+    "selectedLiveTLSVersion271": true,
+    "noDownloadOrHistoricalCheckoutImport": true,
+    "privateFixtureCredentialsNotPublished": true,
+    "allOwnedChildrenAndEntryFDsWithinOriginal360": true,
+    "noForeignSignal": true,
+    "oldRootsUntouched": true,
+    "CargoTargetUntouched": true
+  },
+  "officialArtifacts": {
+    "archiveBytes": 74865426,
+    "archiveSHA256": "0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243",
+    "binaryBytes": 181760103,
+    "binarySHA256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+    "freshPresenceAndVersionRequired": true
+  },
+  "cases": {
+    "officialACL": 23,
+    "rawStatusesAndBeforeAfterTransitions": true,
+    "realIssuedNoDefaultNonrootActors": true,
+    "noExpectedStatusNormalization": true,
+    "noDefaultPolicyAddedToActor": true,
+    "unknownMutationStopsPreservingPartial": true,
+    "candidateHTTP12": 0,
+    "currentRecordComponent": "4 classes / 8 fixed fake component cases inside the original fixture; not product API cases"
+  },
+  "report": {
+    "path": "/home/qian/heptabao-official271-acl23-oracle-20261106-r2/result.public.json",
+    "mode": "0600",
+    "createOnly": true,
+    "postFinallyVerdict": "terminal stdout after bootstrap signal restoration and all12 entry FDs closed; original Owner receipt independently contains child closure.",
+    "actualSize": null,
+    "actualSHA": null,
+    "actualVersion": null,
+    "separateINFOAndBODYAuthorityRequired": true
+  },
+  "observations": {
+    "maximumProcessStatusObservers": 32,
+    "maximumProcessReadObservers": 129,
+    "maximumOperationStatusCallsPerObserver": 8,
+    "maximumImmutablePagesPerObserver": 128,
+    "immutablePageBytes": 8192,
+    "maximumSerializedPayloadBytes": 1048576,
+    "processReadPerStreamBytes": 16384,
+    "maximumObservedBytesPerStream": 2097152,
+    "onlyOriginalReturnedJobAndOperations": true,
+    "oneNativeCallOrOwnedFuture": true,
+    "unknownKeepsLane": true,
+    "noAutomaticReplay": true,
+    "closeEachObserverBeforeNext": true
+  },
+  "archive": {
+    "wholeGOAndRequestBeforeFreshSlotInitialize": true,
+    "wholeRequestIntentArmedBeforeOneCall": true,
+    "originalSDKWholeBeforeInterpretation": true,
+    "wholePayloadBeforeDecode": true,
+    "originalTerminalAuthorityAndContiguousStreamsRequired": true
+  },
+  "lane": {
+    "before": {
+      "A": 0,
+      "B": 1,
+      "C": 0,
+      "root": 0
+    },
+    "during": {
+      "A": 0,
+      "B": 1,
+      "C": 1,
+      "root": 0
+    },
+    "maximum": 2,
+    "APublicReadbacksHoldUntilLaneAvailable": true
+  },
+  "after": "Return original terminal authority and whole contiguous public streams; report actual case completion or failure and current original-process closure. Hold before report INFO/BODY. Do not repeat old fixture, normalize responses, or inject default actor policy.",
+  "productionCutover": false,
+  "legacyCleanup": false,
+  "allClientsAndBackupsMigrated": false,
+  "fullReplacement": false,
+  "authorEntry52ExactlyReproduced": true,
+  "originalReportClosureQualification": {
+    "blob": "8d39f1e1cd354958740cd8c2ad12d768513d2452",
+    "bytes": 4942,
+    "sha256": "595cecb07920371fed122f77743975654f2f236571de41074013a3954ec442c5"
+  },
+  "originalFailureAndStatus0UnknownPreserved": true,
+  "sourceFix": "Exact fixed451B PEM source is unchanged; request value removes one final LF. Strict public config comparison is unchanged and captures original projection before comparison."
+}

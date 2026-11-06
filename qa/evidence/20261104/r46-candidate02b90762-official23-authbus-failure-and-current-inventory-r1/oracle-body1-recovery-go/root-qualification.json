@@ -1,0 +1,138 @@
+{
+  "schema": "heptabao.root.oracle271.r2.same-arm-page0-recovery.qualification.r1",
+  "passed": true,
+  "checks": 20,
+  "rows": [
+    {
+      "name": "actual23_and_SOURCE9_whole",
+      "passed": true
+    },
+    {
+      "name": "same_exact_paused_state",
+      "passed": true
+    },
+    {
+      "name": "same_actual_readonly_reconciliation",
+      "passed": true
+    },
+    {
+      "name": "restore_source_pin",
+      "passed": true
+    },
+    {
+      "name": "eight_original_Git_history_records",
+      "passed": true
+    },
+    {
+      "name": "known_original_create_ACK",
+      "passed": true
+    },
+    {
+      "name": "original_read_UNKNOWN_retained",
+      "passed": true
+    },
+    {
+      "name": "exact_original_arm_Merkle",
+      "passed": true
+    },
+    {
+      "name": "whole_original_armed",
+      "passed": true
+    },
+    {
+      "name": "whole_recovery_SDK_armed",
+      "passed": true
+    },
+    {
+      "name": "whole_original_intent",
+      "passed": true
+    },
+    {
+      "name": "whole_recovery_SDK_intent",
+      "passed": true
+    },
+    {
+      "name": "whole_original_request",
+      "passed": true
+    },
+    {
+      "name": "whole_recovery_SDK_request",
+      "passed": true
+    },
+    {
+      "name": "original_binary_future_completed_inactive",
+      "passed": true
+    },
+    {
+      "name": "pending_page_never_called",
+      "passed": true
+    },
+    {
+      "name": "same_original_BODY_GO",
+      "passed": true
+    },
+    {
+      "name": "pure_restoration_matches_exact_proposed_bytes",
+      "passed": true
+    },
+    {
+      "name": "exactly_three_fields_reverse_to_original",
+      "passed": true
+    },
+    {
+      "name": "failure_and_original_pending_history_preserved",
+      "passed": true
+    }
+  ],
+  "actualPacket": {
+    "tree": "c1d73181fdb8e6118aa12bc02e49c93b2ee36fcb",
+    "files": 23,
+    "bytes": 409164,
+    "merkle": {
+      "root_sha": "c1d73181fdb8e6118aa12bc02e49c93b2ee36fcb",
+      "trees_verified": 1,
+      "leaf_count": 23
+    },
+    "whole": true
+  },
+  "sourcePacket": {
+    "tree": "35d5d13759796bec35b06db8821845c5be8c24d1",
+    "files": 9,
+    "bytes": 710404,
+    "merkle": {
+      "root_sha": "35d5d13759796bec35b06db8821845c5be8c24d1",
+      "trees_verified": 1,
+      "leaf_count": 9
+    },
+    "whole": true
+  },
+  "before": {
+    "blob": "551c671b614f169d938ea734a963c0a996258dbf",
+    "bytes": 346725,
+    "sha256": "fc5eddffa1ec12f067afbf5016d66924e23ed188b780618309fc554130e0a9fa"
+  },
+  "after": {
+    "blob": "8d2dfab08450b092edf96f83004dcb59a9eb2bba",
+    "bytes": 347811,
+    "sha256": "9d072f1a2b834ef6539ff50af27c5fc5be234b26f0e90eea2c95fa08dc6500dd"
+  },
+  "source": {
+    "blob": "7e0d9e66249dc8cfa19c9957a66288f43312014e",
+    "bytes": 2805,
+    "sha256": "079d6ca900bbf2f718639c66f44d43e13a34cfa6d2d4c0d1f3121470124b36c3"
+  },
+  "reconciliation": {
+    "blob": "e58b4ef7bed4b32ed196726e19fdcff0801d2e53",
+    "bytes": 1007,
+    "sha256": "46a0ce5d5df69a0ae9d5e0b08607050b0f9f9ae1aeaa68bb87f10d82778a8475"
+  },
+  "originalOperation": "5433a8b98b3015f338e147954b4d9910b5657f85730a4bc09de3a79129a88155",
+  "originalRequest": "c466e0e87676208da9a08ad7630283696ec42cc8",
+  "originalReadFailurePreserved": true,
+  "originalBinaryAdmissionRepeated": false,
+  "actualRestoreApplied": false,
+  "NativeCalls": 0,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

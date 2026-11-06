@@ -1,0 +1,70 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r45_Ainert_Cbody_Cfixture2_GO",
+  "records": [
+    {
+      "name": "A-inert-full-root-verifier.js",
+      "blob": "d1dc389e9b2a7040d88dc55f490b57b085372901",
+      "bytes": 3734,
+      "sha256": "dde1111ac691aea5dde20da69cb9b07d5b373ad02132468e7c953022164da585"
+    },
+    {
+      "name": "A-inert-full-root-result.json",
+      "blob": "7ae8d9d4b6e2101b79a2c3fde256716e5639c03a",
+      "bytes": 8041,
+      "sha256": "f042507c76eb3651c70370dcaddb44613e64582a6e17ef8bfd99ad5d1e1e4916"
+    },
+    {
+      "name": "A-inert-root-original-predicate-error.json",
+      "blob": "b246c302010fdd02434ab7969685d8b2f0bcb6f4",
+      "bytes": 2999,
+      "sha256": "692c94b8cd430a83e678b084980f252d434b5320552ea5a5090334703e099e3a"
+    },
+    {
+      "name": "A-inert-root-correction.json",
+      "blob": "5f5d4a08dfc4efdde425fb95f980fa22988205fc",
+      "bytes": 609,
+      "sha256": "dd36e17754b13b739dc135ba89b816497371e2647a46e158d68805e3798994e2"
+    },
+    {
+      "name": "C-original-report-root-verifier.js",
+      "blob": "aef89142171027ccc377dd5761ede36fa90fa727",
+      "bytes": 4809,
+      "sha256": "3256c91a49c0e49eb94016dc8849628f331af958f06fb04c5233a6123fff0960"
+    },
+    {
+      "name": "C-original-report-root-result.json",
+      "blob": "8d39f1e1cd354958740cd8c2ad12d768513d2452",
+      "bytes": 4942,
+      "sha256": "595cecb07920371fed122f77743975654f2f236571de41074013a3954ec442c5"
+    },
+    {
+      "name": "C-fresh-r2-source-root-verifier.js",
+      "blob": "56c2cb4e6881cd4c663b42576e4e6222a16d2c1e",
+      "bytes": 4722,
+      "sha256": "d9a17742fa92c14b0e0f1e7fe86630c3b9b986364487d2e8c984d81bf15d4460"
+    },
+    {
+      "name": "C-fresh-r2-source-root-result.json",
+      "blob": "3958b06e41871ee7b77d6461f24b784b1b8de071",
+      "bytes": 2217,
+      "sha256": "1421bc84036bdab3791fd843c0b968ed462088053bbe83fe14531c8bd1e7c876"
+    },
+    {
+      "name": "C-fresh-r2-GO.json",
+      "blob": "d5f8ff9a04b49b34121121b5a0c2215bcc4805ca",
+      "bytes": 6892,
+      "sha256": "d7b67a94e5bc7162ebfecb3fc3132157c5134581f5f07d05de4e9de2cd0f13d5"
+    },
+    {
+      "name": "C-fresh-r2-root-input-shape-correction.json",
+      "blob": "250bbd60b858041bee869972bc929fc12496ef16",
+      "bytes": 5233,
+      "sha256": "dc28ebd1c20b3c772b3ac6759d94a7ebda2a5421bd4f281531f4bfbbdd04383c"
+    }
+  ],
+  "expected_data_tree": "54f2aa46e08d5d95c7197c5c2128554de95ecd1f",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

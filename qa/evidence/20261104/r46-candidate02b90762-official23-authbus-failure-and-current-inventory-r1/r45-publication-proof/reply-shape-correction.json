@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.root-publication-reply-shape-correction.r2",
+  "error": "no structured original Git payload",
+  "cause": "The generic decoder accepted sha/content fields, but the successful update_ref original SDK has structuredContent.success=true.",
+  "originalMutationNotReplayed": true,
+  "originalSDKRetained": true,
+  "exactRefReadOnlyReconciledTo": "549bf308874ed357a9df6f5991713c4778a84d3f",
+  "earlierUnarchivedExplanationWronglySaidRefObject": true
+}

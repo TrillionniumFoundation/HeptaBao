@@ -1,0 +1,27 @@
+{
+  "expectedTree": "2e7e1a66eec4e42a14ea0c350328f4f263842c20",
+  "verified": [
+    {
+      "path": "armed.json",
+      "blob": "fa1bbe90a05dae49daaf3ac4dae22cb621f061d8",
+      "bytes": 933,
+      "sha256": "2d8191d857455227b59457d9a5914fe5d5e782dcb0d2f6cef60b6d15862d4a96",
+      "whole": true
+    }
+  ],
+  "remaining": [
+    {
+      "path": "intent.json",
+      "blob": "8b98fecde248d486080bc85e56e8f9e7bce17415",
+      "bytes": 796,
+      "sha256": "4608f815454b8ccd4bd5055a83e68a70f2b46682a27278d74c36e17a62aa9bf9"
+    },
+    {
+      "path": "request.json",
+      "blob": "c466e0e87676208da9a08ad7630283696ec42cc8",
+      "bytes": 109,
+      "sha256": "0a3a7386e5636e03553cf01174506b2437bb6e3afa344ba3005e3e70b7c39084"
+    }
+  ],
+  "mutationMustNotRepeat": true
+}

@@ -1,0 +1,370 @@
+--- a/crates/heptabao-server/src/service_native_jwt_tests.rs
++++ b/crates/heptabao-server/src/service_native_jwt_tests.rs
+@@ -462,175 +462,41 @@
+     Ok(())
+ }
+ 
+-fn acl_token(
+-    f: &mut Fixture,
+-    name: &str,
+-    path: &str,
+-    capabilities: &[&str],
+-) -> TestResult<Zeroizing<String>> {
+-    let policy = format!(
+-        "path {path:?} {{ capabilities = {} }}",
+-        serde_json::to_string(capabilities)?
+-    );
++#[test]
++fn native_jwt_role_operations_keep_the_existing_legacy_acl_contract() -> TestResult {
++    let mut f = Fixture::new()?;
++    // These are the existing legacy handler's ACLs, not a claim of independently
++    // observed OpenBao 2.7.1 parity. A separate oracle comparison remains due.
++    status(&f.admin("PUT", "sys/policies/acl/jwt-role-manager", json!({"policy":
++        "path \"auth/native-jwt/role\" { capabilities = [\"list\"] } path \"auth/native-jwt/role/client\" { capabilities = [\"read\",\"update\",\"sudo\"] }"
++    }))?, 204);
+     status(
+         &f.admin(
+             "PUT",
+-            &format!("sys/policies/acl/{name}"),
+-            json!({"policy":policy}),
++            "sys/policies/acl/jwt-role-no-sudo",
++            json!({"policy":
++                "path \"auth/native-jwt/role/client\" { capabilities = [\"read\",\"update\"] }"
++            }),
+         )?,
+         204,
+     );
+-    // Verify the real writer has only its path policy, with neither root nor
+-    // default. JWT role configuration is not token-API policy delegation.
+-    let token_policies = vec![name];
+-    let mut issued = f.admin(
+-        "POST",
+-        "auth/token/create",
+-        json!({"policies":&token_policies,"no_default_policy":true,"ttl":"600s"}),
+-    )?;
+-    status(&issued, 200);
+-    assert_eq!(issued.body["auth"]["token_type"], "service");
+-    assert_eq!(issued.body["auth"]["policies"], json!(&token_policies));
+-    assert_eq!(issued.body["auth"]["token_policies"], json!(&token_policies));
+-    let token = secret(&mut issued, "/auth/client_token")?;
+-    let mut looked = f.admin("POST", "auth/token/lookup", json!({"token":token.as_str()}))?;
+-    status(&looked, 200);
+-    assert_eq!(looked.body["data"]["policies"], json!(&token_policies));
+-    erase_json(&mut looked.body);
+-    Ok(token)
+-}
+-
+-#[test]
+-fn native_jwt_role_management_uses_source_create_update_and_delete_after_cold_reopen()
+--> TestResult {
+-    let mut f = Fixture::new()?;
+-    let path = "auth/native-jwt/role/acl-managed";
+-    let create = acl_token(&mut f, "jwt-acl-create", path, &["create"])?;
+-    let update = acl_token(&mut f, "jwt-acl-update", path, &["update"])?;
+-    let update_sudo = acl_token(&mut f, "jwt-acl-update-sudo", path, &["update", "sudo"])?;
+-    let delete = acl_token(&mut f, "jwt-acl-delete", path, &["delete"])?;
+-    let role = json!({
+-        "role_type":"jwt","user_claim":"sub","bound_audiences":["native"],
+-        "token_policies":[],"token_ttl":120,"token_max_ttl":600
+-    });
+-    status(&f.admin("GET", path, json!({}))?, 404);
+-    let before = f.snapshot()?;
+-    for token in [&update, &update_sudo] {
+-        let denied = f.actor(token, "POST", path, role.clone())?;
+-        status(&denied, 403);
+-        no_credential(&denied);
+-        assert!(before.as_slice() == f.snapshot()?.as_slice());
+-    }
+-    // Once published, this role exists. Delivery must retain the source's
+-    // Create capability instead of recomputing Update against the new root.
+-    status(&f.actor(&create, "POST", path, role.clone())?, 204);
+-    assert_eq!(f.admin("GET", path, json!({}))?.body["data"]["token_policies"], json!([]));
+-    let created = f.snapshot()?;
+-    assert!(before.as_slice() != created.as_slice());
+-    let mut f = f.restart()?;
+-    assert!(created.as_slice() == f.snapshot()?.as_slice());
+-    assert_eq!(f.admin("GET", path, json!({}))?.body["data"]["token_ttl"], 120);
+-    let denied = f.actor(&create, "POST", path, json!({"token_ttl":121}))?;
+-    status(&denied, 403);
+-    no_credential(&denied);
+-    assert!(created.as_slice() == f.snapshot()?.as_slice());
+-    status(&f.actor(&update, "POST", path, json!({"token_ttl":121}))?, 204);
+-    assert_eq!(f.admin("GET", path, json!({}))?.body["data"]["token_ttl"], 121);
+-    let updated = f.snapshot()?;
+-    for token in [&update, &update_sudo] {
+-        let denied = f.actor(token, "DELETE", path, json!({}))?;
+-        status(&denied, 403);
+-        no_credential(&denied);
+-        assert!(updated.as_slice() == f.snapshot()?.as_slice());
+-    }
+-    // The update-only writer may define a future login's policies even though
+-    // it does not own those policies. Its Create/Delete/other-path restrictions
+-    // above remain effective under the actual captured Native Actor.
+-    status(
+-        &f.actor(&update, "POST", path, json!({"token_policies":["native-jwt"]}))?,
+-        204,
+-    );
+-    assert_eq!(
+-        f.admin("GET", path, json!({}))?.body["data"]["token_policies"],
+-        json!(["native-jwt"])
+-    );
+-    status(&f.actor(&delete, "DELETE", path, json!({}))?, 204);
+-    status(&f.admin("GET", path, json!({}))?, 404);
+-    let deleted = f.snapshot()?;
+-    status(&f.actor(&delete, "DELETE", path, json!({}))?, 204);
+-    assert!(deleted.as_slice() == f.snapshot()?.as_slice());
+-    let mut f = f.restart()?;
+-    assert!(deleted.as_slice() == f.snapshot()?.as_slice());
+-    status(&f.admin("GET", path, json!({}))?, 404);
+-    status(&f.actor(&create, "POST", path, role)?, 204);
+-    status(&f.admin("GET", path, json!({}))?, 200);
+-    Ok(())
+-}
+-
+-#[test]
+-fn native_jwt_collection_read_is_authorized_before_unsupported_and_list_stays_list()
+--> TestResult {
+-    let mut f = Fixture::new()?;
+-    let path = "auth/native-jwt/role";
+-    let read = acl_token(&mut f, "jwt-acl-read", path, &["read"])?;
+-    let list = acl_token(&mut f, "jwt-acl-list", path, &["list"])?;
+-    let none = acl_token(
+-        &mut f,
+-        "jwt-acl-unrelated",
+-        "jwt-kv/data/unrelated",
+-        &["read"],
+-    )?;
+-    let before = f.snapshot()?;
+-    for (token, method, expected) in [
+-        (&read, "GET", 405),
+-        (&list, "GET", 403),
+-        (&none, "GET", 403),
+-        (&read, "LIST", 403),
+-        (&none, "LIST", 403),
+-    ] {
+-        let denied = f.actor(token, method, path, json!({}))?;
+-        status(&denied, expected);
+-        no_credential(&denied);
+-        assert!(before.as_slice() == f.snapshot()?.as_slice());
+-    }
+-    let listed = f.actor(&list, "LIST", path, json!({}))?;
++    let manager = f.token("jwt-role-manager")?;
++    let no_sudo = f.token("jwt-role-no-sudo")?;
++    let listed = f.actor(&manager, "GET", "auth/native-jwt/role", json!({}))?;
+     status(&listed, 200);
+     assert_eq!(listed.body["data"]["keys"], json!(["client"]));
+-    assert!(before.as_slice() == f.snapshot()?.as_slice());
+-    let mut f = f.restart()?;
+-    assert!(before.as_slice() == f.snapshot()?.as_slice());
+-    let listed = f.actor(&list, "LIST", path, json!({}))?;
+-    status(&listed, 200);
+-    assert_eq!(listed.body["data"]["keys"], json!(["client"]));
+-    Ok(())
+-}
+-
+-#[test]
+-fn native_jwt_config_update_without_sudo_persists_and_rejects_read_only_actor()
+--> TestResult {
+-    let mut f = Fixture::new()?;
+-    let update = acl_token(&mut f, "jwt-acl-config-update", CONFIG, &["update"])?;
+-    let read = acl_token(&mut f, "jwt-acl-config-read", CONFIG, &["read"])?;
+-    let mut config = f.config(&f.pair);
+-    config["issuer"] = json!("https://native-jwt-config-updated.example");
+     let before = f.snapshot()?;
+-    let denied = f.actor(&read, "POST", CONFIG, config.clone())?;
++    let denied = f.actor(&no_sudo, "POST", ROLE, json!({"token_ttl":301}))?;
+     status(&denied, 403);
+     no_credential(&denied);
+     assert!(before.as_slice() == f.snapshot()?.as_slice());
+-    status(&f.actor(&update, "POST", CONFIG, config)?, 204);
+-    let updated = f.snapshot()?;
+-    assert!(before.as_slice() != updated.as_slice());
+-    let mut f = f.restart()?;
+-    assert!(updated.as_slice() == f.snapshot()?.as_slice());
+-    let value = f.actor(&read, "GET", CONFIG, json!({}))?;
+-    status(&value, 200);
+-    assert_eq!(
+-        value.body["data"]["bound_issuer"],
+-        "https://native-jwt-config-updated.example"
++    status(
++        &f.actor(&manager, "POST", ROLE, json!({"token_ttl":301}))?,
++        204,
+     );
+-    let config = f.config(&f.pair);
+-    status(&f.actor(&update, "POST", CONFIG, config)?, 204);
++    // No delete capability: the existing named DELETE uses update + sudo.
++    status(&f.actor(&manager, "DELETE", ROLE, json!({}))?, 204);
++    status(&f.admin("GET", ROLE, json!({}))?, 404);
+     Ok(())
+ }
+ 
+@@ -1197,169 +1063,3 @@
+     );
+     Ok(())
+ }
+-
+-fn assert_native_jwt_policy_grant(
+-    f: &mut Fixture,
+-    expected: &[&str],
+-) -> TestResult<Zeroizing<String>> {
+-    let assertion = f.assertion(f.now + 60);
+-    let mut response = f.actor(
+-        "",
+-        "POST",
+-        LOGIN,
+-        json!({"role":"client","jwt":assertion.as_str()}),
+-    )?;
+-    status(&response, 200);
+-    assert_eq!(response.body["auth"]["token_type"], "service");
+-    assert_eq!(response.body["auth"]["policies"], json!(expected));
+-    assert_eq!(response.body["auth"]["token_policies"], json!(expected));
+-    let entity = text(&response, "/auth/entity_id")?;
+-    let token = secret(&mut response, "/auth/client_token")?;
+-    let mut looked = f.admin(
+-        "POST",
+-        "auth/token/lookup",
+-        json!({"token":token.as_str()}),
+-    )?;
+-    status(&looked, 200);
+-    assert_eq!(looked.body["data"]["policies"], json!(expected));
+-    assert_eq!(looked.body["data"]["entity_id"], entity);
+-    erase_json(&mut looked.body);
+-    Ok(token)
+-}
+-
+-#[test]
+-fn native_jwt_empty_role_policies_and_no_default_flag_survive_real_cold_reopen()
+--> TestResult {
+-    for field in ["token_policies", "policies"] {
+-        let mut f = Fixture::new()?;
+-        let mut body = json!({});
+-        body[field] = json!([]);
+-        status(&f.admin("POST", ROLE, body)?, 204);
+-        let role = f.admin("GET", ROLE, json!({}))?;
+-        status(&role, 200);
+-        assert_eq!(role.body["data"]["token_policies"], json!([]));
+-        assert_eq!(role.body["data"]["token_no_default_policy"], false);
+-        let mut f = f.restart()?;
+-        let _with_default = assert_native_jwt_policy_grant(&mut f, &["default"])?;
+-        status(
+-            &f.admin("POST", ROLE, json!({"token_no_default_policy":true}))?,
+-            204,
+-        );
+-        // Omitted updates retain the flag, and a cold reopen must keep it.
+-        status(&f.admin("POST", ROLE, json!({"token_ttl":301}))?, 204);
+-        let mut f = f.restart()?;
+-        assert_eq!(
+-            f.admin("GET", ROLE, json!({}))?.body["data"]["token_no_default_policy"],
+-            true
+-        );
+-        let _without_default = assert_native_jwt_policy_grant(&mut f, &[])?;
+-        // Suppression prevents injection; it must not remove explicit default.
+-        let mut body = json!({"token_no_default_policy":true});
+-        body[field] = json!(["default"]);
+-        status(&f.admin("POST", ROLE, body)?, 204);
+-        let mut f = f.restart()?;
+-        let _explicit = assert_native_jwt_policy_grant(&mut f, &["default"])?;
+-    }
+-    Ok(())
+-}
+-
+-#[test]
+-fn native_jwt_no_default_policy_weak_bool_updates_are_atomic_and_persist()
+--> TestResult {
+-    let mut f = Fixture::new()?;
+-    // Official HTTP JSON uses json.Number; only 0/1 spellings reach ParseBool.
+-    // These are real Service requests, not a private flag-parser unit fixture.
+-    for (raw, expected) in [
+-        ("true", true), ("false", false), ("1", true), ("0", false),
+-        ("\"t\"", true), ("\"T\"", true), ("\"true\"", true),
+-        ("\"TRUE\"", true), ("\"True\"", true), ("\"1\"", true),
+-        ("\"f\"", false), ("\"F\"", false), ("\"false\"", false),
+-        ("\"FALSE\"", false), ("\"False\"", false), ("\"0\"", false),
+-        ("\"\"", false), ("null", false),
+-    ] {
+-        let value: Value = serde_json::from_str(raw)?;
+-        status(
+-            &f.admin("POST", ROLE, json!({"token_no_default_policy":value}))?,
+-            204,
+-        );
+-        assert_eq!(
+-            f.admin("GET", ROLE, json!({}))?.body["data"]["token_no_default_policy"],
+-            expected
+-        );
+-    }
+-    status(&f.admin("POST", ROLE, json!({"token_no_default_policy":true}))?, 204);
+-    status(&f.admin("POST", ROLE, json!({"token_ttl":302}))?, 204);
+-    let mut f = f.restart()?;
+-    assert_eq!(
+-        f.admin("GET", ROLE, json!({}))?.body["data"]["token_no_default_policy"],
+-        true
+-    );
+-    for raw in [
+-        "[]", "{}", "2", "-1", "0.5", "1.0", "1e0",
+-        "\"yes\"", "\"true \"", "\" true\"", "\"2\"",
+-    ] {
+-        let value: Value = serde_json::from_str(raw)?;
+-        let before = f.snapshot()?;
+-        let response = f.admin("POST", ROLE, json!({"token_no_default_policy":value}))?;
+-        status(&response, 400);
+-        no_credential(&response);
+-        assert!(before.as_slice() == f.snapshot()?.as_slice());
+-    }
+-    status(&f.admin("POST", ROLE, json!({"token_no_default_policy":null}))?, 204);
+-    let mut f = f.restart()?;
+-    assert_eq!(
+-        f.admin("GET", ROLE, json!({}))?.body["data"]["token_no_default_policy"],
+-        false
+-    );
+-    Ok(())
+-}
+-
+-#[test]
+-fn native_jwt_root_role_configuration_is_stored_but_never_issued_or_retroactively_renewed()
+--> TestResult {
+-    let mut f = Fixture::new()?;
+-    let issued = assert_native_jwt_policy_grant(&mut f, &["default", "native-jwt"])?;
+-    let update = acl_token(&mut f, "jwt-root-role-writer", ROLE, &["update"])?;
+-    for field in ["token_policies", "policies"] {
+-        for suppress_default in [false, true] {
+-            let mut body = json!({"token_no_default_policy":suppress_default});
+-            body[field] = json!(["root"]);
+-            // Official role storage allows root; issuance rejects it later.
+-            status(&f.actor(&update, "POST", ROLE, body)?, 204);
+-            let mut reopened = f.restart()?;
+-            assert_eq!(
+-                reopened.admin("GET", ROLE, json!({}))?.body["data"]["token_policies"],
+-                json!(["root"])
+-            );
+-            let assertion = reopened.assertion(reopened.now + 60);
+-            let before = reopened.snapshot()?;
+-            let denied = reopened.actor(
+-                "",
+-                "POST",
+-                LOGIN,
+-                json!({"role":"client","jwt":assertion.as_str()}),
+-            )?;
+-            status(&denied, 400);
+-            no_credential(&denied);
+-            assert!(before.as_slice() == reopened.snapshot()?.as_slice());
+-            f = reopened;
+-        }
+-    }
+-    // Renewal must retain the issued grant. A later root role cannot promote it,
+-    // and changing the flag does not remove default from an existing token.
+-    let mut renewed = f.admin(
+-        "POST",
+-        "auth/token/renew",
+-        json!({"token":issued.as_str(),"increment":120}),
+-    )?;
+-    status(&renewed, 200);
+-    assert_eq!(renewed.body["auth"]["policies"], json!(["default", "native-jwt"]));
+-    assert_eq!(renewed.body["auth"]["token_policies"], json!(["default", "native-jwt"]));
+-    let echoed = secret(&mut renewed, "/auth/client_token")?;
+-    assert!(echoed.as_str() == issued.as_str());
+-    let mut looked = f.admin("POST", "auth/token/lookup", json!({"token":issued.as_str()}))?;
+-    status(&looked, 200);
+-    assert_eq!(looked.body["data"]["policies"], json!(["default", "native-jwt"]));
+-    erase_json(&mut looked.body);
+-    Ok(())
+-}

@@ -1,0 +1,1 @@
+return new Function(files['pure.original.js']+'\n'+files['strict-diff.original.js']+'\n'+files['typed-binding.correct.original.js']+'\n'+files['verifier.source.js']+'\nreturn verifyOfficialAcl23FixtureR2Source;')()(files);

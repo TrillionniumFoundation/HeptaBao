@@ -1,0 +1,111 @@
+{
+  "schema": "heptabao.root-official271-r2-report-INFO-actual.r1",
+  "passed": true,
+  "checks": 22,
+  "rows": [
+    {
+      "name": "whole30_original_INFO_packet",
+      "passed": true
+    },
+    {
+      "name": "author43_exact",
+      "passed": true
+    },
+    {
+      "name": "root29_original_outer_closed",
+      "passed": true
+    },
+    {
+      "name": "whole_prior7_state_exact",
+      "passed": true
+    },
+    {
+      "name": "separate_original_INFO_GO",
+      "passed": true
+    },
+    {
+      "name": "official271_r2_original_INFO_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "official271_r2_original_INFO_call_official271-x230-acl23-r2-report-info-admit",
+      "passed": true
+    },
+    {
+      "name": "official271_r2_original_INFO_armed_tree_official271-x230-acl23-r2-report-info-admit",
+      "passed": true
+    },
+    {
+      "name": "official271_r2_original_INFO_call_official271-x230-acl23-r2-report-info-status0",
+      "passed": true
+    },
+    {
+      "name": "official271_r2_original_INFO_armed_tree_official271-x230-acl23-r2-report-info-status0",
+      "passed": true
+    },
+    {
+      "name": "official271_r2_original_INFO_call_official271-x230-acl23-r2-report-info-page0",
+      "passed": true
+    },
+    {
+      "name": "official271_r2_original_INFO_armed_tree_official271-x230-acl23-r2-report-info-page0",
+      "passed": true
+    },
+    {
+      "name": "official271_r2_original_INFO_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "official271_r2_original_INFO_observer_fb33dec05df1603940b92929c9cb75c6990fa6d0c1ca281f1a317d8221edfc47",
+      "passed": true
+    },
+    {
+      "name": "official271_r2_original_INFO_page_fb33dec05df1603940b92929c9cb75c6990fa6d0c1ca281f1a317d8221edfc47_0",
+      "passed": true
+    },
+    {
+      "name": "official271_r2_original_INFO_payload_fb33dec05df1603940b92929c9cb75c6990fa6d0c1ca281f1a317d8221edfc47",
+      "passed": true
+    },
+    {
+      "name": "official271_r2_original_INFO_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "three_calls_one_whole_original_metadata",
+      "passed": true
+    },
+    {
+      "name": "exact_original_request",
+      "passed": true
+    },
+    {
+      "name": "actual_exact_report_size_SHA_version",
+      "passed": true
+    },
+    {
+      "name": "actual_regular600_singlelink_full9",
+      "passed": true
+    },
+    {
+      "name": "closed_scope_without_body_or_case_claim",
+      "passed": true
+    }
+  ],
+  "packet": "3ae4a7d1058156f166eaecc67de5bb9171f63539",
+  "originalOperation": "fb33dec05df1603940b92929c9cb75c6990fa6d0c1ca281f1a317d8221edfc47",
+  "originalCalls": 3,
+  "originalPages": 1,
+  "reportPath": "/home/qian/heptabao-official271-acl23-oracle-20261106-r2/result.public.json",
+  "reportBytes": 651803,
+  "reportSHA256": "9048f3b5c854a190dadde86f5d7eec180c497313065bd70bd23a87124789a62d",
+  "actualVersion": "2053:2098461:651803:1793982810542000556:1793982810542000556",
+  "reportBodyObserved": false,
+  "actualACLCases": null,
+  "ownerReceiptQualified": false,
+  "currentNativeCalls": 0,
+  "currentOwnedFutures": 0,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

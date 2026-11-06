@@ -1,0 +1,66 @@
+{
+  "stage": [
+    [
+      "\"\"\"Stage exact unformatted snapshot forwarding source independently; no Cargo or product.\"\"\"",
+      "\"\"\"Stage exact combined source independently for separate build admission.\"\"\""
+    ],
+    [
+      "ROOT = Path('/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1')",
+      "ROOT = Path('/home/qian-qi/hb-02b90762-src-20261106-r1')"
+    ],
+    [
+      "COMMIT = '2379d02ba1ee3e88989815d5a978f998822bac4f'",
+      "COMMIT = '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'"
+    ],
+    [
+      "TREE = 'fc933c18a0415730e3658c17ff021db9b2df2caa'",
+      "TREE = '9781e9615ac5fb068d217241c74bb54bf87942cf'"
+    ],
+    [
+      "PARENT = 'b6949024dc5d0922ca9b27d865923d28982286c3'",
+      "PARENT = '025b05a340de841b8161c1120344e86eae30eb97'"
+    ],
+    [
+      "ANCESTRY = (\n    ('2379d02ba1ee3e88989815d5a978f998822bac4f', 'b6949024dc5d0922ca9b27d865923d28982286c3'),\n    ('b6949024dc5d0922ca9b27d865923d28982286c3', '8c95fb0a8b2f61933a09b04986df2bafc9e7095c'),\n    ('8c95fb0a8b2f61933a09b04986df2bafc9e7095c', '808e45d690f177ecb922e13d1ed19f7877156094'),\n    ('808e45d690f177ecb922e13d1ed19f7877156094', 'e3afc157447d35c861f275a761b29da3e42aff8e'),\n    ('e3afc157447d35c861f275a761b29da3e42aff8e', '4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'),\n    ('4e808d0ecb1bcded22870a7ec960dfb2491cf6ec', '1c66541993662f92cf717154e33717abedb2ea74'),\n    ('1c66541993662f92cf717154e33717abedb2ea74', '6d02ceca629163e1c07480fa1f21520434407143'),\n    ('6d02ceca629163e1c07480fa1f21520434407143', '19ba09ab5c494f25a3531749b0b99fc5c651d56c'),\n    ('19ba09ab5c494f25a3531749b0b99fc5c651d56c', 'e69e52f28c653d28c5ae36dbbf6eb51b844536bc'),\n    ('e69e52f28c653d28c5ae36dbbf6eb51b844536bc', 'c133d7e7b8a1df5f0be8f4337893f234c6ccede2'),\n    ('c133d7e7b8a1df5f0be8f4337893f234c6ccede2', 'df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'),\n    ('df026fe323dd7cf0f0ec57d7d2d9c5a79897053c', '6304a898192bfdf7eabec3c4ea40f7166e59a137'),\n    ('6304a898192bfdf7eabec3c4ea40f7166e59a137', 'e5de554f5dfe99f0de30012122fe3e248fb60532'),\n    ('e5de554f5dfe99f0de30012122fe3e248fb60532', 'fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd'),\n    ('fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd', '6d3040a2dbd06661a67f5c62df259ff446eb8515'),\n    ('6d3040a2dbd06661a67f5c62df259ff446eb8515', '49503322c7f446e5eb41e7744f1fdbd7f1192ecc'),\n)",
+      "ANCESTRY = (\n    ('02b90762b3d6cc8699cc88bffb6f76cb1f07e270', '025b05a340de841b8161c1120344e86eae30eb97'),\n    ('025b05a340de841b8161c1120344e86eae30eb97', '33b814c7034ec853151b1ff13e7529c83f65ea70'),\n    ('33b814c7034ec853151b1ff13e7529c83f65ea70', '808e45d690f177ecb922e13d1ed19f7877156094'),\n    ('808e45d690f177ecb922e13d1ed19f7877156094', 'e3afc157447d35c861f275a761b29da3e42aff8e'),\n    ('e3afc157447d35c861f275a761b29da3e42aff8e', '4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'),\n    ('4e808d0ecb1bcded22870a7ec960dfb2491cf6ec', '1c66541993662f92cf717154e33717abedb2ea74'),\n    ('1c66541993662f92cf717154e33717abedb2ea74', '6d02ceca629163e1c07480fa1f21520434407143'),\n    ('6d02ceca629163e1c07480fa1f21520434407143', '19ba09ab5c494f25a3531749b0b99fc5c651d56c'),\n    ('19ba09ab5c494f25a3531749b0b99fc5c651d56c', 'e69e52f28c653d28c5ae36dbbf6eb51b844536bc'),\n    ('e69e52f28c653d28c5ae36dbbf6eb51b844536bc', 'c133d7e7b8a1df5f0be8f4337893f234c6ccede2'),\n    ('c133d7e7b8a1df5f0be8f4337893f234c6ccede2', 'df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'),\n    ('df026fe323dd7cf0f0ec57d7d2d9c5a79897053c', '6304a898192bfdf7eabec3c4ea40f7166e59a137'),\n    ('6304a898192bfdf7eabec3c4ea40f7166e59a137', 'e5de554f5dfe99f0de30012122fe3e248fb60532'),\n    ('e5de554f5dfe99f0de30012122fe3e248fb60532', 'fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd'),\n    ('fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd', '6d3040a2dbd06661a67f5c62df259ff446eb8515'),\n    ('6d3040a2dbd06661a67f5c62df259ff446eb8515', '49503322c7f446e5eb41e7744f1fdbd7f1192ecc'),\n)"
+    ],
+    [
+      "assert len(entries) == 3930 and len({x[0] for x in entries}) == 3930",
+      "assert len(entries) == 3932 and len({x[0] for x in entries}) == 3932"
+    ],
+    [
+      "'heptabao.native-snapshot-forward-independent-source-stage.v1'",
+      "'heptabao.native-jwt-independent-source-stage.v1'"
+    ],
+    [
+      "'unformatted_snapshot_forward_source_for_separate_formatter_admission'",
+      "'combined_source_for_separate_build_admission'"
+    ],
+    [
+      "result['full_worktree']['tracked_bytes'] == 62486000",
+      "result['full_worktree']['tracked_bytes'] == 62537554"
+    ],
+    [
+      "'0e35cb5c3192efd2b9ddecfdbbe78581dd65c8ceb1aee8577709f7d7f504b811'",
+      "'c6cef770842a1b0006b4c86a58e325802d00dd5779dede468262f2693c3246cc'"
+    ],
+    [
+      "'canonical-native-snapshot-forward-2379d02b-from495.bundle'",
+      "'canonical-hb-02b90762-from495.bundle'"
+    ]
+  ],
+  "journal": [
+    [
+      "\"snapshot_2379_rog_source_gitfirst_r1\"",
+      "\"combined_02b90762_rog_source_gitfirst_r1\""
+    ],
+    [
+      "const GF_REQUEST = {blob:\"f84c09ce0410038dda0e55ce1a9b98609990780a\",\n bytes:112068,sha256:\"6f8ed22378a218d9128d019607472452b247a8f441b2234f52038945540ca5d8\"};",
+      "const GF_REQUEST = {blob:\"b2ce0ac862ac88e531650feea8847268403ce025\",\n bytes:111947,sha256:\"9a6003c2fb09cefc190f883c2d9ed7fbc285bc50d9fdf09bc0b2ca1346b215a9\"};"
+    ],
+    [
+      "/^heptabao-native-snapshot-2379d02b-rog-source-observe-r1-/",
+      "/^heptabao-combined-02b90762-rog-source-observe-r1-/"
+    ]
+  ]
+}

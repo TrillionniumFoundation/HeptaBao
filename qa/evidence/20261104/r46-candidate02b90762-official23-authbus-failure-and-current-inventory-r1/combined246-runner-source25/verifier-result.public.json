@@ -1,0 +1,430 @@
+{
+  "schema": "heptabao.jwt-policy.runner-adapter.source-verification.r1",
+  "pass": true,
+  "checkCount": 101,
+  "checks": [
+    {
+      "name": "whole before runner",
+      "pass": true
+    },
+    {
+      "name": "whole after runner",
+      "pass": true
+    },
+    {
+      "name": "unique exact runner headline",
+      "pass": true
+    },
+    {
+      "name": "unique exact runner groups-hash",
+      "pass": true
+    },
+    {
+      "name": "unique exact runner first-three-shapes",
+      "pass": true
+    },
+    {
+      "name": "unique exact runner shared-profile-count",
+      "pass": true
+    },
+    {
+      "name": "unique exact runner preflight-totals",
+      "pass": true
+    },
+    {
+      "name": "unique exact runner first-four-entry-count",
+      "pass": true
+    },
+    {
+      "name": "unique exact runner first-four-unique-count",
+      "pass": true
+    },
+    {
+      "name": "unique exact runner intent-count",
+      "pass": true
+    },
+    {
+      "name": "unique exact runner selected-totals",
+      "pass": true
+    },
+    {
+      "name": "unique exact runner explicit-baseline-delta",
+      "pass": true
+    },
+    {
+      "name": "unique exact runner actual-totals",
+      "pass": true
+    },
+    {
+      "name": "unique exact runner actual-unique",
+      "pass": true
+    },
+    {
+      "name": "unique exact runner actual-entries",
+      "pass": true
+    },
+    {
+      "name": "exact replacement reconstruction runner",
+      "pass": true
+    },
+    {
+      "name": "reverse unique runner actual-entries",
+      "pass": true
+    },
+    {
+      "name": "reverse unique runner actual-unique",
+      "pass": true
+    },
+    {
+      "name": "reverse unique runner actual-totals",
+      "pass": true
+    },
+    {
+      "name": "reverse unique runner explicit-baseline-delta",
+      "pass": true
+    },
+    {
+      "name": "reverse unique runner selected-totals",
+      "pass": true
+    },
+    {
+      "name": "reverse unique runner intent-count",
+      "pass": true
+    },
+    {
+      "name": "reverse unique runner first-four-unique-count",
+      "pass": true
+    },
+    {
+      "name": "reverse unique runner first-four-entry-count",
+      "pass": true
+    },
+    {
+      "name": "reverse unique runner preflight-totals",
+      "pass": true
+    },
+    {
+      "name": "reverse unique runner shared-profile-count",
+      "pass": true
+    },
+    {
+      "name": "reverse unique runner first-three-shapes",
+      "pass": true
+    },
+    {
+      "name": "reverse unique runner groups-hash",
+      "pass": true
+    },
+    {
+      "name": "reverse unique runner headline",
+      "pass": true
+    },
+    {
+      "name": "exact reverse reconstruction runner",
+      "pass": true
+    },
+    {
+      "name": "strict forward runner",
+      "pass": true
+    },
+    {
+      "name": "strict inverse runner",
+      "pass": true
+    },
+    {
+      "name": "strict reverse runner",
+      "pass": true
+    },
+    {
+      "name": "unbound admission runner",
+      "pass": true
+    },
+    {
+      "name": "original12000 runner",
+      "pass": true
+    },
+    {
+      "name": "no ready bypass runner",
+      "pass": true
+    },
+    {
+      "name": "whole before launcher",
+      "pass": true
+    },
+    {
+      "name": "whole after launcher",
+      "pass": true
+    },
+    {
+      "name": "unique exact launcher headline",
+      "pass": true
+    },
+    {
+      "name": "unique exact launcher groups-hash",
+      "pass": true
+    },
+    {
+      "name": "unique exact launcher groups-exact-byte-cap",
+      "pass": true
+    },
+    {
+      "name": "unique exact launcher first-three-shapes",
+      "pass": true
+    },
+    {
+      "name": "unique exact launcher entries-total",
+      "pass": true
+    },
+    {
+      "name": "unique exact launcher unique-total",
+      "pass": true
+    },
+    {
+      "name": "unique exact launcher first-four-entry-count",
+      "pass": true
+    },
+    {
+      "name": "unique exact launcher first-four-unique-count",
+      "pass": true
+    },
+    {
+      "name": "unique exact launcher admission-totals",
+      "pass": true
+    },
+    {
+      "name": "unique exact launcher selected-first-four",
+      "pass": true
+    },
+    {
+      "name": "unique exact launcher current-new-tests",
+      "pass": true
+    },
+    {
+      "name": "unique exact launcher stdout-totals",
+      "pass": true
+    },
+    {
+      "name": "exact replacement reconstruction launcher",
+      "pass": true
+    },
+    {
+      "name": "reverse unique launcher stdout-totals",
+      "pass": true
+    },
+    {
+      "name": "reverse unique launcher current-new-tests",
+      "pass": true
+    },
+    {
+      "name": "reverse unique launcher selected-first-four",
+      "pass": true
+    },
+    {
+      "name": "reverse unique launcher admission-totals",
+      "pass": true
+    },
+    {
+      "name": "reverse unique launcher first-four-unique-count",
+      "pass": true
+    },
+    {
+      "name": "reverse unique launcher first-four-entry-count",
+      "pass": true
+    },
+    {
+      "name": "reverse unique launcher unique-total",
+      "pass": true
+    },
+    {
+      "name": "reverse unique launcher entries-total",
+      "pass": true
+    },
+    {
+      "name": "reverse unique launcher first-three-shapes",
+      "pass": true
+    },
+    {
+      "name": "reverse unique launcher groups-exact-byte-cap",
+      "pass": true
+    },
+    {
+      "name": "reverse unique launcher groups-hash",
+      "pass": true
+    },
+    {
+      "name": "reverse unique launcher headline",
+      "pass": true
+    },
+    {
+      "name": "exact reverse reconstruction launcher",
+      "pass": true
+    },
+    {
+      "name": "strict forward launcher",
+      "pass": true
+    },
+    {
+      "name": "strict inverse launcher",
+      "pass": true
+    },
+    {
+      "name": "strict reverse launcher",
+      "pass": true
+    },
+    {
+      "name": "unbound admission launcher",
+      "pass": true
+    },
+    {
+      "name": "original12000 launcher",
+      "pass": true
+    },
+    {
+      "name": "no ready bypass launcher",
+      "pass": true
+    },
+    {
+      "name": "entire runtime family/list/exact execution loop unchanged",
+      "pass": true
+    },
+    {
+      "name": "unique outer exception header",
+      "pass": true
+    },
+    {
+      "name": "runner final error/cleanup entire tail unchanged",
+      "pass": true
+    },
+    {
+      "name": "generic read_bound function unchanged",
+      "pass": true
+    },
+    {
+      "name": "same-PID runner argv unchanged",
+      "pass": true
+    },
+    {
+      "name": "frozen stage schema unchanged",
+      "pass": true
+    },
+    {
+      "name": "unbound FINAL_COMMIT",
+      "pass": true
+    },
+    {
+      "name": "unbound FINAL_TREE",
+      "pass": true
+    },
+    {
+      "name": "unbound SOURCE_STAGE_ROOT",
+      "pass": true
+    },
+    {
+      "name": "unbound DIAGNOSTIC_COMMIT",
+      "pass": true
+    },
+    {
+      "name": "unbound DIAGNOSTIC_TREE",
+      "pass": true
+    },
+    {
+      "name": "all existing fences and normal/compile pipelines unchanged",
+      "pass": true
+    },
+    {
+      "name": "launcher lock-close/refusal tail unchanged",
+      "pass": true
+    },
+    {
+      "name": "launcher known byte cap39648/40000",
+      "pass": true
+    },
+    {
+      "name": "runner known byte cap31984/40000",
+      "pass": true
+    },
+    {
+      "name": "old exact inventory254/237",
+      "pass": true
+    },
+    {
+      "name": "new exact inventory268/246",
+      "pass": true
+    },
+    {
+      "name": "fourteen unchanged groups27+61",
+      "pass": true
+    },
+    {
+      "name": "eighty-eight unchanged rows incl full source provenance",
+      "pass": true
+    },
+    {
+      "name": "entire ordered group/profile/fullname join",
+      "pass": true
+    },
+    {
+      "name": "profile definitions unchanged except counts",
+      "pass": true
+    },
+    {
+      "name": "profile22/229/17 exact",
+      "pass": true
+    },
+    {
+      "name": "eighteen families with600 deadline",
+      "pass": true
+    },
+    {
+      "name": "same22 file/default source names",
+      "pass": true
+    },
+    {
+      "name": "exact input groups33825",
+      "pass": true
+    },
+    {
+      "name": "only finite groups read bound33825",
+      "pass": true
+    },
+    {
+      "name": "exact new groups hash bound in both controls",
+      "pass": true
+    },
+    {
+      "name": "original C149/166 provenance retained",
+      "pass": true
+    },
+    {
+      "name": "explicit scoped new test delta",
+      "pass": true
+    },
+    {
+      "name": "actual local selected20 Native plus4 legacy",
+      "pass": true
+    },
+    {
+      "name": "snapshot23+Service4+normal61 retained separately",
+      "pass": true
+    }
+  ],
+  "files": 2,
+  "exactReplacements": 25,
+  "hunks": 12,
+  "unique": 246,
+  "profileEntries": 268,
+  "profiles": {
+    "file": 22,
+    "default": 229,
+    "HA": 17
+  },
+  "groups": 18,
+  "groupBytes": 33825,
+  "launcherBytes": 39648,
+  "launcherMarginBeforeBinding": 352,
+  "runnerBytes": 31984,
+  "pythonCompiled": false,
+  "rustCompiled": false,
+  "RuntimeCalls": 0,
+  "finalBindingReady": false
+}

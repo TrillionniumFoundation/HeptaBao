@@ -1,0 +1,11 @@
+{
+  "schema": "heptabao.root-writer-label-store-collision-recovery.r1",
+  "affected": [
+    "r45_inventory_discovery_GO",
+    "r45_publication_proof"
+  ],
+  "cause": "The archive writer uses its supplied label as a store key; root reused two object-store labels as archive labels.",
+  "actualOriginalsUnchanged": true,
+  "sourceRecovery": "Whole original archived texts, exact known blob/size/SHA; no Native or Git mutation replay.",
+  "avoidance": "Use unique archive labels distinct from semantic object keys."
+}

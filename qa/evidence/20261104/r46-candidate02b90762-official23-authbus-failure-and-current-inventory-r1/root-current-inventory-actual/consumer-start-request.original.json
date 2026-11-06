@@ -1,0 +1,32 @@
+{
+  "host": "x230",
+  "root": "/home/qian",
+  "kind": "files",
+  "query": "(^|/)[^/]*(heptabao|openbao|vault|bao)[^/]*$",
+  "query_mode": "regex",
+  "ignore_case": true,
+  "include_hidden": true,
+  "early_termination": false,
+  "context_lines": 0,
+  "exclude_patterns": [
+    "**/.git/**",
+    "**/.ssh/**",
+    "**/.gnupg/**",
+    "**/.cache/**",
+    "**/node_modules/**",
+    "**/target/**",
+    "**/target-*/**",
+    "**/*token*",
+    "**/*credential*",
+    "**/*capsule*",
+    "**/*.key",
+    "**/*.pem",
+    "heptabao-same-root-publication-normal-20261105-r1/**",
+    "heptabao-native-20261030-5a1e-r5/**"
+  ],
+  "max_entries": 4096,
+  "max_results": 128,
+  "max_bytes": 1048576,
+  "timeout_seconds": 15,
+  "file_pattern": "*.service|*.timer|*.socket|*.hcl|*.conf|*.json|*.yaml|*.yml|*.toml|*.ini|*.sh|*.py|*.env|*bao*|*vault*"
+}

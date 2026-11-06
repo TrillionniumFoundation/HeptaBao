@@ -1,0 +1,14 @@
+function qualifyOracleR2OuterMinimum(p,go) {
+ const rows=[],ck=(name,v)=>{rows.push({name,passed:v===true});if(v!==true)throw Error(name);},f=p.raw,s=JSON.parse(f["STATE.original.closed.json"]),r=JSON.parse(f["RELEASE.public.json"]),a=JSON.parse(f["authority.native.original.json"]),o=JSON.parse(f["stdout.original.txt"]),same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+ ck("whole_minimum7",p.audit.whole&&p.audit.files===7&&p.audit.bytes===222965);
+ ck("exact_new_GO_and_original_job",s.goRaw===go.text&&same(r.go,go.pins)&&s.job==="1a1b1b4fbfa-fc05-7a60"&&r.job===s.job);
+ ck("original_succeeded_zero",a.job_id===s.job&&a.state==="succeeded"&&a.exit_code===0&&a.timed_out===false);
+ ck("whole_durable_terminal_output",a.output_complete===true&&a.output_durable===true&&a.terminal_publication_confirmed===true&&a.log_bytes.stdout.seen===681&&a.log_bytes.stdout.stored===681&&a.log_bytes.stderr.stored===0&&!a.log_truncated.stdout&&!a.log_truncated.stderr);
+ ck("exact_original_stdout",same(gitBlobMeta(f["stdout.original.txt"]),r.originalStdout)&&gitBlobMeta(f["stdout.original.txt"]).blob==="8ba51a89419cb8be7c215bea6f29677c9de258d8");
+ for(const file of ["authority-status.sdk.original.json","streams-status.sdk.original.json"]){const x=JSON.parse(JSON.parse(f[file]).content[0].text);ck(file+"_completed_inactive",x.async_state==="completed"&&x.result_state==="stored_observed"&&x.owned_future_active===false);}
+ ck("capture_and_entry12_closed",o.capture_complete===true&&o.failure===null&&o.all_entry_file_descriptors_closed===true&&o.entry_fd_count===12&&o.pending_signal===null);
+ ck("exact_announced_public_report",o.report.bytes===651803&&o.report.sha256==="9048f3b5c854a190dadde86f5d7eec180c497313065bd70bd23a87124789a62d"&&same(o.report.full9_decimal,["2053","2098461","1000","1000","33152","1","651803","1793982810542000556","1793982810542000556"])&&o.report.closed===true);
+ ck("all_original_outer_calls_closed",Object.keys(s.calls).length===7&&Object.values(s.calls).every(c=>c.phase==="accepted"&&c.called===true)&&s.completedObservers.length===2&&s.completedObservers.every(x=>x.completedInactive===true)&&s.pending===null&&s.activeObserver===null&&!s.nativeCallInFlight&&!s.paused);
+ ck("lane_release_not_product_pass",r.laneReleased&&r.nativeCallsInFlight===0&&r.activeFutures===0&&r.actualCaseRecords===null&&r.originalOwnerReceiptQualified===false&&r.reportMetadataIndependentlyObserved===false&&r.reportBodyObserved===false&&o.parity_qualified===false);
+ return{schema:"heptabao.root-official271-fresh-r2-outer-minimum.r1",passed:true,checks:rows.length,rows,packet:p.audit.tree,originalJob:s.job,exitCode:0,currentCalls:0,currentFutures:0,reportBytes:651803,actualACLCases:null,ownerReceiptQualified:false,fullOuterChainQualificationPending:true,fullReplacement:false,productionCutover:false,legacyCleanup:false};
+}

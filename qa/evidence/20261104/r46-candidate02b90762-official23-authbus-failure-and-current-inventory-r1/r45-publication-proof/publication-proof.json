@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.r45-publication-proof.v1",
+  "branch": "codex/heptabao-validation-20261104",
+  "commit": "549bf308874ed357a9df6f5991713c4778a84d3f",
+  "tree": "49ae90fa5f57e47e198c6daea3f985f03739e93d",
+  "parent": "47b25ff07c1ec7e83f392cb60dc62d7c74b472ed",
+  "prefix": "qa/evidence/20261104/r45-snapshot49-complete-fresh-auth-stage-and-oracle-recovery-r1",
+  "cutoff": "2026-11-06 16:22:23 UTC",
+  "rootCurrentTree": "af44bfcd216f2e76fa4705945b7ac2ef198e12e0",
+  "allFiveImmediateTreesWholeReadBack": true,
+  "commitParentAndTreeVerified": true,
+  "exactRefReadOnlyReconciled": true,
+  "refUpdateInvokedOnce": true,
+  "refSDKSuccess": true,
+  "indexTotals": {
+    "packets": 31,
+    "files": 1943,
+    "bytes": 26872728,
+    "allWhole": true
+  },
+  "indexChecks": 64,
+  "executorFilesystemUsed": false,
+  "rootRuntimeCalls": 0,
+  "taskContinues": true,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

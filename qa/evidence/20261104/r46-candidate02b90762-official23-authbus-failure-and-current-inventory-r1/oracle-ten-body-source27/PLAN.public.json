@@ -1,0 +1,272 @@
+{
+  "schema": "heptabao.official271.r2.ten-range-report-body-source.r1",
+  "status": "SOURCE_ONLY_NO_NATIVE_AUTHORIZATION",
+  "slot": "official271_x230_acl23_oracle_gitfirst_r2",
+  "action": "authorize_oracle_report_body",
+  "originalJob": "1a1b1b4fbfa-fc05-7a60",
+  "host": "x230",
+  "fixedReport": {
+    "path": "/home/qian/heptabao-official271-acl23-oracle-20261106-r2/result.public.json",
+    "bytes": 651803,
+    "sha256": "9048f3b5c854a190dadde86f5d7eec180c497313065bd70bd23a87124789a62d",
+    "version": "2053:2098461:651803:1793982810542000556:1793982810542000556",
+    "infoOperation": "fb33dec05df1603940b92929c9cb75c6990fa6d0c1ca281f1a317d8221edfc47",
+    "infoNative": {
+      "blob": "5de2fd1d0891ce3fee0bb3b4e3968452e7715dcd",
+      "bytes": 463,
+      "sha256": "50afd94d7cb022e910476f5812f78beb008323cb042a378182a32c99761893d7"
+    },
+    "full9Strings": [
+      "2053",
+      "2098461",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "651803",
+      "1793982810542000556",
+      "1793982810542000556"
+    ]
+  },
+  "source": {
+    "blob": "8ef2f6875479aada7effd09d85fd398d23b43ca1",
+    "bytes": 32147,
+    "sha256": "c6989da12d4ccebd3ae22ce9f71ef99f01714f473f61fe29517a0b15d657e69d"
+  },
+  "priorClosedState": {
+    "blob": "b4206a027c1584bf5a0bcaaf54d1cec9dc1ce036",
+    "bytes": 227036,
+    "sha256": "0fe475c8bebb1fa287c9aa9e944731ae4618edd9f87ced4e852b3b9b48e9faba"
+  },
+  "originalOuterPacket": "add8a90793a5eceec69e98b389d8ce4dadca00df",
+  "independentInfoActualPacket": "3ae4a7d1058156f166eaecc67de5bb9171f63539",
+  "infoGO": {
+    "blob": "b73bc52094bcfb4e2a6fe3ac343a096293dc4afd",
+    "bytes": 3364,
+    "sha256": "606ac5905629756fd4b04208498f44da847512d5ca529400719bc7aced8149cc"
+  },
+  "exactRequests": [
+    {
+      "blob": "af4e5d3b2a3e4a3e995c87b3b5c8edf902910a68",
+      "bytes": 326,
+      "sha256": "93a2f825b56df42871bc8e4529d27e9f5ace353aec6c6abed678497a5eab4979"
+    },
+    {
+      "blob": "4064a4b95b3333f4c4f5b487decb7c1d299cd1e6",
+      "bytes": 330,
+      "sha256": "70feb42f03317c7589056b8b1a639932cdfe608ac2e806a1daaacf9a52acd02e"
+    },
+    {
+      "blob": "3be4277978fa7422d4d70d4ca3239f91a7006ce6",
+      "bytes": 331,
+      "sha256": "917bfc19c6b300654f742555eccee4d5d8d1a6b60472da0d686e97a0432e0ae2"
+    },
+    {
+      "blob": "5bb0631c792c014e14dd772f522fd5bca6198621",
+      "bytes": 331,
+      "sha256": "8da81d14bf4c561ce4c0560c23a46a15cadfa571dda943e3905e15d4aa05ac4c"
+    },
+    {
+      "blob": "5589350ca22a464f0655d34b277558a41c537b46",
+      "bytes": 331,
+      "sha256": "1f399bb67128888b8d72d5a05d602c980845b5f527f949376b40e7a6cbec2b4e"
+    },
+    {
+      "blob": "1e4b5491e3507fe198fa71f139ea52f94672f6a5",
+      "bytes": 331,
+      "sha256": "4ea9b21ed5b45381ff569fe74b00c0b2268606541ce550f5d912441e03c97984"
+    },
+    {
+      "blob": "83f4a370ba4fbc52971e4a4142cbe013532507d5",
+      "bytes": 331,
+      "sha256": "f3c32901ac9cb9d9e921cbbf580d2eee9f65385847f0ad785db747cc280269bd"
+    },
+    {
+      "blob": "279f53810a412e76b2b1f0a8e4341ef7fab6d0d2",
+      "bytes": 331,
+      "sha256": "5c5dd34279d052e8282ef0ca5977a8cf52da72cb2ab679e0e33aa540a14dd58c"
+    },
+    {
+      "blob": "2acf5b82bffb12ca4fadaff883b1255c90edffb8",
+      "bytes": 331,
+      "sha256": "83ef20e19bf5cef3fc0e6d8c186faf46f0bad2fd0ed2bd120eca68d61ef03bcc"
+    },
+    {
+      "blob": "107e4cd0d7cbe4c2f1aed3422d120e8cbda448aa",
+      "bytes": 331,
+      "sha256": "19f1f7c23373d1ea2627af34676e6676748bb6a56370ab24a7de31159a86eaf1"
+    }
+  ],
+  "ranges": [
+    {
+      "offset": 0,
+      "limit": 65536
+    },
+    {
+      "offset": 65536,
+      "limit": 65536
+    },
+    {
+      "offset": 131072,
+      "limit": 65536
+    },
+    {
+      "offset": 196608,
+      "limit": 65536
+    },
+    {
+      "offset": 262144,
+      "limit": 65536
+    },
+    {
+      "offset": 327680,
+      "limit": 65536
+    },
+    {
+      "offset": 393216,
+      "limit": 65536
+    },
+    {
+      "offset": 458752,
+      "limit": 65536
+    },
+    {
+      "offset": 524288,
+      "limit": 65536
+    },
+    {
+      "offset": 589824,
+      "limit": 61979
+    }
+  ],
+  "budgets": {
+    "maximumBinaryReadStarts": 10,
+    "maximumFileInfoOperations": 0,
+    "maximumProcessStartCalls": 0,
+    "wholeBytes": 651803,
+    "perBinaryRange": 65536,
+    "immutableBodyPageBytes": 16384,
+    "oldImmutablePageBytes": 8192,
+    "maximumStatusCallsPerID": 8,
+    "maximumImmutablePagesPerID": 128,
+    "maximumOriginalPayloadBytes": 1048576,
+    "maximumSimultaneousCallsOrFutures": 1
+  },
+  "requiredGO": {
+    "authorization": "GO",
+    "scope": "official271_oracle_result_binary_read_ranges_only",
+    "original_job": "1a1b1b4fbfa-fc05-7a60",
+    "info_operation": "fb33dec05df1603940b92929c9cb75c6990fa6d0c1ca281f1a317d8221edfc47",
+    "maximum_binary_read_starts": 10,
+    "maximum_file_info_operations": 0,
+    "maximum_process_start_calls": 0,
+    "immutable_body_page_bytes": 16384,
+    "maximum_operation_status_calls_per_id": 8,
+    "maximum_immutable_pages_per_id": 128,
+    "fixed_report": {
+      "path": "/home/qian/heptabao-official271-acl23-oracle-20261106-r2/result.public.json",
+      "bytes": 651803,
+      "sha256": "9048f3b5c854a190dadde86f5d7eec180c497313065bd70bd23a87124789a62d",
+      "version": "2053:2098461:651803:1793982810542000556:1793982810542000556"
+    },
+    "exact_requests": [
+      {
+        "blob": "af4e5d3b2a3e4a3e995c87b3b5c8edf902910a68",
+        "bytes": 326,
+        "sha256": "93a2f825b56df42871bc8e4529d27e9f5ace353aec6c6abed678497a5eab4979"
+      },
+      {
+        "blob": "4064a4b95b3333f4c4f5b487decb7c1d299cd1e6",
+        "bytes": 330,
+        "sha256": "70feb42f03317c7589056b8b1a639932cdfe608ac2e806a1daaacf9a52acd02e"
+      },
+      {
+        "blob": "3be4277978fa7422d4d70d4ca3239f91a7006ce6",
+        "bytes": 331,
+        "sha256": "917bfc19c6b300654f742555eccee4d5d8d1a6b60472da0d686e97a0432e0ae2"
+      },
+      {
+        "blob": "5bb0631c792c014e14dd772f522fd5bca6198621",
+        "bytes": 331,
+        "sha256": "8da81d14bf4c561ce4c0560c23a46a15cadfa571dda943e3905e15d4aa05ac4c"
+      },
+      {
+        "blob": "5589350ca22a464f0655d34b277558a41c537b46",
+        "bytes": 331,
+        "sha256": "1f399bb67128888b8d72d5a05d602c980845b5f527f949376b40e7a6cbec2b4e"
+      },
+      {
+        "blob": "1e4b5491e3507fe198fa71f139ea52f94672f6a5",
+        "bytes": 331,
+        "sha256": "4ea9b21ed5b45381ff569fe74b00c0b2268606541ce550f5d912441e03c97984"
+      },
+      {
+        "blob": "83f4a370ba4fbc52971e4a4142cbe013532507d5",
+        "bytes": 331,
+        "sha256": "f3c32901ac9cb9d9e921cbbf580d2eee9f65385847f0ad785db747cc280269bd"
+      },
+      {
+        "blob": "279f53810a412e76b2b1f0a8e4341ef7fab6d0d2",
+        "bytes": 331,
+        "sha256": "5c5dd34279d052e8282ef0ca5977a8cf52da72cb2ab679e0e33aa540a14dd58c"
+      },
+      {
+        "blob": "2acf5b82bffb12ca4fadaff883b1255c90edffb8",
+        "bytes": 331,
+        "sha256": "83ef20e19bf5cef3fc0e6d8c186faf46f0bad2fd0ed2bd120eca68d61ef03bcc"
+      },
+      {
+        "blob": "107e4cd0d7cbe4c2f1aed3422d120e8cbda448aa",
+        "bytes": 331,
+        "sha256": "19f1f7c23373d1ea2627af34676e6676748bb6a56370ab24a7de31159a86eaf1"
+      }
+    ]
+  },
+  "existingAlgorithmReference": {
+    "blob": "bfb93119d9e3bd6840f73023f605fa14e9f26790",
+    "bytes": 33512,
+    "sha256": "ee56cf9516ae2dfbfa9c7115bcd70c9a70a451173c0279f537f953c1accae0d7",
+    "scope": "Already reviewed CLI13 contiguous binary range closure; bindings are replaced for this single independent X230 public report. No inherited old GO or file authority."
+  },
+  "changes": [
+    {
+      "name": "data",
+      "reason": "Bind the actual completed INFO metadata, full9, version, prior closed state, and ten immutable exact requests."
+    },
+    {
+      "name": "gfAuthorizeOracleReportBody",
+      "reason": "One separate BODY GO attached to exact current closed slot; ten reads only, no INFO/process initialization."
+    },
+    {
+      "name": "gfValidateRequest",
+      "reason": "Sequential exact body request, original returned ID only; 8 status/128 immutable page counters."
+    },
+    {
+      "name": "gfPrepareOne",
+      "reason": "New admission/status/page arms cite validated BODY GO; original INFO arm/call map remains byte-equivalent."
+    },
+    {
+      "name": "gfInvokePreparedOnce",
+      "reason": "Increment once-only body-start counter before the one original Native admission; archive/error control otherwise exact."
+    },
+    {
+      "name": "gfAcceptArchivedSDK",
+      "reason": "Only new binary observers use 16384-byte immutable delivery pages; prior 8192-byte records remain unchanged."
+    },
+    {
+      "name": "gfCloseOriginalObserver",
+      "reason": "Reuse exact reviewed range/SHA/EOF/UTF8/whole-report algorithm with literal bindings; full payload before parse, decoded report whole before semantic reading."
+    },
+    {
+      "name": "gfRun",
+      "reason": "Expose the single explicit BODY authorization action, preserving normal-return error handling and prior history."
+    }
+  ],
+  "beforeAfterUnchangedFunctions": 8,
+  "oldR1FailureAndPausedStatus0Unmodified": true,
+  "unknownHandling": "Any Native/Git UNKNOWN pauses this existing exact context. No loop or automatic replay; preserve original key/ID, SDK, armed and error history.",
+  "wholeReportQualification": false,
+  "ownerReceiptQualification": false,
+  "aclResultsQualification": false,
+  "actualBodyReads": 0
+}

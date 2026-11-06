@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.pure-git-readback-recovery.v1",
+  "originalTree": "ea13fb44cf45c97338396e2ccf7bdc4594aad156",
+  "originalCreateRepeated": false,
+  "originalMerkleWhole": true,
+  "wholeBeforeFailure": 99,
+  "exactRemainingReads": 11,
+  "failedFixedLeaf": "call-020.request.original.json",
+  "failedBlob": "d632e5db6ab6b0ec2e05a3c17fe0a550754216cd",
+  "failedOriginalSdk": {
+    "blob": "ddc8b45cb9056b09ca3a6bc0e94ea3aff95211f2",
+    "bytes": 304,
+    "sha256": "5710b903750ccc9853075a23278fc1cbcc7468c124b9087e9d09c592e5d2bede"
+  },
+  "sameBlobRecoverySdk": {
+    "blob": "fdf0bac7181aaaf86262278edf7c584f91516bd9",
+    "bytes": 297,
+    "sha256": "75587de33e4d0341aea09d4fa7edb7a50def57c1df1269eeacd7f516100f1110"
+  },
+  "wholeAfterRecovery": true,
+  "originalNativeImpact": false,
+  "NativeCalls": 0
+}

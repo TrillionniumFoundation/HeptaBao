@@ -1,0 +1,176 @@
+{
+  "schema": "heptabao.official271.r2.body02.same-ID-recovery.source-checks.r1",
+  "pass": true,
+  "check_count": 39,
+  "checks": [
+    {
+      "name": "strict source forward",
+      "passed": true
+    },
+    {
+      "name": "strict source reverse",
+      "passed": true
+    },
+    {
+      "name": "exact original paused state pin",
+      "passed": true
+    },
+    {
+      "name": "exact original returned ID and request",
+      "passed": true
+    },
+    {
+      "name": "original exact BODY2 range",
+      "passed": true
+    },
+    {
+      "name": "original status0 failure and budget one retained",
+      "passed": true
+    },
+    {
+      "name": "original status SDK raw pin",
+      "passed": true
+    },
+    {
+      "name": "original three starts/two completed ranges",
+      "passed": true
+    },
+    {
+      "name": "one exact status query same arguments",
+      "passed": true
+    },
+    {
+      "name": "same thirteen functions",
+      "passed": true
+    },
+    {
+      "name": "unchanged gfNeed",
+      "passed": true
+    },
+    {
+      "name": "unchanged gfMetaEquals",
+      "passed": true
+    },
+    {
+      "name": "unchanged gfState",
+      "passed": true
+    },
+    {
+      "name": "unchanged gfSave",
+      "passed": true
+    },
+    {
+      "name": "unchanged gfIntegerText",
+      "passed": true
+    },
+    {
+      "name": "unchanged gfPrepareOne",
+      "passed": true
+    },
+    {
+      "name": "unchanged gfInvokePreparedOnce",
+      "passed": true
+    },
+    {
+      "name": "unchanged gfReconcileSameGitArchiveReadOnly",
+      "passed": true
+    },
+    {
+      "name": "unchanged gfRun",
+      "passed": true
+    },
+    {
+      "name": "closed dispatch only status/result",
+      "passed": true
+    },
+    {
+      "name": "accept unchanged except new16K page cap",
+      "passed": true
+    },
+    {
+      "name": "full payload external before native parse",
+      "passed": true
+    },
+    {
+      "name": "chunk exact bytes/version/hash guards",
+      "passed": true
+    },
+    {
+      "name": "no partial report semantic parsing",
+      "passed": true
+    },
+    {
+      "name": "new context retains old immutable",
+      "passed": true
+    },
+    {
+      "name": "observer cloned without resetting old future",
+      "passed": true
+    },
+    {
+      "name": "new context cannot reinitialize",
+      "passed": true
+    },
+    {
+      "name": "one exact status guard accepted",
+      "passed": true
+    },
+    {
+      "name": "wrong ID refused",
+      "passed": true
+    },
+    {
+      "name": "operation_start refused",
+      "passed": true
+    },
+    {
+      "name": "process_start refused",
+      "passed": true
+    },
+    {
+      "name": "payload before closure refused",
+      "passed": true
+    },
+    {
+      "name": "second new status refused",
+      "passed": true
+    },
+    {
+      "name": "closed original first16K page guard accepted",
+      "passed": true
+    },
+    {
+      "name": "wrong original page cursor refused",
+      "passed": true
+    },
+    {
+      "name": "129th original page refused",
+      "passed": true
+    },
+    {
+      "name": "actual prepare new GO arm whole",
+      "passed": true
+    },
+    {
+      "name": "actual prepare leaves original exact state",
+      "passed": true
+    },
+    {
+      "name": "every further step detects old context change",
+      "passed": true
+    }
+  ],
+  "NativeCalls": 0,
+  "PythonRuns": 0,
+  "oldStatusConsumed": 1,
+  "newStatusMaximum": 1,
+  "originalStatusTotalMaximum": 8,
+  "originalPayloadPagesMaximum": 128,
+  "immutablePageBytes": 16384,
+  "payloadBytesMaximum": 1048576,
+  "operationStartMaximum": 0,
+  "processStartMaximum": 0,
+  "handbackAuthorized": false,
+  "reportSemanticParsing": false,
+  "sourceOnlyFake": true
+}

@@ -1,0 +1,18 @@
+{
+  "schema": "heptabao.root.candidate-create-commit-intent.r1",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "parent": "025b05a340de841b8161c1120344e86eae30eb97",
+  "tree": "9781e9615ac5fb068d217241c74bb54bf87942cf",
+  "branch": "codex/heptabao-snapshot49-jwt147-9781e961-20261106",
+  "message": "fix(storage,auth): integrate streaming snapshots and JWT policy schema 147\n\nIntegrate the 49 verified snapshot source mappings and the test-only Identity projection repair. Match the observed OpenBao 2.7.1 JWT role create/update/delete/list ACLs, store configured policies without injecting default, and apply token_no_default_policy at issuance.\n\nPreserve historical role serialization and issued grants, reject root-policy issuance, and require schema 147 for the new policy semantics with publication and restore downgrade checks. Add cold-reopen, policy, ACL, renewal and historical-format regressions.\n\nSource checks and exact before/after diffs are verified. The planned 246 distinct tests and 268 configuration runs still require compilation and execution. This commit does not authorize production cutover or legacy cleanup.",
+  "sourceLeafIndex": {
+    "blob": "b0fb9b0a1215383eb29223756c29554d10caaaa5",
+    "bytes": 453838,
+    "sha256": "c6cef770842a1b0006b4c86a58e325802d00dd5779dede468262f2693c3246cc"
+  },
+  "sourceLeafCount": 3932,
+  "sourceBytes": 62537554,
+  "sourceIntentArchive": "cc43ea9289ec57e98d1e3f68779ebc0696534a01",
+  "mutationCount": 1,
+  "automaticRetry": false
+}

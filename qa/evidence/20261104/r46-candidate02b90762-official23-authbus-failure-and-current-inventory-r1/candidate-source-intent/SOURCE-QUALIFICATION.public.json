@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.root.recovered-combined-candidate.source-qualification.r1",
+  "baseCommit": "025b05a340de841b8161c1120344e86eae30eb97",
+  "baseTree": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+  "baseTreeMerkle": {
+    "root_sha": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+    "trees_verified": 358,
+    "leaf_count": 3916
+  },
+  "snapshot49SourceMap": {
+    "blob": "0301035c7b6f3d8a2d82a9a3f09724c00d0245dc",
+    "bytes": 30671,
+    "sha256": "0171e334aaaecf8c9b9dc7719bbf97375ef408aa2d1bf43217507cacbd7944e0"
+  },
+  "Identity2": {
+    "sourceTree": "4a424e3a39f96a1fb94fc2b721478673a4afa58d",
+    "engineBlob": "e98d3580ac3fc8cb90eb9d1317d1cc3e5133eaee",
+    "nativeTestIntermediateBlob": "57dd3760335f245f2a37540899b338a8b9b56189"
+  },
+  "jwt12SourceTree": "9ca955f3cdb12f6d4ee7245154ac498fe197c416",
+  "jwt12Author272ExactlyReproduced": {
+    "blob": "5648f3c2a80f3c13fd1bc2e84c1c23e54b8f13ef",
+    "bytes": 30432,
+    "sha256": "71d918ef5a17cede90fbeea1e4e222f823a66868ba20fd9939d7972706a29d98"
+  },
+  "allProductionBeforePinsMatch": true,
+  "allSource39HunksExact": true,
+  "preResetIndependent70": {
+    "passed": true,
+    "outputBlob": "3bd831dc5e309e2d864e524750cb7ee2a7b4ec36",
+    "outputBytes": 6081,
+    "outputSHA256": "3aac990ba6201c92c0c347403dbac08f45f4f8a0c9566d2e0155909cb8ece584",
+    "outputNotDurablyArchivedBeforeReset": true
+  },
+  "rootRecoveredTree": "9781e9615ac5fb068d217241c74bb54bf87942cf",
+  "matchesPreResetExpectedTree": true,
+  "leafCount": 3932,
+  "totalBytes": 62537554,
+  "changedLeaves": 61,
+  "addedLeaves": 16,
+  "deletions": 0,
+  "plannedUniqueTests": 246,
+  "plannedProfileExecutions": 268,
+  "actualNewRustTestsExecuted": 0,
+  "sourceFormatted": false,
+  "rustCompiled": false,
+  "fullReplacementQualified": false
+}

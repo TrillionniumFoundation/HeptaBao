@@ -1,0 +1,89 @@
+{
+  "schema": "heptabao.root-Auth-HOME-r3-fixed3-readback-source.r1",
+  "passed": true,
+  "checks": 16,
+  "rows": [
+    {
+      "name": "whole_SOURCE32",
+      "passed": true
+    },
+    {
+      "name": "source_author31_exact",
+      "passed": true
+    },
+    {
+      "name": "original_inert_root62_closed",
+      "passed": true
+    },
+    {
+      "name": "exact_original_state_authority_stream",
+      "passed": true
+    },
+    {
+      "name": "exact_actual_original_state_pin",
+      "passed": true
+    },
+    {
+      "name": "six_hunk_forward_inverse",
+      "passed": true
+    },
+    {
+      "name": "all_journal_functions_byte_unchanged",
+      "passed": true
+    },
+    {
+      "name": "unchanged_readback_and_runtime_derivers",
+      "passed": true
+    },
+    {
+      "name": "exact_three_actual_stage_full9_pins",
+      "passed": true
+    },
+    {
+      "name": "three_exact_readonly_metadata_requests",
+      "passed": true
+    },
+    {
+      "name": "four_conditional_chunks96654",
+      "passed": true
+    },
+    {
+      "name": "fresh_scope_no_previous_budget_reset",
+      "passed": true
+    },
+    {
+      "name": "actual_versions_required_no_prediction",
+      "passed": true
+    },
+    {
+      "name": "pre_finally_receipt_separate_from_final_success",
+      "passed": true
+    },
+    {
+      "name": "bounded_readonly_scope",
+      "passed": true
+    },
+    {
+      "name": "runtime_requires_separate_actual_inputs_and_GO",
+      "passed": true
+    }
+  ],
+  "packet": "c1ee44f788afff5bcbfea08ce934ce9608f75e91",
+  "originalInertQualification": {
+    "blob": "7ae8d9d4b6e2101b79a2c3fde256716e5639c03a",
+    "bytes": 8041,
+    "sha256": "f042507c76eb3651c70370dcaddb44613e64582a6e17ef8bfd99ad5d1e1e4916"
+  },
+  "metadataReads": 3,
+  "conditionalBinaryReads": 4,
+  "additionalBinaryBytes": 96654,
+  "previousReadsetBytesPreserved": 96654,
+  "cumulativeTwoReadsets": 193308,
+  "actualVersionsNotYetObserved": true,
+  "NativeCalls": 0,
+  "runtimeStartsAuthorized": false,
+  "credentialsQualified": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

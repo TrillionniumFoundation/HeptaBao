@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.original-runtime-future-delivery-activation.v1",
+  "originalRootGo": {
+    "blob": "179dadd5fda8192e78a5ae387e6a8ed768d4adab",
+    "bytes": 2981,
+    "sha256": "74fe23a30afc4efc34baa9a1413bd96f8936a615f101ae59a524fec304154db8"
+  },
+  "deliveryRootGo": {
+    "blob": "c7ee949925513a39007bae15b89cf8e230bb6de6",
+    "bytes": 4926,
+    "sha256": "d0187cf2b372ac2b80671f51d3e098865b7997df7eb86128fd802edd70f3880a"
+  },
+  "priorClosedState": {
+    "blob": "f3ee8a7deed5183685c0b2c5701b242b5c795bce",
+    "bytes": 68853,
+    "sha256": "ce4b7bf7b8b2f271e51680405643c2ff5562bb9f246b0b473928c6504bb426bf"
+  },
+  "afterJournal": {
+    "blob": "c2274b5979ecc8d73f95c27fdfb004339ca133db",
+    "bytes": 19244,
+    "sha256": "1988c68e38d215bb938337238b35425049c06b786630be783053b9a57c2b3418"
+  },
+  "slot": "owner_authbus_current_home_runtime_gitfirst_r3",
+  "oldObserversUnchanged": true,
+  "oldCallsUnchanged": true,
+  "originalContextUnchanged": true,
+  "nextStdout": 32768,
+  "futureProcessReadPageLimit": 16384,
+  "otherNewObserverPageLimit": 8192,
+  "newStarts": 0,
+  "NativeCalls": 0,
+  "phase": "whole_before_future_observer",
+  "archive": "1ec5c06d74e965ad3b21453e846ee89485ce1523",
+  "whole": true
+}

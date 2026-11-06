@@ -1,0 +1,8 @@
+{
+  "kind": "pure_v8_source_checker",
+  "priorPassChecks": 100,
+  "issue": "lastIndexOf could select a nested cleanup catch; it did not establish the entire outer tail",
+  "candidateChanged": false,
+  "NativeCalls": 0,
+  "resolution": "require a unique newline-prefixed column-zero outer except header and compare from that exact anchor"
+}

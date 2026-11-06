@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"hosts\": [\n    {\n      \"allow_execute\": true,\n      \"allow_pty\": true,\n      \"allow_write\": true,\n      \"execution_mode\": \"operator\",\n      \"name\": \"ai395\",\n      \"operator_tools\": true,\n      \"platform\": \"linux\",\n      \"privileged_actions\": []\n    },\n    {\n      \"allow_execute\": true,\n      \"allow_pty\": true,\n      \"allow_write\": true,\n      \"execution_mode\": \"operator\",\n      \"name\": \"desktop\",\n      \"operator_tools\": true,\n      \"platform\": \"linux\",\n      \"privileged_actions\": []\n    },\n    {\n      \"allow_execute\": true,\n      \"allow_pty\": true,\n      \"allow_write\": true,\n      \"execution_mode\": \"operator\",\n      \"name\": \"mac\",\n      \"operator_tools\": true,\n      \"platform\": \"macos\",\n      \"privileged_actions\": []\n    },\n    {\n      \"allow_execute\": true,\n      \"allow_pty\": true,\n      \"allow_write\": true,\n      \"execution_mode\": \"operator\",\n      \"name\": \"main\",\n      \"operator_tools\": true,\n      \"platform\": \"macos\",\n      \"privileged_actions\": []\n    },\n    {\n      \"allow_execute\": true,\n      \"allow_pty\": true,\n      \"allow_write\": true,\n      \"execution_mode\": \"operator\",\n      \"name\": \"pocket4\",\n      \"operator_tools\": true,\n      \"platform\": \"linux\",\n      \"privileged_actions\": []\n    },\n    {\n      \"allow_execute\": true,\n      \"allow_pty\": true,\n      \"allow_write\": true,\n      \"execution_mode\": \"operator\",\n      \"name\": \"rog\",\n      \"operator_tools\": true,\n      \"platform\": \"linux\",\n      \"privileged_actions\": []\n    },\n    {\n      \"allow_execute\": true,\n      \"allow_pty\": true,\n      \"allow_write\": true,\n      \"execution_mode\": \"operator\",\n      \"name\": \"x230\",\n      \"operator_tools\": true,\n      \"platform\": \"linux\",\n      \"privileged_actions\": []\n    }\n  ]\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

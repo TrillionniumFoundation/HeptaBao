@@ -1,0 +1,1345 @@
+{
+  "schema": "heptabao.official271.ACL23.r2.observed-summary.r1",
+  "source_report": {
+    "blob": "0605fa44d81ccb93e1d1f00a0f8f7a37f4bea897",
+    "bytes": 651803,
+    "sha256": "9048f3b5c854a190dadde86f5d7eec180c497313065bd70bd23a87124789a62d"
+  },
+  "source_report_whole_tree": "72e65bb1ed6909bf40d4d88bbc93d0d2c535faa2",
+  "capture_complete": true,
+  "failure": null,
+  "live_identity": {
+    "archive_member_matches_executable": true,
+    "artifact_sha256": "0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243",
+    "binary_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+    "cluster_id": "78b21cea-49e3-d6ce-9221-f0abd7984be4",
+    "endpoint": "https://127.0.0.1:23625",
+    "launcher_source_sha256": "5c11b432e1180fb40394fab382da774cf4171bf51431aab7e5823068cfba01d6",
+    "product": "OpenBao",
+    "provenance_url": "https://github.com/openbao/openbao/releases/tag/v2.7.1",
+    "server_mode": "server_not_dev",
+    "storage": "pebbledb",
+    "synthetic_only": true,
+    "tls_verified": true,
+    "version": "2.7.1"
+  },
+  "actual_case_count": 23,
+  "actual_cases": [
+    {
+      "ordinal": 0,
+      "id": "delete-none",
+      "method": "DELETE",
+      "path": "auth/jwt-acl/role/delete-none",
+      "capabilities": [],
+      "actual_raw_status": 403,
+      "official_source_prediction": 403,
+      "old_R2_source_prediction": 403,
+      "official_prediction_matches_actual": true,
+      "old_R2_prediction_differs": false,
+      "wire_complete": true,
+      "wire_status": 403,
+      "wire_context_closed": true,
+      "wire_retried": false,
+      "normalized": false,
+      "transition_checked": true,
+      "beforeEqualsAfter": true,
+      "beforeListed": [
+        "collection-seed",
+        "delete-delete",
+        "delete-delete-sudo",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "afterListed": [
+        "collection-seed",
+        "delete-delete",
+        "delete-delete-sudo",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "actor": {
+        "independent_lookup": true,
+        "minimum_observed_ttl_seconds": 30,
+        "no_default_policy": true,
+        "no_entity_binding": true,
+        "no_root_policy": true,
+        "only_exact_case_policy": true,
+        "real_issued_service": true
+      }
+    },
+    {
+      "ordinal": 1,
+      "id": "delete-update",
+      "method": "DELETE",
+      "path": "auth/jwt-acl/role/delete-update",
+      "capabilities": [
+        "update"
+      ],
+      "actual_raw_status": 403,
+      "official_source_prediction": 403,
+      "old_R2_source_prediction": 403,
+      "official_prediction_matches_actual": true,
+      "old_R2_prediction_differs": false,
+      "wire_complete": true,
+      "wire_status": 403,
+      "wire_context_closed": true,
+      "wire_retried": false,
+      "normalized": false,
+      "transition_checked": true,
+      "beforeEqualsAfter": true,
+      "beforeListed": [
+        "collection-seed",
+        "delete-delete",
+        "delete-delete-sudo",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "afterListed": [
+        "collection-seed",
+        "delete-delete",
+        "delete-delete-sudo",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "actor": {
+        "independent_lookup": true,
+        "minimum_observed_ttl_seconds": 30,
+        "no_default_policy": true,
+        "no_entity_binding": true,
+        "no_root_policy": true,
+        "only_exact_case_policy": true,
+        "real_issued_service": true
+      }
+    },
+    {
+      "ordinal": 2,
+      "id": "delete-update-sudo",
+      "method": "DELETE",
+      "path": "auth/jwt-acl/role/delete-update-sudo",
+      "capabilities": [
+        "update",
+        "sudo"
+      ],
+      "actual_raw_status": 403,
+      "official_source_prediction": 403,
+      "old_R2_source_prediction": 204,
+      "official_prediction_matches_actual": true,
+      "old_R2_prediction_differs": true,
+      "wire_complete": true,
+      "wire_status": 403,
+      "wire_context_closed": true,
+      "wire_retried": false,
+      "normalized": false,
+      "transition_checked": true,
+      "beforeEqualsAfter": true,
+      "beforeListed": [
+        "collection-seed",
+        "delete-delete",
+        "delete-delete-sudo",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "afterListed": [
+        "collection-seed",
+        "delete-delete",
+        "delete-delete-sudo",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "actor": {
+        "independent_lookup": true,
+        "minimum_observed_ttl_seconds": 30,
+        "no_default_policy": true,
+        "no_entity_binding": true,
+        "no_root_policy": true,
+        "only_exact_case_policy": true,
+        "real_issued_service": true
+      }
+    },
+    {
+      "ordinal": 3,
+      "id": "delete-delete",
+      "method": "DELETE",
+      "path": "auth/jwt-acl/role/delete-delete",
+      "capabilities": [
+        "delete"
+      ],
+      "actual_raw_status": 204,
+      "official_source_prediction": 204,
+      "old_R2_source_prediction": 403,
+      "official_prediction_matches_actual": true,
+      "old_R2_prediction_differs": true,
+      "wire_complete": true,
+      "wire_status": 204,
+      "wire_context_closed": true,
+      "wire_retried": false,
+      "normalized": false,
+      "transition_checked": true,
+      "beforeEqualsAfter": false,
+      "beforeListed": [
+        "collection-seed",
+        "delete-delete",
+        "delete-delete-sudo",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "afterListed": [
+        "collection-seed",
+        "delete-delete-sudo",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "actor": {
+        "independent_lookup": true,
+        "minimum_observed_ttl_seconds": 30,
+        "no_default_policy": true,
+        "no_entity_binding": true,
+        "no_root_policy": true,
+        "only_exact_case_policy": true,
+        "real_issued_service": true
+      }
+    },
+    {
+      "ordinal": 4,
+      "id": "delete-delete-sudo",
+      "method": "DELETE",
+      "path": "auth/jwt-acl/role/delete-delete-sudo",
+      "capabilities": [
+        "delete",
+        "sudo"
+      ],
+      "actual_raw_status": 204,
+      "official_source_prediction": 204,
+      "old_R2_source_prediction": 403,
+      "official_prediction_matches_actual": true,
+      "old_R2_prediction_differs": true,
+      "wire_complete": true,
+      "wire_status": 204,
+      "wire_context_closed": true,
+      "wire_retried": false,
+      "normalized": false,
+      "transition_checked": true,
+      "beforeEqualsAfter": false,
+      "beforeListed": [
+        "collection-seed",
+        "delete-delete-sudo",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "afterListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "actor": {
+        "independent_lookup": true,
+        "minimum_observed_ttl_seconds": 30,
+        "no_default_policy": true,
+        "no_entity_binding": true,
+        "no_root_policy": true,
+        "only_exact_case_policy": true,
+        "real_issued_service": true
+      }
+    },
+    {
+      "ordinal": 5,
+      "id": "collection-bare-get-none",
+      "method": "GET",
+      "path": "auth/jwt-acl/role",
+      "capabilities": [],
+      "actual_raw_status": 403,
+      "official_source_prediction": 403,
+      "old_R2_source_prediction": 403,
+      "official_prediction_matches_actual": true,
+      "old_R2_prediction_differs": false,
+      "wire_complete": true,
+      "wire_status": 403,
+      "wire_context_closed": true,
+      "wire_retried": false,
+      "normalized": false,
+      "transition_checked": true,
+      "beforeEqualsAfter": true,
+      "beforeListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "afterListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "actor": {
+        "independent_lookup": true,
+        "minimum_observed_ttl_seconds": 30,
+        "no_default_policy": true,
+        "no_entity_binding": true,
+        "no_root_policy": true,
+        "only_exact_case_policy": true,
+        "real_issued_service": true
+      }
+    },
+    {
+      "ordinal": 6,
+      "id": "collection-bare-get-read",
+      "method": "GET",
+      "path": "auth/jwt-acl/role",
+      "capabilities": [
+        "read"
+      ],
+      "actual_raw_status": 405,
+      "official_source_prediction": 405,
+      "old_R2_source_prediction": 403,
+      "official_prediction_matches_actual": true,
+      "old_R2_prediction_differs": true,
+      "wire_complete": true,
+      "wire_status": 405,
+      "wire_context_closed": true,
+      "wire_retried": false,
+      "normalized": false,
+      "transition_checked": true,
+      "beforeEqualsAfter": true,
+      "beforeListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "afterListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "actor": {
+        "independent_lookup": true,
+        "minimum_observed_ttl_seconds": 30,
+        "no_default_policy": true,
+        "no_entity_binding": true,
+        "no_root_policy": true,
+        "only_exact_case_policy": true,
+        "real_issued_service": true
+      }
+    },
+    {
+      "ordinal": 7,
+      "id": "collection-bare-get-list",
+      "method": "GET",
+      "path": "auth/jwt-acl/role",
+      "capabilities": [
+        "list"
+      ],
+      "actual_raw_status": 403,
+      "official_source_prediction": 403,
+      "old_R2_source_prediction": 200,
+      "official_prediction_matches_actual": true,
+      "old_R2_prediction_differs": true,
+      "wire_complete": true,
+      "wire_status": 403,
+      "wire_context_closed": true,
+      "wire_retried": false,
+      "normalized": false,
+      "transition_checked": true,
+      "beforeEqualsAfter": true,
+      "beforeListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "afterListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "actor": {
+        "independent_lookup": true,
+        "minimum_observed_ttl_seconds": 30,
+        "no_default_policy": true,
+        "no_entity_binding": true,
+        "no_root_policy": true,
+        "only_exact_case_policy": true,
+        "real_issued_service": true
+      }
+    },
+    {
+      "ordinal": 8,
+      "id": "collection-list-query-none",
+      "method": "GET",
+      "path": "auth/jwt-acl/role?list=true",
+      "capabilities": [],
+      "actual_raw_status": 403,
+      "official_source_prediction": 403,
+      "old_R2_source_prediction": 403,
+      "official_prediction_matches_actual": true,
+      "old_R2_prediction_differs": false,
+      "wire_complete": true,
+      "wire_status": 403,
+      "wire_context_closed": true,
+      "wire_retried": false,
+      "normalized": false,
+      "transition_checked": true,
+      "beforeEqualsAfter": true,
+      "beforeListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "afterListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "actor": {
+        "independent_lookup": true,
+        "minimum_observed_ttl_seconds": 30,
+        "no_default_policy": true,
+        "no_entity_binding": true,
+        "no_root_policy": true,
+        "only_exact_case_policy": true,
+        "real_issued_service": true
+      }
+    },
+    {
+      "ordinal": 9,
+      "id": "collection-list-query-read",
+      "method": "GET",
+      "path": "auth/jwt-acl/role?list=true",
+      "capabilities": [
+        "read"
+      ],
+      "actual_raw_status": 403,
+      "official_source_prediction": 403,
+      "old_R2_source_prediction": 403,
+      "official_prediction_matches_actual": true,
+      "old_R2_prediction_differs": false,
+      "wire_complete": true,
+      "wire_status": 403,
+      "wire_context_closed": true,
+      "wire_retried": false,
+      "normalized": false,
+      "transition_checked": true,
+      "beforeEqualsAfter": true,
+      "beforeListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "afterListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "actor": {
+        "independent_lookup": true,
+        "minimum_observed_ttl_seconds": 30,
+        "no_default_policy": true,
+        "no_entity_binding": true,
+        "no_root_policy": true,
+        "only_exact_case_policy": true,
+        "real_issued_service": true
+      }
+    },
+    {
+      "ordinal": 10,
+      "id": "collection-list-query-list",
+      "method": "GET",
+      "path": "auth/jwt-acl/role?list=true",
+      "capabilities": [
+        "list"
+      ],
+      "actual_raw_status": 200,
+      "official_source_prediction": 200,
+      "old_R2_source_prediction": 200,
+      "official_prediction_matches_actual": true,
+      "old_R2_prediction_differs": false,
+      "wire_complete": true,
+      "wire_status": 200,
+      "wire_context_closed": true,
+      "wire_retried": false,
+      "normalized": false,
+      "transition_checked": true,
+      "beforeEqualsAfter": true,
+      "beforeListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "afterListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "actor": {
+        "independent_lookup": true,
+        "minimum_observed_ttl_seconds": 30,
+        "no_default_policy": true,
+        "no_entity_binding": true,
+        "no_root_policy": true,
+        "only_exact_case_policy": true,
+        "real_issued_service": true
+      }
+    },
+    {
+      "ordinal": 11,
+      "id": "collection-list-method-none",
+      "method": "LIST",
+      "path": "auth/jwt-acl/role",
+      "capabilities": [],
+      "actual_raw_status": 403,
+      "official_source_prediction": 403,
+      "old_R2_source_prediction": 403,
+      "official_prediction_matches_actual": true,
+      "old_R2_prediction_differs": false,
+      "wire_complete": true,
+      "wire_status": 403,
+      "wire_context_closed": true,
+      "wire_retried": false,
+      "normalized": false,
+      "transition_checked": true,
+      "beforeEqualsAfter": true,
+      "beforeListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "afterListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "actor": {
+        "independent_lookup": true,
+        "minimum_observed_ttl_seconds": 30,
+        "no_default_policy": true,
+        "no_entity_binding": true,
+        "no_root_policy": true,
+        "only_exact_case_policy": true,
+        "real_issued_service": true
+      }
+    },
+    {
+      "ordinal": 12,
+      "id": "collection-list-method-read",
+      "method": "LIST",
+      "path": "auth/jwt-acl/role",
+      "capabilities": [
+        "read"
+      ],
+      "actual_raw_status": 403,
+      "official_source_prediction": 403,
+      "old_R2_source_prediction": 403,
+      "official_prediction_matches_actual": true,
+      "old_R2_prediction_differs": false,
+      "wire_complete": true,
+      "wire_status": 403,
+      "wire_context_closed": true,
+      "wire_retried": false,
+      "normalized": false,
+      "transition_checked": true,
+      "beforeEqualsAfter": true,
+      "beforeListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "afterListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "actor": {
+        "independent_lookup": true,
+        "minimum_observed_ttl_seconds": 30,
+        "no_default_policy": true,
+        "no_entity_binding": true,
+        "no_root_policy": true,
+        "only_exact_case_policy": true,
+        "real_issued_service": true
+      }
+    },
+    {
+      "ordinal": 13,
+      "id": "collection-list-method-list",
+      "method": "LIST",
+      "path": "auth/jwt-acl/role",
+      "capabilities": [
+        "list"
+      ],
+      "actual_raw_status": 200,
+      "official_source_prediction": 200,
+      "old_R2_source_prediction": 200,
+      "official_prediction_matches_actual": true,
+      "old_R2_prediction_differs": false,
+      "wire_complete": true,
+      "wire_status": 200,
+      "wire_context_closed": true,
+      "wire_retried": false,
+      "normalized": false,
+      "transition_checked": true,
+      "beforeEqualsAfter": true,
+      "beforeListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "afterListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "actor": {
+        "independent_lookup": true,
+        "minimum_observed_ttl_seconds": 30,
+        "no_default_policy": true,
+        "no_entity_binding": true,
+        "no_root_policy": true,
+        "only_exact_case_policy": true,
+        "real_issued_service": true
+      }
+    },
+    {
+      "ordinal": 14,
+      "id": "existing-post-none",
+      "method": "POST",
+      "path": "auth/jwt-acl/role/existing-none",
+      "capabilities": [],
+      "actual_raw_status": 403,
+      "official_source_prediction": 403,
+      "old_R2_source_prediction": 403,
+      "official_prediction_matches_actual": true,
+      "old_R2_prediction_differs": false,
+      "wire_complete": true,
+      "wire_status": 403,
+      "wire_context_closed": true,
+      "wire_retried": false,
+      "normalized": false,
+      "transition_checked": true,
+      "beforeEqualsAfter": true,
+      "beforeListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "afterListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "actor": {
+        "independent_lookup": true,
+        "minimum_observed_ttl_seconds": 30,
+        "no_default_policy": true,
+        "no_entity_binding": true,
+        "no_root_policy": true,
+        "only_exact_case_policy": true,
+        "real_issued_service": true
+      }
+    },
+    {
+      "ordinal": 15,
+      "id": "existing-post-update",
+      "method": "POST",
+      "path": "auth/jwt-acl/role/existing-update",
+      "capabilities": [
+        "update"
+      ],
+      "actual_raw_status": 204,
+      "official_source_prediction": 204,
+      "old_R2_source_prediction": 403,
+      "official_prediction_matches_actual": true,
+      "old_R2_prediction_differs": true,
+      "wire_complete": true,
+      "wire_status": 204,
+      "wire_context_closed": true,
+      "wire_retried": false,
+      "normalized": false,
+      "transition_checked": true,
+      "beforeEqualsAfter": false,
+      "beforeListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "afterListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "actor": {
+        "independent_lookup": true,
+        "minimum_observed_ttl_seconds": 30,
+        "no_default_policy": true,
+        "no_entity_binding": true,
+        "no_root_policy": true,
+        "only_exact_case_policy": true,
+        "real_issued_service": true
+      }
+    },
+    {
+      "ordinal": 16,
+      "id": "existing-post-update-sudo",
+      "method": "POST",
+      "path": "auth/jwt-acl/role/existing-update-sudo",
+      "capabilities": [
+        "update",
+        "sudo"
+      ],
+      "actual_raw_status": 204,
+      "official_source_prediction": 204,
+      "old_R2_source_prediction": 204,
+      "official_prediction_matches_actual": true,
+      "old_R2_prediction_differs": false,
+      "wire_complete": true,
+      "wire_status": 204,
+      "wire_context_closed": true,
+      "wire_retried": false,
+      "normalized": false,
+      "transition_checked": true,
+      "beforeEqualsAfter": false,
+      "beforeListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "afterListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "actor": {
+        "independent_lookup": true,
+        "minimum_observed_ttl_seconds": 30,
+        "no_default_policy": true,
+        "no_entity_binding": true,
+        "no_root_policy": true,
+        "only_exact_case_policy": true,
+        "real_issued_service": true
+      }
+    },
+    {
+      "ordinal": 17,
+      "id": "fresh-post-create",
+      "method": "POST",
+      "path": "auth/jwt-acl/role/fresh-create",
+      "capabilities": [
+        "create"
+      ],
+      "actual_raw_status": 204,
+      "official_source_prediction": 204,
+      "old_R2_source_prediction": 403,
+      "official_prediction_matches_actual": true,
+      "old_R2_prediction_differs": true,
+      "wire_complete": true,
+      "wire_status": 204,
+      "wire_context_closed": true,
+      "wire_retried": false,
+      "normalized": false,
+      "transition_checked": true,
+      "beforeEqualsAfter": false,
+      "beforeListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo"
+      ],
+      "afterListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo",
+        "fresh-create"
+      ],
+      "actor": {
+        "independent_lookup": true,
+        "minimum_observed_ttl_seconds": 30,
+        "no_default_policy": true,
+        "no_entity_binding": true,
+        "no_root_policy": true,
+        "only_exact_case_policy": true,
+        "real_issued_service": true
+      }
+    },
+    {
+      "ordinal": 18,
+      "id": "fresh-post-update-sudo",
+      "method": "POST",
+      "path": "auth/jwt-acl/role/fresh-update-sudo",
+      "capabilities": [
+        "update",
+        "sudo"
+      ],
+      "actual_raw_status": 403,
+      "official_source_prediction": 403,
+      "old_R2_source_prediction": 204,
+      "official_prediction_matches_actual": true,
+      "old_R2_prediction_differs": true,
+      "wire_complete": true,
+      "wire_status": 403,
+      "wire_context_closed": true,
+      "wire_retried": false,
+      "normalized": false,
+      "transition_checked": true,
+      "beforeEqualsAfter": true,
+      "beforeListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo",
+        "fresh-create"
+      ],
+      "afterListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo",
+        "fresh-create"
+      ],
+      "actor": {
+        "independent_lookup": true,
+        "minimum_observed_ttl_seconds": 30,
+        "no_default_policy": true,
+        "no_entity_binding": true,
+        "no_root_policy": true,
+        "only_exact_case_policy": true,
+        "real_issued_service": true
+      }
+    },
+    {
+      "ordinal": 19,
+      "id": "fresh-post-create-update-sudo",
+      "method": "POST",
+      "path": "auth/jwt-acl/role/fresh-create-update-sudo",
+      "capabilities": [
+        "create",
+        "update",
+        "sudo"
+      ],
+      "actual_raw_status": 204,
+      "official_source_prediction": 204,
+      "old_R2_source_prediction": 204,
+      "official_prediction_matches_actual": true,
+      "old_R2_prediction_differs": false,
+      "wire_complete": true,
+      "wire_status": 204,
+      "wire_context_closed": true,
+      "wire_retried": false,
+      "normalized": false,
+      "transition_checked": true,
+      "beforeEqualsAfter": false,
+      "beforeListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo",
+        "fresh-create"
+      ],
+      "afterListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo",
+        "fresh-create",
+        "fresh-create-update-sudo"
+      ],
+      "actor": {
+        "independent_lookup": true,
+        "minimum_observed_ttl_seconds": 30,
+        "no_default_policy": true,
+        "no_entity_binding": true,
+        "no_root_policy": true,
+        "only_exact_case_policy": true,
+        "real_issued_service": true
+      }
+    },
+    {
+      "ordinal": 20,
+      "id": "config-post-none",
+      "method": "POST",
+      "path": "auth/jwt-acl/config",
+      "capabilities": [],
+      "actual_raw_status": 403,
+      "official_source_prediction": 403,
+      "old_R2_source_prediction": 403,
+      "official_prediction_matches_actual": true,
+      "old_R2_prediction_differs": false,
+      "wire_complete": true,
+      "wire_status": 403,
+      "wire_context_closed": true,
+      "wire_retried": false,
+      "normalized": false,
+      "transition_checked": true,
+      "beforeEqualsAfter": true,
+      "beforeListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo",
+        "fresh-create",
+        "fresh-create-update-sudo"
+      ],
+      "afterListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo",
+        "fresh-create",
+        "fresh-create-update-sudo"
+      ],
+      "actor": {
+        "independent_lookup": true,
+        "minimum_observed_ttl_seconds": 30,
+        "no_default_policy": true,
+        "no_entity_binding": true,
+        "no_root_policy": true,
+        "only_exact_case_policy": true,
+        "real_issued_service": true
+      }
+    },
+    {
+      "ordinal": 21,
+      "id": "config-post-update",
+      "method": "POST",
+      "path": "auth/jwt-acl/config",
+      "capabilities": [
+        "update"
+      ],
+      "actual_raw_status": 204,
+      "official_source_prediction": 204,
+      "old_R2_source_prediction": 403,
+      "official_prediction_matches_actual": true,
+      "old_R2_prediction_differs": true,
+      "wire_complete": true,
+      "wire_status": 204,
+      "wire_context_closed": true,
+      "wire_retried": false,
+      "normalized": false,
+      "transition_checked": true,
+      "beforeEqualsAfter": false,
+      "beforeListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo",
+        "fresh-create",
+        "fresh-create-update-sudo"
+      ],
+      "afterListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo",
+        "fresh-create",
+        "fresh-create-update-sudo"
+      ],
+      "actor": {
+        "independent_lookup": true,
+        "minimum_observed_ttl_seconds": 30,
+        "no_default_policy": true,
+        "no_entity_binding": true,
+        "no_root_policy": true,
+        "only_exact_case_policy": true,
+        "real_issued_service": true
+      }
+    },
+    {
+      "ordinal": 22,
+      "id": "config-post-update-sudo",
+      "method": "POST",
+      "path": "auth/jwt-acl/config",
+      "capabilities": [
+        "update",
+        "sudo"
+      ],
+      "actual_raw_status": 204,
+      "official_source_prediction": 204,
+      "old_R2_source_prediction": 204,
+      "official_prediction_matches_actual": true,
+      "old_R2_prediction_differs": false,
+      "wire_complete": true,
+      "wire_status": 204,
+      "wire_context_closed": true,
+      "wire_retried": false,
+      "normalized": false,
+      "transition_checked": true,
+      "beforeEqualsAfter": false,
+      "beforeListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo",
+        "fresh-create",
+        "fresh-create-update-sudo"
+      ],
+      "afterListed": [
+        "collection-seed",
+        "delete-none",
+        "delete-update",
+        "delete-update-sudo",
+        "existing-none",
+        "existing-update",
+        "existing-update-sudo",
+        "fresh-create",
+        "fresh-create-update-sudo"
+      ],
+      "actor": {
+        "independent_lookup": true,
+        "minimum_observed_ttl_seconds": 30,
+        "no_default_policy": true,
+        "no_entity_binding": true,
+        "no_root_policy": true,
+        "only_exact_case_policy": true,
+        "real_issued_service": true
+      }
+    }
+  ],
+  "observed_status_counts": {
+    "200": 2,
+    "204": 8,
+    "403": 12,
+    "405": 1
+  },
+  "all_official_predictions_match": true,
+  "old_R2_source_prediction_differences": [
+    "delete-update-sudo",
+    "delete-delete",
+    "delete-delete-sudo",
+    "collection-bare-get-read",
+    "collection-bare-get-list",
+    "existing-post-update",
+    "fresh-post-create",
+    "fresh-post-update-sudo",
+    "config-post-update"
+  ],
+  "candidate_actual_cases": 0,
+  "parity_qualified": false,
+  "raw_status_normalization": false,
+  "policy_scope": {
+    "input_role_fields": [
+      "role_type",
+      "user_claim",
+      "bound_audiences"
+    ],
+    "observed_policy_readback_variants": [
+      {
+        "token_policies_present": true,
+        "token_policies": []
+      }
+    ],
+    "explicit_empty_policy_input_tested": false,
+    "root_policy_input_tested": false,
+    "role_no_default_policy_issuance_tested": false
+  },
+  "setup_config_projection": {
+    "bound_issuer": "heptabao-acl23-official271-acl23-r2",
+    "jwt_supported_algs": [
+      "RS256"
+    ],
+    "jwt_validation_pubkeys": [
+      "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0vx7agoebGcQSuuPiLJX\nZptN9nndrQmbXEps2aiAFbWhM78LhWx4cbbfAAtVT86zwu1RK7aPFFxuhDR1L6tS\noc/BJECPebWKRXjBZCiFV4n3oknjhMstn64tZ/2W+5JsGY4Hc5n9yBXArwl93lqt\n7/RN5w6Cf0h4QyQ5v+65YGjQR0/FDW2QvzqY368QQMicAtaSqzs8KJZgnYb9c7d0\nzgdAZHzu6qMQvRL5hajrn1n91CbOpbISD08qNLyrdkt+bFTWhAI4vMQFh6WeZu0f\nM4lFd2NcRwr3XPksINHaQ+G/xBniIqbw0Ls1jF44+csFCur+kEgU8awapJzKnqDK\ngwIDAQAB\n-----END PUBLIC KEY-----"
+    ]
+  },
+  "public_PEM_request_bytes": 450,
+  "source_PEM_file_bytes": 451,
+  "acl_requests_observed": 838,
+  "acl_request_cap": 853,
+  "extra_live_health_requests": {
+    "attempted": 1,
+    "completed": 1,
+    "maximum": 1
+  },
+  "startup_requests_actual_count": null,
+  "component": {
+    "classes": 4,
+    "variants": 8,
+    "all_variants_pass": true,
+    "HTTP_requests": 0,
+    "product_cases": 0
+  },
+  "owner": {
+    "same_originals_closed": true,
+    "passed_process_method": true,
+    "deadline_reset": false,
+    "original_deadline_ns": 2685214770179157,
+    "started_ns": 2684854872254707,
+    "finished_ns": 2684871761953469,
+    "children": [
+      {
+        "label": "official_openbao_launcher.158",
+        "kind": "utility",
+        "original_PID": 211407,
+        "exit_code": 0,
+        "same_original_Popen_wait": true,
+        "completed_original_wait_count": 1,
+        "original_SID_retired_observed": true,
+        "SID_survivors": [],
+        "SID_observation_gaps": [],
+        "gaps": [],
+        "signals": [],
+        "fallback": false,
+        "exec_input_guard_acknowledged": true
+      },
+      {
+        "label": "official_openbao_launcher.158",
+        "kind": "utility",
+        "original_PID": 211408,
+        "exit_code": 0,
+        "same_original_Popen_wait": true,
+        "completed_original_wait_count": 1,
+        "original_SID_retired_observed": true,
+        "SID_survivors": [],
+        "SID_observation_gaps": [],
+        "gaps": [],
+        "signals": [],
+        "fallback": false,
+        "exec_input_guard_acknowledged": true
+      },
+      {
+        "label": "official_openbao_launcher.158",
+        "kind": "utility",
+        "original_PID": 211409,
+        "exit_code": 0,
+        "same_original_Popen_wait": true,
+        "completed_original_wait_count": 1,
+        "original_SID_retired_observed": true,
+        "SID_survivors": [],
+        "SID_observation_gaps": [],
+        "gaps": [],
+        "signals": [],
+        "fallback": false,
+        "exec_input_guard_acknowledged": true
+      },
+      {
+        "label": "official_openbao_launcher.328",
+        "kind": "server",
+        "original_PID": 211411,
+        "exit_code": 0,
+        "same_original_Popen_wait": true,
+        "completed_original_wait_count": 1,
+        "original_SID_retired_observed": true,
+        "SID_survivors": [],
+        "SID_observation_gaps": [],
+        "gaps": [],
+        "signals": [
+          {
+            "authority": "original_kernel_pidfd",
+            "fallback": false,
+            "requested_ns": 2684871131102893,
+            "sent": true,
+            "signal": 15
+          }
+        ],
+        "fallback": false,
+        "exec_input_guard_acknowledged": true
+      }
+    ]
+  },
+  "artifact_before_after_full_metadata_equal": true,
+  "artifact_metadata_after": [
+    {
+      "expected_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+      "full9_decimal": [
+        "2053",
+        "4484525",
+        "1000",
+        "1000",
+        "33216",
+        "1",
+        "181760103",
+        "1793293201917498566",
+        "1793293202538497931"
+      ],
+      "path": "/home/qian/heptabao-official-271-fresh-20261029-r1/bao",
+      "whole_hash_checked_by_original_launcher": false
+    },
+    {
+      "expected_sha256": "0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243",
+      "full9_decimal": [
+        "2053",
+        "4484524",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "74865426",
+        "1793293199950500560",
+        "1793293199950500560"
+      ],
+      "path": "/home/qian/heptabao-official-271-fresh-20261029-r1/official-openbao-2.7.1-linux-amd64.tar.gz",
+      "whole_hash_checked_by_original_launcher": false
+    }
+  ],
+  "artifact_snapshot_hash_flag_preserved_false": true,
+  "old_errors_retained": [
+    "r1 INFO status0 delivery UNKNOWN",
+    "r2 BODY1 page0 Git readback failure and exact same-arm restore",
+    "r2 BODY2 status0 delivery UNKNOWN and independent same-ID recovery plus exact handback"
+  ],
+  "root_independent_content_review_pending": true
+}

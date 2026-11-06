@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.pure-original-chain-verifier-interface.v1",
+  "function": "verifyOriginalRuntimeEvidence(input)",
+  "imports": "pure-helpers.js evaluated in same lexical scope; no Native/file/network calls",
+  "state": {
+    "path": "final-journal-state.public.json",
+    "parse": "lossless"
+  },
+  "authorityRaw": "authority.original.json",
+  "stdoutRaw": "stdout.original.json",
+  "stderrRaw": "stderr.original.txt",
+  "deliveryPriorRaw": "delivery16-prior-closed-state.public.json",
+  "deliveryGoRaw": "delivery16-GO.public.json",
+  "originalJournalRaw": "original-journal.js",
+  "deliveryJournalRaw": "delivery16-journal.js",
+  "calls": "call-index.public.json: map key to raw request,intent,armed,sdk,native path; preserve raw strings",
+  "payloads": "observer-index.public.json: map id to raw payload and native path",
+  "actualResult": "verification.actual.json",
+  "actualExecutor": "verification.actual-executor.js",
+  "scope": "pure original evidence chain and actual failure only; no execution of product, SDK, fixture or original source modules"
+}

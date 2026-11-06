@@ -1,0 +1,88 @@
+{
+  "schema": "heptabao.root-actual025b-single-parent-ancestry-to495.r1",
+  "base": "025b05a340de841b8161c1120344e86eae30eb97",
+  "prerequisite": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "links": [
+    {
+      "sha": "025b05a340de841b8161c1120344e86eae30eb97",
+      "parent": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+      "tree": "1d8160c9385f8053b9a683cc1834da0f912e2d37"
+    },
+    {
+      "sha": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+      "parent": "808e45d690f177ecb922e13d1ed19f7877156094",
+      "tree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6"
+    },
+    {
+      "sha": "808e45d690f177ecb922e13d1ed19f7877156094",
+      "parent": "e3afc157447d35c861f275a761b29da3e42aff8e",
+      "tree": "0506d30b02f5a2a2dc7d6364299365ae8d1d7cc7"
+    },
+    {
+      "sha": "e3afc157447d35c861f275a761b29da3e42aff8e",
+      "parent": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+      "tree": "5497775d9d473541e13e1603be8c893a3e27681b"
+    },
+    {
+      "sha": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+      "parent": "1c66541993662f92cf717154e33717abedb2ea74",
+      "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255"
+    },
+    {
+      "sha": "1c66541993662f92cf717154e33717abedb2ea74",
+      "parent": "6d02ceca629163e1c07480fa1f21520434407143",
+      "tree": "94ced21a63ff9aaca4538c0d4796efea2150e632"
+    },
+    {
+      "sha": "6d02ceca629163e1c07480fa1f21520434407143",
+      "parent": "19ba09ab5c494f25a3531749b0b99fc5c651d56c",
+      "tree": "09aa45b9439741780961c2af76680c27e0773d08"
+    },
+    {
+      "sha": "19ba09ab5c494f25a3531749b0b99fc5c651d56c",
+      "parent": "e69e52f28c653d28c5ae36dbbf6eb51b844536bc",
+      "tree": "73ba0c7fdf333b41d3944c5ee58b477026ff2d82"
+    },
+    {
+      "sha": "e69e52f28c653d28c5ae36dbbf6eb51b844536bc",
+      "parent": "c133d7e7b8a1df5f0be8f4337893f234c6ccede2",
+      "tree": "132ec30c42775568ee7e531183e8adcb65c54ca3"
+    },
+    {
+      "sha": "c133d7e7b8a1df5f0be8f4337893f234c6ccede2",
+      "parent": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+      "tree": "23999765c64b7f5d6afa8c58e97a99aa4233e2d7"
+    },
+    {
+      "sha": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+      "parent": "6304a898192bfdf7eabec3c4ea40f7166e59a137",
+      "tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825"
+    },
+    {
+      "sha": "6304a898192bfdf7eabec3c4ea40f7166e59a137",
+      "parent": "e5de554f5dfe99f0de30012122fe3e248fb60532",
+      "tree": "ec716cea85a52fab285f5c96d51c0624a045cc02"
+    },
+    {
+      "sha": "e5de554f5dfe99f0de30012122fe3e248fb60532",
+      "parent": "fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd",
+      "tree": "46b1276c237aaadd8cc3185e8228d8a791c68214"
+    },
+    {
+      "sha": "fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd",
+      "parent": "6d3040a2dbd06661a67f5c62df259ff446eb8515",
+      "tree": "17da0b36f418b52203040e54aae127899cf5e65e"
+    },
+    {
+      "sha": "6d3040a2dbd06661a67f5c62df259ff446eb8515",
+      "parent": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+      "tree": "2ec2be733f5499cb632e529159a296f3c6f62cd1"
+    }
+  ],
+  "length": 15,
+  "actual495HistoryCount": 3752,
+  "baseHistoryCount": 3767,
+  "proposedOneFinalCommitHistoryCount": 3768,
+  "allParentsObserved": true,
+  "finalCommitNotYetCreated": true
+}

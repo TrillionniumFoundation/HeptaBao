@@ -1,0 +1,12 @@
+{
+  "schema": "heptabao.original-readback-verifier-interface.v1",
+  "function": "verifyFixedReadbackActual",
+  "state": "journal-final-state.original.json",
+  "plan": "readback-plan.original.json",
+  "callOriginals": "original-calls.index.public.json -> paths.sdk and paths.native keyed by key",
+  "observerOriginals": "original-observers.index.public.json -> paths.payload and paths.native keyed by id",
+  "originalInertStateRaw": "original-inert-closed-state.original.json",
+  "allPathsRelativeToLogicalFlatMap": true,
+  "logicalFlatMapInFinalManifest": true,
+  "execution": "Pure V8 function evaluation; no candidate/SDK/host execution"
+}

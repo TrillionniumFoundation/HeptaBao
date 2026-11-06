@@ -1,0 +1,54 @@
+{
+  "phase": "create_tree_admitted_once",
+  "expectedTree": "2e7e1a66eec4e42a14ea0c350328f4f263842c20",
+  "entries": [
+    {
+      "path": "armed.json",
+      "blob": "fa1bbe90a05dae49daaf3ac4dae22cb621f061d8",
+      "bytes": 933,
+      "sha256": "2d8191d857455227b59457d9a5914fe5d5e782dcb0d2f6cef60b6d15862d4a96"
+    },
+    {
+      "path": "intent.json",
+      "blob": "8b98fecde248d486080bc85e56e8f9e7bce17415",
+      "bytes": 796,
+      "sha256": "4608f815454b8ccd4bd5055a83e68a70f2b46682a27278d74c36e17a62aa9bf9"
+    },
+    {
+      "path": "request.json",
+      "blob": "c466e0e87676208da9a08ad7630283696ec42cc8",
+      "bytes": 109,
+      "sha256": "0a3a7386e5636e03553cf01174506b2437bb6e3afa344ba3005e3e70b7c39084"
+    }
+  ],
+  "request": {
+    "repository_full_name": "TrillionniumFoundation/HeptaBao",
+    "tree_elements": [
+      {
+        "path": "armed.json",
+        "mode": "100644",
+        "type": "blob",
+        "content": "{\n  \"schema\": \"heptabao.gitfirst.fixed-native-call-armed.r1\",\n  \"callKey\": \"official271-x230-acl23-r2-body01-page000000\",\n  \"kind\": \"operation_result\",\n  \"request\": {\n    \"blob\": \"c466e0e87676208da9a08ad7630283696ec42cc8\",\n    \"bytes\": 109,\n    \"sha256\": \"0a3a7386e5636e03553cf01174506b2437bb6e3afa344ba3005e3e70b7c39084\"\n  },\n  \"rootGo\": {\n    \"blob\": \"1bfd1fe525b4a3e426b303fe65ef1615150eca53\",\n    \"bytes\": 3811,\n    \"sha256\": \"583c500b3be6866097aca0a96507b7c7c294ab35ae5166b10c7cc6ee25996363\"\n  },\n  \"originalJob\": \"1a1b1b4fbfa-fc05-7a60\",\n  \"originalOperation\": \"5433a8b98b3015f338e147954b4d9910b5657f85730a4bc09de3a79129a88155\",\n  \"maximumNativeCalls\": 1,\n  \"nativeNotYetCalled\": true,\n  \"lossOfAcknowledgmentNeverGrantsReplay\": true,\n  \"localFirstExplicitlyReplacedByExactRootGO\": true,\n  \"mayHaveDispatchedAfterThisCheckpoint\": true,\n  \"recovery\": \"Read exact original job/operation only; absence of later ACK is UNKNOWN.\"\n}\n"
+      },
+      {
+        "path": "intent.json",
+        "mode": "100644",
+        "type": "blob",
+        "content": "{\n  \"schema\": \"heptabao.gitfirst.fixed-native-call-intent.r1\",\n  \"callKey\": \"official271-x230-acl23-r2-body01-page000000\",\n  \"kind\": \"operation_result\",\n  \"request\": {\n    \"blob\": \"c466e0e87676208da9a08ad7630283696ec42cc8\",\n    \"bytes\": 109,\n    \"sha256\": \"0a3a7386e5636e03553cf01174506b2437bb6e3afa344ba3005e3e70b7c39084\"\n  },\n  \"rootGo\": {\n    \"blob\": \"1bfd1fe525b4a3e426b303fe65ef1615150eca53\",\n    \"bytes\": 3811,\n    \"sha256\": \"583c500b3be6866097aca0a96507b7c7c294ab35ae5166b10c7cc6ee25996363\"\n  },\n  \"originalJob\": \"1a1b1b4fbfa-fc05-7a60\",\n  \"originalOperation\": \"5433a8b98b3015f338e147954b4d9910b5657f85730a4bc09de3a79129a88155\",\n  \"maximumNativeCalls\": 1,\n  \"nativeNotYetCalled\": true,\n  \"lossOfAcknowledgmentNeverGrantsReplay\": true,\n  \"localFirstExplicitlyReplacedByExactRootGO\": true\n}\n"
+      },
+      {
+        "path": "request.json",
+        "mode": "100644",
+        "type": "blob",
+        "content": "{\"operation_id\":\"5433a8b98b3015f338e147954b4d9910b5657f85730a4bc09de3a79129a88155\",\"offset\":0,\"limit\":16384}\n"
+      }
+    ]
+  },
+  "texts": {
+    "request.json": "{\"operation_id\":\"5433a8b98b3015f338e147954b4d9910b5657f85730a4bc09de3a79129a88155\",\"offset\":0,\"limit\":16384}\n",
+    "intent.json": "{\n  \"schema\": \"heptabao.gitfirst.fixed-native-call-intent.r1\",\n  \"callKey\": \"official271-x230-acl23-r2-body01-page000000\",\n  \"kind\": \"operation_result\",\n  \"request\": {\n    \"blob\": \"c466e0e87676208da9a08ad7630283696ec42cc8\",\n    \"bytes\": 109,\n    \"sha256\": \"0a3a7386e5636e03553cf01174506b2437bb6e3afa344ba3005e3e70b7c39084\"\n  },\n  \"rootGo\": {\n    \"blob\": \"1bfd1fe525b4a3e426b303fe65ef1615150eca53\",\n    \"bytes\": 3811,\n    \"sha256\": \"583c500b3be6866097aca0a96507b7c7c294ab35ae5166b10c7cc6ee25996363\"\n  },\n  \"originalJob\": \"1a1b1b4fbfa-fc05-7a60\",\n  \"originalOperation\": \"5433a8b98b3015f338e147954b4d9910b5657f85730a4bc09de3a79129a88155\",\n  \"maximumNativeCalls\": 1,\n  \"nativeNotYetCalled\": true,\n  \"lossOfAcknowledgmentNeverGrantsReplay\": true,\n  \"localFirstExplicitlyReplacedByExactRootGO\": true\n}\n",
+    "armed.json": "{\n  \"schema\": \"heptabao.gitfirst.fixed-native-call-armed.r1\",\n  \"callKey\": \"official271-x230-acl23-r2-body01-page000000\",\n  \"kind\": \"operation_result\",\n  \"request\": {\n    \"blob\": \"c466e0e87676208da9a08ad7630283696ec42cc8\",\n    \"bytes\": 109,\n    \"sha256\": \"0a3a7386e5636e03553cf01174506b2437bb6e3afa344ba3005e3e70b7c39084\"\n  },\n  \"rootGo\": {\n    \"blob\": \"1bfd1fe525b4a3e426b303fe65ef1615150eca53\",\n    \"bytes\": 3811,\n    \"sha256\": \"583c500b3be6866097aca0a96507b7c7c294ab35ae5166b10c7cc6ee25996363\"\n  },\n  \"originalJob\": \"1a1b1b4fbfa-fc05-7a60\",\n  \"originalOperation\": \"5433a8b98b3015f338e147954b4d9910b5657f85730a4bc09de3a79129a88155\",\n  \"maximumNativeCalls\": 1,\n  \"nativeNotYetCalled\": true,\n  \"lossOfAcknowledgmentNeverGrantsReplay\": true,\n  \"localFirstExplicitlyReplacedByExactRootGO\": true,\n  \"mayHaveDispatchedAfterThisCheckpoint\": true,\n  \"recovery\": \"Read exact original job/operation only; absence of later ACK is UNKNOWN.\"\n}\n"
+  },
+  "localDurableJournal": false,
+  "runtimeAuthorized": false
+}

@@ -1,0 +1,19 @@
+function qualifyFreshInertFull(p,go,author,min,source) {
+ const rows=[],ck=(name,v)=>{rows.push({name,passed:v===true});if(v!==true)throw Error(name);},f=p.raw,s=JSON.parse(f["journal-final-state.original.json"]),blobs={};
+ for(const raw of Object.values(f))blobs[gitBlobMeta(raw).blob]=raw;
+ ck("whole115",p.audit.whole&&p.audit.files===115&&p.audit.bytes===2464151);
+ ck("author70_exact",author.exact&&author.value.passed&&author.value.checkCount===70);
+ ck("minimum21_exact_whole_streams",min.value.passed&&min.value.checks===21&&gitBlobMeta(f["stdout.original.txt"]).blob==="0c1ac73af42e57c324be188a0d162bc2fd72003c");
+ ck("exact_original_GO",f["root-GO.original.json"]===go.text&&s.goRaw===go.text);
+ const idx=JSON.parse(f["original-calls.index.public.json"]),calls=idx.map(x=>({key:x.key,kind:x.kind,phase:x.phase,requestPin:x.request,sdkPin:x.sdk,nativePin:x.native,requestText:f[x.prefix+"-request.original.json"],intentText:f[x.prefix+"-intent.original.json"],armedText:f[x.prefix+"-armed.original.json"],sdkText:f[x.prefix+"-sdk.original.json"],nativeText:f[x.prefix+"-native.original.json"],armedTree:x.armedTree}));
+ verifyOriginalJournal({label:"A_r3_original_inert",calls,observers:s.completedObservers,blob:k=>blobs[k],goPins:[go.pins],pageLimit:()=>8192,ck});
+ ck("exact_inert_original_request",gitBlobMeta(calls[0].requestText).blob==="a9b40fb0c03bbda404e8bdbbef2e398e34c2f8af");
+ ck("17_calls3_observers10_pages",calls.length===17&&s.completedObservers.length===3&&s.completedObservers.reduce((n,x)=>n+x.pages,0)===10);
+ const candidate=JSON.parse(f["actual-context.public.json"]).candidate,sourcePath=source.pins.find(x=>x.blob==="c5a520313563ec821c1b80d49249a8cef1573709")?.path;
+ const payloadPath=source.pins.find(x=>x.blob===candidate.payloadPin.blob)?.path,payloadRaw=typeof payloadPath==="string"?source.raw[payloadPath]:null,payload=payloadRaw===null?null:JSON.parse(payloadRaw);
+ const exactMap=(entries,pins)=>entries&&JSON.stringify(Object.keys(entries).sort())===JSON.stringify(Object.keys(pins).sort())&&Object.entries(entries).every(([name,b64])=>JSON.stringify(gitBlobMeta(utf8Text(unb64(b64))))===JSON.stringify(pins[name]));
+ ck("actual_candidate_exact_reviewed_source",typeof sourcePath==="string"&&payloadRaw!==null&&JSON.stringify(gitBlobMeta(payloadRaw))===JSON.stringify(candidate.payloadPin)&&candidate.payloadPin.blob==="aff137a45af0d8f529f94cf2d93ba2a754eac527"&&exactMap(payload.files,candidate.sourcePins)&&exactMap(payload.documents,candidate.documentPins)&&candidate.NEW_T5==="/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3"&&candidate.NEW_HOME==="/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r3"&&candidate.documentPins["candidate-current-manager-wal-r1.public.json"].blob==="c5a520313563ec821c1b80d49249a8cef1573709");
+ ck("old_verifier_predicates_unchanged",f["before--verify-actual.js"].replace("verifyInertR2Actual","verifyInertR3Actual").replace("heptabao.authbus-home-r2-original-inert-actual-checks.v1","heptabao.authbus-home-r3-original-inert-actual-checks.v1")===f["verify-actual.js"]);
+ ck("all_original_observers_and_lane_closed",s.pending===null&&s.activeObserver===null&&!s.nativeCallInFlight&&!s.paused&&s.nextStdout===20680&&s.nextStderr===0);
+ return{schema:"heptabao.root-fresh-HOME-T5-r3-inert-full.r1",passed:true,checks:rows.length,rows,packet:p.audit.tree,job:"1a1b19aef7b-fc05-79d3",originalCalls:17,originalObservers:3,originalPages:10,allOriginalPayloadsWhole:true,originalInertSucceeded:true,currentNativeCalls:0,currentOwnedFutures:0,publicTargetReads:0,businessRuntimeStarts:0,credentialsQualified:false,oldManagedUnknownPreserved:true,fullReplacement:false,productionCutover:false,legacyCleanup:false};
+}

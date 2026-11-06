@@ -1,0 +1,164 @@
+{
+  "schema": "heptabao.root.authbus.r3.fixed3-and-runtime-source.qualification.r1",
+  "passed": true,
+  "checks": 25,
+  "rows": [
+    {
+      "name": "whole_fixed3_min12",
+      "passed": true
+    },
+    {
+      "name": "whole_runtime_SOURCE21",
+      "passed": true
+    },
+    {
+      "name": "qualified_inert62_and_original_GO",
+      "passed": true
+    },
+    {
+      "name": "original_release_whole_and_identical",
+      "passed": true
+    },
+    {
+      "name": "all_seven_originals_claim_closed",
+      "passed": true
+    },
+    {
+      "name": "original_inactive_status_0",
+      "passed": true
+    },
+    {
+      "name": "original_inactive_status_1",
+      "passed": true
+    },
+    {
+      "name": "original_inactive_status_2",
+      "passed": true
+    },
+    {
+      "name": "original_inactive_status_3",
+      "passed": true
+    },
+    {
+      "name": "original_inactive_status_4",
+      "passed": true
+    },
+    {
+      "name": "original_inactive_status_5",
+      "passed": true
+    },
+    {
+      "name": "original_inactive_status_6",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_outer",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_candidate",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_receipt",
+      "passed": true
+    },
+    {
+      "name": "separate_original_receipt_and_final_success",
+      "passed": true
+    },
+    {
+      "name": "cumulative_read_bytes_preserved",
+      "passed": true
+    },
+    {
+      "name": "frozen_inputs_and_deriver_exact",
+      "passed": true
+    },
+    {
+      "name": "strict_forward_diff",
+      "passed": true
+    },
+    {
+      "name": "strict_reverse_diff",
+      "passed": true
+    },
+    {
+      "name": "journal_only_slot_request_prefix",
+      "passed": true
+    },
+    {
+      "name": "actual_request_and_HOME_bound",
+      "passed": true
+    },
+    {
+      "name": "same_regular_interpreter_and_original_limits",
+      "passed": true
+    },
+    {
+      "name": "independent_typed_request_binding",
+      "passed": true
+    },
+    {
+      "name": "no_business_qualification_from_staging",
+      "passed": true
+    }
+  ],
+  "readbackPacket": {
+    "tree": "b504ef8b9f964bbf949d7c1c3c8711c49379f8fc",
+    "files": 12,
+    "bytes": 125708,
+    "merkle": {
+      "root_sha": "b504ef8b9f964bbf949d7c1c3c8711c49379f8fc",
+      "trees_verified": 1,
+      "leaf_count": 12
+    },
+    "whole": true
+  },
+  "sourcePacket": {
+    "tree": "6c77acd0fb83a5718c20d53bcbcc94fade127097",
+    "files": 21,
+    "bytes": 180498,
+    "merkle": {
+      "root_sha": "6c77acd0fb83a5718c20d53bcbcc94fade127097",
+      "trees_verified": 1,
+      "leaf_count": 21
+    },
+    "whole": true
+  },
+  "actualReadbackBytes": 96654,
+  "originalObserverCount": 7,
+  "originalReportedCallCount": 35,
+  "fullCallChainQualification": false,
+  "readbackRelease": {
+    "blob": "1e042b5b377395f15203ef82cf33e8a198a770a7",
+    "bytes": 20952,
+    "sha256": "1b819c4e204ec3c01656ee1f297424a72c544c66891a0f975a18ef11c1f895dc"
+  },
+  "request": {
+    "blob": "4d945e65cbee59c0df29b136abc8266be77ffa7e",
+    "bytes": 8207,
+    "sha256": "dd1b65b97018914f9fb613f42810f4259a872fcb6da6117e46c559ba7b9e8f39"
+  },
+  "journal": {
+    "blob": "356a543a19cc95ce6df4a88406cfc7950d154066",
+    "bytes": 19052,
+    "sha256": "44a46f27cb46136d81cc9fce7f3d5fa290a1ded406bf2c5a4c4d27abf4fd85f7"
+  },
+  "actualHOME": {
+    "blob": "2dc7ce1ebe9a865cf61a84dce5c99f4244ca18a0",
+    "bytes": 2030,
+    "sha256": "c1693109a8ecbadd879b198739c777a3b92735d2c5ca0ae56ac6496503cac7a4"
+  },
+  "typedIdentity": {
+    "sha256": "94425f4f50b9a0f0ea1b1fb5c2b23972fb50582f8b026f191e611ca64ea9e74e",
+    "native_fingerprint": "10683206060337635568",
+    "canonicalBytes": 8076
+  },
+  "actualBusinessTests": 0,
+  "baselineProduct": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "finalCandidateQualified": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

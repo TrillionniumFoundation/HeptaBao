@@ -1,0 +1,269 @@
+{
+  "schema": "heptabao.combined237-minimal-execution-source-plan.v1",
+  "status": "unbound_SOURCE_only",
+  "combined_commit": null,
+  "combined_tree": null,
+  "source_stage_root": null,
+  "controls_root": null,
+  "stage_receipt": null,
+  "control_receipt": null,
+  "artifact_slots": null,
+  "runtime_request": null,
+  "idempotency_key": null,
+  "ready": false,
+  "native_authorized": false,
+  "prior_c_qualification_inherited": false,
+  "actual_list_required": true,
+  "base_commit_for_future_combined_tree": "025b05a340de841b8161c1120344e86eae30eb97",
+  "pending_overlay": {
+    "count": 49,
+    "origin_commit": "2379d02ba1ee3e88989815d5a978f998822bac4f",
+    "formatted_changed_files": 23,
+    "changed_whole_observed_so_far": 11,
+    "unchanged_content_reuse": 26,
+    "all_changed_whole_required_before_final_candidate": true,
+    "do_not_reuse_old_source_input_full9_as_output_full9": true
+  },
+  "keep_five_base_leaves_outside_overlay": [
+    "crates/heptabao-server/src/engines/pki.rs",
+    "crates/heptabao-server/src/service_native_pki.rs",
+    "crates/heptabao-server/src/service_native_pki_tests.rs",
+    "crates/heptabao-server/src/service_native_ssh.rs",
+    "qa/openbao-acceptance/acceptance.py"
+  ],
+  "source_inventory": {
+    "tree": "f4af09012f370b9776d43755d4168e5e40610418",
+    "report": "a00a19114e867b201603d1f261fc2da20f2084a0",
+    "entries254": "f00b6ddc99dca8c52465c0a9ea1a648a46a01a4f",
+    "unique237": "fbcd8fb6b59722b4e350a75d3a763aa595941d86",
+    "root31_evidence": "ef7f4f011eb70b4183c298f3ac6a81a475a2f869"
+  },
+  "original_controls": {
+    "tree": "af083341815f9dee1b456ce2de7432239e8bd832",
+    "runner": {
+      "blob": "f8b36c8adccb493dfc6aa507856150ce8a6a764d",
+      "bytes": 30397,
+      "sha256": "d76b3d392c20bf4a7bbb7e8d8ea69abdfe3bb11f71a35075ba26ab948e778a50"
+    },
+    "launcher": {
+      "blob": "419a805247448d46180890fb9cdd69c2832d4811",
+      "bytes": 38565,
+      "sha256": "efec176c08804a91adfd0160cdc092fad879d64ff594debe2fffe8008488d00c"
+    },
+    "groups": {
+      "blob": "5d563b1c7a1b7070395f6d8a03b512ddb019fae0",
+      "bytes": 19789,
+      "sha256": "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869"
+    }
+  },
+  "proposal": {
+    "runner": {
+      "blob": "635d6345fd513121f51fb4dd135783b1e3be6b7e",
+      "bytes": 31885,
+      "sha256": "59bba99270e8c2d779aed91f3053a94c66120cdbd8c90f423f7efb253adfe32f"
+    },
+    "launcher": {
+      "blob": "117bee05cd8da2aad9aef1a4209de067ce1b72d8",
+      "bytes": 39538,
+      "sha256": "9a9cad94b1c7a9e349203684d131538bb0c15d9563a08d89ecfe2a80be97a116"
+    },
+    "groups": {
+      "blob": "bbc853c04329f1f102a9e2ffda692e4733aed052",
+      "bytes": 32163,
+      "sha256": "a3c126e1833c7d46eac8b30030d24d620540786bbe2b38d21ed9891ca42ccb38"
+    },
+    "runner_replacements": 18,
+    "runner_hunks": 11,
+    "launcher_replacements": 11,
+    "launcher_hunks": 7
+  },
+  "denominator": {
+    "unique": 237,
+    "profile_entries": 254,
+    "families": 18,
+    "original_c": {
+      "unique": 149,
+      "entries": 166,
+      "families": 4
+    },
+    "snapshot": {
+      "unique": 27,
+      "entries": 27,
+      "families": 5,
+      "low_level": 23,
+      "real_service_audit_regressions": 4
+    },
+    "normal": {
+      "unique": 61,
+      "entries": 61,
+      "families": 9
+    },
+    "pairwise_intersections": 0,
+    "identity_key": [
+      "crate",
+      "fully_qualified_test_name"
+    ],
+    "profile_duplicates": 17,
+    "profile_duplicate_origin": "The original C native17 exact names run once with file features and once with default features."
+  },
+  "profiles": [
+    {
+      "profile": "file",
+      "package": "heptabao-server",
+      "target": "heptabao_server",
+      "features": [
+        "native-v6-storage"
+      ],
+      "feature_arguments": [
+        "--no-default-features",
+        "--features",
+        "native-v6-storage"
+      ],
+      "entries": 17,
+      "retained_basename": "retained-heptabao-server-libtest-file",
+      "new_compile": false
+    },
+    {
+      "profile": "default",
+      "package": "heptabao-server",
+      "target": "heptabao_server",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "feature_arguments": [],
+      "entries": 220,
+      "retained_basename": "retained-heptabao-server-libtest-default",
+      "new_compile": false
+    },
+    {
+      "profile": "ha-native-v6-peer-ingress",
+      "package": "heptabao-ha-service",
+      "target": "heptabao_ha_service",
+      "features": [
+        "native-v6-peer-ingress"
+      ],
+      "feature_arguments": [
+        "--no-default-features",
+        "--features",
+        "native-v6-peer-ingress"
+      ],
+      "entries": 17,
+      "retained_basename": "retained-heptabao-ha-service-libtest-ha-native-v6-peer-ingress",
+      "new_compile": true
+    }
+  ],
+  "budgets": {
+    "outer_seconds": 12000,
+    "normal_release_build_seconds": 1800,
+    "all_compile_checks_shared_seconds": 3600,
+    "compile_deadline_reset": false,
+    "ordinary_no_default_check_count": 1,
+    "server_libtest_compile_count": 2,
+    "additional_ha_libtest_compile_count": 1,
+    "each_exact_listing_max_seconds": 30,
+    "each_runtime_family_shared_seconds": 600,
+    "runtime_family_count": 18,
+    "all_families_clipped_to_original_outer": true,
+    "cleanup_term_seconds": 5,
+    "cleanup_kill_seconds": 5
+  },
+  "budget_notes": [
+    "The 18 family maxima do not add to or refresh the 12000-second outer deadline.",
+    "The ordinary check and all three libtest compiles share one original 3600-second deadline.",
+    "Exact listing time is inside its family's 600-second deadline.",
+    "The source proposal does not guarantee completion within these retained caps; insufficient remaining time fails under the inherited guards."
+  ],
+  "exact_execution_shape": {
+    "release": "unchanged two normal production binaries; default features; original 1800 cap",
+    "ordinary_check": "unchanged cargo check --release --locked --offline -p heptabao-server --lib --no-default-features --message-format=json-render-diagnostics",
+    "libtest_common": [
+      "cargo",
+      "test",
+      "--release",
+      "--locked",
+      "--offline",
+      "-p",
+      "<exact package>",
+      "--lib",
+      "--no-run",
+      "<profile feature arguments>",
+      "--message-format=json-render-diagnostics"
+    ],
+    "per_test_listing": [
+      "<retained exact libtest>",
+      "<frozen full testcase>",
+      "--exact",
+      "--list"
+    ],
+    "per_test_run": [
+      "<retained exact libtest>",
+      "<same frozen full testcase>",
+      "--exact",
+      "--nocapture",
+      "--test-threads=1"
+    ],
+    "listing_result_required": "Exactly one matching full testcase from the selected profile binary.",
+    "run_result_required": "exit0, no timeout, actual summary 1 passed; 0 failed; 0 ignored, within unchanged family/outer deadline.",
+    "planned_primary_owned_command_records": 513,
+    "primary_record_count_is_not_total_OS_child_count": true
+  },
+  "fixed_input_limit_change": {
+    "path_basename": "jwt-test-groups.public.json",
+    "old_bytes_cap": 20000,
+    "new_bytes_cap": 32163,
+    "expected_whole": {
+      "blob": "bbc853c04329f1f102a9e2ffda692e4733aed052",
+      "bytes": 32163,
+      "sha256": "a3c126e1833c7d46eac8b30030d24d620540786bbe2b38d21ed9891ca42ccb38"
+    },
+    "generic_read_bound_changed": false,
+    "runner_and_launcher_caps_unchanged": 40000,
+    "runner_current_bytes": 31885,
+    "launcher_current_bytes": 39538,
+    "final_bound_sources_must_be_remeasured": true,
+    "other_read_limits_changed": false,
+    "process_or_runtime_budgets_changed": false
+  },
+  "retained_boundaries": {
+    "old_four_groups_unchanged": true,
+    "all_original_helper_definitions_byte_identical": true,
+    "runner_error_finally_and_output_suffix_byte_identical": true,
+    "ordinary_compile_gate_byte_identical": true,
+    "release_build_and_artifact_publication_block_byte_identical": true,
+    "exact_list_and_test_loop_byte_identical": true,
+    "target_lock_probe_byte_identical": true,
+    "target_lock_released_before_same_pid_exec": true,
+    "root_target_window_still_required": true,
+    "standalone_publisher_added": false,
+    "new_controller_layer_added": false,
+    "existing_three_control_filenames_preserved": true,
+    "old_C_failures_and_qualifications_not_rewritten": true
+  },
+  "future_binding_requirements": [
+    "Finish remaining 12 changed formatted files under original table GO; keep 26 unchanged-content reuse labels.",
+    "Root freezes exact 025b base plus all49 actual/formatted-content overlay with the five disjoint base leaves retained.",
+    "Independently stage that exact combined commit/tree into a fresh source root; bind actual stage receipt and original source fences.",
+    "Bind the existing create-only three-control publication at a fresh control root; measure the complete actual carrier against original 262144-byte stdin limit.",
+    "Rebind only reviewed unresolved literals and derived control hashes; remeasure launcher/runner against unchanged40000 caps.",
+    "Root schedules sole shared target ownership and issues a new exact build request/GO. No request is present in this packet."
+  ],
+  "nonclaims": {
+    "python_compile": false,
+    "python_candidate_executed": false,
+    "rust_compile": false,
+    "actual_tests": 0,
+    "actual_libtest_listing": false,
+    "current_combined_product_qualification": false,
+    "current_C149166_qualification_inherited": false,
+    "full34_or_comparison69_or_LAN_rerun": false,
+    "official_CLI_B04B05_pass": false,
+    "full_replacement": false
+  },
+  "source_checks": {
+    "pure_V8_checks": 85,
+    "pass": true,
+    "scope": "Exact replacements, whole definitions/diffs, fixed inventory mapping, profile compile dispatch and unchanged deadlines/cleanup; not Python AST/compile or runtime tests."
+  }
+}

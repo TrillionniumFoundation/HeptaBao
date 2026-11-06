@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r45_inventory_discovery_GO",
+  "records": [
+    {
+      "name": "root-source-qualification.json",
+      "blob": "bc7518189920f90323c6ead4ee294ed472591303",
+      "bytes": 935,
+      "sha256": "47ecafd0a6502bb5f5f4488d08eab6dc7092a5d67482afe345b9dc1b65844f42"
+    },
+    {
+      "name": "root-GO.json",
+      "blob": "acf5eadc67327880998ed08b661874433ae5d121",
+      "bytes": 6092,
+      "sha256": "52dae6062b15f30b6741c9ca8239901f68a8bff5b2a3ea219dd7d1de9423b1e8"
+    }
+  ],
+  "expected_data_tree": "6e7f03b22597b472bab3ea45336f4facd0b0bb1d",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

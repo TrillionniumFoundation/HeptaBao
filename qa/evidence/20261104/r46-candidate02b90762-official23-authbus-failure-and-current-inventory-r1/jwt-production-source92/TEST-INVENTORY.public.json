@@ -1,0 +1,326 @@
+{
+  "schema": "heptabao-jwt-local-policy-test-inventory-source-r1",
+  "qualification": "SOURCE_ONLY_NOT_COMPILED_NOT_RUN",
+  "priorGroups": {
+    "blob": "5d563b1c7a1b7070395f6d8a03b512ddb019fae0",
+    "bytes": 19789,
+    "sha256": "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869"
+  },
+  "prior": {
+    "unique": 149,
+    "profileEntries": 166,
+    "groups": [
+      {
+        "label": "native-jwt-pki-file17",
+        "profile": "file",
+        "tests": 17,
+        "runtime_seconds": 600
+      },
+      {
+        "label": "native-jwt-pki-default17",
+        "profile": "default",
+        "tests": 17,
+        "runtime_seconds": 600
+      },
+      {
+        "label": "legacy-jwt-default63",
+        "profile": "default",
+        "tests": 63,
+        "runtime_seconds": 600
+      },
+      {
+        "label": "native-auth-identity-default69",
+        "profile": "default",
+        "tests": 69,
+        "runtime_seconds": 600
+      }
+    ]
+  },
+  "proposed": {
+    "unique": 158,
+    "profileEntries": 180,
+    "groups": [
+      {
+        "label": "native-jwt-pki-file22",
+        "profile": "file",
+        "tests": 22,
+        "runtime_seconds": 600
+      },
+      {
+        "label": "native-jwt-pki-default22",
+        "profile": "default",
+        "tests": 22,
+        "runtime_seconds": 600
+      },
+      {
+        "label": "legacy-jwt-default67",
+        "profile": "default",
+        "tests": 67,
+        "runtime_seconds": 600
+      },
+      {
+        "label": "native-auth-identity-default69",
+        "profile": "default",
+        "tests": 69,
+        "runtime_seconds": 600
+      }
+    ]
+  },
+  "exactDelta": {
+    "removed": [
+      {
+        "fullname": "service::native_auth::jwt_tests::native_jwt_role_operations_keep_the_existing_legacy_acl_contract",
+        "profiles": [
+          "file",
+          "default"
+        ],
+        "reason": "replaced the old incompatible update+sudo/GET-list JWT ACL contract"
+      }
+    ],
+    "added": [
+      {
+        "fullname": "service::native_auth::jwt_tests::native_jwt_role_management_uses_source_create_update_and_delete_after_cold_reopen",
+        "profiles": [
+          "file",
+          "default"
+        ]
+      },
+      {
+        "fullname": "service::native_auth::jwt_tests::native_jwt_collection_read_is_authorized_before_unsupported_and_list_stays_list",
+        "profiles": [
+          "file",
+          "default"
+        ]
+      },
+      {
+        "fullname": "service::native_auth::jwt_tests::native_jwt_config_update_without_sudo_persists_and_rejects_read_only_actor",
+        "profiles": [
+          "file",
+          "default"
+        ]
+      },
+      {
+        "fullname": "service::native_auth::jwt_tests::native_jwt_empty_role_policies_and_no_default_flag_survive_real_cold_reopen",
+        "profiles": [
+          "file",
+          "default"
+        ]
+      },
+      {
+        "fullname": "service::native_auth::jwt_tests::native_jwt_no_default_policy_weak_bool_updates_are_atomic_and_persist",
+        "profiles": [
+          "file",
+          "default"
+        ]
+      },
+      {
+        "fullname": "service::native_auth::jwt_tests::native_jwt_root_role_configuration_is_stored_but_never_issued_or_retroactively_renewed",
+        "profiles": [
+          "file",
+          "default"
+        ]
+      },
+      {
+        "fullname": "service::jwt_policy_tests::jwt_legacy_service_and_batch_issue_defaults_from_saved_raw_policies",
+        "profiles": [
+          "default"
+        ]
+      },
+      {
+        "fullname": "service::jwt_policy_tests::jwt_legacy_root_role_is_saved_but_service_and_batch_issuance_are_rejected",
+        "profiles": [
+          "default"
+        ]
+      },
+      {
+        "fullname": "service::jwt_policy_tests::jwt_policy_schema147_covers_false_true_all_namespaces_and_sticky_restore_floor",
+        "profiles": [
+          "default"
+        ]
+      },
+      {
+        "fullname": "service::jwt_policy_tests::jwt_historical_absent_policy_marker_keeps_bytes_and_default_origin",
+        "profiles": [
+          "default"
+        ]
+      }
+    ],
+    "unique": 9,
+    "profileEntries": 14,
+    "oldNativeFunctionsRetainedExactly": [
+      "native_jwt_local_service_token_identity_renewal_and_cold_reopen",
+      "native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta",
+      "native_jwt_identity_failure_does_not_export_witness_or_token_and_next_login_is_fresh",
+      "native_jwt_original_assertion_expiry_before_publication_keeps_auth_identity_atomic",
+      "native_jwt_native_owner_capacity_veto_after_authentication_keeps_the_old_root",
+      "native_jwt_original_assertion_expiry_after_commit_withholds_reply_without_rollback",
+      "native_jwt_post_commit_audit_failure_keeps_whole_root_and_recovery_required",
+      "native_jwt_post_audit_response_and_original_deadline_cannot_be_rebound",
+      "native_jwt_post_audit_revocation_cannot_replace_the_original_publication_proof",
+      "native_jwt_token_api_service_descendants_keep_own_renewal_and_parent_revocation",
+      "native_jwt_token_api_batch_owner_preserves_real_parent_binding_across_cold_reopen",
+      "native_jwt_token_api_revoke_orphan_keeps_own_issuer_but_mount_retirement_still_revokes",
+      "native_jwt_and_userpass_token_api_targets_keep_real_owner_and_renewal_in_both_directions",
+      "native_jwt_token_api_profile_rejects_mount_label_without_real_issuer_or_parent_graph"
+    ],
+    "oldTestNamesRetainedOnOtherEditedLeaves": true
+  },
+  "combinedReference": {
+    "priorInventory": {
+      "blob": "550b22b6285606f8cfc2eb67c6da7fb58deda356",
+      "bytes": 67744,
+      "sha256": "837481bbb8743c0e871fe11d3bc878e225fb3b43f5d101c8cdc1c09c5edea341"
+    },
+    "priorGroups": {
+      "blob": "bbc853c04329f1f102a9e2ffda692e4733aed052",
+      "bytes": 32163,
+      "sha256": "a3c126e1833c7d46eac8b30030d24d620540786bbe2b38d21ed9891ca42ccb38"
+    },
+    "priorProfiles": {
+      "blob": "e1cacb44a846d2e6548a6c12b0d2773c3cd95538",
+      "bytes": 1143,
+      "sha256": "687d2f1fb501146230080bc58b0e2903cb845f150e29ce18791ef2e4f5a3c5bd"
+    },
+    "priorUnique": 237,
+    "priorProfileEntries": 254,
+    "deltaUnique": 9,
+    "deltaProfileEntries": 14,
+    "result": {
+      "unique": 246,
+      "profileEntries": 268
+    },
+    "newGroups": {
+      "blob": "8945c9f8f2565807601f8197b93be026ca4e875b",
+      "bytes": 33825,
+      "sha256": "7c0fb6c5b6819c2cab60f3044e0aec767ad8abbf22e31ff0f7fab742ea4cd786"
+    },
+    "newInventory": {
+      "blob": "6f72694ddb218e5f5f57ec820ae7de5f1b15f00b",
+      "bytes": 71054,
+      "sha256": "5e389b26f74ea27eca1332c6234360f6b32bf926966d6bb133f3730eb5b5774a"
+    },
+    "newProfiles": {
+      "blob": "4ec148f2954864b850dd16448e855dcd01f83a62",
+      "bytes": 1143,
+      "sha256": "5fa8ee8f33aa6e2615793e83936405ccc1fe8436272c89dae8fcb4a471ca1220"
+    },
+    "wholePriorCombinedInventoryRecomputed": true,
+    "exactUnchangedGroups": [
+      {
+        "label": "snapshot-body10",
+        "tests": 10
+      },
+      {
+        "label": "snapshot-peer7",
+        "tests": 7
+      },
+      {
+        "label": "snapshot-actor2",
+        "tests": 2
+      },
+      {
+        "label": "snapshot-wire4",
+        "tests": 4
+      },
+      {
+        "label": "snapshot-service-audit4",
+        "tests": 4
+      },
+      {
+        "label": "ssh25",
+        "tests": 25
+      },
+      {
+        "label": "mount1",
+        "tests": 1
+      },
+      {
+        "label": "redirect5",
+        "tests": 5
+      },
+      {
+        "label": "actor2",
+        "tests": 2
+      },
+      {
+        "label": "ordinary5",
+        "tests": 5
+      },
+      {
+        "label": "no_forward6",
+        "tests": 6
+      },
+      {
+        "label": "ingress_observer",
+        "tests": 7
+      },
+      {
+        "label": "cold_h2",
+        "tests": 9
+      },
+      {
+        "label": "same_root_publication",
+        "tests": 1
+      }
+    ],
+    "unchangedEntriesAfterFirst166": 88,
+    "delta": {
+      "removed": [
+        [
+          "heptabao-server",
+          "service::native_auth::jwt_tests::native_jwt_role_operations_keep_the_existing_legacy_acl_contract"
+        ]
+      ],
+      "added": [
+        [
+          "heptabao-server",
+          "service::native_auth::jwt_tests::native_jwt_role_management_uses_source_create_update_and_delete_after_cold_reopen"
+        ],
+        [
+          "heptabao-server",
+          "service::native_auth::jwt_tests::native_jwt_collection_read_is_authorized_before_unsupported_and_list_stays_list"
+        ],
+        [
+          "heptabao-server",
+          "service::native_auth::jwt_tests::native_jwt_config_update_without_sudo_persists_and_rejects_read_only_actor"
+        ],
+        [
+          "heptabao-server",
+          "service::native_auth::jwt_tests::native_jwt_empty_role_policies_and_no_default_flag_survive_real_cold_reopen"
+        ],
+        [
+          "heptabao-server",
+          "service::native_auth::jwt_tests::native_jwt_no_default_policy_weak_bool_updates_are_atomic_and_persist"
+        ],
+        [
+          "heptabao-server",
+          "service::native_auth::jwt_tests::native_jwt_root_role_configuration_is_stored_but_never_issued_or_retroactively_renewed"
+        ],
+        [
+          "heptabao-server",
+          "service::jwt_policy_tests::jwt_legacy_service_and_batch_issue_defaults_from_saved_raw_policies"
+        ],
+        [
+          "heptabao-server",
+          "service::jwt_policy_tests::jwt_legacy_root_role_is_saved_but_service_and_batch_issuance_are_rejected"
+        ],
+        [
+          "heptabao-server",
+          "service::jwt_policy_tests::jwt_policy_schema147_covers_false_true_all_namespaces_and_sticky_restore_floor"
+        ],
+        [
+          "heptabao-server",
+          "service::jwt_policy_tests::jwt_historical_absent_policy_marker_keeps_bytes_and_default_origin"
+        ]
+      ]
+    },
+    "actualLibtestListMatched": false,
+    "candidateCommit": null
+  },
+  "limitations": [
+    "The 600-second family deadlines are preserved as data; no runner binding or execution is authorized by this inventory.",
+    "The existing Native JWT batch-501 regression remains exact and marks an unsupported product operation.",
+    "Legacy Service batch tests use the real ordinary owner; they do not prove Native batch support.",
+    "The frozen 237/254 full table was joined by ordered crate/profile/fullname; fourteen later groups and their 88 full inventory rows including auxiliary source evidence remain exact. Actual candidate libtest --list is pending."
+  ]
+}

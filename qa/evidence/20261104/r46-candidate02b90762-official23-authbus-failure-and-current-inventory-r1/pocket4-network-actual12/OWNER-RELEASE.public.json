@@ -1,0 +1,31 @@
+{
+  "schema": "heptabao.pocket4-network-owner-release.r1",
+  "go": {
+    "blob": "a18a4132d7942fefaa22c919cb0447c047d1a624",
+    "bytes": 1613,
+    "sha256": "f0a4bfcc540d506100d09a6f947364e32fbd744a61c1c7cfc9bfaf226106c929"
+  },
+  "original_call_returned": true,
+  "original_sdk_external_whole": {
+    "blob": "589ffca7ee8e09b44cf242941eea60704789f3d9",
+    "bytes": 58234,
+    "sha256": "1bf43684a3c895f9a0b9315cb594b1d06bf9ddfa7aabf968e4473926c7919e2b"
+  },
+  "original_sdk_archive": "ab3ba4b0ff4e240a7009df1ebcd8baa6de494f7e",
+  "original_native": {
+    "blob": "6d3c2b892b404d9397650fef136c32d3af0b42b6",
+    "bytes": 51121,
+    "sha256": "692b6845f4ec24174128b432361dfd0fec26329235d2b05a2c1c3198840ea129"
+  },
+  "original_isError": false,
+  "native_calls": 1,
+  "current_call_in_flight": false,
+  "current_owned_future": 0,
+  "closed": true,
+  "lane_released": "B0",
+  "no_followup_calls_submitted": true,
+  "three_searches_submitted": false,
+  "single_PID_submitted": false,
+  "physical_mapping_qualified": false,
+  "prior_unknowns_changed": false
+}

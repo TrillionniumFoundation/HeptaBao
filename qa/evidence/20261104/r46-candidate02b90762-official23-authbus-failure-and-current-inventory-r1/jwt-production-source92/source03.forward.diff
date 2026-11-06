@@ -1,0 +1,46 @@
+--- a/crates/heptabao-server/src/service.rs
++++ b/crates/heptabao-server/src/service.rs
+@@ -84,6 +84,7 @@
+ const POLICY_EXPIRATION_STATE_SCHEMA: u32 = crate::auth::policy_expiration::STATE_SCHEMA;
+ const NAMESPACE_FACTORY_STATE_SCHEMA: u32 = crate::auth::namespace_factory::STATE_SCHEMA;
+ const KV_MOUNT_CONFIGURATION_STATE_SCHEMA: u32 = 146;
++const JWT_POLICY_STATE_SCHEMA: u32 = crate::auth::jwt_policies::STATE_SCHEMA;
+ #[cfg(test)]
+ #[path = "service_policy_expiration_tests.rs"]
+ mod policy_expiration_tests;
+@@ -202,7 +203,7 @@
+ const PKI_BATCH_LEASE_STATE_SCHEMA: u32 = 136;
+ const NATIVE_PLAIN_NAMESPACE_STATE_SCHEMA: u32 = 138;
+ #[cfg(any(test, feature = "native-v6-storage"))]
+-const MAX_SUPPORTED_STATE_SCHEMA: u32 = KV_MOUNT_CONFIGURATION_STATE_SCHEMA;
++const MAX_SUPPORTED_STATE_SCHEMA: u32 = JWT_POLICY_STATE_SCHEMA;
+ 
+ fn supported_reader_schema(schema: u32) -> bool {
+     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
+@@ -270,6 +271,7 @@
+                 | POLICY_EXPIRATION_STATE_SCHEMA
+                 | NAMESPACE_FACTORY_STATE_SCHEMA
+                 | KV_MOUNT_CONFIGURATION_STATE_SCHEMA
++                | JWT_POLICY_STATE_SCHEMA
+                 | PKI_BATCH_LEASE_STATE_SCHEMA
+                 | USERPASS_ISSUANCE_STATE_SCHEMA
+                 | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
+@@ -6160,6 +6162,7 @@
+         }
+         if admitted.auth.has_rate_limit_quota_state()
+             || admitted.auth.has_approle_no_default_policy()
++            || admitted.auth.has_jwt_policy_state()
+             || admitted.auth.has_security_contract_state()
+             || admitted.auth.has_policy_expiration_state()
+             || admitted.engines.has_pki_acme_state()
+@@ -12628,6 +12631,10 @@
+ #[path = "service_jwt_renewal_tests.rs"]
+ mod jwt_renewal_tests;
+ 
++#[cfg(test)]
++#[path = "service_jwt_policy_tests.rs"]
++mod jwt_policy_tests;
++
+ #[cfg(all(test, target_os = "linux"))]
+ #[path = "service_kubernetes_renewal_tests.rs"]
+ mod kubernetes_renewal_tests;

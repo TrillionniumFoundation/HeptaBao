@@ -1,0 +1,95 @@
+{
+  "copies": {
+    "mac_current_phase_owner_r2.py": {
+      "bytes": 25647,
+      "identity": [
+        "16777233",
+        "593414506",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "25647",
+        "1793981090633707904",
+        "1793981090633707904"
+      ],
+      "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r3/mac_current_phase_owner_r2.py",
+      "sha256": "438578c430cdb86a22babfb76b7ed60a0bca8b486834378e34c54ffa85200c60"
+    },
+    "mac_current_server_owner_r1.py": {
+      "bytes": 14052,
+      "identity": [
+        "16777233",
+        "593414505",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "14052",
+        "1793981090633390630",
+        "1793981090633390630"
+      ],
+      "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r3/mac_current_server_owner_r1.py",
+      "sha256": "e4c868bfbda0d6357581925b6a09a59b9f8eac1f61e12154e4ecd86cbcede277"
+    }
+  },
+  "parents": [
+    {
+      "identity": [
+        "16777233",
+        "2",
+        "0",
+        "0",
+        "16877",
+        "22",
+        "704",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "path": "/"
+    },
+    {
+      "identity": [
+        "16777233",
+        "18326",
+        "0",
+        "80",
+        "16877",
+        "6",
+        "192",
+        "1790904461743063380",
+        "1790904461743063380"
+      ],
+      "path": "/Users"
+    },
+    {
+      "identity": [
+        "16777233",
+        "6929812",
+        "501",
+        "20",
+        "16877",
+        "325",
+        "10400",
+        "1793980889926014662",
+        "1793980889926014662"
+      ],
+      "path": "/Users/qianqi"
+    }
+  ],
+  "root": {
+    "identity": [
+      "16777233",
+      "593414504",
+      "501",
+      "20",
+      "16832",
+      "4",
+      "128",
+      "1793981090633666907",
+      "1793981090633666907"
+    ],
+    "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r3"
+  },
+  "schema": "heptabao.mac-owned-home-control-binding.r1"
+}

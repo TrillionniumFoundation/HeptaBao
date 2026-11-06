@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.current-consumer-backup-discovery.once-intent.v1",
+  "context": "current_consumer_backup_discovery_r1",
+  "callKey": "process-page-01",
+  "ordinal": 2,
+  "tool": "mcp__codex_apps__heptaruntime_mac_controller_host_processes",
+  "request": {
+    "blob": "040b93676ebe94e0cc47a07233a9967e6055a8f6",
+    "bytes": 55,
+    "sha256": "63b49a268da54a1579a938272befab4635d3bab4799dc3f9a642703150204903"
+  },
+  "go": {
+    "blob": "acf5eadc67327880998ed08b661874433ae5d121",
+    "bytes": 6092,
+    "sha256": "52dae6062b15f30b6741c9ca8239901f68a8bff5b2a3ea219dd7d1de9423b1e8"
+  },
+  "submitted": false,
+  "pageOrdinal": 1,
+  "maximumProcessPages": 4,
+  "noArgumentsOrEnvironment": true,
+  "noRetryOnUnknown": true
+}

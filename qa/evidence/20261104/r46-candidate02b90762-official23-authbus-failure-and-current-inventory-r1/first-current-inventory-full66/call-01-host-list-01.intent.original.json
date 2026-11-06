@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.current-consumer-backup-discovery.once-intent.v1",
+  "context": "current_consumer_backup_discovery_r1",
+  "callKey": "host-list-01",
+  "ordinal": 1,
+  "tool": "mcp__codex_apps__heptaruntime_mac_controller_host_list",
+  "request": {
+    "blob": "0967ef424bce6791893e9a57bb952f80fd536e93",
+    "bytes": 3,
+    "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+  },
+  "go": {
+    "blob": "acf5eadc67327880998ed08b661874433ae5d121",
+    "bytes": 6092,
+    "sha256": "52dae6062b15f30b6741c9ca8239901f68a8bff5b2a3ea219dd7d1de9423b1e8"
+  },
+  "scope": "bounded-configured-alias-and-X230-process-and-filename-discovery-only",
+  "maximumCallCount": 1,
+  "submitted": false,
+  "noRetryOnUnknown": true
+}

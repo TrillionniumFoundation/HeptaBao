@@ -1,0 +1,16 @@
+{
+  "call": "unit-status-once",
+  "tool": "service_status",
+  "request": {
+    "blob": "17b73efdc3c96fb8bf2d68d9d1a67598c6e41469",
+    "bytes": 92,
+    "sha256": "6d3f43b0dab2d6019de387fc7f9937b51ee877a251befe3350a5d2fc6965f547"
+  },
+  "go": {
+    "blob": "9f6feec23fbb0e9ca55eb2101eb61810ce3e3f76",
+    "bytes": 707,
+    "sha256": "80bbb97dad60e8166574d8d0eafe731006bf606a6cb8af24301a0b36e4c82942"
+  },
+  "dispatchCount": 0,
+  "automaticRetry": false
+}

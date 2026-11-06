@@ -1,0 +1,66 @@
+[
+  {
+    "ordinal": 0,
+    "callKey": "official271-x230-acl23-r2-body03-admit",
+    "kind": "operation_start",
+    "prefix": "call-00",
+    "armedTree": "c9dc5766a25f21e147d90d3841b0025bb248b5cb",
+    "sdkTree": "f19dc4fe3bc1be8a7a4d2bc8256b7d75e8983423"
+  },
+  {
+    "ordinal": 1,
+    "callKey": "official271-x230-acl23-r2-body03-status0",
+    "kind": "operation_status",
+    "prefix": "call-01",
+    "armedTree": "d3421aaea2088076682d144dd2281e6892e334ba",
+    "sdkTree": "e8f131c4b1d5ed5fad801ade62ee3c4ad4c41f95"
+  },
+  {
+    "ordinal": 2,
+    "callKey": "official271-x230-acl23-r2-body03-page000000",
+    "kind": "operation_result",
+    "prefix": "call-02",
+    "armedTree": "017a7aed98a72621468edf44741ac753c9cc3f35",
+    "sdkTree": "9fb8ade038ad0193ac6e6b847e86f2cc97141757"
+  },
+  {
+    "ordinal": 3,
+    "callKey": "official271-x230-acl23-r2-body03-page016384",
+    "kind": "operation_result",
+    "prefix": "call-03",
+    "armedTree": "2276deae1f8a7d948f1cf629e00c0060f8235921",
+    "sdkTree": "0ec8fe83ab69d9f520543f2e0bd584132eb5bb46"
+  },
+  {
+    "ordinal": 4,
+    "callKey": "official271-x230-acl23-r2-body03-page032768",
+    "kind": "operation_result",
+    "prefix": "call-04",
+    "armedTree": "014bc91147dbde50ab40616b619bea4ef8a8f12d",
+    "sdkTree": "5b78f1455df28a7c2faca86bc02593a1d86a77fb"
+  },
+  {
+    "ordinal": 5,
+    "callKey": "official271-x230-acl23-r2-body03-page049152",
+    "kind": "operation_result",
+    "prefix": "call-05",
+    "armedTree": "1493e7ff9a86f62d9c5761336f3caa6b6c9fbd9b",
+    "sdkTree": "63444dd980431faa8595bec841e2747e5d0839ca"
+  },
+  {
+    "ordinal": 6,
+    "callKey": "official271-x230-acl23-r2-body03-page065536",
+    "kind": "operation_result",
+    "prefix": "call-06",
+    "armedTree": "60e009a7a3ed5158faab535881ff7ee14d06f2ca",
+    "sdkTree": "7a8e8f6cae056e08dcc77eae6c7f178533d5f851"
+  },
+  {
+    "ordinal": 7,
+    "callKey": "official271-x230-acl23-r2-body03-page081920",
+    "kind": "operation_result",
+    "prefix": "call-07",
+    "armedTree": "d7272c347b45e55849bf786673053e8f6aa1d347",
+    "sdkTree": "6e796bd0bbf65d740d0e3d495372c2170cfa58f7"
+  }
+]

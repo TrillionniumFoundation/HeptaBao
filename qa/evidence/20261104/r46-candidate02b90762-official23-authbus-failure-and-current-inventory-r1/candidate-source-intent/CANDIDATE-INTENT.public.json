@@ -1,0 +1,513 @@
+{
+  "schema": "heptabao.root.final-source-candidate-publication-intent.r1",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "soleParent": "025b05a340de841b8161c1120344e86eae30eb97",
+  "baseTree": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+  "expectedTree": "9781e9615ac5fb068d217241c74bb54bf87942cf",
+  "branch": "codex/heptabao-snapshot49-jwt147-9781e961-20261106",
+  "sourceLeaves": 3932,
+  "sourceBytes": 62537554,
+  "changes": [
+    {
+      "path": "crates/heptabao-ha-service/src/authenticated_peer_frame.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8edc95536e36540a0cf160cb904e4844a80f98fc",
+      "size": 6204,
+      "before": "2abb0190d59f0385b378355a8f3d9573575ac988"
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/lib.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "658ebe6c1596e0db88ead17e65c20e69d240dfbb",
+      "size": 85408,
+      "before": "6e8947315c14e50c2424de90b11c99888e7bd0a5"
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/native_snapshot_body.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "51b0497f92f570ee48993b9bbd13e0d6cafbf54c",
+      "size": 15502,
+      "before": null
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/native_snapshot_body_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5595cb6d05f012396f92c00ed51b2c02d4775063",
+      "size": 7525,
+      "before": null
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/native_snapshot_peer.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "edf2e0e3a1e6a3da1a3308f4aa78213a160c28df",
+      "size": 23025,
+      "before": null
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/native_snapshot_peer_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b070183ad3d1774edd1469a9115c2a638b28b45b",
+      "size": 24476,
+      "before": null
+    },
+    {
+      "path": "crates/heptabao-server/src/auth.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c755af145c643bba143a0733459764bdb6fbd256",
+      "size": 399660,
+      "before": "c407b40741a5660b77e2342871888e2a61ac29da"
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_forward_actor.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a77b6320e54d37388baebc1a41a6b04d599da61e",
+      "size": 5060,
+      "before": "83fe8774097f079577f27678e3d08a8d35a27c1d"
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_jwt_policies.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b741714db926dea7865c1de4d59e78bf29562df6",
+      "size": 1898,
+      "before": null
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_native_jwt.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7a318b86ebdd47872fde86fbcce732f885571868",
+      "size": 19107,
+      "before": "4856333932541f0da1b02cf1065b22532ee3fe96"
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_snapshot_forward_actor_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7a150190255e6bb826aa79e7fb7c0d445809ab72",
+      "size": 2392,
+      "before": null
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "01412db627e69cf65b267fab3ecf7c1ca8a9bf13",
+      "size": 120850,
+      "before": "4e175a1b54bceaf63c90751544f26ba667ff4890"
+    },
+    {
+      "path": "crates/heptabao-server/src/engine_identity.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e98d3580ac3fc8cb90eb9d1317d1cc3e5133eaee",
+      "size": 9316,
+      "before": "54067536bc2d81a6dacf991bd1a0d6a9e15a8d82"
+    },
+    {
+      "path": "crates/heptabao-server/src/ha.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "577f2e3234bac279dca98d09f74200ffc8653cb6",
+      "size": 171763,
+      "before": "95533302d0a7afa31078b712624c1701f5edb9c8"
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_snapshot_forward.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "553b70d33e329e7c71dd957f609b672d4e3ff7a5",
+      "size": 6680,
+      "before": null
+    },
+    {
+      "path": "crates/heptabao-server/src/http.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "801f6a636ef62e8b3608e42d6e9a411186a88eaf",
+      "size": 232691,
+      "before": "58706d8d92e5e4a3c38a0b5843ead700ab2c4825"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c8a2ccae144d8196e6377c31f4915ff81dd7a6bf",
+      "size": 38482,
+      "before": "4a5743d757b79493400b712bf57a5fa552b50bda"
+    },
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2c850912c06599a46430d3cf59bda3f5b512b391",
+      "size": 519855,
+      "before": "671bb42fa71e7a29b78b7e48355c9024c1ec7d73"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_backup_restore.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c8d522e76680ef18c93aeaeef1e7f8f220404e48",
+      "size": 55905,
+      "before": "c349e3b69432f1fd2da94499ab948e3fc4282c54"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_forward_delivery.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e5e2b67dc88ed2a67ee266a1bbdd8b777c42f36c",
+      "size": 29010,
+      "before": "3203475bf2d08dde01570b8fe473e6343cdc4c4f"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_identity.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3ecc61336c4678fe99b0224dce4650b1744e59d3",
+      "size": 147757,
+      "before": "85c4edcadc7d7243652e00251975ccc875e5a129"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_jwt_pem_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "afe0f5c51012dd851552c3d37adc660ef3532b5b",
+      "size": 26873,
+      "before": "db7e649929b37f2f4cad0a51c640bfd051bfcb43"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_jwt_policy_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6ca9546c368db3b449bf4ca13da7de30fc927233",
+      "size": 20130,
+      "before": null
+    },
+    {
+      "path": "crates/heptabao-server/src/service_jwt_renewal_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1f4701e846c03082a15349f6dcd6ceb49f293d90",
+      "size": 14725,
+      "before": "808a6538e01458e232afb5286142098ab305e1b2"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_jwt_user_claim_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a6d74c9bab205bcdd0aa7b5a2f8997ae1afad091",
+      "size": 27988,
+      "before": "ead5a7c0733c9ab70ec0e4b46ed610f1f67b7b5c"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_controlgroups_271_namespace_ha_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d3b1e12fcbbfdeba55ffa344dec0a1fa476b7992",
+      "size": 16080,
+      "before": "d644f9788632be327e74e0cea2af6bdf1de66e20"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_controlgroups_271_namespace_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "758fc2a19179bf0359f790a2b85ab0bb90e78e35",
+      "size": 16003,
+      "before": "a25a840f0ef6680321a704fab203fa080467d74c"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_file_gc_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "063676cb26c9023e5d27dbffefba694a94422295",
+      "size": 13274,
+      "before": "5d250b3680aa85dc6063e8468bb84fc433817bf3"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_flat_retirement_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fff1bd6ba6d249299774ce508d2511e51bd42cde",
+      "size": 40451,
+      "before": "b5d2787ddefa9a36f0621fb67bb49b600d135a77"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_jwt_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e26bb55f3a6c167104581ac0e5450f98aed1cc0d",
+      "size": 49655,
+      "before": "e2f9097b9715b535ba1c4ef49d95fc46f0482a63"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_kv2_import_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "23038ffffacd18037700b0b9b1f4ed2d38c769f1",
+      "size": 34188,
+      "before": "2f5372924f8ac7aef133f897e1fafe859aa4ad60"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_kv2_large_ha_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "558d460b067c61d231f56c48320d4de54fa52edd",
+      "size": 41292,
+      "before": "de9e04185f634918825636d9d42dd018e8d9f723"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_kv2_mount_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0d55e13c52aa785eccb3f9893aada54f5fb626d4",
+      "size": 26981,
+      "before": "7af690e48a46293adb63a65cea4cb10ccbcd1812"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_kv2_storage_witness_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4bfdfdbf943010b434134bb1cfcaaacee86f3fff",
+      "size": 23721,
+      "before": "0db27da2dd2a5c994ee980fd15b497fcc998aa5d"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_namespace_tree_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dced505c3ce880f7cee05cec747d4400aac59d50",
+      "size": 32704,
+      "before": "d533aeec0d078e8ed3c513c81c41870a15cd16c5"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_pki_archive_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0256a72add9fca16d4ec8bbee3c5b4243ff7f1e2",
+      "size": 13352,
+      "before": "a509159de804ef6f83f26980a35290f496316373"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_remount_v6_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "245516dd1985d1a64fdd0532cbbbc2a209618dd0",
+      "size": 25915,
+      "before": "44b7930a61b8f31436c265234f24812df379c0f3"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0c51b759c257d836adf521bea3d75b90af0b301f",
+      "size": 16080,
+      "before": null
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_ssh_archive_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "748af393ffbe89e8697ba15fe1f78b5170e418ec",
+      "size": 8280,
+      "before": "fca8c213da5d752a77ac2bdca28bd88548d2ff5c"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_storage_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "101bac012507c04ee3a1c2b6dc15273e18cd9d61",
+      "size": 25215,
+      "before": "a93030cf3b5f4a881ad32f148e1b9afc02a07e0b"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_transit_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9f94153e8309317194ec66cf5cdb51a16507e4af",
+      "size": 27508,
+      "before": "7c1d2120a51d62505b7a3e0ff0aaaae2d101d204"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d6359eeb2d31bfc07636bbc2c2809688ebfc3467",
+      "size": 33328,
+      "before": "e6fc168b8813dfe046fadb446bdc880ffa2d8984"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_historical_restore_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1e9818f52ee2827166f2e9694e63513fb0e8e713",
+      "size": 53166,
+      "before": "6c9d8e5b205340ae54bde2600b09771b7325536e"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ac8bbc490de8197097a16acc57956b2c5243fc69",
+      "size": 70780,
+      "before": "aa9e00cd0f530ff27fa896160f8db1e0c5700920"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_restore_borrowed_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "74669ad0f4e3fd26f34d10b53ed29a06ae8a2032",
+      "size": 21227,
+      "before": "4de9450047a084ddcfb164b54a4ff661db787d2d"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_snapshot_repair_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d4b85c648162480a0ebd1900624a33d063c11eb7",
+      "size": 23538,
+      "before": "26897662a968abfc839fea5774c5b2405e8b63e9"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_snapshot_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "001413918726abb14faa742f291dde633ddbd036",
+      "size": 12836,
+      "before": "2a4fbc6bf26ee49aef0dc7eca081116f91a67aa5"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_migration_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d755f8800bd1d93c8c2b1b7e113c09f2489e4f0b",
+      "size": 19758,
+      "before": "cf2f577f948220a7d03db6ee94432856be2ab215"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_rate_limit_quota_139_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "60925759e86f1bfad3a9d75ff0d53885da8b9626",
+      "size": 40558,
+      "before": "de14459404def21c3954b06c6c3913b9fb4b2dbf"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "788f782911de638ceba14a208e9821f5892f4452",
+      "size": 9837,
+      "before": null
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_client.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a8a00094d2c4efb26a9be5c1af9b7b5f0c8e04cf",
+      "size": 20232,
+      "before": null
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_file.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "16e71797b71b0c49564ea753d3b03651f7fe21ce",
+      "size": 1957,
+      "before": null
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_source.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7178177f6156cce780c7044721ed53120c86a563",
+      "size": 19516,
+      "before": null
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_test_faults.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "66154e6540b0ae821f562a99f5d40cfc3dcbf276",
+      "size": 5490,
+      "before": null
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_wire.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a06777634573628646661f75d2d3d060d16e06f8",
+      "size": 16474,
+      "before": null
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_wire_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "54eabe0d9a8e07bd3cdfc10a917b565c59053a65",
+      "size": 11119,
+      "before": null
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_lossless_export_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dfe6f5e80709418b69bb1b33fee48dadb9ed6aa1",
+      "size": 13457,
+      "before": "815cc88c81df0721e7016bf04a733a9ee7da8c96"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "70794fded9c0ec68b2dab848ccf1f89bf912775d",
+      "size": 52444,
+      "before": "6b94e34c223fac25858c1e7f82fb18c07abf0ef3"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3d99ca6a4bc029ae5757c03a63b482aafac44e72",
+      "size": 13772,
+      "before": "6c5d06a598e1e48c57dd30bf391643b7c2b448ce"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9c5ccafbb9ae7d1f3ec1de8c05d97411630f3e98",
+      "size": 47093,
+      "before": "0a94044292493853c7770cb36aa69544c1488aca"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2f6c5383d4303a60d15801bd348f3f337fbe144b",
+      "size": 17988,
+      "before": "28d00dcb4193d725c9d9cb9a36f6e52518be0404"
+    }
+  ],
+  "sourceQualification": {
+    "blob": "da3c6aab031b4cebfb7dc8266e5a907813ae2f08",
+    "bytes": 1772,
+    "sha256": "16a2c5d7a248a513e8a6b2d022523d7edf07d5ee69fa0572d1ec78dd5aca9dd1"
+  },
+  "candidateCommit": null,
+  "createTreeCountBeforeThisIntent": 0,
+  "createCommitCountBeforeThisIntent": 0,
+  "createBranchCountBeforeThisIntent": 0,
+  "sourceFormatted": false,
+  "rustCompiled": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

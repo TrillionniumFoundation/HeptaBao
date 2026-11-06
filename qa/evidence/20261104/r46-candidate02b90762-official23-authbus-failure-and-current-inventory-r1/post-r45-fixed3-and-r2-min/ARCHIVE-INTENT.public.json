@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r45_Cr2_closed_A_fixed3_GO",
+  "records": [
+    {
+      "name": "C-fresh-r2-minimum-root-verifier.js",
+      "blob": "7b9663a49da183c78cd23f5cbb076fabb4bfe26f",
+      "bytes": 2840,
+      "sha256": "f687480184e09c36366df3cb10ec409f25c04761fa1f23e067af19185ad39833"
+    },
+    {
+      "name": "C-fresh-r2-minimum-root-result.json",
+      "blob": "1cbe26f6cc13f3a65a579b2dc636b6f57f6893ad",
+      "bytes": 1401,
+      "sha256": "ab76b8aa6c91db9a2282a4464fabac75540c93788b6884896b56d52b5fb07ed5"
+    },
+    {
+      "name": "A-fixed3-source-root-verifier.js",
+      "blob": "6c0c74b68589fed28365fd0b39208c87bdc87eab",
+      "bytes": 4758,
+      "sha256": "791f3a91b130827f4b2fc80a5aec7bf68c6c8f699b4c26b39aeffb4ff0feb4a6"
+    },
+    {
+      "name": "A-fixed3-source-root-result.json",
+      "blob": "3d0e1eda1910aa1ba9c0a37146b293112655f76b",
+      "bytes": 2101,
+      "sha256": "29d72720dad72fcb3d23d5d030ac1d08ec4f638f711b20e08677d37a1049e137"
+    },
+    {
+      "name": "A-fixed3-GO.json",
+      "blob": "1ef997e26d58cc0d601f23fb03e084713da8f47f",
+      "bytes": 6746,
+      "sha256": "ffc626746b232c542027339394b78c9c4a9a700311e8090a3316d5dc8db8f7b5"
+    }
+  ],
+  "expected_data_tree": "852d74e9098dc3ccd93819fabb60195c0b5c788e",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

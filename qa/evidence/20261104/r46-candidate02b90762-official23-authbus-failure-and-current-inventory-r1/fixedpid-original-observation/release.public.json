@@ -1,0 +1,51 @@
+{
+  "schema": "heptabao.root.fixedPID.owner-release.r1",
+  "originalJob": "1a1b1ed8329-fc05-7b8c",
+  "originalCalls": 3,
+  "oneProcessStart": 1,
+  "authoritativeStatuses": 1,
+  "terminalReads": 1,
+  "wholeOriginalSDKs": [
+    {
+      "name": "SDK.original.json",
+      "blob": "7c8ffd1be785d7425344585584b991ed0f1ccd3a",
+      "bytes": 11786,
+      "sha256": "e826fed5fcddbbe21a50a6ea5cf4b917392630b462d57dbac8dc6cef170fd09f"
+    },
+    {
+      "name": "SDK.original.json",
+      "blob": "8a989699930ee24c7840847c7bd20bd08ccb34d8",
+      "bytes": 951,
+      "sha256": "0ce7e00882b4cd04234070ea7a0aa50c1d5436d82db0369bd4c882364cca6b2a"
+    },
+    {
+      "name": "SDK.original.json",
+      "blob": "eec9f854f79badf754cf409318ce3ceb8e9b7e82",
+      "bytes": 5243,
+      "sha256": "9d9d35d0ff79a444d258e3867c7b8b45ecce30b8ebb45269baa9ce2096920057"
+    }
+  ],
+  "state": "failed",
+  "exitCode": 1,
+  "outputComplete": true,
+  "outputDurable": true,
+  "terminalPublicationConfirmed": true,
+  "stdout": {
+    "blob": "6c032a2d08059840312b07f5ecb0104056881d49",
+    "bytes": 1470,
+    "sha256": "b3cd47643edf5e663e3a82f85407bf1a20992b041ad1ad0a2817a0f6844430b0"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "currentCalls": 0,
+  "currentOwnedFutures": 0,
+  "closed": true,
+  "partialPublicIdentity": true,
+  "permissionDenialPreserved": true,
+  "noSudoOrFallback": true,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

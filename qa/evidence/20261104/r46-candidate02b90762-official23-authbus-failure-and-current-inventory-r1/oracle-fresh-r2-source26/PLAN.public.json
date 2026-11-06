@@ -1,0 +1,201 @@
+{
+  "schema": "heptabao.official271.acl23.fresh-fixture-r2.source.v1",
+  "state": "SOURCE_ONLY_NO_RUNTIME_GO",
+  "source": {
+    "blob": "446b3cff61ab8baf805d9868f57b150ff0a8ba4f",
+    "bytes": 18330,
+    "sha256": "300a2e20ac852d845f13905c21295bfda3221212688f2573cc4097714eb16855"
+  },
+  "aclExecutor": {
+    "blob": "3b2695829e4d8bc8688fd80f3f513fb550e56a1d",
+    "bytes": 15892,
+    "sha256": "60a2864887218041e3a718d765dc00d261be49510372af95233e8ae89c64e922"
+  },
+  "request": {
+    "blob": "e2a92c388ec7167f14b33cc9c2a03d82aae3bda4",
+    "bytes": 164759,
+    "sha256": "9ea5802b1ed39410eb2e83d5d7bebd6dfe44812271ac53da47863b884214f190"
+  },
+  "payload": {
+    "blob": "d40d885470eec3db203a9c91f579e5b5b17ed098",
+    "bytes": 134677,
+    "sha256": "8a8681e59c5572ed01fa6e824c4a2e03692baceb8d272bba857431c9c5c8e30f"
+  },
+  "journal": {
+    "blob": "bfda2944a31309daa516957ce6169e7dd73bb7db",
+    "bytes": 19055,
+    "sha256": "ef4694d6e91ff9fd4dddd12c05676a983fcb9a226c44810b4f7547b8b4c922d5"
+  },
+  "typed": {
+    "sha256": "7fa6526d31102a09e614e4334916934e335cf9105fd7181d08fb926a32eef0e0",
+    "fingerprint_decimal": "9198129917878872585",
+    "canonical_bytes": 164695
+  },
+  "slot": "official271_x230_acl23_oracle_gitfirst_r2",
+  "freshRoot": "/home/qian/heptabao-official271-acl23-oracle-20261106-r2",
+  "runId": "official271-acl23-r2",
+  "freshHttpsPort": 23625,
+  "freshClusterPort": 23626,
+  "rootPresence": null,
+  "portAvailability": null,
+  "originalScopeUntouched": {
+    "root": "/home/qian/heptabao-official271-acl23-oracle-20261106-r1",
+    "httpsPort": 23623,
+    "clusterPort": 23624,
+    "job": "1a1b17f9eff-fc05-7932",
+    "originalPausedState": {
+      "blob": "6c825b1f09d8584aafef83e153a7470679cae7cb",
+      "bytes": 223583,
+      "sha256": "af2add9ab483ad2c95c09da48e9307eb30ab78e864bf7e015edbfb2ae323268d"
+    },
+    "report": {
+      "blob": "7fec0f9ae61ccd30cbbda8a9242d62187fa2f8f2",
+      "bytes": 36658,
+      "sha256": "4b72f600f6b794c5cf7198ebe76696179cd2477da587113a5ee7bfe81be3eece"
+    },
+    "bodyPacket": "4dba644c762b447e8718e103f81e8e3e3085066d",
+    "sameOriginalsClosed": true,
+    "processMethodPassed": false,
+    "bodyRootQualification": null
+  },
+  "changes": [
+    "Keep exact 451-byte PEM source file in the eleven-input payload; remove only its validated single terminal LF from the value used to construct config requests, producing450 bytes. No response normalization.",
+    "Store exactly COMMON_CONFIG_FIELDS public setup projection before its unchanged strict equality comparison; include it in success and partial reports.",
+    "Fresh root/run ID/ports/key/slot and mechanically recomputed payload/source pins; no old fixture replay."
+  ],
+  "publicKeySource": {
+    "blob": "0699a557f6f8b51d1b9a8187b1ed89084f76aa25",
+    "bytes": 451,
+    "sha256": "db4837a2caba18729628ca629eeb44f452a55d5a9aa1f7bad7c2357ed0217938"
+  },
+  "publicKeyRequestValue": {
+    "blob": "f6ede40e46f5f1b5dadedb045f88ae987661e632",
+    "bytes": 450,
+    "sha256": "0d800d674a53560c9bdb69c20d16f0c84be727a0f37910ba4297f6941697f96c"
+  },
+  "publicKeyFileUnchanged": true,
+  "threePublicFields": [
+    "bound_issuer",
+    "jwt_validation_pubkeys",
+    "jwt_supported_algs"
+  ],
+  "strictReadbackEqualityPreserved": true,
+  "rawResponseNormalization": false,
+  "rawStatusNormalization": false,
+  "matrixUnchanged": {
+    "blob": "7364a32a2341a56b0730ad3486c72bdbd6de53c4",
+    "bytes": 14285,
+    "sha256": "59e3c9519e59e7ae26cde512a8171d39e2175e8bb24f12039222218570ebe6f8"
+  },
+  "actorPoliciesUnchanged": true,
+  "policyDelegationGapStillObservedSeparately": true,
+  "immutableInputs": {
+    "source/qa/openbao-acceptance/owned_process.py": {
+      "blob": "64793384ee1fd7db5081ac4ebb7e9dd354757889",
+      "bytes": 28442,
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0"
+    },
+    "source/qa/openbao-acceptance/official_openbao_launcher.py": {
+      "blob": "d7ac02bceeb6ec0751c3ff0d2ec6126e36ac8405",
+      "bytes": 20008,
+      "sha256": "5c11b432e1180fb40394fab382da774cf4171bf51431aab7e5823068cfba01d6"
+    },
+    "source/qa/openbao-acceptance/bao_http.py": {
+      "blob": "a3afa32fb83a1f214e4d05dc928c39f29090d647",
+      "bytes": 2349,
+      "sha256": "6c617b587640ceacfcae0f91ee928ee068193ae012ecb305541e3007315c328f"
+    },
+    "source/qa/openbao-acceptance/raw_status_observer.py": {
+      "blob": "c928d3750a3cdb05d3702f269b31026136e7a496",
+      "bytes": 13664,
+      "sha256": "1952270dba831b0e21e2291df8178e9557e7ff76fc83a2e8dc70cbf46eb7d4e9"
+    },
+    "source/qa/openbao-acceptance/acl23_executor.py": {
+      "blob": "3b2695829e4d8bc8688fd80f3f513fb550e56a1d",
+      "bytes": 15892,
+      "sha256": "60a2864887218041e3a718d765dc00d261be49510372af95233e8ae89c64e922"
+    },
+    "source/qa/openbao-acceptance/current_record_component.py": {
+      "blob": "158c65b4d0b1ecae87cb640ffaaf564de551980f",
+      "bytes": 5355,
+      "sha256": "660c8f55649861a3765b7b320d4c1abf2e7eba4ebac2f2290bee29eabeaff3f9"
+    },
+    "source/clients/python/heptabao/__init__.py": {
+      "blob": "856df0cad90c9fe3bcac80b3662e4d7259592ca5",
+      "bytes": 194,
+      "sha256": "6b48603fea77708df5e51b71cda53f488241b3c3f3cccb60158434cbdec219b2"
+    },
+    "source/clients/python/heptabao/transport.py": {
+      "blob": "76ba79c5c8da10881337f7e9eee1e0fbd54f490b",
+      "bytes": 21936,
+      "sha256": "fbf797ed819364f39fca60fb1d61032d29a43feb3c275de8f6b37c2f9e88429f"
+    },
+    "source/clients/python/heptabao/consistency.py": {
+      "blob": "19ab60eab7e1f8f909dcead6e0a0f487f1324b61",
+      "bytes": 4836,
+      "sha256": "657d81f48895ec4bb4e27199fcd3b7125d8fc2cb9899f777945ef2e831519abe"
+    },
+    "MATRIX23.original.public.json": {
+      "blob": "7364a32a2341a56b0730ad3486c72bdbd6de53c4",
+      "bytes": 14285,
+      "sha256": "59e3c9519e59e7ae26cde512a8171d39e2175e8bb24f12039222218570ebe6f8"
+    },
+    "PUBLIC-KEY.pem": {
+      "blob": "0699a557f6f8b51d1b9a8187b1ed89084f76aa25",
+      "bytes": 451,
+      "sha256": "db4837a2caba18729628ca629eeb44f452a55d5a9aa1f7bad7c2357ed0217938"
+    }
+  },
+  "onlyChangedRuntimeInput": "source/qa/openbao-acceptance/acl23_executor.py",
+  "originalTenInputBodiesUnchanged": true,
+  "budgets": {
+    "ownerSeconds": 360,
+    "outerSeconds": 390,
+    "httpMaximumSeconds": 15,
+    "aclRequestsMaximum": 853,
+    "sourceRequestMaximum": 957,
+    "startupActualRequests": null,
+    "inputFiles": 11,
+    "sourceBytes": 127412,
+    "stdinBytes": 134677,
+    "entryFDsMaximum": 12,
+    "reportMaximumBytes": 1048576,
+    "chunkMaximumBytes": 65536,
+    "readbackMaximumBytes": 1175988,
+    "statusObserversMaximum": 32,
+    "readObserversMaximum": 129,
+    "statusQueriesPerObserverMaximum": 8,
+    "pagesPerObserverMaximum": 128,
+    "immutablePageBytes": 8192,
+    "payloadMaximumBytes": 1048576,
+    "streamReadBytes": 16384,
+    "totalStreamObservationMaximumBytes": 2097152,
+    "originalDeadlineReset": false
+  },
+  "originalHelpersUnchanged": true,
+  "components": {
+    "classes": 4,
+    "variants": 8,
+    "sourceUnchanged": true,
+    "previousActualPassed8": true,
+    "nextExecution": null,
+    "productCases": 0
+  },
+  "runtimeGate": "Root must independently close original report/owner facts and issue a separate exact new fixture GO and lane. No stage/INFO/BODY authority authorizes this process.",
+  "primaryEvidence": {
+    "tree": "909136da6be72cddc66cf81f986a978b7f9508ea",
+    "finding": {
+      "blob": "006481a13c93ccce1a343b4c2ec70669fec63f46",
+      "bytes": 4062,
+      "sha256": "f21a4dc0f45eea8cd8dc41d2b3fae6ddfd41a1b9d54f3eac492b829e0a32b391"
+    }
+  },
+  "knownLimits": [
+    "The original report did not retain actual setup config bytes. Its exact original mismatch cannot be reconstructed; the input repair is supported by both primary parsing paths.",
+    "Original Owner passed_process_method remains false. Its four same-original waits/retired SIDs are explicit actual records; do not retroactively call the original fixture successful.",
+    "These source checks do not run Python/OpenSSL/OpenBao or any ACL product case. Fresh port/root checks remain runtime-owned.",
+    "Raw official responses and role token_policies remain unnormalized; no actor default policy is injected."
+  ],
+  "nativeCalls": 0,
+  "productCasesExecutedByThisSource": 0
+}

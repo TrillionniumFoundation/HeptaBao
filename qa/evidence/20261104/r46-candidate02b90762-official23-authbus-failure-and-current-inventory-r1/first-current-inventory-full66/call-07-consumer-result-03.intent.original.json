@@ -1,0 +1,32 @@
+{
+  "schema": "heptabao.current-consumer-backup-discovery.once-intent.v1",
+  "context": "current_consumer_backup_discovery_r1",
+  "callKey": "consumer-result-03",
+  "ordinal": 7,
+  "tool": "mcp__codex_apps__heptaruntime_mac_controller_search_results",
+  "request": {
+    "blob": "0fac06ba67b34317a55afb79c6813879ed5d4f8c",
+    "bytes": 117,
+    "sha256": "d87a176ce62dc0245eca3f53390a6aad359b3038eaf760546497e2f33cef7900"
+  },
+  "go": {
+    "blob": "acf5eadc67327880998ed08b661874433ae5d121",
+    "bytes": 6092,
+    "sha256": "52dae6062b15f30b6741c9ca8239901f68a8bff5b2a3ea219dd7d1de9423b1e8"
+  },
+  "submitted": false,
+  "originalSearchID": "164d94fe0ce313136c059144efa005f384f52da4949abc9d98af79946daf26fb",
+  "previousActual": {
+    "native": {
+      "blob": "72c1a20a6a08d790e4a8c8e169e9e4ee101ea3a4",
+      "bytes": 8213,
+      "sha256": "f631e37062f8486cf795c25e92941ce7dffb897ff49b11183c32b785792516a7"
+    },
+    "next_cursor": 64
+  },
+  "cursor": 64,
+  "limit": 32,
+  "terminalPagesAlreadyClosed": 2,
+  "maximumTerminalPages": 4,
+  "noNewSearch": true
+}

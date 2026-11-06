@@ -1,0 +1,22 @@
+{
+  "fileInfo": {
+    "blob": "491baf66132791ec1836a27a6d283e6f53fa0c06",
+    "purpose": "Previously actual tool schema only, not current target metadata"
+  },
+  "binaryRead": {
+    "blob": "7e330a915a3a69739a502d9fb9efac1afe938dc4",
+    "keys": [
+      "chunk_sha256",
+      "data_base64",
+      "eof",
+      "next_offset",
+      "offset",
+      "path",
+      "size",
+      "version"
+    ],
+    "purpose": "Previously actual tool schema only; the large historical SDK source body is not duplicated or reread from host"
+  },
+  "newTargetMetadataObserved": false,
+  "stageActualFull9UsedOnlyAsExpectedComparison": true
+}

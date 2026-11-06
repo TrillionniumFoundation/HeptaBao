@@ -1,0 +1,91 @@
+{
+  "schema": "heptabao.jwt-policy-empty.source-peer.v1",
+  "reviewer": "compatibility_audit",
+  "status": "SOURCE_FINDINGS_AND_MINIMAL_PATCH_PROPOSAL",
+  "root_task": "JWT-local explicit-empty/default/delegation review; preserve original route Actor/caps and global ACL",
+  "inputs": "SOURCE-MAP.public.json",
+  "evidence": "CODE-PRIMARY.public.json",
+  "stages": "POLICY-STAGES.public.json",
+  "coverage": "ORIGINAL23-COVERAGE.public.json",
+  "conclusions": [
+    {
+      "id": "write-vs-issue-default",
+      "finding": "The candidate inserts default into the saved role. Official modern and legacy explicit empty inputs save an empty effective list; default is added to newly issued tokens according to the role flag.",
+      "severity": "compatibility_source_gap",
+      "not_live": true
+    },
+    {
+      "id": "jwt-role-writer-subset",
+      "finding": "The candidate applies global token-policy assignment validation to JWT role configuration. Official role parsing/storage has no such writer subset gate. Preserve real route capability authorization and remove only this JWT-local call.",
+      "severity": "compatibility_source_gap",
+      "not_live": true
+    },
+    {
+      "id": "root-stage",
+      "finding": "Do not replace removed assignment validation with an early root-policy 400. Official role storage and token issuance are separate: source permits storing root configuration and forbids root at token creation. Preserve candidate's existing pre-service/pre-batch login root rejection and issued-token provenance guards.",
+      "severity": "required_patch_boundary"
+    },
+    {
+      "id": "role-no-default-schema",
+      "finding": "The candidate lacks a JWT role token_no_default_policy member and rejects the field. A compatible local implementation needs default-false persistence, omitted-update preservation, readback, and official TypeBool decoding, plus common issuance handling for both token types.",
+      "severity": "explicit_schema_api_gap",
+      "not_live": true
+    },
+    {
+      "id": "renewal",
+      "finding": "Keep existing auth_jwt_renewal.rs byte-for-byte; reapplying role policies or a changed role default flag to existing tokens would introduce a different behavior.",
+      "severity": "must_preserve"
+    },
+    {
+      "id": "coverage",
+      "finding": "The unchanged original23 and actual executor source do not contain explicit []/root role/default-role flag or login policy cases. They can settle capability/omitted-policy behavior for truly no-default actors; do not promote that result to untested policy semantics.",
+      "severity": "scope_limit"
+    }
+  ],
+  "narrow_proposal": [
+    {
+      "step": 1,
+      "change": "JWT role policy parse only: add_default=false, preserve omitted prior list and explicit empty clearing. Leave global policies() byte-identical.",
+      "reason": "Separate role configuration from issued-token default injection."
+    },
+    {
+      "step": 2,
+      "change": "Remove only JWT role self.validate_assignment(actor,&role_policies), retaining self.permission on the original create/update capability and the native captured Actor/source capability path.",
+      "reason": "Do not treat a role definition as direct token API policy delegation."
+    },
+    {
+      "step": 3,
+      "change": "JWT-local token_no_default_policy: persisted default false; omission on update retains previous; expose on role read. Match official FieldData TypeBool weak decoder rather than assume only JSON booleans; accepted input domain must be separately pinned before candidate freeze.",
+      "reason": "Current whitelist/struct lack the field. Preserve old serialized false/absent meaning and reject only officially invalid values."
+    },
+    {
+      "step": 4,
+      "change": "Compute one final issued policy set after genuine JWT/root guards and before branching; clone role policies, add default only when role flag is false. Both service Token and BatchClaims consume this same result. Explicit default is never removed by the flag.",
+      "reason": "Changing storage parsing alone would silently remove expected default policy from both login branches."
+    },
+    {
+      "step": 5,
+      "change": "Keep renewal/global validate_assignment/general token issuance and non-JWT auth paths unchanged; do not strip default from existing persisted roles during migration.",
+      "reason": "Previously stored default may be explicit or historical; no evidence permits destructive rewriting."
+    }
+  ],
+  "additional_limits": [
+    "Official modern/legacy parsing paths differ in normalization, precedence and legacy read alias retention. The narrow empty/default fix is not a blanket claim of complete policy-field representation parity.",
+    "Default suppression is distinct from token API no_default_policy used to create the matrix actors.",
+    "Official core also rejects nonassignable internal policies; preserving the existing root guard does not by itself establish every policy-name restriction is equivalent.",
+    "Any new stored field requires explicit migration/state-fence review and constructor coverage; no compile/runtime validation is claimed here.",
+    "Do not add default to test actors or relax global ACL negative tests to conceal the divergence.",
+    "New meaningful storage/issuance/root/renewal regression names must be listed separately; the existing 23 and 237/254 denominators are not silently changed."
+  ],
+  "execution": {
+    "native_calls": 0,
+    "rust_compile": 0,
+    "rust_tests": 0,
+    "python_calls": 0,
+    "production_mutations": 0,
+    "source_commit_created": false
+  },
+  "whole_source_bindings": 26,
+  "source_qualification_only": true,
+  "future_candidate_requested_by_root": true
+}

@@ -1,0 +1,8 @@
+{
+  "kind": "pure_v8_inventory_checker",
+  "error": "combined original exact geometry",
+  "cause": "The frozen final88 inventory rows include family/source/sourceFile/sourceEvidence auxiliary fields; a minimal flatten projection intentionally lacks them.",
+  "nativeCalls": 0,
+  "candidateSourceChanged": false,
+  "resolution": "Compare ordered crate/profile/fullname, preserve the exact original last88 row objects, then rebuild only the first four groups."
+}

@@ -1,0 +1,71 @@
+{
+  "schema": "heptabao.official271.fresh-r2.report-info-release.r1",
+  "host": "x230",
+  "job": "1a1b1b4fbfa-fc05-7a60",
+  "slot": "official271_x230_acl23_oracle_gitfirst_r2",
+  "operation": "fb33dec05df1603940b92929c9cb75c6990fa6d0c1ca281f1a317d8221edfc47",
+  "nativeCallsInFlight": 0,
+  "activeFutures": 0,
+  "pending": null,
+  "laneReleased": true,
+  "scope": "metadata-only",
+  "calls": 3,
+  "pages": 1,
+  "originalSevenCallsRetained": true,
+  "go": {
+    "blob": "b73bc52094bcfb4e2a6fe3ac343a096293dc4afd",
+    "bytes": 3364,
+    "sha256": "606ac5905629756fd4b04208498f44da847512d5ca529400719bc7aced8149cc"
+  },
+  "closedStatusSDK": {
+    "blob": "81320f6f71e721e4bf7b1ecb7f14e01051b0c336",
+    "bytes": 975,
+    "sha256": "6b9247755c588676088b6d424c216a982a66bcb2adb05226fa7c63a7de90e1df"
+  },
+  "native": {
+    "blob": "5de2fd1d0891ce3fee0bb3b4e3968452e7715dcd",
+    "bytes": 463,
+    "sha256": "50afd94d7cb022e910476f5812f78beb008323cb042a378182a32c99761893d7"
+  },
+  "payload": {
+    "blob": "e96e18604f2253507b6a80caad875b595e6f48c5",
+    "bytes": 580,
+    "sha256": "601fdc40a05e58e756f113c62484484895d998dbc72b988e5014c8b6ce770a50"
+  },
+  "actual": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 384,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 384,
+    "path": "/home/qian/heptabao-official271-acl23-oracle-20261106-r2/result.public.json",
+    "sha256": "9048f3b5c854a190dadde86f5d7eec180c497313065bd70bd23a87124789a62d",
+    "size": 651803,
+    "version": "2053:2098461:651803:1793982810542000556:1793982810542000556"
+  },
+  "full9Strings": [
+    "2053",
+    "2098461",
+    "1000",
+    "1000",
+    "33152",
+    "1",
+    "651803",
+    "1793982810542000556",
+    "1793982810542000556"
+  ],
+  "state": {
+    "blob": "b4206a027c1584bf5a0bcaaf54d1cec9dc1ce036",
+    "bytes": 227036,
+    "sha256": "0fe475c8bebb1fa287c9aa9e944731ae4618edd9f87ced4e852b3b9b48e9faba"
+  },
+  "reportBodyRead": false,
+  "aclCaseResultsQualified": false,
+  "ownerReceiptQualified": false
+}

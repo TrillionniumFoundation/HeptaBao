@@ -1,0 +1,435 @@
+{
+  "schema": "heptabao.jwt-local-policy-source12.r1",
+  "candidateCommit": null,
+  "base": "root provisional 025b + actual snapshot49 + Identity2; no new commit/ref",
+  "execution": {
+    "formatted": false,
+    "rustCompiled": false,
+    "rustTestsExecuted": 0,
+    "nativeCalls": 0,
+    "fullReplacement": false
+  },
+  "files": [
+    {
+      "path": "crates/heptabao-server/src/auth_native_jwt.rs",
+      "before": {
+        "blob": "4856333932541f0da1b02cf1065b22532ee3fe96",
+        "bytes": 18771,
+        "sha256": "ca4325e8c853816855a332b85e1ae87fe24ccecdea375c3422cd25451fc49641"
+      },
+      "after": {
+        "blob": "7a318b86ebdd47872fde86fbcce732f885571868",
+        "bytes": 19107,
+        "sha256": "59eb89dbd69dde8cd8d70c8cd340a47e5e3855e6e19f127914986ec228a8a87f"
+      },
+      "mode": "100644",
+      "kind": "modify",
+      "index": 0,
+      "beforeFile": "source00.before.rs",
+      "afterFile": "source00.after.rs",
+      "forwardFile": "source00.forward.diff",
+      "reverseFile": "source00.reverse.diff",
+      "forward": {
+        "blob": "5b3f3103456c4bbbb202fd631abf251ae18769cc",
+        "bytes": 1841,
+        "sha256": "d37ee36f1098e663e1807b5dbab2214a5d30a6b75d635f918d7576b8292ebc82"
+      },
+      "reverse": {
+        "blob": "442da418fa17fdadc27a8270f61f7be3c8ed1113",
+        "bytes": 1841,
+        "sha256": "5603d56115a5cdfbd073b9c9115b53ad1e873aebc56fb421eeae64824410e45b"
+      },
+      "hunks": 1
+    },
+    {
+      "path": "crates/heptabao-server/src/auth.rs",
+      "before": {
+        "blob": "c407b40741a5660b77e2342871888e2a61ac29da",
+        "bytes": 398266,
+        "sha256": "9f366e631019e55aca61717a324bf13c1995797ed088b5b9d8b80c4a11914f7f"
+      },
+      "after": {
+        "blob": "c755af145c643bba143a0733459764bdb6fbd256",
+        "bytes": 399660,
+        "sha256": "59666cfb8bc42b672b2185eb23014def09759dbbc37c3b45c8593969d0d2edfb"
+      },
+      "mode": "100644",
+      "kind": "modify",
+      "index": 1,
+      "beforeFile": "source01.before.rs",
+      "afterFile": "source01.after.rs",
+      "forwardFile": "source01.forward.diff",
+      "reverseFile": "source01.reverse.diff",
+      "forward": {
+        "blob": "c8081c401bd8d2c02cb24927f8ec052614a62089",
+        "bytes": 7049,
+        "sha256": "6dcdf9aa30bcc97ea9d8b14171185c142d00f227a703cc273f9995654a12927b"
+      },
+      "reverse": {
+        "blob": "e0cae2f9a72c2a82633270c9fea80fd4d8abf5cb",
+        "bytes": 7049,
+        "sha256": "6eb76cafe394e3f34469d1265acdd0dbb50543723873fbc9936b5ecd97c09960"
+      },
+      "hunks": 14
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_jwt_policies.rs",
+      "before": null,
+      "after": {
+        "blob": "b741714db926dea7865c1de4d59e78bf29562df6",
+        "bytes": 1898,
+        "sha256": "c6533f5bb305422977afed9c219b408717810ac716d18bd422dd1e84a166a73d"
+      },
+      "mode": "100644",
+      "kind": "new",
+      "index": 2,
+      "beforeFile": null,
+      "afterFile": "source02.after.rs",
+      "forwardFile": "source02.forward.diff",
+      "reverseFile": "source02.reverse.diff",
+      "forward": {
+        "blob": "4de6a0c7aaeaa869f8a51fe9edcd28d873b787a3",
+        "bytes": 2037,
+        "sha256": "67bc2bc02eda0fdc9268f711ba63ee91c8930d9b559e14feb2634cae1b5f61d5"
+      },
+      "reverse": {
+        "blob": "5755d0f1ad935eac94e4e2044b22390df102a65a",
+        "bytes": 2037,
+        "sha256": "907a1f78763e6f06445a8b36a405e1813b0a7a372add644aedb1ef2c927e1f14"
+      },
+      "hunks": 1
+    },
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "before": {
+        "blob": "6574a4d522a62feb328fea61d19df575ce7f2550",
+        "bytes": 519619,
+        "sha256": "4ad6ea76e43a14a073843400b12f516175d46ed103610a6f7202b82a09d7c919"
+      },
+      "after": {
+        "blob": "2c850912c06599a46430d3cf59bda3f5b512b391",
+        "bytes": 519855,
+        "sha256": "353b30dac21cfbe8bff83f320ae9ee3c5b70c317222accd1b536d102f16befb9"
+      },
+      "mode": "100644",
+      "kind": "modify",
+      "index": 3,
+      "beforeFile": "source03.before.rs",
+      "afterFile": "source03.after.rs",
+      "forwardFile": "source03.forward.diff",
+      "reverseFile": "source03.reverse.diff",
+      "forward": {
+        "blob": "4cfe22a1aa525d114e6dafddba274f2219e1a04b",
+        "bytes": 1980,
+        "sha256": "bb22b14e72c556400ecacbd643f54ea3fec68374c75dcbc3368a74f9e0866f4d"
+      },
+      "reverse": {
+        "blob": "b636f3650dd832f7f9d46690e212f2f3fb6d6a19",
+        "bytes": 1980,
+        "sha256": "e67c9c6bda29f805a39a23a8d57cd72f157ff589af7ed4669caf579aed38d906"
+      },
+      "hunks": 5
+    },
+    {
+      "path": "crates/heptabao-server/src/service_identity.rs",
+      "before": {
+        "blob": "85c4edcadc7d7243652e00251975ccc875e5a129",
+        "bytes": 147003,
+        "sha256": "a9b310b901f693b4913dc21442cd71b224262325b6291ce1402a9ffa1c6354cf"
+      },
+      "after": {
+        "blob": "3ecc61336c4678fe99b0224dce4650b1744e59d3",
+        "bytes": 147757,
+        "sha256": "11367db524911c3f2fd7206a913fa992ff9ead918c5a9efb31fdfa11e9a5b2f0"
+      },
+      "mode": "100644",
+      "kind": "modify",
+      "index": 4,
+      "beforeFile": "source04.before.rs",
+      "afterFile": "source04.after.rs",
+      "forwardFile": "source04.forward.diff",
+      "reverseFile": "source04.reverse.diff",
+      "forward": {
+        "blob": "ca89d57ccee6709ab0b4a4b2cbcb1f01adc227f9",
+        "bytes": 2028,
+        "sha256": "c90fa3a3b35ffc2b61ac2814b39e78447117a3b2b8b7a53b53cdc914dbd760ce"
+      },
+      "reverse": {
+        "blob": "8e727bcaa9b443808bbae7d8c7a84ab4782e2d2b",
+        "bytes": 2028,
+        "sha256": "be3b4858b8d2298f25d1cc85a05514f05af0ebba16ebfa719253e07569f85d34"
+      },
+      "hunks": 4
+    },
+    {
+      "path": "crates/heptabao-server/src/service_backup_restore.rs",
+      "before": {
+        "blob": "c349e3b69432f1fd2da94499ab948e3fc4282c54",
+        "bytes": 55523,
+        "sha256": "40962fb88930d10979cab2b48efc83025480d936d9727f8f22a018dad2f0e7d2"
+      },
+      "after": {
+        "blob": "c8d522e76680ef18c93aeaeef1e7f8f220404e48",
+        "bytes": 55905,
+        "sha256": "6d32af21f71d36067d7a7e0ce3827beb0661ad573eda1d91a32b4fd7427b6ee9"
+      },
+      "mode": "100644",
+      "kind": "modify",
+      "index": 5,
+      "beforeFile": "source05.before.rs",
+      "afterFile": "source05.after.rs",
+      "forwardFile": "source05.forward.diff",
+      "reverseFile": "source05.reverse.diff",
+      "forward": {
+        "blob": "ea8e3077fb437e1a4ab8da84aac7c5424e016330",
+        "bytes": 705,
+        "sha256": "57937ec254d2ff48923765d6532b5781ad4ad3c56052ec12a44e3fdf998e543c"
+      },
+      "reverse": {
+        "blob": "12c3c1d71eb327e204498bdbe25c4b8a95afc43e",
+        "bytes": 705,
+        "sha256": "370ed44d40d93591ca047eafc458bd2475e9baf8585b371c58a55fea3d197af0"
+      },
+      "hunks": 1
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_jwt_tests.rs",
+      "before": {
+        "blob": "57dd3760335f245f2a37540899b338a8b9b56189",
+        "bytes": 37451,
+        "sha256": "ab4b610f7bc1a74287710b3461c3f212ad6c6f7aabcf642c3302ea66dc51c57c"
+      },
+      "after": {
+        "blob": "e26bb55f3a6c167104581ac0e5450f98aed1cc0d",
+        "bytes": 49655,
+        "sha256": "d909c5fa2fe1044e49372b9168619feed28968d48d34fa9af111e39fc31f056a"
+      },
+      "mode": "100644",
+      "kind": "modify",
+      "index": 6,
+      "beforeFile": "source06.before.rs",
+      "afterFile": "source06.after.rs",
+      "forwardFile": "source06.forward.diff",
+      "reverseFile": "source06.reverse.diff",
+      "forward": {
+        "blob": "185375cf0c5b0b18c0984df9311b2f0dd2deadb7",
+        "bytes": 15653,
+        "sha256": "3e25f27d5ae1e4c9c345087b2f50d4d4bd6ee01e4d98c91c2985379d4b3b80b8"
+      },
+      "reverse": {
+        "blob": "3f597c434390d41459104b3547448ead6ce072cf",
+        "bytes": 15653,
+        "sha256": "114fcca31d16a4de7a116c0e65fe3f58c19a24f14a3f9b6dcbe12de6a1816229"
+      },
+      "hunks": 2
+    },
+    {
+      "path": "crates/heptabao-server/src/service_jwt_policy_tests.rs",
+      "before": null,
+      "after": {
+        "blob": "6ca9546c368db3b449bf4ca13da7de30fc927233",
+        "bytes": 20130,
+        "sha256": "f7ea6733616f0123555ba368a83ed3fb6b670e859b8a01f33f7b416532bfe846"
+      },
+      "mode": "100644",
+      "kind": "new",
+      "index": 7,
+      "beforeFile": null,
+      "afterFile": "source07.after.rs",
+      "forwardFile": "source07.forward.diff",
+      "reverseFile": "source07.reverse.diff",
+      "forward": {
+        "blob": "f536639118f03387a97b14ada5c426c58029fb90",
+        "bytes": 20665,
+        "sha256": "928a5fa728565a60c69b0656908401a2ad0838462e6cf958fe15580f57d99b69"
+      },
+      "reverse": {
+        "blob": "9e5d3cc81b37a5948699478c58d23fc23b1716ba",
+        "bytes": 20665,
+        "sha256": "7b34110859fbf69a17fa1d66f721c213e484e804064b3c482a6eb5d88b237f42"
+      },
+      "hunks": 1
+    },
+    {
+      "path": "crates/heptabao-server/src/service_jwt_user_claim_tests.rs",
+      "before": {
+        "blob": "ead5a7c0733c9ab70ec0e4b46ed610f1f67b7b5c",
+        "bytes": 27679,
+        "sha256": "1e69fedd1ff8821a06450a1d04f70f3bed008044ffa5c8b2174db99347c2c0f7"
+      },
+      "after": {
+        "blob": "a6d74c9bab205bcdd0aa7b5a2f8997ae1afad091",
+        "bytes": 27988,
+        "sha256": "6e7f16b854aa99888ec21e399309b5f11c7d5612b1e2223c1feab7dcb0d02082"
+      },
+      "mode": "100644",
+      "kind": "modify",
+      "index": 8,
+      "beforeFile": "source08.before.rs",
+      "afterFile": "source08.after.rs",
+      "forwardFile": "source08.forward.diff",
+      "reverseFile": "source08.reverse.diff",
+      "forward": {
+        "blob": "8edfdb0e65698e5211da5510417aba8bfacd3c40",
+        "bytes": 1583,
+        "sha256": "1ec37cf922ed32ad22c72ee1e410897d8f990eae9accea194be090ed1c9a9cc2"
+      },
+      "reverse": {
+        "blob": "35961e5da9814dc6d1784eedcf20397dc76ff990",
+        "bytes": 1583,
+        "sha256": "e1114a1c3e76e6ff887cec4a8ffb6aa7d33ea1b97e59d1f8d5a0d855ce82f674"
+      },
+      "hunks": 2
+    },
+    {
+      "path": "crates/heptabao-server/src/service_jwt_pem_tests.rs",
+      "before": {
+        "blob": "db7e649929b37f2f4cad0a51c640bfd051bfcb43",
+        "bytes": 26283,
+        "sha256": "4d5745103a0f614cc438f8668ba2d69704d0fe92a2341795867287dee65860b3"
+      },
+      "after": {
+        "blob": "afe0f5c51012dd851552c3d37adc660ef3532b5b",
+        "bytes": 26873,
+        "sha256": "51a670bf7a6826079d28a348b739d7e1ca420365547443d5013e2457269e3ca2"
+      },
+      "mode": "100644",
+      "kind": "modify",
+      "index": 9,
+      "beforeFile": "source09.before.rs",
+      "afterFile": "source09.after.rs",
+      "forwardFile": "source09.forward.diff",
+      "reverseFile": "source09.reverse.diff",
+      "forward": {
+        "blob": "2e3b7a61ea5c250efdf438b6e7743dd7f8230973",
+        "bytes": 2008,
+        "sha256": "d569e281766cddec4ccba53f1629ac41ea278014c7e4aca1e7301b56ce37ee6f"
+      },
+      "reverse": {
+        "blob": "3cd19f47f58188acb340b82f2beeb007e825c341",
+        "bytes": 2008,
+        "sha256": "72b846dcf44732a0129d85cc3cf981a72ed91ab12d5df9aa8d0708da5048b1c7"
+      },
+      "hunks": 4
+    },
+    {
+      "path": "crates/heptabao-server/src/service_jwt_renewal_tests.rs",
+      "before": {
+        "blob": "808a6538e01458e232afb5286142098ab305e1b2",
+        "bytes": 14093,
+        "sha256": "274429a69c1adcf96a6ff1874d9d228a4a20416808b4ce6476d4150213b5de3c"
+      },
+      "after": {
+        "blob": "1f4701e846c03082a15349f6dcd6ceb49f293d90",
+        "bytes": 14725,
+        "sha256": "25d9c4cb75e546081b3aa31d8a32fb174949765c929c0bea96ed46ef82fcb108"
+      },
+      "mode": "100644",
+      "kind": "modify",
+      "index": 10,
+      "beforeFile": "source10.before.rs",
+      "afterFile": "source10.after.rs",
+      "forwardFile": "source10.forward.diff",
+      "reverseFile": "source10.reverse.diff",
+      "forward": {
+        "blob": "e18e55a36f40dcb6f6fb930ef8845a586a147c19",
+        "bytes": 2743,
+        "sha256": "f9a28543ba30ca43cd017a96cb80b2a61e27aa0948e4321aefb61b7b3a6ab27c"
+      },
+      "reverse": {
+        "blob": "446cb38258b77d517679e3dbb7ac68be43fd0050",
+        "bytes": 2743,
+        "sha256": "0391f786d8a54d4076f4f030d17b2fa1ef531e2ca17343048a836d564190b459"
+      },
+      "hunks": 3
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_tests.rs",
+      "before": {
+        "blob": "4e175a1b54bceaf63c90751544f26ba667ff4890",
+        "bytes": 120792,
+        "sha256": "9324cd42b62c03fbfd36b886276c75cf3bee883d73bfa54889590110624e5704"
+      },
+      "after": {
+        "blob": "01412db627e69cf65b267fab3ecf7c1ca8a9bf13",
+        "bytes": 120850,
+        "sha256": "3f64ec969b9fc63f36af3521030f2cb6cf201144462dbc35662f5834ca0f3910"
+      },
+      "mode": "100644",
+      "kind": "modify",
+      "index": 11,
+      "beforeFile": "source11.before.rs",
+      "afterFile": "source11.after.rs",
+      "forwardFile": "source11.forward.diff",
+      "reverseFile": "source11.reverse.diff",
+      "forward": {
+        "blob": "205a541044510b9feea28505f756585358f630de",
+        "bytes": 344,
+        "sha256": "3ca6e9f1fe632ce0c5d03f293e13a7a49e73f0f1c0863464d20614edd241003a"
+      },
+      "reverse": {
+        "blob": "282e079778a46094b110927a1a03db7898ae6c09",
+        "bytes": 344,
+        "sha256": "73de25c5e3fbc852a21038cfa07f1bb18c9d336794c6fbd1243ee371353a0007"
+      },
+      "hunks": 1
+    }
+  ],
+  "authChain": {
+    "actual": {
+      "blob": "c407b40741a5660b77e2342871888e2a61ac29da",
+      "bytes": 398266,
+      "sha256": "9f366e631019e55aca61717a324bf13c1995797ed088b5b9d8b80c4a11914f7f"
+    },
+    "intermediate": {
+      "blob": "c6a1517252cdef86ecd701a47cb1f443f4a09da3",
+      "bytes": 398708,
+      "sha256": "d1ba2a8a25a66682e4b01c1613898c172638bef2cfd0f70998ddd2bc05a7b86b"
+    },
+    "final": {
+      "blob": "c755af145c643bba143a0733459764bdb6fbd256",
+      "bytes": 399660,
+      "sha256": "59666cfb8bc42b672b2185eb23014def09759dbbc37c3b45c8593969d0d2edfb"
+    }
+  },
+  "unchangedReferences": [
+    {
+      "file": "unchanged.auth_jwt_renewal.rs",
+      "path": "crates/heptabao-server/src/auth_jwt_renewal.rs",
+      "pin": {
+        "blob": "8730956cc5a33a9401c71f4bcac98af8ee1b9e07",
+        "bytes": 6444,
+        "sha256": "6efa2614ce670ff9373190860c991a2a7a3f55d598bbf54289a4fa8b1eb262d6"
+      }
+    },
+    {
+      "file": "unchanged.auth_token_policies.rs",
+      "path": "crates/heptabao-server/src/auth_token_policies.rs",
+      "pin": {
+        "blob": "ee5a72d69cb36c6f8f51ae655bb2111c982798e7",
+        "bytes": 8679,
+        "sha256": "495249b1592cf239fb857e7ccde6c9e1224869c79a2392e03dfdabcb98ed65b9"
+      }
+    },
+    {
+      "file": "unchanged.Identity2.engine_identity.rs",
+      "path": "crates/heptabao-server/src/engine_identity.rs",
+      "pin": {
+        "blob": "e98d3580ac3fc8cb90eb9d1317d1cc3e5133eaee",
+        "bytes": 9316,
+        "sha256": "38ceaaae5ed821b3ef5e0fde67ef6ed968966a808fab8bab6ec1c2393349807f"
+      }
+    }
+  ],
+  "preservedPriorFailures": {
+    "draft2TestActorDefaultWorkaroundNotUsed": {
+      "blob": "e39bb3ea23ad1689dd5543c8d87443196c9c3ff4",
+      "bytes": 43039,
+      "sha256": "11c25288286bbc65f2dd16e3cd4a8ffffad751b389b25ea24b5674760c0c1128"
+    },
+    "originalNativeWrongAclTestPresentInBefore": true,
+    "originalCLI_B04_B05": "unchanged actual failures",
+    "NativeJwtBatchUnsupported": true
+  },
+  "sourcePeer": "2d4907afe10a50e4e1bdc071d3b5983c3e073db2"
+}

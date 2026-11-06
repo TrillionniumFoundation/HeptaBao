@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r45_publication_proof",
+  "records": [
+    {
+      "name": "publication-proof.json",
+      "blob": "eb31006ec7aca3b9bdb69042590821b86a52ace7",
+      "bytes": 948,
+      "sha256": "ad133ee052f1a159465fe6213c1baa0df780225c6dcd6100619f970d17132682"
+    },
+    {
+      "name": "reply-shape-correction.json",
+      "blob": "fa7e41c33413fbbaf9ae6fb58f70f8eb297df525",
+      "bytes": 469,
+      "sha256": "110d6d3899d794fc44f24fb22a6c50ce66086407c08e6c667372c9237cbefa50"
+    },
+    {
+      "name": "update-ref.original-sdk.json",
+      "blob": "bc792cbeafd69869c1bb177d2380534078196a99",
+      "bytes": 161,
+      "sha256": "0aad31566ba642e38c47f18ab55ad16470654eade0b74575427dd592d966998e"
+    },
+    {
+      "name": "ref-readonly-reconciliation.original-sdk.json",
+      "blob": "aa15f15a427ba3dddde9cd599ed565810e5c43f9",
+      "bytes": 1753,
+      "sha256": "e2938cbfdfc7cec6d81fdfdaacc289b7020cbea124f1d78f8a2a3713f3bf868c"
+    }
+  ],
+  "expected_data_tree": "ab9072e0f9f7962e8bf7498c79e84ffff3102f9c",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

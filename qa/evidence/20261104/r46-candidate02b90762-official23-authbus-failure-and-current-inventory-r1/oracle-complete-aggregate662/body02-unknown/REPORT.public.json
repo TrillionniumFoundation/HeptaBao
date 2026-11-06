@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.official271.r2.body02.original-status-delivery-unknown.r1",
+  "status": "HOLD_ORIGINAL_ID_STATUS_DELIVERY_UNKNOWN",
+  "slot": "official271_x230_acl23_oracle_gitfirst_r2",
+  "originalJob": "1a1b1b4fbfa-fc05-7a60",
+  "originalOperation": "6220e2762757d7afa1ba315c7beb2a985c59c147ac7cb3852aa17ba9c21c7a9e",
+  "tool": "binary_read",
+  "originalBinaryRequest": {
+    "idempotency_key": "heptabao-official271-x230-acl23-r2-report-body-02",
+    "operation": {
+      "tool": "binary_read",
+      "arguments": {
+        "host": "x230",
+        "path": "/home/qian/heptabao-official271-acl23-oracle-20261106-r2/result.public.json",
+        "offset": 131072,
+        "limit": 65536,
+        "expected_version": "2053:2098461:651803:1793982810542000556:1793982810542000556"
+      }
+    }
+  },
+  "originalStatusRequest": {
+    "blob": "182980da62d3a27a098c8fb974e6a68dd7926318",
+    "bytes": 84,
+    "sha256": "f99d18d13005ea9de9e2426fcc8fbce4e668450f52fdd726234aa3f8e4cc7317"
+  },
+  "originalStatusSDK": {
+    "blob": "0cede4881f37869cfd279b69b738c87eb62b4889",
+    "bytes": 248,
+    "sha256": "b85d625e0a8999ce34020675f0a2f8ba093e807dc725c16053a63c92fbbc9c70"
+  },
+  "sameErrorBytesAreNotOperationIdentity": true,
+  "actualState": {
+    "blob": "652b0103388657f5515e30c077ce927c24b19cf2",
+    "bytes": 454676,
+    "sha256": "dd4a465e95e91c8aa23ddcde138d4541a52e79e7482297eb418bb89e16f83aa3"
+  },
+  "originalStatusCallsConsumed": 1,
+  "statusBudgetTotal": 8,
+  "nativeCallsInFlight": 0,
+  "ownedFutureClosureUnknown": true,
+  "laneReleased": false,
+  "originalBodyAdmissions": 3,
+  "originalCompletedBodyRanges": 2,
+  "actualCompletedBodyBytes": 131072,
+  "originalImmutablePagesForThisID": 0,
+  "originalNextPayloadOffset": 0,
+  "laterBodyAdmissions": 0,
+  "automaticRetry": false,
+  "scope": "Any following new same-ID status observation requires its own external root GO. No binary_read/INFO/process replay or new key.",
+  "previousGitArmRecovery": {
+    "packet": "c1d73181fdb8e6118aa12bc02e49c93b2ee36fcb",
+    "go": "936b059532050a7662755fc24f8e914fcffb6ea6",
+    "actualProof": "40a5931a4f5257d3bf00f1889cea65abbea2629b",
+    "historyRetained": true
+  },
+  "oldR1UnknownStillPreserved": true,
+  "reportBodyQualified": false
+}

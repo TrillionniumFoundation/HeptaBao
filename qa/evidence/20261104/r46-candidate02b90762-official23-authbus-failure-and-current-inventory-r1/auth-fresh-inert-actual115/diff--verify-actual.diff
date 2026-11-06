@@ -1,0 +1,15 @@
+--- a/before-actual.js
++++ b/after-actual.js
+@@ -1,4 +1,4 @@
++function verifyInertR3Actual(input, pin, utf8){
+-function verifyInertR2Actual(input, pin, utf8){
+  const checks=[];function need(name,value){checks.push({name,passed:value===true});if(value!==true)throw new Error("actual:"+name);}
+  const {state:s,candidate:c,authority:a,streams,report:r,stdout,stderr,statuses}=input;
+  const expectSources=Object.keys(c.sourcePins),expectDocs=Object.keys(c.documentPins);
+@@ -34,5 +34,5 @@
+  need("all execution and private effect gates false",["cargoStarted","gitStarted","serviceStarted","consumerExecuted","currentPrivateInputsOpened","productionSqliteOpened","sqliteExecuted","inputEntrypointsExecuted"].every(k=>r[k]===false));
+  need("one diskutil original closed custody",r.commands.commands.length===1&&r.commands.unknownCommandCount===0&&r.commands.commands[0].label==="inert-t5-volume"&&r.commands.commands[0].exitCode===0&&r.commands.commands[0].streamsClosed===true&&r.commands.commands[0].cleanup.directChildReaped===true&&r.commands.commands[0].cleanup.allGroupRowsEmptyAfterReap===true&&r.commands.commands[0].outcomeUnknown===false);
+  const receipt=r.candidateReceipt;need("actual candidate receipt bound only from final stdout",receipt.name==="inert-registry-wal-4e808-result.public.json"&&receipt.bytes===15237&&receipt.bytes<=65536&&receipt.identity[6]===String(receipt.bytes)&&receipt.identity[4]==="33152"&&receipt.identity[5]==="1"&&receipt.wholeReadbackVerified===true&&receipt.readbackUsesSeparateHeldFd===true&&receipt.sha256===r.candidateReceiptSha256);
++ return {schema:"heptabao.authbus-home-r3-original-inert-actual-checks.v1",passed:true,checkCount:checks.length,checks,stdout:pin(stdout),stderr:pin(stderr),NativeCalls:17,observers:3,pages:10,scope:"Original inert outcome and original returned observer chain only; no external target read, runtime, selected-owner, credential or product qualification."};
+- return {schema:"heptabao.authbus-home-r2-original-inert-actual-checks.v1",passed:true,checkCount:checks.length,checks,stdout:pin(stdout),stderr:pin(stderr),NativeCalls:17,observers:3,pages:10,scope:"Original inert outcome and original returned observer chain only; no external target read, runtime, selected-owner, credential or product qualification."};
+ }

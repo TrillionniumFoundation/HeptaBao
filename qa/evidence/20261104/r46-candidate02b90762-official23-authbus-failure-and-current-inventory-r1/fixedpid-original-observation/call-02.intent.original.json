@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.root.fixedPID.once-call-intent.r1",
+  "key": "root-fixedPID-status-01",
+  "kind": "process_status",
+  "go": {
+    "blob": "58e2d4b2d44c2af1a239bef33e9891272a4a602e",
+    "bytes": 2316,
+    "sha256": "84b4f8e84b1804520c17157db0c1f81f890d81c576357b0d83400a1d51380497"
+  },
+  "request": {
+    "blob": "5a2311ce44d830a8f4dbe52a6922f43f3a142f00",
+    "bytes": 49,
+    "sha256": "95528f77f1783bf2503c071295afe9db7c6d3c4978d5f40eeeecdef195368629"
+  },
+  "originalJob": "1a1b1ed8329-fc05-7b8c",
+  "maximumNativeCalls": 1,
+  "called": false,
+  "nativeNotYetCalled": true,
+  "lossOfAcknowledgementNeverGrantsReplay": true,
+  "SDKWholeBeforeParse": true,
+  "statusOrdinal": 1,
+  "statusMaximum": 8
+}

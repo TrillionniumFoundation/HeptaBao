@@ -1,0 +1,23 @@
+function qualifyOfficialFixtureR2(p,author,original,oldSource,primary) {
+ const rows=[],ck=(name,v)=>{rows.push({name,passed:v===true});if(v!==true)throw Error(name);},f=p.raw,plan=JSON.parse(f["PLAN.public.json"]),q=JSON.parse(f["REQUEST.after.exact.json"]),qb=JSON.parse(f["REQUEST.before.exact.json"]),pl=JSON.parse(q.stdin),plb=JSON.parse(qb.stdin),same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+ ck("whole_SOURCE26",p.audit.whole&&p.audit.files===26&&p.audit.bytes===627436);
+ ck("author52_exact",author.exact&&author.value.passed&&author.value.check_count===52);
+ ck("original_report_root37_children_closed_failed_verdict_retained",original.value.passed&&original.value.checks===37&&original.value.originalChildrenClosed===true&&original.value.overallOwnerMethodPassed===false&&original.value.actualACLCases===0);
+ ck("exact_original_request_source",gitBlobMeta(f["REQUEST.before.exact.json"]).blob==="90b68f243c6dfc77cedce08b6d1095ffdd1a79a1"&&f["REQUEST.before.exact.json"]===oldSource.raw["request.after.REVIEW-ONLY.json"]);
+ for(const [name,count]of [["acl",5],["entry",4],["journal",2]]){const b=f[name+".before"+(name==="journal"?".js":".py")],a=f[name+".after"+(name==="journal"?".js":".py")],d=f[name+".strict.diff"];ck(name+"_exact_roundtrip_"+count+"hunks",strictApply(b,d).text===a&&strictApply(a,d,true).text===b&&strictApply(b,d).hunks===count);}
+ ck("entry_operational_functions_unchanged",f["entry.before.py"].slice(f["entry.before.py"].indexOf("class EntryFailure"))===f["entry.after.py"].slice(f["entry.after.py"].indexOf("class EntryFailure")));
+ ck("original_451_public_PEM_exact",gitBlobMeta(f["PUBLIC-KEY.source.pem"]).blob==="0699a557f6f8b51d1b9a8187b1ed89084f76aa25"&&f["PUBLIC-KEY.source.pem"].endsWith("\n")&&!f["PUBLIC-KEY.source.pem"].endsWith("\n\n"));
+ ck("only_single_terminal_LF_wire_input_removed",f["PUBLIC-KEY.request-value.txt"]===f["PUBLIC-KEY.source.pem"].slice(0,-1)&&gitBlobMeta(f["PUBLIC-KEY.request-value.txt"]).bytes===450&&gitBlobMeta(f["PUBLIC-KEY.request-value.txt"]).sha256==="0d800d674a53560c9bdb69c20d16f0c84be727a0f37910ba4297f6941697f96c");
+ const changed=Object.keys(pl.files).filter(k=>pl.files[k]!==plb.files[k]);
+ ck("eleven_inputs_only_acl_body_changed",Object.keys(pl.files).length===11&&same(Object.keys(pl.files).sort(),Object.keys(plb.files).sort())&&same(changed,["source/qa/openbao-acceptance/acl23_executor.py"]));
+ ck("all_eleven_exact_declared_input_pins",Object.entries(pl.files).every(([name,b64])=>same(gitBlobMeta(b64),plan.immutableInputs[name]))&&q.stdin===f["PAYLOAD.after.original.json"]);
+ ck("strict_readback_unchanged_projection_captured_first",f["acl.after.py"].includes('self.setup_config_projection = state["config"]\n        if state["config"] != self.baseline_config:\n            raise BaoError("common_config_projection_mismatch")')&&plan.rawResponseNormalization===false&&plan.rawStatusNormalization===false&&plan.actorPoliciesUnchanged===true);
+ ck("request_only_entry_payload_and_new_key_changed",Object.keys(q).filter(k=>JSON.stringify(q[k])!==JSON.stringify(qb[k])).sort().join(",")==="args,idempotency_key,stdin");
+ const binding=processStartBinding(q);
+ ck("typed_native_identity_independently_bound",binding.sha256===plan.typed.sha256&&String(binding.native_fingerprint)===plan.typed.fingerprint_decimal&&utf8Bytes(binding.canonical).length===164695);
+ ck("fixed_new_scope_preserves_old_root",plan.freshRoot==="/home/qian/heptabao-official271-acl23-oracle-20261106-r2"&&plan.runId==="official271-acl23-r2"&&plan.freshHttpsPort===23625&&plan.freshClusterPort===23626&&plan.originalScopeUntouched.root.endsWith("-r1"));
+ ck("original_deadlines_and_bounds_unchanged",q.timeout_seconds===390&&plan.budgets.ownerSeconds===360&&plan.budgets.outerSeconds===390&&plan.budgets.aclRequestsMaximum===853&&plan.budgets.sourceRequestMaximum===957&&plan.budgets.entryFDsMaximum===12&&plan.budgets.reportMaximumBytes===1048576&&plan.budgets.originalDeadlineReset===false);
+ ck("exact_primary_trim_chain",same(gitBlobMeta(f["PRIMARY-FINDING.public.json"]),primary.pins));
+ ck("no_product_or_execution_claim",plan.nativeCalls===0&&plan.productCasesExecutedByThisSource===0&&plan.rootPresence===null&&plan.portAvailability===null&&plan.originalScopeUntouched.bodyRootQualification===null);
+ return{schema:"heptabao.root-official271-fresh-ACL23-r2-source.r1",passed:true,checks:rows.length,rows,packet:p.audit.tree,originalChildrenClosed:true,originalFailedVerdictPreserved:true,onlyAclPublicInputAndProjectionBehaviorChanged:true,NativeCalls:0,PythonRuns:0,productCases:0,nativeBinding:{sha256:binding.sha256,native_fingerprint:String(binding.native_fingerprint),canonicalBytes:utf8Bytes(binding.canonical).length},fullReplacement:false};
+}

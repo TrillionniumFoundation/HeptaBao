@@ -1,0 +1,126 @@
+{
+  "schema": "heptabao.jwt-local-policy-source12.reviewable-proposal.r1",
+  "status": "SOURCE_READY_FOR_ROOT_REVIEW",
+  "sourceOnly": true,
+  "files": 12,
+  "modified": 10,
+  "added": 2,
+  "deleted": 0,
+  "hunks": 39,
+  "candidateBytes": 1404403,
+  "candidateCommit": null,
+  "candidateTree": null,
+  "actualBase": {
+    "auth": {
+      "blob": "c407b40741a5660b77e2342871888e2a61ac29da",
+      "bytes": 398266,
+      "sha256": "9f366e631019e55aca61717a324bf13c1995797ed088b5b9d8b80c4a11914f7f"
+    },
+    "service": {
+      "blob": "6574a4d522a62feb328fea61d19df575ce7f2550",
+      "bytes": 519619,
+      "sha256": "4ad6ea76e43a14a073843400b12f516175d46ed103610a6f7202b82a09d7c919"
+    },
+    "identity2NativeTests": {
+      "blob": "57dd3760335f245f2a37540899b338a8b9b56189",
+      "bytes": 37451,
+      "sha256": "ab4b610f7bc1a74287710b3461c3f212ad6c6f7aabcf642c3302ea66dc51c57c"
+    },
+    "identity2Engine": {
+      "blob": "e98d3580ac3fc8cb90eb9d1317d1cc3e5133eaee",
+      "bytes": 9316,
+      "sha256": "38ceaaae5ed821b3ef5e0fde67ef6ed968966a808fab8bab6ec1c2393349807f"
+    }
+  },
+  "changes": [
+    "Keep current draft2 JWT route ACL fixes: original-role existence chooses create/update, named delete uses delete and missing delete204 without state allocation, collection GET requires read then405, LIST requires list, config update has no sudo.",
+    "JWT role policy storage now passes add_default=false and has no actor-policy-subset check. Global policies(), validate_assignment(), route capability validation and original Native Actor delivery checks remain exact.",
+    "Add token_no_default_policy as API boolean using the existing weak HTTP boolean parser. Omitted updates retain the value; explicit default remains configured even when injection is suppressed.",
+    "Represent the role flag internally as Option<bool>. Historical None omits the field during serialization; new roles or explicit policy/flag writes get Some(false/true). Both service and batch issuance add default exactly when suppression is false.",
+    "Keep the existing login root-policy rejection before Identity/token construction, including service and batch. Root can be saved in a role by an appropriately authorized role writer; it cannot be issued. Renewal source is untouched and retains original grants.",
+    "Schema147 gates any new role flag, including Some(false) with raw empty policies, plus persisted direct JWT grants without default. Reader/writer/publication/restore checks cover all namespace roles and retain sticky floors after retirement.",
+    "Historical schema18/19/68/69 tests now construct old None roles only before their first candidate commit. The helper refuses a new-format predecessor, any existing target role or Native/HA/Wrapper storage; it cannot erase a committed147 marker."
+  ],
+  "testEvidence": {
+    "classification": "Rust test SOURCE only",
+    "pureVerifier": {
+      "blob": "491b2e95415f79d702f358cbf9c2944ed89f2526",
+      "bytes": 19837,
+      "sha256": "533bb97820d17b600508815f593e970f1dd09c5510baf63fedd5ff6be53ce70a"
+    },
+    "pureResult": {
+      "blob": "5648f3c2a80f3c13fd1bc2e84c1c23e54b8f13ef",
+      "bytes": 30432,
+      "sha256": "71d918ef5a17cede90fbeea1e4e222f823a66868ba20fd9939d7972706a29d98"
+    },
+    "pureChecks": 272,
+    "unchangedFunctionBodies": 611,
+    "NativeOldTestsRetainedWhole": 14,
+    "NativeTestCountBefore": 15,
+    "NativeTestCountAfter": 20,
+    "newLegacyServiceTests": 4,
+    "oldOtherTestNamesPreserved": true,
+    "globalTokenEscalationNegativeUnchanged": true,
+    "oldJwtConfigurationNegativeBoundary": "The preserved old privilege-escalation-named test lacks create capability on a fresh role and does not isolate the removed JWT subset rule. It is not counted as subset-rejection evidence.",
+    "originalMatrix": {
+      "unique": 149,
+      "profiles": 166
+    },
+    "proposedLocalMatrix": {
+      "unique": 158,
+      "profiles": 180
+    },
+    "originalCombined": {
+      "unique": 237,
+      "profiles": 254
+    },
+    "proposedCombined": {
+      "unique": 246,
+      "profiles": 268
+    },
+    "combinedFullInputMatched": true,
+    "actualLibtestListMatched": false
+  },
+  "migration": [
+    {
+      "input": "historical role with absent marker; no policy/flag update",
+      "behavior": "retain absent serialized marker and original stored policies; do not infer whether old default was explicit"
+    },
+    {
+      "input": "new role, even omitted/empty policy with false",
+      "behavior": "Some(false); raw list stored as configured; issuance injects default; require schema147"
+    },
+    {
+      "input": "explicit modern/legacy policy update on historical role",
+      "behavior": "retain applicable flag or false; mark Some and require147; this is an explicit semantic rewrite"
+    },
+    {
+      "input": "flag-only true on historical default-bearing role",
+      "behavior": "preserve configured default because its old origin cannot be recovered; issue it explicitly"
+    },
+    {
+      "input": "role deletion after147",
+      "behavior": "writer and published predecessor keep147; lower-schema restore cannot silently reinstate old issuance semantics"
+    },
+    {
+      "input": "old reader",
+      "behavior": "reject the147 owner instead of silently issuing directly from the new raw stored list"
+    }
+  ],
+  "knownBoundaries": [
+    "Native JWT batch remains known501 and unsupported; the unchanged test asserts this boundary.",
+    "Legacy Service batch tests exercise a real ordinary owner and real signed JWT; they do not qualify Native batch.",
+    "Official23 actual summary proves its 23 ACL and omitted-policy cases only, not this candidate's behavior or explicit-empty/root/flag issuance.",
+    "No formatter, compiler, Rust test, live product, process, file_info or binary_read was run for this candidate.",
+    "No source commit/ref was created and no global ACL, shared weak boolean, Identity2 engine or auth_jwt_renewal.rs source was modified.",
+    "Root must independently review, format/build, match actual test names, and execute the scoped tests and product acceptance before qualification. Existing CLI failure/UNKNOWN histories remain unchanged."
+  ],
+  "constructionRecords": [
+    "construction-error-01.public.json",
+    "source-checker-error-02.public.json",
+    "inventory-checker-error-03.public.json",
+    "historical.reference-fetch-error.original-SDK.json"
+  ],
+  "nativeCalls": 0,
+  "fullReplacement": false
+}

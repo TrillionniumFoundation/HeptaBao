@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.inventory.release-wording-correction.v1",
+  "originalReleaseTree": "42ae7e652068d809ed62a77a15fcf16cd2a1a596",
+  "originalRelease": {
+    "blob": "a8803753eb5c87b24db6cb93272bbeb049be11e2",
+    "bytes": 3951,
+    "sha256": "4ec276422539a5dd821d94139f596b1073ddd2ba807f4ad242a795da7b83f94f"
+  },
+  "changedField": {
+    "removed": "candidateIsNotTheUid1000Fixture",
+    "added": [
+      "candidateMustNotBeEquatedWithUid1000Fixture",
+      "candidateExecutableContainerUnitAndVersionStillUnobserved"
+    ]
+  },
+  "reason": "Observed uid100 must not be equated with the historical uid1000 fixture; the process executable/container/unit/version have not been observed. The release does not prove its provenance.",
+  "allOriginalNativeSDKsUnchanged": true,
+  "newNativeCalls": 0
+}

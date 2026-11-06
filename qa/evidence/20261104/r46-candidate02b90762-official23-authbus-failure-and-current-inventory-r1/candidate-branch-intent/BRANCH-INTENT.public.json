@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.root.candidate-new-branch-intent.r1",
+  "branch": "codex/heptabao-snapshot49-jwt147-9781e961-20261106",
+  "commit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+  "tree": "9781e9615ac5fb068d217241c74bb54bf87942cf",
+  "soleParent": "025b05a340de841b8161c1120344e86eae30eb97",
+  "priorReadStatus": 404,
+  "branchAbsentOriginalSDK": {
+    "blob": "47cd51d22561d8222ca1cb3f9fe45fd9c8877060",
+    "bytes": 629,
+    "sha256": "929fdc37b1bd92a54d1a68b22cde5c9ceb70e2eab86f02af7b921970af5aac8b"
+  },
+  "createCount": 1,
+  "automaticRetry": false,
+  "productionDeployment": false
+}

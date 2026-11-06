@@ -1,0 +1,70 @@
+{
+  "schema": "heptabao.root.GO.oracle271.r2.BODY02.explicit-handback.r1",
+  "authorization": "GO",
+  "scope": "official271_r2_original_body02_handback_only",
+  "original_job": "1a1b1b4fbfa-fc05-7a60",
+  "original_operation_id": "6220e2762757d7afa1ba315c7beb2a985c59c147ac7cb3852aa17ba9c21c7a9e",
+  "source_packet": "3b16b169df6e6a7eaaab4ecbab7462c29dd9972f",
+  "exact_source": {
+    "blob": "bcd5f8aeb323519de016c9a50faafc978fd3efea",
+    "bytes": 10066,
+    "sha256": "7429fe571425fa1598a060df33bf088c9ae1a2a1a3d885a3c180fbeac1bd17ca"
+  },
+  "exact_before": {
+    "blob": "652b0103388657f5515e30c077ce927c24b19cf2",
+    "bytes": 454676,
+    "sha256": "dd4a465e95e91c8aa23ddcde138d4541a52e79e7482297eb418bb89e16f83aa3"
+  },
+  "exact_after": {
+    "blob": "71de8bc336a360f5e3600c1c74072016714d4c48",
+    "bytes": 545600,
+    "sha256": "eb3d133b3f55b9f89b894503a39c0ffcf30f1cc8cc7f98299156fee0fda69a53"
+  },
+  "root_qualification": {
+    "blob": "8af0158bf886d00226bba1e5c083ee12da47681d",
+    "bytes": 7415,
+    "sha256": "87321df82a21511b3aca42d09d2914806a72032b0ac5e40f1187a6c03e5e24f0"
+  },
+  "actual_recovery_packet": "1da012307bd166ff9601bbcf92963a28f12cb80a",
+  "main_slot": "official271_x230_acl23_oracle_gitfirst_r2",
+  "recovery_slot": "official271_x230_acl23_r2_body02_status_reconcile_r1",
+  "maximum_state_applications": 1,
+  "apply_proof_external_whole_before_state_application": true,
+  "all_28_old_calls_and_outerFailure_preserved": true,
+  "only_six_declared_state_fields_changed": true,
+  "no_budget_reset": true,
+  "old_failed_status_consumed": 1,
+  "recovery_status_consumed": 1,
+  "total_status_used_for_original_ID": 2,
+  "original_status_cap": 8,
+  "body_admissions_already_started": 3,
+  "total_original_body_admissions_limit": 10,
+  "next_original_request": {
+    "blob": "5bb0631c792c014e14dd772f522fd5bca6198621",
+    "bytes": 331,
+    "sha256": "8da81d14bf4c561ce4c0560c23a46a15cadfa571dda943e3905e15d4aa05ac4c"
+  },
+  "remaining_reads_continue_only_under_original_body_GO": {
+    "blob": "1bfd1fe525b4a3e426b303fe65ef1615150eca53",
+    "bytes": 3811,
+    "sha256": "583c500b3be6866097aca0a96507b7c7c294ab35ae5166b10c7cc6ee25996363"
+  },
+  "no_reinitialize_or_reauthorize_original_slot": true,
+  "no_new_binary_read_in_pure_handback": true,
+  "independent_boundary_before_preparing_original_BODY3": true,
+  "lane": "C1_after_handback",
+  "concurrent_lanes": {
+    "A": 1,
+    "B": 0,
+    "C": 1,
+    "root": 0
+  },
+  "root_PID_probe_released": {
+    "blob": "85340d3aebab6ef402ca4ff428d05e775e022ccc",
+    "bytes": 1554,
+    "sha256": "e640d03e15d40ea6450abe72ceaea523ceb8e3f2fe9d7f6d048331908d3c0214"
+  },
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

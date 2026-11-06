@@ -1,0 +1,76 @@
+--- a/crates/heptabao-server/src/auth.rs
++++ b/crates/heptabao-server/src/auth.rs
+@@ -6435,7 +6435,11 @@
+             return Ok(response);
+         }
+         if path == format!("auth/{mount}/role") {
+-            if !matches!(method, "GET" | "LIST") {
++            if method == "GET" {
++                self.permission(principal, namespace, path, "read", now)?;
++                return Err(err(405, "unsupported operation"));
++            }
++            if method != "LIST" {
+                 return Err(err(405, "method not allowed"));
+             }
+             self.permission(principal, namespace, path, "list", now)?;
+@@ -6523,8 +6527,7 @@
+         let AuthScope { namespace, mount } = scope;
+         let path = format!("auth/{mount}/config");
+         let path = path.as_str();
+-        let actor = self.permission(principal, namespace, path, "update", now)?;
+-        self.authorize_request(actor, namespace, path, "sudo", now)?;
++        self.permission(principal, namespace, path, "update", now)?;
+         reject_unknown(
+             body,
+             &[
+@@ -6654,6 +6657,16 @@
+         Ok(config)
+     }
+ 
++    // OpenBao's role existence check chooses Create or Update before dispatch.
++    // The native owner captures this same source decision for later delivery.
++    fn jwt_role_write_capability(&self, scope: AuthScope<'_>, name: &str) -> &'static str {
++        if self.jwt_at(scope).is_some_and(|state| state.roles.contains_key(name)) {
++            "update"
++        } else {
++            "create"
++        }
++    }
++
+     fn jwt_role_route(
+         &mut self,
+         principal: Option<&Principal>,
+@@ -6705,8 +6718,8 @@
+                 ))
+             }
+             "POST" | "PUT" => {
+-                let actor = self.permission(principal, namespace, &path, "update", now)?;
+-                self.authorize_request(actor, namespace, &path, "sudo", now)?;
++                let capability = self.jwt_role_write_capability(scope, name);
++                let actor = self.permission(principal, namespace, &path, capability, now)?;
+                 reject_unknown(
+                     body,
+                     &[
+@@ -6875,15 +6888,14 @@
+                 Ok(empty(mutated))
+             }
+             "DELETE" => {
+-                let actor = self.permission(principal, namespace, &path, "update", now)?;
+-                self.authorize_request(actor, namespace, &path, "sudo", now)?;
++                self.permission(principal, namespace, &path, "delete", now)?;
+                 reject_unknown(body, &[])?;
+-                let removed = self.jwt_at_mut(scope).roles.remove(name);
+-                if removed.is_some() {
+-                    Ok(empty(true))
+-                } else {
+-                    Err(err(404, "JWT role not found"))
+-                }
++                let removed = self
++                    .jwt_mounts
++                    .get_mut(namespace)
++                    .and_then(|mounts| mounts.get_mut(mount))
++                    .is_some_and(|state| state.roles.remove(name).is_some());
++                Ok(empty(removed))
+             }
+             _ => Err(err(405, "method not allowed")),
+         }

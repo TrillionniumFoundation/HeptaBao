@@ -1,0 +1,80 @@
+{
+  "schema": "heptabao.oracle271.r2.BODY02.exact-handback-inputs.r1",
+  "originalSlot": "official271_x230_acl23_oracle_gitfirst_r2",
+  "recoverySlot": "official271_x230_acl23_r2_body02_status_reconcile_r1",
+  "originalOperation": "6220e2762757d7afa1ba315c7beb2a985c59c147ac7cb3852aa17ba9c21c7a9e",
+  "originalJob": "1a1b1b4fbfa-fc05-7a60",
+  "originalFailedStatusKey": "official271-x230-acl23-r2-body02-status0",
+  "before": {
+    "blob": "652b0103388657f5515e30c077ce927c24b19cf2",
+    "bytes": 454676,
+    "sha256": "dd4a465e95e91c8aa23ddcde138d4541a52e79e7482297eb418bb89e16f83aa3"
+  },
+  "recoveryState": {
+    "blob": "5d9085aeb711d6aab60f88b6641eb22e5222d66d",
+    "bytes": 109798,
+    "sha256": "96f62783eb44cf88fea10f65393392ff9de5fd5c1b27ff10682f00edebc8bcf7"
+  },
+  "range": {
+    "blob": "f4179457f2e9809cc01112869e37b41e7f37ceaf",
+    "bytes": 87889,
+    "sha256": "47a1516de0574d2418f86104cbc9346f1bcdf6f30cdc79faf1dfd26e01a48e7f"
+  },
+  "payload": {
+    "blob": "f20019334ad38cacb1e167322cf7794a95e241da",
+    "bytes": 87807,
+    "sha256": "ee2852333b301886098786350bddfabf531c07672915529a9af3562d96de9528"
+  },
+  "native": {
+    "blob": "80fee5c5830ce3a427fc1a4f265be7b1ee63400c",
+    "bytes": 87704,
+    "sha256": "9899f711cc87f520fe247875f159c843ca107796e90d6f348680be3ce17625c6"
+  },
+  "status": {
+    "blob": "b64fcdddb682057cf1d0f90d60a47121f3e47662",
+    "bytes": 802,
+    "sha256": "c8c49d86c35384b51653bdf518550284329fdfd7846514eaec73a272de1aa3c3"
+  },
+  "recoveryGO": {
+    "blob": "7b1141c85601e434dff10db425277ca89e979aa6",
+    "bytes": 2494,
+    "sha256": "582a251cdce243240d5731c9bf4145be67fc954050716209b2a2d6e10d48540e"
+  },
+  "recoverySource": {
+    "blob": "20a36582d7acf9d3675b9c31fd47e6ae72e7354a",
+    "bytes": 21016,
+    "sha256": "defc76fc73a4a3ab2fc8d4d8468b11d3410760268560c54c06682ae63b790cfd"
+  },
+  "recoveryWholeTree": "1da012307bd166ff9601bbcf92963a28f12cb80a",
+  "recoveryStatusSDK": {
+    "blob": "a295d73b6655906c92193aed0df4d42fe30b8c32",
+    "bytes": 977,
+    "sha256": "1a94d7f418d242fa4b99022f3d5a8280437d9fea80d8d978de712bea901c1c1e"
+  },
+  "oldFailedStatusSDK": {
+    "blob": "0cede4881f37869cfd279b69b738c87eb62b4889",
+    "bytes": 248,
+    "sha256": "b85d625e0a8999ce34020675f0a2f8ba093e807dc725c16053a63c92fbbc9c70"
+  },
+  "mainJournal": {
+    "blob": "8ef2f6875479aada7effd09d85fd398d23b43ca1",
+    "bytes": 32147,
+    "sha256": "c6989da12d4ccebd3ae22ce9f71ef99f01714f473f61fe29517a0b15d657e69d"
+  },
+  "nextRequest": {
+    "blob": "5bb0631c792c014e14dd772f522fd5bca6198621",
+    "bytes": 331,
+    "sha256": "8da81d14bf4c561ce4c0560c23a46a15cadfa571dda943e3905e15d4aa05ac4c"
+  },
+  "totalOriginalRanges": 10,
+  "bodyAdmissionsAlreadyStarted": 3,
+  "bodyRangesAlreadyComplete": 2,
+  "newRecoveryStatusCalls": 1,
+  "oldFailedStatusCalls": 1,
+  "combinedOriginalStatusCalls": 2,
+  "originalStatusCap": 8,
+  "recoveryPages": 6,
+  "immutablePageBytes": 16384,
+  "originalPerIDPageCap": 128,
+  "originalPayloadCap": 1048576
+}

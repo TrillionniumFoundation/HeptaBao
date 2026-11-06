@@ -1,0 +1,261 @@
+{
+  "schema": "heptabao.jwt-local-policy.primary-domain.r1",
+  "priorPeer": {
+    "tree": "2d4907afe10a50e4e1bdc071d3b5983c3e073db2",
+    "report": {
+      "path": "REVIEW.public.json",
+      "blob": "8f132a150aea348cf3987f4660eb5e851c1d3d72",
+      "bytes": 5718,
+      "sha256": "31139049e0ad0879c145ce0ddc374b6a8280f52902c567f0cf036ed9389ccc11",
+      "whole": true
+    }
+  },
+  "officialCommit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+  "additionalSources": [
+    {
+      "file": "official.openbao-go.mod",
+      "pin": {
+        "blob": "19492f165d0a622d88e23c0a0654f116703c0fe3",
+        "bytes": 16740,
+        "sha256": "a9af58f3facf377222e9eb3368f3821deb1d1edd33e82984769ccc0cb4eadd56"
+      },
+      "origin": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/go.mod"
+    },
+    {
+      "file": "official.sdk-go.mod",
+      "pin": {
+        "blob": "fa79b2793128af6e73d011d9f01889ada0614c45",
+        "bytes": 4857,
+        "sha256": "54bb893f3412c11b1ef3e131ccba9c8ed58533d629eaf0f054c17ab75ed52de4"
+      },
+      "origin": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/sdk/go.mod"
+    },
+    {
+      "file": "official.mapstructure-v2_5.go",
+      "pin": {
+        "blob": "9087fd96c79e25a9545aa3655f4426d58a350905",
+        "bytes": 55732,
+        "sha256": "87d01b09fcb2ca148ef722ba52baf6851c35357c49d9f2e918d8551c7c03f1ee"
+      },
+      "origin": "https://github.com/go-viper/mapstructure/blob/v2.5.0/mapstructure.go"
+    },
+    {
+      "file": "official.jsonutil.go",
+      "pin": {
+        "blob": "0aea275a4cf9e210b28d829018c6b4ffa32f37ae",
+        "bytes": 3003,
+        "sha256": "910917296df1ed2211f1cbb3eba4fb7fdc3158a8001d72ef7105b9abef4f1932"
+      },
+      "origin": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/sdk/helper/jsonutil/json.go"
+    },
+    {
+      "file": "official.http-handler.go",
+      "pin": {
+        "blob": "ee3c7bc5c0e342d379cf4d6334a5f9f0d4233ff3",
+        "bytes": 41113,
+        "sha256": "fb3c080c1a5e4bb200d4fffdc147909d329fa73a6583ed26630dd359370ac838"
+      },
+      "origin": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/http/handler.go"
+    },
+    {
+      "file": "official.http-json.go",
+      "pin": {
+        "blob": "fdecf6e049b04c33a31a412c1e2968646d2e8dcc",
+        "bytes": 4791,
+        "sha256": "4565a598dcaff0e99a6e1c3ddc34c494c37e61ff361db01f68bfa2dcc40b65a6"
+      },
+      "origin": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/http/json.go"
+    },
+    {
+      "file": "reference.go-strconv-atob.go",
+      "pin": {
+        "blob": "0a495008d7785e15544070114e4807ff21c3f42a",
+        "bytes": 974,
+        "sha256": "a811df1f66377d76716b133aaa0e0029f8b8432f39b9128e60aeb792c5e70fdb"
+      },
+      "origin": "https://github.com/golang/go/blob/go1.23.2/src/strconv/atob.go",
+      "scope": "Go standard library source reference; not observed compiler identity of official binary"
+    }
+  ],
+  "requestDomain": "ordinary official HTTP application/json -> jsonutil UseNumber -> framework FieldData TypeBool -> mapstructure v2.5.0 weak decoder -> strconv.ParseBool",
+  "sourceAnchors": [
+    {
+      "source": {
+        "blob": "ee3c7bc5c0e342d379cf4d6334a5f9f0d4233ff3",
+        "bytes": 41113,
+        "sha256": "fb3c080c1a5e4bb200d4fffdc147909d329fa73a6583ed26630dd359370ac838"
+      },
+      "function": "parseBody",
+      "lines": [
+        872,
+        904
+      ],
+      "meaning": "JSON branch invokes parseJSONRequest"
+    },
+    {
+      "source": {
+        "blob": "fdecf6e049b04c33a31a412c1e2968646d2e8dcc",
+        "bytes": 4791,
+        "sha256": "4565a598dcaff0e99a6e1c3ddc34c494c37e61ff361db01f68bfa2dcc40b65a6"
+      },
+      "function": "parseJSONRequest",
+      "lines": [
+        22,
+        50
+      ],
+      "meaning": "jsonutil decoding"
+    },
+    {
+      "source": {
+        "blob": "0aea275a4cf9e210b28d829018c6b4ffa32f37ae",
+        "bytes": 3003,
+        "sha256": "910917296df1ed2211f1cbb3eba4fb7fdc3158a8001d72ef7105b9abef4f1932"
+      },
+      "function": "DecodeJSONFromReader",
+      "lines": [
+        88,
+        102
+      ],
+      "meaning": "dec.UseNumber retains JSON number spelling"
+    },
+    {
+      "source": {
+        "blob": "19fb31d8f2fcded26049ea9e08d08503d8271726",
+        "bytes": 14785,
+        "sha256": "ba1b41f770e0b9e784f4afe4d1758e608be91b2a2adaeef63446b7f5542bb109"
+      },
+      "function": "GetOk/GetOkErr and TypeBool",
+      "lines": [
+        169,
+        227
+      ],
+      "meaning": "presence retained; nil normalized to false"
+    },
+    {
+      "source": {
+        "blob": "9087fd96c79e25a9545aa3655f4426d58a350905",
+        "bytes": 55732,
+        "sha256": "87d01b09fcb2ca148ef722ba52baf6851c35357c49d9f2e918d8551c7c03f1ee"
+      },
+      "function": "decodeBool",
+      "lines": [
+        908,
+        941
+      ],
+      "meaning": "weak strings parse with strconv; empty string false"
+    },
+    {
+      "source": {
+        "blob": "9087fd96c79e25a9545aa3655f4426d58a350905",
+        "bytes": 55732,
+        "sha256": "87d01b09fcb2ca148ef722ba52baf6851c35357c49d9f2e918d8551c7c03f1ee"
+      },
+      "function": "getKind",
+      "lines": [
+        1822,
+        1846
+      ],
+      "meaning": "json.Number remains string-kind, rather than a native nonzero integer coercion"
+    },
+    {
+      "source": {
+        "blob": "0a495008d7785e15544070114e4807ff21c3f42a",
+        "bytes": 974,
+        "sha256": "a811df1f66377d76716b133aaa0e0029f8b8432f39b9128e60aeb792c5e70fdb"
+      },
+      "function": "ParseBool",
+      "lines": [
+        10,
+        18
+      ],
+      "meaning": "standard boolean string domain; source reference only"
+    }
+  ],
+  "acceptedHTTPValues": {
+    "jsonBooleans": [
+      false,
+      true
+    ],
+    "jsonNumbers": [
+      "0",
+      "1"
+    ],
+    "stringsTrue": [
+      "1",
+      "t",
+      "T",
+      "true",
+      "TRUE",
+      "True"
+    ],
+    "stringsFalse": [
+      "",
+      "0",
+      "f",
+      "F",
+      "false",
+      "FALSE",
+      "False"
+    ],
+    "jsonNull": false
+  },
+  "selectedRejectedHTTPValues": [
+    "[]",
+    "{}",
+    "2",
+    "-1",
+    "0.5",
+    "1.0",
+    "1e0",
+    "\"yes\"",
+    "\"true \"",
+    "\" true\"",
+    "\"2\""
+  ],
+  "limits": [
+    "Mapstructure's nonzero Go-native integer path is not expanded into the official HTTP JSON number domain.",
+    "The standard-library reference version does not assert the compiler used to build the official binary.",
+    "No new generic boolean implementation is introduced; existing auth_token_policies weak_boolean remains exact.",
+    "No claim of policy grammar/alias-conflict/templated-policy compatibility beyond the scoped list/default/ACL changes."
+  ],
+  "officialActual23": {
+    "inspectedSummary": {
+      "blob": "5ebf2743de2e5e96a68c042d80e37f0921cb021e",
+      "bytes": 38300,
+      "sha256": "6ed54426f3b40166279dc45809f895db3223c1128afc6322ae0a9b9cf5ae158a"
+    },
+    "fullReportReference": {
+      "blob": "0605fa44d81ccb93e1d1f00a0f8f7a37f4bea897",
+      "bytes": 651803,
+      "sha256": "9048f3b5c854a190dadde86f5d7eec180c497313065bd70bd23a87124789a62d"
+    },
+    "fullReportWholeReadByThisPeer": false,
+    "summaryWholeReadByThisPeer": true,
+    "policyScope": {
+      "input_role_fields": [
+        "role_type",
+        "user_claim",
+        "bound_audiences"
+      ],
+      "observed_policy_readback_variants": [
+        {
+          "token_policies_present": true,
+          "token_policies": []
+        }
+      ],
+      "explicit_empty_policy_input_tested": false,
+      "root_policy_input_tested": false,
+      "role_no_default_policy_issuance_tested": false
+    },
+    "rawStatusCounts": {
+      "200": 2,
+      "204": 8,
+      "403": 12,
+      "405": 1
+    },
+    "candidateActualCases": 0,
+    "explicitEmptyRoleInputLiveCompared": false,
+    "roleFlagIssuanceLiveCompared": false,
+    "rootPolicyIssuanceLiveCompared": false
+  }
+}

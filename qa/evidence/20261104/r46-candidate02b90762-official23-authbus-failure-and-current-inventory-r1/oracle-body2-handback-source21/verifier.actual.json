@@ -1,0 +1,136 @@
+{
+  "schema": "heptabao.oracle271.r2.BODY02.handback-source-verification.r1",
+  "pass": true,
+  "check_count": 31,
+  "checks": [
+    {
+      "label": "exact proposed successor state",
+      "pass": true
+    },
+    {
+      "label": "exact successor bytes and hashes",
+      "pass": true
+    },
+    {
+      "label": "exact paused predecessor bytes and hashes",
+      "pass": true
+    },
+    {
+      "label": "pure derivation only",
+      "pass": true
+    },
+    {
+      "label": "strict forward state delta",
+      "pass": true
+    },
+    {
+      "label": "strict reverse state delta",
+      "pass": true
+    },
+    {
+      "label": "only six explicitly reviewed fields change",
+      "pass": true
+    },
+    {
+      "label": "all original 28 call records preserved",
+      "pass": true
+    },
+    {
+      "label": "original outerFailure preserved",
+      "pass": true
+    },
+    {
+      "label": "failed delivery record preserved",
+      "pass": true
+    },
+    {
+      "label": "no admission-count reset",
+      "pass": true
+    },
+    {
+      "label": "prior two ranges preserved",
+      "pass": true
+    },
+    {
+      "label": "prior five observer records preserved",
+      "pass": true
+    },
+    {
+      "label": "only recovered original closed observer added",
+      "pass": true
+    },
+    {
+      "label": "recovered third range contiguous",
+      "pass": true
+    },
+    {
+      "label": "old failed query still consumes original budget",
+      "pass": true
+    },
+    {
+      "label": "no recovery admission or budget reset",
+      "pass": true
+    },
+    {
+      "label": "full report still incomplete and unparsed",
+      "pass": true
+    },
+    {
+      "label": "unchanged approved main journal",
+      "pass": true
+    },
+    {
+      "label": "next is exact original BODY3",
+      "pass": true
+    },
+    {
+      "label": "old paused predecessor still refuses next admission",
+      "pass": true
+    },
+    {
+      "label": "proposed successor accepts only the exact next original request",
+      "pass": true
+    },
+    {
+      "label": "cannot repeat original BODY2",
+      "pass": true
+    },
+    {
+      "label": "cannot skip to BODY4",
+      "pass": true
+    },
+    {
+      "label": "no process admission",
+      "pass": true
+    },
+    {
+      "label": "no further original BODY2 status after handback",
+      "pass": true
+    },
+    {
+      "label": "no BODY2 page replay",
+      "pass": true
+    },
+    {
+      "label": "second application rejected by exact before guard",
+      "pass": true
+    },
+    {
+      "label": "changed recovery state rejected",
+      "pass": true
+    },
+    {
+      "label": "changed original chunk rejected",
+      "pass": true
+    },
+    {
+      "label": "source check does not mutate predecessor input",
+      "pass": true
+    }
+  ],
+  "actual_main_state_mutation": false,
+  "native_calls": 0,
+  "git_calls": 0,
+  "report_json_interpreted": false,
+  "root_handback_GO_pending": true
+}

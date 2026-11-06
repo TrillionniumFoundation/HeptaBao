@@ -1,0 +1,245 @@
+[
+  {
+    "source_key": "official-field-data",
+    "blob": "19fb31d8f2fcded26049ea9e08d08503d8271726",
+    "bytes": 14785,
+    "sha256": "ba1b41f770e0b9e784f4afe4d1758e608be91b2a2adaeef63446b7f5542bb109",
+    "line_start": 165,
+    "line_end": 184,
+    "claim": "GetOk retains presence even for a nil decoded zero; it does not turn explicit empty slices into absent fields."
+  },
+  {
+    "source_key": "official-field-data",
+    "blob": "19fb31d8f2fcded26049ea9e08d08503d8271726",
+    "bytes": 14785,
+    "sha256": "ba1b41f770e0b9e784f4afe4d1758e608be91b2a2adaeef63446b7f5542bb109",
+    "line_start": 208,
+    "line_end": 223,
+    "claim": "Raw-key presence is checked before TypeBool weak decoding; bool-only input must not be assumed."
+  },
+  {
+    "source_key": "official-field-data",
+    "blob": "19fb31d8f2fcded26049ea9e08d08503d8271726",
+    "bytes": 14785,
+    "sha256": "ba1b41f770e0b9e784f4afe4d1758e608be91b2a2adaeef63446b7f5542bb109",
+    "line_start": 343,
+    "line_end": 363,
+    "claim": "Slice decoding returns present=true; explicit [] is distinct from omission."
+  },
+  {
+    "source_key": "official-tokenutil:tokenutil.go",
+    "blob": "814b809a84a5085c2493693bdcea6a41d1f3ee94",
+    "bytes": 14196,
+    "sha256": "f096e81b5cce6e8fd4750ea01d15e5f160ae656c8a876d4b2ac2482217565969",
+    "line_start": 176,
+    "line_end": 208,
+    "claim": "JWT TokenParams assigns present token_no_default_policy and token_policies; the role writer's actor is not consulted here."
+  },
+  {
+    "source_key": "official-tokenutil:tokenutil.go",
+    "blob": "814b809a84a5085c2493693bdcea6a41d1f3ee94",
+    "bytes": 14196,
+    "sha256": "f096e81b5cce6e8fd4750ea01d15e5f160ae656c8a876d4b2ac2482217565969",
+    "line_start": 264,
+    "line_end": 294,
+    "claim": "Role read emits token_policies=[] for empty; login Auth carries the stored policy list and NoDefaultPolicy flag."
+  },
+  {
+    "source_key": "official-tokenutil:tokenutil.go",
+    "blob": "814b809a84a5085c2493693bdcea6a41d1f3ee94",
+    "bytes": 14196,
+    "sha256": "f096e81b5cce6e8fd4750ea01d15e5f160ae656c8a876d4b2ac2482217565969",
+    "line_start": 362,
+    "line_end": 384,
+    "claim": "Modern field takes precedence; explicit modern empty clears legacy alias. Legacy field uses ParsePolicies then copies to modern."
+  },
+  {
+    "source_key": "official-tokenutil:policyutil.go",
+    "blob": "9fe0c93d2c4c32e650dcb1919e3e4e3ce70468fa",
+    "bytes": 3409,
+    "sha256": "dc76454791f26542b9cd49f72f0e9fdaf36b0332e84676eff64bf15d68461118",
+    "line_start": 24,
+    "line_end": 40,
+    "claim": "Legacy explicit empty reaches SanitizePolicies(false). The raw-nil fallback to default must not be confused with explicit []."
+  },
+  {
+    "source_key": "official-tokenutil:policyutil.go",
+    "blob": "9fe0c93d2c4c32e650dcb1919e3e4e3ce70468fa",
+    "bytes": 3409,
+    "sha256": "dc76454791f26542b9cd49f72f0e9fdaf36b0332e84676eff64bf15d68461118",
+    "line_start": 51,
+    "line_end": 77,
+    "claim": "Normalization and optional automatic default addition occur here; explicit default survives addDefault=false."
+  },
+  {
+    "source_key": "official-primary24:references/official/role.go",
+    "blob": "558143b0ea43dc030676f05699d49ecb42542fff",
+    "bytes": 25759,
+    "sha256": "76cf4a9d86973e1a7d9a4663fa3f24da6be931387e2b07fb8c7ce0e625ebbb3d",
+    "line_start": 288,
+    "line_end": 325,
+    "claim": "Loading a legacy nonempty policy list upgrades it to TokenPolicies when needed."
+  },
+  {
+    "source_key": "official-primary24:references/official/role.go",
+    "blob": "558143b0ea43dc030676f05699d49ecb42542fff",
+    "bytes": 25759,
+    "sha256": "76cf4a9d86973e1a7d9a4663fa3f24da6be931387e2b07fb8c7ce0e625ebbb3d",
+    "line_start": 423,
+    "line_end": 436,
+    "claim": "Modern policies are always populated; legacy policies alias is emitted only when legacy stored policies are nonempty."
+  },
+  {
+    "source_key": "official-primary24:references/official/role.go",
+    "blob": "558143b0ea43dc030676f05699d49ecb42542fff",
+    "bytes": 25759,
+    "sha256": "76cf4a9d86973e1a7d9a4663fa3f24da6be931387e2b07fb8c7ce0e625ebbb3d",
+    "line_start": 494,
+    "line_end": 543,
+    "claim": "Existing/new role selection, token parsing, and legacy upgrade occur during role writes."
+  },
+  {
+    "source_key": "official-primary24:references/official/role.go",
+    "blob": "558143b0ea43dc030676f05699d49ecb42542fff",
+    "bytes": 25759,
+    "sha256": "76cf4a9d86973e1a7d9a4663fa3f24da6be931387e2b07fb8c7ce0e625ebbb3d",
+    "line_start": 729,
+    "line_end": 755,
+    "claim": "After template validation the role is stored; the whole role handler contains no writer-policy subset or root-policy rejection."
+  },
+  {
+    "source_key": "official-extra:internal/builtin/credential/jwt/path_login.go",
+    "blob": "099b2c2ce4cb9dac44420a2898304983e4c4230b",
+    "bytes": 11437,
+    "sha256": "39088e521c0972e9cbfbeb51254ab50445cd2b65090092a6b46131af5dfcd4b8",
+    "line_start": 168,
+    "line_end": 196,
+    "claim": "Verified JWT login builds Auth and applies role TokenParams; it does not inject defaults at role-write time."
+  },
+  {
+    "source_key": "official-extra:internal/vault/request_handling.go",
+    "blob": "c31daccabf24d0ec6064012d995fb0e3d5b759f9",
+    "bytes": 101673,
+    "sha256": "f539e14e846b22649eb0af207e71171919c3d0cd99a4e81a109b7446f7e8511e",
+    "line_start": 2147,
+    "line_end": 2163,
+    "claim": "Core LoginCreateToken adds default according to NoDefaultPolicy, rejects root/nonassignable policies, then registers the token."
+  },
+  {
+    "source_key": "official-extra:internal/builtin/credential/jwt/path_login.go",
+    "blob": "099b2c2ce4cb9dac44420a2898304983e4c4230b",
+    "bytes": 11437,
+    "sha256": "39088e521c0972e9cbfbeb51254ab50445cd2b65090092a6b46131af5dfcd4b8",
+    "line_start": 230,
+    "line_end": 250,
+    "claim": "Official renewal reuses req.Auth and changes TTL/MaxTTL/Period; it does not reassign current role policies."
+  },
+  {
+    "source_key": "draft2-source20:source1.after.rs",
+    "blob": "c6a1517252cdef86ecd701a47cb1f443f4a09da3",
+    "bytes": 398708,
+    "sha256": "d1ba2a8a25a66682e4b01c1613898c172638bef2cfd0f70998ddd2bc05a7b86b",
+    "line_start": 1205,
+    "line_end": 1233,
+    "claim": "Candidate JwtRole has policies but no token_no_default_policy field."
+  },
+  {
+    "source_key": "draft2-source20:source1.after.rs",
+    "blob": "c6a1517252cdef86ecd701a47cb1f443f4a09da3",
+    "bytes": 398708,
+    "sha256": "d1ba2a8a25a66682e4b01c1613898c172638bef2cfd0f70998ddd2bc05a7b86b",
+    "line_start": 2095,
+    "line_end": 2125,
+    "claim": "Global policy parser preserves omitted previous values; add_default=true injects default. Keep this helper byte-identical."
+  },
+  {
+    "source_key": "draft2-source20:source1.after.rs",
+    "blob": "c6a1517252cdef86ecd701a47cb1f443f4a09da3",
+    "bytes": 398708,
+    "sha256": "d1ba2a8a25a66682e4b01c1613898c172638bef2cfd0f70998ddd2bc05a7b86b",
+    "line_start": 6328,
+    "line_end": 6340,
+    "claim": "Candidate JWT root-policy rejection already exists before both token issuance branches; preserve this boundary."
+  },
+  {
+    "source_key": "draft2-source20:source1.after.rs",
+    "blob": "c6a1517252cdef86ecd701a47cb1f443f4a09da3",
+    "bytes": 398708,
+    "sha256": "d1ba2a8a25a66682e4b01c1613898c172638bef2cfd0f70998ddd2bc05a7b86b",
+    "line_start": 6362,
+    "line_end": 6416,
+    "claim": "Both service and batch issuance use role.policies without later automatic-default logic."
+  },
+  {
+    "source_key": "draft2-source20:source1.after.rs",
+    "blob": "c6a1517252cdef86ecd701a47cb1f443f4a09da3",
+    "bytes": 398708,
+    "sha256": "d1ba2a8a25a66682e4b01c1613898c172638bef2cfd0f70998ddd2bc05a7b86b",
+    "line_start": 6660,
+    "line_end": 6745,
+    "claim": "Role create/update capability is selected from original role presence and enforced; whitelist currently rejects token_no_default_policy."
+  },
+  {
+    "source_key": "draft2-source20:source1.after.rs",
+    "blob": "c6a1517252cdef86ecd701a47cb1f443f4a09da3",
+    "bytes": 398708,
+    "sha256": "d1ba2a8a25a66682e4b01c1613898c172638bef2cfd0f70998ddd2bc05a7b86b",
+    "line_start": 6798,
+    "line_end": 6812,
+    "claim": "Candidate role storage injects default and calls writer-policy assignment validation; this causes the relevant no-default actor divergence."
+  },
+  {
+    "source_key": "draft2-source20:source1.after.rs",
+    "blob": "c6a1517252cdef86ecd701a47cb1f443f4a09da3",
+    "bytes": 398708,
+    "sha256": "d1ba2a8a25a66682e4b01c1613898c172638bef2cfd0f70998ddd2bc05a7b86b",
+    "line_start": 8388,
+    "line_end": 8397,
+    "claim": "Global validate_assignment rejects root and non-subsets; leave global function unchanged, remove only JWT role call."
+  },
+  {
+    "source_key": "draft2-source20:source0.after.rs",
+    "blob": "7a318b86ebdd47872fde86fbcce732f885571868",
+    "bytes": 19107,
+    "sha256": "59eb89dbd69dde8cd8d70c8cd340a47e5e3855e6e19f127914986ec228a8a87f",
+    "line_start": 153,
+    "line_end": 170,
+    "claim": "Native delivery requires the actual original Actor and captured source capability; preserve this guard."
+  },
+  {
+    "source_key": "draft2-source20:source0.after.rs",
+    "blob": "7a318b86ebdd47872fde86fbcce732f885571868",
+    "bytes": 19107,
+    "sha256": "59eb89dbd69dde8cd8d70c8cd340a47e5e3855e6e19f127914986ec228a8a87f",
+    "line_start": 401,
+    "line_end": 418,
+    "claim": "Native owner retains source create/update decision; successful create must not be reclassified as update after publication."
+  },
+  {
+    "source_key": "base-module:crates/heptabao-server/src/auth_jwt_renewal.rs",
+    "blob": "8730956cc5a33a9401c71f4bcac98af8ee1b9e07",
+    "bytes": 6444,
+    "sha256": "6efa2614ce670ff9373190860c991a2a7a3f55d598bbf54289a4fa8b1eb262d6",
+    "line_start": 76,
+    "line_end": 144,
+    "claim": "Existing service-token renewal preserves issued policies and remains byte-identical."
+  },
+  {
+    "source_key": "actual23-executor",
+    "blob": "3b2695829e4d8bc8688fd80f3f513fb550e56a1d",
+    "bytes": 15892,
+    "sha256": "60a2864887218041e3a718d765dc00d261be49510372af95233e8ae89c64e922",
+    "line_start": 78,
+    "line_end": 97,
+    "claim": "Current r2 official23 executor writes only role_type, user_claim, and bound_audiences; role readback separately captures token_policies."
+  },
+  {
+    "source_key": "actual23-executor",
+    "blob": "3b2695829e4d8bc8688fd80f3f513fb550e56a1d",
+    "bytes": 15892,
+    "sha256": "60a2864887218041e3a718d765dc00d261be49510372af95233e8ae89c64e922",
+    "line_start": 151,
+    "line_end": 194,
+    "claim": "Each real service actor has exactly one case policy, no default, and independent lookup. Its no_default_policy parameter is not the role token_no_default_policy field."
+  }
+]

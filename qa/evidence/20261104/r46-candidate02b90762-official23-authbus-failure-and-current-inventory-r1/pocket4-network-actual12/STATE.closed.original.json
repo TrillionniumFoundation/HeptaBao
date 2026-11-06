@@ -1,0 +1,95 @@
+{
+  "schema": "heptabao.pocket4-network-once-state.r1",
+  "phase": "returned_sdk_whole_parsed",
+  "go": {
+    "raw": "{\n  \"schema\": \"heptabao.root.GO.pocket4.current-network-single-read.r1\",\n  \"authorization\": \"GO\",\n  \"scope\": \"single_original_public_network_inspect_only\",\n  \"sourcePacket\": \"0944e743781641109b178d824b2c8c26a239ba0e\",\n  \"sourceAudit\": {\n    \"tree\": \"0944e743781641109b178d824b2c8c26a239ba0e\",\n    \"files\": 9,\n    \"bytes\": 15655,\n    \"merkle\": {\n      \"root_sha\": \"0944e743781641109b178d824b2c8c26a239ba0e\",\n      \"trees_verified\": 1,\n      \"leaf_count\": 9\n    },\n    \"whole\": true\n  },\n  \"exactRequest\": {\n    \"blob\": \"238fd0aa94cd040ee7ba5572a0794dd84f0ee4dd\",\n    \"bytes\": 24,\n    \"sha256\": \"2d2f4b9e3224c89b54307d102899b9efbf7ba7531cab1433e0583a12d62e8e0d\"\n  },\n  \"tool\": \"mcp__codex_apps__heptaruntime_mac_controller_network_inspect\",\n  \"maximumCalls\": 1,\n  \"maximumSearchStarts\": 0,\n  \"maximumProcessStarts\": 0,\n  \"lane\": \"B1\",\n  \"concurrentLanes\": {\n    \"A\": 0,\n    \"B\": 1,\n    \"C\": 1,\n    \"root\": 0\n  },\n  \"currentHostAliasEvidence\": {\n    \"originalHostListNative\": \"54c30fba00c385936cdc7568ddf877cb3f724d8c\",\n    \"rootQualification\": {\n      \"blob\": \"4dfc716a9f2faacf3b54dfd7dc61b1d8f6ecfe13\",\n      \"bytes\": 7385,\n      \"sha256\": \"69134ba95267fc99c9eb37cfed7d62590b72750366d8012b939fb4f86477dc75\"\n    }\n  },\n  \"originalIntentAndRequestBeforeCall\": true,\n  \"wholeOriginalSDKBeforeParse\": true,\n  \"missingOrErrorAcknowledgementNoReplay\": true,\n  \"releaseBImmediatelyAfterOriginalReturnsAndIsArchived\": true,\n  \"noPhysicalIdentityAssumption\": true,\n  \"noCredentialsOrPrivateContentReads\": true,\n  \"noStateMutation\": true,\n  \"fullReplacement\": false,\n  \"productionCutover\": false,\n  \"legacyCleanup\": false\n}\n",
+    "pin": {
+      "blob": "a18a4132d7942fefaa22c919cb0447c047d1a624",
+      "bytes": 1613,
+      "sha256": "f0a4bfcc540d506100d09a6f947364e32fbd744a61c1c7cfc9bfaf226106c929"
+    }
+  },
+  "request": {
+    "path": "request.pocket4-network.public.json",
+    "raw": "{\n  \"host\": \"pocket4\"\n}\n",
+    "pin": {
+      "blob": "238fd0aa94cd040ee7ba5572a0794dd84f0ee4dd",
+      "bytes": 24,
+      "sha256": "2d2f4b9e3224c89b54307d102899b9efbf7ba7531cab1433e0583a12d62e8e0d"
+    }
+  },
+  "called": true,
+  "callInFlight": false,
+  "returned": true,
+  "sdkWhole": true,
+  "closed": true,
+  "laneReleased": true,
+  "arm": {
+    "tree": "8274d1b1d55e97f28a3f60144247dc3a2af61fa4",
+    "entries": [
+      {
+        "path": "GO.original.json",
+        "blob": "a18a4132d7942fefaa22c919cb0447c047d1a624",
+        "bytes": 1613,
+        "sha256": "f0a4bfcc540d506100d09a6f947364e32fbd744a61c1c7cfc9bfaf226106c929",
+        "whole": true
+      },
+      {
+        "path": "STATE.before-call.json",
+        "blob": "cc901428b0e2b7cedbfe7954fc1b1d5bf5dd5ccb",
+        "bytes": 2531,
+        "sha256": "33ea83d7a494bce0130fecf9beec9a5b0f6a7a585158d3869e613bb7da723130",
+        "whole": true
+      },
+      {
+        "path": "intent.original.json",
+        "blob": "0ecac1e4f227e7fb3e7cc7a7ceee779bb6bf51bc",
+        "bytes": 970,
+        "sha256": "7b74f59e65ed7c59f88081ca6ecb756d1fe975e91aa87ea5bc04c8c01a905a05",
+        "whole": true
+      },
+      {
+        "path": "request.original.json",
+        "blob": "238fd0aa94cd040ee7ba5572a0794dd84f0ee4dd",
+        "bytes": 24,
+        "sha256": "2d2f4b9e3224c89b54307d102899b9efbf7ba7531cab1433e0583a12d62e8e0d",
+        "whole": true
+      }
+    ],
+    "count": 4,
+    "bytes": 5138,
+    "whole": true,
+    "localDurableJournal": false,
+    "runtimeAuthorized": false
+  },
+  "parsed": true,
+  "sdkArchive": {
+    "tree": "ab3ba4b0ff4e240a7009df1ebcd8baa6de494f7e",
+    "entries": [
+      {
+        "path": "SDK.original.json",
+        "blob": "589ffca7ee8e09b44cf242941eea60704789f3d9",
+        "bytes": 58234,
+        "sha256": "1bf43684a3c895f9a0b9315cb594b1d06bf9ddfa7aabf968e4473926c7919e2b",
+        "whole": true
+      }
+    ],
+    "count": 1,
+    "bytes": 58234,
+    "whole": true,
+    "localDurableJournal": false,
+    "runtimeAuthorized": false
+  },
+  "sdkPin": {
+    "blob": "589ffca7ee8e09b44cf242941eea60704789f3d9",
+    "bytes": 58234,
+    "sha256": "1bf43684a3c895f9a0b9315cb594b1d06bf9ddfa7aabf968e4473926c7919e2b"
+  },
+  "originalIsError": false,
+  "nativePin": {
+    "blob": "6d3c2b892b404d9397650fef136c32d3af0b42b6",
+    "bytes": 51121,
+    "sha256": "692b6845f4ec24174128b432361dfd0fec26329235d2b05a2c1c3198840ea129"
+  },
+  "nativeParsed": true
+}

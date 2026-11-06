@@ -1,0 +1,24 @@
+{
+  "serialization": {
+    "schema": "heptabao.pure-source-generator-error.r1",
+    "error": "original payload serialization",
+    "stage": "prior payload textual serializer assertion before modifications or Native",
+    "nativeCalls": 0,
+    "sourceFrozen": false,
+    "reasonPending": "Check original exact serializer before binding successor."
+  },
+  "correction": "Original payload was compact JSON plus LF, exactly reconstructed; successor uses the same serializer.",
+  "portRefinement": {
+    "schema": "heptabao.source-fresh-scope-port-refinement.r1",
+    "priorProposedRequest": {
+      "blob": "22cebe29557592c78264c1a014e55a4112cf3068",
+      "bytes": 164759,
+      "sha256": "a7c9c1b4793c8c1bd2606cd56176a58579b3a5a6cfda5fa2e8328dbd870d1d85"
+    },
+    "priorPort": 23623,
+    "newPort": 23625,
+    "newClusterPort": 23626,
+    "reason": "Root explicitly requires fresh root AND ports; prior unarchived draft retained oldport, no Native or source GO existed.",
+    "nativeCalls": 0
+  }
+}

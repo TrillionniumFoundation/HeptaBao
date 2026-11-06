@@ -1,0 +1,121 @@
+{
+  "tree": "389301f1a977bbc143e4159592d61a0298255cff",
+  "count": 662,
+  "bytes": 12802072,
+  "MerkleTrees": 19,
+  "whole": true,
+  "wholeBasis": "Each immutable child packet's complete byte readback, plus this exact recursive aggregate Merkle and all leaf SHA/size matches.",
+  "intent": "608782bb223c00832d8724d09d549d8edd73383d",
+  "subtrees": [
+    {
+      "path": "actual",
+      "tree": "ebc0d214a6d8bb3ad8844fe1c1ff701f336ca013",
+      "files": 10,
+      "bytes": 2047241
+    },
+    {
+      "path": "body00",
+      "tree": "d06de3ccbc9400d8a69bb50fde29aa8065344acf",
+      "files": 50,
+      "bytes": 593427
+    },
+    {
+      "path": "body01",
+      "tree": "272418f89b6ba123c43c0c4638365d545d909e93",
+      "files": 51,
+      "bytes": 594119
+    },
+    {
+      "path": "body02-recovery",
+      "tree": "1da012307bd166ff9601bbcf92963a28f12cb80a",
+      "files": 56,
+      "bytes": 1168276
+    },
+    {
+      "path": "body02-unknown",
+      "tree": "677343f3b00aa92e0bbd0eb4b3371551993020e6",
+      "files": 16,
+      "bytes": 503205
+    },
+    {
+      "path": "body03",
+      "tree": "1d437c66537d3c8293801f5484217293ff8abb98",
+      "files": 50,
+      "bytes": 593648
+    },
+    {
+      "path": "body04",
+      "tree": "146d0bae98e4c0e3fc51847a568bcecb1d2ad13c",
+      "files": 50,
+      "bytes": 593648
+    },
+    {
+      "path": "body05",
+      "tree": "aa72a03dcc5f34cb8fcbc36d8c806f06a672c92f",
+      "files": 50,
+      "bytes": 593648
+    },
+    {
+      "path": "body06",
+      "tree": "4d568b98548ae6cbb214117d7486038592cace36",
+      "files": 50,
+      "bytes": 593648
+    },
+    {
+      "path": "body07",
+      "tree": "71655534a9dd1939b0e38324de3a4d26f78ae30e",
+      "files": 50,
+      "bytes": 593648
+    },
+    {
+      "path": "body08",
+      "tree": "0acca1ba2652d5455fcb65fc16e77aeebcef77e3",
+      "files": 50,
+      "bytes": 593648
+    },
+    {
+      "path": "body09",
+      "tree": "3fbbf030ebbe241b3357e4b6667a1211f0cd57a2",
+      "files": 50,
+      "bytes": 566758
+    },
+    {
+      "path": "git-arm-read-failure",
+      "tree": "c1d73181fdb8e6118aa12bc02e49c93b2ee36fcb",
+      "files": 23,
+      "bytes": 409164
+    },
+    {
+      "path": "git-arm-restore",
+      "tree": "40a5931a4f5257d3bf00f1889cea65abbea2629b",
+      "files": 4,
+      "bytes": 697989
+    },
+    {
+      "path": "handback",
+      "tree": "12d4c8f204e869defb420343a497aceb750afe13",
+      "files": 6,
+      "bytes": 1006566
+    },
+    {
+      "path": "info",
+      "tree": "3ae4a7d1058156f166eaecc67de5bb9171f63539",
+      "files": 30,
+      "bytes": 508563
+    },
+    {
+      "path": "outer",
+      "tree": "add8a90793a5eceec69e98b389d8ce4dadca00df",
+      "files": 55,
+      "bytes": 698647
+    },
+    {
+      "path": "verification",
+      "tree": "ecf24654af7d2d961044a830c5b4c0c8854afd0d",
+      "files": 11,
+      "bytes": 446229
+    }
+  ],
+  "NativeCalls": 0,
+  "refUpdates": 0
+}

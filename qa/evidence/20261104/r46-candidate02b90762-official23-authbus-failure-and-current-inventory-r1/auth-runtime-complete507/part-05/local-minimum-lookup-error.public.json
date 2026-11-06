@@ -1,0 +1,8 @@
+{
+  "schema": "heptabao.pure-archive-precondition-error.v1",
+  "stage": "minimum-texts prior to archive",
+  "error": "MISSING:original-START.sdk.json",
+  "incorrectLookup": "owner_authbus_current_home_runtime_gitfirst_r3:original_sdk_raw:home-r3-runtime-start",
+  "effect": "pure local missing cache alias; no Git mutation or Native call occurred; actual START SDK remains whole at c4207498163a2a69dc2c77f622de345f2118edd5",
+  "correction": "derive process_start key from unchanged calls index"
+}

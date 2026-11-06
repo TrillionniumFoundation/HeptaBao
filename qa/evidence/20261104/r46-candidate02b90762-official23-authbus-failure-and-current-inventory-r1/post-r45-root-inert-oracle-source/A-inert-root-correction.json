@@ -1,0 +1,12 @@
+{
+  "schema": "heptabao.root-inert-context-shape-correction.r1",
+  "wrongComparison": "Context input inventory object was compared to the candidate document it references.",
+  "correctComparison": "Reproduce all22 source and8 document pins from the exact837696B public carrier; compare inventory maps, payload pin and fresh namespace, and bind candidate document separately.",
+  "originalFailurePreserved": true,
+  "result": {
+    "blob": "7ae8d9d4b6e2101b79a2c3fde256716e5639c03a",
+    "bytes": 8041,
+    "sha256": "f042507c76eb3651c70370dcaddb44613e64582a6e17ef8bfd99ad5d1e1e4916"
+  },
+  "NativeCalls": 0
+}

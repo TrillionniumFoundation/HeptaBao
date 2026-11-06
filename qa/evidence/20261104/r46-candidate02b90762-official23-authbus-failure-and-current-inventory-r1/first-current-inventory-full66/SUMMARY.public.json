@@ -1,0 +1,147 @@
+{
+  "schema": "heptabao.current-consumer-backup-discovery.actual-summary.v1",
+  "status": "BOUNDED_DISCOVERY_COMPLETE_WITH_EXPLICIT_PARTIAL_SEARCH_COVERAGE",
+  "sourcePacket": "d3d0138061dfd710ade1e48bda7a556997d9839c",
+  "GO": {
+    "blob": "acf5eadc67327880998ed08b661874433ae5d121",
+    "bytes": 6092,
+    "sha256": "52dae6062b15f30b6741c9ca8239901f68a8bff5b2a3ea219dd7d1de9423b1e8"
+  },
+  "calls": 13,
+  "uniqueOriginalSearchStarts": 2,
+  "hostListCalls": 1,
+  "hostProcessPages": 2,
+  "processRecords": 250,
+  "processPageCursors": [
+    0,
+    2089,
+    4145874
+  ],
+  "lastProcessHasMore": false,
+  "processSnapshotAtomic": false,
+  "searchPages": 8,
+  "progressiveObservations": 0,
+  "searchResults": 256,
+  "originalSDKsWhole": 13,
+  "processNameCandidates": [
+    {
+      "identity": "linux:b19bd1b9-4dbe-4335-96cf-ed98d393efea:35455670",
+      "name": "bao",
+      "pid": 2031533,
+      "uid": 100
+    }
+  ],
+  "processCandidateLimit": "The observed bao PID2031533/uid100/start tuple is not an executable/version/unit/container mapping and must not be equated with the historical uid1000 QA fixture.",
+  "configuredHostNames": [
+    "ai395",
+    "desktop",
+    "mac",
+    "main",
+    "pocket4",
+    "rog",
+    "x230"
+  ],
+  "Pocket4ConfiguredNamePresent": true,
+  "Pocket4PhysicalMappingQualified": false,
+  "Pocket4NativeCalls": 0,
+  "searches": [
+    {
+      "kind": "consumer",
+      "search_id": "164d94fe0ce313136c059144efa005f384f52da4949abc9d98af79946daf26fb",
+      "rows": 128,
+      "topDirectoryCounts": {
+        "heptabao-native-20261030-5a1e-r5": 128
+      },
+      "archiveFilenameCandidates": [],
+      "statistics": {
+        "bytes": 0,
+        "coverage_complete": false,
+        "coverage_reasons": [
+          "result_limit"
+        ],
+        "coverage_scope": "selected_authorized_regular_single_link_files",
+        "entries": 142,
+        "extracted_documents": 0,
+        "files": 0,
+        "results": 128,
+        "skipped_binary_or_non_utf8": 0,
+        "skipped_document_invalid": 0,
+        "skipped_document_limited": 0,
+        "skipped_document_unavailable": 0,
+        "skipped_hardlinks": 0,
+        "skipped_large": 0,
+        "skipped_protected": 0,
+        "skipped_special": 0,
+        "skipped_symlinks": 0,
+        "traversal_complete": false,
+        "unreadable": 0
+      }
+    },
+    {
+      "kind": "backup",
+      "search_id": "ce71eb3a4fbaf6af16c1bdc59f853b58190bbeb5123eb7bd168bc1f970486f52",
+      "rows": 128,
+      "topDirectoryCounts": {
+        "heptabao-native-20261030-5a1e-r5": 128
+      },
+      "archiveFilenameCandidates": [
+        {
+          "path": "heptabao-native-20261030-5a1e-r5/cold-unseal-source-r13/x230-original-http31-full34-r1/native-snapshot.tar.gz"
+        }
+      ],
+      "statistics": {
+        "bytes": 0,
+        "coverage_complete": false,
+        "coverage_reasons": [
+          "result_limit"
+        ],
+        "coverage_scope": "selected_authorized_regular_single_link_files",
+        "entries": 4011,
+        "extracted_documents": 0,
+        "files": 0,
+        "results": 128,
+        "skipped_binary_or_non_utf8": 0,
+        "skipped_document_invalid": 0,
+        "skipped_document_limited": 0,
+        "skipped_document_unavailable": 0,
+        "skipped_hardlinks": 0,
+        "skipped_large": 0,
+        "skipped_protected": 0,
+        "skipped_special": 0,
+        "skipped_symlinks": 0,
+        "traversal_complete": false,
+        "unreadable": 0
+      }
+    }
+  ],
+  "filenameSearchInterpretation": "Both regex queries match relative paths. Both reached result_limit while all returned paths were under heptabao-native-20261030-5a1e-r5. This identifies a coverage limitation, not absence of live consumers or other backups; linkage to a process is unobserved.",
+  "backupCandidateLimit": "The one returned archive-like basename is only a current filename observation. No version/hash/content/schedule/off-host copy or restore proof was collected for that path.",
+  "bytesReadBySearches": 0,
+  "configBodyReads": 0,
+  "archiveBodyReads": 0,
+  "argvOrEnvironmentReads": 0,
+  "processOrShellStarts": 0,
+  "productMutations": 0,
+  "cleanupActions": 0,
+  "pending": null,
+  "NativeCallInFlight": false,
+  "ownedActiveFutures": 0,
+  "lane": "B0",
+  "overallInventoryComplete": false,
+  "consumerMigrationQualified": false,
+  "backupRecoveryQualified": false,
+  "historicalUNKNOWNsChanged": false,
+  "finalCombinedCandidateBound": false,
+  "integrityChecks": {
+    "originalSDKHashMatches": 13,
+    "originalNativeExtractionMatches": 13,
+    "originalRequestArmMatches": 13,
+    "originalIntentArmMatches": 13,
+    "acceptedCalls": 13
+  },
+  "provenance": {
+    "originalRelease": "42ae7e652068d809ed62a77a15fcf16cd2a1a596",
+    "correctedRelease": "2fccddaa0842bcf26b36194b7c6115a960b5ffea",
+    "wordingOnlyCorrectionRetained": true
+  }
+}

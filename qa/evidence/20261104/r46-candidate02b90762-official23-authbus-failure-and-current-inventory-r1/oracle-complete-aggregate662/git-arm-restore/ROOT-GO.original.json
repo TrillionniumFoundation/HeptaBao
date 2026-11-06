@@ -1,0 +1,57 @@
+{
+  "schema": "heptabao.root.GO.oracle271.r2.same-original-arm-restoration.r1",
+  "authorization": "GO",
+  "scope": "official271_r2_body1_page0_git_arm_restore_only",
+  "original_operation": "5433a8b98b3015f338e147954b4d9910b5657f85730a4bc09de3a79129a88155",
+  "pending_call": "official271-x230-acl23-r2-body01-page000000",
+  "expected_tree": "2e7e1a66eec4e42a14ea0c350328f4f263842c20",
+  "original_request": "c466e0e87676208da9a08ad7630283696ec42cc8",
+  "root_qualification": {
+    "blob": "74887389d8b6cad49bd6098bdfdeead8e7e1b798",
+    "bytes": 3378,
+    "sha256": "cf1931e06ffd3efa90807a851236f9acd7e963aa91bf640f77731f29b0c7a4ef"
+  },
+  "source_packet": "35d5d13759796bec35b06db8821845c5be8c24d1",
+  "source": {
+    "blob": "7e0d9e66249dc8cfa19c9957a66288f43312014e",
+    "bytes": 2805,
+    "sha256": "079d6ca900bbf2f718639c66f44d43e13a34cfa6d2d4c0d1f3121470124b36c3"
+  },
+  "before": {
+    "blob": "551c671b614f169d938ea734a963c0a996258dbf",
+    "bytes": 346725,
+    "sha256": "fc5eddffa1ec12f067afbf5016d66924e23ed188b780618309fc554130e0a9fa"
+  },
+  "expected_after": {
+    "blob": "8d2dfab08450b092edf96f83004dcb59a9eb2bba",
+    "bytes": 347811,
+    "sha256": "9d072f1a2b834ef6539ff50af27c5fc5be234b26f0e90eea2c95fa08dc6500dd"
+  },
+  "reconciliation": {
+    "blob": "e58b4ef7bed4b32ed196726e19fdcff0801d2e53",
+    "bytes": 1007,
+    "sha256": "46a0ce5d5df69a0ae9d5e0b08607050b0f9f9ae1aeaa68bb87f10d82778a8475"
+  },
+  "maximum_new_binary_read_admissions": 0,
+  "maximum_new_process_starts": 0,
+  "maximum_new_Git_create_for_original_arm": 0,
+  "actual_apply_after_external_whole_proof": true,
+  "invoke_original_prepared_page_once_after_separate_boundary": true,
+  "remaining_ten_range_go": {
+    "blob": "1bfd1fe525b4a3e426b303fe65ef1615150eca53",
+    "bytes": 3811,
+    "sha256": "583c500b3be6866097aca0a96507b7c7c294ab35ae5166b10c7cc6ee25996363"
+  },
+  "old_errors_and_UNKNOWN_preserved": true,
+  "no_budget_reset": true,
+  "lane": "C1",
+  "concurrent_lanes": {
+    "A": 1,
+    "B": 0,
+    "C": 1,
+    "root": 0
+  },
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

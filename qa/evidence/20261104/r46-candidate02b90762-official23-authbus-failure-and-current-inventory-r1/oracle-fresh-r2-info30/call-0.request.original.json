@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-official271-x230-acl23-oracle-report-info-r2",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "x230",
+      "path": "/home/qian/heptabao-official271-acl23-oracle-20261106-r2/result.public.json"
+    }
+  }
+}

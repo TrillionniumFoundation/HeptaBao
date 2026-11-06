@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-official271-x230-acl23-oracle-observe-r2-streams0",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "x230",
+      "job_id": "1a1b1b4fbfa-fc05-7a60",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

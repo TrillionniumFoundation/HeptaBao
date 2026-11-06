@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.pocket4-network-once-intent.r1",
+  "scope": "pocket4_network_identity_r1",
+  "go": {
+    "blob": "a18a4132d7942fefaa22c919cb0447c047d1a624",
+    "bytes": 1613,
+    "sha256": "f0a4bfcc540d506100d09a6f947364e32fbd744a61c1c7cfc9bfaf226106c929"
+  },
+  "source_packet": "0944e743781641109b178d824b2c8c26a239ba0e",
+  "call_ordinal": 1,
+  "tool": "mcp__codex_apps__heptaruntime_mac_controller_network_inspect",
+  "exact_request": {
+    "blob": "238fd0aa94cd040ee7ba5572a0794dd84f0ee4dd",
+    "bytes": 24,
+    "sha256": "2d2f4b9e3224c89b54307d102899b9efbf7ba7531cab1433e0583a12d62e8e0d"
+  },
+  "typed_arguments": {
+    "host": "pocket4"
+  },
+  "maximum_native_calls": 1,
+  "called": false,
+  "search_starts": 0,
+  "process_starts": 0,
+  "once_intent_external_before_call": true,
+  "original_sdk_whole_before_parse": true,
+  "missing_ack_or_error_no_replay": true,
+  "physical_mapping_still_unqualified": true,
+  "credentials_or_private_content": false
+}

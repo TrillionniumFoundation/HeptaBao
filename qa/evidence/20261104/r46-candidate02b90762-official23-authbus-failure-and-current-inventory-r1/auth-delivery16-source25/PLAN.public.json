@@ -1,0 +1,109 @@
+{
+  "schema": "heptabao.runtime-future-delivery16-source.v1",
+  "originalJob": "1a1b1d28dc2-fc05-7afe",
+  "slot": "owner_authbus_current_home_runtime_gitfirst_r3",
+  "originalRootGo": {
+    "blob": "179dadd5fda8192e78a5ae387e6a8ed768d4adab",
+    "bytes": 2981,
+    "sha256": "74fe23a30afc4efc34baa9a1413bd96f8936a615f101ae59a524fec304154db8"
+  },
+  "priorClosedState": {
+    "blob": "f3ee8a7deed5183685c0b2c5701b242b5c795bce",
+    "bytes": 68853,
+    "sha256": "ce4b7bf7b8b2f271e51680405643c2ff5562bb9f246b0b473928c6504bb426bf"
+  },
+  "beforeJournal": {
+    "blob": "356a543a19cc95ce6df4a88406cfc7950d154066",
+    "bytes": 19052,
+    "sha256": "44a46f27cb46136d81cc9fce7f3d5fa290a1ded406bf2c5a4c4d27abf4fd85f7"
+  },
+  "afterJournal": {
+    "blob": "c2274b5979ecc8d73f95c27fdfb004339ca133db",
+    "bytes": 19244,
+    "sha256": "1988c68e38d215bb938337238b35425049c06b786630be783053b9a57c2b3418"
+  },
+  "futureProcessReadPageLimit": 16384,
+  "otherNewObserverPageLimit": 8192,
+  "historicalObserverPageLimit": 8192,
+  "oldObservers": [
+    {
+      "id": "0952b46df04a7c2534f2a714eaa4f9e5330f0385cd7a3e681f39e425a5536a25",
+      "tool": "process_status",
+      "payload": {
+        "blob": "1ab3ffff608535570c675adeb57b5068817682b1",
+        "bytes": 911,
+        "sha256": "6276197ae38c45446723ababc3d7cb5e49d8fcef5c0faf35c2592fdef969a8da"
+      },
+      "payloadTree": "68a6b53f5596da8d51f9db8f09c0b29b6eadcfda",
+      "nativeText": {
+        "blob": "bcdab520b27af2ab781a23062c149b0a51e893d6",
+        "bytes": 732,
+        "sha256": "fee3b782b6ea12fd8383b628624118c5619ef0982aef93fbd4a82e35ad7a0e7f"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "3c99509e84c0fbc7b6c0ceb82b806bda1c4ba493323dd27baa334a51b0da8a45",
+      "tool": "process_read",
+      "payload": {
+        "blob": "cf2df683cd7604f0e60c66efc5b14abc75dff3a6",
+        "bytes": 52268,
+        "sha256": "b56d701ededbb143bb842e59a2f9167d71de3d26378fbdb826afa4b75e83d7ae"
+      },
+      "payloadTree": "9661815cb7472c777d371bc7f3f2e42824c54dac",
+      "nativeText": {
+        "blob": "c511a8c92493816bd5a4902cd22e2e10be54c7c8",
+        "bytes": 50362,
+        "sha256": "892d678255e9bc52bfce2192d5b1e920928c19e378acdc571d503f757c8a0548"
+      },
+      "pages": 7,
+      "completedInactive": true
+    },
+    {
+      "id": "556e6177ffa8b74d056073855a1b6fc775913f87979ae911123788a5e3482b59",
+      "tool": "process_read",
+      "payload": {
+        "blob": "36453c5ad0dad2e262e355d8286ed344db007f39",
+        "bytes": 54327,
+        "sha256": "9c94e266d037a849c4ddb2a6f9fbd53bc37cbdbabee7f3868a0b851a14037383"
+      },
+      "payloadTree": "43f853125921471fd91d084230f732be325371d9",
+      "nativeText": {
+        "blob": "07696ccbdb0b1a0ae05351c58aed6e3fe2b32a46",
+        "bytes": 51051,
+        "sha256": "58281fc7189fa42af697ba95e5db5606392b3ea0a76ad14844ef674587c9ab35"
+      },
+      "pages": 7,
+      "completedInactive": true
+    }
+  ],
+  "oldCalls": 22,
+  "nextStdout": 32768,
+  "nextStderr": 0,
+  "terminalStdout": 211872,
+  "remainingStdoutBytes": 179104,
+  "maximumOriginalProcessStatuses": 64,
+  "processStatusesAlreadyAdmitted": 1,
+  "maximumStatusCallsPerObserver": 8,
+  "maximumTerminalProcessReads": 129,
+  "terminalProcessReadsAlreadyAdmitted": 2,
+  "remainingActualProcessReads": 11,
+  "processReadBytes": 16384,
+  "maximumOriginalPayloadBytes": 1048576,
+  "oldMaxPagesPerPayload": 128,
+  "newMaxPagesPerReadPayload": 64,
+  "remainingActualPayloadWorstCasePages": 704,
+  "originalDefaultRemainingWorstCasePages": 1408,
+  "simultaneousNativeCallsOrFutures": 1,
+  "originalDeadline900": true,
+  "originalOuter1080": true,
+  "GF_SLOTChanged": false,
+  "originalContextChanged": false,
+  "oldCallsAndObserversMutated": false,
+  "onlyUnadmittedFutureObservers": true,
+  "alreadyReturnedBytesNeverReread": true,
+  "newProcessStarts": 0,
+  "activationNotExecuted": true,
+  "NativeCalls": 0
+}

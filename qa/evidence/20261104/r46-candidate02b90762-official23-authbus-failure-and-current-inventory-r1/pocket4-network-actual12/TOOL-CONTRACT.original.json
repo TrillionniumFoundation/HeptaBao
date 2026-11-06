@@ -1,0 +1,4 @@
+{
+  "name": "mcp__codex_apps__heptaruntime_mac_controller_network_inspect",
+  "description": "Read links, addresses, routes, listeners, and USB4/Thunderbolt peers from a configured host without changing network state. This tool is part of plugin `HeptaRuntime Mac Controller`.\n\nMCP server instructions: Filesystem tools. File lines render as `N:hh|content`; `N:hh` is the line id edit tools target, and edit results are diffs with fresh ids, so edits chain without re-viewing files. Reuse returned content and ids; read complete relevant blocks, then act on them. Each response costs a round trip: first decide what you need next, then request every call that doesn't depend on another's result in that one response.\n\nexec tool declaration:\n```ts\ndeclare const tools: { mcp__codex_apps__heptaruntime_mac_controller_network_inspect(args: { host: string; }): Promise<CallToolResult>; };\n```"
+}

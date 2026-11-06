@@ -1,0 +1,280 @@
+{
+  "schema": "heptabao.jwt-policy-empty.peer-inputs.v1",
+  "reviewed_packets": [
+    {
+      "role": "pending JWTACL draft2",
+      "tree": "74715d5f647960cfab278652079a773e88ddb0ac",
+      "merkle": {
+        "root_sha": "74715d5f647960cfab278652079a773e88ddb0ac",
+        "trees_verified": 1,
+        "leaf_count": 20
+      },
+      "selected_leaves": 5
+    },
+    {
+      "role": "official primary / original MATRIX23",
+      "tree": "15a9b763cc1163226b392d7b9a93d5a2ff3e5384",
+      "merkle": {
+        "root_sha": "15a9b763cc1163226b392d7b9a93d5a2ff3e5384",
+        "trees_verified": 5,
+        "leaf_count": 24
+      },
+      "selected_leaves": 8
+    },
+    {
+      "role": "root tokenutil primary supplement",
+      "tree": "14188d30affb94a730f9dee445a4683d10337b1f",
+      "merkle": {
+        "root_sha": "14188d30affb94a730f9dee445a4683d10337b1f",
+        "trees_verified": 1,
+        "leaf_count": 6
+      },
+      "selected_leaves": 5
+    }
+  ],
+  "scope_statement": "All listed 26 texts were read in full and independently byte/hash checked. Only the listed 18 selected leaves of the three frozen packets were fetched; this peer does not claim another full 20+24+6-leaf readback. Four auxiliary candidate modules were bound to the exact recursive base33b tree. Three newly retrieved official full sources and their original Git SDKs are included in this packet.",
+  "official_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+  "candidate_base_commit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+  "candidate_base_tree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+  "whole_sources": [
+    {
+      "role": "draft2-source20",
+      "path": "PLAN.public.json",
+      "pin": {
+        "blob": "0e2c192cc2569b9c0da35fc6fd840efd8d1e4486",
+        "bytes": 4397,
+        "sha256": "1c4605c4a6b65e53bc6af73789ec56835698f8e7bedd9963d0fb86c2e1eb364f"
+      }
+    },
+    {
+      "role": "draft2-source20",
+      "path": "source0.after.rs",
+      "pin": {
+        "blob": "7a318b86ebdd47872fde86fbcce732f885571868",
+        "bytes": 19107,
+        "sha256": "59eb89dbd69dde8cd8d70c8cd340a47e5e3855e6e19f127914986ec228a8a87f"
+      }
+    },
+    {
+      "role": "draft2-source20",
+      "path": "source1.after.rs",
+      "pin": {
+        "blob": "c6a1517252cdef86ecd701a47cb1f443f4a09da3",
+        "bytes": 398708,
+        "sha256": "d1ba2a8a25a66682e4b01c1613898c172638bef2cfd0f70998ddd2bc05a7b86b"
+      }
+    },
+    {
+      "role": "draft2-source20",
+      "path": "source2.after.rs",
+      "pin": {
+        "blob": "452fd4d6d12d0fe050c38032b99e39c459292fbb",
+        "bytes": 42561,
+        "sha256": "89ee932bf1e5933620ef53f6e2d3537f6c3e8643ad3942bf78017107848277ff"
+      }
+    },
+    {
+      "role": "draft2-source20",
+      "path": "production-edits.public.json",
+      "pin": {
+        "blob": "e54b68e7f780fbfd8eefdec2bb5b6b0fbf922506",
+        "bytes": 5431,
+        "sha256": "b22cf96c1fd6006da52445c7ab97ead6555c6e2b6542a49fd71d27b1d9b82fe8"
+      }
+    },
+    {
+      "role": "official-primary24",
+      "path": "SOURCES.public.json",
+      "pin": {
+        "blob": "aeceaaaf5fa8f6fde9f0f0c2691ad8e9e64a0de6",
+        "bytes": 5053,
+        "sha256": "8963352ab24804a4c0bdab694155c769564f612191e118c995959cef7e5ecbd1"
+      }
+    },
+    {
+      "role": "official-primary24",
+      "path": "MATRIX.public.json",
+      "pin": {
+        "blob": "7364a32a2341a56b0730ad3486c72bdbd6de53c4",
+        "bytes": 14285,
+        "sha256": "59e3c9519e59e7ae26cde512a8171d39e2175e8bb24f12039222218570ebe6f8"
+      }
+    },
+    {
+      "role": "official-primary24",
+      "path": "COMMON-ROLE.template.json",
+      "pin": {
+        "blob": "44e935106eb66dac1bd32d76bd56de0baca7f298",
+        "bytes": 111,
+        "sha256": "7d816d3da051f8d64da1e43499ae631cff8949629d5da8bb93d18b880ad93df0"
+      }
+    },
+    {
+      "role": "official-primary24",
+      "path": "references/official/role.go",
+      "pin": {
+        "blob": "558143b0ea43dc030676f05699d49ecb42542fff",
+        "bytes": 25759,
+        "sha256": "76cf4a9d86973e1a7d9a4663fa3f24da6be931387e2b07fb8c7ce0e625ebbb3d"
+      }
+    },
+    {
+      "role": "official-primary24",
+      "path": "references/official/backend.go",
+      "pin": {
+        "blob": "36117c297614a6e5c38b98c57652d297bee10123",
+        "bytes": 4189,
+        "sha256": "f0756be85b1ef0b9beb41cff3268cd321b47b1c2cf85b14407c338fb8e61784a"
+      }
+    },
+    {
+      "role": "official-primary24",
+      "path": "references/official/config.go",
+      "pin": {
+        "blob": "ffbf35fb32bc41f0c1c617e29fb1e1ae5cfdf027",
+        "bytes": 24654,
+        "sha256": "d0c4d8dc1934e0490d918426e6107500482e08616ca9f5d34054fad3b424aa80"
+      }
+    },
+    {
+      "role": "official-primary24",
+      "path": "references/official/acl.go",
+      "pin": {
+        "blob": "2251475f3161a7eca462c0098b0ef6f8c970a553",
+        "bytes": 27409,
+        "sha256": "6e75975d1f7ad3dd52eea2e9a87febcd3c4d7ea0c15965c20bf8b7ed6ecc3a17"
+      }
+    },
+    {
+      "role": "official-primary24",
+      "path": "references/official/http_logical.go",
+      "pin": {
+        "blob": "7c091863ff2496db948ad945060d320d66b4bb7f",
+        "bytes": 15421,
+        "sha256": "5d474557d9dd8a28f0dfa3a83eb3c8e2fac502fae8b3404a3df1cc81c438f451"
+      }
+    },
+    {
+      "role": "official-tokenutil",
+      "path": "SOURCE-FINDINGS.public.json",
+      "pin": {
+        "blob": "c563c89d3b1e8bfc16efb22de972cd31989f569c",
+        "bytes": 3544,
+        "sha256": "cb1594514ee4f5753150e4ecb70edc07b12493418cc29e1c70dda1b63282db59"
+      }
+    },
+    {
+      "role": "official-tokenutil",
+      "path": "policyutil.go",
+      "pin": {
+        "blob": "9fe0c93d2c4c32e650dcb1919e3e4e3ce70468fa",
+        "bytes": 3409,
+        "sha256": "dc76454791f26542b9cd49f72f0e9fdaf36b0332e84676eff64bf15d68461118"
+      }
+    },
+    {
+      "role": "official-tokenutil",
+      "path": "tokenutil.go",
+      "pin": {
+        "blob": "814b809a84a5085c2493693bdcea6a41d1f3ee94",
+        "bytes": 14196,
+        "sha256": "f096e81b5cce6e8fd4750ea01d15e5f160ae656c8a876d4b2ac2482217565969"
+      }
+    },
+    {
+      "role": "official-tokenutil",
+      "path": "tokenutil.go.original-SDK.json",
+      "pin": {
+        "blob": "e7c614f0b033511dd5c6723fe910d747262abba3",
+        "bytes": 31894,
+        "sha256": "83779abbfd54cef0e6c0ca259ff548a353680ffc4ab77816fa543dbbc4569a62"
+      }
+    },
+    {
+      "role": "official-tokenutil",
+      "path": "policyutil.go.original-SDK.json",
+      "pin": {
+        "blob": "328ee4baa902849e4bc6e6d80ff988488efcd602",
+        "bytes": 8187,
+        "sha256": "9ebbba13a7bc6c9a8767b513bacd12d4086574d838db386051d3e25d8d01aace"
+      }
+    },
+    {
+      "role": "additional-whole-source",
+      "path": "official-field-data",
+      "pin": {
+        "blob": "19fb31d8f2fcded26049ea9e08d08503d8271726",
+        "bytes": 14785,
+        "sha256": "ba1b41f770e0b9e784f4afe4d1758e608be91b2a2adaeef63446b7f5542bb109"
+      }
+    },
+    {
+      "role": "additional-whole-source",
+      "path": "official-extra:internal/vault/request_handling.go",
+      "pin": {
+        "blob": "c31daccabf24d0ec6064012d995fb0e3d5b759f9",
+        "bytes": 101673,
+        "sha256": "f539e14e846b22649eb0af207e71171919c3d0cd99a4e81a109b7446f7e8511e"
+      }
+    },
+    {
+      "role": "additional-whole-source",
+      "path": "official-extra:internal/builtin/credential/jwt/path_login.go",
+      "pin": {
+        "blob": "099b2c2ce4cb9dac44420a2898304983e4c4230b",
+        "bytes": 11437,
+        "sha256": "39088e521c0972e9cbfbeb51254ab50445cd2b65090092a6b46131af5dfcd4b8"
+      }
+    },
+    {
+      "role": "additional-whole-source",
+      "path": "base-module:crates/heptabao-server/src/auth_jwt_batch.rs",
+      "pin": {
+        "blob": "5f4f925bc84dbac704794ff091d74663a4b5f848",
+        "bytes": 2263,
+        "sha256": "ea2eeeff0749eb0e398e78bc07f19d7121b7606a275a9b81edb3693cc7984f42"
+      }
+    },
+    {
+      "role": "additional-whole-source",
+      "path": "base-module:crates/heptabao-server/src/auth_jwt_login.rs",
+      "pin": {
+        "blob": "906232fdae08ea3246585152c263e572dfc7fc94",
+        "bytes": 8632,
+        "sha256": "3ef4e39330d1c09e8002d62454877107efda6f902ba2e62a8a77b59e313628e7"
+      }
+    },
+    {
+      "role": "additional-whole-source",
+      "path": "base-module:crates/heptabao-server/src/auth_jwt_renewal.rs",
+      "pin": {
+        "blob": "8730956cc5a33a9401c71f4bcac98af8ee1b9e07",
+        "bytes": 6444,
+        "sha256": "6efa2614ce670ff9373190860c991a2a7a3f55d598bbf54289a4fa8b1eb262d6"
+      }
+    },
+    {
+      "role": "additional-whole-source",
+      "path": "base-module:crates/heptabao-server/src/auth_jwt_pem.rs",
+      "pin": {
+        "blob": "9ea3ae19b523bd9e0b05e08feca98e8be338464c",
+        "bytes": 7687,
+        "sha256": "418e033a050fc13433d7351b47b40f4f2a648411252282007e979bdad5571254"
+      }
+    },
+    {
+      "role": "additional-whole-source",
+      "path": "actual23-executor",
+      "pin": {
+        "blob": "3b2695829e4d8bc8688fd80f3f513fb550e56a1d",
+        "bytes": 15892,
+        "sha256": "60a2864887218041e3a718d765dc00d261be49510372af95233e8ae89c64e922"
+      }
+    }
+  ],
+  "native_calls": 0,
+  "code_executed": false,
+  "production_changed": false,
+  "global_acl_changed": false,
+  "actors_modified": false
+}

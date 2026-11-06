@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.root-official271-r2-report-INFO-source.r1",
+  "passed": true,
+  "checks": 12,
+  "rows": [
+    {
+      "name": "whole_SOURCE16",
+      "passed": true
+    },
+    {
+      "name": "author36_exact",
+      "passed": true
+    },
+    {
+      "name": "root11_closed_outer",
+      "passed": true
+    },
+    {
+      "name": "exact_actual_state_and_stdout",
+      "passed": true
+    },
+    {
+      "name": "current_fixture_journal_exact",
+      "passed": true
+    },
+    {
+      "name": "strict_journal_roundtrip",
+      "passed": true
+    },
+    {
+      "name": "strict_original_INFO_rebinding_roundtrip",
+      "passed": true
+    },
+    {
+      "name": "one_exact_readonly_report_request",
+      "passed": true
+    },
+    {
+      "name": "actual_report_size_SHA_full9",
+      "passed": true
+    },
+    {
+      "name": "separate_INFO_GO_no_new_context_reset",
+      "passed": true
+    },
+    {
+      "name": "bounded_metadata_only",
+      "passed": true
+    },
+    {
+      "name": "no_body_version_or_case_claim",
+      "passed": true
+    }
+  ],
+  "packet": "fd6f82c53ce55c56b8e37ae83ad8c4868c1f0e12",
+  "rootClosedOuter": {
+    "blob": "1cbe26f6cc13f3a65a579b2dc636b6f57f6893ad",
+    "bytes": 1401,
+    "sha256": "ab76b8aa6c91db9a2282a4464fabac75540c93788b6884896b56d52b5fb07ed5"
+  },
+  "maximumFileInfo": 1,
+  "bodyAuthorized": false,
+  "NativeCalls": 0,
+  "fullReplacement": false
+}

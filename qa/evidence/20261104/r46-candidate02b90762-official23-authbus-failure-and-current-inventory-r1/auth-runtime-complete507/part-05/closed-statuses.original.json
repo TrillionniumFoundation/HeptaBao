@@ -1,0 +1,212 @@
+[
+  {
+    "callKey": "home-r3-runtime-authority-01-status-01",
+    "requestRaw": "{\n  \"operation_id\": \"0952b46df04a7c2534f2a714eaa4f9e5330f0385cd7a3e681f39e425a5536a25\"\n}\n",
+    "sdkPin": {
+      "blob": "7666d73cbc2df958d38b922584ea4b7cacff8951",
+      "bytes": 980,
+      "sha256": "d97ca19f7b918184cf581114ea2f39771c3b9d0623a17f449b6248c177fd77c1"
+    },
+    "nativePin": {
+      "blob": "8be6e8cacb709b9829e638cf3e6e53a0771c8b37",
+      "bytes": 805,
+      "sha256": "cd2976d9c5d06cbd9d19ec0f0e3cf15a95032d6dedeeeaa75b90e84edf56730a"
+    },
+    "nativeRaw": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"0952b46df04a7c2534f2a714eaa4f9e5330f0385cd7a3e681f39e425a5536a25\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"process_status\"}"
+  },
+  {
+    "callKey": "home-r3-runtime-streams-01-status-01",
+    "requestRaw": "{\n  \"operation_id\": \"3c99509e84c0fbc7b6c0ceb82b806bda1c4ba493323dd27baa334a51b0da8a45\"\n}\n",
+    "sdkPin": {
+      "blob": "2c9f499831b88b054bde553bf173a0560520ae76",
+      "bytes": 978,
+      "sha256": "25fd9de028ff8a381412b5638fb433d37a5139e6aef454e9342f3ebc8b4fffb1"
+    },
+    "nativePin": {
+      "blob": "fb3df1c55af54ddca3f1b3f12f5e253f9d230e91",
+      "bytes": 803,
+      "sha256": "b1de5875464cf58beac19b6ea925222e707ea719628f1a806030d01221623584"
+    },
+    "nativeRaw": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"3c99509e84c0fbc7b6c0ceb82b806bda1c4ba493323dd27baa334a51b0da8a45\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"process_read\"}"
+  },
+  {
+    "callKey": "home-r3-runtime-streams-02-status-01",
+    "requestRaw": "{\n  \"operation_id\": \"556e6177ffa8b74d056073855a1b6fc775913f87979ae911123788a5e3482b59\"\n}\n",
+    "sdkPin": {
+      "blob": "7c1a9b90e04beabf4abd335f7ce229d2ca1d6395",
+      "bytes": 978,
+      "sha256": "c96fe92578aae2002af6edd67a0223d1b24cb6813e054ce14237b284823d978e"
+    },
+    "nativePin": {
+      "blob": "4da5311490bff6570253e1724926530b59a5c812",
+      "bytes": 803,
+      "sha256": "be070c05fac30516f06ca0039c4060cb380948c8eaefd1fcf530a757edb46e96"
+    },
+    "nativeRaw": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"556e6177ffa8b74d056073855a1b6fc775913f87979ae911123788a5e3482b59\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"process_read\"}"
+  },
+  {
+    "callKey": "home-r3-runtime-streams-03-status-01",
+    "requestRaw": "{\n  \"operation_id\": \"6264154b0233008b87a3ad524532ddc5266ece5fa56dfa624cbc959353252d51\"\n}\n",
+    "sdkPin": {
+      "blob": "485a958b56df7b75c0f1a3163b0b78fc3323502c",
+      "bytes": 978,
+      "sha256": "e370caeef4a56eba8d9214869ebbf1c07932bb02f911b0a18c1cc8d2ddcf10df"
+    },
+    "nativePin": {
+      "blob": "80af7040305965bb948ad0e91d5773092c63d578",
+      "bytes": 803,
+      "sha256": "f5ff57a4dfe800c8b0cfabf441e100175d7e908e1ebf909933d672e471d64d3d"
+    },
+    "nativeRaw": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"6264154b0233008b87a3ad524532ddc5266ece5fa56dfa624cbc959353252d51\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"process_read\"}"
+  },
+  {
+    "callKey": "home-r3-runtime-streams-04-status-01",
+    "requestRaw": "{\n  \"operation_id\": \"4b6197c9e033ec38c3f6ba0dd7a06fd22420159cd441beb90fe9212e304f4a16\"\n}\n",
+    "sdkPin": {
+      "blob": "785bef0e6774361af8e9d2a7fb622404da858bb3",
+      "bytes": 978,
+      "sha256": "e1accefc6c74031df8c1632ed631524bcc6bd1d2348f5a8b020dc9d5875c4c87"
+    },
+    "nativePin": {
+      "blob": "1608f3deb81753c61399673edd0bfaa0330ca206",
+      "bytes": 803,
+      "sha256": "2548cb10407011579eed0b05dc7ac97ae44389db2a576de988e7fabe8910855e"
+    },
+    "nativeRaw": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"4b6197c9e033ec38c3f6ba0dd7a06fd22420159cd441beb90fe9212e304f4a16\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"process_read\"}"
+  },
+  {
+    "callKey": "home-r3-runtime-streams-05-status-01",
+    "requestRaw": "{\n  \"operation_id\": \"a9082d49632c027fc2d1233e14b8a1442e41f59518f6bbc0ac1dae6437ce7e5c\"\n}\n",
+    "sdkPin": {
+      "blob": "0d972ec8b2371f41acb8791dfd18d66b85d1e379",
+      "bytes": 978,
+      "sha256": "9930b5314544b4e4d75ddfd7119aa797913967a7fc0bc7f444cf5864c25242d5"
+    },
+    "nativePin": {
+      "blob": "bac8e57972841fb00c5e18dd0efae36c259f3730",
+      "bytes": 803,
+      "sha256": "7111599b12190e515eed2645ecb94271208c0f7c95b8e50c8500b2a02a1b5457"
+    },
+    "nativeRaw": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"a9082d49632c027fc2d1233e14b8a1442e41f59518f6bbc0ac1dae6437ce7e5c\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"process_read\"}"
+  },
+  {
+    "callKey": "home-r3-runtime-streams-06-status-01",
+    "requestRaw": "{\n  \"operation_id\": \"fe08b4f9456cd3ddfb13a669dfc838a6165a73ec23ad910e71ce8107c151cd8c\"\n}\n",
+    "sdkPin": {
+      "blob": "5c828a2430f4a58680846092572b35b30eb62bde",
+      "bytes": 978,
+      "sha256": "5b319ed99297c1a5d0d4f5136c0c45605aa8368603d2c375fb7467f67baf45ea"
+    },
+    "nativePin": {
+      "blob": "07ab97a5fcfef05736cd1d65e6a5094b1f5a146e",
+      "bytes": 803,
+      "sha256": "58657832fb227eda961bb20989416af043e0f6c187dbc995a7997b5aa16e8445"
+    },
+    "nativeRaw": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"fe08b4f9456cd3ddfb13a669dfc838a6165a73ec23ad910e71ce8107c151cd8c\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"process_read\"}"
+  },
+  {
+    "callKey": "home-r3-runtime-streams-07-status-01",
+    "requestRaw": "{\n  \"operation_id\": \"7aad3f8ca8033f90a61815ee48df25ded7cf0847a93f10adc7cc4ecf93e19284\"\n}\n",
+    "sdkPin": {
+      "blob": "3737f4929ddb5ec7cbe764288a262080632fae83",
+      "bytes": 978,
+      "sha256": "058f4105895dbe52cd0d9ba3a449a788c1a470706005c4d61212b3ba50f227d3"
+    },
+    "nativePin": {
+      "blob": "3a55e3b793aeeaa141c2b0843dca6afd987e2b34",
+      "bytes": 803,
+      "sha256": "a2ace063f4d701fc14e1d99d03d37840dbffc10adb4a8902612f90d4918c6084"
+    },
+    "nativeRaw": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"7aad3f8ca8033f90a61815ee48df25ded7cf0847a93f10adc7cc4ecf93e19284\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"process_read\"}"
+  },
+  {
+    "callKey": "home-r3-runtime-streams-08-status-01",
+    "requestRaw": "{\n  \"operation_id\": \"88408513b2f1c57089501b5bb093f854a09277714d3645113064afddc24c2874\"\n}\n",
+    "sdkPin": {
+      "blob": "fdd20ccf62ced98c36550bb47cbacacfb027073c",
+      "bytes": 978,
+      "sha256": "4168910ffd1bbb5c248794464f7ea6921990e73d2fc611a136ddf4fef297ae7c"
+    },
+    "nativePin": {
+      "blob": "8e0ed42b6f930f02d358dc61e8545861aece3b4f",
+      "bytes": 803,
+      "sha256": "19b58759cc47a377721989cb2d1ddba4ee9880b7ef7483554bbdab86b76b0f76"
+    },
+    "nativeRaw": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"88408513b2f1c57089501b5bb093f854a09277714d3645113064afddc24c2874\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"process_read\"}"
+  },
+  {
+    "callKey": "home-r3-runtime-streams-09-status-01",
+    "requestRaw": "{\n  \"operation_id\": \"59b660e08b69c4af87be734f5be3fb950136c75ce9bc6a411c25df8e95a5b687\"\n}\n",
+    "sdkPin": {
+      "blob": "4413948726d1d5496c5d449d36fca8cda5a50b38",
+      "bytes": 978,
+      "sha256": "2ba890a0c5c0986dfbfa02400df9f3fad5d1e8392f72cdc37dedac164ca6395d"
+    },
+    "nativePin": {
+      "blob": "ef4ebc34b2d0510c84ccd45391d0e35ee25e4f9e",
+      "bytes": 803,
+      "sha256": "a525e8e7f0d13590e12c42f5c004ebee2f7c5277cde1b396aeba0e2bbd3d3772"
+    },
+    "nativeRaw": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"59b660e08b69c4af87be734f5be3fb950136c75ce9bc6a411c25df8e95a5b687\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"process_read\"}"
+  },
+  {
+    "callKey": "home-r3-runtime-streams-10-status-01",
+    "requestRaw": "{\n  \"operation_id\": \"66d58c437ee480b7cec58e5300ef31a198f1424db2a7efdf08de5fee5b27b3d2\"\n}\n",
+    "sdkPin": {
+      "blob": "b39c07f3fd9ef4c16ada2a9a9d312d6396bcbd95",
+      "bytes": 978,
+      "sha256": "7d5c9d3e201718d3fd98903ddb90220863fd6c800785bea6f444eff60f1463b0"
+    },
+    "nativePin": {
+      "blob": "b0e85f56af5721c832850dc06dd6308917ab8313",
+      "bytes": 803,
+      "sha256": "ca356583b64aa1eab84358518ae131aaa83c130a2dfdf31a31db6d6f7ebe9e53"
+    },
+    "nativeRaw": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"66d58c437ee480b7cec58e5300ef31a198f1424db2a7efdf08de5fee5b27b3d2\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"process_read\"}"
+  },
+  {
+    "callKey": "home-r3-runtime-streams-11-status-01",
+    "requestRaw": "{\n  \"operation_id\": \"3b7df7349700eb01fd5d356b754b4668b88f9b01ee934125eee682b2e01cbd2c\"\n}\n",
+    "sdkPin": {
+      "blob": "925de14a05589ed203a89c07bdc1ecd8b58d4b4c",
+      "bytes": 978,
+      "sha256": "221dc61e4a31d244bd1d16b9604495137ef1a04c124df4625ebcd1274ad7a90a"
+    },
+    "nativePin": {
+      "blob": "572a6960714288832cf9df2f3baf73356f3324ec",
+      "bytes": 803,
+      "sha256": "9724daca8a6bb68883a9a4efedb2a4a2eae93fec0ab5b0c5fe56b3575b5b7fb8"
+    },
+    "nativeRaw": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"3b7df7349700eb01fd5d356b754b4668b88f9b01ee934125eee682b2e01cbd2c\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"process_read\"}"
+  },
+  {
+    "callKey": "home-r3-runtime-streams-12-status-01",
+    "requestRaw": "{\n  \"operation_id\": \"e480b745b59a23b54311d2d0e791ea50f9db3d24b8c562389ec0eb1eaffe3d4d\"\n}\n",
+    "sdkPin": {
+      "blob": "f2ee69e90eb51800dce8605962823f7b43a10181",
+      "bytes": 978,
+      "sha256": "cf075f22f0ccd3a5b946884630f4e058658cb49d9b602cf5da1cfc13ced3aaea"
+    },
+    "nativePin": {
+      "blob": "3d3c934b9cf195e6ca6b3a3a11f4ede2a2c23377",
+      "bytes": 803,
+      "sha256": "d598236e390475ae86bc8b0aeb02d46593f7900f0ff8c9dafcdaf0d3b7fc5cdd"
+    },
+    "nativeRaw": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"e480b745b59a23b54311d2d0e791ea50f9db3d24b8c562389ec0eb1eaffe3d4d\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"process_read\"}"
+  },
+  {
+    "callKey": "home-r3-runtime-streams-13-status-01",
+    "requestRaw": "{\n  \"operation_id\": \"395f3da052623554097c4daf05c29d7ead90a4d125fea71f0f39873e3eb36187\"\n}\n",
+    "sdkPin": {
+      "blob": "e44ffb3c36b24a4cca263288f97c5fc9c211fa07",
+      "bytes": 978,
+      "sha256": "cecfd1572de96a7defc45370e897071e2689876dcb8d864738723903104a8562"
+    },
+    "nativePin": {
+      "blob": "036b160bd9ea0aa6690652227388e021999b169c",
+      "bytes": 803,
+      "sha256": "8ba5d2bf28acb9b1057bc0693a40a131d4a890060cb75909abc68409546c2f22"
+    },
+    "nativeRaw": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"395f3da052623554097c4daf05c29d7ead90a4d125fea71f0f39873e3eb36187\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"process_read\"}"
+  }
+]

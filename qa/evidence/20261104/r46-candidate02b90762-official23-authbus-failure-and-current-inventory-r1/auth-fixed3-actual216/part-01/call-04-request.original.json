@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-mac-home-r3-readback-0180bc98-info-02",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "mac",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/candidate-current-manager-wal-r1.public.json"
+    }
+  }
+}

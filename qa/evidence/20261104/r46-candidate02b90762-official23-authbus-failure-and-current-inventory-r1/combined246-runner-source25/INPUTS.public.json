@@ -1,0 +1,168 @@
+{
+  "schema": "heptabao.jwt-policy.runner-adapter.inputs.r1",
+  "baseSourceTree": "9bdb3eb3c6aac221d51d14a4a8f3bcc24e75f7e6",
+  "productionSourceTree": "9ca955f3cdb12f6d4ee7245154ac498fe197c416",
+  "runner": {
+    "before": {
+      "blob": "635d6345fd513121f51fb4dd135783b1e3be6b7e",
+      "bytes": 31885,
+      "sha256": "59bba99270e8c2d779aed91f3053a94c66120cdbd8c90f423f7efb253adfe32f"
+    },
+    "after": {
+      "blob": "55d6f11b19bcf6e8dabdbc6584caad181f8c9ef8",
+      "bytes": 31984,
+      "sha256": "7ddb3bf0f8484712273ec6e583389b55d522fb0627e22cf6860980751e2590ee"
+    },
+    "replacements": [
+      {
+        "label": "headline",
+        "before": "run 237 unique cases in 254 profile instances.",
+        "after": "run 246 unique cases in 268 profile instances."
+      },
+      {
+        "label": "groups-hash",
+        "before": "a3c126e1833c7d46eac8b30030d24d620540786bbe2b38d21ed9891ca42ccb38",
+        "after": "7c0fb6c5b6819c2cab60f3044e0aec767ad8abbf22e31ff0f7fab742ea4cd786"
+      },
+      {
+        "label": "first-three-shapes",
+        "before": "(\"native-jwt-pki-file17\", \"file\", 17), (\"native-jwt-pki-default17\", \"default\", 17),\n    (\"legacy-jwt-default63\", \"default\", 63)",
+        "after": "(\"native-jwt-pki-file22\", \"file\", 22), (\"native-jwt-pki-default22\", \"default\", 22),\n    (\"legacy-jwt-default67\", \"default\", 67)"
+      },
+      {
+        "label": "shared-profile-count",
+        "before": "'same seventeen source names in both feature profiles'",
+        "after": "'same twenty-two source names in both feature profiles'"
+      },
+      {
+        "label": "preflight-totals",
+        "before": "assert len(all_cases) == 254 and len(set(all_cases)) == 237",
+        "after": "assert len(all_cases) == 268 and len(set(all_cases)) == 246"
+      },
+      {
+        "label": "first-four-entry-count",
+        "before": "assert sum(len(g['tests']) for g in groups[:4]) == 166",
+        "after": "assert sum(len(g['tests']) for g in groups[:4]) == 180"
+      },
+      {
+        "label": "first-four-unique-count",
+        "before": "assert len({n for g in groups[:4] for n in g['tests']}) == 149",
+        "after": "assert len({n for g in groups[:4] for n in g['tests']}) == 158"
+      },
+      {
+        "label": "intent-count",
+        "before": "'profile': profile, 'groups': groups, 'test_count': 237,",
+        "after": "'profile': profile, 'groups': groups, 'test_count': 246,"
+      },
+      {
+        "label": "selected-totals",
+        "before": "'selected_unique_test_total': 237, 'selected_profile_instance_total': 254,",
+        "after": "'selected_unique_test_total': 246, 'selected_profile_instance_total': 268,"
+      },
+      {
+        "label": "explicit-baseline-delta",
+        "before": "'baseline_c_unique_test_total': 149, 'baseline_c_profile_instance_total': 166,",
+        "after": "'baseline_c_unique_test_total': 149, 'baseline_c_profile_instance_total': 166,\n          'jwt_policy_delta_unique_test_total': 9, 'jwt_policy_delta_profile_instance_total': 14,"
+      },
+      {
+        "label": "actual-totals",
+        "before": "assert len(actual_cases) == 254 and len(set(actual_cases)) == 237",
+        "after": "assert len(actual_cases) == 268 and len(set(actual_cases)) == 246"
+      },
+      {
+        "label": "actual-unique",
+        "before": "result['actual_unique_test_total'] = 237",
+        "after": "result['actual_unique_test_total'] = 246"
+      },
+      {
+        "label": "actual-entries",
+        "before": "result['actual_profile_instance_total'] = 254",
+        "after": "result['actual_profile_instance_total'] = 268"
+      }
+    ]
+  },
+  "launcher": {
+    "before": {
+      "blob": "117bee05cd8da2aad9aef1a4209de067ce1b72d8",
+      "bytes": 39538,
+      "sha256": "9a9cad94b1c7a9e349203684d131538bb0c15d9563a08d89ecfe2a80be97a116"
+    },
+    "after": {
+      "blob": "5e3fe94b6a6ffccc79dd7c1e4e84eeea4b051445",
+      "bytes": 39648,
+      "sha256": "25b3a80da99db2a734f0ad07a8276b98fe1b10f932209f428a67b4a748a75707"
+    },
+    "replacements": [
+      {
+        "label": "headline",
+        "before": "exact 237/254 matrix.",
+        "after": "exact 246/268 matrix."
+      },
+      {
+        "label": "groups-hash",
+        "before": "a3c126e1833c7d46eac8b30030d24d620540786bbe2b38d21ed9891ca42ccb38",
+        "after": "7c0fb6c5b6819c2cab60f3044e0aec767ad8abbf22e31ff0f7fab742ea4cd786"
+      },
+      {
+        "label": "groups-exact-byte-cap",
+        "before": "groups_raw, groups_pin = read_bound(CONTROL / 'jwt-test-groups.public.json', args.groups_sha256, 32163)",
+        "after": "groups_raw, groups_pin = read_bound(CONTROL / 'jwt-test-groups.public.json', args.groups_sha256, 33825)"
+      },
+      {
+        "label": "first-three-shapes",
+        "before": "(\"native-jwt-pki-file17\", \"file\", 17), (\"native-jwt-pki-default17\", \"default\", 17),\n    (\"legacy-jwt-default63\", \"default\", 63)",
+        "after": "(\"native-jwt-pki-file22\", \"file\", 22), (\"native-jwt-pki-default22\", \"default\", 22),\n    (\"legacy-jwt-default67\", \"default\", 67)"
+      },
+      {
+        "label": "entries-total",
+        "before": "assert sum(len(g['tests']) for g in groups) == 254",
+        "after": "assert sum(len(g['tests']) for g in groups) == 268"
+      },
+      {
+        "label": "unique-total",
+        "before": "assert len({(PROFILE_CRATES[g['libtest_profile']], name) for g in groups for name in g['tests']}) == 237",
+        "after": "assert len({(PROFILE_CRATES[g['libtest_profile']], name) for g in groups for name in g['tests']}) == 246"
+      },
+      {
+        "label": "first-four-entry-count",
+        "before": "assert sum(len(g['tests']) for g in groups[:4]) == 166",
+        "after": "assert sum(len(g['tests']) for g in groups[:4]) == 180"
+      },
+      {
+        "label": "first-four-unique-count",
+        "before": "assert len({n for g in groups[:4] for n in g['tests']}) == 149",
+        "after": "assert len({n for g in groups[:4] for n in g['tests']}) == 158"
+      },
+      {
+        "label": "admission-totals",
+        "before": "unique_test_count=237, profile_instance_test_count=254,",
+        "after": "unique_test_count=246, profile_instance_test_count=268,"
+      },
+      {
+        "label": "selected-first-four",
+        "before": "baseline_c_unique=149, baseline_c_profile_instances=166,",
+        "after": "baseline_c_unique=149, baseline_c_profile_instances=166,\n                  selected_jwt_pki_unique=158, selected_jwt_pki_instances=180,"
+      },
+      {
+        "label": "current-new-tests",
+        "before": "new_jwt_test_names=15, new_jwt_profile_instances=30,",
+        "after": "new_jwt_test_names=20, new_jwt_profile_instances=40, jwt_policy_legacy_additions=4,"
+      },
+      {
+        "label": "stdout-totals",
+        "before": "'source_tree': args.tree, 'unique_test_count': 237, 'profile_instance_test_count': 254,",
+        "after": "'source_tree': args.tree, 'unique_test_count': 246, 'profile_instance_test_count': 268,"
+      }
+    ]
+  },
+  "groupsBefore": {
+    "blob": "bbc853c04329f1f102a9e2ffda692e4733aed052",
+    "bytes": 32163,
+    "sha256": "a3c126e1833c7d46eac8b30030d24d620540786bbe2b38d21ed9891ca42ccb38"
+  },
+  "groupsAfter": {
+    "blob": "8945c9f8f2565807601f8197b93be026ca4e875b",
+    "bytes": 33825,
+    "sha256": "7c0fb6c5b6819c2cab60f3044e0aec767ad8abbf22e31ff0f7fab742ea4cd786"
+  }
+}

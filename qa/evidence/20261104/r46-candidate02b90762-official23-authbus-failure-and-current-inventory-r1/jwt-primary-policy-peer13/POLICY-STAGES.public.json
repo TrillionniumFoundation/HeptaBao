@@ -1,0 +1,69 @@
+{
+  "schema": "heptabao.jwt-policy-stage-source-table.v1",
+  "semantics": "primary-source-derived; no live result",
+  "rows": [
+    {
+      "input": "new role, both policy keys absent",
+      "official_storage": "empty TokenPolicies; no automatic default stored",
+      "issued_flag_false": "default added during login token creation",
+      "issued_flag_true": "no automatic default",
+      "candidate_draft2": "stores default; no-default writer is denied by JWT validate_assignment"
+    },
+    {
+      "input": "existing role, both keys absent",
+      "official_storage": "preserve existing effective policy list",
+      "issued_flag_false": "existing configured list plus automatic default",
+      "issued_flag_true": "existing configured list without new default injection",
+      "candidate_draft2": "retains prior policies and inserts default; changing only true->false cannot fix a prior stored default failing writer subset"
+    },
+    {
+      "input": "token_policies: []",
+      "official_storage": "assign modern empty and clear legacy alias; read token_policies=[]",
+      "issued_flag_false": "default added only during login",
+      "issued_flag_true": "no automatic default",
+      "candidate_draft2": "injects default during save"
+    },
+    {
+      "input": "policies: []",
+      "official_storage": "legacy ParsePolicies(empty)->SanitizePolicies(false); assign empty to both aliases; legacy read alias absent because empty",
+      "issued_flag_false": "default added only during login",
+      "issued_flag_true": "no automatic default",
+      "candidate_draft2": "injects default during save; current read also emits legacy empty alias unlike official"
+    },
+    {
+      "input": "token_policies: [default], token_no_default_policy: true",
+      "official_storage": "explicit default retained; no-default flag stored",
+      "issued_flag_false": "default retained",
+      "issued_flag_true": "explicit default retained; flag suppresses automatic injection, not configured policy",
+      "candidate_draft2": "rejects the unsupported role flag before reaching this semantic"
+    },
+    {
+      "input": "configured ordinary policy not in writer token",
+      "official_storage": "role path create/update ACL controls write; read handler/parser show no writer-policy subset guard",
+      "issued_flag_false": "configured policy and automatic default, after real JWT and token-creation gates",
+      "issued_flag_true": "configured policy only, after real JWT and token-creation gates",
+      "candidate_draft2": "JWT role call to global validate_assignment rejects non-subset; this is role definition, not token API delegation"
+    },
+    {
+      "input": "configured root policy",
+      "official_storage": "role handler can persist the configuration; no write-time root ban in the read source",
+      "issued_flag_false": "core rejects root before RegisterAuth",
+      "issued_flag_true": "core rejects root before RegisterAuth",
+      "candidate_draft2": "global assignment call rejects at role write; login already has root rejection that must remain"
+    },
+    {
+      "input": "role token_no_default_policy omitted on update",
+      "official_storage": "existing bool retained; absent on new role means false",
+      "issued_flag_false": "automatic default allowed",
+      "issued_flag_true": "prior true retained and suppresses automatic injection",
+      "candidate_draft2": "field/state/API not supported"
+    },
+    {
+      "input": "existing issued token renewed after role policy/default change",
+      "official_storage": "role may change independently",
+      "issued_flag_false": "renewal retains issued token policies",
+      "issued_flag_true": "renewal retains issued token policies",
+      "candidate_draft2": "existing renewal already retains issued policies; keep file unchanged"
+    }
+  ]
+}

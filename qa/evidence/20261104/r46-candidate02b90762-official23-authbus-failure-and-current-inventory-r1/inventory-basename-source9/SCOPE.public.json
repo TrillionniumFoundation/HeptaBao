@@ -1,0 +1,74 @@
+{
+  "schema": "heptabao.current-consumer-backup-discovery.r2-source-proposal.v1",
+  "status": "SOURCE_ONLY_NOT_DISPATCHED",
+  "previousActual": {
+    "tree": "0cfad195ee96a891dfe60d5fdb0f042fd4efd425",
+    "summary": {
+      "blob": "76472d61168ec5bc5dbe286098db3ea757bbd739",
+      "bytes": 4841,
+      "sha256": "2a2840c1e4b635e64751bf79b67da43f31fbef5ff773b1be561c3c6564da5bbc"
+    },
+    "release": "2fccddaa0842bcf26b36194b7c6115a960b5ffea"
+  },
+  "changes": [
+    "Anchor every query to the final relative-path component.",
+    "Exclude the exact additional QA-named root that filled both original result sets.",
+    "Restrict the consumer filename suffix/name set explicitly.",
+    "Add one proposed /etc/systemd/system name-only root; policy denial is retained with no alternative-root bypass.",
+    "Add one public network DTO request using the actually returned configured alias pocket4."
+  ],
+  "newContext": "current_consumer_backup_discovery_r2",
+  "initialized": false,
+  "NativeCalls": 0,
+  "runtime_authorized": false,
+  "oldResultHistoryPreserved": true,
+  "oldScopesNotReset": true,
+  "searchBudgets": {
+    "searchStarts": 3,
+    "each": {
+      "entries": 4096,
+      "results": 128,
+      "bytes": 1048576,
+      "workerSeconds": 15,
+      "terminalPages": 4,
+      "progressiveObservations": 4,
+      "pageRows": 32
+    },
+    "oneOriginalSearchTerminalBeforeNext": true,
+    "missingAckNoRestart": true
+  },
+  "networkRequests": 1,
+  "discoveryLimitations": [
+    "Basename-only matching deliberately misses generic names such as agent.conf beneath a bao directory; such a root can be proposed only from actual discovery.",
+    "Only the two literal roots are proposed; no mount/off-host/container-root scan.",
+    "Unit symlinks/hardlinks may be skipped by the existing search policy; report coverage reasons and never follow them through another path.",
+    "File names do not prove active endpoint use, binary version or migration.",
+    "The observed bao PID2031533/uid100 identity is a separate fixed-PID source proposal."
+  ],
+  "pocket4": {
+    "configuredAlias": "pocket4",
+    "sourceOriginalHostListSDK": "adb4c033961b9bc179b72ab4bae82fa5e82ddd46",
+    "sourceOriginalNative": "54c30fba00c385936cdc7568ddf877cb3f724d8c",
+    "knownHistoricalSSH": "pocket4-ts",
+    "knownHistoricalLANAddress": "192.168.0.9",
+    "historicalLauncher": {
+      "blob": "6634b9f6c5b8a971bffe4bd7338545b2e238fd44",
+      "bytes": 25879,
+      "sha256": "57cb2b31c6dfdd13a63cc99714e205386361efc9d6bf32230a03861f36cd5a92"
+    },
+    "historicalSummary": {
+      "blob": "74bc3f4393c3909de08c9f541570ed7c4043b162",
+      "bytes": 307292,
+      "sha256": "87f4e3a08d87045de370d30555768bea5b8a95f3a8f317a684746f8c9a4250b1"
+    },
+    "actualNetworkObservation": null,
+    "physicalMappingQualified": false,
+    "comparison": "Use actual returned host/interface/address fields, if supplied, against the historical node3 facts. An alias string or matching IP alone does not authorize product deployment or prove full physical identity."
+  },
+  "noPrivateContentReads": true,
+  "noArgvOrEnvironmentReads": true,
+  "noArchiveOrBinaryBodyReads": true,
+  "noProductActions": true,
+  "originalCallsNotReplayed": true,
+  "currentLane": "B0; awaits new exact GO and lane"
+}

@@ -1,0 +1,126 @@
+{
+  "schema": "heptabao.current-consumer-backup-discovery.owner-release.v1",
+  "context": "current_consumer_backup_discovery_r1",
+  "go": {
+    "blob": "acf5eadc67327880998ed08b661874433ae5d121",
+    "bytes": 6092,
+    "sha256": "52dae6062b15f30b6741c9ca8239901f68a8bff5b2a3ea219dd7d1de9423b1e8"
+  },
+  "sourcePacket": "d3d0138061dfd710ade1e48bda7a556997d9839c",
+  "status": "ORIGINAL_BOUNDED_OBSERVATIONS_CLOSED_PARTIAL_INVENTORY",
+  "NativeCalls": 13,
+  "hostListCalls": 1,
+  "processPages": 2,
+  "processRecords": 250,
+  "processPaginationExhausted": true,
+  "processSnapshotAtomic": false,
+  "searchStarts": 2,
+  "terminalResultPages": 8,
+  "progressiveObservations": 0,
+  "searches": [
+    {
+      "kind": "consumer",
+      "search_id": "164d94fe0ce313136c059144efa005f384f52da4949abc9d98af79946daf26fb",
+      "state": "limited",
+      "reason": "result_limit",
+      "terminal": true,
+      "allReturnedRowsClosed": true,
+      "rows": 128,
+      "terminalPages": 4,
+      "statistics": {
+        "bytes": 0,
+        "coverage_complete": false,
+        "coverage_reasons": [
+          "result_limit"
+        ],
+        "coverage_scope": "selected_authorized_regular_single_link_files",
+        "entries": 142,
+        "extracted_documents": 0,
+        "files": 0,
+        "results": 128,
+        "skipped_binary_or_non_utf8": 0,
+        "skipped_document_invalid": 0,
+        "skipped_document_limited": 0,
+        "skipped_document_unavailable": 0,
+        "skipped_hardlinks": 0,
+        "skipped_large": 0,
+        "skipped_protected": 0,
+        "skipped_special": 0,
+        "skipped_symlinks": 0,
+        "traversal_complete": false,
+        "unreadable": 0
+      },
+      "lastCall": "consumer-result-04",
+      "lastSDK": {
+        "blob": "488b12ef98504cd264aaa41d1bf829fb70eb08bb",
+        "bytes": 8589,
+        "sha256": "4a881be039c764e53f3d41043ebc84c6c742dda3a9dc8d1b4cbf1c38b9d1a8cd"
+      }
+    },
+    {
+      "kind": "backup",
+      "search_id": "ce71eb3a4fbaf6af16c1bdc59f853b58190bbeb5123eb7bd168bc1f970486f52",
+      "state": "limited",
+      "reason": "result_limit",
+      "terminal": true,
+      "allReturnedRowsClosed": true,
+      "rows": 128,
+      "terminalPages": 4,
+      "statistics": {
+        "bytes": 0,
+        "coverage_complete": false,
+        "coverage_reasons": [
+          "result_limit"
+        ],
+        "coverage_scope": "selected_authorized_regular_single_link_files",
+        "entries": 4011,
+        "extracted_documents": 0,
+        "files": 0,
+        "results": 128,
+        "skipped_binary_or_non_utf8": 0,
+        "skipped_document_invalid": 0,
+        "skipped_document_limited": 0,
+        "skipped_document_unavailable": 0,
+        "skipped_hardlinks": 0,
+        "skipped_large": 0,
+        "skipped_protected": 0,
+        "skipped_special": 0,
+        "skipped_symlinks": 0,
+        "traversal_complete": false,
+        "unreadable": 0
+      },
+      "lastCall": "backup-result-04",
+      "lastSDK": {
+        "blob": "1d6e06c21d6ee62b459a7551f164c89e5b263ccc",
+        "bytes": 7205,
+        "sha256": "fc5b2b6844aefb4e97ff2610c78f51fe40b2c3c19b6ccd0f5a506b3a0035ea01"
+      }
+    }
+  ],
+  "originalSearchStartsRetried": 0,
+  "NativeCallInFlight": false,
+  "ownedActiveFutures": 0,
+  "pending": null,
+  "lane": "B0",
+  "currentProcessCandidate": [
+    {
+      "identity": "linux:b19bd1b9-4dbe-4335-96cf-ed98d393efea:35455670",
+      "name": "bao",
+      "pid": 2031533,
+      "uid": 100
+    }
+  ],
+  "currentProcessBinaryVersionOrServiceBinding": null,
+  "pocket4ConfiguredNameObserved": "pocket4",
+  "pocket4PhysicalMappingQualified": false,
+  "pocket4NativeRequests": 0,
+  "privateContentBytesReadBySearches": 0,
+  "noArgumentsOrEnvironmentRequested": true,
+  "overallInventoryComplete": false,
+  "consumerMigrationQualified": false,
+  "backupRecoveryQualified": false,
+  "oldUNKNOWNChanged": false,
+  "subsequentNativeAuthorized": false,
+  "candidateMustNotBeEquatedWithUid1000Fixture": true,
+  "candidateExecutableContainerUnitAndVersionStillUnobserved": true
+}

@@ -1,0 +1,33 @@
+{
+  "sourcePin": {
+    "blob": "20a36582d7acf9d3675b9c31fd47e6ae72e7354a",
+    "bytes": 21016,
+    "sha256": "defc76fc73a4a3ab2fc8d4d8468b11d3410760268560c54c06682ae63b790cfd"
+  },
+  "requestPin": {
+    "blob": "182980da62d3a27a098c8fb974e6a68dd7926318",
+    "bytes": 84,
+    "sha256": "f99d18d13005ea9de9e2426fcc8fbce4e668450f52fdd726234aa3f8e4cc7317"
+  },
+  "pausedPin": {
+    "blob": "652b0103388657f5515e30c077ce927c24b19cf2",
+    "bytes": 454676,
+    "sha256": "dd4a465e95e91c8aa23ddcde138d4541a52e79e7482297eb418bb89e16f83aa3"
+  },
+  "need": {
+    "path": "/home/qian/heptabao-official271-acl23-oracle-20261106-r2/result.public.json",
+    "bytes": 651803,
+    "sha256": "9048f3b5c854a190dadde86f5d7eec180c497313065bd70bd23a87124789a62d",
+    "version": "2053:2098461:651803:1793982810542000556:1793982810542000556",
+    "offset": 131072,
+    "limit": 65536
+  },
+  "originalID": "6220e2762757d7afa1ba315c7beb2a985c59c147ac7cb3852aa17ba9c21c7a9e",
+  "originalAdmitKey": "official271-x230-acl23-r2-body02-admit",
+  "originalAdmitPin": {
+    "blob": "3be4277978fa7422d4d70d4ca3239f91a7006ce6",
+    "bytes": 331,
+    "sha256": "917bfc19c6b300654f742555eccee4d5d8d1a6b60472da0d686e97a0432e0ae2"
+  },
+  "originalStatusKey": "official271-x230-acl23-r2-body02-status0"
+}

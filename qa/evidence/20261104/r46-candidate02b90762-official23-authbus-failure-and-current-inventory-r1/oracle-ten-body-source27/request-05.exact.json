@@ -1,0 +1,1 @@
+{"idempotency_key":"heptabao-official271-x230-acl23-r2-report-body-05","operation":{"tool":"binary_read","arguments":{"host":"x230","path":"/home/qian/heptabao-official271-acl23-oracle-20261106-r2/result.public.json","offset":327680,"limit":65536,"expected_version":"2053:2098461:651803:1793982810542000556:1793982810542000556"}}}

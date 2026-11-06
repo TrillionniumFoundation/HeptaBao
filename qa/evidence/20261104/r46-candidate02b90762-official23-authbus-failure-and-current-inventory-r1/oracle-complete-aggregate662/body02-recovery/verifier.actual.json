@@ -1,0 +1,440 @@
+{
+  "schema": "heptabao.original-body02-recovery-verification.r1",
+  "pass": true,
+  "check_count": 105,
+  "checks": [
+    {
+      "label": "whole recovery GO",
+      "pass": true
+    },
+    {
+      "label": "exact paused predecessor",
+      "pass": true
+    },
+    {
+      "label": "exact reviewed recovery source",
+      "pass": true
+    },
+    {
+      "label": "seven original recovery calls",
+      "pass": true
+    },
+    {
+      "label": "recovery has no pending future",
+      "pass": true
+    },
+    {
+      "label": "old plus new status budget",
+      "pass": true
+    },
+    {
+      "label": "old main read counters retained",
+      "pass": true
+    },
+    {
+      "label": "original failed status SDK retained",
+      "pass": true
+    },
+    {
+      "label": "original outerFailure retained",
+      "pass": true
+    },
+    {
+      "label": "old knowledge is not rewritten",
+      "pass": true
+    },
+    {
+      "label": "original binary admission binding",
+      "pass": true
+    },
+    {
+      "label": "returned original operation ID",
+      "pass": true
+    },
+    {
+      "label": "accepted call 0",
+      "pass": true
+    },
+    {
+      "label": "request exact 0",
+      "pass": true
+    },
+    {
+      "label": "intent binding 0",
+      "pass": true
+    },
+    {
+      "label": "armed binding 0",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 0",
+      "pass": true
+    },
+    {
+      "label": "whole original SDK 0",
+      "pass": true
+    },
+    {
+      "label": "SDK archive Merkle 0",
+      "pass": true
+    },
+    {
+      "label": "SDK native byte exact 0",
+      "pass": true
+    },
+    {
+      "label": "same original ID 0",
+      "pass": true
+    },
+    {
+      "label": "single new exact status",
+      "pass": true
+    },
+    {
+      "label": "original effect completed inactive",
+      "pass": true
+    },
+    {
+      "label": "accepted call 1",
+      "pass": true
+    },
+    {
+      "label": "request exact 1",
+      "pass": true
+    },
+    {
+      "label": "intent binding 1",
+      "pass": true
+    },
+    {
+      "label": "armed binding 1",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 1",
+      "pass": true
+    },
+    {
+      "label": "whole original SDK 1",
+      "pass": true
+    },
+    {
+      "label": "SDK archive Merkle 1",
+      "pass": true
+    },
+    {
+      "label": "SDK native byte exact 1",
+      "pass": true
+    },
+    {
+      "label": "same original ID 1",
+      "pass": true
+    },
+    {
+      "label": "next immutable page 1",
+      "pass": true
+    },
+    {
+      "label": "page digest extent 1",
+      "pass": true
+    },
+    {
+      "label": "page continuity EOF 1",
+      "pass": true
+    },
+    {
+      "label": "accepted call 2",
+      "pass": true
+    },
+    {
+      "label": "request exact 2",
+      "pass": true
+    },
+    {
+      "label": "intent binding 2",
+      "pass": true
+    },
+    {
+      "label": "armed binding 2",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 2",
+      "pass": true
+    },
+    {
+      "label": "whole original SDK 2",
+      "pass": true
+    },
+    {
+      "label": "SDK archive Merkle 2",
+      "pass": true
+    },
+    {
+      "label": "SDK native byte exact 2",
+      "pass": true
+    },
+    {
+      "label": "same original ID 2",
+      "pass": true
+    },
+    {
+      "label": "next immutable page 2",
+      "pass": true
+    },
+    {
+      "label": "page digest extent 2",
+      "pass": true
+    },
+    {
+      "label": "page continuity EOF 2",
+      "pass": true
+    },
+    {
+      "label": "accepted call 3",
+      "pass": true
+    },
+    {
+      "label": "request exact 3",
+      "pass": true
+    },
+    {
+      "label": "intent binding 3",
+      "pass": true
+    },
+    {
+      "label": "armed binding 3",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 3",
+      "pass": true
+    },
+    {
+      "label": "whole original SDK 3",
+      "pass": true
+    },
+    {
+      "label": "SDK archive Merkle 3",
+      "pass": true
+    },
+    {
+      "label": "SDK native byte exact 3",
+      "pass": true
+    },
+    {
+      "label": "same original ID 3",
+      "pass": true
+    },
+    {
+      "label": "next immutable page 3",
+      "pass": true
+    },
+    {
+      "label": "page digest extent 3",
+      "pass": true
+    },
+    {
+      "label": "page continuity EOF 3",
+      "pass": true
+    },
+    {
+      "label": "accepted call 4",
+      "pass": true
+    },
+    {
+      "label": "request exact 4",
+      "pass": true
+    },
+    {
+      "label": "intent binding 4",
+      "pass": true
+    },
+    {
+      "label": "armed binding 4",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 4",
+      "pass": true
+    },
+    {
+      "label": "whole original SDK 4",
+      "pass": true
+    },
+    {
+      "label": "SDK archive Merkle 4",
+      "pass": true
+    },
+    {
+      "label": "SDK native byte exact 4",
+      "pass": true
+    },
+    {
+      "label": "same original ID 4",
+      "pass": true
+    },
+    {
+      "label": "next immutable page 4",
+      "pass": true
+    },
+    {
+      "label": "page digest extent 4",
+      "pass": true
+    },
+    {
+      "label": "page continuity EOF 4",
+      "pass": true
+    },
+    {
+      "label": "accepted call 5",
+      "pass": true
+    },
+    {
+      "label": "request exact 5",
+      "pass": true
+    },
+    {
+      "label": "intent binding 5",
+      "pass": true
+    },
+    {
+      "label": "armed binding 5",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 5",
+      "pass": true
+    },
+    {
+      "label": "whole original SDK 5",
+      "pass": true
+    },
+    {
+      "label": "SDK archive Merkle 5",
+      "pass": true
+    },
+    {
+      "label": "SDK native byte exact 5",
+      "pass": true
+    },
+    {
+      "label": "same original ID 5",
+      "pass": true
+    },
+    {
+      "label": "next immutable page 5",
+      "pass": true
+    },
+    {
+      "label": "page digest extent 5",
+      "pass": true
+    },
+    {
+      "label": "page continuity EOF 5",
+      "pass": true
+    },
+    {
+      "label": "accepted call 6",
+      "pass": true
+    },
+    {
+      "label": "request exact 6",
+      "pass": true
+    },
+    {
+      "label": "intent binding 6",
+      "pass": true
+    },
+    {
+      "label": "armed binding 6",
+      "pass": true
+    },
+    {
+      "label": "three-leaf armed Merkle 6",
+      "pass": true
+    },
+    {
+      "label": "whole original SDK 6",
+      "pass": true
+    },
+    {
+      "label": "SDK archive Merkle 6",
+      "pass": true
+    },
+    {
+      "label": "SDK native byte exact 6",
+      "pass": true
+    },
+    {
+      "label": "same original ID 6",
+      "pass": true
+    },
+    {
+      "label": "next immutable page 6",
+      "pass": true
+    },
+    {
+      "label": "page digest extent 6",
+      "pass": true
+    },
+    {
+      "label": "page continuity EOF 6",
+      "pass": true
+    },
+    {
+      "label": "one status six pages complete",
+      "pass": true
+    },
+    {
+      "label": "one original observer closed",
+      "pass": true
+    },
+    {
+      "label": "immutable payload byte exact",
+      "pass": true
+    },
+    {
+      "label": "payload archive Merkle",
+      "pass": true
+    },
+    {
+      "label": "complete native envelope byte exact",
+      "pass": true
+    },
+    {
+      "label": "native whole identity",
+      "pass": true
+    },
+    {
+      "label": "original BODY2 exact bounds",
+      "pass": true
+    },
+    {
+      "label": "actual 65536 byte chunk SHA",
+      "pass": true
+    },
+    {
+      "label": "explicit range carries original source",
+      "pass": true
+    },
+    {
+      "label": "scope excludes handback and new admission",
+      "pass": true
+    }
+  ],
+  "counts": {
+    "new_status": 1,
+    "old_failed_status": 1,
+    "total_status_for_original_id": 2,
+    "pages": 6,
+    "original_binary_admissions": 1,
+    "recovery_binary_admissions": 0,
+    "original_payload_bytes": 87807,
+    "chunk_bytes": 65536
+  },
+  "full_report_parsed": false,
+  "handback_performed": false,
+  "old_status_delivery_unknown_preserved": true
+}

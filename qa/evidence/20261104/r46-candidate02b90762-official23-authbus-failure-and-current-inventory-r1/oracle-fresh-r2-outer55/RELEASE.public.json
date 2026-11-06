@@ -1,0 +1,97 @@
+{
+  "schema": "heptabao.official271.fresh-r2.outer-release.r1",
+  "slot": "official271_x230_acl23_oracle_gitfirst_r2",
+  "job": "1a1b1b4fbfa-fc05-7a60",
+  "host": "x230",
+  "nativeCallsInFlight": 0,
+  "activeFutures": 0,
+  "laneReleased": true,
+  "calls": 7,
+  "completedObservers": 2,
+  "pages": 2,
+  "state": {
+    "blob": "f75c8cdfbda60bf8059b5ddf2ef058431d97ec02",
+    "bytes": 214063,
+    "sha256": "ea3a61cc35c1d17dd6b187d36ff6f5ca7ac289d9bed387345ea326886a61f178"
+  },
+  "go": {
+    "blob": "d5f8ff9a04b49b34121121b5a0c2215bcc4805ca",
+    "bytes": 6892,
+    "sha256": "d7b67a94e5bc7162ebfecb3fc3132157c5134581f5f07d05de4e9de2cd0f13d5"
+  },
+  "source": {
+    "blob": "446b3cff61ab8baf805d9868f57b150ff0a8ba4f",
+    "bytes": 18330,
+    "sha256": "300a2e20ac852d845f13905c21295bfda3221212688f2573cc4097714eb16855"
+  },
+  "request": {
+    "blob": "e2a92c388ec7167f14b33cc9c2a03d82aae3bda4",
+    "bytes": 164759,
+    "sha256": "9ea5802b1ed39410eb2e83d5d7bebd6dfe44812271ac53da47863b884214f190"
+  },
+  "typed": {
+    "sha256": "7fa6526d31102a09e614e4334916934e335cf9105fd7181d08fb926a32eef0e0",
+    "fingerprint_decimal": "9198129917878872585",
+    "canonical_bytes": 164695
+  },
+  "originalAuthority": {
+    "blob": "da813799540ff8624c4900af309e3f3427a40e9f",
+    "bytes": 729,
+    "sha256": "4bf1b9bb464681feae554428898b0e2551918cd5c8c5f86655ba9e2cbc484267"
+  },
+  "originalStreams": {
+    "blob": "0e964035663001baae316888052f5d53c41dd7cf",
+    "bytes": 2427,
+    "sha256": "db81ce7dbd8c9c7a3880ed6017a6318af511ebe785729b36c8a572e14d075c02"
+  },
+  "originalStdout": {
+    "blob": "8ba51a89419cb8be7c215bea6f29677c9de258d8",
+    "bytes": 681,
+    "sha256": "958d53e5de547b3a36a048411eae3ed457ee20d336e4c52a4f7abb9a6c41d875"
+  },
+  "terminalExit": 0,
+  "outputComplete": true,
+  "outputDurable": true,
+  "terminalPublicationConfirmed": true,
+  "stdoutBytes": 681,
+  "stderrBytes": 0,
+  "terminal": {
+    "all_entry_file_descriptors_closed": true,
+    "candidate_started": false,
+    "capture_complete": true,
+    "component_product_cases": 0,
+    "entry_fd_count": 12,
+    "failure": null,
+    "matrix_case_denominator": 23,
+    "original_owner_receipt_present": true,
+    "parity_qualified": false,
+    "pending_signal": null,
+    "report": {
+      "bytes": 651803,
+      "closed": true,
+      "full9_decimal": [
+        "2053",
+        "2098461",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "651803",
+        "1793982810542000556",
+        "1793982810542000556"
+      ],
+      "relative": "result.public.json",
+      "sha256": "9048f3b5c854a190dadde86f5d7eec180c497313065bd70bd23a87124789a62d"
+    },
+    "report_cap": 1048576,
+    "schema": "heptabao.official271.acl23.oracle-only.terminal.v1",
+    "source_bytes": 127412
+  },
+  "reportPath": "/home/qian/heptabao-official271-acl23-oracle-20261106-r2/result.public.json",
+  "reportMetadataIndependentlyObserved": false,
+  "reportBodyObserved": false,
+  "actualCaseRecords": null,
+  "originalOwnerReceiptQualified": false,
+  "terminalCaptureFlagIsNotWholeReportQualification": true,
+  "oldR1FailureAndUnknownPreserved": true
+}

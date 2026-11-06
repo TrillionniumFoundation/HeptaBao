@@ -1,0 +1,9 @@
+{
+  "authorization": "GO",
+  "scope": "official271_r2_body1_page0_git_arm_restore_only",
+  "original_operation": "5433a8b98b3015f338e147954b4d9910b5657f85730a4bc09de3a79129a88155",
+  "pending_call": "official271-x230-acl23-r2-body01-page000000",
+  "expected_tree": "2e7e1a66eec4e42a14ea0c350328f4f263842c20",
+  "original_request": "c466e0e87676208da9a08ad7630283696ec42cc8",
+  "sourceOnlyFakeAuthority": true
+}

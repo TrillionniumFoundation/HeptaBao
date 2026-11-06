@@ -1,0 +1,233 @@
+{
+  "schema": "heptabao.r46.validation-checkpoint.v1",
+  "cutoff_UTC": "2026-11-06 18:33:16 UTC",
+  "task_continues": true,
+  "full_OpenBao_2_7_1_replacement": false,
+  "production_cutover": false,
+  "all_current_clients_and_backup_paths_migrated": false,
+  "legacy_cleanup": false,
+  "candidate": {
+    "commit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "tree": "9781e9615ac5fb068d217241c74bb54bf87942cf",
+    "soleParent": "025b05a340de841b8161c1120344e86eae30eb97",
+    "branch": "codex/heptabao-snapshot49-jwt147-9781e961-20261106",
+    "sourceLeaves": 3932,
+    "sourceBytes": 62537554,
+    "changedLeaves": 61,
+    "addedLeaves": 16,
+    "deletions": 0,
+    "sourceFormatted": false,
+    "sourceQualified": true,
+    "newReleaseBuilt": false,
+    "newTestsExecuted": 0,
+    "plannedDistinctTests": 246,
+    "plannedProfileExecutions": 268,
+    "profiles": {
+      "file": 22,
+      "default": 229,
+      "HA": 17
+    },
+    "publicationProof": {
+      "blob": "ed23864fbcbef564d3ca2c6096bb38dffcd0b089",
+      "bytes": 4708,
+      "sha256": "9219175fca62661308ec5daa4347ec0529c012a90624e34f11e6e3c89efa4a02"
+    }
+  },
+  "candidate_stage": {
+    "host": "rog",
+    "job_id": "1a1b21f5945-fc05-7c77",
+    "startArm": "73b5f236a5f6483844647e0806021b98339a9c5d",
+    "startSDK": "f57cf2a580bacc393fe7b9e125f5a3e891386b5c",
+    "startSDKTree": "cdd6016aab41674835c4ef7e316feb174040c2ce",
+    "reused": false,
+    "launchOk": true,
+    "typedSHA256": "c9cd01bf49b3990b8282a4bd57a04c98e23bd1516a80612d625304ac14b34c03",
+    "source": "agent original whole report; root full original chain pending",
+    "terminalAuthority": null,
+    "sourceStageQualified": false,
+    "GO": {
+      "blob": "33b103c3f06905601ac8025cff9d1a154558a6cb",
+      "bytes": 3361,
+      "sha256": "3918de0c0ecd788f61e195879b1333b2f9f51adf4df7a7dd7d94d866adcf2aca"
+    },
+    "scope": "source-only isolated fresh checkout; no Cargo, product service or formatter",
+    "actualFullReportPending": true
+  },
+  "official271": {
+    "job": "x230/1a1b1b4fbfa-fc05-7a60",
+    "report": {
+      "blob": "0605fa44d81ccb93e1d1f00a0f8f7a37f4bea897",
+      "bytes": 651803,
+      "sha256": "9048f3b5c854a190dadde86f5d7eec180c497313065bd70bd23a87124789a62d"
+    },
+    "version": "2.7.1",
+    "tlsVerified": true,
+    "archiveMemberMatchesExecutable": true,
+    "capture_complete": true,
+    "failure": null,
+    "actualACL23": 23,
+    "statusCounts": {
+      "200": 2,
+      "204": 8,
+      "403": 12,
+      "405": 1
+    },
+    "all23OfficialPredictionsMatched": true,
+    "oldR2PredictionDifferences": 9,
+    "changedSnapshots": 8,
+    "unchangedSnapshots": 15,
+    "actualHTTP": 838,
+    "HTTPcap": 853,
+    "rolePolicyScope": "Inputs omitted policies; actual role readbacks include token_policies: []. Explicit-empty, root-policy issuance and role no-default were not part of this official23 run.",
+    "rawStatusNormalization": false,
+    "candidateCases": 0,
+    "parityQualified": false,
+    "originalChildren": 4,
+    "allSameOriginalsWaitedOnceAndClosed": true,
+    "artifactFull9BeforeAfterIdentical": true,
+    "artifactWholeHashFlagRetainedFalse": true,
+    "sourceInputsClosed": 11,
+    "entryFDsClosed": 12,
+    "componentCases": 8,
+    "componentProductCases": 0,
+    "originalNativeCalls": 91,
+    "originalObservers": 13,
+    "tenBODYRangesWhole": true,
+    "oldStatusUNKNOWNRetained": true,
+    "rootReproduced976Exactly": true
+  },
+  "AuthBus": {
+    "job": "mac/1a1b1d28dc2-fc05-7afe",
+    "state": "failed",
+    "exitCode": 1,
+    "stdout": {
+      "blob": "71201c9dc56be7704936677c6c31c8c9d5df2ae9",
+      "bytes": 211872,
+      "sha256": "0d493d9feae4d6d2760e5cfa9c47d18367fc73baa3bdfc49df3120bc360b457e"
+    },
+    "fullOriginalStreams": true,
+    "observedElapsedSeconds": 6.390990375075489,
+    "errorType": "ObservationRefused",
+    "errorCode": null,
+    "errorSite": "mac_native_process_observer_r1.py:66 (complete BSD info and PID check)",
+    "originalCountOrErrnoNotCaptured": true,
+    "managerCompletedOperations": 1,
+    "TLSBootstrapHTTP": 16,
+    "ownedBusinessPhasesRecorded": 0,
+    "allAccountsQualified": false,
+    "allOwnedRegistrationsLineagesHelpersClosed": false,
+    "outcomeUnknown": true,
+    "observerLaneClosed": true,
+    "originalCalls": 88,
+    "originalObservers": 14,
+    "originalPages": 59,
+    "rootReproduced1406Exactly": true,
+    "sourceCommit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "latestCandidateQualified": false,
+    "noJ3160": true,
+    "credentialsPublished": false,
+    "productionServiceOperationDispatched": false,
+    "followup": {
+      "sourceCoreTree": "29fd6a3c218a443a4280d4d4f4bed97cc3a4e95c",
+      "status": "source review pending; no new observer initialized",
+      "twoOriginalLabels": true,
+      "fourFixedPIDs": true,
+      "noRepeatBootout": true,
+      "noHistoricalReapInferredFromAbsence": true
+    }
+  },
+  "inventory": {
+    "complete": false,
+    "backupsComplete": false,
+    "rootCurrentDiscoveryCalls": 5,
+    "currentService": {
+      "name": "openclaw-authbus-x230-openbao-proxy.service",
+      "systemLoaded": true,
+      "active": "inactive",
+      "subState": "dead",
+      "enabled": "disabled",
+      "mainPID": 0,
+      "userUnit": "not-found",
+      "notLinkedToLiveBaoContainer": true
+    },
+    "homeTraversal": {
+      "entries": 4096,
+      "reason": "entry_limit",
+      "selectedFiles": 0,
+      "results": 0,
+      "coverageComplete": false
+    },
+    "systemUnitTraversal": {
+      "entries": 257,
+      "results": 1,
+      "skippedSymlinks": 195,
+      "coverage": "selected authorized ordinary single-link names only"
+    },
+    "backupRepeatNotDispatched": true,
+    "fixedBaoObservation": {
+      "pid": 2031533,
+      "uid": 100,
+      "identityStable": true,
+      "probeExitCode": 1,
+      "overallOK": false,
+      "cgroup": "0::/system.slice/docker-f67985499a16bc15917152d8083b9aa985edcbea868e3f15bdcef3aea6ab0bb9.scope",
+      "exeReadlinkErrno": 13,
+      "exeReadlink": "EACCES",
+      "exeVersionImageNotProven": true,
+      "noPrivilegeFallback": true
+    },
+    "Pocket4Network": {
+      "configuredAlias": "pocket4",
+      "LANAddress": "192.168.0.9/24",
+      "wifiMAC": "e0:d5:5d:ec:cf:93",
+      "physicalMappingQualified": false
+    }
+  },
+  "historicalBaseline": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "MacFormal34MiB": 31,
+    "X230Formal34MiB": 31,
+    "MacNormal": 61,
+    "ROGNormal": 61,
+    "LANHA": 98,
+    "independentColdRestart": 12,
+    "oldX230Comparison": {
+      "profiles": 69,
+      "exact": 67,
+      "normalizedPKI": 2
+    },
+    "notInheritedByCandidate": true
+  },
+  "remainingGates": [
+    "Build and run exact 246/268 candidate tests, then strict HTTP12 and official23 candidate-side comparison.",
+    "Repair and rerun AuthBus trusted-source/AppRole/TLS/KV/Policy/renew/revoke/restart/rollback with same final candidate; preserve all prior failures.",
+    "Repeat formal 34MiB migration/recovery on Mac and X230 and same-candidate real Mac/ROG/Pocket4 HA/ReadIndex/persistence/restart.",
+    "Finish current consumer and backup path inventory; each client's real credential read/write/restart/rollback before individual cutover.",
+    "Only after all migration gates, delete old services/binaries/regenerable assets and retain latest qualified service."
+  ],
+  "knownProductGaps": [
+    "Native JWT batch remains explicit 501; legacy batch tests do not grant native qualification.",
+    "Database/Kubernetes/RabbitMQ and other previously recorded plugin/admin/seal/root/rekey/ACME/EAB capability gaps remain unqualified.",
+    "Old CLI snapshot B04/B05 failures are retained; source fixes need actual leader/standby runtime evidence."
+  ],
+  "volatileRecovery": {
+    "observed_UTC": "2026-11-06 18:12:54 UTC",
+    "rootAndAllAgentsStoreLost": true,
+    "noNativeCallsOrFuturesInFlightAtLoss": true,
+    "noCandidateMutationStartedAtLoss": true,
+    "immutableGitSourcesAndReportsRecovered": true,
+    "recomputedCandidateExactlyMatched": true,
+    "localExecutorStillUnavailable": true,
+    "originalNativeRunsNotReplayed": true
+  },
+  "publication": {
+    "evidenceIndex": {
+      "packets": 48,
+      "files": 2216,
+      "bytes": 42919008
+    },
+    "checkpointNotCompletion": true
+  },
+  "maximumNativeLanes": 2,
+  "rootNativeInFlight": 0
+}

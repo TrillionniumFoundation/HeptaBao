@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-mac-home-r3-readback-0180bc98-body-01",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "mac",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/qa/mac_current_outer_wal_r1.py",
+      "offset": 0,
+      "limit": 65536,
+      "expected_version": "16777244:72739433:73918:1793981090642500588:1793981090642506588"
+    }
+  }
+}

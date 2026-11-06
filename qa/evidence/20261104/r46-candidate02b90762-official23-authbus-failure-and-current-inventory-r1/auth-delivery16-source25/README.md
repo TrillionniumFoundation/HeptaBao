@@ -1,0 +1,9 @@
+# Original runtime future result delivery amendment SOURCE
+
+Only future not-yet-admitted process_read observers get immutable pageLimit 16384. Their native process_read remains 16384. Other new observer kinds retain8192. The page width is frozen on admission, used to validate both exact requests and returned bytes, and recorded on closed observers. Four strict forward/reverse hunks; all other journal bytes remain exact, including original job, request pin, slot, cursors, callbacks, SDK-before-parse and unknown/no-replay behavior.
+
+The current original runtime is already known failed exit1 with stdout211872 and stderr0. Authority plus stream01/02 are fully closed:22 calls,3 observers,15 original8192 pages,stdout0..32768. They remain unchanged and are not relabeled. The prior exact68853-byte state is frozen here. No currently active observer changes width.
+
+After a separate exact whole root amendment, the pure activation entry verifies the exact prior state and reviewed after-source, archives prior state/GO/activation with the unchanged once-only Git helper, and sets a separate delivery-source alias. It never initializes/clones/mutates the original runtime context, dispatches Native, or interprets prior failed output. Any archive error returns a preserved failure and stops new admission.
+
+Remaining stdout179104=10*16384+15264, hence11 original process_read requests. Their fixed request table uses the existing original prefix/job/cursors. Maximum original payload remains1MiB: ceil(1048576/16384)=64 pages per new read, versus128 formerly. Future11 payloads therefore<=704 pages versus1408, plus15 original pages=719. This is a transport upper bound, not a claim about the unread actual payload sizes. Original64 process_status,8 statuses per ID,129 reads,2MiB stdout,900/1080 and one Native call/future remain unchanged. No new process_start or business action is authorized by this SOURCE.

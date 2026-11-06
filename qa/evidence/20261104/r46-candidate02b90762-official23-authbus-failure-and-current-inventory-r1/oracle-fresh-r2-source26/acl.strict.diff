@@ -1,0 +1,43 @@
+--- a/acl23_executor.fixture-r2.py
++++ b/acl23_executor.fixture-r2.py
+@@ -45,7 +45,7 @@
+         self.marker = "heptabao-acl23-" + run_id
+         self.baseline_config = {
+             "bound_issuer": self.marker,
+-            "jwt_validation_pubkeys": [public_pem],
++            "jwt_validation_pubkeys": [public_pem[:-1]],  # Only the validated source PEM final LF.
+             "jwt_supported_algs": ["RS256"],
+         }
+         self.existing = tuple(
+@@ -59,6 +59,7 @@
+         self.names = tuple(sorted(set(self.existing + self.fresh)))
+         self.results = []
+         self.setup_completed = False
++        self.setup_config_projection = None
+         self.owned_policy_names = []
+         self.mount_created_known = False
+         self._private_tokens = []
+@@ -137,6 +138,7 @@
+                                 self.role_body(self.marker + "-seed-" + name)),
+                 204, "common_role_seed_precondition_failed")
+         state = self.snapshot()
++        self.setup_config_projection = state["config"]
+         if state["config"] != self.baseline_config:
+             raise BaoError("common_config_projection_mismatch")
+         if any(state["roles"][name] is None for name in self.existing):
+@@ -277,6 +279,7 @@
+             raise
+         return {"matrix_cases": 23, "actual_case_records": len(self.results),
+                 "cases": self.results, "setup_completed": self.setup_completed,
++                "setup_config_projection": self.setup_config_projection,
+                 "raw_status_normalization": False, "parity_qualified": False,
+                 "requires_pair_comparison": True}
+ 
+@@ -284,6 +287,7 @@
+         return {"matrix_cases": 23, "actual_case_records": len(self.results),
+                 "cases": self.results, "setup_completed": self.setup_completed,
+                 "stopped_reason": self.stopped_reason, "parity_qualified": False,
++                "setup_config_projection": self.setup_config_projection,
+                 "current_case": self.current_case,
+                 "original_case_wire_records": [
+                     row for row in self.calls.records

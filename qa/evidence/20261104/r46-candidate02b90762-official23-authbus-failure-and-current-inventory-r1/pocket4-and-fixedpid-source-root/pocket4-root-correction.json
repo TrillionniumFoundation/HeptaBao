@@ -1,0 +1,9 @@
+{
+  "original": {
+    "error": "Error: original_request_intent_Merkle",
+    "NativeCalls": 0
+  },
+  "cause": "Root assumed the earlier inventory two-leaf naming convention; this actual call uses its explicit four-leaf arm and SDK.original.json.",
+  "correction": "Verify every exact original archive entry against preserved original-archives rather than reusing a different call layout.",
+  "originalEvidenceChanged": false
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "ordinal": 1,
+    "pin": {
+      "blob": "0d7fbe236f97641d1dbac6b68965ba95cea0963a",
+      "bytes": 245,
+      "sha256": "94a83cd7e5a37a72603f7f38e3a02aa2028705407b6d9c44858694fd40e27e6c"
+    },
+    "immutableStoreKey": "gitfirst-failure-by-blob:0d7fbe236f97641d1dbac6b68965ba95cea0963a"
+  },
+  {
+    "ordinal": 2,
+    "pin": {
+      "blob": "9698fce36007ca93a05dde1121690a74747a16af",
+      "bytes": 237,
+      "sha256": "1dfda1fd3bdc3a38f8121639317a01b437f34e554ee5dc7417c40da8602c4643"
+    },
+    "immutableStoreKey": "gitfirst-failure-by-blob:9698fce36007ca93a05dde1121690a74747a16af"
+  }
+]

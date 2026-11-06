@@ -1,0 +1,57 @@
+--- a/crates/heptabao-server/src/auth_jwt_policies.rs
++++ /dev/null
+@@ -1,54 +0,0 @@
+-//! JWT role policy configuration is distinct from token issuance defaults.
+-//! None preserves a historical role whose default-policy origin is unknown.
+-//! New policy semantics, including an explicit empty list with false, require
+-//! schema 147 so an older reader cannot issue directly from the stored raw list.
+-use super::*;
+-
+-pub(crate) const STATE_SCHEMA: u32 = 147;
+-
+-pub(super) fn configured_flag(
+-    body: &Value,
+-    previous: Option<&JwtRole>,
+-) -> Result<Option<bool>, AuthError> {
+-    let flag = body
+-        .get("token_no_default_policy")
+-        .map(|value| {
+-            token_policies::weak_boolean(Some(value), "token_no_default_policy")
+-        })
+-        .transpose()?
+-        .or_else(|| previous.and_then(|role| role.token_no_default_policy));
+-    if previous.is_none()
+-        || body.get("token_policies").is_some()
+-        || body.get("policies").is_some()
+-    {
+-        Ok(Some(flag.unwrap_or(false)))
+-    } else {
+-        // A flag-only change never removes a historical configured default.
+-        // An unrelated update preserves the absent historical marker exactly.
+-        Ok(flag)
+-    }
+-}
+-
+-pub(super) fn issued_policies(role: &JwtRole) -> BTreeSet<String> {
+-    let mut policies = role.policies.clone();
+-    if !role.token_no_default_policy.unwrap_or(false) {
+-        policies.insert("default".into());
+-    }
+-    policies
+-}
+-
+-impl AuthState {
+-    pub(crate) fn has_jwt_policy_state(&self) -> bool {
+-        self.jwt_mounts
+-            .values()
+-            .flat_map(|mounts| mounts.values())
+-            .flat_map(|mount| mount.roles.values())
+-            .any(|role| role.token_no_default_policy.is_some())
+-            || self.tokens.values().any(|token| {
+-                matches!(
+-                    token.auth_provenance,
+-                    Some(TokenAuthProvenance::Jwt { .. })
+-                ) && !token.policies.contains("default")
+-            })
+-    }
+-}

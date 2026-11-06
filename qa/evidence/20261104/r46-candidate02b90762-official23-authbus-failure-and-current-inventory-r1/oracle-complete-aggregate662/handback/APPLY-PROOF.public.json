@@ -1,0 +1,77 @@
+{
+  "schema": "heptabao.oracle271.r2.BODY02.root-authorized-handback-apply-proof.r1",
+  "phase": "external_whole_before_exact_state_application",
+  "rootGO": {
+    "blob": "bb2b94bb1f152bb9f890debfde83cb9808a87a5a",
+    "bytes": 2719,
+    "sha256": "de517150c314608a87292893580f58ff318a09f11ee026e8634ec4e9be92c129"
+  },
+  "source": {
+    "blob": "bcd5f8aeb323519de016c9a50faafc978fd3efea",
+    "bytes": 10066,
+    "sha256": "7429fe571425fa1598a060df33bf088c9ae1a2a1a3d885a3c180fbeac1bd17ca"
+  },
+  "mainSlot": "official271_x230_acl23_oracle_gitfirst_r2",
+  "recoverySlot": "official271_x230_acl23_r2_body02_status_reconcile_r1",
+  "actualBefore": {
+    "blob": "652b0103388657f5515e30c077ce927c24b19cf2",
+    "bytes": 454676,
+    "sha256": "dd4a465e95e91c8aa23ddcde138d4541a52e79e7482297eb418bb89e16f83aa3"
+  },
+  "actualRecoveryClosed": {
+    "blob": "5d9085aeb711d6aab60f88b6641eb22e5222d66d",
+    "bytes": 109798,
+    "sha256": "96f62783eb44cf88fea10f65393392ff9de5fd5c1b27ff10682f00edebc8bcf7"
+  },
+  "exactAfter": {
+    "blob": "71de8bc336a360f5e3600c1c74072016714d4c48",
+    "bytes": 545600,
+    "sha256": "eb3d133b3f55b9f89b894503a39c0ffcf30f1cc8cc7f98299156fee0fda69a53"
+  },
+  "changes": [
+    "paused",
+    "pending",
+    "activeObserver",
+    "completedObservers",
+    "oracleReportBodyRanges",
+    "oracleReportBody02Recovery"
+  ],
+  "oldCallRecords": {
+    "blob": "a8146f2e6ebb709108ffdc1453dc627a9c7a09c5",
+    "bytes": 253336,
+    "sha256": "a5c07ca0bfabf5baf46a08ccd5dd5ac41e31f2f7efdf960922083fbfc1f7458f"
+  },
+  "oldOuterFailure": {
+    "blob": "9698fce36007ca93a05dde1121690a74747a16af",
+    "bytes": 237,
+    "sha256": "1dfda1fd3bdc3a38f8121639317a01b437f34e554ee5dc7417c40da8602c4643"
+  },
+  "externalFailureHistory": {
+    "blob": "7b816b619427cd05860454a79be7bfc54fcda2e6",
+    "bytes": 605,
+    "sha256": "7395767e91aeba54e09bd5c903685a7e55acf6e150bbd777c81a035c97ad7723"
+  },
+  "externalLatestFailure": {
+    "blob": "9698fce36007ca93a05dde1121690a74747a16af",
+    "bytes": 237,
+    "sha256": "1dfda1fd3bdc3a38f8121639317a01b437f34e554ee5dc7417c40da8602c4643"
+  },
+  "oldCallsPreserved": 28,
+  "bodyAdmissionsAlreadyStarted": 3,
+  "totalOriginalBodyLimit": 10,
+  "combinedStatusForOriginalID": 2,
+  "statusLimit": 8,
+  "newNativeCalls": 0,
+  "newGitMutationsOtherThanThisProof": 0,
+  "mainJournalUnchanged": {
+    "blob": "8ef2f6875479aada7effd09d85fd398d23b43ca1",
+    "bytes": 32147,
+    "sha256": "c6989da12d4ccebd3ae22ce9f71ef99f01714f473f61fe29517a0b15d657e69d"
+  },
+  "nextOriginalRequest": {
+    "blob": "5bb0631c792c014e14dd772f522fd5bca6198621",
+    "bytes": 331,
+    "sha256": "8da81d14bf4c561ce4c0560c23a46a15cadfa571dda943e3905e15d4aa05ac4c"
+  },
+  "independentBoundaryBeforeBODY3": true
+}

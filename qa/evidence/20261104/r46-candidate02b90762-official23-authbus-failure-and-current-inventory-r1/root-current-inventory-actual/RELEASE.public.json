@@ -1,0 +1,53 @@
+{
+  "schema": "heptabao.root.current-discovery-and-exact-unit.release.r1",
+  "nativeCalls": 5,
+  "searchesAdmitted": 2,
+  "searchesTerminal": 2,
+  "pending": null,
+  "activeFuture": null,
+  "rootLane": 0,
+  "allOriginalCallsOnce": true,
+  "originalSDKWhole": true,
+  "consumerSearchCoverage": false,
+  "consumerReason": "entry_limit",
+  "backupRequestNotDispatched": [
+    {
+      "scope": "backup",
+      "sourceRequest": "1635a1db31b4ee3e1ac8083616d8a59ecc1b591c",
+      "reason": "Identical /home/qian traversal and entry budget reached 4096 before any selected file. Preserve original failed coverage; use bounded directory inventory to locate explicit production roots before another filename query."
+    }
+  ],
+  "systemUnitSelectedScopeCoverage": true,
+  "systemUnitSkippedSymlinks": 195,
+  "exactService": {
+    "system": {
+      "ActiveState": "inactive",
+      "Description": "OpenClaw AuthBus X230-only OpenBao TCP proxy (Mac localhost)",
+      "ExecMainStatus": "0",
+      "InvocationID": "",
+      "LoadState": "loaded",
+      "MainPID": "0",
+      "Result": "success",
+      "SubState": "dead",
+      "UnitFileState": "disabled"
+    },
+    "user": {
+      "ActiveState": "inactive",
+      "Description": "openclaw-authbus-x230-openbao-proxy.service",
+      "ExecMainStatus": "0",
+      "InvocationID": "",
+      "LoadState": "not-found",
+      "MainPID": "0",
+      "Result": "success",
+      "SubState": "dead",
+      "UnitFileState": ""
+    },
+    "nonAtomicScopes": true,
+    "productMutations": false,
+    "doesNotIdentifyLiveContainerBao": true
+  },
+  "currentClientsAndBackupsComplete": false,
+  "fullReplacementQualified": false,
+  "productionCutoverQualified": false,
+  "cleanupQualified": false
+}

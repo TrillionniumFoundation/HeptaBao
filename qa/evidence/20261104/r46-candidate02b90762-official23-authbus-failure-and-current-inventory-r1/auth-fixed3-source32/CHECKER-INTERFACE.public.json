@@ -1,0 +1,14 @@
+{
+  "entry": "verifyR3ReadbackSource(files,gitBlobMeta,strictApplySource)",
+  "files": "Exact UTF-8 flat-file mapping from this package.",
+  "prelude": [
+    "reference.pure-helpers.unchanged.js",
+    "reference.unified-source-helpers.unchanged.js"
+  ],
+  "journalFunctionsExecuted": false,
+  "metadataFunctionsExecuted": false,
+  "bodyFunctionsExecuted": false,
+  "NativeCalls": 0,
+  "result": "source-checks.actual.json",
+  "checks": 31
+}

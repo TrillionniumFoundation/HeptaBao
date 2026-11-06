@@ -1,0 +1,180 @@
+{
+  "schema": "heptabao.root-official271-original-report-body-actual.r1",
+  "passed": true,
+  "checks": 37,
+  "rows": [
+    {
+      "name": "whole47_original_packet",
+      "passed": true
+    },
+    {
+      "name": "author96_exact",
+      "passed": true
+    },
+    {
+      "name": "prior_original_INFO_root18",
+      "passed": true
+    },
+    {
+      "name": "exact_BODY_GO",
+      "passed": true
+    },
+    {
+      "name": "original_paused_UNKNOWN_exact",
+      "passed": true
+    },
+    {
+      "name": "prior_two_calls_unmodified",
+      "passed": true
+    },
+    {
+      "name": "C_original_report_BODY_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "C_original_report_BODY_call_official271-x230-acl23-report-body-admit-r1",
+      "passed": true
+    },
+    {
+      "name": "C_original_report_BODY_armed_tree_official271-x230-acl23-report-body-admit-r1",
+      "passed": true
+    },
+    {
+      "name": "C_original_report_BODY_call_official271-x230-acl23-report-body-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "C_original_report_BODY_armed_tree_official271-x230-acl23-report-body-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "C_original_report_BODY_call_official271-x230-acl23-report-body-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "C_original_report_BODY_armed_tree_official271-x230-acl23-report-body-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "C_original_report_BODY_call_official271-x230-acl23-report-body-page1-r1",
+      "passed": true
+    },
+    {
+      "name": "C_original_report_BODY_armed_tree_official271-x230-acl23-report-body-page1-r1",
+      "passed": true
+    },
+    {
+      "name": "C_original_report_BODY_call_official271-x230-acl23-report-body-page2-r1",
+      "passed": true
+    },
+    {
+      "name": "C_original_report_BODY_armed_tree_official271-x230-acl23-report-body-page2-r1",
+      "passed": true
+    },
+    {
+      "name": "C_original_report_BODY_call_official271-x230-acl23-report-body-page3-r1",
+      "passed": true
+    },
+    {
+      "name": "C_original_report_BODY_armed_tree_official271-x230-acl23-report-body-page3-r1",
+      "passed": true
+    },
+    {
+      "name": "C_original_report_BODY_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "C_original_report_BODY_observer_e42caa936d424e97f27c2f50f99f3921fed5b12f8fe86e3236ce4ec7efd04fab",
+      "passed": true
+    },
+    {
+      "name": "C_original_report_BODY_page_e42caa936d424e97f27c2f50f99f3921fed5b12f8fe86e3236ce4ec7efd04fab_0",
+      "passed": true
+    },
+    {
+      "name": "C_original_report_BODY_page_e42caa936d424e97f27c2f50f99f3921fed5b12f8fe86e3236ce4ec7efd04fab_16384",
+      "passed": true
+    },
+    {
+      "name": "C_original_report_BODY_page_e42caa936d424e97f27c2f50f99f3921fed5b12f8fe86e3236ce4ec7efd04fab_32768",
+      "passed": true
+    },
+    {
+      "name": "C_original_report_BODY_page_e42caa936d424e97f27c2f50f99f3921fed5b12f8fe86e3236ce4ec7efd04fab_49152",
+      "passed": true
+    },
+    {
+      "name": "C_original_report_BODY_payload_e42caa936d424e97f27c2f50f99f3921fed5b12f8fe86e3236ce4ec7efd04fab",
+      "passed": true
+    },
+    {
+      "name": "C_original_report_BODY_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "six_calls_four_pages_one_original_ID",
+      "passed": true
+    },
+    {
+      "name": "whole_version_bound_36658_report",
+      "passed": true
+    },
+    {
+      "name": "actual_original_setup_failure",
+      "passed": true
+    },
+    {
+      "name": "actual_live_official271_TLS",
+      "passed": true
+    },
+    {
+      "name": "four_original_children_closed",
+      "passed": true
+    },
+    {
+      "name": "owner360_original_deadline_preserved",
+      "passed": true
+    },
+    {
+      "name": "failed_method_and_missing_post_artifact_preserved",
+      "passed": true
+    },
+    {
+      "name": "eight_fake_components_not_product_cases",
+      "passed": true
+    },
+    {
+      "name": "no_candidate_started_no_status_normalization",
+      "passed": true
+    },
+    {
+      "name": "complete_closed_read_lane",
+      "passed": true
+    }
+  ],
+  "packet": "4dba644c762b447e8718e103f81e8e3e3085066d",
+  "originalReport": {
+    "blob": "7fec0f9ae61ccd30cbbda8a9242d62187fa2f8f2",
+    "bytes": 36658,
+    "sha256": "4b72f600f6b794c5cf7198ebe76696179cd2477da587113a5ee7bfe81be3eece"
+  },
+  "bodyOriginalCalls": 6,
+  "bodyOriginalPages": 4,
+  "originalChildrenClosed": true,
+  "overallOwnerMethodPassed": false,
+  "artifactAfter": null,
+  "actualACLRequests": 26,
+  "actualACLCases": 0,
+  "ACLCaseDenominator": 23,
+  "actualHTTP12Cases": 0,
+  "officialBinaryLiveIdentityQualified": true,
+  "firstRunConfigProjectionObserved": false,
+  "newFixtureNotStarted": true,
+  "oldStatus0UnknownPreserved": true,
+  "currentNativeCalls": 0,
+  "currentOwnedFutures": 0,
+  "parityQualified": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

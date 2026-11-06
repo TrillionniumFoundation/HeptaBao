@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"authenticated_chatgpt_caller_isolation\":false,\"credential_metadata_resume\":true,\"metadata_resume_after_restart\":true,\"ownership_scope\":\"authenticated_private_operator_credential\",\"search\":{\"created_unix_ms\":1793988065847,\"host\":\"x230\",\"kind\":\"files\",\"reason\":null,\"root\":\"/etc/systemd/system\",\"search_id\":\"a3b45beb18eeb5b45cd854fc8d9f2177d14669ac09c6cf53e2b61b6c5b252db0\",\"state\":\"completed\"},\"session_resume_after_restart\":false,\"snapshot\":{\"action\":\"results\",\"backend\":\"native_search_worker\",\"committed_result_bytes\":55,\"committed_results\":1,\"next_cursor\":null,\"progressive\":false,\"reason\":null,\"results\":[{\"path\":\"openclaw-authbus-x230-openbao-proxy.service\"}],\"search_id\":\"a3b45beb18eeb5b45cd854fc8d9f2177d14669ac09c6cf53e2b61b6c5b252db0\",\"snapshot_ready\":true,\"state\":\"completed\",\"statistics\":{\"bytes\":0,\"coverage_complete\":true,\"coverage_reasons\":[],\"coverage_scope\":\"selected_authorized_regular_single_link_files\",\"entries\":257,\"extracted_documents\":0,\"files\":0,\"results\":1,\"skipped_binary_or_non_utf8\":0,\"skipped_document_invalid\":0,\"skipped_document_limited\":0,\"skipped_document_unavailable\":0,\"skipped_hardlinks\":0,\"skipped_large\":0,\"skipped_protected\":0,\"skipped_special\":0,\"skipped_symlinks\":195,\"traversal_complete\":true,\"unreadable\":0}},\"unfinished_search_after_controller_restart\":\"interrupted_without_relaunch\"}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao.root.current-x230-basename-discovery.GO.r1",
+  "sourceTree": "0944e743781641109b178d824b2c8c26a239ba0e",
+  "sourceWhole": true,
+  "sourceRequests": [
+    {
+      "path": "request.consumer-basename.public.json",
+      "blob": "26306b1d348778e525242ef3c154a1e5c8945c0e",
+      "bytes": 835,
+      "sha256": "c4845bf89c5b7cd4f354d57b59527e27416a2023faaa0e640d4deef5ce1689ba"
+    },
+    {
+      "path": "request.backup-basename.public.json",
+      "blob": "1635a1db31b4ee3e1ac8083616d8a59ecc1b591c",
+      "bytes": 808,
+      "sha256": "6f87d83e72293588b301177d01c5cd39d93ea583c37b8e7b2d46ea7a6d3206d0"
+    },
+    {
+      "path": "request.system-unit-basename.public.json",
+      "blob": "72fd4a74df4e9b612dfd54f3c4a7bd52e014eb30",
+      "bytes": 426,
+      "sha256": "f9d1e702cc4d2fab9b1b9bfd1910c1adb2bf2d7328b36bbfc5e724ed777159ba"
+    }
+  ],
+  "authorization": "User requested every current client and backup migration before cleanup; read-only basename discovery.",
+  "lane": "root single lane; A0 and C0 recorded",
+  "maxNativeCalls": 27,
+  "budgets": {
+    "searchStarts": 3,
+    "perSearch": {
+      "maxEntries": 4096,
+      "maxResults": 128,
+      "maxBytes": 1048576,
+      "workerSeconds": 15,
+      "progressivePages": 4,
+      "terminalPages": 4,
+      "pageRows": 32
+    }
+  },
+  "oneOriginalSearchTerminalBeforeNext": true,
+  "missingAckNoRestart": true,
+  "denyByPolicyNoAlternatePath": true,
+  "wholeOriginalRequestAndIntentBeforeDispatch": true,
+  "wholeOriginalSDKBeforeInterpretation": true,
+  "privateContentReads": false,
+  "argvEnvironmentReads": false,
+  "binaryOrArchiveBodyReads": false,
+  "mutations": false,
+  "originalScopesAndFailuresPreserved": true,
+  "fullInventoryQualified": false,
+  "cleanupAuthorized": false
+}

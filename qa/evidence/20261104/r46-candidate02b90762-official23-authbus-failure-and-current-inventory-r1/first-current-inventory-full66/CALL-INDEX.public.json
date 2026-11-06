@@ -1,0 +1,670 @@
+[
+  {
+    "ordinal": 1,
+    "key": "host-list-01",
+    "tool": "mcp__codex_apps__heptaruntime_mac_controller_host_list",
+    "request": {
+      "blob": "0967ef424bce6791893e9a57bb952f80fd536e93",
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    "intent": {
+      "blob": "bc3fd36f058a0898053e8aa746096d3c99d11813",
+      "bytes": 745,
+      "sha256": "778774868acda1becad37a2e599819e39d3f62cdd2cd008f5d61e71898a3e862"
+    },
+    "arm_tree": "562cee0741df9493a939379d7564f1b64c97022b",
+    "originalSDK": {
+      "blob": "adb4c033961b9bc179b72ab4bae82fa5e82ddd46",
+      "bytes": 2056,
+      "sha256": "aaf4f281730dc90c7720cdef47365152218391d64074daa81c78ba028884e70e"
+    },
+    "sdk_tree": "3a3f9d00bcf233d0a51d16c873d1d39b86c3a998",
+    "native": {
+      "blob": "54c30fba00c385936cdc7568ddf877cb3f724d8c",
+      "bytes": 1704,
+      "sha256": "0be6ff512fad6617c1e8f6c8eb2426951af0519ba9de8d2643aa74294730f2f5"
+    },
+    "native_from_originalSDK": "content[0].text",
+    "called": true,
+    "accepted": true
+  },
+  {
+    "ordinal": 2,
+    "key": "process-page-01",
+    "tool": "mcp__codex_apps__heptaruntime_mac_controller_host_processes",
+    "request": {
+      "blob": "040b93676ebe94e0cc47a07233a9967e6055a8f6",
+      "bytes": 55,
+      "sha256": "63b49a268da54a1579a938272befab4635d3bab4799dc3f9a642703150204903"
+    },
+    "intent": {
+      "blob": "27a99e6e9a76886bf3862429e7f0ee230f706cec",
+      "bytes": 729,
+      "sha256": "8a19fbbd699fea77823dff24ebe72fd3194515c96f459e2e06ab7f4c8461b0fe"
+    },
+    "arm_tree": "6164ba09b5316e4db568cc9ca8b6bf9700a4bde0",
+    "originalSDK": {
+      "blob": "507640304334caf5b70edb7856b5c5781b3c277f",
+      "bytes": 20991,
+      "sha256": "63ff8a1b7769c5e81dee8b5871d059507ed2dbd2e7ca3c649a4bcdd20636ad07"
+    },
+    "sdk_tree": "a9807c8baa126a3bd3c19734d398053174f6c336",
+    "native": {
+      "blob": "979ffe2cf2348a745f61873d4d182a336d7740a1",
+      "bytes": 18547,
+      "sha256": "0208aa7d9b5146f1fef7880cd1674d1be75d228d188a65bef97cd36a54b85749"
+    },
+    "native_from_originalSDK": "content[0].text",
+    "called": true,
+    "accepted": true,
+    "result": {
+      "records": 128,
+      "after_pid": 0,
+      "next_after_pid": 2089,
+      "has_more": true,
+      "snapshot_atomic": false
+    }
+  },
+  {
+    "ordinal": 3,
+    "key": "process-page-02",
+    "tool": "mcp__codex_apps__heptaruntime_mac_controller_host_processes",
+    "request": {
+      "blob": "17ebe1ec77621dc846b5c9ef626c7e892e9682be",
+      "bytes": 58,
+      "sha256": "1c3ad89c6654d7bf708163c6fd7c3f118630cf4f589c33f511be60c99d3eb973"
+    },
+    "intent": {
+      "blob": "8349afe8cb75fe2a8f16cb2b648334218045ae8b",
+      "bytes": 1012,
+      "sha256": "094fee7a8e28011d73e2e300b92c31713f4cd587f7e0736c9e28d8b5abf66d74"
+    },
+    "arm_tree": "8921f9eca47cb71ec80abf3032ff983c403b6b0b",
+    "originalSDK": {
+      "blob": "f8c58602de72e7924da9e2dd9ef8adeb1bdbf582",
+      "bytes": 20810,
+      "sha256": "f125363f698cda9f5270cc29ec4cc3516e1de1f591f3e7fb146938eb6e31ee4a"
+    },
+    "sdk_tree": "d2533ec0820ca4758c0f569f16f7c241f95ef2e8",
+    "native": {
+      "blob": "8ae0b817a361d7eee2aeb86f3759a2fc0a9ac1f8",
+      "bytes": 18474,
+      "sha256": "dc5a0bb4102e191c9858678bbf3208eff1613f6559e0b2323f1d63785496c600"
+    },
+    "native_from_originalSDK": "content[0].text",
+    "called": true,
+    "accepted": true,
+    "result": {
+      "records": 122,
+      "after_pid": 2089,
+      "next_after_pid": 4145874,
+      "has_more": false,
+      "snapshot_atomic": false
+    }
+  },
+  {
+    "ordinal": 4,
+    "key": "consumer-search-start-01",
+    "tool": "mcp__codex_apps__heptaruntime_mac_controller_search_start",
+    "request": {
+      "blob": "c6978b8bb26bde83073052af8903c8857fc6c1d4",
+      "bytes": 670,
+      "sha256": "876a9681670744485c2f73a15f36e619737845cd7d8be991f25969f036d0ac6e"
+    },
+    "intent": {
+      "blob": "3e2d927625154a4809411169866c5a61d16bb6ab",
+      "bytes": 793,
+      "sha256": "ca07ddc8f5fb30fa49d8f3fe477632b0d1c79f1d537c0c7aa090e59f4533445d"
+    },
+    "arm_tree": "127cd7f235aa0d3630c4c359086f35594e648be8",
+    "originalSDK": {
+      "blob": "3a809360dffc6e7c3c875cd746666bddaa49e25b",
+      "bytes": 1285,
+      "sha256": "0199ec44b2a2494a1dd07e1212b24f26e94444bc3cf7a5fd88418922dde9e06e"
+    },
+    "sdk_tree": "9e7e8251341de32bceba0cb5324ae739d827ff28",
+    "native": {
+      "blob": "7db2f89552cacee4668178adbd4f440aaefb47fb",
+      "bytes": 1068,
+      "sha256": "e46c4b1a1141e66f68fc480f0d64729a031238c3e2f95747fd195f6c84037f06"
+    },
+    "native_from_originalSDK": "content[0].text",
+    "called": true,
+    "accepted": true,
+    "result": {
+      "search_id": "164d94fe0ce313136c059144efa005f384f52da4949abc9d98af79946daf26fb",
+      "state": "running"
+    }
+  },
+  {
+    "ordinal": 5,
+    "key": "consumer-result-01",
+    "tool": "mcp__codex_apps__heptaruntime_mac_controller_search_results",
+    "request": {
+      "blob": "3a1d163e1320ea5f0f9851a2274e0ea6535acc68",
+      "bytes": 116,
+      "sha256": "0b573a0c8577b58f04ab5c02cb12941d52bf5a5f0e92419a83c7f57c8d0ca078"
+    },
+    "intent": {
+      "blob": "123ca8492d5e1d17bb40916c49c80ff926fc3b08",
+      "bytes": 1230,
+      "sha256": "de8b70b218097b703f98f0af53e2a702c8e809aa0f976b1938f1176d3c85310f"
+    },
+    "arm_tree": "3069ab8e474073da82483e0eefeb4d6d2b9b49fe",
+    "originalSDK": {
+      "blob": "b711449c7ceec892f3c67831c175e611f0c2fee0",
+      "bytes": 5980,
+      "sha256": "7d823cbe92322812f63c2abfdb63c7b5b9bcc53dbee9c507a627cc4cf2c93aa6"
+    },
+    "sdk_tree": "f1fe69d3148d878ef477caec367b35d8638c3f80",
+    "native": {
+      "blob": "2173d5972d126fcb1781a9772d6e2f9c42504390",
+      "bytes": 5607,
+      "sha256": "b20751b743dd1cd0a2d5a250c0197ae34cd40100d833e8c9612e102b2ab15620"
+    },
+    "native_from_originalSDK": "content[0].text",
+    "called": true,
+    "accepted": true,
+    "result": {
+      "search_id": "164d94fe0ce313136c059144efa005f384f52da4949abc9d98af79946daf26fb",
+      "state": "limited",
+      "cursor": 0,
+      "next_cursor": 32,
+      "rows": 32,
+      "progressive": false,
+      "snapshot_ready": true,
+      "statistics": {
+        "bytes": 0,
+        "coverage_complete": false,
+        "coverage_reasons": [
+          "result_limit"
+        ],
+        "coverage_scope": "selected_authorized_regular_single_link_files",
+        "entries": 142,
+        "extracted_documents": 0,
+        "files": 0,
+        "results": 128,
+        "skipped_binary_or_non_utf8": 0,
+        "skipped_document_invalid": 0,
+        "skipped_document_limited": 0,
+        "skipped_document_unavailable": 0,
+        "skipped_hardlinks": 0,
+        "skipped_large": 0,
+        "skipped_protected": 0,
+        "skipped_special": 0,
+        "skipped_symlinks": 0,
+        "traversal_complete": false,
+        "unreadable": 0
+      }
+    }
+  },
+  {
+    "ordinal": 6,
+    "key": "consumer-result-02",
+    "tool": "mcp__codex_apps__heptaruntime_mac_controller_search_results",
+    "request": {
+      "blob": "e91da2ac1dba707df49bc1272fbc14ea0cef2177",
+      "bytes": 117,
+      "sha256": "7d8b6d6abbce49c0aef939501669a077e52db5e53da6ecb0de8d818d05c94a45"
+    },
+    "intent": {
+      "blob": "a20a43514524ef3c04f68cf8aa6e5644dbc19fcb",
+      "bytes": 1063,
+      "sha256": "bacdcf2dc4463754723559b1b40d5f9d68676a260d962236f2e019da8aa1f21e"
+    },
+    "arm_tree": "ce085e182c9af05c2737075768bc8b0bd91f7b7f",
+    "originalSDK": {
+      "blob": "1c7e5f3ffc6783f1618c88c4881b2b7789884081",
+      "bytes": 8586,
+      "sha256": "1868f8234cf65fcef42650f6a859cfb9c589938c90435e3ccc4284cae04ec0fc"
+    },
+    "sdk_tree": "6baab99c43a5936a3e52af2594fb6a9176581bf6",
+    "native": {
+      "blob": "72c1a20a6a08d790e4a8c8e169e9e4ee101ea3a4",
+      "bytes": 8213,
+      "sha256": "f631e37062f8486cf795c25e92941ce7dffb897ff49b11183c32b785792516a7"
+    },
+    "native_from_originalSDK": "content[0].text",
+    "called": true,
+    "accepted": true,
+    "result": {
+      "search_id": "164d94fe0ce313136c059144efa005f384f52da4949abc9d98af79946daf26fb",
+      "state": "limited",
+      "cursor": 32,
+      "next_cursor": 64,
+      "rows": 32,
+      "progressive": false,
+      "snapshot_ready": true,
+      "statistics": {
+        "bytes": 0,
+        "coverage_complete": false,
+        "coverage_reasons": [
+          "result_limit"
+        ],
+        "coverage_scope": "selected_authorized_regular_single_link_files",
+        "entries": 142,
+        "extracted_documents": 0,
+        "files": 0,
+        "results": 128,
+        "skipped_binary_or_non_utf8": 0,
+        "skipped_document_invalid": 0,
+        "skipped_document_limited": 0,
+        "skipped_document_unavailable": 0,
+        "skipped_hardlinks": 0,
+        "skipped_large": 0,
+        "skipped_protected": 0,
+        "skipped_special": 0,
+        "skipped_symlinks": 0,
+        "traversal_complete": false,
+        "unreadable": 0
+      }
+    }
+  },
+  {
+    "ordinal": 7,
+    "key": "consumer-result-03",
+    "tool": "mcp__codex_apps__heptaruntime_mac_controller_search_results",
+    "request": {
+      "blob": "0fac06ba67b34317a55afb79c6813879ed5d4f8c",
+      "bytes": 117,
+      "sha256": "d87a176ce62dc0245eca3f53390a6aad359b3038eaf760546497e2f33cef7900"
+    },
+    "intent": {
+      "blob": "b25aa690fb855876490a929d12bc4b8bdaffdbcf",
+      "bytes": 1063,
+      "sha256": "515ac5a38bf530e7b75ce103395a94da0e307e5c04481e8d03436003d4db7317"
+    },
+    "arm_tree": "c6594c42da6cfe77fe653e11bfd46fe179515105",
+    "originalSDK": {
+      "blob": "5e92960de096333373b3126eaa29a7e38a584984",
+      "bytes": 8489,
+      "sha256": "d662183fa9ef15d58af16c3647c3a137db9e179d3e6add5d3471a2b069beffa5"
+    },
+    "sdk_tree": "17ad5e993898c554a82a58dad5de6ca4cce3ca9e",
+    "native": {
+      "blob": "b58444892d09d84a35d453e857e47d3cf10a932b",
+      "bytes": 8116,
+      "sha256": "0a492a752c0ef353210eb34de8fbaeaa826b3f62a81ea64580adea320ef20182"
+    },
+    "native_from_originalSDK": "content[0].text",
+    "called": true,
+    "accepted": true,
+    "result": {
+      "search_id": "164d94fe0ce313136c059144efa005f384f52da4949abc9d98af79946daf26fb",
+      "state": "limited",
+      "cursor": 64,
+      "next_cursor": 96,
+      "rows": 32,
+      "progressive": false,
+      "snapshot_ready": true,
+      "statistics": {
+        "bytes": 0,
+        "coverage_complete": false,
+        "coverage_reasons": [
+          "result_limit"
+        ],
+        "coverage_scope": "selected_authorized_regular_single_link_files",
+        "entries": 142,
+        "extracted_documents": 0,
+        "files": 0,
+        "results": 128,
+        "skipped_binary_or_non_utf8": 0,
+        "skipped_document_invalid": 0,
+        "skipped_document_limited": 0,
+        "skipped_document_unavailable": 0,
+        "skipped_hardlinks": 0,
+        "skipped_large": 0,
+        "skipped_protected": 0,
+        "skipped_special": 0,
+        "skipped_symlinks": 0,
+        "traversal_complete": false,
+        "unreadable": 0
+      }
+    }
+  },
+  {
+    "ordinal": 8,
+    "key": "consumer-result-04",
+    "tool": "mcp__codex_apps__heptaruntime_mac_controller_search_results",
+    "request": {
+      "blob": "f4f1feef44ce3331277fdca129696e67c201f864",
+      "bytes": 117,
+      "sha256": "d0809ee7a3147d8cb1d27b85710eebb0edace9b577838f499529242f425e63ed"
+    },
+    "intent": {
+      "blob": "689b77585494027a71cca3315d0ab36c89e493b2",
+      "bytes": 1063,
+      "sha256": "76a1db7944699eea4c7d486cb7ac1f4700d04915468f8e4b0dad013239b06539"
+    },
+    "arm_tree": "5ca08661f768e5f28de61e5224bff88b0d2ee348",
+    "originalSDK": {
+      "blob": "488b12ef98504cd264aaa41d1bf829fb70eb08bb",
+      "bytes": 8589,
+      "sha256": "4a881be039c764e53f3d41043ebc84c6c742dda3a9dc8d1b4cbf1c38b9d1a8cd"
+    },
+    "sdk_tree": "306c57adfc3465e35bd5bb8f74d4038e784691bf",
+    "native": {
+      "blob": "98a1003802caa1a4cc6b5c1d65d378596059b361",
+      "bytes": 8216,
+      "sha256": "7bc3ebf3f56e7e3d0dada4a1f716284d9cf44a12880e7ad8c6fb5564d27eada2"
+    },
+    "native_from_originalSDK": "content[0].text",
+    "called": true,
+    "accepted": true,
+    "result": {
+      "search_id": "164d94fe0ce313136c059144efa005f384f52da4949abc9d98af79946daf26fb",
+      "state": "limited",
+      "cursor": 96,
+      "next_cursor": null,
+      "rows": 32,
+      "progressive": false,
+      "snapshot_ready": true,
+      "statistics": {
+        "bytes": 0,
+        "coverage_complete": false,
+        "coverage_reasons": [
+          "result_limit"
+        ],
+        "coverage_scope": "selected_authorized_regular_single_link_files",
+        "entries": 142,
+        "extracted_documents": 0,
+        "files": 0,
+        "results": 128,
+        "skipped_binary_or_non_utf8": 0,
+        "skipped_document_invalid": 0,
+        "skipped_document_limited": 0,
+        "skipped_document_unavailable": 0,
+        "skipped_hardlinks": 0,
+        "skipped_large": 0,
+        "skipped_protected": 0,
+        "skipped_special": 0,
+        "skipped_symlinks": 0,
+        "traversal_complete": false,
+        "unreadable": 0
+      }
+    }
+  },
+  {
+    "ordinal": 9,
+    "key": "backup-search-start-01",
+    "tool": "mcp__codex_apps__heptaruntime_mac_controller_search_start",
+    "request": {
+      "blob": "2eb16d0781b644f833c88c7ad1c00596b1e2c1ce",
+      "bytes": 664,
+      "sha256": "bfb28fc041d7070e32b51a328f0a5d2bb0dbdb3e2aad6d4dd3cd903572e5569e"
+    },
+    "intent": {
+      "blob": "0875c3bde5906bffa8997eeef05af8b1430647b9",
+      "bytes": 1197,
+      "sha256": "7647644787e185f36b6b6ea200c4d46454d9d59229f8a7132d72857a7c9ed9c1"
+    },
+    "arm_tree": "7f0c5540ead1c3f3e97daf211c45adaca7019879",
+    "originalSDK": {
+      "blob": "44b4103765664d80d016fce9ecbfe2afca4ef221",
+      "bytes": 1285,
+      "sha256": "d6ba152748d101fc82e2d39193079b228f96d62d6052cff99e01fc529ef17f68"
+    },
+    "sdk_tree": "1d05de9be338cb4c7d0ddb7c44f0e46e00981b6c",
+    "native": {
+      "blob": "df852f272f3af42cf28fcb924017527f0efa31e7",
+      "bytes": 1068,
+      "sha256": "762bd34104f4c859fee1eff9a86ae9a530a7195afde32582aaf8b0257ed6140c"
+    },
+    "native_from_originalSDK": "content[0].text",
+    "called": true,
+    "accepted": true,
+    "result": {
+      "search_id": "ce71eb3a4fbaf6af16c1bdc59f853b58190bbeb5123eb7bd168bc1f970486f52",
+      "state": "running"
+    }
+  },
+  {
+    "ordinal": 10,
+    "key": "backup-result-01",
+    "tool": "mcp__codex_apps__heptaruntime_mac_controller_search_results",
+    "request": {
+      "blob": "038198ceb4e7746c1d6a1e02f78545226e514dbb",
+      "bytes": 116,
+      "sha256": "36a428317baa18f7ba30fcf079b877dd263baef6ae87c78db802453883405587"
+    },
+    "intent": {
+      "blob": "6a148525dab4baee1e1691125e51e27e0f0d8621",
+      "bytes": 1229,
+      "sha256": "6e7d3fbd53ebd1d8940050ee7cae6395b3dd27529a8e562e2eafd5cd8c72f007"
+    },
+    "arm_tree": "96e90d76720ee0d8622ddd84f9c1120023f6512c",
+    "originalSDK": {
+      "blob": "b397085b3d0e5dc37617608c0e589e0c37324b55",
+      "bytes": 6457,
+      "sha256": "9c66cf8d448504b6e3850d5393f0b0f6a185e738d3f9b15a56cca0c819ca328a"
+    },
+    "sdk_tree": "2731f227a8d2d5e081f8ceaa3e278c7ec65e29a1",
+    "native": {
+      "blob": "a78d32314e4541b4c70223f80aca5a06e461d511",
+      "bytes": 6084,
+      "sha256": "f293f8c86512c62d9db5940517442aeb516b318b83a366700a73edfc2b5fdcaa"
+    },
+    "native_from_originalSDK": "content[0].text",
+    "called": true,
+    "accepted": true,
+    "result": {
+      "search_id": "ce71eb3a4fbaf6af16c1bdc59f853b58190bbeb5123eb7bd168bc1f970486f52",
+      "state": "limited",
+      "cursor": 0,
+      "next_cursor": 32,
+      "rows": 32,
+      "progressive": false,
+      "snapshot_ready": true,
+      "statistics": {
+        "bytes": 0,
+        "coverage_complete": false,
+        "coverage_reasons": [
+          "result_limit"
+        ],
+        "coverage_scope": "selected_authorized_regular_single_link_files",
+        "entries": 4011,
+        "extracted_documents": 0,
+        "files": 0,
+        "results": 128,
+        "skipped_binary_or_non_utf8": 0,
+        "skipped_document_invalid": 0,
+        "skipped_document_limited": 0,
+        "skipped_document_unavailable": 0,
+        "skipped_hardlinks": 0,
+        "skipped_large": 0,
+        "skipped_protected": 0,
+        "skipped_special": 0,
+        "skipped_symlinks": 0,
+        "traversal_complete": false,
+        "unreadable": 0
+      }
+    }
+  },
+  {
+    "ordinal": 11,
+    "key": "backup-result-02",
+    "tool": "mcp__codex_apps__heptaruntime_mac_controller_search_results",
+    "request": {
+      "blob": "d7210604b86d663d49010bb40beab95e97254dbd",
+      "bytes": 117,
+      "sha256": "89441e386ab25dc420994fa242a6154e6429a2c8b8d1c3dc2dde6f77f338d08d"
+    },
+    "intent": {
+      "blob": "0c46bdea7e9cca2191bd5e036574db901211d85b",
+      "bytes": 1062,
+      "sha256": "624fe25edb6d537a8df6829dbabb7ad664c94394e800104e1eff9d9fd9f0c56c"
+    },
+    "arm_tree": "b0a509fa5e6ab5e4ce7991d4c23ad6da4b25e12b",
+    "originalSDK": {
+      "blob": "3aa2b752fb7b9e3a958be1bc2289919b238dcab1",
+      "bytes": 5949,
+      "sha256": "5c542e1740f2280c79f860692014fe3fcb0176012562ac62fb5dd5124cc49422"
+    },
+    "sdk_tree": "04ad4e88df194ab9ac50958da17aebea42a69dc5",
+    "native": {
+      "blob": "5c238da8c6d556a49be5b66cdae69f9b5750146c",
+      "bytes": 5576,
+      "sha256": "ef0a08c9c0d7fef1f9aad3b6dabd6e16ec2593cdc964f73c4572f4654eabf434"
+    },
+    "native_from_originalSDK": "content[0].text",
+    "called": true,
+    "accepted": true,
+    "result": {
+      "search_id": "ce71eb3a4fbaf6af16c1bdc59f853b58190bbeb5123eb7bd168bc1f970486f52",
+      "state": "limited",
+      "cursor": 32,
+      "next_cursor": 64,
+      "rows": 32,
+      "progressive": false,
+      "snapshot_ready": true,
+      "statistics": {
+        "bytes": 0,
+        "coverage_complete": false,
+        "coverage_reasons": [
+          "result_limit"
+        ],
+        "coverage_scope": "selected_authorized_regular_single_link_files",
+        "entries": 4011,
+        "extracted_documents": 0,
+        "files": 0,
+        "results": 128,
+        "skipped_binary_or_non_utf8": 0,
+        "skipped_document_invalid": 0,
+        "skipped_document_limited": 0,
+        "skipped_document_unavailable": 0,
+        "skipped_hardlinks": 0,
+        "skipped_large": 0,
+        "skipped_protected": 0,
+        "skipped_special": 0,
+        "skipped_symlinks": 0,
+        "traversal_complete": false,
+        "unreadable": 0
+      }
+    }
+  },
+  {
+    "ordinal": 12,
+    "key": "backup-result-03",
+    "tool": "mcp__codex_apps__heptaruntime_mac_controller_search_results",
+    "request": {
+      "blob": "efca7838b763f3dbe5acca9e82c5ab0acd862118",
+      "bytes": 117,
+      "sha256": "8686c523dbf557a7515881c9940c8b9f75bd3d910654ad1ae3502bb8de2ce895"
+    },
+    "intent": {
+      "blob": "c2a0714104762ce44655fc2f29204f0731bb7008",
+      "bytes": 1062,
+      "sha256": "1c41e5574333222388c1c9fbe01ba6907e887012f9ec91090d3cdc684116d2bf"
+    },
+    "arm_tree": "6b70048c833b39384ff36d621c2b8b50110efbe1",
+    "originalSDK": {
+      "blob": "9c53a31fc8c9330040c0b1701adae1f5933fa07f",
+      "bytes": 6288,
+      "sha256": "9ea4ed3f2e6cf95b2083cf311cb80fff4399b9a96029e1f061eade801c4fbc86"
+    },
+    "sdk_tree": "c3eed8f286fee45ac5a030983ed133dbfe0abb01",
+    "native": {
+      "blob": "f41c1c1f3d31502f2d2d914dbb467500574b7350",
+      "bytes": 5915,
+      "sha256": "e75a0b52d4c5d089a6b3b27f3adefe32d964df56fb14750836efd282fcf86c2a"
+    },
+    "native_from_originalSDK": "content[0].text",
+    "called": true,
+    "accepted": true,
+    "result": {
+      "search_id": "ce71eb3a4fbaf6af16c1bdc59f853b58190bbeb5123eb7bd168bc1f970486f52",
+      "state": "limited",
+      "cursor": 64,
+      "next_cursor": 96,
+      "rows": 32,
+      "progressive": false,
+      "snapshot_ready": true,
+      "statistics": {
+        "bytes": 0,
+        "coverage_complete": false,
+        "coverage_reasons": [
+          "result_limit"
+        ],
+        "coverage_scope": "selected_authorized_regular_single_link_files",
+        "entries": 4011,
+        "extracted_documents": 0,
+        "files": 0,
+        "results": 128,
+        "skipped_binary_or_non_utf8": 0,
+        "skipped_document_invalid": 0,
+        "skipped_document_limited": 0,
+        "skipped_document_unavailable": 0,
+        "skipped_hardlinks": 0,
+        "skipped_large": 0,
+        "skipped_protected": 0,
+        "skipped_special": 0,
+        "skipped_symlinks": 0,
+        "traversal_complete": false,
+        "unreadable": 0
+      }
+    }
+  },
+  {
+    "ordinal": 13,
+    "key": "backup-result-04",
+    "tool": "mcp__codex_apps__heptaruntime_mac_controller_search_results",
+    "request": {
+      "blob": "88f333d21f58df904815d19d87837b5ce16475de",
+      "bytes": 117,
+      "sha256": "63aa9ace0d3f69e44f4394a8f3b50ab581de479dc97ecfb644fe6c92587e610f"
+    },
+    "intent": {
+      "blob": "357c0dfdd9d133a2edbd48b7d2f1a7424a609de7",
+      "bytes": 1062,
+      "sha256": "906784baa98bd6e7a7308930d4ff4d8370d247ededf58a736d4e3f6ec7bf3da4"
+    },
+    "arm_tree": "47184d62c72b781b80eb5ce1cd2f95ece5861ab9",
+    "originalSDK": {
+      "blob": "1d6e06c21d6ee62b459a7551f164c89e5b263ccc",
+      "bytes": 7205,
+      "sha256": "fc5b2b6844aefb4e97ff2610c78f51fe40b2c3c19b6ccd0f5a506b3a0035ea01"
+    },
+    "sdk_tree": "1b823d6940c593ce68ce0b7b5c5bdbcda86555c5",
+    "native": {
+      "blob": "91a988c1f573f1cd5d6b83784e3b3f9180ec3139",
+      "bytes": 6832,
+      "sha256": "e72c345eda1e604b686b007170ad702444b35a90884ebf47801e05e99a5c00fc"
+    },
+    "native_from_originalSDK": "content[0].text",
+    "called": true,
+    "accepted": true,
+    "result": {
+      "search_id": "ce71eb3a4fbaf6af16c1bdc59f853b58190bbeb5123eb7bd168bc1f970486f52",
+      "state": "limited",
+      "cursor": 96,
+      "next_cursor": null,
+      "rows": 32,
+      "progressive": false,
+      "snapshot_ready": true,
+      "statistics": {
+        "bytes": 0,
+        "coverage_complete": false,
+        "coverage_reasons": [
+          "result_limit"
+        ],
+        "coverage_scope": "selected_authorized_regular_single_link_files",
+        "entries": 4011,
+        "extracted_documents": 0,
+        "files": 0,
+        "results": 128,
+        "skipped_binary_or_non_utf8": 0,
+        "skipped_document_invalid": 0,
+        "skipped_document_limited": 0,
+        "skipped_document_unavailable": 0,
+        "skipped_hardlinks": 0,
+        "skipped_large": 0,
+        "skipped_protected": 0,
+        "skipped_special": 0,
+        "skipped_symlinks": 0,
+        "traversal_complete": false,
+        "unreadable": 0
+      }
+    }
+  }
+]

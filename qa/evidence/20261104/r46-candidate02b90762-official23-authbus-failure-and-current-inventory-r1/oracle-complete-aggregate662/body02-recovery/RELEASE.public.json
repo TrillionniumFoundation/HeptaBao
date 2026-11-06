@@ -1,0 +1,56 @@
+{
+  "schema": "heptabao.official271.r2.body02.same-ID-closed-release.r1",
+  "originalOperation": "6220e2762757d7afa1ba315c7beb2a985c59c147ac7cb3852aa17ba9c21c7a9e",
+  "originalJob": "1a1b1b4fbfa-fc05-7a60",
+  "recoverySlot": "official271_x230_acl23_r2_body02_status_reconcile_r1",
+  "originalSlot": "official271_x230_acl23_oracle_gitfirst_r2",
+  "originalPausedState": {
+    "blob": "652b0103388657f5515e30c077ce927c24b19cf2",
+    "bytes": 454676,
+    "sha256": "dd4a465e95e91c8aa23ddcde138d4541a52e79e7482297eb418bb89e16f83aa3"
+  },
+  "recoveryClosedState": {
+    "blob": "5d9085aeb711d6aab60f88b6641eb22e5222d66d",
+    "bytes": 109798,
+    "sha256": "96f62783eb44cf88fea10f65393392ff9de5fd5c1b27ff10682f00edebc8bcf7"
+  },
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallsInFlight": 0,
+  "activeFutures": 0,
+  "laneObservationClosed": true,
+  "handbackApplied": false,
+  "rootRecoveryGO": {
+    "blob": "7b1141c85601e434dff10db425277ca89e979aa6",
+    "bytes": 2494,
+    "sha256": "582a251cdce243240d5731c9bf4145be67fc954050716209b2a2d6e10d48540e"
+  },
+  "newCalls": 7,
+  "newStatusCalls": 1,
+  "oldFailedStatusCalls": 1,
+  "totalActualStatusQueriesForThisID": 2,
+  "pages": 6,
+  "payload": {
+    "blob": "f20019334ad38cacb1e167322cf7794a95e241da",
+    "bytes": 87807,
+    "sha256": "ee2852333b301886098786350bddfabf531c07672915529a9af3562d96de9528"
+  },
+  "native": {
+    "blob": "80fee5c5830ce3a427fc1a4f265be7b1ee63400c",
+    "bytes": 87704,
+    "sha256": "9899f711cc87f520fe247875f159c843ca107796e90d6f348680be3ce17625c6"
+  },
+  "range": {
+    "offset": 131072,
+    "limit": 65536,
+    "next": 196608,
+    "chunkSHA256": "e555738cebe004b499e9bd6cf256865322ae0a98c28a847e82ce4122496392cd",
+    "originalEOF": false
+  },
+  "bodyAdmissionsNew": 0,
+  "reportParsing": false,
+  "remainingSevenAdmissionsNew": 0,
+  "originalFailureUnknownRetained": true,
+  "oldBodyStartedCounter": 3,
+  "originalInfoAndBodyVersionPreserved": true
+}

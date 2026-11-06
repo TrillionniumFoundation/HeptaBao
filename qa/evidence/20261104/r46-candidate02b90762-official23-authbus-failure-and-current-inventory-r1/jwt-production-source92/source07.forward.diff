@@ -1,0 +1,445 @@
+--- /dev/null
++++ b/crates/heptabao-server/src/service_jwt_policy_tests.rs
+@@ -0,0 +1,442 @@
++//! Policy/default regressions through the real legacy Service issuance path.
++//! Native batch remains unsupported; these tests do not grant it qualification.
++use super::tests::{Root, bootstrap};
++use super::*;
++use base64::engine::general_purpose::URL_SAFE_NO_PAD;
++use ring::signature::{Ed25519KeyPair, KeyPair};
++use std::collections::BTreeSet;
++
++type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
++const ROLE: &str = "auth/policy-jwt/role/app";
++
++struct Fixture {
++    files: Root,
++    service: Service,
++    key: Zeroizing<String>,
++    admin: Zeroizing<String>,
++    pair: Ed25519KeyPair,
++    now: u64,
++}
++impl Fixture {
++    fn new() -> TestResult<Self> {
++        Self::with_historical_role(false)
++    }
++
++    fn with_historical_role(historical: bool) -> TestResult<Self> {
++        let files = Root::new();
++        let mut service = files.service()?;
++        let (key, admin) = bootstrap(&mut service)?;
++        let pair = Ed25519KeyPair::from_seed_unchecked(&[74; 32])
++            .map_err(|_| "synthetic JWT signing key")?;
++        let mut f = Self {
++            files,
++            service,
++            key: Zeroizing::new(key),
++            admin: Zeroizing::new(admin),
++            pair,
++            now: 100,
++        };
++        #[cfg(feature = "native-v6-storage")]
++        assert!(f.service.native_root.is_none());
++        status(&f.admin("POST", "sys/auth/policy-jwt", json!({"type":"jwt"}))?, 204);
++        let config = json!({
++            "issuer":"https://jwt-policy.example","audiences":["policy"],
++            "clock_skew_seconds":0,
++            "keys":[{"kid":"key","algorithm":"EdDSA",
++                "key_base64":URL_SAFE_NO_PAD.encode(f.pair.public_key().as_ref())}]
++        });
++        status(&f.admin("POST", "auth/policy-jwt/config", config)?, 204);
++        let mut body = json!({
++            "role_type":"jwt","user_claim":"sub","bound_audiences":["policy"],
++            "token_ttl":300,"token_max_ttl":600
++        });
++        if historical {
++            historical_role(
++                &mut f.service, &f.admin, "", "policy-jwt", "app", body, f.now
++            )?;
++        } else {
++            body["token_policies"] = json!([]);
++            status(&f.admin("POST", ROLE, body)?, 204);
++        }
++        Ok(f)
++    }
++
++    fn request(&mut self, actor: &str, method: &str, path: &str, body: Value)
++    -> TestResult<Response> {
++        self.now += 1;
++        match self.service.begin_at_mode(RequestDispatch {
++            method,
++            path,
++            namespace: "",
++            token: actor,
++            body,
++            now: self.now,
++            allow_forward: false,
++            enforce_namespace: true,
++            wrap_ttl_seconds: None,
++            origin_peer: None,
++            client_certificates: None,
++        }) {
++            RequestExecution::Complete(response) => Ok(response),
++            RequestExecution::External(_) => Err("local JWT escaped to external execution".into()),
++        }
++    }
++
++    fn admin(&mut self, method: &str, path: &str, body: Value) -> TestResult<Response> {
++        let admin = Zeroizing::new(self.admin.as_str().to_owned());
++        self.request(&admin, method, path, body)
++    }
++
++    fn assertion(&self) -> Zeroizing<String> {
++        let header = URL_SAFE_NO_PAD.encode(br#"{"alg":"EdDSA","kid":"key"}"#);
++        let claims = json!({
++            "iss":"https://jwt-policy.example","aud":"policy","sub":"alice",
++            "iat":self.now,"exp":self.now+60
++        });
++        let signing = format!("{header}.{}", URL_SAFE_NO_PAD.encode(claims.to_string()));
++        Zeroizing::new(format!(
++            "{signing}.{}",
++            URL_SAFE_NO_PAD.encode(self.pair.sign(signing.as_bytes()).as_ref())
++        ))
++    }
++
++    fn restart(mut self) -> TestResult<Self> {
++        drop(self.service);
++        let mut service = self.files.service()?;
++        self.now += 1;
++        status(
++            &service.handle_at("POST", "sys/unseal", "", "", json!({"key":self.key.as_str()}), self.now),
++            200,
++        );
++        #[cfg(feature = "native-v6-storage")]
++        assert!(service.native_root.is_none());
++        assert!(!service.recovery_required);
++        self.service = service;
++        Ok(self)
++    }
++
++    fn owner_bytes(&self) -> TestResult<Zeroizing<Vec<u8>>> {
++        let state = self.service.state.as_ref().ok_or("state")?;
++        let mut auth = serde_json::to_value(&state.auth)?;
++        // Ignore unrelated terminal-clock metadata, while retaining complete
++        // mount, role, token and engine/Identity objects for the rejected login.
++        let mut projection = json!({
++            "mounts":auth["auth_mounts"].take(),
++            "jwt":auth["jwt_mounts"].take(),
++            "tokens":auth["tokens"].take(),
++            "engines":&state.engines
++        });
++        let bytes = Zeroizing::new(serde_json::to_vec(&projection)?);
++        erase_json(&mut projection);
++        erase_json(&mut auth);
++        Ok(bytes)
++    }
++}
++
++fn status(response: &Response, expected: u16) {
++    assert_eq!(response.status, expected, "JWT errors={:?}", response.body.get("errors"));
++}
++
++fn policies(response: &Response, pointer: &str) -> TestResult<BTreeSet<String>> {
++    response.body.pointer(pointer).and_then(Value::as_array)
++        .ok_or_else(|| "policy array missing".into())
++        .and_then(|values| values.iter().map(|value| {
++            value.as_str().map(str::to_owned).ok_or_else(|| "policy string missing".into())
++        }).collect())
++}
++
++#[test]
++fn jwt_legacy_service_and_batch_issue_defaults_from_saved_raw_policies() -> TestResult {
++    for token_type in ["service", "batch"] {
++        for field in ["token_policies", "policies"] {
++            for (configured, suppress_default, expected) in [
++                (Vec::<&str>::new(), false, vec!["default"]),
++                (Vec::<&str>::new(), true, Vec::<&str>::new()),
++                (vec!["default"], true, vec!["default"]),
++            ] {
++                let mut f = Fixture::new()?;
++                let mut body = json!({
++                    "token_type":token_type,"token_no_default_policy":suppress_default
++                });
++                body[field] = json!(configured);
++                status(&f.admin("POST", ROLE, body)?, 204);
++                let read = f.admin("GET", ROLE, json!({}))?;
++                status(&read, 200);
++                assert_eq!(read.body["data"]["token_policies"], json!(configured));
++                assert_eq!(read.body["data"]["token_no_default_policy"], suppress_default);
++                let mut f = f.restart()?;
++                let assertion = f.assertion();
++                let before_tokens = serde_json::to_value(
++                    &f.service.state.as_ref().ok_or("state")?.auth
++                )?["tokens"].as_object().ok_or("tokens")?.len();
++                let mut issued = f.request(
++                    "",
++                    "POST",
++                    "auth/policy-jwt/login",
++                    json!({"role":"app","jwt":assertion.as_str()}),
++                )?;
++                status(&issued, 200);
++                let expected: BTreeSet<String> = expected.into_iter().map(str::to_owned).collect();
++                assert_eq!(policies(&issued, "/auth/policies")?, expected);
++                assert_eq!(policies(&issued, "/auth/token_policies")?, expected);
++                assert_eq!(issued.body["auth"]["token_type"], token_type);
++                assert_eq!(issued.body["auth"]["renewable"], token_type == "service");
++                let entity = issued.body["auth"]["entity_id"].as_str()
++                    .filter(|value| !value.is_empty()).ok_or("real entity missing")?.to_owned();
++                let token = Zeroizing::new(
++                    issued.body["auth"]["client_token"].as_str()
++                        .filter(|value| !value.is_empty()).ok_or("real token missing")?.to_owned()
++                );
++                erase_json(&mut issued.body);
++                let mut looked = f.admin(
++                    "POST",
++                    "auth/token/lookup",
++                    json!({"token":token.as_str()}),
++                )?;
++                status(&looked, 200);
++                assert_eq!(policies(&looked, "/data/policies")?, expected);
++                assert_eq!(looked.body["data"]["type"], token_type);
++                assert_eq!(looked.body["data"]["entity_id"], entity);
++                erase_json(&mut looked.body);
++                let after_tokens = serde_json::to_value(
++                    &f.service.state.as_ref().ok_or("state")?.auth
++                )?["tokens"].as_object().ok_or("tokens")?.len();
++                assert_eq!(after_tokens, before_tokens + usize::from(token_type == "service"));
++                let mut f = f.restart()?;
++                let mut looked = f.admin(
++                    "POST",
++                    "auth/token/lookup",
++                    json!({"token":token.as_str()}),
++                )?;
++                status(&looked, 200);
++                assert_eq!(policies(&looked, "/data/policies")?, expected);
++                assert_eq!(looked.body["data"]["entity_id"], entity);
++                erase_json(&mut looked.body);
++            }
++        }
++    }
++    Ok(())
++}
++
++#[test]
++fn jwt_legacy_root_role_is_saved_but_service_and_batch_issuance_are_rejected() -> TestResult {
++    for token_type in ["service", "batch"] {
++        for field in ["token_policies", "policies"] {
++            for suppress_default in [false, true] {
++                let mut f = Fixture::new()?;
++                let mut body = json!({
++                    "token_type":token_type,"token_no_default_policy":suppress_default
++                });
++                body[field] = json!(["root"]);
++                status(&f.admin("POST", ROLE, body)?, 204);
++                let mut f = f.restart()?;
++                assert_eq!(
++                    f.admin("GET", ROLE, json!({}))?.body["data"]["token_policies"],
++                    json!(["root"])
++                );
++                let assertion = f.assertion();
++                let before = f.owner_bytes()?;
++                let denied = f.request(
++                    "",
++                    "POST",
++                    "auth/policy-jwt/login",
++                    json!({"role":"app","jwt":assertion.as_str()}),
++                )?;
++                status(&denied, 400);
++                assert!(denied.body.get("auth").is_none());
++                assert!(before.as_slice() == f.owner_bytes()?.as_slice());
++            }
++        }
++    }
++    Ok(())
++}
++
++#[test]
++fn jwt_policy_schema147_covers_false_true_all_namespaces_and_sticky_restore_floor()
++-> TestResult {
++    let mut f = Fixture::new()?;
++    for flag in [false, true] {
++        status(
++            &f.admin("POST", ROLE, json!({"token_policies":[],"token_no_default_policy":flag}))?,
++            204,
++        );
++        let state = f.service.state.as_ref().ok_or("state")?.clone();
++        assert_eq!(state.schema, JWT_POLICY_STATE_SCHEMA);
++        assert_eq!(state.writer_schema(), JWT_POLICY_STATE_SCHEMA);
++        assert!(state.validate_format().is_ok());
++        let mut owner = serde_json::to_value(&state.auth)?;
++        let role = &owner["jwt_mounts"][""]["policy-jwt"]["roles"]["app"];
++        assert_eq!(role["policies"], json!([]));
++        assert_eq!(role["token_no_default_policy"], flag);
++        let mut downgraded = state.clone();
++        downgraded.schema = JWT_POLICY_STATE_SCHEMA - 1;
++        assert!(downgraded.validate_format().is_err());
++        assert!(downgraded.validate_publication_schema(Some(&state)).is_err());
++        assert_eq!(
++            Service::validate_snapshot_protected_floor(&state, &downgraded)
++                .err().ok_or("downgrade accepted")?.status,
++            400
++        );
++        // A pure owner-format projection, never published as a valid tenant:
++        // the same marker in a non-root namespace must still raise the floor.
++        let mount = owner["jwt_mounts"][""].take();
++        owner["jwt_mounts"].as_object_mut().ok_or("JWT namespaces")?.clear();
++        owner["jwt_mounts"]["policy-namespace-fixture"] = mount;
++        let auth: AuthState = serde_json::from_value(owner.clone())?;
++        erase_json(&mut owner);
++        assert!(auth.has_jwt_policy_state());
++        let mut namespace_projection = state.clone();
++        namespace_projection.auth = auth.into();
++        namespace_projection.schema = JWT_POLICY_STATE_SCHEMA - 1;
++        assert_eq!(namespace_projection.writer_schema(), JWT_POLICY_STATE_SCHEMA);
++        assert!(namespace_projection.validate_format().is_err());
++        assert!(namespace_projection.validate_publication_schema(None).is_err());
++    }
++    // Real retirement must preserve the sticky reader floor after all markers
++    // disappear; even a marker-free image labelled 146 cannot restore over it.
++    status(&f.admin("DELETE", ROLE, json!({}))?, 204);
++    let mut f = f.restart()?;
++    let retired = f.service.state.as_ref().ok_or("state")?.clone();
++    assert!(!retired.auth.has_jwt_policy_state());
++    assert_eq!(retired.schema, JWT_POLICY_STATE_SCHEMA);
++    assert_eq!(retired.writer_schema(), JWT_POLICY_STATE_SCHEMA);
++    let mut old = retired.clone();
++    old.schema = JWT_POLICY_STATE_SCHEMA - 1;
++    assert!(old.validate_publication_schema(Some(&retired)).is_err());
++    assert!(Service::validate_snapshot_protected_floor(&retired, &old).is_err());
++    let mut future = retired;
++    future.schema = MAX_SUPPORTED_STATE_SCHEMA + 1;
++    assert_eq!(future.writer_schema(), MAX_SUPPORTED_STATE_SCHEMA + 1);
++    assert!(future.validate_format().is_err());
++    Ok(())
++}
++
++#[test]
++fn jwt_historical_absent_policy_marker_keeps_bytes_and_default_origin() -> TestResult {
++    let mut f = Fixture::with_historical_role(true)?;
++    let source = f.service.state.as_ref().ok_or("historical state")?;
++    assert!(source.schema < JWT_POLICY_STATE_SCHEMA);
++    assert!(!source.auth.has_jwt_policy_state());
++    assert_eq!(source.writer_schema(), source.schema);
++    assert!(source.validate_format().is_ok());
++    let before = owner_store::serialize_owner(&source.auth).map_err(|_| "old owner encode")?;
++    let auth: AuthState = serde_json::from_slice(&before)?;
++    let after = owner_store::serialize_owner(&auth).map_err(|_| "old owner reencode")?;
++    assert!(before.as_slice() == after.as_slice());
++    let mut value: Value = serde_json::from_slice(&after)?;
++    assert!(value["jwt_mounts"][""]["policy-jwt"]["roles"]["app"]
++        .get("token_no_default_policy").is_none());
++    assert_eq!(value["jwt_mounts"][""]["policy-jwt"]["roles"]["app"]["policies"], json!(["default"]));
++    erase_json(&mut value);
++    status(&f.admin("POST", ROLE, json!({"token_ttl":301}))?, 204);
++    let mut f = f.restart()?;
++    let state = f.service.state.as_ref().ok_or("historical state")?;
++    assert!(state.schema < JWT_POLICY_STATE_SCHEMA);
++    assert!(!state.auth.has_jwt_policy_state());
++    let encoded = owner_store::serialize_owner(&state.auth).map_err(|_| "owner encode")?;
++    let mut value: Value = serde_json::from_slice(&encoded)?;
++    assert!(value["jwt_mounts"][""]["policy-jwt"]["roles"]["app"]
++        .get("token_no_default_policy").is_none());
++    erase_json(&mut value);
++    status(&f.admin("POST", ROLE, json!({"token_no_default_policy":true}))?, 204);
++    let mut f = f.restart()?;
++    let state = f.service.state.as_ref().ok_or("upgraded state")?;
++    assert_eq!(state.schema, JWT_POLICY_STATE_SCHEMA);
++    assert!(state.auth.has_jwt_policy_state());
++    let encoded = owner_store::serialize_owner(&state.auth).map_err(|_| "owner encode")?;
++    let mut value: Value = serde_json::from_slice(&encoded)?;
++    assert_eq!(value["jwt_mounts"][""]["policy-jwt"]["roles"]["app"]["policies"], json!(["default"]));
++    assert_eq!(value["jwt_mounts"][""]["policy-jwt"]["roles"]["app"]["token_no_default_policy"], true);
++    erase_json(&mut value);
++    // That historical default has unknown origin and stays configured. It must
++    // still be issued after true, without reinterpreting it as injected metadata.
++    let assertion = f.assertion();
++    let mut response = f.request("", "POST", "auth/policy-jwt/login",
++        json!({"role":"app","jwt":assertion.as_str()}))?;
++    status(&response, 200);
++    assert_eq!(policies(&response, "/auth/token_policies")?, BTreeSet::from(["default".into()]));
++    erase_json(&mut response.body);
++    Ok(())
++}
++
++// A historical input factory for old schema68/69 regressions. Construct only a
++// never-published role; never strip a marker from the live predecessor or lower
++// a published schema147. Normal JWT tests still use the real HTTP role path.
++pub(super) fn historical_role(
++    service: &mut Service,
++    token: &str,
++    namespace: &str,
++    mount: &str,
++    name: &str,
++    body: Value,
++    now: u64,
++) -> TestResult {
++    if service.recovery_required || service.ha.is_some()
++        || service.postgres_durable.is_some() || service.durable.is_none()
++        || service.barrier_key.is_none()
++        || body.get("policies").is_some() || body.get("token_policies").is_some()
++        || body.get("token_no_default_policy").is_some()
++    {
++        return Err("historical JWT input requires an ordinary untouched role".into());
++    }
++    #[cfg(target_os = "linux")]
++    if service.wrapper_barrier_selected() {
++        return Err("historical JWT input cannot select Wrapper storage".into());
++    }
++    #[cfg(feature = "native-v6-storage")]
++    if service.native_storage_profile.is_some()
++        || service.native_candidate_profile.is_some() || service.native_root.is_some()
++    {
++        return Err("historical JWT input cannot select Native storage".into());
++    }
++    let source = service.state.as_ref().ok_or("historical predecessor")?;
++    if source.schema >= JWT_POLICY_STATE_SCHEMA || source.auth.has_jwt_policy_state()
++        || source.namespace_protected.is_some()
++    {
++        return Err("historical JWT input cannot erase a new or protected policy owner".into());
++    }
++    source.validate_format().map_err(|_| "historical predecessor format")?;
++    let principal = source.auth.authenticate_read_only(token, now)?
++        .ok_or("historical root principal")?;
++    if !principal.is_root() || !principal.namespace().is_empty() {
++        return Err("historical JWT input requires the actual root credential".into());
++    }
++    let path = format!("auth/{mount}/role/{name}");
++    let mut original = serde_json::to_value(&source.auth)?;
++    if original["jwt_mounts"][namespace][mount]["roles"].get(name).is_some() {
++        erase_json(&mut original);
++        return Err("historical JWT input cannot replace an existing role".into());
++    }
++    erase_json(&mut original);
++    source.auth.authorize_request_parameters_observed(
++        &principal, namespace, "POST", &path, &body, AuthorityTime::Coarse(now)
++    )?;
++    let mut candidate = source.clone();
++    let response = candidate.auth.handle(
++        Some(&principal), namespace, "POST", &path, &body, now
++    )?.ok_or("historical JWT input route")?;
++    if response.status != 204 || !response.mutated || !response.body.is_null() {
++        return Err("historical JWT input was not a new valid role".into());
++    }
++    let mut owner = serde_json::to_value(&candidate.auth)?;
++    let role = owner["jwt_mounts"][namespace][mount]["roles"][name]
++        .as_object_mut().ok_or("unpublished historical role")?;
++    if role.get("token_no_default_policy") != Some(&json!(false))
++        || role.get("policies") != Some(&json!([]))
++    {
++        return Err("unpublished historical role policy shape changed".into());
++    }
++    role.remove("token_no_default_policy");
++    role.insert("policies".into(), json!(["default"]));
++    candidate.auth = serde_json::from_value::<AuthState>(owner.clone())?.into();
++    erase_json(&mut owner);
++    if candidate.auth.has_jwt_policy_state() {
++        return Err("historical candidate still contains new policy metadata".into());
++    }
++    candidate.schema = candidate.writer_schema();
++    candidate.validate_publication_schema(service.state.as_ref())
++        .map_err(|_| "historical candidate publication format")?;
++    service.commit_state(&mut candidate).map_err(|_| "historical first publication")?;
++    service.install_committed_namespace_view(candidate);
++    Ok(())
++}

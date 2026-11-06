@@ -1,0 +1,8 @@
+{
+  "schema": "heptabao.pure-archive-precondition-error.v1",
+  "error": "MISSING:delivery_forward",
+  "stage": "full-packet assembly before archive",
+  "effects": "no Native or Git mutation; original evidence unchanged",
+  "correction": "obtain exact diff from frozen delivery SOURCE texts instead of assumed cache alias",
+  "clarification": "delivery_forward key was present as {raw,hunks}; the failed test expected a string; frozen SOURCE delivery.forward.diff is exact raw. No original evidence changed."
+}

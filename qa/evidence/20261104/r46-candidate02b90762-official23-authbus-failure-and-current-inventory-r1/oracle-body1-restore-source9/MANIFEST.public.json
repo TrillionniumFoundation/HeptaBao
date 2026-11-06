@@ -1,0 +1,53 @@
+{
+  "schema": "heptabao.fixed-source-manifest.r1",
+  "entries": [
+    {
+      "path": "restore.source.js",
+      "blob": "7e0d9e66249dc8cfa19c9957a66288f43312014e",
+      "bytes": 2805,
+      "sha256": "079d6ca900bbf2f718639c66f44d43e13a34cfa6d2d4c0d1f3121470124b36c3"
+    },
+    {
+      "path": "STATE.before.original.json",
+      "blob": "551c671b614f169d938ea734a963c0a996258dbf",
+      "bytes": 346725,
+      "sha256": "fc5eddffa1ec12f067afbf5016d66924e23ed188b780618309fc554130e0a9fa"
+    },
+    {
+      "path": "STATE.after.proposed.json",
+      "blob": "8d2dfab08450b092edf96f83004dcb59a9eb2bba",
+      "bytes": 347811,
+      "sha256": "9d072f1a2b834ef6539ff50af27c5fc5be234b26f0e90eea2c95fa08dc6500dd"
+    },
+    {
+      "path": "RECONCILIATION.actual.json",
+      "blob": "e58b4ef7bed4b32ed196726e19fdcff0801d2e53",
+      "bytes": 1007,
+      "sha256": "46a0ce5d5df69a0ae9d5e0b08607050b0f9f9ae1aeaa68bb87f10d82778a8475"
+    },
+    {
+      "path": "FAKE-GO.source-only.json",
+      "blob": "e301752eb409f351424c53421d2301174426a7f2",
+      "bytes": 411,
+      "sha256": "b065d98688d1abd679c4595b7e593c3caf73b220745faafd268847ea954a8fbb"
+    },
+    {
+      "path": "verifier.actual.json",
+      "blob": "db240a066b75f91fdb3efa795a66db0f6b555720",
+      "bytes": 1396,
+      "sha256": "86dd1f03c99009edf4024f2f930e97b9f3b0a7c233f385475a4cc1e24a13a1e2"
+    },
+    {
+      "path": "PLAN.public.json",
+      "blob": "fd53ecf3a281f4999afb080fd089ec2bcdc1b474",
+      "bytes": 1776,
+      "sha256": "619ed44475d92651681372468068146013488011947760d3dc747fc13ade315d"
+    },
+    {
+      "path": "pure.original.js",
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    }
+  ]
+}

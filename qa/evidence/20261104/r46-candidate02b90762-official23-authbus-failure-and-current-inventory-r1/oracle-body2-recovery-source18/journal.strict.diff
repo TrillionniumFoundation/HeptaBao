@@ -1,0 +1,167 @@
+--- a/official271-r2-body02-original-status-recovery
++++ b/official271-r2-body02-original-status-recovery
+@@ -5,20 +5,19 @@
+  * Every original SDK is store'd, serialized, Git-created once and whole-read
+  * before isError or native text is inspected.
+  */
+-const GF_SLOT = "official271_x230_acl23_report_info_status_reconcile_r1";
+-const GF_ORIGINAL_SLOT = "official271_x230_acl23_oracle_gitfirst_r1";
+-const GF_ORIGINAL_PAUSED_STATE = {"blob":"6c825b1f09d8584aafef83e153a7470679cae7cb","bytes":223583,"sha256":"af2add9ab483ad2c95c09da48e9307eb30ab78e864bf7e015edbfb2ae323268d"};
+-const GF_ORIGINAL_INFO_OPERATION = "a0a962c286bd8b5d4eeb3df9b6d075c3651ac317544ee6a25737be98cd29efc8";
+-const GF_ORIGINAL_FAILED_STATUS_KEY = "official271-x230-acl23-report-info-status0-r1";
++const GF_SLOT = "official271_x230_acl23_r2_body02_status_reconcile_r1";
++const GF_ORIGINAL_SLOT = "official271_x230_acl23_oracle_gitfirst_r2";
++const GF_ORIGINAL_PAUSED_STATE = {"blob":"652b0103388657f5515e30c077ce927c24b19cf2","bytes":454676,"sha256":"dd4a465e95e91c8aa23ddcde138d4541a52e79e7482297eb418bb89e16f83aa3"};
++const GF_ORIGINAL_BODY_OPERATION = "6220e2762757d7afa1ba315c7beb2a985c59c147ac7cb3852aa17ba9c21c7a9e";
++const GF_ORIGINAL_FAILED_STATUS_KEY = "official271-x230-acl23-r2-body02-status0";
+ const GF_ORIGINAL_FAILED_STATUS_SDK = {"blob":"0cede4881f37869cfd279b69b738c87eb62b4889","bytes":248,"sha256":"b85d625e0a8999ce34020675f0a2f8ba093e807dc725c16053a63c92fbbc9c70"};
+-const GF_RECONCILE_STATUS_REQUEST = {"blob":"218e1601e3925e6e4923aee8a43b9cb8ed1e3c31","bytes":89,"sha256":"862f3d441b53b066a88880b5d652afc0a842368c9e88fa868b011a05b3600d14"};
+-const GF_REQUEST = {"blob":"90b68f243c6dfc77cedce08b6d1095ffdd1a79a1","bytes":164440,"sha256":"f03764a69cd820e1e31409fb5c9d08523f4df98c4c28078eb5bf7ed8b56df9d8"};
++const GF_RECONCILE_STATUS_REQUEST = {"blob":"182980da62d3a27a098c8fb974e6a68dd7926318","bytes":84,"sha256":"f99d18d13005ea9de9e2426fcc8fbce4e668450f52fdd726234aa3f8e4cc7317"};
+ 
+-const GF_ORACLE_REPORT_INFO_REQUEST = {"blob":"3d4b0ac9b5e642da091ae07c6e446c2c4947b817","bytes":267,"sha256":"4a98bc7695715f1cdc1e50ba56ffe85a16511f11af6305d356eaf2092a1b3094"};
+-const GF_ORACLE_REPORT_INFO_TARGET = {"path":"/home/qian/heptabao-official271-acl23-oracle-20261106-r1/result.public.json","bytes":36658,"sha256":"4b72f600f6b794c5cf7198ebe76696179cd2477da587113a5ee7bfe81be3eece","full9Strings":["2053","3318893","1000","1000","33152","1","36658","1793979309530036044","1793979309530036044"]};
+-const GF_ORACLE_REPORT_PRIOR_STATE = {"blob":"79d77bf0c3c347a504641becf40670db09cf2bac","bytes":213768,"sha256":"bb7c9bca85b753a5ce96f767043d02ef23a801473b7f252809f8343f3e7d5906"};
+-const GF_ORACLE_REPORT_STDOUT = {"blob":"4cadde347ce3fb4b3dd8a175dea060bb73ccb1db","bytes":782,"sha256":"a423a851fc982b94aa352315f29a5c30f099988b820421a43f84c369d42ec426"};
++const GF_ORIGINAL_BODY_REQUEST = {"blob":"3be4277978fa7422d4d70d4ca3239f91a7006ce6","bytes":331,"sha256":"917bfc19c6b300654f742555eccee4d5d8d1a6b60472da0d686e97a0432e0ae2"};
++const GF_ORIGINAL_BODY_TARGET = {"path":"/home/qian/heptabao-official271-acl23-oracle-20261106-r2/result.public.json","bytes":651803,"sha256":"9048f3b5c854a190dadde86f5d7eec180c497313065bd70bd23a87124789a62d","version":"2053:2098461:651803:1793982810542000556:1793982810542000556","offset":131072,"limit":65536};
+ 
++const GF_ORIGINAL_ADMIT_KEY = "official271-x230-acl23-r2-body02-admit";
++
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {
+  const actual=gitBlobMeta(raw);
+@@ -42,29 +41,32 @@
+  gfNeed(load(GF_SLOT)===undefined,"new_readonly_reconciliation_context_once");
+  gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin),"whole_same_ID_reconciliation_GO");
+  const g=JSON.parse(goRaw);
+- gfNeed(g.authorization==="GO" && g.scope==="official271_original_report_info_same_id_status_reconciliation_only"
+-  && g.original_job==="1a1b17f9eff-fc05-7932" && g.original_operation_id===GF_ORIGINAL_INFO_OPERATION
++ gfNeed(g.authorization==="GO" && g.scope==="official271_r2_original_body02_same_id_status_reconciliation_only"
++  && g.original_job==="1a1b1b4fbfa-fc05-7a60" && g.original_operation_id===GF_ORIGINAL_BODY_OPERATION
+   && g.maximum_new_operation_status_calls===1 && g.original_operation_status_calls===1
+   && g.maximum_combined_operation_status_calls===8 && g.maximum_operation_result_calls===128
+   && g.maximum_operation_start_calls===0 && g.maximum_process_start_calls===0
+-  && g.immutable_page_bytes===8192 && g.maximum_payload_bytes===1048576
++  && g.immutable_page_bytes===16384 && g.maximum_payload_bytes===1048576
+   && JSON.stringify(g.exact_status_request)===JSON.stringify(GF_RECONCILE_STATUS_REQUEST),
+   "one_new_status_then_only_original_payload_if_closed");
+  gfNeed(gfMetaEquals(originalStateRaw,GF_ORIGINAL_PAUSED_STATE)
+   && JSON.stringify(load(GF_ORIGINAL_SLOT),null,2)+"\n"===originalStateRaw,"old_paused_context_whole_unchanged");
+  const prior=JSON.parse(originalStateRaw),oldCall=prior.calls[GF_ORIGINAL_FAILED_STATUS_KEY],observer=prior.activeObserver;
+  gfNeed(prior.paused===true && prior.pending===GF_ORIGINAL_FAILED_STATUS_KEY
+-  && prior.nativeCallInFlight===false && Object.keys(prior.calls).length===9
+-  && prior.completedObservers.length===2 && prior.job==="1a1b17f9eff-fc05-7932"
+-  && observer.id===GF_ORIGINAL_INFO_OPERATION && observer.tool==="file_info"
++  && prior.nativeCallInFlight===false && Object.keys(prior.calls).length===28
++  && prior.completedObservers.length===5 && prior.job==="1a1b1b4fbfa-fc05-7a60"
++  && prior.oracleReportBodyStarted===3 && prior.oracleReportBodyRanges.length===2
++  && observer.id===GF_ORIGINAL_BODY_OPERATION && observer.tool==="binary_read"
+   && observer.futureClosed===false && observer.nextPageOffset===0 && observer.pages.length===0
+-  && observer.eof===false && gfMetaEquals(JSON.stringify(observer.request,null,2)+"\n",GF_ORACLE_REPORT_INFO_REQUEST)
++  && observer.eof===false
++  && gfMetaEquals(prior.calls[GF_ORIGINAL_ADMIT_KEY].requestRaw,GF_ORIGINAL_BODY_REQUEST)
++  && JSON.stringify(observer.request)===JSON.stringify(JSON.parse(prior.calls[GF_ORIGINAL_ADMIT_KEY].requestRaw))
+   && oldCall.called===true && oldCall.phase==="native_interpretation_refused"
+   && oldCall.sdkArchive?.whole===true
+   && gfMetaEquals(load(GF_ORIGINAL_SLOT+":original_sdk_raw:"+GF_ORIGINAL_FAILED_STATUS_KEY),GF_ORIGINAL_FAILED_STATUS_SDK),
+-  "returned_original_INFO_ACK_and_unknown_status_not_reset");
++  "returned_original_BINARY_ACK_and_unknown_status_not_reset");
+  gfNeed(Object.values(prior.calls).filter(c=>c.kind==="operation_status"
+-  && JSON.parse(c.requestRaw).operation_id===GF_ORIGINAL_INFO_OPERATION).length===1,
++  && JSON.parse(c.requestRaw).operation_id===GF_ORIGINAL_BODY_OPERATION).length===1,
+   "one_original_status_query_before_one_new_query");
+  store(GF_SLOT,{rootGoWhole:true,goRaw,goPin,digest:null,fingerprint:null,
+   job:prior.job,startCalled:false,pending:null,nativeCallInFlight:false,paused:false,
+@@ -72,22 +74,22 @@
+   activeObserver:observer,reconcileStatusCalls:0,originalStatusCalls:1,
+   originalPausedContext:{slot:GF_ORIGINAL_SLOT,state:GF_ORIGINAL_PAUSED_STATE,
+    failedStatusKey:GF_ORIGINAL_FAILED_STATUS_KEY,failedStatusSDK:GF_ORIGINAL_FAILED_STATUS_SDK},
+-  onlyOracleReportInfo:true,oracleReportInfoStarted:true,oracleReportInfo:null,
++  onlyOriginalBodyRange:true,originalBodyRange:null,
+   localJournalAvailable:false,gitFirstExplicitlyRequiredByThisRootGO:true});
+ }
+ function gfValidateRequest(s,kind,q,raw) {
+  gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null,"single_call_boundary");
+  if(kind==="operation_status") {
+   gfNeed(s.reconcileStatusCalls===0 && s.originalStatusCalls===1 && s.originalStatusCalls+s.reconcileStatusCalls<8
+-   && s.activeObserver?.id===GF_ORIGINAL_INFO_OPERATION && !s.activeObserver.futureClosed
++   && s.activeObserver?.id===GF_ORIGINAL_BODY_OPERATION && !s.activeObserver.futureClosed
+    && gfMetaEquals(raw,GF_RECONCILE_STATUS_REQUEST)
+-   && Object.keys(q).join(",")==="operation_id" && q.operation_id===GF_ORIGINAL_INFO_OPERATION,
++   && Object.keys(q).join(",")==="operation_id" && q.operation_id===GF_ORIGINAL_BODY_OPERATION,
+    "one_new_readonly_status_for_same_returned_original_ID");
+  } else if(kind==="operation_result") {
+   gfNeed(s.reconcileStatusCalls===1 && s.activeObserver?.futureClosed===true
+-   && s.activeObserver.id===GF_ORIGINAL_INFO_OPERATION && !s.activeObserver.eof
++   && s.activeObserver.id===GF_ORIGINAL_BODY_OPERATION && !s.activeObserver.eof
+    && s.activeObserver.pages.length<128 && Object.keys(q).sort().join(",")==="limit,offset,operation_id"
+-   && q.operation_id===GF_ORIGINAL_INFO_OPERATION && q.limit===8192
++   && q.operation_id===GF_ORIGINAL_BODY_OPERATION && q.limit===16384
+    && q.offset===s.activeObserver.nextPageOffset,"closed_original_immutable_next_page_only");
+  } else throw new Error("only_same_ID_status_and_original_result_no_admission");
+ }
+@@ -196,7 +198,7 @@
+     && Number.isSafeInteger(v.total_bytes) && v.total_bytes>=0 && v.total_bytes<=1048576
+     && /^[a-f0-9]{64}$/.test(v.result_sha256),"exact_original_immutable_payload");
+    const b=unb64(v.data_base64);
+-   gfNeed(b.length<=8192 && v.next_offset===q.offset+b.length
++   gfNeed(b.length<=16384 && v.next_offset===q.offset+b.length
+      && v.next_offset<=v.total_bytes && v.eof===(v.next_offset===v.total_bytes)
+      && (b.length>0||v.eof),"exact_original_page_extent");
+    gfNeed(a.total===null || (a.total===v.total_bytes && a.digest===v.result_sha256),
+@@ -238,36 +240,24 @@
+   gfNeed(p.resultType==="complete" && p.isError===false
+     && p.content?.length===1 && p.content[0].type==="text","original_native_result_success");
+   const nativeRaw=p.content[0].text,v=parseLosslessIntegers(nativeRaw);
+-  if(a.tool==="file_info") {
+-   const t=GF_ORACLE_REPORT_INFO_TARGET,md=v.metadata,parts=typeof v.version==="string"?v.version.split(":"):[];
+-   gfNeed(s.onlyOracleReportInfo===true && s.oracleReportInfoStarted===true && s.oracleReportInfo===null
+-    && a.request.operation.arguments.host==="x230" && a.request.operation.arguments.path===t.path
+-    && v.path===t.path && v.size===t.bytes && v.size<=1048576 && v.sha256===t.sha256
+-    && v.mode===384 && md?.metadata_platform==="linux" && md.mode===384
+-    && md.uid===1000 && md.gid===1000 && md.link_count===1
+-    && parts.length===5 && parts.every(x=>/^[0-9]+$/.test(x)) && parts[2]===String(v.size),
+-    "exact_report_metadata_SHA_mode_version");
+-   const full9=[parts[0],parts[1],"1000","1000",String(32768|v.mode),"1",String(v.size),parts[3],parts[4]];
+-   gfNeed(JSON.stringify(full9)===JSON.stringify(t.full9Strings),"actual_stdout_and_independent_report_full9_equal");
+-   s.oracleReportInfo={path:v.path,size:v.size,sha256:v.sha256,version:v.version,
+-    full9Strings:full9,originalOperation:a.id,nativeText:gitBlobMeta(nativeRaw),
+-    regularFileFromNativeFileInfoContract:true,bodyReadAuthorized:false};
+-  } else gfNeed(v.job_id===s.job,"original_job_native_result_binding");
+-  if(a.tool==="process_read") {
+-   for(const stream of ["stdout","stderr"]) {
+-    const row=v[stream],asked=a.request.operation.arguments[stream+"_offset"];
+-    gfNeed(row && row.offset===asked && Number.isSafeInteger(row.next_offset)
+-      && typeof row.text==="string" && typeof row.bytes_hex==="string"
+-      && /^[a-f0-9]*$/.test(row.bytes_hex),"lossless_original_stream_shape");
+-    const b=[];for(let i=0;i<row.bytes_hex.length;i+=2)b.push(parseInt(row.bytes_hex.slice(i,i+2),16));
+-    gfNeed(row.bytes_hex.length%2===0 && b.length<=16384 && row.next_offset===asked+b.length
+-      && utf8Text(b)===row.text && Number.isSafeInteger(row.size)
+-      && row.size>=row.next_offset && typeof row.eof==="boolean"
+-      && (!row.eof||row.next_offset===row.size),
+-      "lossless_original_stream_text_hex_extent");
+-    s[stream==="stdout"?"nextStdout":"nextStderr"]=row.next_offset;
+-   }
+-  }
++  const t=GF_ORIGINAL_BODY_TARGET,asked=a.request.operation.arguments;
++  gfNeed(a.id===GF_ORIGINAL_BODY_OPERATION && a.tool==="binary_read"
++    && s.onlyOriginalBodyRange===true && s.originalBodyRange===null
++    && s.reconcileStatusCalls===1 && s.originalStatusCalls===1
++    && asked.host==="x230" && asked.path===t.path && asked.offset===t.offset
++    && asked.limit===t.limit && asked.expected_version===t.version
++    && v.path===t.path && v.version===t.version && v.size===t.bytes
++    && v.offset===t.offset && v.next_offset===t.offset+t.limit
++    && v.eof===(v.next_offset===t.bytes) && typeof v.data_base64==="string"
++    && /^[a-f0-9]{64}$/.test(v.chunk_sha256),
++    "same_original_body02_version_and_range");
++  const bodyBytes=unb64(v.data_base64);
++  gfNeed(bodyBytes.length===65536 && bodyBytes.length===t.limit
++    && sha256Latin1(byteString(bodyBytes))===v.chunk_sha256,
++    "whole_original_body02_chunk_SHA_no_report_semantic_parse");
++  s.originalBodyRange={offset:t.offset,limit:t.limit,next:v.next_offset,
++    chunkSHA256:v.chunk_sha256,base64:v.data_base64,originalOperation:a.id,
++    originalPayload:pin,originalPayloadTree:archive.tree};
+   const original={id:a.id,tool:a.tool,payload:pin,payloadTree:archive.tree,
+     nativeText:gitBlobMeta(nativeRaw),pages:a.pages.length,completedInactive:true};
+   s.completedObservers.push(original);s.activeObserver=null;gfSave(s);

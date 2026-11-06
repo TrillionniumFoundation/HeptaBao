@@ -1,0 +1,25 @@
+function qualifyOfficialReportBody(p,go,author,prior) {
+ const rows=[],ck=(name,v)=>{rows.push({name,passed:v===true});if(v!==true)throw Error(name);},f=p.raw,s=JSON.parse(f["STATE.actual.closed.json"]),old=JSON.parse(f["STATE.prior-INFO.closed.json"]),r=JSON.parse(f["report.original.json"]),release=JSON.parse(f["RELEASE.public.json"]),blobs={};
+ for(const raw of Object.values(f))blobs[gitBlobMeta(raw).blob]=raw;
+ ck("whole47_original_packet",p.audit.whole&&p.audit.files===47&&p.audit.bytes===631347);
+ ck("author96_exact",author.exact&&author.value.passed&&author.value.check_count===96);
+ ck("prior_original_INFO_root18",prior.value.passed&&prior.value.checks===18);
+ ck("exact_BODY_GO",f["ROOT-GO.public.json"]===go.text&&s.oracleReportBodyGO.raw===go.text);
+ ck("original_paused_UNKNOWN_exact",gitBlobMeta(f["ORIGINAL.paused-state.json"]).blob==="6c825b1f09d8584aafef83e153a7470679cae7cb"&&release.originalFailedStatus0RemainsUnknown===true);
+ ck("prior_two_calls_unmodified",Object.keys(old.calls).length===2&&Object.entries(old.calls).every(([k,v])=>JSON.stringify(v)===JSON.stringify(s.calls[k])));
+ const idx=JSON.parse(f["CALL-INDEX.public.json"]),calls=idx.map((x,i)=>{const pre="call-"+String(i).padStart(2,"0");return{key:x.key,kind:x.kind,phase:s.calls[x.key].phase,requestPin:x.request,sdkPin:x.sdk,nativePin:x.native,requestText:f[pre+".request.original.json"],intentText:f[pre+".intent.original.json"],armedText:f[pre+".armed.original.json"],sdkText:f[pre+".sdk.original.json"],nativeText:f[pre+".native.original.json"],armedTree:x.armedTree};});
+ verifyOriginalJournal({label:"C_original_report_BODY",calls,observers:s.completedObservers.slice(1),blob:k=>blobs[k],goPins:[go.pins],pageLimit:()=>16384,ck});
+ ck("six_calls_four_pages_one_original_ID",calls.length===6&&s.completedObservers.length===2&&s.completedObservers[1].pages===4&&s.completedObservers[1].id==="e42caa936d424e97f27c2f50f99f3921fed5b12f8fe86e3236ce4ec7efd04fab");
+ const n=JSON.parse(f["native.original.json"]),m=gitBlobMeta(f["report.original.json"]);
+ ck("whole_version_bound_36658_report",m.blob==="7fec0f9ae61ccd30cbbda8a9242d62187fa2f8f2"&&m.bytes===36658&&m.sha256==="4b72f600f6b794c5cf7198ebe76696179cd2477da587113a5ee7bfe81be3eece"&&utf8Text(unb64(n.data_base64))===f["report.original.json"]&&n.version===go.value.target.version&&n.offset===0&&n.next_offset===36658&&n.eof===true);
+ ck("actual_original_setup_failure",r.failure.class==="BaoError"&&r.failure.code==="common_config_projection_mismatch"&&r.acl_requests_observed===26&&r.acl.cases.length===0&&r.matrix_case_denominator===23);
+ ck("actual_live_official271_TLS",r.live_identity.version==="2.7.1"&&r.live_identity.product==="OpenBao"&&r.live_identity.tls_verified&&r.live_identity.archive_member_matches_executable&&r.live_identity.binary_sha256==="535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea");
+ const o=r.original_owner;
+ ck("four_original_children_closed",o.same_originals_closed===true&&o.children.length===4&&o.children.every(x=>x.completed_original_wait_count===1&&x.exit_code===0&&x.same_original_Popen_wait===true&&x.original_SID_retired_observed===true&&x.gaps.length===0&&x.SID_observation_gaps.length===0&&x.SID_survivors.length===0&&x.fallback===false));
+ ck("owner360_original_deadline_preserved",o.profile_seconds===360&&o.external_original_deadline===true&&o.finished_ns<o.original_deadline_ns&&r.deadline_reset===false);
+ ck("failed_method_and_missing_post_artifact_preserved",o.passed_process_method===false&&r.artifact_metadata_after===null&&release.actual.configReadbackProjectionRetained===false);
+ ck("eight_fake_components_not_product_cases",r.components.results.length===8&&r.components.results.every(x=>x.passed)&&r.components.product_cases===0&&r.components.HTTP_requests===0&&r.http12_product_cases_executed===0&&r.parity_qualified===false);
+ ck("no_candidate_started_no_status_normalization",r.candidate_started===false&&r.status_normalization===false);
+ ck("complete_closed_read_lane",s.pending===null&&s.activeObserver===null&&!s.nativeCallInFlight&&!s.paused&&Object.keys(s.calls).length===8&&release.newNativeCalls===0&&release.newActiveFutures===0&&release.laneReleased===true);
+ return{schema:"heptabao.root-official271-original-report-body-actual.r1",passed:true,checks:rows.length,rows,packet:p.audit.tree,originalReport:m,bodyOriginalCalls:6,bodyOriginalPages:4,originalChildrenClosed:true,overallOwnerMethodPassed:false,artifactAfter:null,actualACLRequests:26,actualACLCases:0,ACLCaseDenominator:23,actualHTTP12Cases:0,officialBinaryLiveIdentityQualified:true,firstRunConfigProjectionObserved:false,newFixtureNotStarted:true,oldStatus0UnknownPreserved:true,currentNativeCalls:0,currentOwnedFutures:0,parityQualified:false,fullReplacement:false,productionCutover:false,legacyCleanup:false};
+}

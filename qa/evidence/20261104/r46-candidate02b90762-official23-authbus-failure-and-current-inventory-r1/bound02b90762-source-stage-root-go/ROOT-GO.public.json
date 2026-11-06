@@ -1,0 +1,92 @@
+{
+  "schema": "heptabao.root.final02b90762-fresh-source-stage.GO.r1",
+  "lane": "B single Native lane",
+  "authorization": "User requested completing implementation and real Mac/Linux/LAN validation; one isolated source stage required for the reviewed candidate.",
+  "sourceTree": "3b4bda7a414858bdb20160e7c2cee9d8e4318864",
+  "sourceRootQualification": {
+    "blob": "9f556b404030f870fe3658600f9231f90a47139f",
+    "bytes": 2231,
+    "sha256": "613b59c689b60bb924816c47fba4783e88bbcf91913165374eb45a18401b2129"
+  },
+  "sourceAuthor71": {
+    "blob": "0eed8ae514bbe05866ab436d1cb4c814f4147395",
+    "bytes": 6272,
+    "sha256": "693700ac5e987a5072d0b4ba6df243dcde9d40f36724b3fbf8bcab859940c1c3"
+  },
+  "candidateCommit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+  "candidateTree": "9781e9615ac5fb068d217241c74bb54bf87942cf",
+  "exactRequest": {
+    "blob": "b2ce0ac862ac88e531650feea8847268403ce025",
+    "bytes": 111947,
+    "sha256": "9a6003c2fb09cefc190f883c2d9ed7fbc285bc50d9fdf09bc0b2ca1346b215a9"
+  },
+  "source": {
+    "blob": "36c9681e90e19521a8f09d2fbfd88896e2b6d267",
+    "bytes": 28939,
+    "sha256": "3a0aa014e5292df423d5742743ac78db9374aba51044031dce85abfa39356c6a"
+  },
+  "journal": {
+    "blob": "54407e90a2917b521acf749859a2248c7e33b14d",
+    "bytes": 19047,
+    "sha256": "f1eede8bf6e8d745f3a1ee0ccf85158c7100c6698f3654f5f8bc34cb7e7b8a3b"
+  },
+  "slot": "combined_02b90762_rog_source_gitfirst_r1",
+  "key": "heptabao-combined-02b90762-rog-source-20261106-r1-3a0aa014",
+  "native_binding": {
+    "sha256": "c9cd01bf49b3990b8282a4bd57a04c98e23bd1516a80612d625304ac14b34c03",
+    "native_fingerprint": "14541280692936087819"
+  },
+  "host": "rog",
+  "freshRoot": "/home/qian-qi/hb-02b90762-src-20261106-r1",
+  "scope": "one unique process_start; original job process_status/process_read observations only under the unchanged journal",
+  "maxNativeLanes": 1,
+  "budgets": {
+    "stage": 300,
+    "gitLeaf": 90,
+    "clone": 180,
+    "outer": 360,
+    "term": 5,
+    "kill": 5,
+    "stdin": 262144,
+    "bundle": 4194304,
+    "eachLeaf": 2097152,
+    "totalTracked": 134217728,
+    "processRead": 16384,
+    "immutablePage": 8192,
+    "payload": 1048576,
+    "processStarts": 1,
+    "processStatusObservers": 64,
+    "processReadObservers": 129,
+    "perObserverStatusCalls": 8,
+    "perObserverImmutablePages": 128,
+    "originalStdoutBytes": 2097152,
+    "originalStderrBytes": 2097152
+  },
+  "required": {
+    "freshSlotInitializeOnlyOnce": true,
+    "wholeOriginalIntentBeforeDispatch": true,
+    "modelBoundaryBeforeDispatch": true,
+    "originalSDKWholeBeforeParse": true,
+    "sameOriginalJobOnly": true,
+    "oldSourceAndFailedObserverFences": true,
+    "allOwnedHelpersAndDescriptorsClosed": true,
+    "originalAuthorityAndFullStreamsRequired": true
+  },
+  "onError": "Preserve original UNKNOWN or failure; no replay or replacement. Only exact-SHA Git read reconciliation is routine; Native recovery needs its own concrete scope.",
+  "notIncluded": {
+    "reportFileInfoOrBody": false,
+    "bundleTransport": false,
+    "formatter": false,
+    "Cargo": false,
+    "productServer": false,
+    "credentials": false,
+    "productionCutover": false,
+    "legacyCleanup": false
+  },
+  "qualification": {
+    "stageSuccessNotAssumed": true,
+    "sourceFormatted": false,
+    "buildQualified": false,
+    "fullReplacementQualified": false
+  }
+}

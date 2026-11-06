@@ -1,0 +1,74 @@
+{
+  "hosts": [
+    {
+      "allow_execute": true,
+      "allow_pty": true,
+      "allow_write": true,
+      "execution_mode": "operator",
+      "name": "ai395",
+      "operator_tools": true,
+      "platform": "linux",
+      "privileged_actions": []
+    },
+    {
+      "allow_execute": true,
+      "allow_pty": true,
+      "allow_write": true,
+      "execution_mode": "operator",
+      "name": "desktop",
+      "operator_tools": true,
+      "platform": "linux",
+      "privileged_actions": []
+    },
+    {
+      "allow_execute": true,
+      "allow_pty": true,
+      "allow_write": true,
+      "execution_mode": "operator",
+      "name": "mac",
+      "operator_tools": true,
+      "platform": "macos",
+      "privileged_actions": []
+    },
+    {
+      "allow_execute": true,
+      "allow_pty": true,
+      "allow_write": true,
+      "execution_mode": "operator",
+      "name": "main",
+      "operator_tools": true,
+      "platform": "macos",
+      "privileged_actions": []
+    },
+    {
+      "allow_execute": true,
+      "allow_pty": true,
+      "allow_write": true,
+      "execution_mode": "operator",
+      "name": "pocket4",
+      "operator_tools": true,
+      "platform": "linux",
+      "privileged_actions": []
+    },
+    {
+      "allow_execute": true,
+      "allow_pty": true,
+      "allow_write": true,
+      "execution_mode": "operator",
+      "name": "rog",
+      "operator_tools": true,
+      "platform": "linux",
+      "privileged_actions": []
+    },
+    {
+      "allow_execute": true,
+      "allow_pty": true,
+      "allow_write": true,
+      "execution_mode": "operator",
+      "name": "x230",
+      "operator_tools": true,
+      "platform": "linux",
+      "privileged_actions": []
+    }
+  ]
+}

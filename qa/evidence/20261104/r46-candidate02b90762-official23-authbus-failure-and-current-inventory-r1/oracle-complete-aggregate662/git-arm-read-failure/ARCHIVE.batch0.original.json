@@ -1,0 +1,17 @@
+[
+  {
+    "status": "fulfilled",
+    "value": {
+      "path": "armed.json",
+      "blob": "fa1bbe90a05dae49daaf3ac4dae22cb621f061d8",
+      "bytes": 933,
+      "sha256": "2d8191d857455227b59457d9a5914fe5d5e782dcb0d2f6cef60b6d15862d4a96",
+      "whole": true
+    }
+  },
+  {
+    "status": "rejected",
+    "path": "intent.json",
+    "error": "Error: git_whole_error_preserved:intent.json"
+  }
+]

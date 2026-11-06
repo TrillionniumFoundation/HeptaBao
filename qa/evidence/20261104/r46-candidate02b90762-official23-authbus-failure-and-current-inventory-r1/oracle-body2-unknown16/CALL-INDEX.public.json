@@ -1,0 +1,46 @@
+[
+  {
+    "key": "official271-x230-acl23-r2-body02-admit",
+    "kind": "operation_start",
+    "prefix": "call-0",
+    "request": {
+      "blob": "3be4277978fa7422d4d70d4ca3239f91a7006ce6",
+      "bytes": 331,
+      "sha256": "917bfc19c6b300654f742555eccee4d5d8d1a6b60472da0d686e97a0432e0ae2"
+    },
+    "sdk": {
+      "blob": "63be865b7ca604ca8e69f3811bda5e0c3acbe4e5",
+      "bytes": 706,
+      "sha256": "0d7d68f49b4ab5173b2ad4d5beb3a60144cbaeeaa86be0e27048fe3ba2fc397b"
+    },
+    "native": {
+      "blob": "7ef1ecc5d0c2d24218252ebbe0ecd448216fdaa2",
+      "bytes": 545,
+      "sha256": "2c86ed74c10fda283b165aebd1ebdc23fb413ff3b41552d1b0c0e5a90ed795c6"
+    },
+    "phase": "accepted",
+    "called": true,
+    "armedTree": "b8c2519993d4ba36798ef5fae62796eb6627ad41",
+    "sdkTree": "1614b11a217243ce831910bce13d5ba6360bafba"
+  },
+  {
+    "key": "official271-x230-acl23-r2-body02-status0",
+    "kind": "operation_status",
+    "prefix": "call-1",
+    "request": {
+      "blob": "182980da62d3a27a098c8fb974e6a68dd7926318",
+      "bytes": 84,
+      "sha256": "f99d18d13005ea9de9e2426fcc8fbce4e668450f52fdd726234aa3f8e4cc7317"
+    },
+    "sdk": {
+      "blob": "0cede4881f37869cfd279b69b738c87eb62b4889",
+      "bytes": 248,
+      "sha256": "b85d625e0a8999ce34020675f0a2f8ba093e807dc725c16053a63c92fbbc9c70"
+    },
+    "native": null,
+    "phase": "native_interpretation_refused",
+    "called": true,
+    "armedTree": "2ec6565b9d8d8fb6e5b3e40f6e753f4dc43fdfce",
+    "sdkTree": "4919219e2ef2b45fb8be8f3557194889f34722b2"
+  }
+]

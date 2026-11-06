@@ -1,0 +1,137 @@
+{
+  "schema": "heptabao.mac-home-r3-fixed-three-target-readback.v1",
+  "host": "mac",
+  "oldSlot": "owner_authbus_current_home_inert_gitfirst_r3",
+  "newSlot": "owner_authbus_home_r3_fixed_readback_gitfirst_r1",
+  "originalState": {
+    "blob": "d087853e217e00f48e676fdd17e91a97d814cb82",
+    "bytes": 927251,
+    "sha256": "5e171021ed9a14dde7e54ffebc47011f2dedf97ad4afc84fba1876bb27c229f9"
+  },
+  "originalJob": "1a1b19aef7b-fc05-79d3",
+  "originalGo": {
+    "blob": "b2fd06b25b4131e542df9ad539cc8022c1ca396a",
+    "bytes": 4967,
+    "sha256": "2fb8a2be027d8efc0d783d114dfde2d74ca1e4b3ca607021f4f27d704faac88d"
+  },
+  "sourcePacket": "1b9f6f07249d0757ac0efa0227827e834a750260",
+  "actualPacket": "7ca43a7e2a81d89e377cb00e38ead927c896d8dc",
+  "finalStdout": {
+    "blob": "0c1ac73af42e57c324be188a0d162bc2fd72003c",
+    "bytes": 20680,
+    "sha256": "0180bc98a766e41d357084dc957446906d3ac7afe8301f27346151138b57d151"
+  },
+  "authority": {
+    "blob": "3dd7eb3a01bfbba19e37e1dc88d999f091bd0b19",
+    "bytes": 733,
+    "sha256": "5d6a0d14560141f7f449427f44180b561190cfadb5267fa754117dba853a5fa6"
+  },
+  "release": {
+    "blob": "8d381debb6aa2336dfa369dfa2fbf2938a9eeb4a",
+    "bytes": 10571,
+    "sha256": "5b4b3616d7ec0022955a0087417d3435ac8a0cd6a0ce0a9f0993edd963c66dd9"
+  },
+  "targets": [
+    {
+      "ordinal": 1,
+      "id": "outer",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/qa/mac_current_outer_wal_r1.py",
+      "bytes": 73918,
+      "sha256": "7f3bec1e572b624844fe5ba477dea895a2fcd94d6c9e4a88b5001f4d957a05d0",
+      "stageFull9": [
+        "16777244",
+        "72739433",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "73918",
+        "1793981090642500588",
+        "1793981090642506588"
+      ],
+      "sourcePin": {
+        "blob": "6952e205d0cb50f2066c0d2bf56a567239aa8a1e",
+        "bytes": 73918,
+        "sha256": "7f3bec1e572b624844fe5ba477dea895a2fcd94d6c9e4a88b5001f4d957a05d0"
+      },
+      "bodyChunks": [
+        65536,
+        8382
+      ]
+    },
+    {
+      "ordinal": 2,
+      "id": "candidate",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/candidate-current-manager-wal-r1.public.json",
+      "bytes": 7499,
+      "sha256": "2ca16e7421d9cfba8802029e6125a2efbdae39ac0a6a52ef1962fca864871d81",
+      "stageFull9": [
+        "16777244",
+        "72739447",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "7499",
+        "1793981090651310355",
+        "1793981090651318729"
+      ],
+      "sourcePin": {
+        "blob": "c5a520313563ec821c1b80d49249a8cef1573709",
+        "bytes": 7499,
+        "sha256": "2ca16e7421d9cfba8802029e6125a2efbdae39ac0a6a52ef1962fca864871d81"
+      },
+      "bodyChunks": [
+        7499
+      ]
+    },
+    {
+      "ordinal": 3,
+      "id": "receipt",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/inert-registry-wal-4e808-result.public.json",
+      "bytes": 15237,
+      "sha256": "d64535852bd697b0fd8f1cf314621d50236c0f398c068f8f4e276d480a1eedd3",
+      "stageFull9": [
+        "16777244",
+        "72739455",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "15237",
+        "1793981090656143173",
+        "1793981090656148839"
+      ],
+      "sourcePin": null,
+      "bodyChunks": [
+        15237
+      ]
+    }
+  ],
+  "metadataRequests": [
+    "{\n  \"idempotency_key\": \"heptabao-mac-home-r3-readback-0180bc98-info-01\",\n  \"operation\": {\n    \"tool\": \"file_info\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"path\": \"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/qa/mac_current_outer_wal_r1.py\"\n    }\n  }\n}\n",
+    "{\n  \"idempotency_key\": \"heptabao-mac-home-r3-readback-0180bc98-info-02\",\n  \"operation\": {\n    \"tool\": \"file_info\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"path\": \"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/candidate-current-manager-wal-r1.public.json\"\n    }\n  }\n}\n",
+    "{\n  \"idempotency_key\": \"heptabao-mac-home-r3-readback-0180bc98-info-03\",\n  \"operation\": {\n    \"tool\": \"file_info\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"path\": \"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/inert-registry-wal-4e808-result.public.json\"\n    }\n  }\n}\n"
+  ],
+  "keyPrefix": "heptabao-mac-home-r3-readback-0180bc98-",
+  "metadataOperations": 3,
+  "conditionalBodyOperations": 4,
+  "bodyTotalBytes": 96654,
+  "bodyChunkMaximum": 65536,
+  "immutablePageMaximum": 8192,
+  "immutablePayloadMaximum": 1048576,
+  "metadataHashCostIsSeparate": true,
+  "maxStatusesPerOperation": 8,
+  "metadataSubmitted": 0,
+  "bodySubmitted": 0,
+  "runtimeSubmitted": 0,
+  "readThenExecAtomicityClaim": false,
+  "old952f964cScopesNotInherited": true,
+  "oldR1PartialUnchanged": true,
+  "actualRootQualification": null,
+  "actualRootQualificationPacket": null,
+  "actualRootQualificationPendingThisScopeGO": true,
+  "oldReadbackBodyBytesRemainConsumed": 96654,
+  "newAdditionalBodyBytes": 96654,
+  "twoReadbackScopesCumulativeBodyBytes": 193308
+}

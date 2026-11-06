@@ -1,0 +1,563 @@
+{
+  "schema": "heptabao.mac-home-r3-fixed-readback-release.v1",
+  "status": "ALL_SEVEN_ORIGINAL_READS_CLOSED_THREE_WHOLE_FILES_EXACT",
+  "originalJob": "1a1b19aef7b-fc05-79d3",
+  "readbackGO": {
+    "blob": "1ef997e26d58cc0d601f23fb03e084713da8f47f",
+    "bytes": 6746,
+    "sha256": "ffc626746b232c542027339394b78c9c4a9a700311e8090a3316d5dc8db8f7b5"
+  },
+  "sourcePacket": "c1ee44f788afff5bcbfea08ce934ce9608f75e91",
+  "actualInertPacket": "7ca43a7e2a81d89e377cb00e38ead927c896d8dc",
+  "actualInertQualification": {
+    "blob": "7ae8d9d4b6e2101b79a2c3fde256716e5639c03a",
+    "bytes": 8041,
+    "sha256": "f042507c76eb3651c70370dcaddb44613e64582a6e17ef8bfd99ad5d1e1e4916"
+  },
+  "oldSlot": "owner_authbus_current_home_inert_gitfirst_r3",
+  "oldStateByteExact": {
+    "blob": "d087853e217e00f48e676fdd17e91a97d814cb82",
+    "bytes": 927251,
+    "sha256": "5e171021ed9a14dde7e54ffebc47011f2dedf97ad4afc84fba1876bb27c229f9"
+  },
+  "slot": "owner_authbus_home_r3_fixed_readback_gitfirst_r1",
+  "originalCalls": 35,
+  "originalAdmissions": 7,
+  "processStartsInThisScope": 0,
+  "immutablePages": 21,
+  "originalPayloadBytes": 132615,
+  "originals": [
+    {
+      "ordinal": 1,
+      "id": "52647f16a852a82dcacd7db33ff1ff1eeee1ae29a05879ecde848168109ae96e",
+      "tool": "file_info",
+      "payload": {
+        "blob": "7e9beeedee01e0fe5304156be9a56d1fec1faac1",
+        "bytes": 619,
+        "sha256": "c7d2c2b548320c24d22f2ab0e3ca4fdfd8cc9e5d0ae5a2eb18b65254cfc0f8fb"
+      },
+      "payloadTree": "b2609c75b510ba425b1bb99c98048d2843e2594d",
+      "nativeText": {
+        "blob": "e5ea66336a964329e6c07ba43c0d33af01853b37",
+        "bytes": 502,
+        "sha256": "a96b9da8a563ead2c01f8375d416c12608d56feaac87006b48781500b2508fe5"
+      },
+      "pages": 1,
+      "completedInactive": true,
+      "admissionRequest": {
+        "blob": "53f4292c6b8120923d06e36f3e4f98c8223bfa44",
+        "bytes": 297,
+        "sha256": "4c7e512e9e19cf21192297096b847e98bcc1d8e15c7ccdfcc5b326f210de56cc"
+      },
+      "admissionSDK": {
+        "blob": "b74dbfdb1ff334c28e1b325fe4b76c8f86ce8aad",
+        "bytes": 704,
+        "sha256": "41478b243af7a2d9bfd2e05c366fc0d08c201fdb02bd942c4ebf5283d04a33b1"
+      },
+      "admissionNative": {
+        "blob": "1a2e57413965ff2b1575f834fc50cfeca5b9d101",
+        "bytes": 543,
+        "sha256": "f16633e7887d3700e1a214809a0575d71e85c9c8fed521ec36eaf08f88bb6ef1"
+      },
+      "admissionArmedTree": "c07806ce5de6a29f0cbfc9923e450cb0227f1e64",
+      "statusRequest": {
+        "blob": "aa22527e6776ce64eb88882ed389568bc7eeec63",
+        "bytes": 89,
+        "sha256": "558058ff9ed4d7a2c48492b2c7882ce3cb362a8b1a9d5d0e2c7e72e19cf7ec15"
+      },
+      "statusSDK": {
+        "blob": "ae7f298e1d562cac06400365b430d515ea93442b",
+        "bytes": 975,
+        "sha256": "e1526b6d11bcf17148594a7c3e1ba15142af4b29ce8a004815f8075eb0796b3f"
+      },
+      "statusNative": {
+        "blob": "b6e76419684c15eb37c07ee895972db102b0325f",
+        "bytes": 800,
+        "sha256": "242fc28c6d987a6f43e306c6e2fd65ad136b74121a567d80c82ba234dd04fee1"
+      },
+      "statusArmedTree": "0e4aa9ad5081f91c266c262635513c09c9e0dc5e",
+      "statusKey": "home-r3-readback-info-01-status-01"
+    },
+    {
+      "ordinal": 2,
+      "id": "f7b25584e6b62811955ea57f203ed84ff2f62d28848359fd65c7b173045cd45d",
+      "tool": "file_info",
+      "payload": {
+        "blob": "5000485ccf273ef108d1346b67e38710a4c00f00",
+        "bytes": 631,
+        "sha256": "612e373e30860cc18ba8f645228faef55f691f236093532ff9ded31eb39473ae"
+      },
+      "payloadTree": "57e3ef6c0b29652310f55c7d8a88edc866e63759",
+      "nativeText": {
+        "blob": "8811db8dc5df94b15381c3a8c9d77ea8a3a481e6",
+        "bytes": 514,
+        "sha256": "699eecf96017020dfb2a6d0612be3c9199bc5a73d7852fb33affd4c1434c3ac2"
+      },
+      "pages": 1,
+      "completedInactive": true,
+      "admissionRequest": {
+        "blob": "9069b26ac98e77ee62a58869e8a738ec33029b35",
+        "bytes": 311,
+        "sha256": "3087619123b8e04e8ddfb5dca62948510462cef8b8760c2bd3afec91e84cf540"
+      },
+      "admissionSDK": {
+        "blob": "0fa2cf557711970e28b6870915a13132dac76ea1",
+        "bytes": 704,
+        "sha256": "6c61b776e17065482df2aa6f0cdf12314308b926d97a976371ec252c1027f86b"
+      },
+      "admissionNative": {
+        "blob": "d3ff8546d1a8d420874eb85313dff574f3b471c2",
+        "bytes": 543,
+        "sha256": "4c1860d16f83757992152d89495aaeae1f421e6865e2751c1bf1807a88713a7a"
+      },
+      "admissionArmedTree": "0c56cb8cbd84f0cf1b7f16645a2d8954f166ead3",
+      "statusRequest": {
+        "blob": "c67c7c240137998f4ab2c25af8e944136ca3ec62",
+        "bytes": 89,
+        "sha256": "dfe2ccce5e1ad91ad54a4c0b668f1eaea5f3cd575fe88200f245da7c34f0fb8c"
+      },
+      "statusSDK": {
+        "blob": "5e64e1e6f213e3c4bd3205f062f04ec807dd6cb1",
+        "bytes": 975,
+        "sha256": "d4d00bb91697e4a42004c33f6e2f69a70cfd7ab7169c9741bf3f3b563e0c4fea"
+      },
+      "statusNative": {
+        "blob": "9d86ba4f1c319cfa45af51d6c7ba2a73a3826f3b",
+        "bytes": 800,
+        "sha256": "2b8e97e0e0302257f5e1acbb690072257a145959a2ffd5397b922a6ba3381c00"
+      },
+      "statusArmedTree": "8ffb17c508e6326d830f402c6d5c1b2403a97757",
+      "statusKey": "home-r3-readback-info-02-status-01"
+    },
+    {
+      "ordinal": 3,
+      "id": "53edefc1e33963a13234ba8d7cee0eb80130d3e57b350be0ba05760417ca966f",
+      "tool": "file_info",
+      "payload": {
+        "blob": "a07fe080e1e3d5e0fd523480cd5c0489d2fa111f",
+        "bytes": 632,
+        "sha256": "6d65c411ae7efc4df510506722af711876181d435eb02b56a06acabe3badc248"
+      },
+      "payloadTree": "5d0f01494232b044a0140cd26e5e441fc1c5b29d",
+      "nativeText": {
+        "blob": "a195daf2b76f626feacd94838c4347c73094a42c",
+        "bytes": 515,
+        "sha256": "a1865cf1b4cc4b754ef1ef40d059da85da9ad3e32a9bed0e9d1c7834fbffd0a1"
+      },
+      "pages": 1,
+      "completedInactive": true,
+      "admissionRequest": {
+        "blob": "61670ba24375f134bd79e2593d985b6073bddf10",
+        "bytes": 310,
+        "sha256": "8330ea64050562876b7c76d89f4a5999e7b0850309e7e6896fa4f0dd11b86773"
+      },
+      "admissionSDK": {
+        "blob": "bd9bde7fc3e8e654a60eb9935b2c21de804f6b25",
+        "bytes": 704,
+        "sha256": "c9c57a0e8ebcc3520c7a806ce3bcdf13c50b1b09fd11c608d08b9f79002c10e5"
+      },
+      "admissionNative": {
+        "blob": "9e870d758066657467be7666f3e8e984e2aafa37",
+        "bytes": 543,
+        "sha256": "6779536b5c1f58d4b0c4e31afd386fbc254ae8cea1947d5d2b9188883c9b4955"
+      },
+      "admissionArmedTree": "2b2e4df852e46d8b0162614e89ac28bb59c0338f",
+      "statusRequest": {
+        "blob": "796e68195d3bda757ac86833aacf8fca41f29694",
+        "bytes": 89,
+        "sha256": "47a2e7f3e182b7c53776a0da4d175615367e35f4414e9a1fbe132c1d7477848e"
+      },
+      "statusSDK": {
+        "blob": "1554f33f639eae60e74b7393be1a456d6191810f",
+        "bytes": 975,
+        "sha256": "a66304a5316615dc659c35bbc757b696209a4c67b7e1f17038ad1c328071632b"
+      },
+      "statusNative": {
+        "blob": "ebb520b03fd8b72e6bff8aa1daf3d84e8ce316ec",
+        "bytes": 800,
+        "sha256": "0b33462aebcf91ee22aa8119263db37497d76cce8af7c51748e4d3b92b83c8e7"
+      },
+      "statusArmedTree": "d489ee02e4aeeeb3f74b8f15c3e464ba97bc2c13",
+      "statusKey": "home-r3-readback-info-03-status-01"
+    },
+    {
+      "ordinal": 4,
+      "id": "9d2f53547b83d9e6f2f398f669a0ddb5b8181b4a2255f9b3d175be99af67e57b",
+      "tool": "binary_read",
+      "payload": {
+        "blob": "d811407494a693b14330b0d957cdc91f297bb4f2",
+        "bytes": 87842,
+        "sha256": "8b77095aa00939aa6daae77554896b74e2226327465d75c307a6c3207a54e020"
+      },
+      "payloadTree": "e4338e85f612656699b44b3cca692b5a6adf1fb0",
+      "nativeText": {
+        "blob": "1b3b8665c1dec1fcbbdb36a5c2570f61d1aa199b",
+        "bytes": 87739,
+        "sha256": "0d008ca860b9882e06afee7bbd3f0620a7836ac17804cbfaab5564e71aaf9211"
+      },
+      "pages": 11,
+      "completedInactive": true,
+      "admissionRequest": {
+        "blob": "c2d8a9b1af161a4d30a47401dd63bd591a3821a2",
+        "bytes": 433,
+        "sha256": "84d6353d34ea882aec34f574d873a8f4f97c5c23e05e1e8a07c68be7369bb309"
+      },
+      "admissionSDK": {
+        "blob": "b4990c4ae6dc12c3d6bf2577e43f357299537055",
+        "bytes": 706,
+        "sha256": "58725e442ace923d37f448aacdbf06780b3552728eb0d328fd3b834b1d8979a4"
+      },
+      "admissionNative": {
+        "blob": "ed13e1e4ee2684d5e726ba66241ca8ff780ac01d",
+        "bytes": 545,
+        "sha256": "e9aa2b4f0cf45bda40fa80d714eb9e1dd1152a4416bc91e971048dd1e7ba5bf2"
+      },
+      "admissionArmedTree": "e8fcb1c212680c85ddd6b651da8f2aebe5507aec",
+      "statusRequest": {
+        "blob": "11e5acba1407064f60c1b112751d8f345430de47",
+        "bytes": 89,
+        "sha256": "6d12c1b88b74e665971b5cb6f04d19313ebcb573f6ec962602143a92621935a2"
+      },
+      "statusSDK": {
+        "blob": "8c92624505ffd843793aa21276f25e0c3af92546",
+        "bytes": 977,
+        "sha256": "80ba5689d4b3416fc4edeb05252dc294e230adcc4e86b0e6b60651be4f582ee7"
+      },
+      "statusNative": {
+        "blob": "4d4de7455bf972ffb7ea2d3c833e6e89a819d556",
+        "bytes": 802,
+        "sha256": "25090e6ce0a6b1882d03284ed95db5dabee3e286268496ee1f16fd83a4625fb6"
+      },
+      "statusArmedTree": "cd9dc0e1685c43c08266a1af08f364febc4244c8",
+      "statusKey": "home-r3-readback-body-01-status-01"
+    },
+    {
+      "ordinal": 5,
+      "id": "de1ea267016aa322b31dc1c411f3c312147965604d8fbc134501041bac00fa89",
+      "tool": "binary_read",
+      "payload": {
+        "blob": "6f6368906988f9a8cfabdf6b927854f0664a5828",
+        "bytes": 11637,
+        "sha256": "5910d6c21b57027e28037887a7146ba600465819f7c7059b5c9cab7b571a86cd"
+      },
+      "payloadTree": "72072e6f13303735a4b854daa8b999851e92564f",
+      "nativeText": {
+        "blob": "6a5d9b889dfd4a6af4d4f5951d4cf2715272534d",
+        "bytes": 11534,
+        "sha256": "d64f695029418aa4e7ef67c0c2a7b7c0355890965f461acc36d490ee0f205bb4"
+      },
+      "pages": 2,
+      "completedInactive": true,
+      "admissionRequest": {
+        "blob": "92d1ad9cf3ebd92b65feea56aed3447ca769c4c5",
+        "bytes": 436,
+        "sha256": "4199bad6ddf6ab432d49a0f58939c9dd5b70de195fffb0ff2b5eb5c3f0509fcf"
+      },
+      "admissionSDK": {
+        "blob": "dd38f441a8084f15219004716ea23bb9cc081b92",
+        "bytes": 706,
+        "sha256": "b28dc70f2dc57a9ff4695f8227b21f625511e215f4372b8800a208dbb6da1a61"
+      },
+      "admissionNative": {
+        "blob": "50a6d822e30a0b5f344f22e793787948672a1045",
+        "bytes": 545,
+        "sha256": "0a2d615c5bb080d0b4b6e11c6df2cd03f1fc1f3c5fecc76bd5561a47b87377ca"
+      },
+      "admissionArmedTree": "0c907646c6f410555f581782e741786f3ca802d0",
+      "statusRequest": {
+        "blob": "8416039581cf55b4002ce668d4cef8312a1defbf",
+        "bytes": 89,
+        "sha256": "b68e4711c5103a3936e30ec1b0d7402b71f35bda5cb558fe85f36b8fe086c12d"
+      },
+      "statusSDK": {
+        "blob": "a59292724152b15f588b2d0e58fdd56de798bc88",
+        "bytes": 977,
+        "sha256": "eb058cab16d8054c1271764a7f3d1fc0a1f3a95129af14848b2904f8ecd83a51"
+      },
+      "statusNative": {
+        "blob": "0830bc80b9f177a6b22354d67058a6a4204acecb",
+        "bytes": 802,
+        "sha256": "f969c046235438ee219e174715895c1f67c5634613c3a650fb560bc905c76eb5"
+      },
+      "statusArmedTree": "c793f676d9cbdfcc424e5c1ac864d1abc2ba6a59",
+      "statusKey": "home-r3-readback-body-02-status-01"
+    },
+    {
+      "ordinal": 6,
+      "id": "a1d6b7924d9c0139968ef4c59622589a31699e79801c5b3499e5ec9c147aa7f4",
+      "tool": "binary_read",
+      "payload": {
+        "blob": "8461e06869e13360ed9f01840045c1aa7d833f93",
+        "bytes": 10468,
+        "sha256": "e24359f2cca028cee1397203ccce5096a63f59dc3d801c9bacfd59334600aab8"
+      },
+      "payloadTree": "2534816e972ef6f04c6ed1cbb6ea3dcd139625a5",
+      "nativeText": {
+        "blob": "aaa1be316e709e8a8d76dee30a6a53d45eba27f0",
+        "bytes": 10365,
+        "sha256": "31c349161954fddd7ccc55a96a60e2663054e8dab81a3c635de9e66064c92390"
+      },
+      "pages": 2,
+      "completedInactive": true,
+      "admissionRequest": {
+        "blob": "1743c5fc315b7cf283c97c07c5a8c613531227ff",
+        "bytes": 445,
+        "sha256": "aa871446c37f713e8c9fbd9e866cef0f0b0b68c06d39730e11d5bf0965d6a67e"
+      },
+      "admissionSDK": {
+        "blob": "b1f5ee9df657db430b0eacc1d520229b0f9eaef9",
+        "bytes": 706,
+        "sha256": "ea9b244e93a1c9c51b78014f5f9878e4bd59250fd59fcd3e608d73dfcf1d4bf8"
+      },
+      "admissionNative": {
+        "blob": "84725824e05e3e088f2270b146beeefd363171b1",
+        "bytes": 545,
+        "sha256": "910b8998e85c900be735b3ea3c560dd69e1a5e49687a1bd84a3e84a165d61350"
+      },
+      "admissionArmedTree": "f0257e2940bc2f5c393156dfae8224f10af3e417",
+      "statusRequest": {
+        "blob": "4705724c8ec746d5f7c2b5b7b14afb3b87a694bb",
+        "bytes": 89,
+        "sha256": "060551f5280780e6c52da48ea70a71425c6d5afcbdba8ded87d268d456c143a9"
+      },
+      "statusSDK": {
+        "blob": "e3413a45db2f9ffe815213d783c3307b1ef18d49",
+        "bytes": 977,
+        "sha256": "96264833f4e5e9f64a95a956763cd0dd9eac9e1d97f87ebf5ddccf185ac6b50f"
+      },
+      "statusNative": {
+        "blob": "e35c37fc18fe1fa859ffd401985f291a7abc6311",
+        "bytes": 802,
+        "sha256": "d1feeaee84921f296f887517c2cd6a8baad31c67fd40c15a0fd3dcef234a1edd"
+      },
+      "statusArmedTree": "cd33bf45ffba44bba1a7e6e681ab79077cafe0fa",
+      "statusKey": "home-r3-readback-body-03-status-01"
+    },
+    {
+      "ordinal": 7,
+      "id": "a27e373a8d55dd0581873ece0cee465e6ca5bf790458a5e54d283e75535c26de",
+      "tool": "binary_read",
+      "payload": {
+        "blob": "10e548d337e7b60fa2cb44fdff2cab5ff0c63f3d",
+        "bytes": 20786,
+        "sha256": "923107467e50ff2cf946d586dbae57f05cf3a453e53fc62a72014f152530482e"
+      },
+      "payloadTree": "a0936be5b5f4376fc90880a2f60e8689b0433de4",
+      "nativeText": {
+        "blob": "78a390779b306cd587a75a4ee745efebf79da20c",
+        "bytes": 20683,
+        "sha256": "cebacb8259acad5870891e8427f695ab404622c5f79363ecadf2d215b214b3c8"
+      },
+      "pages": 3,
+      "completedInactive": true,
+      "admissionRequest": {
+        "blob": "6443a13784ce88fcf64a5fdc2f35829f82b6b475",
+        "bytes": 446,
+        "sha256": "12359dc8b6871eb9daeab41dca3e8e8f47819b70288a259a29af7f9756c289d2"
+      },
+      "admissionSDK": {
+        "blob": "578bf5952128b0a09d69726ad36a698073e2d709",
+        "bytes": 706,
+        "sha256": "aa2564645dfff8627d97f2ff5491a0fcf8659938902363f35091b12a39a19f83"
+      },
+      "admissionNative": {
+        "blob": "2cd974e7e9a2f1bd44c6a285ebf8178950b71820",
+        "bytes": 545,
+        "sha256": "fcc58e106192cab4603ec37e44431dce61e8f39e39a4ad9380d72254a755c70a"
+      },
+      "admissionArmedTree": "30c34dcabc00e1769402b90eb551866f99859aef",
+      "statusRequest": {
+        "blob": "3c66346b70785451e90c66047c6b179c045a0a83",
+        "bytes": 89,
+        "sha256": "d22c44e66ea90ff61532030006b3f3f72e14e4b781c8980186c5b9404ed797dc"
+      },
+      "statusSDK": {
+        "blob": "b03eef940283944c82517e94ddc96c14e451e427",
+        "bytes": 977,
+        "sha256": "c0505cc7c956109d2d4bda4085b7d14c83158462a01d62730943fcfa6dbba14a"
+      },
+      "statusNative": {
+        "blob": "c515b1d1c6cf433f8756c54aaf65a8963b51e4ab",
+        "bytes": 802,
+        "sha256": "39f77e923b6c30a1ec0daba49ab5f59f586a031b7f3ca16267888275b2d8334e"
+      },
+      "statusArmedTree": "0aa112ebb0a694a714dff54462fe936a923bdfcf",
+      "statusKey": "home-r3-readback-body-04-status-01"
+    }
+  ],
+  "wholeFiles": [
+    {
+      "target": "outer",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/qa/mac_current_outer_wal_r1.py",
+      "version": "16777244:72739433:73918:1793981090642500588:1793981090642506588",
+      "full9": [
+        "16777244",
+        "72739433",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "73918",
+        "1793981090642500588",
+        "1793981090642506588"
+      ],
+      "pin": {
+        "blob": "6952e205d0cb50f2066c0d2bf56a567239aa8a1e",
+        "bytes": 73918,
+        "sha256": "7f3bec1e572b624844fe5ba477dea895a2fcd94d6c9e4a88b5001f4d957a05d0"
+      },
+      "independentOriginalBinaryRead": true
+    },
+    {
+      "target": "candidate",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/candidate-current-manager-wal-r1.public.json",
+      "version": "16777244:72739447:7499:1793981090651310355:1793981090651318729",
+      "full9": [
+        "16777244",
+        "72739447",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "7499",
+        "1793981090651310355",
+        "1793981090651318729"
+      ],
+      "pin": {
+        "blob": "c5a520313563ec821c1b80d49249a8cef1573709",
+        "bytes": 7499,
+        "sha256": "2ca16e7421d9cfba8802029e6125a2efbdae39ac0a6a52ef1962fca864871d81"
+      },
+      "independentOriginalBinaryRead": true
+    },
+    {
+      "target": "receipt",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/inert-registry-wal-4e808-result.public.json",
+      "version": "16777244:72739455:15237:1793981090656143173:1793981090656148839",
+      "full9": [
+        "16777244",
+        "72739455",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "15237",
+        "1793981090656143173",
+        "1793981090656148839"
+      ],
+      "pin": {
+        "blob": "6d2daf13dcf820d1d73e43723a60d6f7bdcbcc8e",
+        "bytes": 15237,
+        "sha256": "d64535852bd697b0fd8f1cf314621d50236c0f398c068f8f4e276d480a1eedd3"
+      },
+      "independentOriginalBinaryRead": true
+    }
+  ],
+  "actualMetadata": [
+    {
+      "ordinal": 1,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/qa/mac_current_outer_wal_r1.py",
+      "bytes": 73918,
+      "sha256": "7f3bec1e572b624844fe5ba477dea895a2fcd94d6c9e4a88b5001f4d957a05d0",
+      "version": "16777244:72739433:73918:1793981090642500588:1793981090642506588",
+      "full9": [
+        "16777244",
+        "72739433",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "73918",
+        "1793981090642500588",
+        "1793981090642506588"
+      ],
+      "regularFileTypeSource": "file_info rejects symlinks and non-regular targets; mode is permission bits"
+    },
+    {
+      "ordinal": 2,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/candidate-current-manager-wal-r1.public.json",
+      "bytes": 7499,
+      "sha256": "2ca16e7421d9cfba8802029e6125a2efbdae39ac0a6a52ef1962fca864871d81",
+      "version": "16777244:72739447:7499:1793981090651310355:1793981090651318729",
+      "full9": [
+        "16777244",
+        "72739447",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "7499",
+        "1793981090651310355",
+        "1793981090651318729"
+      ],
+      "regularFileTypeSource": "file_info rejects symlinks and non-regular targets; mode is permission bits"
+    },
+    {
+      "ordinal": 3,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/inert-registry-wal-4e808-result.public.json",
+      "bytes": 15237,
+      "sha256": "d64535852bd697b0fd8f1cf314621d50236c0f398c068f8f4e276d480a1eedd3",
+      "version": "16777244:72739455:15237:1793981090656143173:1793981090656148839",
+      "full9": [
+        "16777244",
+        "72739455",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "15237",
+        "1793981090656143173",
+        "1793981090656148839"
+      ],
+      "regularFileTypeSource": "file_info rejects symlinks and non-regular targets; mode is permission bits"
+    }
+  ],
+  "newBodyBytes": 96654,
+  "oldReadbackBodyBytesRemainConsumed": 96654,
+  "twoReadbackScopesCumulativeBodyBytes": 193308,
+  "bodyReturnAccounting": [
+    {
+      "ordinal": 1,
+      "returnedEncodingObserved": true,
+      "bytes": 65536,
+      "byteCountUnknown": false
+    },
+    {
+      "ordinal": 2,
+      "returnedEncodingObserved": true,
+      "bytes": 8382,
+      "byteCountUnknown": false
+    },
+    {
+      "ordinal": 3,
+      "returnedEncodingObserved": true,
+      "bytes": 7499,
+      "byteCountUnknown": false
+    },
+    {
+      "ordinal": 4,
+      "returnedEncodingObserved": true,
+      "bytes": 15237,
+      "byteCountUnknown": false
+    }
+  ],
+  "observedFutureStatesClosed": true,
+  "callInFlight": false,
+  "futureInFlight": false,
+  "activeObserver": null,
+  "pending": null,
+  "paused": false,
+  "errorsObserved": 0,
+  "retries": 0,
+  "AReleased": true,
+  "receiptIsPreFinallyAndOkFalse": true,
+  "finalInertStdoutSuccessSeparate": true,
+  "allHistoricalUnknownsUnchanged": true,
+  "noPrivateInputRead": true,
+  "noSdkOrServiceExecution": true,
+  "actualSelectedOwnerOrCredentialQualification": false,
+  "runtimeSubmitted": false,
+  "productionCutover": false,
+  "legacyCleanup": false,
+  "readThenExecAtomicityClaim": false
+}

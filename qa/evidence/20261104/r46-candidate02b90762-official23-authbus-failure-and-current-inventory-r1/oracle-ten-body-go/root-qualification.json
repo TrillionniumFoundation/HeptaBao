@@ -1,0 +1,121 @@
+{
+  "schema": "heptabao.root.oracle271.r2.ten-body-source.qualification.r1",
+  "passed": true,
+  "checks": 21,
+  "rows": [
+    {
+      "name": "whole_SOURCE27_Merkle",
+      "passed": true
+    },
+    {
+      "name": "author75_exact_reproduction",
+      "passed": true
+    },
+    {
+      "name": "independently_qualified_actual_INFO",
+      "passed": true
+    },
+    {
+      "name": "actual_closed_state_pin",
+      "passed": true
+    },
+    {
+      "name": "actual_INFO_native_pin",
+      "passed": true
+    },
+    {
+      "name": "original_INFO_GO_pin",
+      "passed": true
+    },
+    {
+      "name": "frozen_journal_pin",
+      "passed": true
+    },
+    {
+      "name": "all_previous_calls_closed",
+      "passed": true
+    },
+    {
+      "name": "actual_fixed_report_binding",
+      "passed": true
+    },
+    {
+      "name": "exact_range_0",
+      "passed": true
+    },
+    {
+      "name": "exact_range_1",
+      "passed": true
+    },
+    {
+      "name": "exact_range_2",
+      "passed": true
+    },
+    {
+      "name": "exact_range_3",
+      "passed": true
+    },
+    {
+      "name": "exact_range_4",
+      "passed": true
+    },
+    {
+      "name": "exact_range_5",
+      "passed": true
+    },
+    {
+      "name": "exact_range_6",
+      "passed": true
+    },
+    {
+      "name": "exact_range_7",
+      "passed": true
+    },
+    {
+      "name": "exact_range_8",
+      "passed": true
+    },
+    {
+      "name": "exact_range_9",
+      "passed": true
+    },
+    {
+      "name": "contiguous_whole_651803",
+      "passed": true
+    },
+    {
+      "name": "bounded_read_only_GO_contract",
+      "passed": true
+    }
+  ],
+  "packet": {
+    "tree": "110ad5e4707f61b076815cd33c7514eebaf39746",
+    "files": 27,
+    "bytes": 391306,
+    "merkle": {
+      "root_sha": "110ad5e4707f61b076815cd33c7514eebaf39746",
+      "trees_verified": 1,
+      "leaf_count": 27
+    },
+    "whole": true
+  },
+  "source": {
+    "blob": "8ef2f6875479aada7effd09d85fd398d23b43ca1",
+    "bytes": 32147,
+    "sha256": "c6989da12d4ccebd3ae22ce9f71ef99f01714f473f61fe29517a0b15d657e69d"
+  },
+  "priorActualINFO": {
+    "blob": "4c43efd2187a4a592ff6558cdabd746cb524a902",
+    "bytes": 3190,
+    "sha256": "78028b65216625c25933c0487af69ee4ed320fb4995896838ff6a2352a854398"
+  },
+  "originalJob": "1a1b1b4fbfa-fc05-7a60",
+  "actualReportBytes": 651803,
+  "actualReportSHA256": "9048f3b5c854a190dadde86f5d7eec180c497313065bd70bd23a87124789a62d",
+  "newBinaryReadStarts": 0,
+  "bodyQualified": false,
+  "aclResultsQualified": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

@@ -1,0 +1,48 @@
+[
+  {
+    "profile": "file",
+    "package": "heptabao-server",
+    "target": "heptabao_server",
+    "features": [
+      "native-v6-storage"
+    ],
+    "feature_arguments": [
+      "--no-default-features",
+      "--features",
+      "native-v6-storage"
+    ],
+    "entries": 17,
+    "retained_basename": "retained-heptabao-server-libtest-file",
+    "new_compile": false
+  },
+  {
+    "profile": "default",
+    "package": "heptabao-server",
+    "target": "heptabao_server",
+    "features": [
+      "default",
+      "native-v6-ha",
+      "native-v6-storage"
+    ],
+    "feature_arguments": [],
+    "entries": 220,
+    "retained_basename": "retained-heptabao-server-libtest-default",
+    "new_compile": false
+  },
+  {
+    "profile": "ha-native-v6-peer-ingress",
+    "package": "heptabao-ha-service",
+    "target": "heptabao_ha_service",
+    "features": [
+      "native-v6-peer-ingress"
+    ],
+    "feature_arguments": [
+      "--no-default-features",
+      "--features",
+      "native-v6-peer-ingress"
+    ],
+    "entries": 17,
+    "retained_basename": "retained-heptabao-ha-service-libtest-ha-native-v6-peer-ingress",
+    "new_compile": true
+  }
+]

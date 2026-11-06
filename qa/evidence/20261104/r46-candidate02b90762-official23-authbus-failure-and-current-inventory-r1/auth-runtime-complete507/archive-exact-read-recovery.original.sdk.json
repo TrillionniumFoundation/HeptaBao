@@ -1,0 +1,12 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "{\n  \"operation_id\": \"556e6177ffa8b74d056073855a1b6fc775913f87979ae911123788a5e3482b59\",\n  \"offset\": 32768,\n  \"limit\": 8192\n}\n"
+  },
+  "isError": false
+}

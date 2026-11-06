@@ -1,0 +1,271 @@
+{
+  "schema": "heptabao.root-fresh-HOME-T5-r3-inert-full.r1",
+  "passed": true,
+  "checks": 62,
+  "rows": [
+    {
+      "name": "whole115",
+      "passed": true
+    },
+    {
+      "name": "author70_exact",
+      "passed": true
+    },
+    {
+      "name": "minimum21_exact_whole_streams",
+      "passed": true
+    },
+    {
+      "name": "exact_original_GO",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_call_home-launch-r3-inert-start",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_armed_tree_home-launch-r3-inert-start",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_call_home-launch-r3-inert-authority-01-admission",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_armed_tree_home-launch-r3-inert-authority-01-admission",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_call_home-launch-r3-inert-authority-01-status-01",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_armed_tree_home-launch-r3-inert-authority-01-status-01",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_call_home-launch-r3-inert-authority-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_armed_tree_home-launch-r3-inert-authority-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_call_home-launch-r3-inert-streams-01-admission",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_armed_tree_home-launch-r3-inert-streams-01-admission",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_call_home-launch-r3-inert-streams-01-status-01",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_armed_tree_home-launch-r3-inert-streams-01-status-01",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_call_home-launch-r3-inert-streams-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_armed_tree_home-launch-r3-inert-streams-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_call_home-launch-r3-inert-streams-01-page-008192",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_armed_tree_home-launch-r3-inert-streams-01-page-008192",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_call_home-launch-r3-inert-streams-01-page-016384",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_armed_tree_home-launch-r3-inert-streams-01-page-016384",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_call_home-launch-r3-inert-streams-01-page-024576",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_armed_tree_home-launch-r3-inert-streams-01-page-024576",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_call_home-launch-r3-inert-streams-01-page-032768",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_armed_tree_home-launch-r3-inert-streams-01-page-032768",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_call_home-launch-r3-inert-streams-01-page-040960",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_armed_tree_home-launch-r3-inert-streams-01-page-040960",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_call_home-launch-r3-inert-streams-01-page-049152",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_armed_tree_home-launch-r3-inert-streams-01-page-049152",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_call_home-launch-r3-inert-streams-02-admission",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_armed_tree_home-launch-r3-inert-streams-02-admission",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_call_home-launch-r3-inert-streams-02-status-01",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_armed_tree_home-launch-r3-inert-streams-02-status-01",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_call_home-launch-r3-inert-streams-02-page-000000",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_armed_tree_home-launch-r3-inert-streams-02-page-000000",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_call_home-launch-r3-inert-streams-02-page-008192",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_armed_tree_home-launch-r3-inert-streams-02-page-008192",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_observer_f631645e08689c8d4d6442a180acdae4ced98ce71b7dc2612f66d0b70419b8b9",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_page_f631645e08689c8d4d6442a180acdae4ced98ce71b7dc2612f66d0b70419b8b9_0",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_payload_f631645e08689c8d4d6442a180acdae4ced98ce71b7dc2612f66d0b70419b8b9",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_observer_b2ff28699ac13475cf8e1d057711b4424b0061efc08980840fedaecf365d8d48",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_page_b2ff28699ac13475cf8e1d057711b4424b0061efc08980840fedaecf365d8d48_0",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_page_b2ff28699ac13475cf8e1d057711b4424b0061efc08980840fedaecf365d8d48_8192",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_page_b2ff28699ac13475cf8e1d057711b4424b0061efc08980840fedaecf365d8d48_16384",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_page_b2ff28699ac13475cf8e1d057711b4424b0061efc08980840fedaecf365d8d48_24576",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_page_b2ff28699ac13475cf8e1d057711b4424b0061efc08980840fedaecf365d8d48_32768",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_page_b2ff28699ac13475cf8e1d057711b4424b0061efc08980840fedaecf365d8d48_40960",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_page_b2ff28699ac13475cf8e1d057711b4424b0061efc08980840fedaecf365d8d48_49152",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_payload_b2ff28699ac13475cf8e1d057711b4424b0061efc08980840fedaecf365d8d48",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_observer_8223f2dbfcb144507fca445b394c744b9fd15545a367dc557088927225a42e0e",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_page_8223f2dbfcb144507fca445b394c744b9fd15545a367dc557088927225a42e0e_0",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_page_8223f2dbfcb144507fca445b394c744b9fd15545a367dc557088927225a42e0e_8192",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_payload_8223f2dbfcb144507fca445b394c744b9fd15545a367dc557088927225a42e0e",
+      "passed": true
+    },
+    {
+      "name": "A_r3_original_inert_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "exact_inert_original_request",
+      "passed": true
+    },
+    {
+      "name": "17_calls3_observers10_pages",
+      "passed": true
+    },
+    {
+      "name": "actual_candidate_exact_reviewed_source",
+      "passed": true
+    },
+    {
+      "name": "old_verifier_predicates_unchanged",
+      "passed": true
+    },
+    {
+      "name": "all_original_observers_and_lane_closed",
+      "passed": true
+    }
+  ],
+  "packet": "7ca43a7e2a81d89e377cb00e38ead927c896d8dc",
+  "job": "1a1b19aef7b-fc05-79d3",
+  "originalCalls": 17,
+  "originalObservers": 3,
+  "originalPages": 10,
+  "allOriginalPayloadsWhole": true,
+  "originalInertSucceeded": true,
+  "currentNativeCalls": 0,
+  "currentOwnedFutures": 0,
+  "publicTargetReads": 0,
+  "businessRuntimeStarts": 0,
+  "credentialsQualified": false,
+  "oldManagedUnknownPreserved": true,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

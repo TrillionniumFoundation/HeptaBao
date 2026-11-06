@@ -1,0 +1,78 @@
+{
+  "schema": "heptabao.jwt-policy-empty.peer-manifest.v1",
+  "entries": [
+    {
+      "path": "CODE-PRIMARY.public.json",
+      "blob": "06c249a13b8c95c067dc7d88325dff1de8c96a61",
+      "bytes": 10709,
+      "sha256": "3a4581d89c9ef2188d771f531830a2a355d74049f3fd068c019d4c97a44b2629"
+    },
+    {
+      "path": "ORIGINAL23-COVERAGE.public.json",
+      "blob": "6d8c8bd340305bc5fd192d8a688c466d205d1915",
+      "bytes": 3602,
+      "sha256": "010b22f1bb67a5598a004ed66149469b5caf0f4dbe4ab76334aede4ce08be646"
+    },
+    {
+      "path": "POLICY-STAGES.public.json",
+      "blob": "65eb50cf33bc118d51d87b9666f5a5feca86bb49",
+      "bytes": 3830,
+      "sha256": "39463ff47688d267feed01e00fecedb6003c7276598aea23c31ca2b52445f727"
+    },
+    {
+      "path": "REVIEW.public.json",
+      "blob": "8f132a150aea348cf3987f4660eb5e851c1d3d72",
+      "bytes": 5718,
+      "sha256": "31139049e0ad0879c145ce0ddc374b6a8280f52902c567f0cf036ed9389ccc11"
+    },
+    {
+      "path": "SOURCE-MAP.public.json",
+      "blob": "5ce6bee1172fbaa9c7385d80a73b7ff33d2361e5",
+      "bytes": 9276,
+      "sha256": "b20e5346d010a2dc0ed0c43a8b0dca9aa466f8140c93c77c6f97f564073c8612"
+    },
+    {
+      "path": "actual23-role-and-actor-executor.original.py",
+      "blob": "3b2695829e4d8bc8688fd80f3f513fb550e56a1d",
+      "bytes": 15892,
+      "sha256": "60a2864887218041e3a718d765dc00d261be49510372af95233e8ae89c64e922"
+    },
+    {
+      "path": "official-field-data.original-SDK.json",
+      "blob": "ce5c679c7c33a55913a7737eb244fe43c241513a",
+      "bytes": 33233,
+      "sha256": "ce0a427eb20f16c3012fff07f8866139816b732a0d803dbbf6a313a3903b1f61"
+    },
+    {
+      "path": "official-field-data.original.go",
+      "blob": "19fb31d8f2fcded26049ea9e08d08503d8271726",
+      "bytes": 14785,
+      "sha256": "ba1b41f770e0b9e784f4afe4d1758e608be91b2a2adaeef63446b7f5542bb109"
+    },
+    {
+      "path": "official-jwt-login.original-SDK.json",
+      "blob": "fa85aeac0f35aee8038d425474aa9d97cedd5efa",
+      "bytes": 25595,
+      "sha256": "737548f00d6c9bb20a8862055db321add68fc8e70fc9008dbab83cba44562f10"
+    },
+    {
+      "path": "official-jwt-login.original.go",
+      "blob": "099b2c2ce4cb9dac44420a2898304983e4c4230b",
+      "bytes": 11437,
+      "sha256": "39088e521c0972e9cbfbeb51254ab50445cd2b65090092a6b46131af5dfcd4b8"
+    },
+    {
+      "path": "official-request-handling.original-SDK.json",
+      "blob": "3d5745052039184b5b425c134b000fd7aaf3c999",
+      "bytes": 221356,
+      "sha256": "bc4335d1451dd8a80abe6a18ee61cab7dd5234a85b6f5e76fa47106018bddaae"
+    },
+    {
+      "path": "official-request-handling.original.go",
+      "blob": "c31daccabf24d0ec6064012d995fb0e3d5b759f9",
+      "bytes": 101673,
+      "sha256": "f539e14e846b22649eb0af207e71171919c3d0cd99a4e81a109b7446f7e8511e"
+    }
+  ],
+  "no_native": true
+}

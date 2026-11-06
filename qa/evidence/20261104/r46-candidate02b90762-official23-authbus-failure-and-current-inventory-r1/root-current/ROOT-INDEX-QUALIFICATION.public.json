@@ -1,0 +1,407 @@
+{
+  "schema": "heptabao.r46.index-verification.r1",
+  "passed": true,
+  "checkCount": 100,
+  "checks": [
+    {
+      "name": "48 mounted trees",
+      "pass": true
+    },
+    {
+      "name": "unique mount names",
+      "pass": true
+    },
+    {
+      "name": "Merkle r45-publication-proof",
+      "pass": true
+    },
+    {
+      "name": "unique files r45-publication-proof",
+      "pass": true
+    },
+    {
+      "name": "Merkle post-r45-root-inert-oracle-source",
+      "pass": true
+    },
+    {
+      "name": "unique files post-r45-root-inert-oracle-source",
+      "pass": true
+    },
+    {
+      "name": "Merkle post-r45-fixed3-and-r2-min",
+      "pass": true
+    },
+    {
+      "name": "unique files post-r45-fixed3-and-r2-min",
+      "pass": true
+    },
+    {
+      "name": "Merkle oracle-info-go",
+      "pass": true
+    },
+    {
+      "name": "unique files oracle-info-go",
+      "pass": true
+    },
+    {
+      "name": "Merkle post-r45-original-root-proofs",
+      "pass": true
+    },
+    {
+      "name": "unique files post-r45-original-root-proofs",
+      "pass": true
+    },
+    {
+      "name": "Merkle oracle-ten-body-go",
+      "pass": true
+    },
+    {
+      "name": "unique files oracle-ten-body-go",
+      "pass": true
+    },
+    {
+      "name": "Merkle auth-runtime-go-and-root-original-proof",
+      "pass": true
+    },
+    {
+      "name": "unique files auth-runtime-go-and-root-original-proof",
+      "pass": true
+    },
+    {
+      "name": "Merkle pocket4-network-go",
+      "pass": true
+    },
+    {
+      "name": "unique files pocket4-network-go",
+      "pass": true
+    },
+    {
+      "name": "Merkle oracle-body1-recovery-go",
+      "pass": true
+    },
+    {
+      "name": "unique files oracle-body1-recovery-go",
+      "pass": true
+    },
+    {
+      "name": "Merkle pocket4-and-fixedpid-source-root",
+      "pass": true
+    },
+    {
+      "name": "unique files pocket4-and-fixedpid-source-root",
+      "pass": true
+    },
+    {
+      "name": "Merkle oracle-body2-recovery-go",
+      "pass": true
+    },
+    {
+      "name": "unique files oracle-body2-recovery-go",
+      "pass": true
+    },
+    {
+      "name": "Merkle auth-delivery16-go",
+      "pass": true
+    },
+    {
+      "name": "unique files auth-delivery16-go",
+      "pass": true
+    },
+    {
+      "name": "Merkle oracle-body2-handback-root",
+      "pass": true
+    },
+    {
+      "name": "unique files oracle-body2-handback-root",
+      "pass": true
+    },
+    {
+      "name": "Merkle fixedpid-original-observation",
+      "pass": true
+    },
+    {
+      "name": "unique files fixedpid-original-observation",
+      "pass": true
+    },
+    {
+      "name": "Merkle first-current-inventory-full66",
+      "pass": true
+    },
+    {
+      "name": "unique files first-current-inventory-full66",
+      "pass": true
+    },
+    {
+      "name": "Merkle inventory-basename-source9",
+      "pass": true
+    },
+    {
+      "name": "unique files inventory-basename-source9",
+      "pass": true
+    },
+    {
+      "name": "Merkle pocket4-network-actual12",
+      "pass": true
+    },
+    {
+      "name": "unique files pocket4-network-actual12",
+      "pass": true
+    },
+    {
+      "name": "Merkle fixedpid-source12",
+      "pass": true
+    },
+    {
+      "name": "unique files fixedpid-source12",
+      "pass": true
+    },
+    {
+      "name": "Merkle auth-fresh-inert-actual115",
+      "pass": true
+    },
+    {
+      "name": "unique files auth-fresh-inert-actual115",
+      "pass": true
+    },
+    {
+      "name": "Merkle auth-fixed3-source32",
+      "pass": true
+    },
+    {
+      "name": "unique files auth-fixed3-source32",
+      "pass": true
+    },
+    {
+      "name": "Merkle auth-fixed3-actual216",
+      "pass": true
+    },
+    {
+      "name": "unique files auth-fixed3-actual216",
+      "pass": true
+    },
+    {
+      "name": "Merkle auth-runtime-source21",
+      "pass": true
+    },
+    {
+      "name": "unique files auth-runtime-source21",
+      "pass": true
+    },
+    {
+      "name": "Merkle auth-runtime-complete507",
+      "pass": true
+    },
+    {
+      "name": "unique files auth-runtime-complete507",
+      "pass": true
+    },
+    {
+      "name": "Merkle auth-delivery16-source25",
+      "pass": true
+    },
+    {
+      "name": "unique files auth-delivery16-source25",
+      "pass": true
+    },
+    {
+      "name": "Merkle auth-delivery16-activation",
+      "pass": true
+    },
+    {
+      "name": "unique files auth-delivery16-activation",
+      "pass": true
+    },
+    {
+      "name": "Merkle oracle-fresh-r2-source26",
+      "pass": true
+    },
+    {
+      "name": "unique files oracle-fresh-r2-source26",
+      "pass": true
+    },
+    {
+      "name": "Merkle oracle-fresh-r2-outer55",
+      "pass": true
+    },
+    {
+      "name": "unique files oracle-fresh-r2-outer55",
+      "pass": true
+    },
+    {
+      "name": "Merkle oracle-fresh-r2-info30",
+      "pass": true
+    },
+    {
+      "name": "unique files oracle-fresh-r2-info30",
+      "pass": true
+    },
+    {
+      "name": "Merkle oracle-ten-body-source27",
+      "pass": true
+    },
+    {
+      "name": "unique files oracle-ten-body-source27",
+      "pass": true
+    },
+    {
+      "name": "Merkle oracle-body1-restore-source9",
+      "pass": true
+    },
+    {
+      "name": "unique files oracle-body1-restore-source9",
+      "pass": true
+    },
+    {
+      "name": "Merkle oracle-body1-restore-actual",
+      "pass": true
+    },
+    {
+      "name": "unique files oracle-body1-restore-actual",
+      "pass": true
+    },
+    {
+      "name": "Merkle oracle-body2-unknown16",
+      "pass": true
+    },
+    {
+      "name": "unique files oracle-body2-unknown16",
+      "pass": true
+    },
+    {
+      "name": "Merkle oracle-body2-recovery-source18",
+      "pass": true
+    },
+    {
+      "name": "unique files oracle-body2-recovery-source18",
+      "pass": true
+    },
+    {
+      "name": "Merkle oracle-body2-handback-source21",
+      "pass": true
+    },
+    {
+      "name": "unique files oracle-body2-handback-source21",
+      "pass": true
+    },
+    {
+      "name": "Merkle oracle-complete-aggregate662",
+      "pass": true
+    },
+    {
+      "name": "unique files oracle-complete-aggregate662",
+      "pass": true
+    },
+    {
+      "name": "Merkle oracle-final-proof3",
+      "pass": true
+    },
+    {
+      "name": "unique files oracle-final-proof3",
+      "pass": true
+    },
+    {
+      "name": "Merkle jwt-primary-policy-peer13",
+      "pass": true
+    },
+    {
+      "name": "unique files jwt-primary-policy-peer13",
+      "pass": true
+    },
+    {
+      "name": "Merkle jwt-production-source92",
+      "pass": true
+    },
+    {
+      "name": "unique files jwt-production-source92",
+      "pass": true
+    },
+    {
+      "name": "Merkle combined246-runner-source25",
+      "pass": true
+    },
+    {
+      "name": "unique files combined246-runner-source25",
+      "pass": true
+    },
+    {
+      "name": "Merkle root-current-inventory-actual",
+      "pass": true
+    },
+    {
+      "name": "unique files root-current-inventory-actual",
+      "pass": true
+    },
+    {
+      "name": "Merkle candidate-source-intent",
+      "pass": true
+    },
+    {
+      "name": "unique files candidate-source-intent",
+      "pass": true
+    },
+    {
+      "name": "Merkle candidate-commit-intent",
+      "pass": true
+    },
+    {
+      "name": "unique files candidate-commit-intent",
+      "pass": true
+    },
+    {
+      "name": "Merkle candidate-branch-intent",
+      "pass": true
+    },
+    {
+      "name": "unique files candidate-branch-intent",
+      "pass": true
+    },
+    {
+      "name": "Merkle candidate-publication-proof",
+      "pass": true
+    },
+    {
+      "name": "unique files candidate-publication-proof",
+      "pass": true
+    },
+    {
+      "name": "Merkle prior-current-inventory-go",
+      "pass": true
+    },
+    {
+      "name": "unique files prior-current-inventory-go",
+      "pass": true
+    },
+    {
+      "name": "Merkle bound02b90762-source-stage28",
+      "pass": true
+    },
+    {
+      "name": "unique files bound02b90762-source-stage28",
+      "pass": true
+    },
+    {
+      "name": "Merkle bound02b90762-source-stage-root-go",
+      "pass": true
+    },
+    {
+      "name": "unique files bound02b90762-source-stage-root-go",
+      "pass": true
+    },
+    {
+      "name": "Merkle auth-original-reconcile-core9",
+      "pass": true
+    },
+    {
+      "name": "unique files auth-original-reconcile-core9",
+      "pass": true
+    },
+    {
+      "name": "2216 exact files",
+      "pass": true
+    },
+    {
+      "name": "42919008 exact bytes",
+      "pass": true
+    }
+  ]
+}

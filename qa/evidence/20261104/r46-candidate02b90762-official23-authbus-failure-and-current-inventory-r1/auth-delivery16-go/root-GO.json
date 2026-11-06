@@ -1,0 +1,137 @@
+{
+  "schema": "heptabao.root.GO.authbus.r3.remaining-original-stream-delivery16.r1",
+  "authorization": "GO",
+  "scope": "amend_only_unadmitted_original_process_read_immutable_page_size",
+  "original_job": "1a1b1d28dc2-fc05-7afe",
+  "original_slot": "owner_authbus_current_home_runtime_gitfirst_r3",
+  "amends_original_GO": {
+    "blob": "179dadd5fda8192e78a5ae387e6a8ed768d4adab",
+    "bytes": 2981,
+    "sha256": "74fe23a30afc4efc34baa9a1413bd96f8936a615f101ae59a524fec304154db8"
+  },
+  "source_packet": "95fc1eb5c02ce16da87158f008a14f0508a76684",
+  "root_qualification": {
+    "blob": "02b84847862378979e2ee671a35502ade9d9b56f",
+    "bytes": 5329,
+    "sha256": "1b9a2d6f05c6ffa8191e4fa743c1469eaa446f8bac3c192fa6b02cd06e658c72"
+  },
+  "exact_prior_closed_state": {
+    "blob": "f3ee8a7deed5183685c0b2c5701b242b5c795bce",
+    "bytes": 68853,
+    "sha256": "ce4b7bf7b8b2f271e51680405643c2ff5562bb9f246b0b473928c6504bb426bf"
+  },
+  "exact_new_journal": {
+    "blob": "c2274b5979ecc8d73f95c27fdfb004339ca133db",
+    "bytes": 19244,
+    "sha256": "1988c68e38d215bb938337238b35425049c06b786630be783053b9a57c2b3418"
+  },
+  "exact_activation": {
+    "blob": "9c8c5ce22f45d00067e0b69e1a5f2e280ed57019",
+    "bytes": 2745,
+    "sha256": "ef5390f6fd4060d42ce6b316bf6f422c0a2a1722f83bcd35815023bcc274b856"
+  },
+  "exact_remaining_process_read_requests": [
+    {
+      "ordinal": 3,
+      "blob": "56e416ac1574b32994cda81242acd555ba8493bc",
+      "bytes": 302,
+      "sha256": "7c0c84635ee75beb84d8f3bcc8e2630482ed88e0fda0bd9fcf7c8108a6ff9651"
+    },
+    {
+      "ordinal": 4,
+      "blob": "28988bea3cc3529f257abdfbaf5f90387483b39e",
+      "bytes": 302,
+      "sha256": "519cf9948eefa931278e7f2bf410d921c595f4c15ae21cb7171b0e3d55fa6d69"
+    },
+    {
+      "ordinal": 5,
+      "blob": "e81a610edfd21414e902bf46379f18e326c140f8",
+      "bytes": 302,
+      "sha256": "83ea21d9f3d742ce8a251ac4d6e6ca6ea1960ff6683c8a40b6566a826baa14d2"
+    },
+    {
+      "ordinal": 6,
+      "blob": "53a4c4461b76e95237679c9f81e14ae95909f24f",
+      "bytes": 302,
+      "sha256": "858666ca4245e9bca2c7bdd588a3c6da863ea64bd1b3b7cc52e425467f55e78d"
+    },
+    {
+      "ordinal": 7,
+      "blob": "f3f4fcf602d4be6e44702211c55fd29514ca4e0a",
+      "bytes": 302,
+      "sha256": "6b2943445ec4a0f2464536f2ecd27e6bf7e2319b4513de07d6ec90cad8cfceb7"
+    },
+    {
+      "ordinal": 8,
+      "blob": "02ac85af3c9f761e26ca2d87e29adc3e6087a186",
+      "bytes": 303,
+      "sha256": "88f3679060e65b0701584da1e9d1d5df74830a94187b498364908f3650ce08d6"
+    },
+    {
+      "ordinal": 9,
+      "blob": "73223d11ae2af79c544ee4e70ff9f2af78f06ee1",
+      "bytes": 303,
+      "sha256": "d2b195509ad91035f0d5dee91c637c238c89e14a2b1d519420087c5bbd5d3059"
+    },
+    {
+      "ordinal": 10,
+      "blob": "0904a8e5476f3126cec74d3f0478f1550c706700",
+      "bytes": 303,
+      "sha256": "e924a7a0e91e9551c20d8af37511380ef2ad960bba0cabaee9db838ca64937ab"
+    },
+    {
+      "ordinal": 11,
+      "blob": "d8506238383c75f0fdbdbad3541c654b8db72f3e",
+      "bytes": 303,
+      "sha256": "21a8965f75126cce907b1f22be2e508764e2a3ec7ef565d057cf479714bd4b03"
+    },
+    {
+      "ordinal": 12,
+      "blob": "bd2d6eab7bbea8d96245e1aa3e73f288d2f33665",
+      "bytes": 303,
+      "sha256": "2427050ffa6b4b33953e113ff03babb8352f52c9a63e4796d7d872dbae552f0d"
+    },
+    {
+      "ordinal": 13,
+      "blob": "5ea65b6388ef86298f4217e8cf28620e6ff00d7e",
+      "bytes": 303,
+      "sha256": "72e0bb096937cdc8253d15d0f480aab0801f099b0390f35b0b7d24131e899072"
+    }
+  ],
+  "maximum_new_process_starts": 0,
+  "maximum_new_process_read_admissions": 11,
+  "maximum_total_terminal_process_reads": 129,
+  "terminal_reads_already_admitted": 2,
+  "maximum_total_process_statuses": 64,
+  "process_statuses_already_admitted": 1,
+  "maximum_status_calls_per_observer": 8,
+  "process_read_bytes": 16384,
+  "new_process_read_immutable_page_bytes": 16384,
+  "maximum_immutable_pages_per_new_process_read": 64,
+  "maximum_original_payload_bytes_per_observer": 1048576,
+  "other_new_observer_immutable_page_bytes": 8192,
+  "historical_observer_immutable_page_bytes": 8192,
+  "historical_calls_and_observers_unchanged": true,
+  "delivered_stdout_bytes": 32768,
+  "final_stdout_bytes": 211872,
+  "remaining_stdout_bytes": 179104,
+  "maximum_remaining_read_payload_pages": 704,
+  "maximum_simultaneous_native_calls_or_owned_futures": 1,
+  "activation_must_be_externally_whole_before_any_remaining_admission": true,
+  "parent_GO_remains_original_arm_identity_and_this_amendment_is_bound_by_the_external_activation": true,
+  "no_original_context_reinitialize": true,
+  "no_existing_observer_rebind": true,
+  "no_rewind_or_reread": true,
+  "old_900_1080_second_business_limits_unchanged": true,
+  "old_failure_and_UNKNOWN_history_preserved": true,
+  "lane": "A1",
+  "concurrent_lanes": {
+    "A": 1,
+    "B": 0,
+    "C": 1,
+    "root": 0
+  },
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

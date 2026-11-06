@@ -1,0 +1,457 @@
+[
+  {
+    "callKey": "official271-x230-acl23-r2-authority0-status0",
+    "slot": "official271_x230_acl23_oracle_gitfirst_r2",
+    "operation": "95ffff8579001c0641035b4c3cc1f453bf9751d1fa1213be6b6d405fb8ae005a",
+    "tool": "process_status",
+    "sdk": {
+      "blob": "02723ae04abc466f65392966c52a97385ecb5ad8",
+      "bytes": 980,
+      "sha256": "816b554f8e4abc0efbc4e3bf8a59b85bbb341e67c3a6fbfd14e497d2a35bcf93"
+    },
+    "native": {
+      "blob": "0799b3dc6afde1b20962cbff4a31696e887f5d1e",
+      "bytes": 805,
+      "sha256": "0da51e233ae96bc6b1f571865790b320119547a76113103600ca3ae72e40d6aa"
+    },
+    "sdkRaw": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"{\\\"async_state\\\":\\\"completed\\\",\\\"audit_metadata_available\\\":true,\\\"authenticated_chatgpt_caller_isolation\\\":false,\\\"automatic_retry\\\":false,\\\"cancellation_does_not_prove_remote_effect_stopped\\\":true,\\\"credential_metadata_resume\\\":true,\\\"cross_session_resume\\\":true,\\\"delivery_proven\\\":false,\\\"early_return_async_start_supported\\\":true,\\\"execution_resume_after_restart\\\":false,\\\"operation_id\\\":\\\"95ffff8579001c0641035b4c3cc1f453bf9751d1fa1213be6b6d405fb8ae005a\\\",\\\"original_payload_is_not_transport_delivery_proof\\\":true,\\\"owned_future_active\\\":false,\\\"ownership_scope\\\":\\\"authenticated_private_operator_credential\\\",\\\"payload_available\\\":true,\\\"remote_termination_confirmed\\\":false,\\\"result_state\\\":\\\"stored_observed\\\",\\\"retention_max_original_bytes\\\":1048576,\\\"session_scope\\\":\\\"authenticated_private_operator_credential\\\",\\\"tool_name\\\":\\\"process_status\\\"}\"\n    }\n  ],\n  \"structuredContent\": null,\n  \"isError\": false\n}\n",
+    "nativeRaw": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"95ffff8579001c0641035b4c3cc1f453bf9751d1fa1213be6b6d405fb8ae005a\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"process_status\"}",
+    "originalObserver": {
+      "id": "95ffff8579001c0641035b4c3cc1f453bf9751d1fa1213be6b6d405fb8ae005a",
+      "tool": "process_status",
+      "payload": {
+        "blob": "c8462d74bef0c9d61ada55e4268169c2befe2bf6",
+        "bytes": 908,
+        "sha256": "cbc3084795111ecec6bb5ce2bc479c842a5d4a1f4f15504704d2c25d5de1cf61"
+      },
+      "payloadTree": "61f86f86a939a44491481eb0f690d65740d3b16d",
+      "nativeText": {
+        "blob": "da813799540ff8624c4900af309e3f3427a40e9f",
+        "bytes": 729,
+        "sha256": "4bf1b9bb464681feae554428898b0e2551918cd5c8c5f86655ba9e2cbc484267"
+      },
+      "pages": 1,
+      "completedInactive": true
+    }
+  },
+  {
+    "callKey": "official271-x230-acl23-r2-streams0-status0",
+    "slot": "official271_x230_acl23_oracle_gitfirst_r2",
+    "operation": "f688543e38352312ee0e8ded4fb44d59cffd1e2e170680232a6c0c5a620a78f0",
+    "tool": "process_read",
+    "sdk": {
+      "blob": "5854a5192fff04d8227b5ebb27ad93cf49b8b42b",
+      "bytes": 978,
+      "sha256": "51513f7554ca8dc383f683095659e6703a6c1a347e69b64922fe276cb79e4465"
+    },
+    "native": {
+      "blob": "c902f93a868f091a2baede705e564cb1cbd7a1f9",
+      "bytes": 803,
+      "sha256": "23313ab9bd589b4a163f816b40e706ae0a2e67c502d58e55e854ef94a8176b71"
+    },
+    "sdkRaw": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"{\\\"async_state\\\":\\\"completed\\\",\\\"audit_metadata_available\\\":true,\\\"authenticated_chatgpt_caller_isolation\\\":false,\\\"automatic_retry\\\":false,\\\"cancellation_does_not_prove_remote_effect_stopped\\\":true,\\\"credential_metadata_resume\\\":true,\\\"cross_session_resume\\\":true,\\\"delivery_proven\\\":false,\\\"early_return_async_start_supported\\\":true,\\\"execution_resume_after_restart\\\":false,\\\"operation_id\\\":\\\"f688543e38352312ee0e8ded4fb44d59cffd1e2e170680232a6c0c5a620a78f0\\\",\\\"original_payload_is_not_transport_delivery_proof\\\":true,\\\"owned_future_active\\\":false,\\\"ownership_scope\\\":\\\"authenticated_private_operator_credential\\\",\\\"payload_available\\\":true,\\\"remote_termination_confirmed\\\":false,\\\"result_state\\\":\\\"stored_observed\\\",\\\"retention_max_original_bytes\\\":1048576,\\\"session_scope\\\":\\\"authenticated_private_operator_credential\\\",\\\"tool_name\\\":\\\"process_read\\\"}\"\n    }\n  ],\n  \"structuredContent\": null,\n  \"isError\": false\n}\n",
+    "nativeRaw": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"f688543e38352312ee0e8ded4fb44d59cffd1e2e170680232a6c0c5a620a78f0\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"process_read\"}",
+    "originalObserver": {
+      "id": "f688543e38352312ee0e8ded4fb44d59cffd1e2e170680232a6c0c5a620a78f0",
+      "tool": "process_read",
+      "payload": {
+        "blob": "087f5813bb7ae0719f7d607a7b2f47df5ae8ca33",
+        "bytes": 2692,
+        "sha256": "eaa2e06957c3a04be4fcabb3e18da13b5edb11f5d6c77a1b280001ee6a4b8c93"
+      },
+      "payloadTree": "203d1823fecfe81a80b3cb21b72814980577b96b",
+      "nativeText": {
+        "blob": "0e964035663001baae316888052f5d53c41dd7cf",
+        "bytes": 2427,
+        "sha256": "db81ce7dbd8c9c7a3880ed6017a6318af511ebe785729b36c8a572e14d075c02"
+      },
+      "pages": 1,
+      "completedInactive": true
+    }
+  },
+  {
+    "callKey": "official271-x230-acl23-r2-report-info-status0",
+    "slot": "official271_x230_acl23_oracle_gitfirst_r2",
+    "operation": "fb33dec05df1603940b92929c9cb75c6990fa6d0c1ca281f1a317d8221edfc47",
+    "tool": "file_info",
+    "sdk": {
+      "blob": "81320f6f71e721e4bf7b1ecb7f14e01051b0c336",
+      "bytes": 975,
+      "sha256": "6b9247755c588676088b6d424c216a982a66bcb2adb05226fa7c63a7de90e1df"
+    },
+    "native": {
+      "blob": "76f5c794d3bbdec74ff978ce22e63f1dcead2f24",
+      "bytes": 800,
+      "sha256": "ab9fd5416444a1112c59fe341dde2ffe3e9d2d363ed47896b13d112ef0aba248"
+    },
+    "sdkRaw": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"{\\\"async_state\\\":\\\"completed\\\",\\\"audit_metadata_available\\\":true,\\\"authenticated_chatgpt_caller_isolation\\\":false,\\\"automatic_retry\\\":false,\\\"cancellation_does_not_prove_remote_effect_stopped\\\":true,\\\"credential_metadata_resume\\\":true,\\\"cross_session_resume\\\":true,\\\"delivery_proven\\\":false,\\\"early_return_async_start_supported\\\":true,\\\"execution_resume_after_restart\\\":false,\\\"operation_id\\\":\\\"fb33dec05df1603940b92929c9cb75c6990fa6d0c1ca281f1a317d8221edfc47\\\",\\\"original_payload_is_not_transport_delivery_proof\\\":true,\\\"owned_future_active\\\":false,\\\"ownership_scope\\\":\\\"authenticated_private_operator_credential\\\",\\\"payload_available\\\":true,\\\"remote_termination_confirmed\\\":false,\\\"result_state\\\":\\\"stored_observed\\\",\\\"retention_max_original_bytes\\\":1048576,\\\"session_scope\\\":\\\"authenticated_private_operator_credential\\\",\\\"tool_name\\\":\\\"file_info\\\"}\"\n    }\n  ],\n  \"structuredContent\": null,\n  \"isError\": false\n}\n",
+    "nativeRaw": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"fb33dec05df1603940b92929c9cb75c6990fa6d0c1ca281f1a317d8221edfc47\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"file_info\"}",
+    "originalObserver": {
+      "id": "fb33dec05df1603940b92929c9cb75c6990fa6d0c1ca281f1a317d8221edfc47",
+      "tool": "file_info",
+      "payload": {
+        "blob": "e96e18604f2253507b6a80caad875b595e6f48c5",
+        "bytes": 580,
+        "sha256": "601fdc40a05e58e756f113c62484484895d998dbc72b988e5014c8b6ce770a50"
+      },
+      "payloadTree": "40d355a14aab29d2b68c0f0a9fec6d09416f508d",
+      "nativeText": {
+        "blob": "5de2fd1d0891ce3fee0bb3b4e3968452e7715dcd",
+        "bytes": 463,
+        "sha256": "50afd94d7cb022e910476f5812f78beb008323cb042a378182a32c99761893d7"
+      },
+      "pages": 1,
+      "completedInactive": true
+    }
+  },
+  {
+    "callKey": "official271-x230-acl23-r2-body00-status0",
+    "slot": "official271_x230_acl23_oracle_gitfirst_r2",
+    "operation": "97ec0f9400d93019b1e459f6db580941680676a6b5633c31cbb9cb6626df1802",
+    "tool": "binary_read",
+    "sdk": {
+      "blob": "9333af97317006b237ff06b23dc0532617449fc7",
+      "bytes": 977,
+      "sha256": "ab274a86fb329e0c394f8b332ab697b54861938710958f42a207f56d6028aba4"
+    },
+    "native": {
+      "blob": "ea0fd7e1f30b0a98c95c8b343f7e9bb11bdb8dd8",
+      "bytes": 802,
+      "sha256": "5cb495799003bd39ab404242d7a541363297b783918cf009475f676143096364"
+    },
+    "sdkRaw": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"{\\\"async_state\\\":\\\"completed\\\",\\\"audit_metadata_available\\\":true,\\\"authenticated_chatgpt_caller_isolation\\\":false,\\\"automatic_retry\\\":false,\\\"cancellation_does_not_prove_remote_effect_stopped\\\":true,\\\"credential_metadata_resume\\\":true,\\\"cross_session_resume\\\":true,\\\"delivery_proven\\\":false,\\\"early_return_async_start_supported\\\":true,\\\"execution_resume_after_restart\\\":false,\\\"operation_id\\\":\\\"97ec0f9400d93019b1e459f6db580941680676a6b5633c31cbb9cb6626df1802\\\",\\\"original_payload_is_not_transport_delivery_proof\\\":true,\\\"owned_future_active\\\":false,\\\"ownership_scope\\\":\\\"authenticated_private_operator_credential\\\",\\\"payload_available\\\":true,\\\"remote_termination_confirmed\\\":false,\\\"result_state\\\":\\\"stored_observed\\\",\\\"retention_max_original_bytes\\\":1048576,\\\"session_scope\\\":\\\"authenticated_private_operator_credential\\\",\\\"tool_name\\\":\\\"binary_read\\\"}\"\n    }\n  ],\n  \"structuredContent\": null,\n  \"isError\": false\n}\n",
+    "nativeRaw": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"97ec0f9400d93019b1e459f6db580941680676a6b5633c31cbb9cb6626df1802\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"binary_read\"}",
+    "originalObserver": {
+      "id": "97ec0f9400d93019b1e459f6db580941680676a6b5633c31cbb9cb6626df1802",
+      "tool": "binary_read",
+      "payload": {
+        "blob": "bbc96068a2f79a4842898dd56823dd0b0c8c9b6e",
+        "bytes": 87801,
+        "sha256": "4e415febd6ea5479ffd5fb243bfe6e17cfa434b0cd268e6115d904a01716d27c"
+      },
+      "payloadTree": "065f76e9972641789337774aebe805eb6890fd1c",
+      "nativeText": {
+        "blob": "819f01b07fb3a8843bbde86d8552438a7dfd225c",
+        "bytes": 87698,
+        "sha256": "0e301440e270e701ec02e2ee79e9b32e9aff9fbe30fd5810803dc0e8ae815d93"
+      },
+      "pages": 6,
+      "completedInactive": true
+    }
+  },
+  {
+    "callKey": "official271-x230-acl23-r2-body01-status0",
+    "slot": "official271_x230_acl23_oracle_gitfirst_r2",
+    "operation": "5433a8b98b3015f338e147954b4d9910b5657f85730a4bc09de3a79129a88155",
+    "tool": "binary_read",
+    "sdk": {
+      "blob": "8bc1ff6ad51efa034bcab231e546b14ab3ba4724",
+      "bytes": 977,
+      "sha256": "6dfa0164e6187053dae47be6808dcb43619b2dae036394de6f6a709e27786a76"
+    },
+    "native": {
+      "blob": "ce87db627bb2373a3c787b8691f9b6a9b9a052e7",
+      "bytes": 802,
+      "sha256": "84b71c296826c5951afb99f681fe005d036ccaaaafa6f1423ba25982c80d3ec2"
+    },
+    "sdkRaw": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"{\\\"async_state\\\":\\\"completed\\\",\\\"audit_metadata_available\\\":true,\\\"authenticated_chatgpt_caller_isolation\\\":false,\\\"automatic_retry\\\":false,\\\"cancellation_does_not_prove_remote_effect_stopped\\\":true,\\\"credential_metadata_resume\\\":true,\\\"cross_session_resume\\\":true,\\\"delivery_proven\\\":false,\\\"early_return_async_start_supported\\\":true,\\\"execution_resume_after_restart\\\":false,\\\"operation_id\\\":\\\"5433a8b98b3015f338e147954b4d9910b5657f85730a4bc09de3a79129a88155\\\",\\\"original_payload_is_not_transport_delivery_proof\\\":true,\\\"owned_future_active\\\":false,\\\"ownership_scope\\\":\\\"authenticated_private_operator_credential\\\",\\\"payload_available\\\":true,\\\"remote_termination_confirmed\\\":false,\\\"result_state\\\":\\\"stored_observed\\\",\\\"retention_max_original_bytes\\\":1048576,\\\"session_scope\\\":\\\"authenticated_private_operator_credential\\\",\\\"tool_name\\\":\\\"binary_read\\\"}\"\n    }\n  ],\n  \"structuredContent\": null,\n  \"isError\": false\n}\n",
+    "nativeRaw": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"5433a8b98b3015f338e147954b4d9910b5657f85730a4bc09de3a79129a88155\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"binary_read\"}",
+    "originalObserver": {
+      "id": "5433a8b98b3015f338e147954b4d9910b5657f85730a4bc09de3a79129a88155",
+      "tool": "binary_read",
+      "payload": {
+        "blob": "df652d7c8aae087d3fef6e2b006ed91ba1676b39",
+        "bytes": 87806,
+        "sha256": "3917779169bffb0cf16e7feb19078b676bd8a797bbeabf975f438e9c1c1ded06"
+      },
+      "payloadTree": "302a4ced1e85b72ebe084b4cd488f94a42f0489d",
+      "nativeText": {
+        "blob": "f3a252b3490a1c6284b74bd672c592e2dfa043d6",
+        "bytes": 87703,
+        "sha256": "5f95f551f8511ed39ad2ad017ae0cd5a538f2f05e762fd0b0a49aac5f3367f0a"
+      },
+      "pages": 6,
+      "completedInactive": true
+    }
+  },
+  {
+    "callKey": "official271-x230-acl23-r2-body02-reconcile-status1",
+    "slot": "official271_x230_acl23_r2_body02_status_reconcile_r1",
+    "operation": "6220e2762757d7afa1ba315c7beb2a985c59c147ac7cb3852aa17ba9c21c7a9e",
+    "tool": "binary_read",
+    "sdk": {
+      "blob": "a295d73b6655906c92193aed0df4d42fe30b8c32",
+      "bytes": 977,
+      "sha256": "1a94d7f418d242fa4b99022f3d5a8280437d9fea80d8d978de712bea901c1c1e"
+    },
+    "native": {
+      "blob": "b64fcdddb682057cf1d0f90d60a47121f3e47662",
+      "bytes": 802,
+      "sha256": "c8c49d86c35384b51653bdf518550284329fdfd7846514eaec73a272de1aa3c3"
+    },
+    "sdkRaw": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"{\\\"async_state\\\":\\\"completed\\\",\\\"audit_metadata_available\\\":true,\\\"authenticated_chatgpt_caller_isolation\\\":false,\\\"automatic_retry\\\":false,\\\"cancellation_does_not_prove_remote_effect_stopped\\\":true,\\\"credential_metadata_resume\\\":true,\\\"cross_session_resume\\\":true,\\\"delivery_proven\\\":false,\\\"early_return_async_start_supported\\\":true,\\\"execution_resume_after_restart\\\":false,\\\"operation_id\\\":\\\"6220e2762757d7afa1ba315c7beb2a985c59c147ac7cb3852aa17ba9c21c7a9e\\\",\\\"original_payload_is_not_transport_delivery_proof\\\":true,\\\"owned_future_active\\\":false,\\\"ownership_scope\\\":\\\"authenticated_private_operator_credential\\\",\\\"payload_available\\\":true,\\\"remote_termination_confirmed\\\":false,\\\"result_state\\\":\\\"stored_observed\\\",\\\"retention_max_original_bytes\\\":1048576,\\\"session_scope\\\":\\\"authenticated_private_operator_credential\\\",\\\"tool_name\\\":\\\"binary_read\\\"}\"\n    }\n  ],\n  \"structuredContent\": null,\n  \"isError\": false\n}\n",
+    "nativeRaw": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"6220e2762757d7afa1ba315c7beb2a985c59c147ac7cb3852aa17ba9c21c7a9e\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"binary_read\"}",
+    "originalObserver": {
+      "id": "6220e2762757d7afa1ba315c7beb2a985c59c147ac7cb3852aa17ba9c21c7a9e",
+      "tool": "binary_read",
+      "payload": {
+        "blob": "f20019334ad38cacb1e167322cf7794a95e241da",
+        "bytes": 87807,
+        "sha256": "ee2852333b301886098786350bddfabf531c07672915529a9af3562d96de9528"
+      },
+      "payloadTree": "04064303592aa2e9f1d76f45b971d56be2a74f1e",
+      "nativeText": {
+        "blob": "80fee5c5830ce3a427fc1a4f265be7b1ee63400c",
+        "bytes": 87704,
+        "sha256": "9899f711cc87f520fe247875f159c843ca107796e90d6f348680be3ce17625c6"
+      },
+      "pages": 6,
+      "completedInactive": true
+    }
+  },
+  {
+    "callKey": "official271-x230-acl23-r2-body03-status0",
+    "slot": "official271_x230_acl23_oracle_gitfirst_r2",
+    "operation": "50238311722cbf264f75f615112dbc6e5b38c25d93eebe7878450008dce5144a",
+    "tool": "binary_read",
+    "sdk": {
+      "blob": "378817b4cd99b3f3097fb4d8e0e3851155bebbf3",
+      "bytes": 977,
+      "sha256": "a8c9d19b975c3ba3fac490b0d7fbb896a514f45d7b1c9169d08f34b45507ed26"
+    },
+    "native": {
+      "blob": "729424e59c9884e7d8a475308b896355d23b7adb",
+      "bytes": 802,
+      "sha256": "f51f700c8d9f99bd300c23cd288988a9485dbc461bfc14aebbb88a41f3d8124b"
+    },
+    "sdkRaw": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"{\\\"async_state\\\":\\\"completed\\\",\\\"audit_metadata_available\\\":true,\\\"authenticated_chatgpt_caller_isolation\\\":false,\\\"automatic_retry\\\":false,\\\"cancellation_does_not_prove_remote_effect_stopped\\\":true,\\\"credential_metadata_resume\\\":true,\\\"cross_session_resume\\\":true,\\\"delivery_proven\\\":false,\\\"early_return_async_start_supported\\\":true,\\\"execution_resume_after_restart\\\":false,\\\"operation_id\\\":\\\"50238311722cbf264f75f615112dbc6e5b38c25d93eebe7878450008dce5144a\\\",\\\"original_payload_is_not_transport_delivery_proof\\\":true,\\\"owned_future_active\\\":false,\\\"ownership_scope\\\":\\\"authenticated_private_operator_credential\\\",\\\"payload_available\\\":true,\\\"remote_termination_confirmed\\\":false,\\\"result_state\\\":\\\"stored_observed\\\",\\\"retention_max_original_bytes\\\":1048576,\\\"session_scope\\\":\\\"authenticated_private_operator_credential\\\",\\\"tool_name\\\":\\\"binary_read\\\"}\"\n    }\n  ],\n  \"structuredContent\": null,\n  \"isError\": false\n}\n",
+    "nativeRaw": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"50238311722cbf264f75f615112dbc6e5b38c25d93eebe7878450008dce5144a\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"binary_read\"}",
+    "originalObserver": {
+      "id": "50238311722cbf264f75f615112dbc6e5b38c25d93eebe7878450008dce5144a",
+      "tool": "binary_read",
+      "payload": {
+        "blob": "9d9ee81b8f2e6f13dd419111658f306f1331515b",
+        "bytes": 87807,
+        "sha256": "247f21449e6dbc8c796ef7915575a42e02099f552587e4892ecfa6bb7e721da5"
+      },
+      "payloadTree": "5458aa8764bd02c262f80639c79c49581ac1916f",
+      "nativeText": {
+        "blob": "f5951de078e9f4b18f52ea2c254530d332ea7c0f",
+        "bytes": 87704,
+        "sha256": "629dfb2ccf0d894f92f50024fe9bbb4019bd4b572dcbcf216014c933a64c4318"
+      },
+      "pages": 6,
+      "completedInactive": true
+    }
+  },
+  {
+    "callKey": "official271-x230-acl23-r2-body04-status0",
+    "slot": "official271_x230_acl23_oracle_gitfirst_r2",
+    "operation": "7a17a9723fc8c7a97505edaf37a1d2afc03b62337370e3a4b27c79f3dbb298a8",
+    "tool": "binary_read",
+    "sdk": {
+      "blob": "cc5443f6558857610885a53739cae2ecc0b2f30e",
+      "bytes": 977,
+      "sha256": "4324b4969a301538ad2573c50a81d7e0b6cc2d86f78feff329e8bd46a8a6b03c"
+    },
+    "native": {
+      "blob": "328508a3a4528483c3c70bd75356dd41e2606dca",
+      "bytes": 802,
+      "sha256": "861b3e1415de60ce093ef53048a4567c07937de84dbfd8c3f176d916390d5717"
+    },
+    "sdkRaw": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"{\\\"async_state\\\":\\\"completed\\\",\\\"audit_metadata_available\\\":true,\\\"authenticated_chatgpt_caller_isolation\\\":false,\\\"automatic_retry\\\":false,\\\"cancellation_does_not_prove_remote_effect_stopped\\\":true,\\\"credential_metadata_resume\\\":true,\\\"cross_session_resume\\\":true,\\\"delivery_proven\\\":false,\\\"early_return_async_start_supported\\\":true,\\\"execution_resume_after_restart\\\":false,\\\"operation_id\\\":\\\"7a17a9723fc8c7a97505edaf37a1d2afc03b62337370e3a4b27c79f3dbb298a8\\\",\\\"original_payload_is_not_transport_delivery_proof\\\":true,\\\"owned_future_active\\\":false,\\\"ownership_scope\\\":\\\"authenticated_private_operator_credential\\\",\\\"payload_available\\\":true,\\\"remote_termination_confirmed\\\":false,\\\"result_state\\\":\\\"stored_observed\\\",\\\"retention_max_original_bytes\\\":1048576,\\\"session_scope\\\":\\\"authenticated_private_operator_credential\\\",\\\"tool_name\\\":\\\"binary_read\\\"}\"\n    }\n  ],\n  \"structuredContent\": null,\n  \"isError\": false\n}\n",
+    "nativeRaw": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"7a17a9723fc8c7a97505edaf37a1d2afc03b62337370e3a4b27c79f3dbb298a8\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"binary_read\"}",
+    "originalObserver": {
+      "id": "7a17a9723fc8c7a97505edaf37a1d2afc03b62337370e3a4b27c79f3dbb298a8",
+      "tool": "binary_read",
+      "payload": {
+        "blob": "14d9e9fa05e7c5c582c19790c0fb6483f402b355",
+        "bytes": 87807,
+        "sha256": "4307765bf3b413b3209d0d056080a9938808f503337fb42b416327e51000688a"
+      },
+      "payloadTree": "076a79afaada14b98323a70b70194c67c6cb364b",
+      "nativeText": {
+        "blob": "f41364602fbdc43e2bf78988bc57418bbe110df0",
+        "bytes": 87704,
+        "sha256": "2b0de1da0fc9c32628923db87a6df2176fa752533d13b2c1200b6154d6590d40"
+      },
+      "pages": 6,
+      "completedInactive": true
+    }
+  },
+  {
+    "callKey": "official271-x230-acl23-r2-body05-status0",
+    "slot": "official271_x230_acl23_oracle_gitfirst_r2",
+    "operation": "8943429b0d90b7f7aad5e1effde5297864ea32ade9aa33d9f67411b2a01579cc",
+    "tool": "binary_read",
+    "sdk": {
+      "blob": "8b7d0d81ce06d187eb48f5dfd83a30d5771153c3",
+      "bytes": 977,
+      "sha256": "45ef7e5e128ca77f143f737c914a4d89492f5680857d170eecb1bc8ea9e64f0d"
+    },
+    "native": {
+      "blob": "ace0229d5ab6a9c0fd434ab71f564129e5297c3b",
+      "bytes": 802,
+      "sha256": "b0ccaaf3963cc86dbf955f5f152ec79754a50ba2929d8292da681a2ab63cd8e2"
+    },
+    "sdkRaw": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"{\\\"async_state\\\":\\\"completed\\\",\\\"audit_metadata_available\\\":true,\\\"authenticated_chatgpt_caller_isolation\\\":false,\\\"automatic_retry\\\":false,\\\"cancellation_does_not_prove_remote_effect_stopped\\\":true,\\\"credential_metadata_resume\\\":true,\\\"cross_session_resume\\\":true,\\\"delivery_proven\\\":false,\\\"early_return_async_start_supported\\\":true,\\\"execution_resume_after_restart\\\":false,\\\"operation_id\\\":\\\"8943429b0d90b7f7aad5e1effde5297864ea32ade9aa33d9f67411b2a01579cc\\\",\\\"original_payload_is_not_transport_delivery_proof\\\":true,\\\"owned_future_active\\\":false,\\\"ownership_scope\\\":\\\"authenticated_private_operator_credential\\\",\\\"payload_available\\\":true,\\\"remote_termination_confirmed\\\":false,\\\"result_state\\\":\\\"stored_observed\\\",\\\"retention_max_original_bytes\\\":1048576,\\\"session_scope\\\":\\\"authenticated_private_operator_credential\\\",\\\"tool_name\\\":\\\"binary_read\\\"}\"\n    }\n  ],\n  \"structuredContent\": null,\n  \"isError\": false\n}\n",
+    "nativeRaw": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"8943429b0d90b7f7aad5e1effde5297864ea32ade9aa33d9f67411b2a01579cc\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"binary_read\"}",
+    "originalObserver": {
+      "id": "8943429b0d90b7f7aad5e1effde5297864ea32ade9aa33d9f67411b2a01579cc",
+      "tool": "binary_read",
+      "payload": {
+        "blob": "2db0b2a55b404064efda08ce7dd0eda110e63960",
+        "bytes": 87807,
+        "sha256": "1c175202f25371f5a11befd37c4b5a22572d6d28afeba544ca1c91295b1941dd"
+      },
+      "payloadTree": "30b6f93241a2d5c8453ef4f65e8374c83c9fbd63",
+      "nativeText": {
+        "blob": "c5dec82c97ffbcade7bd98d3a4da8a6cd83e4333",
+        "bytes": 87704,
+        "sha256": "a9b8b98bdd71278a1bbd08542cfbf5e17698d2c83e52ed5eb1715451dc8b3d56"
+      },
+      "pages": 6,
+      "completedInactive": true
+    }
+  },
+  {
+    "callKey": "official271-x230-acl23-r2-body06-status0",
+    "slot": "official271_x230_acl23_oracle_gitfirst_r2",
+    "operation": "be6879be7b3f9a9809da1cfce8f68bf3717e5d1566b1eabb08b8a103e15b04dd",
+    "tool": "binary_read",
+    "sdk": {
+      "blob": "ca47d9c40be509e1c02aeedaa52f13f73e640423",
+      "bytes": 977,
+      "sha256": "12e4ec1753e1f5d137a2389725b37ab2957e39d77befe9b392e7d6e5607a1f90"
+    },
+    "native": {
+      "blob": "3991d11cf0e264bc7ec1fab7d950e53293ec936f",
+      "bytes": 802,
+      "sha256": "b51729bcb2e8006649c537b25a164fe53dd1296f4ec1adc46d7cebef1b82e87b"
+    },
+    "sdkRaw": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"{\\\"async_state\\\":\\\"completed\\\",\\\"audit_metadata_available\\\":true,\\\"authenticated_chatgpt_caller_isolation\\\":false,\\\"automatic_retry\\\":false,\\\"cancellation_does_not_prove_remote_effect_stopped\\\":true,\\\"credential_metadata_resume\\\":true,\\\"cross_session_resume\\\":true,\\\"delivery_proven\\\":false,\\\"early_return_async_start_supported\\\":true,\\\"execution_resume_after_restart\\\":false,\\\"operation_id\\\":\\\"be6879be7b3f9a9809da1cfce8f68bf3717e5d1566b1eabb08b8a103e15b04dd\\\",\\\"original_payload_is_not_transport_delivery_proof\\\":true,\\\"owned_future_active\\\":false,\\\"ownership_scope\\\":\\\"authenticated_private_operator_credential\\\",\\\"payload_available\\\":true,\\\"remote_termination_confirmed\\\":false,\\\"result_state\\\":\\\"stored_observed\\\",\\\"retention_max_original_bytes\\\":1048576,\\\"session_scope\\\":\\\"authenticated_private_operator_credential\\\",\\\"tool_name\\\":\\\"binary_read\\\"}\"\n    }\n  ],\n  \"structuredContent\": null,\n  \"isError\": false\n}\n",
+    "nativeRaw": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"be6879be7b3f9a9809da1cfce8f68bf3717e5d1566b1eabb08b8a103e15b04dd\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"binary_read\"}",
+    "originalObserver": {
+      "id": "be6879be7b3f9a9809da1cfce8f68bf3717e5d1566b1eabb08b8a103e15b04dd",
+      "tool": "binary_read",
+      "payload": {
+        "blob": "2110b148fb2d5fe5cd48023f704461d478dc595c",
+        "bytes": 87807,
+        "sha256": "dfadd62b310aacb323943d8b105b4ab1d9ccf7b4ccf6e8a5284512eed0334c3c"
+      },
+      "payloadTree": "fc3e2f1538fead10bb1c307695c949435ad7d9bf",
+      "nativeText": {
+        "blob": "44ff3d754bd9036f8b013cb07022b070f15d01fe",
+        "bytes": 87704,
+        "sha256": "1c7082302ccec792acf50ad661c0e990ff7e8021671bc3d26197c18175e0eda3"
+      },
+      "pages": 6,
+      "completedInactive": true
+    }
+  },
+  {
+    "callKey": "official271-x230-acl23-r2-body07-status0",
+    "slot": "official271_x230_acl23_oracle_gitfirst_r2",
+    "operation": "5bd15e837f1faf6d24500087a42759184716d85afbc7e35876119a4a69c6f60c",
+    "tool": "binary_read",
+    "sdk": {
+      "blob": "f4be48c1bb84a0f202c8a952eae2229c7213a87f",
+      "bytes": 977,
+      "sha256": "fc5082671c26ea88774e90e3c49233cc7c4172a44d13de1582b11ef434afdaa5"
+    },
+    "native": {
+      "blob": "a3ec0ea0439efa8bd8d78e2f189362186dafdaa8",
+      "bytes": 802,
+      "sha256": "2c2ebfd15d3947dba50d8c2d75b7fd143055375e50ec9334aacfba46595873ae"
+    },
+    "sdkRaw": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"{\\\"async_state\\\":\\\"completed\\\",\\\"audit_metadata_available\\\":true,\\\"authenticated_chatgpt_caller_isolation\\\":false,\\\"automatic_retry\\\":false,\\\"cancellation_does_not_prove_remote_effect_stopped\\\":true,\\\"credential_metadata_resume\\\":true,\\\"cross_session_resume\\\":true,\\\"delivery_proven\\\":false,\\\"early_return_async_start_supported\\\":true,\\\"execution_resume_after_restart\\\":false,\\\"operation_id\\\":\\\"5bd15e837f1faf6d24500087a42759184716d85afbc7e35876119a4a69c6f60c\\\",\\\"original_payload_is_not_transport_delivery_proof\\\":true,\\\"owned_future_active\\\":false,\\\"ownership_scope\\\":\\\"authenticated_private_operator_credential\\\",\\\"payload_available\\\":true,\\\"remote_termination_confirmed\\\":false,\\\"result_state\\\":\\\"stored_observed\\\",\\\"retention_max_original_bytes\\\":1048576,\\\"session_scope\\\":\\\"authenticated_private_operator_credential\\\",\\\"tool_name\\\":\\\"binary_read\\\"}\"\n    }\n  ],\n  \"structuredContent\": null,\n  \"isError\": false\n}\n",
+    "nativeRaw": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"5bd15e837f1faf6d24500087a42759184716d85afbc7e35876119a4a69c6f60c\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"binary_read\"}",
+    "originalObserver": {
+      "id": "5bd15e837f1faf6d24500087a42759184716d85afbc7e35876119a4a69c6f60c",
+      "tool": "binary_read",
+      "payload": {
+        "blob": "6d986ed4b52300dba6795af8158dc1b8db2817c1",
+        "bytes": 87807,
+        "sha256": "55344499c42972426e2e068b531e39fbb7024f54b0720f852aafb0b8684845d7"
+      },
+      "payloadTree": "f266fbd584ace76479d4fbe24cf4aedb413786fa",
+      "nativeText": {
+        "blob": "3ec33d2ae7e66393a958ef1a94da008a9245029a",
+        "bytes": 87704,
+        "sha256": "3f0560be939410bd1fca39646ab5ebef8d76514d509f4c30a6762643d3c15099"
+      },
+      "pages": 6,
+      "completedInactive": true
+    }
+  },
+  {
+    "callKey": "official271-x230-acl23-r2-body08-status0",
+    "slot": "official271_x230_acl23_oracle_gitfirst_r2",
+    "operation": "dba526bf65faac6083b872108e695943e48cccbd403ce9aaf0d09a369a77a2dd",
+    "tool": "binary_read",
+    "sdk": {
+      "blob": "823204f6b3eb8652c8411daac0672b6cdae79f6f",
+      "bytes": 977,
+      "sha256": "27d5936bf3056a4800b4d44783ccfba87eefa6fc8d0e2a2a913f52a2811b0c5a"
+    },
+    "native": {
+      "blob": "0980b74fadad70b4d68ec1f9ce749273563f913e",
+      "bytes": 802,
+      "sha256": "2b4c3fbab3fadead1bb6bac9fa8255407ebb80c11a13bcb39c7d33e01b239969"
+    },
+    "sdkRaw": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"{\\\"async_state\\\":\\\"completed\\\",\\\"audit_metadata_available\\\":true,\\\"authenticated_chatgpt_caller_isolation\\\":false,\\\"automatic_retry\\\":false,\\\"cancellation_does_not_prove_remote_effect_stopped\\\":true,\\\"credential_metadata_resume\\\":true,\\\"cross_session_resume\\\":true,\\\"delivery_proven\\\":false,\\\"early_return_async_start_supported\\\":true,\\\"execution_resume_after_restart\\\":false,\\\"operation_id\\\":\\\"dba526bf65faac6083b872108e695943e48cccbd403ce9aaf0d09a369a77a2dd\\\",\\\"original_payload_is_not_transport_delivery_proof\\\":true,\\\"owned_future_active\\\":false,\\\"ownership_scope\\\":\\\"authenticated_private_operator_credential\\\",\\\"payload_available\\\":true,\\\"remote_termination_confirmed\\\":false,\\\"result_state\\\":\\\"stored_observed\\\",\\\"retention_max_original_bytes\\\":1048576,\\\"session_scope\\\":\\\"authenticated_private_operator_credential\\\",\\\"tool_name\\\":\\\"binary_read\\\"}\"\n    }\n  ],\n  \"structuredContent\": null,\n  \"isError\": false\n}\n",
+    "nativeRaw": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"dba526bf65faac6083b872108e695943e48cccbd403ce9aaf0d09a369a77a2dd\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"binary_read\"}",
+    "originalObserver": {
+      "id": "dba526bf65faac6083b872108e695943e48cccbd403ce9aaf0d09a369a77a2dd",
+      "tool": "binary_read",
+      "payload": {
+        "blob": "d77089598f6408f46df6eeb01411bf2d40baad44",
+        "bytes": 87807,
+        "sha256": "8cacd0d8e46988f4896055364ad5197f4b02acd466fabffca7ee3c3d9adb0067"
+      },
+      "payloadTree": "fe7cbd89fcb0bc605f43c8d03a3aba970abebf75",
+      "nativeText": {
+        "blob": "28b3c14226a815e7c70ee3c2fc5f4a7fcf764702",
+        "bytes": 87704,
+        "sha256": "97d030a8aabc3037a8a6ea551297c81051690b2663cb886ffeedfbc91dac8aea"
+      },
+      "pages": 6,
+      "completedInactive": true
+    }
+  },
+  {
+    "callKey": "official271-x230-acl23-r2-body09-status0",
+    "slot": "official271_x230_acl23_oracle_gitfirst_r2",
+    "operation": "5cd1b1d120ad0de242ffda9e9d24d14379c814540a3c1f773bdc1a1dbae9da41",
+    "tool": "binary_read",
+    "sdk": {
+      "blob": "728bd3b7d6a24dc87c363511315eef5f88a0b062",
+      "bytes": 977,
+      "sha256": "a2ed6197039e17050d639096b79fb0fd54da9ccefe27b4c15698536f3d1efbe7"
+    },
+    "native": {
+      "blob": "60cd087a3fb13e69cab23e0bd2cd293b048bf70f",
+      "bytes": 802,
+      "sha256": "bb8026b117e263bc7f9affcbc9e7e1dc26ebeecbcc4a128f64fcb9b6c75884ac"
+    },
+    "sdkRaw": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"{\\\"async_state\\\":\\\"completed\\\",\\\"audit_metadata_available\\\":true,\\\"authenticated_chatgpt_caller_isolation\\\":false,\\\"automatic_retry\\\":false,\\\"cancellation_does_not_prove_remote_effect_stopped\\\":true,\\\"credential_metadata_resume\\\":true,\\\"cross_session_resume\\\":true,\\\"delivery_proven\\\":false,\\\"early_return_async_start_supported\\\":true,\\\"execution_resume_after_restart\\\":false,\\\"operation_id\\\":\\\"5cd1b1d120ad0de242ffda9e9d24d14379c814540a3c1f773bdc1a1dbae9da41\\\",\\\"original_payload_is_not_transport_delivery_proof\\\":true,\\\"owned_future_active\\\":false,\\\"ownership_scope\\\":\\\"authenticated_private_operator_credential\\\",\\\"payload_available\\\":true,\\\"remote_termination_confirmed\\\":false,\\\"result_state\\\":\\\"stored_observed\\\",\\\"retention_max_original_bytes\\\":1048576,\\\"session_scope\\\":\\\"authenticated_private_operator_credential\\\",\\\"tool_name\\\":\\\"binary_read\\\"}\"\n    }\n  ],\n  \"structuredContent\": null,\n  \"isError\": false\n}\n",
+    "nativeRaw": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"5cd1b1d120ad0de242ffda9e9d24d14379c814540a3c1f773bdc1a1dbae9da41\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"binary_read\"}",
+    "originalObserver": {
+      "id": "5cd1b1d120ad0de242ffda9e9d24d14379c814540a3c1f773bdc1a1dbae9da41",
+      "tool": "binary_read",
+      "payload": {
+        "blob": "f024844758e1a28532398cca6fc3353ba7730410",
+        "bytes": 83062,
+        "sha256": "5e8878aa8501b554b3934e8ce1ae799c12c8985d85d8fc696655fecd85dd2802"
+      },
+      "payloadTree": "60f8cdbda4016614fafe109ef895c8518ecfe291",
+      "nativeText": {
+        "blob": "1ba5945556ae59f827f16266ab8398b2df3d9c8e",
+        "bytes": 82959,
+        "sha256": "34ee3c1fa73aad7e942b939b234c4cf4d83a7eb86b880dda51929091f75c1605"
+      },
+      "pages": 6,
+      "completedInactive": true
+    }
+  }
+]

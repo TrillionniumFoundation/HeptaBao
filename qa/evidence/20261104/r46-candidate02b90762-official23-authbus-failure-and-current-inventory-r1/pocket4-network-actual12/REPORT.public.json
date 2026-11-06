@@ -1,0 +1,264 @@
+{
+  "schema": "heptabao.pocket4-network-single-read-actual.r1",
+  "original_native_calls": 1,
+  "current_native_calls": 0,
+  "current_owned_futures": 0,
+  "lane": "B0",
+  "source_packet": "0944e743781641109b178d824b2c8c26a239ba0e",
+  "go": {
+    "blob": "a18a4132d7942fefaa22c919cb0447c047d1a624",
+    "bytes": 1613,
+    "sha256": "f0a4bfcc540d506100d09a6f947364e32fbd744a61c1c7cfc9bfaf226106c929"
+  },
+  "request": {
+    "blob": "238fd0aa94cd040ee7ba5572a0794dd84f0ee4dd",
+    "bytes": 24,
+    "sha256": "2d2f4b9e3224c89b54307d102899b9efbf7ba7531cab1433e0583a12d62e8e0d"
+  },
+  "intent": {
+    "blob": "0ecac1e4f227e7fb3e7cc7a7ceee779bb6bf51bc",
+    "bytes": 970,
+    "sha256": "7b74f59e65ed7c59f88081ca6ecb756d1fe975e91aa87ea5bc04c8c01a905a05"
+  },
+  "original_arm": "8274d1b1d55e97f28a3f60144247dc3a2af61fa4",
+  "original_sdk": {
+    "blob": "589ffca7ee8e09b44cf242941eea60704789f3d9",
+    "bytes": 58234,
+    "sha256": "1bf43684a3c895f9a0b9315cb594b1d06bf9ddfa7aabf968e4473926c7919e2b"
+  },
+  "original_sdk_archive": "ab3ba4b0ff4e240a7009df1ebcd8baa6de494f7e",
+  "original_native": {
+    "blob": "6d3c2b892b404d9397650fef136c32d3af0b42b6",
+    "bytes": 51121,
+    "sha256": "692b6845f4ec24174128b432361dfd0fec26329235d2b05a2c1c3198840ea129"
+  },
+  "extraction": "JSON.parse(SDK.original.json).content[0].text, exact whole UTF8",
+  "original_sdk_isError": false,
+  "all_four_command_exit_codes": {
+    "addresses": 0,
+    "links": 0,
+    "listeners": 0,
+    "routes": 0
+  },
+  "command_stderr_bytes": {
+    "addresses": 0,
+    "links": 0,
+    "listeners": 0,
+    "routes": 0
+  },
+  "actual_alias_from_exact_request": "pocket4",
+  "actual_host_name_field": null,
+  "actual_wifi": {
+    "ifname": "wlp195s0",
+    "ifindex": 4,
+    "mac": "e0:d5:5d:ec:cf:93",
+    "operstate": "UP",
+    "addresses": [
+      {
+        "family": "inet",
+        "local": "192.168.0.9",
+        "prefixlen": 24,
+        "scope": "global"
+      },
+      {
+        "family": "inet6",
+        "local": "240e:345:1193:8a10:d6fc:27bf:119f:9a68",
+        "prefixlen": 64,
+        "scope": "global"
+      },
+      {
+        "family": "inet6",
+        "local": "240e:345:1193:8a10:ab8a:2ae5:955c:5dd3",
+        "prefixlen": 64,
+        "scope": "global"
+      },
+      {
+        "family": "inet6",
+        "local": "240e:345:1193:8a10::1002",
+        "prefixlen": 128,
+        "scope": "global"
+      },
+      {
+        "family": "inet6",
+        "local": "240e:345:1193:8a10:42eb:3600:d5f1:f7f2",
+        "prefixlen": 64,
+        "scope": "global"
+      },
+      {
+        "family": "inet6",
+        "local": "fe80::20f6:9749:8078:1e1a",
+        "prefixlen": 64,
+        "scope": "link"
+      }
+    ]
+  },
+  "actual_tailscale": {
+    "ifname": "tailscale0",
+    "ifindex": 159,
+    "mac": null,
+    "operstate": "UNKNOWN",
+    "addresses": [
+      {
+        "family": "inet",
+        "local": "100.119.126.104",
+        "prefixlen": 32,
+        "scope": "global"
+      },
+      {
+        "family": "inet6",
+        "local": "fd7a:115c:a1e0::a935:7e6f",
+        "prefixlen": 128,
+        "scope": "global"
+      },
+      {
+        "family": "inet6",
+        "local": "fe80::f86c:9d2c:6524:528b",
+        "prefixlen": 64,
+        "scope": "link"
+      }
+    ]
+  },
+  "actual_ipv4_default_routes": [
+    {
+      "dev": "wlp195s0",
+      "dst": "default",
+      "flags": [],
+      "gateway": "192.168.0.1",
+      "metric": 600,
+      "prefsrc": "192.168.0.9",
+      "protocol": "dhcp"
+    },
+    {
+      "dev": "wwp197s0f4u1i4",
+      "dst": "default",
+      "flags": [],
+      "gateway": "100.190.29.128",
+      "metric": 1050,
+      "protocol": "static"
+    },
+    {
+      "dev": "wlp195s0",
+      "dst": "default",
+      "flags": [],
+      "gateway": "fe80::a61a:3aff:feed:1a50",
+      "metric": 600,
+      "pref": "medium",
+      "protocol": "ra"
+    },
+    {
+      "dev": "wwp197s0f4u1i4",
+      "dst": "default",
+      "flags": [],
+      "gateway": "240e:446:115c:18b:698d:d6a2:b269:a77",
+      "metric": 700,
+      "pref": "medium",
+      "protocol": "static"
+    }
+  ],
+  "actual_wifi_routes": [
+    {
+      "dev": "wlp195s0",
+      "dst": "default",
+      "flags": [],
+      "gateway": "192.168.0.1",
+      "metric": 600,
+      "prefsrc": "192.168.0.9",
+      "protocol": "dhcp"
+    },
+    {
+      "dev": "wlp195s0",
+      "dst": "192.168.0.0/24",
+      "flags": [],
+      "metric": 600,
+      "prefsrc": "192.168.0.9",
+      "protocol": "kernel",
+      "scope": "link"
+    },
+    {
+      "dev": "wlp195s0",
+      "dst": "192.168.0.9",
+      "flags": [],
+      "prefsrc": "192.168.0.9",
+      "protocol": "kernel",
+      "scope": "host",
+      "table": "local",
+      "type": "local"
+    },
+    {
+      "dev": "wlp195s0",
+      "dst": "default",
+      "flags": [],
+      "gateway": "fe80::a61a:3aff:feed:1a50",
+      "metric": 600,
+      "pref": "medium",
+      "protocol": "ra"
+    }
+  ],
+  "actual_thunderbolt": [
+    {
+      "generation": "4",
+      "name": "0-0",
+      "unique_id": "67033804-20b9-9589-ffff-ffffffffffff"
+    },
+    {
+      "generation": "4",
+      "name": "1-0",
+      "unique_id": "67033804-21b9-9589-ffff-ffffffffffff"
+    },
+    {
+      "name": "1-0:2.1"
+    },
+    {
+      "name": "1-0:2.2"
+    },
+    {
+      "device_name": "ai395",
+      "name": "1-2",
+      "rx_speed": "10.0 Gb/s",
+      "tx_speed": "10.0 Gb/s",
+      "unique_id": "e0c93804-4068-2689-ffff-ffffffffffff"
+    },
+    {
+      "name": "1-2.0"
+    },
+    {
+      "name": "domain0",
+      "security": "user"
+    },
+    {
+      "name": "domain1",
+      "security": "user"
+    }
+  ],
+  "observed_counts": {
+    "address_interfaces": 17,
+    "link_interfaces": 17,
+    "routes": 102,
+    "thunderbolt_records": 8
+  },
+  "historical_correspondence": {
+    "launcher": {
+      "blob": "6634b9f6c5b8a971bffe4bd7338545b2e238fd44",
+      "bytes": 25879,
+      "sha256": "57cb2b31c6dfdd13a63cc99714e205386361efc9d6bf32230a03861f36cd5a92"
+    },
+    "historical_node_label": "node3",
+    "historical_ssh_alias": "pocket4-ts",
+    "historical_lan_ipv4": "192.168.0.9",
+    "actual_ipv4_match": true,
+    "conclusion": "Current configured alias pocket4 reports the same LAN IPv4 as the historical node3 plan. This is a network correlation, not unique physical-host identification."
+  },
+  "limitations": {
+    "physical_host_mapping_qualified": false,
+    "boot_or_hardware_serial_observed": false,
+    "service_or_consumer_inventory_complete": false,
+    "backup_recovery_qualified": false,
+    "program_argv_or_environment_read": false,
+    "configuration_or_archive_body_read": false
+  },
+  "closed": true,
+  "no_replay": true,
+  "search_starts": 0,
+  "process_starts": 0,
+  "prior_unknowns_changed": false
+}

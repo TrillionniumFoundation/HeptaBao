@@ -1,0 +1,22 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "// Copyright 2009 The Go Authors. All rights reserved.\n// Use of this source code is governed by a BSD-style\n// license that can be found in the LICENSE file.\n\npackage strconv\n\n// ParseBool returns the boolean value represented by the string.\n// It accepts 1, t, T, TRUE, true, True, 0, f, F, FALSE, false, False.\n// Any other value returns an error.\nfunc ParseBool(str string) (bool, error) {\n\tswitch str {\n\tcase \"1\", \"t\", \"T\", \"true\", \"TRUE\", \"True\":\n\t\treturn true, nil\n\tcase \"0\", \"f\", \"F\", \"false\", \"FALSE\", \"False\":\n\t\treturn false, nil\n\t}\n\treturn false, syntaxError(\"ParseBool\", str)\n}\n\n// FormatBool returns \"true\" or \"false\" according to the value of b.\nfunc FormatBool(b bool) string {\n\tif b {\n\t\treturn \"true\"\n\t}\n\treturn \"false\"\n}\n\n// AppendBool appends \"true\" or \"false\", according to the value of b,\n// to dst and returns the extended buffer.\nfunc AppendBool(dst []byte, b bool) []byte {\n\tif b {\n\t\treturn append(dst, \"true\"...)\n\t}\n\treturn append(dst, \"false\"...)\n}\n",
+    "title": "atob.go",
+    "modified_date": "2018-06-09T01:26:25Z",
+    "url": "https://github.com/golang/go/blob/go1.23.2/src/strconv/atob.go",
+    "display_url": "https://github.com/golang/go/blob/go1.23.2/src/strconv/atob.go",
+    "display_title": "atob.go",
+    "structuredContent": {
+      "title": "atob.go",
+      "content": "// Copyright 2009 The Go Authors. All rights reserved.\n// Use of this source code is governed by a BSD-style\n// license that can be found in the LICENSE file.\n\npackage strconv\n\n// ParseBool returns the boolean value represented by the string.\n// It accepts 1, t, T, TRUE, true, True, 0, f, F, FALSE, false, False.\n// Any other value returns an error.\nfunc ParseBool(str string) (bool, error) {\n\tswitch str {\n\tcase \"1\", \"t\", \"T\", \"true\", \"TRUE\", \"True\":\n\t\treturn true, nil\n\tcase \"0\", \"f\", \"F\", \"false\", \"FALSE\", \"False\":\n\t\treturn false, nil\n\t}\n\treturn false, syntaxError(\"ParseBool\", str)\n}\n\n// FormatBool returns \"true\" or \"false\" according to the value of b.\nfunc FormatBool(b bool) string {\n\tif b {\n\t\treturn \"true\"\n\t}\n\treturn \"false\"\n}\n\n// AppendBool appends \"true\" or \"false\", according to the value of b,\n// to dst and returns the extended buffer.\nfunc AppendBool(dst []byte, b bool) []byte {\n\tif b {\n\t\treturn append(dst, \"true\"...)\n\t}\n\treturn append(dst, \"false\"...)\n}\n",
+      "display_url": "https://github.com/golang/go/blob/go1.23.2/src/strconv/atob.go"
+    }
+  },
+  "isError": false
+}

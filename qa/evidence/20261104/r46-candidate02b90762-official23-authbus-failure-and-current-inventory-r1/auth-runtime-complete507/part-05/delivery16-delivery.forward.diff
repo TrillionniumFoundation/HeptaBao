@@ -1,0 +1,39 @@
+--- a/runtime-journal.before.original.js
++++ b/runtime-journal.delivery16.js
+@@ -66,7 +66,9 @@
+  } else if(kind==="operation_result") {
+   gfNeed(s.activeObserver?.futureClosed===true
+    && Object.keys(q).sort().join(",")==="limit,offset,operation_id"
++   && q.operation_id===s.activeObserver.id
++   && (s.activeObserver.pageLimit===8192||s.activeObserver.pageLimit===16384)
++   && q.limit===s.activeObserver.pageLimit
+-   && q.operation_id===s.activeObserver.id && q.limit===8192
+    && q.offset===s.activeObserver.nextPageOffset && !s.activeObserver.eof,
+    "same_closed_original_operation_next_page");
+  } else throw new Error("closed_native_tool_set");
+@@ -172,6 +174,7 @@
+    gfNeed(/^[a-f0-9]{64}$/.test(v.operation_id) && v.tool_name===q.operation.tool
+      && v.reused===false && v.automatic_retry===false,"original_observer_admission");
+    s.activeObserver={id:v.operation_id,request:q,tool:v.tool_name,futureClosed:false,
++    pageLimit:q.operation.tool==="process_read"?16384:8192,
+     nextPageOffset:0,eof:false,pages:[],total:null,digest:null};
+   } else if(c.kind==="operation_status") {
+    const a=s.activeObserver;
+@@ -191,7 +194,7 @@
+     && Number.isSafeInteger(v.total_bytes) && v.total_bytes>=0 && v.total_bytes<=1048576
+     && /^[a-f0-9]{64}$/.test(v.result_sha256),"exact_original_immutable_payload");
+    const b=unb64(v.data_base64);
++   gfNeed(b.length<=a.pageLimit && v.next_offset===q.offset+b.length
+-   gfNeed(b.length<=8192 && v.next_offset===q.offset+b.length
+      && v.next_offset<=v.total_bytes && v.eof===(v.next_offset===v.total_bytes)
+      && (b.length>0||v.eof),"exact_original_page_extent");
+    gfNeed(a.total===null || (a.total===v.total_bytes && a.digest===v.result_sha256),
+@@ -250,7 +253,7 @@
+    }
+   }
+   const original={id:a.id,tool:a.tool,payload:pin,payloadTree:archive.tree,
++    nativeText:gitBlobMeta(nativeRaw),pages:a.pages.length,pageLimit:a.pageLimit,completedInactive:true};
+-    nativeText:gitBlobMeta(nativeRaw),pages:a.pages.length,completedInactive:true};
+   s.completedObservers.push(original);s.activeObserver=null;gfSave(s);
+   store(GF_SLOT+":closed_native:"+a.id,nativeRaw);
+   return {original,nativeRaw,value:v};

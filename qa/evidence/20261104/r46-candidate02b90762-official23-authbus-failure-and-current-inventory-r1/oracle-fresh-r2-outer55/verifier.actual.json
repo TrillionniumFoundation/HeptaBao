@@ -1,0 +1,370 @@
+{
+  "schema": "heptabao.official271.ACL23.original-chain-actual-checks.r2",
+  "pass": true,
+  "check_count": 88,
+  "checks": [
+    {
+      "name": "whole exact GO",
+      "passed": true
+    },
+    {
+      "name": "exact original request",
+      "passed": true
+    },
+    {
+      "name": "exact journal",
+      "passed": true
+    },
+    {
+      "name": "fixed host/executable/outer",
+      "passed": true
+    },
+    {
+      "name": "fixed requested argv/body identities",
+      "passed": true
+    },
+    {
+      "name": "typed canonical digest",
+      "passed": true
+    },
+    {
+      "name": "closed retained slot",
+      "passed": true
+    },
+    {
+      "name": "seven original calls two original observers",
+      "passed": true
+    },
+    {
+      "name": "exact kind order",
+      "passed": true
+    },
+    {
+      "name": "call-00 exact request/SDK/native pins",
+      "passed": true
+    },
+    {
+      "name": "call-00 accepted complete external archives",
+      "passed": true
+    },
+    {
+      "name": "call-00 original SDK text unchanged",
+      "passed": true
+    },
+    {
+      "name": "call-00 original intent and scope",
+      "passed": true
+    },
+    {
+      "name": "call-00 original armed boundary",
+      "passed": true
+    },
+    {
+      "name": "call-00 original 3-leaf arm Merkle",
+      "passed": true
+    },
+    {
+      "name": "call-00 original SDK Merkle",
+      "passed": true
+    },
+    {
+      "name": "call-01 exact request/SDK/native pins",
+      "passed": true
+    },
+    {
+      "name": "call-01 accepted complete external archives",
+      "passed": true
+    },
+    {
+      "name": "call-01 original SDK text unchanged",
+      "passed": true
+    },
+    {
+      "name": "call-01 original intent and scope",
+      "passed": true
+    },
+    {
+      "name": "call-01 original armed boundary",
+      "passed": true
+    },
+    {
+      "name": "call-01 original 3-leaf arm Merkle",
+      "passed": true
+    },
+    {
+      "name": "call-01 original SDK Merkle",
+      "passed": true
+    },
+    {
+      "name": "call-02 exact request/SDK/native pins",
+      "passed": true
+    },
+    {
+      "name": "call-02 accepted complete external archives",
+      "passed": true
+    },
+    {
+      "name": "call-02 original SDK text unchanged",
+      "passed": true
+    },
+    {
+      "name": "call-02 original intent and scope",
+      "passed": true
+    },
+    {
+      "name": "call-02 original armed boundary",
+      "passed": true
+    },
+    {
+      "name": "call-02 original 3-leaf arm Merkle",
+      "passed": true
+    },
+    {
+      "name": "call-02 original SDK Merkle",
+      "passed": true
+    },
+    {
+      "name": "call-03 exact request/SDK/native pins",
+      "passed": true
+    },
+    {
+      "name": "call-03 accepted complete external archives",
+      "passed": true
+    },
+    {
+      "name": "call-03 original SDK text unchanged",
+      "passed": true
+    },
+    {
+      "name": "call-03 original intent and scope",
+      "passed": true
+    },
+    {
+      "name": "call-03 original armed boundary",
+      "passed": true
+    },
+    {
+      "name": "call-03 original 3-leaf arm Merkle",
+      "passed": true
+    },
+    {
+      "name": "call-03 original SDK Merkle",
+      "passed": true
+    },
+    {
+      "name": "call-04 exact request/SDK/native pins",
+      "passed": true
+    },
+    {
+      "name": "call-04 accepted complete external archives",
+      "passed": true
+    },
+    {
+      "name": "call-04 original SDK text unchanged",
+      "passed": true
+    },
+    {
+      "name": "call-04 original intent and scope",
+      "passed": true
+    },
+    {
+      "name": "call-04 original armed boundary",
+      "passed": true
+    },
+    {
+      "name": "call-04 original 3-leaf arm Merkle",
+      "passed": true
+    },
+    {
+      "name": "call-04 original SDK Merkle",
+      "passed": true
+    },
+    {
+      "name": "call-05 exact request/SDK/native pins",
+      "passed": true
+    },
+    {
+      "name": "call-05 accepted complete external archives",
+      "passed": true
+    },
+    {
+      "name": "call-05 original SDK text unchanged",
+      "passed": true
+    },
+    {
+      "name": "call-05 original intent and scope",
+      "passed": true
+    },
+    {
+      "name": "call-05 original armed boundary",
+      "passed": true
+    },
+    {
+      "name": "call-05 original 3-leaf arm Merkle",
+      "passed": true
+    },
+    {
+      "name": "call-05 original SDK Merkle",
+      "passed": true
+    },
+    {
+      "name": "call-06 exact request/SDK/native pins",
+      "passed": true
+    },
+    {
+      "name": "call-06 accepted complete external archives",
+      "passed": true
+    },
+    {
+      "name": "call-06 original SDK text unchanged",
+      "passed": true
+    },
+    {
+      "name": "call-06 original intent and scope",
+      "passed": true
+    },
+    {
+      "name": "call-06 original armed boundary",
+      "passed": true
+    },
+    {
+      "name": "call-06 original 3-leaf arm Merkle",
+      "passed": true
+    },
+    {
+      "name": "call-06 original SDK Merkle",
+      "passed": true
+    },
+    {
+      "name": "original unique ACK",
+      "passed": true
+    },
+    {
+      "name": "actual ACK typed identity",
+      "passed": true
+    },
+    {
+      "name": "observer0 exact original job",
+      "passed": true
+    },
+    {
+      "name": "observer0 unique admission",
+      "passed": true
+    },
+    {
+      "name": "observer0 known original future closed",
+      "passed": true
+    },
+    {
+      "name": "observer0 exact original immutable page request",
+      "passed": true
+    },
+    {
+      "name": "observer0 immutable full range",
+      "passed": true
+    },
+    {
+      "name": "observer0 payload whole original",
+      "passed": true
+    },
+    {
+      "name": "observer0 original payload Merkle",
+      "passed": true
+    },
+    {
+      "name": "observer0 original native success envelope",
+      "passed": true
+    },
+    {
+      "name": "observer0 returned original job",
+      "passed": true
+    },
+    {
+      "name": "observer1 exact original job",
+      "passed": true
+    },
+    {
+      "name": "observer1 unique admission",
+      "passed": true
+    },
+    {
+      "name": "observer1 known original future closed",
+      "passed": true
+    },
+    {
+      "name": "observer1 exact original immutable page request",
+      "passed": true
+    },
+    {
+      "name": "observer1 immutable full range",
+      "passed": true
+    },
+    {
+      "name": "observer1 payload whole original",
+      "passed": true
+    },
+    {
+      "name": "observer1 original payload Merkle",
+      "passed": true
+    },
+    {
+      "name": "observer1 original native success envelope",
+      "passed": true
+    },
+    {
+      "name": "observer1 returned original job",
+      "passed": true
+    },
+    {
+      "name": "known successful terminal without timeout",
+      "passed": true
+    },
+    {
+      "name": "terminal publication and durable whole output",
+      "passed": true
+    },
+    {
+      "name": "stdout exact complete raw stream",
+      "passed": true
+    },
+    {
+      "name": "stderr exact complete raw stream",
+      "passed": true
+    },
+    {
+      "name": "continuous finite cursors",
+      "passed": true
+    },
+    {
+      "name": "actual capture-complete summary without report qualification",
+      "passed": true
+    },
+    {
+      "name": "actual entry FD boundary only",
+      "passed": true
+    },
+    {
+      "name": "actual report pointer only",
+      "passed": true
+    },
+    {
+      "name": "no parity or candidate qualification",
+      "passed": true
+    },
+    {
+      "name": "no further Native admission claim",
+      "passed": true
+    }
+  ],
+  "calls": 7,
+  "observers": 2,
+  "pages": 2,
+  "stdoutBytes": 681,
+  "stderrBytes": 0,
+  "originalExit": 0,
+  "actualAclCases": null,
+  "reportMetadataIndependentlyRead": false,
+  "ownerChildClosureIndependentlyRead": false,
+  "RuntimeCallsByVerifier": 0,
+  "sourceOrTestExecutionByVerifier": 0
+}

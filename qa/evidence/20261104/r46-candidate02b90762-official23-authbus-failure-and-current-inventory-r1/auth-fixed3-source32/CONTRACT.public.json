@@ -1,0 +1,201 @@
+{
+  "schema": "heptabao.home-r3-three-info-four-body-source-contract.v1",
+  "status": "SOURCE_ONLY_NO_NEW_NATIVE_GO",
+  "actualInertQualification": null,
+  "actualInertPacket": "7ca43a7e2a81d89e377cb00e38ead927c896d8dc",
+  "targets": [
+    {
+      "ordinal": 1,
+      "id": "outer",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/qa/mac_current_outer_wal_r1.py",
+      "bytes": 73918,
+      "sha256": "7f3bec1e572b624844fe5ba477dea895a2fcd94d6c9e4a88b5001f4d957a05d0",
+      "stageFull9": [
+        "16777244",
+        "72739433",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "73918",
+        "1793981090642500588",
+        "1793981090642506588"
+      ],
+      "sourcePin": {
+        "blob": "6952e205d0cb50f2066c0d2bf56a567239aa8a1e",
+        "bytes": 73918,
+        "sha256": "7f3bec1e572b624844fe5ba477dea895a2fcd94d6c9e4a88b5001f4d957a05d0"
+      },
+      "bodyChunks": [
+        65536,
+        8382
+      ]
+    },
+    {
+      "ordinal": 2,
+      "id": "candidate",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/candidate-current-manager-wal-r1.public.json",
+      "bytes": 7499,
+      "sha256": "2ca16e7421d9cfba8802029e6125a2efbdae39ac0a6a52ef1962fca864871d81",
+      "stageFull9": [
+        "16777244",
+        "72739447",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "7499",
+        "1793981090651310355",
+        "1793981090651318729"
+      ],
+      "sourcePin": {
+        "blob": "c5a520313563ec821c1b80d49249a8cef1573709",
+        "bytes": 7499,
+        "sha256": "2ca16e7421d9cfba8802029e6125a2efbdae39ac0a6a52ef1962fca864871d81"
+      },
+      "bodyChunks": [
+        7499
+      ]
+    },
+    {
+      "ordinal": 3,
+      "id": "receipt",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/inert-registry-wal-4e808-result.public.json",
+      "bytes": 15237,
+      "sha256": "d64535852bd697b0fd8f1cf314621d50236c0f398c068f8f4e276d480a1eedd3",
+      "stageFull9": [
+        "16777244",
+        "72739455",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "15237",
+        "1793981090656143173",
+        "1793981090656148839"
+      ],
+      "sourcePin": null,
+      "bodyChunks": [
+        15237
+      ]
+    }
+  ],
+  "metadataExactRequests": [
+    {
+      "blob": "53f4292c6b8120923d06e36f3e4f98c8223bfa44",
+      "bytes": 297,
+      "sha256": "4c7e512e9e19cf21192297096b847e98bcc1d8e15c7ccdfcc5b326f210de56cc"
+    },
+    {
+      "blob": "9069b26ac98e77ee62a58869e8a738ec33029b35",
+      "bytes": 311,
+      "sha256": "3087619123b8e04e8ddfb5dca62948510462cef8b8760c2bd3afec91e84cf540"
+    },
+    {
+      "blob": "61670ba24375f134bd79e2593d985b6073bddf10",
+      "bytes": 310,
+      "sha256": "8330ea64050562876b7c76d89f4a5999e7b0850309e7e6896fa4f0dd11b86773"
+    }
+  ],
+  "journal": {
+    "blob": "19a4abc941caead7f1634c1cd10703d240d7953f",
+    "bytes": 29193,
+    "sha256": "b516648c526d71ba024476abef985649badc487430024e5cd13eccdd70e12908"
+  },
+  "journalBefore": {
+    "blob": "f6c9314e003ee344cebb811d84c30966e664b73c",
+    "bytes": 29203,
+    "sha256": "5c02a803779cb9835ce12664ba2d9659ea4ba9f61c15b6b51ff415b6ce435b95"
+  },
+  "pureDeriver": {
+    "blob": "07c54395de82130247a0a40b9d32c18ad4c431c6",
+    "bytes": 4379,
+    "sha256": "a26b2fd45b358afe8b1af486b88e88c981d5cbd89bfcb83227bb02b5fe791729"
+  },
+  "runtimeDeriver": {
+    "blob": "6c36bdd55a2ea4442c5eec1fbf9b62d990226080",
+    "bytes": 7131,
+    "sha256": "9cae37de4fafceb24269dc3eda108fc4b2adc7d8e0f8d7722b14446ea79e67c4"
+  },
+  "scope": {
+    "newNativeStart": false,
+    "originalInertStateUntouched": true,
+    "metadataFirstAll3Closed": true,
+    "conditionalBodiesOnlyAfterActualVersionValidated": true,
+    "operationsMaximum": 7,
+    "statusCallsPerOriginalOperationMaximum": 8,
+    "immutablePageLimit": 8192,
+    "immutablePayloadLimit": 1048576,
+    "bodyOperations": 4,
+    "bodyChunkLimit": 65536,
+    "bodyTotalExact": 96654,
+    "metadataWholeHashCostSeparate": true,
+    "oneNativeCall": true,
+    "oneOwnedFuture": true,
+    "existing45_60InertBudgetsUnchanged": true,
+    "existing900_1080RuntimeBudgetsUnchanged": true
+  },
+  "metadataGate": [
+    "file_info exact host/path and native success, completed/stored/inactive with complete original immutable payload",
+    "actual size and SHA256 equal the final qualified inert row",
+    "actual mode0600, uid501/gid20, link_count1; purpose-built file_info rejects symlinks/nonregular targets",
+    "version dev:ino:size:mtime_ns:ctime_ns combined with actual uid/gid/mode/link_count equals the exact nine-field stage observation",
+    "all three metadata operations must close before deriving any body; actual version string, not predicted token, supplies expected_version"
+  ],
+  "bodyGate": [
+    "external exact intent/armed before each of the four original binary_read admissions",
+    "each original SDK external whole before isError or parsing; only same-ID status/immutable pages",
+    "all returned decoded body bytes recorded before rejection predicates",
+    "exact path/version/size/offset/next/eof/length/chunk SHA256",
+    "outer two chunks contiguous same actual version; full outer/candidate bytes equal frozen source blobs; receipt whole bytes/SHA equal actual final stdout pin",
+    "after all seven original observers close, external whole three bodies and explicit lane release"
+  ],
+  "stopRule": "Any drift, transport/API error or lost ACK pauses new admission. Preserve original exact key/SDK/ID; no replay, alternate path or implicit recovery. Root directs any same-ID reconciliation.",
+  "proofLimits": [
+    "file_info whole-file hashing has no caller byte argument and is separately acknowledged work; 96,654 B only bounds the new binary body readset",
+    "no raw current-private capture, credentials, SDK execution, directory enumeration or changed file writes",
+    "staging and these public reads do not prove selected owner, valid credentials or production readiness",
+    "no claim of atomic protection between these public reads and future exec; original runtime 22 source and seven proof predicates remain unchanged",
+    "all old labels, PID32527 history, helper87650/R4/Git8916/R1partial UNKNOWN facts remain unchanged"
+  ],
+  "futureRuntime": {
+    "deriveOnlyAfterThreeActualWholes": true,
+    "inputs": [
+      "original authority733",
+      "original finalstdout20680",
+      "actual independently read receipt15237",
+      "frozen fresh R3 runtime input"
+    ],
+    "homeBinding": "same final stdout homeControlBinding cross-checked against receipt; never synthesized from expected values",
+    "unchangedRuntimeDeriver": "6c36bdd55a2ea4442c5eec1fbf9b62d990226080",
+    "requiresSeparateExactRuntimeGO": true,
+    "processStartRequest": null
+  },
+  "validation": {
+    "onlyPureMechanicalBindingChecks": true,
+    "syntheticMetadataFunctionsNotRerun": true,
+    "actualNewMetadataObserved": false,
+    "actualNewBodyObserved": false,
+    "oldComponentsNotRerun": true,
+    "journalFunctionsUnchanged": true,
+    "deriverWholeUnchanged": true
+  },
+  "actualInertQualificationRequiredInExactGO": true,
+  "actualInertMinimumPacket": "c6210845399f86719380b87de175055fe1ee403d",
+  "receiptBoundary": {
+    "bytes": 15237,
+    "sha256": "d64535852bd697b0fd8f1cf314621d50236c0f398c068f8f4e276d480a1eedd3",
+    "publicStageWholeReadbackObserved": true,
+    "independentExternalBodyObserved": false,
+    "preFinallyOkFalseMustRemain": true,
+    "postFinallyStdoutOkTrueIsSeparate": true
+  },
+  "accounting": {
+    "oldR2ReadsetBodyBytesAlreadyConsumed": 96654,
+    "newR3AdditionalBodyBytes": 96654,
+    "cumulativeAcrossTheseTwoReadbackScopes": 193308,
+    "notATotalForAllHistoricalSdkReads": true,
+    "metadataWholeHashWorkHasNoCallerByteCap": true,
+    "oldBudgetOrActualVersionReused": false
+  }
+}

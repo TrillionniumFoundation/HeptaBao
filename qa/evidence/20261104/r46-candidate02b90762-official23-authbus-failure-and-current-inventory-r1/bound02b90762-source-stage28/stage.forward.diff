@@ -1,0 +1,78 @@
+--- a/stage.py
++++ b/stage.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Stage exact unformatted snapshot forwarding source independently; no Cargo or product."""
++"""Stage exact combined source independently for separate build admission."""
+ from pathlib import Path, PurePosixPath
+ import argparse
+ import hashlib
+@@ -19,19 +19,19 @@
+ parser.add_argument('--carrier-sha256', required=True)
+ args = parser.parse_args()
+ args.host = 'rog'
+-ROOT = Path('/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1')
++ROOT = Path('/home/qian-qi/hb-02b90762-src-20261106-r1')
+ SOURCE = ROOT / 'source'
+ CONTROL = ROOT / 'control'
+ OLD = Path('/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source')
+ OLD_COMMIT = '49503322c7f446e5eb41e7744f1fdbd7f1192ecc'
+ OLD_TREE = '1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'
+-COMMIT = '2379d02ba1ee3e88989815d5a978f998822bac4f'
+-TREE = 'fc933c18a0415730e3658c17ff021db9b2df2caa'
+-PARENT = 'b6949024dc5d0922ca9b27d865923d28982286c3'
++COMMIT = '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'
++TREE = '9781e9615ac5fb068d217241c74bb54bf87942cf'
++PARENT = '025b05a340de841b8161c1120344e86eae30eb97'
+ ANCESTRY = (
+-    ('2379d02ba1ee3e88989815d5a978f998822bac4f', 'b6949024dc5d0922ca9b27d865923d28982286c3'),
+-    ('b6949024dc5d0922ca9b27d865923d28982286c3', '8c95fb0a8b2f61933a09b04986df2bafc9e7095c'),
+-    ('8c95fb0a8b2f61933a09b04986df2bafc9e7095c', '808e45d690f177ecb922e13d1ed19f7877156094'),
++    ('02b90762b3d6cc8699cc88bffb6f76cb1f07e270', '025b05a340de841b8161c1120344e86eae30eb97'),
++    ('025b05a340de841b8161c1120344e86eae30eb97', '33b814c7034ec853151b1ff13e7529c83f65ea70'),
++    ('33b814c7034ec853151b1ff13e7529c83f65ea70', '808e45d690f177ecb922e13d1ed19f7877156094'),
+     ('808e45d690f177ecb922e13d1ed19f7877156094', 'e3afc157447d35c861f275a761b29da3e42aff8e'),
+     ('e3afc157447d35c861f275a761b29da3e42aff8e', '4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'),
+     ('4e808d0ecb1bcded22870a7ec960dfb2491cf6ec', '1c66541993662f92cf717154e33717abedb2ea74'),
+@@ -365,7 +365,7 @@
+         assert kind == 'blob' and mode in ('100644', '100755')
+         assert not p.is_absolute() and '..' not in p.parts and str(p) == relative
+         entries.append((relative, mode, object_id))
+-    assert len(entries) == 3930 and len({x[0] for x in entries}) == 3930
++    assert len(entries) == 3932 and len({x[0] for x in entries}) == 3932
+     indexed = []
+     for item in git(SOURCE, 'ls-files', '--stage', '-z').split(b'\0'):
+         if not item:
+@@ -440,7 +440,7 @@
+     ('ssh25', 25), ('mount1', 1), ('redirect5', 5), ('actor2', 2), ('ordinary5', 5), ('no_forward6', 6)]
+ assert sum(len(g['tests']) for g in groups) == 44 and all(g['runtime_seconds'] == 600 for g in groups)
+ assert not os.path.lexists(ROOT)
+-result = {'schema': 'heptabao.native-snapshot-forward-independent-source-stage.v1', 'status': 'failed',
++result = {'schema': 'heptabao.native-jwt-independent-source-stage.v1', 'status': 'failed',
+           'source_commit': COMMIT, 'source_tree': TREE, 'sole_parent': PARENT,
+           'root': str(ROOT), 'source': str(SOURCE), 'host': 'rog',
+           'stager_sha256': args.self_sha256, 'carrier_sha256': args.carrier_sha256,
+@@ -448,7 +448,7 @@
+           'new_stage_total_seconds': 300, 'new_supervisor_seconds': 360,
+           'server_started': False, 'compiler_started': False, 'production_changed': False,
+           'source_ref': None, 'source_fetch_argument': COMMIT,
+-          'stage_purpose': 'unformatted_snapshot_forward_source_for_separate_formatter_admission',
++          'stage_purpose': 'combined_source_for_separate_build_admission',
+           'historical_controls_executed': False, 'candidate_build_qualification': False,
+           'formatter_executed': False, 'rust_tests_executed': False,
+           'canonical_history_count': 3768, 'actual_build_qualification': False,
+@@ -498,11 +498,11 @@
+     git(SOURCE, 'fsck', '--full', '--strict', '--no-reflogs', '--no-dangling', COMMIT)
+     result.update(independent_git())
+     result['full_worktree'] = verify_full_worktree()
+-    assert result['full_worktree']['tracked_bytes'] == 62486000
+-    assert result['full_worktree']['full_leaf_index_sha256'] == '0e35cb5c3192efd2b9ddecfdbbe78581dd65c8ceb1aee8577709f7d7f504b811'
++    assert result['full_worktree']['tracked_bytes'] == 62537554
++    assert result['full_worktree']['full_leaf_index_sha256'] == 'c6cef770842a1b0006b4c86a58e325802d00dd5779dede468262f2693c3246cc'
+     assert freeze(SOURCE) == {'commit': COMMIT, 'tree': TREE, 'status': ''}
+ 
+-    canonical_path = CONTROL / 'canonical-native-snapshot-forward-2379d02b-from495.bundle'
++    canonical_path = CONTROL / 'canonical-hb-02b90762-from495.bundle'
+     assert not os.path.lexists(canonical_path)
+     git(SOURCE, 'bundle', 'create', '--version=2', str(canonical_path), 'HEAD', '^' + OLD_COMMIT)
+     canonical_raw = stable_read(canonical_path, 4 * 1024 * 1024)

@@ -1,0 +1,86 @@
+{
+  "schema": "heptabao.root.pocket4.current-network.qualification.r1",
+  "passed": true,
+  "checks": 12,
+  "rows": [
+    {
+      "name": "whole_current_packet12",
+      "passed": true
+    },
+    {
+      "name": "exact_single_request_and_GO",
+      "passed": true
+    },
+    {
+      "name": "whole_original_SDK_and_native",
+      "passed": true
+    },
+    {
+      "name": "four_leaf_original_arm",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_Merkle",
+      "passed": true
+    },
+    {
+      "name": "once_intent_before_original_call",
+      "passed": true
+    },
+    {
+      "name": "four_completed_subcommands",
+      "passed": true
+    },
+    {
+      "name": "observed_wifi_identity",
+      "passed": true
+    },
+    {
+      "name": "actual_wifi_default_gateway",
+      "passed": true
+    },
+    {
+      "name": "original_counts",
+      "passed": true
+    },
+    {
+      "name": "one_original_call_zero_followup",
+      "passed": true
+    },
+    {
+      "name": "network_correspondence_only",
+      "passed": true
+    }
+  ],
+  "packet": {
+    "tree": "45e56385161f779b8f2224c0592ffbedf74bba31",
+    "files": 12,
+    "bytes": 132011,
+    "merkle": {
+      "root_sha": "45e56385161f779b8f2224c0592ffbedf74bba31",
+      "trees_verified": 1,
+      "leaf_count": 12
+    },
+    "whole": true
+  },
+  "originalSDK": {
+    "blob": "589ffca7ee8e09b44cf242941eea60704789f3d9",
+    "bytes": 58234,
+    "sha256": "1bf43684a3c895f9a0b9315cb594b1d06bf9ddfa7aabf968e4473926c7919e2b"
+  },
+  "originalNative": {
+    "blob": "6d3c2b892b404d9397650fef136c32d3af0b42b6",
+    "bytes": 51121,
+    "sha256": "692b6845f4ec24174128b432361dfd0fec26329235d2b05a2c1c3198840ea129"
+  },
+  "observedLANIPv4": "192.168.0.9",
+  "observedInterface": "wlp195s0",
+  "observedMAC": "e0:d5:5d:ec:cf:93",
+  "physicalHostMappingQualified": false,
+  "currentClientInventoryComplete": false,
+  "backupPathsMigrated": false,
+  "NativeCalls": 0,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.current-consumer-backup-discovery.once-intent.v1",
+  "context": "current_consumer_backup_discovery_r1",
+  "callKey": "consumer-search-start-01",
+  "ordinal": 4,
+  "tool": "mcp__codex_apps__heptaruntime_mac_controller_search_start",
+  "request": {
+    "blob": "c6978b8bb26bde83073052af8903c8857fc6c1d4",
+    "bytes": 670,
+    "sha256": "876a9681670744485c2f73a15f36e619737845cd7d8be991f25969f036d0ac6e"
+  },
+  "go": {
+    "blob": "acf5eadc67327880998ed08b661874433ae5d121",
+    "bytes": 6092,
+    "sha256": "52dae6062b15f30b6741c9ca8239901f68a8bff5b2a3ea219dd7d1de9423b1e8"
+  },
+  "submitted": false,
+  "searchOrdinal": 1,
+  "maximumSearchStarts": 2,
+  "previousProcessPagesClosed": 2,
+  "filenameOnly": true,
+  "noContentRead": true,
+  "missingAckMeansNoRetry": true
+}

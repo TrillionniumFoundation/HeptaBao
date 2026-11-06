@@ -1,0 +1,6 @@
+{
+  "host": "x230",
+  "services": [
+    "openclaw-authbus-x230-openbao-proxy.service"
+  ]
+}

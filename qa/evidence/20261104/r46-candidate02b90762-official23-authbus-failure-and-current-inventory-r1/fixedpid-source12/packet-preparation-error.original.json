@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.pure-source-packet-preparation-error.r1",
+  "stage": "construct typed-binding.public.json object before storing packet",
+  "observed_error": "ReferenceError: requestPin is not defined\n    at exec_main.mjs:97:210",
+  "correction": "Use request:H.meta(JSON.stringify(q,null,2)+newline) instead of an undeclared assignment expression.",
+  "candidate_source_changed": false,
+  "request_changed": false,
+  "native_calls": 0,
+  "git_mutation_called": false,
+  "original_source": {
+    "blob": "43a2c36f7d870a47ddbf0f8e182095763a60ed55",
+    "bytes": 9160,
+    "sha256": "0ffbc4ba49b5576f279436afc0b7d820e855305b8ee5e0cbbc12d99bc0d8dc80"
+  },
+  "original_request": {
+    "blob": "14a30253613e70cd6a524bb6525b19ad5a293ad0",
+    "bytes": 9947,
+    "sha256": "e8dc466cbec31cb6fe105b7daccd4b6098c7bd6e687b999b8842aae7a4c92045"
+  }
+}

@@ -1,0 +1,333 @@
+{
+  "schema": "heptabao.root-current-X230-inventory-original.r1",
+  "passed": true,
+  "checks": 75,
+  "rows": [
+    {
+      "name": "whole66_originals",
+      "passed": true
+    },
+    {
+      "name": "exact_original_discovery_GO",
+      "passed": true
+    },
+    {
+      "name": "thirteen_unique_originals",
+      "passed": true
+    },
+    {
+      "name": "host-list-01_exact_original_bytes",
+      "passed": true
+    },
+    {
+      "name": "host-list-01_once_intent_GO",
+      "passed": true
+    },
+    {
+      "name": "host-list-01_arm_and_SDK_Merkle",
+      "passed": true
+    },
+    {
+      "name": "host-list-01_actual_kind_specific_budget",
+      "passed": true
+    },
+    {
+      "name": "process-page-01_exact_original_bytes",
+      "passed": true
+    },
+    {
+      "name": "process-page-01_once_intent_GO",
+      "passed": true
+    },
+    {
+      "name": "process-page-01_arm_and_SDK_Merkle",
+      "passed": true
+    },
+    {
+      "name": "process-page-01_actual_kind_specific_budget",
+      "passed": true
+    },
+    {
+      "name": "process-page-02_exact_original_bytes",
+      "passed": true
+    },
+    {
+      "name": "process-page-02_once_intent_GO",
+      "passed": true
+    },
+    {
+      "name": "process-page-02_arm_and_SDK_Merkle",
+      "passed": true
+    },
+    {
+      "name": "process-page-02_actual_kind_specific_budget",
+      "passed": true
+    },
+    {
+      "name": "consumer-search-start-01_exact_original_bytes",
+      "passed": true
+    },
+    {
+      "name": "consumer-search-start-01_once_intent_GO",
+      "passed": true
+    },
+    {
+      "name": "consumer-search-start-01_arm_and_SDK_Merkle",
+      "passed": true
+    },
+    {
+      "name": "consumer-search-start-01_actual_kind_specific_budget",
+      "passed": true
+    },
+    {
+      "name": "consumer-result-01_exact_original_bytes",
+      "passed": true
+    },
+    {
+      "name": "consumer-result-01_once_intent_GO",
+      "passed": true
+    },
+    {
+      "name": "consumer-result-01_arm_and_SDK_Merkle",
+      "passed": true
+    },
+    {
+      "name": "consumer-result-01_actual_kind_specific_budget",
+      "passed": true
+    },
+    {
+      "name": "consumer-result-02_exact_original_bytes",
+      "passed": true
+    },
+    {
+      "name": "consumer-result-02_once_intent_GO",
+      "passed": true
+    },
+    {
+      "name": "consumer-result-02_arm_and_SDK_Merkle",
+      "passed": true
+    },
+    {
+      "name": "consumer-result-02_actual_kind_specific_budget",
+      "passed": true
+    },
+    {
+      "name": "consumer-result-03_exact_original_bytes",
+      "passed": true
+    },
+    {
+      "name": "consumer-result-03_once_intent_GO",
+      "passed": true
+    },
+    {
+      "name": "consumer-result-03_arm_and_SDK_Merkle",
+      "passed": true
+    },
+    {
+      "name": "consumer-result-03_actual_kind_specific_budget",
+      "passed": true
+    },
+    {
+      "name": "consumer-result-04_exact_original_bytes",
+      "passed": true
+    },
+    {
+      "name": "consumer-result-04_once_intent_GO",
+      "passed": true
+    },
+    {
+      "name": "consumer-result-04_arm_and_SDK_Merkle",
+      "passed": true
+    },
+    {
+      "name": "consumer-result-04_actual_kind_specific_budget",
+      "passed": true
+    },
+    {
+      "name": "backup-search-start-01_exact_original_bytes",
+      "passed": true
+    },
+    {
+      "name": "backup-search-start-01_once_intent_GO",
+      "passed": true
+    },
+    {
+      "name": "backup-search-start-01_arm_and_SDK_Merkle",
+      "passed": true
+    },
+    {
+      "name": "backup-search-start-01_actual_kind_specific_budget",
+      "passed": true
+    },
+    {
+      "name": "backup-result-01_exact_original_bytes",
+      "passed": true
+    },
+    {
+      "name": "backup-result-01_once_intent_GO",
+      "passed": true
+    },
+    {
+      "name": "backup-result-01_arm_and_SDK_Merkle",
+      "passed": true
+    },
+    {
+      "name": "backup-result-01_actual_kind_specific_budget",
+      "passed": true
+    },
+    {
+      "name": "backup-result-02_exact_original_bytes",
+      "passed": true
+    },
+    {
+      "name": "backup-result-02_once_intent_GO",
+      "passed": true
+    },
+    {
+      "name": "backup-result-02_arm_and_SDK_Merkle",
+      "passed": true
+    },
+    {
+      "name": "backup-result-02_actual_kind_specific_budget",
+      "passed": true
+    },
+    {
+      "name": "backup-result-03_exact_original_bytes",
+      "passed": true
+    },
+    {
+      "name": "backup-result-03_once_intent_GO",
+      "passed": true
+    },
+    {
+      "name": "backup-result-03_arm_and_SDK_Merkle",
+      "passed": true
+    },
+    {
+      "name": "backup-result-03_actual_kind_specific_budget",
+      "passed": true
+    },
+    {
+      "name": "backup-result-04_exact_original_bytes",
+      "passed": true
+    },
+    {
+      "name": "backup-result-04_once_intent_GO",
+      "passed": true
+    },
+    {
+      "name": "backup-result-04_arm_and_SDK_Merkle",
+      "passed": true
+    },
+    {
+      "name": "backup-result-04_actual_kind_specific_budget",
+      "passed": true
+    },
+    {
+      "name": "exact_fixed_initial_and_search_requests",
+      "passed": true
+    },
+    {
+      "name": "tool_counts_and_order",
+      "passed": true
+    },
+    {
+      "name": "actual_two_PID_pages250",
+      "passed": true
+    },
+    {
+      "name": "process_snapshot_not_atomic",
+      "passed": true
+    },
+    {
+      "name": "one_unresolved_bao_candidate_exact_identity",
+      "passed": true
+    },
+    {
+      "name": "consumer_single_original_start",
+      "passed": true
+    },
+    {
+      "name": "consumer_terminal_page0",
+      "passed": true
+    },
+    {
+      "name": "consumer_terminal_page1",
+      "passed": true
+    },
+    {
+      "name": "consumer_terminal_page2",
+      "passed": true
+    },
+    {
+      "name": "consumer_terminal_page3",
+      "passed": true
+    },
+    {
+      "name": "consumer_exact128_returned_paths_partial",
+      "passed": true
+    },
+    {
+      "name": "backup_single_original_start",
+      "passed": true
+    },
+    {
+      "name": "backup_terminal_page0",
+      "passed": true
+    },
+    {
+      "name": "backup_terminal_page1",
+      "passed": true
+    },
+    {
+      "name": "backup_terminal_page2",
+      "passed": true
+    },
+    {
+      "name": "backup_terminal_page3",
+      "passed": true
+    },
+    {
+      "name": "backup_exact128_returned_paths_partial",
+      "passed": true
+    },
+    {
+      "name": "two_searches_closed_before_release",
+      "passed": true
+    },
+    {
+      "name": "explicit_closed_lane",
+      "passed": true
+    },
+    {
+      "name": "no_private_or_product_or_migration_claim",
+      "passed": true
+    }
+  ],
+  "packet": "0cfad195ee96a891dfe60d5fdb0f042fd4efd425",
+  "originalNativeCalls": 13,
+  "currentNativeCalls": 0,
+  "currentOwnedFutures": 0,
+  "processRecords": 250,
+  "processSnapshotAtomic": false,
+  "searches": 2,
+  "returnedPaths": 256,
+  "allReturnedPagesWhole": true,
+  "bothSearchesLimited": true,
+  "liveBaoCandidate": {
+    "pid": 2031533,
+    "uid": 100,
+    "identity": "linux:b19bd1b9-4dbe-4335-96cf-ed98d393efea:35455670",
+    "executable": null,
+    "version": null,
+    "unit": null,
+    "container": null
+  },
+  "overallInventoryComplete": false,
+  "consumerMigrationQualified": false,
+  "backupRecoveryQualified": false,
+  "Pocket4PhysicalMappingQualified": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

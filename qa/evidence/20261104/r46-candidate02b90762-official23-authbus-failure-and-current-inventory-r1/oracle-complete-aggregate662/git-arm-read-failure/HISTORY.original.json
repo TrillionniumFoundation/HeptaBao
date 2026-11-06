@@ -1,0 +1,82 @@
+[
+  {
+    "ordinal": 1,
+    "stage": "create_tree",
+    "pin": {
+      "blob": "0abf7cd8ef75344ad923dc6461b100b71512525b",
+      "bytes": 195,
+      "sha256": "9d6e06eae88d828bed94c4b0a628e3e0e912a19592ced050feaea3eb3cbb9dbe"
+    },
+    "immutableStoreKey": "original-sdk-by-blob:0abf7cd8ef75344ad923dc6461b100b71512525b"
+  },
+  {
+    "ordinal": 2,
+    "stage": "tree_whole",
+    "pin": {
+      "blob": "e4c16f0a4dbad0178be49a7a6a180f5cdaa04ff3",
+      "bytes": 2801,
+      "sha256": "0d8f396ba44aa30e0e9c445a38d5a094f515904033bb06d3655cdc0c96da5279"
+    },
+    "immutableStoreKey": "original-sdk-by-blob:e4c16f0a4dbad0178be49a7a6a180f5cdaa04ff3"
+  },
+  {
+    "ordinal": 3,
+    "stage": "whole:intent.json",
+    "pin": {
+      "blob": "ddc8b45cb9056b09ca3a6bc0e94ea3aff95211f2",
+      "bytes": 304,
+      "sha256": "5710b903750ccc9853075a23278fc1cbcc7468c124b9087e9d09c592e5d2bede"
+    },
+    "immutableStoreKey": "original-sdk-by-blob:ddc8b45cb9056b09ca3a6bc0e94ea3aff95211f2"
+  },
+  {
+    "ordinal": 4,
+    "stage": "whole:armed.json",
+    "pin": {
+      "blob": "9c9cc7f12118d5d4a92dff9d230b77f80184331c",
+      "bytes": 1173,
+      "sha256": "b72e607aea66fa73a769523d0ec478e7c56b8fd04fcd27bcfb9b8ec9eaf27133"
+    },
+    "immutableStoreKey": "original-sdk-by-blob:9c9cc7f12118d5d4a92dff9d230b77f80184331c"
+  },
+  {
+    "ordinal": 5,
+    "stage": "recovery_tree",
+    "pin": {
+      "blob": "e4c16f0a4dbad0178be49a7a6a180f5cdaa04ff3",
+      "bytes": 2801,
+      "sha256": "0d8f396ba44aa30e0e9c445a38d5a094f515904033bb06d3655cdc0c96da5279"
+    },
+    "immutableStoreKey": "original-sdk-by-blob:e4c16f0a4dbad0178be49a7a6a180f5cdaa04ff3"
+  },
+  {
+    "ordinal": 6,
+    "stage": "recovery_whole:armed.json",
+    "pin": {
+      "blob": "9c9cc7f12118d5d4a92dff9d230b77f80184331c",
+      "bytes": 1173,
+      "sha256": "b72e607aea66fa73a769523d0ec478e7c56b8fd04fcd27bcfb9b8ec9eaf27133"
+    },
+    "immutableStoreKey": "original-sdk-by-blob:9c9cc7f12118d5d4a92dff9d230b77f80184331c"
+  },
+  {
+    "ordinal": 7,
+    "stage": "recovery_whole:intent.json",
+    "pin": {
+      "blob": "2100daf14ab92ee82986a9b34512eb6eecd1e6a6",
+      "bytes": 1028,
+      "sha256": "369ea8f11123c8beacc046c6f985aa0ada3fdd53dac1d64381f344ec014e5f57"
+    },
+    "immutableStoreKey": "original-sdk-by-blob:2100daf14ab92ee82986a9b34512eb6eecd1e6a6"
+  },
+  {
+    "ordinal": 8,
+    "stage": "recovery_whole:request.json",
+    "pin": {
+      "blob": "d92efdd2857202b741ebdebdc631de5afed65cc3",
+      "bytes": 277,
+      "sha256": "3f5644cae0cb27e783c6cb5218cc5fe05cabe52f2c368d03fd88a51bea193a7e"
+    },
+    "immutableStoreKey": "original-sdk-by-blob:d92efdd2857202b741ebdebdc631de5afed65cc3"
+  }
+]

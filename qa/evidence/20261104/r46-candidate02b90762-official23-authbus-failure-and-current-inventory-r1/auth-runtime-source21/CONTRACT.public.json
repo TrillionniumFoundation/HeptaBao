@@ -1,0 +1,121 @@
+{
+  "schema": "heptabao.mac-current-home-r3-actual-bound-runtime-source.v1",
+  "status": "SOURCE_ONLY_RUNTIME_NOT_SUBMITTED",
+  "sourcePacket": "1b9f6f07249d0757ac0efa0227827e834a750260",
+  "actualInertQualification": {
+    "blob": "7ae8d9d4b6e2101b79a2c3fde256716e5639c03a",
+    "bytes": 8041,
+    "sha256": "f042507c76eb3651c70370dcaddb44613e64582a6e17ef8bfd99ad5d1e1e4916"
+  },
+  "actualReadbackMinimum": "b504ef8b9f964bbf949d7c1c3c8711c49379f8fc",
+  "actualReadbackRelease": {
+    "blob": "1e042b5b377395f15203ef82cf33e8a198a770a7",
+    "bytes": 20952,
+    "sha256": "1b819c4e204ec3c01656ee1f297424a72c544c66891a0f975a18ef11c1f895dc"
+  },
+  "unchangedDeriver": {
+    "blob": "6c36bdd55a2ea4442c5eec1fbf9b62d990226080",
+    "bytes": 7131,
+    "sha256": "9cae37de4fafceb24269dc3eda108fc4b2adc7d8e0f8d7722b14446ea79e67c4"
+  },
+  "derivationInputPins": {
+    "authority": {
+      "blob": "3dd7eb3a01bfbba19e37e1dc88d999f091bd0b19",
+      "bytes": 733,
+      "sha256": "5d6a0d14560141f7f449427f44180b561190cfadb5267fa754117dba853a5fa6"
+    },
+    "stdout": {
+      "blob": "0c1ac73af42e57c324be188a0d162bc2fd72003c",
+      "bytes": 20680,
+      "sha256": "0180bc98a766e41d357084dc957446906d3ac7afe8301f27346151138b57d151"
+    },
+    "receipt": {
+      "blob": "6d2daf13dcf820d1d73e43723a60d6f7bdcbcc8e",
+      "bytes": 15237,
+      "sha256": "d64535852bd697b0fd8f1cf314621d50236c0f398c068f8f4e276d480a1eedd3"
+    }
+  },
+  "request": {
+    "blob": "4d945e65cbee59c0df29b136abc8266be77ffa7e",
+    "bytes": 8207,
+    "sha256": "dd1b65b97018914f9fb613f42810f4259a872fcb6da6117e46c559ba7b9e8f39"
+  },
+  "actualHomeBinding": {
+    "blob": "2dc7ce1ebe9a865cf61a84dce5c99f4244ca18a0",
+    "bytes": 2030,
+    "sha256": "c1693109a8ecbadd879b198739c777a3b92735d2c5ca0ae56ac6496503cac7a4"
+  },
+  "journal": {
+    "blob": "356a543a19cc95ce6df4a88406cfc7950d154066",
+    "bytes": 19052,
+    "sha256": "44a46f27cb46136d81cc9fce7f3d5fa290a1ded406bf2c5a4c4d27abf4fd85f7"
+  },
+  "beforeJournal": {
+    "blob": "7c17ea14858c4801b205d8c91aa250b250558b9b",
+    "bytes": 19052,
+    "sha256": "2e501ef98b5d2c29acfccbd21128f18da2a8bfa49e59429f52591986c384f6f9"
+  },
+  "strictForwardHunks": 2,
+  "strictReverseHunks": 2,
+  "journalChangedLiteralsOnly": [
+    "GF_SLOT",
+    "GF_REQUEST exact request pin",
+    "original observer key prefix"
+  ],
+  "newSlot": "owner_authbus_current_home_runtime_gitfirst_r3",
+  "observerKeyPrefix": "heptabao-mac-current-home-launch-runtime-7f3bec1e-",
+  "originalBusinessPreserved": {
+    "fiveAgents": [
+      "main",
+      "trnm",
+      "hepta-ui",
+      "hepta",
+      "hepta-backend"
+    ],
+    "fullOriginalConfigAndProviderModelFlags": true,
+    "originalLoaderSelectorAndRegistryInstanceGuards": true,
+    "source22AndSevenProofPreflights": true,
+    "privateCaptureAndBusinessDataStayOnT5": true,
+    "publicLaunchControlsAndStdioStayAtExactHome": true,
+    "originalAppRoleTLSKVPolicyRenewRevokeRestartRollback": true,
+    "renewPreAndPostLookup": true,
+    "renewBodyEmptyObject": true,
+    "noSleepOrRetry": true,
+    "workerSeconds": 900,
+    "controllerSeconds": 1080,
+    "currentCaptureSeconds": 45,
+    "registryQuerySeconds": 3,
+    "registryWalCapBytes": 5969912,
+    "rowCapBytes": 1048576,
+    "aggregateCapBytes": 8388608
+  },
+  "observationMechanism": {
+    "sameJournalNativeFunctions": true,
+    "exactExternalIntentBeforeOneStart": true,
+    "SDKWholeBeforeParse": true,
+    "originalJobAndOperationsOnly": true,
+    "processReadLimit": 16384,
+    "immutablePageLimit": 8192,
+    "maximumImmutablePayload": 1048576,
+    "oneCallOneFuture": true,
+    "workerStdoutCapBytes": 2097152,
+    "rootExactGOStillRequired": true,
+    "maximumOriginalProcessStatuses": 64,
+    "maximumStatusCallsPerObserver": 8,
+    "maximumTerminalProcessReads": 129
+  },
+  "limits": {
+    "stagingAndReadbackDoNotProveSelectedOwner": true,
+    "credentialsNotQualified": true,
+    "productionCutover": false,
+    "legacyCleanup": false,
+    "allHistoricalUnknownsUnchanged": true,
+    "noReadThenExecAtomicityClaim": true
+  },
+  "actualReadbackRootQualification": null,
+  "actualReadbackRootQualificationMustBeBoundByRuntimeGO": true,
+  "actualPort": null,
+  "portAssignedOnlyByOriginalRuntimeReservePort": true,
+  "originalNeverExitedFixPreserved": true,
+  "oldFailedRuntimeAndManagedUnknownsNotRewritten": true
+}

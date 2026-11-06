@@ -1,0 +1,8 @@
+{
+  "failurePacket": "c1d73181fdb8e6118aa12bc02e49c93b2ee36fcb",
+  "recoverySourcePacket": "35d5d13759796bec35b06db8821845c5be8c24d1",
+  "rootGO": "936b059532050a7662755fc24f8e914fcffb6ea6",
+  "actualRestoreProofTree": "40a5931a4f5257d3bf00f1889cea65abbea2629b",
+  "originalPageCalledBeforeRecovery": false,
+  "oldErrorsRetained": true
+}

@@ -1,0 +1,358 @@
+{
+  "schema": "heptabao.authbus-home-r3-inert-original-closure-release.v1",
+  "sourceOnlyPreparationOfBusinessInputs": true,
+  "job": {
+    "host": "mac",
+    "id": "1a1b19aef7b-fc05-79d3",
+    "startCount": 1,
+    "authority": {
+      "blob": "3dd7eb3a01bfbba19e37e1dc88d999f091bd0b19",
+      "bytes": 733,
+      "sha256": "5d6a0d14560141f7f449427f44180b561190cfadb5267fa754117dba853a5fa6"
+    },
+    "state": "succeeded",
+    "exitCode": 0,
+    "outputComplete": true,
+    "outputDurable": true,
+    "terminalPublicationConfirmed": true
+  },
+  "exactRequest": {
+    "blob": "a9b40fb0c03bbda404e8bdbbef2e398e34c2f8af",
+    "bytes": 875570,
+    "sha256": "c85ff3e246279e367039128a59f0b2a894bda727577e0d2de317a972696ca9de"
+  },
+  "rootGO": {
+    "blob": "b2fd06b25b4131e542df9ad539cc8022c1ca396a",
+    "bytes": 4967,
+    "sha256": "2fb8a2be027d8efc0d783d114dfde2d74ca1e4b3ca607021f4f27d704faac88d"
+  },
+  "sourcePacket": "1b9f6f07249d0757ac0efa0227827e834a750260",
+  "startArmedTree": "943bb6d2f5279066bff24308987c3eb28f4e8d89",
+  "startSDK": {
+    "blob": "ce19bd0f5b559a25f3b480bbf90deadf9c8336a3",
+    "bytes": 39765,
+    "sha256": "839d6b265474dd6130cfc4252359c052c7acd54fcd5c7ba4b96921a39c7877d8"
+  },
+  "startNative": {
+    "blob": "4aa9662708f1b2ffdac32ffa6808c1fd0d3fc892",
+    "bytes": 38540,
+    "sha256": "7944ce83c4985c55e375ff890275bc4694495197c69a042a8b2d22760ced02bd"
+  },
+  "stdout": {
+    "blob": "0c1ac73af42e57c324be188a0d162bc2fd72003c",
+    "bytes": 20680,
+    "sha256": "0180bc98a766e41d357084dc957446906d3ac7afe8301f27346151138b57d151"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "originalCalls": 17,
+  "observers": [
+    {
+      "id": "f631645e08689c8d4d6442a180acdae4ced98ce71b7dc2612f66d0b70419b8b9",
+      "tool": "process_status",
+      "payload": {
+        "blob": "0c7287e1a48655636676a091a2940023c5601cf7",
+        "bytes": 912,
+        "sha256": "7c01744825b6190a2bc63f4eab5118b531c3ebfb2fbf86047805a37fb7f5248b"
+      },
+      "payloadTree": "c57f418089f5de4ef94ca40dcd795398a742478b",
+      "nativeText": {
+        "blob": "3dd7eb3a01bfbba19e37e1dc88d999f091bd0b19",
+        "bytes": 733,
+        "sha256": "5d6a0d14560141f7f449427f44180b561190cfadb5267fa754117dba853a5fa6"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "b2ff28699ac13475cf8e1d057711b4424b0061efc08980840fedaecf365d8d48",
+      "tool": "process_read",
+      "payload": {
+        "blob": "9afacae54bd23911e9f290ed20f5933ca6ec9d80",
+        "bytes": 55219,
+        "sha256": "1fe0e6529604239a09c5fb630815259df8dc89df8202e691f5575d225e528483"
+      },
+      "payloadTree": "8cb10e15742c5a1f8ead60ede3a9465f2f076035",
+      "nativeText": {
+        "blob": "ae4acc85ba2e7abdf0719e13a955b3c13989423c",
+        "bytes": 51345,
+        "sha256": "2bd44bf694ef163126bfb97249ad3a0f21008edb8d8b40e6834f711c5f8c2b36"
+      },
+      "pages": 7,
+      "completedInactive": true
+    },
+    {
+      "id": "8223f2dbfcb144507fca445b394c744b9fd15545a367dc557088927225a42e0e",
+      "tool": "process_read",
+      "payload": {
+        "blob": "c298f646776234b8ed7cfe417ea7de091d9de359",
+        "bytes": 14556,
+        "sha256": "50442dfba8b9d7f915a1f33023f9be37a605c7ef30bfdaa54705ec294ea7c44f"
+      },
+      "payloadTree": "1c8e7dac1b45f882fc5c5049569bb179f9e59433",
+      "nativeText": {
+        "blob": "3eac0a716139dc6dd5c538c94f60fe6eb43fa7a6",
+        "bytes": 13617,
+        "sha256": "a056fbfc6b8907bcf50d0f26dc66b113fa49502851746c6a59f99197bb6b380f"
+      },
+      "pages": 2,
+      "completedInactive": true
+    }
+  ],
+  "originalPages": 10,
+  "statusPins": [
+    {
+      "key": "home-launch-r3-inert-authority-01-status-01",
+      "pin": {
+        "blob": "1f30194d5c401d3662b8ff431b6bd8ab6c3a800d",
+        "bytes": 805,
+        "sha256": "3df8132b00868bb5af91d5fc0591a376a5e3e1a0e5badbd30b87cc332bded825"
+      },
+      "operationId": "f631645e08689c8d4d6442a180acdae4ced98ce71b7dc2612f66d0b70419b8b9"
+    },
+    {
+      "key": "home-launch-r3-inert-streams-01-status-01",
+      "pin": {
+        "blob": "64a0c50e082ed0d4484953e1fafa65e4c43fb123",
+        "bytes": 803,
+        "sha256": "fd76cd77e6f435f23eb55cdec7927d03dfc0bd4af5117fe233c100b07d6ce1ee"
+      },
+      "operationId": "b2ff28699ac13475cf8e1d057711b4424b0061efc08980840fedaecf365d8d48"
+    },
+    {
+      "key": "home-launch-r3-inert-streams-02-status-01",
+      "pin": {
+        "blob": "c3f6d55ff09a072bd6567dda9229db2466fca2d7",
+        "bytes": 803,
+        "sha256": "d3d225fd3ae69996f91661e55d7a49dc709b00b70c4078c5c0672e399259c428"
+      },
+      "operationId": "8223f2dbfcb144507fca445b394c744b9fd15545a367dc557088927225a42e0e"
+    }
+  ],
+  "allCallsAcceptedOnce": true,
+  "allObserversCompletedInactive": true,
+  "exactStreamEOF": true,
+  "activeCallCount": 0,
+  "activeFutureCount": 0,
+  "pending": null,
+  "activeObserver": null,
+  "paused": false,
+  "laneReleased": true,
+  "actualInert": {
+    "ok": true,
+    "outcomeUnknown": false,
+    "sourceCount": 22,
+    "publicDocumentCount": 8,
+    "files": 30,
+    "homeCopies": 2,
+    "elapsedSeconds": 0.24067879235371947,
+    "originalDeadlineMetAfterClosure": true,
+    "allOwnedCommandsStopped": true,
+    "allOwnedDescriptorsClosed": true,
+    "allReturnedHomeControlDescriptorsClosed": true,
+    "homeOpenAttempts": 8,
+    "homeAllClosed": true,
+    "homeEffectUnknown": false,
+    "helperPid": 57042,
+    "helperDirectReaped": true,
+    "heldT5Final": {
+      "allDescriptorsClosed": true,
+      "anchors": [
+        {
+          "identity": [
+            "16777233",
+            "2",
+            "0",
+            "0",
+            "16877",
+            "22",
+            "704",
+            "1786589515000000000",
+            "1786589515000000000"
+          ],
+          "path": "/"
+        },
+        {
+          "identity": [
+            "16777233",
+            "18336",
+            "0",
+            "0",
+            "16877",
+            "5",
+            "160",
+            "1793100597756515591",
+            "1793100597756515591"
+          ],
+          "path": "/Volumes"
+        },
+        {
+          "identity": [
+            "16777244",
+            "2",
+            "0",
+            "0",
+            "16893",
+            "12",
+            "384",
+            "1793152973144260495",
+            "1793152973144260495"
+          ],
+          "path": "/Volumes/T5"
+        }
+      ],
+      "closeErrors": [],
+      "expectedVolumeDevice": "16777244",
+      "lastAnchorCheckPassed": true,
+      "schema": "heptabao.held-t5-volume-state.r1",
+      "volumeUUIDVerified": true
+    },
+    "homeBinding": {
+      "copies": {
+        "mac_current_phase_owner_r2.py": {
+          "bytes": 25647,
+          "identity": [
+            "16777233",
+            "593414506",
+            "501",
+            "20",
+            "33152",
+            "1",
+            "25647",
+            "1793981090633707904",
+            "1793981090633707904"
+          ],
+          "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r3/mac_current_phase_owner_r2.py",
+          "sha256": "438578c430cdb86a22babfb76b7ed60a0bca8b486834378e34c54ffa85200c60"
+        },
+        "mac_current_server_owner_r1.py": {
+          "bytes": 14052,
+          "identity": [
+            "16777233",
+            "593414505",
+            "501",
+            "20",
+            "33152",
+            "1",
+            "14052",
+            "1793981090633390630",
+            "1793981090633390630"
+          ],
+          "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r3/mac_current_server_owner_r1.py",
+          "sha256": "e4c868bfbda0d6357581925b6a09a59b9f8eac1f61e12154e4ecd86cbcede277"
+        }
+      },
+      "parents": [
+        {
+          "identity": [
+            "16777233",
+            "2",
+            "0",
+            "0",
+            "16877",
+            "22",
+            "704",
+            "1786589515000000000",
+            "1786589515000000000"
+          ],
+          "path": "/"
+        },
+        {
+          "identity": [
+            "16777233",
+            "18326",
+            "0",
+            "80",
+            "16877",
+            "6",
+            "192",
+            "1790904461743063380",
+            "1790904461743063380"
+          ],
+          "path": "/Users"
+        },
+        {
+          "identity": [
+            "16777233",
+            "6929812",
+            "501",
+            "20",
+            "16877",
+            "325",
+            "10400",
+            "1793980889926014662",
+            "1793980889926014662"
+          ],
+          "path": "/Users/qianqi"
+        }
+      ],
+      "root": {
+        "identity": [
+          "16777233",
+          "593414504",
+          "501",
+          "20",
+          "16832",
+          "4",
+          "128",
+          "1793981090633666907",
+          "1793981090633666907"
+        ],
+        "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r3"
+      },
+      "schema": "heptabao.mac-owned-home-control-binding.r1"
+    }
+  },
+  "receiptObservation": {
+    "bytes": 15237,
+    "identity": [
+      "16777244",
+      "72739455",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "15237",
+      "1793981090656143173",
+      "1793981090656148839"
+    ],
+    "kind": "inert_candidate_receipt",
+    "name": "inert-registry-wal-4e808-result.public.json",
+    "readbackUsesSeparateHeldFd": true,
+    "sha256": "d64535852bd697b0fd8f1cf314621d50236c0f398c068f8f4e276d480a1eedd3",
+    "wholeReadbackVerified": true,
+    "bodyNotIndependentlyReadHere": true,
+    "receiptIsPreFinallyAndDoesNotProveFinalClosure": true
+  },
+  "actualPureChecks": {
+    "verifier": {
+      "blob": "f1d06fc5970bc41d4f4f38036782be324c89897b",
+      "bytes": 7755,
+      "sha256": "0399b5f44ebe3156cb48e162f286e57bcdf963280f6b830042dd0d96a0bed91a"
+    },
+    "result": {
+      "blob": "66d0d78387c47022ebe763751e3c714482e72180",
+      "bytes": 7161,
+      "sha256": "cb39cc0869e7fc4127b5f1e27b7d33d64575b4319de4fa9f600d44951b84de11"
+    },
+    "passed": true,
+    "count": 70
+  },
+  "scopes": {
+    "newPublicInertStage": true,
+    "actualTargetInfoCalls": 0,
+    "actualTargetBodyCalls": 0,
+    "businessRuntimeStarts": 0,
+    "serverStarts": 0,
+    "sdkConsumerStarts": 0,
+    "currentPrivateCaptureReads": 0,
+    "selectedOwnerOrCredentialsQualified": false,
+    "productionCutover": false,
+    "historicalUnknownChanged": false
+  },
+  "publicDirectoriesRetained": true,
+  "oldFailuresAndUnknownsPreserved": true
+}

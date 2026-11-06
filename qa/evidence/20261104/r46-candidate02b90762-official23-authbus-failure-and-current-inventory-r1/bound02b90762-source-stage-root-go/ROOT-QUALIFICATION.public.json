@@ -1,0 +1,94 @@
+{
+  "schema": "heptabao.root.final02b90762-bound-stage.source-review.r1",
+  "passed": true,
+  "checkCount": 15,
+  "checks": [
+    {
+      "name": "whole SOURCE28",
+      "pass": true
+    },
+    {
+      "name": "root actual publication exact",
+      "pass": true
+    },
+    {
+      "name": "root actual commit exact",
+      "pass": true
+    },
+    {
+      "name": "root git-order index exact",
+      "pass": true
+    },
+    {
+      "name": "root canonical fields",
+      "pass": true
+    },
+    {
+      "name": "only source literal changes",
+      "pass": true
+    },
+    {
+      "name": "only journal exact fresh scope",
+      "pass": true
+    },
+    {
+      "name": "correct stdin binding helper",
+      "pass": true
+    },
+    {
+      "name": "exact source through request",
+      "pass": true
+    },
+    {
+      "name": "typed request digest",
+      "pass": true
+    },
+    {
+      "name": "one fresh root fixed",
+      "pass": true
+    },
+    {
+      "name": "original read fences",
+      "pass": true
+    },
+    {
+      "name": "unchanged finite stage budgets",
+      "pass": true
+    },
+    {
+      "name": "no formatter or build claimed",
+      "pass": true
+    },
+    {
+      "name": "future report reads separate",
+      "pass": true
+    }
+  ],
+  "sourceTree": "3b4bda7a414858bdb20160e7c2cee9d8e4318864",
+  "request": {
+    "blob": "b2ce0ac862ac88e531650feea8847268403ce025",
+    "bytes": 111947,
+    "sha256": "9a6003c2fb09cefc190f883c2d9ed7fbc285bc50d9fdf09bc0b2ca1346b215a9"
+  },
+  "stage": {
+    "blob": "36c9681e90e19521a8f09d2fbfd88896e2b6d267",
+    "bytes": 28939,
+    "sha256": "3a0aa014e5292df423d5742743ac78db9374aba51044031dce85abfa39356c6a"
+  },
+  "journal": {
+    "blob": "54407e90a2917b521acf749859a2248c7e33b14d",
+    "bytes": 19047,
+    "sha256": "f1eede8bf6e8d745f3a1ee0ccf85158c7100c6698f3654f5f8bc34cb7e7b8a3b"
+  },
+  "typedBinding": {
+    "sha256": "c9cd01bf49b3990b8282a4bd57a04c98e23bd1516a80612d625304ac14b34c03",
+    "native_fingerprint": "14541280692936087819"
+  },
+  "author71Exact": {
+    "blob": "0eed8ae514bbe05866ab436d1cb4c814f4147395",
+    "bytes": 6272,
+    "sha256": "693700ac5e987a5072d0b4ba6df243dcde9d40f36724b3fbf8bcab859940c1c3"
+  },
+  "sourceExecution": false,
+  "NativeCalls": 0
+}

@@ -1,0 +1,3581 @@
+//! Service is the serialization/commit owner for both auth and engine state.
+//! Every request sees one post-ReadIndex identity snapshot; successful login
+//! publishes the token and its alias/entity association in the same transaction.
+use super::*;
+use crate::auth::{AuthError, AuthResponse};
+
+impl State {
+    /// Retained/pending/all-namespace owners can carry private batch precision
+    /// even when no corresponding service-token record remains.
+    pub(super) fn has_token_api_precision_state(&self) -> bool {
+        self.auth.has_token_api_precision_state()
+            || self
+                .engines
+                .all_lease_owners()
+                .into_iter()
+                .chain(self.database.all_lease_owners())
+                .chain(self.auth.sdk_credential_owners())
+                .chain(self.auth.namespace_sdk_cleanup_owners())
+                .any(|(_, owner)| {
+                    owner
+                        .batch_claims()
+                        .is_some_and(|claims| claims.precision().is_some())
+                })
+    }
+
+    /// Scan persisted mount metadata in every namespace.
+    pub(super) fn has_mount_listing_visibility_state(&self) -> bool {
+        self.auth.has_mount_listing_visibility_state()
+            || self.engines.has_mount_listing_visibility_state()
+    }
+
+    /// Keep unknown schemas for admission to reject and preserve sticky floors.
+    pub(super) fn writer_schema(&self) -> u32 {
+        if !supported_reader_schema(self.schema) {
+            return self.schema;
+        }
+        let required = if self.auth.has_static_kv1_wrapped_reply_state() {
+            KV_MOUNT_CONFIGURATION_STATE_SCHEMA
+        } else if self.auth.has_general_wrapped_reply_state() {
+            GENERAL_WRAPPED_REPLY_STATE_SCHEMA
+        } else if self.auth.has_pki_raw_http_reply_state() {
+            RAW_PKI_HTTP_REPLY_STATE_SCHEMA
+        } else if self.auth.has_raw_wrapped_reply_state() {
+            RAW_WRAPPED_REPLY_STATE_SCHEMA
+        } else if self.engines.has_pki_rsa8192_state() {
+            PKI_RSA8192_STATE_SCHEMA
+        } else if self.engines.has_ordinary_pki_revocation_state() {
+            PKI_ORDINARY_REVOCATION_STATE_SCHEMA
+        } else if self.engines.has_pki_key_policy_state() {
+            PKI_KEY_POLICY_STATE_SCHEMA
+        } else if self.engines.has_pki_acme_state() {
+            PKI_ACME_ACCOUNT_STATE_SCHEMA
+        } else if self.engines.has_full_dn_crl_state() {
+            EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
+        } else if self.engines.has_pki_url_state() {
+            PKI_URLS_STATE_SCHEMA
+        } else if self.engines.has_external_pki_signer_history() {
+            EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
+        } else if self.engines.has_pki_role_names_state() {
+            PKI_ROLE_NAMES_STATE_SCHEMA
+        } else if self.has_namespace_batch_state() {
+            NAMESPACE_BATCH_STATE_SCHEMA
+        } else if self.engines.has_pki_signed_role_time_state() {
+            PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
+        } else if self.engines.has_pki_role_time_state() {
+            PKI_ROLE_TIME_STATE_SCHEMA
+        } else if self.engines.has_pki_role_leaf_profile_state() {
+            PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+        } else if self.engines.has_kubernetes_opaque_artifact_state() {
+            KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
+        } else if self.auth.has_public_origin_state() {
+            AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
+        } else if self.engines.has_pki_role_wildcard_state() {
+            PKI_ROLE_WILDCARD_STATE_SCHEMA
+        } else if self.engines.has_pki_role_bare_domain_state() {
+            PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
+        } else if self.engines.has_pki_role_any_name_state() {
+            PKI_ROLE_ANY_NAME_STATE_SCHEMA
+        } else if self.has_token_api_precision_state() {
+            TOKEN_API_PRECISION_STATE_SCHEMA
+        } else if self.namespaces.has_custody_state() || self.engines.has_namespace_record_custody()
+        {
+            NAMESPACE_CUSTODY_STATE_SCHEMA
+        } else if self.auth.has_token_api_schema80_state() {
+            TOKEN_ROLE_STATE_SCHEMA
+        } else if self.engines.has_local_pki_intermediate_state() {
+            LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
+        } else if self.engines.has_local_pki_crl_state() {
+            LOCAL_PKI_CRL_STATE_SCHEMA
+        } else if self.engines.has_local_pki_multi_issuer_state() {
+            LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA
+        } else if self.engines.has_local_pki_root_fields_state() {
+            LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA
+        } else if self.engines.has_local_pki_identifier_state() {
+            LOCAL_PKI_IDENTIFIER_STATE_SCHEMA
+        } else if self.auth.has_indexed_recovery_wire() {
+            INDEXED_RECOVERY_WIRE_STATE_SCHEMA
+        } else if self.auth.has_recovery_state() {
+            RECOVERY_CREDENTIAL_STATE_SCHEMA
+        } else if self.engines.has_local_typed_pki_state() {
+            LOCAL_TYPED_PKI_STATE_SCHEMA
+        } else if self.engines.has_issuer_path_pki_state() {
+            PKI_ISSUER_PATH_STATE_SCHEMA
+        } else if self.engines.has_transit_byok_state() {
+            TRANSIT_BYOK_STATE_SCHEMA
+        } else if self.auth.has_jwt_pem_keyset_state() {
+            JWT_PEM_KEYSET_STATE_SCHEMA
+        } else if self.auth.has_jwt_user_claim_state() {
+            JWT_USER_CLAIM_STATE_SCHEMA
+        } else if self.engines.has_typed_external_pki_state() {
+            TYPED_PKI_STATE_SCHEMA
+        } else if self.engines.has_aad_bound_convergent_state() {
+            AAD_BOUND_STATE_SCHEMA
+        } else {
+            CURRENT_STATE_SCHEMA
+        };
+        let required = if self.engines.has_sdk_state() {
+            required.max(SDK_STORAGE_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.engines.has_sdk_response_header_state() {
+            required.max(SDK_RESPONSE_HEADERS_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.engines.has_sdk_lease_state() {
+            required.max(SDK_SECRET_LEASE_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.auth.has_sdk_auth_state() {
+            required.max(SDK_AUTH_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.engines.has_sdk_registration_state() {
+            required.max(SDK_ACCEPTED_SECRET_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.engines.has_sdk_batch_registration_state()
+            || self.auth.has_sdk_credential_state()
+        {
+            required.max(SDK_BATCH_CREDENTIAL_SECRET_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.auth.has_auth_mount_options_state() {
+            required.max(AUTH_MOUNT_OPTIONS_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.has_namespace_deletion_state() {
+            required.max(NAMESPACE_DELETION_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.auth.has_sdk_auth_retirement_state() {
+            required.max(SDK_AUTH_RETIREMENT_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.auth.has_namespace_sdk_cleanup_state()
+            || self
+                .namespaces
+                .deletions
+                .as_ref()
+                .is_some_and(|ledger| ledger.sdk_cleanup().is_some())
+        {
+            required.max(NAMESPACE_SDK_CLEANUP_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.engines.has_kv_mount_configuration() {
+            required.max(KV_MOUNT_CONFIGURATION_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.has_mount_listing_visibility_state() {
+            required.max(MOUNT_LISTING_VISIBILITY_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.auth.has_sdk_namespace_custody() {
+            required.max(SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.engines.has_ssh_ca_state() {
+            required.max(SSH_CA_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.engines.has_mldsa_import_state() {
+            required.max(MLDSA_IMPORT_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.engines.has_standard_asymmetric_import_state() {
+            required.max(STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.auth.has_control_group_state() {
+            required.max(CONTROL_GROUP_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.engines.has_symmetric_backup_state() {
+            required.max(SYMMETRIC_BACKUP_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.engines.has_kv2_lossless_state() {
+            required.max(KV2_LOSSLESS_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.namespaces.workflows.has_profiles() {
+            required.max(WORKFLOW_PROFILE_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.auth.has_fractional_control_group_state() {
+            required.max(CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.global_lossless_json_format.is_some()
+            || self.has_global_lossless_json_state()
+        {
+            required.max(GLOBAL_LOSSLESS_JSON_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.namespaces.workflows.has_dynamic_profiles() {
+            required.max(WORKFLOW_DYNAMIC_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.engines.has_transit_rotation_precision_state() {
+            required.max(TRANSIT_ROTATION_PRECISION_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.namespaces.workflows.has_expression_profiles() {
+            required.max(WORKFLOW_EXPRESSION_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.auth.has_sdk_advanced_state() {
+            required.max(SDK_ADVANCED_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.engines.has_transit_derived_ed_state() {
+            required.max(TRANSIT_DERIVED_ED_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.namespaces.workflows.has_request_credentials() {
+            required.max(WORKFLOW_CREDENTIAL_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.engines.has_transit_cache_state() {
+            required.max(TRANSIT_CACHE_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.auth.has_identity_mfa_state() {
+            required.max(IDENTITY_MFA_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.namespaces.workflows.has_logical_input_profiles()
+            || self.auth.has_control_group_logical_data()
+        {
+            required.max(WORKFLOW_INPUT_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.auth.has_userpass_issuance_state() {
+            required.max(USERPASS_ISSUANCE_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.auth.has_rate_limit_quota_state() {
+            required.max(RATE_LIMIT_QUOTA_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.auth.has_extended_rate_limit_quota_state() {
+            required.max(EXTENDED_RATE_LIMIT_QUOTA_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.namespaces.has_native_flat_retirement_state() {
+            required.max(NATIVE_FLAT_NAMESPACE_RETIREMENT_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.namespaces.has_native_plain_tree_state() {
+            required.max(NATIVE_PLAIN_NAMESPACE_TREE_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.auth.has_scoped_rate_limit_quota_state() {
+            required.max(SCOPED_RATE_LIMIT_QUOTA_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.auth.has_namespace_factory_state() {
+            required.max(NAMESPACE_FACTORY_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.auth.has_policy_expiration_state() {
+            required.max(POLICY_EXPIRATION_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.auth.has_cluster_local_approle_state() {
+            required.max(APPROLE_LOCAL_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.auth.has_security_contract_state() {
+            required.max(AUTH_SECURITY_CONTRACT_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.auth.has_approle_no_default_policy() {
+            required.max(APPROLE_NO_DEFAULT_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.engines.has_pki_batch_lease_state() {
+            required.max(PKI_BATCH_LEASE_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.auth.has_jwt_policy_state() {
+            required.max(JWT_POLICY_STATE_SCHEMA)
+        } else {
+            required
+        };
+        // Child resources in the ordinary owner format do not imply V6
+        // storage. The actual V6 planners raise their private candidate's
+        // reader floor when they publish that representation; self.schema
+        // below preserves the floor after the publication has occurred.
+        self.schema.max(required)
+    }
+
+    pub(super) fn validate_publication_schema(
+        &self,
+        previous: Option<&State>,
+    ) -> Result<(), Response> {
+        if self.schema < JWT_POLICY_STATE_SCHEMA
+            && (self.auth.has_jwt_policy_state()
+                || previous.is_some_and(|old| old.schema >= JWT_POLICY_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "JWT role policy semantics require schema 147 and cannot decrease",
+            ));
+        }
+        self.engines
+            .validate_kv_mount_configuration()
+            .map_err(Response::from_engine_error)?;
+        if self.schema < KV_MOUNT_CONFIGURATION_STATE_SCHEMA
+            && (self.engines.has_kv_mount_configuration()
+                || previous.is_some_and(|old| old.schema >= KV_MOUNT_CONFIGURATION_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "KV mount configuration requires schema 146 and cannot decrease",
+            ));
+        }
+        self.validate_global_lossless_json_state(previous)?;
+        self.validate_namespace_factory_state()?;
+        if self.schema < NAMESPACE_FACTORY_STATE_SCHEMA
+            && (self.auth.has_namespace_factory_state()
+                || previous.is_some_and(|state| state.schema >= NAMESPACE_FACTORY_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "namespace factory provenance requires schema 144 and cannot decrease",
+            ));
+        }
+        self.auth
+            .validate_policy_expiration_state()
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < POLICY_EXPIRATION_STATE_SCHEMA
+            && (self.auth.has_policy_expiration_state()
+                || previous.is_some_and(|state| state.schema >= POLICY_EXPIRATION_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "policy expiration requires schema 143 and cannot decrease",
+            ));
+        }
+        self.auth
+            .validate_cluster_local_approle_state(&self.cluster_id)
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < APPROLE_LOCAL_STATE_SCHEMA
+            && (self.auth.has_cluster_local_approle_state()
+                || previous.is_some_and(|state| state.schema >= APPROLE_LOCAL_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "cluster-local AppRole SecretIDs require schema 142 and cannot decrease",
+            ));
+        }
+        self.auth
+            .validate_security_contract_state()
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < AUTH_SECURITY_CONTRACT_STATE_SCHEMA
+            && (self.auth.has_security_contract_state()
+                || previous
+                    .is_some_and(|state| state.schema >= AUTH_SECURITY_CONTRACT_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "Auth security contracts require schema 141 and cannot decrease",
+            ));
+        }
+        self.validate_native_flat_retirement_state(previous)?;
+        if self.schema < NATIVE_PLAIN_NAMESPACE_STATE_SCHEMA
+            && previous.is_some_and(|state| state.schema >= NATIVE_PLAIN_NAMESPACE_STATE_SCHEMA)
+        {
+            return Err(Response::error(
+                503,
+                "native child namespace reader floor cannot decrease",
+            ));
+        }
+        if self.schema < PKI_BATCH_LEASE_STATE_SCHEMA
+            && (self.engines.has_pki_batch_lease_state()
+                || previous.is_some_and(|state| state.schema >= PKI_BATCH_LEASE_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "PKI certificate and batch lease separation requires schema 136",
+            ));
+        }
+        self.auth
+            .validate_approle_no_default_policy()
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < APPROLE_NO_DEFAULT_STATE_SCHEMA
+            && (self.auth.has_approle_no_default_policy()
+                || previous.is_some_and(|state| state.schema >= APPROLE_NO_DEFAULT_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "AppRole default-policy semantics require schema 135",
+            ));
+        }
+        self.auth
+            .validate_rate_limit_quota_state(previous.map(|s| &*s.auth))
+            .map_err(|e| Response::error(503, &e.message))?;
+        self.validate_rate_limit_quota_catalog()?;
+        if self.schema < SCOPED_RATE_LIMIT_QUOTA_STATE_SCHEMA
+            && (self.auth.has_scoped_rate_limit_quota_state()
+                || previous
+                    .is_some_and(|state| state.schema >= SCOPED_RATE_LIMIT_QUOTA_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "scoped quota semantics require schema 139",
+            ));
+        }
+        if self.schema < EXTENDED_RATE_LIMIT_QUOTA_STATE_SCHEMA
+            && (self.auth.has_extended_rate_limit_quota_state()
+                || previous
+                    .is_some_and(|state| state.schema >= EXTENDED_RATE_LIMIT_QUOTA_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "extended rate limit quota requires schema 137",
+            ));
+        }
+        if self.schema < RATE_LIMIT_QUOTA_STATE_SCHEMA
+            && (self.auth.has_rate_limit_quota_state()
+                || previous.is_some_and(|s| s.schema >= RATE_LIMIT_QUOTA_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "native rate limit quota requires schema 134",
+            ));
+        }
+        self.auth
+            .validate_userpass_issuance_state(previous.map(|state| &*state.auth))
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < USERPASS_ISSUANCE_STATE_SCHEMA
+            && (self.auth.has_userpass_issuance_state()
+                || previous.is_some_and(|state| state.schema >= USERPASS_ISSUANCE_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "native Userpass issuance requires schema 132",
+            ));
+        }
+        self.engines
+            .validate_transit_cache_state(previous.map(|state| &*state.engines))
+            .map_err(Response::from_engine_error)?;
+        if self.schema < TRANSIT_CACHE_STATE_SCHEMA
+            && (self.engines.has_transit_cache_state()
+                || previous.is_some_and(|state| state.schema >= TRANSIT_CACHE_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "transit cache configuration requires schema 130",
+            ));
+        }
+        self.auth
+            .validate_identity_mfa_state(previous.map(|state| &*state.auth))
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < IDENTITY_MFA_STATE_SCHEMA
+            && (self.auth.has_identity_mfa_state()
+                || previous.is_some_and(|state| state.schema >= IDENTITY_MFA_STATE_SCHEMA))
+        {
+            return Err(Response::error(503, "Identity MFA requires schema 129"));
+        }
+        self.auth
+            .validate_sdk_advanced_state(previous.map(|state| &*state.auth))
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < SDK_ADVANCED_STATE_SCHEMA
+            && (self.auth.has_sdk_advanced_state()
+                || previous.is_some_and(|state| state.schema >= SDK_ADVANCED_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "SDK advanced custody requires schema 126",
+            ));
+        }
+        self.engines
+            .validate_transit_derived_ed_state(previous.map(|state| &*state.engines))
+            .map_err(Response::from_engine_error)?;
+        if self.schema < TRANSIT_DERIVED_ED_STATE_SCHEMA
+            && (self.engines.has_transit_derived_ed_state()
+                || previous.is_some_and(|state| state.schema >= TRANSIT_DERIVED_ED_STATE_SCHEMA))
+        {
+            return Err(Response::error(503, "derived Ed25519 requires schema 127"));
+        }
+        self.engines
+            .validate_transit_rotation_precision_state(previous.map(|state| &*state.engines))
+            .map_err(Response::from_engine_error)?;
+        if self.schema < TRANSIT_ROTATION_PRECISION_STATE_SCHEMA
+            && (self.engines.has_transit_rotation_precision_state()
+                || previous
+                    .is_some_and(|state| state.schema >= TRANSIT_ROTATION_PRECISION_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "precise transit rotation requires schema 124",
+            ));
+        }
+        self.namespaces.workflows.validate()?;
+        if self.schema < WORKFLOW_INPUT_STATE_SCHEMA
+            && (self.namespaces.workflows.has_logical_input_profiles()
+                || self.auth.has_control_group_logical_data()
+                || previous.is_some_and(|state| state.schema >= WORKFLOW_INPUT_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "workflow logical input requires schema 131",
+            ));
+        }
+        if self.schema < WORKFLOW_CREDENTIAL_STATE_SCHEMA
+            && (self.namespaces.workflows.has_request_credentials()
+                || previous.is_some_and(|state| state.schema >= WORKFLOW_CREDENTIAL_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "workflow request credentials require schema 128",
+            ));
+        }
+        if self.schema < WORKFLOW_EXPRESSION_STATE_SCHEMA
+            && (self.namespaces.workflows.has_expression_profiles()
+                || previous.is_some_and(|state| state.schema >= WORKFLOW_EXPRESSION_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "workflow expressions require schema 125",
+            ));
+        }
+        if self.schema < WORKFLOW_DYNAMIC_STATE_SCHEMA
+            && (self.namespaces.workflows.has_dynamic_profiles()
+                || previous.is_some_and(|state| state.schema >= WORKFLOW_DYNAMIC_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "dynamic workflow sources require schema 123",
+            ));
+        }
+        if self.schema < CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
+            && (self.auth.has_fractional_control_group_state()
+                || previous
+                    .is_some_and(|state| state.schema >= CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "fractional control groups require schema 122",
+            ));
+        }
+        if self.schema < WORKFLOW_PROFILE_STATE_SCHEMA
+            && (self.namespaces.workflows.has_profiles()
+                || previous.is_some_and(|state| state.schema >= WORKFLOW_PROFILE_STATE_SCHEMA))
+        {
+            return Err(Response::error(503, "workflow profiles require schema 121"));
+        }
+        self.auth
+            .validate_control_group_state()
+            .map_err(|_| Response::error(503, "invalid control group owner"))?;
+        self.validate_control_group_transports()?;
+        self.auth
+            .validate_control_group_clock_floor(previous.map(|state| &*state.auth))
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < SYMMETRIC_BACKUP_STATE_SCHEMA
+            && (self.engines.has_symmetric_backup_state()
+                || previous.is_some_and(|s| s.schema >= SYMMETRIC_BACKUP_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "symmetric imported derivation and backups require schema 119",
+            ));
+        }
+        if self.schema < CONTROL_GROUP_STATE_SCHEMA
+            && (self.auth.has_control_group_state()
+                || previous.is_some_and(|s| s.schema >= CONTROL_GROUP_STATE_SCHEMA))
+        {
+            return Err(Response::error(503, "Control Groups require schema 118"));
+        }
+        self.engines
+            .validate_kv2_lossless_state(previous.map(|state| &*state.engines))
+            .map_err(Response::from_engine_error)?;
+        if self.schema < KV2_LOSSLESS_STATE_SCHEMA
+            && (self.engines.has_kv2_lossless_state()
+                || previous.is_some_and(|state| state.schema >= KV2_LOSSLESS_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "KV2 lossless custody requires schema 120",
+            ));
+        }
+        namespace_diagnostic!(
+            "publication.guard.validate.00",
+            self.namespace_leases.validate()
+        )?;
+        namespace_diagnostic!(
+            "publication.guard.validate_transit_byok_state.01",
+            self.engines
+                .validate_transit_byok_state()
+                .map_err(|_| Response::error(503, "invalid Transit imported key state"))
+        )?;
+        if self.schema < STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA
+            && (self.engines.has_standard_asymmetric_import_state()
+                || previous
+                    .is_some_and(|state| state.schema >= STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "standard asymmetric imports require schema 117",
+            ));
+        }
+        if self.schema < MLDSA_IMPORT_STATE_SCHEMA
+            && (self.engines.has_mldsa_import_state()
+                || previous.is_some_and(|state| state.schema >= MLDSA_IMPORT_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.00", 503);
+            return Err(Response::error(503, "ML-DSA imports require schema 116"));
+        }
+        if self.schema < MOUNT_LISTING_VISIBILITY_STATE_SCHEMA
+            && (self.has_mount_listing_visibility_state()
+                || previous
+                    .is_some_and(|state| state.schema >= MOUNT_LISTING_VISIBILITY_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.01", 503);
+            return Err(Response::error(
+                503,
+                "mount listing visibility requires schema 111",
+            ));
+        }
+        namespace_diagnostic!(
+            "publication.guard.validate_ssh_ca_format.02",
+            self.engines
+                .validate_ssh_ca_format()
+                .map_err(Response::from_engine_error)
+        )?;
+        if self.engines.has_ssh_ca_state() && self.schema < SSH_CA_STATE_SCHEMA
+            || previous.is_some_and(|state| {
+                state.schema == SSH_CA_STATE_SCHEMA || state.engines.has_ssh_ca_state()
+            }) && (self.schema < SSH_CA_STATE_SCHEMA || !self.engines.has_ssh_ca_state())
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.02", 503);
+            return Err(Response::error(503, "SSH CA custody cannot regress"));
+        }
+        let protected =
+            namespace_diagnostic!("publication.protected.initial", self.protected_state())?;
+        if self.schema < SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA
+            && (protected.auth.has_sdk_namespace_custody()
+                || previous
+                    .is_some_and(|old| old.schema >= SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.03", 503);
+            return Err(Response::error(
+                503,
+                "SDK Auth namespace custody requires schema 114",
+            ));
+        }
+        if let Some(previous) = previous {
+            namespace_diagnostic!(
+                "publication.sdk_successor",
+                self.auth
+                    .validate_sdk_namespace_custody_successor(&previous.auth)
+                    .map_err(|e| Response::error(e.status, &e.message))
+            )?;
+            if self.namespace_protected.is_none()
+                && self.namespace_leases.is_empty()
+                && !namespace_diagnostic!(
+                    "publication.raw_digest",
+                    self.auth
+                        .sdk_namespace_custody_raw_publication_unchanged(&previous.auth)
+                        .map_err(|e| Response::error(e.status, &e.message))
+                )?
+            {
+                // This raw custody change is already inadmissible. Classify a
+                // torn SDK registration/clock using its existing read-only
+                // validator before reporting the remaining typed-proof failure.
+                namespace_diagnostic!(
+                    "publication.sdk_raw_classification",
+                    self.engines
+                        .validate_sdk_lease_clock(Some(&*previous.engines))
+                        .map_err(|error| Response::error(503, &error.message))
+                )?;
+                return namespace_diagnostic!(
+                    "publication.sdk_raw_change",
+                    Err(Response::error(
+                        503,
+                        "SDK namespace ciphertext requires actual typed publication proof",
+                    ))
+                );
+            }
+        }
+        namespace_diagnostic!(
+            "publication.guard.validate_ssh_ca_format.03",
+            protected
+                .engines
+                .validate_ssh_ca_format()
+                .map_err(Response::from_engine_error)
+        )?;
+        if protected.engines.has_ssh_ca_state() != self.engines.has_ssh_ca_state() {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.04", 503);
+            return Err(Response::error(503, "SSH CA owner marker disagrees"));
+        }
+        namespace_diagnostic!(
+            "publication.guard.validate_raw_wrapped_reply_state.04",
+            protected
+                .auth
+                .validate_raw_wrapped_reply_state()
+                .map_err(|_| Response::error(503, "invalid original wrapped reply custody"))
+        )?;
+        if self.schema < KV_MOUNT_CONFIGURATION_STATE_SCHEMA
+            && protected.auth.has_static_kv1_wrapped_reply_state()
+        {
+            return Err(Response::error(
+                503,
+                "signed static KV1 reply custody requires schema 146",
+            ));
+        }
+        if self.schema < GENERAL_WRAPPED_REPLY_STATE_SCHEMA
+            && (protected.auth.has_general_wrapped_reply_state()
+                || previous.is_some_and(|state| state.schema >= GENERAL_WRAPPED_REPLY_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.05", 503);
+            return Err(Response::error(
+                503,
+                "general reply custody requires schema 113",
+            ));
+        }
+        if self.schema < RAW_PKI_HTTP_REPLY_STATE_SCHEMA
+            && (protected.auth.has_pki_raw_http_reply_state()
+                || previous.is_some_and(|state| state.schema >= RAW_PKI_HTTP_REPLY_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.06", 503);
+            return Err(Response::error(
+                503,
+                "PKI raw HTTP custody requires schema 112",
+            ));
+        }
+        if self.schema < RAW_WRAPPED_REPLY_STATE_SCHEMA
+            && (protected.auth.has_raw_wrapped_reply_state()
+                || previous.is_some_and(|state| state.schema >= RAW_WRAPPED_REPLY_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.07", 503);
+            return Err(Response::error(
+                503,
+                "original wrapped reply custody requires schema 110",
+            ));
+        }
+        if let Some(previous) = previous {
+            namespace_diagnostic!(
+                "publication.nested.validate_raw_wrapped_reply_successor",
+                protected
+                    .auth
+                    .validate_raw_wrapped_reply_successor(
+                        &namespace_diagnostic!(
+                            "publication.protected.raw.previous",
+                            previous.protected_state()
+                        )?
+                        .auth
+                    )
+                    .map_err(|_| {
+                        Response::error(503, "original wrapped reply custody cannot regress")
+                    })
+            )?;
+        }
+        if self.schema < PKI_RSA8192_STATE_SCHEMA
+            && (self.engines.has_pki_rsa8192_state()
+                || previous.is_some_and(|state| state.schema >= PKI_RSA8192_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.08", 503);
+            return Err(Response::error(
+                503,
+                "PKI RSA8192 ownership requires schema 108",
+            ));
+        }
+        if self.schema < PKI_ORDINARY_REVOCATION_STATE_SCHEMA
+            && (self.engines.has_ordinary_pki_revocation_state()
+                || previous
+                    .is_some_and(|state| state.schema >= PKI_ORDINARY_REVOCATION_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.09", 503);
+            return Err(Response::error(
+                503,
+                "PKI ordinary revocation ownership requires schema 105",
+            ));
+        }
+        if self.schema < PKI_KEY_POLICY_STATE_SCHEMA
+            && (self.engines.has_pki_key_policy_state()
+                || previous.is_some_and(|state| state.schema >= PKI_KEY_POLICY_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.10", 503);
+            return Err(Response::error(
+                503,
+                "PKI subject key policy requires schema 104",
+            ));
+        }
+        namespace_diagnostic!(
+            "publication.guard.validate_auth_mount_options_state.05",
+            self.auth
+                .validate_auth_mount_options_state()
+                .map_err(|e| Response::error(e.status, &e.message))
+        )?;
+        if self.schema < AUTH_MOUNT_OPTIONS_STATE_SCHEMA
+            && (self.auth.has_auth_mount_options_state()
+                || previous.is_some_and(|state| state.schema >= AUTH_MOUNT_OPTIONS_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.11", 503);
+            return Err(Response::error(
+                503,
+                "auth mount options require schema 103",
+            ));
+        }
+        namespace_diagnostic!(
+            "publication.guard.validate_namespace_batch_state.06",
+            self.validate_namespace_batch_state()
+        )?;
+        namespace_diagnostic!(
+            "publication.guard.validate_namespace_deletion_state.07",
+            self.validate_namespace_deletion_state()
+        )?;
+        namespace_diagnostic!(
+            "publication.guard.validate_acme_state.08",
+            self.engines
+                .validate_acme_state(&self.cluster_id, |ns| self.namespaces.incarnation(ns))
+                .map_err(|error| Response::error(503, &error.message))
+        )?;
+        if self.schema < PKI_ACME_ACCOUNT_STATE_SCHEMA && self.engines.has_pki_acme_state() {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.12", 503);
+            return Err(Response::error(
+                503,
+                "ACME durable account ownership requires schema 99",
+            ));
+        }
+        namespace_diagnostic!(
+            "publication.guard.validate_sdk_credential_state.09",
+            self.auth
+                .validate_sdk_credential_state(None, &self.cluster_id, |ns| {
+                    self.namespaces.incarnation(ns)
+                })
+                .map_err(|e| Response::error(e.status, &e.message))
+        )?;
+        namespace_diagnostic!(
+            "publication.guard.validate_sdk_auth_state.10",
+            self.auth
+                .validate_sdk_auth_state()
+                .map_err(|e| Response::error(e.status, &e.message))
+        )?;
+        namespace_diagnostic!(
+            "publication.guard.validate_sdk_auth_clock.11",
+            self.auth
+                .validate_sdk_auth_clock(previous.map(|state| &*state.auth))
+                .map_err(|e| Response::error(e.status, &e.message))
+        )?;
+        namespace_diagnostic!(
+            "publication.guard.validate_sdk_credential_state.12",
+            self.auth
+                .validate_sdk_credential_state(
+                    previous.map(|state| &*state.auth),
+                    &self.cluster_id,
+                    |ns| self.namespaces.incarnation(ns),
+                )
+                .map_err(|e| Response::error(e.status, &e.message))
+        )?;
+        namespace_diagnostic!(
+            "publication.guard.validate_sdk_auth_retirement_state.13",
+            self.auth
+                .validate_sdk_auth_retirement_state(
+                    previous.map(|state| &*state.auth),
+                    &self.cluster_id,
+                    |ns| self.namespaces.incarnation(ns),
+                )
+                .map_err(|e| Response::error(e.status, &e.message))
+        )?;
+        if self.schema < SDK_AUTH_RETIREMENT_STATE_SCHEMA
+            && (self.auth.has_sdk_auth_retirement_state()
+                || previous.is_some_and(|old| old.auth.has_sdk_auth_retirement_state()))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.13", 503);
+            return Err(Response::error(
+                503,
+                "SDK Auth retirement ownership requires format 107",
+            ));
+        }
+        let floor = previous.and_then(|state| state.auth.sdk_auth_epoch_floor());
+        namespace_diagnostic!(
+            "publication.guard.validate_sdk_auth_epoch_floor.14",
+            self.auth
+                .validate_sdk_auth_epoch_floor(floor.as_ref())
+                .map_err(|e| Response::error(e.status, &e.message))
+        )?;
+        if self.schema < SDK_AUTH_STATE_SCHEMA
+            && (self.auth.has_sdk_auth_state()
+                || previous.is_some_and(|state| state.schema >= SDK_AUTH_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.14", 503);
+            return Err(Response::error(
+                503,
+                "SDK Auth ownership requires format 100",
+            ));
+        }
+
+        namespace_diagnostic!(
+            "publication.guard.validate_public_origin_state.15",
+            namespace_diagnostic!(
+                "publication.protected.public_origin",
+                self.protected_state()
+            )?
+            .auth
+            .validate_public_origin_state()
+            .map_err(|_| Response::error(503, "invalid public origin protected owner"))
+        )?;
+        if let Some(previous) = previous {
+            namespace_diagnostic!(
+                "publication.nested.validate_namespace_deletion_successor",
+                self.auth
+                    .validate_namespace_deletion_successor(&previous.auth, &self.cluster_id)
+                    .map_err(|e| Response::error(e.status, &e.message))
+            )?;
+            if self.schema < NAMESPACE_DELETION_STATE_SCHEMA
+                && previous.has_namespace_deletion_state()
+            {
+                #[cfg(test)]
+                crate::service::namespace_diagnostics::record_status("publication.reject.15", 503);
+                return Err(Response::error(
+                    503,
+                    "namespace deletion writer floor cannot decrease",
+                ));
+            }
+            namespace_diagnostic!(
+                "publication.nested.validate_namespace_batch_successor",
+                namespace_diagnostic!(
+                    "publication.protected.batch.current",
+                    self.protected_state()
+                )?
+                .auth
+                .validate_namespace_batch_successor(
+                    &namespace_diagnostic!(
+                        "publication.protected.batch.previous",
+                        previous.protected_state()
+                    )?
+                    .auth
+                )
+                .map_err(|error| Response::error(error.status, &error.message))
+            )?;
+            namespace_diagnostic!(
+                "publication.nested.validate_public_origin_successor",
+                namespace_diagnostic!(
+                    "publication.protected.origin.current",
+                    self.protected_state()
+                )?
+                .auth
+                .validate_public_origin_successor(
+                    &namespace_diagnostic!(
+                        "publication.protected.origin.previous",
+                        previous.protected_state()
+                    )?
+                    .auth
+                )
+                .map_err(|_| Response::error(503, "public origin floor cannot retire"))
+            )?;
+            namespace_diagnostic!(
+                "publication.nested.validate_custody_successor",
+                namespace_diagnostic!(
+                    "publication.protected.custody.current",
+                    self.protected_state()
+                )?
+                .namespaces
+                .validate_custody_successor(
+                    &namespace_diagnostic!(
+                        "publication.protected.custody.previous",
+                        previous.protected_state()
+                    )?
+                    .namespaces
+                )
+            )?;
+        }
+
+        if !supported_reader_schema(self.schema) {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.16", 503);
+            return Err(Response::error(
+                503,
+                "unsupported or downgraded identity state schema",
+            ));
+        }
+        namespace_diagnostic!(
+            "publication.guard.validate_acme_successor.16",
+            self.engines
+                .validate_acme_successor(previous.map(|state| &*state.engines), |namespace| {
+                    previous.is_some_and(|old| {
+                        self.namespaces
+                            .retires_namespace_incarnation(&old.namespaces, namespace)
+                    })
+                })
+                .map_err(|error| Response::error(503, &error.message))
+        )?;
+        if self.schema < PKI_ACME_ACCOUNT_STATE_SCHEMA
+            && (self.engines.has_pki_acme_state()
+                || previous.is_some_and(|s| s.schema >= PKI_ACME_ACCOUNT_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.17", 503);
+            return Err(Response::error(
+                503,
+                "ACME durable account ownership requires schema 99",
+            ));
+        }
+        namespace_diagnostic!(
+            "publication.guard.validate_sdk_registration_namespace.17",
+            self.engines
+                .validate_sdk_registration_namespace(|namespace| self
+                    .namespaces
+                    .incarnation(namespace))
+                .map_err(|error| Response::error(503, &error.message))
+        )?;
+        namespace_diagnostic!(
+            "publication.guard.validate_sdk_lease_clock.18",
+            self.engines
+                .validate_sdk_lease_clock(previous.map(|state| &*state.engines))
+                .map_err(|error| Response::error(503, &error.message))
+        )?;
+        namespace_diagnostic!(
+            "publication.guard.validate_pki_revocation_clock.19",
+            self.engines
+                .validate_pki_revocation_clock(previous.map(|state| &*state.engines))
+                .map_err(|error| Response::error(503, &error.message))
+        )?;
+        namespace_diagnostic!(
+            "publication.guard.validate_kubernetes_artifact_clock.20",
+            self.engines
+                .validate_kubernetes_artifact_clock(previous.map(|state| &*state.engines))
+                .map_err(|error| Response::error(503, &error.message))
+        )?;
+        namespace_diagnostic!(
+            "publication.guard.validate_token_api_clock_floor.21",
+            self.auth
+                .validate_token_api_clock_floor(previous.map(|state| &*state.auth))
+                .map_err(|error| Response::error(503, &error.message))
+        )?;
+        if self.schema < NAMESPACE_BATCH_STATE_SCHEMA
+            && (self.has_namespace_batch_state()
+                || previous.is_some_and(|old| old.schema >= NAMESPACE_BATCH_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.18", 503);
+            return Err(Response::error(
+                503,
+                "namespace batch lifecycle requires schema 91",
+            ));
+        }
+        if self.schema < TOKEN_API_PRECISION_STATE_SCHEMA
+            && (self.has_token_api_precision_state()
+                || previous.is_some_and(|state| {
+                    state.has_token_api_precision_state()
+                        || state.schema >= TOKEN_API_PRECISION_STATE_SCHEMA
+                }))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.19", 503);
+            return Err(Response::error(
+                503,
+                "Token API precise lease publication requires schema 82",
+            ));
+        }
+        if self.schema < KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
+            && (self.engines.has_kubernetes_opaque_artifact_state()
+                || previous
+                    .is_some_and(|state| state.schema >= KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.20", 503);
+            return Err(Response::error(
+                503,
+                "opaque Kubernetes artifact ownership requires schema 87",
+            ));
+        }
+        if self.schema < PKI_URLS_STATE_SCHEMA
+            && (self.engines.has_pki_url_state()
+                || previous.is_some_and(|state| state.schema >= PKI_URLS_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.21", 503);
+            return Err(Response::error(503, "PKI URL ownership requires schema 97"));
+        }
+        if self.schema < EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
+            && (self.engines.has_full_dn_crl_state()
+                || previous
+                    .is_some_and(|state| state.schema >= EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.22", 503);
+            return Err(Response::error(
+                503,
+                "external full-DN CRL semantics require schema 98",
+            ));
+        }
+        if self.schema < EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
+            && (self.engines.has_external_pki_signer_history()
+                || previous
+                    .is_some_and(|state| state.schema >= EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.23", 503);
+            return Err(Response::error(
+                503,
+                "external PKI signer history requires schema 94",
+            ));
+        }
+        if self.schema < PKI_ROLE_NAMES_STATE_SCHEMA
+            && (self.engines.has_pki_role_names_state()
+                || previous.is_some_and(|state| state.schema >= PKI_ROLE_NAMES_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.24", 503);
+            return Err(Response::error(
+                503,
+                "PKI role name ownership requires schema 93",
+            ));
+        }
+        if self.schema < SDK_BATCH_CREDENTIAL_SECRET_STATE_SCHEMA
+            && (self.engines.has_sdk_batch_registration_state()
+                || self.auth.has_sdk_credential_state()
+                || previous
+                    .is_some_and(|state| state.schema >= SDK_BATCH_CREDENTIAL_SECRET_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.25", 503);
+            return Err(Response::error(
+                503,
+                "batch or credential SDK Secret ownership requires schema 102",
+            ));
+        }
+        if self.schema < SDK_ACCEPTED_SECRET_STATE_SCHEMA
+            && (self.engines.has_sdk_registration_state()
+                || previous.is_some_and(|state| state.schema >= SDK_ACCEPTED_SECRET_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.26", 503);
+            return Err(Response::error(
+                503,
+                "accepted SDK Secret registration requires schema 101",
+            ));
+        }
+        if self.schema < SDK_SECRET_LEASE_STATE_SCHEMA
+            && (self.engines.has_sdk_lease_state()
+                || previous.is_some_and(|state| state.schema >= SDK_SECRET_LEASE_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.27", 503);
+            return Err(Response::error(
+                503,
+                "SDK secret lease ownership requires schema 96",
+            ));
+        }
+        if self.schema < SDK_RESPONSE_HEADERS_STATE_SCHEMA
+            && (self.engines.has_sdk_response_header_state()
+                || previous.is_some_and(|state| state.schema >= SDK_RESPONSE_HEADERS_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.28", 503);
+            return Err(Response::error(
+                503,
+                "SDK response header ownership requires schema 95",
+            ));
+        }
+        if self.schema < SDK_STORAGE_STATE_SCHEMA
+            && (self.engines.has_sdk_state()
+                || previous.is_some_and(|state| state.schema >= SDK_STORAGE_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.29", 503);
+            return Err(Response::error(
+                503,
+                "SDK catalog and storage ownership requires schema 92",
+            ));
+        }
+        if self.schema < PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
+            && (self.engines.has_pki_signed_role_time_state()
+                || previous.is_some_and(|state| state.schema >= PKI_SIGNED_ROLE_TIME_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.30", 503);
+            return Err(Response::error(
+                503,
+                "PKI signed role time ownership requires schema 90",
+            ));
+        }
+        if self.schema < PKI_ROLE_TIME_STATE_SCHEMA
+            && (self.engines.has_pki_role_time_state()
+                || previous.is_some_and(|state| state.schema >= PKI_ROLE_TIME_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.31", 503);
+            return Err(Response::error(
+                503,
+                "PKI role time ownership requires schema 89",
+            ));
+        }
+        if self.schema < PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+            && (self.engines.has_pki_role_leaf_profile_state()
+                || previous.is_some_and(|state| state.schema >= PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.32", 503);
+            return Err(Response::error(
+                503,
+                "PKI role leaf profiles require schema 88",
+            ));
+        }
+        if self.schema < PKI_ROLE_WILDCARD_STATE_SCHEMA
+            && (self.engines.has_pki_role_wildcard_state()
+                || previous.is_some_and(|state| state.schema >= PKI_ROLE_WILDCARD_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.33", 503);
+            return Err(Response::error(
+                503,
+                "PKI wildcard ownership requires schema 85",
+            ));
+        }
+        if self.schema < PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
+            && (self.engines.has_pki_role_bare_domain_state()
+                || previous.is_some_and(|state| state.schema >= PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.34", 503);
+            return Err(Response::error(
+                503,
+                "PKI base-domain ownership requires schema 84",
+            ));
+        }
+        if self.schema < PKI_ROLE_ANY_NAME_STATE_SCHEMA
+            && (self.engines.has_pki_role_any_name_state()
+                || previous.is_some_and(|state| state.schema >= PKI_ROLE_ANY_NAME_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.35", 503);
+            return Err(Response::error(
+                503,
+                "PKI allow_any_name ownership requires schema 83",
+            ));
+        }
+        if self.schema < AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
+            && (self.auth.has_public_origin_state()
+                || previous.is_some_and(|state| state.schema >= AUTH_PUBLIC_ORIGIN_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.36", 503);
+            return Err(Response::error(
+                503,
+                "native public origin requires schema 86",
+            ));
+        }
+        if self.schema < NAMESPACE_CUSTODY_STATE_SCHEMA
+            && (self.namespaces.has_custody_state()
+                || self.engines.has_namespace_record_custody()
+                || previous.is_some_and(|state| state.schema >= NAMESPACE_CUSTODY_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.37", 503);
+            return Err(Response::error(
+                503,
+                "independent namespace custody requires schema 81",
+            ));
+        }
+        if self.schema < TOKEN_ROLE_STATE_SCHEMA
+            && (self.auth.has_token_api_schema80_state()
+                || previous.is_some_and(|state| state.schema >= TOKEN_ROLE_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.38", 503);
+            return Err(Response::error(
+                503,
+                "Token API role ownership requires schema 80",
+            ));
+        }
+        if self.schema < LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
+            && (self.engines.has_local_pki_intermediate_state()
+                || previous
+                    .is_some_and(|state| state.schema >= LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.39", 503);
+            return Err(Response::error(
+                503,
+                "local PKI intermediate ownership requires schema 79",
+            ));
+        }
+        if self.schema < LOCAL_PKI_CRL_STATE_SCHEMA
+            && (self.engines.has_local_pki_crl_state()
+                || previous.is_some_and(|state| state.schema >= LOCAL_PKI_CRL_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.40", 503);
+            return Err(Response::error(
+                503,
+                "local PKI CRL state requires schema 78",
+            ));
+        }
+        if self.schema < LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA
+            && (self.engines.has_local_pki_multi_issuer_state()
+                || previous
+                    .is_some_and(|state| state.schema >= LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.41", 503);
+            return Err(Response::error(
+                503,
+                "local PKI issuer ownership requires schema 77",
+            ));
+        }
+        if self.schema < LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA
+            && (self.engines.has_local_pki_root_fields_state()
+                || previous.is_some_and(|state| state.schema >= LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.42", 503);
+            return Err(Response::error(
+                503,
+                "local PKI root fields require schema 76",
+            ));
+        }
+        if self.schema < RECOVERY_CREDENTIAL_STATE_SCHEMA
+            && (self.auth.has_recovery_state()
+                || previous.is_some_and(|state| state.schema >= RECOVERY_CREDENTIAL_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.43", 503);
+            return Err(Response::error(
+                503,
+                "protected recovery credential requires schema 73",
+            ));
+        }
+        if self.schema < LOCAL_PKI_IDENTIFIER_STATE_SCHEMA
+            && (self.engines.has_local_pki_identifier_state()
+                || previous.is_some_and(|state| state.schema >= LOCAL_PKI_IDENTIFIER_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.44", 503);
+            return Err(Response::error(
+                503,
+                "local PKI identifiers require schema 75",
+            ));
+        }
+        if self.schema < INDEXED_RECOVERY_WIRE_STATE_SCHEMA
+            && (self.auth.has_indexed_recovery_wire()
+                || previous.is_some_and(|state| state.schema >= INDEXED_RECOVERY_WIRE_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.45", 503);
+            return Err(Response::error(
+                503,
+                "indexed recovery wire requires schema 74",
+            ));
+        }
+        namespace_diagnostic!(
+            "publication.guard.validate_recovery_credential.22",
+            self.auth
+                .validate_recovery_credential(&self.cluster_id)
+                .map_err(|_| Response::error(503, "invalid protected recovery credential"))
+        )?;
+        if let Some(previous) = previous {
+            namespace_diagnostic!(
+                "publication.nested.validate_recovery_publication",
+                self.auth
+                    .validate_recovery_publication(&previous.auth, &self.cluster_id)
+                    .map_err(|_| Response::error(503, "recovery authority publication rejected"))
+            )?;
+        }
+        if self.schema < LOCAL_TYPED_PKI_STATE_SCHEMA
+            && (self.engines.has_local_typed_pki_state()
+                || previous.is_some_and(|state| state.schema >= LOCAL_TYPED_PKI_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.46", 503);
+            return Err(Response::error(
+                503,
+                "typed local PKI keys require schema 72",
+            ));
+        }
+        if self.schema < PKI_ISSUER_PATH_STATE_SCHEMA
+            && (self.engines.has_issuer_path_pki_state()
+                || previous.is_some_and(|state| state.schema >= PKI_ISSUER_PATH_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.47", 503);
+            return Err(Response::error(
+                503,
+                "PKI issuer-path leases require schema 71",
+            ));
+        }
+        if self.schema < TRANSIT_BYOK_STATE_SCHEMA
+            && (self.engines.has_transit_byok_state()
+                || previous.is_some_and(|state| state.schema >= TRANSIT_BYOK_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.48", 503);
+            return Err(Response::error(
+                503,
+                "Transit imports and wrapping keys require schema 70",
+            ));
+        }
+        if self.schema < JWT_PEM_KEYSET_STATE_SCHEMA
+            && (self.auth.has_jwt_pem_keyset_state()
+                || previous.is_some_and(|state| state.schema >= JWT_PEM_KEYSET_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.49", 503);
+            return Err(Response::error(503, "JWT PEM keyset requires schema 69"));
+        }
+        if self.schema < JWT_USER_CLAIM_STATE_SCHEMA
+            && (self.auth.has_jwt_user_claim_state()
+                || previous.is_some_and(|state| state.schema >= JWT_USER_CLAIM_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.50", 503);
+            return Err(Response::error(
+                503,
+                "custom JWT identity claims require schema 68",
+            ));
+        }
+        if self.schema < TYPED_PKI_STATE_SCHEMA
+            && (self.engines.has_typed_external_pki_state()
+                || previous.is_some_and(|state| state.schema >= TYPED_PKI_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.51", 503);
+            return Err(Response::error(
+                503,
+                "typed external PKI public keys require schema 67",
+            ));
+        }
+        if self.schema < AAD_BOUND_STATE_SCHEMA
+            && (self.engines.has_aad_bound_convergent_state()
+                || previous.is_some_and(|state| state.schema >= AAD_BOUND_STATE_SCHEMA))
+        {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.52", 503);
+            return Err(Response::error(
+                503,
+                "AAD-bound convergent keys require schema 66",
+            ));
+        }
+        if previous.is_some_and(|state| {
+            !supported_reader_schema(state.schema) || self.schema < state.schema
+        }) {
+            #[cfg(test)]
+            crate::service::namespace_diagnostics::record_status("publication.reject.53", 503);
+            return Err(Response::error(
+                503,
+                "identity state schema cannot decrease",
+            ));
+        }
+        Ok(())
+    }
+
+    pub(super) fn validate_format(&self) -> Result<(), Response> {
+        if self.schema < JWT_POLICY_STATE_SCHEMA && self.auth.has_jwt_policy_state() {
+            return Err(Response::error(503, "JWT role policy semantics require schema 147"));
+        }
+        self.validate_global_lossless_json_state(None)?;
+        self.validate_native_flat_retirement_state(None)?;
+        if self.schema < PKI_BATCH_LEASE_STATE_SCHEMA && self.engines.has_pki_batch_lease_state() {
+            return Err(Response::error(
+                503,
+                "PKI certificate and batch lease separation requires schema 136",
+            ));
+        }
+        self.engines
+            .validate_transit_cache_state(None)
+            .map_err(Response::from_engine_error)?;
+        if self.schema < TRANSIT_CACHE_STATE_SCHEMA && self.engines.has_transit_cache_state()
+            || self.schema == TRANSIT_CACHE_STATE_SCHEMA && !self.engines.has_transit_cache_state()
+        {
+            return Err(Response::error(
+                503,
+                "transit cache reader floor or retired owner is missing",
+            ));
+        }
+        self.engines
+            .validate_kv2_lossless_state(None)
+            .map_err(Response::from_engine_error)?;
+        if self.schema < KV2_LOSSLESS_STATE_SCHEMA && self.engines.has_kv2_lossless_state()
+            || self.schema == KV2_LOSSLESS_STATE_SCHEMA
+                && !self.engines.has_kv2_lossless_state()
+                && self.global_lossless_json_format != Some(1)
+        {
+            return Err(Response::error(
+                503,
+                "KV2 lossless custody requires schema 120",
+            ));
+        }
+        if self.schema < SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA
+            && self.auth.has_sdk_namespace_custody()
+            || self.schema == SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA
+                && !self.auth.has_sdk_namespace_custody()
+        {
+            return Err(Response::error(
+                503,
+                "SDK Auth namespace custody requires format 114",
+            ));
+        }
+        self.validate_sdk_namespace_custody()?;
+        self.validate_mfa_namespace_custody()?;
+        self.engines
+            .validate_ssh_ca_format()
+            .map_err(Response::from_engine_error)?;
+        if self.schema < SSH_CA_STATE_SCHEMA && self.engines.has_ssh_ca_state()
+            || self.schema == SSH_CA_STATE_SCHEMA && !self.engines.has_ssh_ca_state()
+        {
+            return Err(Response::error(503, "SSH CA custody requires schema 115"));
+        }
+
+        self.engines
+            .validate_kv_mount_configuration()
+            .map_err(Response::from_engine_error)?;
+        if self.schema < KV_MOUNT_CONFIGURATION_STATE_SCHEMA
+            && self.engines.has_kv_mount_configuration()
+        {
+            return Err(Response::error(
+                503,
+                "KV mount configuration requires schema 146",
+            ));
+        }
+        if self.schema < MOUNT_LISTING_VISIBILITY_STATE_SCHEMA
+            && self.has_mount_listing_visibility_state()
+        {
+            return Err(Response::error(
+                503,
+                "mount listing visibility requires schema 111",
+            ));
+        }
+        self.auth
+            .validate_sdk_auth_retirement_state(None, &self.cluster_id, |ns| {
+                self.namespaces.incarnation(ns)
+            })
+            .map_err(|e| Response::error(e.status, &e.message))?;
+        if self.schema < SDK_AUTH_RETIREMENT_STATE_SCHEMA
+            && self.auth.has_sdk_auth_retirement_state()
+        {
+            return Err(Response::error(
+                503,
+                "SDK Auth retirement ownership requires format 107",
+            ));
+        }
+        self.auth
+            .validate_raw_wrapped_reply_state()
+            .map_err(|_| Response::error(503, "invalid original wrapped reply custody"))?;
+        if self.schema < KV_MOUNT_CONFIGURATION_STATE_SCHEMA
+            && self.auth.has_static_kv1_wrapped_reply_state()
+        {
+            return Err(Response::error(
+                503,
+                "signed static KV1 reply custody requires schema 146",
+            ));
+        }
+        if self.schema < GENERAL_WRAPPED_REPLY_STATE_SCHEMA
+            && self.auth.has_general_wrapped_reply_state()
+            || self.schema == GENERAL_WRAPPED_REPLY_STATE_SCHEMA
+                && !self.auth.has_general_wrapped_reply_state()
+        {
+            return Err(Response::error(
+                503,
+                "general reply custody requires schema 113",
+            ));
+        }
+        if self.schema < RAW_PKI_HTTP_REPLY_STATE_SCHEMA && self.auth.has_pki_raw_http_reply_state()
+            || self.schema == RAW_PKI_HTTP_REPLY_STATE_SCHEMA
+                && !self.auth.has_pki_raw_http_reply_state()
+        {
+            return Err(Response::error(
+                503,
+                "PKI raw HTTP custody requires schema 112",
+            ));
+        }
+        if self.schema < RAW_WRAPPED_REPLY_STATE_SCHEMA && self.auth.has_raw_wrapped_reply_state()
+            || self.schema == RAW_WRAPPED_REPLY_STATE_SCHEMA
+                && !self.auth.has_raw_wrapped_reply_state()
+        {
+            return Err(Response::error(
+                503,
+                "original wrapped reply custody requires schema 110",
+            ));
+        }
+        self.auth
+            .validate_auth_mount_options_state()
+            .map_err(|e| Response::error(e.status, &e.message))?;
+        if self.schema < AUTH_MOUNT_OPTIONS_STATE_SCHEMA && self.auth.has_auth_mount_options_state()
+        {
+            return Err(Response::error(
+                503,
+                "auth mount options require schema 103",
+            ));
+        }
+        self.validate_namespace_batch_state()?;
+        self.validate_namespace_deletion_state()?;
+        self.auth
+            .validate_sdk_credential_state(None, &self.cluster_id, |ns| {
+                self.namespaces.incarnation(ns)
+            })
+            .map_err(|e| Response::error(e.status, &e.message))?;
+        self.auth
+            .validate_sdk_auth_state()
+            .map_err(|e| Response::error(e.status, &e.message))?;
+        self.auth
+            .validate_identity_mfa_state(None)
+            .map_err(|error| Response::error(503, &error.message))?;
+        self.auth
+            .validate_identity_mfa_bindings(
+                &self.cluster_id,
+                |namespace| self.namespaces.mfa_scope(namespace),
+                |namespace| self.namespaces.mfa_retirement_floor(namespace),
+                |namespace| {
+                    self.namespaces.custody_owner(namespace).is_some()
+                        || self.namespaces.inherited_owner(namespace).is_some()
+                },
+            )
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < IDENTITY_MFA_STATE_SCHEMA && self.auth.has_identity_mfa_state()
+            || self.schema == IDENTITY_MFA_STATE_SCHEMA && !self.auth.has_identity_mfa_state()
+        {
+            return Err(Response::error(
+                503,
+                "Identity MFA reader marker requires schema 129",
+            ));
+        }
+        self.auth
+            .validate_sdk_advanced_state(None)
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < SDK_ADVANCED_STATE_SCHEMA && self.auth.has_sdk_advanced_state()
+            || self.schema == SDK_ADVANCED_STATE_SCHEMA && !self.auth.has_sdk_advanced_state()
+        {
+            return Err(Response::error(
+                503,
+                "SDK advanced custody requires schema 126",
+            ));
+        }
+        if self.schema < SDK_AUTH_STATE_SCHEMA && self.auth.has_sdk_auth_state() {
+            return Err(Response::error(
+                503,
+                "SDK Auth ownership requires format 100",
+            ));
+        }
+        if self.schema == SDK_AUTH_STATE_SCHEMA && !self.auth.has_sdk_auth_state() {
+            return Err(Response::error(
+                503,
+                "SDK Auth retired owner evidence missing",
+            ));
+        }
+
+        self.engines
+            .validate_acme_state(&self.cluster_id, |ns| self.namespaces.incarnation(ns))
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < PKI_ACME_ACCOUNT_STATE_SCHEMA && self.engines.has_pki_acme_state() {
+            return Err(Response::error(
+                503,
+                "ACME durable account ownership requires schema 99",
+            ));
+        }
+
+        self.engines
+            .validate_sdk_registration_namespace(|namespace| self.namespaces.incarnation(namespace))
+            .map_err(|error| Response::error(503, &error.message))?;
+        self.engines
+            .validate_sdk_lease_cluster(&self.cluster_id)
+            .map_err(|e| Response::error(503, &e.message))?;
+        self.engines
+            .validate_sdk_leases()
+            .map_err(|e| Response::error(503, &e.message))?;
+        if self.schema < SDK_BATCH_CREDENTIAL_SECRET_STATE_SCHEMA
+            && (self.engines.has_sdk_batch_registration_state()
+                || self.auth.has_sdk_credential_state())
+        {
+            return Err(Response::error(
+                503,
+                "batch or credential SDK Secret ownership requires schema 102",
+            ));
+        }
+        if self.schema < SDK_ACCEPTED_SECRET_STATE_SCHEMA
+            && self.engines.has_sdk_registration_state()
+        {
+            return Err(Response::error(
+                503,
+                "accepted SDK Secret registration requires schema 101",
+            ));
+        }
+        if self.schema < SDK_SECRET_LEASE_STATE_SCHEMA && self.engines.has_sdk_lease_state() {
+            return Err(Response::error(
+                503,
+                "SDK secret lease ownership requires schema 96",
+            ));
+        }
+        if self
+            .engines
+            .sdk_lease_owners()
+            .iter()
+            .any(|(namespace, owner)| {
+                owner.batch_claims().is_some_and(|claims| {
+                    self.auth
+                        .validate_batch_lease_owner(claims, namespace)
+                        .is_err()
+                })
+            })
+        {
+            return Err(Response::error(503, "SDK lease issuer rejected"));
+        }
+
+        self.engines
+            .validate_sdk_state()
+            .map_err(|e| Response::error(503, &e.message))?;
+        if self.schema < SDK_RESPONSE_HEADERS_STATE_SCHEMA
+            && self.engines.has_sdk_response_header_state()
+        {
+            return Err(Response::error(
+                503,
+                "SDK response header ownership requires schema 95",
+            ));
+        }
+        if self.schema < SDK_STORAGE_STATE_SCHEMA && self.engines.has_sdk_state() {
+            return Err(Response::error(
+                503,
+                "SDK catalog and storage ownership requires schema 92",
+            ));
+        }
+        self.auth
+            .validate_public_origin_state()
+            .map_err(|_| Response::error(503, "invalid public origin owner"))?;
+        if self.schema == AUTH_PUBLIC_ORIGIN_STATE_SCHEMA && !self.auth.has_public_origin_state() {
+            return Err(Response::error(
+                503,
+                "public origin retirement floor is missing",
+            ));
+        }
+        if self.schema < AUTH_PUBLIC_ORIGIN_STATE_SCHEMA && self.auth.has_public_origin_state() {
+            return Err(Response::error(
+                503,
+                "native public origin requires schema 86",
+            ));
+        }
+        if !supported_reader_schema(self.schema) {
+            return Err(Response::error(
+                503,
+                "unsupported or downgraded identity state schema",
+            ));
+        }
+        if self.schema < PKI_RSA8192_STATE_SCHEMA && self.engines.has_pki_rsa8192_state() {
+            return Err(Response::error(
+                503,
+                "PKI RSA8192 ownership requires schema 108",
+            ));
+        }
+        if self.schema < PKI_ORDINARY_REVOCATION_STATE_SCHEMA
+            && self.engines.has_ordinary_pki_revocation_state()
+        {
+            return Err(Response::error(
+                503,
+                "PKI ordinary revocation ownership requires schema 105",
+            ));
+        }
+        self.engines
+            .validate_pki_revocation_clock(None)
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < PKI_KEY_POLICY_STATE_SCHEMA && self.engines.has_pki_key_policy_state() {
+            return Err(Response::error(
+                503,
+                "PKI subject key policy requires schema 104",
+            ));
+        }
+        if self.schema < PKI_URLS_STATE_SCHEMA && self.engines.has_pki_url_state() {
+            return Err(Response::error(503, "PKI URL ownership requires schema 97"));
+        }
+        if self.schema < EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
+            && self.engines.has_full_dn_crl_state()
+        {
+            return Err(Response::error(
+                503,
+                "external full-DN CRL semantics require schema 98",
+            ));
+        }
+        if self.schema < EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
+            && self.engines.has_external_pki_signer_history()
+        {
+            return Err(Response::error(
+                503,
+                "external PKI signer history requires schema 94",
+            ));
+        }
+        if self.schema < PKI_ROLE_NAMES_STATE_SCHEMA && self.engines.has_pki_role_names_state() {
+            return Err(Response::error(
+                503,
+                "PKI role name ownership requires schema 93",
+            ));
+        }
+        if self.schema < PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
+            && self.engines.has_pki_signed_role_time_state()
+        {
+            return Err(Response::error(
+                503,
+                "PKI signed role time ownership requires schema 90",
+            ));
+        }
+        if self.schema < PKI_ROLE_TIME_STATE_SCHEMA && self.engines.has_pki_role_time_state() {
+            return Err(Response::error(
+                503,
+                "PKI role time ownership requires schema 89",
+            ));
+        }
+        if self.schema < PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+            && self.engines.has_pki_role_leaf_profile_state()
+        {
+            return Err(Response::error(
+                503,
+                "PKI role leaf profiles require schema 88",
+            ));
+        }
+        if self.schema < PKI_ROLE_WILDCARD_STATE_SCHEMA
+            && self.engines.has_pki_role_wildcard_state()
+        {
+            return Err(Response::error(
+                503,
+                "PKI wildcard ownership requires schema 85",
+            ));
+        }
+        if self.schema < PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
+            && self.engines.has_pki_role_bare_domain_state()
+        {
+            return Err(Response::error(
+                503,
+                "PKI base-domain ownership requires schema 84",
+            ));
+        }
+        if self.schema < PKI_ROLE_ANY_NAME_STATE_SCHEMA
+            && self.engines.has_pki_role_any_name_state()
+        {
+            return Err(Response::error(
+                503,
+                "PKI allow_any_name ownership requires schema 83",
+            ));
+        }
+        self.auth
+            .validate_token_api_precision_state()
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.has_token_api_precision_state() && !self.auth.has_token_api_precision_state() {
+            return Err(Response::error(
+                503,
+                "private precise lease owners require an observation floor",
+            ));
+        }
+        if self.schema < TOKEN_API_PRECISION_STATE_SCHEMA && self.has_token_api_precision_state() {
+            return Err(Response::error(
+                503,
+                "Token API precise lease reader requires schema 82",
+            ));
+        }
+        if self.schema < NAMESPACE_CUSTODY_STATE_SCHEMA
+            && (self.namespaces.has_custody_state() || self.engines.has_namespace_record_custody())
+        {
+            return Err(Response::error(
+                503,
+                "independent namespace custody requires schema 81",
+            ));
+        }
+        self.auth
+            .validate_token_role_state()
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
+            && self.engines.has_kubernetes_opaque_artifact_state()
+        {
+            return Err(Response::error(
+                503,
+                "opaque Kubernetes artifact ownership requires schema 87",
+            ));
+        }
+        if self.schema < TOKEN_ROLE_STATE_SCHEMA && self.auth.has_token_api_schema80_state() {
+            return Err(Response::error(
+                503,
+                "Token API role ownership requires schema 80",
+            ));
+        }
+        if self.schema < LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
+            && self.engines.has_local_pki_intermediate_state()
+        {
+            return Err(Response::error(
+                503,
+                "local PKI intermediate ownership requires schema 79",
+            ));
+        }
+        if self.schema < LOCAL_PKI_CRL_STATE_SCHEMA && self.engines.has_local_pki_crl_state() {
+            return Err(Response::error(
+                503,
+                "local PKI CRL state requires schema 78",
+            ));
+        }
+        if self.schema < LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA
+            && self.engines.has_local_pki_multi_issuer_state()
+        {
+            return Err(Response::error(
+                503,
+                "local PKI issuer ownership requires schema 77",
+            ));
+        }
+        if self.schema < LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA
+            && self.engines.has_local_pki_root_fields_state()
+        {
+            return Err(Response::error(
+                503,
+                "local PKI root fields require schema 76",
+            ));
+        }
+        if self.schema < RECOVERY_CREDENTIAL_STATE_SCHEMA && self.auth.has_recovery_state() {
+            return Err(Response::error(
+                503,
+                "protected recovery credential requires schema 73",
+            ));
+        }
+        if self.schema < LOCAL_PKI_IDENTIFIER_STATE_SCHEMA
+            && self.engines.has_local_pki_identifier_state()
+        {
+            return Err(Response::error(
+                503,
+                "local PKI identifiers require schema 75",
+            ));
+        }
+        if self.schema < INDEXED_RECOVERY_WIRE_STATE_SCHEMA && self.auth.has_indexed_recovery_wire()
+        {
+            return Err(Response::error(
+                503,
+                "indexed recovery wire requires schema 74",
+            ));
+        }
+        self.auth
+            .validate_recovery_credential(&self.cluster_id)
+            .map_err(|_| Response::error(503, "invalid protected recovery credential"))?;
+        if self.schema < LOCAL_TYPED_PKI_STATE_SCHEMA && self.engines.has_local_typed_pki_state() {
+            return Err(Response::error(
+                503,
+                "typed local PKI keys require schema 72",
+            ));
+        }
+        if self.schema < PKI_ISSUER_PATH_STATE_SCHEMA && self.engines.has_issuer_path_pki_state() {
+            return Err(Response::error(
+                503,
+                "PKI issuer-path leases require schema 71",
+            ));
+        }
+        self.auth
+            .validate_control_group_state()
+            .map_err(|_| Response::error(503, "invalid control group owner"))?;
+        self.validate_control_group_transports()?;
+        if self.schema < TRANSIT_DERIVED_ED_STATE_SCHEMA
+            && self.engines.has_transit_derived_ed_state()
+        {
+            return Err(Response::error(503, "derived Ed25519 requires schema 127"));
+        }
+        self.engines
+            .validate_transit_derived_ed_state(None)
+            .map_err(Response::from_engine_error)?;
+        if self.schema < TRANSIT_ROTATION_PRECISION_STATE_SCHEMA
+            && self.engines.has_transit_rotation_precision_state()
+        {
+            return Err(Response::error(
+                503,
+                "precise transit rotation requires schema 124",
+            ));
+        }
+        self.engines
+            .validate_transit_rotation_precision_state(None)
+            .map_err(Response::from_engine_error)?;
+        if self.schema < SYMMETRIC_BACKUP_STATE_SCHEMA && self.engines.has_symmetric_backup_state()
+        {
+            return Err(Response::error(
+                503,
+                "symmetric imported derivation and backups require schema 119",
+            ));
+        }
+        if self.schema < CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
+            && self.auth.has_fractional_control_group_state()
+        {
+            return Err(Response::error(
+                503,
+                "fractional control groups require schema 122",
+            ));
+        }
+        if self.schema < WORKFLOW_INPUT_STATE_SCHEMA
+            && (self.namespaces.workflows.has_logical_input_profiles()
+                || self.auth.has_control_group_logical_data())
+        {
+            return Err(Response::error(
+                503,
+                "workflow logical input requires schema 131",
+            ));
+        }
+        if self.schema < WORKFLOW_CREDENTIAL_STATE_SCHEMA
+            && self.namespaces.workflows.has_request_credentials()
+        {
+            return Err(Response::error(
+                503,
+                "workflow request credentials require schema 128",
+            ));
+        }
+        if self.schema < WORKFLOW_EXPRESSION_STATE_SCHEMA
+            && self.namespaces.workflows.has_expression_profiles()
+        {
+            return Err(Response::error(
+                503,
+                "workflow expressions require schema 125",
+            ));
+        }
+        if self.schema < WORKFLOW_DYNAMIC_STATE_SCHEMA
+            && self.namespaces.workflows.has_dynamic_profiles()
+        {
+            return Err(Response::error(
+                503,
+                "dynamic workflow sources require schema 123",
+            ));
+        }
+        if self.schema < WORKFLOW_PROFILE_STATE_SCHEMA && self.namespaces.workflows.has_profiles() {
+            return Err(Response::error(503, "workflow profiles require schema 121"));
+        }
+        if self.schema < CONTROL_GROUP_STATE_SCHEMA && self.auth.has_control_group_state() {
+            return Err(Response::error(503, "Control Groups require schema 118"));
+        }
+        if self.schema < STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA
+            && self.engines.has_standard_asymmetric_import_state()
+        {
+            return Err(Response::error(
+                503,
+                "standard asymmetric imports require schema 117",
+            ));
+        }
+        if self.schema < MLDSA_IMPORT_STATE_SCHEMA && self.engines.has_mldsa_import_state() {
+            return Err(Response::error(503, "ML-DSA imports require schema 116"));
+        }
+        if self.schema < TRANSIT_BYOK_STATE_SCHEMA && self.engines.has_transit_byok_state() {
+            return Err(Response::error(
+                503,
+                "Transit imports and wrapping keys require schema 70",
+            ));
+        }
+        self.engines
+            .validate_transit_byok_state()
+            .map_err(|_| Response::error(503, "invalid Transit imported key state"))?;
+        if self.schema < JWT_PEM_KEYSET_STATE_SCHEMA && self.auth.has_jwt_pem_keyset_state() {
+            return Err(Response::error(503, "JWT PEM keyset requires schema 69"));
+        }
+        self.auth
+            .validate_jwt_pem_keyset_state()
+            .map_err(|_| Response::error(503, "invalid JWT PEM keyset state"))?;
+        if self.schema < JWT_USER_CLAIM_STATE_SCHEMA && self.auth.has_jwt_user_claim_state() {
+            return Err(Response::error(
+                503,
+                "custom JWT identity claims require schema 68",
+            ));
+        }
+        self.auth
+            .validate_jwt_user_claim_state()
+            .map_err(|_| Response::error(503, "invalid JWT identity claim state"))?;
+        if self.schema < TYPED_PKI_STATE_SCHEMA && self.engines.has_typed_external_pki_state() {
+            return Err(Response::error(
+                503,
+                "typed external PKI public keys require schema 67",
+            ));
+        }
+        if self.schema < AAD_BOUND_STATE_SCHEMA && self.engines.has_aad_bound_convergent_state() {
+            return Err(Response::error(
+                503,
+                "AAD-bound convergent keys require schema 66",
+            ));
+        }
+        self.engines
+            .validate_aad_bound_convergent_state()
+            .map_err(|_| Response::error(503, "invalid AAD-bound convergent key state"))?;
+        if self.schema < 65 && self.engines.has_asymmetric_state() {
+            return Err(Response::error(
+                503,
+                "asymmetric Transit keys require schema 65",
+            ));
+        }
+        if self.schema < 65 && self.engines.has_external_pki_state() {
+            return Err(Response::error(
+                503,
+                "PKI external roots and CSR keys require schema 65",
+            ));
+        }
+        if self.schema < 64 && self.engines.has_external_transit_state() {
+            return Err(Response::error(
+                503,
+                "Transit external keys require schema 64",
+            ));
+        }
+        self.engines
+            .validate_external_transit_state()
+            .map_err(|_| Response::error(503, "invalid Transit external key state"))?;
+        if self.schema < 63 && self.engines.has_external_key_state() {
+            return Err(Response::error(
+                503,
+                "External Keys registry requires schema 63",
+            ));
+        }
+        self.engines
+            .validate_external_key_state()
+            .map_err(|_| Response::error(503, "invalid External Keys registry"))?;
+
+        if self.schema < 62 && self.engines.has_mldsa_state() {
+            return Err(Response::error(
+                503,
+                "Transit ML-DSA keys require schema 62",
+            ));
+        }
+        self.engines
+            .validate_mldsa_state()
+            .map_err(|_| Response::error(503, "invalid Transit ML-DSA state"))?;
+
+        self.engines
+            .validate_record_mode()
+            .map_err(|e| Response::error(503, &e.message))?;
+        if self.schema < 36 && self.engines.record_root().is_some() {
+            return Err(Response::error(503, "record KV1 requires schema 36"));
+        }
+
+        if self.schema < 37 && self.engines.has_packed_kv1_records() {
+            return Err(Response::error(503, "packed KV1 records require schema 37"));
+        }
+
+        if self.schema < 42 && self.engines.has_kubernetes_typed_lease_owners() {
+            return Err(Response::error(
+                503,
+                "Kubernetes typed lease ownership requires schema 42",
+            ));
+        }
+
+        if self.schema < 50 && self.auth.has_kerberos_state() {
+            return Err(Response::error(
+                503,
+                "Kerberos authentication state requires schema 50",
+            ));
+        }
+        if self.schema < 51 && self.auth.has_oidc_userinfo_state() {
+            return Err(Response::error(
+                503,
+                "OIDC UserInfo session state requires schema 51",
+            ));
+        }
+        self.auth
+            .validate_acl_wrapping_ttl_state()
+            .map_err(|_| Response::error(503, "invalid ACL wrapping TTL state"))?;
+        if self.schema < 61 && self.auth.has_acl_wrapping_ttl_state() {
+            return Err(Response::error(
+                503,
+                "ACL wrapping TTL constraints require schema 61",
+            ));
+        }
+        self.auth
+            .validate_acl_template_state()
+            .map_err(|_| Response::error(503, "invalid ACL Identity template state"))?;
+        if self.schema < 60 && self.auth.has_acl_template_state() {
+            return Err(Response::error(
+                503,
+                "ACL Identity templates require schema 60",
+            ));
+        }
+        self.auth
+            .validate_acl_parameter_state()
+            .map_err(|_| Response::error(503, "invalid ACL parameter policy state"))?;
+        if self.schema < 58 && self.auth.has_acl_parameter_state() {
+            return Err(Response::error(
+                503,
+                "ACL parameter constraints require schema 58",
+            ));
+        }
+
+        self.auth
+            .validate_password_policy_state()
+            .map_err(|_| Response::error(503, "invalid password policy state"))?;
+        if self.schema < 56 && self.auth.has_password_policy_state() {
+            return Err(Response::error(
+                503,
+                "password policy state requires schema 56",
+            ));
+        }
+
+        if self.schema < 48 && self.auth.has_cert_batch_state() {
+            return Err(Response::error(
+                503,
+                "native certificate token state requires schema 48",
+            ));
+        }
+        if self.schema < 48 && self.auth.has_token_api_creation_ttl() {
+            return Err(Response::error(
+                503,
+                "Token API creation TTL requires schema 48",
+            ));
+        }
+
+        self.auth
+            .validate_system_lease_defaults()
+            .map_err(|_| Response::error(503, "invalid system or Token API lease state"))?;
+        self.auth
+            .validate_batch_issuance_state()
+            .map_err(|_| Response::error(503, "invalid batch token key authority"))?;
+        if self.schema < 41
+            && (self.auth.has_batch_authority() || self.auth.has_batch_issuance_state())
+        {
+            return Err(Response::error(
+                503,
+                "batch token authority requires schema 41",
+            ));
+        }
+        self.auth
+            .validate_approle_batch_state()
+            .map_err(|_| Response::error(503, "invalid AppRole batch configuration"))?;
+        if self.schema < 42 && self.auth.has_approle_batch_state() {
+            return Err(Response::error(
+                503,
+                "AppRole batch configuration requires schema 42",
+            ));
+        }
+        self.auth
+            .validate_approle_token_bound_cidrs()
+            .map_err(|_| Response::error(503, "invalid AppRole token source constraints"))?;
+        if self.schema < 43 && self.auth.has_approle_token_bound_cidrs() {
+            return Err(Response::error(
+                503,
+                "AppRole token source constraints require schema 43",
+            ));
+        }
+        if self.schema < 45 && self.auth.has_approle_secret_bound_cidrs() {
+            return Err(Response::error(
+                503,
+                "AppRole SecretID login source constraints require schema 45",
+            ));
+        }
+        if self.schema < 46 && self.auth.has_approle_secret_id_cidrs() {
+            return Err(Response::error(
+                503,
+                "AppRole per-SecretID CIDR constraints require schema 46",
+            ));
+        }
+        if self.schema < 47
+            && (self.auth.has_approle_metadata()
+                || self.engines.has_approle_login_alias_metadata_state()
+                || self.engines.has_extended_login_alias_metadata_state())
+        {
+            return Err(Response::error(
+                503,
+                "AppRole credential or alias metadata requires schema 47",
+            ));
+        }
+        self.auth
+            .validate_approle_metadata()
+            .map_err(|_| Response::error(503, "invalid AppRole credential metadata"))?;
+        if self.schema < 47 && self.engines.has_nullable_identity_metadata_state() {
+            return Err(Response::error(
+                503,
+                "nullable Identity metadata requires schema 47",
+            ));
+        }
+        self.auth
+            .validate_approle_native_defaults()
+            .map_err(|_| Response::error(503, "invalid native AppRole state"))?;
+        self.auth
+            .validate_approle_no_default_policy()
+            .map_err(|error| Response::error(503, &error.message))?;
+        self.auth
+            .validate_cluster_local_approle_state(&self.cluster_id)
+            .map_err(|error| Response::error(503, &error.message))?;
+        self.auth
+            .validate_policy_expiration_state()
+            .map_err(|error| Response::error(503, &error.message))?;
+        self.validate_namespace_factory_state()?;
+        if self.schema < NAMESPACE_FACTORY_STATE_SCHEMA && self.auth.has_namespace_factory_state() {
+            return Err(Response::error(
+                503,
+                "namespace factory provenance requires schema 144",
+            ));
+        }
+        if self.schema < POLICY_EXPIRATION_STATE_SCHEMA && self.auth.has_policy_expiration_state() {
+            return Err(Response::error(
+                503,
+                "policy expiration requires schema 143",
+            ));
+        }
+        if self.schema < APPROLE_LOCAL_STATE_SCHEMA && self.auth.has_cluster_local_approle_state() {
+            return Err(Response::error(
+                503,
+                "cluster-local AppRole SecretIDs require schema 142",
+            ));
+        }
+        self.auth
+            .validate_security_contract_state()
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < AUTH_SECURITY_CONTRACT_STATE_SCHEMA
+            && self.auth.has_security_contract_state()
+        {
+            return Err(Response::error(
+                503,
+                "Auth security contracts require schema 141",
+            ));
+        }
+        if self.schema < APPROLE_NO_DEFAULT_STATE_SCHEMA
+            && self.auth.has_approle_no_default_policy()
+        {
+            return Err(Response::error(
+                503,
+                "AppRole default-policy semantics require schema 135",
+            ));
+        }
+        self.auth
+            .validate_jwt_batch_state()
+            .map_err(|_| Response::error(503, "invalid JWT batch configuration"))?;
+        if self.schema < 44
+            && (self.auth.has_jwt_batch_state() || self.engines.has_login_alias_metadata_state())
+        {
+            return Err(Response::error(
+                503,
+                "JWT token type or login alias metadata requires schema 44",
+            ));
+        }
+        self.auth
+            .validate_userpass_name_modes()
+            .map_err(|_| Response::error(503, "invalid userpass name mode"))?;
+        if self.schema < 40 && self.auth.has_userpass_name_modes() {
+            return Err(Response::error(
+                503,
+                "userpass name modes require schema 40",
+            ));
+        }
+        self.auth
+            .validate_userpass_password_semantics()
+            .map_err(|_| Response::error(503, "invalid userpass password comparison semantics"))?;
+        if self.schema < 38 && self.auth.has_userpass_password_semantics() {
+            return Err(Response::error(
+                503,
+                "userpass password comparison semantics require schema 38",
+            ));
+        }
+        self.auth
+            .validate_userpass_no_default_policy()
+            .map_err(|_| Response::error(503, "invalid userpass default-policy state"))?;
+        if self.schema < 39 && self.auth.has_userpass_no_default_policy() {
+            return Err(Response::error(
+                503,
+                "userpass default-policy semantics require schema 39",
+            ));
+        }
+        self.auth
+            .validate_userpass_token_bound_cidrs()
+            .map_err(|_| Response::error(503, "invalid userpass source constraints"))?;
+        if self.schema < 39 && self.auth.has_userpass_token_bound_cidrs() {
+            return Err(Response::error(
+                503,
+                "userpass source constraints require schema 39",
+            ));
+        }
+        self.auth
+            .validate_userpass_native_tokens()
+            .map_err(|_| Response::error(503, "invalid native userpass state"))?;
+        self.auth
+            .validate_userpass_issuance_state(None)
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < USERPASS_ISSUANCE_STATE_SCHEMA && self.auth.has_userpass_issuance_state()
+            || self.schema == USERPASS_ISSUANCE_STATE_SCHEMA
+                && !self.auth.has_userpass_issuance_state()
+        {
+            return Err(Response::error(
+                503,
+                "native Userpass issuance reader marker requires schema 132",
+            ));
+        }
+        self.auth
+            .validate_rate_limit_quota_state(None)
+            .map_err(|e| Response::error(503, &e.message))?;
+        self.validate_rate_limit_quota_catalog()?;
+        if self.schema < SCOPED_RATE_LIMIT_QUOTA_STATE_SCHEMA
+            && self.auth.has_scoped_rate_limit_quota_state()
+            || self.schema == SCOPED_RATE_LIMIT_QUOTA_STATE_SCHEMA
+                && !self.auth.has_scoped_rate_limit_quota_state()
+        {
+            return Err(Response::error(
+                503,
+                "scoped quota reader marker requires schema 139",
+            ));
+        }
+        if self.schema < EXTENDED_RATE_LIMIT_QUOTA_STATE_SCHEMA
+            && self.auth.has_extended_rate_limit_quota_state()
+            || self.schema == EXTENDED_RATE_LIMIT_QUOTA_STATE_SCHEMA
+                && !self.auth.has_extended_rate_limit_quota_state()
+        {
+            return Err(Response::error(
+                503,
+                "extended quota reader marker requires schema 137",
+            ));
+        }
+        if self.schema < RATE_LIMIT_QUOTA_STATE_SCHEMA && self.auth.has_rate_limit_quota_state()
+            || self.schema == RATE_LIMIT_QUOTA_STATE_SCHEMA
+                && !self.auth.has_rate_limit_quota_state()
+        {
+            return Err(Response::error(
+                503,
+                "quota reader marker requires schema 134",
+            ));
+        }
+        self.auth
+            .validate_userpass_lockout_state()
+            .map_err(|_| Response::error(503, "invalid userpass lockout state"))?;
+        if self.schema < 52 && self.auth.has_userpass_lockout_state() {
+            return Err(Response::error(
+                503,
+                "userpass lockout state requires schema 52",
+            ));
+        }
+        self.engines
+            .validate_identity_alias_state()
+            .map_err(|e| Response::error(503, &e.message))?;
+        self.engines
+            .validate_lease_state()
+            .map_err(|e| Response::error(503, &e.message))?;
+        self.auth
+            .validate_wrapping_state()
+            .map_err(|_| Response::error(503, "invalid wrapping state"))?;
+        self.database.validate_scope(&self.cluster_id)?;
+        // Retained, expired and pending owners must also be admitted. Liveness
+        // belongs to reconciliation; a missing key or foreign namespace is a
+        // state-integrity error even when no lease is currently active.
+        for (namespace, owner) in self
+            .engines
+            .all_lease_owners()
+            .into_iter()
+            .chain(self.database.all_lease_owners())
+            .chain(self.auth.sdk_credential_owners())
+            .chain(self.auth.namespace_sdk_cleanup_owners())
+        {
+            if let Some(claims) = owner.batch_claims() {
+                if self.schema < 41 {
+                    return Err(Response::error(
+                        503,
+                        "batch lease ownership requires schema 41",
+                    ));
+                }
+                self.auth
+                    .validate_batch_lease_owner(claims, &namespace)
+                    .map_err(|_| Response::error(503, "invalid batch lease authority"))?;
+            }
+        }
+        self.raft_admin.validate()?;
+        self.auth
+            .validate_online_auth()
+            .map_err(|_| Response::error(503, "invalid online authentication state"))?;
+        self.auth
+            .validate_plugin_auth_state()
+            .map_err(|_| Response::error(503, "invalid authentication plugin state"))?;
+        self.auth
+            .validate_radius_renewal_state()
+            .map_err(|_| Response::error(503, "invalid RADIUS renewal state"))?;
+        self.auth
+            .validate_ldap_renewal_state()
+            .map_err(|_| Response::error(503, "invalid LDAP renewal state"))?;
+        self.auth
+            .validate_jwt_renewal_state()
+            .map_err(|_| Response::error(503, "invalid JWT renewal state"))?;
+        self.auth
+            .validate_native_jwt_state()
+            .map_err(|_| Response::error(503, "invalid native JWT state"))?;
+        self.auth
+            .validate_kubernetes_renewal_state()
+            .map_err(|_| Response::error(503, "invalid Kubernetes renewal state"))?;
+        self.auth
+            .validate_oidc_renewal_state()
+            .map_err(|_| Response::error(503, "invalid OIDC renewal state"))?;
+        if self.schema < 5 && self.auth.has_online_auth_state() {
+            return Err(Response::error(
+                503,
+                "online authentication requires schema 5",
+            ));
+        }
+        if self.schema < 5 && self.replay_epoch != 0 {
+            return Err(Response::error(503, "replay epoch state requires schema 5"));
+        }
+        if self.schema < 6 && self.database.has_provider_fence() {
+            return Err(Response::error(
+                503,
+                "database provider fencing requires schema 6",
+            ));
+        }
+        if self.schema < 53 && self.database.has_credential_rotation_state() {
+            return Err(Response::error(
+                503,
+                "database credential rotation requires schema 53",
+            ));
+        }
+        if self.schema < 54 && self.database.has_statement_template_state() {
+            return Err(Response::error(
+                503,
+                "database statement templates require schema 54",
+            ));
+        }
+        if self.schema < 55 && self.database.has_scram_password_authentication() {
+            return Err(Response::error(
+                503,
+                "PostgreSQL SCRAM password authentication requires schema 55",
+            ));
+        }
+        if self.schema < 56 && self.database.has_password_generation_state() {
+            return Err(Response::error(
+                503,
+                "database password policies and username templates require schema 56",
+            ));
+        }
+        if self.schema < 57 && self.database.has_root_rotation_statement_state() {
+            return Err(Response::error(
+                503,
+                "database root rotation statements require schema 57",
+            ));
+        }
+        if self.schema < 59 && self.engines.has_pki_extension_state() {
+            return Err(Response::error(
+                503,
+                "PKI cluster or ACME configuration requires schema 59",
+            ));
+        }
+        if self.schema < 7 && self.auth.has_ldap_group_state() {
+            return Err(Response::error(
+                503,
+                "LDAP group synchronization requires schema 7",
+            ));
+        }
+        if self.schema < 8 && self.engines.has_kubernetes_mount() {
+            return Err(Response::error(
+                503,
+                "Kubernetes TokenRequest secrets state requires schema 8",
+            ));
+        }
+        self.engines
+            .validate_kubernetes_state()
+            .map_err(|error| Response::error(503, &error.message))?;
+        self.engines
+            .validate_openldap_state()
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < 9 && !self.namespaces.is_empty() {
+            return Err(Response::error(
+                503,
+                "explicit namespace catalog requires schema 9",
+            ));
+        }
+        if self.schema < 49 && self.namespaces.workflows.has_workflows() {
+            return Err(Response::error(
+                503,
+                "authenticated workflow state requires schema 49",
+            ));
+        }
+        self.namespaces.validate(&self.cluster_id)?;
+        self.engines
+            .visit_namespace_record_owner_bindings(|binding| {
+                self.namespaces
+                    .validate_record_custody_binding(binding)
+                    .map_err(|_| crate::engines::EngineError {
+                        status: 503,
+                        message: "namespace record floor binding rejected".into(),
+                    })
+            })
+            .map_err(|_| Response::error(503, "namespace record floor binding rejected"))?;
+        if self.schema < 10 && self.auth.has_plugin_auth_state() {
+            return Err(Response::error(
+                503,
+                "authentication plugin state requires schema 10",
+            ));
+        }
+        if self.schema < 11 && self.auth.has_approle_token_provenance() {
+            return Err(Response::error(
+                503,
+                "AppRole renewal provenance requires schema 11",
+            ));
+        }
+        if self.schema < 12 && self.auth.has_radius_state() {
+            return Err(Response::error(
+                503,
+                "RADIUS authentication state requires schema 12",
+            ));
+        }
+        if self.schema < 13 && self.namespaces.has_sealed_state() {
+            return Err(Response::error(
+                503,
+                "namespace seal state requires schema 13",
+            ));
+        }
+        if self.schema < 14 && self.engines.has_openldap_mount() {
+            return Err(Response::error(
+                503,
+                "OpenLDAP dynamic credential state requires schema 14",
+            ));
+        }
+        if self.schema < 15 && self.engines.has_metadata_cas_state() {
+            return Err(Response::error(
+                503,
+                "KV metadata CAS state requires schema 15",
+            ));
+        }
+        if self.schema < 16 && self.auth.has_v16_token_provenance() {
+            return Err(Response::error(
+                503,
+                "RADIUS renewal and token API provenance require schema 16",
+            ));
+        }
+        if self.schema < 17
+            && (self.auth.has_ldap_renewal_provenance()
+                || self.engines.has_external_group_membership())
+        {
+            return Err(Response::error(
+                503,
+                "LDAP renewal and external group evidence require schema 17",
+            ));
+        }
+        if self.schema < 18 && self.auth.has_jwt_renewal_state() {
+            return Err(Response::error(
+                503,
+                "JWT renewal provenance and role limits require schema 18",
+            ));
+        }
+        if self.schema < 19 && self.auth.has_native_jwt_state() {
+            return Err(Response::error(
+                503,
+                "native JWT claim semantics require schema 19",
+            ));
+        }
+        if self.schema < 20 && self.auth.has_kubernetes_renewal_state() {
+            return Err(Response::error(
+                503,
+                "Kubernetes renewal provenance and role limits require schema 20",
+            ));
+        }
+        if self.schema < 21 && self.auth.has_oidc_renewal_state() {
+            return Err(Response::error(
+                503,
+                "OIDC renewal provenance and role limits require schema 21",
+            ));
+        }
+        if self.schema < 22 && self.auth.has_radius_native_parameters() {
+            return Err(Response::error(
+                503,
+                "RADIUS native token parameters require schema 22",
+            ));
+        }
+        if self.schema < 23
+            && (self.auth.has_native_ldap_state() || self.engines.has_opaque_identity_aliases())
+        {
+            return Err(Response::error(
+                503,
+                "native LDAP authority and opaque identity aliases require schema 23",
+            ));
+        }
+        if self.schema < 24 && self.auth.has_native_radius_state() {
+            return Err(Response::error(
+                503,
+                "native RADIUS configuration and provenance require schema 24",
+            ));
+        }
+        if self.schema < 25
+            && (self.auth.has_native_ldap_transport() || self.auth.has_radius_no_default_policy())
+        {
+            return Err(Response::error(
+                503,
+                "native LDAP transport or RADIUS default-policy semantics require schema 25",
+            ));
+        }
+        if self.schema < 26 && self.auth.has_radius_api_transport() {
+            return Err(Response::error(
+                503,
+                "RADIUS API transport authority requires schema 26",
+            ));
+        }
+        if self.schema < 27 && self.auth.has_token_bound_cidrs() {
+            return Err(Response::error(
+                503,
+                "token source address constraints require schema 27",
+            ));
+        }
+        if self.schema < 28
+            && (self.auth.has_jwt_api_https_state() || self.auth.has_oidc_api_https_state())
+        {
+            return Err(Response::error(
+                503,
+                "JWT/OIDC API HTTPS authority requires schema 28",
+            ));
+        }
+        if self.schema < 29
+            && (self.auth.has_ldap_token_bound_cidrs()
+                || self.auth.has_kubernetes_api_https_state())
+        {
+            return Err(Response::error(
+                503,
+                "LDAP source constraints or Kubernetes API HTTPS authority require schema 29",
+            ));
+        }
+        if self.schema < 30
+            && (self.auth.has_jwt_bound_claims_state() || self.auth.has_ldap_no_default_policy())
+        {
+            return Err(Response::error(
+                503,
+                "JWT claim predicates or native LDAP default-policy semantics require schema 30",
+            ));
+        }
+        if self.schema < 31 && self.auth.has_kube_role_bound_cidrs() {
+            return Err(Response::error(
+                503,
+                "Kubernetes role and issued-token source constraints require schema 31",
+            ));
+        }
+        if self.schema < 32 && self.auth.has_jwt_native_ttl_defaults() {
+            return Err(Response::error(
+                503,
+                "JWT role TTL inheritance requires schema 32",
+            ));
+        }
+        if self.schema < 33 && self.auth.has_system_lease_defaults() {
+            return Err(Response::error(
+                503,
+                "system lease defaults and Token API grant metadata require schema 33",
+            ));
+        }
+        if self.schema < 34 && self.auth.has_approle_native_defaults() {
+            return Err(Response::error(
+                503,
+                "AppRole TTL inheritance or SecretID issuance metadata requires schema 34",
+            ));
+        }
+        if self.schema < 35 && self.auth.has_userpass_native_tokens() {
+            return Err(Response::error(
+                503,
+                "userpass native token limits, configured policies or issuer provenance require schema 35",
+            ));
+        }
+        self.auth
+            .validate_jwt_api_https_state()
+            .map_err(|_| Response::error(503, "invalid JWT HTTPS authority"))?;
+        let pre_database = self.database.is_empty()
+            && !self.engines.has_database_mount()
+            && self.raft_admin.is_default();
+        match self.schema {
+            1 if pre_database
+                && !self.auth.has_remote_jwt_state()
+                && !self.auth.has_live_identity_state()
+                && !self.auth.has_wrapping_state()
+                && !self.engines.has_lease_state() =>
+            {
+                Ok(())
+            }
+            2 if pre_database
+                && !self.auth.has_remote_jwt_state()
+                && !self.auth.has_wrapping_state()
+                && !self.engines.has_lease_state() =>
+            {
+                Ok(())
+            }
+            3 if pre_database && !self.auth.has_remote_jwt_state() => Ok(()),
+            4
+            | 5
+            | 6
+            | 7
+            | 8
+            | 9
+            | 10
+            | 11
+            | 12
+            | 13
+            | 14
+            | 15
+            | 16
+            | 17
+            | 18
+            | 19
+            | 20
+            | 21
+            | 22
+            | 23
+            | 24
+            | 25
+            | 26
+            | 27
+            | 28
+            | 29
+            | 30
+            | 31
+            | 32
+            | 33
+            | 34
+            | 35
+            | 36
+            | 37
+            | 38
+            | 39
+            | 40
+            | 41
+            | 42
+            | 43
+            | 44
+            | 45
+            | 46
+            | 47
+            | 48
+            | 49
+            | 50
+            | 51
+            | 52
+            | 53
+            | 54
+            | 55
+            | 56
+            | 57
+            | 58
+            | 59
+            | 60
+            | 61
+            | 62
+            | 63
+            | 64
+            | CURRENT_STATE_SCHEMA
+            | AAD_BOUND_STATE_SCHEMA
+            | TYPED_PKI_STATE_SCHEMA
+            | JWT_USER_CLAIM_STATE_SCHEMA
+            | JWT_PEM_KEYSET_STATE_SCHEMA
+            | TRANSIT_BYOK_STATE_SCHEMA
+            | PKI_ISSUER_PATH_STATE_SCHEMA
+            | LOCAL_TYPED_PKI_STATE_SCHEMA
+            | RECOVERY_CREDENTIAL_STATE_SCHEMA
+            | INDEXED_RECOVERY_WIRE_STATE_SCHEMA
+            | LOCAL_PKI_IDENTIFIER_STATE_SCHEMA
+            | LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA
+            | LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA
+            | LOCAL_PKI_CRL_STATE_SCHEMA
+            | LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
+            | TOKEN_ROLE_STATE_SCHEMA
+            | TOKEN_API_PRECISION_STATE_SCHEMA
+            | KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
+            | PKI_ROLE_ANY_NAME_STATE_SCHEMA
+            | PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
+            | PKI_ROLE_WILDCARD_STATE_SCHEMA
+            | PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+            | PKI_ROLE_TIME_STATE_SCHEMA
+            | PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
+            | PKI_ROLE_NAMES_STATE_SCHEMA
+            | EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
+            | SDK_RESPONSE_HEADERS_STATE_SCHEMA
+            | SDK_SECRET_LEASE_STATE_SCHEMA
+            | SDK_AUTH_STATE_SCHEMA
+            | SDK_ACCEPTED_SECRET_STATE_SCHEMA
+            | SDK_BATCH_CREDENTIAL_SECRET_STATE_SCHEMA
+            | AUTH_MOUNT_OPTIONS_STATE_SCHEMA
+            | PKI_KEY_POLICY_STATE_SCHEMA
+            | PKI_ORDINARY_REVOCATION_STATE_SCHEMA
+            | PKI_RSA8192_STATE_SCHEMA
+            | MOUNT_LISTING_VISIBILITY_STATE_SCHEMA
+            | RAW_WRAPPED_REPLY_STATE_SCHEMA
+            | RAW_PKI_HTTP_REPLY_STATE_SCHEMA
+            | GENERAL_WRAPPED_REPLY_STATE_SCHEMA
+            | SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA
+            | SSH_CA_STATE_SCHEMA
+            | MLDSA_IMPORT_STATE_SCHEMA
+            | STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA
+            | CONTROL_GROUP_STATE_SCHEMA
+            | SYMMETRIC_BACKUP_STATE_SCHEMA
+            | KV2_LOSSLESS_STATE_SCHEMA
+            | WORKFLOW_PROFILE_STATE_SCHEMA
+            | WORKFLOW_DYNAMIC_STATE_SCHEMA
+            | TRANSIT_ROTATION_PRECISION_STATE_SCHEMA
+            | WORKFLOW_EXPRESSION_STATE_SCHEMA
+            | SDK_ADVANCED_STATE_SCHEMA
+            | TRANSIT_DERIVED_ED_STATE_SCHEMA
+            | WORKFLOW_CREDENTIAL_STATE_SCHEMA
+            | TRANSIT_CACHE_STATE_SCHEMA
+            | IDENTITY_MFA_STATE_SCHEMA
+            | WORKFLOW_INPUT_STATE_SCHEMA
+            | RATE_LIMIT_QUOTA_STATE_SCHEMA
+            | EXTENDED_RATE_LIMIT_QUOTA_STATE_SCHEMA
+            | SCOPED_RATE_LIMIT_QUOTA_STATE_SCHEMA
+            | NATIVE_FLAT_NAMESPACE_RETIREMENT_STATE_SCHEMA
+            | NATIVE_PLAIN_NAMESPACE_TREE_STATE_SCHEMA
+            | APPROLE_NO_DEFAULT_STATE_SCHEMA
+            | AUTH_SECURITY_CONTRACT_STATE_SCHEMA
+            | APPROLE_LOCAL_STATE_SCHEMA
+            | POLICY_EXPIRATION_STATE_SCHEMA
+            | NAMESPACE_FACTORY_STATE_SCHEMA
+            | KV_MOUNT_CONFIGURATION_STATE_SCHEMA
+            | JWT_POLICY_STATE_SCHEMA
+            | PKI_BATCH_LEASE_STATE_SCHEMA
+            | NATIVE_PLAIN_NAMESPACE_STATE_SCHEMA
+            | USERPASS_ISSUANCE_STATE_SCHEMA
+            | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
+            | PKI_URLS_STATE_SCHEMA
+            | EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
+            | PKI_ACME_ACCOUNT_STATE_SCHEMA
+            | NAMESPACE_BATCH_STATE_SCHEMA
+            | NAMESPACE_DELETION_STATE_SCHEMA
+            | SDK_AUTH_RETIREMENT_STATE_SCHEMA
+            | NAMESPACE_SDK_CLEANUP_STATE_SCHEMA
+            | SDK_STORAGE_STATE_SCHEMA
+            | NAMESPACE_CUSTODY_STATE_SCHEMA
+            | AUTH_PUBLIC_ORIGIN_STATE_SCHEMA => Ok(()),
+            _ => Err(Response::error(
+                503,
+                "unsupported or downgraded identity state schema",
+            )),
+        }
+    }
+}
+
+impl Service {
+    pub(super) fn bind_identity_principal(
+        state: &State,
+        principal: &mut Principal,
+        namespace: &str,
+    ) -> Result<(), Response> {
+        let Some(id) = principal.entity_id() else {
+            return Ok(());
+        };
+        let projection = state
+            .engines
+            .identity_projection(namespace, id)
+            .map_err(|error| Response::error(error.status, &error.message))?;
+        if projection.disabled {
+            return Err(Response::error(403, "permission denied"));
+        }
+        let selectors = state
+            .auth
+            .principal_template_selectors(principal, namespace, &projection.policies)
+            .map_err(|error| Response::error(error.status, &error.message))?;
+        let values = state
+            .engines
+            .identity_template_values(namespace, &projection, &selectors, |accessor| {
+                state.auth.has_mount_accessor(namespace, accessor)
+            })
+            .map_err(|error| Response::error(error.status, &error.message))?;
+        principal.bind_identity_policies(projection.policies);
+        principal.bind_identity_templates(values);
+        Ok(())
+    }
+
+    pub(super) fn finish_identity_response(
+        auth: &mut AuthState,
+        engines: &mut EngineState,
+        response: &mut AuthResponse,
+        namespaces: &crate::service::namespaces::NamespaceRegistry,
+        namespace: &str,
+        now: u64,
+    ) -> Result<(), Response> {
+        Self::finish_identity_response_observed(
+            auth,
+            engines,
+            response,
+            namespaces,
+            namespace,
+            now,
+            AuthorityTime::Coarse(now),
+        )
+    }
+    pub(super) fn finish_identity_response_observed(
+        auth: &mut AuthState,
+        engines: &mut EngineState,
+        response: &mut AuthResponse,
+        namespaces: &crate::service::namespaces::NamespaceRegistry,
+        namespace: &str,
+        now: u64,
+        time: AuthorityTime,
+    ) -> Result<(), Response> {
+        let auth_error = |error: AuthError| Response::error(error.status, &error.message);
+        if let Some(login) = response.login_identity.take() {
+            let accessor = auth
+                .mount_accessor(namespace, &login.mount)
+                .map_err(auth_error)?;
+            if let Some(metadata) = login.metadata.as_ref() {
+                engines
+                    .validate_login_alias_metadata(namespace, &accessor, &login.alias, metadata)
+                    .map_err(|error| Response::error(error.status, &error.message))?;
+            }
+            let projection = engines
+                .bind_login_identity_scoped(
+                    namespaces.identity_namespace(namespace)?,
+                    &accessor,
+                    &login.alias,
+                    now,
+                )
+                .map_err(|error| Response::error(error.status, &error.message))?;
+            if projection.disabled {
+                return Err(Response::error(
+                    403,
+                    if login.token_api_alias {
+                        "entity from given entity alias is disabled"
+                    } else {
+                        "permission denied"
+                    },
+                ));
+            }
+            auth.bind_issued_entity(response, namespace, &login.mount, &projection.entity_id)
+                .map_err(auth_error)?;
+            if let Some(metadata) = login.metadata.as_ref() {
+                engines
+                    .update_login_alias_metadata(namespace, &accessor, &login.alias, metadata, now)
+                    .map_err(|error| Response::error(error.status, &error.message))?;
+            }
+        }
+        let is_auth = response.body.get("auth").is_some();
+        let envelope = if is_auth { "auth" } else { "data" };
+        let native_mfa_entity = response
+            .pending_service
+            .as_ref()
+            .and_then(|pending| pending.entity_id())
+            .map(str::to_owned);
+        let Some(id) = native_mfa_entity
+            .as_deref()
+            .or_else(|| response.body[envelope]["entity_id"].as_str())
+            .filter(|id| !id.is_empty())
+        else {
+            if response.external_groups.is_some() {
+                return Err(Response::error(
+                    503,
+                    "provider identity binding is unavailable",
+                ));
+            }
+            return auth
+                .finish_pending_batch_observed(response, namespace, now, time)
+                .map_err(auth_error);
+        };
+        if let Some(groups) = response.external_groups.take() {
+            let accessor = auth
+                .mount_accessor(namespace, &groups.mount)
+                .map_err(auth_error)?;
+            engines
+                .verify_external_group_identity(namespace, id, &accessor, &groups.alias)
+                .map_err(|error| Response::error(error.status, &error.message))?;
+            engines
+                .refresh_external_group_membership(namespace, id, &accessor, &groups.names, now)
+                .map_err(|error| Response::error(error.status, &error.message))?;
+        }
+        let projection = engines
+            .identity_projection(namespace, id)
+            .map_err(|error| Response::error(error.status, &error.message))?;
+        // Administrative token lookup can describe a disabled identity. Its
+        // token is still unusable: admission checks disabled before dispatch.
+        if is_auth && projection.disabled {
+            return Err(Response::error(403, "permission denied"));
+        }
+        let mfa_entity = projection.entity_id.clone();
+        let mfa_groups = projection.group_ids.clone();
+        response.body[envelope]["entity_id"] = Value::String(projection.entity_id);
+        response.body[envelope]["identity_policies"] = json!(projection.policies);
+        if is_auth {
+            let mut all = projection.policies;
+            if let Some(token_policies) = response.body["auth"]["token_policies"].as_array() {
+                for policy in token_policies {
+                    let name = policy
+                        .as_str()
+                        .ok_or_else(|| Response::error(500, "invalid token policy"))?;
+                    all.insert(name.to_owned());
+                }
+            }
+            response.body["auth"]["policies"] = json!(all);
+        }
+        auth.finish_mfa_response(response, &mfa_entity, &mfa_groups, time)
+            .map_err(auth_error)?;
+        auth.finish_pending_batch_observed(response, namespace, now, time)
+            .map_err(auth_error)
+    }
+
+    pub(super) fn validate_identity_alias_mount(
+        auth: &AuthState,
+        engines: &crate::engines::EngineState,
+        namespace: &str,
+        path: &str,
+        body: &Value,
+    ) -> Result<(), Response> {
+        // Resolve omitted fields from the actual namespace-local Alias owner.
+        // The public metadata no-op still must pass the live mount fence.
+        let accessor = engines
+            .identity_api_alias_accessor(namespace, path, body)
+            .map_err(Response::from_engine_error)?;
+        let base = path.split_once('?').map_or(path, |(base, _)| base);
+        let group_alias_route =
+            base == "identity/group-alias" || base.starts_with("identity/group-alias/id/");
+        let accessor = match accessor {
+            Some(accessor) => Some(accessor),
+            None if group_alias_route => body
+                .get("mount_accessor")
+                .map(|value| {
+                    value
+                        .as_str()
+                        .map(str::to_owned)
+                        .ok_or_else(|| Response::error(400, "invalid mount accessor"))
+                })
+                .transpose()?,
+            None => None,
+        };
+        if let Some(accessor) = accessor
+            && !auth.has_mount_accessor(namespace, &accessor)
+        {
+            if auth.identity_alias_mount_is_foreign(namespace, &accessor) {
+                return Err(Response::error(
+                    403,
+                    "matching mount is in a different namespace than request",
+                ));
+            }
+            return Err(Response::error(400, "unknown auth mount accessor"));
+        }
+        Ok(())
+    }
+
+    pub(super) fn project_identity_alias_mounts(
+        auth: &AuthState,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &mut Value,
+    ) {
+        let base = path.split_once('?').map_or(path, |(base, _)| base);
+        let alias_route = [
+            "identity/entity-alias",
+            "identity/alias",
+            "identity/persona",
+        ]
+        .iter()
+        .any(|root| {
+            base.strip_prefix(root)
+                .is_some_and(|rest| rest == "/id" || rest.starts_with("/id/"))
+        });
+        if !alias_route || !matches!(method, "GET" | "HEAD" | "LIST") {
+            return;
+        }
+        let project = |data: &mut Value| {
+            let descriptor = data
+                .get("mount_accessor")
+                .and_then(Value::as_str)
+                .and_then(|accessor| auth.identity_alias_mount(namespace, accessor));
+            if let Some((path, kind)) = descriptor {
+                data["mount_path"] = json!(path);
+                data["mount_type"] = json!(kind);
+            }
+        };
+        if let Some(data) = body.get_mut("data") {
+            if data.get("mount_accessor").is_some() {
+                project(data);
+            } else if let Some(info) = data.get_mut("key_info").and_then(Value::as_object_mut) {
+                for value in info.values_mut() {
+                    project(value);
+                }
+            }
+        }
+    }
+}
+
+#[cfg(test)]
+#[path = "identity_service_tests.rs"]
+mod tests;
+
+#[cfg(test)]
+#[path = "service_alias_metadata_tests.rs"]
+mod alias_metadata_tests;
+
+#[cfg(test)]
+mod recovery_state_tests {
+    use super::*;
+
+    fn state() -> Result<State, crate::auth::AuthError> {
+        let (auth, _) = AuthState::bootstrap(1)?;
+        Ok(State {
+            global_lossless_json_format: None,
+            namespace_protected: None,
+            namespace_leases: namespace_runtime::Leases::default(),
+            schema: CURRENT_STATE_SCHEMA,
+            cluster_id: "recovery-test-cluster".into(),
+            replay_epoch: 0,
+            namespaces: namespaces::NamespaceRegistry::default().into(),
+            auth: auth.into(),
+            engines: EngineState::initialized_empty().into(),
+            database: database::DatabaseState::default().into(),
+            raft_admin: raft_admin::RaftAdminState::default().into(),
+        })
+    }
+
+    #[test]
+    fn recovery_staging_defeats_owner_reuse_and_forces_monotonic_floor()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let previous = state().map_err(|_| std::io::Error::other("test bootstrap failed"))?;
+        let old_bytes = owner_store::serialize_owner(&previous.auth)?;
+        assert!(!String::from_utf8_lossy(&old_bytes).contains("recovery_credential"));
+        let mut candidate = previous.clone();
+        let fragments = candidate
+            .auth
+            .initialize_recovery_credential(&candidate.cluster_id, 5, 3)
+            .map_err(|_| std::io::Error::other("test recovery generation failed"))?;
+        assert_eq!(fragments.len(), 5);
+        assert!(!previous.auth.has_recovery_credential());
+        assert!(!OwnerReuseHint::between(Some(&previous), &candidate).auth);
+        assert_eq!(
+            candidate.writer_schema(),
+            INDEXED_RECOVERY_WIRE_STATE_SCHEMA
+        );
+        assert!(candidate.validate_format().is_err());
+        candidate.schema = candidate.writer_schema();
+        assert!(candidate.validate_format().is_ok());
+        assert!(candidate.validate_publication_schema(None).is_ok());
+        assert!(
+            candidate
+                .validate_publication_schema(Some(&previous))
+                .is_err()
+        );
+        let mut downgraded = candidate.clone();
+        downgraded.schema = LOCAL_TYPED_PKI_STATE_SCHEMA;
+        assert!(
+            downgraded
+                .validate_publication_schema(Some(&candidate))
+                .is_err()
+        );
+        assert_eq!(old_bytes, owner_store::serialize_owner(&previous.auth)?);
+        Ok(())
+    }
+
+    #[test]
+    fn recovery_roundtrip_binds_cluster_and_rejects_old_schema_admission()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let mut candidate = state().map_err(|_| std::io::Error::other("test bootstrap failed"))?;
+        candidate
+            .auth
+            .initialize_recovery_credential(&candidate.cluster_id, 3, 2)
+            .map_err(|_| std::io::Error::other("test recovery generation failed"))?;
+        candidate.schema = candidate.writer_schema();
+        let bytes = owner_store::serialize_owner(&candidate)?;
+        let mut loaded: State = serde_json::from_slice(&bytes)?;
+        assert!(loaded.validate_format().is_ok());
+        loaded.cluster_id = "unrelated-cluster".into();
+        assert!(loaded.validate_format().is_err());
+        assert!(
+            loaded
+                .validate_publication_schema(Some(&candidate))
+                .is_err()
+        );
+        loaded.cluster_id = candidate.cluster_id.clone();
+        loaded.schema = LOCAL_TYPED_PKI_STATE_SCHEMA;
+        assert!(loaded.validate_format().is_err());
+        assert!(
+            loaded
+                .auth
+                .initialize_recovery_credential(&loaded.cluster_id, 3, 2)
+                .is_err()
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn snapshot_floor_cannot_replay_same_schema_recovery_credentials_or_challenges()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let mut current = state().map_err(|_| std::io::Error::other("test bootstrap failed"))?;
+        current
+            .auth
+            .initialize_recovery_credential(&current.cluster_id, 5, 3)
+            .map_err(|_| std::io::Error::other("recovery generation failed"))?;
+        current.schema = current.writer_schema();
+        let mut stale = current.clone();
+        let (unrelated, _) = crate::auth::RecoveryCredential::generate(
+            crypto::digest(stale.cluster_id.as_bytes()),
+            1,
+            5,
+            3,
+        )
+        .map_err(|_| std::io::Error::other("recovery generation failed"))?;
+        stale.auth.recovery_credential = Some(unrelated);
+        assert_eq!(current.schema, stale.schema);
+        assert!(Service::validate_snapshot_protected_floor(&current, &stale).is_err());
+        let mut stale_challenge = current.clone();
+        stale_challenge.auth.recovery_attempt = Some(
+            crate::auth::RecoveryAttempt::new(
+                crypto::digest(current.cluster_id.as_bytes()),
+                current.auth.recovery_credential.as_ref(),
+                3,
+                2,
+                true,
+            )
+            .map_err(|_| std::io::Error::other("challenge generation failed"))?,
+        );
+        assert!(Service::validate_snapshot_protected_floor(&current, &stale_challenge).is_err());
+        assert!(Service::validate_snapshot_protected_floor(&current, &current).is_ok());
+        Ok(())
+    }
+    #[test]
+    fn indexed_attempt_raises_reader_before_candidate_and_cancel_does_not_lower_it()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let mut previous = state().map_err(|_| std::io::Error::other("bootstrap failed"))?;
+        let (legacy, _) = crate::auth::RecoveryCredential::generate_with_codec(
+            crypto::digest(previous.cluster_id.as_bytes()),
+            1,
+            5,
+            3,
+            None,
+        )
+        .map_err(|_| std::io::Error::other("legacy generation failed"))?;
+        previous.auth.recovery_credential = Some(legacy);
+        previous.schema = RECOVERY_CREDENTIAL_STATE_SCHEMA;
+        assert!(previous.validate_format().is_ok());
+        let mut active = previous.clone();
+        active.auth.recovery_attempt = Some(
+            crate::auth::RecoveryAttempt::new(
+                crypto::digest(active.cluster_id.as_bytes()),
+                active.auth.recovery_credential.as_ref(),
+                255,
+                2,
+                true,
+            )
+            .map_err(|_| std::io::Error::other("challenge failed"))?,
+        );
+        assert!(active.validate_format().is_err());
+        assert_eq!(active.writer_schema(), INDEXED_RECOVERY_WIRE_STATE_SCHEMA);
+        active.schema = active.writer_schema();
+        assert!(active.validate_publication_schema(Some(&previous)).is_ok());
+        let mut canceled = active.clone();
+        canceled.auth.recovery_attempt = None;
+        assert_eq!(canceled.writer_schema(), INDEXED_RECOVERY_WIRE_STATE_SCHEMA);
+        let mut downgraded = canceled.clone();
+        downgraded.schema = RECOVERY_CREDENTIAL_STATE_SCHEMA;
+        assert!(
+            downgraded
+                .validate_publication_schema(Some(&canceled))
+                .is_err()
+        );
+        assert!(Service::validate_snapshot_protected_floor(&canceled, &downgraded).is_err());
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod kubernetes_artifact_floor_tests {
+    use super::*;
+    #[test]
+    fn kube_opaque_artifact_floor_survives_empty_retirement_and_refuses_snapshot_downgrade()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let (auth, _) = AuthState::bootstrap(1).map_err(|_| "bootstrap")?;
+        let current = State {
+            global_lossless_json_format: None,
+            schema: KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA,
+            cluster_id: "opaque-artifact-floor-test".into(),
+            replay_epoch: 0,
+            namespaces: namespaces::NamespaceRegistry::default().into(),
+            auth: auth.into(),
+            engines: EngineState::initialized_empty().into(),
+            database: database::DatabaseState::default().into(),
+            raft_admin: raft_admin::RaftAdminState::default().into(),
+            namespace_protected: None,
+            namespace_leases: namespace_runtime::Leases::default(),
+        };
+        current
+            .validate_format()
+            .map_err(|_| "schema87 supported reader")?;
+        assert_eq!(current.writer_schema(), 87);
+        let mut older = current.clone();
+        older.schema = TOKEN_ROLE_STATE_SCHEMA;
+        assert!(older.validate_publication_schema(Some(&current)).is_err());
+        let rejected = Service::validate_snapshot_protected_floor(&current, &older)
+            .err()
+            .ok_or("missing snapshot rejection")?;
+        assert_eq!(rejected.status, 400);
+        assert_eq!(
+            rejected.body["errors"],
+            json!(["snapshot would downgrade opaque Kubernetes artifact ownership"])
+        );
+        let mut unknown = current.clone();
+        unknown.schema = MAX_SUPPORTED_STATE_SCHEMA + 1;
+        assert!(unknown.validate_format().is_err());
+        assert_eq!(unknown.writer_schema(), MAX_SUPPORTED_STATE_SCHEMA + 1);
+        let mut precise = current.clone();
+        precise.schema = 82;
+        assert!(
+            precise.validate_format().is_ok(),
+            "explicit reader82 admits a historical whole-second graph"
+        );
+        assert!(
+            precise.validate_publication_schema(Some(&current)).is_err(),
+            "an admitted reader82 shape cannot overwrite the actual retired87 floor"
+        );
+        assert!(Service::validate_snapshot_protected_floor(&current, &precise).is_err());
+        // The integrated reader admits PKI88 while retaining the prior87 floor.
+        let mut integrated = current.clone();
+        integrated.schema = PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA;
+        assert!(integrated.validate_format().is_ok());
+        assert!(
+            integrated
+                .validate_publication_schema(Some(&current))
+                .is_ok()
+        );
+        assert!(Service::validate_snapshot_protected_floor(&integrated, &current).is_err());
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+#[path = "service_identity_legacy_api_tests.rs"]
+mod legacy_api_tests;
+
+#[cfg(test)]
+#[allow(clippy::unwrap_used)]
+mod security_contract_state_tests {
+    use super::*;
+
+    fn fixture() -> (State, crate::auth::Principal) {
+        let (mut auth, raw) = AuthState::bootstrap(100).unwrap();
+        let root = auth.authenticate(&raw, 100).unwrap();
+        (
+            State {
+                global_lossless_json_format: None,
+                namespace_protected: None,
+                namespace_leases: namespace_runtime::Leases::default(),
+                schema: CURRENT_STATE_SCHEMA,
+                cluster_id: "security141-test-cluster".into(),
+                replay_epoch: 0,
+                namespaces: namespaces::NamespaceRegistry::default().into(),
+                auth: auth.into(),
+                engines: EngineState::initialized_empty().into(),
+                database: database::DatabaseState::default().into(),
+                raft_admin: raft_admin::RaftAdminState::default().into(),
+            },
+            root,
+        )
+    }
+
+    #[test]
+    fn security141_policy_owner_requires_reader_floor_before_publication_and_load() {
+        let (previous, root) = fixture();
+        let before = owner_store::serialize_owner(&previous.auth).unwrap();
+        let mut candidate = previous.clone();
+        candidate
+            .auth
+            .handle(
+                Some(&root),
+                "",
+                "POST",
+                "sys/policies/acl/security141",
+                &json!({"policy":"path \"secret/*\" { capabilities = [\"read\"] }", "cas":0}),
+                100,
+            )
+            .unwrap()
+            .unwrap();
+        assert_eq!(
+            candidate.writer_schema(),
+            AUTH_SECURITY_CONTRACT_STATE_SCHEMA
+        );
+        assert!(candidate.validate_format().is_err());
+        assert!(
+            candidate
+                .validate_publication_schema(Some(&previous))
+                .is_err()
+        );
+        candidate.schema = candidate.writer_schema();
+        assert!(candidate.validate_format().is_ok());
+        assert!(
+            candidate
+                .validate_publication_schema(Some(&previous))
+                .is_ok()
+        );
+        assert!(!OwnerReuseHint::between(Some(&previous), &candidate).auth);
+        assert_eq!(
+            before,
+            owner_store::serialize_owner(&previous.auth).unwrap()
+        );
+        let encoded = crate::secret_serde::to_vec(&candidate, 16 * 1024 * 1024)
+            .map_err(|_| "security141_candidate_secret_serialization_failed")
+            .unwrap();
+        let restored: State = serde_json::from_slice(&encoded).unwrap();
+        assert!(restored.validate_format().is_ok());
+        assert_eq!(
+            restored.writer_schema(),
+            AUTH_SECURITY_CONTRACT_STATE_SCHEMA
+        );
+        let mut lower = restored.clone();
+        lower.schema = 140;
+        assert!(lower.validate_format().is_err());
+        assert!(lower.validate_publication_schema(Some(&restored)).is_err());
+        assert!(Service::validate_snapshot_protected_floor(&previous, &lower).is_err());
+        assert!(Service::validate_snapshot_protected_floor(&restored, &previous).is_err());
+    }
+
+    #[test]
+    fn security141_retired_policy_cannot_authorize_old_snapshot_or_writer_floor() {
+        let (previous, root) = fixture();
+        let mut current = previous.clone();
+        current
+            .auth
+            .handle(
+                Some(&root),
+                "",
+                "POST",
+                "sys/policies/acl/security141",
+                &json!({"policy":"path \"secret/*\" { capabilities = [\"read\"] }"}),
+                100,
+            )
+            .unwrap()
+            .unwrap();
+        current.schema = current.writer_schema();
+        current
+            .auth
+            .handle(
+                Some(&root),
+                "",
+                "DELETE",
+                "sys/policies/acl/security141",
+                &json!({}),
+                100,
+            )
+            .unwrap()
+            .unwrap();
+        assert!(!current.auth.has_security_contract_state());
+        assert_eq!(current.writer_schema(), AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
+        assert!(Service::validate_snapshot_protected_floor(&current, &previous).is_err());
+        let mut lower = current.clone();
+        lower.schema = 140;
+        assert!(lower.validate_publication_schema(Some(&current)).is_err());
+        assert!(Service::validate_snapshot_protected_floor(&current, &lower).is_err());
+    }
+}

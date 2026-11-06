@@ -1,0 +1,5 @@
+{
+  "error": "C report structure lookup TypeError after root GO/arm state saved; no Native had run at error",
+  "affected": "unrelated read-only summary only",
+  "automaticRetry": false
+}

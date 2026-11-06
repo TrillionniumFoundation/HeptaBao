@@ -1,0 +1,135 @@
+{
+  "schema": "heptabao.r3-fixed-readback-pure-binding-checks.v1",
+  "passed": true,
+  "checkCount": 31,
+  "checks": [
+    {
+      "name": "reviewed_journal_before_whole",
+      "passed": true
+    },
+    {
+      "name": "reviewed_pure_deriver_whole_unchanged",
+      "passed": true
+    },
+    {
+      "name": "strict_forward_complete",
+      "passed": true
+    },
+    {
+      "name": "strict_inverse_complete",
+      "passed": true
+    },
+    {
+      "name": "all_functions_whole_unchanged_after_three_binding_blocks",
+      "passed": true
+    },
+    {
+      "name": "new_slot_and_old_context_exact",
+      "passed": true
+    },
+    {
+      "name": "original_state_pin",
+      "passed": true
+    },
+    {
+      "name": "original_stage_closed",
+      "passed": true
+    },
+    {
+      "name": "actual_authority_bound",
+      "passed": true
+    },
+    {
+      "name": "actual_final_stdout_bound",
+      "passed": true
+    },
+    {
+      "name": "actual_release_bound",
+      "passed": true
+    },
+    {
+      "name": "exact_three_targets",
+      "passed": true
+    },
+    {
+      "name": "target_0_actual_full9_size_sha",
+      "passed": true
+    },
+    {
+      "name": "metadata_0_one_exact_request",
+      "passed": true
+    },
+    {
+      "name": "target_1_actual_full9_size_sha",
+      "passed": true
+    },
+    {
+      "name": "metadata_1_one_exact_request",
+      "passed": true
+    },
+    {
+      "name": "target_2_actual_full9_size_sha",
+      "passed": true
+    },
+    {
+      "name": "metadata_2_one_exact_request",
+      "passed": true
+    },
+    {
+      "name": "outer_expected_whole_source",
+      "passed": true
+    },
+    {
+      "name": "candidate_expected_whole_source",
+      "passed": true
+    },
+    {
+      "name": "receipt_actual_not_source_or_fabricated_version",
+      "passed": true
+    },
+    {
+      "name": "exact_4_chunks_96654",
+      "passed": true
+    },
+    {
+      "name": "original_read_and_observer_caps",
+      "passed": true
+    },
+    {
+      "name": "old_and_new_body_accounting_separate",
+      "passed": true
+    },
+    {
+      "name": "no_new_submission_or_actual_metadata",
+      "passed": true
+    },
+    {
+      "name": "pre_finally_receipt_and_final_stdout_distinct",
+      "passed": true
+    },
+    {
+      "name": "future_runtime_deriver_frozen_r3",
+      "passed": true
+    },
+    {
+      "name": "original_runtime_1080_preserved",
+      "passed": true
+    },
+    {
+      "name": "root_qualification_pending_not_invented",
+      "passed": true
+    },
+    {
+      "name": "unreachable_start_guard_retained",
+      "passed": true
+    },
+    {
+      "name": "no_journal_or_deriver_execution_claim",
+      "passed": true
+    }
+  ],
+  "NativeCalls": 0,
+  "metadataCalls": 0,
+  "binaryCalls": 0,
+  "sourceOnly": true
+}

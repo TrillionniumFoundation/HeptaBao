@@ -1,0 +1,7 @@
+{
+  "at": "resume-initial-read",
+  "error": "ReferenceError: readPublicPacketWhole is not defined",
+  "nativeCalls": 0,
+  "gitMutations": 0,
+  "reason": "helpers evaluated in a nested strict eval scope; no Git read dispatched"
+}

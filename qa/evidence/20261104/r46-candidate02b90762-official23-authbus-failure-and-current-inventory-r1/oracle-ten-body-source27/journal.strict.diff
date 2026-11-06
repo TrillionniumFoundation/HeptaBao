@@ -1,0 +1,287 @@
+--- a/official271-r2-report-body10-journal
++++ b/official271-r2-report-body10-journal
+@@ -13,6 +13,103 @@
+ const GF_ORACLE_REPORT_PRIOR_STATE = {"blob":"f75c8cdfbda60bf8059b5ddf2ef058431d97ec02","bytes":214063,"sha256":"ea3a61cc35c1d17dd6b187d36ff6f5ca7ac289d9bed387345ea326886a61f178"};
+ const GF_ORACLE_REPORT_STDOUT = {"blob":"8ba51a89419cb8be7c215bea6f29677c9de258d8","bytes":681,"sha256":"958d53e5de547b3a36a048411eae3ed457ee20d336e4c52a4f7abb9a6c41d875"};
+ 
++/* One actual version, ten contiguous ranges; only new binary observers use 16 KiB pages. */
++const GF_ORACLE_BODY_EXPECTED = {"path":"/home/qian/heptabao-official271-acl23-oracle-20261106-r2/result.public.json","bytes":651803,"sha256":"9048f3b5c854a190dadde86f5d7eec180c497313065bd70bd23a87124789a62d","version":"2053:2098461:651803:1793982810542000556:1793982810542000556","infoOperation":"fb33dec05df1603940b92929c9cb75c6990fa6d0c1ca281f1a317d8221edfc47","infoNative":{"blob":"5de2fd1d0891ce3fee0bb3b4e3968452e7715dcd","bytes":463,"sha256":"50afd94d7cb022e910476f5812f78beb008323cb042a378182a32c99761893d7"},"full9Strings":["2053","2098461","1000","1000","33152","1","651803","1793982810542000556","1793982810542000556"]};
++const GF_ORACLE_BODY_RANGES = [
++  {
++    "offset": 0,
++    "limit": 65536,
++    "request": {
++      "blob": "af4e5d3b2a3e4a3e995c87b3b5c8edf902910a68",
++      "bytes": 326,
++      "sha256": "93a2f825b56df42871bc8e4529d27e9f5ace353aec6c6abed678497a5eab4979"
++    }
++  },
++  {
++    "offset": 65536,
++    "limit": 65536,
++    "request": {
++      "blob": "4064a4b95b3333f4c4f5b487decb7c1d299cd1e6",
++      "bytes": 330,
++      "sha256": "70feb42f03317c7589056b8b1a639932cdfe608ac2e806a1daaacf9a52acd02e"
++    }
++  },
++  {
++    "offset": 131072,
++    "limit": 65536,
++    "request": {
++      "blob": "3be4277978fa7422d4d70d4ca3239f91a7006ce6",
++      "bytes": 331,
++      "sha256": "917bfc19c6b300654f742555eccee4d5d8d1a6b60472da0d686e97a0432e0ae2"
++    }
++  },
++  {
++    "offset": 196608,
++    "limit": 65536,
++    "request": {
++      "blob": "5bb0631c792c014e14dd772f522fd5bca6198621",
++      "bytes": 331,
++      "sha256": "8da81d14bf4c561ce4c0560c23a46a15cadfa571dda943e3905e15d4aa05ac4c"
++    }
++  },
++  {
++    "offset": 262144,
++    "limit": 65536,
++    "request": {
++      "blob": "5589350ca22a464f0655d34b277558a41c537b46",
++      "bytes": 331,
++      "sha256": "1f399bb67128888b8d72d5a05d602c980845b5f527f949376b40e7a6cbec2b4e"
++    }
++  },
++  {
++    "offset": 327680,
++    "limit": 65536,
++    "request": {
++      "blob": "1e4b5491e3507fe198fa71f139ea52f94672f6a5",
++      "bytes": 331,
++      "sha256": "4ea9b21ed5b45381ff569fe74b00c0b2268606541ce550f5d912441e03c97984"
++    }
++  },
++  {
++    "offset": 393216,
++    "limit": 65536,
++    "request": {
++      "blob": "83f4a370ba4fbc52971e4a4142cbe013532507d5",
++      "bytes": 331,
++      "sha256": "f3c32901ac9cb9d9e921cbbf580d2eee9f65385847f0ad785db747cc280269bd"
++    }
++  },
++  {
++    "offset": 458752,
++    "limit": 65536,
++    "request": {
++      "blob": "279f53810a412e76b2b1f0a8e4341ef7fab6d0d2",
++      "bytes": 331,
++      "sha256": "5c5dd34279d052e8282ef0ca5977a8cf52da72cb2ab679e0e33aa540a14dd58c"
++    }
++  },
++  {
++    "offset": 524288,
++    "limit": 65536,
++    "request": {
++      "blob": "2acf5b82bffb12ca4fadaff883b1255c90edffb8",
++      "bytes": 331,
++      "sha256": "83ef20e19bf5cef3fc0e6d8c186faf46f0bad2fd0ed2bd120eca68d61ef03bcc"
++    }
++  },
++  {
++    "offset": 589824,
++    "limit": 61979,
++    "request": {
++      "blob": "107e4cd0d7cbe4c2f1aed3422d120e8cbda448aa",
++      "bytes": 331,
++      "sha256": "19f1f7c23373d1ea2627af34676e6676748bb6a56370ab24a7de31159a86eaf1"
++    }
++  }
++];
++const GF_ORACLE_BODY_PRIOR_STATE = {"blob":"b4206a027c1584bf5a0bcaaf54d1cec9dc1ce036","bytes":227036,"sha256":"0fe475c8bebb1fa287c9aa9e944731ae4618edd9f87ced4e852b3b9b48e9faba"};
++const GF_ORACLE_BODY_PAGE_BYTES = 16384;
++
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {
+  const actual=gitBlobMeta(raw);
+@@ -72,30 +169,82 @@
+  gfSave(s);
+  return {authorized:true,scope:g.scope,maximumNativeAdmissions:1,processStartAllowed:false,binaryReadAllowed:false};
+ }
++function gfAuthorizeOracleReportBody({goRaw,goPin,goWholeReadback,priorStateRaw}) {
++ const s=gfState(),need=GF_ORACLE_BODY_EXPECTED,info=s.oracleReportInfo;
++ gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null && s.activeObserver===null
++   && s.job==="1a1b1b4fbfa-fc05-7a60" && s.oracleReportInfoGO?.whole===true
++   && s.oracleReportInfoStarted===true && s.oracleReportBodyGO===undefined
++   && s.oracleReportBodyStarted===undefined && s.oracleReportBodyRanges===undefined
++   && Object.keys(s.calls).length===10 && s.completedObservers.length===3
++   && s.completedObservers.every(o=>o.completedInactive===true)
++   && Object.values(s.calls).every(c=>c.phase==="accepted"&&c.sdkArchive?.whole===true)
++   && gfMetaEquals(priorStateRaw,GF_ORACLE_BODY_PRIOR_STATE)
++   && JSON.stringify(s,null,2)+"\n"===priorStateRaw,
++   "whole_closed_current_r2_INFO_before_exact_body_GO");
++ gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin)
++   && goPin.blob!==s.goPin.blob && goPin.blob!==s.oracleReportInfoGO.pin.blob,
++   "separate_whole_oracle_body_GO");
++ const g=JSON.parse(goRaw);
++ gfNeed(g.authorization==="GO" && g.scope==="official271_oracle_result_binary_read_ranges_only"
++   && g.original_job===s.job && g.info_operation===need.infoOperation
++   && g.maximum_binary_read_starts===10 && g.maximum_file_info_operations===0
++   && g.maximum_process_start_calls===0 && g.immutable_body_page_bytes===GF_ORACLE_BODY_PAGE_BYTES
++   && g.maximum_operation_status_calls_per_id===8 && g.maximum_immutable_pages_per_id===128
++   && g.fixed_report?.path===need.path && g.fixed_report?.bytes===need.bytes
++   && g.fixed_report?.sha256===need.sha256 && g.fixed_report?.version===need.version
++   && Array.isArray(g.exact_requests) && g.exact_requests.length===GF_ORACLE_BODY_RANGES.length
++   && GF_ORACLE_BODY_RANGES.every((x,i)=>g.exact_requests[i]?.blob===x.request.blob
++     && g.exact_requests[i]?.bytes===x.request.bytes
++     && g.exact_requests[i]?.sha256===x.request.sha256),
++   "exact_root_ten_range_scope");
++ const prior=s.completedObservers.find(o=>o.id===need.infoOperation);
++ gfNeed(prior?.completedInactive===true && prior.tool==="file_info"
++   && prior.nativeText.blob===need.infoNative.blob
++   && gfMetaEquals(load(GF_SLOT+":closed_native:"+need.infoOperation),need.infoNative)
++   && info?.path===need.path && info.size===need.bytes && info.sha256===need.sha256
++   && info.version===need.version && info.originalOperation===need.infoOperation
++   && JSON.stringify(info.full9Strings)===JSON.stringify(need.full9Strings)
++   && need.bytes>0 && need.bytes<=1048576,
++   "whole_current_INFO_version_SHA_full9");
++ s.oracleReportBodyGO={pin:goPin,raw:goRaw,whole:true};
++ s.onlyOracleReportInfo=false;s.onlyOracleReportBody=true;
++ s.oracleReportBodyStarted=0;s.oracleReportBodyRanges=[];
++ gfSave(s);
++ return {originalJob:s.job,infoOperation:need.infoOperation,
++   exactRequests:GF_ORACLE_BODY_RANGES,maximumBinaryReadStarts:10,
++   bodyPageBytes:GF_ORACLE_BODY_PAGE_BYTES,wholeBytes:need.bytes};
++}
+ function gfValidateRequest(s,kind,q,raw) {
+  gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null,"single_call_boundary");
+- gfNeed(s.oracleReportInfoGO?.whole===true && s.onlyOracleReportInfo===true,
+-        "separate_report_info_GO_before_any_new_call");
++ gfNeed(s.oracleReportBodyGO?.whole===true && s.onlyOracleReportBody===true,
++        "separate_report_body_GO_before_any_new_call");
+  if(kind==="process_start") {
+-  throw new Error("report_info_has_no_process_start_authorization");
++  throw new Error("report_body_has_no_process_start_authorization");
+  } else if(kind==="operation_start") {
+-  gfNeed(s.activeObserver===null && s.oracleReportInfo===null
+-   && s.oracleReportInfoStarted===false && s.completedObservers.length===2
+-   && Object.values(s.calls).filter(c=>c.kind==="operation_start").length===2
+-   && gfMetaEquals(raw,GF_ORACLE_REPORT_INFO_REQUEST)
+-   && q.operation?.tool==="file_info" && q.operation.arguments.host==="x230"
+-   && q.operation.arguments.path===GF_ORACLE_REPORT_INFO_TARGET.path,
+-   "one_exact_fixed_oracle_report_metadata_request");
++  const index=s.oracleReportBodyRanges.length,range=GF_ORACLE_BODY_RANGES[index],a=q.operation?.arguments;
++  gfNeed(s.activeObserver===null && range && s.oracleReportBodyStarted===index
++   && s.completedObservers.length===3+index && gfMetaEquals(raw,range.request)
++   && q.operation?.tool==="binary_read" && a?.host==="x230"
++   && Object.keys(a).sort().join(",")==="expected_version,host,limit,offset,path"
++   && a.path===GF_ORACLE_BODY_EXPECTED.path && a.offset===range.offset
++   && a.limit===range.limit && a.limit>0 && a.limit<=65536
++   && a.expected_version===GF_ORACLE_BODY_EXPECTED.version,
++   "one_exact_next_version_bound_oracle_body_range");
+  } else if(kind==="operation_status") {
+   gfNeed(s.activeObserver && !s.activeObserver.futureClosed
+    && Object.keys(q).join(",")==="operation_id"
+-   && q.operation_id===s.activeObserver.id,"same_live_original_operation_status");
++   && q.operation_id===s.activeObserver.id
++   && Object.values(s.calls).filter(c=>c.kind==="operation_status"&&c.called===true
++      && JSON.parse(c.requestRaw).operation_id===q.operation_id).length<8,
++   "same_live_original_operation_status_within_eight");
+  } else if(kind==="operation_result") {
+   gfNeed(s.activeObserver?.futureClosed===true
+    && Object.keys(q).sort().join(",")==="limit,offset,operation_id"
+-   && q.operation_id===s.activeObserver.id && q.limit===8192
+-   && q.offset===s.activeObserver.nextPageOffset && !s.activeObserver.eof,
+-   "same_closed_original_operation_next_page");
++   && q.operation_id===s.activeObserver.id
++   && q.limit===(s.activeObserver.tool==="binary_read"?GF_ORACLE_BODY_PAGE_BYTES:8192)
++   && q.offset===s.activeObserver.nextPageOffset && !s.activeObserver.eof
++   && s.activeObserver.pages.length<128,
++   "same_closed_original_operation_next_page_within_128");
+  } else throw new Error("closed_native_tool_set");
+ }
+ async function gfPrepareOne({callKey,kind,requestRaw}) {
+@@ -105,7 +254,7 @@
+  gfValidateRequest(s,kind,q,requestRaw);
+  const requestPin=gitBlobMeta(requestRaw);
+  const intent={schema:"heptabao.gitfirst.fixed-native-call-intent.r1",
+-  callKey,kind,request:requestPin,rootGo:s.oracleReportInfoGO?.pin??s.goPin,originalJob:s.job,
++  callKey,kind,request:requestPin,rootGo:s.oracleReportBodyGO?.pin??s.oracleReportInfoGO?.pin??s.goPin,originalJob:s.job,
+   originalOperation:s.activeObserver?.id??null,maximumNativeCalls:1,
+   nativeNotYetCalled:true,lossOfAcknowledgmentNeverGrantsReplay:true,
+   localFirstExplicitlyReplacedByExactRootGO:true};
+@@ -135,7 +284,7 @@
+  gfNeed(gfMetaEquals(c.requestRaw,c.requestPin),"armed_request_unchanged");
+  c.called=true;c.phase="native_call_entered";s.nativeCallInFlight=true;
+  if(c.kind==="process_start")s.startCalled=true;
+- if(c.kind==="operation_start")s.oracleReportInfoStarted=true;
++ if(c.kind==="operation_start")s.oracleReportBodyStarted+=1;
+  gfSave(s); // No await or second dispatch between this marker and the one call.
+  let sdk;
+  try {
+@@ -219,7 +368,7 @@
+     && Number.isSafeInteger(v.total_bytes) && v.total_bytes>=0 && v.total_bytes<=1048576
+     && /^[a-f0-9]{64}$/.test(v.result_sha256),"exact_original_immutable_payload");
+    const b=unb64(v.data_base64);
+-   gfNeed(b.length<=8192 && v.next_offset===q.offset+b.length
++   gfNeed(b.length<=(a.tool==="binary_read"?GF_ORACLE_BODY_PAGE_BYTES:8192) && v.next_offset===q.offset+b.length
+      && v.next_offset<=v.total_bytes && v.eof===(v.next_offset===v.total_bytes)
+      && (b.length>0||v.eof),"exact_original_page_extent");
+    gfNeed(a.total===null || (a.total===v.total_bytes && a.digest===v.result_sha256),
+@@ -261,7 +410,45 @@
+   gfNeed(p.resultType==="complete" && p.isError===false
+     && p.content?.length===1 && p.content[0].type==="text","original_native_result_success");
+   const nativeRaw=p.content[0].text,v=parseLosslessIntegers(nativeRaw);
+-  if(a.tool==="file_info") {
++  if(a.tool==="binary_read") {
++   const need=GF_ORACLE_BODY_EXPECTED,index=s.oracleReportBodyRanges.length,
++     range=GF_ORACLE_BODY_RANGES[index],asked=a.request.operation.arguments;
++   gfNeed(range && s.oracleReportBodyStarted===index+1
++     && asked.offset===range.offset && asked.limit===range.limit
++     && v.path===need.path && v.version===need.version && v.size===need.bytes
++     && v.offset===range.offset && v.next_offset===range.offset+range.limit
++     && v.eof===(v.next_offset===need.bytes)
++     && typeof v.data_base64==="string" && /^[a-f0-9]{64}$/.test(v.chunk_sha256),
++     "exact_oracle_body_original_range_extent");
++   const bodyBytes=unb64(v.data_base64);
++   gfNeed(bodyBytes.length===range.limit
++     && sha256Latin1(byteString(bodyBytes))===v.chunk_sha256,
++     "oracle_body_actual_chunk_bytes_SHA");
++   const row={offset:range.offset,limit:range.limit,next:v.next_offset,
++     chunkSHA256:v.chunk_sha256,base64:v.data_base64,originalOperation:a.id,
++     originalPayload:pin,originalPayloadTree:archive.tree};
++   if(index+1===GF_ORACLE_BODY_RANGES.length) {
++    const ranges=s.oracleReportBodyRanges.concat([row]);
++    let complete=[],at=0;
++    for(const part of ranges) {
++     gfNeed(part.offset===at,"oracle_body_whole_continuity");
++     complete=complete.concat(unb64(part.base64));at=part.next;
++    }
++    gfNeed(at===need.bytes && complete.length===need.bytes
++      && sha256Latin1(byteString(complete))===need.sha256,"oracle_body_whole_exact_SHA");
++    const wholeRaw=utf8Text(complete),wholePin=gitBlobMeta(wholeRaw);
++    gfNeed(wholePin.bytes===need.bytes && wholePin.sha256===need.sha256,
++      "oracle_report_whole_UTF8_roundtrip");
++    store(GF_SLOT+":oracle_report_body_original",wholeRaw);
++    const wholeArchive=await archiveFlatPublicTextsOnce({
++     key:"official271-acl23-r2-report-whole",repository:"TrillionniumFoundation/HeptaBao",
++     texts:{"result.public.json":wholeRaw}});
++    s.oracleReportBody={path:need.path,version:need.version,body:wholePin,
++      wholeTree:wholeArchive.tree,originalOperations:ranges.map(x=>x.originalOperation),
++      metadataOperation:need.infoOperation,semanticQualification:false};
++   }
++   s.oracleReportBodyRanges.push(row);
++  } else if(a.tool==="file_info") {
+    const t=GF_ORACLE_REPORT_INFO_TARGET,md=v.metadata,parts=typeof v.version==="string"?v.version.split(":"):[];
+    gfNeed(s.onlyOracleReportInfo===true && s.oracleReportInfoStarted===true && s.oracleReportInfo===null
+     && a.request.operation.arguments.host==="x230" && a.request.operation.arguments.path===t.path
+@@ -359,7 +546,8 @@
+ async function gfRun(action,args) {
+  try {
+   let value;
+-  if(action==="authorize_oracle_report_info")value=gfAuthorizeOracleReportInfo(args);
++  if(action==="authorize_oracle_report_body")value=gfAuthorizeOracleReportBody(args);
++  else if(action==="authorize_oracle_report_info")value=gfAuthorizeOracleReportInfo(args);
+   else if(action==="initialize")value=gfInitializeOnlyAfterRootGO(args);
+   else if(action==="prepare")value=await gfPrepareOne(args);
+   else if(action==="invoke")value=await gfInvokePreparedOnce(args.callKey);

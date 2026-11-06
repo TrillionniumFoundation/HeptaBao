@@ -1,0 +1,96 @@
+{
+  "schema": "heptabao.root-official271-fresh-ACL23-r2-source.r1",
+  "passed": true,
+  "checks": 19,
+  "rows": [
+    {
+      "name": "whole_SOURCE26",
+      "passed": true
+    },
+    {
+      "name": "author52_exact",
+      "passed": true
+    },
+    {
+      "name": "original_report_root37_children_closed_failed_verdict_retained",
+      "passed": true
+    },
+    {
+      "name": "exact_original_request_source",
+      "passed": true
+    },
+    {
+      "name": "acl_exact_roundtrip_5hunks",
+      "passed": true
+    },
+    {
+      "name": "entry_exact_roundtrip_4hunks",
+      "passed": true
+    },
+    {
+      "name": "journal_exact_roundtrip_2hunks",
+      "passed": true
+    },
+    {
+      "name": "entry_operational_functions_unchanged",
+      "passed": true
+    },
+    {
+      "name": "original_451_public_PEM_exact",
+      "passed": true
+    },
+    {
+      "name": "only_single_terminal_LF_wire_input_removed",
+      "passed": true
+    },
+    {
+      "name": "eleven_inputs_only_acl_body_changed",
+      "passed": true
+    },
+    {
+      "name": "all_eleven_exact_declared_input_pins",
+      "passed": true
+    },
+    {
+      "name": "strict_readback_unchanged_projection_captured_first",
+      "passed": true
+    },
+    {
+      "name": "request_only_entry_payload_and_new_key_changed",
+      "passed": true
+    },
+    {
+      "name": "typed_native_identity_independently_bound",
+      "passed": true
+    },
+    {
+      "name": "fixed_new_scope_preserves_old_root",
+      "passed": true
+    },
+    {
+      "name": "original_deadlines_and_bounds_unchanged",
+      "passed": true
+    },
+    {
+      "name": "exact_primary_trim_chain",
+      "passed": true
+    },
+    {
+      "name": "no_product_or_execution_claim",
+      "passed": true
+    }
+  ],
+  "packet": "929090b26d52522694ae8d62f33ac5641e823e7c",
+  "originalChildrenClosed": true,
+  "originalFailedVerdictPreserved": true,
+  "onlyAclPublicInputAndProjectionBehaviorChanged": true,
+  "NativeCalls": 0,
+  "PythonRuns": 0,
+  "productCases": 0,
+  "nativeBinding": {
+    "sha256": "7fa6526d31102a09e614e4334916934e335cf9105fd7181d08fb926a32eef0e0",
+    "native_fingerprint": "9198129917878872585",
+    "canonicalBytes": 164695
+  },
+  "fullReplacement": false
+}

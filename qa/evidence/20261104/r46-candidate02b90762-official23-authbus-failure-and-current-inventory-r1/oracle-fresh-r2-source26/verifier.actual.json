@@ -1,0 +1,219 @@
+{
+  "schema": "heptabao.official271.acl23.fixture-r2-source-check.r1",
+  "passed": true,
+  "check_count": 52,
+  "checks": [
+    {
+      "name": "acl strict forward",
+      "passed": true
+    },
+    {
+      "name": "acl strict reverse",
+      "passed": true
+    },
+    {
+      "name": "entry strict forward",
+      "passed": true
+    },
+    {
+      "name": "entry strict reverse",
+      "passed": true
+    },
+    {
+      "name": "journal strict forward",
+      "passed": true
+    },
+    {
+      "name": "journal strict reverse",
+      "passed": true
+    },
+    {
+      "name": "ACL five explicit hunks",
+      "passed": true
+    },
+    {
+      "name": "generator exact all source",
+      "passed": true
+    },
+    {
+      "name": "generator exact request and payload",
+      "passed": true
+    },
+    {
+      "name": "entry exact pin",
+      "passed": true
+    },
+    {
+      "name": "ACL exact pin",
+      "passed": true
+    },
+    {
+      "name": "journal exact pin",
+      "passed": true
+    },
+    {
+      "name": "request exact pin",
+      "passed": true
+    },
+    {
+      "name": "payload exact pin",
+      "passed": true
+    },
+    {
+      "name": "451 original public PEM unchanged",
+      "passed": true
+    },
+    {
+      "name": "one LF removed only request value",
+      "passed": true
+    },
+    {
+      "name": "request canonicalization is one explicit slice",
+      "passed": true
+    },
+    {
+      "name": "validated PEM format remains unchanged",
+      "passed": true
+    },
+    {
+      "name": "public setup projection initialized None",
+      "passed": true
+    },
+    {
+      "name": "public projection stored before same strict comparison",
+      "passed": true
+    },
+    {
+      "name": "projection exposed in both success partial",
+      "passed": true
+    },
+    {
+      "name": "only three public config fields",
+      "passed": true
+    },
+    {
+      "name": "unchanged method admin_call",
+      "passed": true
+    },
+    {
+      "name": "unchanged method require_status",
+      "passed": true
+    },
+    {
+      "name": "unchanged method role_body",
+      "passed": true
+    },
+    {
+      "name": "unchanged method common_role",
+      "passed": true
+    },
+    {
+      "name": "unchanged method snapshot",
+      "passed": true
+    },
+    {
+      "name": "unchanged method issue_actor",
+      "passed": true
+    },
+    {
+      "name": "unchanged method case_payload",
+      "passed": true
+    },
+    {
+      "name": "unchanged method verify_transition",
+      "passed": true
+    },
+    {
+      "name": "run case loop and raw wire unchanged",
+      "passed": true
+    },
+    {
+      "name": "no actor default injection",
+      "passed": true
+    },
+    {
+      "name": "eleven fixed input paths unchanged",
+      "passed": true
+    },
+    {
+      "name": "only one runtime input changed",
+      "passed": true
+    },
+    {
+      "name": "ten other inputs byteidentical",
+      "passed": true
+    },
+    {
+      "name": "original matrix whole untouched",
+      "passed": true
+    },
+    {
+      "name": "all input pins exact",
+      "passed": true
+    },
+    {
+      "name": "source bytes explicit",
+      "passed": true
+    },
+    {
+      "name": "same compact payload serializer",
+      "passed": true
+    },
+    {
+      "name": "entry implementation tail unchanged",
+      "passed": true
+    },
+    {
+      "name": "fresh root literal",
+      "passed": true
+    },
+    {
+      "name": "fresh ports",
+      "passed": true
+    },
+    {
+      "name": "fresh run ID",
+      "passed": true
+    },
+    {
+      "name": "Owner360 and report budget remain",
+      "passed": true
+    },
+    {
+      "name": "new entry exact self and stdin",
+      "passed": true
+    },
+    {
+      "name": "same X230 launcher outer390",
+      "passed": true
+    },
+    {
+      "name": "fresh explicit business key",
+      "passed": true
+    },
+    {
+      "name": "typed binding exact",
+      "passed": true
+    },
+    {
+      "name": "fresh journal slot",
+      "passed": true
+    },
+    {
+      "name": "journal only three data bindings",
+      "passed": true
+    },
+    {
+      "name": "root primary evidence exact",
+      "passed": true
+    },
+    {
+      "name": "source only preserves original fail",
+      "passed": true
+    }
+  ],
+  "python_runs": 0,
+  "native_calls": 0,
+  "product_cases": 0,
+  "new_fixture_started": false
+}

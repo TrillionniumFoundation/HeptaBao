@@ -1,0 +1,51 @@
+{
+  "schema": "heptabao.root.GO.pocket4.current-network-single-read.r1",
+  "authorization": "GO",
+  "scope": "single_original_public_network_inspect_only",
+  "sourcePacket": "0944e743781641109b178d824b2c8c26a239ba0e",
+  "sourceAudit": {
+    "tree": "0944e743781641109b178d824b2c8c26a239ba0e",
+    "files": 9,
+    "bytes": 15655,
+    "merkle": {
+      "root_sha": "0944e743781641109b178d824b2c8c26a239ba0e",
+      "trees_verified": 1,
+      "leaf_count": 9
+    },
+    "whole": true
+  },
+  "exactRequest": {
+    "blob": "238fd0aa94cd040ee7ba5572a0794dd84f0ee4dd",
+    "bytes": 24,
+    "sha256": "2d2f4b9e3224c89b54307d102899b9efbf7ba7531cab1433e0583a12d62e8e0d"
+  },
+  "tool": "mcp__codex_apps__heptaruntime_mac_controller_network_inspect",
+  "maximumCalls": 1,
+  "maximumSearchStarts": 0,
+  "maximumProcessStarts": 0,
+  "lane": "B1",
+  "concurrentLanes": {
+    "A": 0,
+    "B": 1,
+    "C": 1,
+    "root": 0
+  },
+  "currentHostAliasEvidence": {
+    "originalHostListNative": "54c30fba00c385936cdc7568ddf877cb3f724d8c",
+    "rootQualification": {
+      "blob": "4dfc716a9f2faacf3b54dfd7dc61b1d8f6ecfe13",
+      "bytes": 7385,
+      "sha256": "69134ba95267fc99c9eb37cfed7d62590b72750366d8012b939fb4f86477dc75"
+    }
+  },
+  "originalIntentAndRequestBeforeCall": true,
+  "wholeOriginalSDKBeforeParse": true,
+  "missingOrErrorAcknowledgementNoReplay": true,
+  "releaseBImmediatelyAfterOriginalReturnsAndIsArchived": true,
+  "noPhysicalIdentityAssumption": true,
+  "noCredentialsOrPrivateContentReads": true,
+  "noStateMutation": true,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

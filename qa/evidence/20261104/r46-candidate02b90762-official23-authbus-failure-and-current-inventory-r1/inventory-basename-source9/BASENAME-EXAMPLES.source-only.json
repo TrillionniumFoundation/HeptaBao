@@ -1,0 +1,59 @@
+{
+  "scope": "Nine pure regex examples, not Runtime or product cases",
+  "examples": [
+    {
+      "query": "consumer",
+      "value": "heptabao-native-20261030-5a1e-r5/candidate/server.json",
+      "expected": false,
+      "actual": false
+    },
+    {
+      "query": "consumer",
+      "value": ".config/bao/agent.conf",
+      "expected": false,
+      "actual": false
+    },
+    {
+      "query": "consumer",
+      "value": ".config/systemd/user/vault-agent.service",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "query": "consumer",
+      "value": "bin/bao",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "query": "backup",
+      "value": "repo/snapshot_module/src/main.rs",
+      "expected": false,
+      "actual": false
+    },
+    {
+      "query": "backup",
+      "value": "backups/kv.snapshot",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "query": "backup",
+      "value": "backups/bao-backup.tar.gz",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "query": "unit",
+      "value": "vault.service.d/override.conf",
+      "expected": false,
+      "actual": false
+    },
+    {
+      "query": "unit",
+      "value": "bao.service",
+      "expected": true,
+      "actual": true
+    }
+  ]
+}

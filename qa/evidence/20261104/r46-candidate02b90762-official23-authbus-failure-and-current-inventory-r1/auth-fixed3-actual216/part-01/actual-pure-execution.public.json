@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.pure-v8-readback-verifier-execution.v1",
+  "verifier": {
+    "blob": "f17fc019345cddc3a972d5fd53d3a46cbc63a8e4",
+    "bytes": 5397,
+    "sha256": "0a7d697e15ba58ce6e61ace87d8606366b151325095a41411fa543ff35930db0"
+  },
+  "result": {
+    "blob": "711f4759c89227f4a31df53931680f97e70d94d1",
+    "bytes": 9891,
+    "sha256": "af84574159e891bf8665b3d3bfdb2fc4c679db595c33516d843730a3b4b91c4e"
+  },
+  "inputState": {
+    "blob": "70c547edbebceae5f188356a240641b4619955bd",
+    "bytes": 345471,
+    "sha256": "45da3237c596106c4d865e79dd915c3372a40bf866b3cfafa773a555555eef92"
+  },
+  "interface": {
+    "blob": "45489523006cf167d13dd332014fc5c7e82354d4",
+    "bytes": 642,
+    "sha256": "7eac12bea0e0108e1762738c59a99beb88107c8aa5ada20df6b941720a0dd0e6"
+  },
+  "passed": true,
+  "checkCount": 88,
+  "originalNativeCalls": 35,
+  "NativeCallsDuringVerification": 0,
+  "errors": []
+}

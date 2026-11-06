@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.official271.fresh-r2.outer-chain-qualification.r1",
+  "boundary": "Original 7-call outer transport only; prior exact state frozen before report INFO authorization.",
+  "sourcePacket": "929090b26d52522694ae8d62f33ac5641e823e7c",
+  "minimalPacket": "ce3c48a294ff22474bac26d940b1ac8d468f2d78",
+  "rootMinimalQualification": {
+    "blob": "1cbe26f6cc13f3a65a579b2dc636b6f57f6893ad",
+    "bytes": 1401,
+    "sha256": "ab76b8aa6c91db9a2282a4464fabac75540c93788b6884896b56d52b5fb07ed5"
+  },
+  "originalExit": 0,
+  "calls": 7,
+  "observers": 2,
+  "pages": 2,
+  "stdoutBytes": 681,
+  "verifier": {
+    "blob": "27117c632c93e025674ad1a81eb31c4dc885324c",
+    "bytes": 8913,
+    "sha256": "775513266b03bbe5962025c1ad2cd3a347902396eca65ef108a53ae88503f8aa"
+  },
+  "actual": {
+    "blob": "f72af1410bdad47fbe872cc7fbffca9d027cb93c",
+    "bytes": 7915,
+    "sha256": "08d063177df554f2646c298ecd5fce1a0a7b5e6767572bd5eae7e1b5bae320a0"
+  },
+  "checks": 88,
+  "reportBytes": 651803,
+  "reportSHA256": "9048f3b5c854a190dadde86f5d7eec180c497313065bd70bd23a87124789a62d",
+  "reportBodyQualification": false,
+  "actual23Statuses": null,
+  "ownerReceiptQualification": false,
+  "oldR1FailureAndStatus0UnknownPreserved": true,
+  "RuntimeCallsByVerifier": 0
+}

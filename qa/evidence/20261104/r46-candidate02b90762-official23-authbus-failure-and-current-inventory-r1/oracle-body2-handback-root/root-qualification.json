@@ -1,0 +1,249 @@
+{
+  "schema": "heptabao.root.oracle271.r2.BODY02.actual-and-handback.qualification.r1",
+  "passed": true,
+  "checks": 47,
+  "rows": [
+    {
+      "name": "whole_full56_and_SOURCE21",
+      "passed": true
+    },
+    {
+      "name": "both_author_results_exact",
+      "passed": true
+    },
+    {
+      "name": "original_GO_and_paused_history",
+      "passed": true
+    },
+    {
+      "name": "same_recovery_originals_across_packets",
+      "passed": true
+    },
+    {
+      "name": "SDK_archive_official271-x230-acl23-r2-body02-reconcile-status1",
+      "passed": true
+    },
+    {
+      "name": "SDK_archive_official271-x230-acl23-r2-body02-recovery-page000000",
+      "passed": true
+    },
+    {
+      "name": "SDK_archive_official271-x230-acl23-r2-body02-recovery-page016384",
+      "passed": true
+    },
+    {
+      "name": "SDK_archive_official271-x230-acl23-r2-body02-recovery-page032768",
+      "passed": true
+    },
+    {
+      "name": "SDK_archive_official271-x230-acl23-r2-body02-recovery-page049152",
+      "passed": true
+    },
+    {
+      "name": "SDK_archive_official271-x230-acl23-r2-body02-recovery-page065536",
+      "passed": true
+    },
+    {
+      "name": "SDK_archive_official271-x230-acl23-r2-body02-recovery-page081920",
+      "passed": true
+    },
+    {
+      "name": "original_BODY2_recovered_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "original_BODY2_recovered_call_official271-x230-acl23-r2-body02-admit",
+      "passed": true
+    },
+    {
+      "name": "original_BODY2_recovered_armed_tree_official271-x230-acl23-r2-body02-admit",
+      "passed": true
+    },
+    {
+      "name": "original_BODY2_recovered_call_official271-x230-acl23-r2-body02-reconcile-status1",
+      "passed": true
+    },
+    {
+      "name": "original_BODY2_recovered_armed_tree_official271-x230-acl23-r2-body02-reconcile-status1",
+      "passed": true
+    },
+    {
+      "name": "original_BODY2_recovered_call_official271-x230-acl23-r2-body02-recovery-page000000",
+      "passed": true
+    },
+    {
+      "name": "original_BODY2_recovered_armed_tree_official271-x230-acl23-r2-body02-recovery-page000000",
+      "passed": true
+    },
+    {
+      "name": "original_BODY2_recovered_call_official271-x230-acl23-r2-body02-recovery-page016384",
+      "passed": true
+    },
+    {
+      "name": "original_BODY2_recovered_armed_tree_official271-x230-acl23-r2-body02-recovery-page016384",
+      "passed": true
+    },
+    {
+      "name": "original_BODY2_recovered_call_official271-x230-acl23-r2-body02-recovery-page032768",
+      "passed": true
+    },
+    {
+      "name": "original_BODY2_recovered_armed_tree_official271-x230-acl23-r2-body02-recovery-page032768",
+      "passed": true
+    },
+    {
+      "name": "original_BODY2_recovered_call_official271-x230-acl23-r2-body02-recovery-page049152",
+      "passed": true
+    },
+    {
+      "name": "original_BODY2_recovered_armed_tree_official271-x230-acl23-r2-body02-recovery-page049152",
+      "passed": true
+    },
+    {
+      "name": "original_BODY2_recovered_call_official271-x230-acl23-r2-body02-recovery-page065536",
+      "passed": true
+    },
+    {
+      "name": "original_BODY2_recovered_armed_tree_official271-x230-acl23-r2-body02-recovery-page065536",
+      "passed": true
+    },
+    {
+      "name": "original_BODY2_recovered_call_official271-x230-acl23-r2-body02-recovery-page081920",
+      "passed": true
+    },
+    {
+      "name": "original_BODY2_recovered_armed_tree_official271-x230-acl23-r2-body02-recovery-page081920",
+      "passed": true
+    },
+    {
+      "name": "original_BODY2_recovered_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "original_BODY2_recovered_observer_6220e2762757d7afa1ba315c7beb2a985c59c147ac7cb3852aa17ba9c21c7a9e",
+      "passed": true
+    },
+    {
+      "name": "original_BODY2_recovered_page_6220e2762757d7afa1ba315c7beb2a985c59c147ac7cb3852aa17ba9c21c7a9e_0",
+      "passed": true
+    },
+    {
+      "name": "original_BODY2_recovered_page_6220e2762757d7afa1ba315c7beb2a985c59c147ac7cb3852aa17ba9c21c7a9e_16384",
+      "passed": true
+    },
+    {
+      "name": "original_BODY2_recovered_page_6220e2762757d7afa1ba315c7beb2a985c59c147ac7cb3852aa17ba9c21c7a9e_32768",
+      "passed": true
+    },
+    {
+      "name": "original_BODY2_recovered_page_6220e2762757d7afa1ba315c7beb2a985c59c147ac7cb3852aa17ba9c21c7a9e_49152",
+      "passed": true
+    },
+    {
+      "name": "original_BODY2_recovered_page_6220e2762757d7afa1ba315c7beb2a985c59c147ac7cb3852aa17ba9c21c7a9e_65536",
+      "passed": true
+    },
+    {
+      "name": "original_BODY2_recovered_page_6220e2762757d7afa1ba315c7beb2a985c59c147ac7cb3852aa17ba9c21c7a9e_81920",
+      "passed": true
+    },
+    {
+      "name": "original_BODY2_recovered_payload_6220e2762757d7afa1ba315c7beb2a985c59c147ac7cb3852aa17ba9c21c7a9e",
+      "passed": true
+    },
+    {
+      "name": "original_BODY2_recovered_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "original_chunk_exact_65536",
+      "passed": true
+    },
+    {
+      "name": "recovery_closed_and_counted",
+      "passed": true
+    },
+    {
+      "name": "exact_handback_source_and_main_journal",
+      "passed": true
+    },
+    {
+      "name": "strict_exact_state_diff_both_directions",
+      "passed": true
+    },
+    {
+      "name": "only_six_state_fields",
+      "passed": true
+    },
+    {
+      "name": "old_calls_and_failures_unchanged",
+      "passed": true
+    },
+    {
+      "name": "append_only_original_closed_observer_and_range",
+      "passed": true
+    },
+    {
+      "name": "immutable_recovery_reference_and_budget",
+      "passed": true
+    },
+    {
+      "name": "resume_only_next_original_request",
+      "passed": true
+    }
+  ],
+  "actualPacket": {
+    "tree": "1da012307bd166ff9601bbcf92963a28f12cb80a",
+    "files": 56,
+    "bytes": 1168276,
+    "merkle": {
+      "root_sha": "1da012307bd166ff9601bbcf92963a28f12cb80a",
+      "trees_verified": 1,
+      "leaf_count": 56
+    },
+    "whole": true
+  },
+  "sourcePacket": {
+    "tree": "3b16b169df6e6a7eaaab4ecbab7462c29dd9972f",
+    "files": 21,
+    "bytes": 1546210,
+    "merkle": {
+      "root_sha": "3b16b169df6e6a7eaaab4ecbab7462c29dd9972f",
+      "trees_verified": 1,
+      "leaf_count": 21
+    },
+    "whole": true
+  },
+  "originalOperation": "6220e2762757d7afa1ba315c7beb2a985c59c147ac7cb3852aa17ba9c21c7a9e",
+  "originalRecoveredBytes": 65536,
+  "cumulativeContiguousBodyBytes": 196608,
+  "originalFailedStatusPreserved": true,
+  "before": {
+    "blob": "652b0103388657f5515e30c077ce927c24b19cf2",
+    "bytes": 454676,
+    "sha256": "dd4a465e95e91c8aa23ddcde138d4541a52e79e7482297eb418bb89e16f83aa3"
+  },
+  "after": {
+    "blob": "71de8bc336a360f5e3600c1c74072016714d4c48",
+    "bytes": 545600,
+    "sha256": "eb3d133b3f55b9f89b894503a39c0ffcf30f1cc8cc7f98299156fee0fda69a53"
+  },
+  "handbackSource": {
+    "blob": "bcd5f8aeb323519de016c9a50faafc978fd3efea",
+    "bytes": 10066,
+    "sha256": "7429fe571425fa1598a060df33bf088c9ae1a2a1a3d885a3c180fbeac1bd17ca"
+  },
+  "nextOriginalRequest": {
+    "blob": "5bb0631c792c014e14dd772f522fd5bca6198621",
+    "bytes": 331,
+    "sha256": "8da81d14bf4c561ce4c0560c23a46a15cadfa571dda943e3905e15d4aa05ac4c"
+  },
+  "remainingOriginalReads": 7,
+  "totalOriginalAdmissionLimit": 10,
+  "actualHandbackApplied": false,
+  "fullReportQualified": false,
+  "NativeCalls": 0,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

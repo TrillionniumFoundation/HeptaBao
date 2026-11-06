@@ -1,0 +1,18 @@
+{
+  "schema": "heptabao.original-call-intent.v1",
+  "call": "consumer-start",
+  "tool": "search_start",
+  "request": {
+    "blob": "26306b1d348778e525242ef3c154a1e5c8945c0e",
+    "bytes": 835,
+    "sha256": "c4845bf89c5b7cd4f354d57b59527e27416a2023faaa0e640d4deef5ce1689ba"
+  },
+  "go": {
+    "blob": "af61dde0fb0fc7164a20aa4034bc698f39b75267",
+    "bytes": 1770,
+    "sha256": "7a106338e0a6a3f7922127ebdfc9625506b5ead70a196b5ab0ca2cdd8460a06e"
+  },
+  "originalCallOrdinal": 1,
+  "dispatchCount": 0,
+  "automaticRetry": false
+}

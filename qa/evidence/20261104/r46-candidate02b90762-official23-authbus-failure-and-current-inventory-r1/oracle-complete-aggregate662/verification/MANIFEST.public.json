@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.official271.ACL23.r2.verification-packet.r1",
+  "entries": [
+    {
+      "path": "verifier.source.js",
+      "blob": "34490cd08f73819905f57734cbacb72767b0949e",
+      "bytes": 16776,
+      "sha256": "69987d63f8debc92cad9a6640a7fe8fc49120fe465b3a46271bfd7f8132507c6"
+    },
+    {
+      "path": "verifier.actual.json",
+      "blob": "1f61ce5cd7bd896b3c4bfdce11b399fe014905a5",
+      "bytes": 78121,
+      "sha256": "08f56b18d4097c413767d5b8f851878a4e68efcfb198ab6bb1929095d27346c3"
+    },
+    {
+      "path": "executor.source.js",
+      "blob": "fa9a8ee13fda215d8bf357e8b8aaf4b202164e6d",
+      "bytes": 819,
+      "sha256": "8f9265a31ba3507540e0cb988a4dd848ac08ad8540a8d6edf4084eef2c36851f"
+    },
+    {
+      "path": "pure_helpers.js",
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    {
+      "path": "SOURCE-PAYLOAD.original.json",
+      "blob": "d40d885470eec3db203a9c91f579e5b5b17ed098",
+      "bytes": 134677,
+      "sha256": "8a8681e59c5572ed01fa6e824c4a2e03692baceb8d272bba857431c9c5c8e30f"
+    },
+    {
+      "path": "MATRIX23.original.public.json",
+      "blob": "7364a32a2341a56b0730ad3486c72bdbd6de53c4",
+      "bytes": 14285,
+      "sha256": "59e3c9519e59e7ae26cde512a8171d39e2175e8bb24f12039222218570ebe6f8"
+    },
+    {
+      "path": "PUBLIC-KEY.pem",
+      "blob": "0699a557f6f8b51d1b9a8187b1ed89084f76aa25",
+      "bytes": 451,
+      "sha256": "db4837a2caba18729628ca629eeb44f452a55d5a9aa1f7bad7c2357ed0217938"
+    },
+    {
+      "path": "CATALOG.public.json",
+      "blob": "916af791f998c31038581724e3080edcb1582384",
+      "bytes": 162992,
+      "sha256": "7c5611a14fadade9c7336809fc9d174e090c0190ab67b8f8a47d22bf5ef3d663"
+    },
+    {
+      "path": "CALL-INDEX.aggregate.json",
+      "blob": "102b4778f34d5aab5f23784dabcb9894b87dc450",
+      "bytes": 26822,
+      "sha256": "07367b1f571fdae5bc9f0c7cb38758f9bb8dfd79e4ce0fee6ba33581a367b54c"
+    },
+    {
+      "path": "REVIEW.public.json",
+      "blob": "e2feab1750675be3aa19c73161cf7e0426e4de59",
+      "bytes": 2371,
+      "sha256": "24b4bd9e85b3111adc897189e2a6149f71da7f333fc61e6ab11b45e8e314f90e"
+    }
+  ]
+}

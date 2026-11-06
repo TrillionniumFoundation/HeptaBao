@@ -1,0 +1,314 @@
+{
+  "schema": "heptabao.combined02b90762-bound-stage-source-verification.r1",
+  "pass": true,
+  "checks": 71,
+  "results": [
+    {
+      "name": "whole:PLAN.public.json",
+      "pass": true
+    },
+    {
+      "name": "whole:stage.before.py",
+      "pass": true
+    },
+    {
+      "name": "whole:stage.after.py",
+      "pass": true
+    },
+    {
+      "name": "whole:stage.forward.diff",
+      "pass": true
+    },
+    {
+      "name": "whole:stage.reverse.diff",
+      "pass": true
+    },
+    {
+      "name": "whole:journal.before.js",
+      "pass": true
+    },
+    {
+      "name": "whole:journal.after.js",
+      "pass": true
+    },
+    {
+      "name": "whole:journal.forward.diff",
+      "pass": true
+    },
+    {
+      "name": "whole:journal.reverse.diff",
+      "pass": true
+    },
+    {
+      "name": "whole:request.before.json",
+      "pass": true
+    },
+    {
+      "name": "whole:request.after.json",
+      "pass": true
+    },
+    {
+      "name": "whole:LITERAL-CHANGES.public.json",
+      "pass": true
+    },
+    {
+      "name": "whole:historical-carrier.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole:baseline-stage-GO.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole:source11-interface.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole:root-publication-proof.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole:actual-commit.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole:base-ancestry.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole:git-order-leaf-index.original.txt",
+      "pass": true
+    },
+    {
+      "name": "whole:pure-helper.original.js",
+      "pass": true
+    },
+    {
+      "name": "whole:archive-helper.original.js",
+      "pass": true
+    },
+    {
+      "name": "whole:strict-diff-helper.original.js",
+      "pass": true
+    },
+    {
+      "name": "whole:correct-stdin-binding.original.js",
+      "pass": true
+    },
+    {
+      "name": "finite_literal_counts",
+      "pass": true
+    },
+    {
+      "name": "unique_literal:24",
+      "pass": true
+    },
+    {
+      "name": "unique_literal:25",
+      "pass": true
+    },
+    {
+      "name": "unique_literal:26",
+      "pass": true
+    },
+    {
+      "name": "unique_literal:27",
+      "pass": true
+    },
+    {
+      "name": "unique_literal:28",
+      "pass": true
+    },
+    {
+      "name": "unique_literal:29",
+      "pass": true
+    },
+    {
+      "name": "unique_literal:30",
+      "pass": true
+    },
+    {
+      "name": "unique_literal:31",
+      "pass": true
+    },
+    {
+      "name": "unique_literal:32",
+      "pass": true
+    },
+    {
+      "name": "unique_literal:33",
+      "pass": true
+    },
+    {
+      "name": "unique_literal:34",
+      "pass": true
+    },
+    {
+      "name": "unique_literal:35",
+      "pass": true
+    },
+    {
+      "name": "only_stage_literals",
+      "pass": true
+    },
+    {
+      "name": "unique_literal:37",
+      "pass": true
+    },
+    {
+      "name": "unique_literal:38",
+      "pass": true
+    },
+    {
+      "name": "unique_literal:39",
+      "pass": true
+    },
+    {
+      "name": "only_journal_literals",
+      "pass": true
+    },
+    {
+      "name": "stage_strict_both_directions",
+      "pass": true
+    },
+    {
+      "name": "journal_strict_both_directions",
+      "pass": true
+    },
+    {
+      "name": "strict_hunk_counts",
+      "pass": true
+    },
+    {
+      "name": "all_original_function_order",
+      "pass": true
+    },
+    {
+      "name": "nineteen_original_function_bodies",
+      "pass": true
+    },
+    {
+      "name": "sole_function_actual_leafcount_only",
+      "pass": true
+    },
+    {
+      "name": "original_exception_finally_terminal_tail",
+      "pass": true
+    },
+    {
+      "name": "root_actual_publication",
+      "pass": true
+    },
+    {
+      "name": "actual_commit_parent_tree",
+      "pass": true
+    },
+    {
+      "name": "exact_16link_continuity",
+      "pass": true
+    },
+    {
+      "name": "actual_base_chain_and_history",
+      "pass": true
+    },
+    {
+      "name": "source_actual_ancestry_literal",
+      "pass": true
+    },
+    {
+      "name": "index_exact_trailing_newline",
+      "pass": true
+    },
+    {
+      "name": "original_nul_index_shape",
+      "pass": true
+    },
+    {
+      "name": "actual_leaf_count_and_tracked_bytes",
+      "pass": true
+    },
+    {
+      "name": "actual_index_digest_bound",
+      "pass": true
+    },
+    {
+      "name": "unchanged_canonical_runtime_guard",
+      "pass": true
+    },
+    {
+      "name": "root_selected_fresh_paths",
+      "pass": true
+    },
+    {
+      "name": "reviewed_schema_and_unformatted_purpose",
+      "pass": true
+    },
+    {
+      "name": "no_formatter_or_execution_qualification",
+      "pass": true
+    },
+    {
+      "name": "request_only_source_selfhash_key",
+      "pass": true
+    },
+    {
+      "name": "unchanged_whole_carrier",
+      "pass": true
+    },
+    {
+      "name": "exact_original_request_geometry",
+      "pass": true
+    },
+    {
+      "name": "unique_scope_key_literal",
+      "pass": true
+    },
+    {
+      "name": "typed_stdin_original_positive_control",
+      "pass": true
+    },
+    {
+      "name": "new_correct_typed_binding",
+      "pass": true
+    },
+    {
+      "name": "new_journal_slot_request_pins",
+      "pass": true
+    },
+    {
+      "name": "original_observer_host_caps",
+      "pass": true
+    },
+    {
+      "name": "original_budget_table",
+      "pass": true
+    },
+    {
+      "name": "source_review_only",
+      "pass": true
+    }
+  ],
+  "stage": {
+    "blob": "36c9681e90e19521a8f09d2fbfd88896e2b6d267",
+    "bytes": 28939,
+    "sha256": "3a0aa014e5292df423d5742743ac78db9374aba51044031dce85abfa39356c6a"
+  },
+  "request": {
+    "blob": "b2ce0ac862ac88e531650feea8847268403ce025",
+    "bytes": 111947,
+    "sha256": "9a6003c2fb09cefc190f883c2d9ed7fbc285bc50d9fdf09bc0b2ca1346b215a9"
+  },
+  "journal": {
+    "blob": "54407e90a2917b521acf749859a2248c7e33b14d",
+    "bytes": 19047,
+    "sha256": "f1eede8bf6e8d745f3a1ee0ccf85158c7100c6698f3654f5f8bc34cb7e7b8a3b"
+  },
+  "functionBodiesUnchanged": 19,
+  "stageLiteralChanges": 12,
+  "journalLiteralChanges": 3,
+  "stageHunks": 6,
+  "journalHunks": 2,
+  "pythonExecuted": false,
+  "NativeCalls": 0,
+  "RustExecuted": false
+}

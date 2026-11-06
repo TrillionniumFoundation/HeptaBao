@@ -1,0 +1,9 @@
+--- a/before--verify-actual.js
++++ b/verify-actual.js
+@@ -28,5 +28,5 @@
+  for(let i=0;i<4;i++){const b=s.readbackParts[i],q=JSON.parse(s.readbackRequests[i+3]).operation.arguments;need("body "+i+" actual chunk version and digest",b.path===q.path&&b.version===q.expected_version&&b.offset===q.offset&&b.bytes===q.limit&&b.next_offset===q.offset+q.limit&&unb64(b.base64).length===q.limit&&sha256Latin1(byteString(unb64(b.base64)))===b.chunkSha256);}
+  need("all three whole files exact",s.readbackWholeFiles.length===3&&s.readbackWholeFiles.every((f,i)=>f.target===p.targets[i].id&&f.path===p.targets[i].path&&f.version===s.readbackInfos[i].version&&gitBlobMeta(f.raw).sha256===p.targets[i].sha256&&gitBlobMeta(f.raw).bytes===p.targets[i].bytes&&(!p.targets[i].sourcePin||gitBlobMeta(f.raw).blob===p.targets[i].sourcePin.blob)));
+  need("original inert context unchanged",gitBlobMeta(data.originalInertStateRaw).blob===p.originalState.blob);
++ return {schema:"heptabao.home-r3-fixed-readback-actual-checks.v1",passed:true,checkCount:checks.length,checks,NativeCalls:35,originalOperations:7,immutablePages:21,bodyBytes:96654,noNewRuntimeInVerifier:true,noProductTestClaim:true};
+- return {schema:"heptabao.home-r2-fixed-readback-actual-checks.v1",passed:true,checkCount:checks.length,checks,NativeCalls:35,originalOperations:7,immutablePages:21,bodyBytes:96654,noNewRuntimeInVerifier:true,noProductTestClaim:true};
+ }

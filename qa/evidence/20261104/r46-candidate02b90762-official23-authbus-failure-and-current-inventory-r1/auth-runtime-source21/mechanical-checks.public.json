@@ -1,0 +1,18 @@
+{
+  "journalStrictForward": true,
+  "journalStrictReverse": true,
+  "journalOnlySlotRequestObserverPrefix": true,
+  "originalDefinitionsNoFunctionalChange": true,
+  "requestFromFrozenDeriver": true,
+  "realHomeBindingByteEqual": true,
+  "regularInterpreterUnchanged": true,
+  "cwdUnchanged": true,
+  "controller1080Unchanged": true,
+  "outerPathExact": true,
+  "candidatePathExact": true,
+  "candidateSHAExact": true,
+  "runtimeSlotNotInitialized": true,
+  "actualReadbackClosed": true,
+  "preFinalReceiptFalsePreserved": true,
+  "NativeCalls": 0
+}

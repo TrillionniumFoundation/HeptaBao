@@ -1,0 +1,85 @@
+{
+  "schema": "heptabao.official271.r2.BODY02.same-ID-status-and-payload.source.r1",
+  "status": "SOURCE_ONLY_NO_NEW_NATIVE_AUTHORIZATION",
+  "source": {
+    "blob": "20a36582d7acf9d3675b9c31fd47e6ae72e7354a",
+    "bytes": 21016,
+    "sha256": "defc76fc73a4a3ab2fc8d4d8468b11d3410760268560c54c06682ae63b790cfd"
+  },
+  "reference": {
+    "blob": "2ac1f78dd4076b31c8eaaaba4c1e344f70c807e0",
+    "bytes": 22284,
+    "scope": "Existing independent same-ID status recovery; original paused context is checked byte-exact at every step."
+  },
+  "newSlot": "official271_x230_acl23_r2_body02_status_reconcile_r1",
+  "originalSlot": "official271_x230_acl23_oracle_gitfirst_r2",
+  "originalJob": "1a1b1b4fbfa-fc05-7a60",
+  "originalID": "6220e2762757d7afa1ba315c7beb2a985c59c147ac7cb3852aa17ba9c21c7a9e",
+  "originalPausedState": {
+    "blob": "652b0103388657f5515e30c077ce927c24b19cf2",
+    "bytes": 454676,
+    "sha256": "dd4a465e95e91c8aa23ddcde138d4541a52e79e7482297eb418bb89e16f83aa3"
+  },
+  "originalUnknownPacket": "677343f3b00aa92e0bbd0eb4b3371551993020e6",
+  "originalRequest": {
+    "blob": "3be4277978fa7422d4d70d4ca3239f91a7006ce6",
+    "bytes": 331,
+    "sha256": "917bfc19c6b300654f742555eccee4d5d8d1a6b60472da0d686e97a0432e0ae2"
+  },
+  "newStatusRequest": {
+    "blob": "182980da62d3a27a098c8fb974e6a68dd7926318",
+    "bytes": 84,
+    "sha256": "f99d18d13005ea9de9e2426fcc8fbce4e668450f52fdd726234aa3f8e4cc7317"
+  },
+  "failedStatusSDK": {
+    "blob": "0cede4881f37869cfd279b69b738c87eb62b4889",
+    "bytes": 248,
+    "sha256": "b85d625e0a8999ce34020675f0a2f8ba093e807dc725c16053a63c92fbbc9c70"
+  },
+  "sameGenericErrorBytesRequireThisExactArmAndSlot": true,
+  "target": {
+    "path": "/home/qian/heptabao-official271-acl23-oracle-20261106-r2/result.public.json",
+    "bytes": 651803,
+    "sha256": "9048f3b5c854a190dadde86f5d7eec180c497313065bd70bd23a87124789a62d",
+    "version": "2053:2098461:651803:1793982810542000556:1793982810542000556",
+    "offset": 131072,
+    "limit": 65536
+  },
+  "requiredGO": {
+    "authorization": "GO",
+    "scope": "official271_r2_original_body02_same_id_status_reconciliation_only",
+    "original_job": "1a1b1b4fbfa-fc05-7a60",
+    "original_operation_id": "6220e2762757d7afa1ba315c7beb2a985c59c147ac7cb3852aa17ba9c21c7a9e",
+    "maximum_new_operation_status_calls": 1,
+    "original_operation_status_calls": 1,
+    "maximum_combined_operation_status_calls": 8,
+    "maximum_operation_result_calls": 128,
+    "maximum_operation_start_calls": 0,
+    "maximum_process_start_calls": 0,
+    "immutable_page_bytes": 16384,
+    "maximum_payload_bytes": 1048576,
+    "exact_status_request": {
+      "blob": "182980da62d3a27a098c8fb974e6a68dd7926318",
+      "bytes": 84,
+      "sha256": "f99d18d13005ea9de9e2426fcc8fbce4e668450f52fdd726234aa3f8e4cc7317"
+    }
+  },
+  "procedure": [
+    "Whole exact GO, source, original paused state and failed SDK; initialize only the new recovery slot.",
+    "External three-leaf arm and model boundary before one new operation_status for the returned original ID.",
+    "Persist whole original SDK before any isError/native parse. queued/running/error/unknown stops; no second new status.",
+    "Only completed/stored/inactive permits contiguous original operation_result pages of 16384, at most128 pages, one original payload at most1MiB.",
+    "Persist whole immutable payload before original native parsing. Require exact offset131072/limit65536/path/version/size/EOF and recomputed whole chunk SHA.",
+    "Do not parse incomplete report; retain original chunk as base64 in the separate context with whole original payload/native references.",
+    "Stop after this original observer closes. Separate root GO must approve exact handback into the original paused slot before remaining seven requests; no handback function is present here."
+  ],
+  "oldOriginalCallsAndErrorsUnchanged": true,
+  "bodyStartedCounterOriginal": 3,
+  "bodyRangesOriginalClosed": 2,
+  "oldStatusCountsAsOneOfEight": true,
+  "newNativeFutureCreated": false,
+  "remainingSevenRequestsAuthorizedByThisScope": false,
+  "handbackAuthorized": false,
+  "reportSemanticQualification": false,
+  "changes": "Bindings, one finite recovery initialization, 16KiB only-new immutable pages, and exact BODY2 native chunk closure. Nine original functions including prepare/invoke/reconcile/run are byte-identical."
+}

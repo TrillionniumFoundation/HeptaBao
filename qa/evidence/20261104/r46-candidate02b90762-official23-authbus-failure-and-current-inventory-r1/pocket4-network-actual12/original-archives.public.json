@@ -1,0 +1,57 @@
+{
+  "arm": {
+    "tree": "8274d1b1d55e97f28a3f60144247dc3a2af61fa4",
+    "entries": [
+      {
+        "path": "GO.original.json",
+        "blob": "a18a4132d7942fefaa22c919cb0447c047d1a624",
+        "bytes": 1613,
+        "sha256": "f0a4bfcc540d506100d09a6f947364e32fbd744a61c1c7cfc9bfaf226106c929",
+        "whole": true
+      },
+      {
+        "path": "STATE.before-call.json",
+        "blob": "cc901428b0e2b7cedbfe7954fc1b1d5bf5dd5ccb",
+        "bytes": 2531,
+        "sha256": "33ea83d7a494bce0130fecf9beec9a5b0f6a7a585158d3869e613bb7da723130",
+        "whole": true
+      },
+      {
+        "path": "intent.original.json",
+        "blob": "0ecac1e4f227e7fb3e7cc7a7ceee779bb6bf51bc",
+        "bytes": 970,
+        "sha256": "7b74f59e65ed7c59f88081ca6ecb756d1fe975e91aa87ea5bc04c8c01a905a05",
+        "whole": true
+      },
+      {
+        "path": "request.original.json",
+        "blob": "238fd0aa94cd040ee7ba5572a0794dd84f0ee4dd",
+        "bytes": 24,
+        "sha256": "2d2f4b9e3224c89b54307d102899b9efbf7ba7531cab1433e0583a12d62e8e0d",
+        "whole": true
+      }
+    ],
+    "count": 4,
+    "bytes": 5138,
+    "whole": true,
+    "localDurableJournal": false,
+    "runtimeAuthorized": false
+  },
+  "sdk": {
+    "tree": "ab3ba4b0ff4e240a7009df1ebcd8baa6de494f7e",
+    "entries": [
+      {
+        "path": "SDK.original.json",
+        "blob": "589ffca7ee8e09b44cf242941eea60704789f3d9",
+        "bytes": 58234,
+        "sha256": "1bf43684a3c895f9a0b9315cb594b1d06bf9ddfa7aabf968e4473926c7919e2b",
+        "whole": true
+      }
+    ],
+    "count": 1,
+    "bytes": 58234,
+    "whole": true,
+    "localDurableJournal": false,
+    "runtimeAuthorized": false
+  }
+}

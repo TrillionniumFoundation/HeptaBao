@@ -1,0 +1,12 @@
+{
+  "error": "runner final error/cleanup entire tail unchanged",
+  "source": {
+    "blob": "d7bfc9ca2cba59f384a96c62aca4afb6ac75260d",
+    "bytes": 6392,
+    "sha256": "a1b3159ae8f751e3a00498f0d7f17c616a6bd0f1936c26aef01ee536b49802e9"
+  },
+  "NativeCalls": 0,
+  "candidateSourcesChanged": false,
+  "cause": "indexOf selected the earlier nested owned-process exception block rather than the outer final cleanup tail",
+  "resolution": "select the last exact outer except header, then compare the whole tail"
+}

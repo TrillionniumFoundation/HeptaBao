@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.official271.ACL23.r2.offline-final-review.r1",
+  "status": "ACTUAL_OFFICIAL_SIDE_COMPLETE",
+  "report": {
+    "blob": "0605fa44d81ccb93e1d1f00a0f8f7a37f4bea897",
+    "bytes": 651803,
+    "sha256": "9048f3b5c854a190dadde86f5d7eec180c497313065bd70bd23a87124789a62d"
+  },
+  "checks": 976,
+  "verification_scope": "Original nine normal read-observer chains plus root-qualified recovered BODY2, exact complete 651803 bytes, raw23 status and complete state transitions, actor proofs, public configuration, fixed source/artifact facts, original four-child closure; no new product execution.",
+  "counts": {
+    "main_original_calls": 84,
+    "independent_recovery_calls": 7,
+    "total_original_native_calls": 91,
+    "original_observers": 13,
+    "body_original_admissions": 10,
+    "body_original_pages": 60,
+    "whole_report_bytes": 651803,
+    "official_ACL_cases": 23,
+    "component_variants": 8,
+    "component_product_cases": 0,
+    "actual_HTTP_requests": 838
+  },
+  "actual_status_counts": {
+    "200": 2,
+    "204": 8,
+    "403": 12,
+    "405": 1
+  },
+  "official_source_prediction_matches": 23,
+  "old_R2_source_prediction_differences": [
+    "delete-update-sudo",
+    "delete-delete",
+    "delete-delete-sudo",
+    "collection-bare-get-read",
+    "collection-bare-get-list",
+    "existing-post-update",
+    "fresh-post-create",
+    "fresh-post-update-sudo",
+    "config-post-update"
+  ],
+  "observed_role_policy_projections": [
+    {
+      "token_policies_present": true,
+      "token_policies": []
+    }
+  ],
+  "explicit_role_policy_or_issuance_cases_not_covered": [
+    "explicit empty role token_policies input",
+    "role root policy",
+    "token_no_default_policy issuance"
+  ],
+  "observed_metadata_flag_boundary": "artifact_metadata_before/after.whole_hash_checked_by_original_launcher remains false; live_identity separately records binary/archive hashes and archive-member equality from the actual approved launcher.",
+  "recovery_history": "r1 UNKNOWN retained externally; r2 BODY1 page0 Git-read failure restored same armed call before Native; r2 BODY2 status0 SDK timeout retained, one separate same-ID status plus six pages closed original ID, root-authorized exact handback preserved original28 call records and failure.",
+  "candidate_actual_cases": 0,
+  "HeptaBao_parity_qualified": false,
+  "Runtime_lane_released": true
+}

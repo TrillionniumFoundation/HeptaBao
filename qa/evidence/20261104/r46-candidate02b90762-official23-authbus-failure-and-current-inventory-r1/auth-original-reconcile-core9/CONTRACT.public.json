@@ -1,0 +1,418 @@
+{
+  "schema": "heptabao.original-home-r3-scope-readonly-SOURCE.v1",
+  "authorization": "SOURCE_ONLY_NO_NATIVE_GO",
+  "originalJob": "mac/1a1b1d28dc2-fc05-7afe",
+  "source": {
+    "blob": "9231e3027ed78704f90b5acde6dfbaace5190d9f",
+    "bytes": 133654,
+    "sha256": "39e1684a7214d2899b6e6bc3de90da21f25b9944c1d2d1c4c1626559699407b8"
+  },
+  "request": {
+    "blob": "15dca2a76a1e236ceae6f9735becdbe0332bd55b",
+    "bytes": 137992,
+    "sha256": "1341a2b69faf2541b01d1d0cb023062326004ed03b1cc8ec75027d02f559637c"
+  },
+  "journal": {
+    "blob": "4a2b0c3aae27c0033bb6e86046fc4a8cacd788d6",
+    "bytes": 19063,
+    "sha256": "f3cab2b5b9e0827e49a87eb52443b3690d410f69f30bba7ca9fbbd6cc4571e45"
+  },
+  "originalEvidence": {
+    "packet": "5a8f15108ec2c2c03438dd28fb05b256d78805e9",
+    "stdout": {
+      "blob": "71201c9dc56be7704936677c6c31c8c9d5df2ae9",
+      "bytes": 211872,
+      "sha256": "0d493d9feae4d6d2760e5cfa9c47d18367fc73baa3bdfc49df3120bc360b457e"
+    },
+    "release": "e31026fc685530de5b77028ae14def650d21a21c",
+    "originalResult": "failed exit1",
+    "managedOutcomeUnknown": true,
+    "originalHelperCustodyNullPids": [
+      84947,
+      85012
+    ],
+    "originalServerExecAndConsumerWrapperBirthsPreserved": true,
+    "originalCountAndErrnoNotRecorded": true
+  },
+  "priorReadOnlyAncestor": {
+    "source": "3673a9582878d49378eb137d6beca5b178536680",
+    "journal": "99c8925a6db3b3aceeb7ac8944e6d829e08bb7f2",
+    "tree": "d6715818ee514bdbe1cd4ad5e0866cc5c723069f",
+    "scopeIsNewExactTableNotOldScopeGO": true
+  },
+  "registrations": [
+    {
+      "kind": "server",
+      "label": "org.heptabao.qa.mac-authbus-4e808-home-r3.server",
+      "target": "gui/501/org.heptabao.qa.mac-authbus-4e808-home-r3.server",
+      "generation": "server-initial",
+      "plistSHA256": "7f5efd28179bb974f6be3d75d08f04c2673e1f7206b4f0f9b4228194873ef641",
+      "planSHA256": "7a655675ff98c0d7a69c065140f3fee1f77dadd84497f30ca5b9381d7cb10135",
+      "expectedArgumentCount": 17,
+      "originalBootoutExit0AlreadyOccurred": true,
+      "readOnlyPrints": 2,
+      "bootstrapBootoutKillOrSignal": false
+    },
+    {
+      "kind": "consumer",
+      "label": "org.heptabao.qa.mac-authbus-4e808-home-r3.consumer",
+      "target": "gui/501/org.heptabao.qa.mac-authbus-4e808-home-r3.consumer",
+      "generation": "initial",
+      "plistSHA256": "a981ee746e056334fa6fe99c3cb67a2a423952dec0004320175af33e7b7a9101",
+      "planSHA256": "9d7af980d25c4ab8c3896cb1598464ee6f8c361f0f265d52184ce3f24000edab",
+      "expectedArgumentCount": 15,
+      "originalBootoutExit0AlreadyOccurred": true,
+      "readOnlyPrints": 2,
+      "bootstrapBootoutKillOrSignal": false
+    }
+  ],
+  "kernel": {
+    "fixedPids": [
+      {
+        "pid": 84720,
+        "role": "server-exec",
+        "recordedIdentity": {
+          "birthSec": 1793984737,
+          "birthUsec": 295307,
+          "executable": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-server",
+          "pgid": 84720,
+          "pid": 84720,
+          "ppid": 1,
+          "uid": 501
+        },
+        "expectedImage": "knownServerBinary",
+        "historicalBirthKnown": true
+      },
+      {
+        "pid": 84846,
+        "role": "consumer-wrapper",
+        "recordedIdentity": {
+          "birthSec": 1793984740,
+          "birthUsec": 375501,
+          "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+          "pgid": 84846,
+          "pid": 84846,
+          "ppid": 1,
+          "uid": 501
+        },
+        "expectedImage": "kernelPython",
+        "historicalBirthKnown": true
+      },
+      {
+        "pid": 84947,
+        "role": "failed-ps-helper-1",
+        "recordedIdentity": null,
+        "expectedImage": "fixedPs",
+        "historicalBirthKnown": false
+      },
+      {
+        "pid": 85012,
+        "role": "failed-ps-helper-2",
+        "recordedIdentity": null,
+        "expectedImage": "fixedPs",
+        "historicalBirthKnown": false
+      }
+    ],
+    "selfCrosscheckCalls": 2,
+    "maximumNumericCalls": 18,
+    "maximumPathCalls": 8,
+    "maximumChildCountCalls": 8,
+    "maximumNewLibprocCalls": 34,
+    "perTargetTwoEpochs": true,
+    "numericArg": 1,
+    "numericExpectedBytes": 136,
+    "pgidOffset": 100,
+    "ttydevOffset": 108,
+    "errno": "set0 immediately before each C call, capture immediately after, publish count/errno even if incomplete",
+    "callWindowsSeconds": [
+      4,
+      4
+    ],
+    "windowsClippedTo35And45": true,
+    "synchronousCallsCannotBePreempted": true,
+    "pathProjectionOnly": [
+      "kernelPython",
+      "launcherPython",
+      "knownServerBinary",
+      "fixedPs"
+    ],
+    "maximumChildCountBufferPids": 32,
+    "noChildPidsPublishedOrFollowed": true,
+    "historicalBirthUnknownForHelpers": true,
+    "ESRCHIsNotHistoricalReap": true,
+    "noPIDOrGroupControl": true,
+    "originalCommandsInternalProcessReadsSeparateFromThese34Calls": true
+  },
+  "readset": [
+    {
+      "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "kind": "whole_public_fixed_control",
+      "maximumBytes": 34640,
+      "expectedWholeSHA256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13",
+      "historicalFull9": [
+        "16777233",
+        "587518380",
+        "501",
+        "80",
+        "33261",
+        "1",
+        "34640",
+        "1793798038915516382",
+        "1793798038915695047"
+      ],
+      "expectedExactBytes": 34640,
+      "freshHeldAndNamedFull9Required": true
+    },
+    {
+      "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r3/mac_current_server_owner_r1.py",
+      "kind": "whole_public_fixed_control",
+      "maximumBytes": 14052,
+      "expectedWholeSHA256": "e4c868bfbda0d6357581925b6a09a59b9f8eac1f61e12154e4ecd86cbcede277",
+      "historicalFull9": [
+        "16777233",
+        "593414505",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "14052",
+        "1793981090633390630",
+        "1793981090633390630"
+      ],
+      "expectedExactBytes": 14052,
+      "freshHeldAndNamedFull9Required": true
+    },
+    {
+      "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r3/server-initial.plist",
+      "kind": "whole_public_fixed_control",
+      "maximumBytes": 8192,
+      "expectedWholeSHA256": "7f5efd28179bb974f6be3d75d08f04c2673e1f7206b4f0f9b4228194873ef641",
+      "historicalFull9": null,
+      "expectedExactBytes": null,
+      "freshHeldAndNamedFull9Required": true
+    },
+    {
+      "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r3/mac_current_phase_owner_r2.py",
+      "kind": "whole_public_fixed_control",
+      "maximumBytes": 25647,
+      "expectedWholeSHA256": "438578c430cdb86a22babfb76b7ed60a0bca8b486834378e34c54ffa85200c60",
+      "historicalFull9": [
+        "16777233",
+        "593414506",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "25647",
+        "1793981090633707904",
+        "1793981090633707904"
+      ],
+      "expectedExactBytes": 25647,
+      "freshHeldAndNamedFull9Required": true
+    },
+    {
+      "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r3/initial.plist",
+      "kind": "whole_public_fixed_control",
+      "maximumBytes": 8192,
+      "expectedWholeSHA256": "a981ee746e056334fa6fe99c3cb67a2a423952dec0004320175af33e7b7a9101",
+      "historicalFull9": null,
+      "expectedExactBytes": null,
+      "freshHeldAndNamedFull9Required": true
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/launchd/server-initial.ready.public.json",
+      "kind": "typed_public_ready",
+      "maximumBytes": 8192,
+      "missing": "only exact ENOENT observation",
+      "wholeHashExported": false
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/launchd/server-initial.exec-ready.public.json",
+      "kind": "typed_pre_finally_server_candidate",
+      "maximumBytes": 65536,
+      "missing": "only exact ENOENT observation",
+      "wholeHashExported": false
+    },
+    {
+      "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r3/server-initial.stdout.private",
+      "kind": "PRIVATE_CONTAINER_public_first_LF_projection_only",
+      "firstPassMaximum": 65536,
+      "sameFDVerificationMaximum": 65536,
+      "maximumFileBytes": 2097152,
+      "stderrBodyRead": false,
+      "unreadTailUnchangedClaimed": false,
+      "tailExported": false,
+      "rawOrUnknownHashExported": false
+    },
+    {
+      "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r3/server-initial.stderr.private",
+      "kind": "metadata_only",
+      "maximumFileBytes": 2097152,
+      "bodyRead": false
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/launchd/initial.ready.public.json",
+      "kind": "typed_public_ready",
+      "maximumBytes": 8192,
+      "missing": "only exact ENOENT observation",
+      "wholeHashExported": false
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/launchd/initial.result.public.json",
+      "kind": "typed_consumer_result_before_final_volume_close",
+      "maximumBytes": 262144,
+      "missing": "only exact ENOENT observation",
+      "wholeHashExported": false
+    },
+    {
+      "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r3/initial.stdout.private",
+      "kind": "PRIVATE_CONTAINER_public_first_LF_projection_only",
+      "firstPassMaximum": 65536,
+      "sameFDVerificationMaximum": 65536,
+      "maximumFileBytes": 2097152,
+      "stderrBodyRead": false,
+      "unreadTailUnchangedClaimed": false,
+      "tailExported": false,
+      "rawOrUnknownHashExported": false
+    },
+    {
+      "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r3/initial.stderr.private",
+      "kind": "metadata_only",
+      "maximumFileBytes": 2097152,
+      "bodyRead": false
+    }
+  ],
+  "projection": {
+    "server": "exact prior typed server-ready, candidate and first-LF allowlist retained",
+    "consumer": "fixed schema/generation/planSHA booleans; typed original ready identity; original result booleans, bounded6 records with typed lifecycle and exact source-literal known failure/check names; no arbitrary worker text, hashes, wire fields, tokens, credentials or account IDs",
+    "consumerResultPrecedesFinalVolumeClose": true,
+    "consumerFirstLfFollowsFinalVolumeClose": true,
+    "consumerFirstLfComparedToWholeResultSHAInternallyOnly": true,
+    "successfulResultDoesNotAuthorizeOrQualifyOriginalPhase": true,
+    "closedSourceLiterals": [
+      {
+        "name": "mac_current_phase_owner_r2.py",
+        "blob": "57b38b5d7072cb425898159f1f5d491fc2b1647a",
+        "bytes": 25647,
+        "sha256": "438578c430cdb86a22babfb76b7ed60a0bca8b486834378e34c54ffa85200c60"
+      },
+      {
+        "name": "mac_current_cycle_r2.mjs",
+        "blob": "9bbc3d403a4fb65176e9398cc71ef2464f94dc5a",
+        "bytes": 24012,
+        "sha256": "f57fb90955342ecbbc6e8d5423d99f16bdd51dfe7a1d23076f8b78016a78837b"
+      },
+      {
+        "name": "mac_single_native_r2.mjs",
+        "blob": "2b7aee5224a9129441396ae88664b4670af1fd50",
+        "bytes": 33148,
+        "sha256": "e1b85fd42d637a2cdccb4e8ab958d4c8a99898725b3bca4558cdc2ff984da630"
+      },
+      {
+        "name": "mac_native_process_observer_r1.py",
+        "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+        "bytes": 13423,
+        "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+      },
+      {
+        "name": "mac_owned_unreaped_r1.py",
+        "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+        "bytes": 10990,
+        "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+      }
+    ],
+    "closedLiteralCount": 531,
+    "originalParsedManagerStrictConsumerZeroGuardNotChanged": true
+  },
+  "bounds": {
+    "softSeconds": 45,
+    "helperAdmissionEndSeconds": 35,
+    "outerSeconds": 60,
+    "eachPrintMaximumSeconds": 10,
+    "maximumDirectPrints": 4,
+    "eachPrintPerStreamBytes": 65536,
+    "allHelperReturnedBytes": 1048576,
+    "maximumFDOpenAttempts": 64,
+    "maximumMetadataCalls": 4096,
+    "maximumApplicationReadCalls": 256,
+    "maximumApplicationReturnedReadBytes": 704512,
+    "wholeLeafMaximaSum": 434787,
+    "firstLFMaximaSum": 262144,
+    "maximumNonDriftBodyBytes": 696931,
+    "applicationWriteBytes": 0,
+    "maximumPublicStdoutBytes": 65536,
+    "existingBusiness900And1080Untouched": true,
+    "newReadSetBudgetNotReusedFromPrior262144": true
+  },
+  "fences": {
+    "noFollowEachPath": true,
+    "heldParentAndNamedLeaf": true,
+    "leafUID501": true,
+    "leafNlink1": true,
+    "leafMode0600ExceptPython0755": true,
+    "PythonAndTwoCopiesExactHistoricalFull9": true,
+    "plistsExactOriginalSHAAndCurrentWholeFull9NoInventedHistoricalIdentity": true,
+    "homeExactOriginalPostRuntimeFull9": [
+      "16777233",
+      "593414504",
+      "501",
+      "20",
+      "16832",
+      "10",
+      "320",
+      "1793984740371301900",
+      "1793984740371301900"
+    ],
+    "T5ThreeOriginalAnchorsFull9": true,
+    "newT5WorkParentsObservedFirst5PlusOpenFull9": true,
+    "allFixedLeafPresenceAndFull9RecheckedAtEnd": true,
+    "prefixSameFDRepeatedAndAppendFence": true,
+    "onceCloseLedgerAndPendingUnknown": true,
+    "originalThreeEmbeddedHelpersByteExact": true
+  },
+  "protocol": {
+    "slot": "owner_authbus_home_r3_original_scope_reconcile_gitfirst_r1",
+    "prefix": "heptabao-mac-original-scope-reconcile-39e1684a-",
+    "uniqueSTART": true,
+    "stdinKey": "stdin",
+    "noImplicitGO": true,
+    "GF_RUNOnly": true,
+    "GitFirstWholeBeforeNativeParse": true,
+    "maximumProcessStatusObservers": 8,
+    "maximumProcessReadObservers": 8,
+    "processReadBytes": 16384,
+    "immutablePageBytes": 8192,
+    "maximumPagesPerObserver": 128,
+    "maximumPayloadBytes": 1048576,
+    "maximumStatusCallsPerObserver": 8,
+    "observeOnlyReturnedOriginalJobAndOperationID": true,
+    "noReplayOrNewKeyOnUnknown": true
+  },
+  "resultSemantics": {
+    "ok": "only complete current diagnostic with all its own returned resources known closed and original shared deadline met",
+    "outcomeUnknown": "this diagnostic, not a rewrite of original runtime",
+    "originalManagedOutcomeUnknownAlwaysTrue": true,
+    "registrationClosureClaimed": false,
+    "historicalReapClaimed": false,
+    "newCleanupQualificationClaimed": false,
+    "currentESRCHClassificationsDoNotAssertPIDAbsenceOrReaping": true,
+    "currentDifferentBirthDoesNotFillUnknownOriginalHelperBirth": true,
+    "allSamplesSequentialNotAtomic": true
+  },
+  "forbidden": [
+    "old or new bootstrap",
+    "bootout",
+    "signal to managed or historical process",
+    "wait/reap original processes",
+    "new business runtime",
+    "new root or file writes",
+    "directory scan",
+    "follow discovered PID",
+    "private plan or admission or capsule read",
+    "whole private stdio",
+    "raw log export",
+    "credential values or arbitrary unknown text/hash",
+    "SDK/provider/refresh/J3160"
+  ],
+  "NativeCalls": 0
+}

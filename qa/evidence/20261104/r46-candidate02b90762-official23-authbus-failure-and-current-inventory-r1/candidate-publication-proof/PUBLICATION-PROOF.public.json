@@ -1,0 +1,128 @@
+{
+  "schema": "heptabao.root.snapshot49-identity2-jwt147.candidate-publication.r1",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "commit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+  "tree": "9781e9615ac5fb068d217241c74bb54bf87942cf",
+  "soleParent": "025b05a340de841b8161c1120344e86eae30eb97",
+  "branch": "refs/heads/codex/heptabao-snapshot49-jwt147-9781e961-20261106",
+  "branchReadbackCommit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+  "createdTreeOnce": true,
+  "createdCommitOnce": true,
+  "createdBranchOnce": true,
+  "treeReadbackMerkleVerified": true,
+  "all3932LeafPinsAndSizesVerified": true,
+  "leafCount": 3932,
+  "trackedBytes": 62537554,
+  "changedLeaves": 61,
+  "addedLeaves": 16,
+  "deletedLeaves": 0,
+  "gitOrderLeafIndex": {
+    "blob": "b0fb9b0a1215383eb29223756c29554d10caaaa5",
+    "bytes": 453838,
+    "sha256": "c6cef770842a1b0006b4c86a58e325802d00dd5779dede468262f2693c3246cc"
+  },
+  "actualAncestryTo495": [
+    {
+      "sha": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+      "parent": "025b05a340de841b8161c1120344e86eae30eb97",
+      "tree": "9781e9615ac5fb068d217241c74bb54bf87942cf"
+    },
+    {
+      "sha": "025b05a340de841b8161c1120344e86eae30eb97",
+      "parent": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+      "tree": "1d8160c9385f8053b9a683cc1834da0f912e2d37"
+    },
+    {
+      "sha": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+      "parent": "808e45d690f177ecb922e13d1ed19f7877156094",
+      "tree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6"
+    },
+    {
+      "sha": "808e45d690f177ecb922e13d1ed19f7877156094",
+      "parent": "e3afc157447d35c861f275a761b29da3e42aff8e",
+      "tree": "0506d30b02f5a2a2dc7d6364299365ae8d1d7cc7"
+    },
+    {
+      "sha": "e3afc157447d35c861f275a761b29da3e42aff8e",
+      "parent": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+      "tree": "5497775d9d473541e13e1603be8c893a3e27681b"
+    },
+    {
+      "sha": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+      "parent": "1c66541993662f92cf717154e33717abedb2ea74",
+      "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255"
+    },
+    {
+      "sha": "1c66541993662f92cf717154e33717abedb2ea74",
+      "parent": "6d02ceca629163e1c07480fa1f21520434407143",
+      "tree": "94ced21a63ff9aaca4538c0d4796efea2150e632"
+    },
+    {
+      "sha": "6d02ceca629163e1c07480fa1f21520434407143",
+      "parent": "19ba09ab5c494f25a3531749b0b99fc5c651d56c",
+      "tree": "09aa45b9439741780961c2af76680c27e0773d08"
+    },
+    {
+      "sha": "19ba09ab5c494f25a3531749b0b99fc5c651d56c",
+      "parent": "e69e52f28c653d28c5ae36dbbf6eb51b844536bc",
+      "tree": "73ba0c7fdf333b41d3944c5ee58b477026ff2d82"
+    },
+    {
+      "sha": "e69e52f28c653d28c5ae36dbbf6eb51b844536bc",
+      "parent": "c133d7e7b8a1df5f0be8f4337893f234c6ccede2",
+      "tree": "132ec30c42775568ee7e531183e8adcb65c54ca3"
+    },
+    {
+      "sha": "c133d7e7b8a1df5f0be8f4337893f234c6ccede2",
+      "parent": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+      "tree": "23999765c64b7f5d6afa8c58e97a99aa4233e2d7"
+    },
+    {
+      "sha": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+      "parent": "6304a898192bfdf7eabec3c4ea40f7166e59a137",
+      "tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825"
+    },
+    {
+      "sha": "6304a898192bfdf7eabec3c4ea40f7166e59a137",
+      "parent": "e5de554f5dfe99f0de30012122fe3e248fb60532",
+      "tree": "ec716cea85a52fab285f5c96d51c0624a045cc02"
+    },
+    {
+      "sha": "e5de554f5dfe99f0de30012122fe3e248fb60532",
+      "parent": "fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd",
+      "tree": "46b1276c237aaadd8cc3185e8228d8a791c68214"
+    },
+    {
+      "sha": "fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd",
+      "parent": "6d3040a2dbd06661a67f5c62df259ff446eb8515",
+      "tree": "17da0b36f418b52203040e54aae127899cf5e65e"
+    },
+    {
+      "sha": "6d3040a2dbd06661a67f5c62df259ff446eb8515",
+      "parent": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+      "tree": "2ec2be733f5499cb632e529159a296f3c6f62cd1"
+    }
+  ],
+  "actual495HistoryCount": 3752,
+  "actualBaseHistoryCount": 3767,
+  "expectedCandidateHistoryCount": 3768,
+  "sourceIntentArchive": "cc43ea9289ec57e98d1e3f68779ebc0696534a01",
+  "commitIntentArchive": "44f0ee075ac0eb14342178d2490890c74f7fca68",
+  "branchIntentArchive": "f4d6feb635f4fd6b001915e0695a9fa8963ef0e9",
+  "branchArchiveReadErrorPreserved": true,
+  "branchArchiveSameBlobReadOnlyRecovery": true,
+  "rootV8StoreLossRecoveredFromImmutableGit": true,
+  "sourceFormatted": false,
+  "newRustCompilation": false,
+  "newRustTestsExecuted": 0,
+  "plannedTests": {
+    "unique": 246,
+    "profiles": 268,
+    "file": 22,
+    "default": 229,
+    "HA": 17
+  },
+  "productionChanged": false,
+  "fullReplacementQualified": false,
+  "legacyCleanupQualified": false
+}

@@ -1,0 +1,35 @@
+function qualifyCurrentInventoryOriginal(p,go,sourcePacket) {
+ const rows=[],ck=(name,v)=>{rows.push({name,passed:v===true});if(v!==true)throw Error(name);},f=p.raw,index=JSON.parse(f["CALL-INDEX.public.json"]),state=JSON.parse(f["STATE.original.json"]),release=JSON.parse(f["RELEASE.public.json"]),same=(a,b)=>JSON.stringify(a)===JSON.stringify(b),calls=[];
+ ck("whole66_originals",p.audit.whole&&p.audit.files===66&&p.audit.bytes===456614);
+ ck("exact_original_discovery_GO",f["GO.original.json"]===go.text&&same(release.go,go.pins));
+ ck("thirteen_unique_originals",index.length===13&&state.calls.length===13&&new Set(index.map(x=>x.key)).size===13);
+ for(const row of index){const pre="call-"+String(row.ordinal).padStart(2,"0")+"-"+row.key,req=f[pre+".request.original.json"],intent=f[pre+".intent.original.json"],sdkRaw=f[pre+".sdk.original.json"],nativeRaw=f[pre+".native.original.json"],it=JSON.parse(intent),sdk=JSON.parse(sdkRaw),c=state.calls[row.ordinal-1];
+ ck(row.key+"_exact_original_bytes",same(gitBlobMeta(req),row.request)&&same(gitBlobMeta(intent),row.intent)&&same(gitBlobMeta(sdkRaw),row.originalSDK)&&same(gitBlobMeta(nativeRaw),row.native)&&sdk.isError===false&&sdk.content.length===1&&sdk.content[0].text===nativeRaw);
+ ck(row.key+"_once_intent_GO",row.called===true&&row.accepted===true&&c.called===true&&c.phase==="accepted"&&it.callKey===row.key&&it.tool===row.tool&&same(it.go,go.pins)&&same(it.request,row.request)&&it.submitted===false);
+ ck(row.key+"_arm_and_SDK_Merkle",immediateTreeSha([{path:"intent.public.json",type:"blob",mode:"100644",sha:row.intent.blob},{path:"request.original.json",type:"blob",mode:"100644",sha:row.request.blob}])===row.arm_tree&&immediateTreeSha([{path:"original.sdk.json",type:"blob",mode:"100644",sha:row.originalSDK.blob}])===row.sdk_tree);
+ const request=JSON.parse(req),tool=row.tool;
+ const bounded=tool.endsWith("_host_list")?it.maximumCallCount===1&&it.noRetryOnUnknown===true:
+ tool.endsWith("_host_processes")?it.maximumProcessPages===4&&it.pageOrdinal>=1&&it.pageOrdinal<=4&&it.noArgumentsOrEnvironment===true&&it.noRetryOnUnknown===true:
+ tool.endsWith("_search_start")?it.maximumSearchStarts===2&&it.searchOrdinal>=1&&it.searchOrdinal<=2&&it.missingAckMeansNoRetry===true&&it.filenameOnly===true&&it.noContentRead===true:
+ tool.endsWith("_search_results")?it.maximumTerminalPages===4&&it.noNewSearch===true&&it.cursor===request.cursor&&it.limit===32:false;
+ ck(row.key+"_actual_kind_specific_budget",bounded);
+ calls.push({row,q:request,n:JSON.parse(nativeRaw),req});}
+ ck("exact_fixed_initial_and_search_requests",calls[0].req===sourcePacket.raw["request.host-list.public.json"]&&calls[1].req===sourcePacket.raw["request.x230-process-first.public.json"]&&calls[3].req===sourcePacket.raw["request.x230-consumer-names.public.json"]&&calls[8].req===sourcePacket.raw["request.x230-backup-names.public.json"]);
+ ck("tool_counts_and_order",calls.filter(c=>c.row.tool.endsWith("_host_list")).length===1&&calls.filter(c=>c.row.tool.endsWith("_host_processes")).length===2&&calls.filter(c=>c.row.tool.endsWith("_search_start")).length===2&&calls.filter(c=>c.row.tool.endsWith("_search_results")).length===8);
+ const p1=calls[1],p2=calls[2],processes=p1.n.processes.concat(p2.n.processes);
+ ck("actual_two_PID_pages250",p1.q.after_pid===0&&p1.q.limit===128&&p1.n.processes.length===128&&p1.n.next_after_pid===2089&&p1.n.has_more===true&&p2.q.after_pid===2089&&p2.q.limit===128&&p2.n.processes.length===122&&p2.n.next_after_pid===4145874&&p2.n.has_more===false&&processes.length===250);
+ ck("process_snapshot_not_atomic",p1.n.snapshot_atomic===false&&p2.n.snapshot_atomic===false&&release.processSnapshotAtomic===false);
+ const bao=processes.filter(x=>x.name==="bao");
+ ck("one_unresolved_bao_candidate_exact_identity",bao.length===1&&bao[0].pid===2031533&&bao[0].uid===100&&bao[0].identity==="linux:b19bd1b9-4dbe-4335-96cf-ed98d393efea:35455670"&&release.currentProcessBinaryVersionOrServiceBinding===null&&release.candidateMustNotBeEquatedWithUid1000Fixture===true);
+ for(const [kind,start,first,expectedEntries]of [["consumer",3,4,142],["backup",8,9,4011]]){const id=calls[start].n.search.search_id,all=[];
+ ck(kind+"_single_original_start",/^[a-f0-9]{64}$/.test(id)&&calls[start].n.search.host==="x230"&&calls[start].n.search.root==="/home/qian"&&calls[start].n.search.kind==="files"&&calls[start].n.automatic_retry===false);
+ for(let j=0;j<4;j++){const z=calls[first+j],snap=z.n.snapshot;
+ ck(kind+"_terminal_page"+j,z.q.search_id===id&&z.q.cursor===j*32&&z.q.limit===32&&snap.search_id===id&&snap.snapshot_ready===true&&snap.progressive===false&&snap.state==="limited"&&snap.reason==="result_limit"&&snap.results.length===32&&snap.next_cursor===(j===3?null:(j+1)*32)&&snap.statistics.bytes===0&&snap.statistics.coverage_complete===false&&snap.statistics.entries===expectedEntries);
+ all.push(...snap.results.map(x=>x.path));}
+ const pub=JSON.parse(f[kind+".returned-paths.public.json"]);
+ ck(kind+"_exact128_returned_paths_partial",all.length===128&&same(all,pub.rows.map(x=>typeof x==="string"?x:x.path))&&all.every(x=>x.startsWith("heptabao-native-20261030-5a1e-r5/"))&&pub.coverage_complete===false);}
+ ck("two_searches_closed_before_release",release.searches.length===2&&release.searches.every(x=>x.terminal&&x.allReturnedRowsClosed&&x.terminalPages===4&&x.rows===128)&&release.originalSearchStartsRetried===0);
+ ck("explicit_closed_lane",state.closed===true&&state.pending===null&&state.ownedSearch===null&&state.nativeCallInFlight===false&&state.paused===false&&state.laneReleased===true&&release.ownedActiveFutures===0&&release.NativeCallInFlight===false&&release.lane==="B0");
+ ck("no_private_or_product_or_migration_claim",release.privateContentBytesReadBySearches===0&&release.noArgumentsOrEnvironmentRequested===true&&release.overallInventoryComplete===false&&release.consumerMigrationQualified===false&&release.backupRecoveryQualified===false&&release.pocket4PhysicalMappingQualified===false&&release.pocket4NativeRequests===0&&release.oldUNKNOWNChanged===false);
+ return{schema:"heptabao.root-current-X230-inventory-original.r1",passed:true,checks:rows.length,rows,packet:p.audit.tree,originalNativeCalls:13,currentNativeCalls:0,currentOwnedFutures:0,processRecords:250,processSnapshotAtomic:false,searches:2,returnedPaths:256,allReturnedPagesWhole:true,bothSearchesLimited:true,liveBaoCandidate:{pid:2031533,uid:100,identity:"linux:b19bd1b9-4dbe-4335-96cf-ed98d393efea:35455670",executable:null,version:null,unit:null,container:null},overallInventoryComplete:false,consumerMigrationQualified:false,backupRecoveryQualified:false,Pocket4PhysicalMappingQualified:false,fullReplacement:false,productionCutover:false,legacyCleanup:false};
+}

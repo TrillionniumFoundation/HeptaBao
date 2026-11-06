@@ -1,0 +1,46 @@
+--- a/official271.acl23.fixture-r2.entry.py
++++ b/official271.acl23.fixture-r2.entry.py
+@@ -18,9 +18,9 @@
+ import sys
+ import time
+ 
+-ROOT = Path("/home/qian/heptabao-official271-acl23-oracle-20261106-r1")
+-PORT = 23623
+-RUN_ID = "official271-acl23-r1"
++ROOT = Path("/home/qian/heptabao-official271-acl23-oracle-20261106-r2")
++PORT = 23625
++RUN_ID = "official271-acl23-r2"
+ VERSION = "2.7.1"
+ BINARY = Path("/home/qian/heptabao-official-271-fresh-20261029-r1/bao")
+ ARCHIVE = Path("/home/qian/heptabao-official-271-fresh-20261029-r1/official-openbao-2.7.1-linux-amd64.tar.gz")
+@@ -30,8 +30,8 @@
+     (ARCHIVE, 74865426, 0o600,
+      "0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243"),
+ )
+-PAYLOAD_BYTES = 134374
+-PAYLOAD_SHA256 = "49e17724c2087cbc6f15fd5a37f8fc0e0d37c649ebc0273627540aabe75141d0"
++PAYLOAD_BYTES = 134677
++PAYLOAD_SHA256 = "8a8681e59c5572ed01fa6e824c4a2e03692baceb8d272bba857431c9c5c8e30f"
+ INPUTS = [
+   [
+     "source/qa/openbao-acceptance/owned_process.py",
+@@ -55,8 +55,8 @@
+   ],
+   [
+     "source/qa/openbao-acceptance/acl23_executor.py",
+-    15599,
+-    "e96451d450224abfa7eeda34622b26b1d21493867b4344aa254709348515bfc4"
++    15892,
++    "60a2864887218041e3a718d765dc00d261be49510372af95233e8ae89c64e922"
+   ],
+   [
+     "source/qa/openbao-acceptance/current_record_component.py",
+@@ -97,7 +97,7 @@
+ OWNER_SECONDS = 360
+ ACL_REQUEST_CAP = 853
+ REPORT_CAP = 1048576
+-SOURCE_BYTES = 127119
++SOURCE_BYTES = 127412
+ FD_LIMIT = 12  # Eleven fixed source outputs plus the one public result.
+ START_NS = time.monotonic_ns()
+ UNTIL_NS = START_NS + OWNER_SECONDS * 1_000_000_000

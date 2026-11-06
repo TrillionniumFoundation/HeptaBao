@@ -1,0 +1,91 @@
+{
+  "schema": "heptabao.jwt-policy.combined-runner-adapter.source-r1",
+  "status": "UNBOUND_SOURCE_ONLY",
+  "baseSourceTree": "9bdb3eb3c6aac221d51d14a4a8f3bcc24e75f7e6",
+  "candidateProductionTree": "9ca955f3cdb12f6d4ee7245154ac498fe197c416",
+  "runner": {
+    "blob": "55d6f11b19bcf6e8dabdbc6584caad181f8c9ef8",
+    "bytes": 31984,
+    "sha256": "7ddb3bf0f8484712273ec6e583389b55d522fb0627e22cf6860980751e2590ee"
+  },
+  "launcher": {
+    "blob": "5e3fe94b6a6ffccc79dd7c1e4e84eeea4b051445",
+    "bytes": 39648,
+    "sha256": "25b3a80da99db2a734f0ad07a8276b98fe1b10f932209f428a67b4a748a75707"
+  },
+  "groups": {
+    "blob": "8945c9f8f2565807601f8197b93be026ca4e875b",
+    "bytes": 33825,
+    "sha256": "7c0fb6c5b6819c2cab60f3044e0aec767ad8abbf22e31ff0f7fab742ea4cd786"
+  },
+  "inventory": {
+    "blob": "6f72694ddb218e5f5f57ec820ae7de5f1b15f00b",
+    "bytes": 71054,
+    "sha256": "5e389b26f74ea27eca1332c6234360f6b32bf926966d6bb133f3730eb5b5774a"
+  },
+  "profiles": {
+    "blob": "4ec148f2954864b850dd16448e855dcd01f83a62",
+    "bytes": 1143,
+    "sha256": "5fa8ee8f33aa6e2615793e83936405ccc1fe8436272c89dae8fcb4a471ca1220"
+  },
+  "exactChanges": {
+    "runnerReplacements": 13,
+    "launcherReplacements": 12,
+    "strictHunks": 12,
+    "normalGroupCount": 18,
+    "selectedUnique": 246,
+    "selectedProfileEntries": 268,
+    "profileCounts": {
+      "file": 22,
+      "default": 229,
+      "ha_native_v6_peer_ingress": 17
+    },
+    "newSelectedFirstFour": {
+      "unique": 158,
+      "entries": 180
+    },
+    "originalBaselineC": {
+      "unique": 149,
+      "entries": 166
+    },
+    "newDelta": {
+      "unique": 9,
+      "entries": 14
+    },
+    "groupsReadCap": {
+      "before": 32163,
+      "after": 33825,
+      "reason": "exact whole known new groups file only; generic read_bound unchanged"
+    },
+    "launcherBytes": 39648,
+    "launcherCap": 40000,
+    "unboundMarginBytes": 352,
+    "runnerBytes": 31984
+  },
+  "unchanged": [
+    "all runtime/list/--exact execution loop and owned cleanup",
+    "normal release1800/shared compile3600/listing30/each family600/outer12000",
+    "native .cargo-lock nonblocking probe and same-PID exec order",
+    "all old failed/UNKNOWN/source/root fences",
+    "original snapshot23+Service4 and normal61 cases; all fourteen later groups and88 evidence rows",
+    "fresh stage schema and all null final bindings"
+  ],
+  "binding": {
+    "BINDING_READY": false,
+    "FINAL_COMMIT": null,
+    "FINAL_TREE": null,
+    "SOURCE_STAGE_ROOT": null,
+    "processStartRequest": null,
+    "stageInterfaceModified": false,
+    "remeasureAfterFinalBindingRequired": true
+  },
+  "qualification": {
+    "pureSourceChecks": 101,
+    "pythonCompiled": false,
+    "rustCompiled": false,
+    "actualListMatched": false,
+    "testsExecuted": 0,
+    "NativeCalls": 0,
+    "sourceCommitCreated": false
+  }
+}

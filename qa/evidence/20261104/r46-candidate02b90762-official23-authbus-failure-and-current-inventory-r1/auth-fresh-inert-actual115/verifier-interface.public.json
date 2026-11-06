@@ -1,0 +1,25 @@
+{
+  "schema": "heptabao.inert-actual-verifier-inputs.v1",
+  "entry": "verifyInertR3Actual(input,gitBlobMeta,utf8Bytes)",
+  "input": {
+    "state": "journal-final-state.original.json",
+    "candidate": "actual-context.public.json:candidate",
+    "authority": "authority.original.json",
+    "streams": [
+      "observer-02-native.original.json",
+      "observer-03-native.original.json"
+    ],
+    "report": "JSON.parse(stdout.original.txt)",
+    "stdout": "stdout.original.txt",
+    "stderr": "stderr.original.txt",
+    "statuses": [
+      "observer-01.status.native.original.json",
+      "observer-02.status.native.original.json",
+      "observer-03.status.native.original.json"
+    ]
+  },
+  "prelude": "pure-helpers.original.js",
+  "pureOnly": true,
+  "old70PredicateBytesPreservedExceptFunctionAndSchemaName": true,
+  "noCandidateOrSdkExecution": true
+}

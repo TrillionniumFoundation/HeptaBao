@@ -1,0 +1,14 @@
+{
+  "schema": "heptabao.root-provisional-final-stage-runtime-guard.r1",
+  "onlyProvisional": true,
+  "finalCandidateNotFrozen": true,
+  "leaf": {
+    "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+    "blob": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3",
+    "bytes": 61623
+  },
+  "expectedBlob": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3",
+  "matches": true,
+  "stageNotStarted": true,
+  "NativeCalls": 0
+}
