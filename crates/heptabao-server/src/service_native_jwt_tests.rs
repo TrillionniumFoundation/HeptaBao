@@ -272,11 +272,14 @@ impl Fixture {
         Ok((token, entity))
     }
     fn token(&mut self, policy: &str) -> TestResult<Zeroizing<String>> {
+        self.token_with_policies(&[policy])
+    }
+    fn token_with_policies(&mut self, policies: &[&str]) -> TestResult<Zeroizing<String>> {
         let mut response = self.admin(
             "POST",
             "auth/token/create",
             json!({
-                "policies":[policy],"no_default_policy":true,"ttl":"600s"
+                "policies":policies,"no_default_policy":true,"ttl":"600s"
             }),
         )?;
         status(&response, 200);
@@ -430,23 +433,31 @@ fn native_jwt_local_service_token_identity_renewal_and_cold_reopen() -> TestResu
 #[test]
 fn native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta() -> TestResult {
     let mut f = Fixture::new()?;
-    for (path, body) in [
+    for (path, body, expected) in [
         (
             CONFIG,
             json!({"issuer":"https://native-jwt.example","audiences":["native"],
         "jwks_url":"https://remote-issuer.invalid/keys"}),
+            501,
         ),
-        (ROLE, json!({"token_type":"batch"})),
+        (ROLE, json!({"token_type":"batch"}), 501),
+        (
+            "sys/auth/native-jwt/tune",
+            json!({"token_type":"default-batch"}),
+            501,
+        ),
         (
             "sys/auth/native-jwt/tune",
             json!({"token_type":"default_batch"}),
+            400,
         ),
     ] {
         let before = f.snapshot()?;
         let response = f.admin("POST", path, body)?;
-        status(&response, 501);
+        status(&response, expected);
         no_credential(&response);
         assert!(before.as_slice() == f.snapshot()?.as_slice());
+        assert!(f.service.pending_native_auth_delivery.is_none());
     }
     let assertion = f.assertion(f.now + 60);
     let mut segments = assertion.split('.').map(str::to_owned).collect::<Vec<_>>();
@@ -484,11 +495,20 @@ fn native_jwt_role_operations_keep_the_existing_legacy_acl_contract() -> TestRes
         )?,
         204,
     );
-    let manager = f.token("jwt-role-manager")?;
-    let no_sudo = f.token("jwt-role-no-sudo")?;
+    let assignment_denied = f.token("jwt-role-manager")?;
+    let manager = f.token_with_policies(&["jwt-role-manager", "native-jwt"])?;
+    let no_sudo = f.token_with_policies(&["jwt-role-no-sudo", "native-jwt"])?;
     let listed = f.actor(&manager, "GET", "auth/native-jwt/role", json!({}))?;
     status(&listed, 200);
     assert_eq!(listed.body["data"]["keys"], json!(["client"]));
+    // Updating a role retains its existing token policies. Even with sudo,
+    // the actor must be allowed to assign that unchanged policy set.
+    let before = f.snapshot()?;
+    let denied = f.actor(&assignment_denied, "POST", ROLE, json!({"token_ttl":301}))?;
+    status(&denied, 403);
+    no_credential(&denied);
+    assert!(before.as_slice() == f.snapshot()?.as_slice());
+    assert!(f.service.pending_native_auth_delivery.is_none());
     let before = f.snapshot()?;
     let denied = f.actor(&no_sudo, "POST", ROLE, json!({"token_ttl":301}))?;
     status(&denied, 403);
@@ -1084,6 +1104,12 @@ fn native_jwt_token_api_profile_rejects_mount_label_without_real_issuer_or_paren
         })
         .map(|(id, _)| id.clone())
         .ok_or("actual Token API child")?;
+    assert!(value["tokens"][&child_id]["token_role"].is_null());
+    assert!(
+        value["tokens"][&child_id]["parent"]
+            .as_str()
+            .is_some_and(|id| value["tokens"][id]["auth_provenance"]["kind"] == "jwt")
+    );
     // Negative format/profile probes operate on detached values only. They
     // never install a forged token, mutate the fixture or grant a Principal.
     for mutation in 0..7 {
@@ -1096,19 +1122,39 @@ fn native_jwt_token_api_profile_rejects_mount_label_without_real_issuer_or_paren
             3 => token["auth_provenance"]["issued_creation_ttl"] = Value::Null,
             4 => token["parent"] = json!(&child_id),
             5 => token["parent"] = json!("0".repeat(64)),
-            _ => token["public_origin"]["creation_path"] = json!(LOGIN),
+            _ => token["public_origin"]["creation_path"] = json!("auth//token/create"),
         }
         let changed_bytes = Zeroizing::new(serde_json::to_vec(&changed)?);
         erase_json(&mut changed);
         if let Ok(detached) = serde_json::from_slice::<crate::auth::AuthState>(&changed_bytes) {
-            assert!(!detached.native_v6_jwt_state_supported());
+            assert!(
+                !detached.native_v6_jwt_state_supported(),
+                "unsupported Token API mutation {mutation} was accepted"
+            );
         }
+    }
+    // An unroled Token API creation path is a public response fact. A valid
+    // display path does not replace its real issuer or parent graph. Named
+    // Token API roles have a separate immutable path binding.
+    let mut labelled = value.clone();
+    labelled["tokens"][&child_id]["public_origin"]["creation_path"] = json!(LOGIN);
+    let labelled_bytes = Zeroizing::new(serde_json::to_vec(&labelled)?);
+    let detached: crate::auth::AuthState = serde_json::from_slice(&labelled_bytes)?;
+    assert!(detached.native_v6_jwt_state_supported());
+    drop(detached);
+    labelled["tokens"][&child_id]["auth_provenance"] = Value::Null;
+    let no_issuer_bytes = Zeroizing::new(serde_json::to_vec(&labelled)?);
+    erase_json(&mut labelled);
+    if let Ok(detached) = serde_json::from_slice::<crate::auth::AuthState>(&no_issuer_bytes) {
+        assert!(
+            !detached.native_v6_jwt_state_supported(),
+            "a display path cannot supply a missing Token API issuer"
+        );
     }
     erase_json(&mut value);
     assert!(original.as_slice() == f.snapshot()?.as_slice());
-    status(
-        &f.actor(&child, "GET", "auth/token/lookup-self", json!({}))?,
-        200,
-    );
+    let lookup = f.actor(&child, "GET", "auth/token/lookup-self", json!({}))?;
+    status(&lookup, 200);
+    assert_eq!(lookup.body["data"]["path"], "auth/token/create");
     Ok(())
 }
