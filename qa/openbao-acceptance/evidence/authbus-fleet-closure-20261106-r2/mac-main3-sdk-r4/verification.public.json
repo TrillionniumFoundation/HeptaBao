@@ -1,0 +1,95 @@
+{
+  "schema": "heptabao.mac-main3-sdk-r4-archive-verification.r1",
+  "ok": true,
+  "actualPluginSdkQualified": true,
+  "phaseRows": [
+    {
+      "phase": "initial",
+      "outerChecks": 32,
+      "sdkChecks": 56,
+      "outerCompleteTlsResponses": 20,
+      "sdkCompleteTlsResponses": 12,
+      "sqliteOpened": 422,
+      "sqliteClosed": 422,
+      "sdkInverseCompleted": false,
+      "sdkInverseRetried": false,
+      "originalNodeOutcomeUnknown": false
+    },
+    {
+      "phase": "cold-new-process",
+      "outerChecks": 20,
+      "sdkChecks": 109,
+      "outerCompleteTlsResponses": 14,
+      "sdkCompleteTlsResponses": 9,
+      "sqliteOpened": 363,
+      "sqliteClosed": 363,
+      "sdkInverseCompleted": true,
+      "sdkInverseRetried": false,
+      "originalNodeOutcomeUnknown": false
+    }
+  ],
+  "actualJobId": "1a1b2babcc1-fc05-7f81",
+  "actualKey": "heptabao-mac-authbus-main3-sdk-two-generation-20261106-r4",
+  "actualStdout": {
+    "bytes": 139206,
+    "sha256": "09983d11b0ec6d81cfb60420e607c878e0803d8b87f1f34db5929cbac59db9df"
+  },
+  "originalFinalJournal": {
+    "bytes": 110445,
+    "sha256": "e3473d2a1bde64a2ce2a92dc53b1da11905772e0925af1a71f3602165993f2bc"
+  },
+  "elapsedSeconds": 17.40993924997747,
+  "originalCommands": 67,
+  "knownCommandExitCodes": {
+    "zero": 55,
+    "labelAbsent113": 12
+  },
+  "commandBatches": 5,
+  "allOriginalCommandsReapedAndGroupsEmpty": true,
+  "allReturnedStreamsClosed": true,
+  "journalFiles": 104,
+  "launchdEventFiles": 14,
+  "inlineCapturePublicFiles": 2,
+  "all120OriginalsIndependentlyReadAndWholeFileShaMatched": true,
+  "originalFileBytes": 327405,
+  "independentAbsence": {
+    "jobId": "1a1b2c18152-fc05-7f9a",
+    "rounds": 2,
+    "guiLabelAbsent": true,
+    "exactLifetimePids": [
+      92011,
+      92351
+    ],
+    "originalNodePids": [
+      92111,
+      92129,
+      92433
+    ],
+    "allFivePidsNativeEsrchBothRounds": true,
+    "relatedPidPpidPgidRows": 0,
+    "serviceOrSignalActions": 0
+  },
+  "sourceSelection": {
+    "sameParentFreshCapture": true,
+    "maximumSeconds": 45,
+    "sourceAgents": 5,
+    "selectedOwnerCredentials": 3,
+    "consumerReferences": 15,
+    "publicMetadataFiles": 145,
+    "beforeAfterWholeGenerationExact": true,
+    "continuousObservationClaimed": false,
+    "privateValuesOrDigestsPublished": false
+  },
+  "rollbackScope": "five newly initialized fixture local/effective auth stores, two raw auth tables and stamps per store, six AuthBus cache bytes/modes/absences",
+  "providerValid": false,
+  "providerCalled": false,
+  "providerRefreshAttempted": false,
+  "productionChanged": false,
+  "productionTrafficCutover": false,
+  "productionClientRollbackQualified": false,
+  "wholeProductionDatabaseRollback": false,
+  "actualGatewayRestarted": false,
+  "actualCentralOrderPolicyCopied": false,
+  "productChanged": false,
+  "earlierFailedAttemptsRewritten": false
+}

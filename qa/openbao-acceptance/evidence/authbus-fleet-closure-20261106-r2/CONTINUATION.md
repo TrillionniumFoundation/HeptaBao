@@ -4,7 +4,44 @@ The current full-replacement gate remains **not qualified**. Product source is u
 
 No production traffic was switched. No legacy production Bao service, binary, data or backup was deleted. The retired Mac R2 registration below was an explicitly owned failed QA wrapper.
 
-## Latest completed X230, HA and AuthBus checkpoint — r11
+## Latest completed SDK and LAN diagnosis checkpoint — r12
+
+The full-replacement decision remains **not qualified**. The actual Mac SDK campaign now passes both generations, including its isolated inverse, and the original physical HA failure has been narrowed to a direct TCP connection failure at the selected port. Product files, original workload limits and the finite registered-client/backup scope are unchanged. Provider calls, production credential writes, registered-gateway restarts, production cutovers, helper-hold releases and legacy-production deletions remain zero.
+
+### Actual Mac SDK two-generation campaign passed
+
+Job `1a1b2babcc1-fc05-7f81` [succeeded with complete durable output](mac-main3-sdk-r4/execution-terminal.original.json), without timeout, cancellation or retry. Its [139,206-byte original result](mac-main3-sdk-r4/execution.stdout.original.json) records **52 outer checks and 165 SDK checks**, two actual installed-plugin cycles, and **55 complete TLS-verified HTTP operations**: 34 outer and 21 SDK operations, with zero unknown HTTP outcomes. The original initial health wait used repeated connection attempts before one GET; it did not replay an HTTP mutation. The initial token renewed once. Cold recovery checked the persisted token, acquired a different new token, revoked and refused both tokens, and destroyed the SecretID once.
+
+The worker used the three current real main-owner credential objects and compared all 15 effective references across five agent scopes privately. These three inputs were expired. No provider refresh was made, so `providerValid` remains false. The original plugin source and its original HTTPS, CA, `rejectUnauthorized=true` and timeout options were checked before observation instrumentation; this result does not rely on silently correcting insecure plugin options.
+
+The initial phase saved the isolated candidate; the cold phase performed the inverse once, without retry. That inverse restored the five isolated scopes, both raw authentication tables and stamps, and all six isolated cache files to their exact original empty fixture baseline. **It does not qualify a full production client/database rollback.** Production rollback still requires the complete relevant database and file state after any committed provider rotations, together with actual service and consumer recovery.
+
+All **785 original SQLite connections** closed once. The two workers closed 82/82 and 84/84 recorded descriptors. Three source fences closed. All **67 original helper commands** have complete original waits, reaped identities and empty owned groups: 55 expected exit-0 records and 12 expected exit-113 absence records. The two actual server generations, PIDs 92011 and 92351, completed their original stop and bootout actions. The seed/worker PIDs 92111, 92129 and 92433 also have known original completion records.
+
+An [independent two-round absence observation](mac-main3-sdk-r4/independent-absence.stdout.original.json), job `1a1b2c18152-fc05-7f9a`, separately completed with exit 0. Both exact GUI registrations were absent, all five original server/Node identities returned ESRCH, and neither process-table round found a matching PID, parent or process group. It is bound to the exact final journal, SHA-256 `e3473d2a1bde64a2ce2a92dc53b1da11905772e0925af1a71f3602165993f2bc`.
+
+The [runtime archive](mac-main3-sdk-r4/RUNTIME-EVIDENCE.md) retains every original pagination response, 104 journals, 14 launchd events, two inline-capture public originals and both authority responses. All 120 remote public evidence files were independently read in full and checked for exact size/hash. The [root retained verification](mac-main3-sdk-r4/root-retained-verification.public.json) independently checks the original byte pins, all 67 helper records, complete check/HTTP/SQLite counts, and exact equality between the final journal value and the original stdout result after removing only the two stdout journal-envelope fields. It preserves Python integer precision. This is independent verification of the retained original execution, not another product run.
+
+The [frozen preparation](mac-main3-sdk-r4/preparation/README.md) retains the complete 746,592-byte staging bundle, source derivation, exact Mac readbacks, 173 guards, 15 synthetic TLS cases and seven seed cases. Earlier SDK r2/r3 failures and their unknown business outcomes remain historical failures.
+
+### Normal Rust server works locally; original LAN port still fails
+
+The separate [normal Rust/TLS/LAN diagnostic](ha128-diagnostics/rust-tls-lan-r1/actual/stdout.original.json), job `1a1b2c2c579-fc05-7fa1`, completed its observation and cleanup with exit 0. This is **diagnostic completion**, not an HA pass. It freshly verified the normal Linux binary and original CA/leaf, started one new owned, uninitialized Rust server on X230, and used the original strict HTTP/TLS context and limits. X230's local HTTPS health request to `192.168.0.13:46230` returned the expected 501 with `initialized=false` and `sealed=true` in about 0.061 seconds. The Mac's TCP-only request, strict-TLS probe's TCP connect, and original urllib health request each timed out at the original 1.5-second bound. The TLS handshake was never entered from Mac.
+
+Both original child-custody chains, waits, streams and groups closed; the diagnostic reports no remote closure uncertainty. There was no initialization, token use, API mutation, production write or service change. The first HA128 attempt remains failed at 16/128, and `allFourHealthAndTransportStagesPassed` remains false.
+
+The [fixed routing observation on X230](ha128-diagnostics/fixed-lan-policy-r1/x230/stdout.original.json), job `1a1b2cee69e-fc05-7fd9`, then showed that the route to Mac `.8` from wired `.13` uses `enp0s25`; from wireless `.3` it uses the wireless table/interface. Reverse-path filtering is loose (value 2) for all three inspected settings. This does not support attributing the failure to strict reverse-path filtering or the wrong return interface.
+
+The [Mac alias and port-22 comparison](ha128-diagnostics/fixed-lan-policy-r1/mac/stdout.original.json), job `1a1b2cf964f-fc05-7fdb`, confirms that the actual `x230` SSH alias targets `.13` without ProxyJump. Both `.13:22` and `.3:22` accepted one bounded TCP connection. The [native LAN projection](ha128-diagnostics/fixed-lan-policy-r1/native-network-declared-lan.public.json) retains only declared-interface/route facts and a private equality check for the wired neighbor. Unrelated network inventories remain private. These observations narrow the next diagnosis to the selected port and its path; they do not establish an effective firewall fix or a passing physical HA campaign.
+
+### Actual gateway loading chain captured; production gates remain
+
+The [current installed gateway source chain](mac-gateway-loader-current-r1/README.md) is archived with its exact original native-read responses. The actual mainline proceeds through gateway CLI startup, server startup, `loadGatewayStartupPlugins`, `loadGatewayPlugins` and `loadOpenClawPlugins`. The pre-bootstrap stage uses a different compiled path helper from the earlier isolated fallback-policy test, and can process global/config environment selectors before the final startup snapshot. The 20 prior policy tests therefore cannot alone prove which file the actual gateway will select or which plugins are registered in running memory.
+
+Actual startup registration, the complete selector chain, writer exclusion with fresh-generation six-database keeper handling, provider-once/CAS recovery, and full production rollback are still separate requirements. The successful SDK inverse is not substituted for those requirements. ROG and Pocket4 still require source-bound real credential I/O, restart and full rollback before their own cutovers. The registered backup/restore and Mac legacy-relay consumer gates remain required before any legacy production cleanup.
+
+
+## Historical completed X230, HA and AuthBus checkpoint — r11
 
 The current full-replacement decision is still **not qualified**. This checkpoint adds successful current X230 migration/API evidence, the first current physical HA failure, complete SDK r2/r3 failed-run archives, and two successful Mac diagnostics. Product code, normal build features and all original workload budgets remain unchanged. No production credential was refreshed or written, no registered gateway was restarted or switched, no helper hold was released, and no legacy production installation was deleted.
 
