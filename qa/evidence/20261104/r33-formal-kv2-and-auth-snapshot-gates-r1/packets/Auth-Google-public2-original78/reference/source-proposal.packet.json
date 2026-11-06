@@ -1,0 +1,27 @@
+{
+  "tree": "20ea640795bcc500830a7e534485851ee93951a8",
+  "files": 7,
+  "bytes": 61682,
+  "merkle": 3,
+  "wholeReadback": true,
+  "requests": [
+    {
+      "path": "requests/01-metadata.exact.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c1b435737ad8a9538a1037f1f10b4c396ec9c581",
+      "size": 279,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/c1b435737ad8a9538a1037f1f10b4c396ec9c581"
+    },
+    {
+      "path": "requests/02-metadata.exact.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e7060cb5323b8169caf3eab29b2e95f3a9def76e",
+      "size": 270,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/e7060cb5323b8169caf3eab29b2e95f3a9def76e"
+    }
+  ],
+  "contract": "ea6032ceeac023760187d6733bd066c7df18e98b",
+  "deriver": "c09d5016e52d77d05f60377ffa7b5ea1fe325df2"
+}

@@ -1,0 +1,109 @@
+{
+  "schema": "heptabao.whole-public-evidence-manifest.v1",
+  "files": [
+    {
+      "path": "reference/GO.original.json",
+      "blob": "773ffa99d027be4cd77e265b3a40f8432864139c",
+      "bytes": 6192,
+      "sha256": "66e15a989b26ed9cf57a89896767e845267c2a7f8be72e2ac94cab9ffde3d869"
+    },
+    {
+      "path": "reference/READPLAN.original.json",
+      "blob": "a236f6dd28af159764f57aa7135d1ab14ca77f8d",
+      "bytes": 1446,
+      "sha256": "fdfd94b878902b6bfeb6c00246d10df730a70d052893c94815f048205d798c54"
+    },
+    {
+      "path": "launch/request.original.json",
+      "blob": "3839158cca7a7d543d8b277fc4df9f271d45ab83",
+      "bytes": 355,
+      "sha256": "235880f1326aa4d1848b2a9867c5915719c787bb9b58e90140b95838a7c49b69"
+    },
+    {
+      "path": "launch/execution-intent.public.json",
+      "blob": "d55fa07136b49290649743ac8ada3be3f903b508",
+      "bytes": 2054,
+      "sha256": "3c6f4cc3bea0a2b1fdb79aca3658505517d1fdc3917af4757b796620e15b63cf"
+    },
+    {
+      "path": "launch/ack.original.sdk.json",
+      "blob": "ef97f09d6ec0bb4ea2cfaecd2271025aa4276418",
+      "bytes": 1360,
+      "sha256": "ce68ad30338d9f6f1778c733122f6bc4520a9d35e6604965765f29e9d3ea054f"
+    },
+    {
+      "path": "launch/ack.original.json",
+      "blob": "33e0133c4bb70ffcd06af1af8ad681030066711a",
+      "bytes": 1117,
+      "sha256": "ff725ec568abc5c2895592c23d3b1b93e8040226c2cac6f825b96fa2ecfcb6db"
+    },
+    {
+      "path": "launch/first-parser-failure.public.json",
+      "blob": "1c8db6a8dfe28f751c0650f222513d9af685a97d",
+      "bytes": 933,
+      "sha256": "ac2289b1c203db042f8b2824c3eb8a62fc5f2bb1346d70bcc2077b09b68006ef"
+    },
+    {
+      "path": "launch/parser-correction.public.json",
+      "blob": "13c2b9fb7b468f2bcfe0fa56864f9d69f2b5a2e1",
+      "bytes": 1136,
+      "sha256": "9af53b50c6e62312205ea978e177995ab43252c996701924063e6695aeafde9d"
+    },
+    {
+      "path": "actual/authority.original.json",
+      "blob": "adfb59fdb566c3acb280812f33e6961994962e34",
+      "bytes": 729,
+      "sha256": "33d3949d275404316b8545346688fff4fdb7fc0806c72cd0fb0d74af3b02dfae"
+    },
+    {
+      "path": "actual/stdout.original.txt",
+      "blob": "c5fc65d0ec823e6201d81aedc37d21ee163e6748",
+      "bytes": 275,
+      "sha256": "51b2dc84922edef40315c6ca7ecb6b66dfd44032cfae2432f8551949f1ec6c28"
+    },
+    {
+      "path": "actual/stderr.original.txt",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "actual/result.public.json",
+      "blob": "551255f3ff372d04f49ea595f1cf5a55c3c06285",
+      "bytes": 1124,
+      "sha256": "e2c18577543dc0290461daf2b6791cfe9da87616d87cd4a17c007a8f99f0d9a0"
+    },
+    {
+      "path": "actual/result.file_info.original.json",
+      "blob": "7c01f6158eeb50ad04c97d24b214983bc67d2afa",
+      "bytes": 482,
+      "sha256": "a4de69ee5e0221737dd02956fe550597d6319f6c3406aa6d9c89c495b0058763"
+    },
+    {
+      "path": "actual/summary.public.json",
+      "blob": "1368fb13c2478606a2e730ef13f942ede824114b",
+      "bytes": 90926,
+      "sha256": "b9966b600df2f2c681148b63d03dca3bbceabcdff3fb42dc1eb4bae73677ae9f"
+    },
+    {
+      "path": "actual/summary.file_info.original.json",
+      "blob": "b21191f87f12444960afc6ff03d6cef8ac48c9b1",
+      "bytes": 485,
+      "sha256": "7e34aa0d8a763f0d43459c5b4b30b5380f6c035d6051d5aa637205e058515819"
+    },
+    {
+      "path": "recovery/original-journal.public.json",
+      "blob": "83f37c59fa1ca23c12b0583a256db89081ab4388",
+      "bytes": 7819,
+      "sha256": "f12d3c46cc9cf218c08fddd72d4a5c2f8ea42822cf64947cf7ef08984d7b8bf3"
+    },
+    {
+      "path": "STATE.public.json",
+      "blob": "385efa95c64f14e13e581c3fb1c56e8d4207cd8d",
+      "bytes": 1779,
+      "sha256": "113de2c15597c6cb3c538caf580e2b3499eafa11a467438cd68aac4c2ef2a0cb"
+    }
+  ],
+  "total_bytes": 118212,
+  "scope": "Original actual core; full observation archive pending as explicitly stated."
+}

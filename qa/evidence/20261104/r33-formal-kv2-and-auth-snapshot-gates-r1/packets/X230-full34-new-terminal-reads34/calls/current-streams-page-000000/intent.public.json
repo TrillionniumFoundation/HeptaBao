@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.x230-full34-new-current-read-followup-intent.v1",
+  "GO": "6959e167d282af43d703808e79bc61f39069ef3a",
+  "sequence": 2,
+  "label": "current-streams-page-000000",
+  "method": "operation_result",
+  "requestPin": {
+    "name": "x230-full34-current-streams-page-000000-request",
+    "blob": "84a68046a16e2e307ccb54ddf8b1ec1fe78117c3",
+    "bytes": 121,
+    "sha256": "165ea6faec175a66e8715f96b0f164ce6d1ad8f6dbd0dced5365ee229d308112"
+  },
+  "request": {
+    "operation_id": "baa76cd87bed04ef0f5ba23360182bdb3fb745aa6aae0479526f41ec58e1f534",
+    "offset": 0,
+    "limit": 8192
+  },
+  "same_admitted_operation_only": true,
+  "new_native_dispatch": false,
+  "old_39_index_gap_unchanged": true
+}

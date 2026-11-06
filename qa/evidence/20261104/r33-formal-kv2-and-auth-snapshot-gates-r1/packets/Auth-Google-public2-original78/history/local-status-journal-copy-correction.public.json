@@ -1,0 +1,10 @@
+{
+  "schema": "heptabao.local-journal-copy-correction.v1",
+  "scope": "local bookkeeping only; no failed Runtime call",
+  "cause": "load/store values are copied. The observed native status was archived before parse but its state mutation was not stored before checkpoint.",
+  "originalStatus": "aac573db5ff1dbde371a4cdc620f73821c9ba70f",
+  "originalStatusSdk": "893d7b1f51faa7569ce24a8b9194ad331fd12ac9",
+  "originalStatusClosed": true,
+  "additionalRuntimeCalls": 0,
+  "action": "Restore state exclusively from saved original status; add explicit store before each future checkpoint."
+}

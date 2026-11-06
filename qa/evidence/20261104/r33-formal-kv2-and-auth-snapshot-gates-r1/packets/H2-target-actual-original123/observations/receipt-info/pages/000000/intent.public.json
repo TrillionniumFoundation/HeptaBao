@@ -1,0 +1,25 @@
+{
+  "schema": "heptabao.H2-target-read.exact-call-intent.v1",
+  "root_GO": "012b76fca8a176e1cc15e3115ad38a69977ef8d9",
+  "lane": "A",
+  "label": "receipt-info",
+  "phase": "page000000",
+  "method": "operation_result",
+  "request": {
+    "name": "ha-h2-target-receipt-info-page000000-request",
+    "blob": "c1aec94932042aff10b267c9d1b80091560c2b70",
+    "bytes": 121,
+    "sha256": "44ec38330afba725af6481f4e5de55005386ebdb6ce4637a374da4298d30978b"
+  },
+  "arguments": {
+    "operation_id": "b9e5bcd859097fd5493bcf0bc39cf86ed0ed09db63611d65a2e748376e339957",
+    "offset": 0,
+    "limit": 8192
+  },
+  "reference": {},
+  "previous_whole_closed": null,
+  "only_readonly": true,
+  "stage_replay": false,
+  "prepare_or_live": false,
+  "one_future_per_lane": true
+}

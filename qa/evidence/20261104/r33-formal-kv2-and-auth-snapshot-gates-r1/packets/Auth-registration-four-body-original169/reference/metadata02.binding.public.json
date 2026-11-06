@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.mac-registration-metadata2.actual-binding.r1",
+  "sequence": 2,
+  "request": {
+    "blob": "dfe400bad04a2b62d613da8aee4dd8e189e0dee2",
+    "bytes": 267,
+    "sha256": "3c37c2558a7c0dba50d4e60fd4abf9bd3c2ff24c09c2e9098482621ebb27a0b8"
+  },
+  "operation_id": "921e9ebd9f85ea4b118698312ce295b313aced33538f1edd4d1d04a7ad5fb7d2",
+  "ACK_SDK": "c1dbd67a8324e1037dab4e6b09157521757d6fc9",
+  "status": {
+    "blob": "8414ed66a671815387d92fc4863f3a439bcefc3d",
+    "bytes": 800,
+    "sha256": "f2bb272808f586b1043a3b043ea9dda393afa3886eed28013487ea012182fbfe"
+  },
+  "page_SDK": "515ca21f86962f659d64838d15a669251ca303ec",
+  "payload": {
+    "blob": "9cfecd2b75e688dae5c724f9b6563bbad107a97a",
+    "bytes": 574,
+    "sha256": "7db36ce1824a6d5d66178322ad097af9464d79892a8ac23dad05242ab7ab6b10"
+  },
+  "native": {
+    "blob": "79c97aa723f11a670fadee82726d7bf516b76f89",
+    "bytes": 457,
+    "sha256": "5f17977b62215a5ac52cedbc1a8a610be0d5fbb50f68d2470e82e5e6af719d10"
+  },
+  "completed_stored_inactive": true,
+  "whole_original_payload": true,
+  "observed": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 80,
+      "link_count": 1,
+      "metadata_platform": "darwin",
+      "mode": 420,
+      "uid": 501,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 420,
+    "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-B8eQDFB4.js",
+    "sha256": "25f3ef82756d85281ad5c25375a5cd2f405989a1145ed438de05992e8c995376",
+    "size": 181581,
+    "version": "16777233:405238776:181581:1784843461889330234:1784843461889330234",
+    "full9_decimal": [
+      "16777233",
+      "405238776",
+      "501",
+      "80",
+      "33188",
+      "1",
+      "181581",
+      "1784843461889330234",
+      "1784843461889330234"
+    ]
+  },
+  "new_body_requests_submitted": 0,
+  "SDK_execution": 0,
+  "actual_selected_owner": null
+}

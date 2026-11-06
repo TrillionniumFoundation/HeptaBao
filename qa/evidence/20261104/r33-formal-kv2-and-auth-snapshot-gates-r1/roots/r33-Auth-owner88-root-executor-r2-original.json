@@ -1,0 +1,7 @@
+{
+  "chunk_id": "6e5b42",
+  "wall_time_seconds": 0.619424072,
+  "exit_code": 0,
+  "original_token_count": 103,
+  "output": "{\"ok\": true, \"passed\": 218, \"failed\": 0, \"failureDetails\": [], \"expectedPacketTree\": \"71a1656fbe227fcea1e92558a5004e22eaab69c6\", \"merkleTrees\": 12, \"result\": {\"blob\": \"68838a0c45042258358892d20778b0aee3b14b27\", \"bytes\": 40331, \"sha256\": \"2fb1335557b1a32685b002019c53a2e61950350c2fbde3fa77ec5d9471dbbd66\"}, \"resultPath\": \"/workspace/scratch/f86faac821c4/r32_recovery/r33-Auth-owner88-root-result-r2.public.json\"}\n"
+}

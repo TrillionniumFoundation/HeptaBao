@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.original-operation.immutable-page.intent.v1",
+  "request": {
+    "name": "ha-h2-stage-streams1-page-008192-request",
+    "blob": "aa46680b0b7966fdd3f9e10cb9078a9e04ba3f5e",
+    "bytes": 124,
+    "sha256": "4433c10e7b95cd359d1bfb7ea21ca492027fcf28d6ef925c37e70f617f97250f"
+  },
+  "closed_status": {
+    "name": "ha-h2-stage-streams1-status-native",
+    "blob": "47b5a9600d185462a1d84ab0ea60be0b83a40230",
+    "bytes": 803,
+    "sha256": "133a52a3ca15cd2549b96eaa7c5ce6a65112d2550684cbd98a6dcd3740f45191"
+  },
+  "first_page": {
+    "name": "ha-h2-stage-streams1-page-000000-native",
+    "blob": "1524a2a95683628cab92e7e8fbac5f16c19b4fe6",
+    "bytes": 11609,
+    "sha256": "1bf827b60bb82281ce7ac2ec500ce695e94c9438f432fd5b7b3c672f963d9d4b"
+  },
+  "expected_payload_bytes": 22218,
+  "expected_payload_sha256": "aced4dcce24ceda5831268ea592365d4beef46ecdb1ba4227ca14238baf974de",
+  "root_go": "065ae72edbb8f330b66f5a40ea4c0134891f60d8",
+  "new_native_admission": false,
+  "original_job": "1a1adb7c0f6-fc05-5ab6"
+}

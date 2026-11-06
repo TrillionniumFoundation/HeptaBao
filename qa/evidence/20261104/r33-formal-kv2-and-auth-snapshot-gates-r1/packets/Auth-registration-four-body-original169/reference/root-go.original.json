@@ -1,0 +1,275 @@
+{
+  "schema": "heptabao.root-Auth-registration-four-public-body-reads-exact-GO.r32.v1",
+  "status": "GO_FOUR_FIXED_BODY_OPERATIONS",
+  "owner": "/root/authbus_migration",
+  "lane": "A",
+  "same_owner_lane_continues": true,
+  "qualification": {
+    "name": "r32-Auth-registration-metadata2-and-body4-root-review.public.json",
+    "blob": "459a8919593386faa96403d6411f576d112252e1",
+    "bytes": 12267,
+    "sha256": "2d62443cb8ad5cc005b50f7216d00d40417f38f1ac3d4b078bd4c133dce0cb95"
+  },
+  "actual_packet": "27c4b1be1736069cf4b9fdc6a1bf44acb819624f",
+  "independent_peer": "7448f5bc13b27f52b862720344cbff4ff830e20e",
+  "prior_metadata_release": "72bfd14bb2b1f439babf59a731b53f3765352df1",
+  "requests": [
+    {
+      "sequence": 1,
+      "id": "manifest-registry",
+      "request_path": "body-proposal/requests/01-manifest-registry-0.json",
+      "request_pin": {
+        "blob": "f78c2274f45aa6b9f62422fac6453bd8ec4e96ce",
+        "bytes": 420,
+        "sha256": "18cd2d3ccfd8367ef87eae98aba054cd425ab17824af8eaa3e28cb312e6af233"
+      },
+      "value": {
+        "idempotency_key": "heptabao-mac-registration-body-manifest-registry-819c76c3-0-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/manifest-registry--UiRn6nq.js",
+            "expected_version": "16777233:405237428:31444:1784843459184750747:1784843459184750747",
+            "offset": 0,
+            "limit": 31444
+          }
+        }
+      },
+      "actual_metadata": {
+        "blob": "fda116250a9560c6dbff15ce0815d2a887d25f8c",
+        "bytes": 464,
+        "sha256": "03de9557541da230e61f378709eb492d25b5e18c04cd787f5b3252f19e02041a"
+      },
+      "metadata_binding": {
+        "blob": "135d4ddb97212b3d4af186d37e0d4d8962f1a915",
+        "bytes": 1928,
+        "sha256": "af0b23e2e5f49b826234d5e842f620240583c9ca0c3b82cd60b178bd6e88b539"
+      },
+      "expected_whole": {
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/manifest-registry--UiRn6nq.js",
+        "bytes": 31444,
+        "sha256": "819c76c314e6ed1fd39c5ed6b169d63997905b3ae8a98b9373783d626431ace4",
+        "version": "16777233:405237428:31444:1784843459184750747:1784843459184750747",
+        "full9_decimal": [
+          "16777233",
+          "405237428",
+          "501",
+          "80",
+          "33188",
+          "1",
+          "31444",
+          "1784843459184750747",
+          "1784843459184750747"
+        ]
+      },
+      "expected_next_offset": 31444,
+      "expected_eof": true,
+      "submitted": false
+    },
+    {
+      "sequence": 2,
+      "id": "plugin-registry",
+      "request_path": "body-proposal/requests/02-plugin-registry-0.json",
+      "request_pin": {
+        "blob": "de4f483af21acc4f5824876a774d4be6812cef86",
+        "bytes": 410,
+        "sha256": "f4da6cc37d69a217e3ba38f8c048d11aa3f6d0de4354038b5d91b9b824d9c163"
+      },
+      "value": {
+        "idempotency_key": "heptabao-mac-registration-body-plugin-registry-25f3ef82-0-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-B8eQDFB4.js",
+            "expected_version": "16777233:405238776:181581:1784843461889330234:1784843461889330234",
+            "offset": 0,
+            "limit": 65536
+          }
+        }
+      },
+      "actual_metadata": {
+        "blob": "79c97aa723f11a670fadee82726d7bf516b76f89",
+        "bytes": 457,
+        "sha256": "5f17977b62215a5ac52cedbc1a8a610be0d5fbb50f68d2470e82e5e6af719d10"
+      },
+      "metadata_binding": {
+        "blob": "4be423ca21e0d9157a922ba21ed4d9568cd46a28",
+        "bytes": 1922,
+        "sha256": "f9974a505995f53beef0504d1b83690d14b2d9efe0df6959eb05172d24c56740"
+      },
+      "expected_whole": {
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-B8eQDFB4.js",
+        "bytes": 181581,
+        "sha256": "25f3ef82756d85281ad5c25375a5cd2f405989a1145ed438de05992e8c995376",
+        "version": "16777233:405238776:181581:1784843461889330234:1784843461889330234",
+        "full9_decimal": [
+          "16777233",
+          "405238776",
+          "501",
+          "80",
+          "33188",
+          "1",
+          "181581",
+          "1784843461889330234",
+          "1784843461889330234"
+        ]
+      },
+      "expected_next_offset": 65536,
+      "expected_eof": false,
+      "submitted": false
+    },
+    {
+      "sequence": 3,
+      "id": "plugin-registry",
+      "request_path": "body-proposal/requests/03-plugin-registry-65536.json",
+      "request_pin": {
+        "blob": "3fa1a95b06619da84b9af79f429ecda22f28c992",
+        "bytes": 418,
+        "sha256": "8532186b15b50c5123e3ac2a3e523614e57763ed4ae918ed8177240c4b2a5e66"
+      },
+      "value": {
+        "idempotency_key": "heptabao-mac-registration-body-plugin-registry-25f3ef82-65536-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-B8eQDFB4.js",
+            "expected_version": "16777233:405238776:181581:1784843461889330234:1784843461889330234",
+            "offset": 65536,
+            "limit": 65536
+          }
+        }
+      },
+      "actual_metadata": {
+        "blob": "79c97aa723f11a670fadee82726d7bf516b76f89",
+        "bytes": 457,
+        "sha256": "5f17977b62215a5ac52cedbc1a8a610be0d5fbb50f68d2470e82e5e6af719d10"
+      },
+      "metadata_binding": {
+        "blob": "4be423ca21e0d9157a922ba21ed4d9568cd46a28",
+        "bytes": 1922,
+        "sha256": "f9974a505995f53beef0504d1b83690d14b2d9efe0df6959eb05172d24c56740"
+      },
+      "expected_whole": {
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-B8eQDFB4.js",
+        "bytes": 181581,
+        "sha256": "25f3ef82756d85281ad5c25375a5cd2f405989a1145ed438de05992e8c995376",
+        "version": "16777233:405238776:181581:1784843461889330234:1784843461889330234",
+        "full9_decimal": [
+          "16777233",
+          "405238776",
+          "501",
+          "80",
+          "33188",
+          "1",
+          "181581",
+          "1784843461889330234",
+          "1784843461889330234"
+        ]
+      },
+      "expected_next_offset": 131072,
+      "expected_eof": false,
+      "submitted": false
+    },
+    {
+      "sequence": 4,
+      "id": "plugin-registry",
+      "request_path": "body-proposal/requests/04-plugin-registry-131072.json",
+      "request_pin": {
+        "blob": "14a5cc1d4945973ef7d33b38b514564bd989a9b2",
+        "bytes": 420,
+        "sha256": "3fcd59d3e179191032adedd39db914d6ec86612da735918b0e9d9b686c78183f"
+      },
+      "value": {
+        "idempotency_key": "heptabao-mac-registration-body-plugin-registry-25f3ef82-131072-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-B8eQDFB4.js",
+            "expected_version": "16777233:405238776:181581:1784843461889330234:1784843461889330234",
+            "offset": 131072,
+            "limit": 50509
+          }
+        }
+      },
+      "actual_metadata": {
+        "blob": "79c97aa723f11a670fadee82726d7bf516b76f89",
+        "bytes": 457,
+        "sha256": "5f17977b62215a5ac52cedbc1a8a610be0d5fbb50f68d2470e82e5e6af719d10"
+      },
+      "metadata_binding": {
+        "blob": "4be423ca21e0d9157a922ba21ed4d9568cd46a28",
+        "bytes": 1922,
+        "sha256": "f9974a505995f53beef0504d1b83690d14b2d9efe0df6959eb05172d24c56740"
+      },
+      "expected_whole": {
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-B8eQDFB4.js",
+        "bytes": 181581,
+        "sha256": "25f3ef82756d85281ad5c25375a5cd2f405989a1145ed438de05992e8c995376",
+        "version": "16777233:405238776:181581:1784843461889330234:1784843461889330234",
+        "full9_decimal": [
+          "16777233",
+          "405238776",
+          "501",
+          "80",
+          "33188",
+          "1",
+          "181581",
+          "1784843461889330234",
+          "1784843461889330234"
+        ]
+      },
+      "expected_next_offset": 181581,
+      "expected_eof": true,
+      "submitted": false
+    }
+  ],
+  "accounting": {
+    "previous_completed": {
+      "files": 6,
+      "chunks": 7,
+      "bytes": 140664
+    },
+    "proposed_new": {
+      "files": 2,
+      "chunks": 4,
+      "bytes": 213025,
+      "max_chunk": 65536,
+      "immutable_result_page_limit": 8192
+    },
+    "cumulative_if_separately_authorized_and_completed": {
+      "files": 8,
+      "chunks": 11,
+      "bytes": 353689
+    },
+    "old_body_authorization_reused_or_reset": false,
+    "metadata_hash_work_not_bounded_by_body_limits": true
+  },
+  "protocol": {
+    "one_Runtime_call_and_one_owned_native_future": true,
+    "external_exact_intent_complete_before_single_operation_start": true,
+    "save_whole_original_SDK_before_isError_and_parse": true,
+    "sequence": "Exactly requests 1,2,3,4; original ID only; completed/stored/inactive and every immutable original payload fully verified before next.",
+    "max_native_chunk": 65536,
+    "immutable_page_limit": 8192,
+    "each_chunk_SHA_extent_version_and_EOF_required": true,
+    "whole_two_source_SHA_required": true,
+    "unsafe_integers_lossless": true,
+    "error_or_missing_ACK": "Retain original SDK/error, stop new admission. No alternate path, new key, business/read replay, metadata refresh, dependency expansion, or inferred absence.",
+    "prior140664_body_bytes_not_reusable": true
+  },
+  "after_success": "Read exact whole sources for pure static registration/root/manifest contract analysis. Any subsequent file read, native SDK import, diagnostic, configuration projection, credential work or changed source requires its own concrete reviewable next step.",
+  "exclusions": {
+    "J3160_dependency": false,
+    "private_capsule_read": false,
+    "credentials_export": false,
+    "provider_model_refresh_quota_changes": false,
+    "SDK_import_execution": false,
+    "actual_selected_owner_qualified": false,
+    "production_cutover": false
+  },
+  "root_Runtime_calls": 0
+}

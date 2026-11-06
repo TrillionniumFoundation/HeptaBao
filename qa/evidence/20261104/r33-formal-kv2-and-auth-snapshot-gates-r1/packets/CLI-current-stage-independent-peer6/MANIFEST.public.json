@@ -1,0 +1,31 @@
+{
+  "schema": "heptabao.cli-stage-peer.manifest.v1",
+  "originalTree": "3ec3bec37a6ef1270525c017618eda810edc8044",
+  "files": {
+    "verify_original_chain.py": {
+      "blob": "041ee3ec8c16c466d37dcab8cca6c98f9b21ccaf",
+      "bytes": 13083,
+      "sha256": "2fabde59cc7d4dacf451f749c080c3617fa73a6c154a68d82ca3815a88b553b3"
+    },
+    "result.public.json": {
+      "blob": "75d2f9ee80ccf1d8ba1f024e38c07f33a4533a86",
+      "bytes": 43607,
+      "sha256": "62c465a9873949d8154f22fdf4912f3d16662be3d259943483f6a1bcd5a87bdb"
+    },
+    "executor.original.json": {
+      "blob": "5b838d5f99a99629c5e232caf269f6628b847fad",
+      "bytes": 509,
+      "sha256": "93d84aa0e8a3690d1572ef8fc86324be194f7fb50efba0d2307c3230bfe0d484"
+    },
+    "history/local-digest-exploration.public.json": {
+      "blob": "d9c4395295ee4b743411cfaa4f31f53db8dce11e",
+      "bytes": 931,
+      "sha256": "9ec7abd42d433b1c51f7401d6b31b413cbfbfaf2ff2c2c5b0e921490abe429e8"
+    },
+    "PEER.md": {
+      "blob": "2221bb130887c6baa1f62b86e88e0251a4a954ae",
+      "bytes": 2969,
+      "sha256": "ef2212485548542569c924192c9aa0320d9990cbaf11ec6cbe4dbee489a76b25"
+    }
+  }
+}

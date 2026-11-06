@@ -1,3 +1,73 @@
+# R33：双机正式 KV2 恢复与 X230 对照完成；AuthBus、CLI 与 H2 继续推进
+
+**事实冻结时间：2026-11-05 23:43:28 UTC。全量替代、生产切流、全部客户端及备份迁移、旧版清理仍均为 false。**
+
+当前被测候选仍为 `4e808d0ecb1bcded22870a7ec960dfb2491cf6ec`，源树 `eba5e650bd080b8ad41ea52a2bc68867f541d255`。本检查点固化实际取得的结果、完整原始链条和明确的剩余门槛；冻结时间之后的在途作业不在这里提前计作成功。工作在发布本检查点后继续。
+
+机器可读状态见 [R33 STATE](../../qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/STATE.public.json)，逐包路径、Git 身份、字节数和根审查索引见 [R33 MANIFEST](../../qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/MANIFEST.public.json)。先前 R32 的所有非文档子树原样保留；本文后半部分保留此前完整记录。
+
+## 一、五项门槛的当前状态
+
+| 用户要求 | 已有实际证据 | 仍须完成 |
+|---|---|---|
+| KV2 从 34 MiB 隔离成果进入可迁移、可恢复的正式存储 | Mac 原 31/31 与 X230 原 31/31 均已覆盖正式 native V6、官方 2.7.1 历史迁移、HTTP 快照恢复和冷重启 | 不把此有限容量、版本与生命周期合同外推成无限容量或全 API 资格；补齐仍缺的历史归档索引 |
+| Mac、ROG、Pocket4 真正断主、重新选主、ReadIndex、持久化及重启 | 原真实三机运行 98/98，加独立补充 12/12；实际 SIGKILL 主节点、自然选主、失去 quorum 后读写拒绝、原密钥冷启动及跨节点见证已取得 | 原官方 CLI 快照保存/恢复/冷重启/standby 流程，以及真实 TLS ALPN H2 流程仍未取得本轮 live 结果；物理断电、磁盘写满及长期运行不是已有证据 |
+| AuthBus 不依赖 J3160 的可信凭证、AppRole/TLS/KV/Policy/续期/撤销 | 有限公开来源完整回读、实际注册归属修复、Google 唯一声明入口绑定、续期证据增量和完整 22 源码包已审；修正后的 inert 请求已获得有限执行范围 | 原完整配置工作进程中的实际 selected owner、可信凭证来源、真实读写、续期延长、撤销、冷重启及回滚尚未由本检查点证明 |
+| 逐台真实凭证读写、重启、回滚后再切流 | Mac 5、ROG 6 是已有的有限观测；逐客户端门槛保持 | 当前客户端全集、Pocket4 manager、X230 消费者和全部备份路径仍未闭合，不能以有限样本代替全机迁移 |
+| 删除旧 OpenBao、旧 HeptaBao 和可再生资产，仅保留最新版服务 | 清理条件仍显式为 false | 必须先证明所有客户端与备份迁移、实际流量转换和回滚能力，再执行旧版清理 |
+
+## 二、正式 KV2：Mac 与 X230 的同一有限合同均已闭合
+
+Mac 的原始 31/31、47.534 秒结果沿用 R29 已取得的资格，没有重跑。X230 原作业 `1a1ad5ffad0-fc05-599a` 的 31/31、144.321 秒结果现已完成合同与原始链条核对，根资格对象为 `9fd3ec40974a0d7fc2eed14983fd8b621b6bc214`。
+
+合同包含 17 个可读的大版本，每个 2 MiB，共 35,651,584 字节逻辑载荷；19 个生命周期版本及三个阶段的 57 个原生历史见证。原官方 TLS 服务只执行一次导出和一次导入，每次仍保留原 360 秒上限。9,018,349 字节 HTTP 快照、恢复和冷启动完成，并检查删除后恢复、已销毁版本、CAS 拒绝和成功分支。所有自有进程停止，源与二进制保持一致。
+
+这些是已执行的正式存储和恢复合同，不能由此推出没有测试的容量、历史深度、全错误优先级或生产安全范围。仍有 39 个原框架索引叶未定位，记录在 `febdec346fa99b7eef463f660639c6dd8cd3a664`。现有原生载荷和正文见证保留；后来新增的两次终态观察没有冒充那些原记录。**运行合同通过与全部历史归档完整是两个分别报告的结论。**
+
+## 三、X230 与 OpenBao 2.7.1：69/69 对照完成，保留归一化边界
+
+原作业 `x230/1a1adc377a3-fc05-5acb` 实际退出 0；双方各 69 项通过，0 失败、0 未运行，清理通过且无清理错误，耗时 37.691 秒。候选使用 `native_v6_file`，fixture options 为 false、激活返回 204。官方服务运行在非 dev server 模式，TLS 已验证，官方归档成员与实际可执行文件的 SHA256 匹配。
+
+覆盖的 13 组是 AppRole、core、TLS 边界、identity、KV、operations、PKI、system、token、TOTP、transit、userpass 和 wrapping。候选二进制 SHA256 为 `cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0`；官方可执行文件为 `535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea`。前后源码提交、源树、二进制哈希及 clean 状态一致。
+
+完整摘要为 `db965ea9374ddcb7b76c5d21a89036ba9a5d6125`，104,034 字节，SHA256 `51dbe8ec85e7e18434e48ecf627107267fb49284d18408c448f01a7d38929bc5`。根审查 `661060e634ee99e2c67c1403f1344a062fd76ee2` 实际从 7 个原只读观察、23 个原 immutable page 重建载荷，并比较逐项语义。
+
+其中 67 项保留了相等的数值 HTTP 状态。两个 PKI 项原本记录的是 `rejected_after_ttl` 与 `rejected_400_or_404`，各自允许集合为 [400, 404]。因此这两项证明归一化拒绝合同通过，**没有单独证明具体 400 与 404 的严格一致性**。其余鉴权方式、secret engines、完整错误优先级、持久化重启、HA、迁移、升级、agent/proxy/CLI 和生产安全也不由这一个套件替代证明。
+
+## 四、AuthBus：修正真实归属绑定，保留原工作进程
+
+公开注册来源原 169 件包已有独立 714 项离线链条核对。Google 两个公开 JSON 的原 78 件包、唯一声明入口的原 38 件包均完整闭合；本轮入口实际 10,582 字节，SHA256 `f245758337a55924518852f542a27d49bd786d8e4b80821dc5f98f825ec3fc60`。这是当前实际观察，不是虚构的历史入口 pin。
+
+归属修复区分真正的 `ownerPluginId` 和 harness 自身可不同的 `pluginId`，继续检查实际 registry 所有者、对应本地入口、局部实例与全局 selected instance。原 loader、selector、完整 cfg 及“selected harness 为实际注册实例”的原断言都保留；没有通过过滤 Google、禁用模块、改小配置或伪造对象绕过失败。
+
+main、trnm、hepta-ui、hepta、hepta-backend 五个 agent 和 `openai/gpt-5.6-sol` 保持。续期增量围绕原单次 renew POST {} 增加前后 lookup 证据，检查同一 token/accessor/创建身份、service token、TTL/lease duration 和到期时间；原角色 TTL 180 秒、最大 600 秒及全部工作/清理预算保持。正向到期延长在原完整清理、恢复和 lineage 检查后评估，不靠新增睡眠、重试或修改角色制造结果。私有 bearer/accessor 不导出到公开记录。
+
+完整绑定源码包为 `71a1656fbe227fcea1e92558a5004e22eaab69c6`，88 件；根 218 项源码审查与后续 129 项实际 Git 树/请求修正审查通过。原 inert proposal 错用 `stdin_text` 的字段已在提交前识别，原件保留；只有改为原生字段 `stdin` 的 `521c4700c9896ef48c8b710f7b787b5cfb5d1504` 可以执行，payload、root、key、argv 与预算没有变化。
+
+新的有限 GO 为 `964c58fa1ae491cad2f815362a2381686e64837a`：原 45 秒共享期限、60 秒 supervisor，一次 create-only inert 发布；只有原作业权威退出 0、完整 post-finally stdout、30 个源/文档的独立 held-read 与 full9 全部匹配后，才允许固定 outer、candidate、receipt 三项外部回读。最多 3 个 metadata、4 个 body、新正文 144,253 字节、immutable page 8,192 字节。原 publisher 对 30 个对象和 receipt 的 held-read、原 runtime 对 22 个源码与 7 份证明的使用期校验均保持。旧 root 的 31 项 API GO 没有被继承；本次三目标范围及它不能消除采样到 exec 之间原 TOCTOU 的限制均明确记录。
+
+截至本检查点冻结点，尚未采用新的实际 inert 成功或完整凭证工作进程结果。**源码审查通过不等于实际 owner、凭证续期或生产迁移通过。J3160 未参与。**
+
+## 五、CLI 与 H2：运行包已具备，后续实际门槛仍逐项执行
+
+官方 CLI 的当前 stage 原作业 `desktop/1a1ada8b25f-fc05-5a8d` 已权威成功，post-finally 原 stdout 证明全部 FD 关闭；完整 63 件原包及独立 286 项链条核对已取得。实际 binding 6,944 字节，SHA256 `7ef3458f4a54b74336941229307c0ffb6778e581c18b27518dc03a8fe6107eea`。冻结点正在按 `e40948ddf621c367c4d24a7190cc95a89d9fd8d5` 核对两个固定 staged 文件；原 prepare、B01 保存 A、B02 修改/恢复 A/冷启动、B03 保存 B、B04 standby 保存、B05 修改/standby 恢复 B/冷启动尚未计作通过。原两次 B01 UNKNOWN 保留。
+
+H2 的 12 个 incoming 输入已资格核对；当前 stage 原作业 `desktop/1a1adb7c0f6-fc05-5ab6` 的原 106 件包完成根 395 项独立链条审查。随后两个原 metadata 加三个原 body、5 个原观察、10 页、38,845 字节全部闭合，实际 receipt 28,615 字节与 binding 10,230 字节均匹配期望完整哈希；不是拿源码派生 receipt 代替主机回读。根已确认五个原 handler 均 completed/stored/inactive，执行通道交给 AuthBus。
+
+H2 仍须原 prepare 和 H01/H02/H03：真实 TLS/主机名/证书、ALPN h2、KV2 GET、至多 8 MiB snapshot GET、状态/类型/正文/trailers/end-of-stream。这不扩大成 34 MiB H2、snapshot restore 或全 API 资格。
+
+## 六、归档、失败与清理边界
+
+本轮多次 Git create_blob 的 ReadTimeout、内部错误和同 SHA 404 均保留；已接收的原公开字节通过 Git create_tree 的 content 条目恢复，再完整回读校验。没有为了修补 Git 归档而重发主机观察或业务启动。会话缓存重置、原 stale-host-generation 返回、局部检查器类型/空格错误、mode 派生纠正及一次 ns 精度错误也分别保存原件与纠正，未改写原生证据。
+
+Mac 七个原 Cargo 片段、ROG 原完整命令/大构建归档，以及 X230 上述 39 个历史框架索引叶仍各自保持未闭合状态。现有 Nov2 捕获/Nov3 运输是一个 23 文件、7 DB、6 auth store、9 receipt 的历史链，既不是九份当前备份，也不是全局原子快照。
+
+后续顺序仍是实际 AuthBus 完整工作进程、CLI/H2 live、剩余兼容范围及当前全客户端/备份清单，然后逐客户端真实读写、重启、回滚和切流。只有全部迁移证据成立，才删除旧 OpenBao、旧 HeptaBao 服务/二进制/可再生中间资产并只保留最新版 HeptaBao 服务。
+
+---
+
+## 此前检查点完整记录（原 R32 文本逐字保留）
+
 # HeptaBao 全量替代推进检查点 R32
 
 时间：2026-11-05T21:01:15Z。当前候选仍为 `4e808d0ecb1bcded22870a7ec960dfb2491cf6ec`，源码树 `eba5e650bd080b8ad41ea52a2bc68867f541d255`；Draft PR #159 尚未合并。

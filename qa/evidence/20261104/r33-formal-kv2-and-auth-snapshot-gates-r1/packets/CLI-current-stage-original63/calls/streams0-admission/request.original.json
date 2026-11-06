@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-official271-phaseb-4e808-stage-streams0-20261105-r4",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1ada8b25f-fc05-5a8d",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

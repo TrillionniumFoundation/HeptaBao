@@ -1,0 +1,498 @@
+{
+  "schema": "heptabao.Auth-Google-entry38.independent-root-original-chain.v1",
+  "ok": true,
+  "checks_passed": 182,
+  "checks": [
+    "fixed38_and121330_plan",
+    "fixed_public_local_origin:reference/GO.original.json",
+    "whole:reference/GO.original.json",
+    "fixed_public_local_origin:reference/CONTRACT.source.json",
+    "whole:reference/CONTRACT.source.json",
+    "fixed_public_local_origin:reference/derive-entry-body.mjs",
+    "whole:reference/derive-entry-body.mjs",
+    "fixed_public_local_origin:reference/Google.package.original.json",
+    "whole:reference/Google.package.original.json",
+    "fixed_public_local_origin:observations/body/admission.original.json",
+    "whole:observations/body/admission.original.json",
+    "fixed_public_local_origin:observations/body/admission.original.sdk.json",
+    "whole:observations/body/admission.original.sdk.json",
+    "fixed_public_local_origin:observations/body/derived.public.json",
+    "whole:observations/body/derived.public.json",
+    "fixed_public_local_origin:observations/body/exact-request.json",
+    "whole:observations/body/exact-request.json",
+    "fixed_public_local_origin:observations/body/intent.public.json",
+    "whole:observations/body/intent.public.json",
+    "fixed_public_local_origin:observations/body/native.original.json",
+    "whole:observations/body/native.original.json",
+    "fixed_public_local_origin:observations/body/page-000000.exact-request.json",
+    "whole:observations/body/page-000000.exact-request.json",
+    "fixed_public_local_origin:observations/body/page-000000.original.json",
+    "whole:observations/body/page-000000.original.json",
+    "fixed_public_local_origin:observations/body/page-000000.original.sdk.json",
+    "whole:observations/body/page-000000.original.sdk.json",
+    "fixed_public_local_origin:observations/body/page-008192.exact-request.json",
+    "whole:observations/body/page-008192.exact-request.json",
+    "fixed_public_local_origin:observations/body/page-008192.original.json",
+    "whole:observations/body/page-008192.original.json",
+    "fixed_public_local_origin:observations/body/page-008192.original.sdk.json",
+    "whole:observations/body/page-008192.original.sdk.json",
+    "fixed_public_local_origin:observations/body/payload.original.json",
+    "whole:observations/body/payload.original.json",
+    "fixed_public_local_origin:observations/body/status.exact-request.json",
+    "whole:observations/body/status.exact-request.json",
+    "fixed_public_local_origin:observations/body/status.original.json",
+    "whole:observations/body/status.original.json",
+    "fixed_public_local_origin:observations/body/status.original.sdk.json",
+    "whole:observations/body/status.original.sdk.json",
+    "fixed_public_local_origin:observations/body/submission-attempt.json",
+    "whole:observations/body/submission-attempt.json",
+    "fixed_public_local_origin:observations/metadata/admission.original.json",
+    "whole:observations/metadata/admission.original.json",
+    "fixed_public_local_origin:observations/metadata/admission.original.sdk.json",
+    "whole:observations/metadata/admission.original.sdk.json",
+    "fixed_public_local_origin:observations/metadata/exact-request.json",
+    "whole:observations/metadata/exact-request.json",
+    "fixed_public_local_origin:observations/metadata/intent.public.json",
+    "whole:observations/metadata/intent.public.json",
+    "fixed_public_local_origin:observations/metadata/native.original.json",
+    "whole:observations/metadata/native.original.json",
+    "fixed_public_local_origin:observations/metadata/page-000000.exact-request.json",
+    "whole:observations/metadata/page-000000.exact-request.json",
+    "fixed_public_local_origin:observations/metadata/page-000000.original.json",
+    "whole:observations/metadata/page-000000.original.json",
+    "fixed_public_local_origin:observations/metadata/page-000000.original.sdk.json",
+    "whole:observations/metadata/page-000000.original.sdk.json",
+    "fixed_public_local_origin:observations/metadata/payload.original.json",
+    "whole:observations/metadata/payload.original.json",
+    "fixed_public_local_origin:observations/metadata/status.exact-request.json",
+    "whole:observations/metadata/status.exact-request.json",
+    "fixed_public_local_origin:observations/metadata/status.original.json",
+    "whole:observations/metadata/status.original.json",
+    "fixed_public_local_origin:observations/metadata/status.original.sdk.json",
+    "whole:observations/metadata/status.original.sdk.json",
+    "fixed_public_local_origin:observations/metadata/submission-attempt.json",
+    "whole:observations/metadata/submission-attempt.json",
+    "fixed_public_local_origin:actual/entry.original.js",
+    "whole:actual/entry.original.js",
+    "fixed_public_local_origin:RELEASE.public.json",
+    "whole:RELEASE.public.json",
+    "fixed_public_local_origin:STATE.public.json",
+    "whole:STATE.public.json",
+    "fixed_public_local_origin:MANIFEST.public.json",
+    "whole:MANIFEST.public.json",
+    "whole_total121330",
+    "original_tree_SDK_no_error",
+    "exact_tree_untruncated",
+    "exact_tree38_leaf_set",
+    "tree_leaf:MANIFEST.public.json",
+    "tree_leaf:RELEASE.public.json",
+    "tree_leaf:STATE.public.json",
+    "tree_leaf:actual/entry.original.js",
+    "tree_leaf:observations/body/admission.original.json",
+    "tree_leaf:observations/body/admission.original.sdk.json",
+    "tree_leaf:observations/body/derived.public.json",
+    "tree_leaf:observations/body/exact-request.json",
+    "tree_leaf:observations/body/intent.public.json",
+    "tree_leaf:observations/body/native.original.json",
+    "tree_leaf:observations/body/page-000000.exact-request.json",
+    "tree_leaf:observations/body/page-000000.original.json",
+    "tree_leaf:observations/body/page-000000.original.sdk.json",
+    "tree_leaf:observations/body/page-008192.exact-request.json",
+    "tree_leaf:observations/body/page-008192.original.json",
+    "tree_leaf:observations/body/page-008192.original.sdk.json",
+    "tree_leaf:observations/body/payload.original.json",
+    "tree_leaf:observations/body/status.exact-request.json",
+    "tree_leaf:observations/body/status.original.json",
+    "tree_leaf:observations/body/status.original.sdk.json",
+    "tree_leaf:observations/body/submission-attempt.json",
+    "tree_leaf:observations/metadata/admission.original.json",
+    "tree_leaf:observations/metadata/admission.original.sdk.json",
+    "tree_leaf:observations/metadata/exact-request.json",
+    "tree_leaf:observations/metadata/intent.public.json",
+    "tree_leaf:observations/metadata/native.original.json",
+    "tree_leaf:observations/metadata/page-000000.exact-request.json",
+    "tree_leaf:observations/metadata/page-000000.original.json",
+    "tree_leaf:observations/metadata/page-000000.original.sdk.json",
+    "tree_leaf:observations/metadata/payload.original.json",
+    "tree_leaf:observations/metadata/status.exact-request.json",
+    "tree_leaf:observations/metadata/status.original.json",
+    "tree_leaf:observations/metadata/status.original.sdk.json",
+    "tree_leaf:observations/metadata/submission-attempt.json",
+    "tree_leaf:reference/CONTRACT.source.json",
+    "tree_leaf:reference/GO.original.json",
+    "tree_leaf:reference/Google.package.original.json",
+    "tree_leaf:reference/derive-entry-body.mjs",
+    "rebuilt_Merkle_root",
+    "six_Merkle_nodes",
+    "Merkle:reference",
+    "Merkle:observations/body",
+    "Merkle:observations/metadata",
+    "Merkle:observations",
+    "Merkle:actual",
+    "Merkle:",
+    "exact_GO_and_deriver",
+    "actual_package_unique_declared_entry",
+    "no_invented_historical_entry_pin",
+    "original_request_and_intent:metadata",
+    "fixed_host_path_tool:metadata",
+    "SDK_no_error:observations/metadata/admission.original.sdk.json",
+    "SDK_native_exact:observations/metadata/admission.original.sdk.json",
+    "unique_original_admission:metadata",
+    "SDK_no_error:observations/metadata/status.original.sdk.json",
+    "SDK_native_exact:observations/metadata/status.original.sdk.json",
+    "sameID_status_request:metadata",
+    "original_observer_closed:metadata",
+    "fixed_immutable_page_inventory:metadata",
+    "SDK_no_error:observations/metadata/page-000000.original.sdk.json",
+    "SDK_native_exact:observations/metadata/page-000000.original.sdk.json",
+    "exact_page_request:observations/metadata/page-000000",
+    "original_immutable_page_identity:observations/metadata/page-000000",
+    "page_extent_SHA_EOF:observations/metadata/page-000000",
+    "whole_original_payload:metadata",
+    "payload_to_native_exact:metadata",
+    "original_request_and_intent:body",
+    "fixed_host_path_tool:body",
+    "SDK_no_error:observations/body/admission.original.sdk.json",
+    "SDK_native_exact:observations/body/admission.original.sdk.json",
+    "unique_original_admission:body",
+    "SDK_no_error:observations/body/status.original.sdk.json",
+    "SDK_native_exact:observations/body/status.original.sdk.json",
+    "sameID_status_request:body",
+    "original_observer_closed:body",
+    "fixed_immutable_page_inventory:body",
+    "SDK_no_error:observations/body/page-000000.original.sdk.json",
+    "SDK_native_exact:observations/body/page-000000.original.sdk.json",
+    "exact_page_request:observations/body/page-000000",
+    "original_immutable_page_identity:observations/body/page-000000",
+    "page_extent_SHA_EOF:observations/body/page-000000",
+    "SDK_no_error:observations/body/page-008192.original.sdk.json",
+    "SDK_native_exact:observations/body/page-008192.original.sdk.json",
+    "exact_page_request:observations/body/page-008192",
+    "original_immutable_page_identity:observations/body/page-008192",
+    "page_extent_SHA_EOF:observations/body/page-008192",
+    "whole_original_payload:body",
+    "payload_to_native_exact:body",
+    "two_unique_original_observers_three_pages",
+    "current_exact_metadata",
+    "actual_regular_public_metadata_guards",
+    "exact_current_version_size",
+    "body_request_derived_from_actual_metadata",
+    "exact_derived_value",
+    "original_metadata_precedes_body_binding",
+    "entry_whole_native_original_bytes",
+    "native_body_exact_range_version_EOF",
+    "release_exact_source_and_counts",
+    "release_matches_original_observers",
+    "bounded_cumulative_accounting",
+    "scope_and_idle"
+  ],
+  "source_tree": "135407c6d3156a8602da63184c0df4143aa137ea",
+  "whole_files": 38,
+  "whole_bytes": 121330,
+  "Merkle_nodes": 6,
+  "original_observers": [
+    {
+      "role": "metadata",
+      "id": "a580f54050582197d19edf79113e4191d04bd0beb7ae12823aafcc7a4bcb41c6",
+      "closed": true,
+      "payload": {
+        "blob": "68e69d5703a3904675c24e4efe0c65acf6ece006",
+        "bytes": 578,
+        "sha256": "aad737c888f6c7c6a523f018e468f37e6dc7228ded1f84f39d41bdef4e53d3f4"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 578,
+          "native": {
+            "blob": "c20689b991984764543ef14e391516e48caa0339",
+            "bytes": 1453,
+            "sha256": "75fd9d7325b29058aebff7d3c19a15abcf217fcc50658a6235fb78487bee2cc9"
+          }
+        }
+      ]
+    },
+    {
+      "role": "body",
+      "id": "9bc668cbff6899f22f3df1e608172d156062037bb534967dea991082a8d6409b",
+      "closed": true,
+      "payload": {
+        "blob": "ed4673f30bc4ae9be7f6681386ba5e1abb10a3d5",
+        "bytes": 14528,
+        "sha256": "b68f86a7be26b23377f023a14f36401d04c67fdb2941c2bb8690f7717ae17f31"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 8192,
+          "native": {
+            "blob": "47dd6d55d783a999b6286d8129a673dd7caa293a",
+            "bytes": 11609,
+            "sha256": "3df075c42d386d8c81dc353f34dde013d94f0735ee5cd0a4302f29e73aba81d9"
+          }
+        },
+        {
+          "offset": 8192,
+          "bytes": 6336,
+          "native": {
+            "blob": "eb2be8afad3df66cb21403fcf95ce377ec3c94d5",
+            "bytes": 9136,
+            "sha256": "9fe156280897c4442082161b765c82a38eb3345f576ab3e0958419d4b2bb7f50"
+          }
+        }
+      ]
+    }
+  ],
+  "original_pages": 3,
+  "archived_readonly_calls": 7,
+  "entry": {
+    "blob": "4a63cd4e06362ad36bb50c481315020b6aec94aa",
+    "bytes": 10582,
+    "sha256": "f245758337a55924518852f542a27d49bd786d8e4b80821dc5f98f825ec3fc60"
+  },
+  "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/index.js",
+  "version": "16777233:405237094:10582:1784843458496192413:1784843458496192413",
+  "cumulative_source_body_bytes": 393557,
+  "scope": {
+    "Runtime_calls": 0,
+    "remote_source_body_reads": 0,
+    "SDK_or_plugin_execution": false,
+    "author_deriver_executed": false,
+    "candidate_executed": false,
+    "current_public_entry_pinned": true,
+    "historical_entry_pin_fabricated": false,
+    "actual_selected_owner_proven": false,
+    "credential_runtime_qualified": false,
+    "wall_clock_archival_order_independently_proven": false
+  },
+  "inputs": [
+    {
+      "path": "reference/GO.original.json",
+      "blob": "575b8d4e64924d9306677d80e615f1a1ee570bce",
+      "bytes": 4124,
+      "sha256": "2e00b0ea969a50d1e874306342bef200de60478b24853542cb9aec0a26c5829a"
+    },
+    {
+      "path": "reference/CONTRACT.source.json",
+      "blob": "00f9fb5e8fc7605f88cb4423d0d8c60483cf88c1",
+      "bytes": 3111,
+      "sha256": "732e7f49ec9be28bdd5e0235352e2499a21a5eac585ce4c31ab7016a18e8c475"
+    },
+    {
+      "path": "reference/derive-entry-body.mjs",
+      "blob": "3a86d0d14f6fa15e410bc28571db4c8a5202971e",
+      "bytes": 1729,
+      "sha256": "8e5011216fd773608f83a827ce117b93f19c539215d157faaa638a475c98ece1"
+    },
+    {
+      "path": "reference/Google.package.original.json",
+      "blob": "eca1335cb1e73aafcb53f89bba324673f9fa4493",
+      "bytes": 375,
+      "sha256": "398f73305017a1d3813610825814c6e1dd93b683da088cb6df068a31c639fcc3"
+    },
+    {
+      "path": "observations/body/admission.original.json",
+      "blob": "2e2accfe9fc31181b516a6eb4a03ffa68c4fd8ab",
+      "bytes": 545,
+      "sha256": "8d9821cff1b29f7264525219a6ab3e899080ea935de4c952e43055fac029ff55"
+    },
+    {
+      "path": "observations/body/admission.original.sdk.json",
+      "blob": "c949f6b649e60223bae02e2689488489fff636f9",
+      "bytes": 664,
+      "sha256": "6da2cd1a68c3261304b46e5140d9c414987c1566e8e9596aa779c5875f11877f"
+    },
+    {
+      "path": "observations/body/derived.public.json",
+      "blob": "8b67be58e744926f462cfd4fb41fa0d64b400686",
+      "bytes": 650,
+      "sha256": "7fde4e748281e89b910e9a69215f55a3476cdeffdc23fd671e1e07f7d2144758"
+    },
+    {
+      "path": "observations/body/exact-request.json",
+      "blob": "841fd844b9eb44fa7aa048aa14dcdb126d482dbf",
+      "bytes": 406,
+      "sha256": "59fb1a6063565976db5f4dd832d17485f71ffb59f2136878f01c46d2386052db"
+    },
+    {
+      "path": "observations/body/intent.public.json",
+      "blob": "3fc1308dc01881e5f2448f16caeba066e8c71ea5",
+      "bytes": 2208,
+      "sha256": "e3af92c2b89701a7d03e1cb0dc0832a3897df568bc5d09d219eafb510351363f"
+    },
+    {
+      "path": "observations/body/native.original.json",
+      "blob": "aadb3e884bee4c482514896eb14df0ad816df7c5",
+      "bytes": 14425,
+      "sha256": "18facf8cbea67478eed47704e4c175611f5e9f8b1e0db12daf92b600ffd8927e"
+    },
+    {
+      "path": "observations/body/page-000000.exact-request.json",
+      "blob": "2a421744b7e0e6123d7783cee659cdc91538d8ae",
+      "bytes": 121,
+      "sha256": "db14ddcf9bf245d86b2e0d2921193d7f40956fcc8e2ad263bfe3e4354ed9ecf6"
+    },
+    {
+      "path": "observations/body/page-000000.original.json",
+      "blob": "47dd6d55d783a999b6286d8129a673dd7caa293a",
+      "bytes": 11609,
+      "sha256": "3df075c42d386d8c81dc353f34dde013d94f0735ee5cd0a4302f29e73aba81d9"
+    },
+    {
+      "path": "observations/body/page-000000.original.sdk.json",
+      "blob": "c84230b8ae752656ad7c30ad1c618a9ad4786b39",
+      "bytes": 11738,
+      "sha256": "cea9eccc7c59a8c8acb53c73f3f7c110d4d01d94a69b199433ac7045c2777235"
+    },
+    {
+      "path": "observations/body/page-008192.exact-request.json",
+      "blob": "ac400b76384e8a7febd1ae1133c51bee2818895b",
+      "bytes": 124,
+      "sha256": "1fea1a4c42b2a31e430d45f7b13be5a15e19d2be18b4dab65d13dd8995500290"
+    },
+    {
+      "path": "observations/body/page-008192.original.json",
+      "blob": "eb2be8afad3df66cb21403fcf95ce377ec3c94d5",
+      "bytes": 9136,
+      "sha256": "9fe156280897c4442082161b765c82a38eb3345f576ab3e0958419d4b2bb7f50"
+    },
+    {
+      "path": "observations/body/page-008192.original.sdk.json",
+      "blob": "601428e0b53765872eb4337a17845ad918132c7e",
+      "bytes": 9265,
+      "sha256": "45842258b9c8bcb1ee47e01d0529102a046eb198e79d6b2a0686c5c34cb0f4b8"
+    },
+    {
+      "path": "observations/body/payload.original.json",
+      "blob": "ed4673f30bc4ae9be7f6681386ba5e1abb10a3d5",
+      "bytes": 14528,
+      "sha256": "b68f86a7be26b23377f023a14f36401d04c67fdb2941c2bb8690f7717ae17f31"
+    },
+    {
+      "path": "observations/body/status.exact-request.json",
+      "blob": "4d8cc4a433bf864e5193be60d7d194d90e480720",
+      "bytes": 89,
+      "sha256": "8bbf514a89d4221acd9b8db5e40e3eee32c12618eabcde07d554342888d48e12"
+    },
+    {
+      "path": "observations/body/status.original.json",
+      "blob": "b47bc5bc3058d5ecde6c45baea3637fcac61cbbd",
+      "bytes": 802,
+      "sha256": "cc082f6338bf47c98aa9ca51c47dfc12e9bd59bbb7d6cc9c6b7d71e55c82a39b"
+    },
+    {
+      "path": "observations/body/status.original.sdk.json",
+      "blob": "62de946f3d3d880f1fac86798736a4a60d13c509",
+      "bytes": 935,
+      "sha256": "425af7f74685a722c2a39eda09f5fb673f607cd728556d87d4efd33d027ec5eb"
+    },
+    {
+      "path": "observations/body/submission-attempt.json",
+      "blob": "9695630fb87117ecf0c4fb9a4f73136e59bf481c",
+      "bytes": 106,
+      "sha256": "8064d30b8d9abb7d0b075ec23ac43aea62fb3f63a98e558d86765f4273521752"
+    },
+    {
+      "path": "observations/metadata/admission.original.json",
+      "blob": "8dde122e43578077900bde89919043c5f18fadb2",
+      "bytes": 543,
+      "sha256": "be9b34e212b11763f4f06f3d8529b16f218b31da0571b3184da1ea72924de207"
+    },
+    {
+      "path": "observations/metadata/admission.original.sdk.json",
+      "blob": "29227eca7de466f2db15fec47e3a6434b3263618",
+      "bytes": 662,
+      "sha256": "203c0764b2cf213b41ef15ad3642f0fc6a0769f64bb68d39e4ab89252ad97768"
+    },
+    {
+      "path": "observations/metadata/exact-request.json",
+      "blob": "28b92dd34125354c01ee4e6b04a61c23103ee88f",
+      "bytes": 273,
+      "sha256": "2707b0502aae10d672a340c85462937bd14cbbb3e98b7c337b278a94ad68b136"
+    },
+    {
+      "path": "observations/metadata/intent.public.json",
+      "blob": "e6a004e5c4e9e223df4359a254afcd82633dbf73",
+      "bytes": 996,
+      "sha256": "4404e9c32f2dc56a0f828c22d6709a74dd036caa9b3f32d2130b3e1089fc84bc"
+    },
+    {
+      "path": "observations/metadata/native.original.json",
+      "blob": "5455a5b2e9d5f332c50a995d5976bce1c062dd49",
+      "bytes": 461,
+      "sha256": "de9b4501eeba69fe999813c6fb1d067c67e816ed746d6edf109dab9d08deda0f"
+    },
+    {
+      "path": "observations/metadata/page-000000.exact-request.json",
+      "blob": "72a5d565fe28f49c0168f7ebb3fece7dcc05c119",
+      "bytes": 121,
+      "sha256": "f397271183ca6d21746f1993b6809d68d9108fa542da5bd81a508415c225959c"
+    },
+    {
+      "path": "observations/metadata/page-000000.original.json",
+      "blob": "c20689b991984764543ef14e391516e48caa0339",
+      "bytes": 1453,
+      "sha256": "75fd9d7325b29058aebff7d3c19a15abcf217fcc50658a6235fb78487bee2cc9"
+    },
+    {
+      "path": "observations/metadata/page-000000.original.sdk.json",
+      "blob": "a229860678898ada1465b557d0b2a5bf96914b36",
+      "bytes": 1582,
+      "sha256": "27fc5b79c31f2ab06b7e4d4ddab8edf02485b488b071ed139b9c89d74e641dbf"
+    },
+    {
+      "path": "observations/metadata/payload.original.json",
+      "blob": "68e69d5703a3904675c24e4efe0c65acf6ece006",
+      "bytes": 578,
+      "sha256": "aad737c888f6c7c6a523f018e468f37e6dc7228ded1f84f39d41bdef4e53d3f4"
+    },
+    {
+      "path": "observations/metadata/status.exact-request.json",
+      "blob": "5c25e711b70f3f53d3ddfcd807063f8ebb0a0939",
+      "bytes": 89,
+      "sha256": "8bd01bc244461b0b6dd461fa1bac308424165ccc346ec1d8d1b4d1e9e84b4fff"
+    },
+    {
+      "path": "observations/metadata/status.original.json",
+      "blob": "8ba53bf5723a6cc0fc29f00c223e0166c4d7ac92",
+      "bytes": 800,
+      "sha256": "4eca51b37211c110089dc3d51f15807f8daffaacce484c929453bd7004e2cb24"
+    },
+    {
+      "path": "observations/metadata/status.original.sdk.json",
+      "blob": "5a4dec00d7a46e52d1bf9b18979ed78dfbf21828",
+      "bytes": 933,
+      "sha256": "aacfeac1edebe96c5cae675aa5e20eb8babc68eea746d667a4134380bbbd4dd3"
+    },
+    {
+      "path": "observations/metadata/submission-attempt.json",
+      "blob": "cadd85f147f1b5729c6153518c60fe6dcbe5e150",
+      "bytes": 106,
+      "sha256": "74523ad73c6f774a1c85e8a4a9b31cde620cef558b4b6e6ef2ea487978408d57"
+    },
+    {
+      "path": "actual/entry.original.js",
+      "blob": "4a63cd4e06362ad36bb50c481315020b6aec94aa",
+      "bytes": 10582,
+      "sha256": "f245758337a55924518852f542a27d49bd786d8e4b80821dc5f98f825ec3fc60"
+    },
+    {
+      "path": "RELEASE.public.json",
+      "blob": "fbe27f3c94adc303417db0e20abaf6d59bdd9950",
+      "bytes": 3117,
+      "sha256": "21d59a9db84ec87ab26ffce2371350f79e290a5857e96f06ff4af16b47a2d779"
+    },
+    {
+      "path": "STATE.public.json",
+      "blob": "c8a75376203b9f206366b9ccf01d752155880d93",
+      "bytes": 3658,
+      "sha256": "2f68ce5a6d5087c114d748534fe62eec31a099f88fb10393dd08e6dc91287d3c"
+    },
+    {
+      "path": "MANIFEST.public.json",
+      "blob": "af8dd422d645355ab543de9a17636cc91232ed81",
+      "bytes": 8686,
+      "sha256": "aa977203866e7c754f1bc49977a8a51554de3aae686ba60dd41a7f7b3c5d6347"
+    }
+  ]
+}

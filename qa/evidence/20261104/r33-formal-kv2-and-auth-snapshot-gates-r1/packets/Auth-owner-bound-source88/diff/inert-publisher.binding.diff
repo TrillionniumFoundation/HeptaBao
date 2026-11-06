@@ -1,0 +1,108 @@
+--- baseline/inert-publisher.py
++++ dispatch/inert-publisher.py
+@@ -10,29 +10,29 @@
+ from contextlib import contextmanager
+ from pathlib import Path
+ START=time.monotonic();UNTIL=START+45.0
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1')
+ QA=ROOT/'qa'
+ PROOFS=ROOT/'proofs'
+ PINS={
+     "mac_current_fixture_materializer_r1.py": [
+-        23649,
+-        "686b89842b19da959c5ea1af25f7568ea65070bf6b3cacd25443ea0a3cb809f1"
++        25972,
++        "cf0b78ed54648525b873d91473d603f115e84013c38ba4abaa42771dfa5d1ccf"
+     ],
+     "mac_current_capture_entry_wal_r1.py": [
+-        42084,
+-        "32fcee225a7d185242bbc9cc792b9ed9572c26f38e04ad7b10c1831e2409cb4a"
++        42082,
++        "f0600e0b8fe1f01a3d68559e724e19d0f76272c2febd4d362b9012d84b1177e2"
+     ],
+     "mac_owned_launchd_r3.py": [
+-        35734,
+-        "f33b4b61fdb97f4612e1667840e148e69dc2702b49f0832f1491800ddbc6cf29"
++        35736,
++        "4989b58248f7951f825c021402bef611708b8613291d3282761c8c97d0b4adf6"
+     ],
+     "mac_current_server_owner_r1.py": [
+-        13396,
+-        "7ff8a1d8c8b134869d1256826e063e6d22950c3defd03b127ada17061c445f60"
++        13394,
++        "fb38bd7ce30e9a0b62539d459939b2ec20d96f84fd08d57199aa095fd3fc5ef6"
+     ],
+     "mac_current_phase_owner_r2.py": [
+-        24977,
+-        "4b545e9b3147cc118565255cdfcd64ee41095f4f957f9c151d103892d4a92500"
++        24975,
++        "bb674ed1a60b204207af2dbab4d7b06a76e47fdebb19991e2f2c3dda7beac4a5"
+     ],
+     "mac_native_process_observer_r1.py": [
+         13423,
+@@ -47,8 +47,8 @@
+         "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+     ],
+     "mac_t5_volume_guard_r1.py": [
+-        13393,
+-        "56f0490e6b4457ec59f82ffb17984f16108c0856879c21ceabc3ea6670605d70"
++        13391,
++        "55a007ae925c6cab6ee228ec5154cff79baa6c2bc38fb65868fd192dfc29d288"
+     ],
+     "mac_owned_unreaped_r1.py": [
+         10990,
+@@ -63,28 +63,28 @@
+         "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2"
+     ],
+     "mac_current_cycle_r2.mjs": [
+-        24013,
+-        "9ebc50e88b990987041f8fb9280b5ebedd96d1211a38cb24d2f6f4c518483fdc"
++        24011,
++        "d8ce076b75794b2ca495ef37c310d9995f092c0563eae262fcaab1582c543878"
+     ],
+     "mac_single_native_r2.mjs": [
+-        28533,
+-        "8c4a2cc09330cfda7a488e7e5caa811f4e190a10054a31f683b3466124210431"
++        33147,
++        "c2cf0eaa0c2b4b925bca02e82059152cfe4288786e15c71d49fc09fc54494c4b"
+     ],
+     "mac_auth_rows_cas_r1.mjs": [
+-        3109,
+-        "aea4fb56bbf8c51457d99f8a46fb1dcce11acc99ef82c8c57ab8c6c4e1b68f64"
++        3107,
++        "dd3d02675212f6e513a4f93573566646c55a1d27cb21ac7bbb528058a96db8b7"
+     ],
+     "mac_authbus_cache_cas_r1.mjs": [
+         6846,
+         "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+     ],
+     "mac_current_outer_inputs_r2.py": [
+-        27292,
+-        "6645e7375e1c3a5e0fbf994a2f035d4922c4def4d5bbfd333236293db78f9b11"
++        33000,
++        "97db953e7324e31a9bb162d1ee508ed5f2e2a58c98a181131988e9dd3c3cfdce"
+     ],
+     "mac_current_outer_wal_r1.py": [
+-        68348,
+-        "bce47fd194be7ec1d1ec340e24d8e759dbf7611ef3c75eca2adeb62e9b4ccf01"
++        71506,
++        "6ad1b80ac06c90759c2ac5fd01df9c750b077ffa43253486c07658b6e1ddd4d5"
+     ],
+     "mac_darwin_owned_projection_r1.py": [
+         12858,
+@@ -134,11 +134,11 @@
+     ],
+     "candidate-current-manager-wal-r1.public.json": [
+         7211,
+-        "1e39c5c4e8a3fb9c6eeb1eb56f45b02e169f1d2052f45e1531b72c1435665cd7"
++        "1dcbc2953731c9c29db6a1f599777d3a7b2b4c237b80cf540afafadebb509932"
+     ]
+ }
+-PAYLOAD_BYTES=780807
+-PAYLOAD_SHA='4cbfe07b6e0f504768fc52e1bab8dcbc7af0c9326e9db69c89b8b9bcc07283c4'
++PAYLOAD_BYTES=801859
++PAYLOAD_SHA="c84a7e6ba807f90c98f5a8a9e375aff86b9a287281d8e2d001e8566315a3b7d9"
+ ANCHOR_SHA='dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8'
+ protected=0;pending=None
+ class Refused(RuntimeError):pass

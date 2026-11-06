@@ -1,0 +1,99 @@
+{
+  "schema": "heptabao.mac-google-public-manifest-package.fixed-read.source-proposal.r1",
+  "status": "SOURCE_ONLY_NOT_SUBMITTED_NO_GO",
+  "provenance": {
+    "historicalBlob": "79471a511eb665193c2dbc05607298e96ac6fa7d",
+    "historicalBytes": 51466,
+    "historicalSha256": "6caa9ebfc2a3bf3ae637676a8055022817ec0efa85b09c6ffc304ac854ca6236",
+    "historicalActualTree": "aa2065276dad68190c800c9cd2eb5096ac281c4f",
+    "sourceKey": "sourcePins",
+    "rootAlreadyObserved": true,
+    "historicalRuntimeQualificationInherited": false
+  },
+  "files": [
+    {
+      "id": "google-manifest",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/openclaw.plugin.json",
+      "sha256": "518e8e071c1e5720c9fe621ac84c8b550df93af14dac0d96d788d73917835301",
+      "metadataKey": "heptabao-mac-google-manifest-metadata-518e8e07-20261105-r1",
+      "bodyKey": "heptabao-mac-google-manifest-body-518e8e07-20261105-r1"
+    },
+    {
+      "id": "google-package",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/package.json",
+      "sha256": "398f73305017a1d3813610825814c6e1dd93b683da088cb6df068a31c639fcc3",
+      "metadataKey": "heptabao-mac-google-package-metadata-398f7330-20261105-r1",
+      "bodyKey": "heptabao-mac-google-package-body-398f7330-20261105-r1"
+    }
+  ],
+  "sequence": [
+    "metadata-google-manifest",
+    "metadata-google-package",
+    "body-google-manifest",
+    "body-google-package"
+  ],
+  "admission": {
+    "eachCallSingle": true,
+    "maxNativeFutures": 1,
+    "externalExactIntentMustCompleteBeforeStart": true,
+    "originalSdkSavedBeforeIsErrorAndParse": true,
+    "unknownOrErrorStopNewAdmissions": true,
+    "noAutomaticRetries": true,
+    "sameIdStatusAndImmutablePayloadMustCloseBeforeNext": true,
+    "maxImmutablePageBytes": 8192,
+    "newNativeReadCallsAtMost": 4
+  },
+  "metadataGate": {
+    "tool": "file_info",
+    "regularNonSymlinkByApi": true,
+    "singleLinkExactly": 1,
+    "sha256MustEqualHistorical": true,
+    "stableVersionAndSizeRequired": true,
+    "eachBytesMin": 1,
+    "eachBytesMax": 65536,
+    "permittedUids": [
+      0,
+      501
+    ],
+    "modeNoGroupOrOtherWrite": true,
+    "hashWorkNotCappedByBodyLimit": true,
+    "metadataMayHashFullTarget": true,
+    "ifOversizeOrDrift": "STOP_NO_BODY_NO_NEW_PATH"
+  },
+  "conditionalBody": {
+    "source": "derive-body-requests.mjs",
+    "deriveOnlyAfterBothOriginalMetadataClosedAndWhole": true,
+    "exactBodyRequestAndIntentMustBeDurableBeforeStart": true,
+    "offset": 0,
+    "limit": "exact actual size",
+    "expectedVersion": "exact original file_info version",
+    "oneReadEach": true,
+    "maxWholeBodyBytes": 131072,
+    "maxChunks": 2,
+    "sha256MustEqualHistoricalAndMetadata": true,
+    "requireEofTrueAndExactNextOffset": true,
+    "noAutomaticFollowingOfJsonPathsOrImports": true
+  },
+  "accounting": {
+    "previousCompletedFiles": 8,
+    "previousCompletedChunks": 11,
+    "previousCompletedBytes": 353689,
+    "newMetadata": 2,
+    "newBodyMaxFiles": 2,
+    "newBodyMaxChunks": 2,
+    "newBodyMaxBytes": 131072,
+    "cumulativeBodyMaxBytes": 484761,
+    "previousWindowsNotReset": true,
+    "fixtureBudgetsUnchanged": true
+  },
+  "limits": {
+    "sdkExecuted": false,
+    "credentialsRead": false,
+    "privateCapsuleRead": false,
+    "configurationChanged": false,
+    "providerOrRefresh": false,
+    "selectedOwnerProven": false,
+    "currentRuntimeAuthorized": false
+  },
+  "purpose": "Recover only the two already historically pinned public JSON bodies needed to bind the bundled Google declaration. Keep all enabled harness candidates. Derive no arbitrary manifest path and do not treat a declared entry as an observed/hashed executable."
+}

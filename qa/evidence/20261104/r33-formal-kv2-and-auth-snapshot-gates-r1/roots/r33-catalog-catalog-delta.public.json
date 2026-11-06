@@ -1,0 +1,542 @@
+{
+  "schema": "heptabao.R33.local-public-packet-catalog-delta.v1",
+  "not_a_commit_or_publication": true,
+  "Runtime_calls": 0,
+  "root_doc_index_branch_modified": false,
+  "draft_source": {
+    "path": "/workspace/scratch/f86faac821c4/r32_recovery/r33-checkpoint-packet-plan-draft.json",
+    "inner": {
+      "blob": "3f653f55c3fe1fd2719505ff5437e8c2d9127358",
+      "bytes": 3447,
+      "sha256": "4d6cda06f9f73d03e7277d0fd08e045a5a8ecdfc8fbb4bd5fb9ebe4180bdbb1a"
+    }
+  },
+  "previous_commit": "f4a47f951cd39e0f75797a6224f42837a4369044",
+  "previous_tree": "40370ae9364cc27c91d84e5edfe00c6c0e0fbfdb",
+  "evidence_prefix": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1",
+  "base_packets_unchanged": [
+    {
+      "name": "X230-full34-original157",
+      "tree": "28de789ae17618e33fd4bc47787fbbeefd55b6c3",
+      "files": 157,
+      "bytes": 878681,
+      "merkle": 44,
+      "immutable_tree_source": {
+        "path": "/workspace/scratch/f86faac821c4/r32_recovery/x230-full34-available-original-tree-sdk.json",
+        "wrapper_bytes": 132423,
+        "wrapper_sha256": "58ba9d1414893feed5c7684cafaa288cbec0820c6d48c14bbe3a72b22535aa7c"
+      },
+      "local_tree_identity_recomputed": true,
+      "catalog_origin": "unchanged draft16",
+      "runtime_or_semantic_verifier_rerun": false,
+      "suggested_mount": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/X230-full34-original157"
+    },
+    {
+      "name": "X230-full34-summary-original107",
+      "tree": "f0f0770bbd740583e9db906627efd57f8a296906",
+      "files": 107,
+      "bytes": 781823,
+      "merkle": 31,
+      "immutable_tree_source": {
+        "path": "/workspace/scratch/f86faac821c4/r32_recovery/x230-full34-summary-chains-tree-sdk.json",
+        "wrapper_bytes": 91707,
+        "wrapper_sha256": "9781c26d890f84dcaeaa7cc6383c81ad2f66c58ec8c99611ce8927c3b8c59741"
+      },
+      "local_tree_identity_recomputed": true,
+      "catalog_origin": "unchanged draft16",
+      "runtime_or_semantic_verifier_rerun": false,
+      "suggested_mount": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/X230-full34-summary-original107"
+    },
+    {
+      "name": "X230-full34-summary-peer9",
+      "tree": "c52db09106eee126f1982fbb5eb4cb1810f8e259",
+      "files": 9,
+      "bytes": 134160,
+      "merkle": 3,
+      "immutable_tree_source": {
+        "path": "/workspace/scratch/f86faac821c4/r32_recovery/tree-c52db09106eee126f1982fbb5eb4cb1810f8e259-sdk.json",
+        "wrapper_bytes": 8373,
+        "wrapper_sha256": "db84dfbaad95d0b16fe223eea9a753975bc682405845521ad8e7e6784d8e8ff9"
+      },
+      "local_tree_identity_recomputed": true,
+      "catalog_origin": "unchanged draft16",
+      "runtime_or_semantic_verifier_rerun": false,
+      "suggested_mount": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/X230-full34-summary-peer9"
+    },
+    {
+      "name": "X230-full34-base-partial-peer7",
+      "tree": "a74af927eedfddd78ae23b3fd03afc6638d76e8f",
+      "files": 7,
+      "bytes": 59808,
+      "merkle": 3,
+      "inherited_count_source": {
+        "source": "/workspace/scratch/f86faac821c4/r32_recovery/r33-checkpoint-packet-plan-draft.json",
+        "files": 7,
+        "bytes": 59808,
+        "merkle": 3,
+        "basis": "Existing root draft16 exact prior-peer packet count; this local pass does not reconstruct its directory from a new fetch.",
+        "original_inner": {
+          "blob": "3f653f55c3fe1fd2719505ff5437e8c2d9127358",
+          "bytes": 3447,
+          "sha256": "4d6cda06f9f73d03e7277d0fd08e045a5a8ecdfc8fbb4bd5fb9ebe4180bdbb1a"
+        }
+      },
+      "local_tree_identity_recomputed": false,
+      "catalog_origin": "unchanged draft16",
+      "runtime_or_semantic_verifier_rerun": false,
+      "suggested_mount": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/X230-full34-base-partial-peer7"
+    },
+    {
+      "name": "X230-full34-new-terminal-reads34",
+      "tree": "c20c4a619e0976c546f75443baf1555af6acf4a3",
+      "files": 34,
+      "bytes": 50711,
+      "merkle": 13,
+      "immutable_tree_source": {
+        "path": "/workspace/scratch/f86faac821c4/r32_recovery/tree-c20c4a619e0976c546f75443baf1555af6acf4a3-sdk.json",
+        "wrapper_bytes": 31373,
+        "wrapper_sha256": "5f684e6314faee9a63adac63c4a8026784b093d5cca95bbd66945d03f4d576bb"
+      },
+      "local_tree_identity_recomputed": true,
+      "catalog_origin": "unchanged draft16",
+      "runtime_or_semantic_verifier_rerun": false,
+      "suggested_mount": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/X230-full34-new-terminal-reads34"
+    },
+    {
+      "name": "CLI-current-stage-original63",
+      "tree": "3ec3bec37a6ef1270525c017618eda810edc8044",
+      "files": 63,
+      "bytes": 1007838,
+      "merkle": 21,
+      "immutable_tree_source": {
+        "path": "/workspace/scratch/f86faac821c4/r32_recovery/tree-3ec3bec37a6ef1270525c017618eda810edc8044-sdk.json",
+        "wrapper_bytes": 54757,
+        "wrapper_sha256": "64174b12d3cb793152a674caba7f592708d6c36273a52be752aedf2c675395f3"
+      },
+      "local_tree_identity_recomputed": true,
+      "catalog_origin": "unchanged draft16",
+      "runtime_or_semantic_verifier_rerun": false,
+      "suggested_mount": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/CLI-current-stage-original63"
+    },
+    {
+      "name": "CLI-current-stage-independent-peer6",
+      "tree": "350332a96e6c04c5be9746e695e74765e8acd41d",
+      "files": 6,
+      "bytes": 62242,
+      "merkle": 2,
+      "immutable_tree_source": {
+        "path": "/workspace/scratch/f86faac821c4/r32_recovery/cli-stage-peer-tree-read-350332a96e6c04c5be9746e695e74765e8acd41d.json",
+        "wrapper_bytes": 5703,
+        "wrapper_sha256": "bf4c5ba1b3f288b6744c7cdfb144e959c28275a08e06ca765611f1a28d4cdc38"
+      },
+      "local_tree_identity_recomputed": true,
+      "catalog_origin": "unchanged draft16",
+      "runtime_or_semantic_verifier_rerun": false,
+      "suggested_mount": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/CLI-current-stage-independent-peer6"
+    },
+    {
+      "name": "H2-current-stage-source39",
+      "tree": "9fa416e0d2bafa213bee8fee7dd82ddf3199484e",
+      "files": 39,
+      "bytes": 1275318,
+      "merkle": 8,
+      "immutable_tree_source": {
+        "path": "/workspace/scratch/f86faac821c4/r32_recovery/tree-9fa416e0d2bafa213bee8fee7dd82ddf3199484e-sdk.json",
+        "wrapper_bytes": 30807,
+        "wrapper_sha256": "0a1eddbaeef438c22dae6ac6d00cef270a376febd9adb47f4933e4b8158804d9"
+      },
+      "local_tree_identity_recomputed": true,
+      "catalog_origin": "unchanged draft16",
+      "runtime_or_semantic_verifier_rerun": false,
+      "suggested_mount": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/H2-current-stage-source39"
+    },
+    {
+      "name": "H2-five-metadata-source29",
+      "tree": "75603caa34edcd1b3d209255b5d78780fd48c182",
+      "files": 29,
+      "bytes": 80290,
+      "merkle": 5,
+      "immutable_tree_source": {
+        "path": "/workspace/scratch/f86faac821c4/r32_recovery/tree-75603caa34edcd1b3d209255b5d78780fd48c182-sdk.json",
+        "wrapper_bytes": 22599,
+        "wrapper_sha256": "e9af350b1700df29b54d2cea527d770258756f7c80c7538a8e5f55212d10a36f"
+      },
+      "local_tree_identity_recomputed": true,
+      "catalog_origin": "unchanged draft16",
+      "runtime_or_semantic_verifier_rerun": false,
+      "suggested_mount": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/H2-five-metadata-source29"
+    },
+    {
+      "name": "H2-five-metadata-original85",
+      "tree": "8ecca81bb585417a7a8975f010a92652f256192b",
+      "files": 85,
+      "bytes": 165725,
+      "merkle": 15,
+      "immutable_tree_source": {
+        "path": "/workspace/scratch/f86faac821c4/r32_recovery/tree-8ecca81bb585417a7a8975f010a92652f256192b-sdk.json",
+        "wrapper_bytes": 68045,
+        "wrapper_sha256": "6ecddaf879da547a44da2f73aa3ea20d59b710ebfc7e48b4d48d660480896024"
+      },
+      "local_tree_identity_recomputed": true,
+      "catalog_origin": "unchanged draft16",
+      "runtime_or_semantic_verifier_rerun": false,
+      "suggested_mount": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/H2-five-metadata-original85"
+    },
+    {
+      "name": "H2-fixed-conditional-body-source7",
+      "tree": "c2b12435ed9806d5da84c4b678fb14193879f9f9",
+      "files": 7,
+      "bytes": 12754,
+      "merkle": 2,
+      "immutable_tree_source": {
+        "path": "/workspace/scratch/f86faac821c4/r32_recovery/tree-c2b12435ed9806d5da84c4b678fb14193879f9f9-sdk.json",
+        "wrapper_bytes": 6429,
+        "wrapper_sha256": "8e194e44614dcebad20d877869044fc2eb4aa5ab632b7930898b2041756761b0"
+      },
+      "local_tree_identity_recomputed": true,
+      "catalog_origin": "unchanged draft16",
+      "runtime_or_semantic_verifier_rerun": false,
+      "suggested_mount": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/H2-fixed-conditional-body-source7"
+    },
+    {
+      "name": "Auth-registration-four-body-original169",
+      "tree": "58c16429b0cd2dd135df7fe50f7582f51413005e",
+      "files": 169,
+      "bytes": 1711315,
+      "merkle": 60,
+      "immutable_tree_source": {
+        "path": "/workspace/scratch/f86faac821c4/r32_recovery/auth169-tree-sdk-peer-preparation.json",
+        "wrapper_bytes": 149055,
+        "wrapper_sha256": "35e24692f88ca2321118946e788f87765f8c1cbe7ce5bb7581ef123dfa98d407"
+      },
+      "local_tree_identity_recomputed": true,
+      "catalog_origin": "unchanged draft16",
+      "runtime_or_semantic_verifier_rerun": false,
+      "suggested_mount": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/Auth-registration-four-body-original169"
+    },
+    {
+      "name": "Auth-Google-public2-source7",
+      "tree": "20ea640795bcc500830a7e534485851ee93951a8",
+      "files": 7,
+      "bytes": 61682,
+      "merkle": 3,
+      "immutable_tree_source": {
+        "path": "/workspace/scratch/f86faac821c4/r32_recovery/tree-20ea640795bcc500830a7e534485851ee93951a8-sdk.json",
+        "wrapper_bytes": 6935,
+        "wrapper_sha256": "529d82d57621d618ff36fa30d5bc1b6362fe2b0dd2f94c3c95435a97880126d1"
+      },
+      "local_tree_identity_recomputed": true,
+      "catalog_origin": "unchanged draft16",
+      "runtime_or_semantic_verifier_rerun": false,
+      "suggested_mount": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/Auth-Google-public2-source7"
+    },
+    {
+      "name": "Auth-Google-public2-original78",
+      "tree": "385b356167187308221d8c2d5c12ece7c1da24e3",
+      "files": 78,
+      "bytes": 374228,
+      "merkle": 26,
+      "inherited_count_source": {
+        "source": "/workspace/scratch/f86faac821c4/r32_recovery/r33-google78-root-result.public.json",
+        "root_review": "58c08e40c4d72f3060b053c034e88c1ffa906232",
+        "files": 78,
+        "bytes": 374228,
+        "merkle": 26,
+        "basis": "Existing root244 whole/26-Merkle result; neither checker nor original reads rerun.",
+        "original_inner": {
+          "blob": "58c08e40c4d72f3060b053c034e88c1ffa906232",
+          "bytes": 16448,
+          "sha256": "62e2017c201bbba14485d8f016c1aac562df082628454aa7f852df55f7785d80"
+        }
+      },
+      "local_tree_identity_recomputed": false,
+      "catalog_origin": "unchanged draft16",
+      "runtime_or_semantic_verifier_rerun": false,
+      "suggested_mount": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/Auth-Google-public2-original78"
+    },
+    {
+      "name": "Auth-Google-entry-source7",
+      "tree": "eecd5498a211b869c0a40ad16e415507b1c759b3",
+      "files": 7,
+      "bytes": 59841,
+      "merkle": 2,
+      "immutable_tree_source": {
+        "path": "/workspace/scratch/f86faac821c4/r32_recovery/tree-eecd5498a211b869c0a40ad16e415507b1c759b3-sdk.json",
+        "wrapper_bytes": 6375,
+        "wrapper_sha256": "b45a16d3fbb3ae15c0dcd699d1fd4612b72ff10cc0ebf81690ec709b9437c102"
+      },
+      "local_tree_identity_recomputed": true,
+      "catalog_origin": "unchanged draft16",
+      "runtime_or_semantic_verifier_rerun": false,
+      "suggested_mount": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/Auth-Google-entry-source7"
+    },
+    {
+      "name": "Auth-owner-source-repair51",
+      "tree": "d03ff2c5eeff00a6639f95d66c4c4fca3105056a",
+      "files": 51,
+      "bytes": 906723,
+      "merkle": 11,
+      "immutable_tree_source": {
+        "path": "/workspace/scratch/f86faac821c4/r32_recovery/owner-final-tree-read-d03ff2c5eeff00a6639f95d66c4c4fca3105056a.json",
+        "wrapper_bytes": 40129,
+        "wrapper_sha256": "ef8972131be3f3dfe1a4c23e07f52c0c75a5b9ab42d1060d8f2cf2d9a3827c00"
+      },
+      "local_tree_identity_recomputed": true,
+      "catalog_origin": "unchanged draft16",
+      "runtime_or_semantic_verifier_rerun": false,
+      "suggested_mount": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/Auth-owner-source-repair51"
+    }
+  ],
+  "additions": [
+    {
+      "name": "H2-current-stage-original106",
+      "tree": "a78dc168435d5951385ef2a01d377524bfc68d83",
+      "scope": "actual stage original chain; no H2 prepare/live",
+      "review_references": [
+        "9f6617e593a66d63da9f7fc10200a2e28ba56c4d"
+      ],
+      "count_reference": "root395 / existing stage packet",
+      "immutable_tree_source": {
+        "path": "/workspace/scratch/f86faac821c4/r32_recovery/ha-h2-stage-actual-tree-sdk.json",
+        "wrapper_bytes": 81963,
+        "wrapper_sha256": "f5743ea3c46bb3b39e51bd17f3b8f26a65f1adc5fb427974c5c230ad5cd9afb6"
+      },
+      "local_tree_identity_recomputed": true,
+      "files": 106,
+      "bytes": 1058439,
+      "merkle": 17,
+      "catalog_origin": "explicit root requested addition",
+      "runtime_or_semantic_verifier_rerun": false,
+      "suggested_mount": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/H2-current-stage-original106"
+    },
+    {
+      "name": "Auth-registration-original-chain-peer7",
+      "tree": "6d1bfe6fb193bb2ad172fccdb441602e3715c7af",
+      "scope": "714 independent original-chain checks; not SDK or product execution",
+      "review_references": [
+        "7bf70816e5cb26e8f627b77135b50a4c8918b7b5",
+        "65b6f2235fcf055ff15fc9177fd6f80727449462"
+      ],
+      "immutable_tree_source": {
+        "path": "/workspace/scratch/f86faac821c4/r32_recovery/ha-auth169-peer-tree-sdk.json",
+        "wrapper_bytes": 5747,
+        "wrapper_sha256": "b2ae51cd38a3318438bf9ff7ae295d6279fbeeb2b1b4359dd58b858708967a92"
+      },
+      "local_tree_identity_recomputed": true,
+      "files": 7,
+      "bytes": 183235,
+      "merkle": 1,
+      "catalog_origin": "explicit root requested addition",
+      "runtime_or_semantic_verifier_rerun": false,
+      "suggested_mount": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/Auth-registration-original-chain-peer7"
+    },
+    {
+      "name": "Auth-Google-entry-original38",
+      "tree": "135407c6d3156a8602da63184c0df4143aa137ea",
+      "scope": "fixed public entry metadata/body originals; actual selected owner not inferred",
+      "review_local_reference": "/workspace/scratch/f86faac821c4/r32_recovery/r33-Auth-entry38-root-result.public.json",
+      "immutable_tree_source": {
+        "path": "/workspace/scratch/f86faac821c4/r32_recovery/r33-Auth-entry38-original-tree-sdk.json",
+        "wrapper_bytes": 29187,
+        "wrapper_sha256": "4be4aa85420f5c4d0bcc0c296bb4d8895e9472f5c23373725502a7423dda1a83"
+      },
+      "local_tree_identity_recomputed": true,
+      "files": 38,
+      "bytes": 121330,
+      "merkle": 6,
+      "catalog_origin": "explicit root requested addition",
+      "runtime_or_semantic_verifier_rerun": false,
+      "suggested_mount": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/Auth-Google-entry-original38"
+    },
+    {
+      "name": "Auth-owner-bound-source88",
+      "tree": "71a1656fbe227fcea1e92558a5004e22eaab69c6",
+      "scope": "bound SOURCE, no runtime qualification",
+      "review_references": [
+        "68838a0c45042258358892d20778b0aee3b14b27",
+        "fb57872b59c10fe82ca348986cd4ddf5ac8bfc58"
+      ],
+      "immutable_tree_source": {
+        "path": "/workspace/scratch/f86faac821c4/r32_recovery/owner-source88-tree-read-sdk.json",
+        "wrapper_bytes": 65715,
+        "wrapper_sha256": "80c3fb0949f694798cfa98130083fbfa0cd7f861de53e250ad6325145f93d814"
+      },
+      "local_tree_identity_recomputed": true,
+      "files": 88,
+      "bytes": 2910122,
+      "merkle": 12,
+      "catalog_origin": "explicit root requested addition",
+      "runtime_or_semantic_verifier_rerun": false,
+      "suggested_mount": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/Auth-owner-bound-source88"
+    },
+    {
+      "name": "Auth-owner-stdin-overlay10",
+      "tree": "2f213b0e8de72fac88fec0039761390f34f9e946",
+      "scope": "exact request schema correction, preserving old proposal",
+      "review_local_reference": "/workspace/scratch/f86faac821c4/r32_recovery/r33-Auth-source88-overlay10-root-result.public.json",
+      "immutable_tree_source": {
+        "path": "/workspace/scratch/f86faac821c4/r32_recovery/owner-stdin-overlay-tree-read-sdk.json",
+        "wrapper_bytes": 8273,
+        "wrapper_sha256": "1c2b08b13dabf065040e0beb9b59129b0ab269540d5480d335d3d68381068fd5"
+      },
+      "local_tree_identity_recomputed": true,
+      "files": 10,
+      "bytes": 1662289,
+      "merkle": 2,
+      "catalog_origin": "explicit root requested addition",
+      "runtime_or_semantic_verifier_rerun": false,
+      "suggested_mount": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/Auth-owner-stdin-overlay10"
+    },
+    {
+      "name": "Auth-owner-archive-recovery14",
+      "tree": "bb48916a5f83d37eb7faae2ed139db976bfef658",
+      "scope": "Git archive errors and same public byte recovery; no Runtime replay",
+      "review_references": [
+        "fb57872b59c10fe82ca348986cd4ddf5ac8bfc58"
+      ],
+      "immutable_tree_source": {
+        "path": "/workspace/scratch/f86faac821c4/r32_recovery/owner-bound-archive-evidence-tree-sdk.json",
+        "wrapper_bytes": 11035,
+        "wrapper_sha256": "10ebe5417b2c6c5e4f713ce1191b43a3f06fedd2b47874acddb4d4ef55923987"
+      },
+      "local_tree_identity_recomputed": true,
+      "files": 14,
+      "bytes": 77679,
+      "merkle": 2,
+      "catalog_origin": "explicit root requested addition",
+      "runtime_or_semantic_verifier_rerun": false,
+      "suggested_mount": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/Auth-owner-archive-recovery14"
+    },
+    {
+      "name": "Auth-owner-three-target-source6",
+      "tree": "c780abd37895a5cab64775bf3166c67da0f1faf6",
+      "scope": "three fixed public target observation SOURCE only",
+      "known_source": "/workspace/scratch/f86faac821c4/r32_recovery/owner-postinert-three-targets-fetch-sdk.json",
+      "immutable_tree_source": {
+        "path": "/workspace/scratch/f86faac821c4/r32_recovery/owner-postinert-three-targets-fetch-sdk.json",
+        "wrapper_bytes": 5785,
+        "wrapper_sha256": "937f153a709daedb91c09ceb67fcc245a7f4d3a04a50a061f67d13ce99f76664"
+      },
+      "local_tree_identity_recomputed": true,
+      "files": 6,
+      "bytes": 13171,
+      "merkle": 2,
+      "catalog_origin": "explicit root requested addition",
+      "runtime_or_semantic_verifier_rerun": false,
+      "suggested_mount": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/Auth-owner-three-target-source6"
+    },
+    {
+      "name": "H2-target-actual-original123",
+      "tree": "51e78b6600d671e0565c8911b452650812410474",
+      "scope": "5 original observers / 10 pages / 38845 bytes, 2 independent file_infos; no prepare/live",
+      "review_references": [
+        "b5aa3ca4cc494fc3fcf0737b083876b3931fee3c",
+        "0093a0be7a54f88393626276c864b5a46b1c8770",
+        "c2545057a868ae12869df0dc8e904398118a5ab8"
+      ],
+      "immutable_tree_source": {
+        "path": "/workspace/scratch/f86faac821c4/r32_recovery/ha-h2-target-complete-tree-sdk.json",
+        "wrapper_bytes": 108463,
+        "wrapper_sha256": "c40777d327dcf999c0681cb0b516f13e8212e38e2f488eaaf699a882cf98a283"
+      },
+      "local_tree_identity_recomputed": true,
+      "files": 123,
+      "bytes": 714650,
+      "merkle": 40,
+      "catalog_origin": "explicit root requested addition",
+      "runtime_or_semantic_verifier_rerun": false,
+      "suggested_mount": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/H2-target-actual-original123"
+    },
+    {
+      "name": "X230-comparison69-complete-original193",
+      "tree": "045449626f3b1d62154ce6e5c42e2c9c7dc36bfd",
+      "scope": "192 original leaves plus manifest; 69 cases per implementation, scoped compatibility only",
+      "review_references": [
+        "661060e634ee99e2c67c1403f1344a062fd76ee2"
+      ],
+      "original_local_map": "/workspace/scratch/f86faac821c4/r32_recovery/comparison69-complete-files-index.json",
+      "immutable_tree_source": {
+        "path": "/workspace/scratch/f86faac821c4/r32_recovery/ha-comparison69-complete-tree-sdk.json",
+        "wrapper_bytes": 160025,
+        "wrapper_sha256": "d455dea2451a43482e007e36684abb443526ef0a93221518a8a943342ce61301"
+      },
+      "local_tree_identity_recomputed": true,
+      "files": 193,
+      "bytes": 1209038,
+      "merkle": 53,
+      "catalog_origin": "explicit root requested addition",
+      "runtime_or_semantic_verifier_rerun": false,
+      "suggested_mount": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/X230-comparison69-complete-original193"
+    }
+  ],
+  "separate_SOURCE_proposals_for_root_choice": [
+    {
+      "name": "H2-prepare-bound-SOURCE13",
+      "tree": "2aa05d9fcb6006c3086edb25c6ab83f8f30e7328",
+      "scope": "SOURCE-only original prepare request; args[7] actual binding SHA resolved, not submitted or authorized",
+      "request": "2059cf884472ae55dc799be4b781f9fe96efd10e",
+      "runtime_GO": false,
+      "submitted": false,
+      "original_local_map": "/workspace/scratch/f86faac821c4/r32_recovery/ha-prepare-complete-packet.json",
+      "immutable_tree_source": {
+        "path": "/workspace/scratch/f86faac821c4/r32_recovery/ha-prepare-complete-tree-sdk.json",
+        "wrapper_bytes": 11489,
+        "wrapper_sha256": "4516819276a71c5fc190ea920eb8d4e1500cf1869f939ece329242a0df7d5911"
+      },
+      "local_tree_identity_recomputed": true,
+      "files": 13,
+      "bytes": 186726,
+      "merkle": 4,
+      "catalog_origin": "new SOURCE proposal, separately listed for root choice",
+      "runtime_or_semantic_verifier_rerun": false,
+      "suggested_mount": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/H2-prepare-bound-SOURCE13"
+    }
+  ],
+  "totals": {
+    "base": {
+      "packets": 16,
+      "files": 855,
+      "bytes": 7623139,
+      "merkle_nodes": 249
+    },
+    "requested_additions": {
+      "packets": 9,
+      "files": 585,
+      "bytes": 7949953,
+      "merkle_nodes": 135
+    },
+    "requested_combined": {
+      "packets": 25,
+      "files": 1440,
+      "bytes": 15573092,
+      "merkle_nodes": 384
+    },
+    "SOURCE_proposal_optional": {
+      "packets": 1,
+      "files": 13,
+      "bytes": 186726,
+      "merkle_nodes": 4
+    },
+    "including_optional_SOURCE": {
+      "packets": 26,
+      "files": 1453,
+      "bytes": 15759818,
+      "merkle_nodes": 388
+    }
+  },
+  "counts_are_sums_of_packet_paths_not_cross_packet_unique_blobs": true,
+  "tree_count_verification": "Rebuilt 24 immutable tree identities from existing local recursive Git-tree SDK wrappers; inherited Google78 root244 and prior-peer7 draft counts explicitly. Existing author/root business and original-chain checkers were not rerun.",
+  "original_pending_now_has_packet": [
+    "H2 complete original stage",
+    "Auth registration169 independent peer",
+    "X23069 complete original run",
+    "Auth Googleentry original read"
+  ],
+  "boundaries": [
+    "H2 target observations prove only their two fixed file identities plus three whole body chunks, not independently statted identities for all staged targets.",
+    "H2 and CLI prepare/live remain distinct future actions; packet inclusion does not authorize any action.",
+    "X230 full34 original 39 framework index leaves remain unlocated; new current observers do not replace them.",
+    "X230 comparison69 remains scoped compatibility, including 67 numeric matches and 2 normalized PKI rejection cases; no full compatibility claim.",
+    "Git archive transport errors, cache-recovery histories and stage status-query UNKNOWN are preserved; none are converted to new product execution."
+  ]
+}

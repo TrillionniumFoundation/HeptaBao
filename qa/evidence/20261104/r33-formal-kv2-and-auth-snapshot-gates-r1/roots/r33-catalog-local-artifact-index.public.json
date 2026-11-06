@@ -1,0 +1,26 @@
+{
+  "catalog-delta.public.json": {
+    "path": "/workspace/scratch/f86faac821c4/ha_r33_catalog_delta_r1/catalog-delta.public.json",
+    "bytes": 24563,
+    "sha256": "e326b296facd524ba84be17c31eb12591a06932f24f3c7ec2b7fed681a0bc8c3",
+    "blob": "58652bf04e7bb5536b047205605f0a130a0db824"
+  },
+  "verification-result.public.json": {
+    "path": "/workspace/scratch/f86faac821c4/ha_r33_catalog_delta_r1/verification-result.public.json",
+    "bytes": 6825,
+    "sha256": "150ff72369d1aa08797488fe6bfe0c3d0ad323b308d493d17d2b5f41aeb5c6c3",
+    "blob": "7125d51c16034b44caeae8f7dee9dfc33f4bfbe1"
+  },
+  "build_catalog.py": {
+    "path": "/workspace/scratch/f86faac821c4/ha_r33_catalog_delta_r1/build_catalog.py",
+    "bytes": 12916,
+    "sha256": "eccdcaa60f45cb4998c2e6ed796738d69e0fda5f63462a0a3ec316217988f53c",
+    "blob": "67a7d1bbc30792f8d3a7780025a1c51424def8c4"
+  },
+  "README.md": {
+    "path": "/workspace/scratch/f86faac821c4/ha_r33_catalog_delta_r1/README.md",
+    "bytes": 1937,
+    "sha256": "1e0258dba68aa7014084dc56500911ddb051a7f7af2bb799d21c567895a281db",
+    "blob": "a8abf8a851d4080c848d8e0966c6115cfa445c34"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "label": "binding-body0",
+  "role": "binding",
+  "expected_bytes": 10230,
+  "request": {
+    "idempotency_key": "ha-4e808-h2-stage-binding-body0-r2-20261105",
+    "operation": {
+      "tool": "binary_read",
+      "arguments": {
+        "host": "desktop",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/binding.private.json",
+        "offset": 0,
+        "limit": 10230,
+        "expected_version": null
+      }
+    }
+  }
+}

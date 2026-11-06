@@ -1,0 +1,14 @@
+{
+  "tree": "eecd5498a211b869c0a40ad16e415507b1c759b3",
+  "files": 7,
+  "bytes": 59841,
+  "merkle": 2,
+  "wholeReadback": true,
+  "metadataRequest": {
+    "blob": "28b92dd34125354c01ee4e6b04a61c23103ee88f",
+    "bytes": 273,
+    "sha256": "2707b0502aae10d672a340c85462937bd14cbbb3e98b7c337b278a94ad68b136"
+  },
+  "contract": "00f9fb5e8fc7605f88cb4423d0d8c60483cf88c1",
+  "deriver": "3a86d0d14f6fa15e410bc28571db4c8a5202971e"
+}

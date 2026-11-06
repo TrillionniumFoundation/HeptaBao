@@ -1,0 +1,49 @@
+{
+  "schema": "heptabao.H2-stage.original-ACK-binding.v1",
+  "request": {
+    "blob": "773c7e054a36dfc175632a83ed23db5b5600ad58",
+    "bytes": 369727,
+    "sha256": "12373f98e11e1040558067bfdffe0604dc71c2ed720cf6261b238ea79ca3c01b"
+  },
+  "GO": {
+    "blob": "065ae72edbb8f330b66f5a40ea4c0134891f60d8",
+    "bytes": 3222,
+    "sha256": "56fb58ec14115a0c4c7a01fe9098cfc544477d364bbcd46d158840656b475127"
+  },
+  "intent": {
+    "name": "ha-h2-4e808-stage-external-exact-intent",
+    "blob": "87f09d19e25b2e9c2131d5df2e47d499cd44226c",
+    "bytes": 2564,
+    "sha256": "478c9f9f6cbbdada0c39a2aca88bd8d32374a26cbd094e23636adc31c29fe587"
+  },
+  "SDK": {
+    "name": "ha-h2-4e808-stage-start-original-sdk",
+    "blob": "f4a251f9d7dde3a1646cbd89278139950b5b4c1d",
+    "bytes": 30918,
+    "sha256": "47452d63d81275ba4c78b0ba7e4ba6fe8021aa0470cadbc30fe6fbd23e22265d"
+  },
+  "native": {
+    "name": "ha-h2-4e808-stage-start-original-native",
+    "blob": "13e0e2fee6d7b4da5d20abf808bda69338d652a5",
+    "bytes": 29066,
+    "sha256": "486e27371536ee492dfa0a49f8bfcd6463f5d4a5732c2e5fe541fb60d79601a2"
+  },
+  "job_id": "1a1adb7c0f6-fc05-5ab6",
+  "checks": {
+    "job_id": true,
+    "host": true,
+    "executable": true,
+    "cwd": true,
+    "args": true,
+    "empty_env": true,
+    "key": true,
+    "digest": true,
+    "fingerprint": true,
+    "launched": true,
+    "reused": true,
+    "record_pending": true
+  },
+  "identity_bound": true,
+  "terminal_known": false,
+  "not_product_qualification": true
+}

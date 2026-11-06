@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.h2qa.destination.metadata5.external-execution-intent.v1",
+  "authorization": {
+    "blob": "8c5542d05ace15c6d1405852ff69b091fa6c88ce",
+    "bytes": 9259,
+    "sha256": "5e7475c2e5cd149681e33bb12bb3a7f875168a12052a4e91a260fb41163bea45"
+  },
+  "lane": "A",
+  "index": 8,
+  "role": "build_binding",
+  "request": {
+    "path": "requests/08-build_binding.file-info.public.json",
+    "blob": "a26f1abc3870b092e6f77424c8c559674e2a44de",
+    "bytes": 318,
+    "sha256": "e6bed1b646b6251626c052d77a73dbc03cc31cd01e39519d8e9b09e17425545e"
+  },
+  "exact_request": {
+    "idempotency_key": "ha-qa12-destination-8-file-info-observation-r1-20261105",
+    "operation": {
+      "tool": "file_info",
+      "arguments": {
+        "host": "desktop",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/build-binding.private.json"
+      }
+    }
+  },
+  "expected_historical_receiver": {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/build-binding.private.json",
+    "version": "2050:7257432:4039:1793882066255718130:1793882066255718130",
+    "full9_decimal": [
+      "2050",
+      "7257432",
+      "1000",
+      "1000",
+      "33024",
+      "1",
+      "4039",
+      "1793882066255718130",
+      "1793882066255718130"
+    ],
+    "mode": 256,
+    "bytes": 4039,
+    "sha256": "ac127d3e67971ad6b9ae987c0fc6437f8882ff00d9480acbc12ed149796dd12a",
+    "same_fd_readback": {
+      "bytes": 4039,
+      "sha256": "ac127d3e67971ad6b9ae987c0fc6437f8882ff00d9480acbc12ed149796dd12a"
+    },
+    "create_only": true,
+    "fsynced": true,
+    "source_core_blob": "4f45e1efca410e22d9607352f9ffff451fcbc305"
+  },
+  "previous_closed_indices": [
+    7
+  ],
+  "previous_closure": {
+    "name": "ha-h2-info7-closure",
+    "blob": "e9a99419d95d40fc0f48d93ddd659fb058d9c5d3",
+    "bytes": 2777,
+    "sha256": "560de23dc4721eb7f7f0d23672b70281816e917691aeaf8c1e6614f8ac37064a"
+  },
+  "one_admission_only": true,
+  "old_UNKNOWN_preserved": true,
+  "new_body_reads": 0,
+  "new_process_start": 0
+}

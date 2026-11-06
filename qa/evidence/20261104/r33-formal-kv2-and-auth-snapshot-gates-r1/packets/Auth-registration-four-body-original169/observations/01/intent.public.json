@@ -1,0 +1,36 @@
+{
+  "schema": "heptabao.mac-registration-body4.original-read-intent.r1",
+  "sequence": 1,
+  "lane": "A",
+  "go": {
+    "blob": "49fa57d6128f99ff425ea798466514564374d3b4",
+    "bytes": 10218,
+    "sha256": "9ab46d2157d77f7045cdd33426c52692bc844424537efb196936f8cef6ef5c8b"
+  },
+  "metadata_actual_packet": "27c4b1be1736069cf4b9fdc6a1bf44acb819624f",
+  "prior_metadata_release": "72bfd14bb2b1f439babf59a731b53f3765352df1",
+  "exact_request_pin": {
+    "blob": "f78c2274f45aa6b9f62422fac6453bd8ec4e96ce",
+    "bytes": 420,
+    "sha256": "18cd2d3ccfd8367ef87eae98aba054cd425ab17824af8eaa3e28cb312e6af233"
+  },
+  "exact_request": {
+    "idempotency_key": "heptabao-mac-registration-body-manifest-registry-819c76c3-0-20261105-r1",
+    "operation": {
+      "tool": "binary_read",
+      "arguments": {
+        "host": "mac",
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/manifest-registry--UiRn6nq.js",
+        "expected_version": "16777233:405237428:31444:1784843459184750747:1784843459184750747",
+        "offset": 0,
+        "limit": 31444
+      }
+    }
+  },
+  "previous_body_closed_and_whole": null,
+  "only_one_Runtime_call_and_native_future": true,
+  "start_not_yet_called": true,
+  "immutable_page_limit": 8192,
+  "old_body_bytes_not_reused": 140664,
+  "SDK_execution": false
+}

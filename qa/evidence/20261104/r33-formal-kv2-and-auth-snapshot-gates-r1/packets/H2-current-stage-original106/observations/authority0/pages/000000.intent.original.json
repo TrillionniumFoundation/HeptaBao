@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.original-operation.immutable-page.intent.v1",
+  "action": "operation_result",
+  "request": {
+    "name": "ha-h2-stage-authority0-page-000000-request",
+    "blob": "1d1988976a3b3e349b13d822d5b8a28dc31c3449",
+    "bytes": 121,
+    "sha256": "26f6394f39048f8fd94b24685447785e899ef3c08e59aea19a32f8de2e836210"
+  },
+  "root_go": "065ae72edbb8f330b66f5a40ea4c0134891f60d8",
+  "original_admission_native": "937644457801f63b811c061e70a0fc6fa5f1fa8b",
+  "closed_status": {
+    "name": "ha-h2-stage-authority0-status-reconcile1-native",
+    "blob": "8c6e8b972dee719212c3f9652af4bb57083be131",
+    "bytes": 805,
+    "sha256": "701f6415de7decd4ed566afe065eb593ffe763cc2ef5f0b4f795246ecec676ba"
+  },
+  "old_unlocated_status_boundary": "unknown; this is the original observer payload, not reconstruction of missing outer SDK",
+  "new_native_admission": false
+}

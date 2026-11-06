@@ -1,0 +1,613 @@
+{
+  "schema": "heptabao.mac-current-owner-bound-source.mechanical-binding.r1",
+  "status": "SOURCE_ONLY_NO_EXECUTION_AUTHORIZATION",
+  "newRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1",
+  "newLabels": {
+    "server": "org.heptabao.qa.mac-authbus-4e808-owner-r1.server",
+    "consumer": "org.heptabao.qa.mac-authbus-4e808-owner-r1.consumer"
+  },
+  "baselinePayloadBlob": "931383bbc295b82ad7ff6cf57c33af3395e20966",
+  "reviewedOwnerRepairTree": "d03ff2c5eeff00a6639f95d66c4c4fca3105056a",
+  "actualEntryPacketTree": "135407c6d3156a8602da63184c0df4143aa137ea",
+  "entry": {
+    "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/index.js",
+    "blob": "4a63cd4e06362ad36bb50c481315020b6aec94aa",
+    "bytes": 10582,
+    "sha256": "f245758337a55924518852f542a27d49bd786d8e4b80821dc5f98f825ec3fc60",
+    "observedVersion": "16777233:405237094:10582:1784843458496192413:1784843458496192413",
+    "historicalQualificationInherited": false
+  },
+  "sourceRows": [
+    {
+      "path": "source/mac_auth_rows_cas_r1.mjs",
+      "before": {
+        "blob": "26e00c58f5daa0d68ceb62b5f0be560c06c39746",
+        "bytes": 3109,
+        "sha256": "aea4fb56bbf8c51457d99f8a46fb1dcce11acc99ef82c8c57ab8c6c4e1b68f64"
+      },
+      "reviewedBefore": {
+        "blob": "26e00c58f5daa0d68ceb62b5f0be560c06c39746",
+        "bytes": 3109,
+        "sha256": "aea4fb56bbf8c51457d99f8a46fb1dcce11acc99ef82c8c57ab8c6c4e1b68f64"
+      },
+      "after": {
+        "blob": "413e5c6ffe69dddfe1324ec604504fc8e4b93462",
+        "bytes": 3107,
+        "sha256": "dd3d02675212f6e513a4f93573566646c55a1d27cb21ac7bbb528058a96db8b7"
+      },
+      "rootLiteralOccurrences": 1,
+      "labelLiteralOccurrences": 0,
+      "ownerEntryBinding": false,
+      "mechanicalInverseExact": true,
+      "originalWholeUnchanged": false
+    },
+    {
+      "path": "source/mac_authbus_cache_cas_r1.mjs",
+      "before": {
+        "blob": "a318e427095b6c9273f03208620296b57ab59bc0",
+        "bytes": 6846,
+        "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+      },
+      "reviewedBefore": {
+        "blob": "a318e427095b6c9273f03208620296b57ab59bc0",
+        "bytes": 6846,
+        "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+      },
+      "after": {
+        "blob": "a318e427095b6c9273f03208620296b57ab59bc0",
+        "bytes": 6846,
+        "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+      },
+      "rootLiteralOccurrences": 0,
+      "labelLiteralOccurrences": 0,
+      "ownerEntryBinding": false,
+      "mechanicalInverseExact": true,
+      "originalWholeUnchanged": true
+    },
+    {
+      "path": "source/mac_capture_sqlite_synthetic_r1.py",
+      "before": {
+        "blob": "992fa2b52760e5f3d0b192837053728011e11500",
+        "bytes": 16476,
+        "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c"
+      },
+      "reviewedBefore": {
+        "blob": "992fa2b52760e5f3d0b192837053728011e11500",
+        "bytes": 16476,
+        "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c"
+      },
+      "after": {
+        "blob": "992fa2b52760e5f3d0b192837053728011e11500",
+        "bytes": 16476,
+        "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c"
+      },
+      "rootLiteralOccurrences": 0,
+      "labelLiteralOccurrences": 0,
+      "ownerEntryBinding": false,
+      "mechanicalInverseExact": true,
+      "originalWholeUnchanged": true
+    },
+    {
+      "path": "source/mac_capture_sqlite_synthetic_r2.py",
+      "before": {
+        "blob": "92930e43caa1b87bc857c642fd545b5b0147226d",
+        "bytes": 16915,
+        "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2"
+      },
+      "reviewedBefore": {
+        "blob": "92930e43caa1b87bc857c642fd545b5b0147226d",
+        "bytes": 16915,
+        "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2"
+      },
+      "after": {
+        "blob": "92930e43caa1b87bc857c642fd545b5b0147226d",
+        "bytes": 16915,
+        "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2"
+      },
+      "rootLiteralOccurrences": 0,
+      "labelLiteralOccurrences": 0,
+      "ownerEntryBinding": false,
+      "mechanicalInverseExact": true,
+      "originalWholeUnchanged": true
+    },
+    {
+      "path": "source/mac_current_capture_entry_wal_r1.py",
+      "before": {
+        "blob": "1001b044076205bd8497670a12504439bdf921c8",
+        "bytes": 42084,
+        "sha256": "32fcee225a7d185242bbc9cc792b9ed9572c26f38e04ad7b10c1831e2409cb4a"
+      },
+      "reviewedBefore": {
+        "blob": "1001b044076205bd8497670a12504439bdf921c8",
+        "bytes": 42084,
+        "sha256": "32fcee225a7d185242bbc9cc792b9ed9572c26f38e04ad7b10c1831e2409cb4a"
+      },
+      "after": {
+        "blob": "6d81fc1a726b43f4b523a416a077c49953d96ac6",
+        "bytes": 42082,
+        "sha256": "f0600e0b8fe1f01a3d68559e724e19d0f76272c2febd4d362b9012d84b1177e2"
+      },
+      "rootLiteralOccurrences": 1,
+      "labelLiteralOccurrences": 0,
+      "ownerEntryBinding": false,
+      "mechanicalInverseExact": true,
+      "originalWholeUnchanged": false
+    },
+    {
+      "path": "source/mac_current_cycle_r2.mjs",
+      "before": {
+        "blob": "d3b981f2c22a8e522555c12571d01c2be0008472",
+        "bytes": 24013,
+        "sha256": "9ebc50e88b990987041f8fb9280b5ebedd96d1211a38cb24d2f6f4c518483fdc"
+      },
+      "reviewedBefore": {
+        "blob": "d3b981f2c22a8e522555c12571d01c2be0008472",
+        "bytes": 24013,
+        "sha256": "9ebc50e88b990987041f8fb9280b5ebedd96d1211a38cb24d2f6f4c518483fdc"
+      },
+      "after": {
+        "blob": "e9b57fe153e4a8816dcfaae3fb6e028cb80e6496",
+        "bytes": 24011,
+        "sha256": "d8ce076b75794b2ca495ef37c310d9995f092c0563eae262fcaab1582c543878"
+      },
+      "rootLiteralOccurrences": 1,
+      "labelLiteralOccurrences": 0,
+      "ownerEntryBinding": false,
+      "mechanicalInverseExact": true,
+      "originalWholeUnchanged": false
+    },
+    {
+      "path": "source/mac_current_fixture_materializer_r1.py",
+      "before": {
+        "blob": "aa9842e1543eee1dbcacc797161ddda31d59cb5a",
+        "bytes": 23649,
+        "sha256": "686b89842b19da959c5ea1af25f7568ea65070bf6b3cacd25443ea0a3cb809f1"
+      },
+      "reviewedBefore": {
+        "blob": "570f9abdcad9cfdc4c2d06c3895f0f68a1bf8c1b",
+        "bytes": 25974,
+        "sha256": "c9db0d893d2c326f35b8c80ea46c1be53b6d6b3b46caf78309b8f14f28cfe21f"
+      },
+      "after": {
+        "blob": "d96326268e8048a31b420fda20b32958b99b6753",
+        "bytes": 25972,
+        "sha256": "cf0b78ed54648525b873d91473d603f115e84013c38ba4abaa42771dfa5d1ccf"
+      },
+      "rootLiteralOccurrences": 1,
+      "labelLiteralOccurrences": 0,
+      "ownerEntryBinding": false,
+      "mechanicalInverseExact": true,
+      "originalWholeUnchanged": false
+    },
+    {
+      "path": "source/mac_current_outer_inputs_r2.py",
+      "before": {
+        "blob": "7f4802e5225b73af247f371f3dc5c197c6e4425c",
+        "bytes": 27292,
+        "sha256": "6645e7375e1c3a5e0fbf994a2f035d4922c4def4d5bbfd333236293db78f9b11"
+      },
+      "reviewedBefore": {
+        "blob": "1e2a0cfb1bdbaef2d418fd8eb941ac14ec28e9b6",
+        "bytes": 32881,
+        "sha256": "cf335c2aa67c6ba0ecbe7a236c458c18261feb870a71a0b41ca4fb0e2d184a64"
+      },
+      "after": {
+        "blob": "2d56e56803e76c9bba6c3bba56552508fb50fb92",
+        "bytes": 33000,
+        "sha256": "97db953e7324e31a9bb162d1ee508ed5f2e2a58c98a181131988e9dd3c3cfdce"
+      },
+      "rootLiteralOccurrences": 1,
+      "labelLiteralOccurrences": 0,
+      "ownerEntryBinding": true,
+      "mechanicalInverseExact": true,
+      "originalWholeUnchanged": false
+    },
+    {
+      "path": "source/mac_current_outer_wal_r1.py",
+      "before": {
+        "blob": "8459b949c07982f56dae2e252565f3db0971e246",
+        "bytes": 68348,
+        "sha256": "bce47fd194be7ec1d1ec340e24d8e759dbf7611ef3c75eca2adeb62e9b4ccf01"
+      },
+      "reviewedBefore": {
+        "blob": "26622454186ba28ada489c9a10b34cf4ad254b97",
+        "bytes": 71496,
+        "sha256": "72ecfcd586a4ab4c48fd95d2e15b4a44165a754570c699eae18dceaa02f3b262"
+      },
+      "after": {
+        "blob": "12a6fa7a0432281246b36915f1b4b5cd5cd5b400",
+        "bytes": 71506,
+        "sha256": "6ad1b80ac06c90759c2ac5fd01df9c750b077ffa43253486c07658b6e1ddd4d5"
+      },
+      "rootLiteralOccurrences": 1,
+      "labelLiteralOccurrences": 0,
+      "ownerEntryBinding": false,
+      "mechanicalInverseExact": true,
+      "originalWholeUnchanged": false
+    },
+    {
+      "path": "source/mac_current_phase_owner_r2.py",
+      "before": {
+        "blob": "0bb331760813905250de5c0722a74fdcebfc099e",
+        "bytes": 24977,
+        "sha256": "4b545e9b3147cc118565255cdfcd64ee41095f4f957f9c151d103892d4a92500"
+      },
+      "reviewedBefore": {
+        "blob": "0bb331760813905250de5c0722a74fdcebfc099e",
+        "bytes": 24977,
+        "sha256": "4b545e9b3147cc118565255cdfcd64ee41095f4f957f9c151d103892d4a92500"
+      },
+      "after": {
+        "blob": "82f790ff6d26d9e998fe1c5c61f89f5975ec3920",
+        "bytes": 24975,
+        "sha256": "bb674ed1a60b204207af2dbab4d7b06a76e47fdebb19991e2f2c3dda7beac4a5"
+      },
+      "rootLiteralOccurrences": 1,
+      "labelLiteralOccurrences": 0,
+      "ownerEntryBinding": false,
+      "mechanicalInverseExact": true,
+      "originalWholeUnchanged": false
+    },
+    {
+      "path": "source/mac_current_server_owner_r1.py",
+      "before": {
+        "blob": "db0aeb856c01006e6e66ba72269f029dfa13ca81",
+        "bytes": 13396,
+        "sha256": "7ff8a1d8c8b134869d1256826e063e6d22950c3defd03b127ada17061c445f60"
+      },
+      "reviewedBefore": {
+        "blob": "db0aeb856c01006e6e66ba72269f029dfa13ca81",
+        "bytes": 13396,
+        "sha256": "7ff8a1d8c8b134869d1256826e063e6d22950c3defd03b127ada17061c445f60"
+      },
+      "after": {
+        "blob": "44bf4989f10bad1d6322b182b630769bf93a09c3",
+        "bytes": 13394,
+        "sha256": "fb38bd7ce30e9a0b62539d459939b2ec20d96f84fd08d57199aa095fd3fc5ef6"
+      },
+      "rootLiteralOccurrences": 1,
+      "labelLiteralOccurrences": 0,
+      "ownerEntryBinding": false,
+      "mechanicalInverseExact": true,
+      "originalWholeUnchanged": false
+    },
+    {
+      "path": "source/mac_darwin_owned_projection_r1.py",
+      "before": {
+        "blob": "a7b6f61d0ccabc4c29b4d0891663ad2d24ba25bb",
+        "bytes": 12858,
+        "sha256": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740"
+      },
+      "reviewedBefore": {
+        "blob": "a7b6f61d0ccabc4c29b4d0891663ad2d24ba25bb",
+        "bytes": 12858,
+        "sha256": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740"
+      },
+      "after": {
+        "blob": "a7b6f61d0ccabc4c29b4d0891663ad2d24ba25bb",
+        "bytes": 12858,
+        "sha256": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740"
+      },
+      "rootLiteralOccurrences": 0,
+      "labelLiteralOccurrences": 0,
+      "ownerEntryBinding": false,
+      "mechanicalInverseExact": true,
+      "originalWholeUnchanged": true
+    },
+    {
+      "path": "source/mac_guarded_current_capture_r3.py",
+      "before": {
+        "blob": "244f98634ab07e96f70585179a1d155fdb34f34f",
+        "bytes": 23578,
+        "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693"
+      },
+      "reviewedBefore": {
+        "blob": "244f98634ab07e96f70585179a1d155fdb34f34f",
+        "bytes": 23578,
+        "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693"
+      },
+      "after": {
+        "blob": "244f98634ab07e96f70585179a1d155fdb34f34f",
+        "bytes": 23578,
+        "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693"
+      },
+      "rootLiteralOccurrences": 0,
+      "labelLiteralOccurrences": 0,
+      "ownerEntryBinding": false,
+      "mechanicalInverseExact": true,
+      "originalWholeUnchanged": true
+    },
+    {
+      "path": "source/mac_native_owned_commands_r1.py",
+      "before": {
+        "blob": "3cf86925b936062de7453193548b8ed32e2c4e45",
+        "bytes": 5972,
+        "sha256": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd"
+      },
+      "reviewedBefore": {
+        "blob": "3cf86925b936062de7453193548b8ed32e2c4e45",
+        "bytes": 5972,
+        "sha256": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd"
+      },
+      "after": {
+        "blob": "3cf86925b936062de7453193548b8ed32e2c4e45",
+        "bytes": 5972,
+        "sha256": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd"
+      },
+      "rootLiteralOccurrences": 0,
+      "labelLiteralOccurrences": 0,
+      "ownerEntryBinding": false,
+      "mechanicalInverseExact": true,
+      "originalWholeUnchanged": true
+    },
+    {
+      "path": "source/mac_native_owned_unreaped_r1.py",
+      "before": {
+        "blob": "5a90c395dc7c88335eb7e06f7984a013b280af02",
+        "bytes": 10761,
+        "sha256": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c"
+      },
+      "reviewedBefore": {
+        "blob": "5a90c395dc7c88335eb7e06f7984a013b280af02",
+        "bytes": 10761,
+        "sha256": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c"
+      },
+      "after": {
+        "blob": "5a90c395dc7c88335eb7e06f7984a013b280af02",
+        "bytes": 10761,
+        "sha256": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c"
+      },
+      "rootLiteralOccurrences": 0,
+      "labelLiteralOccurrences": 0,
+      "ownerEntryBinding": false,
+      "mechanicalInverseExact": true,
+      "originalWholeUnchanged": true
+    },
+    {
+      "path": "source/mac_native_process_observer_r1.py",
+      "before": {
+        "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+        "bytes": 13423,
+        "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+      },
+      "reviewedBefore": {
+        "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+        "bytes": 13423,
+        "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+      },
+      "after": {
+        "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+        "bytes": 13423,
+        "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+      },
+      "rootLiteralOccurrences": 0,
+      "labelLiteralOccurrences": 0,
+      "ownerEntryBinding": false,
+      "mechanicalInverseExact": true,
+      "originalWholeUnchanged": true
+    },
+    {
+      "path": "source/mac_owned_commands_r1.py",
+      "before": {
+        "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+        "bytes": 5965,
+        "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+      },
+      "reviewedBefore": {
+        "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+        "bytes": 5965,
+        "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+      },
+      "after": {
+        "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+        "bytes": 5965,
+        "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+      },
+      "rootLiteralOccurrences": 0,
+      "labelLiteralOccurrences": 0,
+      "ownerEntryBinding": false,
+      "mechanicalInverseExact": true,
+      "originalWholeUnchanged": true
+    },
+    {
+      "path": "source/mac_owned_launchd_r3.py",
+      "before": {
+        "blob": "04466c9004d80289dac655fcd958a1e33f324ae4",
+        "bytes": 35734,
+        "sha256": "f33b4b61fdb97f4612e1667840e148e69dc2702b49f0832f1491800ddbc6cf29"
+      },
+      "reviewedBefore": {
+        "blob": "04466c9004d80289dac655fcd958a1e33f324ae4",
+        "bytes": 35734,
+        "sha256": "f33b4b61fdb97f4612e1667840e148e69dc2702b49f0832f1491800ddbc6cf29"
+      },
+      "after": {
+        "blob": "96fe347f2edbda1718b2fd683041b88be8f41e30",
+        "bytes": 35736,
+        "sha256": "4989b58248f7951f825c021402bef611708b8613291d3282761c8c97d0b4adf6"
+      },
+      "rootLiteralOccurrences": 1,
+      "labelLiteralOccurrences": 2,
+      "ownerEntryBinding": false,
+      "mechanicalInverseExact": true,
+      "originalWholeUnchanged": false
+    },
+    {
+      "path": "source/mac_owned_unreaped_r1.py",
+      "before": {
+        "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+        "bytes": 10990,
+        "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+      },
+      "reviewedBefore": {
+        "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+        "bytes": 10990,
+        "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+      },
+      "after": {
+        "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+        "bytes": 10990,
+        "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+      },
+      "rootLiteralOccurrences": 0,
+      "labelLiteralOccurrences": 0,
+      "ownerEntryBinding": false,
+      "mechanicalInverseExact": true,
+      "originalWholeUnchanged": true
+    },
+    {
+      "path": "source/mac_registry_readonly_wal_r1.py",
+      "before": {
+        "blob": "c97d95b735bb4d76bf90d4c2b78d7b1bbcaa0920",
+        "bytes": 31776,
+        "sha256": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed"
+      },
+      "reviewedBefore": {
+        "blob": "c97d95b735bb4d76bf90d4c2b78d7b1bbcaa0920",
+        "bytes": 31776,
+        "sha256": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed"
+      },
+      "after": {
+        "blob": "c97d95b735bb4d76bf90d4c2b78d7b1bbcaa0920",
+        "bytes": 31776,
+        "sha256": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed"
+      },
+      "rootLiteralOccurrences": 0,
+      "labelLiteralOccurrences": 0,
+      "ownerEntryBinding": false,
+      "mechanicalInverseExact": true,
+      "originalWholeUnchanged": true
+    },
+    {
+      "path": "source/mac_single_native_r2.mjs",
+      "before": {
+        "blob": "3614c27cb06f311870ceeeda3f01e806306ae0d1",
+        "bytes": 28533,
+        "sha256": "8c4a2cc09330cfda7a488e7e5caa811f4e190a10054a31f683b3466124210431"
+      },
+      "reviewedBefore": {
+        "blob": "11d6b0bb0c26019b5a6e4035d42226b6666cab07",
+        "bytes": 33149,
+        "sha256": "26dbfd7cf7b725d07dfb39fdf6de09e8d131a6b184d998aa729b1094d76cad90"
+      },
+      "after": {
+        "blob": "d7e88969213c7195e65d6f4919939789d054e214",
+        "bytes": 33147,
+        "sha256": "c2cf0eaa0c2b4b925bca02e82059152cfe4288786e15c71d49fc09fc54494c4b"
+      },
+      "rootLiteralOccurrences": 1,
+      "labelLiteralOccurrences": 0,
+      "ownerEntryBinding": false,
+      "mechanicalInverseExact": true,
+      "originalWholeUnchanged": false
+    },
+    {
+      "path": "source/mac_t5_volume_guard_r1.py",
+      "before": {
+        "blob": "40e12084ba78c86abb3f16c10c64a30664a8b916",
+        "bytes": 13393,
+        "sha256": "56f0490e6b4457ec59f82ffb17984f16108c0856879c21ceabc3ea6670605d70"
+      },
+      "reviewedBefore": {
+        "blob": "40e12084ba78c86abb3f16c10c64a30664a8b916",
+        "bytes": 13393,
+        "sha256": "56f0490e6b4457ec59f82ffb17984f16108c0856879c21ceabc3ea6670605d70"
+      },
+      "after": {
+        "blob": "5a0177bed2e224de3ec14f68174ec9b6e0ea2525",
+        "bytes": 13391,
+        "sha256": "55a007ae925c6cab6ee228ec5154cff79baa6c2bc38fb65868fd192dfc29d288"
+      },
+      "rootLiteralOccurrences": 1,
+      "labelLiteralOccurrences": 0,
+      "ownerEntryBinding": false,
+      "mechanicalInverseExact": true,
+      "originalWholeUnchanged": false
+    }
+  ],
+  "changedSourceCount": 11,
+  "unchangedSourceCount": 11,
+  "rootLiteralCount": 11,
+  "newLabelLiteralCount": 2,
+  "proofRows": [
+    {
+      "path": "documents/proofs/native-proc-r2.authority.public.json",
+      "blob": "da54efb279857250790f0ed946c55aaad405d505",
+      "bytes": 733,
+      "sha256": "411ea26371219c49547abc014464585551ba4a69b70bb906b92561a8d5bddf23",
+      "wholeUnchanged": true
+    },
+    {
+      "path": "documents/proofs/native-proc-r2.child-stdout.public.json",
+      "blob": "b5277782c948051b4483afe62c9951a1aa80096b",
+      "bytes": 11066,
+      "sha256": "bb5717753866c0d7e647e4fd5c18a3342db0f530016cc7d92cb508c955ff8644",
+      "wholeUnchanged": true
+    },
+    {
+      "path": "documents/proofs/native-proc-r2.stdout.public.json",
+      "blob": "08056cb82289a44037c771b0ea03982ea11064be",
+      "bytes": 24032,
+      "sha256": "7a1b715e595a2badf18e4f01506cca2ee7c4c0a760c5ef3c86708a435ace9c4f",
+      "wholeUnchanged": true
+    },
+    {
+      "path": "documents/proofs/registry-wal-r1.authority.public.json",
+      "blob": "fa0eeaed83c335a12ac508e06a3a484cc3e9895e",
+      "bytes": 733,
+      "sha256": "b564093e2300cdc44b2ae4724e869d5b24bfe3d94d269f8ebfa977e08b07505f",
+      "wholeUnchanged": true
+    },
+    {
+      "path": "documents/proofs/registry-wal-r1.stdout.public.json",
+      "blob": "d96c74efb2b56e29c3f0f5aed63223cc67e81540",
+      "bytes": 62662,
+      "sha256": "7d08a18c21a5d754ea9fbe7711e6315daf8fbd80c7b5a6937756fea7ba4d1c82",
+      "wholeUnchanged": true
+    },
+    {
+      "path": "documents/proofs/synthetic-r2.authority.public.json",
+      "blob": "0673ffaf642cd44775ecc910e9320ff43989952e",
+      "bytes": 733,
+      "sha256": "1b33a9144712ac2bc3d16d87bb2a9ea1c2e4c0be236dfd08d8b599f7518942dd",
+      "wholeUnchanged": true
+    },
+    {
+      "path": "documents/proofs/synthetic-r2.stdout.public.json",
+      "blob": "781d085d4fdc52ada91ea796572099137c87cd55",
+      "bytes": 16228,
+      "sha256": "6c14a7f95e4f059090da2e88a3fff80eac79c1d83ef58a29df3cc67a610cd8f5",
+      "wholeUnchanged": true
+    }
+  ],
+  "anchor": {
+    "blob": "837f7d23be8380144cc7ed1212e5fc646cf56a43",
+    "bytes": 967,
+    "sha256": "dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8"
+  },
+  "sourcePins": {
+    "blob": "66bdc764ff66b017a590cb3d27dc5a02c46523d6",
+    "bytes": 2276,
+    "sha256": "324c0b19ad8bf92c99536dd32a8a1b3994f398f34b74d39f056e14bc626b83b3"
+  },
+  "candidate": {
+    "blob": "42c540b2922123647362fac75008d8ef875e51bc",
+    "bytes": 7211,
+    "sha256": "1dcbc2953731c9c29db6a1f599777d3a7b2b4c237b80cf540afafadebb509932"
+  },
+  "publisherStdin": {
+    "blob": "b4caba908690e8b774aa8ee913247d2f9b7cf25d",
+    "bytes": 801859,
+    "sha256": "c84a7e6ba807f90c98f5a8a9e375aff86b9a287281d8e2d001e8566315a3b7d9"
+  },
+  "sameFunctionAndWorkerSemanticsAfterReversingBindings": true,
+  "renewalLookupIncrementIntegrated": true,
+  "reviewedRenewalSource": "26622454186ba28ada489c9a10b34cf4ad254b97",
+  "allBudgetsUnchanged": true,
+  "privateCapsuleRead": false,
+  "SDKExecuted": false,
+  "newHostIO": false,
+  "freshRootOrLabelsObservedAbsent": false,
+  "inertRequestSubmitted": false,
+  "runtimeRequestSubmitted": false
+}

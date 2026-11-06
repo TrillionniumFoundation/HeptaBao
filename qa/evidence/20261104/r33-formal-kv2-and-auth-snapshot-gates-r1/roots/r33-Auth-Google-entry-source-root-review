@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.google-declared-entry-source.root-review.v1",
+  "ok": true,
+  "checks_passed": 6,
+  "checks": [
+    "exact_source7_whole",
+    "actual_package_and_historical_receipt",
+    "unique_declared_entry",
+    "current_entry_not_fabricated_historical_pin",
+    "one_exact_metadata_request",
+    "finite_additional_body_only_no_recursion"
+  ],
+  "source_tree": "eecd5498a211b869c0a40ad16e415507b1c759b3",
+  "contract": {
+    "blob": "00f9fb5e8fc7605f88cb4423d0d8c60483cf88c1",
+    "bytes": 3111,
+    "sha256": "732e7f49ec9be28bdd5e0235352e2499a21a5eac585ce4c31ab7016a18e8c475"
+  },
+  "metadata_request": {
+    "blob": "28b92dd34125354c01ee4e6b04a61c23103ee88f",
+    "bytes": 273,
+    "sha256": "2707b0502aae10d672a340c85462937bd14cbbb3e98b7c337b278a94ad68b136"
+  },
+  "pure_deriver": {
+    "blob": "3a86d0d14f6fa15e410bc28571db4c8a5202971e",
+    "bytes": 1729,
+    "sha256": "8e5011216fd773608f83a827ce117b93f19c539215d157faaa638a475c98ece1"
+  },
+  "manual_deriver_review": "Full1619-byte pure source read: fixed path, observed SHA format, actual positive size<=65536, version size component, regular API/no-symlink/single-link/darwin/uid0or501/mode checks, one actual-version/size request, prior382975 accounting. No imports/I/O and no traversal.",
+  "historical_entry_pin": null,
+  "current_metadata_is_new_observation": true,
+  "source_only": true,
+  "Runtime_GO_issued": false,
+  "selected_owner_proven": false
+}

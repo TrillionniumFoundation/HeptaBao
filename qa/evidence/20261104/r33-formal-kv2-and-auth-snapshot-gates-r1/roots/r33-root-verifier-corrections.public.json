@@ -1,0 +1,38 @@
+{
+  "schema": "root.offline-verifier-corrections.r33.v1",
+  "source88": {
+    "originalResult": {
+      "blob": "add609f9dfd5da7d43faf5032d6a318a4b176af2",
+      "bytes": 40335,
+      "sha256": "6077083dacf9ccb70673ef8d1105f9d7d93741c7060b76dd2dfa4f829e45cd51"
+    },
+    "correctedResult": {
+      "blob": "68838a0c45042258358892d20778b0aee3b14b27",
+      "bytes": 40331,
+      "sha256": "2fb1335557b1a32685b002019c53a2e61950350c2fbde3fa77ec5d9471dbbd66"
+    },
+    "corrections": [
+      "Compare decoded Python PINS and DOCUMENT_PINS lists to lists, not tuples.",
+      "Inspect the original UNTIL=START+45.0 AST instead of a whitespace-sensitive literal."
+    ],
+    "candidateChanged": false,
+    "originalFailureArtifactsPreserved": true
+  },
+  "runtimeReads": {
+    "originalResult": {
+      "blob": "cb2d35f9a42b907ced32ca7d7e8c198b47876816",
+      "bytes": 13901,
+      "sha256": "e99b2b6082ec10d4df198f06b7d6ebd765591cdcf551700831c7383de904a47e"
+    },
+    "correctedResult": {
+      "blob": "661060e634ee99e2c67c1403f1344a062fd76ee2",
+      "bytes": 14148,
+      "sha256": "2bad201860a65029cf08ce4efbfd3fd7d8688fa37d8384446c6a2b3a2779a4d4"
+    },
+    "correction": "Two original PKI http_status fields are documented normalized strings, not numeric HTTP statuses. Preserve their exact labels and [400,404] accepted set; do not claim exact 400/404 parity.",
+    "originalFailureArtifactsPreserved": true
+  },
+  "runtimeCalls": 0,
+  "authorCodeExecuted": false,
+  "all_product_or_fixture_bytes_unchanged": true
+}

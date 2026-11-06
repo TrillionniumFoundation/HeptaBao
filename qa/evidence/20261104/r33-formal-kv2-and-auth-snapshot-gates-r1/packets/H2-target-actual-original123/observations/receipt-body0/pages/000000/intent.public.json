@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.H2-target-read.exact-call-intent.v1",
+  "root_GO": "012b76fca8a176e1cc15e3115ad38a69977ef8d9",
+  "lane": "A",
+  "label": "receipt-body0",
+  "phase": "page000000",
+  "method": "operation_result",
+  "request": {
+    "name": "ha-h2-target-receipt-body0-page000000-request",
+    "blob": "d4edffa9b347a002e56d416921e6775384077b97",
+    "bytes": 121,
+    "sha256": "482da130ff63cc8e7764e4cb6b486652c1fd47297ae776c618f30094b0f23912"
+  },
+  "arguments": {
+    "operation_id": "4feddfcdc2b6feb51d39a8716ae9c345cc714dcfaa9e46d1cf013df73251ddda",
+    "offset": 0,
+    "limit": 8192
+  },
+  "reference": {},
+  "previous_whole_closed": {
+    "label": "binding-info",
+    "operation_id": "80f5828787b4d736969785f5e96e7380a3e7bfa201e7ba487c1c73baaa3d2b9c",
+    "status": {
+      "name": "ha-h2-target-binding-info-status0-native",
+      "blob": "f0e9ff1ff8ddf7d01a1ae7e7fd791a27a135fd96",
+      "bytes": 800,
+      "sha256": "e0c63eaacb605859912467f324711dd64082311b542aebbce4705be9b49f36dd"
+    },
+    "payload": {
+      "name": "ha-h2-target-binding-info-payload-original",
+      "blob": "ddb19b80b8c71220d905dec7955da3b78cd047ed",
+      "bytes": 602,
+      "sha256": "376a48739895ff0af4cbb7a1200cf7fe4c91598447a02ac61b4a78fcbbcc5f22"
+    },
+    "native": {
+      "name": "ha-h2-target-binding-info-result-native-original",
+      "blob": "8c8a33e62a76f2f58f32aec8ca0d47d83b8df942",
+      "bytes": 485,
+      "sha256": "0cd46e03c0ffc5f53db357885959a6f7e96f1ebcdb8a415abd1954f359042581"
+    },
+    "whole": true
+  },
+  "only_readonly": true,
+  "stage_replay": false,
+  "prepare_or_live": false,
+  "one_future_per_lane": true
+}

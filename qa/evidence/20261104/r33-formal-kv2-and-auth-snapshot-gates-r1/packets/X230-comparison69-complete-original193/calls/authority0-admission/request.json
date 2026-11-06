@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-4e808-x230-comparison69-authority0-20261105-r1",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "x230",
+      "job_id": "1a1adc377a3-fc05-5acb"
+    }
+  }
+}

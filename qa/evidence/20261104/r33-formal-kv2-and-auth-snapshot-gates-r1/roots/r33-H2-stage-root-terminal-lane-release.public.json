@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.H2-stage.actual-terminal-root-lane-release.r33.v1",
+  "ok": true,
+  "checks_passed": 9,
+  "checks": [
+    "original_observer_closed_authority0",
+    "original_observer_closed_streams0",
+    "original_observer_closed_streams1",
+    "exact_original_H2_ACK_binding",
+    "terminal_original_job_zero_full_durable",
+    "original_stream_sizes",
+    "post_finally_owned_fds_closed_within_original_300",
+    "exact_candidate_and_carrier",
+    "stage_only_and_lane_idle"
+  ],
+  "original_job": "desktop/1a1adb7c0f6-fc05-5ab6",
+  "owner_release": {
+    "blob": "d7dc4ad0d377f269c23c0b920a265f9ede815906",
+    "bytes": 5297,
+    "sha256": "d1a7eaf50efbea5654588aa5a3a9c06076e8f5efd96a411c035f0580bebbeca0"
+  },
+  "stdout": {
+    "blob": "e4b2ab7d6800225ad1f8c87e5cb51fb330840907",
+    "bytes": 23147,
+    "sha256": "cd7de0b60ff21476b5812c2159f8c44b55484fd9d1cd1a0900477a61853dd249"
+  },
+  "authority": {
+    "blob": "c321bd33305dcdfafa58ce829d414c9c5cbe9f98",
+    "bytes": 733,
+    "sha256": "f8c50e8d3016b1efc99267ad9a9abe99f3ae5b06d2ec8c8461c5a6154508e0fd"
+  },
+  "ACK": {
+    "blob": "13e0e2fee6d7b4da5d20abf808bda69338d652a5",
+    "bytes": 29066,
+    "sha256": "486e27371536ee492dfa0a49f8bfcd6463f5d4a5732c2e5fe541fb60d79601a2"
+  },
+  "closed_statuses": [
+    {
+      "blob": "8c6e8b972dee719212c3f9652af4bb57083be131",
+      "bytes": 805,
+      "sha256": "701f6415de7decd4ed566afe065eb593ffe763cc2ef5f0b4f795246ecec676ba"
+    },
+    {
+      "blob": "3a40adf18df2b9f42960b2c5d4d19c37636c3b59",
+      "bytes": 803,
+      "sha256": "5a802ad50e36ac21a8ce1a4f0584c0677d8223b073db7247e51f9a0f1f8f8050"
+    },
+    {
+      "blob": "47b5a9600d185462a1d84ab0ea60be0b83a40230",
+      "bytes": 803,
+      "sha256": "133a52a3ca15cd2549b96eaa7c5ce6a65112d2550684cbd98a6dcd3740f45191"
+    }
+  ],
+  "A_released": true,
+  "whole_original_protocol_chain_separately_pending": true,
+  "target_metadata_body_and_prepare_live_not_authorized": true,
+  "historical_unknown_boundary_preserved": "Earlier context-truncated status query submission/delivery remains unknown. This creates no claimed recovered SDK. A newly authorized same-ID status query is explicit; no operation_start or stage replay occurred. Local archive helper failure after returned status SDK was recovered from that original returned object, without another Runtime call."
+}

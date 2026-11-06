@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.x230-full34-independent-raw-peer.partial.v1",
+  "status": "AVAILABLE_LAUNCH_NATIVE_BYTES_PASS_OLD_OBSERVER_CHAIN_NOT_COMPLETE",
+  "job_id": "1a1ad5ffad0-fc05-599a",
+  "base_actual_checks": 156,
+  "verifier": {
+    "blob": "14d4cb50dc5f50cf5580b6104b0bdb4f48e199b2",
+    "bytes": 8604,
+    "sha256": "83d77994b45f756c720540447d880e762edf09e432c48cc3d2e80737cfe6e97a"
+  },
+  "result": {
+    "blob": "d434814dee3523035f30a371ae84813db4fefc43",
+    "bytes": 11349,
+    "sha256": "728a9c7187b293e201610d9f5e8e2b02c2bd50bff861bd977620138e8cf4aa43"
+  },
+  "input_count": 73,
+  "product_semantics_reviewed": false,
+  "author_checker_executed": false,
+  "Runtime_calls": 0,
+  "findings": [
+    "Original process_start request, root GO, external intent, recovered typed canonical bytes and nested ACK.job agree exactly, including lossless 64-bit fingerprint. The original top-level parser failure and correction remain.",
+    "All eight original serialized payloads decode byte-exact to retained native objects. Earlier running and terminal authority remain distinct. Native terminal exit0/full/durable/confirmed and 275/0 complete streams agree; this does not itself close the original observer chain.",
+    "The fixed result 1124B and summary two original chunks65536+25390=90926B reconstruct byte-exact against independent metadata full9/version, chunk SHA and whole SHA. No case/protocol/cleanup business predicates were independently reviewed here.",
+    "First authority0/authority1/streams0 request/intent/SDK/native call records for admission/status/page are not yet located (36 leaves). Their original payload/native pairs remain. result-info also lacks admission intent and status request/intent (3 leaves). Missing originals are not reconstructed or declared permanently lost.",
+    "Summary16 immutable page records and final observer indexes will be checked incrementally when the owner publishes them. No bounded or unbounded host/object search was performed."
+  ],
+  "scope_limit": "Partial raw evidence peer only; no full archive/qualification claim. Historical original gaps remain even if separately authorized new observations later corroborate current terminal data."
+}

@@ -1,0 +1,45 @@
+{
+  "schema": "heptabao.owner-bound-renew.public-source-archive-complete.r1",
+  "status": "SOURCE_ONLY_BOTH_REQUESTS_UNSUBMITTED",
+  "source88": {
+    "tree": "71a1656fbe227fcea1e92558a5004e22eaab69c6",
+    "files": 88,
+    "bytes": 2910122,
+    "merkle": 12,
+    "manifest": "12a2c8aa4849a117f669db169b98ce0b208ef8b3"
+  },
+  "stdinCorrection": {
+    "tree": "2f213b0e8de72fac88fec0039761390f34f9e946",
+    "files": 10,
+    "bytes": 1662289,
+    "merkle": 2,
+    "request": "521c4700c9896ef48c8b710f7b787b5cfb5d1504",
+    "onlyDiff": "JSON request key stdin_text -> stdin; generator corresponding literal"
+  },
+  "priorInvalidRequestPreserved": "850fdaf3c82e5067605494f5a8e8d8af3a1ab899",
+  "futureRuntimeRequestUnchanged": "ca9a3b37ca8c8a55458460a35a4b183b4356901f",
+  "archiveRecovery": {
+    "sourceNewUnique": 44,
+    "firstWholeCreateBlob": 36,
+    "lastFixedBlobsViaCreateTreeContent": 8,
+    "lastEightWholeReadbackMatch": true,
+    "sourceTreeMatchesIndependentRootExpectedTree": true,
+    "createBlobErrorsPreserved": 3,
+    "cbcSameSHAObserved404BeforeCreateTree": true,
+    "errorObjectCreateReturnedErrorButSameSHAWholeObserved": {
+      "blob": "acce5cbefc57250d5ebb8ff731dd0c05125319c9",
+      "bytes": 215,
+      "sha256": "b7f28051539d99276914b46705c25fd90b95df01f5568d9c32e4adc342bcfc7f"
+    },
+    "priorLocalJournalBoundaryPreserved": "c521c957ecc26d6386177464bd50574879d38adb",
+    "isRuntimeReplay": false
+  },
+  "runtimeCalls": 0,
+  "nativeFutures": 0,
+  "sdkExecution": 0,
+  "currentCredentialReads": 0,
+  "newRootObserved": false,
+  "allSourceAndDispatchBytesPreserved": true,
+  "rootExactGoRequiredForInert": true,
+  "runtimeRequiresSeparateRootGoAfterKnownStage": true
+}

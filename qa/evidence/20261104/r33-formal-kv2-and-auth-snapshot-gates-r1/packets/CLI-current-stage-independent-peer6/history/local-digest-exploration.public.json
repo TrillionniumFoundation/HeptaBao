@@ -1,0 +1,12 @@
+{
+  "schema": "heptabao.cli-stage-peer.local-exploration-boundary.v1",
+  "kind": "unqualified_digest_template_not_used",
+  "priorSharedHelper": "r32_recovery/pure_helpers.js::processStartBinding",
+  "limitation": "The helper is explicitly not qualified against native RequestBinding. A local Python exploratory shape using stdin_text did not reproduce the known native typed digest. This was not a Runtime call or an original-record failure.",
+  "exploratoryDigest": "53a6f7212829034d595db0bbc6b2abba4d2a7e7020dbb935df3663cf2eff01cc",
+  "nativeDigest": "8a10353c991430800ffe9e2c9ec33a375ff33a6254b3d335abebb8b14ac9c67e",
+  "finalVerifier": "Matches the exact request controller/stdin bytes and each ACK field. Compares native digest and exact integer fingerprint to original root GO, without claiming a new independent typed serialization algorithm.",
+  "authorCheckerExecuted": false,
+  "RuntimeCalls": 0,
+  "remoteGitReads": 0
+}

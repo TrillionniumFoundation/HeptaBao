@@ -1,0 +1,122 @@
+{
+  "schema": "heptabao.h2-stage.minimal-existing-stage-adaptation.v1",
+  "status": "SOURCE_ONLY_PENDING_FIVE_INFOS_AND_ROOT_REVIEW",
+  "base_stage": {
+    "blob": "45ceb135688a2002e845f31e010ca5c010551517",
+    "bytes": 23638,
+    "sha256": "87a9c2a7d1b9b4e789a4fda79fc9a89ba21657493707403f36cb891546e4a34f",
+    "tree": "4b6256ccb13ee3c355d5dcd08388b7a3d06fb28a"
+  },
+  "candidate": {
+    "blob": "678e519f17c474b5610651bcbb93b43d186124c5",
+    "bytes": 26823,
+    "sha256": "a8bf27675b1a00b08f60d33fbed84405c033d537fb9562d963b9ff725264fca1"
+  },
+  "diff": {
+    "blob": "a1414f43cd222f3e9c63a36b41d63ebdc071ef36",
+    "bytes": 18443,
+    "sha256": "9c67821ff3a1b6d4988a6b982494ee75331985285906c4764affffc0c21417d1",
+    "strict_hunks": 14
+  },
+  "source52_tree": "697f7b64102692c5da736eee4cd329211189839a",
+  "payload": {
+    "blob": "b07825d48a091c0fcd618eb54653b625007fd8b1",
+    "bytes": 321152,
+    "sha256": "6700283209e4de4433d0ef562c696c9d95ea6a12a2f0c3926701e4cc11674883"
+  },
+  "scope": "One existing stage implementation adapted to the already frozen H2 layout. No added control layer or wrapper.",
+  "authorized_structural_categories": [
+    {
+      "category": "owned_h2qa",
+      "change": "Add one h2qa child/held FD to NewDirectories. Existing append-before-fstat, check and reverse once-close ledger cover it; check/close definitions remain whole unchanged."
+    },
+    {
+      "category": "fixed_second_copy_route",
+      "change": "The same copy implementation uses either current product incoming/artifacts or instrument incoming/h2qa. Exact full copy tuples and a boolean route restrict both; original source/no-symlink/single-link/identity/hash/EOF/custody/close logic remains."
+    },
+    {
+      "category": "exact_FD_name_membership",
+      "change": "Tighten existing write to exact FD/name pairs, disallow raw writes to h2qa, check fixed twelve instrument and root membership. Instrument copies use only the held h2fd."
+    },
+    {
+      "category": "H2_carrier_schema",
+      "change": "Replace carrier/receipt schema, layout and exact eight text payload members; fixed 1MiB stdin bound, original exact payload hash/size and duplicate-key parsing remain."
+    },
+    {
+      "category": "actual_H2_binding",
+      "change": "Copy twelve fixed instruments, derive h2_client fields from verified target records and require exact equality to the frozen template. Remove official_cli executable capture/binding. The five QA sources including official_cli_reference_r4.py are unchanged."
+    }
+  ],
+  "unchanged": {
+    "definitions": 13,
+    "total_existing_definitions": 18,
+    "imports": true,
+    "original_three_product_copy_tuples": true,
+    "original_failure_finally_deadline_tail_whole": true,
+    "source_guard_definitions": true,
+    "five_H2_QA_whole": true,
+    "H01_H02_H03_and_TLS_ALPN_contracts": true,
+    "product_instrument_identity_separate": true,
+    "six_old_fences": true,
+    "three_utility_capture_code": true,
+    "product_source_tree_unmodified": true
+  },
+  "exact_layout": {
+    "control": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2",
+    "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-validation-source-r1",
+    "work": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-live-r2",
+    "prepare": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/prepare-r1"
+  },
+  "fixed_incoming_paths": [
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming"
+  ],
+  "copies": {
+    "product": 3,
+    "instrument": 12,
+    "payload_product_receipts": 2,
+    "payload_QA": 5,
+    "target_files_excluding_binding_stage_receipts": 22
+  },
+  "resource_bounds": {
+    "original_internal_seconds": 300,
+    "original_outer_seconds": 330,
+    "outer_source_review_blob": "8674877d7bb1cdea7cd49a96bac7a81660e26e67",
+    "stdin_max_bytes": 1048576,
+    "copy_read_chunk_bytes": 65536,
+    "owned_directory_FDs": 5,
+    "maximum_simultaneous_stage_FDs_derived": 7,
+    "actual_stage_FDs_observed": 0,
+    "children": 0,
+    "network": 0
+  },
+  "unresolved": {
+    "five_incoming_info_indices": [
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "five_incoming_info_proposal_tree": "75603caa34edcd1b3d209255b5d78780fd48c182",
+    "all_22_target_actual_identities": null,
+    "actual_binding": null,
+    "actual_stage": null,
+    "prepare": false,
+    "live": false
+  },
+  "admission_boundary": "This source packet constructs no process_start or runnable dispatch request. Its frozen input binding is still ready_for_readonly_prepare=false. The existing stage would create the actual ready binding only after successful target copies/readbacks; no such publication is claimed. Five missing independent incoming observations and root exact source/execution review are still required before any stage authorization.",
+  "tests": {
+    "selected_python_checks": 118,
+    "selected_fake_cases": 17,
+    "no_main_or_QA_execution": true,
+    "no_native_FDs": true,
+    "strict_V8_diff_forward_reverse": true,
+    "local_generator_first_attempt_missing_LF_failure_preserved": true
+  },
+  "historical_UNKNOWN": "Old direct info6/info7 and original index6 lost-ACK remain unknown; accepted later reused=false returned observer closure is not backfilled. Refer to metadata5 source packet original histories.",
+  "stage_dispatch_ready": false,
+  "stage_process_request_constructed": false,
+  "Runtime_calls": 0,
+  "source_commit_or_ref_modified": false
+}

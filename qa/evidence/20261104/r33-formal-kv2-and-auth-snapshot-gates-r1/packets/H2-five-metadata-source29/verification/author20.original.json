@@ -1,0 +1,87 @@
+{
+  "status": "PASS_SOURCE_FIXED_SCOPE_ONLY",
+  "checks_count": 20,
+  "checks": [
+    {
+      "name": "12 original roles",
+      "passed": true
+    },
+    {
+      "name": "7 existing independent observations",
+      "passed": true
+    },
+    {
+      "name": "exact remaining indices",
+      "passed": true
+    },
+    {
+      "name": "index7unobserved",
+      "passed": true
+    },
+    {
+      "name": "index7only native info",
+      "passed": true
+    },
+    {
+      "name": "index7fixed incoming",
+      "passed": true
+    },
+    {
+      "name": "index8unobserved",
+      "passed": true
+    },
+    {
+      "name": "index8only native info",
+      "passed": true
+    },
+    {
+      "name": "index8fixed incoming",
+      "passed": true
+    },
+    {
+      "name": "index9unobserved",
+      "passed": true
+    },
+    {
+      "name": "index9only native info",
+      "passed": true
+    },
+    {
+      "name": "index9fixed incoming",
+      "passed": true
+    },
+    {
+      "name": "index10unobserved",
+      "passed": true
+    },
+    {
+      "name": "index10only native info",
+      "passed": true
+    },
+    {
+      "name": "index10fixed incoming",
+      "passed": true
+    },
+    {
+      "name": "index11unobserved",
+      "passed": true
+    },
+    {
+      "name": "index11only native info",
+      "passed": true
+    },
+    {
+      "name": "index11fixed incoming",
+      "passed": true
+    },
+    {
+      "name": "keys unique five",
+      "passed": true
+    },
+    {
+      "name": "old direct7 had no key",
+      "passed": true
+    }
+  ],
+  "Runtime_calls": 0
+}

@@ -1,0 +1,83 @@
+{
+  "schema": "heptabao.H2-target-read.exact-call-intent.v1",
+  "root_GO": "012b76fca8a176e1cc15e3115ad38a69977ef8d9",
+  "lane": "A",
+  "label": "binding-body0",
+  "phase": "admission",
+  "method": "operation_start",
+  "request": {
+    "name": "ha-h2-target-binding-body0-admission-request",
+    "blob": "0e10c75ccd5a799a69464b83914fff2d194f052c",
+    "bytes": 415,
+    "sha256": "3e70aa3f485367343d686be0967f752ff951ec7bdea65e6159b857c436c28ffa"
+  },
+  "arguments": {
+    "idempotency_key": "ha-4e808-h2-stage-binding-body0-r2-20261105",
+    "operation": {
+      "tool": "binary_read",
+      "arguments": {
+        "host": "desktop",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/binding.private.json",
+        "offset": 0,
+        "limit": 10230,
+        "expected_version": "2050:7874334:10230:1793915867275098276:1793915867275098276"
+      }
+    }
+  },
+  "reference": {
+    "derivation": {
+      "input": {
+        "name": "ha-h2-target-deriver-input",
+        "blob": "d08eb7bf62b5a84aa4f2f4461c863a02daf405ee",
+        "bytes": 5385,
+        "sha256": "0266ec96d2b3610eb515e42075f44ec7d59e25f13b17dd2a3184dbd3f6b5fda3"
+      },
+      "output": {
+        "name": "ha-h2-target-deriver-output",
+        "blob": "52566fb6cc63dc4e69f408e04c34b1855ea00de3",
+        "bytes": 2530,
+        "sha256": "8537798d86515a765f00d1f5cc6fdb07291daa7e1660fca58a9adf924eef96c1"
+      },
+      "executor": {
+        "name": "ha-h2-target-deriver-executor",
+        "blob": "34c2ea53976f82549988a169bc8ce8c6366a62d4",
+        "bytes": 975,
+        "sha256": "426dbc9394e8c633cac7eb097b279a81abea334b5944a53c962befa034cc89e6"
+      }
+    },
+    "actual_receipt": {
+      "name": "ha-h2-target-actual-receipt-whole",
+      "blob": "f492ce4e681ba7d5917d1cda1ebd4a3f8d67f13c",
+      "bytes": 28615,
+      "sha256": "f2bcc9227a235a40afa11c1703595180a925fbd39abd29d4550872ed3a05ae6a"
+    },
+    "only_expected_version_replaced": true
+  },
+  "previous_whole_closed": {
+    "label": "receipt-body1",
+    "operation_id": "2c415530bf269b1cf09a2f8e496a5697177c7184e7a2735b4602638d5d006a76",
+    "status": {
+      "name": "ha-h2-target-receipt-body1-status0-native",
+      "blob": "fbf9a26f92f842ad4616dce2da083d56316d61c8",
+      "bytes": 802,
+      "sha256": "f6598f7aca57ef87763c16095627a4f1fd05bd16b8128794842f1739304f9723"
+    },
+    "payload": {
+      "name": "ha-h2-target-receipt-body1-payload-original",
+      "blob": "bfca87a0bd9276696cd66575940364bebebeead1",
+      "bytes": 16754,
+      "sha256": "e0665e4e8d7dee739bd918b4da1c576badfc4a5387c4e9886d3406c00f6b6124"
+    },
+    "native": {
+      "name": "ha-h2-target-receipt-body1-result-native-original",
+      "blob": "2811ca5a36fbb4f4535f17448f50f3a7fbf5cd4a",
+      "bytes": 16651,
+      "sha256": "a3caf86e773214e5e918f399265c9bb2ea416c342ef3459b554657dc185d973f"
+    },
+    "whole": true
+  },
+  "only_readonly": true,
+  "stage_replay": false,
+  "prepare_or_live": false,
+  "one_future_per_lane": true
+}

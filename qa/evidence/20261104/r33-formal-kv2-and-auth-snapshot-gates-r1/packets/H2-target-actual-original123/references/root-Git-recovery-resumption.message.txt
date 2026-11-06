@@ -1,0 +1,3 @@
+Root collaboration message, recorded verbatim; this is not a Runtime SDK.
+
+Git恢复路径已证实：Auth对固定8个missing公开blob用一次github_create_tree tree_elements content成功，SHA精确71a1656…（不是Runtime重放）。你可同法将RECOVERY.index固定8原件做独立tree归档，再逐blob whole核SHA；保留三旧Git错误。无需重发任何Runtime，Root正在独审三原页重组。恢复完成且原body0全链闭合后即可续原GO012的后2个body，无新scope/新key。

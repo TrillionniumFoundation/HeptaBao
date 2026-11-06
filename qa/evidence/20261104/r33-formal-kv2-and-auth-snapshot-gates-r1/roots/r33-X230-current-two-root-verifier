@@ -1,0 +1,40 @@
+function verifyCurrentTwo(raw,audit,H){
+ const checks=[];const need=(ok,label)=>{if(!ok)throw Error(label);checks.push(label);};
+ const J=p=>H.parse(raw[p]); const meta=p=>H.meta(raw[p]); const same=(x,y)=>JSON.stringify(x)===JSON.stringify(y);
+ need(audit.tree==="c20c4a619e0976c546f75443baf1555af6acf4a3"&&audit.files===34&&audit.bytes===50711&&audit.merkle.trees_verified===13,"whole_packet_identity");
+ for(const r of audit.records)need(same(meta(r.path),{blob:r.blob,bytes:r.bytes,sha256:r.sha256}),"whole_blob:"+r.path);
+ need(meta("reference/current-two-GO.original.json").blob==="6959e167d282af43d703808e79bc61f39069ef3a","exact_root_GO");
+ need(meta("reference/historical-gap.original.json").blob==="febdec346fa99b7eef463f660639c6dd8cd3a664","old_gap_unchanged");
+ const rows=[["current-authority","process_status","56366ed11bcb4e8e9d35fe2dde5a8c5c88de3e035978b830604be8a297e24749","5c85f2c2516a37147d63d4cf7b586ccea16fb903"],["current-streams","process_read","baa76cd87bed04ef0f5ba23360182bdb3fb745aa6aae0479526f41ec58e1f534","1a1ae29597953ea9ac5ea55f4bc170b5ec5de5fa"]];
+ for(const [label,tool,id,reqBlob] of rows){
+  const base="calls/"+label;const req=J(base+"-admission/request.original.json");
+  need(meta(base+"-admission/request.original.json").blob===reqBlob&&req.operation.tool===tool&&req.operation.arguments.host==="x230"&&req.operation.arguments.job_id==="1a1ad5ffad0-fc05-599a","fixed_request:"+label);
+  if(tool==="process_read")need(same(req.operation.arguments,{host:"x230",job_id:"1a1ad5ffad0-fc05-599a",stdout_offset:0,stderr_offset:0,limit:4096}),"exact_stream_cap_offsets");
+  for(const suffix of ["admission","status","page-000000"]){
+   const p=base+"-"+suffix+"/";const q=J(p+"request.original.json"),i=J(p+"intent.public.json"),s=J(p+"result.original.sdk.json"),n=J(p+"result.original.json");const qm=meta(p+"request.original.json");
+   need(s.isError===false&&s.content.length===1&&s.content[0].type==="text"&&s.content[0].text===raw[p+"result.original.json"],"SDK_exact_native:"+label+":"+suffix);
+   need(same(i.request,q),"intent_exact_request:"+label+":"+suffix);
+   const pin=i.requestPin??{blob:i.request_blob,bytes:i.request_bytes,sha256:i.request_sha256};
+   need(pin.blob===qm.blob&&pin.bytes===qm.bytes&&pin.sha256===qm.sha256,"intent_request_whole_pin:"+label+":"+suffix);
+   need((typeof i.GO==="string"?i.GO:i.GO.blob)==="6959e167d282af43d703808e79bc61f39069ef3a"&&n.operation_id===id,"GO_and_operation:"+label+":"+suffix);
+   if(suffix==="admission")need(n.tool_name===tool&&n.reused===false&&n.automatic_retry===false&&i.business_start_or_replay===false&&i.not_recovered_original_protocol===true,"new_read_only_admission:"+label);
+   if(suffix==="status")need(same(q,{operation_id:id})&&n.async_state==="completed"&&n.result_state==="stored_observed"&&n.owned_future_active===false&&n.payload_available===true&&n.tool_name===tool,"closed_native_future:"+label);
+   if(suffix==="page-000000"){
+    need(same(q,{operation_id:id,offset:0,limit:8192})&&n.offset===0&&n.eof===true&&n.immutable_snapshot===true&&n.payload_kind==="native_result","single_immutable_page:"+label);
+    const decoded=H.utf8Text(H.unb64(n.data_base64));const pm=H.meta(decoded);
+    need(decoded===raw["observations/"+label+"/payload.original.json"]&&pm.bytes===n.total_bytes&&n.next_offset===n.total_bytes&&pm.sha256===n.result_sha256,"whole_original_payload:"+label);
+    const payload=H.parse(decoded);need(payload.resultType==="complete"&&payload.isError===false&&payload.content.length===1&&payload.content[0].type==="text"&&payload.content[0].text===raw["observations/"+label+"/native.original.json"],"payload_exact_native:"+label);
+   }
+  }
+ }
+ const a=J("observations/current-authority/native.original.json"),r=J("observations/current-streams/native.original.json");
+ need(meta("observations/current-authority/native.original.json").blob==="adfb59fdb566c3acb280812f33e6961994962e34","same_original_terminal_authority_bytes");
+ need(a.job_id==="1a1ad5ffad0-fc05-599a"&&r.job_id===a.job_id&&a.state==="succeeded"&&a.exit_code===0&&a.cancelled===false&&a.timed_out===false&&a.output_complete===true&&a.output_durable===true&&a.terminal_publication_confirmed===true,"same_original_job_success");
+ for(const stream of ["stdout","stderr"]){
+  const x=r[stream],expected=stream==="stdout"?275:0,t=raw["actual/"+stream+".original.txt"],bytes=H.u(t);
+  need(x.offset===0&&x.next_offset===expected&&x.size===expected&&x.eof===true&&x.text===t&&bytes.length===expected&&x.bytes_hex===bytes.map(v=>v.toString(16).padStart(2,"0")).join(""),"exact_log_bytes_and_EOF:"+stream);
+  need(a.log_bytes[stream].seen===expected&&a.log_bytes[stream].stored===expected&&a.log_errors[stream]===null&&a.log_truncated[stream]===false&&a.log_synced[stream]===true,"authority_logs_complete:"+stream);
+ }
+ const report=H.parse(raw["actual/stdout.original.txt"]);need(report.ok===true&&report.checks_passed===31&&report.checks_total===31&&report.error===null&&report.bytes===1124&&report.sha256==="e2c18577543dc0290461daf2b6791cfe9da87616d87cd4a17c007a8f99f0d9a0","original_result_identity");
+ return {schema:"heptabao.x230-full34-current-two.root-review.v1",ok:true,checks_passed:checks.length,checks,packet:audit.tree,whole_files:34,whole_bytes:50711,merkle_trees:13,actual_new_readonly_observations:2,actual_Runtime_calls:6,actual_immutable_pages:2,job:"x230/1a1ad5ffad0-fc05-599a",lane_B_released:true,original_product_reexecuted:false,historical_39_index_gap_unchanged:true,historical_original_chain_complete:false,business_semantic_review_separate:"899f083f702b43a1e5a698bee81bb5c69a435547",full_replacement:false,production_cutover:false,cleanup:false};
+}

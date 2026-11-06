@@ -1,0 +1,35 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian/heptabao-same-root-publication-normal-20261105-r1/comparison69_controller.py"
+    ],
+    "created_unix_ms": 1793916630947,
+    "cwd": "/home/qian/heptabao-same-root-publication-normal-20261105-r1",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "x230",
+    "id": "1a1adc377a3-fc05-5acb",
+    "idempotency_key": "heptabao-4e808-x230-comparison69-r1-836dfd5e",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian/.local/state/hepta-runtime-mac-worker/jobs/1a1adc377a3-fc05-5acb",
+    "request_digest": "56ddc986607a02e224a254f604912c4d12b3c4b7de290b2d724b3add50687e35",
+    "request_fingerprint": 6259380636096266978,
+    "ssh_target": "x230-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1adc377a3-fc05-5acb"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1adc377a3-fc05-5acb"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

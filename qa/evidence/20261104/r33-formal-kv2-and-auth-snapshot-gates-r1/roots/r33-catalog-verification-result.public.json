@@ -1,0 +1,249 @@
+{
+  "schema": "heptabao.R33.local-catalog-tree-identity-result.v1",
+  "ok": true,
+  "scanned_existing_local_tree_wrappers": 132,
+  "listed_trees": 26,
+  "local_recomputed_tree_count": 24,
+  "all_local_merkle_nodes": 359,
+  "inherited_merkle_nodes": 29,
+  "tree_results": [
+    {
+      "name": "X230-full34-original157",
+      "tree": "28de789ae17618e33fd4bc47787fbbeefd55b6c3",
+      "files": 157,
+      "bytes": 878681,
+      "merkle": 44,
+      "local_tree_identity_recomputed": true,
+      "ok": true
+    },
+    {
+      "name": "X230-full34-summary-original107",
+      "tree": "f0f0770bbd740583e9db906627efd57f8a296906",
+      "files": 107,
+      "bytes": 781823,
+      "merkle": 31,
+      "local_tree_identity_recomputed": true,
+      "ok": true
+    },
+    {
+      "name": "X230-full34-summary-peer9",
+      "tree": "c52db09106eee126f1982fbb5eb4cb1810f8e259",
+      "files": 9,
+      "bytes": 134160,
+      "merkle": 3,
+      "local_tree_identity_recomputed": true,
+      "ok": true
+    },
+    {
+      "name": "X230-full34-base-partial-peer7",
+      "tree": "a74af927eedfddd78ae23b3fd03afc6638d76e8f",
+      "files": 7,
+      "bytes": 59808,
+      "merkle": 3,
+      "local_tree_identity_recomputed": false,
+      "ok": true
+    },
+    {
+      "name": "X230-full34-new-terminal-reads34",
+      "tree": "c20c4a619e0976c546f75443baf1555af6acf4a3",
+      "files": 34,
+      "bytes": 50711,
+      "merkle": 13,
+      "local_tree_identity_recomputed": true,
+      "ok": true
+    },
+    {
+      "name": "CLI-current-stage-original63",
+      "tree": "3ec3bec37a6ef1270525c017618eda810edc8044",
+      "files": 63,
+      "bytes": 1007838,
+      "merkle": 21,
+      "local_tree_identity_recomputed": true,
+      "ok": true
+    },
+    {
+      "name": "CLI-current-stage-independent-peer6",
+      "tree": "350332a96e6c04c5be9746e695e74765e8acd41d",
+      "files": 6,
+      "bytes": 62242,
+      "merkle": 2,
+      "local_tree_identity_recomputed": true,
+      "ok": true
+    },
+    {
+      "name": "H2-current-stage-source39",
+      "tree": "9fa416e0d2bafa213bee8fee7dd82ddf3199484e",
+      "files": 39,
+      "bytes": 1275318,
+      "merkle": 8,
+      "local_tree_identity_recomputed": true,
+      "ok": true
+    },
+    {
+      "name": "H2-five-metadata-source29",
+      "tree": "75603caa34edcd1b3d209255b5d78780fd48c182",
+      "files": 29,
+      "bytes": 80290,
+      "merkle": 5,
+      "local_tree_identity_recomputed": true,
+      "ok": true
+    },
+    {
+      "name": "H2-five-metadata-original85",
+      "tree": "8ecca81bb585417a7a8975f010a92652f256192b",
+      "files": 85,
+      "bytes": 165725,
+      "merkle": 15,
+      "local_tree_identity_recomputed": true,
+      "ok": true
+    },
+    {
+      "name": "H2-fixed-conditional-body-source7",
+      "tree": "c2b12435ed9806d5da84c4b678fb14193879f9f9",
+      "files": 7,
+      "bytes": 12754,
+      "merkle": 2,
+      "local_tree_identity_recomputed": true,
+      "ok": true
+    },
+    {
+      "name": "Auth-registration-four-body-original169",
+      "tree": "58c16429b0cd2dd135df7fe50f7582f51413005e",
+      "files": 169,
+      "bytes": 1711315,
+      "merkle": 60,
+      "local_tree_identity_recomputed": true,
+      "ok": true
+    },
+    {
+      "name": "Auth-Google-public2-source7",
+      "tree": "20ea640795bcc500830a7e534485851ee93951a8",
+      "files": 7,
+      "bytes": 61682,
+      "merkle": 3,
+      "local_tree_identity_recomputed": true,
+      "ok": true
+    },
+    {
+      "name": "Auth-Google-public2-original78",
+      "tree": "385b356167187308221d8c2d5c12ece7c1da24e3",
+      "files": 78,
+      "bytes": 374228,
+      "merkle": 26,
+      "local_tree_identity_recomputed": false,
+      "ok": true
+    },
+    {
+      "name": "Auth-Google-entry-source7",
+      "tree": "eecd5498a211b869c0a40ad16e415507b1c759b3",
+      "files": 7,
+      "bytes": 59841,
+      "merkle": 2,
+      "local_tree_identity_recomputed": true,
+      "ok": true
+    },
+    {
+      "name": "Auth-owner-source-repair51",
+      "tree": "d03ff2c5eeff00a6639f95d66c4c4fca3105056a",
+      "files": 51,
+      "bytes": 906723,
+      "merkle": 11,
+      "local_tree_identity_recomputed": true,
+      "ok": true
+    },
+    {
+      "name": "H2-current-stage-original106",
+      "tree": "a78dc168435d5951385ef2a01d377524bfc68d83",
+      "files": 106,
+      "bytes": 1058439,
+      "merkle": 17,
+      "local_tree_identity_recomputed": true,
+      "ok": true
+    },
+    {
+      "name": "Auth-registration-original-chain-peer7",
+      "tree": "6d1bfe6fb193bb2ad172fccdb441602e3715c7af",
+      "files": 7,
+      "bytes": 183235,
+      "merkle": 1,
+      "local_tree_identity_recomputed": true,
+      "ok": true
+    },
+    {
+      "name": "Auth-Google-entry-original38",
+      "tree": "135407c6d3156a8602da63184c0df4143aa137ea",
+      "files": 38,
+      "bytes": 121330,
+      "merkle": 6,
+      "local_tree_identity_recomputed": true,
+      "ok": true
+    },
+    {
+      "name": "Auth-owner-bound-source88",
+      "tree": "71a1656fbe227fcea1e92558a5004e22eaab69c6",
+      "files": 88,
+      "bytes": 2910122,
+      "merkle": 12,
+      "local_tree_identity_recomputed": true,
+      "ok": true
+    },
+    {
+      "name": "Auth-owner-stdin-overlay10",
+      "tree": "2f213b0e8de72fac88fec0039761390f34f9e946",
+      "files": 10,
+      "bytes": 1662289,
+      "merkle": 2,
+      "local_tree_identity_recomputed": true,
+      "ok": true
+    },
+    {
+      "name": "Auth-owner-archive-recovery14",
+      "tree": "bb48916a5f83d37eb7faae2ed139db976bfef658",
+      "files": 14,
+      "bytes": 77679,
+      "merkle": 2,
+      "local_tree_identity_recomputed": true,
+      "ok": true
+    },
+    {
+      "name": "Auth-owner-three-target-source6",
+      "tree": "c780abd37895a5cab64775bf3166c67da0f1faf6",
+      "files": 6,
+      "bytes": 13171,
+      "merkle": 2,
+      "local_tree_identity_recomputed": true,
+      "ok": true
+    },
+    {
+      "name": "H2-target-actual-original123",
+      "tree": "51e78b6600d671e0565c8911b452650812410474",
+      "files": 123,
+      "bytes": 714650,
+      "merkle": 40,
+      "local_tree_identity_recomputed": true,
+      "ok": true
+    },
+    {
+      "name": "X230-comparison69-complete-original193",
+      "tree": "045449626f3b1d62154ce6e5c42e2c9c7dc36bfd",
+      "files": 193,
+      "bytes": 1209038,
+      "merkle": 53,
+      "local_tree_identity_recomputed": true,
+      "ok": true
+    },
+    {
+      "name": "H2-prepare-bound-SOURCE13",
+      "tree": "2aa05d9fcb6006c3086edb25c6ab83f8f30e7328",
+      "files": 13,
+      "bytes": 186726,
+      "merkle": 4,
+      "local_tree_identity_recomputed": true,
+      "ok": true
+    }
+  ],
+  "Runtime_calls": 0,
+  "new_Git_reads": 0,
+  "root_files_modified": false,
+  "first_local_index_gap_preserved": "missing-local-trees.public.json and r32_recovery/ha-r33-catalog-first-local-executor.json; no Runtime or Git request resulted"
+}

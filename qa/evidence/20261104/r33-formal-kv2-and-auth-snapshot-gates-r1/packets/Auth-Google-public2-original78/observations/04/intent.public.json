@@ -1,0 +1,38 @@
+{
+  "schema": "heptabao.exact-native-read.external-intent.r1",
+  "GO": "a58667829950717eab43010eb2c768f9be24677e",
+  "sequence": 4,
+  "operation": "body-google-package",
+  "exactRequest": {
+    "blob": "d47264958f9a498e14d4652e84db91707816011a",
+    "bytes": 399,
+    "sha256": "eb1662f64292602133d56ea8ae0142d2b7bc04c5db7ef278ce60398d07532e46"
+  },
+  "request": {
+    "idempotency_key": "heptabao-mac-google-package-body-398f7330-20261105-r1",
+    "operation": {
+      "tool": "binary_read",
+      "arguments": {
+        "host": "mac",
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/package.json",
+        "expected_version": "16777233:405240659:375:1784843466392296043:1784843466392296043",
+        "offset": 0,
+        "limit": 375
+      }
+    }
+  },
+  "priorNativeFuturesActive": 0,
+  "previousClosedBinding": {
+    "blob": "8b1fe31a4403b91f032d6043a0052b7275c166ec",
+    "bytes": 1347,
+    "sha256": "b32e5fb36c42319811f178f57f1f5730f2867366c5e223b4a1545a0e598aa1cb"
+  },
+  "actualMetadataAllClosed": true,
+  "derivation": {
+    "blob": "6d6551905fd9ab9edc2411c4e482d4fc203d9aff",
+    "bytes": 2603,
+    "sha256": "98faf7637fcd1e4afdb9465f8260aa2f904c531dc997bc54ee6158048a0c3603"
+  },
+  "submissionsBeforeThisIntent": 0,
+  "scope": "one fixed version/size public body; no SDK/private capsule"
+}

@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "ha-4e808-h2-stage-authority0-r2-20261105",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1adb7c0f6-fc05-5ab6"
+    }
+  }
+}

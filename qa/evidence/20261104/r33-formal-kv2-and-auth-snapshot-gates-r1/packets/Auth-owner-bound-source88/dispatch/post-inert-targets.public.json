@@ -1,0 +1,194 @@
+{
+  "status": "SOURCE_ONLY_NO_READ_REQUESTS_BOUND",
+  "targets": [
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_fixture_materializer_r1.py",
+      "kind": "source",
+      "bytes": 25972,
+      "sha256": "cf0b78ed54648525b873d91473d603f115e84013c38ba4abaa42771dfa5d1ccf"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_capture_entry_wal_r1.py",
+      "kind": "source",
+      "bytes": 42082,
+      "sha256": "f0600e0b8fe1f01a3d68559e724e19d0f76272c2febd4d362b9012d84b1177e2"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_owned_launchd_r3.py",
+      "kind": "source",
+      "bytes": 35736,
+      "sha256": "4989b58248f7951f825c021402bef611708b8613291d3282761c8c97d0b4adf6"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_server_owner_r1.py",
+      "kind": "source",
+      "bytes": 13394,
+      "sha256": "fb38bd7ce30e9a0b62539d459939b2ec20d96f84fd08d57199aa095fd3fc5ef6"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_phase_owner_r2.py",
+      "kind": "source",
+      "bytes": 24975,
+      "sha256": "bb674ed1a60b204207af2dbab4d7b06a76e47fdebb19991e2f2c3dda7beac4a5"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_native_process_observer_r1.py",
+      "kind": "source",
+      "bytes": 13423,
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_guarded_current_capture_r3.py",
+      "kind": "source",
+      "bytes": 23578,
+      "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_owned_commands_r1.py",
+      "kind": "source",
+      "bytes": 5965,
+      "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_t5_volume_guard_r1.py",
+      "kind": "source",
+      "bytes": 13391,
+      "sha256": "55a007ae925c6cab6ee228ec5154cff79baa6c2bc38fb65868fd192dfc29d288"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_owned_unreaped_r1.py",
+      "kind": "source",
+      "bytes": 10990,
+      "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_capture_sqlite_synthetic_r1.py",
+      "kind": "source",
+      "bytes": 16476,
+      "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_capture_sqlite_synthetic_r2.py",
+      "kind": "source",
+      "bytes": 16915,
+      "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_cycle_r2.mjs",
+      "kind": "source",
+      "bytes": 24011,
+      "sha256": "d8ce076b75794b2ca495ef37c310d9995f092c0563eae262fcaab1582c543878"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_single_native_r2.mjs",
+      "kind": "source",
+      "bytes": 33147,
+      "sha256": "c2cf0eaa0c2b4b925bca02e82059152cfe4288786e15c71d49fc09fc54494c4b"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_auth_rows_cas_r1.mjs",
+      "kind": "source",
+      "bytes": 3107,
+      "sha256": "dd3d02675212f6e513a4f93573566646c55a1d27cb21ac7bbb528058a96db8b7"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_authbus_cache_cas_r1.mjs",
+      "kind": "source",
+      "bytes": 6846,
+      "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_outer_inputs_r2.py",
+      "kind": "source",
+      "bytes": 33000,
+      "sha256": "97db953e7324e31a9bb162d1ee508ed5f2e2a58c98a181131988e9dd3c3cfdce"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_outer_wal_r1.py",
+      "kind": "source",
+      "bytes": 71506,
+      "sha256": "6ad1b80ac06c90759c2ac5fd01df9c750b077ffa43253486c07658b6e1ddd4d5"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_darwin_owned_projection_r1.py",
+      "kind": "source",
+      "bytes": 12858,
+      "sha256": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_native_owned_unreaped_r1.py",
+      "kind": "source",
+      "bytes": 10761,
+      "sha256": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_native_owned_commands_r1.py",
+      "kind": "source",
+      "bytes": 5972,
+      "sha256": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_registry_readonly_wal_r1.py",
+      "kind": "source",
+      "bytes": 31776,
+      "sha256": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/proofs/synthetic-r2.stdout.public.json",
+      "kind": "public_document",
+      "bytes": 16228,
+      "sha256": "6c14a7f95e4f059090da2e88a3fff80eac79c1d83ef58a29df3cc67a610cd8f5"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/proofs/synthetic-r2.authority.public.json",
+      "kind": "public_document",
+      "bytes": 733,
+      "sha256": "1b33a9144712ac2bc3d16d87bb2a9ea1c2e4c0be236dfd08d8b599f7518942dd"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/proofs/native-proc-r2.stdout.public.json",
+      "kind": "public_document",
+      "bytes": 24032,
+      "sha256": "7a1b715e595a2badf18e4f01506cca2ee7c4c0a760c5ef3c86708a435ace9c4f"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/proofs/native-proc-r2.authority.public.json",
+      "kind": "public_document",
+      "bytes": 733,
+      "sha256": "411ea26371219c49547abc014464585551ba4a69b70bb906b92561a8d5bddf23"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/proofs/native-proc-r2.child-stdout.public.json",
+      "kind": "public_document",
+      "bytes": 11066,
+      "sha256": "bb5717753866c0d7e647e4fd5c18a3342db0f530016cc7d92cb508c955ff8644"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/proofs/registry-wal-r1.stdout.public.json",
+      "kind": "public_document",
+      "bytes": 62662,
+      "sha256": "7d08a18c21a5d754ea9fbe7711e6315daf8fbd80c7b5a6937756fea7ba4d1c82"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/proofs/registry-wal-r1.authority.public.json",
+      "kind": "public_document",
+      "bytes": 733,
+      "sha256": "b564093e2300cdc44b2ae4724e869d5b24bfe3d94d269f8ebfa977e08b07505f"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/candidate-current-manager-wal-r1.public.json",
+      "kind": "public_document",
+      "bytes": 7211,
+      "sha256": "1dcbc2953731c9c29db6a1f599777d3a7b2b4c237b80cf540afafadebb509932"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/inert-registry-wal-4e808-result.public.json",
+      "kind": "inert_candidate_receipt",
+      "bytes": null,
+      "sha256": null,
+      "bindOnlyFromActualFinalStdout": true
+    }
+  ],
+  "newObservations": 0,
+  "candidateIsNotAuthority": true
+}

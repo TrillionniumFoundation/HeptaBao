@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.public-source-readset-proposal-manifest.r1",
+  "records": [
+    {
+      "path": "PROPOSAL.public.json",
+      "blob": "ff3046f3cd50a7ca97f9244f72a8e605274f03a4",
+      "bytes": 6885,
+      "sha256": "64b668759ae9776b79de81b0576f660809146cde39686a51535c073534af6a7b"
+    },
+    {
+      "path": "REVIEW.md",
+      "blob": "e42fca15982a363a5536a4fd9464dd9356d9aa56",
+      "bytes": 4111,
+      "sha256": "54771d8b2dee8b235d79c0be6d5cc64f3e147aa1f78620fb4750ee3a39f162e7"
+    },
+    {
+      "path": "requests/01-bootstrap_outer.info.exact.json",
+      "blob": "56c177329ca38cbcdf84ab992e27c5283d843552",
+      "bytes": 313,
+      "sha256": "9c866d9897e81b01b259bade8ca4850b9d77ebdddb21502206a6052d12aa53df"
+    },
+    {
+      "path": "requests/02-runtime_candidate.info.exact.json",
+      "blob": "2263db35a8e968afb6344b539edf630cb4fef109",
+      "bytes": 329,
+      "sha256": "734cec4b2f5534b999ff30d97262fb72bd4427ce62e6afa191b759302fa71052"
+    },
+    {
+      "path": "requests/03-inert_receipt.info.exact.json",
+      "blob": "27f448937660c77a2b8a578e2024d2d56db9f31f",
+      "bytes": 324,
+      "sha256": "59be3479f40bd0a7d950932480f4863bf780236aa2ed1d9a28753e42a7e5baa7"
+    }
+  ]
+}

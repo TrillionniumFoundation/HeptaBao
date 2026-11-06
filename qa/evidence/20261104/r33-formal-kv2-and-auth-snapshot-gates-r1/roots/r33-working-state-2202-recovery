@@ -1,0 +1,87 @@
+{
+  "schema": "heptabao.r33-working-state-after-cache-reset-2202.v1",
+  "published_checkpoint": {
+    "commit": "f4a47f951cd39e0f75797a6224f42837a4369044",
+    "tree": "40370ae9364cc27c91d84e5edfe00c6c0e0fbfdb",
+    "proof": "91ac186a53928bf2479b37146abc13942ecebdea"
+  },
+  "cache_reset": {
+    "observation": "All root functions.store keys absent around 2026-11-05 22:02 UTC; local hash-addressed original blobs/SDK/tree wrappers retained",
+    "local_error": "TypeError reading absent SUMMARY.public.json raw map; no Runtime call",
+    "restoration": "Exact local Git objects and original SDK files only. Existing product tests and read operations not rerun."
+  },
+  "root_results": {
+    "r33_X230_full34_qualification": "9fd3ec40974a0d7fc2eed14983fd8b621b6bc214",
+    "r33_X230_comparison69_GO": "4cf8d079885984d44cc9654a8ba816438f30b9ed",
+    "r33_H2_stage_GO": "065ae72edbb8f330b66f5a40ea4c0134891f60d8",
+    "r33_H2_five_metadata_root_review": "0fa6449871c5cddc938d287cdd0a0bcce5c9c2bd",
+    "r33_CLI_stage_root_release": "35c92d88b2fec06a75fe4fa7d0baf5a373e74eea",
+    "r33_CLI_stage_release": "40745dab3fba9739dd0805086cbd2dc3eb457f11",
+    "r33_Auth_Google_root_lane_release": "e14878d04a20c92baa806c541580a1d64b1f4ce8",
+    "r33_Auth_Google_release": "ee94515d5509f2ba5efce754973da409036b1aec",
+    "r33_Auth_Google_reads_GO": "a58667829950717eab43010eb2c768f9be24677e",
+    "r33_Auth_Google_manifest": "dde2aa7b76b6e8eec6e7f9edc368ea3191aca7d6",
+    "r33_Auth_Google_package": "eca1335cb1e73aafcb53f89bba324673f9fa4493",
+    "r32_checkpoint_state_frozen": "d11fa471982c2840d137300a97380bf3de28c9e5",
+    "r32_checkpoint_publication_proof": "91ac186a53928bf2479b37146abc13942ecebdea"
+  },
+  "actual_packets": {
+    "H2_metadata85": {
+      "tree": "8ecca81bb585417a7a8975f010a92652f256192b",
+      "files": 85,
+      "bytes": 165725,
+      "Merkle": 15,
+      "root_whole_done": true
+    },
+    "Auth_registration169": {
+      "tree": "58c16429b0cd2dd135df7fe50f7582f51413005e",
+      "files": 169,
+      "bytes": 1711315,
+      "Merkle": 60,
+      "root_whole_done": true,
+      "independent_peer_pending": true
+    },
+    "CLI_stage63": {
+      "tree": "3ec3bec37a6ef1270525c017618eda810edc8044",
+      "files": 63,
+      "bytes": 1007838,
+      "Merkle": 21,
+      "author_whole_done": true,
+      "root_native_post_finally_done": true
+    },
+    "Google_public2_78": {
+      "tree": "385b356167187308221d8c2d5c12ece7c1da24e3",
+      "files": 78,
+      "bytes": 374228,
+      "Merkle": 26,
+      "root_four_statuses_and_whole_two_sources_done": true
+    },
+    "Google_entry_source7": {
+      "tree": "eecd5498a211b869c0a40ad16e415507b1c759b3",
+      "files": 7,
+      "bytes": 59841,
+      "Merkle": 2,
+      "root_whole_and_source_read_done": true,
+      "Runtime_submitted": false
+    }
+  },
+  "lane_A_last_report": {
+    "owner": "/root/ha_validation",
+    "GO": "065ae72edbb8f330b66f5a40ea4c0134891f60d8",
+    "job": "desktop/1a1adb7c0f6-fc05-5ab6",
+    "intent": "87f09d19e25b2e9c2131d5df2e47d499cd44226c",
+    "ACK_SDK": "f4a251f9d7dde3a1646cbd89278139950b5b4c1d",
+    "ACK_native": "13e0e2fee6d7b4da5d20abf808bda69338d652a5",
+    "phase": "Only same-job authority/streams closure; exact current in-flight state owned by agent journal"
+  },
+  "lane_B_last_report": {
+    "owner": "/root/compatibility_audit",
+    "GO": "4cf8d079885984d44cc9654a8ba816438f30b9ed",
+    "request": "6c51aa75507c4ba473d19406ecf51d9ca8c2860d",
+    "phase": "Exact single next69 start authorized; submission/ACK state must come from owner original journal, never replay from this checkpoint"
+  },
+  "no_duplicate_product_or_native_read_authorized": true,
+  "overall_full_replacement": false,
+  "production_cutover": false,
+  "cleanup": false
+}

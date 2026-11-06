@@ -1,0 +1,18 @@
+--- baseline/mac_owned_launchd_r3.py
++++ source/mac_owned_launchd_r3.py
+@@ -11,12 +11,12 @@
+ from pathlib import Path
+ from mac_native_process_observer_r1 import ProcessReader
+ 
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1')
+ QA=ROOT/'qa'
+ BINDING_READY=True  # Actual normal61 pins are bound; host execution requires separate root GO.
+ DOMAIN='gui/501'
+-LABELS={'server':'org.heptabao.qa.mac-authbus-4e808-wal-r1.server',
+-        'consumer':'org.heptabao.qa.mac-authbus-4e808-wal-r1.consumer'}
++LABELS={'server':'org.heptabao.qa.mac-authbus-4e808-owner-r1.server',
++        'consumer':'org.heptabao.qa.mac-authbus-4e808-owner-r1.consumer'}
+ SERVER=Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-server')
+ SERVER_SHA='c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63'
+ GRAPH=(('server-start','server-initial'),('phase','initial'),

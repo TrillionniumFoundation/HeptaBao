@@ -1,0 +1,41 @@
+{
+  "schema": "heptabao.source-manifest.v1",
+  "files": [
+    {
+      "path": "README.md",
+      "blob": "cdaccf0baa281c5f28a03f8d4c403411d35fbc7d",
+      "bytes": 1506,
+      "sha256": "0e95d84f2107864597ecb494c893424679e0fb73e240d6feeeb0e26a55904345"
+    },
+    {
+      "path": "CONTRACT.public.json",
+      "blob": "00f9fb5e8fc7605f88cb4423d0d8c60483cf88c1",
+      "bytes": 3111,
+      "sha256": "732e7f49ec9be28bdd5e0235352e2499a21a5eac585ce4c31ab7016a18e8c475"
+    },
+    {
+      "path": "metadata.exact.json",
+      "blob": "28b92dd34125354c01ee4e6b04a61c23103ee88f",
+      "bytes": 273,
+      "sha256": "2707b0502aae10d672a340c85462937bd14cbbb3e98b7c337b278a94ad68b136"
+    },
+    {
+      "path": "derive-entry-body.mjs",
+      "blob": "3a86d0d14f6fa15e410bc28571db4c8a5202971e",
+      "bytes": 1729,
+      "sha256": "8e5011216fd773608f83a827ce117b93f19c539215d157faaa638a475c98ece1"
+    },
+    {
+      "path": "reference/google-package.actual.original.json",
+      "blob": "eca1335cb1e73aafcb53f89bba324673f9fa4493",
+      "bytes": 375,
+      "sha256": "398f73305017a1d3813610825814c6e1dd93b683da088cb6df068a31c639fcc3"
+    },
+    {
+      "path": "reference/historical-source-receipt.public.json",
+      "blob": "79471a511eb665193c2dbc05607298e96ac6fa7d",
+      "bytes": 51466,
+      "sha256": "6caa9ebfc2a3bf3ae637676a8055022817ec0efa85b09c6ffc304ac854ca6236"
+    }
+  ]
+}

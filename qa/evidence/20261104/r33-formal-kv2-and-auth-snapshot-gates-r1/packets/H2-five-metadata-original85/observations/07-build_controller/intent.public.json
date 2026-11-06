@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.h2-incoming-metadata5-exact-observation-intent.v1",
+  "GO": {
+    "blob": "8c5542d05ace15c6d1405852ff69b091fa6c88ce",
+    "bytes": 9259,
+    "sha256": "5e7475c2e5cd149681e33bb12bb3a7f875168a12052a4e91a260fb41163bea45"
+  },
+  "lane": "A",
+  "owner": "/root/ha_validation",
+  "index": 7,
+  "role": "build_controller",
+  "method": "operation_start",
+  "request_pin": {
+    "blob": "d6c4523a0ea985ceec897184f2adacd8dfe27e02",
+    "bytes": 320,
+    "sha256": "eed851d3b3c84be824b5a31dd46f4d32489540a1253893504e8d5ab81faedc17"
+  },
+  "request": {
+    "idempotency_key": "ha-qa12-destination-7-file-info-observation-r1-20261105",
+    "operation": {
+      "tool": "file_info",
+      "arguments": {
+        "host": "desktop",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/build_native_h2_client_r1.py"
+      }
+    }
+  },
+  "expected_historical_receiver": {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/build_native_h2_client_r1.py",
+    "version": "2050:7257431:59791:1793882066247718382:1793882066247718382",
+    "full9_decimal": [
+      "2050",
+      "7257431",
+      "1000",
+      "1000",
+      "33024",
+      "1",
+      "59791",
+      "1793882066247718382",
+      "1793882066247718382"
+    ],
+    "mode": 256,
+    "bytes": 59791,
+    "sha256": "7ea25347f71764f1ed3d459d24b92750ef82c361878e9c856c7a7e8fe699bc15",
+    "same_fd_readback": {
+      "bytes": 59791,
+      "sha256": "7ea25347f71764f1ed3d459d24b92750ef82c361878e9c856c7a7e8fe699bc15"
+    },
+    "create_only": true,
+    "fsynced": true,
+    "source_core_blob": "4f45e1efca410e22d9607352f9ffff451fcbc305"
+  },
+  "previous_in_sequence_closed_indices": [],
+  "only_this_original_readonly_admission": true,
+  "binary_body_read": false,
+  "process_start": false,
+  "old_UNKNOWNs_preserved": true
+}

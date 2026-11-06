@@ -1,0 +1,54 @@
+{
+  "schema": "heptabao.H2-target-read.Git-archive-recovery-complete.v1",
+  "fixed8_tree": "98aecf8ce75ab5ff7594d93081b260a1e9a89348",
+  "whole_blobs": 8,
+  "bytes": 79190,
+  "Runtime_repeated": false,
+  "old_three_Git_errors_preserved": true,
+  "original_page_sdk": {
+    "name": "ha-h2-target-receipt-body0-page016384-SDK",
+    "blob": "b45957c57c11079425794ce7e11acb97e86c4a9d",
+    "bytes": 8736,
+    "sha256": "faf6d5f698746ea6a0f149b61910253a3ba924815381d7bd52ff70730a748454"
+  },
+  "original_page_native": {
+    "name": "ha-h2-target-receipt-body0-page016384-native",
+    "blob": "ac685dbfa25279a0558d02165e99d26d5eeb3b6f",
+    "bytes": 8565,
+    "sha256": "af0d8e4a33b67768a5424ac44d383af09d6fa45a2a936793ed5ab6ec8fec3123"
+  },
+  "original_payload": {
+    "name": "ha-h2-target-receipt-body0-payload-original",
+    "blob": "f6681235e3712ce1cc64e78aae78297d5dfcd79e",
+    "bytes": 22291,
+    "sha256": "77a0c97d77d791f4b25b491429f92a8587af9f25b1158c7e5bd8aabc9e63c01f"
+  },
+  "original_native": {
+    "name": "ha-h2-target-receipt-body0-result-native-original",
+    "blob": "52dd2320bc14a3ecdedc5c1725c1a1219778cd19",
+    "bytes": 22188,
+    "sha256": "e7f54c1251bd89c05880d5aa3a359f08cefcf723d23685d19082c999a78e958d"
+  },
+  "original_body_chunk": {
+    "name": "ha-h2-target-receipt-body0-chunk",
+    "blob": "34ef40bf58318885b710dd4b66d65d8c17998626",
+    "bytes": 16384,
+    "sha256": "4266332e50569244fa1ee981b1b489c18a5fa68fb8e5f15339618f79194509e0"
+  },
+  "original_operation_status": {
+    "name": "ha-h2-target-receipt-body0-status0-native",
+    "blob": "9fdd0650028b3cdc7669999782b4782fbc6640a5",
+    "bytes": 802,
+    "sha256": "41442e56f65a59ec7d279c36367ff0151a496a76f4138cc909d2300f8cebe9d6"
+  },
+  "archive_storage_helper": {
+    "name": "ha-h2-target-observer-content-tree-archive-helper",
+    "blob": "8fc4d7ca9c96be18fae74a4a3c786143bd9b6645",
+    "bytes": 8738,
+    "sha256": "12287ef733821230fa5dbd9f7748cd12ae052e8bd96e800fdc5ab9dc517ec6fe"
+  },
+  "metadata_and_Runtime_scope_unchanged": true,
+  "root_resumption": "After fixed-eight Git whole recovery and original body0 closure, continue the last two bodies under original GO012.",
+  "new_Runtime_calls_for_recovery": 0,
+  "local_recovery_report": "/workspace/scratch/f86faac821c4/ha_h2_target_reads_r2/pending-git-recovery/RECOVERY.local.public.json"
+}

@@ -1,0 +1,368 @@
+{
+  "schema": "heptabao.owner-repair.source-comparison.v1",
+  "passed": 82,
+  "checks": [
+    {
+      "case": "inputs.unchanged.need",
+      "passed": true
+    },
+    {
+      "case": "inputs.unchanged.sha",
+      "passed": true
+    },
+    {
+      "case": "inputs.unchanged.encoded",
+      "passed": true
+    },
+    {
+      "case": "inputs.unchanged.digest",
+      "passed": true
+    },
+    {
+      "case": "inputs.unchanged.identity",
+      "passed": true
+    },
+    {
+      "case": "inputs.unchanged.inode",
+      "passed": true
+    },
+    {
+      "case": "inputs.unchanged.parent_custody_identity",
+      "passed": true
+    },
+    {
+      "case": "inputs.unchanged.same_recorded_input",
+      "passed": true
+    },
+    {
+      "case": "inputs.unchanged.valid_pin",
+      "passed": true
+    },
+    {
+      "case": "inputs.unchanged.exact_json",
+      "passed": true
+    },
+    {
+      "case": "inputs.unchanged.Inputs.remaining",
+      "passed": true
+    },
+    {
+      "case": "inputs.unchanged.Inputs._close",
+      "passed": true
+    },
+    {
+      "case": "inputs.unchanged.Inputs.parents",
+      "passed": true
+    },
+    {
+      "case": "inputs.unchanged.Inputs.read_private",
+      "passed": true
+    },
+    {
+      "case": "inputs.unchanged.Inputs.read_public",
+      "passed": true
+    },
+    {
+      "case": "inputs.unchanged.Inputs._admit_code",
+      "passed": true
+    },
+    {
+      "case": "inputs.unchanged.Inputs.admit_utilities",
+      "passed": true
+    },
+    {
+      "case": "inputs.unchanged.Inputs.project_frozen",
+      "passed": true
+    },
+    {
+      "case": "inputs.unchanged.Inputs.normal_and_base_sources",
+      "passed": true
+    },
+    {
+      "case": "inputs.unchanged.Inputs.verify",
+      "passed": true
+    },
+    {
+      "case": "inputs.unchanged.Inputs.public_pins",
+      "passed": true
+    },
+    {
+      "case": "inputs.unchanged.Inputs.close",
+      "passed": true
+    },
+    {
+      "case": "inputs.unchanged.Inputs.public",
+      "passed": true
+    },
+    {
+      "case": "inputs.old_constant.BASE",
+      "passed": true
+    },
+    {
+      "case": "inputs.old_constant.ROOT",
+      "passed": true
+    },
+    {
+      "case": "inputs.old_constant.BINDING_READY",
+      "passed": true
+    },
+    {
+      "case": "inputs.old_constant.LIVE",
+      "passed": true
+    },
+    {
+      "case": "inputs.old_constant.PLUGIN",
+      "passed": true
+    },
+    {
+      "case": "inputs.old_constant.SDK",
+      "passed": true
+    },
+    {
+      "case": "inputs.old_constant.CODEX",
+      "passed": true
+    },
+    {
+      "case": "inputs.old_constant.CORE",
+      "passed": true
+    },
+    {
+      "case": "inputs.old_constant.NORMAL_ROOT",
+      "passed": true
+    },
+    {
+      "case": "inputs.old_constant.BINARY",
+      "passed": true
+    },
+    {
+      "case": "inputs.old_constant.BINARY_SHA",
+      "passed": true
+    },
+    {
+      "case": "inputs.old_constant.BINARY_BYTES",
+      "passed": true
+    },
+    {
+      "case": "inputs.old_constant.COMMIT",
+      "passed": true
+    },
+    {
+      "case": "inputs.old_constant.TREE",
+      "passed": true
+    },
+    {
+      "case": "inputs.old_constant.PRIVATE_INPUTS",
+      "passed": true
+    },
+    {
+      "case": "inputs.old_constant.PUBLIC_INPUTS",
+      "passed": true
+    },
+    {
+      "case": "inputs.old_constant.GENERATIONS",
+      "passed": true
+    },
+    {
+      "case": "inputs.old_constant.PLUGIN_FILES",
+      "passed": true
+    },
+    {
+      "case": "inputs.old_constant.SDK_FILES",
+      "passed": true
+    },
+    {
+      "case": "inputs.old_constant.CODEX_FILES",
+      "passed": true
+    },
+    {
+      "case": "inputs.old_constant.UTILITY_PATHS",
+      "passed": true
+    },
+    {
+      "case": "inputs.old_constant.MAX_CODE",
+      "passed": true
+    },
+    {
+      "case": "inputs.old_constant.MAX_ALL_HASHED",
+      "passed": true
+    },
+    {
+      "case": "inputs.old_constant.MAX_PUBLIC_CODE_FILES",
+      "passed": true
+    },
+    {
+      "case": "inputs.old_constant.PUBLIC_CODE_PARENT_IDENTITIES",
+      "passed": true
+    },
+    {
+      "case": "inputs.no_removed_definitions",
+      "passed": true
+    },
+    {
+      "case": "materializer.unchanged.need",
+      "passed": true
+    },
+    {
+      "case": "materializer.unchanged.encoded",
+      "passed": true
+    },
+    {
+      "case": "materializer.unchanged.sha",
+      "passed": true
+    },
+    {
+      "case": "materializer.unchanged.digest",
+      "passed": true
+    },
+    {
+      "case": "materializer.unchanged.ident",
+      "passed": true
+    },
+    {
+      "case": "materializer.unchanged.no_nonfinite",
+      "passed": true
+    },
+    {
+      "case": "materializer.unchanged.Materializer.__init__",
+      "passed": true
+    },
+    {
+      "case": "materializer.unchanged.Materializer.remaining",
+      "passed": true
+    },
+    {
+      "case": "materializer.unchanged.Materializer.mkdir",
+      "passed": true
+    },
+    {
+      "case": "materializer.unchanged.Materializer.write",
+      "passed": true
+    },
+    {
+      "case": "materializer.unchanged.Materializer.close_fd",
+      "passed": true
+    },
+    {
+      "case": "materializer.unchanged.Materializer.close_connection",
+      "passed": true
+    },
+    {
+      "case": "materializer.unchanged.Materializer.owned_database",
+      "passed": true
+    },
+    {
+      "case": "materializer.unchanged.Materializer.auth_database",
+      "passed": true
+    },
+    {
+      "case": "materializer.unchanged.Materializer.registry_database",
+      "passed": true
+    },
+    {
+      "case": "materializer.unchanged.Materializer.validate_capsule",
+      "passed": true
+    },
+    {
+      "case": "materializer.unchanged.Materializer.close",
+      "passed": true
+    },
+    {
+      "case": "materializer.unchanged.Materializer.public",
+      "passed": true
+    },
+    {
+      "case": "materializer.old_constant.ROOT",
+      "passed": true
+    },
+    {
+      "case": "materializer.old_constant.LIVE",
+      "passed": true
+    },
+    {
+      "case": "materializer.old_constant.SDK",
+      "passed": true
+    },
+    {
+      "case": "materializer.old_constant.CODEX",
+      "passed": true
+    },
+    {
+      "case": "materializer.old_constant.AGENTS",
+      "passed": true
+    },
+    {
+      "case": "materializer.old_constant.PHASES",
+      "passed": true
+    },
+    {
+      "case": "materializer.old_constant.TABLES",
+      "passed": true
+    },
+    {
+      "case": "materializer.old_constant.CACHE_NAMES",
+      "passed": true
+    },
+    {
+      "case": "materializer.old_constant.CONFIG_SHA",
+      "passed": true
+    },
+    {
+      "case": "materializer.old_constant.MAX_ROW",
+      "passed": true
+    },
+    {
+      "case": "materializer.no_removed_definitions",
+      "passed": true
+    },
+    {
+      "case": "worker.remove_three_insertions_whole_equals_original",
+      "passed": true
+    },
+    {
+      "case": "worker.original_loader_selector_and_two_guards_exact",
+      "passed": true
+    },
+    {
+      "case": "worker.no_extra_loader_call",
+      "passed": true
+    },
+    {
+      "case": "worker.no_extra_selection_call",
+      "passed": true
+    }
+  ],
+  "products": {
+    "inputs": {
+      "beforeBytes": 27292,
+      "beforeSha256": "6645e7375e1c3a5e0fbf994a2f035d4922c4def4d5bbfd333236293db78f9b11",
+      "afterBytes": 31701,
+      "afterSha256": "f0915288544badc39d99c543a41707e2b3c8e85e2cf87a4fe75b331abddedf80",
+      "diffBytes": 9524,
+      "diffSha256": "00ffba0ff31152d442eb8c241b03c9d196c9bb0554894c556e52bae2f44b373f",
+      "hunks": 6
+    },
+    "materializer": {
+      "beforeBytes": 23649,
+      "beforeSha256": "686b89842b19da959c5ea1af25f7568ea65070bf6b3cacd25443ea0a3cb809f1",
+      "afterBytes": 25974,
+      "afterSha256": "c9db0d893d2c326f35b8c80ea46c1be53b6d6b3b46caf78309b8f14f28cfe21f",
+      "diffBytes": 4569,
+      "diffSha256": "705942ff72bb27e56b780a63cdc64e69825685b926669af0cd7a7d834bec76a6",
+      "hunks": 3
+    },
+    "worker": {
+      "beforeBytes": 28533,
+      "beforeSha256": "8c4a2cc09330cfda7a488e7e5caa811f4e190a10054a31f683b3466124210431",
+      "afterBytes": 33127,
+      "afterSha256": "371b0dd20f6cf505ad97925417ea4e143e7a584b1bbc7d230920d85a41ccfbfe",
+      "diffBytes": 6248,
+      "diffSha256": "0c0b76f880ce7d6ba36b72b096d263d24ddce99e307572c31993a4de3999b1cb",
+      "hunks": 3
+    }
+  },
+  "candidateModulesExecuted": false,
+  "runtimeCalls": 0,
+  "oldCapsAndConstantsPreserved": true,
+  "OWNER_PUBLIC_BINDING_READY": false,
+  "newSourceEntryPinsBound": false
+}

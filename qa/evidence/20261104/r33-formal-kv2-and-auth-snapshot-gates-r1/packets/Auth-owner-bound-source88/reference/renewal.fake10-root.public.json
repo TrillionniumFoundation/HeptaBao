@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.renewal-pure-fake10-root-review.r1",
+  "status": "TARGETED_TEST_ONLY_SUCCESSOR_ACTUALLY_PASSED",
+  "packet": "92f35f9c630268bc84478209b9c44931fd7cea66",
+  "checks_passed": 14,
+  "checks": [
+    "strict_five_hunks_forward_inverse",
+    "original_fake_preserved",
+    "candidate_byte_exact_266224",
+    "prior_candidate_byte_exact",
+    "original_local_execution_exit0_and_exact_output",
+    "ten_targeted_fake_cases_passed",
+    "only_three_selected_functions",
+    "no_host_network_sqlite_child_credential",
+    "same_second_consistent",
+    "saturation_consistent_no_extension",
+    "targeted_accessor_negative",
+    "only_fake_definitions_modified",
+    "post_execution_candidate_hash",
+    "preparation_parser_mistake_preserved"
+  ],
+  "cases": 10,
+  "changed_file_blob": "379619eb5702e7ebe08d898007a28c7daedbef72",
+  "candidate_unchanged_blob": "26622454186ba28ada489c9a10b34cf4ad254b97",
+  "five_strict_hunks": true,
+  "root_reran_fake": false,
+  "original_actual_execution_output": "79d98731a635e0ec5a88cc138bf59a282896f874",
+  "scope": "Pure selected functions and in-memory fake responses only. Decreasing-expiry case remains a classifier input, not a fixed-role arithmetic prediction. No actual HTTP200/403/204 or SDK/credential observation.",
+  "product_changes": 0,
+  "guard_changes": 0,
+  "actual_renewal_qualified": false,
+  "full_replacement_qualified": false
+}

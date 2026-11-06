@@ -1,0 +1,32 @@
+{
+  "schema": "heptabao.comparison69.local-archive-error-and-recovery.v1",
+  "business_start_repeated": false,
+  "readonly_admission_repeated": false,
+  "original_helper_blob": "084a8dff712e2a45d411b096824df04c832096a6",
+  "failure_position": "c69Submit line 43 after awaited native operation_start returned and local SDK wrapper was written, before Git archival and isError/lossless parsing in original helper.",
+  "exception": "Error: local_fsync at c69Sync, called by c69Submit line 43.",
+  "original_exec_command_return_not_retained": true,
+  "original_fsync_root_cause_unknown": true,
+  "original_SDK_exact": {
+    "name": "comparison69-authority0-admission-original-SDK",
+    "blob": "5cd3da9933b09d774a2b3e16567b61b642919ceb",
+    "bytes": 709,
+    "sha256": "f5128fcdabd0d64456d3f25e749d1b191385f633d87f52ade365ad7df536f57f"
+  },
+  "original_native_exact": {
+    "name": "comparison69-authority0-admission-original-native",
+    "blob": "a7de8fd190fa5ec01e2c77a8cea99ca0ab7cf067",
+    "bytes": 548,
+    "sha256": "1c62b933b805ec43e125572ff81799772de0bf4197fa8bc684112d1fb6012560"
+  },
+  "original_operation_id": "5c495335fc951a58a709ae67dcf6ce0ce5b336f4563e42a710b6af38e8d17a75",
+  "successful_existing_file_fsync_recovery": {
+    "name": "comparison69-local-fsync-recovery-exec-original",
+    "blob": "74cf099180f44d1b30bc5fe65d407756d22d87b6",
+    "bytes": 11644,
+    "sha256": "cfc21b6bca12361b3de0eca884b3b64c3fc38143dae31928316234ac9a8db7dd"
+  },
+  "local_inspection_did_not_issue_Runtime": true,
+  "no_claim_of_native_completion_from_admission": true,
+  "original_job": "1a1adc377a3-fc05-5acb"
+}

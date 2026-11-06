@@ -1,0 +1,85 @@
+{
+  "schema": "heptabao.h2qa.destination.metadata5.closed.v1",
+  "index": 7,
+  "role": "build_controller",
+  "operation_id": "c3c1d811d17f51182b4f14a01e24ad95744f5dab81fd278e737f8fb175cf2406",
+  "request": {
+    "path": "requests/07-build_controller.file-info.public.json",
+    "blob": "d6c4523a0ea985ceec897184f2adacd8dfe27e02",
+    "bytes": 320,
+    "sha256": "eed851d3b3c84be824b5a31dd46f4d32489540a1253893504e8d5ab81faedc17"
+  },
+  "external_intent": {
+    "name": "ha-h2-info7-external-intent",
+    "blob": "d3f2a27e36b4ad67d02bee2ceaf2d881320570a5",
+    "bytes": 1900,
+    "sha256": "38c0264c3f76b1898ad09566e1543bc9cdee3c1181984b74db20d9f45f32c3e2"
+  },
+  "admission": {
+    "name": "ha-h2-info7-admission-native",
+    "blob": "8718f7728db34bc02b562ddd6c18bb9d4c293eb9",
+    "bytes": 543,
+    "sha256": "61a92b1b88aca10832aed02654db5199805630dbf05b8ae947ccb8855c09c616"
+  },
+  "status": {
+    "name": "ha-h2-info7-status-native",
+    "blob": "b920ed64b1da76cbcf5048c55946476d6bb2e422",
+    "bytes": 800,
+    "sha256": "d20105330928eb72a9782c71fb9ea0771e89dac930ce3726bc0ded575d9448fe"
+  },
+  "immutable_payload": {
+    "name": "ha-h2-info7-payload",
+    "blob": "c6ece0a932e6263b0fe4e7afe4cf319532fa735e",
+    "bytes": 626,
+    "sha256": "e9517859ca2541ff6ca6e4617f2dc4b96b28467ba44cdf23f93e515d9f94a2ee"
+  },
+  "actual_file_info": {
+    "name": "ha-h2-info7-file-info-native",
+    "blob": "9602785aa0701991647013c7a426064029216be6",
+    "bytes": 509,
+    "sha256": "45522418fc57511a1e339b56997ccc12f0938bf46cdaff4140321164a3d63fa2"
+  },
+  "checks": {
+    "path": true,
+    "size": true,
+    "sha256": true,
+    "version": true,
+    "full9": true,
+    "mode": true,
+    "linux": true,
+    "closed": true,
+    "one_payload": true
+  },
+  "actual": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 256,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 256,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/build_native_h2_client_r1.py",
+    "sha256": "7ea25347f71764f1ed3d459d24b92750ef82c361878e9c856c7a7e8fe699bc15",
+    "size": 59791,
+    "version": "2050:7257431:59791:1793882066247718382:1793882066247718382",
+    "full9_decimal": [
+      "2050",
+      "7257431",
+      "1000",
+      "1000",
+      "33024",
+      "1",
+      "59791",
+      "1793882066247718382",
+      "1793882066247718382"
+    ]
+  },
+  "full9_origin": "version dev/ino/size/mtime/ctime plus native uid/gid/mode/link_count; regular-file mode bit follows file_info contract",
+  "old_UNKNOWN_preserved": true,
+  "body_read_RPC": 0,
+  "process_start": 0
+}

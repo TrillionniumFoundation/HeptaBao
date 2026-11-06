@@ -1,0 +1,77 @@
+{
+  "schema": "heptabao.H2-target-read.exact-call-intent.v1",
+  "root_GO": "012b76fca8a176e1cc15e3115ad38a69977ef8d9",
+  "lane": "A",
+  "label": "receipt-body0",
+  "phase": "admission",
+  "method": "operation_start",
+  "request": {
+    "name": "ha-h2-target-receipt-body0-admission-request",
+    "blob": "d2016bf90d76301a0ffce473884ab8abf792da22",
+    "bytes": 419,
+    "sha256": "f15577d00996003061b6dc72e0f45826235e019e246423f2de95c1331e0f4a60"
+  },
+  "arguments": {
+    "idempotency_key": "ha-4e808-h2-stage-receipt-body0-r2-20261105",
+    "operation": {
+      "tool": "binary_read",
+      "arguments": {
+        "host": "desktop",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/stage.result.public.json",
+        "offset": 0,
+        "limit": 16384,
+        "expected_version": "2050:7874336:28615:1793915867295097739:1793915867295097739"
+      }
+    }
+  },
+  "reference": {
+    "deriver": {
+      "input": {
+        "name": "ha-h2-target-deriver-input",
+        "blob": "d08eb7bf62b5a84aa4f2f4461c863a02daf405ee",
+        "bytes": 5385,
+        "sha256": "0266ec96d2b3610eb515e42075f44ec7d59e25f13b17dd2a3184dbd3f6b5fda3"
+      },
+      "output": {
+        "name": "ha-h2-target-deriver-output",
+        "blob": "52566fb6cc63dc4e69f408e04c34b1855ea00de3",
+        "bytes": 2530,
+        "sha256": "8537798d86515a765f00d1f5cc6fdb07291daa7e1660fca58a9adf924eef96c1"
+      },
+      "executor": {
+        "name": "ha-h2-target-deriver-executor",
+        "blob": "34c2ea53976f82549988a169bc8ce8c6366a62d4",
+        "bytes": 975,
+        "sha256": "426dbc9394e8c633cac7eb097b279a81abea334b5944a53c962befa034cc89e6"
+      }
+    },
+    "only_expected_version_replaced": true
+  },
+  "previous_whole_closed": {
+    "label": "binding-info",
+    "operation_id": "80f5828787b4d736969785f5e96e7380a3e7bfa201e7ba487c1c73baaa3d2b9c",
+    "status": {
+      "name": "ha-h2-target-binding-info-status0-native",
+      "blob": "f0e9ff1ff8ddf7d01a1ae7e7fd791a27a135fd96",
+      "bytes": 800,
+      "sha256": "e0c63eaacb605859912467f324711dd64082311b542aebbce4705be9b49f36dd"
+    },
+    "payload": {
+      "name": "ha-h2-target-binding-info-payload-original",
+      "blob": "ddb19b80b8c71220d905dec7955da3b78cd047ed",
+      "bytes": 602,
+      "sha256": "376a48739895ff0af4cbb7a1200cf7fe4c91598447a02ac61b4a78fcbbcc5f22"
+    },
+    "native": {
+      "name": "ha-h2-target-binding-info-result-native-original",
+      "blob": "8c8a33e62a76f2f58f32aec8ca0d47d83b8df942",
+      "bytes": 485,
+      "sha256": "0cd46e03c0ffc5f53db357885959a6f7e96f1ebcdb8a415abd1954f359042581"
+    },
+    "whole": true
+  },
+  "only_readonly": true,
+  "stage_replay": false,
+  "prepare_or_live": false,
+  "one_future_per_lane": true
+}

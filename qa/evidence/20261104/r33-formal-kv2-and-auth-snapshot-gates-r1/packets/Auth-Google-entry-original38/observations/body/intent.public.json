@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.google-declared-entry.original-observation.intent.r1",
+  "stage": "body",
+  "go": {
+    "blob": "575b8d4e64924d9306677d80e615f1a1ee570bce"
+  },
+  "metadataOriginalClosed": {
+    "operation_id": "a580f54050582197d19edf79113e4191d04bd0beb7ae12823aafcc7a4bcb41c6",
+    "status": "completed/stored_observed/inactive",
+    "payload": {
+      "name": "entry-metadata.payload.original.json",
+      "blob": "68e69d5703a3904675c24e4efe0c65acf6ece006",
+      "bytes": 578,
+      "sha256": "aad737c888f6c7c6a523f018e468f37e6dc7228ded1f84f39d41bdef4e53d3f4"
+    },
+    "native": {
+      "name": "entry-metadata.native.original.json",
+      "blob": "5455a5b2e9d5f332c50a995d5976bce1c062dd49",
+      "bytes": 461,
+      "sha256": "de9b4501eeba69fe999813c6fb1d067c67e816ed746d6edf109dab9d08deda0f"
+    }
+  },
+  "deriver": {
+    "blob": "3a86d0d14f6fa15e410bc28571db4c8a5202971e"
+  },
+  "derived": {
+    "name": "entry-body.derived.public.json",
+    "blob": "8b67be58e744926f462cfd4fb41fa0d64b400686",
+    "bytes": 650,
+    "sha256": "7fde4e748281e89b910e9a69215f55a3476cdeffdc23fd671e1e07f7d2144758"
+  },
+  "request": {
+    "name": "entry-body.exact-request.json",
+    "blob": "841fd844b9eb44fa7aa048aa14dcdb126d482dbf",
+    "bytes": 406,
+    "sha256": "59fb1a6063565976db5f4dd832d17485f71ffb59f2136878f01c46d2386052db"
+  },
+  "exact": {
+    "idempotency_key": "heptabao-mac-google-declared-entry-body-eca1335c-20261105-r1",
+    "operation": {
+      "tool": "binary_read",
+      "arguments": {
+        "host": "mac",
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/index.js",
+        "expected_version": "16777233:405237094:10582:1784843458496192413:1784843458496192413",
+        "offset": 0,
+        "limit": 10582
+      }
+    }
+  },
+  "expectedBytes": 10582,
+  "expectedSha256": "f245758337a55924518852f542a27d49bd786d8e4b80821dc5f98f825ec3fc60",
+  "previousBodyBytes": 382975,
+  "newBodyBytes": 10582,
+  "cumulativeBodyBytes": 393557,
+  "operationId": null,
+  "submissionState": "NOT_SUBMITTED",
+  "lane": "A",
+  "maxNativeFutures": 1,
+  "originalPageLimit": 8192,
+  "followImports": false,
+  "sdkExecutions": 0,
+  "privateCapsuleReads": 0,
+  "providerCalls": 0
+}

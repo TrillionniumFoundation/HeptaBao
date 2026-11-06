@@ -1,0 +1,7 @@
+{
+  "chunk_id": "8bd9ce",
+  "wall_time_seconds": 0.082307046,
+  "exit_code": 0,
+  "original_token_count": 262,
+  "output": "{\"QA_count\": 5, \"Runtime_calls\": 0, \"base\": {\"blob\": \"45ceb135688a2002e845f31e010ca5c010551517\", \"bytes\": 23638, \"sha256\": \"87a9c2a7d1b9b4e789a4fda79fc9a89ba21657493707403f36cb891546e4a34f\"}, \"budgets\": {\"internal_seconds\": 300, \"outer_seconds\": 330, \"stdin_max_bytes\": 1048576}, \"candidate\": {\"blob\": \"678e519f17c474b5610651bcbb93b43d186124c5\", \"bytes\": 26823, \"sha256\": \"a8bf27675b1a00b08f60d33fbed84405c033d537fb9562d963b9ff725264fca1\"}, \"change_count\": 24, \"copy_instrument_count\": 12, \"copy_product_count\": 3, \"diff_hunks\": 14, \"five_QA_whole_unchanged\": true, \"missing_independent_incoming_info\": [7, 8, 9, 10, 11], \"module_executions\": 0, \"payload\": {\"blob\": \"b07825d48a091c0fcd618eb54653b625007fd8b1\", \"bytes\": 321152, \"sha256\": \"6700283209e4de4433d0ef562c696c9d95ea6a12a2f0c3926701e4cc11674883\"}, \"payload_product_count\": 2, \"schema\": \"heptabao.h2-stage.minimal-adaptation-source.v1\", \"stage_dispatch_ready\": false, \"stage_process_request_constructed\": false, \"status\": \"SOURCE_ONLY_UNBOUND_OBSERVATION_GATE\", \"target_actual_count\": 0}\n"
+}

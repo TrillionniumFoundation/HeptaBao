@@ -1,0 +1,59 @@
+{
+  "schema": "heptabao.current4e808.H2.stage.external-exact-execution-intent.v1",
+  "owner": "/root/ha_validation",
+  "lane": "A",
+  "authorization": {
+    "blob": "065ae72edbb8f330b66f5a40ea4c0134891f60d8",
+    "bytes": 3222,
+    "sha256": "56fb58ec14115a0c4c7a01fe9098cfc544477d364bbcd46d158840656b475127"
+  },
+  "lane_release": "e14878d04a20c92baa806c541580a1d64b1f4ce8",
+  "original_raw_request": {
+    "blob": "773c7e054a36dfc175632a83ed23db5b5600ad58",
+    "bytes": 369727,
+    "sha256": "12373f98e11e1040558067bfdffe0604dc71c2ed720cf6261b238ea79ca3c01b"
+  },
+  "dispatch_input": "JSON parse of this exact whole raw request; original 369727-byte artifact is retained without reserialization",
+  "expected_typed_request_sha256": "d09ca5bcec50de31ca854f1b2885ed117bd7a3c6f357d6db39fbc87cd6566a96",
+  "expected_native_fingerprint_decimal": "15032071887093030449",
+  "idempotency_key": "heptabao-normal-h2-4e808-local-stage-a8bf2767-20261105-r2",
+  "host": "desktop",
+  "executable": "/usr/bin/python3.12",
+  "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+  "original_argument_count": 7,
+  "arguments_projection": [
+    "-I",
+    "-S",
+    "-B",
+    "-c",
+    {
+      "exact_source": {
+        "blob": "678e519f17c474b5610651bcbb93b43d186124c5",
+        "bytes": 26823,
+        "sha256": "a8bf27675b1a00b08f60d33fbed84405c033d537fb9562d963b9ff725264fca1"
+      }
+    },
+    "--external-controller-sha256",
+    "a8bf27675b1a00b08f60d33fbed84405c033d537fb9562d963b9ff725264fca1"
+  ],
+  "exact_stdin": {
+    "blob": "b07825d48a091c0fcd618eb54653b625007fd8b1",
+    "bytes": 321152,
+    "sha256": "6700283209e4de4433d0ef562c696c9d95ea6a12a2f0c3926701e4cc11674883"
+  },
+  "outer_timeout_seconds": 330,
+  "stage_deadline_seconds": 300,
+  "CONTROL": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2",
+  "scope": "ONE create-only stage of already-reviewed public controls/products/instrument bytes only; no child/network/product/prepare/live",
+  "all_22_target_identities_before_call": "UNOBSERVED",
+  "one_start_only": true,
+  "automatic_replay": false,
+  "UNKNOWN_policy": "Stop new business admissions; preserve original error. No replay/path/key change. Reconcile exact original identity only.",
+  "root_local_serialization_failure_record": {
+    "name": "r33-H2-stage-request-local-serialization-correction",
+    "blob": "0ae9e61a9b23a2310128cd00d992e798717d61da",
+    "bytes": 796,
+    "sha256": "98ea7f600b0bf81bf5c7c9e81c4748bc15ecd838fe1e73b0d4e6a65fc19e2ee3"
+  },
+  "Runtime_START_submitted_before_this_intent": false
+}

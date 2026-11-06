@@ -1,0 +1,56 @@
+{
+  "schema": "heptabao.X230-current-full34-external-execution-intent.v1",
+  "GO": {
+    "path": "reference/ROOT_GO.original.json",
+    "bytes": 6192,
+    "sha256": "66e15a989b26ed9cf57a89896767e845267c2a7f8be72e2ac94cab9ffde3d869",
+    "blob": "773ffa99d027be4cd77e265b3a40f8432864139c",
+    "carrier_tree": "ed49e6dae1e4a46f66cf7b9c36b201b386995b5e"
+  },
+  "request": {
+    "path": "launch/request.original.json",
+    "bytes": 355,
+    "sha256": "235880f1326aa4d1848b2a9867c5915719c787bb9b58e90140b95838a7c49b69",
+    "blob": "3839158cca7a7d543d8b277fc4df9f271d45ab83",
+    "carrier_tree": "57cdcba6fde4ae5dc5994afa139dd20342839e6e"
+  },
+  "request_value": {
+    "host": "x230",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian/heptabao-same-root-publication-normal-20261105-r1/full34_controller.py"
+    ],
+    "cwd": "/home/qian/heptabao-same-root-publication-normal-20261105-r1",
+    "timeout_seconds": 1800,
+    "idempotency_key": "heptabao-4e808-x230-full34-r1-73f0ff55"
+  },
+  "typed_request_binding": {
+    "path": "launch/typed-request-canonical.original.json",
+    "bytes": 330,
+    "sha256": "5c151114a4d4ae0e2770e4dc7060205cc8d5868cda1da1bd85c3c4347123e3ac",
+    "blob": "68184f3b16e799bc36a01b7eb5480d3d168b6cd1",
+    "carrier_tree": "c5ad72d8156a8e398d593b3f42a48d83fde749ca"
+  },
+  "typed_request_sha256": "5c151114a4d4ae0e2770e4dc7060205cc8d5868cda1da1bd85c3c4347123e3ac",
+  "expected_native_fingerprint_decimal": "6635228406362713614",
+  "readplan": {
+    "path": "READPLAN.public.json",
+    "bytes": 1446,
+    "sha256": "fdfd94b878902b6bfeb6c00246d10df730a70d052893c94815f048205d798c54",
+    "blob": "a236f6dd28af159764f57aa7135d1ab14ca77f8d",
+    "carrier_tree": "446d28b07789041e8c9756c4659736e4e4ac5e9a"
+  },
+  "one_original_submit_only": true,
+  "outer_seconds": 1800,
+  "HTTP_seconds": 15,
+  "migration_seconds": 360,
+  "original_cases": 31,
+  "profile": "full34",
+  "migration_lane": "native-large",
+  "lane": "B",
+  "host": "x230",
+  "old_relay_unknown_preserved": true
+}

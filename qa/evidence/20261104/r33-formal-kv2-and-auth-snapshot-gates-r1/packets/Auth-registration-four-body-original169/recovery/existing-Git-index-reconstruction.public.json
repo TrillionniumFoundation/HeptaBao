@@ -1,0 +1,149 @@
+{
+  "schema": "heptabao.auth-registration.existing-Git-index-reconstruction.r1",
+  "method": "Derive exact page request/native/SDK bytes from the already-pinned first operation payload and already-pinned original first-page SDK field ordering, compute Git blob SHA, then fetch that existing immutable blob and require whole byte equality. No create preceded those fetches; no Runtime request was made.",
+  "payload": "5467fe454517334ca51852bdb6d5261706abba94",
+  "template": "6669e525ca999f984ee9a49a917f415212ef61fc",
+  "restored": [
+    {
+      "path": "observations/01/pages/000000/request.original.json",
+      "blob": "cac4a70388792022a1b3e54818a8e30ce178ceea",
+      "bytes": 108,
+      "sha256": "00c42da5cbfd4e841e7f3011df54f92fdcea4fbe2b15038e74177844352c8425"
+    },
+    {
+      "path": "observations/01/pages/000000/original.native.txt",
+      "blob": "e166632f32536ec32329a3f7af3423f62fc27c6f",
+      "bytes": 11609,
+      "sha256": "a2a4fbf79e42a6b762f6a87d6a68df3116f378d2508d4ee795002ee76197a539"
+    },
+    {
+      "path": "observations/01/pages/000000/original.sdk.json",
+      "blob": "6669e525ca999f984ee9a49a917f415212ef61fc",
+      "bytes": 11780,
+      "sha256": "d911718b55c50610ed940c05cfb2e86d231e1ef2141f44cd06a07c6bf554876f"
+    },
+    {
+      "path": "observations/01/pages/008192/request.original.json",
+      "blob": "3c7f840c6c998f62024b459190f50d0a2ffe68bd",
+      "bytes": 111,
+      "sha256": "53ba656ed721b7e0bd71e1f765b760e68f7741229754f0553d39618de4d9e462"
+    },
+    {
+      "path": "observations/01/pages/008192/original.native.txt",
+      "blob": "20258a80c039078cb3a30a262b0f648b89cce937",
+      "bytes": 11613,
+      "sha256": "330bf70b7e201b2e03dcddf4caf05e4c532f423c279b522a26132a19a872b12c"
+    },
+    {
+      "path": "observations/01/pages/008192/original.sdk.json",
+      "blob": "7e47270304488a8aa6930d25a9b3fce31a418bb1",
+      "bytes": 11784,
+      "sha256": "b55ea3d6c3c426c813748a1064905ef4a6657e580c0321e808793d19d9be5563"
+    },
+    {
+      "path": "observations/01/pages/016384/request.original.json",
+      "blob": "e477c0db18962047133a93459d27856fa238702c",
+      "bytes": 112,
+      "sha256": "a3c8b43e264f99fc72b02dc9ce3924825106062d151c4e57223c8d14552eebcc"
+    },
+    {
+      "path": "observations/01/pages/016384/original.native.txt",
+      "blob": "85522fb618b4018944153042547e051a04eef18c",
+      "bytes": 11614,
+      "sha256": "795d1da874a33a0c04965338ba6f19ac9a1ccfc581d4c1d26bc99bc51e85ee14"
+    },
+    {
+      "path": "observations/01/pages/016384/original.sdk.json",
+      "blob": "9c7a43284eadce8c49bdfa6dd3fed685f63bb533",
+      "bytes": 11785,
+      "sha256": "f0af58b7097ef7c99579db5c98d0a76e793947598bc837419ff304820d1ccd18"
+    },
+    {
+      "path": "observations/01/pages/024576/request.original.json",
+      "blob": "236a008b024099fb99cbd5fcf34b8fd3cc0ab830",
+      "bytes": 112,
+      "sha256": "1e394e5d6d196b772a3d6c37e195602590ef19a08ad9af81547629b0f0abb3fc"
+    },
+    {
+      "path": "observations/01/pages/024576/original.native.txt",
+      "blob": "97e5ca33d93a0fd2db1ea280bd83fde6857a9a7f",
+      "bytes": 11614,
+      "sha256": "92ba47c0cfa8f10c48a46c4487046dea8c184fb4d5d1c7621b627e398d55d29c"
+    },
+    {
+      "path": "observations/01/pages/024576/original.sdk.json",
+      "blob": "a83b3ce0cc29d930436238f73093da4a0227b148",
+      "bytes": 11785,
+      "sha256": "7637b42b7715a085b43fc4d70cf2d158f648dc9a9ad5c800e5eb31922af771dd"
+    },
+    {
+      "path": "observations/01/pages/032768/request.original.json",
+      "blob": "083b6c13d0204f61f9109df0da4f8bf320980b16",
+      "bytes": 112,
+      "sha256": "007a9c375109c08d8b24ba4830eb44bcf5beda7f55193a9e8775c445d61c9123"
+    },
+    {
+      "path": "observations/01/pages/032768/original.native.txt",
+      "blob": "de7d5314390439b6f11c435b48e80d581f4225ce",
+      "bytes": 11614,
+      "sha256": "87d4daae6f640c7a421ad4ba81261dcf8a2482cb06487aac68cce54c7edde563"
+    },
+    {
+      "path": "observations/01/pages/032768/original.sdk.json",
+      "blob": "ee5b27142ea5e79d2de1a4f004b08be456f453cd",
+      "bytes": 11785,
+      "sha256": "8decb896fe486ea24bf106ef96c4947da327b8a2093314efae0ff2f972b9bd65"
+    },
+    {
+      "path": "observations/01/pages/040960/request.original.json",
+      "blob": "a6e986e5c7f04d5668ef3fad00a018ffe45d1951",
+      "bytes": 112,
+      "sha256": "a0193eff4ce22f595076489c21674518d4dbf9806828f3e468f91c618413135b"
+    },
+    {
+      "path": "observations/01/pages/040960/original.native.txt",
+      "blob": "bcbc9360446de8b5a5afebe9413ca34e40b060e5",
+      "bytes": 2541,
+      "sha256": "01d4aa18aba695684a00af49ac90fea0ed6248b326ccb0a16e26285c65c127b2"
+    },
+    {
+      "path": "observations/01/pages/040960/original.sdk.json",
+      "blob": "4cfcad85b7005bbaf9cdf86dbb6ce0ce22d15257",
+      "bytes": 2712,
+      "sha256": "722327afc218b7985f4216bad538f0d5764f2e98bd9d7e066dea2dd081a334a2"
+    },
+    {
+      "path": "observations/01/status-0/request.original.json",
+      "blob": "a27869c0524c6d149b29f28d5873e36f06ae2a3d",
+      "bytes": 84,
+      "sha256": "d0f70590462292e3cabb895968e2cd03354fe7e811a8ff2b0c35c493a2fefb4f"
+    },
+    {
+      "path": "observations/01/status-0/original.sdk.json",
+      "blob": "93de128d7352dc680eab89e470d9b7fbf05bbd74",
+      "bytes": 977,
+      "sha256": "e120b2e1355b499da840b4f9d0e70585f54418c628da89dc76d881f791910a73"
+    },
+    {
+      "path": "observations/02/status-0/request.original.json",
+      "blob": "ff320cab38c33298a9b2a90558051933aef5581b",
+      "bytes": 84,
+      "sha256": "ba28c309e638ce83fb1184a5716aba1c0ead8379590f0ec3312fca97403995a1"
+    },
+    {
+      "path": "observations/02/status-0/original.sdk.json",
+      "blob": "b5112f2dbcbbcd8f050b27677801af88c0dcf205",
+      "bytes": 977,
+      "sha256": "4358002e815904403cce3c170465da814209d150634c8a0c647f4ec7ffc25028"
+    },
+    {
+      "path": "archive-errors/page01-offset0-git-whole-read.original.sdk.json",
+      "blob": "ddc8b45cb9056b09ca3a6bc0e94ea3aff95211f2",
+      "bytes": 304,
+      "sha256": "5710b903750ccc9853075a23278fc1cbcc7468c124b9087e9d09c592e5d2bede"
+    }
+  ],
+  "failures": [],
+  "Runtime_calls": 0,
+  "new_Git_blob_creates": 0
+}

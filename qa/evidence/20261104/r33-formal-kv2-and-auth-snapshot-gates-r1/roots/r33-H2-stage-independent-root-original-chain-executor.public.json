@@ -1,0 +1,7 @@
+{
+  "chunk_id": "7d7aa5",
+  "wall_time_seconds": 0.000025579,
+  "exit_code": 0,
+  "original_token_count": 74,
+  "output": "{\"ok\": true, \"checks_passed\": 395, \"result_path\": \"/workspace/scratch/f86faac821c4/r32_recovery/r33-H2-stage-original-chain-root-result.public.json\", \"blob\": \"9f6617e593a66d63da9f7fc10200a2e28ba56c4d\", \"bytes\": 59633, \"sha256\": \"f28359be701e2c8a42721bf17e0aecde366c0f86a9ee56c4166748a88fe9923d\"}\n"
+}

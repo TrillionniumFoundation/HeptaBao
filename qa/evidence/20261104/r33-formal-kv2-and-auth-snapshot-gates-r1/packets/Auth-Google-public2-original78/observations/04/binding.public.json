@@ -1,0 +1,36 @@
+{
+  "schema": "heptabao.google-public-input.body-binding.v1",
+  "id": "google-package",
+  "operationId": "7a17d296389a4dac43847662e338e39d3955274aadafbd537755d5e9f649c8db",
+  "request": {
+    "blob": "d47264958f9a498e14d4652e84db91707816011a",
+    "bytes": 399,
+    "sha256": "eb1662f64292602133d56ea8ae0142d2b7bc04c5db7ef278ce60398d07532e46"
+  },
+  "native": {
+    "blob": "a5c9e9943005317adbded114c79a3cc3d163a9a7",
+    "bytes": 811,
+    "sha256": "d37c3b3b64c74594c8075a27563be29aeae3fff51fc400dc057723ecd9d7f104"
+  },
+  "payload": {
+    "blob": "2c6c233c681f6332042553521f658c38b1855137",
+    "bytes": 914,
+    "sha256": "2901219eb9e16192f9110f54ed4f449a77081c5b3652a6ba514bdb5445498d3a"
+  },
+  "pages": 1,
+  "closed": true,
+  "nativeFutureActive": false,
+  "metadataBinding": {
+    "blob": "524bffecd8929c42e4db384fb0ca2ec93c667353",
+    "bytes": 1380,
+    "sha256": "49efb3d9c1eff177dad0a8808fd06933ffb62a67ab83eba75633cb126e582775"
+  },
+  "body": {
+    "blob": "eca1335cb1e73aafcb53f89bba324673f9fa4493",
+    "bytes": 375,
+    "sha256": "398f73305017a1d3813610825814c6e1dd93b683da088cb6df068a31c639fcc3",
+    "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/package.json",
+    "version": "16777233:405240659:375:1784843466392296043:1784843466392296043"
+  },
+  "exactVersionAndWholeShaAndEof": true
+}

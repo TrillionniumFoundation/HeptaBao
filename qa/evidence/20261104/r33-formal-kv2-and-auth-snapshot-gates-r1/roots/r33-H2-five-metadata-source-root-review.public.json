@@ -1,0 +1,242 @@
+{
+  "schema": "heptabao.root-H2-five-fixed-metadata-source-review.r33.v1",
+  "status": "PASS_SOURCE_READY_FOR_SEPARATE_LANE_GO",
+  "checks_passed": 32,
+  "checks": [
+    "whole-source29-exact",
+    "same-original-instrument12-table",
+    "exact-existing-qualification-references",
+    "prior-independent-info-0",
+    "prior-independent-info-1",
+    "prior-independent-info-2",
+    "prior-independent-info-3",
+    "prior-independent-info-4",
+    "prior-independent-info-5",
+    "prior-independent-info-6",
+    "exact-five-pending-ordinals",
+    "request-7-exact-native-shape-and-pin",
+    "request-7-receiver-binding-no-new-stat",
+    "request-7-read-only-scope",
+    "request-8-exact-native-shape-and-pin",
+    "request-8-receiver-binding-no-new-stat",
+    "request-8-read-only-scope",
+    "request-9-exact-native-shape-and-pin",
+    "request-9-receiver-binding-no-new-stat",
+    "request-9-read-only-scope",
+    "request-10-exact-native-shape-and-pin",
+    "request-10-receiver-binding-no-new-stat",
+    "request-10-read-only-scope",
+    "request-11-exact-native-shape-and-pin",
+    "request-11-receiver-binding-no-new-stat",
+    "request-11-read-only-scope",
+    "all-H2-target-identities-unobserved",
+    "historical-unsubmitted-plan-not-invented",
+    "old-direct-unknowns-retained",
+    "lost-ACK-not-closed-by-reused-false",
+    "closed-finite-read-protocol",
+    "source-only-not-runtime-authority"
+  ],
+  "source_packet": "75603caa34edcd1b3d209255b5d78780fd48c182",
+  "requests": [
+    {
+      "index": 7,
+      "role": "build_controller",
+      "path": "requests/07-build_controller.file-info.public.json",
+      "blob": "d6c4523a0ea985ceec897184f2adacd8dfe27e02",
+      "bytes": 320,
+      "sha256": "eed851d3b3c84be824b5a31dd46f4d32489540a1253893504e8d5ab81faedc17",
+      "host": "desktop",
+      "target_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/build_native_h2_client_r1.py",
+      "idempotency_key": "ha-qa12-destination-7-file-info-observation-r1-20261105",
+      "expected_historical_receiver": {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/build_native_h2_client_r1.py",
+        "version": "2050:7257431:59791:1793882066247718382:1793882066247718382",
+        "full9_decimal": [
+          "2050",
+          "7257431",
+          "1000",
+          "1000",
+          "33024",
+          "1",
+          "59791",
+          "1793882066247718382",
+          "1793882066247718382"
+        ],
+        "mode": 256,
+        "bytes": 59791,
+        "sha256": "7ea25347f71764f1ed3d459d24b92750ef82c361878e9c856c7a7e8fe699bc15",
+        "same_fd_readback": {
+          "bytes": 59791,
+          "sha256": "7ea25347f71764f1ed3d459d24b92750ef82c361878e9c856c7a7e8fe699bc15"
+        },
+        "create_only": true,
+        "fsynced": true,
+        "source_core_blob": "4f45e1efca410e22d9607352f9ffff451fcbc305"
+      }
+    },
+    {
+      "index": 8,
+      "role": "build_binding",
+      "path": "requests/08-build_binding.file-info.public.json",
+      "blob": "a26f1abc3870b092e6f77424c8c559674e2a44de",
+      "bytes": 318,
+      "sha256": "e6bed1b646b6251626c052d77a73dbc03cc31cd01e39519d8e9b09e17425545e",
+      "host": "desktop",
+      "target_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/build-binding.private.json",
+      "idempotency_key": "ha-qa12-destination-8-file-info-observation-r1-20261105",
+      "expected_historical_receiver": {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/build-binding.private.json",
+        "version": "2050:7257432:4039:1793882066255718130:1793882066255718130",
+        "full9_decimal": [
+          "2050",
+          "7257432",
+          "1000",
+          "1000",
+          "33024",
+          "1",
+          "4039",
+          "1793882066255718130",
+          "1793882066255718130"
+        ],
+        "mode": 256,
+        "bytes": 4039,
+        "sha256": "ac127d3e67971ad6b9ae987c0fc6437f8882ff00d9480acbc12ed149796dd12a",
+        "same_fd_readback": {
+          "bytes": 4039,
+          "sha256": "ac127d3e67971ad6b9ae987c0fc6437f8882ff00d9480acbc12ed149796dd12a"
+        },
+        "create_only": true,
+        "fsynced": true,
+        "source_core_blob": "4f45e1efca410e22d9607352f9ffff451fcbc305"
+      }
+    },
+    {
+      "index": 9,
+      "role": "component_stdout",
+      "path": "requests/09-component_stdout.file-info.public.json",
+      "blob": "55c0271a76986e5094f092d0275a09432e7d7686",
+      "bytes": 309,
+      "sha256": "6bb5d35df08427241725ee8c41b3e47318cc8f9d90512e9d4315339c1f853905",
+      "host": "desktop",
+      "target_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/components.stdout",
+      "idempotency_key": "ha-qa12-destination-9-file-info-observation-r1-20261105",
+      "expected_historical_receiver": {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/components.stdout",
+        "version": "2050:7257433:633:1793882066263717877:1793882066263717877",
+        "full9_decimal": [
+          "2050",
+          "7257433",
+          "1000",
+          "1000",
+          "33024",
+          "1",
+          "633",
+          "1793882066263717877",
+          "1793882066263717877"
+        ],
+        "mode": 256,
+        "bytes": 633,
+        "sha256": "9c8b4f62679c5771d7a0b575674f9961e64afaefe46eb30b1825c2f696ed3274",
+        "same_fd_readback": {
+          "bytes": 633,
+          "sha256": "9c8b4f62679c5771d7a0b575674f9961e64afaefe46eb30b1825c2f696ed3274"
+        },
+        "create_only": true,
+        "fsynced": true,
+        "source_core_blob": "4f45e1efca410e22d9607352f9ffff451fcbc305"
+      }
+    },
+    {
+      "index": 10,
+      "role": "component_record",
+      "path": "requests/10-component_record.file-info.public.json",
+      "blob": "85af68bf85098da2e6fec63c10d558addd33eb85",
+      "bytes": 315,
+      "sha256": "c410c0f33ac3c48782d293e222ec5338da09b5098adbdb7a3e88067e62634425",
+      "host": "desktop",
+      "target_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/components.public.json",
+      "idempotency_key": "ha-qa12-destination-10-file-info-observation-r1-20261105",
+      "expected_historical_receiver": {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/components.public.json",
+        "version": "2050:7257434:804:1793882066271717625:1793882066271717625",
+        "full9_decimal": [
+          "2050",
+          "7257434",
+          "1000",
+          "1000",
+          "33024",
+          "1",
+          "804",
+          "1793882066271717625",
+          "1793882066271717625"
+        ],
+        "mode": 256,
+        "bytes": 804,
+        "sha256": "41a0386206a00967a450df01dab89d008d8fc543c4e84702f80aaa1fcbe1f829",
+        "same_fd_readback": {
+          "bytes": 804,
+          "sha256": "41a0386206a00967a450df01dab89d008d8fc543c4e84702f80aaa1fcbe1f829"
+        },
+        "create_only": true,
+        "fsynced": true,
+        "source_core_blob": "4f45e1efca410e22d9607352f9ffff451fcbc305"
+      }
+    },
+    {
+      "index": 11,
+      "role": "component_list_stdout",
+      "path": "requests/11-component_list_stdout.file-info.public.json",
+      "blob": "d76f26c6113fdf70d2cc81df84693c94b6d79138",
+      "bytes": 315,
+      "sha256": "2900f918ecf2e489cd355586b3e86c5221db70781e64ff16b12c53cf47459fc7",
+      "host": "desktop",
+      "target_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/components-list.stdout",
+      "idempotency_key": "ha-qa12-destination-11-file-info-observation-r1-20261105",
+      "expected_historical_receiver": {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/components-list.stdout",
+        "version": "2050:7257435:507:1793882066280717341:1793882066280717341",
+        "full9_decimal": [
+          "2050",
+          "7257435",
+          "1000",
+          "1000",
+          "33024",
+          "1",
+          "507",
+          "1793882066280717341",
+          "1793882066280717341"
+        ],
+        "mode": 256,
+        "bytes": 507,
+        "sha256": "cebfab7307ba716aeebf08514df4cc6cf9a638009579168ced3b621cf8c10d5d",
+        "same_fd_readback": {
+          "bytes": 507,
+          "sha256": "cebfab7307ba716aeebf08514df4cc6cf9a638009579168ced3b621cf8c10d5d"
+        },
+        "create_only": true,
+        "fsynced": true,
+        "source_core_blob": "4f45e1efca410e22d9607352f9ffff451fcbc305"
+      }
+    }
+  ],
+  "prior_independent_infos": 7,
+  "remaining_independent_infos": 5,
+  "source_only": true,
+  "Runtime_calls": 0,
+  "actual_new_metadata_observed": 0,
+  "old_UNKNOWNs_preserved": true,
+  "missing_historical_unsubmitted_plan_acknowledged": true,
+  "file_info_reads_full_file_for_SHA": true,
+  "file_info_not_bounded_by_binary_body_budget": true,
+  "body_reads_authorized": false,
+  "stage_authorized": false,
+  "product_authorized": false,
+  "author94_not_rerun": true,
+  "full_OpenBao271_replacement": false,
+  "verifier": {
+    "name": "r33-H2-five-metadata-source-root-verifier.js",
+    "blob": "958fbfcb8e44239ca1f05d2d5e4ffc61e85a123d",
+    "bytes": 5051,
+    "sha256": "dda06a0763215fee44f9d0a5b33b0da751de2b7035e4927d9f4c6182daac1893"
+  }
+}

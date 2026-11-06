@@ -1,0 +1,62 @@
+{
+  "schema": "heptabao.current4e808-H2.create-only-stage.root-GO.v1",
+  "decision": "GO_ONE_EXACT_STAGE_ONLY",
+  "owner": "/root/ha_validation",
+  "lane": "A",
+  "lane_release": "e14878d04a20c92baa806c541580a1d64b1f4ce8",
+  "source_review": "e92d01ad7beebe19ebb316bb850ac2edc35281e2",
+  "source_whole_tree": "9fa416e0d2bafa213bee8fee7dd82ddf3199484e",
+  "incoming_metadata_root_review": "0fa6449871c5cddc938d287cdd0a0bcce5c9c2bd",
+  "incoming_all12_qualified": true,
+  "request": {
+    "blob": "773c7e054a36dfc175632a83ed23db5b5600ad58",
+    "bytes": 369727,
+    "sha256": "12373f98e11e1040558067bfdffe0604dc71c2ed720cf6261b238ea79ca3c01b"
+  },
+  "typed_request_sha256": "d09ca5bcec50de31ca854f1b2885ed117bd7a3c6f357d6db39fbc87cd6566a96",
+  "native_fingerprint": "15032071887093030449",
+  "host": "desktop",
+  "executable": "/usr/bin/python3.12",
+  "idempotency_key": "heptabao-normal-h2-4e808-local-stage-a8bf2767-20261105-r2",
+  "outer_timeout_seconds": 330,
+  "controller_deadline_seconds": 300,
+  "candidate_blob": "678e519f17c474b5610651bcbb93b43d186124c5",
+  "candidate_sha256": "a8bf27675b1a00b08f60d33fbed84405c033d537fb9562d963b9ff725264fca1",
+  "carrier_blob": "b07825d48a091c0fcd618eb54653b625007fd8b1",
+  "carrier_sha256": "6700283209e4de4433d0ef562c696c9d95ea6a12a2f0c3926701e4cc11674883",
+  "CONTROL": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2",
+  "scope": "Create-only preparation in this absent CONTROL; exact reviewed candidate/carrier only. Original source/input identities, modes, deadlines, failure/finally and fences remain. No child, network, prepare or product fixture execution.",
+  "all22_target_identities_before_call": "UNOBSERVED",
+  "external_exact_intent_before_start": true,
+  "original_SDK_saved_before_isError_and_lossless_parse": true,
+  "one_current_call_and_one_future_per_lane": true,
+  "automatic_retry": false,
+  "missing_ACK_or_UNKNOWN": "Stop new business admissions; preserve original error. No replay/path/key change. Reconcile exact original identity only.",
+  "same_job_readonly_closure": {
+    "process_status": true,
+    "process_read": true,
+    "process_read_each_stream_max_bytes": 16384,
+    "operation_status": true,
+    "immutable_operation_page_bytes": 8192,
+    "exact_intent_before_every_call": true
+  },
+  "success_requires": [
+    "Same exact request and lossless native fingerprint",
+    "Original job exit0/full/durable/dualEOF within original bounds",
+    "Post-finally stdout confirms all owned stage FDs closed; preclose receipt alone insufficient",
+    "Actual output bindings and target metadata checked before prepare/live"
+  ],
+  "followup_files": "A new finite exact metadata/body GO is required for fixed public result and public-content binding; no recursive read",
+  "prepare_authorized": false,
+  "live_authorized": false,
+  "product_cases_executed_by_this_GO": 0,
+  "production_cutover": false,
+  "cleanup": false,
+  "full_replacement": false,
+  "local_pre_admission_correction": {
+    "name": "r33-H2-stage-request-local-serialization-correction",
+    "blob": "0ae9e61a9b23a2310128cd00d992e798717d61da",
+    "bytes": 796,
+    "sha256": "98ea7f600b0bf81bf5c7c9e81c4748bc15ecd838fe1e73b0d4e6a65fc19e2ee3"
+  }
+}

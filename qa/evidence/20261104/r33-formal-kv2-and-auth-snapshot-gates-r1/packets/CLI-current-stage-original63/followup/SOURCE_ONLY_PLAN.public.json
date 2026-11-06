@@ -1,0 +1,108 @@
+{
+  "schema": "heptabao.cli-stage.two-metadata-two-body.source-proposal.v1",
+  "scope": "Two fixed staged files only, source proposal; no Runtime submitted.",
+  "original_GO": "2e6623f5d7c9a05e66e4c22b1485dba8a1924d56",
+  "original_stage_job": "1a1ada8b25f-fc05-5a8d",
+  "authority": {
+    "name": "cli-stage-authority-native-original",
+    "blob": "206a56b5ea6584916cdae30b22e907771e4d6910",
+    "bytes": 733,
+    "sha256": "0ed87cedfada036b5ef605bdaf9b957fdb49679961939a70b0ff560efb8089ba"
+  },
+  "stdout": {
+    "name": "cli-stage-stdout-original",
+    "blob": "e435ea9adce9f7d2439598f4340a74aeccb8b0c9",
+    "bytes": 13593,
+    "sha256": "92135afdb4169bb2efa3356ee1763089c18ae2af69989a79517cf8f0e151e3c9"
+  },
+  "stderr": {
+    "name": "cli-stage-stderr-original",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "closed_observers": [
+    {
+      "name": "authority",
+      "operation_id": "d30eb9841641def4c4bd1c262e1a2926c0710552a568a6b46b915a27a92dd0da",
+      "closed": true,
+      "pages": 1,
+      "status": {
+        "name": "cli-stage-authority-status-original-native",
+        "blob": "f12969db9cd79e37e87e42cf857f331c0eb52e92",
+        "bytes": 805,
+        "sha256": "b94b18d13f9e34a96463c3b8288896a793dc073d86c9b96ce2dda8d2548b579a"
+      }
+    },
+    {
+      "name": "streams0",
+      "operation_id": "3d7bcfb13c1898aa6c675e7894fc8510754c18a209f9a6efca21cb74bc79979a",
+      "closed": true,
+      "pages": 6,
+      "status": {
+        "name": "cli-stage-streams0-status-original-native",
+        "blob": "a7dbbc1cea2aff5de0c5f23390117ac5e1340d18",
+        "bytes": 803,
+        "sha256": "0953f913d2a816a9f228d3b05670fd78e20381df7a2976250f434eb22b8a852b"
+      }
+    }
+  ],
+  "Runtime_call_inflight": false,
+  "active_native_future": null,
+  "requests": [
+    {
+      "role": "stage_result",
+      "name": "cli-stage-stage_result-metadata-request",
+      "blob": "fbf7c6bc9ea47e9be35a7ad43c16ddeae1788266",
+      "bytes": 319,
+      "sha256": "a7342b12fb633d2437735d671041edbebfe8cdc17c15cf1cc8c81312c46f908d"
+    },
+    {
+      "role": "binding",
+      "name": "cli-stage-binding-metadata-request",
+      "blob": "d136d4ae0e978742183d8557245c9b06220e30bb",
+      "bytes": 316,
+      "sha256": "233a4e966384457377975f521e11a762a3781d36d350d111262324a9b72c0861"
+    }
+  ],
+  "conditional_body_templates": {
+    "name": "cli-stage-conditional-two-body-templates",
+    "blob": "42dd13901fcd2b7cd09cfb834e91e886a57537cc",
+    "bytes": 1718,
+    "sha256": "34e9f265bf71bd2061759e000736795f320e082a4aa2a0478445be38416dac07"
+  },
+  "sequence": "First the two exact file_info observations; after both complete and pass their respective binding gates, derive and persist each exact body request using its actual version and actual size, then submit one at a time.",
+  "metadata_gates": {
+    "fixed_host": "desktop",
+    "fixed_paths": [
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/stage.result.public.json",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/binding.private.json"
+    ],
+    "regular": true,
+    "symlink": false,
+    "nlink": 1,
+    "uid": 1000,
+    "gid": 1000,
+    "permissions_octal": "0600",
+    "binding_requires_stdout_size_sha256_and_identity_exact": true,
+    "stage_result_size_sha256": "not independently observed yet; preserved as unresolved",
+    "full9_decimal_integers": "lossless; version string retained byte-for-byte"
+  },
+  "body_gates": {
+    "offset": 0,
+    "limit": "exact observed file size, >0 and <=65536",
+    "expected_version": "verbatim independently observed version",
+    "native_body_read_count": 2,
+    "per_file_max_bytes": 65536,
+    "aggregate_max_bytes": 131072,
+    "immutable_page_bytes": 8192,
+    "one_native_future": true,
+    "whole_sha_size_version_must_equal_independent_info": true,
+    "complete_EOF_required": true,
+    "stop_on_any_error_or_mismatch": true,
+    "no_path_switch_no_extra_info": true,
+    "no_prepare_live_product": true
+  },
+  "stage_receipt_semantics": "Pre-close durable stage.result must not independently prove FD closure; the already complete authoritative exit and post-finally stdout remain the closure evidence.",
+  "all_new_requests_submitted": 0
+}

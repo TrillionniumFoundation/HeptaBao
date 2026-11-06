@@ -1,0 +1,32 @@
+{
+  "schema": "heptabao.google-declared-entry.original-observation.intent.r1",
+  "stage": "metadata",
+  "go": {
+    "blob": "575b8d4e64924d9306677d80e615f1a1ee570bce",
+    "sha256": "2e00b0ea969a50d1e874306342bef200de60478b24853542cb9aec0a26c5829a"
+  },
+  "request": {
+    "blob": "28b92dd34125354c01ee4e6b04a61c23103ee88f",
+    "bytes": 273,
+    "sha256": "2707b0502aae10d672a340c85462937bd14cbbb3e98b7c337b278a94ad68b136"
+  },
+  "exact": {
+    "idempotency_key": "heptabao-mac-google-declared-entry-metadata-eca1335c-20261105-r1",
+    "operation": {
+      "tool": "file_info",
+      "arguments": {
+        "host": "mac",
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/index.js"
+      }
+    }
+  },
+  "operationId": null,
+  "submissionState": "NOT_SUBMITTED",
+  "lane": "A",
+  "maxNativeFutures": 1,
+  "originalPageLimit": 8192,
+  "bodyConditionalOnClosedMetadataAndApprovedDeriver": true,
+  "privateCapsuleReads": 0,
+  "sdkExecutions": 0,
+  "providerCalls": 0
+}

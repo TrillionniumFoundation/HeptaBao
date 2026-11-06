@@ -1,0 +1,1126 @@
+{
+  "schema": "heptabao.h2qa.metadata5.original-chain.verification.v1",
+  "passed": true,
+  "checks": 278,
+  "operation_count": 5,
+  "immutable_pages": 5,
+  "payload_bytes": 3091,
+  "independent_info_bytes": 2506,
+  "new_native_operations_by_verifier": 0,
+  "product_tests": 0,
+  "historical_UNKNOWN_preserved": true,
+  "results": [
+    {
+      "name": "GO.blob",
+      "passed": true
+    },
+    {
+      "name": "GO.bytes",
+      "passed": true
+    },
+    {
+      "name": "GO.sha256",
+      "passed": true
+    },
+    {
+      "name": "exact_five_indices",
+      "passed": true
+    },
+    {
+      "name": "7.exact_request.blob",
+      "passed": true
+    },
+    {
+      "name": "7.exact_request.bytes",
+      "passed": true
+    },
+    {
+      "name": "7.exact_request.sha256",
+      "passed": true
+    },
+    {
+      "name": "7.closed_file_info_shape",
+      "passed": true
+    },
+    {
+      "name": "7.intent_request",
+      "passed": true
+    },
+    {
+      "name": "7.intent_request_pin.blob",
+      "passed": true
+    },
+    {
+      "name": "7.intent_request_pin.bytes",
+      "passed": true
+    },
+    {
+      "name": "7.intent_request_pin.sha256",
+      "passed": true
+    },
+    {
+      "name": "7.intent_prior_closed",
+      "passed": true
+    },
+    {
+      "name": "7.intent_expected",
+      "passed": true
+    },
+    {
+      "name": "observations/07-build_controller/admission.original.sdk.json.not_error",
+      "passed": true
+    },
+    {
+      "name": "observations/07-build_controller/admission.original.sdk.json.one_text",
+      "passed": true
+    },
+    {
+      "name": "7.admission_SDK_exact",
+      "passed": true
+    },
+    {
+      "name": "observations/07-build_controller/status.original.sdk.json.not_error",
+      "passed": true
+    },
+    {
+      "name": "observations/07-build_controller/status.original.sdk.json.one_text",
+      "passed": true
+    },
+    {
+      "name": "7.status_SDK_exact",
+      "passed": true
+    },
+    {
+      "name": "observations/07-build_controller/pages/000000.original.sdk.json.not_error",
+      "passed": true
+    },
+    {
+      "name": "observations/07-build_controller/pages/000000.original.sdk.json.one_text",
+      "passed": true
+    },
+    {
+      "name": "7.page_SDK_exact",
+      "passed": true
+    },
+    {
+      "name": "7.admission_file_info",
+      "passed": true
+    },
+    {
+      "name": "7.status_same_id",
+      "passed": true
+    },
+    {
+      "name": "7.closed",
+      "passed": true
+    },
+    {
+      "name": "7.status_exact_request",
+      "passed": true
+    },
+    {
+      "name": "7.page_exact_request",
+      "passed": true
+    },
+    {
+      "name": "7.operation_status_intent",
+      "passed": true
+    },
+    {
+      "name": "7.operation_result_intent",
+      "passed": true
+    },
+    {
+      "name": "7.immutable_identity",
+      "passed": true
+    },
+    {
+      "name": "7.original_page_extent",
+      "passed": true
+    },
+    {
+      "name": "7.payload_hash",
+      "passed": true
+    },
+    {
+      "name": "7.payload_exact",
+      "passed": true
+    },
+    {
+      "name": "7.native_original_success",
+      "passed": true
+    },
+    {
+      "name": "7.native_exact",
+      "passed": true
+    },
+    {
+      "name": "7.version_decimal_lossless",
+      "passed": true
+    },
+    {
+      "name": "7.actual_path",
+      "passed": true
+    },
+    {
+      "name": "7.actual_size",
+      "passed": true
+    },
+    {
+      "name": "7.actual_sha256",
+      "passed": true
+    },
+    {
+      "name": "7.actual_version",
+      "passed": true
+    },
+    {
+      "name": "7.actual_full9",
+      "passed": true
+    },
+    {
+      "name": "7.actual_platform_mode",
+      "passed": true
+    },
+    {
+      "name": "7.closure_actual",
+      "passed": true
+    },
+    {
+      "name": "7.closure_native_pin.blob",
+      "passed": true
+    },
+    {
+      "name": "7.closure_native_pin.bytes",
+      "passed": true
+    },
+    {
+      "name": "7.closure_native_pin.sha256",
+      "passed": true
+    },
+    {
+      "name": "7.closure_payload_pin.blob",
+      "passed": true
+    },
+    {
+      "name": "7.closure_payload_pin.bytes",
+      "passed": true
+    },
+    {
+      "name": "7.closure_payload_pin.sha256",
+      "passed": true
+    },
+    {
+      "name": "7.table_actual",
+      "passed": true
+    },
+    {
+      "name": "7.table_info_pin.blob",
+      "passed": true
+    },
+    {
+      "name": "7.table_info_pin.bytes",
+      "passed": true
+    },
+    {
+      "name": "7.table_info_pin.sha256",
+      "passed": true
+    },
+    {
+      "name": "7.table_closure_pin.blob",
+      "passed": true
+    },
+    {
+      "name": "7.table_closure_pin.bytes",
+      "passed": true
+    },
+    {
+      "name": "7.table_closure_pin.sha256",
+      "passed": true
+    },
+    {
+      "name": "8.exact_request.blob",
+      "passed": true
+    },
+    {
+      "name": "8.exact_request.bytes",
+      "passed": true
+    },
+    {
+      "name": "8.exact_request.sha256",
+      "passed": true
+    },
+    {
+      "name": "8.closed_file_info_shape",
+      "passed": true
+    },
+    {
+      "name": "8.intent_request",
+      "passed": true
+    },
+    {
+      "name": "8.intent_request_pin.blob",
+      "passed": true
+    },
+    {
+      "name": "8.intent_request_pin.bytes",
+      "passed": true
+    },
+    {
+      "name": "8.intent_request_pin.sha256",
+      "passed": true
+    },
+    {
+      "name": "8.intent_prior_closed",
+      "passed": true
+    },
+    {
+      "name": "8.intent_expected",
+      "passed": true
+    },
+    {
+      "name": "observations/08-build_binding/admission.original.sdk.json.not_error",
+      "passed": true
+    },
+    {
+      "name": "observations/08-build_binding/admission.original.sdk.json.one_text",
+      "passed": true
+    },
+    {
+      "name": "8.admission_SDK_exact",
+      "passed": true
+    },
+    {
+      "name": "observations/08-build_binding/status.original.sdk.json.not_error",
+      "passed": true
+    },
+    {
+      "name": "observations/08-build_binding/status.original.sdk.json.one_text",
+      "passed": true
+    },
+    {
+      "name": "8.status_SDK_exact",
+      "passed": true
+    },
+    {
+      "name": "observations/08-build_binding/pages/000000.original.sdk.json.not_error",
+      "passed": true
+    },
+    {
+      "name": "observations/08-build_binding/pages/000000.original.sdk.json.one_text",
+      "passed": true
+    },
+    {
+      "name": "8.page_SDK_exact",
+      "passed": true
+    },
+    {
+      "name": "8.admission_file_info",
+      "passed": true
+    },
+    {
+      "name": "8.status_same_id",
+      "passed": true
+    },
+    {
+      "name": "8.closed",
+      "passed": true
+    },
+    {
+      "name": "8.status_exact_request",
+      "passed": true
+    },
+    {
+      "name": "8.page_exact_request",
+      "passed": true
+    },
+    {
+      "name": "8.operation_status_intent",
+      "passed": true
+    },
+    {
+      "name": "8.operation_result_intent",
+      "passed": true
+    },
+    {
+      "name": "8.immutable_identity",
+      "passed": true
+    },
+    {
+      "name": "8.original_page_extent",
+      "passed": true
+    },
+    {
+      "name": "8.payload_hash",
+      "passed": true
+    },
+    {
+      "name": "8.payload_exact",
+      "passed": true
+    },
+    {
+      "name": "8.native_original_success",
+      "passed": true
+    },
+    {
+      "name": "8.native_exact",
+      "passed": true
+    },
+    {
+      "name": "8.version_decimal_lossless",
+      "passed": true
+    },
+    {
+      "name": "8.actual_path",
+      "passed": true
+    },
+    {
+      "name": "8.actual_size",
+      "passed": true
+    },
+    {
+      "name": "8.actual_sha256",
+      "passed": true
+    },
+    {
+      "name": "8.actual_version",
+      "passed": true
+    },
+    {
+      "name": "8.actual_full9",
+      "passed": true
+    },
+    {
+      "name": "8.actual_platform_mode",
+      "passed": true
+    },
+    {
+      "name": "8.closure_actual",
+      "passed": true
+    },
+    {
+      "name": "8.closure_native_pin.blob",
+      "passed": true
+    },
+    {
+      "name": "8.closure_native_pin.bytes",
+      "passed": true
+    },
+    {
+      "name": "8.closure_native_pin.sha256",
+      "passed": true
+    },
+    {
+      "name": "8.closure_payload_pin.blob",
+      "passed": true
+    },
+    {
+      "name": "8.closure_payload_pin.bytes",
+      "passed": true
+    },
+    {
+      "name": "8.closure_payload_pin.sha256",
+      "passed": true
+    },
+    {
+      "name": "8.table_actual",
+      "passed": true
+    },
+    {
+      "name": "8.table_info_pin.blob",
+      "passed": true
+    },
+    {
+      "name": "8.table_info_pin.bytes",
+      "passed": true
+    },
+    {
+      "name": "8.table_info_pin.sha256",
+      "passed": true
+    },
+    {
+      "name": "8.table_closure_pin.blob",
+      "passed": true
+    },
+    {
+      "name": "8.table_closure_pin.bytes",
+      "passed": true
+    },
+    {
+      "name": "8.table_closure_pin.sha256",
+      "passed": true
+    },
+    {
+      "name": "9.exact_request.blob",
+      "passed": true
+    },
+    {
+      "name": "9.exact_request.bytes",
+      "passed": true
+    },
+    {
+      "name": "9.exact_request.sha256",
+      "passed": true
+    },
+    {
+      "name": "9.closed_file_info_shape",
+      "passed": true
+    },
+    {
+      "name": "9.intent_request",
+      "passed": true
+    },
+    {
+      "name": "9.intent_request_pin.blob",
+      "passed": true
+    },
+    {
+      "name": "9.intent_request_pin.bytes",
+      "passed": true
+    },
+    {
+      "name": "9.intent_request_pin.sha256",
+      "passed": true
+    },
+    {
+      "name": "9.intent_prior_closed",
+      "passed": true
+    },
+    {
+      "name": "9.intent_expected",
+      "passed": true
+    },
+    {
+      "name": "observations/09-component_stdout/admission.original.sdk.json.not_error",
+      "passed": true
+    },
+    {
+      "name": "observations/09-component_stdout/admission.original.sdk.json.one_text",
+      "passed": true
+    },
+    {
+      "name": "9.admission_SDK_exact",
+      "passed": true
+    },
+    {
+      "name": "observations/09-component_stdout/status.original.sdk.json.not_error",
+      "passed": true
+    },
+    {
+      "name": "observations/09-component_stdout/status.original.sdk.json.one_text",
+      "passed": true
+    },
+    {
+      "name": "9.status_SDK_exact",
+      "passed": true
+    },
+    {
+      "name": "observations/09-component_stdout/pages/000000.original.sdk.json.not_error",
+      "passed": true
+    },
+    {
+      "name": "observations/09-component_stdout/pages/000000.original.sdk.json.one_text",
+      "passed": true
+    },
+    {
+      "name": "9.page_SDK_exact",
+      "passed": true
+    },
+    {
+      "name": "9.admission_file_info",
+      "passed": true
+    },
+    {
+      "name": "9.status_same_id",
+      "passed": true
+    },
+    {
+      "name": "9.closed",
+      "passed": true
+    },
+    {
+      "name": "9.status_exact_request",
+      "passed": true
+    },
+    {
+      "name": "9.page_exact_request",
+      "passed": true
+    },
+    {
+      "name": "9.operation_status_intent",
+      "passed": true
+    },
+    {
+      "name": "9.operation_result_intent",
+      "passed": true
+    },
+    {
+      "name": "9.immutable_identity",
+      "passed": true
+    },
+    {
+      "name": "9.original_page_extent",
+      "passed": true
+    },
+    {
+      "name": "9.payload_hash",
+      "passed": true
+    },
+    {
+      "name": "9.payload_exact",
+      "passed": true
+    },
+    {
+      "name": "9.native_original_success",
+      "passed": true
+    },
+    {
+      "name": "9.native_exact",
+      "passed": true
+    },
+    {
+      "name": "9.version_decimal_lossless",
+      "passed": true
+    },
+    {
+      "name": "9.actual_path",
+      "passed": true
+    },
+    {
+      "name": "9.actual_size",
+      "passed": true
+    },
+    {
+      "name": "9.actual_sha256",
+      "passed": true
+    },
+    {
+      "name": "9.actual_version",
+      "passed": true
+    },
+    {
+      "name": "9.actual_full9",
+      "passed": true
+    },
+    {
+      "name": "9.actual_platform_mode",
+      "passed": true
+    },
+    {
+      "name": "9.closure_actual",
+      "passed": true
+    },
+    {
+      "name": "9.closure_native_pin.blob",
+      "passed": true
+    },
+    {
+      "name": "9.closure_native_pin.bytes",
+      "passed": true
+    },
+    {
+      "name": "9.closure_native_pin.sha256",
+      "passed": true
+    },
+    {
+      "name": "9.closure_payload_pin.blob",
+      "passed": true
+    },
+    {
+      "name": "9.closure_payload_pin.bytes",
+      "passed": true
+    },
+    {
+      "name": "9.closure_payload_pin.sha256",
+      "passed": true
+    },
+    {
+      "name": "9.table_actual",
+      "passed": true
+    },
+    {
+      "name": "9.table_info_pin.blob",
+      "passed": true
+    },
+    {
+      "name": "9.table_info_pin.bytes",
+      "passed": true
+    },
+    {
+      "name": "9.table_info_pin.sha256",
+      "passed": true
+    },
+    {
+      "name": "9.table_closure_pin.blob",
+      "passed": true
+    },
+    {
+      "name": "9.table_closure_pin.bytes",
+      "passed": true
+    },
+    {
+      "name": "9.table_closure_pin.sha256",
+      "passed": true
+    },
+    {
+      "name": "10.exact_request.blob",
+      "passed": true
+    },
+    {
+      "name": "10.exact_request.bytes",
+      "passed": true
+    },
+    {
+      "name": "10.exact_request.sha256",
+      "passed": true
+    },
+    {
+      "name": "10.closed_file_info_shape",
+      "passed": true
+    },
+    {
+      "name": "10.intent_request",
+      "passed": true
+    },
+    {
+      "name": "10.intent_request_pin.blob",
+      "passed": true
+    },
+    {
+      "name": "10.intent_request_pin.bytes",
+      "passed": true
+    },
+    {
+      "name": "10.intent_request_pin.sha256",
+      "passed": true
+    },
+    {
+      "name": "10.intent_prior_closed",
+      "passed": true
+    },
+    {
+      "name": "10.intent_expected",
+      "passed": true
+    },
+    {
+      "name": "observations/10-component_record/admission.original.sdk.json.not_error",
+      "passed": true
+    },
+    {
+      "name": "observations/10-component_record/admission.original.sdk.json.one_text",
+      "passed": true
+    },
+    {
+      "name": "10.admission_SDK_exact",
+      "passed": true
+    },
+    {
+      "name": "observations/10-component_record/status.original.sdk.json.not_error",
+      "passed": true
+    },
+    {
+      "name": "observations/10-component_record/status.original.sdk.json.one_text",
+      "passed": true
+    },
+    {
+      "name": "10.status_SDK_exact",
+      "passed": true
+    },
+    {
+      "name": "observations/10-component_record/pages/000000.original.sdk.json.not_error",
+      "passed": true
+    },
+    {
+      "name": "observations/10-component_record/pages/000000.original.sdk.json.one_text",
+      "passed": true
+    },
+    {
+      "name": "10.page_SDK_exact",
+      "passed": true
+    },
+    {
+      "name": "10.admission_file_info",
+      "passed": true
+    },
+    {
+      "name": "10.status_same_id",
+      "passed": true
+    },
+    {
+      "name": "10.closed",
+      "passed": true
+    },
+    {
+      "name": "10.status_exact_request",
+      "passed": true
+    },
+    {
+      "name": "10.page_exact_request",
+      "passed": true
+    },
+    {
+      "name": "10.operation_status_intent",
+      "passed": true
+    },
+    {
+      "name": "10.operation_result_intent",
+      "passed": true
+    },
+    {
+      "name": "10.immutable_identity",
+      "passed": true
+    },
+    {
+      "name": "10.original_page_extent",
+      "passed": true
+    },
+    {
+      "name": "10.payload_hash",
+      "passed": true
+    },
+    {
+      "name": "10.payload_exact",
+      "passed": true
+    },
+    {
+      "name": "10.native_original_success",
+      "passed": true
+    },
+    {
+      "name": "10.native_exact",
+      "passed": true
+    },
+    {
+      "name": "10.version_decimal_lossless",
+      "passed": true
+    },
+    {
+      "name": "10.actual_path",
+      "passed": true
+    },
+    {
+      "name": "10.actual_size",
+      "passed": true
+    },
+    {
+      "name": "10.actual_sha256",
+      "passed": true
+    },
+    {
+      "name": "10.actual_version",
+      "passed": true
+    },
+    {
+      "name": "10.actual_full9",
+      "passed": true
+    },
+    {
+      "name": "10.actual_platform_mode",
+      "passed": true
+    },
+    {
+      "name": "10.closure_actual",
+      "passed": true
+    },
+    {
+      "name": "10.closure_native_pin.blob",
+      "passed": true
+    },
+    {
+      "name": "10.closure_native_pin.bytes",
+      "passed": true
+    },
+    {
+      "name": "10.closure_native_pin.sha256",
+      "passed": true
+    },
+    {
+      "name": "10.closure_payload_pin.blob",
+      "passed": true
+    },
+    {
+      "name": "10.closure_payload_pin.bytes",
+      "passed": true
+    },
+    {
+      "name": "10.closure_payload_pin.sha256",
+      "passed": true
+    },
+    {
+      "name": "10.table_actual",
+      "passed": true
+    },
+    {
+      "name": "10.table_info_pin.blob",
+      "passed": true
+    },
+    {
+      "name": "10.table_info_pin.bytes",
+      "passed": true
+    },
+    {
+      "name": "10.table_info_pin.sha256",
+      "passed": true
+    },
+    {
+      "name": "10.table_closure_pin.blob",
+      "passed": true
+    },
+    {
+      "name": "10.table_closure_pin.bytes",
+      "passed": true
+    },
+    {
+      "name": "10.table_closure_pin.sha256",
+      "passed": true
+    },
+    {
+      "name": "11.exact_request.blob",
+      "passed": true
+    },
+    {
+      "name": "11.exact_request.bytes",
+      "passed": true
+    },
+    {
+      "name": "11.exact_request.sha256",
+      "passed": true
+    },
+    {
+      "name": "11.closed_file_info_shape",
+      "passed": true
+    },
+    {
+      "name": "11.intent_request",
+      "passed": true
+    },
+    {
+      "name": "11.intent_request_pin.blob",
+      "passed": true
+    },
+    {
+      "name": "11.intent_request_pin.bytes",
+      "passed": true
+    },
+    {
+      "name": "11.intent_request_pin.sha256",
+      "passed": true
+    },
+    {
+      "name": "11.intent_prior_closed",
+      "passed": true
+    },
+    {
+      "name": "11.intent_expected",
+      "passed": true
+    },
+    {
+      "name": "observations/11-component_list_stdout/admission.original.sdk.json.not_error",
+      "passed": true
+    },
+    {
+      "name": "observations/11-component_list_stdout/admission.original.sdk.json.one_text",
+      "passed": true
+    },
+    {
+      "name": "11.admission_SDK_exact",
+      "passed": true
+    },
+    {
+      "name": "observations/11-component_list_stdout/status.original.sdk.json.not_error",
+      "passed": true
+    },
+    {
+      "name": "observations/11-component_list_stdout/status.original.sdk.json.one_text",
+      "passed": true
+    },
+    {
+      "name": "11.status_SDK_exact",
+      "passed": true
+    },
+    {
+      "name": "observations/11-component_list_stdout/pages/000000.original.sdk.json.not_error",
+      "passed": true
+    },
+    {
+      "name": "observations/11-component_list_stdout/pages/000000.original.sdk.json.one_text",
+      "passed": true
+    },
+    {
+      "name": "11.page_SDK_exact",
+      "passed": true
+    },
+    {
+      "name": "11.admission_file_info",
+      "passed": true
+    },
+    {
+      "name": "11.status_same_id",
+      "passed": true
+    },
+    {
+      "name": "11.closed",
+      "passed": true
+    },
+    {
+      "name": "11.status_exact_request",
+      "passed": true
+    },
+    {
+      "name": "11.page_exact_request",
+      "passed": true
+    },
+    {
+      "name": "11.operation_status_intent",
+      "passed": true
+    },
+    {
+      "name": "11.operation_result_intent",
+      "passed": true
+    },
+    {
+      "name": "11.immutable_identity",
+      "passed": true
+    },
+    {
+      "name": "11.original_page_extent",
+      "passed": true
+    },
+    {
+      "name": "11.payload_hash",
+      "passed": true
+    },
+    {
+      "name": "11.payload_exact",
+      "passed": true
+    },
+    {
+      "name": "11.native_original_success",
+      "passed": true
+    },
+    {
+      "name": "11.native_exact",
+      "passed": true
+    },
+    {
+      "name": "11.version_decimal_lossless",
+      "passed": true
+    },
+    {
+      "name": "11.actual_path",
+      "passed": true
+    },
+    {
+      "name": "11.actual_size",
+      "passed": true
+    },
+    {
+      "name": "11.actual_sha256",
+      "passed": true
+    },
+    {
+      "name": "11.actual_version",
+      "passed": true
+    },
+    {
+      "name": "11.actual_full9",
+      "passed": true
+    },
+    {
+      "name": "11.actual_platform_mode",
+      "passed": true
+    },
+    {
+      "name": "11.closure_actual",
+      "passed": true
+    },
+    {
+      "name": "11.closure_native_pin.blob",
+      "passed": true
+    },
+    {
+      "name": "11.closure_native_pin.bytes",
+      "passed": true
+    },
+    {
+      "name": "11.closure_native_pin.sha256",
+      "passed": true
+    },
+    {
+      "name": "11.closure_payload_pin.blob",
+      "passed": true
+    },
+    {
+      "name": "11.closure_payload_pin.bytes",
+      "passed": true
+    },
+    {
+      "name": "11.closure_payload_pin.sha256",
+      "passed": true
+    },
+    {
+      "name": "11.table_actual",
+      "passed": true
+    },
+    {
+      "name": "11.table_info_pin.blob",
+      "passed": true
+    },
+    {
+      "name": "11.table_info_pin.bytes",
+      "passed": true
+    },
+    {
+      "name": "11.table_info_pin.sha256",
+      "passed": true
+    },
+    {
+      "name": "11.table_closure_pin.blob",
+      "passed": true
+    },
+    {
+      "name": "11.table_closure_pin.bytes",
+      "passed": true
+    },
+    {
+      "name": "11.table_closure_pin.sha256",
+      "passed": true
+    },
+    {
+      "name": "unique_five_operations",
+      "passed": true
+    },
+    {
+      "name": "old_unknowns_exact",
+      "passed": true
+    },
+    {
+      "name": "zero_body_or_process",
+      "passed": true
+    },
+    {
+      "name": "five_only",
+      "passed": true
+    },
+    {
+      "name": "unobserved_target_not_promoted",
+      "passed": true
+    },
+    {
+      "name": "release_exact_ids",
+      "passed": true
+    },
+    {
+      "name": "release_table.blob",
+      "passed": true
+    },
+    {
+      "name": "release_table.bytes",
+      "passed": true
+    },
+    {
+      "name": "release_table.sha256",
+      "passed": true
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "chunk_id": "d953b2",
+  "wall_time_seconds": 0.029872323,
+  "exit_code": 0,
+  "original_token_count": 94,
+  "output": "{\"schema\": \"heptabao.H2-target.actual-original-chain-verification.v1\", \"passed\": true, \"checks\": 411, \"whole_input_files\": 113, \"whole_input_bytes\": 507086, \"original_observations\": 5, \"original_Runtime_calls\": 20, \"unique_pages\": 10, \"actual_body_bytes\": 38845, \"verifier_Runtime_calls\": 0, \"candidate_executed\": false, \"prepare_submitted\": false, \"live_submitted\": false}\n"
+}

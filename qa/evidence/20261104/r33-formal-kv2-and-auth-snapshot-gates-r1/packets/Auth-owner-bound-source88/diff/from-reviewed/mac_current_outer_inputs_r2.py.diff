@@ -1,0 +1,28 @@
+--- reviewed/mac_current_outer_inputs_r2.py
++++ source/mac_current_outer_inputs_r2.py
+@@ -13,7 +13,7 @@
+ from contextlib import contextmanager
+ 
+ BASE=Path('/Volumes/T5/hepta-vnext-recovery-20261013')
+-ROOT=BASE/'mac-authbus-4e808-current-registry-wal-r1'
++ROOT=BASE/'mac-authbus-4e808-current-owner-bind-r1'
+ BINDING_READY=True  # Actual normal61 pins are bound; host execution requires separate root GO.
+ LIVE=Path('/Users/qianqi/.openclaw')
+ PLUGIN=LIVE/'extensions/openclaw-authbus'
+@@ -59,10 +59,12 @@
+  "/opt/homebrew/lib":("16777233","10827971","501","80","16893","459","14688","1791866883454202812","1791866883454202812"),
+ }
+ 
+-# Source-only successor: the Google declared entry has not yet been observed.
+-# A later exact public binding must fill OWNER_ENTRY_PINS before this can run.
+-OWNER_PUBLIC_BINDING_READY=False
+-OWNER_ENTRY_PINS={}
++# Current fixed public entry has been observed and whole-hash bound.
++# This does not authorize execution or prove the selected owner.
++OWNER_PUBLIC_BINDING_READY=True
++OWNER_ENTRY_PINS={
++  "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/index.js": "f245758337a55924518852f542a27d49bd786d8e4b80821dc5f98f825ec3fc60"
++}
+ OWNER_PUBLIC_CODE_PINS={
+   "/opt/homebrew/lib/node_modules/openclaw/dist/loader-D8d2EvVh.js": "3a10479bdcbb713692c3ded7dbd5baad27c1b17ae3566172c117d45916dabce7",
+   "/opt/homebrew/lib/node_modules/openclaw/dist/manifest-registry--UiRn6nq.js": "819c76c314e6ed1fd39c5ed6b169d63997905b3ae8a98b9373783d626431ace4",

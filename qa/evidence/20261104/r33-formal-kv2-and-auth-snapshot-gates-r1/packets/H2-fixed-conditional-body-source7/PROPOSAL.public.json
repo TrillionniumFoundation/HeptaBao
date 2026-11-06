@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.H2-stage.fixed-two-metadata-and-three-body.proposal.v1",
+  "runtime_GO": false,
+  "metadata_proposal": {
+    "name": "ha-h2-stage-fixed-target-read-PROPOSAL",
+    "blob": "d24b90689b94600efeba0c804ae5abb22cb45418",
+    "bytes": 5017,
+    "sha256": "dadada6e330015ee9b0fb16650fd816c5341dd1496c704be8afac65ae3663606"
+  },
+  "conditional_body_files": [
+    {
+      "path": "derive_body_requests.py",
+      "name": "ha-h2-stage-conditional-body-deriver",
+      "blob": "8e1f37cfa36403a76bfa2e96a83b85d40eef3f15",
+      "bytes": 4762,
+      "sha256": "dbdb3952492e3c06b88bab1f7875b286725be863f1a29f10b5a3ebe8a139d1dc"
+    },
+    {
+      "path": "conditional-body-config.public.json",
+      "name": "ha-h2-stage-conditional-body-config",
+      "blob": "69db067f16796f8ad85f8f73b0355c2f14707120",
+      "bytes": 3410,
+      "sha256": "885033b5ede85de3a8940ef63a4c6d4616c8f5e4d8090a2eed1d598adf7fd5b9"
+    },
+    {
+      "path": "AST-COMPILE.original.json",
+      "name": "ha-h2-stage-conditional-deriver-compile",
+      "blob": "4261b43220603f1ccfd645d03b9410b0fdd90f9d",
+      "bytes": 350,
+      "sha256": "9591f6947c1addd58e4aa5ff020ef9ac136328d86a4d376c2748bb7881da3ab1"
+    },
+    {
+      "path": "templates/receipt-body0.UNBOUND.json",
+      "name": "ha-h2-stage-receipt-body0-UNBOUND-template",
+      "blob": "eed1b00a2cd397b6ef6afe16c796dd181004536f",
+      "bytes": 480,
+      "sha256": "feee0726e0e53a75e769450bedfe82f344a8ce23b45981add2629b8be86ea407"
+    },
+    {
+      "path": "templates/receipt-body1.UNBOUND.json",
+      "name": "ha-h2-stage-receipt-body1-UNBOUND-template",
+      "blob": "c3fbc0602af5347129ab2bc481866612bce16077",
+      "bytes": 484,
+      "sha256": "a3af031369cd5a489b7e6fe3de4d6c44c3f116ac5624b919ef9bd50896c7bcb5"
+    },
+    {
+      "path": "templates/binding-body0.UNBOUND.json",
+      "name": "ha-h2-stage-binding-body0-UNBOUND-template",
+      "blob": "a063ee7b64fe15dcf1139dc1322da5ee93418ab0",
+      "bytes": 476,
+      "sha256": "9aa686ef2f41886719b46a39f00bf1a6162d82388ea9a46f23f515304ff6d2aa"
+    }
+  ],
+  "expected_total_bytes": 38845,
+  "body_count": 3,
+  "metadata_count": 2,
+  "metadata_must_all_close_before_body": true,
+  "versions_must_come_from_original_file_info": true,
+  "frozen_config_identity_required": true,
+  "deriver_scope": "Pure request materialization only, AST compiled without executing the module. It does not grant Runtime authority and performs no I/O.",
+  "followup": "Only after both fixed metadata originals pass and root authorizes the conditional scope: derive exact requests, save each exact request/intent before the original operation_start, close each returned operation and whole payload before the next.",
+  "all_requests_submitted": 0,
+  "product_cases": 0,
+  "old_UNKNOWN_unchanged": true
+}

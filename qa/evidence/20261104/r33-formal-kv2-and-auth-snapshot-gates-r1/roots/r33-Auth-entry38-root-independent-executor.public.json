@@ -1,0 +1,7 @@
+{
+  "chunk_id": "3f2fc7",
+  "wall_time_seconds": 0.029065529,
+  "exit_code": 0,
+  "original_token_count": 72,
+  "output": "{\"ok\": true, \"checks_passed\": 182, \"result_path\": \"/workspace/scratch/f86faac821c4/r32_recovery/r33-Auth-entry38-root-result.public.json\", \"blob\": \"f16164e745a1f0e9fcbcacda0c7072df73965725\", \"bytes\": 21720, \"sha256\": \"88ab3f41b80fb8cda6e8d55a9868a7c42fe451a5041ffbc42329a242ac08d1d4\"}\n"
+}

@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.H2-stage.root-expectation-evidence-serialization-correction.v1",
+  "original_verifier": "4dac563e6932a6c0c1411317fa5429ec6fa89768",
+  "original_executor": "c1068ca5298aab57c594191013cd0c76f24f16d6",
+  "supersedes_lossy_report": "3853f01ddc095e329a6a3b2e7fa74910d61d489e",
+  "corrected_result": {
+    "name": "r33-H2-stage-independent-target-expectation-result.lossless.public.json",
+    "blob": "94ca0ae828bb46cfc44c94676adb411e9aabed8e",
+    "bytes": 1350,
+    "sha256": "e74974ffe0b0d450a56b1e1ddd3fb148c0ed681927a679721c4524e59b1fecda"
+  },
+  "issue": "The original Python verifier and original executor output retained exact full9 integers. Root unnecessarily parsed that output with ordinary JavaScript JSON.parse before reserializing the report, rounding only large mtime/ctime integers. The corrected report uses the exact original executor stdout bytes; no input, candidate, verifier run, expectation hash or Runtime operation changed.",
+  "expected_receipt_unchanged": {
+    "blob": "f492ce4e681ba7d5917d1cda1ebd4a3f8d67f13c",
+    "bytes": 28615,
+    "sha256": "f2bcc9227a235a40afa11c1703595180a925fbd39abd29d4550872ed3a05ae6a"
+  },
+  "corrected_timestamp_decimal": "1793915867275098276",
+  "Runtime_calls": 0,
+  "original_verifier_rerun": false
+}

@@ -1,0 +1,84 @@
+{
+  "schema": "heptabao.AuthBus.owner-renew-current-bound-source.qualification.r33.v1",
+  "decision": "CORRECTED_INERT_SOURCE_READY_ACTUAL_EXECUTION_PENDING",
+  "sourcePrerequisiteRoot": "65b6f2235fcf055ff15fc9177fd6f80727449462",
+  "source218Root": {
+    "blob": "68838a0c45042258358892d20778b0aee3b14b27",
+    "bytes": 40331,
+    "sha256": "2fb1335557b1a32685b002019c53a2e61950350c2fbde3fa77ec5d9471dbbd66"
+  },
+  "actualTreeAndOverlay129Root": {
+    "blob": "dae926344cbe00c6e57469f75ae71f4139458141",
+    "bytes": 14171,
+    "sha256": "9a94fa14bd51b403dfabb3c3546e24ad1ebfd03680c167916a5b2877b56c25f4"
+  },
+  "source88": {
+    "tree": "71a1656fbe227fcea1e92558a5004e22eaab69c6",
+    "files": 88,
+    "bytes": 2910122,
+    "merkle": 12
+  },
+  "overlay10": {
+    "tree": "2f213b0e8de72fac88fec0039761390f34f9e946",
+    "files": 10,
+    "bytes": 1662289,
+    "merkle": 2
+  },
+  "correctedInertRequest": {
+    "blob": "521c4700c9896ef48c8b710f7b787b5cfb5d1504",
+    "bytes": 818377,
+    "sha256": "6ffc5db0c3d9cf79f00d9484b1d54162b75b7e975e594a1d5ca5d8566d3b9cf4"
+  },
+  "correctedInertNativeBinding": {
+    "canonicalBytes": 818309,
+    "sha256": "e267418ec6d90ed3d5f9ae3fb2f3fb6cc2346e69e6b70be905777edefa05e38a",
+    "native_fingerprint": "16314080256650186451"
+  },
+  "runtimeRequest": {
+    "blob": "ca9a3b37ca8c8a55458460a35a4b183b4356901f",
+    "bytes": 5329,
+    "sha256": "cbb0404036ccaf6c0e03c806de8a569eb4e6143985652428a8f5b6efe1ea6c95"
+  },
+  "runtimeNativeBinding": {
+    "canonicalBytes": 5218,
+    "sha256": "22cfe25e558dd973d40265b4dc397426b0613d55f56f8821f9b4a79ffc51f7a4",
+    "native_fingerprint": "2508472412258818419"
+  },
+  "sourceChanges": {
+    "base": "Original 22-source 4e808 package; three reviewed actual-registration owner-repair sources and the reviewed four-hunk renewal-evidence outer controller.",
+    "onlyNewBindings": "11 fresh ROOT literals, two owned label literals, one actually observed Google entry pin/readiness binding, outer readiness binding and propagated exact source pins.",
+    "originalSevenProofDocsAndVolumeAnchor": "byte-identical",
+    "publisher": "Only ROOT, PINS, DOCUMENT_PINS, PAYLOAD_BYTES and PAYLOAD_SHA changed; all 12 definitions and executable tail remain byte-identical."
+  },
+  "wrongOriginalProposal": {
+    "blob": "850fdaf3c82e5067605494f5a8e8d8af3a1ab899",
+    "notAuthorized": true,
+    "reason": "stdin_text is not the native process_start field. Only corrected 521c exact request may be admitted."
+  },
+  "budgetsUnchanged": {
+    "inertShared": 45,
+    "inertSupervisor": 60,
+    "controller": 900,
+    "manager": 600,
+    "phase": 120,
+    "capture": 45,
+    "query": 3,
+    "http": 10,
+    "ready": 30,
+    "runtimeSupervisor": 1080
+  },
+  "notProved": [
+    "actual selected owner in original full-config worker",
+    "trusted live credential origin",
+    "AppRole, TLS, KV, Policy, renewal and revocation",
+    "cold restart and rollback",
+    "all-client and backup migration",
+    "full OpenBao replacement"
+  ],
+  "Runtime_calls": 0,
+  "privateCapsuleRead": false,
+  "inertAuthorized": false,
+  "runtimeAuthorized": false,
+  "productionCutover": false,
+  "cleanup": false
+}

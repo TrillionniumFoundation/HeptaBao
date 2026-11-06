@@ -1,0 +1,2792 @@
+{
+  "schema": "heptabao.x230.full34.independent-summary-chain-increment.v1",
+  "passed": true,
+  "source_tree": "f0f0770bbd740583e9db906627efd57f8a296906",
+  "source_files": 107,
+  "source_bytes": 781823,
+  "Merkle_trees": 31,
+  "checks": 679,
+  "observers": [
+    {
+      "label": "summary-info",
+      "operation_id": "867d5e9f7afe790244296831583c76b72ded9f3c52e6bf2b2ad215288a4d600a",
+      "tool": "file_info",
+      "pages": 1,
+      "payload": {
+        "blob": "64afb600ac9971355187951f481747201d750c58",
+        "bytes": 602,
+        "sha256": "b6787db40547e062fba17b7d1c36b124178fdffddd21f366745cc5e1dc5523a4"
+      },
+      "native": {
+        "blob": "b21191f87f12444960afc6ff03d6cef8ac48c9b1",
+        "bytes": 485,
+        "sha256": "7e34aa0d8a763f0d43459c5b4b30b5380f6c035d6051d5aa637205e058515819"
+      },
+      "closed": true
+    },
+    {
+      "label": "summary-body0",
+      "operation_id": "3791f6b9560e9c86be4b0ef8c4f152d8f99732c661d5ef115798f56e033fb9f9",
+      "tool": "binary_read",
+      "pages": 11,
+      "payload": {
+        "blob": "fcb04079c04c81ed34cf82c1d0126c808762bf79",
+        "bytes": 87823,
+        "sha256": "6a892e9fad898f16b046a3a8d230179b5ad7b6f95ad24f43102f1dc3ba83d878"
+      },
+      "native": {
+        "blob": "d922621c3df4fe813b0e4cce645498ed025ec0ff",
+        "bytes": 87720,
+        "sha256": "bb8b9ef09a5b30d5fef06f29d5538a6fb661093e56778a016bf74bfdc976c414"
+      },
+      "closed": true
+    },
+    {
+      "label": "summary-body1",
+      "operation_id": "6795dacaa192eda3e62bd6f3de615b035bc881b5bc5cc45e6e6cf989ed97cac2",
+      "tool": "binary_read",
+      "pages": 5,
+      "payload": {
+        "blob": "7d6faf963d5e52417700c84c2a10f9d47cdec25e",
+        "bytes": 34298,
+        "sha256": "d722cce33f9f038fd7735c9727424127e56f1b68d4222138c6c336d041272b3a"
+      },
+      "native": {
+        "blob": "a66ac0db296ec869767434693a23000a5d6d9b79",
+        "bytes": 34195,
+        "sha256": "97a55c6def1cf0fbbfd9452ae6745134a90248bac2361a2f267f5a2977e3f853"
+      },
+      "closed": true
+    }
+  ],
+  "native_operations": 3,
+  "immutable_pages": 17,
+  "native_summary_chunks": 2,
+  "native_summary_bytes": 90926,
+  "original_call_records": 23,
+  "carried_base_review": "390a10b882789b03c3a559cdfdfafb0f4573d107",
+  "base156_reexecuted": false,
+  "prior39_unlocated_leaves_preserved": true,
+  "new_current2_observation_packet_reviewed": false,
+  "Runtime_calls_by_this_verifier": 0,
+  "author_checker_executed": false,
+  "product_semantics_reviewed": false,
+  "checks_detail": [
+    {
+      "name": "tree_sdk_success",
+      "passed": true
+    },
+    {
+      "name": "exact_tree_identity",
+      "passed": true
+    },
+    {
+      "name": "exact_inventory",
+      "passed": true
+    },
+    {
+      "name": "safe_all_regular_packet",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:MANIFEST.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:MANIFEST.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:STATE.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:STATE.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:actual/summary.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:actual/summary.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-admission/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-admission/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-admission/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-admission/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-admission/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-admission/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-admission/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-admission/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-000000/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-000000/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-000000/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-000000/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-000000/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-000000/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-000000/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-000000/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-008192/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-008192/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-008192/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-008192/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-008192/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-008192/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-008192/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-008192/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-016384/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-016384/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-016384/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-016384/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-016384/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-016384/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-016384/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-016384/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-024576/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-024576/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-024576/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-024576/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-024576/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-024576/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-024576/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-024576/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-032768/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-032768/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-032768/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-032768/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-032768/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-032768/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-032768/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-032768/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-040960/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-040960/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-040960/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-040960/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-040960/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-040960/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-040960/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-040960/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-049152/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-049152/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-049152/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-049152/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-049152/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-049152/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-049152/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-049152/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-057344/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-057344/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-057344/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-057344/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-057344/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-057344/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-057344/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-057344/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-065536/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-065536/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-065536/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-065536/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-065536/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-065536/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-065536/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-065536/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-073728/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-073728/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-073728/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-073728/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-073728/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-073728/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-073728/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-073728/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-081920/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-081920/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-081920/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-081920/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-081920/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-081920/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-page-081920/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-page-081920/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-status/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-status/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-status/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-status/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-status/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-status/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body0-status/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body0-status/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-admission/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-admission/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-admission/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-admission/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-admission/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-admission/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-admission/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-admission/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-page-000000/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-page-000000/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-page-000000/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-page-000000/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-page-000000/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-page-000000/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-page-000000/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-page-000000/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-page-008192/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-page-008192/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-page-008192/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-page-008192/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-page-008192/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-page-008192/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-page-008192/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-page-008192/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-page-016384/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-page-016384/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-page-016384/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-page-016384/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-page-016384/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-page-016384/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-page-016384/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-page-016384/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-page-024576/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-page-024576/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-page-024576/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-page-024576/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-page-024576/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-page-024576/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-page-024576/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-page-024576/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-page-032768/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-page-032768/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-page-032768/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-page-032768/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-page-032768/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-page-032768/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-page-032768/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-page-032768/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-status/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-status/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-status/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-status/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-status/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-status/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-body1-status/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-body1-status/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-info-admission/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-info-admission/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-info-admission/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-info-admission/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-info-admission/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-info-admission/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-info-admission/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-info-admission/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-info-page-000000/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-info-page-000000/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-info-page-000000/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-info-page-000000/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-info-page-000000/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-info-page-000000/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-info-page-000000/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-info-page-000000/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-info-status/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-info-status/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-info-status/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-info-status/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-info-status/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-info-status/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:calls/summary-info-status/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:calls/summary-info-status/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:observations/summary-body0/closure.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:observations/summary-body0/closure.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:observations/summary-body0/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:observations/summary-body0/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:observations/summary-body0/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:observations/summary-body0/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:observations/summary-body1/closure.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:observations/summary-body1/closure.public.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:observations/summary-body1/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:observations/summary-body1/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:observations/summary-body1/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:observations/summary-body1/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:observations/summary-info/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:observations/summary-info/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:observations/summary-info/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:observations/summary-info/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:reference/GO.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:reference/GO.original.json",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:reference/post-reset-page-orchestrator.js",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:reference/post-reset-page-orchestrator.js",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:reference/shared-git-helpers.js",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:reference/shared-git-helpers.js",
+      "passed": true
+    },
+    {
+      "name": "packet_path_pin:reference/shared-pure-helpers.js",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:reference/shared-pure-helpers.js",
+      "passed": true
+    },
+    {
+      "name": "whole_packet_bytes",
+      "passed": true
+    },
+    {
+      "name": "whole_file_set",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-info-admission/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-info-admission/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-info-admission/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-info-admission/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-info-status/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-info-status/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-info-status/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-info-status/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-info-page-000000/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-info-page-000000/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-info-page-000000/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-info-page-000000/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:observations/summary-info/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:observations/summary-info/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-admission/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-admission/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-admission/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-admission/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-status/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-status/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-status/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-status/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-000000/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-000000/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-000000/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-000000/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-008192/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-008192/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-008192/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-008192/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-016384/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-016384/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-016384/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-016384/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-024576/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-024576/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-024576/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-024576/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-032768/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-032768/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-032768/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-032768/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-040960/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-040960/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-040960/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-040960/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-049152/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-049152/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-049152/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-049152/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-057344/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-057344/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-057344/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-057344/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-065536/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-065536/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-065536/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-065536/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-073728/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-073728/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-073728/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-073728/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-081920/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-081920/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-081920/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body0-page-081920/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:observations/summary-body0/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:observations/summary-body0/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:observations/summary-body0/closure.public.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-page-000000/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-page-000000/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-page-000000/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-page-000000/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-page-008192/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-page-008192/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-page-008192/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-page-008192/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-page-016384/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-page-016384/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-page-016384/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-page-016384/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-page-024576/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-page-024576/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-page-024576/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-page-024576/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-page-032768/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-page-032768/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-page-032768/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-page-032768/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:observations/summary-body1/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:observations/summary-body1/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:observations/summary-body1/closure.public.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-admission/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-admission/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-admission/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-admission/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-status/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-status/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-status/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:calls/summary-body1-status/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:actual/summary.public.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:reference/GO.original.json",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:reference/shared-pure-helpers.js",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:reference/shared-git-helpers.js",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:reference/post-reset-page-orchestrator.js",
+      "passed": true
+    },
+    {
+      "name": "author_declared_pin:STATE.public.json",
+      "passed": true
+    },
+    {
+      "name": "Merkle:calls/summary-body0-page-000000",
+      "passed": true
+    },
+    {
+      "name": "Merkle:calls/summary-body0-page-008192",
+      "passed": true
+    },
+    {
+      "name": "Merkle:calls/summary-body0-page-016384",
+      "passed": true
+    },
+    {
+      "name": "Merkle:calls/summary-body0-page-024576",
+      "passed": true
+    },
+    {
+      "name": "Merkle:calls/summary-body0-page-032768",
+      "passed": true
+    },
+    {
+      "name": "Merkle:calls/summary-body0-page-040960",
+      "passed": true
+    },
+    {
+      "name": "Merkle:calls/summary-body0-page-049152",
+      "passed": true
+    },
+    {
+      "name": "Merkle:calls/summary-body0-page-057344",
+      "passed": true
+    },
+    {
+      "name": "Merkle:calls/summary-body0-page-065536",
+      "passed": true
+    },
+    {
+      "name": "Merkle:calls/summary-body0-page-073728",
+      "passed": true
+    },
+    {
+      "name": "Merkle:calls/summary-body0-page-081920",
+      "passed": true
+    },
+    {
+      "name": "Merkle:calls/summary-body1-page-000000",
+      "passed": true
+    },
+    {
+      "name": "Merkle:calls/summary-body1-page-008192",
+      "passed": true
+    },
+    {
+      "name": "Merkle:calls/summary-body1-page-016384",
+      "passed": true
+    },
+    {
+      "name": "Merkle:calls/summary-body1-page-024576",
+      "passed": true
+    },
+    {
+      "name": "Merkle:calls/summary-body1-page-032768",
+      "passed": true
+    },
+    {
+      "name": "Merkle:calls/summary-info-page-000000",
+      "passed": true
+    },
+    {
+      "name": "Merkle:calls/summary-body0-admission",
+      "passed": true
+    },
+    {
+      "name": "Merkle:calls/summary-body1-admission",
+      "passed": true
+    },
+    {
+      "name": "Merkle:calls/summary-info-admission",
+      "passed": true
+    },
+    {
+      "name": "Merkle:calls/summary-body0-status",
+      "passed": true
+    },
+    {
+      "name": "Merkle:calls/summary-body1-status",
+      "passed": true
+    },
+    {
+      "name": "Merkle:observations/summary-body0",
+      "passed": true
+    },
+    {
+      "name": "Merkle:observations/summary-body1",
+      "passed": true
+    },
+    {
+      "name": "Merkle:calls/summary-info-status",
+      "passed": true
+    },
+    {
+      "name": "Merkle:observations/summary-info",
+      "passed": true
+    },
+    {
+      "name": "Merkle:observations",
+      "passed": true
+    },
+    {
+      "name": "Merkle:reference",
+      "passed": true
+    },
+    {
+      "name": "Merkle:actual",
+      "passed": true
+    },
+    {
+      "name": "Merkle:calls",
+      "passed": true
+    },
+    {
+      "name": "Merkle:<root>",
+      "passed": true
+    },
+    {
+      "name": "summary-info-admission.intent_request_value",
+      "passed": true
+    },
+    {
+      "name": "summary-info-admission.intent_request_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-info-admission.intent_method_scope",
+      "passed": true
+    },
+    {
+      "name": "summary-info-admission.sdk_not_error",
+      "passed": true
+    },
+    {
+      "name": "summary-info-admission.sdk_text_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-info.exact_native_request",
+      "passed": true
+    },
+    {
+      "name": "summary-info.unique_admission",
+      "passed": true
+    },
+    {
+      "name": "summary-info-status.intent_request_value",
+      "passed": true
+    },
+    {
+      "name": "summary-info-status.intent_request_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-info-status.intent_method_scope",
+      "passed": true
+    },
+    {
+      "name": "summary-info-status.sdk_not_error",
+      "passed": true
+    },
+    {
+      "name": "summary-info-status.sdk_text_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-info.same_status_id",
+      "passed": true
+    },
+    {
+      "name": "summary-info.closed",
+      "passed": true
+    },
+    {
+      "name": "summary-info.exact_page_count",
+      "passed": true
+    },
+    {
+      "name": "summary-info-page-000000.intent_request_value",
+      "passed": true
+    },
+    {
+      "name": "summary-info-page-000000.intent_request_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-info-page-000000.intent_method_scope",
+      "passed": true
+    },
+    {
+      "name": "summary-info-page-000000.sdk_not_error",
+      "passed": true
+    },
+    {
+      "name": "summary-info-page-000000.sdk_text_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-info-page-000000.request_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-info-page-000000.immutable_id",
+      "passed": true
+    },
+    {
+      "name": "summary-info-page-000000.whole_payload_binding",
+      "passed": true
+    },
+    {
+      "name": "summary-info-page-000000.original_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-info.payload_length_digest",
+      "passed": true
+    },
+    {
+      "name": "summary-info.payload_original_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-info.native_success",
+      "passed": true
+    },
+    {
+      "name": "summary-info.native_text_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-admission.intent_request_value",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-admission.intent_request_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-admission.intent_method_scope",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-admission.sdk_not_error",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-admission.sdk_text_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body0.exact_native_request",
+      "passed": true
+    },
+    {
+      "name": "summary-body0.unique_admission",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-status.intent_request_value",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-status.intent_request_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-status.intent_method_scope",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-status.sdk_not_error",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-status.sdk_text_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body0.same_status_id",
+      "passed": true
+    },
+    {
+      "name": "summary-body0.closed",
+      "passed": true
+    },
+    {
+      "name": "summary-body0.exact_page_count",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-000000.intent_request_value",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-000000.intent_request_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-000000.intent_method_scope",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-000000.sdk_not_error",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-000000.sdk_text_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-000000.request_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-000000.immutable_id",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-000000.whole_payload_binding",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-000000.original_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-008192.intent_request_value",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-008192.intent_request_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-008192.intent_method_scope",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-008192.sdk_not_error",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-008192.sdk_text_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-008192.request_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-008192.immutable_id",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-008192.whole_payload_binding",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-008192.original_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-016384.intent_request_value",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-016384.intent_request_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-016384.intent_method_scope",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-016384.sdk_not_error",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-016384.sdk_text_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-016384.request_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-016384.immutable_id",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-016384.whole_payload_binding",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-016384.original_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-024576.intent_request_value",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-024576.intent_request_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-024576.intent_method_scope",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-024576.sdk_not_error",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-024576.sdk_text_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-024576.request_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-024576.immutable_id",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-024576.whole_payload_binding",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-024576.original_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-032768.intent_request_value",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-032768.intent_request_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-032768.intent_method_scope",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-032768.sdk_not_error",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-032768.sdk_text_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-032768.request_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-032768.immutable_id",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-032768.whole_payload_binding",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-032768.original_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-040960.intent_request_value",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-040960.intent_request_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-040960.intent_method_scope",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-040960.sdk_not_error",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-040960.sdk_text_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-040960.request_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-040960.immutable_id",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-040960.whole_payload_binding",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-040960.original_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-049152.intent_request_value",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-049152.intent_request_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-049152.intent_method_scope",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-049152.sdk_not_error",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-049152.sdk_text_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-049152.request_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-049152.immutable_id",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-049152.whole_payload_binding",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-049152.original_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-057344.intent_request_value",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-057344.intent_request_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-057344.intent_method_scope",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-057344.sdk_not_error",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-057344.sdk_text_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-057344.request_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-057344.immutable_id",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-057344.whole_payload_binding",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-057344.original_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-065536.intent_request_value",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-065536.intent_request_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-065536.intent_method_scope",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-065536.sdk_not_error",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-065536.sdk_text_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-065536.request_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-065536.immutable_id",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-065536.whole_payload_binding",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-065536.original_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-073728.intent_request_value",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-073728.intent_request_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-073728.intent_method_scope",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-073728.sdk_not_error",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-073728.sdk_text_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-073728.request_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-073728.immutable_id",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-073728.whole_payload_binding",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-073728.original_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-081920.intent_request_value",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-081920.intent_request_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-081920.intent_method_scope",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-081920.sdk_not_error",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-081920.sdk_text_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-081920.request_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-081920.immutable_id",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-081920.whole_payload_binding",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-081920.original_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body0.payload_length_digest",
+      "passed": true
+    },
+    {
+      "name": "summary-body0.payload_original_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body0.native_success",
+      "passed": true
+    },
+    {
+      "name": "summary-body0.native_text_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body0.closure_id_flags",
+      "passed": true
+    },
+    {
+      "name": "summary-body0.closure_extent",
+      "passed": true
+    },
+    {
+      "name": "summary-body0.closure_payload_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0.closure_native_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-000000.closure_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-000000.closure_request_pins",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-000000.closure_sdk_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-000000.closure_native_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-008192.closure_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-008192.closure_request_pins",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-008192.closure_sdk_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-008192.closure_native_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-016384.closure_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-016384.closure_request_pins",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-016384.closure_sdk_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-016384.closure_native_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-024576.closure_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-024576.closure_request_pins",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-024576.closure_sdk_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-024576.closure_native_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-032768.closure_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-032768.closure_request_pins",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-032768.closure_sdk_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-032768.closure_native_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-040960.closure_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-040960.closure_request_pins",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-040960.closure_sdk_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-040960.closure_native_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-049152.closure_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-049152.closure_request_pins",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-049152.closure_sdk_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-049152.closure_native_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-057344.closure_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-057344.closure_request_pins",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-057344.closure_sdk_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-057344.closure_native_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-065536.closure_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-065536.closure_request_pins",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-065536.closure_sdk_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-065536.closure_native_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-073728.closure_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-073728.closure_request_pins",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-073728.closure_sdk_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-073728.closure_native_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-081920.closure_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-081920.closure_request_pins",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-081920.closure_sdk_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body0-page-081920.closure_native_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-admission.intent_request_value",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-admission.intent_request_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-admission.intent_method_scope",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-admission.sdk_not_error",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-admission.sdk_text_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body1.exact_native_request",
+      "passed": true
+    },
+    {
+      "name": "summary-body1.unique_admission",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-status.intent_request_value",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-status.intent_request_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-status.intent_method_scope",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-status.sdk_not_error",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-status.sdk_text_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body1.same_status_id",
+      "passed": true
+    },
+    {
+      "name": "summary-body1.closed",
+      "passed": true
+    },
+    {
+      "name": "summary-body1.exact_page_count",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-000000.intent_request_value",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-000000.intent_request_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-000000.intent_method_scope",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-000000.sdk_not_error",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-000000.sdk_text_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-000000.request_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-000000.immutable_id",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-000000.whole_payload_binding",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-000000.original_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-008192.intent_request_value",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-008192.intent_request_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-008192.intent_method_scope",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-008192.sdk_not_error",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-008192.sdk_text_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-008192.request_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-008192.immutable_id",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-008192.whole_payload_binding",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-008192.original_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-016384.intent_request_value",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-016384.intent_request_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-016384.intent_method_scope",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-016384.sdk_not_error",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-016384.sdk_text_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-016384.request_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-016384.immutable_id",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-016384.whole_payload_binding",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-016384.original_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-024576.intent_request_value",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-024576.intent_request_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-024576.intent_method_scope",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-024576.sdk_not_error",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-024576.sdk_text_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-024576.request_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-024576.immutable_id",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-024576.whole_payload_binding",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-024576.original_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-032768.intent_request_value",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-032768.intent_request_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-032768.intent_method_scope",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-032768.sdk_not_error",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-032768.sdk_text_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-032768.request_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-032768.immutable_id",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-032768.whole_payload_binding",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-032768.original_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body1.payload_length_digest",
+      "passed": true
+    },
+    {
+      "name": "summary-body1.payload_original_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body1.native_success",
+      "passed": true
+    },
+    {
+      "name": "summary-body1.native_text_exact",
+      "passed": true
+    },
+    {
+      "name": "summary-body1.closure_id_flags",
+      "passed": true
+    },
+    {
+      "name": "summary-body1.closure_extent",
+      "passed": true
+    },
+    {
+      "name": "summary-body1.closure_payload_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body1.closure_native_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-000000.closure_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-000000.closure_request_pins",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-000000.closure_sdk_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-000000.closure_native_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-008192.closure_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-008192.closure_request_pins",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-008192.closure_sdk_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-008192.closure_native_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-016384.closure_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-016384.closure_request_pins",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-016384.closure_sdk_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-016384.closure_native_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-024576.closure_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-024576.closure_request_pins",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-024576.closure_sdk_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-024576.closure_native_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-032768.closure_geometry",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-032768.closure_request_pins",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-032768.closure_sdk_pin",
+      "passed": true
+    },
+    {
+      "name": "summary-body1-page-032768.closure_native_pin",
+      "passed": true
+    },
+    {
+      "name": "exact_23_call_set",
+      "passed": true
+    },
+    {
+      "name": "summary_info_identity",
+      "passed": true
+    },
+    {
+      "name": "summary-body0.native_version_extent",
+      "passed": true
+    },
+    {
+      "name": "summary-body0.native_chunk_hash",
+      "passed": true
+    },
+    {
+      "name": "summary-body1.native_version_extent",
+      "passed": true
+    },
+    {
+      "name": "summary-body1.native_chunk_hash",
+      "passed": true
+    },
+    {
+      "name": "summary_whole_native_exact",
+      "passed": true
+    },
+    {
+      "name": "summary_content_address",
+      "passed": true
+    },
+    {
+      "name": "base_journal_exact",
+      "passed": true
+    },
+    {
+      "name": "cache_boundary_same_original_page",
+      "passed": true
+    },
+    {
+      "name": "cache_boundary_body1_not_yet_submitted",
+      "passed": true
+    },
+    {
+      "name": "pre_reset_known_exact:reference/GO.original.json",
+      "passed": true
+    },
+    {
+      "name": "pre_reset_known_exact:calls/summary-info-admission/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "pre_reset_known_exact:calls/summary-info-admission/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "pre_reset_known_exact:calls/summary-info-admission/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "pre_reset_known_exact:calls/summary-info-admission/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "pre_reset_known_exact:calls/summary-info-status/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "pre_reset_known_exact:calls/summary-info-status/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "pre_reset_known_exact:calls/summary-info-status/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "pre_reset_known_exact:calls/summary-info-status/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "pre_reset_known_exact:calls/summary-info-page-000000/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "pre_reset_known_exact:calls/summary-info-page-000000/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "pre_reset_known_exact:calls/summary-info-page-000000/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "pre_reset_known_exact:calls/summary-info-page-000000/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "pre_reset_known_exact:observations/summary-info/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "pre_reset_known_exact:observations/summary-info/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "pre_reset_known_exact:calls/summary-body0-admission/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "pre_reset_known_exact:calls/summary-body0-admission/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "pre_reset_known_exact:calls/summary-body0-admission/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "pre_reset_known_exact:calls/summary-body0-admission/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "pre_reset_known_exact:calls/summary-body0-status/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "pre_reset_known_exact:calls/summary-body0-status/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "pre_reset_known_exact:calls/summary-body0-status/result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "pre_reset_known_exact:calls/summary-body0-status/result.original.json",
+      "passed": true
+    },
+    {
+      "name": "pre_reset_known_exact:calls/summary-body0-page-000000/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "pre_reset_known_exact:calls/summary-body0-page-000000/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "page_recovery_source_only_result",
+      "passed": true
+    },
+    {
+      "name": "state_narrow_three_ids",
+      "passed": true
+    },
+    {
+      "name": "historical_unlocated_not_recovered",
+      "passed": true
+    },
+    {
+      "name": "no_old_historical_calls_in_increment",
+      "passed": true
+    }
+  ]
+}

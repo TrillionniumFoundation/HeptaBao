@@ -1,0 +1,230 @@
+{
+  "schema": "heptabao.cli-current4e808-stage.lane-B-release.v1",
+  "original_stage_job": "1a1ada8b25f-fc05-5a8d",
+  "GO": "2e6623f5d7c9a05e66e4c22b1485dba8a1924d56",
+  "exact_business_request": "ec3b323f77bfb2f111f5fc22a06f1bf30ea634eb",
+  "execution_intent": {
+    "name": "cli-current4e808-stage-execution-intent",
+    "blob": "48d2b70ffab3a263477a64f17c1e44b2dca4d8ac",
+    "bytes": 1483,
+    "sha256": "cc501579dfab155f24078704b666050a1de063e8ab8e95375352440145183bca"
+  },
+  "unique_start_calls": 1,
+  "start_SDK": {
+    "name": "cli-current-stage-start-original-sdk",
+    "blob": "488f20669e4d0935215d0960d13f84bf1bf91ca8",
+    "bytes": 27661,
+    "sha256": "637f41785e5aeacd402d19d1bb1d4c52305949b526d59a58159a9aa7e3c421c0"
+  },
+  "start_native": {
+    "name": "cli-current-stage-start-original-native",
+    "blob": "64f6646e22179f88f71be160c0202730163c3cc4",
+    "bytes": 25849,
+    "sha256": "be3ed09372522ac4463f69276a541b0a2d7d57294b6bbc9e445651d68830b4a2"
+  },
+  "authority": {
+    "name": "cli-stage-authority-native-original",
+    "blob": "206a56b5ea6584916cdae30b22e907771e4d6910",
+    "bytes": 733,
+    "sha256": "0ed87cedfada036b5ef605bdaf9b957fdb49679961939a70b0ff560efb8089ba"
+  },
+  "stdout": {
+    "name": "cli-stage-stdout-original",
+    "blob": "e435ea9adce9f7d2439598f4340a74aeccb8b0c9",
+    "bytes": 13593,
+    "sha256": "92135afdb4169bb2efa3356ee1763089c18ae2af69989a79517cf8f0e151e3c9"
+  },
+  "stderr": {
+    "name": "cli-stage-stderr-original",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "post_finally": {
+    "status": "passed",
+    "all_stage_fds_closed": true,
+    "fd_close_pending": false,
+    "fd_close_errors": [],
+    "within_stage_deadline": true,
+    "elapsed_after_closure_ms": 2139.90943,
+    "children_spawned": 0,
+    "network_calls": 0,
+    "product_started": false,
+    "readonly_prepare_started": false
+  },
+  "original_observers": [
+    {
+      "role": "authority",
+      "operation_id": "d30eb9841641def4c4bd1c262e1a2926c0710552a568a6b46b915a27a92dd0da",
+      "admission": {
+        "label": "authority-admission",
+        "tool": "operation_start",
+        "request": {
+          "name": "cli-stage-authority-admission-request",
+          "blob": "11caf4dcc4d8250f935ed4afb01d6cdb1154e618",
+          "bytes": 231,
+          "sha256": "b79f22165ecfda2b1dcb9c5ac9cc5dfec3db254b1eda56f3ab19d5e1e63968b9"
+        },
+        "intent": {
+          "name": "cli-stage-authority-admission-intent",
+          "blob": "cd1e8e32db589b0f5cbc1940ee03d94f3226ebdf",
+          "bytes": 578,
+          "sha256": "aa647d0d5fbc62d2eecd271f2c9590f16e455d5e3d2359919b790f820b2e244a"
+        },
+        "submitted": true,
+        "SDK": {
+          "name": "cli-stage-authority-admission-original-sdk",
+          "blob": "3e05a041a244164bd554138ca8c91552cedfce38",
+          "bytes": 709,
+          "sha256": "48a2d3c07e567f17d317cf5a763dfa5172b674158f3b42ee0f556895fe687d27"
+        },
+        "isError": false,
+        "local_transport_exception": false,
+        "native": {
+          "name": "cli-stage-authority-admission-original-native",
+          "blob": "7d9f16515480f31f50fac3798feb6f65757e75cc",
+          "bytes": 548,
+          "sha256": "c27fa5f3532cd7cd0f82f06f3d58e0069cbc2fbfa30f0a701679ef908f40bcc1"
+        }
+      },
+      "status": {
+        "label": "authority-status",
+        "tool": "operation_status",
+        "request": {
+          "name": "cli-stage-authority-status-request",
+          "blob": "bee1d1346905022f235cfc01b8d254e720532864",
+          "bytes": 89,
+          "sha256": "65d6d15dd3029d8cd140143605c186547472a45b73b40f8031cdb2d0fcaf0f71"
+        },
+        "intent": {
+          "name": "cli-stage-authority-status-intent",
+          "blob": "46b5c55ef381d71c25dfdbb6041dba6a1ff1d1a6",
+          "bytes": 634,
+          "sha256": "d99a2f7fe508ecf64b1b68fe443dc01f989c7f0320ff4458378a699aa8bfcc95"
+        },
+        "submitted": true,
+        "SDK": {
+          "name": "cli-stage-authority-status-original-sdk",
+          "blob": "5a6004193dd7fa0e82bc87af8a50672bbde025cb",
+          "bytes": 980,
+          "sha256": "d280328686ec7153132ba70b03987c2942904213303a46c5df09c00c3a35caa9"
+        },
+        "isError": false,
+        "local_transport_exception": false,
+        "native": {
+          "name": "cli-stage-authority-status-original-native",
+          "blob": "f12969db9cd79e37e87e42cf857f331c0eb52e92",
+          "bytes": 805,
+          "sha256": "b94b18d13f9e34a96463c3b8288896a793dc073d86c9b96ce2dda8d2548b579a"
+        }
+      },
+      "payload": {
+        "name": "cli-stage-authority-payload-original",
+        "blob": "5dca082c2027262ed7b7a98f366101f2e9503f87",
+        "bytes": 912,
+        "sha256": "48a175d86f0bf16fbbc944d17e7c290481bacafa33deccff7482f1dde2ea3d28"
+      },
+      "native": {
+        "name": "cli-stage-authority-native-original",
+        "blob": "206a56b5ea6584916cdae30b22e907771e4d6910",
+        "bytes": 733,
+        "sha256": "0ed87cedfada036b5ef605bdaf9b957fdb49679961939a70b0ff560efb8089ba"
+      },
+      "immutable_pages": 1,
+      "closed": true
+    },
+    {
+      "role": "streams0",
+      "operation_id": "3d7bcfb13c1898aa6c675e7894fc8510754c18a209f9a6efca21cb74bc79979a",
+      "admission": {
+        "label": "streams0-admission",
+        "tool": "operation_start",
+        "request": {
+          "name": "cli-stage-streams0-admission-request",
+          "blob": "f8de9725701b4a2bd64a5aa883c693ab6e504d2e",
+          "bytes": 302,
+          "sha256": "79bd3e7941caf6cbf4367d7d8a360b51c47b43fe0c5b6e24d08af3048efd0a97"
+        },
+        "intent": {
+          "name": "cli-stage-streams0-admission-intent",
+          "blob": "5b2e85c46cbc549090aa8bb2b2b4c36bc2925be0",
+          "bytes": 574,
+          "sha256": "881897c7d074e5aee1edf2099d13e6ab4c442c1ccefd9007be825cab6b5079cd"
+        },
+        "submitted": true,
+        "SDK": {
+          "name": "cli-stage-streams0-admission-original-sdk",
+          "blob": "9d44a48bed2a2dc373f51aa157f63943339cbc65",
+          "bytes": 707,
+          "sha256": "0d542da1c00c2a9b72a57e646be3b1205ef2e19fe14643b71e5baee171b8be49"
+        },
+        "isError": false,
+        "local_transport_exception": false,
+        "native": {
+          "name": "cli-stage-streams0-admission-original-native",
+          "blob": "40bb7d460c40d3e20ddb34319410c1eb6e02b8e1",
+          "bytes": 546,
+          "sha256": "e6f64bf8ad5d63a3e48f5af01354c0fda3f94e3c230bcbf63799cb9e82237012"
+        }
+      },
+      "status": {
+        "label": "streams0-status",
+        "tool": "operation_status",
+        "request": {
+          "name": "cli-stage-streams0-status-request",
+          "blob": "c37b64e49c86c5a96271becc55e05a9cf1d951b2",
+          "bytes": 89,
+          "sha256": "b73a2c7c07f069e47b576c5fe37a370aaeb94b131937ec87d85147a136dc7990"
+        },
+        "intent": {
+          "name": "cli-stage-streams0-status-intent",
+          "blob": "c8cba3ae2155b8560a1f4ec45af97167dbe9e56d",
+          "bytes": 633,
+          "sha256": "f1fa3b23eff06f7b712f816f232a6e99a84f7e2315363404494c3bc22c75390d"
+        },
+        "submitted": true,
+        "SDK": {
+          "name": "cli-stage-streams0-status-original-sdk",
+          "blob": "df66936a52a2839eee5fb1a973957914f7055a06",
+          "bytes": 978,
+          "sha256": "3431d24a8d7efb26d9551cb7da9d341515da1065b76353766b52ae124665ced3"
+        },
+        "isError": false,
+        "local_transport_exception": false,
+        "native": {
+          "name": "cli-stage-streams0-status-original-native",
+          "blob": "a7dbbc1cea2aff5de0c5f23390117ac5e1340d18",
+          "bytes": 803,
+          "sha256": "0953f913d2a816a9f228d3b05670fd78e20381df7a2976250f434eb22b8a852b"
+        }
+      },
+      "payload": {
+        "name": "cli-stage-streams0-payload-original",
+        "blob": "07a041cb5f5a88a2c212b27e024cb557bbdbec6c",
+        "bytes": 44216,
+        "sha256": "667fb80ddd77294acd27ca670ee3904e08a5d188c58e7da5d0f934bbeb14f0db"
+      },
+      "native": {
+        "name": "cli-stage-streams0-native-original",
+        "blob": "8e7a8eb86b65b6c04e2782d91a612a8f35c09316",
+        "bytes": 42095,
+        "sha256": "17f980452b14a1210b9778dbcbdf7b441a56098db752e98a6e596856df575176"
+      },
+      "immutable_pages": 6,
+      "closed": true
+    }
+  ],
+  "closed_observer_count": 2,
+  "immutable_pages": 7,
+  "all_read_calls_sdk_saved_before_parse": true,
+  "readonly_calls": 11,
+  "Runtime_calls_inflight": 0,
+  "native_futures_active": 0,
+  "lane_B_released_to_root": true,
+  "followup_target_metadata_submitted": 0,
+  "followup_target_body_submitted": 0,
+  "prepare_live_submitted": 0,
+  "comparison69_submitted": 0,
+  "historical_X230_old39_gap_preserved": true,
+  "qualification": "STAGE_ONLY; full original protocol packet still being indexed in pure Git; no product qualification."
+}

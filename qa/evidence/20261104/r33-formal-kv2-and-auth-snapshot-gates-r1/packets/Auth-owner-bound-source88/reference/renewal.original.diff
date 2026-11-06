@@ -1,0 +1,110 @@
+diff --git a/mac_current_outer_wal_r1.py b/mac_current_outer_wal_r1.py
+--- a/mac_current_outer_wal_r1.py
++++ b/mac_current_outer_wal_r1.py
+@@ -14,7 +14,7 @@
+ 
+ ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1')
+ QA=ROOT/'qa'
+-BINDING_READY=True  # Actual normal61 pins are bound; host execution requires separate root GO.
++BINDING_READY=False  # Source-only renewal increment; no runtime request or fresh candidate is bound.
+ COMMIT='4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'
+ TREE='eba5e650bd080b8ad41ea52a2bc68867f541d255'
+ BINARY=Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-server')
+@@ -794,18 +794,62 @@
+         'canonicalGrantAddedByConsumer':False,'coordinatorExecuted':False,
+         'proposalPresenceNotInterpretedAsCanonicalGrant':True}
+ 
+-def token_lifecycle(client,guard,phase,secrets):
++def token_lookup_snapshot(value,token,expected=None):
++    data=exact_data(value)
++    need(isinstance(data.get('id'),str) and data['id']==token,
++         'lookup_self_echoes_same_presented_credential')
++    accessor=data.get('accessor')
++    need(isinstance(accessor,str) and 1<=len(accessor)<=8192,
++         'actual_lookup_accessor_shape')
++    need(data.get('type')=='service' and data.get('namespace')==''
++         and data.get('renewable') is True,'owned_service_token_renewable')
++    ttl=data.get('ttl');expiry=data.get('expire_time_unix');created=data.get('creation_time')
++    need(type(ttl) is int and 0<ttl<=600 and type(expiry) is int
++         and type(created) is int and 0<=created<expiry
++         and expiry-created<=600,'actual_bounded_approle_lookup_lifetime')
++    if expected is not None:
++        need(accessor==expected['accessor'] and created==expected['creationTime'],
++             'same_accessor_and_creation_across_self_lookups')
++    return {'public':{'ttlSeconds':ttl,'expiresAtUnix':expiry,'renewable':True},
++            'accessor':accessor,'creationTime':created}
++
++def token_lifecycle_before(client,guard,phase,secrets):
+     raw=guard.read(ROOT/phase/'workers/authbus-five-agent-cycle.auth.private.json',65536)
+     value=exact_json(raw)
+     need(isinstance(value,dict) and set(value)=={'tokens'} and isinstance(value['tokens'],list)
+          and len(value['tokens'])==1 and isinstance(value['tokens'][0],str),'actual_cycle_token_custody')
+     token=value['tokens'][0];secrets.add(token)
++    value=client.call('lookup-self-before-'+phase,'GET','auth/token/lookup-self',
++        token=token,validate=lambda v:token_lookup_snapshot(v,token))
++    observed=token_lookup_snapshot(value,token);secrets.add(observed['accessor'])
++    return {'token':token,'lookup':observed}
++
++def token_lifecycle(client,phase,before):
++    token=before['token'];pre=before['lookup']
+     client.call('unassigned-denied-'+phase,'GET','openclaw-auth/data/profiles/unassigned',token=token,expected=403)
+-    client.call('renew-self-'+phase,'POST','auth/token/renew-self',{},token=token)
++    def renewed(value):
++        auth=value.get('auth')
++        need(isinstance(auth,dict) and auth.get('client_token')==token
++             and auth.get('accessor')==pre['accessor'] and auth.get('renewable') is True
++             and type(auth.get('lease_duration')) is int and 0<auth['lease_duration']<=600,
++             'actual_renewal_same_credential_accessor_and_ttl')
++    renewal=client.call('renew-self-'+phase,'POST','auth/token/renew-self',{},
++        token=token,validate=renewed)
++    value=client.call('lookup-self-after-'+phase,'GET','auth/token/lookup-self',
++        token=token,validate=lambda v:token_lookup_snapshot(v,token,pre))
++    post=token_lookup_snapshot(value,token,pre)
+     client.call('revoke-self-'+phase,'POST','auth/token/revoke-self',{},token=token,expected=204)
+     client.call('revoked-denied-'+phase,'GET','openclaw-auth/data/manifest',token=token,expected=403)
++    delta=post['public']['expiresAtUnix']-pre['public']['expiresAtUnix']
+     return {'phase':phase,'actualTokenCaptured':True,'renewed':True,'revoked':True,
+-            'unassignedAndRevokedRequestsRejected':True}
++            'unassignedAndRevokedRequestsRejected':True,
++            'lookupBefore':pre['public'],'lookupAfter':post['public'],
++            'renewalLeaseTtlSeconds':renewal['auth']['lease_duration'],
++            'sameCredentialAcrossLookupAndRenew':True,
++            'sameAccessorAcrossLookupAndRenew':True,
++            'expiryDeltaSeconds':delta,'expiryExtensionObserved':delta>0,
++            'expiryObservation':'increased' if delta>0 else 'unchanged' if delta==0 else 'decreased',
++            'successfulRenewResponseAloneIsNotExtensionQualification':True}
+ 
+ def scan_owned_plaintext(ctx,guard,packet):
+     literals=[v.encode() for c in packet['credentials'].values() for key,v in c.items()
+@@ -998,16 +1042,18 @@
+             managed_profiles=managed,runtime=runtime,source_pins=source_pins,qa_pins=pins,
+             port=port,server_certificate_sha256=peer_sha)
+         first=manager.run_phase('initial');phase_results.append(first)
++        first_token=token_lifecycle_before(client,guard,'initial',secrets)
+         report['initialCanonicalAndInbox']=canonical_and_inbox(client,docs,phase_results)
+-        report['initialTokenLifecycle']=token_lifecycle(client,guard,'initial',secrets)
++        report['initialTokenLifecycle']=token_lifecycle(client,'initial',first_token)
+         manager.kill_server_for_cold_or_inverse('server-initial')
+         manager.start_server('server-cold-new-process')
+         client.ready(503)
+         client.call('cold-unseal','POST','sys/unseal',{'key':unseal},token='',
+             validate=lambda v:need(v.get('sealed') is False,'actual_cold_unsealed'))
+         second=manager.run_phase('cold-new-process');phase_results.append(second)
++        cold_token=token_lifecycle_before(client,guard,'cold-new-process',secrets)
+         report['coldCanonicalAndInbox']=canonical_and_inbox(client,docs,phase_results)
+-        report['coldTokenLifecycle']=token_lifecycle(client,guard,'cold-new-process',secrets)
++        report['coldTokenLifecycle']=token_lifecycle(client,'cold-new-process',cold_token)
+         manager.kill_server_for_cold_or_inverse('server-cold-new-process')
+         phase_results.append(manager.run_phase('initial-inverse'))
+         phase_results.append(manager.run_phase('cold-new-process-inverse'))
+@@ -1038,6 +1084,10 @@
+         report['wholeDatabaseBackupQualified']=False;report['crossAgentAtomicSnapshotClaimed']=False
+         report['nativeFactoryCountObserved']=sum(p['nativeWorkerCount'] for p in phase_results)
+         check('ten_actual_separate_native_lineages',report['nativeFactoryCountObserved']==10)
++        report['renewalExtensionQualified']=all(report[name]['expiryExtensionObserved']
++            for name in ('initialTokenLifecycle','coldTokenLifecycle'))
++        report['renewalObservationScope']='two_same_credential_pre_renew_post_lookup_chains'
++        check('both_actual_renewal_expiries_increased',report['renewalExtensionQualified'])
+         ctx.remaining();guard.check();completed=True
+     except BaseException as error:
+         report['errorType']=type(error).__name__

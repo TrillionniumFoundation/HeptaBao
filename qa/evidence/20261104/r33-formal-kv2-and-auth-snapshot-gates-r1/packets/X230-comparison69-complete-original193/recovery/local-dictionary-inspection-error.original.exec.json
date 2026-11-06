@@ -1,0 +1,7 @@
+{
+  "chunk_id": "efd933",
+  "wall_time_seconds": 0.000032798,
+  "exit_code": 1,
+  "original_token_count": 22,
+  "output": "Traceback (most recent call last):\n  File \"<stdin>\", line 4, in <module>\nKeyError: 0\n"
+}

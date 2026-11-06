@@ -1,0 +1,204 @@
+{
+  "schema": "heptabao.auth-google-public-two-json.actual-release.r1",
+  "GO": "a58667829950717eab43010eb2c768f9be24677e",
+  "lane": "A",
+  "activeCalls": 0,
+  "knownActiveNativeFutures": 0,
+  "originalOperations": 4,
+  "originalImmutablePages": 8,
+  "allOriginalOperationsCompletedStoredInactiveWhole": true,
+  "operations": [
+    {
+      "seq": 1,
+      "kind": "file_info",
+      "operationId": "612a8558f696d18a9cb93d0c55f12135a4343debae1279d3209ffc3ddbfd2f45",
+      "request": {
+        "blob": "c1b435737ad8a9538a1037f1f10b4c396ec9c581",
+        "bytes": 279,
+        "sha256": "453e041ae30ae840ce98e5721b2f8ae18c94ca019939a6df9a6b9b1b9add4331"
+      },
+      "ackSdk": {
+        "blob": "45c5375b46053cf15d3c0df0952caa5b4fed11cc",
+        "bytes": 704,
+        "sha256": "8803182ed74fca6f4a6cbd0ba33d4f471b3e28fff7471026bc0cb346c5e4e96b"
+      },
+      "status": {
+        "blob": "aac573db5ff1dbde371a4cdc620f73821c9ba70f",
+        "bytes": 800,
+        "sha256": "cc3330067ca8b4e006124ac0a1301b484a697c4a5e87f06797f1ac7d0103ae3a"
+      },
+      "payload": {
+        "blob": "58b083dc845f06fc869aea4d6c7d48e1f3be0063",
+        "bytes": 590,
+        "sha256": "ccd508624b726e25792acbd76477167d2aa62845692da8a45997f7e16269662d"
+      },
+      "native": {
+        "blob": "5c4b86cf2d2c42b565b9089c002a08e0fa1d15e0",
+        "bytes": 473,
+        "sha256": "518612279fbc8efb9cf74362e7924531afd6274b13f6bfbb2f64b63abefd5da9"
+      },
+      "binding": {
+        "blob": "aad3d619337daaf4d4e21459c9525738fed4f5e6",
+        "bytes": 1393,
+        "sha256": "28e3845a067c6d068820f1aac71c726f216a7d0dfcab5520c66e1e26103148ee"
+      },
+      "pages": 1,
+      "nativeClosed": true,
+      "wholeClosed": true
+    },
+    {
+      "seq": 2,
+      "kind": "file_info",
+      "operationId": "a5cd8ac32ba823f6f05673fb277debe7fa69914331ff9608d887f3c64a1c4ddc",
+      "request": {
+        "blob": "e7060cb5323b8169caf3eab29b2e95f3a9def76e",
+        "bytes": 270,
+        "sha256": "6b5dcf0c35e17ca58bd79899f0ec81e9fbdf2c00f5b7698e45e9f409e39a7eed"
+      },
+      "ackSdk": {
+        "blob": "0627fa06bd16535bdf668e28a5fc643503ec6a78",
+        "bytes": 704,
+        "sha256": "d6b089fd6496a23fd2ebb81b03ec95f7fff9e99b50c950ed45076ea2be52369d"
+      },
+      "status": {
+        "blob": "ff8fc7b4251b5c99fe7e815697ed2e9d125a9a60",
+        "bytes": 800,
+        "sha256": "13d2a22cc43f1345faa8be029f814d3c5034bbc36a52a30983edb570e39add5f"
+      },
+      "payload": {
+        "blob": "d13a9e2e87c020ac5f5324267f62ff0d62a77e3d",
+        "bytes": 578,
+        "sha256": "05c769fd3a65c131a297cf85d3d297c2416a2d4c7fdb6e2917c29568cc3d361c"
+      },
+      "native": {
+        "blob": "312a238cf2034035b2d554dd9d5c2e887daa44f5",
+        "bytes": 461,
+        "sha256": "ae160efd51813073008d8ae0b8852eaa2f99ce1c4f4569cc882662dc8fb9f75d"
+      },
+      "binding": {
+        "blob": "524bffecd8929c42e4db384fb0ca2ec93c667353",
+        "bytes": 1380,
+        "sha256": "49efb3d9c1eff177dad0a8808fd06933ffb62a67ab83eba75633cb126e582775"
+      },
+      "pages": 1,
+      "nativeClosed": true,
+      "wholeClosed": true
+    },
+    {
+      "seq": 3,
+      "kind": "binary_read",
+      "operationId": "cc8a9e9286fc366252299fcecd8c47b55560d1270aee485ff75a946147346862",
+      "request": {
+        "blob": "3962e47ff547ae504ecfcb70b073111771164bd3",
+        "bytes": 412,
+        "sha256": "40b411c2b8a15c7ad2564fd95d0c6d606d439feaa4f25dcbd1fda9a2ece92886"
+      },
+      "ackSdk": {
+        "blob": "a9463003734a998268dc08f91d66f9062dfa9265",
+        "bytes": 706,
+        "sha256": "1b853b02b777a040e28ba7b36ac3cbc401561f6b63ff1450a004e24b029bf09b"
+      },
+      "status": {
+        "blob": "721ac9ee5353a564f87cbaa7621588ddc5bd8949",
+        "bytes": 802,
+        "sha256": "11fda969d975342b8fa8e04be5a73bb4179daf7406cdeb7ebc4d36d049852b2b"
+      },
+      "payload": {
+        "blob": "bd496990ae76bcec4f2eb1f9f25a1bda46acb600",
+        "bytes": 38976,
+        "sha256": "03ae439ade6a85d93794f44c165ab5c8e9a8a98c4e1bc6eff5fe625bb1ade1ab"
+      },
+      "native": {
+        "blob": "7e79cddec5aaed945167adafbe445a730501953e",
+        "bytes": 38873,
+        "sha256": "2899821618d76a854fa35a7ba61bfc5357530d0d9ea163779e5ffe0c162940e9"
+      },
+      "binding": {
+        "blob": "8b1fe31a4403b91f032d6043a0052b7275c166ec",
+        "bytes": 1347,
+        "sha256": "b32e5fb36c42319811f178f57f1f5730f2867366c5e223b4a1545a0e598aa1cb"
+      },
+      "pages": 5,
+      "nativeClosed": true,
+      "wholeClosed": true
+    },
+    {
+      "seq": 4,
+      "kind": "binary_read",
+      "operationId": "7a17d296389a4dac43847662e338e39d3955274aadafbd537755d5e9f649c8db",
+      "request": {
+        "blob": "d47264958f9a498e14d4652e84db91707816011a",
+        "bytes": 399,
+        "sha256": "eb1662f64292602133d56ea8ae0142d2b7bc04c5db7ef278ce60398d07532e46"
+      },
+      "ackSdk": {
+        "blob": "c5b4f3d76b4147235658dc8313cf4e665f748f88",
+        "bytes": 706,
+        "sha256": "486d84ddf2ec7cb562f4c416b3d7082c313a0143cf34cd797b998ec2096ed950"
+      },
+      "status": {
+        "blob": "0abe152c17a3077f7724f93bc67f31bcc832f0b0",
+        "bytes": 802,
+        "sha256": "64805f3d8819a4195e834f094d52c247a684f47dbe66d8bc1aa2e0e1b653c8d3"
+      },
+      "payload": {
+        "blob": "2c6c233c681f6332042553521f658c38b1855137",
+        "bytes": 914,
+        "sha256": "2901219eb9e16192f9110f54ed4f449a77081c5b3652a6ba514bdb5445498d3a"
+      },
+      "native": {
+        "blob": "a5c9e9943005317adbded114c79a3cc3d163a9a7",
+        "bytes": 811,
+        "sha256": "d37c3b3b64c74594c8075a27563be29aeae3fff51fc400dc057723ecd9d7f104"
+      },
+      "binding": {
+        "blob": "5ac7d1c81b4b7c8ffb5c4e425ea8d8df1adde4a1",
+        "bytes": 1330,
+        "sha256": "7a97c938a69818688763d285802f3e13b6f5afd10a849bd914c5d8e8d9a87249"
+      },
+      "pages": 1,
+      "nativeClosed": true,
+      "wholeClosed": true
+    }
+  ],
+  "actualPublicBodies": {
+    "google-manifest": {
+      "blob": "dde2aa7b76b6e8eec6e7f9edc368ea3191aca7d6",
+      "bytes": 28911,
+      "sha256": "518e8e071c1e5720c9fe621ac84c8b550df93af14dac0d96d788d73917835301",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/openclaw.plugin.json",
+      "version": "16777233:405240594:28911:1784843466375861317:1784843466375861317"
+    },
+    "google-package": {
+      "blob": "eca1335cb1e73aafcb53f89bba324673f9fa4493",
+      "bytes": 375,
+      "sha256": "398f73305017a1d3813610825814c6e1dd93b683da088cb6df068a31c639fcc3",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/package.json",
+      "version": "16777233:405240659:375:1784843466392296043:1784843466392296043"
+    }
+  },
+  "accounting": {
+    "previousBodyBytes": 353689,
+    "newBodyBytes": 29286,
+    "cumulativeBodyBytes": 382975,
+    "newBodyFiles": 2,
+    "newBodyChunks": 2
+  },
+  "declaredEntry": {
+    "package": "eca1335cb1e73aafcb53f89bba324673f9fa4493",
+    "relative": [
+      "./index.js"
+    ],
+    "lexicalPath": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/index.js",
+    "historicalEntryPin": null,
+    "observedEntryFile": false,
+    "ownerSelected": false
+  },
+  "RuntimeErrors": 0,
+  "localJournalCorrections": 2,
+  "extraNativeReadAdmissions": 0,
+  "SDKExecuted": false,
+  "privateCapsuleRead": false,
+  "productionChanged": false,
+  "oldFailuresAndUnknownsPreserved": true
+}

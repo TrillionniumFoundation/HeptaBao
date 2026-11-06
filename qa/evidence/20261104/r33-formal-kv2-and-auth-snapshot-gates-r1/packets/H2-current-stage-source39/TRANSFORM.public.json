@@ -1,0 +1,165 @@
+{
+  "schema": "heptabao.h2-stage.minimal-adaptation-source.v1",
+  "status": "SOURCE_ONLY_UNBOUND_OBSERVATION_GATE",
+  "base": {
+    "bytes": 23638,
+    "sha256": "87a9c2a7d1b9b4e789a4fda79fc9a89ba21657493707403f36cb891546e4a34f",
+    "blob": "45ceb135688a2002e845f31e010ca5c010551517"
+  },
+  "candidate": {
+    "bytes": 26823,
+    "sha256": "a8bf27675b1a00b08f60d33fbed84405c033d537fb9562d963b9ff725264fca1",
+    "blob": "678e519f17c474b5610651bcbb93b43d186124c5"
+  },
+  "payload": {
+    "bytes": 321152,
+    "sha256": "6700283209e4de4433d0ef562c696c9d95ea6a12a2f0c3926701e4cc11674883",
+    "blob": "b07825d48a091c0fcd618eb54653b625007fd8b1"
+  },
+  "change_count": 24,
+  "diff_hunks": 14,
+  "changes": [
+    {
+      "reason": "H2 carrier label only",
+      "before": "Create-only local Phase B source/artifact carrier; no product execution.",
+      "after": "Create-only local H2 source/artifact carrier; no product execution."
+    },
+    {
+      "reason": "Fixed fresh H2 namespaces already in the unchanged binding",
+      "before": "CONTROL = BASE / \"official271-native-cli-phaseb-r3-control-r4\"\nWORK = BASE / \"official271-native-cli-phaseb-r3-live-r4\"",
+      "after": "CONTROL = BASE / \"normal-native-h2-gate-control-r2\"\nWORK = BASE / \"normal-native-h2-gate-live-r2\""
+    },
+    {
+      "reason": "Second fixed existing instrument incoming; no official CLI executable",
+      "before": "OFFICIAL = BASE / \"official271-standby-oracle-control-r1/artifacts/bao\"",
+      "after": "H2_INCOMING = BASE / \"normal-native-h2-qa-shared-artifacts-r1/incoming\""
+    },
+    {
+      "reason": "Exact new eight-member H2 carrier bytes",
+      "before": "PAYLOAD_SHA = \"a2f1d6b11c206b8b10ec896fd857207e38f72efac24bffd556fa94349bc34915\"\nPAYLOAD_BYTES = 302459",
+      "after": "PAYLOAD_SHA = '6700283209e4de4433d0ef562c696c9d95ea6a12a2f0c3926701e4cc11674883'\nPAYLOAD_BYTES = 321152"
+    },
+    {
+      "reason": "Five unchanged H2 QA, unchanged two current receipts, unchanged content-bound template",
+      "before": "FILES = json.loads(r'''{\n  \"phaseb_controller_r3.py\": {\n    \"bytes\": 61210,\n    \"sha256\": \"10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c\"\n  },\n  \"phaseb_binding_r3.py\": {\n    \"bytes\": 28134,\n    \"sha256\": \"f046016ddfcf87eeec2febf5ae2b6d36afa3d8c82454823455dd157e9991cd0d\"\n  },\n  \"phaseb_evidence_r3.py\": {\n    \"bytes\": 15201,\n    \"sha256\": \"4fb452f9eabbbc9f66913e0b824f7f3db5b2a75848b2adf4186e76078f2c9024\"\n  },\n  \"native_fixture_reference_r8.py\": {\n    \"bytes\": 68149,\n    \"sha256\": \"a0bac9972fbb9d65ed3edf537f732a08b5177864516b33ada0a6e98c4c6a0416\"\n  },\n  \"official_cli_reference_r4.py\": {\n    \"bytes\": 46586,\n    \"sha256\": \"18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9\"\n  },\n  \"normal-release-tests-result.public.json\": {\n    \"bytes\": 57532,\n    \"sha256\": \"7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475\"\n  },\n  \"groups.json\": {\n    \"bytes\": 6249,\n    \"sha256\": \"0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1\"\n  },\n  \"binding.partially-resolved.json\": {\n    \"bytes\": 6945,\n    \"sha256\": \"cb4fd6c0ef9708f5bde5bd01cabc67273f3a2e24db5abe37660606e965bf0ee6\"\n  }\n}''')",
+      "after": "FILES = json.loads(r'''{\n  \"phaseb_evidence_r3.py\": {\n    \"bytes\": 15201,\n    \"sha256\": \"4fb452f9eabbbc9f66913e0b824f7f3db5b2a75848b2adf4186e76078f2c9024\"\n  },\n  \"native_fixture_reference_r8.py\": {\n    \"bytes\": 68149,\n    \"sha256\": \"a0bac9972fbb9d65ed3edf537f732a08b5177864516b33ada0a6e98c4c6a0416\"\n  },\n  \"official_cli_reference_r4.py\": {\n    \"bytes\": 46586,\n    \"sha256\": \"18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9\"\n  },\n  \"native_h2_gate_r1.py\": {\n    \"bytes\": 62344,\n    \"sha256\": \"703e5ecfc9b88ce4d8cdaf81342597a12a7b42c92af583b54d87f4f8a37bcf13\"\n  },\n  \"native_h2_binding_r1.py\": {\n    \"bytes\": 41350,\n    \"sha256\": \"6bbaa72dcb899d359f14c6e442c824c46a8c52aa74aa0d6be8b1820596c34cf4\"\n  },\n  \"normal-release-tests-result.public.json\": {\n    \"bytes\": 57532,\n    \"sha256\": \"7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475\"\n  },\n  \"groups.json\": {\n    \"bytes\": 6249,\n    \"sha256\": \"0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1\"\n  },\n  \"binding.partially-resolved.json\": {\n    \"bytes\": 10231,\n    \"sha256\": \"f8eaa547f0cf3d2536c55652293b3c8e9572126b537ee34014495ed222d20bcf\"\n  }\n}''')"
+    },
+    {
+      "reason": "Exact five unchanged H2 QA names",
+      "before": "QA_NAMES = (\n    \"phaseb_controller_r3.py\", \"phaseb_binding_r3.py\", \"phaseb_evidence_r3.py\",\n    \"native_fixture_reference_r8.py\", \"official_cli_reference_r4.py\",\n)\n",
+      "after": "QA_NAMES = (\n    'phaseb_evidence_r3.py',\n    'native_fixture_reference_r8.py',\n    'official_cli_reference_r4.py',\n    'native_h2_gate_r1.py',\n    'native_h2_binding_r1.py',\n)\n"
+    },
+    {
+      "reason": "Closed twelve instrument roles plus existing H2 eight canonical source pins",
+      "before": "SOURCE_PINS = {\n    \"crates/heptabao-server/src/snapshot_archive.rs\": (14013, \"77c9565ac4efcfe8d387ae7955c4c977bdd4913bcf770981a9b28facdeb2313d\"),\n    \"crates/heptabao-server/src/service.rs\": (518245, \"2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2\"),\n    \"crates/heptabao-server/src/service_snapshot_transfer.rs\": (50683, \"022be62ccaf26a335103dc106be432d7b8896768cace056e649b65ca920e97b9\"),\n    \"crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs\": (43899, \"3802288e0f2e3f58b94df509c928467fa2d3d11ee47bb9c68128c6143b9138ff\"),\n    \"crates/heptabao-server/src/service_no_forwarding_ha_tests.rs\": (16516, \"e9109b92a98bdf5742b7e32b16fc640f1d2bd8b3c161352798fc0db6d720cac8\"),\n    \"crates/heptabao-server/src/http_h2.rs\": (14691, \"4db2b72314f7f8c0fd7b271d57d359156bc6add9fdd25e8206d44eee45d20ed1\"),\n    \"crates/heptabao-server/src/service_native_v6_ha_read.rs\": (31855, \"bba510596687120b08a0cef1ee80252ae5e97f10ad4942bcc832983c5d08e121\"),\n    \"crates/heptabao-server/src/ha_native_v6_runtime.rs\": (61623, \"5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a\"),\n}",
+      "after": "H2_COPY = {\n    'executable': ('heptabao-native-h2-qa', 4616576, '1f1c6eccf1ac9652a69572cb270b1d3d99a3402eaabf6d7feed6e4b2c4d55b13', 0o500, 0o500),\n    'rust_source': ('native_h2_client.rs', 19382, '41347a71055e5c7086a256549f25f20d52ba8361e16926b4470f3448425f90dd', 0o400, 0o600),\n    'test_source': ('native_h2_client_tests.rs', 8942, '7f23470287fe953f0271e974d6eda759b7daf9f15bc363d522a02d3633e012c2', 0o400, 0o600),\n    'cargo_manifest': ('Cargo.toml', 957, '960de7b19776cda4bd8a00561a417f72b08ca320efb93ec05028a3be0e7315e5', 0o400, 0o600),\n    'cargo_lock': ('Cargo.lock', 17409, 'f1882bc0bb81e5f74da28502e8cbd718e87fcda0100bf85ad118b007a8faf9bf', 0o400, 0o600),\n    'canonical_lock': ('canonical.Cargo.lock', 101193, 'd2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5', 0o400, 0o600),\n    'build_receipt': ('build-result.public.json', 62314, 'b8a2e83ea012f11cef7dc83bc79758d2b624df7eac2265efddbd32e2880db95e', 0o400, 0o600),\n    'build_controller': ('build_native_h2_client_r1.py', 59791, '7ea25347f71764f1ed3d459d24b92750ef82c361878e9c856c7a7e8fe699bc15', 0o400, 0o600),\n    'build_binding': ('build-binding.private.json', 4039, 'ac127d3e67971ad6b9ae987c0fc6437f8882ff00d9480acbc12ed149796dd12a', 0o400, 0o600),\n    'component_stdout': ('components.stdout', 633, '9c8b4f62679c5771d7a0b575674f9961e64afaefe46eb30b1825c2f696ed3274', 0o400, 0o600),\n    'component_record': ('components.public.json', 804, '41a0386206a00967a450df01dab89d008d8fc543c4e84702f80aaa1fcbe1f829', 0o400, 0o600),\n    'component_list_stdout': ('components-list.stdout', 507, 'cebfab7307ba716aeebf08514df4cc6cf9a638009579168ced3b621cf8c10d5d', 0o400, 0o600),\n}\nSOURCE_PINS = {\n    'Cargo.lock': (101193, 'd2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5'),\n    'crates/heptabao-server/src/ha_native_v6_runtime.rs': (61623, '5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a'),\n    'crates/heptabao-server/src/http_h2.rs': (14691, '4db2b72314f7f8c0fd7b271d57d359156bc6add9fdd25e8206d44eee45d20ed1'),\n    'crates/heptabao-server/src/http_snapshot.rs': (35170, '1cc98a78d6a037a47456b7c6b93dc13647a261e8217f12a6a4edff3d91fe41e2'),\n    'crates/heptabao-server/src/service.rs': (518245, '2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2'),\n    'crates/heptabao-server/src/service_snapshot_transfer.rs': (50683, '022be62ccaf26a335103dc106be432d7b8896768cace056e649b65ca920e97b9'),\n    'crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs': (43899, '3802288e0f2e3f58b94df509c928467fa2d3d11ee47bb9c68128c6143b9138ff'),\n    'crates/heptabao-server/src/snapshot_archive.rs': (14013, '77c9565ac4efcfe8d387ae7955c4c977bdd4913bcf770981a9b28facdeb2313d'),\n}"
+    },
+    {
+      "reason": "H2 stage receipt schema",
+      "before": "schema = \"heptabao.official271-native-cli-phaseb-r3.local-stage.v1\"",
+      "after": "schema = \"heptabao.normal-native-h2-gate.local-stage.v1\""
+    },
+    {
+      "reason": "New owned h2qa FD in the existing ledger",
+      "before": "        self.rootfd = self.qafd = self.artfd = None",
+      "after": "        self.rootfd = self.qafd = self.artfd = self.h2fd = None"
+    },
+    {
+      "reason": "Create exactly one additional owned child directory",
+      "before": "        for name in (\"qa\", \"artifacts\"):",
+      "after": "        for name in (\"qa\", \"artifacts\", \"h2qa\"):"
+    },
+    {
+      "reason": "Register and route h2qa through the existing append-before-fstat and reverse-close path",
+      "before": "            if name == \"qa\":\n                self.qafd = fd\n            else:\n                self.artfd = fd",
+      "after": "            if name == \"qa\":\n                self.qafd = fd\n            elif name == \"artifacts\":\n                self.artfd = fd\n            else:\n                self.h2fd = fd"
+    },
+    {
+      "reason": "Exact write FD/name pairing; instrument destination only admitted by fixed copy route",
+      "before": "        need(name in set(QA_NAMES) | {\"groups.json\", \"normal-release-tests-result.public.json\",\n                                    \"binding.private.json\", \"stage.result.public.json\",\n                                    \"stage.failure.public.json\"}, \"closed_destination_filename\")",
+      "after": "        need((fd == self.qafd and name in QA_NAMES)\n             or (fd == self.artfd and name in {\"groups.json\", \"normal-release-tests-result.public.json\"})\n             or (fd == self.rootfd and name in {\"binding.private.json\", \"stage.result.public.json\",\n                                               \"stage.failure.public.json\"}), \"closed_destination_filename\")"
+    },
+    {
+      "reason": "One existing copy implementation with two closed input/target routes",
+      "before": "    def copy(self, name, size, expected_sha, source_mode, target_mode):\n        self.check()\n        path = INCOMING / name",
+      "after": "    def copy(self, name, size, expected_sha, source_mode, target_mode, *, h2=False):\n        self.check()\n        need(type(h2) is bool, \"fixed_copy_route\")\n        member = (name, size, expected_sha, source_mode, target_mode)\n        need(member in (H2_COPY.values() if h2 else COPY), \"fixed_copy_member\")\n        incoming, directory, destination = ((H2_INCOMING, \"h2qa\", self.h2fd) if h2\n                                            else (INCOMING, \"artifacts\", self.artfd))\n        need(destination is not None, \"owned_copy_destination_fd\")\n        path = incoming / name"
+    },
+    {
+      "reason": "Same copy I/O/hash/EOF/identity/close code using its fixed routed destination FD",
+      "before": "    def copy(self, name, size, expected_sha, source_mode, target_mode, *, h2=False):\n        self.check()\n        need(type(h2) is bool, \"fixed_copy_route\")\n        member = (name, size, expected_sha, source_mode, target_mode)\n        need(member in (H2_COPY.values() if h2 else COPY), \"fixed_copy_member\")\n        incoming, directory, destination = ((H2_INCOMING, \"h2qa\", self.h2fd) if h2\n                                            else (INCOMING, \"artifacts\", self.artfd))\n        need(destination is not None, \"owned_copy_destination_fd\")\n        path = incoming / name\n        sourcefd, before = open_source(path, size, size, source_mode, 1000)\n        targetfd = None\n        try:\n            targetfd = os.open(name, os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600,\n                               dir_fd=self.artfd)\n            digest = hashlib.sha256()\n            count = 0\n            while True:\n                remaining()\n                block = os.read(sourcefd, 65536)\n                if not block:\n                    break\n                count += len(block)\n                need(count <= size, \"copy_source_growth\")\n                digest.update(block)\n                view = memoryview(block)\n                while view:\n                    remaining()\n                    n = os.write(targetfd, view)\n                    need(n > 0, \"copy_write_progress\")\n                    view = view[n:]\n            need(count == size and digest.hexdigest() == expected_sha, \"copy_source_exact\")\n            finish_source(path, sourcefd, before)\n            os.fchmod(targetfd, target_mode)\n            os.fsync(targetfd)\n            st = os.fstat(targetfd)\n            need(st.st_uid == 1000 and st.st_nlink == 1 and st.st_size == size\n                 and stat.S_IMODE(st.st_mode) == target_mode, \"copy_target_custody\")\n            os.lseek(targetfd, 0, os.SEEK_SET)\n            back = hashlib.sha256()\n            read_size = 0\n            while True:\n                remaining()\n                block = os.read(targetfd, 65536)\n                if not block:\n                    break\n                read_size += len(block)\n                need(read_size <= size, \"copy_target_growth\")\n                back.update(block)\n            need(read_size == size and back.hexdigest() == expected_sha, \"copy_target_sha\")\n            need(identity(st) == identity(os.fstat(targetfd))\n                 == identity(os.stat(name, dir_fd=self.artfd, follow_symlinks=False)),\n                 \"copy_target_name_identity\")\n            finish_source(path, sourcefd, before)\n            source = {\"path\": str(path), **identity(before), \"sha256\": expected_sha}\n            target = {\"path\": str(CONTROL / \"artifacts\" / name), **identity(st), \"sha256\": expected_sha}\n        finally:\n            try:\n                if targetfd is not None:\n                    os.close(targetfd)\n            finally:\n                os.close(sourcefd)\n        os.fsync(self.artfd)\n        self.check()\n        self.written.append(name)\n        return {\"source\": source, \"target\": target, \"create_only\": True, \"same_fd_readback\": True}\n",
+      "after": "    def copy(self, name, size, expected_sha, source_mode, target_mode, *, h2=False):\n        self.check()\n        need(type(h2) is bool, \"fixed_copy_route\")\n        member = (name, size, expected_sha, source_mode, target_mode)\n        need(member in (H2_COPY.values() if h2 else COPY), \"fixed_copy_member\")\n        incoming, directory, destination = ((H2_INCOMING, \"h2qa\", self.h2fd) if h2\n                                            else (INCOMING, \"artifacts\", self.artfd))\n        need(destination is not None, \"owned_copy_destination_fd\")\n        path = incoming / name\n        sourcefd, before = open_source(path, size, size, source_mode, 1000)\n        targetfd = None\n        try:\n            targetfd = os.open(name, os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600,\n                               dir_fd=destination)\n            digest = hashlib.sha256()\n            count = 0\n            while True:\n                remaining()\n                block = os.read(sourcefd, 65536)\n                if not block:\n                    break\n                count += len(block)\n                need(count <= size, \"copy_source_growth\")\n                digest.update(block)\n                view = memoryview(block)\n                while view:\n                    remaining()\n                    n = os.write(targetfd, view)\n                    need(n > 0, \"copy_write_progress\")\n                    view = view[n:]\n            need(count == size and digest.hexdigest() == expected_sha, \"copy_source_exact\")\n            finish_source(path, sourcefd, before)\n            os.fchmod(targetfd, target_mode)\n            os.fsync(targetfd)\n            st = os.fstat(targetfd)\n            need(st.st_uid == 1000 and st.st_nlink == 1 and st.st_size == size\n                 and stat.S_IMODE(st.st_mode) == target_mode, \"copy_target_custody\")\n            os.lseek(targetfd, 0, os.SEEK_SET)\n            back = hashlib.sha256()\n            read_size = 0\n            while True:\n                remaining()\n                block = os.read(targetfd, 65536)\n                if not block:\n                    break\n                read_size += len(block)\n                need(read_size <= size, \"copy_target_growth\")\n                back.update(block)\n            need(read_size == size and back.hexdigest() == expected_sha, \"copy_target_sha\")\n            need(identity(st) == identity(os.fstat(targetfd))\n                 == identity(os.stat(name, dir_fd=destination, follow_symlinks=False)),\n                 \"copy_target_name_identity\")\n            finish_source(path, sourcefd, before)\n            source = {\"path\": str(path), **identity(before), \"sha256\": expected_sha}\n            target = {\"path\": str(CONTROL / directory / name), **identity(st), \"sha256\": expected_sha}\n        finally:\n            try:\n                if targetfd is not None:\n                    os.close(targetfd)\n            finally:\n                os.close(sourcefd)\n        os.fsync(destination)\n        self.check()\n        self.written.append(name)\n        return {\"source\": source, \"target\": target, \"create_only\": True, \"same_fd_readback\": True}\n"
+    },
+    {
+      "reason": "Exact H2 carrier schema in original admission",
+      "before": "payload[\"schema\"] == \"heptabao.official271-native-cli-phaseb-r3.local-source-carrier.v1\"",
+      "after": "payload[\"schema\"] == \"heptabao.normal-native-h2-gate.local-source-carrier.v1\""
+    },
+    {
+      "reason": "Exact frozen product and instrument identities remain separate",
+      "before": "    need(spec[\"candidate_commit\"] == HEAD and spec[\"candidate_tree\"] == TREE\n         and spec[\"ready_for_readonly_prepare\"] is False, \"original_partial_binding\")",
+      "after": "    need(spec[\"schema\"] == \"heptabao.normal-native-h2-gate.binding.v2\"\n         and spec[\"candidate_commit\"] == HEAD and spec[\"candidate_tree\"] == TREE\n         and spec[\"instrument_build_commit\"] == \"df026fe323dd7cf0f0ec57d7d2d9c5a79897053c\"\n         and spec[\"instrument_build_tree\"] == \"424463ccd2310ddc1e7b2bbcd7b7af29ae58c825\"\n         and spec[\"ready_for_readonly_prepare\"] is False, \"original_partial_binding\")"
+    },
+    {
+      "reason": "Apply the existing canonical owned read-only incoming guard and before/after directory fence to the fixed instrument source",
+      "before": "    directory_fences = {str(path): directory_identity(path.lstat()) for path in (SOURCE, INCOMING)}",
+      "after": "    need(H2_INCOMING.resolve(strict=True) == H2_INCOMING and H2_INCOMING.is_dir()\n         and H2_INCOMING.lstat().st_uid == 1000\n         and stat.S_IMODE(H2_INCOMING.lstat().st_mode) == 0o500, \"instrument_incoming_custody\")\n    directory_fences = {str(path): directory_identity(path.lstat())\n                        for path in (SOURCE, INCOMING, H2_INCOMING)}"
+    },
+    {
+      "reason": "H2 has no official_cli executable dependency",
+      "before": "    official = capture(OFFICIAL, 181760103, \"535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea\", 181760103)\n",
+      "after": ""
+    },
+    {
+      "reason": "Remove only the nonexistent H2 official executable from the read-only list",
+      "before": "    captured = [machine, *source_pins, *old_fences, official, *utilities.values()]",
+      "after": "    captured = [machine, *source_pins, *old_fences, *utilities.values()]"
+    },
+    {
+      "reason": "Twelve instrument copies via the same owned copy method",
+      "before": "        copied = [owned.copy(*item) for item in COPY]",
+      "after": "        copied = [owned.copy(*item) for item in COPY]\n        h2_copied = {role: owned.copy(*item, h2=True) for role, item in H2_COPY.items()}"
+    },
+    {
+      "reason": "Bind h2_client only from actual target hash/mode/owner records; no official_cli field",
+      "before": "        spec[\"official_cli\"] = bind(official)",
+      "after": "        actual_h2 = {role: bind(entry[\"target\"]) for role, entry in h2_copied.items()}\n        need(actual_h2 == spec[\"h2_client\"], \"actual_h2_targets_match_frozen_binding\")\n        spec[\"h2_client\"] = actual_h2"
+    },
+    {
+      "reason": "Preserve the full before/after metadata fence for all instrument copy sources",
+      "before": "        for item in [*captured, *[entry[\"source\"] for entry in copied]]:",
+      "after": "        for item in [*captured, *[entry[\"source\"] for entry in copied],\n                     *[entry[\"source\"] for entry in h2_copied.values()]]:"
+    },
+    {
+      "reason": "Exact h2qa and owned-root final membership before the original result receipt",
+      "before": "             | {\"groups.json\", \"normal-release-tests-result.public.json\"}, \"exact_created_artifact_members\")",
+      "after": "             | {\"groups.json\", \"normal-release-tests-result.public.json\"}, \"exact_created_artifact_members\")\n        need(set(os.listdir(owned.h2fd)) == {item[0] for item in H2_COPY.values()},\n             \"exact_created_h2_members\")\n        need(set(os.listdir(owned.rootfd)) == {\"qa\", \"artifacts\", \"h2qa\", \"binding.private.json\"},\n             \"exact_created_control_members\")"
+    },
+    {
+      "reason": "Report the twelve actual instrument source/target identity records separately",
+      "before": "                      machine_id_sha256=MACHINE_SHA, copied=copied, qa_files=qarecords,",
+      "after": "                      machine_id_sha256=MACHINE_SHA, copied=copied, h2_copied=h2_copied, qa_files=qarecords,"
+    }
+  ],
+  "five_QA_whole_unchanged": true,
+  "missing_independent_incoming_info": [
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "stage_process_request_constructed": false,
+  "stage_dispatch_ready": false,
+  "target_actual_count": 0,
+  "Runtime_calls": 0,
+  "module_executions": 0,
+  "budgets": {
+    "internal_seconds": 300,
+    "outer_seconds": 330,
+    "stdin_max_bytes": 1048576
+  },
+  "copy_product_count": 3,
+  "payload_product_count": 2,
+  "copy_instrument_count": 12,
+  "QA_count": 5
+}

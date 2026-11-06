@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.cli-stage.actual-terminal-root-lane-release.v1",
+  "ok": true,
+  "checks": [
+    "closed_actual_authority_status",
+    "closed_actual_streams_status",
+    "exact_original_stage_ACK_and_lossless_binding",
+    "stage_terminal_complete_zero",
+    "terminal_log_sizes",
+    "post_finally_actual_owned_FDs_closed_within300",
+    "stage_exact_code_carrier",
+    "stage_only_no_product_or_production",
+    "owner_B_release"
+  ],
+  "checks_passed": 9,
+  "owner_release": {
+    "blob": "40745dab3fba9739dd0805086cbd2dc3eb457f11",
+    "bytes": 8905,
+    "sha256": "66d013791a7da58ac4e8bcb48e178d41323f654daa9f91e09f9aec76a339cfe8"
+  },
+  "stage_GO": "2e6623f5d7c9a05e66e4c22b1485dba8a1924d56",
+  "job": "desktop/1a1ada8b25f-fc05-5a8d",
+  "authority": "206a56b5ea6584916cdae30b22e907771e4d6910",
+  "stdout": "e435ea9adce9f7d2439598f4340a74aeccb8b0c9",
+  "actual_binding": {
+    "bytes": 6944,
+    "create_only": true,
+    "ctime_ns": {
+      "$exactInteger": "1793914880269005999"
+    },
+    "device": 2050,
+    "gid": 1000,
+    "inode": 7874257,
+    "links": 1,
+    "mode": 384,
+    "mtime_ns": {
+      "$exactInteger": "1793914880269005999"
+    },
+    "name": "binding.private.json",
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/binding.private.json",
+    "sha256": "7ef3458f4a54b74336941229307c0ffb6778e581c18b27518dc03a8fe6107eea",
+    "uid": 1000
+  },
+  "B_released": true,
+  "whole_original_protocol_chain_separately_pending": true,
+  "target_metadata_body_and_prepare_live_not_authorized": true
+}

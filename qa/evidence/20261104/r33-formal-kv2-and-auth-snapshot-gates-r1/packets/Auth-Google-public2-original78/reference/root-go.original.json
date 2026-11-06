@@ -1,0 +1,106 @@
+{
+  "schema": "heptabao.auth-google-two-public-reads.root-GO.v1",
+  "decision": "GO_EXACT_TWO_METADATA_THEN_TWO_CONDITIONAL_BODY_READS",
+  "owner": "/root/authbus_migration",
+  "lane": "A",
+  "lane_release": "f705e68d9810fd2a1a006dea527ee767b1dbb0fc",
+  "root_source_review": "8501e8bef5edd41fabe4aeabb0ed1b5611c99090",
+  "source_tree": "20ea640795bcc500830a7e534485851ee93951a8",
+  "contract": {
+    "blob": "ea6032ceeac023760187d6733bd066c7df18e98b",
+    "bytes": 3709,
+    "sha256": "0f2b77f0fd947602aef2730bc2c14ab87a1548f220906a6efaa21eb57ab6efd8"
+  },
+  "body_deriver": {
+    "blob": "c09d5016e52d77d05f60377ffa7b5ea1fe325df2",
+    "bytes": 2785,
+    "sha256": "d7fbd67e2490be00231935507696df02c716ddf106d5e927bfeba7972301d207"
+  },
+  "metadata_requests": [
+    {
+      "blob": "c1b435737ad8a9538a1037f1f10b4c396ec9c581",
+      "bytes": 279,
+      "sha256": "453e041ae30ae840ce98e5721b2f8ae18c94ca019939a6df9a6b9b1b9add4331",
+      "file": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/openclaw.plugin.json",
+      "id": "google-manifest"
+    },
+    {
+      "blob": "e7060cb5323b8169caf3eab29b2e95f3a9def76e",
+      "bytes": 270,
+      "sha256": "6b5dcf0c35e17ca58bd79899f0ec81e9fbdf2c00f5b7698e45e9f409e39a7eed",
+      "file": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/package.json",
+      "id": "google-package"
+    }
+  ],
+  "sequence": [
+    "metadata-google-manifest",
+    "metadata-google-package",
+    "body-google-manifest",
+    "body-google-package"
+  ],
+  "admission": {
+    "eachCallSingle": true,
+    "maxNativeFutures": 1,
+    "externalExactIntentMustCompleteBeforeStart": true,
+    "originalSdkSavedBeforeIsErrorAndParse": true,
+    "unknownOrErrorStopNewAdmissions": true,
+    "noAutomaticRetries": true,
+    "sameIdStatusAndImmutablePayloadMustCloseBeforeNext": true,
+    "maxImmutablePageBytes": 8192,
+    "newNativeReadCallsAtMost": 4
+  },
+  "metadata_gate": {
+    "tool": "file_info",
+    "regularNonSymlinkByApi": true,
+    "singleLinkExactly": 1,
+    "sha256MustEqualHistorical": true,
+    "stableVersionAndSizeRequired": true,
+    "eachBytesMin": 1,
+    "eachBytesMax": 65536,
+    "permittedUids": [
+      0,
+      501
+    ],
+    "modeNoGroupOrOtherWrite": true,
+    "hashWorkNotCappedByBodyLimit": true,
+    "metadataMayHashFullTarget": true,
+    "ifOversizeOrDrift": "STOP_NO_BODY_NO_NEW_PATH"
+  },
+  "conditional_body": {
+    "source": "derive-body-requests.mjs",
+    "deriveOnlyAfterBothOriginalMetadataClosedAndWhole": true,
+    "exactBodyRequestAndIntentMustBeDurableBeforeStart": true,
+    "offset": 0,
+    "limit": "exact actual size",
+    "expectedVersion": "exact original file_info version",
+    "oneReadEach": true,
+    "maxWholeBodyBytes": 131072,
+    "maxChunks": 2,
+    "sha256MustEqualHistoricalAndMetadata": true,
+    "requireEofTrueAndExactNextOffset": true,
+    "noAutomaticFollowingOfJsonPathsOrImports": true
+  },
+  "accounting": {
+    "previousCompletedFiles": 8,
+    "previousCompletedChunks": 11,
+    "previousCompletedBytes": 353689,
+    "newMetadata": 2,
+    "newBodyMaxFiles": 2,
+    "newBodyMaxChunks": 2,
+    "newBodyMaxBytes": 131072,
+    "cumulativeBodyMaxBytes": 484761,
+    "previousWindowsNotReset": true,
+    "fixtureBudgetsUnchanged": true
+  },
+  "original_bodies_only": true,
+  "do_not_read_private_capsule": true,
+  "no_process_or_SDK_execution": true,
+  "no_configuration_change": true,
+  "no_new_path_or_recursive_imports": true,
+  "body_gate": "Both original metadata payloads whole and same-id futures closed; actual fixed path/SHA and all gates pass. Save exact body request and external intent before each unique admission. Each actual body whole SHA/version/EOF must match. Stop upon drift/unknown/error; no native replay or new key.",
+  "selection_proof": false,
+  "AuthBus_qualification": false,
+  "cutover": false,
+  "cleanup": false,
+  "full_replacement": false
+}

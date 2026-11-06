@@ -1,0 +1,38 @@
+{
+  "schema": "heptabao.X230-full34-fixed-original-observation-plan.v1",
+  "GO": "773ffa99d027be4cd77e265b3a40f8432864139c",
+  "host": "x230",
+  "job_id": "ACTUAL_ORIGINAL_ACK_ONLY",
+  "one_native_observer_at_a_time": true,
+  "process_status": {
+    "wrapper": "operation_start",
+    "original_job_only": true,
+    "no_business_replay": true
+  },
+  "process_read": {
+    "wrapper": "operation_start",
+    "stdout_offset": 0,
+    "stderr_offset": 0,
+    "per_stream_limit": 16384,
+    "source_of_limit": "Current native tool contract caps process_read at 16 KiB; within root maximum 65536."
+  },
+  "public_files": [
+    {
+      "id": "result",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/full34-r1/result.public.json"
+    },
+    {
+      "id": "summary",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/full34-r1/summary.public.json"
+    }
+  ],
+  "public_body_limit_combined": 262144,
+  "body_chunk_limit": 65536,
+  "immutable_page_limit": 8192,
+  "body_binding": "verbatim successful original file_info version and whole SHA; actual_size contiguous chunks; no absent/error/unexpected content",
+  "sequence": "Original authority then original streams; only authoritative terminal permits fixed result info/body then summary info/body when known result names it.",
+  "no_private_reads": true,
+  "no_extra_paths": true,
+  "no_comparison69": true,
+  "no_CLI_stage": true
+}

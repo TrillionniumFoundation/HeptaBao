@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.H2-target.complete-archive-state.v1",
+  "root_GO": "012b76fca8a176e1cc15e3115ad38a69977ef8d9",
+  "release": "0093a0be7a54f88393626276c864b5a46b1c8770",
+  "original_observers": 5,
+  "Runtime_calls": 20,
+  "immutable_pages": 10,
+  "body_bytes": 38845,
+  "current_Runtime_calls": 0,
+  "native_futures_active": 0,
+  "independent_target_file_info_count": 2,
+  "prepare_or_live_submitted": false,
+  "derived_mode_correction": "45f1783f6917aaed71fd3bc1f2be17d3cc48a074",
+  "Git_recovery_tree": "98aecf8ce75ab5ff7594d93081b260a1e9a89348",
+  "offline_verifier_checks": 411
+}

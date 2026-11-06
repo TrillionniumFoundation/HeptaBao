@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.h2-stage.local-generator-correction.v1",
+  "attempt1": {
+    "blob": "2befdf72abf4bf566b6fcf3dd496dfbf30f732cb",
+    "bytes": 13981,
+    "sha256": "2da41b958e5acf6d4afd7b63d036b8fdd50e7d33caa8de3adbc78e90fd8fb00d"
+  },
+  "corrected": {
+    "blob": "2f7981712550e3a6566a107b097ce3ab62958fe2",
+    "bytes": 13983,
+    "sha256": "212c41e1ec79e1cb3ea98133f2fd77d7e7e2d0acdb0a8f2721c03f7e97fd7ab3"
+  },
+  "change": "Add the LF after QA_NAMES closing ')' to preserve the original boundary before COPY. The first AST parse failed before any candidate module execution. No Runtime/candidate execution occurred; corrected candidate core678e remains unchanged.",
+  "failed_executor_preserved": true,
+  "candidate": {
+    "blob": "678e519f17c474b5610651bcbb93b43d186124c5",
+    "bytes": 26823,
+    "sha256": "a8bf27675b1a00b08f60d33fbed84405c033d537fb9562d963b9ff725264fca1"
+  }
+}

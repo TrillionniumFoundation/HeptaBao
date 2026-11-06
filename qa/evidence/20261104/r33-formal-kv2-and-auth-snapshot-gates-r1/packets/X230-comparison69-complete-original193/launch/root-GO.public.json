@@ -1,0 +1,104 @@
+{
+  "schema": "heptabao.current4e808-X230-original69.root-GO.v1",
+  "decision": "GO_ONE_EXACT_ORIGINAL_COMPARISON69",
+  "owner": "/root/compatibility_audit",
+  "lane": "B",
+  "lane_release": "35c92d88b2fec06a75fe4fa7d0baf5a373e74eea",
+  "full34_runtime_contract_qualification": "9fd3ec40974a0d7fc2eed14983fd8b621b6bc214",
+  "current_actual_publication_review": "31a05798ea870d71c4d08092ad53e895e275c11f",
+  "independent_source_peer": "21705d1a7d47cbd68c86a1bdea1d99f55d70b35b",
+  "request": {
+    "blob": "6c51aa75507c4ba473d19406ecf51d9ca8c2860d",
+    "bytes": 367,
+    "sha256": "4e6c3e22504fedffbfdead8f50a9856678f1de42d8b1ec2a728befbc507f97ea"
+  },
+  "native_typed_request_sha256": "56ddc986607a02e224a254f604912c4d12b3c4b7de290b2d724b3add50687e35",
+  "native_fingerprint": "6259380636096266978",
+  "host": "x230",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "/home/qian/heptabao-same-root-publication-normal-20261105-r1/comparison69_controller.py"
+  ],
+  "cwd": "/home/qian/heptabao-same-root-publication-normal-20261105-r1",
+  "idempotency_key": "heptabao-4e808-x230-comparison69-r1-836dfd5e",
+  "outer_native_supervisor_seconds": 1800,
+  "wrapper_internal_subprocess_timeout": "No timeout keyword in the unchanged original wrapper; no added internal deadline claimed.",
+  "wrapper": {
+    "blob": "bd0d7378ccf7502c55712d88253ce39c3508a08c",
+    "bytes": 11716,
+    "sha256": "836dfd5eae25f45a680f08c9a93b9aacccc52c02da9ca6ceea15b89cd121e143"
+  },
+  "original_driver": {
+    "blob": "c822522ee80e4a713eee4cb42e91cfeb143e6468",
+    "bytes": 9261,
+    "sha256": "fd88ed0b8f1c1010e79f9393dfbf6464cabcac48ece8c6e448a64b7ccc45272e"
+  },
+  "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "binary_sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+  "fixed_new_fixture_root": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1",
+  "network_scope": "X230 loopback only, original owned isolated candidate and official 2.7.1 TLS services",
+  "original_13_modules": [
+    "approle",
+    "core",
+    "edge_tls",
+    "identity",
+    "kv",
+    "operations",
+    "pki",
+    "system",
+    "token",
+    "totp",
+    "transit",
+    "userpass",
+    "wrapping"
+  ],
+  "expected_case_count_each_side": 69,
+  "source_test_and_feature_flags_unchanged": true,
+  "external_exact_intent_before_each_call": true,
+  "whole_original_SDK_saved_before_isError_and_lossless_parse": true,
+  "one_current_call_and_one_native_future_per_lane": true,
+  "business_starts_max": 1,
+  "automatic_retry": false,
+  "unknown_or_missing_ACK": "Stop new business admissions. Preserve original SDK/error; no process replay or new key. Reconcile exact original request/job only.",
+  "same_original_job_observers": {
+    "process_status": true,
+    "process_read": true,
+    "process_read_per_stream_max": 16384,
+    "operation_result_page_limit": 8192,
+    "status_and_pages_same_admitted_id_only": true
+  },
+  "fixed_public_result_retrieval": {
+    "files": [
+      {
+        "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1/result.public.json",
+        "max_body_bytes": 65536
+      },
+      {
+        "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1/summary.public.json",
+        "max_body_bytes": 524288
+      }
+    ],
+    "order": "Read each exact file_info once and fully close its original metadata chain. Save exact conditional binary_read request and intent before admission. Use actual version/size/wholeSHA, contiguous chunks at most65536, at most9 chunks combined; original immutable pages8192.",
+    "total_body_max": 589824,
+    "metadata_hash_work_not_bounded_by_body_limit": true,
+    "full_SHA_and_version_and_chunk_SHA_and_final_EOF_required": true,
+    "no_private_fixture_or_credentials_read": true,
+    "stop_if_missing_or_oversized_or_drift": true
+  },
+  "success_requires": [
+    "Original69 candidate and69 official oracle each passed with0 skipped/failed, exact13modules",
+    "Whole original result and summary chains, same source/binary before/after",
+    "Both owned services stopped and cleanup_errors empty",
+    "Actual result flags remain full_openbao_compatibility=false and production_qualified=false"
+  ],
+  "historical39_original_full34_gap_unchanged": true,
+  "CLI_target_reads_or_prepare_live_authorized": false,
+  "H2_or_Auth_execution_authorized": false,
+  "production_cutover": false,
+  "cleanup_old_assets": false,
+  "full_openbao_compatibility": false
+}

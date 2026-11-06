@@ -1,0 +1,60 @@
+{
+  "tree": "71a1656fbe227fcea1e92558a5004e22eaab69c6",
+  "files": 88,
+  "bytes": 2910122,
+  "merkle": {
+    "root_sha": "71a1656fbe227fcea1e92558a5004e22eaab69c6",
+    "trees_verified": 12,
+    "leaf_count": 88
+  },
+  "recovered": [
+    {
+      "path": "diff/from-baseline/mac_single_native_r2.mjs.diff",
+      "blob": "cbc4be801c1d34a7e1f182c6b5dd4259a8bfc7b9",
+      "bytes": 6876,
+      "sha256": "6485b891eb8a40c904312d01213ab6dbd97cc46eee7c22a2902de41e8b3ea771"
+    },
+    {
+      "path": "diff/from-reviewed/mac_single_native_r2.mjs.diff",
+      "blob": "721996f1ac47da03991ae356abe344d2adbeb96d",
+      "bytes": 655,
+      "sha256": "2a772e4317f0522580a7d268d06c327ab4642fd2c2eb87d775dcce1fd7cae6df"
+    },
+    {
+      "path": "diff/from-baseline/mac_t5_volume_guard_r1.py.diff",
+      "blob": "de46d41aaa4346836dc2c3ef500e6cb3a342490a",
+      "bytes": 427,
+      "sha256": "f70d806dabc87eca1e99e6965c8b9fbb2b027d21fdb0180b5058c4af05b9edf6"
+    },
+    {
+      "path": "dispatch/post-inert-targets.public.json",
+      "blob": "ceb91d4ec62fcf58458c2fac8c97c2b4375de1d9",
+      "bytes": 8784,
+      "sha256": "dd3a64eb49982bcbba3e6d6495d79503828f2b72c5649a61df48aec24e0fef40"
+    },
+    {
+      "path": "diff/candidate.source-pins.diff",
+      "blob": "99324116e8f24deffc1a666447aaf40679673f94",
+      "bytes": 3868,
+      "sha256": "722087a353d5eedd09c595f04160675f6f2a6468b6e32a78f0abeee22acc2c4c"
+    },
+    {
+      "path": "validation/dispatch.executor.original.json",
+      "blob": "4010606d12d1113435e4abd1ae8efd570bb35176",
+      "bytes": 2751,
+      "sha256": "f2a83cc78161552cf0fe2b38e191401b82b6e9e3244e9b2c38d9f94f8ab21ab5"
+    },
+    {
+      "path": "validation/source.executor.original.json",
+      "blob": "57c577cfddbac61197d0a01980cbf480859d7071",
+      "bytes": 924,
+      "sha256": "dc6950e8ab8959c2a5af260b22648c0d38a7fd6474bbeaa6a82b70dbae1073d8"
+    },
+    {
+      "path": "MANIFEST.public.json",
+      "blob": "12a2c8aa4849a117f669db169b98ce0b208ef8b3",
+      "bytes": 20470,
+      "sha256": "f9cd54aa2651cc5dcd283b9eae39146584baffc98b8a316defc2e162c644167d"
+    }
+  ]
+}

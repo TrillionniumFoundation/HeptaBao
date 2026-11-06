@@ -1,0 +1,70 @@
+{
+  "schema": "heptabao.auth-registration.same-ID-prefix-page-recovery.r1",
+  "operation_id": "78784ed9b981301e1aa59022af894ec47945371cc21cfe73555bf9142615c123",
+  "original_native_admission_repeated": false,
+  "native_future_already_closed": true,
+  "root_authorization": "reference/root-cache-recovery-message.verbatim.txt",
+  "original_pre_reset_prefix_bytes": 65536,
+  "original_unique_payload_total": 87797,
+  "extra_operation_result_calls": 8,
+  "offsets": [
+    {
+      "offset": 0,
+      "limit": 8192,
+      "request": "9ccf74caf11b2aabd25b837b6a47934b0b7612c1",
+      "returned_SDK": "9366d6db5926b71041b4ae0febd66ca4dee714a7",
+      "returned_native": "a22f55e6608fed29a6dd9173d2ca4eeb7bb38cc7"
+    },
+    {
+      "offset": 8192,
+      "limit": 8192,
+      "request": "857b4d3b90b786eea2db76ec882a2fc2ec393533",
+      "returned_SDK": "0ed82983710f2dd4e6c9b7387d75b7e3c244a4d4",
+      "returned_native": "29da419c1f440d0abf641365451fd78cbfe773aa"
+    },
+    {
+      "offset": 16384,
+      "limit": 8192,
+      "request": "a4fdc1005049804d4f03b2c8f483d7b78bd2b666",
+      "returned_SDK": "99628b69bffd292f08dce12b08c7c602ff4b6773",
+      "returned_native": "e2fb5ae4df1a439eaa0774b1a0f30549b5475e84"
+    },
+    {
+      "offset": 24576,
+      "limit": 8192,
+      "request": "fc7d7b8e257149448197e2c702507bd0a121a637",
+      "returned_SDK": "60f36d15876003bbe1bfa23238367c714071a351",
+      "returned_native": "b5fbb5375ecd6238e0923b875187ec5f9c776fe8"
+    },
+    {
+      "offset": 32768,
+      "limit": 8192,
+      "request": "52ced6fa3b107f3dff757d8b619a1fa4b5625355",
+      "returned_SDK": "fb9dc176150fadea058a867f935e164c9d531fe1",
+      "returned_native": "f137d5b9de0ebe477f091f2cef3d4bcb203c6dda"
+    },
+    {
+      "offset": 40960,
+      "limit": 8192,
+      "request": "b3d48ec0df48d440da89954e930d77a3f976b242",
+      "returned_SDK": "75df86c5ab423ecb034e9297d921cea5687f2426",
+      "returned_native": "56cbe627130015698df383c5271271c17685ce25"
+    },
+    {
+      "offset": 49152,
+      "limit": 8192,
+      "request": "6431c9a70b7426e740f3b47d32d788a3427a6e30",
+      "returned_SDK": "0aba527004e8d77809ec5ae3b3cd5c28d0d85d7b",
+      "returned_native": "87a9bc232a4ff6600b321d473a29385aacc0d4e0"
+    },
+    {
+      "offset": 57344,
+      "limit": 8192,
+      "request": "0861a376495e757235658a622e8154d203a8e24a",
+      "returned_SDK": "a1f239b971618c314be8c01a39cd23944dca0645",
+      "returned_native": "de9d6abd05ceb1946dc749dca3c7d7d7ca4aa486"
+    }
+  ],
+  "boundary": "The stored paths contain the returned recovery wrappers for these immutable original pages. Pre-reset page-index cache was lost; no claim of a second native dispatch or an unobserved original completion. Digest/offset/total reconstruct the same fixed original payload.",
+  "new_native_admissions": 0
+}

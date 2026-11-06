@@ -1,0 +1,104 @@
+{
+  "schema": "heptabao.H2-stage.conditional-body-config.v1",
+  "ready": false,
+  "runtime_GO": false,
+  "metadata_proposal": "d24b90689b94600efeba0c804ae5abb22cb45418",
+  "expected": [
+    {
+      "role": "receipt",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/stage.result.public.json",
+      "bytes": 28615,
+      "sha256": "f2bcc9227a235a40afa11c1703595180a925fbd39abd29d4550872ed3a05ae6a",
+      "version": null,
+      "metadata_request": {
+        "idempotency_key": "ha-4e808-h2-stage-receipt-info-r2-20261105",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/stage.result.public.json"
+          }
+        }
+      }
+    },
+    {
+      "role": "binding",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/binding.private.json",
+      "bytes": 10230,
+      "sha256": "b241c6fc78bbe77ea69fc3b8a707b1747324a81f1da1ade3d9bb15c5cea5b7d8",
+      "expected_stage_writer_version": "2050:7874334:10230:1793915867275098276:1793915867275098276",
+      "version": null,
+      "metadata_request": {
+        "idempotency_key": "ha-4e808-h2-stage-binding-info-r2-20261105",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/binding.private.json"
+          }
+        }
+      }
+    }
+  ],
+  "templates": [
+    {
+      "label": "receipt-body0",
+      "role": "receipt",
+      "expected_bytes": 16384,
+      "request": {
+        "idempotency_key": "ha-4e808-h2-stage-receipt-body0-r2-20261105",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/stage.result.public.json",
+            "offset": 0,
+            "limit": 16384,
+            "expected_version": null
+          }
+        }
+      }
+    },
+    {
+      "label": "receipt-body1",
+      "role": "receipt",
+      "expected_bytes": 12231,
+      "request": {
+        "idempotency_key": "ha-4e808-h2-stage-receipt-body1-r2-20261105",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/stage.result.public.json",
+            "offset": 16384,
+            "limit": 12231,
+            "expected_version": null
+          }
+        }
+      }
+    },
+    {
+      "label": "binding-body0",
+      "role": "binding",
+      "expected_bytes": 10230,
+      "request": {
+        "idempotency_key": "ha-4e808-h2-stage-binding-body0-r2-20261105",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/binding.private.json",
+            "offset": 0,
+            "limit": 10230,
+            "expected_version": null
+          }
+        }
+      }
+    }
+  ],
+  "required_both_metadata_closed_before_any_body": true,
+  "planned_bytes": 38845,
+  "chunk_cap": 16384,
+  "immutable_page_cap": 8192
+}
+

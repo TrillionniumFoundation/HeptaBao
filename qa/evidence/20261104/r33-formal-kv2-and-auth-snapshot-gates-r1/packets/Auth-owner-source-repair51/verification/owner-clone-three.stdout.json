@@ -1,0 +1,53 @@
+{
+  "schema": "heptabao.owner-clone-three-pure-cases.v1",
+  "before": {
+    "bytes": 33127,
+    "sha256": "371b0dd20f6cf505ad97925417ea4e143e7a584b1bbc7d230920d85a41ccfbfe"
+  },
+  "after": {
+    "bytes": 33149,
+    "sha256": "26dbfd7cf7b725d07dfb39fdf6de09e8d131a6b184d998aa729b1094d76cad90"
+  },
+  "selectedFunction": {
+    "bytes": 3639,
+    "sha256": "f8b86b1c417776d21481d8e6d6220277522ba4bf46904df1cb60afbc6b704301"
+  },
+  "passed": 3,
+  "cases": [
+    {
+      "name": "genuine_owner_differs_from_harness_plugin_id",
+      "oldCode": "actual_harness_owner_identity",
+      "newCode": null,
+      "globalInstanceEqual": true,
+      "localCloneFieldEqual": true,
+      "equalsOwner": false,
+      "rawHarnessPluginIdPublished": false,
+      "passed": true
+    },
+    {
+      "name": "local_global_plugin_id_mismatch",
+      "code": "actual_registered_harness_callable_lineage",
+      "passed": true
+    },
+    {
+      "name": "wrong_actual_registration_owner",
+      "code": "one_admitted_selected_owner",
+      "passed": true
+    }
+  ],
+  "sourceContracts": {
+    "implementationRegistry": "42ea640e392714881fcf908094d691913efb174f",
+    "globalRegistry": "9f5042ec5442239f12975e3680c0568b3c85bdf8"
+  },
+  "scope": {
+    "actualRuntimeCalls": 0,
+    "installedSdkImports": 0,
+    "actualRegistry": 0,
+    "factories": 0,
+    "nativeProcesses": 0,
+    "privateInput": 0,
+    "realSignals": 0,
+    "fullCandidateModulesExecuted": false,
+    "onlySelectedPureFunction": true
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "schema": "heptabao.r33.active-work-recovery-snapshot.v2",
+  "as_of_utc": "2026-11-05 22:39:31 UTC",
+  "published_checkpoint": {
+    "commit": "f4a47f951cd39e0f75797a6224f42837a4369044",
+    "tree": "40370ae9364cc27c91d84e5edfe00c6c0e0fbfdb",
+    "branch": "codex/heptabao-validation-20261104"
+  },
+  "product_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "references": {
+    "r33_X230_full34_qualification": {
+      "blob": "9fd3ec40974a0d7fc2eed14983fd8b621b6bc214",
+      "bytes": 4870,
+      "sha256": "76f7eef134bbb32d862417fd4e0834d67cb4eb5015c72bcd287b20565134c486"
+    },
+    "r33_X230_comparison69_GO": {
+      "blob": "4cf8d079885984d44cc9654a8ba816438f30b9ed",
+      "bytes": 4623,
+      "sha256": "92a033dc2bfe4b842eea937f825fd523ebd92e66dac7b8f4280ad9cf2daa5f1b"
+    },
+    "r33_CLI_stage_qualification": {
+      "blob": "762a6571965a74d0be6d53727c542346925d3135",
+      "bytes": 3942,
+      "sha256": "566b034d4bad7a41f16d428429d3a7774d2adf89f8603d3f7a5825e9ac9008ec"
+    },
+    "r33_H2_stage_GO": {
+      "blob": "065ae72edbb8f330b66f5a40ea4c0134891f60d8",
+      "bytes": 3222,
+      "sha256": "56fb58ec14115a0c4c7a01fe9098cfc544477d364bbcd46d158840656b475127"
+    },
+    "r33_H2_stage_root_release": {
+      "blob": "89b93c0df9d1d6b9c4695718a46fb86e74d093b3",
+      "bytes": 2341,
+      "sha256": "8131df33f363000ec8fccd99c5cb40243c94707710a8ea89fd08431882360b57"
+    },
+    "r33_Auth_Google78_root_review": {
+      "blob": "58c08e40c4d72f3060b053c034e88c1ffa906232",
+      "bytes": 16448,
+      "sha256": "62e2017c201bbba14485d8f016c1aac562df082628454aa7f852df55f7785d80"
+    },
+    "r33_Auth_source51_root_review": {
+      "blob": "d68f03916d51a94f1f92043b928a3dbc0b023046",
+      "bytes": 17356,
+      "sha256": "4bfe5f1ac02bc68dbeadd0c63628959031af267c2a0a5b75d52fac628e26488b"
+    },
+    "r33_Auth_Google_entry_source_review": {
+      "blob": "cf2f36c029f74a8519db780e1a68b9a99758e5ab",
+      "bytes": 1652,
+      "sha256": "5f5792ec61ebcfb2c76aa0837648f1a3c9d6188f509b25888ffaa3ea40664d60"
+    },
+    "r33_Auth_Google_entry_GO": {
+      "blob": "575b8d4e64924d9306677d80e615f1a1ee570bce",
+      "bytes": 4124,
+      "sha256": "2e00b0ea969a50d1e874306342bef200de60478b24853542cb9aec0a26c5829a"
+    }
+  },
+  "lanes": {
+    "root": {
+      "Runtime": 0
+    },
+    "A": {
+      "owner": "/root/authbus_migration",
+      "scope": "one unique Google declared entry file_info plus qualified one body under 575b8d4e",
+      "H2_original_stage_closed": true
+    },
+    "B": {
+      "owner": "/root/compatibility_audit",
+      "scope": "original X230 comparison69 job authority+streams closed; fixed2public whole read active",
+      "job": "x230/1a1adc377a3-fc05-5acb",
+      "STARTs": 1
+    },
+    "HA": {
+      "Runtime": 0,
+      "scope": "pure local/Git H2 archive and target proposal then independent Auth169 chain"
+    }
+  },
+  "actual_observed": {
+    "X230_full34": "31/31 qualified migration+cold+HTTP restore; bounded39 original framework-index gap retained",
+    "X230_comparison69": "original stdout reports each69/69 and0 failed/not_run; complete2public semantic qualification pending",
+    "CLI_stage": "qualified source plus terminal plus independent286 chain; 0 target/prepare/live",
+    "H2_stage": "exit0/full/durable and post-finally ownedFDclosure within300; whole observer archive peer pending; 0 target/prepare/live",
+    "Auth_source": "R2 owner/harness distinction fixed; READY false until exact entry observed; original worker not run"
+  },
+  "overall": {
+    "full_OpenBao271_replacement": false,
+    "production_cutover": false,
+    "all_clients_and_backups_migrated": false,
+    "old_assets_cleanup": false
+  },
+  "recovery": {
+    "journal_root": "/workspace/scratch/f86faac821c4/r32_recovery",
+    "restore_helper_exact_blobs": [
+      "25eb67a1def4c90ed8a6b1308ca2494228587c1c",
+      "85878559fd5af179c2d0f7aac8657145513ed204",
+      "6c5bd52313333acd4abd635085c4019af4462b78",
+      "82e81aef13d858c865ea05dd762056553a3d1cc6"
+    ],
+    "native_binding": "Append exact82e helper; old25eb stdin_text binding is unqualified.",
+    "cache_reset": "If agents interrupted, followup_task resumes; send_message alone does not trigger.",
+    "missing_ACK": "No business replay or newkey. SameID readonly reconciliation only with preserved unknown boundary."
+  }
+}

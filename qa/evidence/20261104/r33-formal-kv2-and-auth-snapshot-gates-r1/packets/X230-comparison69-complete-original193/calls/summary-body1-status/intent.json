@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.comparison69.exact-read-intent.v1",
+  "GO": {
+    "blob": "4cf8d079885984d44cc9654a8ba816438f30b9ed",
+    "bytes": 4623,
+    "sha256": "92a033dc2bfe4b842eea937f825fd523ebd92e66dac7b8f4280ad9cf2daa5f1b"
+  },
+  "original_business_request": {
+    "blob": "6c51aa75507c4ba473d19406ecf51d9ca8c2860d",
+    "bytes": 367,
+    "sha256": "4e6c3e22504fedffbfdead8f50a9856678f1de42d8b1ec2a728befbc507f97ea"
+  },
+  "original_job": "1a1adc377a3-fc05-5acb",
+  "tool": "operation_status",
+  "request": {
+    "name": "comparison69-summary-body1-status-request",
+    "blob": "9fb958c24afffd358da6d8298747316a85082b47",
+    "bytes": 89,
+    "sha256": "36758cb00307b723b70b31a8e140fc2e070da94aa0a201043f4718c083758146"
+  },
+  "original_operation_id": "e53ae94cd479f5ebcad1e28accf066a56262974d52b891d9c3ed1ee808357392",
+  "business_replay": false,
+  "external_before_call": true
+}

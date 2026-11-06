@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-mac-google-declared-entry-metadata-eca1335c-20261105-r1",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "mac",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/index.js"
+    }
+  }
+}

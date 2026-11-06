@@ -1,0 +1,111 @@
+{
+  "schema": "heptabao.google-two-public-json.complete-packet.v1",
+  "GO": "a58667829950717eab43010eb2c768f9be24677e",
+  "sourceProposal": "20ea640795bcc500830a7e534485851ee93951a8",
+  "originalNativeOperations": 4,
+  "uniqueAdmissions": 4,
+  "reusedAdmissions": 0,
+  "originalImmutablePages": 8,
+  "originalPayloadBytes": 41058,
+  "originalNativeReadErrors": 0,
+  "originalSdkPagesSavedBeforeParse": true,
+  "completeStatusCount": 4,
+  "allReturnedFuturesInactive": true,
+  "allPayloadWholeVerified": true,
+  "metadata": {
+    "google-manifest": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 80,
+        "link_count": 1,
+        "metadata_platform": "darwin",
+        "mode": 420,
+        "uid": 501,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 420,
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/openclaw.plugin.json",
+      "sha256": "518e8e071c1e5720c9fe621ac84c8b550df93af14dac0d96d788d73917835301",
+      "size": 28911,
+      "version": "16777233:405240594:28911:1784843466375861317:1784843466375861317"
+    },
+    "google-package": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 80,
+        "link_count": 1,
+        "metadata_platform": "darwin",
+        "mode": 420,
+        "uid": 501,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 420,
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/package.json",
+      "sha256": "398f73305017a1d3813610825814c6e1dd93b683da088cb6df068a31c639fcc3",
+      "size": 375,
+      "version": "16777233:405240659:375:1784843466392296043:1784843466392296043"
+    }
+  },
+  "bodies": {
+    "google-manifest": {
+      "blob": "dde2aa7b76b6e8eec6e7f9edc368ea3191aca7d6",
+      "bytes": 28911,
+      "sha256": "518e8e071c1e5720c9fe621ac84c8b550df93af14dac0d96d788d73917835301",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/openclaw.plugin.json",
+      "version": "16777233:405240594:28911:1784843466375861317:1784843466375861317"
+    },
+    "google-package": {
+      "blob": "eca1335cb1e73aafcb53f89bba324673f9fa4493",
+      "bytes": 375,
+      "sha256": "398f73305017a1d3813610825814c6e1dd93b683da088cb6df068a31c639fcc3",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/package.json",
+      "version": "16777233:405240659:375:1784843466392296043:1784843466392296043"
+    }
+  },
+  "accounting": {
+    "previousFiles": 8,
+    "previousChunks": 11,
+    "previousBytes": 353689,
+    "newFiles": 2,
+    "newChunks": 2,
+    "newBytes": 29286,
+    "cumulativeFiles": 10,
+    "cumulativeChunks": 13,
+    "cumulativeBytes": 382975
+  },
+  "declaredEntry": {
+    "package": "eca1335cb1e73aafcb53f89bba324673f9fa4493",
+    "relative": [
+      "./index.js"
+    ],
+    "lexicalPath": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/index.js",
+    "historicalEntryPin": null,
+    "observedEntryFile": false,
+    "ownerSelected": false
+  },
+  "localErrors": [
+    {
+      "file": "history/local-status-journal-copy-correction.public.json",
+      "RuntimeError": false,
+      "extraNativeCalls": 0
+    },
+    {
+      "file": "history/local-status-checkpoint-byte-cap.public.json",
+      "RuntimeError": false,
+      "extraNativeCalls": 0
+    }
+  ],
+  "release": {
+    "blob": "ee94515d5509f2ba5efce754973da409036b1aec",
+    "bytes": 7355,
+    "sha256": "638a132e9acf4be4005e7afa59843f11025b8f60a0ffa7d06ff8da1d72234610"
+  },
+  "selectedOwner": null,
+  "sdkExecuted": false,
+  "privateCapsuleRead": false,
+  "credentialsRead": false,
+  "productionChanged": false,
+  "oldUnknownsPreserved": true
+}

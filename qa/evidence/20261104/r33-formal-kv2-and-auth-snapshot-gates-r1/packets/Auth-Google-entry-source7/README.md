@@ -1,0 +1,7 @@
+# One declared entry, no recursive import search
+
+The exact 375-byte public Google package body (`eca1335cb1e73aafcb53f89bba324673f9fa4493`) has exactly one `openclaw.extensions` value, `./index.js`. Joining that relative value to the already observed and historically pinned package root yields precisely `/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/index.js`. The complete historical `sourcePins` map does not contain that path. Its existence, regular-file identity, version, size and SHA are not yet observed.
+
+Only this exact file_info request is proposed, with an optional separately approved conditional body of at most 65,536 bytes. The body version/size/hash must come from the original closed metadata observation. This differs from the prior two JSON reads: those had historical expected hashes; this entry has declaration provenance but no prior whole pin. It must not be silently treated as previously qualified code. No directory enumeration, alternate source resolution, private capsule, SDK, factory or automatic following of imports is included.
+
+Previously completed source bodies total 382,975 bytes. This new independent window would add at most 65,536, for 448,511; the old unused allowances are not reused. The future owner repair preserves the full enabled scope and all five agents. Final selected-owner evidence must still arise from the real original loader/selector and same active/global registry instance, not from this pathname or a provider-name inference.

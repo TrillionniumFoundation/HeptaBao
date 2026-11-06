@@ -1,0 +1,182 @@
+{
+  "schema": "heptabao.cli-stage.fixed-two-metadata-and-two-body.GO.r33.v1",
+  "decision": "GO_TWO_FIXED_METADATA_THEN_CONDITIONAL_TWO_FIXED_BODIES",
+  "owner": "/root/compatibility_audit",
+  "lane": "B",
+  "as_of_utc": "2026-11-05T23:30:31Z",
+  "handoff_original_job": "x230/1a1adc377a3-fc05-5acb",
+  "handoff_owner_release": {
+    "blob": "ae14873adc6ad96375a51ad438f9e3a525c26ae2",
+    "bytes": 15179,
+    "sha256": "7417be3f62d4770f08e94ba7311c7236a20f0327690fbf7e48b563261a44278d"
+  },
+  "root_original_native_closure_review": {
+    "blob": "661060e634ee99e2c67c1403f1344a062fd76ee2",
+    "bytes": 14148,
+    "sha256": "2bad201860a65029cf08ce4efbfd3fd7d8688fa37d8384446c6a2b3a2779a4d4"
+  },
+  "handoff_facts": {
+    "original_job_exit": 0,
+    "original_native_observers": 7,
+    "original_immutable_pages": 23,
+    "remaining_runtime_calls": 0,
+    "active_native_futures": 0,
+    "cases_passed_each": 69,
+    "scope_limit": "67 exact numeric status comparisons and 2 normalized PKI rejection states; no full-compatibility claim"
+  },
+  "stage_qualification": {
+    "blob": "762a6571965a74d0be6d53727c542346925d3135",
+    "bytes": 3942,
+    "sha256": "566b034d4bad7a41f16d428429d3a7774d2adf89f8603d3f7a5825e9ac9008ec"
+  },
+  "original_stage_job": "desktop/1a1ada8b25f-fc05-5a8d",
+  "proposal": {
+    "blob": "be5807aafcebe53338535bc09ea90fcf0407fae9",
+    "bytes": 4361,
+    "sha256": "9fe86328747cf2d219cec4f885e7ebe3cf07a4a9584bc62ab39a33dbb85166d5"
+  },
+  "metadata_requests": [
+    {
+      "pin": {
+        "blob": "fbf7c6bc9ea47e9be35a7ad43c16ddeae1788266",
+        "bytes": 319,
+        "sha256": "a7342b12fb633d2437735d671041edbebfe8cdc17c15cf1cc8c81312c46f908d"
+      },
+      "exact": {
+        "idempotency_key": "heptabao-official271-phaseb-4e808-stage-result-info-20261105-r4",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/stage.result.public.json"
+          }
+        }
+      }
+    },
+    {
+      "pin": {
+        "blob": "d136d4ae0e978742183d8557245c9b06220e30bb",
+        "bytes": 316,
+        "sha256": "233a4e966384457377975f521e11a762a3781d36d350d111262324a9b72c0861"
+      },
+      "exact": {
+        "idempotency_key": "heptabao-official271-phaseb-4e808-stage-binding-info-20261105-r4",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/binding.private.json"
+          }
+        }
+      }
+    }
+  ],
+  "metadata_admissions": 2,
+  "metadata_gates": {
+    "regular_no_symlink": "Native file_info regular-file contract",
+    "permissions": 384,
+    "uid": 1000,
+    "gid": 1000,
+    "nlink": 1,
+    "platform": "linux",
+    "both_original_payloads_must_complete_before_bodies": true,
+    "each_size_min": 1,
+    "each_size_max": 65536,
+    "binding": {
+      "bytes": 6944,
+      "sha256": "7ef3458f4a54b74336941229307c0ffb6778e581c18b27518dc03a8fe6107eea",
+      "version": "2050:7874257:6944:1793914880269005999:1793914880269005999",
+      "full9_decimal": {
+        "dev": "2050",
+        "ino": "7874257",
+        "uid": "1000",
+        "gid": "1000",
+        "mode": "33152",
+        "nlink": "1",
+        "size": "6944",
+        "mtime_ns": "1793914880269005999",
+        "ctime_ns": "1793914880269005999"
+      }
+    },
+    "stage_receipt": "Size, SHA and immutable version must be observed from this fixed original metadata read; no fabricated derived observation."
+  },
+  "conditional_body": {
+    "templates": {
+      "blob": "42dd13901fcd2b7cd09cfb834e91e886a57537cc",
+      "bytes": 1718,
+      "sha256": "34e9f265bf71bd2061759e000736795f320e082a4aa2a0478445be38416dac07"
+    },
+    "exact_templates": [
+      {
+        "role": "stage_result",
+        "request_template": {
+          "idempotency_key": "heptabao-official271-phaseb-4e808-stage-result-body-20261105-r4",
+          "operation": {
+            "tool": "binary_read",
+            "arguments": {
+              "host": "desktop",
+              "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/stage.result.public.json",
+              "expected_version": null,
+              "offset": 0,
+              "limit": null
+            }
+          }
+        },
+        "unresolved_values": [
+          "expected_version",
+          "limit"
+        ],
+        "derive_only_from_original_fixed_file_info": true,
+        "expected_stdout_bytes": null,
+        "expected_stdout_sha256": null,
+        "maximum_file_bytes": 65536
+      },
+      {
+        "role": "binding",
+        "request_template": {
+          "idempotency_key": "heptabao-official271-phaseb-4e808-stage-binding-body-20261105-r4",
+          "operation": {
+            "tool": "binary_read",
+            "arguments": {
+              "host": "desktop",
+              "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/binding.private.json",
+              "expected_version": null,
+              "offset": 0,
+              "limit": null
+            }
+          }
+        },
+        "unresolved_values": [
+          "expected_version",
+          "limit"
+        ],
+        "derive_only_from_original_fixed_file_info": true,
+        "expected_stdout_bytes": 6944,
+        "expected_stdout_sha256": "7ef3458f4a54b74336941229307c0ffb6778e581c18b27518dc03a8fe6107eea",
+        "maximum_file_bytes": 65536
+      }
+    ],
+    "transformation": "Only expected_version=null and limit=null are replaced by the original fixed file_info version string and exact observed size. Host, path, offset0 and idempotency_key remain frozen. Persist whole exact request and separate external intent before each operation_start.",
+    "body_admissions": 2,
+    "per_file_max_bytes": 65536,
+    "aggregate_max_bytes": 131072,
+    "require_each_original_payload_whole_before_next": true,
+    "require_whole_sha_size_version_and_EOF": true
+  },
+  "metadata_hash_work": "file_info performs the full fixed-file SHA independently of bounded body caps.",
+  "native_observation_caps": {
+    "one_call_and_one_native_future_per_lane": true,
+    "operation_result_page_bytes": 8192
+  },
+  "stop_rule": "Native error/refusal/missing ACK/UNKNOWN or size/hash/version/identity mismatch stops new native admissions. No business replay/new key/path switch/cap expansion. A Git archival error is separately retained; restore only identical already-received public bytes, including via content-addressed create_tree, before continuing. Do not replay a native observation to repair Git.",
+  "stage_receipt_scope": "Pre-finally durable stage receipt does not prove descriptor closure. The already qualified authoritative exit and original post-finally stdout are closure evidence.",
+  "scope": {
+    "target_readonly": true,
+    "prepare_authorized": false,
+    "live_authorized": false,
+    "new_stage_authorized": false,
+    "production_traffic_or_cleanup": false
+  },
+  "root_Runtime_calls": 0,
+  "other_lane": "A remains original H2 target fixed reads"
+}

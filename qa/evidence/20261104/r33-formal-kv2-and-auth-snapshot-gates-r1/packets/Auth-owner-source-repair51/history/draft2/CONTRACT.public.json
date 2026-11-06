@@ -1,0 +1,126 @@
+{
+  "schema": "heptabao.mac-actual-harness-owner-repair.unbound-source.r2",
+  "status": "UNBOUND_SOURCE_ONLY_NO_SDK_OR_RUNTIME_GO",
+  "originalFailure": {
+    "packet": "4a4e35f46eabadbfe5e0ccec3f9b49163d02ac08",
+    "rootReview": "bc93e8cdc6c9e0f8330743e115e0aa62662d2148",
+    "code": "actual_finite_harness_code_root",
+    "preserved": true
+  },
+  "originalRootIsTemplateOnly": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1",
+  "plannedFreshRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1",
+  "freshRootObserved": false,
+  "createOnlyPublisherPrepared": false,
+  "exactRuntimeRequest": null,
+  "readiness": {
+    "formalProduct": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "productSourceTree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "ownerPublicBindingReady": false,
+    "GoogleDeclaredEntry": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/index.js",
+    "GoogleEntryWholeSha256": null,
+    "actualSelectedOwner": null
+  },
+  "requiredNextActualInput": {
+    "proposal": "eecd5498a211b869c0a40ad16e415507b1c759b3",
+    "onlyDeclaredGoogleEntry": true,
+    "metadataRequest": "28b92dd34125354c01ee4e6b04a61c23103ee88f",
+    "conditionalBodyProposedSeparately": true,
+    "noPrivateCapsuleRead": true,
+    "onlyLexicalPathProven": true,
+    "actualEntryStillUnobserved": true
+  },
+  "implementation": {
+    "inputs": "Keep the entire original enabled/startup.agentHarnesses filter and original openai owner. The npm branch's original three-file loop is AST-exact. A direct SDK bundled root must have exact historically pinned public manifest/package content, matching manifest id, and prior whole pins for declared entries. Original 40 code set and original parent predicates remain; only a separate fixed path+SHA set can use the existing exact-parent fence for added public code.",
+    "materializer": "Carry those exact owner bindings unchanged through original runtime spreading; check the root/pin relation before emitting the consumer policy. The original /opt/homebrew readable subtree already contains bundled code. No new private, write or network permission.",
+    "worker": "Original loader.t/selector.o and codex/global-instance guards remain byte-exact, once each. After real selection, loader implementation export c() gets the current active registry without another load. Verify the same global record, ownerPluginId versus harness.pluginId, unique active plugin/local harness record, root/source and pre-admitted metadata/code pins. Local/global harness objects are different clones; compare critical callable identity, not object equality. Recheck same active/global/local records after native use."
+  },
+  "selectedDiagnosticDesignChange": {
+    "proposedOnly": true,
+    "reason": "The original isolated worker already has the exact original complete configuration, model binding, import prefix and real registry. A separately sanitized config cannot currently claim equivalent arbitrary plugin registration/supports behavior. The proposed repair performs owner admission in that worker under its existing sandbox without adding loader/selector/factory/provider calls. It is not a credential-free standalone execution and is not authorized by this source packet."
+  },
+  "preserved": {
+    "fiveAgents": [
+      "main",
+      "trnm",
+      "hepta-ui",
+      "hepta",
+      "hepta-backend"
+    ],
+    "models": "original current captured declarations/defaults",
+    "config": "original materializer's complete scoped cfg; only original owned-path and four AuthBus connection fields",
+    "enabledCandidateFilteringChanged": false,
+    "googleRemoved": false,
+    "sourceSelectionForced": false,
+    "rawCapsulePassedToNewDiagnostic": false,
+    "originalUnsupportedGuards": true,
+    "oldUnknowns": true
+  },
+  "budget": {
+    "captureSeconds": 45,
+    "querySeconds": 3,
+    "registryWalBytes": 5969912,
+    "rowBytes": 1048576,
+    "aggregateBytes": 8388608,
+    "capsuleBytes": 4194304,
+    "controllerSeconds": 900,
+    "managerSeconds": 600,
+    "phaseSeconds": 120,
+    "httpSeconds": 10,
+    "readySeconds": 30,
+    "nativeSeconds": [
+      15,
+      8,
+      3
+    ],
+    "cleanupSeconds": 60,
+    "outerSeconds": 1080,
+    "inputHashTotalBytes": 1073741824
+  },
+  "scope": {
+    "actualSdkExecutions": 0,
+    "hostCalls": 0,
+    "privateReads": 0,
+    "productChanges": 0,
+    "ownerSourceQualified": false,
+    "productionCredentialsQualified": false,
+    "currentRuntimePassed": false
+  },
+  "actualPublicJson": {
+    "packet": "385b356167187308221d8c2d5c12ece7c1da24e3",
+    "bodies": {
+      "google-manifest": {
+        "blob": "dde2aa7b76b6e8eec6e7f9edc368ea3191aca7d6",
+        "bytes": 28911,
+        "sha256": "518e8e071c1e5720c9fe621ac84c8b550df93af14dac0d96d788d73917835301",
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/openclaw.plugin.json",
+        "version": "16777233:405240594:28911:1784843466375861317:1784843466375861317"
+      },
+      "google-package": {
+        "blob": "eca1335cb1e73aafcb53f89bba324673f9fa4493",
+        "bytes": 375,
+        "sha256": "398f73305017a1d3813610825814c6e1dd93b683da088cb6df068a31c639fcc3",
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/package.json",
+        "version": "16777233:405240659:375:1784843466392296043:1784843466392296043"
+      }
+    },
+    "declaredEntry": {
+      "package": "eca1335cb1e73aafcb53f89bba324673f9fa4493",
+      "relative": [
+        "./index.js"
+      ],
+      "lexicalPath": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/index.js",
+      "historicalEntryPin": null,
+      "observedEntryFile": false,
+      "ownerSelected": false
+    },
+    "noRuntimeOwnerClaim": true
+  },
+  "validation": {
+    "priorSourceComparisons": 82,
+    "priorInputsSource": "draft1; retained complete; draft2 delta proves other definitions unchanged",
+    "draft2OriginalNpmLoopAstExact": true,
+    "selectedFunctionFakeCases": 10,
+    "selectedFunctionSha256": "fce2a08f818f47d9d5bbdad591469553939dbd2ec8822a13dc55c2d7ee77b211",
+    "SdkOrProductTests": 0
+  }
+}

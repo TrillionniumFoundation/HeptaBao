@@ -1,0 +1,11 @@
+--- baseline/mac_current_cycle_r2.mjs
++++ source/mac_current_cycle_r2.mjs
+@@ -78,7 +78,7 @@
+ 
+ try {
+   plan = JSON.parse(privateRead(process.argv[2]));
+-  const ROOT='/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1';
++  const ROOT='/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1';
+   need(plan.schema==='heptabao.mac-five-agent-worker.private.r1'
+     && ['cycle','rollback'].includes(plan.mode) && ['initial','cold-new-process'].includes(plan.phase),
+     'fixed_cycle_or_inverse_phase');

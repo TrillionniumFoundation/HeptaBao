@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.exact-json-key-byte-patch.r1",
+  "before": {
+    "blob": "850fdaf3c82e5067605494f5a8e8d8af3a1ab899",
+    "bytes": 818382,
+    "sha256": "a9bcf643d3108518d1c9645376ce1173db2035d50f0079e900074364488a888c"
+  },
+  "after": {
+    "blob": "521c4700c9896ef48c8b710f7b787b5cfb5d1504",
+    "bytes": 818377,
+    "sha256": "6ffc5db0c3d9cf79f00d9484b1d54162b75b7e975e594a1d5ca5d8566d3b9cf4"
+  },
+  "offset": 16225,
+  "removeAscii": "\"stdin_text\": ",
+  "insertAscii": "\"stdin\": ",
+  "unchangedPrefix": {
+    "blob": "19ee4848c5e04f2f5c0043cff21d34d922ad2458",
+    "bytes": 16225,
+    "sha256": "403f5f5f5a793d902e057eaf43b999a43a7dbbc57f432f2abe753e9b04a3fb65"
+  },
+  "unchangedSuffix": {
+    "blob": "6b5eb88bfaa51a2b219b78c92c3c662e0e82c920",
+    "bytes": 802143,
+    "sha256": "2aa0a5e6b09762f7889ae3d82ae64a7bb52cc44d100932a5de6005be27624577"
+  },
+  "inverseWholeExact": true
+}

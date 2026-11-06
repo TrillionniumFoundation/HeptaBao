@@ -1,0 +1,2282 @@
+{
+  "schema": "heptabao.current4e808-X230-comparison69.execution-state.v1",
+  "GO": {
+    "blob": "4cf8d079885984d44cc9654a8ba816438f30b9ed",
+    "bytes": 4623,
+    "sha256": "92a033dc2bfe4b842eea937f825fd523ebd92e66dac7b8f4280ad9cf2daa5f1b"
+  },
+  "request": {
+    "blob": "6c51aa75507c4ba473d19406ecf51d9ca8c2860d",
+    "bytes": 367,
+    "sha256": "4e6c3e22504fedffbfdead8f50a9856678f1de42d8b1ec2a728befbc507f97ea"
+  },
+  "intent": {
+    "name": "comparison69-current4e808-execution-intent",
+    "blob": "e3d5e6ed0dcee240d4e01951e68ffd92ed8a3c37",
+    "bytes": 3430,
+    "sha256": "66912a99854b7159fac32984f86bdbe439c5cb918b7cb2282b7a90567fb3e66e"
+  },
+  "stage": "terminal_and_streams_closed",
+  "process_start_calls": 1,
+  "Runtime_call_inflight": true,
+  "active_operation_id": "e53ae94cd479f5ebcad1e28accf066a56262974d52b891d9c3ed1ee808357392",
+  "job_id": "1a1adc377a3-fc05-5acb",
+  "observations": [
+    {
+      "name": "authority0",
+      "operation_id": "5c495335fc951a58a709ae67dcf6ce0ce5b336f4563e42a710b6af38e8d17a75",
+      "tool": "process_status",
+      "arguments": {
+        "host": "x230",
+        "job_id": "1a1adc377a3-fc05-5acb"
+      },
+      "admission": {
+        "label": "authority0-admission",
+        "tool": "operation_start",
+        "request": {
+          "name": "comparison69-authority0-admission-request",
+          "blob": "45ef86f633d656831bd79479c5cb67713e3ebe01",
+          "bytes": 222,
+          "sha256": "ebde9e765ef2beb343988e33267c7df3305623520668800c4a08008a7d0b0603"
+        },
+        "request_text": "{\n  \"idempotency_key\": \"heptabao-4e808-x230-comparison69-authority0-20261105-r1\",\n  \"operation\": {\n    \"tool\": \"process_status\",\n    \"arguments\": {\n      \"host\": \"x230\",\n      \"job_id\": \"1a1adc377a3-fc05-5acb\"\n    }\n  }\n}\n",
+        "intent": {
+          "name": "comparison69-authority0-admission-intent",
+          "blob": "ee36c22088b7df06a877deb94ef16570cffba755",
+          "bytes": 822,
+          "sha256": "8141db09448ae3720e4634553f7eb5ab1b3336908f3414e569ba9b0edd5ae76c"
+        },
+        "submitted": true,
+        "SDK": {
+          "name": "comparison69-authority0-admission-original-SDK",
+          "blob": "5cd3da9933b09d774a2b3e16567b61b642919ceb",
+          "bytes": 709,
+          "sha256": "f5128fcdabd0d64456d3f25e749d1b191385f633d87f52ade365ad7df536f57f"
+        },
+        "native": {
+          "name": "comparison69-authority0-admission-original-native",
+          "blob": "a7de8fd190fa5ec01e2c77a8cea99ca0ab7cf067",
+          "bytes": 548,
+          "sha256": "1c62b933b805ec43e125572ff81799772de0bf4197fa8bc684112d1fb6012560"
+        },
+        "isError": false,
+        "local_transport_exception": false,
+        "local_archival_recovery": {
+          "name": "comparison69-local-archive-error-recovery",
+          "blob": "5a220847e17f6ed9f25079738896746c6881e951",
+          "bytes": 1609,
+          "sha256": "ed1d6f6f75de39d84228e9c79f1441cc33215ca230ab642405d23e2ba26d95c8"
+        }
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "next_offset": 908,
+          "total_bytes": 908,
+          "result_sha256": "8fdb2a5d7f209f9e3b8e3f70126296ae08f14f573d8a53676be47749856a6243",
+          "eof": true,
+          "call_label": "authority0-page-000000",
+          "native_page": {
+            "name": "comparison69-authority0-page-000000-original-native",
+            "blob": "4e97e353042167f962c5ebaa74ce821b95ecfca8",
+            "bytes": 1893,
+            "sha256": "a1e643cfdb25c5f0144393844f44abb428894939c0ae0f776e6189934226ffdb"
+          }
+        }
+      ],
+      "closed": true,
+      "status": {
+        "label": "authority0-status",
+        "tool": "operation_status",
+        "request": {
+          "name": "comparison69-authority0-status-request",
+          "blob": "07672f750642ad82ad112ad935a097ab69aa5544",
+          "bytes": 89,
+          "sha256": "49fd545ba29efff102a73c417f01a23aecdeb886e64fd9e22f3f528a79f521f6"
+        },
+        "request_text": "{\n  \"operation_id\": \"5c495335fc951a58a709ae67dcf6ce0ce5b336f4563e42a710b6af38e8d17a75\"\n}\n",
+        "intent": {
+          "name": "comparison69-authority0-status-intent",
+          "blob": "d973eb0b75be0686af082113c7ad229cd748c25a",
+          "bytes": 881,
+          "sha256": "4bc6530fffa0fb2aff502308c1b19797c05e2a489e90e0b44f9bcb3e539b6380"
+        },
+        "submitted": true,
+        "SDK": {
+          "name": "comparison69-authority0-status-original-SDK",
+          "blob": "248dbc9fc409c1ff6173300eb846677a073afe5a",
+          "bytes": 980,
+          "sha256": "d0dbc50dfee47d6d671b93bff5489df976311d3101c27bd6c54349e0c81cbcb5"
+        },
+        "isError": false,
+        "local_transport_exception": false,
+        "native": {
+          "name": "comparison69-authority0-status-original-native",
+          "blob": "ad1119c1935a91b63888b16ec6da0301897faadb",
+          "bytes": 805,
+          "sha256": "932d51134eb8416b783aa0b63eb7893d5bd1199b9fb3cb83e355e6463f4b74ce"
+        }
+      },
+      "native_handler_closed": true,
+      "payload_sha256": "8fdb2a5d7f209f9e3b8e3f70126296ae08f14f573d8a53676be47749856a6243",
+      "payload_bytes": 908,
+      "next_offset": 908,
+      "pages_complete": true,
+      "payload": {
+        "name": "comparison69-authority0-payload-original",
+        "blob": "a619ba0e4474e6badd3eb7040bd7c2dcbd34314e",
+        "bytes": 908,
+        "sha256": "8fdb2a5d7f209f9e3b8e3f70126296ae08f14f573d8a53676be47749856a6243"
+      },
+      "native": {
+        "name": "comparison69-authority0-native-original",
+        "blob": "9dc7c90f85b22d1f64c6e4cb7c0052e80c282366",
+        "bytes": 729,
+        "sha256": "67915694edce07ac30389411c4a068068866fb8d3cb706d876eb0749a3d8ec78"
+      }
+    },
+    {
+      "name": "streams0",
+      "operation_id": "43830e8eeb0a2864bfb4a9a57c8a56e0858c791430e9850f65777248271aea5d",
+      "tool": "process_read",
+      "arguments": {
+        "host": "x230",
+        "job_id": "1a1adc377a3-fc05-5acb",
+        "stdout_offset": 0,
+        "stderr_offset": 0,
+        "limit": 16384
+      },
+      "admission": {
+        "label": "streams0-admission",
+        "tool": "operation_start",
+        "request": {
+          "name": "comparison69-streams0-admission-request",
+          "blob": "81ea9d5e3ba705d5acd945b20f61e225d72ff32c",
+          "bytes": 292,
+          "sha256": "3cacac618a3baec1fa3f54fc027e720d8a80126d6761a76418ec7bdd9edf4738"
+        },
+        "request_text": "{\n  \"idempotency_key\": \"heptabao-4e808-x230-comparison69-streams0-20261105-r1\",\n  \"operation\": {\n    \"tool\": \"process_read\",\n    \"arguments\": {\n      \"host\": \"x230\",\n      \"job_id\": \"1a1adc377a3-fc05-5acb\",\n      \"stdout_offset\": 0,\n      \"stderr_offset\": 0,\n      \"limit\": 16384\n    }\n  }\n}\n",
+        "intent": {
+          "name": "comparison69-streams0-admission-intent",
+          "blob": "99871357d6fb059301339aa1f634d2f78b4dbb63",
+          "bytes": 820,
+          "sha256": "8990959a7392744434f2d9f9f7041813cf87429d9841f8bceb025a861605b997"
+        },
+        "submitted": true,
+        "SDK": {
+          "name": "comparison69-streams0-admission-original-SDK",
+          "blob": "1954853258c9caa7b0236f95743349c30a99c0ef",
+          "bytes": 707,
+          "sha256": "705586d99e339c85268a4aa2bef93800bf4cdbd82ef58994604b6e0053069635"
+        },
+        "isError": false,
+        "local_transport_exception": false,
+        "native": {
+          "name": "comparison69-streams0-admission-original-native",
+          "blob": "d8280e0bca4fe10f293d779d03178df86a651dc1",
+          "bytes": 546,
+          "sha256": "669d057454e851a617b9fa6ae86b92ed53cf83a80dd64463c86516d2ac814f85"
+        }
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "next_offset": 2290,
+          "total_bytes": 2290,
+          "result_sha256": "43fb40ca84bec3b4952e32ff3d216de3aa7a0531d8fc45d37a87bc508fb727e3",
+          "eof": true,
+          "call_label": "streams0-page-000000",
+          "native_page": {
+            "name": "comparison69-streams0-page-000000-original-native",
+            "blob": "ed4d77b1b9d776c93ea59af2207e11a453760815",
+            "bytes": 3739,
+            "sha256": "9c2cd22b0fe74749c862528623b3fa745ddb458651c2042344cff45ea910d6d9"
+          }
+        }
+      ],
+      "closed": true,
+      "status": {
+        "label": "streams0-status",
+        "tool": "operation_status",
+        "request": {
+          "name": "comparison69-streams0-status-request",
+          "blob": "506d86506107e012d7fd1e478d5216b243e7557f",
+          "bytes": 89,
+          "sha256": "693477c35e891deac932c01c60af247c61a456d17e00fa37a8fde89e59e9818c"
+        },
+        "request_text": "{\n  \"operation_id\": \"43830e8eeb0a2864bfb4a9a57c8a56e0858c791430e9850f65777248271aea5d\"\n}\n",
+        "intent": {
+          "name": "comparison69-streams0-status-intent",
+          "blob": "dbef02dd2183c7c5f462903ef28109210b000a2e",
+          "bytes": 879,
+          "sha256": "0524d2f513b230428677bf07947803f1745ac2db92c8901eeac5f52b9f67a844"
+        },
+        "submitted": true,
+        "SDK": {
+          "name": "comparison69-streams0-status-original-SDK",
+          "blob": "cce796551879c2a47b874c1cf9b62d912b99b228",
+          "bytes": 978,
+          "sha256": "ccc53aecb1eb2ca271e0951885c845e49fe6ab8594c02bf64bb93365bf5a0e8a"
+        },
+        "isError": false,
+        "local_transport_exception": false,
+        "native": {
+          "name": "comparison69-streams0-status-original-native",
+          "blob": "5c41c6356e8c208623bd539de76128dc4a2c21ff",
+          "bytes": 803,
+          "sha256": "5189257a3b587739c454179eeac4c84474ac8a3015f7ad0def7fff6b23cbb9e6"
+        }
+      },
+      "native_handler_closed": true,
+      "payload_sha256": "43fb40ca84bec3b4952e32ff3d216de3aa7a0531d8fc45d37a87bc508fb727e3",
+      "payload_bytes": 2290,
+      "next_offset": 2290,
+      "pages_complete": true,
+      "payload": {
+        "name": "comparison69-streams0-payload-original",
+        "blob": "3aa9859f4518e4292f55535bde1729b418dcb96f",
+        "bytes": 2290,
+        "sha256": "43fb40ca84bec3b4952e32ff3d216de3aa7a0531d8fc45d37a87bc508fb727e3"
+      },
+      "native": {
+        "name": "comparison69-streams0-native-original",
+        "blob": "c6c2de87eb79ed2c54cb8c4c0abc9bf7d3f66c47",
+        "bytes": 2053,
+        "sha256": "753cc04b0089d359f303837613018f73149ecf0881c309bb7659a8f4cdb2f24e"
+      }
+    },
+    {
+      "name": "result-info",
+      "operation_id": "edfcb5b3537ebe15984b3a158a148770500dc1b963076c93b436895bfe42bb9b",
+      "tool": "file_info",
+      "arguments": {
+        "host": "x230",
+        "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1/result.public.json"
+      },
+      "admission": {
+        "label": "result-info-admission",
+        "tool": "operation_start",
+        "request": {
+          "name": "comparison69-result-info-admission-request",
+          "blob": "882ef7f0744c107cfb78136633c09a3b173dc7bd",
+          "bytes": 299,
+          "sha256": "241c5f0110ebfcd4f465b04e965d4c154ba9322911a6ec2167af37a6b7b6281d"
+        },
+        "request_text": "{\n  \"idempotency_key\": \"heptabao-4e808-x230-comparison69-result-info-20261105-r1\",\n  \"operation\": {\n    \"tool\": \"file_info\",\n    \"arguments\": {\n      \"host\": \"x230\",\n      \"path\": \"/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1/result.public.json\"\n    }\n  }\n}\n",
+        "intent": {
+          "name": "comparison69-result-info-admission-intent",
+          "blob": "f749285c456c281e38d272f92452b034e128bb28",
+          "bytes": 823,
+          "sha256": "38018b0abd7ed88a6b32ea7dde597d30fb81ebaa69d06f9eb9dded75c96c5ac1"
+        },
+        "submitted": true,
+        "SDK": {
+          "name": "comparison69-result-info-admission-original-SDK",
+          "blob": "93f2481716bb6cf38e16821ca8575141bb215cf5",
+          "bytes": 704,
+          "sha256": "ffa3e56467ec65f1cc2d0525e04d6f35694c78805a081b38356d49cf14d77f62"
+        },
+        "isError": false,
+        "local_transport_exception": false,
+        "native": {
+          "name": "comparison69-result-info-admission-original-native",
+          "blob": "e73471af57e94766254b3a7eec9396bf19af81af",
+          "bytes": 543,
+          "sha256": "660e2df93568be1130baf3e46647d7d841fcd88af6057ff3a782281b19ec3af1"
+        }
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "next_offset": 605,
+          "total_bytes": 605,
+          "result_sha256": "22a2d631f8046104f313ce3995c0935ec9a6222e37bc36c990365ecfd4c95e52",
+          "eof": true,
+          "call_label": "result-info-page-000000",
+          "native_page": {
+            "name": "comparison69-result-info-page-000000-original-native",
+            "blob": "3d465f94264cc266f7f5c80958cf35a520f2ea61",
+            "bytes": 1489,
+            "sha256": "839e0f371f0bb88174d92e21c6f0b76f4e876bb10c3239dc37b9eff04e7e17f8"
+          }
+        }
+      ],
+      "closed": true,
+      "status": {
+        "label": "result-info-status",
+        "tool": "operation_status",
+        "request": {
+          "name": "comparison69-result-info-status-request",
+          "blob": "9fd4ba2bdfe50fe2cf26afb34ba1fc0a820347ad",
+          "bytes": 89,
+          "sha256": "4b0a7a941743988a88e027833044f8c489e77e244f465d69b44ef5d7542ec537"
+        },
+        "request_text": "{\n  \"operation_id\": \"edfcb5b3537ebe15984b3a158a148770500dc1b963076c93b436895bfe42bb9b\"\n}\n",
+        "intent": {
+          "name": "comparison69-result-info-status-intent",
+          "blob": "4a348488e2c152625a49f1762b2bd3d815af44e1",
+          "bytes": 882,
+          "sha256": "0fe87f842b8b60cd9f9b0b4c75e03c756c9adb7037e3bcdafdf446ee7c608161"
+        },
+        "submitted": true,
+        "SDK": {
+          "name": "comparison69-result-info-status-original-SDK",
+          "blob": "0dd7fab9947a90bd1a6be1a8b554466f6fc24dd7",
+          "bytes": 975,
+          "sha256": "04e5f4f9e59e5b6d75cce881b0e115d6e4f8f71c1efa70102c43705a15070caf"
+        },
+        "isError": false,
+        "local_transport_exception": false,
+        "native": {
+          "name": "comparison69-result-info-status-original-native",
+          "blob": "b6e9ccdecf715e66a50dfba0eb827321a35946a8",
+          "bytes": 800,
+          "sha256": "6f09ce4caf49a732796b5a52012295b10ce80d20fadf1b6c4659e3fb585a3340"
+        }
+      },
+      "native_handler_closed": true,
+      "payload_sha256": "22a2d631f8046104f313ce3995c0935ec9a6222e37bc36c990365ecfd4c95e52",
+      "payload_bytes": 605,
+      "next_offset": 605,
+      "pages_complete": true,
+      "payload": {
+        "name": "comparison69-result-info-payload-original",
+        "blob": "d072953855cb6aa19eb21bbb8a95db659c11d855",
+        "bytes": 605,
+        "sha256": "22a2d631f8046104f313ce3995c0935ec9a6222e37bc36c990365ecfd4c95e52"
+      },
+      "native": {
+        "name": "comparison69-result-info-native-original",
+        "blob": "bbac9a33a23fec12840b787cc5f27b43c9242955",
+        "bytes": 488,
+        "sha256": "fa402021b245e50eff36ded3f2e9f63cc4aa2510df472177844edde748df3035"
+      }
+    },
+    {
+      "name": "result-body0",
+      "operation_id": "bc997fcecd478a8d7d1a72eb69c1a11aabff9c36448951f365aa17849f767fe6",
+      "tool": "binary_read",
+      "arguments": {
+        "host": "x230",
+        "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1/result.public.json",
+        "expected_version": "2053:3074871:2111:1793916670100610710:1793916670100610710",
+        "offset": 0,
+        "limit": 2111
+      },
+      "admission": {
+        "label": "result-body0-admission",
+        "tool": "operation_start",
+        "request": {
+          "name": "comparison69-result-body0-admission-request",
+          "blob": "cb86a2657d33f3d79f4e84f576ff18e78599dbe9",
+          "bytes": 429,
+          "sha256": "536f90901d4576ffd7a6c9f4b22cd148983e49989b6bdc2baa746502bbf55470"
+        },
+        "request_text": "{\n  \"idempotency_key\": \"heptabao-4e808-x230-comparison69-result-body0-20261105-r1\",\n  \"operation\": {\n    \"tool\": \"binary_read\",\n    \"arguments\": {\n      \"host\": \"x230\",\n      \"path\": \"/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1/result.public.json\",\n      \"expected_version\": \"2053:3074871:2111:1793916670100610710:1793916670100610710\",\n      \"offset\": 0,\n      \"limit\": 2111\n    }\n  }\n}\n",
+        "intent": {
+          "name": "comparison69-result-body0-admission-intent",
+          "blob": "a05fa1b87bd2e1dadd4711cdb889eb89606f431b",
+          "bytes": 824,
+          "sha256": "f1735eb2ed53a0be14ba7e9c0e2468aec482f62bf801d43ed495ab61d0523340"
+        },
+        "submitted": true,
+        "SDK": {
+          "name": "comparison69-result-body0-admission-original-SDK",
+          "blob": "d746207c55eb6af97f982509475579abfc93aaff",
+          "bytes": 706,
+          "sha256": "9e2437cca2b2117a23aed90eb8d60974298b6c4f4e160167cf9920c0ca82a298"
+        },
+        "isError": false,
+        "local_transport_exception": false,
+        "native": {
+          "name": "comparison69-result-body0-admission-original-native",
+          "blob": "bb3427e77c194c59e3d4e735ca5e02c5fb649e95",
+          "bytes": 545,
+          "sha256": "77aebdf84ffcded836f7d8740771d4920bf87cadb11e5498d908bf5183992f27"
+        }
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "next_offset": 3256,
+          "total_bytes": 3256,
+          "result_sha256": "bf03544cef277b364d1327d46ae524f865dfbff90e73160cd8e16b49f63a26b4",
+          "eof": true,
+          "call_label": "result-body0-page-000000",
+          "native_page": {
+            "name": "comparison69-result-body0-page-000000-original-native",
+            "blob": "0199206b1fa1844dc2f56c866a0cafd6af48d467",
+            "bytes": 5027,
+            "sha256": "36d3feb32f1864723e44cae60b1aa15f6bbfeb5e28cc9ee3f6da9eafd10e79e9"
+          }
+        }
+      ],
+      "closed": true,
+      "status": {
+        "label": "result-body0-status",
+        "tool": "operation_status",
+        "request": {
+          "name": "comparison69-result-body0-status-request",
+          "blob": "d98073493c5ed608e80f170745c9270e2f6efd5a",
+          "bytes": 89,
+          "sha256": "f6ae1357a793744caaa60e1aed763c74084b8f8384fef142650d721a9a955b4c"
+        },
+        "request_text": "{\n  \"operation_id\": \"bc997fcecd478a8d7d1a72eb69c1a11aabff9c36448951f365aa17849f767fe6\"\n}\n",
+        "intent": {
+          "name": "comparison69-result-body0-status-intent",
+          "blob": "82625ee9cffcddbbf0c81511de97e5f8d7799129",
+          "bytes": 883,
+          "sha256": "2ad5a8e6858b398f362f29da5e291e2ca8d6defd247c1da732b194aec9752b7a"
+        },
+        "submitted": true,
+        "SDK": {
+          "name": "comparison69-result-body0-status-original-SDK",
+          "blob": "a257fb7337237f9c8611c48e935b835635881954",
+          "bytes": 977,
+          "sha256": "410270dabb9379f5ef4aa9b2a81ac8b4fc86b0432067bddbb079a229d256b212"
+        },
+        "isError": false,
+        "local_transport_exception": false,
+        "native": {
+          "name": "comparison69-result-body0-status-original-native",
+          "blob": "a9f0fbc36892dbd58d209da368b8727f73872491",
+          "bytes": 802,
+          "sha256": "074b2098834655247c13e92072d38b08351bd737acf489e99020d99eda877c36"
+        }
+      },
+      "native_handler_closed": true,
+      "payload_sha256": "bf03544cef277b364d1327d46ae524f865dfbff90e73160cd8e16b49f63a26b4",
+      "payload_bytes": 3256,
+      "next_offset": 3256,
+      "pages_complete": true,
+      "payload": {
+        "name": "comparison69-result-body0-payload-original",
+        "blob": "9f06cf19e4b7c77f07450cd162c416dcf850d545",
+        "bytes": 3256,
+        "sha256": "bf03544cef277b364d1327d46ae524f865dfbff90e73160cd8e16b49f63a26b4"
+      },
+      "native": {
+        "name": "comparison69-result-body0-native-original",
+        "blob": "3b628390f3a48437a995d77e50f6558bd31891df",
+        "bytes": 3153,
+        "sha256": "747650237855af1942fd40e8ce60ae19e04a53c23ac72c0354ddd51a315c9439"
+      }
+    },
+    {
+      "name": "summary-info",
+      "operation_id": "8a1c8b6e1814f1bc0c9ef0eeb2f72ccaa288553e37c6c02edbbab1d4680fccfb",
+      "tool": "file_info",
+      "arguments": {
+        "host": "x230",
+        "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1/summary.public.json"
+      },
+      "admission": {
+        "label": "summary-info-admission",
+        "tool": "operation_start",
+        "request": {
+          "name": "comparison69-summary-info-admission-request",
+          "blob": "f91875965a5900c40c387d8daf870627a803c5d1",
+          "bytes": 301,
+          "sha256": "ed18cb044503ba78aed23e84e2b7288b8fd5792135df3d13b766cdd8b7a3c69b"
+        },
+        "request_text": "{\n  \"idempotency_key\": \"heptabao-4e808-x230-comparison69-summary-info-20261105-r1\",\n  \"operation\": {\n    \"tool\": \"file_info\",\n    \"arguments\": {\n      \"host\": \"x230\",\n      \"path\": \"/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1/summary.public.json\"\n    }\n  }\n}\n",
+        "intent": {
+          "name": "comparison69-summary-info-admission-intent",
+          "blob": "a8b8f6b8f0fa4ff512f1877a5aa415fc834ffb02",
+          "bytes": 824,
+          "sha256": "cabe97b7a5e36fdc7684a8cffb7c2c1d4d9262afe47b420e28e70b2e24e4406e"
+        },
+        "submitted": true,
+        "SDK": {
+          "name": "comparison69-summary-info-admission-original-SDK",
+          "blob": "6b84852eb5eb7b8d38e4610160bacc9c278cae2c",
+          "bytes": 704,
+          "sha256": "8ec6ab975ec489831a6a6f9f55f959ac7b5bfa42642956fad26ffed686429516"
+        },
+        "isError": false,
+        "local_transport_exception": false,
+        "native": {
+          "name": "comparison69-summary-info-admission-original-native",
+          "blob": "731a254232208dc0b0e53121c18342c0a1a09ffa",
+          "bytes": 543,
+          "sha256": "00544cb5fbc41dd10163974c6cd08a43eb38ca0060917af294361150af15b430"
+        }
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "next_offset": 610,
+          "total_bytes": 610,
+          "result_sha256": "3751c7ce94cb763ba518c971f2524274f5cafbeb2874a6209407d66b0c9851e5",
+          "eof": true,
+          "call_label": "summary-info-page-000000",
+          "native_page": {
+            "name": "comparison69-summary-info-page-000000-original-native",
+            "blob": "5eef463efa53eb208c07a638855c4bd5aded8e09",
+            "bytes": 1497,
+            "sha256": "bef87ca2c074381043600e0c3b60a29ebcd827fb83ea8d5f769337b8deedba66"
+          }
+        }
+      ],
+      "closed": true,
+      "status": {
+        "label": "summary-info-status",
+        "tool": "operation_status",
+        "request": {
+          "name": "comparison69-summary-info-status-request",
+          "blob": "71620f753dbdc6b2460da06382a2ea47748a399b",
+          "bytes": 89,
+          "sha256": "eeb33d2763ebb3f9722518aa8846954b93be62dcdf915f9b3ef76aff7bb4cd9a"
+        },
+        "request_text": "{\n  \"operation_id\": \"8a1c8b6e1814f1bc0c9ef0eeb2f72ccaa288553e37c6c02edbbab1d4680fccfb\"\n}\n",
+        "intent": {
+          "name": "comparison69-summary-info-status-intent",
+          "blob": "ed34b775604fc1329f993d195de16a65f910a7cc",
+          "bytes": 883,
+          "sha256": "c48fc940289311e0882720c3fc1a1c27ee2bbe89c8f960237be10162518a6e2c"
+        },
+        "submitted": true,
+        "SDK": {
+          "name": "comparison69-summary-info-status-original-SDK",
+          "blob": "f53ac8836e26004536734eb8aacb1377a462c400",
+          "bytes": 975,
+          "sha256": "33b6e8f6cfc7fc2ce749817d03f84f753e18633677208b7326dd393a76d687cc"
+        },
+        "isError": false,
+        "local_transport_exception": false,
+        "native": {
+          "name": "comparison69-summary-info-status-original-native",
+          "blob": "ad57527613c23bad88dd30f20830d6ab9b2a15e5",
+          "bytes": 800,
+          "sha256": "9a6e56cb33fb4dad1c5cce8f25c98cc45acfc4cd1f92f6cdd89a3d1c6b31a0aa"
+        }
+      },
+      "native_handler_closed": true,
+      "payload_sha256": "3751c7ce94cb763ba518c971f2524274f5cafbeb2874a6209407d66b0c9851e5",
+      "payload_bytes": 610,
+      "next_offset": 610,
+      "pages_complete": true,
+      "payload": {
+        "name": "comparison69-summary-info-payload-original",
+        "blob": "02f8c68d32f94b69794f7401fb0629a258f95ed9",
+        "bytes": 610,
+        "sha256": "3751c7ce94cb763ba518c971f2524274f5cafbeb2874a6209407d66b0c9851e5"
+      },
+      "native": {
+        "name": "comparison69-summary-info-native-original",
+        "blob": "cf1ce0c996c28c70b37dc24c6cf6631aa54e272b",
+        "bytes": 493,
+        "sha256": "efc8d663738f053fc9e3faebe57aae4cade3b59e9e844132591ea7e0ded47621"
+      }
+    },
+    {
+      "name": "summary-body0",
+      "operation_id": "984b902e0efc2fd2369f4b29a7c06ac65f1fb637745ef0a186abbc2c628982cb",
+      "tool": "binary_read",
+      "arguments": {
+        "host": "x230",
+        "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1/summary.public.json",
+        "expected_version": "2053:3074869:104034:1793916669702610630:1793916669702610630",
+        "offset": 0,
+        "limit": 65536
+      },
+      "admission": {
+        "label": "summary-body0-admission",
+        "tool": "operation_start",
+        "request": {
+          "name": "comparison69-summary-body0-admission-request",
+          "blob": "08cd565186593024e5e0c46e2085fb2ef671c5d1",
+          "bytes": 434,
+          "sha256": "bc7a5b66bc87ed525a61078a242f83faf411931d098d0f2e5fa901b82f131640"
+        },
+        "request_text": "{\n  \"idempotency_key\": \"heptabao-4e808-x230-comparison69-summary-body0-20261105-r1\",\n  \"operation\": {\n    \"tool\": \"binary_read\",\n    \"arguments\": {\n      \"host\": \"x230\",\n      \"path\": \"/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1/summary.public.json\",\n      \"expected_version\": \"2053:3074869:104034:1793916669702610630:1793916669702610630\",\n      \"offset\": 0,\n      \"limit\": 65536\n    }\n  }\n}\n",
+        "intent": {
+          "name": "comparison69-summary-body0-admission-intent",
+          "blob": "6ec86c3fd55e54232fc93c1a039efe6c55d244d1",
+          "bytes": 825,
+          "sha256": "fe0b9910cb3eda1d5a00b650ae3194eb0538aa0821ee0bc693ea9436da31b603"
+        },
+        "submitted": true,
+        "SDK": {
+          "name": "comparison69-summary-body0-admission-original-SDK",
+          "blob": "8370862ff0f37d0e7941cae0211f23da44ac2bd9",
+          "bytes": 706,
+          "sha256": "cd32302563c7877969a31609ab2b81b5dce7cd89d0912eb1e5f8fd403bf9cb99"
+        },
+        "isError": false,
+        "local_transport_exception": false,
+        "native": {
+          "name": "comparison69-summary-body0-admission-original-native",
+          "blob": "16d9e04feb78b1bd5fd1b14dc927f89340bb39ff",
+          "bytes": 545,
+          "sha256": "a5af7310d1fcc2f53ab7e0471a5e29335b99c2bef2bec2c90abcb286d4b0e540"
+        }
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "next_offset": 8192,
+          "total_bytes": 87831,
+          "result_sha256": "ed6ec651f7df703254a2c2d9d47fe1484ac9dc5639997d4157dcdc78a8b0839c",
+          "eof": false,
+          "call_label": "summary-body0-page-000000",
+          "native_page": {
+            "name": "comparison69-summary-body0-page-000000-original-native",
+            "blob": "068b251ebb16933a03a8d2ebbfc2482c714e2492",
+            "bytes": 11609,
+            "sha256": "bdfc114a8bcbba5dd053d83b18bd3c1d7717005592996692baa36e3d360bacee"
+          }
+        },
+        {
+          "offset": 8192,
+          "next_offset": 16384,
+          "total_bytes": 87831,
+          "result_sha256": "ed6ec651f7df703254a2c2d9d47fe1484ac9dc5639997d4157dcdc78a8b0839c",
+          "eof": false,
+          "call_label": "summary-body0-page-008192",
+          "native_page": {
+            "name": "comparison69-summary-body0-page-008192-original-native",
+            "blob": "47523c065f20b711f350e7177c3c00ffd5c67a1a",
+            "bytes": 11613,
+            "sha256": "65d164b005eb8423a369a2c67a339ad71e71bca13c193763384618050f7634ee"
+          }
+        },
+        {
+          "offset": 16384,
+          "next_offset": 24576,
+          "total_bytes": 87831,
+          "result_sha256": "ed6ec651f7df703254a2c2d9d47fe1484ac9dc5639997d4157dcdc78a8b0839c",
+          "eof": false,
+          "call_label": "summary-body0-page-016384",
+          "native_page": {
+            "name": "comparison69-summary-body0-page-016384-original-native",
+            "blob": "556acd878f7a81f0f1a158c74ba76fce6df2b2f9",
+            "bytes": 11614,
+            "sha256": "5e7dbb3faf452959de40c07dd8bd9787e18379cc64884e823a2056fea4fb0b9c"
+          }
+        },
+        {
+          "offset": 24576,
+          "next_offset": 32768,
+          "total_bytes": 87831,
+          "result_sha256": "ed6ec651f7df703254a2c2d9d47fe1484ac9dc5639997d4157dcdc78a8b0839c",
+          "eof": false,
+          "call_label": "summary-body0-page-024576",
+          "native_page": {
+            "name": "comparison69-summary-body0-page-024576-original-native",
+            "blob": "822a93989474d380b30fdb95c71d178ffb5d9ec8",
+            "bytes": 11614,
+            "sha256": "b69506a45a905926d9823fdb709ac57e336fce416b984cd61a0cee138575e31c"
+          }
+        },
+        {
+          "offset": 32768,
+          "next_offset": 40960,
+          "total_bytes": 87831,
+          "result_sha256": "ed6ec651f7df703254a2c2d9d47fe1484ac9dc5639997d4157dcdc78a8b0839c",
+          "eof": false,
+          "call_label": "summary-body0-page-032768",
+          "native_page": {
+            "name": "comparison69-summary-body0-page-032768-original-native",
+            "blob": "5b4aa18402f06661fd5ab3395e66e2472252024c",
+            "bytes": 11614,
+            "sha256": "876bd4769c5d7c3e5d06d0e27cf8dfe02e07526dd032b5b9178eb5bb947ab49e"
+          }
+        },
+        {
+          "offset": 40960,
+          "next_offset": 49152,
+          "total_bytes": 87831,
+          "result_sha256": "ed6ec651f7df703254a2c2d9d47fe1484ac9dc5639997d4157dcdc78a8b0839c",
+          "eof": false,
+          "call_label": "summary-body0-page-040960",
+          "native_page": {
+            "name": "comparison69-summary-body0-page-040960-original-native",
+            "blob": "83deaba9da8c1cd34422e93a47d756aa5c123102",
+            "bytes": 11614,
+            "sha256": "529428f6091cb36a7bed18a440754822b451f768acb2b12bc8ea5715d2355020"
+          }
+        },
+        {
+          "offset": 49152,
+          "next_offset": 57344,
+          "total_bytes": 87831,
+          "result_sha256": "ed6ec651f7df703254a2c2d9d47fe1484ac9dc5639997d4157dcdc78a8b0839c",
+          "eof": false,
+          "call_label": "summary-body0-page-049152",
+          "native_page": {
+            "name": "comparison69-summary-body0-page-049152-original-native",
+            "blob": "c71596e63494b69fbb6c9e12cc9694ce50ee2db7",
+            "bytes": 11614,
+            "sha256": "647b9e1a261d3a16c299d4abb3610cbe9172d99ee1465c88416b871264d515e3"
+          }
+        },
+        {
+          "offset": 57344,
+          "next_offset": 65536,
+          "total_bytes": 87831,
+          "result_sha256": "ed6ec651f7df703254a2c2d9d47fe1484ac9dc5639997d4157dcdc78a8b0839c",
+          "eof": false,
+          "call_label": "summary-body0-page-057344",
+          "native_page": {
+            "name": "comparison69-summary-body0-page-057344-original-native",
+            "blob": "e4dafc943f260797d094dd6cda39a995130bed25",
+            "bytes": 11614,
+            "sha256": "3f9f91f5912a73443062d55eec36a2e17a6c61bbcc61877ac6612a361dded7d0"
+          }
+        },
+        {
+          "offset": 65536,
+          "next_offset": 73728,
+          "total_bytes": 87831,
+          "result_sha256": "ed6ec651f7df703254a2c2d9d47fe1484ac9dc5639997d4157dcdc78a8b0839c",
+          "eof": false,
+          "call_label": "summary-body0-page-065536",
+          "native_page": {
+            "name": "comparison69-summary-body0-page-065536-original-native",
+            "blob": "9b4c3faf349fc7af0e976edae109f1d605576c51",
+            "bytes": 11614,
+            "sha256": "c202c81785a797d3a2bb900716a9f779d371eab426ef3672614a2f5894200b64"
+          }
+        },
+        {
+          "offset": 73728,
+          "next_offset": 81920,
+          "total_bytes": 87831,
+          "result_sha256": "ed6ec651f7df703254a2c2d9d47fe1484ac9dc5639997d4157dcdc78a8b0839c",
+          "eof": false,
+          "call_label": "summary-body0-page-073728",
+          "native_page": {
+            "name": "comparison69-summary-body0-page-073728-original-native",
+            "blob": "4ff5f94801a77a279e9c85caa866bf91c1dfaa2a",
+            "bytes": 11614,
+            "sha256": "6516eb9d330bf78fdba9c15c23aa3c0ca27e863c399cfc1f68fc9d2975215a96"
+          }
+        },
+        {
+          "offset": 81920,
+          "next_offset": 87831,
+          "total_bytes": 87831,
+          "result_sha256": "ed6ec651f7df703254a2c2d9d47fe1484ac9dc5639997d4157dcdc78a8b0839c",
+          "eof": true,
+          "call_label": "summary-body0-page-081920",
+          "native_page": {
+            "name": "comparison69-summary-body0-page-081920-original-native",
+            "blob": "3eeda9c99761f619240bff9689773adf74015174",
+            "bytes": 8573,
+            "sha256": "5d642ebe7e48bef3a53cdb53beb6d62d86f951937eb36b45422c6f44d5c84608"
+          }
+        }
+      ],
+      "closed": true,
+      "status": {
+        "label": "summary-body0-status",
+        "tool": "operation_status",
+        "request": {
+          "name": "comparison69-summary-body0-status-request",
+          "blob": "97cdcd3b183964bc8aac57994c8929864cd1f13f",
+          "bytes": 89,
+          "sha256": "e401ef525b2271d5105c9929d497a4f5a0ad552e763b53921f958c432cd0f88e"
+        },
+        "request_text": "{\n  \"operation_id\": \"984b902e0efc2fd2369f4b29a7c06ac65f1fb637745ef0a186abbc2c628982cb\"\n}\n",
+        "intent": {
+          "name": "comparison69-summary-body0-status-intent",
+          "blob": "358de609d2d8b82fc796d4a6fb0a55083a3a5894",
+          "bytes": 884,
+          "sha256": "ca9afbcfaed3c07e076e1062f82ae618ef7178cb21c5bd22fb535a27d444b618"
+        },
+        "submitted": true,
+        "SDK": {
+          "name": "comparison69-summary-body0-status-original-SDK",
+          "blob": "3e301e2ac1c9ee3c48fd2739b91cef5ce5d785b2",
+          "bytes": 977,
+          "sha256": "d5c4e2be8649508631b2642dd7ece4c36935fbe9c96b253621ec8f1dd1ab26c1"
+        },
+        "isError": false,
+        "local_transport_exception": false,
+        "native": {
+          "name": "comparison69-summary-body0-status-original-native",
+          "blob": "08ba3e565c076e4382ec6676683e7a6339e1d0d4",
+          "bytes": 802,
+          "sha256": "c08bb54e025b2e996d8053c6d3fd69ae978f02909dbfd507a2c1b4b36fd515ab"
+        }
+      },
+      "native_handler_closed": true,
+      "payload_sha256": "ed6ec651f7df703254a2c2d9d47fe1484ac9dc5639997d4157dcdc78a8b0839c",
+      "payload_bytes": 87831,
+      "next_offset": 87831,
+      "pages_complete": true,
+      "payload": {
+        "name": "comparison69-summary-body0-payload-original",
+        "blob": "a41dd6d35dd00802e12c3151dc8e05da69e21a38",
+        "bytes": 87831,
+        "sha256": "ed6ec651f7df703254a2c2d9d47fe1484ac9dc5639997d4157dcdc78a8b0839c"
+      },
+      "native": {
+        "name": "comparison69-summary-body0-native-original",
+        "blob": "f92a58129757a7a2dcbb670dafe99129185c99f7",
+        "bytes": 87728,
+        "sha256": "d3f756113666ce01c71f07b8ef981ee350d353ef7529b8a98125891493f8a5e8"
+      }
+    },
+    {
+      "name": "summary-body1",
+      "operation_id": "e53ae94cd479f5ebcad1e28accf066a56262974d52b891d9c3ed1ee808357392",
+      "tool": "binary_read",
+      "arguments": {
+        "host": "x230",
+        "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1/summary.public.json",
+        "expected_version": "2053:3074869:104034:1793916669702610630:1793916669702610630",
+        "offset": 65536,
+        "limit": 38498
+      },
+      "admission": {
+        "label": "summary-body1-admission",
+        "tool": "operation_start",
+        "request": {
+          "name": "comparison69-summary-body1-admission-request",
+          "blob": "479f2ff16826dcd8a7f35935c16241143330d021",
+          "bytes": 438,
+          "sha256": "97147c2194091d3a60976eb94f82facc312be73761db79657a45af41848acdb7"
+        },
+        "request_text": "{\n  \"idempotency_key\": \"heptabao-4e808-x230-comparison69-summary-body1-20261105-r1\",\n  \"operation\": {\n    \"tool\": \"binary_read\",\n    \"arguments\": {\n      \"host\": \"x230\",\n      \"path\": \"/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1/summary.public.json\",\n      \"expected_version\": \"2053:3074869:104034:1793916669702610630:1793916669702610630\",\n      \"offset\": 65536,\n      \"limit\": 38498\n    }\n  }\n}\n",
+        "intent": {
+          "name": "comparison69-summary-body1-admission-intent",
+          "blob": "32e3b4c9af1b5cf5c624aa69feee538b553ebff7",
+          "bytes": 825,
+          "sha256": "bc71c7c94ad0faf8ef82725b36873b067488a443476ba823d064da8bb0eb044c"
+        },
+        "submitted": true,
+        "SDK": {
+          "name": "comparison69-summary-body1-admission-original-SDK",
+          "blob": "607e95b06f718afd5fc6a788310ad094709733aa",
+          "bytes": 706,
+          "sha256": "4943a58bfbd6e0de192c9231c1fba4c8730b4325b669927af7e95dc3b7f590f7"
+        },
+        "isError": false,
+        "local_transport_exception": false,
+        "native": {
+          "name": "comparison69-summary-body1-admission-original-native",
+          "blob": "857ec08406f628867ddbcc50dccbd1a9395ca3b0",
+          "bytes": 545,
+          "sha256": "d498054d4ee0f0defe277a875808e88af7e7f35748d86212b07a4b7018704bb2"
+        }
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "next_offset": 8192,
+          "total_bytes": 51783,
+          "result_sha256": "2b4d424f9d702eba4681a886a729c1f0b850378ab4b3884700f3baa69b1591f7",
+          "eof": false,
+          "call_label": "summary-body1-page-000000",
+          "native_page": {
+            "name": "comparison69-summary-body1-page-000000-original-native",
+            "blob": "108437f055afada96b5550ce2ae8be8ef135592f",
+            "bytes": 11609,
+            "sha256": "5c95ee085afa90b2a0d96777337301e892f17322b6eeaa2f353186ae52081f60"
+          }
+        }
+      ],
+      "closed": false,
+      "status": {
+        "label": "summary-body1-status",
+        "tool": "operation_status",
+        "request": {
+          "name": "comparison69-summary-body1-status-request",
+          "blob": "9fb958c24afffd358da6d8298747316a85082b47",
+          "bytes": 89,
+          "sha256": "36758cb00307b723b70b31a8e140fc2e070da94aa0a201043f4718c083758146"
+        },
+        "request_text": "{\n  \"operation_id\": \"e53ae94cd479f5ebcad1e28accf066a56262974d52b891d9c3ed1ee808357392\"\n}\n",
+        "intent": {
+          "name": "comparison69-summary-body1-status-intent",
+          "blob": "149872f48dcce70c4261ff5e021fbeefeb88393e",
+          "bytes": 884,
+          "sha256": "028cad6f9d39e573e03783f20cfbfd2bd2e99d85c4fb0ae51627497f0e7cb256"
+        },
+        "submitted": true,
+        "SDK": {
+          "name": "comparison69-summary-body1-status-original-SDK",
+          "blob": "46f6466a0ae3af6a8956b5b9cc0c679e1ffc87ad",
+          "bytes": 977,
+          "sha256": "8e79d9692d5a0374de7bb3eb72d90ff4cc537e0602f59c38b3e5b6fa8365164e"
+        },
+        "isError": false,
+        "local_transport_exception": false,
+        "native": {
+          "name": "comparison69-summary-body1-status-original-native",
+          "blob": "22e241a688e3c7a6a79e497ee48cbc8ac806b2ea",
+          "bytes": 802,
+          "sha256": "671f97978b8a071a3a0286cc996a64e2f1565aafd08c9139350be79112d0f893"
+        }
+      },
+      "native_handler_closed": true,
+      "payload_sha256": "2b4d424f9d702eba4681a886a729c1f0b850378ab4b3884700f3baa69b1591f7",
+      "payload_bytes": 51783,
+      "next_offset": 8192,
+      "pages_complete": false
+    }
+  ],
+  "calls": [
+    {
+      "label": "authority0-admission",
+      "tool": "operation_start",
+      "request": {
+        "name": "comparison69-authority0-admission-request",
+        "blob": "45ef86f633d656831bd79479c5cb67713e3ebe01",
+        "bytes": 222,
+        "sha256": "ebde9e765ef2beb343988e33267c7df3305623520668800c4a08008a7d0b0603"
+      },
+      "intent": {
+        "name": "comparison69-authority0-admission-intent",
+        "blob": "ee36c22088b7df06a877deb94ef16570cffba755",
+        "bytes": 822,
+        "sha256": "8141db09448ae3720e4634553f7eb5ab1b3336908f3414e569ba9b0edd5ae76c"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-authority0-admission-original-SDK",
+        "blob": "5cd3da9933b09d774a2b3e16567b61b642919ceb",
+        "bytes": 709,
+        "sha256": "f5128fcdabd0d64456d3f25e749d1b191385f633d87f52ade365ad7df536f57f"
+      },
+      "native": {
+        "name": "comparison69-authority0-admission-original-native",
+        "blob": "a7de8fd190fa5ec01e2c77a8cea99ca0ab7cf067",
+        "bytes": 548,
+        "sha256": "1c62b933b805ec43e125572ff81799772de0bf4197fa8bc684112d1fb6012560"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "local_archival_recovery": {
+        "name": "comparison69-local-archive-error-recovery",
+        "blob": "5a220847e17f6ed9f25079738896746c6881e951",
+        "bytes": 1609,
+        "sha256": "ed1d6f6f75de39d84228e9c79f1441cc33215ca230ab642405d23e2ba26d95c8"
+      }
+    },
+    {
+      "label": "authority0-status",
+      "tool": "operation_status",
+      "request": {
+        "name": "comparison69-authority0-status-request",
+        "blob": "07672f750642ad82ad112ad935a097ab69aa5544",
+        "bytes": 89,
+        "sha256": "49fd545ba29efff102a73c417f01a23aecdeb886e64fd9e22f3f528a79f521f6"
+      },
+      "intent": {
+        "name": "comparison69-authority0-status-intent",
+        "blob": "d973eb0b75be0686af082113c7ad229cd748c25a",
+        "bytes": 881,
+        "sha256": "4bc6530fffa0fb2aff502308c1b19797c05e2a489e90e0b44f9bcb3e539b6380"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-authority0-status-original-SDK",
+        "blob": "248dbc9fc409c1ff6173300eb846677a073afe5a",
+        "bytes": 980,
+        "sha256": "d0dbc50dfee47d6d671b93bff5489df976311d3101c27bd6c54349e0c81cbcb5"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-authority0-status-original-native",
+        "blob": "ad1119c1935a91b63888b16ec6da0301897faadb",
+        "bytes": 805,
+        "sha256": "932d51134eb8416b783aa0b63eb7893d5bd1199b9fb3cb83e355e6463f4b74ce"
+      }
+    },
+    {
+      "label": "authority0-page-000000",
+      "tool": "operation_result",
+      "request": {
+        "name": "comparison69-authority0-page-000000-request",
+        "blob": "41e97bce00e9d1af92018118c4b050b2185f738c",
+        "bytes": 121,
+        "sha256": "4f50a09c78945f7a1f30825544b557c03fbd45e18e79dbdce910d0d62fcd832c"
+      },
+      "intent": {
+        "name": "comparison69-authority0-page-000000-intent",
+        "blob": "edd210cdb503da17dd03ec6104d66372fa72d845",
+        "bytes": 887,
+        "sha256": "4f2e5cc59739418c17ff5c5795ae90a8b7c2f5c5dd3a1c753b2e72e2e192d92a"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-authority0-page-000000-original-SDK",
+        "blob": "55dc9b7ed030e9b3eb03c106899d76323aa69bff",
+        "bytes": 2064,
+        "sha256": "62a7e3347abf1109b5fc69b36ed94b6f3d36d65516e9252515e1f1978e4d0081"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-authority0-page-000000-original-native",
+        "blob": "4e97e353042167f962c5ebaa74ce821b95ecfca8",
+        "bytes": 1893,
+        "sha256": "a1e643cfdb25c5f0144393844f44abb428894939c0ae0f776e6189934226ffdb"
+      }
+    },
+    {
+      "label": "streams0-admission",
+      "tool": "operation_start",
+      "request": {
+        "name": "comparison69-streams0-admission-request",
+        "blob": "81ea9d5e3ba705d5acd945b20f61e225d72ff32c",
+        "bytes": 292,
+        "sha256": "3cacac618a3baec1fa3f54fc027e720d8a80126d6761a76418ec7bdd9edf4738"
+      },
+      "intent": {
+        "name": "comparison69-streams0-admission-intent",
+        "blob": "99871357d6fb059301339aa1f634d2f78b4dbb63",
+        "bytes": 820,
+        "sha256": "8990959a7392744434f2d9f9f7041813cf87429d9841f8bceb025a861605b997"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-streams0-admission-original-SDK",
+        "blob": "1954853258c9caa7b0236f95743349c30a99c0ef",
+        "bytes": 707,
+        "sha256": "705586d99e339c85268a4aa2bef93800bf4cdbd82ef58994604b6e0053069635"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-streams0-admission-original-native",
+        "blob": "d8280e0bca4fe10f293d779d03178df86a651dc1",
+        "bytes": 546,
+        "sha256": "669d057454e851a617b9fa6ae86b92ed53cf83a80dd64463c86516d2ac814f85"
+      }
+    },
+    {
+      "label": "streams0-status",
+      "tool": "operation_status",
+      "request": {
+        "name": "comparison69-streams0-status-request",
+        "blob": "506d86506107e012d7fd1e478d5216b243e7557f",
+        "bytes": 89,
+        "sha256": "693477c35e891deac932c01c60af247c61a456d17e00fa37a8fde89e59e9818c"
+      },
+      "intent": {
+        "name": "comparison69-streams0-status-intent",
+        "blob": "dbef02dd2183c7c5f462903ef28109210b000a2e",
+        "bytes": 879,
+        "sha256": "0524d2f513b230428677bf07947803f1745ac2db92c8901eeac5f52b9f67a844"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-streams0-status-original-SDK",
+        "blob": "cce796551879c2a47b874c1cf9b62d912b99b228",
+        "bytes": 978,
+        "sha256": "ccc53aecb1eb2ca271e0951885c845e49fe6ab8594c02bf64bb93365bf5a0e8a"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-streams0-status-original-native",
+        "blob": "5c41c6356e8c208623bd539de76128dc4a2c21ff",
+        "bytes": 803,
+        "sha256": "5189257a3b587739c454179eeac4c84474ac8a3015f7ad0def7fff6b23cbb9e6"
+      }
+    },
+    {
+      "label": "streams0-page-000000",
+      "tool": "operation_result",
+      "request": {
+        "name": "comparison69-streams0-page-000000-request",
+        "blob": "e70d4812c79998afc9b20eee6efe9028485c2a0c",
+        "bytes": 121,
+        "sha256": "218ad9d2da0e3f22b01af13c673401001be2666c9e58c8f43ebb2aa96c0d7e1e"
+      },
+      "intent": {
+        "name": "comparison69-streams0-page-000000-intent",
+        "blob": "44c2aa41d2c7025e9fda872d7fc468e62ed807a3",
+        "bytes": 885,
+        "sha256": "891307a7897c32cae21672284a3bac22827c1042e8a5c773bd353cd3d6d63a96"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-streams0-page-000000-original-SDK",
+        "blob": "7082c37a93d3513a705a8e93d15e198baad37f2b",
+        "bytes": 3910,
+        "sha256": "e503c75422f2f8cee620b5f1bbacc01f45dd72075c709822a6c68bb7d8dc9a40"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-streams0-page-000000-original-native",
+        "blob": "ed4d77b1b9d776c93ea59af2207e11a453760815",
+        "bytes": 3739,
+        "sha256": "9c2cd22b0fe74749c862528623b3fa745ddb458651c2042344cff45ea910d6d9"
+      }
+    },
+    {
+      "label": "result-info-admission",
+      "tool": "operation_start",
+      "request": {
+        "name": "comparison69-result-info-admission-request",
+        "blob": "882ef7f0744c107cfb78136633c09a3b173dc7bd",
+        "bytes": 299,
+        "sha256": "241c5f0110ebfcd4f465b04e965d4c154ba9322911a6ec2167af37a6b7b6281d"
+      },
+      "intent": {
+        "name": "comparison69-result-info-admission-intent",
+        "blob": "f749285c456c281e38d272f92452b034e128bb28",
+        "bytes": 823,
+        "sha256": "38018b0abd7ed88a6b32ea7dde597d30fb81ebaa69d06f9eb9dded75c96c5ac1"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-result-info-admission-original-SDK",
+        "blob": "93f2481716bb6cf38e16821ca8575141bb215cf5",
+        "bytes": 704,
+        "sha256": "ffa3e56467ec65f1cc2d0525e04d6f35694c78805a081b38356d49cf14d77f62"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-result-info-admission-original-native",
+        "blob": "e73471af57e94766254b3a7eec9396bf19af81af",
+        "bytes": 543,
+        "sha256": "660e2df93568be1130baf3e46647d7d841fcd88af6057ff3a782281b19ec3af1"
+      }
+    },
+    {
+      "label": "result-info-status",
+      "tool": "operation_status",
+      "request": {
+        "name": "comparison69-result-info-status-request",
+        "blob": "9fd4ba2bdfe50fe2cf26afb34ba1fc0a820347ad",
+        "bytes": 89,
+        "sha256": "4b0a7a941743988a88e027833044f8c489e77e244f465d69b44ef5d7542ec537"
+      },
+      "intent": {
+        "name": "comparison69-result-info-status-intent",
+        "blob": "4a348488e2c152625a49f1762b2bd3d815af44e1",
+        "bytes": 882,
+        "sha256": "0fe87f842b8b60cd9f9b0b4c75e03c756c9adb7037e3bcdafdf446ee7c608161"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-result-info-status-original-SDK",
+        "blob": "0dd7fab9947a90bd1a6be1a8b554466f6fc24dd7",
+        "bytes": 975,
+        "sha256": "04e5f4f9e59e5b6d75cce881b0e115d6e4f8f71c1efa70102c43705a15070caf"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-result-info-status-original-native",
+        "blob": "b6e9ccdecf715e66a50dfba0eb827321a35946a8",
+        "bytes": 800,
+        "sha256": "6f09ce4caf49a732796b5a52012295b10ce80d20fadf1b6c4659e3fb585a3340"
+      }
+    },
+    {
+      "label": "result-info-page-000000",
+      "tool": "operation_result",
+      "request": {
+        "name": "comparison69-result-info-page-000000-request",
+        "blob": "18a902b1502ad7616f2268430e990917b8f9b683",
+        "bytes": 121,
+        "sha256": "26505e41613c50eb06f9e75ee53d3a23b91ebef0658bfed1883f47af02fa99cf"
+      },
+      "intent": {
+        "name": "comparison69-result-info-page-000000-intent",
+        "blob": "eabfc018e245cffab37bb019855de3401e6ead72",
+        "bytes": 888,
+        "sha256": "352211e408bbf540fbbfa436e4825a14ed56ddfd2813a0b8118ce196f3e4e9a2"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-result-info-page-000000-original-SDK",
+        "blob": "f95b3a8a2c20757b4a953b5e1db966dd8037afc7",
+        "bytes": 1660,
+        "sha256": "7d67c50c2e2eeffebb7359728714cd702d1f354b4720879dd754c528da18db5a"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-result-info-page-000000-original-native",
+        "blob": "3d465f94264cc266f7f5c80958cf35a520f2ea61",
+        "bytes": 1489,
+        "sha256": "839e0f371f0bb88174d92e21c6f0b76f4e876bb10c3239dc37b9eff04e7e17f8"
+      }
+    },
+    {
+      "label": "result-body0-admission",
+      "tool": "operation_start",
+      "request": {
+        "name": "comparison69-result-body0-admission-request",
+        "blob": "cb86a2657d33f3d79f4e84f576ff18e78599dbe9",
+        "bytes": 429,
+        "sha256": "536f90901d4576ffd7a6c9f4b22cd148983e49989b6bdc2baa746502bbf55470"
+      },
+      "intent": {
+        "name": "comparison69-result-body0-admission-intent",
+        "blob": "a05fa1b87bd2e1dadd4711cdb889eb89606f431b",
+        "bytes": 824,
+        "sha256": "f1735eb2ed53a0be14ba7e9c0e2468aec482f62bf801d43ed495ab61d0523340"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-result-body0-admission-original-SDK",
+        "blob": "d746207c55eb6af97f982509475579abfc93aaff",
+        "bytes": 706,
+        "sha256": "9e2437cca2b2117a23aed90eb8d60974298b6c4f4e160167cf9920c0ca82a298"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-result-body0-admission-original-native",
+        "blob": "bb3427e77c194c59e3d4e735ca5e02c5fb649e95",
+        "bytes": 545,
+        "sha256": "77aebdf84ffcded836f7d8740771d4920bf87cadb11e5498d908bf5183992f27"
+      }
+    },
+    {
+      "label": "result-body0-status",
+      "tool": "operation_status",
+      "request": {
+        "name": "comparison69-result-body0-status-request",
+        "blob": "d98073493c5ed608e80f170745c9270e2f6efd5a",
+        "bytes": 89,
+        "sha256": "f6ae1357a793744caaa60e1aed763c74084b8f8384fef142650d721a9a955b4c"
+      },
+      "intent": {
+        "name": "comparison69-result-body0-status-intent",
+        "blob": "82625ee9cffcddbbf0c81511de97e5f8d7799129",
+        "bytes": 883,
+        "sha256": "2ad5a8e6858b398f362f29da5e291e2ca8d6defd247c1da732b194aec9752b7a"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-result-body0-status-original-SDK",
+        "blob": "a257fb7337237f9c8611c48e935b835635881954",
+        "bytes": 977,
+        "sha256": "410270dabb9379f5ef4aa9b2a81ac8b4fc86b0432067bddbb079a229d256b212"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-result-body0-status-original-native",
+        "blob": "a9f0fbc36892dbd58d209da368b8727f73872491",
+        "bytes": 802,
+        "sha256": "074b2098834655247c13e92072d38b08351bd737acf489e99020d99eda877c36"
+      }
+    },
+    {
+      "label": "result-body0-page-000000",
+      "tool": "operation_result",
+      "request": {
+        "name": "comparison69-result-body0-page-000000-request",
+        "blob": "4dc3ff6d5c857e0db02dfc61be5cb7943792e6a1",
+        "bytes": 121,
+        "sha256": "3f3710998294fa9fed0937f786799b79d9ad043ef44e789a8480cbc75632cc3b"
+      },
+      "intent": {
+        "name": "comparison69-result-body0-page-000000-intent",
+        "blob": "ab9bc5ebd8a06ce9ca17cc53fc139246af6605b3",
+        "bytes": 889,
+        "sha256": "bddd8cc372367c552ec529fdd31098b1698a6741b26b0fb45d8e75ffd445cb1e"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-result-body0-page-000000-original-SDK",
+        "blob": "21514e3eae3ef8512bd49cd7ebd3b5904055e5b7",
+        "bytes": 5198,
+        "sha256": "3a290fc3c332be3b9c6680b4427596db8b6d5354ee7bd13cda5bb07e69248c7a"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-result-body0-page-000000-original-native",
+        "blob": "0199206b1fa1844dc2f56c866a0cafd6af48d467",
+        "bytes": 5027,
+        "sha256": "36d3feb32f1864723e44cae60b1aa15f6bbfeb5e28cc9ee3f6da9eafd10e79e9"
+      }
+    },
+    {
+      "label": "summary-info-admission",
+      "tool": "operation_start",
+      "request": {
+        "name": "comparison69-summary-info-admission-request",
+        "blob": "f91875965a5900c40c387d8daf870627a803c5d1",
+        "bytes": 301,
+        "sha256": "ed18cb044503ba78aed23e84e2b7288b8fd5792135df3d13b766cdd8b7a3c69b"
+      },
+      "intent": {
+        "name": "comparison69-summary-info-admission-intent",
+        "blob": "a8b8f6b8f0fa4ff512f1877a5aa415fc834ffb02",
+        "bytes": 824,
+        "sha256": "cabe97b7a5e36fdc7684a8cffb7c2c1d4d9262afe47b420e28e70b2e24e4406e"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-summary-info-admission-original-SDK",
+        "blob": "6b84852eb5eb7b8d38e4610160bacc9c278cae2c",
+        "bytes": 704,
+        "sha256": "8ec6ab975ec489831a6a6f9f55f959ac7b5bfa42642956fad26ffed686429516"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-summary-info-admission-original-native",
+        "blob": "731a254232208dc0b0e53121c18342c0a1a09ffa",
+        "bytes": 543,
+        "sha256": "00544cb5fbc41dd10163974c6cd08a43eb38ca0060917af294361150af15b430"
+      }
+    },
+    {
+      "label": "summary-info-status",
+      "tool": "operation_status",
+      "request": {
+        "name": "comparison69-summary-info-status-request",
+        "blob": "71620f753dbdc6b2460da06382a2ea47748a399b",
+        "bytes": 89,
+        "sha256": "eeb33d2763ebb3f9722518aa8846954b93be62dcdf915f9b3ef76aff7bb4cd9a"
+      },
+      "intent": {
+        "name": "comparison69-summary-info-status-intent",
+        "blob": "ed34b775604fc1329f993d195de16a65f910a7cc",
+        "bytes": 883,
+        "sha256": "c48fc940289311e0882720c3fc1a1c27ee2bbe89c8f960237be10162518a6e2c"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-summary-info-status-original-SDK",
+        "blob": "f53ac8836e26004536734eb8aacb1377a462c400",
+        "bytes": 975,
+        "sha256": "33b6e8f6cfc7fc2ce749817d03f84f753e18633677208b7326dd393a76d687cc"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-summary-info-status-original-native",
+        "blob": "ad57527613c23bad88dd30f20830d6ab9b2a15e5",
+        "bytes": 800,
+        "sha256": "9a6e56cb33fb4dad1c5cce8f25c98cc45acfc4cd1f92f6cdd89a3d1c6b31a0aa"
+      }
+    },
+    {
+      "label": "summary-info-page-000000",
+      "tool": "operation_result",
+      "request": {
+        "name": "comparison69-summary-info-page-000000-request",
+        "blob": "d20823714ae7d53389ee24f34138cffc51825b75",
+        "bytes": 121,
+        "sha256": "41ba05aee3bddd1f2045c3e6f5638c85bbb4f8ca0a5bd411676910767ac00bd0"
+      },
+      "intent": {
+        "name": "comparison69-summary-info-page-000000-intent",
+        "blob": "9c31d8c1a31e7d7d2eed1e294e0f294b26ddc002",
+        "bytes": 889,
+        "sha256": "046eedd1e4ebb671191cf4b92f8f5077b8cc7d54a93dd2d8d34341e0919d266f"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-summary-info-page-000000-original-SDK",
+        "blob": "7b3e764ab8ec3f8d7367e66fabe6de2d86070970",
+        "bytes": 1668,
+        "sha256": "897708a205b89474d5fc271e87449e8d1f9ea6daaaee81572f2c54200894a720"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-summary-info-page-000000-original-native",
+        "blob": "5eef463efa53eb208c07a638855c4bd5aded8e09",
+        "bytes": 1497,
+        "sha256": "bef87ca2c074381043600e0c3b60a29ebcd827fb83ea8d5f769337b8deedba66"
+      }
+    },
+    {
+      "label": "summary-body0-admission",
+      "tool": "operation_start",
+      "request": {
+        "name": "comparison69-summary-body0-admission-request",
+        "blob": "08cd565186593024e5e0c46e2085fb2ef671c5d1",
+        "bytes": 434,
+        "sha256": "bc7a5b66bc87ed525a61078a242f83faf411931d098d0f2e5fa901b82f131640"
+      },
+      "intent": {
+        "name": "comparison69-summary-body0-admission-intent",
+        "blob": "6ec86c3fd55e54232fc93c1a039efe6c55d244d1",
+        "bytes": 825,
+        "sha256": "fe0b9910cb3eda1d5a00b650ae3194eb0538aa0821ee0bc693ea9436da31b603"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-summary-body0-admission-original-SDK",
+        "blob": "8370862ff0f37d0e7941cae0211f23da44ac2bd9",
+        "bytes": 706,
+        "sha256": "cd32302563c7877969a31609ab2b81b5dce7cd89d0912eb1e5f8fd403bf9cb99"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-summary-body0-admission-original-native",
+        "blob": "16d9e04feb78b1bd5fd1b14dc927f89340bb39ff",
+        "bytes": 545,
+        "sha256": "a5af7310d1fcc2f53ab7e0471a5e29335b99c2bef2bec2c90abcb286d4b0e540"
+      }
+    },
+    {
+      "label": "summary-body0-status",
+      "tool": "operation_status",
+      "request": {
+        "name": "comparison69-summary-body0-status-request",
+        "blob": "97cdcd3b183964bc8aac57994c8929864cd1f13f",
+        "bytes": 89,
+        "sha256": "e401ef525b2271d5105c9929d497a4f5a0ad552e763b53921f958c432cd0f88e"
+      },
+      "intent": {
+        "name": "comparison69-summary-body0-status-intent",
+        "blob": "358de609d2d8b82fc796d4a6fb0a55083a3a5894",
+        "bytes": 884,
+        "sha256": "ca9afbcfaed3c07e076e1062f82ae618ef7178cb21c5bd22fb535a27d444b618"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-summary-body0-status-original-SDK",
+        "blob": "3e301e2ac1c9ee3c48fd2739b91cef5ce5d785b2",
+        "bytes": 977,
+        "sha256": "d5c4e2be8649508631b2642dd7ece4c36935fbe9c96b253621ec8f1dd1ab26c1"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-summary-body0-status-original-native",
+        "blob": "08ba3e565c076e4382ec6676683e7a6339e1d0d4",
+        "bytes": 802,
+        "sha256": "c08bb54e025b2e996d8053c6d3fd69ae978f02909dbfd507a2c1b4b36fd515ab"
+      }
+    },
+    {
+      "label": "summary-body0-page-000000",
+      "tool": "operation_result",
+      "request": {
+        "name": "comparison69-summary-body0-page-000000-request",
+        "blob": "fba9e5d527ddb097560512b41fc20fda9c4d7b70",
+        "bytes": 121,
+        "sha256": "61db452710965c1faa61d223cea95279441ba9684c958d2c122f34191c9e2d47"
+      },
+      "intent": {
+        "name": "comparison69-summary-body0-page-000000-intent",
+        "blob": "ebbe007aa77f29c9e06a8b0331169a915beb8b70",
+        "bytes": 890,
+        "sha256": "f849b8d7cf94764c35ccef1b6ddfe9824057764e8c939ce180dae3fe068e74a6"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-summary-body0-page-000000-original-SDK",
+        "blob": "e478c0f0cb45d35c318f3b84fa730dc6ddddb38e",
+        "bytes": 11780,
+        "sha256": "f5d5677a68961abb3de9487b9b171e56134f3b7761fb601dc23cb3d58db65229"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-summary-body0-page-000000-original-native",
+        "blob": "068b251ebb16933a03a8d2ebbfc2482c714e2492",
+        "bytes": 11609,
+        "sha256": "bdfc114a8bcbba5dd053d83b18bd3c1d7717005592996692baa36e3d360bacee"
+      }
+    },
+    {
+      "label": "summary-body0-page-008192",
+      "tool": "operation_result",
+      "request": {
+        "name": "comparison69-summary-body0-page-008192-request",
+        "blob": "c488b286163c2379703ebe41ed7bfa658949f65e",
+        "bytes": 124,
+        "sha256": "fbcf4ed314a3560827b7469b96dbb2f5fb4fb2005471f3ff46be8bdd360c1b75"
+      },
+      "intent": {
+        "name": "comparison69-summary-body0-page-008192-intent",
+        "blob": "8bab92b39e20a8e47c757070c064243261d6f0ad",
+        "bytes": 890,
+        "sha256": "8832cf150ce817c307b01c72b078af2ea2c2fe5574416ee7f4f1cdd6150395e2"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-summary-body0-page-008192-original-SDK",
+        "blob": "196aa9b3d895ca58bcd27cd161cbb45deaa6fe3b",
+        "bytes": 11784,
+        "sha256": "97009dfef3b9ba5fecd14482fec779faac56ee1bb473a5ffa4a356f586460546"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-summary-body0-page-008192-original-native",
+        "blob": "47523c065f20b711f350e7177c3c00ffd5c67a1a",
+        "bytes": 11613,
+        "sha256": "65d164b005eb8423a369a2c67a339ad71e71bca13c193763384618050f7634ee"
+      }
+    },
+    {
+      "label": "summary-body0-page-016384",
+      "tool": "operation_result",
+      "request": {
+        "name": "comparison69-summary-body0-page-016384-request",
+        "blob": "47a5872eeb366b8fa32382d241a1978c3764e630",
+        "bytes": 125,
+        "sha256": "f53656e57a6faa823cf44ccf04fbba26b54eaa2e6067ab9d0cf77b0b61477719"
+      },
+      "intent": {
+        "name": "comparison69-summary-body0-page-016384-intent",
+        "blob": "c183c746dcfc3e89d5d4e329ebd3396e763b864a",
+        "bytes": 890,
+        "sha256": "68935d1fd1cd3ac3fd5b59982dbe4d64a82bcc1e9f84f886f587c016d642d53d"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-summary-body0-page-016384-original-SDK",
+        "blob": "348c2756a3903120091a16e2a530cf3f938e466b",
+        "bytes": 11785,
+        "sha256": "e3dad62fddeb7ffe68735d5ce61ed3bfdd0ca974b73089ade8d32d59e5abef4f"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-summary-body0-page-016384-original-native",
+        "blob": "556acd878f7a81f0f1a158c74ba76fce6df2b2f9",
+        "bytes": 11614,
+        "sha256": "5e7dbb3faf452959de40c07dd8bd9787e18379cc64884e823a2056fea4fb0b9c"
+      }
+    },
+    {
+      "label": "summary-body0-page-024576",
+      "tool": "operation_result",
+      "request": {
+        "name": "comparison69-summary-body0-page-024576-request",
+        "blob": "5a25f180fe02621db9aa4522debd6ccda9615ed7",
+        "bytes": 125,
+        "sha256": "45d4385d980f857ee972123cbb8e58411b18416a6f2f6062141cb5f2a5af10c2"
+      },
+      "intent": {
+        "name": "comparison69-summary-body0-page-024576-intent",
+        "blob": "d158ab9ed2ac311b82985c1678cc26d6f8ca47c1",
+        "bytes": 890,
+        "sha256": "4d7de64764f89bbcdd395498cb3ff386257b1a579b1875c4996fcdc2bb0db8db"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-summary-body0-page-024576-original-SDK",
+        "blob": "24b4c4e97fd5a0745274e73f23591cff497c95c8",
+        "bytes": 11785,
+        "sha256": "b9d5ed0723b70ee24245fa6f0fa06b1de5d21d2ec733a69cbb3f677e79052da7"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-summary-body0-page-024576-original-native",
+        "blob": "822a93989474d380b30fdb95c71d178ffb5d9ec8",
+        "bytes": 11614,
+        "sha256": "b69506a45a905926d9823fdb709ac57e336fce416b984cd61a0cee138575e31c"
+      }
+    },
+    {
+      "label": "summary-body0-page-032768",
+      "tool": "operation_result",
+      "request": {
+        "name": "comparison69-summary-body0-page-032768-request",
+        "blob": "aac70cd03f7c25f0a9a10fc4b7af2e3a31f40d55",
+        "bytes": 125,
+        "sha256": "4f6d0631243968422ef446a049ecd0ff133f6ea32813609934193f8fcfc962fa"
+      },
+      "intent": {
+        "name": "comparison69-summary-body0-page-032768-intent",
+        "blob": "bc0d6cd884a4691513e53425e50984c8f397fe25",
+        "bytes": 890,
+        "sha256": "506669f0f9850e0538ec4cb95b2c8a8da4aad5b5d478acd2e2f80b6bdc92c1e6"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-summary-body0-page-032768-original-SDK",
+        "blob": "a611f1682af505a6ed3d19a667d2d1e26dba8dd2",
+        "bytes": 11785,
+        "sha256": "1c4bdcec63a1ae2e36396528d473e9c1d1c58ce6eafcae2f2edff0d592cc8b4c"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-summary-body0-page-032768-original-native",
+        "blob": "5b4aa18402f06661fd5ab3395e66e2472252024c",
+        "bytes": 11614,
+        "sha256": "876bd4769c5d7c3e5d06d0e27cf8dfe02e07526dd032b5b9178eb5bb947ab49e"
+      }
+    },
+    {
+      "label": "summary-body0-page-040960",
+      "tool": "operation_result",
+      "request": {
+        "name": "comparison69-summary-body0-page-040960-request",
+        "blob": "7bfa0e28d96e90e13d2b3e80d2ac2a0cd9f0adac",
+        "bytes": 125,
+        "sha256": "0d861f7bc0bfe7be4b2201fa3852d0c59f1a585afa90573a03e9a437711cff7e"
+      },
+      "intent": {
+        "name": "comparison69-summary-body0-page-040960-intent",
+        "blob": "e4de8b0792bf8a75fa5cd1b6a6ab55ec5dc5e6a9",
+        "bytes": 890,
+        "sha256": "f3fe60860ae03b111e0ed986ef5371c813ccce7bf22dfa70069f74cbbffd26ab"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-summary-body0-page-040960-original-SDK",
+        "blob": "9475c67bf497dc5e184650acaed5b2296d0486e8",
+        "bytes": 11785,
+        "sha256": "6a7982a76870a34402093ddb45c2d48cfebce3bc3bf48a154d255621c6382c57"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-summary-body0-page-040960-original-native",
+        "blob": "83deaba9da8c1cd34422e93a47d756aa5c123102",
+        "bytes": 11614,
+        "sha256": "529428f6091cb36a7bed18a440754822b451f768acb2b12bc8ea5715d2355020"
+      }
+    },
+    {
+      "label": "summary-body0-page-049152",
+      "tool": "operation_result",
+      "request": {
+        "name": "comparison69-summary-body0-page-049152-request",
+        "blob": "55f2afe8dbc4781ada154864f08caf9163743c27",
+        "bytes": 125,
+        "sha256": "bdccce637fbc659bd7928ee5db7eb6984eea7406d3accbaa830091ebd0e2044c"
+      },
+      "intent": {
+        "name": "comparison69-summary-body0-page-049152-intent",
+        "blob": "016f25c2b58c6e27a4354fa9a04e682ede604c48",
+        "bytes": 890,
+        "sha256": "c6800e2cb516e125c2e6e6a4f86a152854196c908636122b006ef4e1d35c4034"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-summary-body0-page-049152-original-SDK",
+        "blob": "3bf36d02e600eb8e6ae12408592f88bbe489514f",
+        "bytes": 11785,
+        "sha256": "b68f10b178d69e4c22c7f7c9a3789feb1b3a8c748ba9cf0108bf60538468c132"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-summary-body0-page-049152-original-native",
+        "blob": "c71596e63494b69fbb6c9e12cc9694ce50ee2db7",
+        "bytes": 11614,
+        "sha256": "647b9e1a261d3a16c299d4abb3610cbe9172d99ee1465c88416b871264d515e3"
+      }
+    },
+    {
+      "label": "summary-body0-page-057344",
+      "tool": "operation_result",
+      "request": {
+        "name": "comparison69-summary-body0-page-057344-request",
+        "blob": "e9c2284f1cc7ebe87857600c3ed68e23389cb836",
+        "bytes": 125,
+        "sha256": "83f751e939ee1b4ef82e44f96dfcd5c5cbe4deef039924566eb718cbd61679da"
+      },
+      "intent": {
+        "name": "comparison69-summary-body0-page-057344-intent",
+        "blob": "1bad6b8f7b04bfd6295f59a93d126ba3a34832d3",
+        "bytes": 890,
+        "sha256": "68b7cbc602c94b288e283871c9f1e5dd5dcddeac01d7f7e409b19e69992a8826"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-summary-body0-page-057344-original-SDK",
+        "blob": "e692a6378c5c3324cc23d353aab74fde0bb5d4f1",
+        "bytes": 11785,
+        "sha256": "35ecfb5bb30d9eedc40fd89159819ecdee6d59a3ed79462e946a830bb4089429"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-summary-body0-page-057344-original-native",
+        "blob": "e4dafc943f260797d094dd6cda39a995130bed25",
+        "bytes": 11614,
+        "sha256": "3f9f91f5912a73443062d55eec36a2e17a6c61bbcc61877ac6612a361dded7d0"
+      }
+    },
+    {
+      "label": "summary-body0-page-065536",
+      "tool": "operation_result",
+      "request": {
+        "name": "comparison69-summary-body0-page-065536-request",
+        "blob": "e42541a29c9c7ad4f4840b52250add2ff2020516",
+        "bytes": 125,
+        "sha256": "a271988cfa655a3cb552aafb217961047cf45744050ac05eedb11c0dd7487360"
+      },
+      "intent": {
+        "name": "comparison69-summary-body0-page-065536-intent",
+        "blob": "875516c3bccc9dc2b3a654eab6041169d86bd668",
+        "bytes": 890,
+        "sha256": "374629ea1638788d723118439cd4e94497c012f82dd1837fa450a29413722a62"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-summary-body0-page-065536-original-SDK",
+        "blob": "6f09ee7338b4986203ad5ac9d3df951d339808f1",
+        "bytes": 11785,
+        "sha256": "7680b6d857467b150ebe4dbc8b4f2cfaee30260646cc4e0ad48b2e1500b0ddf1"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-summary-body0-page-065536-original-native",
+        "blob": "9b4c3faf349fc7af0e976edae109f1d605576c51",
+        "bytes": 11614,
+        "sha256": "c202c81785a797d3a2bb900716a9f779d371eab426ef3672614a2f5894200b64"
+      }
+    },
+    {
+      "label": "summary-body0-page-073728",
+      "tool": "operation_result",
+      "request": {
+        "name": "comparison69-summary-body0-page-073728-request",
+        "blob": "debeb4e2d7b658dec8c2e1d62cb71d33320eeebf",
+        "bytes": 125,
+        "sha256": "776e562821b8648be9d7b157dcc7834eb24adb6a32a4d7edf6bf7562e47e64f4"
+      },
+      "intent": {
+        "name": "comparison69-summary-body0-page-073728-intent",
+        "blob": "b25c2b5864ed529b7959124d116ffaee968dd5d1",
+        "bytes": 890,
+        "sha256": "8c83414e9052776a90686766a25636e7e0e4766bfc5b77ce3b4fc846fd709257"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-summary-body0-page-073728-original-SDK",
+        "blob": "3fd364309e0eee946caae4eeb26b6546f7247dab",
+        "bytes": 11785,
+        "sha256": "aa3d0fd760c64a254458621b6be6ae4cdaf106800e361215f7cc5ee833c990bc"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-summary-body0-page-073728-original-native",
+        "blob": "4ff5f94801a77a279e9c85caa866bf91c1dfaa2a",
+        "bytes": 11614,
+        "sha256": "6516eb9d330bf78fdba9c15c23aa3c0ca27e863c399cfc1f68fc9d2975215a96"
+      }
+    },
+    {
+      "label": "summary-body0-page-081920",
+      "tool": "operation_result",
+      "request": {
+        "name": "comparison69-summary-body0-page-081920-request",
+        "blob": "9774680576807f15bfcd827ad965f6ad3c92e4f9",
+        "bytes": 125,
+        "sha256": "ff8a1a57dd2f13727ca1ba661450c89c5c62b010cebdf5ea48d9b9b64b0e3598"
+      },
+      "intent": {
+        "name": "comparison69-summary-body0-page-081920-intent",
+        "blob": "b74ad46c0528b22557895b376b07cda6eef50df5",
+        "bytes": 890,
+        "sha256": "74607983196566bc1837e98110561bbe5df020c0bf13e1af73737a42967b2dcc"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-summary-body0-page-081920-original-SDK",
+        "blob": "dbaca266c954f0fb2d564c406ada45aa94bed8f5",
+        "bytes": 8744,
+        "sha256": "b99de10c619db8471956431d05f7d6e8c5974aa052ed6b2a3d91c02d7bd55fb8"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-summary-body0-page-081920-original-native",
+        "blob": "3eeda9c99761f619240bff9689773adf74015174",
+        "bytes": 8573,
+        "sha256": "5d642ebe7e48bef3a53cdb53beb6d62d86f951937eb36b45422c6f44d5c84608"
+      }
+    },
+    {
+      "label": "summary-body1-admission",
+      "tool": "operation_start",
+      "request": {
+        "name": "comparison69-summary-body1-admission-request",
+        "blob": "479f2ff16826dcd8a7f35935c16241143330d021",
+        "bytes": 438,
+        "sha256": "97147c2194091d3a60976eb94f82facc312be73761db79657a45af41848acdb7"
+      },
+      "intent": {
+        "name": "comparison69-summary-body1-admission-intent",
+        "blob": "32e3b4c9af1b5cf5c624aa69feee538b553ebff7",
+        "bytes": 825,
+        "sha256": "bc71c7c94ad0faf8ef82725b36873b067488a443476ba823d064da8bb0eb044c"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-summary-body1-admission-original-SDK",
+        "blob": "607e95b06f718afd5fc6a788310ad094709733aa",
+        "bytes": 706,
+        "sha256": "4943a58bfbd6e0de192c9231c1fba4c8730b4325b669927af7e95dc3b7f590f7"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-summary-body1-admission-original-native",
+        "blob": "857ec08406f628867ddbcc50dccbd1a9395ca3b0",
+        "bytes": 545,
+        "sha256": "d498054d4ee0f0defe277a875808e88af7e7f35748d86212b07a4b7018704bb2"
+      }
+    },
+    {
+      "label": "summary-body1-status",
+      "tool": "operation_status",
+      "request": {
+        "name": "comparison69-summary-body1-status-request",
+        "blob": "9fb958c24afffd358da6d8298747316a85082b47",
+        "bytes": 89,
+        "sha256": "36758cb00307b723b70b31a8e140fc2e070da94aa0a201043f4718c083758146"
+      },
+      "intent": {
+        "name": "comparison69-summary-body1-status-intent",
+        "blob": "149872f48dcce70c4261ff5e021fbeefeb88393e",
+        "bytes": 884,
+        "sha256": "028cad6f9d39e573e03783f20cfbfd2bd2e99d85c4fb0ae51627497f0e7cb256"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-summary-body1-status-original-SDK",
+        "blob": "46f6466a0ae3af6a8956b5b9cc0c679e1ffc87ad",
+        "bytes": 977,
+        "sha256": "8e79d9692d5a0374de7bb3eb72d90ff4cc537e0602f59c38b3e5b6fa8365164e"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-summary-body1-status-original-native",
+        "blob": "22e241a688e3c7a6a79e497ee48cbc8ac806b2ea",
+        "bytes": 802,
+        "sha256": "671f97978b8a071a3a0286cc996a64e2f1565aafd08c9139350be79112d0f893"
+      }
+    },
+    {
+      "label": "summary-body1-page-000000",
+      "tool": "operation_result",
+      "request": {
+        "name": "comparison69-summary-body1-page-000000-request",
+        "blob": "702796c288d47d0868b35c5e51a257d20f9ba75e",
+        "bytes": 121,
+        "sha256": "ca139b8b9d1b6bba6d911ed3a353cc06714fda97f4cab6a0fe3eedf5ee7ec0ee"
+      },
+      "intent": {
+        "name": "comparison69-summary-body1-page-000000-intent",
+        "blob": "3af2f2ba503134e23203cf693ab449b5eff585b9",
+        "bytes": 890,
+        "sha256": "cb1d9591cf00441d47fa82746c972930ac26a2dd0de0925bd34cb494345d993e"
+      },
+      "submitted": true,
+      "SDK": {
+        "name": "comparison69-summary-body1-page-000000-original-SDK",
+        "blob": "b0920fd15b352ff9ab72d4f62f81f805d49982b2",
+        "bytes": 11780,
+        "sha256": "871cce605f2cefbaab533af6af2c9c69e3212903ec4bfba45626632f5fe7fdcc"
+      },
+      "isError": false,
+      "local_transport_exception": false,
+      "native": {
+        "name": "comparison69-summary-body1-page-000000-original-native",
+        "blob": "108437f055afada96b5550ce2ae8be8ef135592f",
+        "bytes": 11609,
+        "sha256": "5c95ee085afa90b2a0d96777337301e892f17322b6eeaa2f353186ae52081f60"
+      }
+    }
+  ],
+  "lane": "B",
+  "full_GO": {
+    "schema": "heptabao.current4e808-X230-original69.root-GO.v1",
+    "decision": "GO_ONE_EXACT_ORIGINAL_COMPARISON69",
+    "owner": "/root/compatibility_audit",
+    "lane": "B",
+    "lane_release": "35c92d88b2fec06a75fe4fa7d0baf5a373e74eea",
+    "full34_runtime_contract_qualification": "9fd3ec40974a0d7fc2eed14983fd8b621b6bc214",
+    "current_actual_publication_review": "31a05798ea870d71c4d08092ad53e895e275c11f",
+    "independent_source_peer": "21705d1a7d47cbd68c86a1bdea1d99f55d70b35b",
+    "request": {
+      "blob": "6c51aa75507c4ba473d19406ecf51d9ca8c2860d",
+      "bytes": 367,
+      "sha256": "4e6c3e22504fedffbfdead8f50a9856678f1de42d8b1ec2a728befbc507f97ea"
+    },
+    "native_typed_request_sha256": "56ddc986607a02e224a254f604912c4d12b3c4b7de290b2d724b3add50687e35",
+    "native_fingerprint": "6259380636096266978",
+    "host": "x230",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian/heptabao-same-root-publication-normal-20261105-r1/comparison69_controller.py"
+    ],
+    "cwd": "/home/qian/heptabao-same-root-publication-normal-20261105-r1",
+    "idempotency_key": "heptabao-4e808-x230-comparison69-r1-836dfd5e",
+    "outer_native_supervisor_seconds": 1800,
+    "wrapper_internal_subprocess_timeout": "No timeout keyword in the unchanged original wrapper; no added internal deadline claimed.",
+    "wrapper": {
+      "blob": "bd0d7378ccf7502c55712d88253ce39c3508a08c",
+      "bytes": 11716,
+      "sha256": "836dfd5eae25f45a680f08c9a93b9aacccc52c02da9ca6ceea15b89cd121e143"
+    },
+    "original_driver": {
+      "blob": "c822522ee80e4a713eee4cb42e91cfeb143e6468",
+      "bytes": 9261,
+      "sha256": "fd88ed0b8f1c1010e79f9393dfbf6464cabcac48ece8c6e448a64b7ccc45272e"
+    },
+    "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "binary_sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+    "fixed_new_fixture_root": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1",
+    "network_scope": "X230 loopback only, original owned isolated candidate and official 2.7.1 TLS services",
+    "original_13_modules": [
+      "approle",
+      "core",
+      "edge_tls",
+      "identity",
+      "kv",
+      "operations",
+      "pki",
+      "system",
+      "token",
+      "totp",
+      "transit",
+      "userpass",
+      "wrapping"
+    ],
+    "expected_case_count_each_side": 69,
+    "source_test_and_feature_flags_unchanged": true,
+    "external_exact_intent_before_each_call": true,
+    "whole_original_SDK_saved_before_isError_and_lossless_parse": true,
+    "one_current_call_and_one_native_future_per_lane": true,
+    "business_starts_max": 1,
+    "automatic_retry": false,
+    "unknown_or_missing_ACK": "Stop new business admissions. Preserve original SDK/error; no process replay or new key. Reconcile exact original request/job only.",
+    "same_original_job_observers": {
+      "process_status": true,
+      "process_read": true,
+      "process_read_per_stream_max": 16384,
+      "operation_result_page_limit": 8192,
+      "status_and_pages_same_admitted_id_only": true
+    },
+    "fixed_public_result_retrieval": {
+      "files": [
+        {
+          "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1/result.public.json",
+          "max_body_bytes": 65536
+        },
+        {
+          "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1/summary.public.json",
+          "max_body_bytes": 524288
+        }
+      ],
+      "order": "Read each exact file_info once and fully close its original metadata chain. Save exact conditional binary_read request and intent before admission. Use actual version/size/wholeSHA, contiguous chunks at most65536, at most9 chunks combined; original immutable pages8192.",
+      "total_body_max": 589824,
+      "metadata_hash_work_not_bounded_by_body_limit": true,
+      "full_SHA_and_version_and_chunk_SHA_and_final_EOF_required": true,
+      "no_private_fixture_or_credentials_read": true,
+      "stop_if_missing_or_oversized_or_drift": true
+    },
+    "success_requires": [
+      "Original69 candidate and69 official oracle each passed with0 skipped/failed, exact13modules",
+      "Whole original result and summary chains, same source/binary before/after",
+      "Both owned services stopped and cleanup_errors empty",
+      "Actual result flags remain full_openbao_compatibility=false and production_qualified=false"
+    ],
+    "historical39_original_full34_gap_unchanged": true,
+    "CLI_target_reads_or_prepare_live_authorized": false,
+    "H2_or_Auth_execution_authorized": false,
+    "production_cutover": false,
+    "cleanup_old_assets": false,
+    "full_openbao_compatibility": false
+  },
+  "start_SDK": {
+    "name": "comparison69-current4e808-start-original-SDK",
+    "blob": "415f5f7c5d45264497e602b2250c4b87b024291e",
+    "bytes": 1372,
+    "sha256": "e9df4b67d241f7603b0582345307be1756d97585d6ce690ef1bb689c02ea3785"
+  },
+  "start_native": {
+    "name": "comparison69-current4e808-start-original-native",
+    "blob": "a9aa615df153a50b631814761d24c3c00238d348",
+    "bytes": 1129,
+    "sha256": "b908f7e31d53491ceab5b3da43fd2d0532e46547a5698d30a33db7ccf0c8f093"
+  },
+  "ACK_binding_verified": true,
+  "pending_call": {
+    "label": "summary-body1-page-008192",
+    "tool": "operation_result",
+    "request": {
+      "name": "comparison69-summary-body1-page-008192-request",
+      "blob": "8f67c2aecf4b446065053496f808869f9ae8531c",
+      "bytes": 124,
+      "sha256": "7332a4e9569e454aa92e0440cf12cc4a686d1849f91d4b708ecdb4a284402db7"
+    },
+    "request_text": "{\n  \"operation_id\": \"e53ae94cd479f5ebcad1e28accf066a56262974d52b891d9c3ed1ee808357392\",\n  \"offset\": 8192,\n  \"limit\": 8192\n}\n",
+    "intent": {
+      "name": "comparison69-summary-body1-page-008192-intent",
+      "blob": "be6ec3d013cf8abd2851ebe26141171f16d5dca6",
+      "bytes": 890,
+      "sha256": "38b956dbedb3fabb8d3b7b81676d399d5a72a64bc37a7fda8b09a5754ab31f87"
+    },
+    "submitted": true
+  },
+  "last_call": {
+    "label": "summary-body1-page-000000",
+    "tool": "operation_result",
+    "request": {
+      "name": "comparison69-summary-body1-page-000000-request",
+      "blob": "702796c288d47d0868b35c5e51a257d20f9ba75e",
+      "bytes": 121,
+      "sha256": "ca139b8b9d1b6bba6d911ed3a353cc06714fda97f4cab6a0fe3eedf5ee7ec0ee"
+    },
+    "request_text": "{\n  \"operation_id\": \"e53ae94cd479f5ebcad1e28accf066a56262974d52b891d9c3ed1ee808357392\",\n  \"offset\": 0,\n  \"limit\": 8192\n}\n",
+    "intent": {
+      "name": "comparison69-summary-body1-page-000000-intent",
+      "blob": "3af2f2ba503134e23203cf693ab449b5eff585b9",
+      "bytes": 890,
+      "sha256": "cb1d9591cf00441d47fa82746c972930ac26a2dd0de0925bd34cb494345d993e"
+    },
+    "submitted": true,
+    "SDK": {
+      "name": "comparison69-summary-body1-page-000000-original-SDK",
+      "blob": "b0920fd15b352ff9ab72d4f62f81f805d49982b2",
+      "bytes": 11780,
+      "sha256": "871cce605f2cefbaab533af6af2c9c69e3212903ec4bfba45626632f5fe7fdcc"
+    },
+    "isError": false,
+    "local_transport_exception": false,
+    "native": {
+      "name": "comparison69-summary-body1-page-000000-original-native",
+      "blob": "108437f055afada96b5550ce2ae8be8ef135592f",
+      "bytes": 11609,
+      "sha256": "5c95ee085afa90b2a0d96777337301e892f17322b6eeaa2f353186ae52081f60"
+    }
+  },
+  "local_archival_errors": [
+    {
+      "name": "comparison69-local-archive-error-recovery",
+      "blob": "5a220847e17f6ed9f25079738896746c6881e951",
+      "bytes": 1609,
+      "sha256": "ed1d6f6f75de39d84228e9c79f1441cc33215ca230ab642405d23e2ba26d95c8"
+    }
+  ],
+  "authority": {
+    "pin": {
+      "name": "comparison69-authority0-native-original",
+      "blob": "9dc7c90f85b22d1f64c6e4cb7c0052e80c282366",
+      "bytes": 729,
+      "sha256": "67915694edce07ac30389411c4a068068866fb8d3cb706d876eb0749a3d8ec78"
+    },
+    "payload": {
+      "name": "comparison69-authority0-payload-original",
+      "blob": "a619ba0e4474e6badd3eb7040bd7c2dcbd34314e",
+      "bytes": 908,
+      "sha256": "8fdb2a5d7f209f9e3b8e3f70126296ae08f14f573d8a53676be47749856a6243"
+    },
+    "native": {
+      "at_unix_ms": 1793916670114,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1adc377a3-fc05-5acb",
+      "launch_nonce": "b8989fedee13b9e10aa793b8b06d4a90",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 561,
+          "stored": 561
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "operation_id": "5c495335fc951a58a709ae67dcf6ce0ce5b336f4563e42a710b6af38e8d17a75"
+  },
+  "streams": {
+    "pin": {
+      "name": "comparison69-streams0-native-original",
+      "blob": "c6c2de87eb79ed2c54cb8c4c0abc9bf7d3f66c47",
+      "bytes": 2053,
+      "sha256": "753cc04b0089d359f303837613018f73149ecf0881c309bb7659a8f4cdb2f24e"
+    },
+    "payload": {
+      "name": "comparison69-streams0-payload-original",
+      "blob": "3aa9859f4518e4292f55535bde1729b418dcb96f",
+      "bytes": 2290,
+      "sha256": "43fb40ca84bec3b4952e32ff3d216de3aa7a0531d8fc45d37a87bc508fb727e3"
+    },
+    "stdout": {
+      "name": "comparison69-stdout-original",
+      "blob": "b346f0ad48be39db09df8fc53813b8665c5e07f1",
+      "bytes": 561,
+      "sha256": "7e363d917ca50188a36dba59d793b264463638735ca2df8de3765e4e0dd2937b"
+    },
+    "stderr": {
+      "name": "comparison69-stderr-original",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "metadata_admitted": [
+    "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1/result.public.json",
+    "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1/summary.public.json"
+  ],
+  "file_infos": {
+    "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1/result.public.json": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 384,
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1/result.public.json",
+      "sha256": "6221e46262b314d7a966605f35e17bd8c146085edb47397c424295fd0649fcaa",
+      "size": 2111,
+      "version": "2053:3074871:2111:1793916670100610710:1793916670100610710",
+      "pin": {
+        "name": "comparison69-result-info-native-original",
+        "blob": "bbac9a33a23fec12840b787cc5f27b43c9242955",
+        "bytes": 488,
+        "sha256": "fa402021b245e50eff36ded3f2e9f63cc4aa2510df472177844edde748df3035"
+      },
+      "payload": {
+        "name": "comparison69-result-info-payload-original",
+        "blob": "d072953855cb6aa19eb21bbb8a95db659c11d855",
+        "bytes": 605,
+        "sha256": "22a2d631f8046104f313ce3995c0935ec9a6222e37bc36c990365ecfd4c95e52"
+      },
+      "operation_id": "edfcb5b3537ebe15984b3a158a148770500dc1b963076c93b436895bfe42bb9b"
+    },
+    "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1/summary.public.json": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 384,
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1/summary.public.json",
+      "sha256": "51dbe8ec85e7e18434e48ecf627107267fb49284d18408c448f01a7d38929bc5",
+      "size": 104034,
+      "version": "2053:3074869:104034:1793916669702610630:1793916669702610630",
+      "pin": {
+        "name": "comparison69-summary-info-native-original",
+        "blob": "cf1ce0c996c28c70b37dc24c6cf6631aa54e272b",
+        "bytes": 493,
+        "sha256": "efc8d663738f053fc9e3faebe57aae4cade3b59e9e844132591ea7e0ded47621"
+      },
+      "payload": {
+        "name": "comparison69-summary-info-payload-original",
+        "blob": "02f8c68d32f94b69794f7401fb0629a258f95ed9",
+        "bytes": 610,
+        "sha256": "3751c7ce94cb763ba518c971f2524274f5cafbeb2874a6209407d66b0c9851e5"
+      },
+      "operation_id": "8a1c8b6e1814f1bc0c9ef0eeb2f72ccaa288553e37c6c02edbbab1d4680fccfb"
+    }
+  },
+  "file_bodies": {
+    "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1/result.public.json": {
+      "next_offset": 2111,
+      "chunks": [
+        {
+          "operation_id": "bc997fcecd478a8d7d1a72eb69c1a11aabff9c36448951f365aa17849f767fe6",
+          "native": {
+            "name": "comparison69-result-body0-native-original",
+            "blob": "3b628390f3a48437a995d77e50f6558bd31891df",
+            "bytes": 3153,
+            "sha256": "747650237855af1942fd40e8ce60ae19e04a53c23ac72c0354ddd51a315c9439"
+          },
+          "payload": {
+            "name": "comparison69-result-body0-payload-original",
+            "blob": "9f06cf19e4b7c77f07450cd162c416dcf850d545",
+            "bytes": 3256,
+            "sha256": "bf03544cef277b364d1327d46ae524f865dfbff90e73160cd8e16b49f63a26b4"
+          },
+          "offset": 0,
+          "next_offset": 2111,
+          "chunk_sha256": "6221e46262b314d7a966605f35e17bd8c146085edb47397c424295fd0649fcaa"
+        }
+      ],
+      "max_bytes": 65536,
+      "whole": {
+        "name": "comparison69-result-public-whole-original",
+        "blob": "81e449cb9e40f3d57b1a27007cac9e5158c0c3d1",
+        "bytes": 2111,
+        "sha256": "6221e46262b314d7a966605f35e17bd8c146085edb47397c424295fd0649fcaa"
+      },
+      "complete": true
+    },
+    "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1/summary.public.json": {
+      "next_offset": 65536,
+      "chunks": [
+        {
+          "operation_id": "984b902e0efc2fd2369f4b29a7c06ac65f1fb637745ef0a186abbc2c628982cb",
+          "native": {
+            "name": "comparison69-summary-body0-native-original",
+            "blob": "f92a58129757a7a2dcbb670dafe99129185c99f7",
+            "bytes": 87728,
+            "sha256": "d3f756113666ce01c71f07b8ef981ee350d353ef7529b8a98125891493f8a5e8"
+          },
+          "payload": {
+            "name": "comparison69-summary-body0-payload-original",
+            "blob": "a41dd6d35dd00802e12c3151dc8e05da69e21a38",
+            "bytes": 87831,
+            "sha256": "ed6ec651f7df703254a2c2d9d47fe1484ac9dc5639997d4157dcdc78a8b0839c"
+          },
+          "offset": 0,
+          "next_offset": 65536,
+          "chunk_sha256": "6da0582c5061f546d150fbfe005d5169130d33d3dd3ebdc76893a84edae8d485",
+          "bytes": 65536
+        }
+      ],
+      "max_bytes": 524288
+    }
+  },
+  "last_result_native": {
+    "name": "comparison69-summary-body1-page-000000-original-native",
+    "blob": "108437f055afada96b5550ce2ae8be8ef135592f",
+    "bytes": 11609,
+    "sha256": "5c95ee085afa90b2a0d96777337301e892f17322b6eeaa2f353186ae52081f60"
+  },
+  "original_SDKs_are_independent_immutable_files": true,
+  "binary_reads_admitted": 3,
+  "result_public": {
+    "name": "comparison69-result-public-whole-original",
+    "blob": "81e449cb9e40f3d57b1a27007cac9e5158c0c3d1",
+    "bytes": 2111,
+    "sha256": "6221e46262b314d7a966605f35e17bd8c146085edb47397c424295fd0649fcaa"
+  }
+}

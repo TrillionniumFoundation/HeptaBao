@@ -1,0 +1,7 @@
+{
+  "chunk_id": "3c4c4b",
+  "wall_time_seconds": 0.005145414,
+  "exit_code": 0,
+  "original_token_count": 52,
+  "output": "{\"AST_compile_only\": true, \"module_executed\": false, \"functions\": [\"derive_body_requests\"], \"planned_bytes\": 38845, \"limits\": [16384, 12231, 10230], \"version_slots\": [null, null, null], \"Runtime_calls\": 0}\n"
+}

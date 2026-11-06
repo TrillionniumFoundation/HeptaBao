@@ -1,0 +1,53 @@
+{
+  "schema": "heptabao.H2-stage.fixed-target-read-root-source-review.v1",
+  "ok": true,
+  "checks_passed": 10,
+  "checks": [
+    "whole_fixed_source7",
+    "fixed_source_config_deriver_pins",
+    "all_versions_unbound",
+    "exact_receipt_independent_derivation",
+    "binding_exact_source_writer_full9",
+    "two_exact_metadata_requests",
+    "three_fixed_body_templates",
+    "ranges_contiguous_and_finite",
+    "fixed_keys_and_paths",
+    "both_metadata_before_any_body"
+  ],
+  "source_tree": "c2b12435ed9806d5da84c4b678fb14193879f9f9",
+  "metadata_proposal": {
+    "blob": "d24b90689b94600efeba0c804ae5abb22cb45418",
+    "bytes": 5017,
+    "sha256": "dadada6e330015ee9b0fb16650fd816c5341dd1496c704be8afac65ae3663606"
+  },
+  "receipt_expectation": {
+    "blob": "94ca0ae828bb46cfc44c94676adb411e9aabed8e",
+    "bytes": 1350,
+    "sha256": "e74974ffe0b0d450a56b1e1ddd3fb148c0ed681927a679721c4524e59b1fecda"
+  },
+  "receipt_expectation_correction": {
+    "blob": "3d0b0ba4426ae3b65c2ef7794d39e84094e69942",
+    "bytes": 1281,
+    "sha256": "e0c4a239a6ac54d031f9c6c18ce2c1d49b31e56b5f7cdf4fb6c859da99bec797"
+  },
+  "conditional_proposal": {
+    "blob": "092744ef48d247d9467512fdcd8af498aeccde6d",
+    "bytes": 2792,
+    "sha256": "dce1ee11a027e7aa469899d4ae0e18e9e2ffbf0b426b324bc5fb7c7ed38d1b9a"
+  },
+  "config": {
+    "blob": "69db067f16796f8ad85f8f73b0355c2f14707120",
+    "bytes": 3410,
+    "sha256": "885033b5ede85de3a8940ef63a4c6d4616c8f5e4d8090a2eed1d598adf7fd5b9"
+  },
+  "pure_deriver": {
+    "blob": "8e1f37cfa36403a76bfa2e96a83b85d40eef3f15",
+    "bytes": 4762,
+    "sha256": "dbdb3952492e3c06b88bab1f7875b286725be863f1a29f10b5a3ebe8a139d1dc"
+  },
+  "manual_full_deriver_review": "Full4762B source read: only copy/re imports, exact fixed config identities as GO prerequisite, two original matching file_info IDs/statuses/whole payloads, fixed modes/uid/gid/single-link/platform/content, exact numeric version and source writer binding, fixed3 ranges, only expected_version substitution. No I/O or SDK/product execution.",
+  "author_deriver_executed_by_root": false,
+  "Runtime_calls": 0,
+  "GO_issued": false,
+  "target_info_or_body_observed": false
+}

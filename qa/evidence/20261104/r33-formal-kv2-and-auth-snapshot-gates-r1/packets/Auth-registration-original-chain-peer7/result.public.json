@@ -1,0 +1,3584 @@
+{
+  "schema": "heptabao.Auth169.independent-original-chain-peer.v1",
+  "passed": true,
+  "checks": 714,
+  "rows": [
+    {
+      "check": "cached tree SDK non-error",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "exact full recursive tree",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "fixed 169 leaves / 60 Merkle trees",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "only regular blob/tree entries",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: MANIFEST.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: RELEASE.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: SCOPE.md",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: SUMMARY.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: archive-errors/page01-offset0-git-recovery.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: archive-errors/page01-offset0-git-whole-read.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: archive-errors/page01-offset0-local-stop.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/01/admission/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/01/admission/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/01/binding.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/01/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/01/native.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/01/pages/000000/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/01/pages/000000/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/01/pages/000000/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/01/pages/008192/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/01/pages/008192/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/01/pages/008192/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/01/pages/016384/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/01/pages/016384/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/01/pages/016384/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/01/pages/024576/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/01/pages/024576/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/01/pages/024576/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/01/pages/032768/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/01/pages/032768/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/01/pages/032768/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/01/pages/040960/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/01/pages/040960/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/01/pages/040960/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/01/payload.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/01/status-0/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/01/status-0/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/01/status-0/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/admission/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/admission/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/binding.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/native.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/000000/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/000000/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/000000/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/008192/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/008192/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/008192/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/016384/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/016384/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/016384/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/024576/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/024576/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/024576/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/032768/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/032768/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/032768/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/040960/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/040960/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/040960/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/049152/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/049152/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/049152/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/057344/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/057344/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/057344/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/065536/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/065536/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/065536/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/073728/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/073728/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/073728/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/081920/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/081920/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/pages/081920/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/payload.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/status-0/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/status-0/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/02/status-0/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/admission/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/admission/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/binding.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/native.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/000000/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/000000/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/000000/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/008192/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/008192/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/008192/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/016384/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/016384/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/016384/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/024576/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/024576/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/024576/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/032768/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/032768/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/032768/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/040960/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/040960/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/040960/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/049152/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/049152/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/049152/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/057344/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/057344/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/057344/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/065536/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/065536/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/065536/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/073728/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/073728/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/073728/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/081920/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/081920/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/pages/081920/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/payload.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/status-0/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/status-0/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/03/status-0/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/admission/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/admission/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/binding.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/native.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/pages/000000/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/pages/000000/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/pages/000000/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/pages/008192/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/pages/008192/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/pages/008192/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/pages/016384/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/pages/016384/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/pages/016384/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/pages/024576/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/pages/024576/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/pages/024576/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/pages/032768/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/pages/032768/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/pages/032768/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/pages/040960/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/pages/040960/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/pages/040960/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/pages/049152/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/pages/049152/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/pages/049152/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/pages/057344/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/pages/057344/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/pages/057344/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/pages/065536/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/pages/065536/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/pages/065536/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/payload.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/status-0/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/status-0/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: observations/04/status-0/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: recovery/cache-reset-local-error.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: recovery/existing-Git-index-reconstruction.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: recovery/same-ID-prefix-pages.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: reference/metadata01.binding.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: reference/metadata01.native.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: reference/metadata02.binding.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: reference/metadata02.native.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: reference/root-cache-recovery-message.verbatim.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: reference/root-go.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: requests/01.exact.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: requests/02.exact.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: requests/03.exact.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: requests/04.exact.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: sources/manifest-registry.original.js",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole leaf: sources/plugin-registry.original.js",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole packet bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: archive-errors",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/01/admission",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/01/pages/000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/01/pages/008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/01/pages/016384",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/01/pages/024576",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/01/pages/032768",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/01/pages/040960",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/01/pages",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/01/status-0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/01",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/02/admission",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/02/pages/000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/02/pages/008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/02/pages/016384",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/02/pages/024576",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/02/pages/032768",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/02/pages/040960",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/02/pages/049152",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/02/pages/057344",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/02/pages/065536",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/02/pages/073728",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/02/pages/081920",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/02/pages",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/02/status-0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/02",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/03/admission",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/03/pages/000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/03/pages/008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/03/pages/016384",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/03/pages/024576",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/03/pages/032768",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/03/pages/040960",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/03/pages/049152",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/03/pages/057344",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/03/pages/065536",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/03/pages/073728",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/03/pages/081920",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/03/pages",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/03/status-0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/03",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/04/admission",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/04/pages/000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/04/pages/008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/04/pages/016384",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/04/pages/024576",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/04/pages/032768",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/04/pages/040960",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/04/pages/049152",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/04/pages/057344",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/04/pages/065536",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/04/pages",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/04/status-0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations/04",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: observations",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: recovery",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: reference",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: requests",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: sources",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "Merkle tree: /",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest exact membership excluding itself",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: archive-errors/page01-offset0-git-recovery.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: archive-errors/page01-offset0-git-whole-read.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: archive-errors/page01-offset0-local-stop.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/01/admission/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/01/admission/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/01/binding.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/01/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/01/native.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/01/pages/000000/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/01/pages/000000/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/01/pages/000000/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/01/pages/008192/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/01/pages/008192/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/01/pages/008192/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/01/pages/016384/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/01/pages/016384/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/01/pages/016384/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/01/pages/024576/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/01/pages/024576/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/01/pages/024576/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/01/pages/032768/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/01/pages/032768/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/01/pages/032768/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/01/pages/040960/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/01/pages/040960/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/01/pages/040960/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/01/payload.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/01/status-0/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/01/status-0/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/01/status-0/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/admission/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/admission/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/binding.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/native.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/000000/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/000000/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/000000/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/008192/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/008192/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/008192/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/016384/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/016384/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/016384/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/024576/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/024576/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/024576/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/032768/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/032768/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/032768/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/040960/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/040960/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/040960/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/049152/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/049152/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/049152/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/057344/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/057344/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/057344/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/065536/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/065536/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/065536/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/073728/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/073728/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/073728/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/081920/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/081920/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/pages/081920/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/payload.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/status-0/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/status-0/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/02/status-0/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/admission/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/admission/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/binding.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/native.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/000000/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/000000/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/000000/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/008192/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/008192/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/008192/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/016384/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/016384/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/016384/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/024576/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/024576/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/024576/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/032768/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/032768/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/032768/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/040960/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/040960/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/040960/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/049152/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/049152/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/049152/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/057344/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/057344/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/057344/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/065536/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/065536/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/065536/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/073728/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/073728/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/073728/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/081920/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/081920/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/pages/081920/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/payload.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/status-0/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/status-0/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/03/status-0/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/admission/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/admission/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/binding.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/native.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/pages/000000/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/pages/000000/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/pages/000000/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/pages/008192/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/pages/008192/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/pages/008192/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/pages/016384/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/pages/016384/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/pages/016384/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/pages/024576/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/pages/024576/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/pages/024576/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/pages/032768/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/pages/032768/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/pages/032768/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/pages/040960/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/pages/040960/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/pages/040960/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/pages/049152/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/pages/049152/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/pages/049152/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/pages/057344/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/pages/057344/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/pages/057344/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/pages/065536/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/pages/065536/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/pages/065536/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/payload.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/status-0/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/status-0/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: observations/04/status-0/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: recovery/cache-reset-local-error.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: recovery/existing-Git-index-reconstruction.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: recovery/same-ID-prefix-pages.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: reference/metadata01.binding.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: reference/metadata01.native.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: reference/metadata02.binding.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: reference/metadata02.native.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: reference/root-cache-recovery-message.verbatim.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: reference/root-go.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: RELEASE.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: requests/01.exact.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: requests/02.exact.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: requests/03.exact.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: requests/04.exact.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: SCOPE.md",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: sources/manifest-registry.original.js",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: sources/plugin-registry.original.js",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "manifest pin: SUMMARY.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "original root GO identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "separate old/new body accounting",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "original caps",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "metadata reference full9: 0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "metadata reference content/version: 0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "metadata reference full9: 1",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "metadata reference content/version: 1",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "01 request exact root value/pin",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "01 intent exact request/GO",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "01 intent retained scope",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "01 first admission metadata predecessor",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/01/admission/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/01/admission/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/01/status-0/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/01/status-0/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "01 original admission binary_read",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "01 same-ID original status request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "01 original observer closed",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/01/pages/000000/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/01/pages/000000/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/01/pages/000000/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/01/pages/000000/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/01/pages/000000/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/01/pages/008192/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/01/pages/008192/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/01/pages/008192/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/01/pages/008192/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/01/pages/008192/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/01/pages/016384/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/01/pages/016384/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/01/pages/016384/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/01/pages/016384/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/01/pages/016384/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/01/pages/024576/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/01/pages/024576/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/01/pages/024576/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/01/pages/024576/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/01/pages/024576/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/01/pages/032768/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/01/pages/032768/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/01/pages/032768/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/01/pages/032768/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/01/pages/032768/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/01/pages/040960/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/01/pages/040960/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/01/pages/040960/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/01/pages/040960/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/01/pages/040960/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "01 whole original payload",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "01 whole original SDK content",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "01 fixed host/tool/range",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "01 native original path/version/size",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "01 native chunk SHA/extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "01 closed binding is lossless projection",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "01 summary original indices",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "01 release exact original observer",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "02 request exact root value/pin",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "02 intent exact request/GO",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "02 intent retained scope",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "02 predecessor is original closed binding",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/02/admission/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/02/admission/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/02/status-0/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/02/status-0/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "02 original admission binary_read",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "02 same-ID original status request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "02 original observer closed",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/000000/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/02/pages/000000/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/02/pages/000000/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/000000/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/000000/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/008192/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/02/pages/008192/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/02/pages/008192/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/008192/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/008192/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/016384/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/02/pages/016384/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/02/pages/016384/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/016384/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/016384/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/024576/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/02/pages/024576/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/02/pages/024576/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/024576/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/024576/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/032768/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/02/pages/032768/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/02/pages/032768/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/032768/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/032768/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/040960/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/02/pages/040960/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/02/pages/040960/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/040960/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/040960/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/049152/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/02/pages/049152/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/02/pages/049152/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/049152/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/049152/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/057344/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/02/pages/057344/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/02/pages/057344/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/057344/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/057344/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/065536/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/02/pages/065536/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/02/pages/065536/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/065536/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/065536/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/073728/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/02/pages/073728/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/02/pages/073728/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/073728/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/073728/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/081920/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/02/pages/081920/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/02/pages/081920/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/081920/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/02/pages/081920/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "02 whole original payload",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "02 whole original SDK content",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "02 fixed host/tool/range",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "02 native original path/version/size",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "02 native chunk SHA/extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "02 closed binding is lossless projection",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "02 summary original indices",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "02 release exact original observer",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "03 request exact root value/pin",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "03 intent exact request/GO",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "03 intent retained scope",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "03 predecessor is original closed binding",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/03/admission/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/03/admission/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/03/status-0/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/03/status-0/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "03 original admission binary_read",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "03 same-ID original status request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "03 original observer closed",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/000000/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/03/pages/000000/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/03/pages/000000/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/000000/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/000000/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/008192/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/03/pages/008192/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/03/pages/008192/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/008192/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/008192/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/016384/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/03/pages/016384/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/03/pages/016384/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/016384/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/016384/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/024576/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/03/pages/024576/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/03/pages/024576/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/024576/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/024576/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/032768/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/03/pages/032768/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/03/pages/032768/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/032768/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/032768/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/040960/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/03/pages/040960/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/03/pages/040960/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/040960/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/040960/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/049152/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/03/pages/049152/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/03/pages/049152/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/049152/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/049152/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/057344/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/03/pages/057344/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/03/pages/057344/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/057344/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/057344/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/065536/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/03/pages/065536/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/03/pages/065536/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/065536/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/065536/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/073728/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/03/pages/073728/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/03/pages/073728/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/073728/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/073728/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/081920/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/03/pages/081920/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/03/pages/081920/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/081920/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/03/pages/081920/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "03 whole original payload",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "03 whole original SDK content",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "03 fixed host/tool/range",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "03 native original path/version/size",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "03 native chunk SHA/extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "03 closed binding is lossless projection",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "03 summary original indices",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "03 release exact original observer",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "04 request exact root value/pin",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "04 intent exact request/GO",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "04 intent retained scope",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "04 predecessor is original closed binding",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/04/admission/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/04/admission/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/04/status-0/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/04/status-0/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "04 original admission binary_read",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "04 same-ID original status request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "04 original observer closed",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/04/pages/000000/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/04/pages/000000/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/04/pages/000000/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/04/pages/000000/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/04/pages/000000/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/04/pages/008192/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/04/pages/008192/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/04/pages/008192/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/04/pages/008192/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/04/pages/008192/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/04/pages/016384/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/04/pages/016384/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/04/pages/016384/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/04/pages/016384/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/04/pages/016384/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/04/pages/024576/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/04/pages/024576/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/04/pages/024576/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/04/pages/024576/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/04/pages/024576/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/04/pages/032768/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/04/pages/032768/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/04/pages/032768/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/04/pages/032768/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/04/pages/032768/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/04/pages/040960/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/04/pages/040960/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/04/pages/040960/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/04/pages/040960/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/04/pages/040960/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/04/pages/049152/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/04/pages/049152/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/04/pages/049152/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/04/pages/049152/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/04/pages/049152/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/04/pages/057344/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/04/pages/057344/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/04/pages/057344/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/04/pages/057344/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/04/pages/057344/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/04/pages/065536/ exact result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/04/pages/065536/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK/native byte exact: observations/04/pages/065536/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/04/pages/065536/ original immutable identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/04/pages/065536/ exact extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "04 whole original payload",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "04 whole original SDK content",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "04 fixed host/tool/range",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "04 native original path/version/size",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "04 native chunk SHA/extent/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "04 closed binding is lossless projection",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "04 summary original indices",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "04 release exact original observer",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "four distinct original operations / 37 unique pages",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "285712 original SDK payload bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole source exact native chunks: sources/manifest-registry.original.js",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole source exact native chunks: sources/plugin-registry.original.js",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "new 213025 body bytes without old cap reset",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "eight same-ID recovery records separate from unique pages",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "recovery record bound to same archived page 0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "recovery record bound to same archived page 8192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "recovery record bound to same archived page 16384",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "recovery record bound to same archived page 24576",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "recovery record bound to same archived page 32768",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "recovery record bound to same archived page 40960",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "recovery record bound to same archived page 49152",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "recovery record bound to same archived page 57344",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "summary recovery count retained, not new admissions",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "finite existing-Git reindex report retained",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "existing-Git restored pin exact: observations/01/pages/000000/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "existing-Git restored pin exact: observations/01/pages/000000/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "existing-Git restored pin exact: observations/01/pages/000000/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "existing-Git restored pin exact: observations/01/pages/008192/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "existing-Git restored pin exact: observations/01/pages/008192/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "existing-Git restored pin exact: observations/01/pages/008192/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "existing-Git restored pin exact: observations/01/pages/016384/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "existing-Git restored pin exact: observations/01/pages/016384/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "existing-Git restored pin exact: observations/01/pages/016384/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "existing-Git restored pin exact: observations/01/pages/024576/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "existing-Git restored pin exact: observations/01/pages/024576/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "existing-Git restored pin exact: observations/01/pages/024576/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "existing-Git restored pin exact: observations/01/pages/032768/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "existing-Git restored pin exact: observations/01/pages/032768/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "existing-Git restored pin exact: observations/01/pages/032768/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "existing-Git restored pin exact: observations/01/pages/040960/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "existing-Git restored pin exact: observations/01/pages/040960/original.native.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "existing-Git restored pin exact: observations/01/pages/040960/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "existing-Git restored pin exact: observations/01/status-0/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "existing-Git restored pin exact: observations/01/status-0/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "existing-Git restored pin exact: observations/02/status-0/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "existing-Git restored pin exact: observations/02/status-0/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "existing-Git restored pin exact: archive-errors/page01-offset0-git-whole-read.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "original Git transport error preserved separately",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "same Git object recovery, not Runtime page replay",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "local cache failure retained as local boundary",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "release/scope stays read-only and unqualified",
+      "passed": true,
+      "actual": null
+    }
+  ],
+  "source_tree": "58c16429b0cd2dd135df7fe50f7582f51413005e",
+  "Runtime_calls": 0,
+  "source_modules_executed": false,
+  "author_checker_executed": false,
+  "product_cases": 0,
+  "source_selected_owner_claim": null,
+  "scope": "Original four read-observer chains, immutable byte reconstruction and finite recovery boundaries only."
+}

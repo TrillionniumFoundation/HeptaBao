@@ -1,0 +1,64 @@
+{
+  "schema": "heptabao.official271-cli.current4e808.create-only-stage.root-GO.v1",
+  "decision": "GO_ONE_EXACT_STAGE_ONLY",
+  "source_review": "c341c7213dfa77b9a32e4326535ee931168c0cce",
+  "independent_source_peer_tree": "b506b704ad62570448033c337887f69fbee217e3",
+  "current_B_release": "de4403da241063a115eba2c018503b6e3d3578bb",
+  "owner": "/root/compatibility_audit",
+  "lane": "B",
+  "request": {
+    "blob": "ec3b323f77bfb2f111f5fc22a06f1bf30ea634eb",
+    "bytes": 346000,
+    "sha256": "bff45cc8f5ee4ca1dc2b6b6515bbb38e68cb61b02cd2f3d2ca34e323042b075f"
+  },
+  "typed_request_sha256": "8a10353c991430800ffe9e2c9ec33a375ff33a6254b3d335abebb8b14ac9c67e",
+  "native_fingerprint": "9948510111243972736",
+  "host": "desktop",
+  "executable": "/usr/bin/python3.12",
+  "idempotency_key": "heptabao-official271-phaseb-4e808-local-stage-87a9c2a7-20261105-r4",
+  "timeout_seconds": 330,
+  "candidate": {
+    "blob": "45ceb135688a2002e845f31e010ca5c010551517",
+    "sha256": "87a9c2a7d1b9b4e789a4fda79fc9a89ba21657493707403f36cb891546e4a34f"
+  },
+  "stdin_carrier": {
+    "blob": "eabd91310302ea038bd023ff681f511511f43db2",
+    "sha256": "a2f1d6b11c206b8b10ec896fd857207e38f72efac24bffd556fa94349bc34915"
+  },
+  "control": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4",
+  "stage_scope": "Create the one absent CONTROL directory and exact source-reviewed children only. Preserve all source pins, old fences and historical UNKNOWN. No prepare/live execution.",
+  "controller_deadline_seconds": 300,
+  "external_intent_before_start": true,
+  "one_call_and_one_native_future_per_lane": true,
+  "original_SDK_saved_before_isError_and_parse": true,
+  "lossless_native_unsafe_integers": true,
+  "unknown_or_missing_ACK": "Stop all new business admissions; no replay or new key. Reconcile only exact original identity.",
+  "same_job_readonly_closure": {
+    "operation_status": true,
+    "process_status": true,
+    "process_read": true,
+    "process_read_each_stream_max_bytes": 16384,
+    "immutable_operation_page_bytes": 8192,
+    "original_id_only": true,
+    "exact_intent_before_each_call": true
+  },
+  "success_requires": [
+    "Same exact typed request and native fingerprint in authoritative job record",
+    "Exit zero within original deadline without timeout or cancellation",
+    "Full stdout and stderr exact byte ranges with both EOF and durable complete terminal authority",
+    "Stage success stdout after finally confirms every owned FD closed; pre-close stage.result alone is insufficient",
+    "Actual fixed target binding and metadata must be reviewed before any prepare/live GO"
+  ],
+  "followup_admissions_require_new_GO": [
+    "Any target file_info/binary_read not explicitly bound above",
+    "Prepare-only controller",
+    "B01 through B05 live controller",
+    "H2 or comparison69"
+  ],
+  "automatic_retry": false,
+  "prepare_authorized": false,
+  "live_authorized": false,
+  "production_cutover": false,
+  "cleanup": false,
+  "full_replacement": false
+}

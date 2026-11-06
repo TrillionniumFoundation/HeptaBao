@@ -1,0 +1,140 @@
+import base64, hashlib, json, pathlib
+A=pathlib.Path('/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1')
+P=pathlib.Path('/workspace/scratch/f86faac821c4/r32_recovery')
+TREE='385b356167187308221d8c2d5c12ece7c1da24e3'
+GO='a58667829950717eab43010eb2c768f9be24677e'
+checks=[]
+def need(v,n):
+    if not v: raise AssertionError(n)
+    checks.append(n)
+def meta(b):
+    return {'blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest(),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+def pin(b,p):
+    m=meta(b)
+    return all(m[k]==p[k] for k in ('blob','bytes','sha256'))
+idx=json.loads((A/'google-public2/complete-files-index.public.json').read_bytes())
+need(len(idx)==78,'exact78_index')
+F={}; nodes={'':{}}
+for path,ref in idx.items():
+    need(not path.startswith('/') and all(x not in ('','..','.') for x in path.split('/')),'safe_path:'+path)
+    q=A/'blobs'/(ref['blob']+'.txt')
+    b=q.read_bytes() if q.exists() else json.loads((P/('blob-'+ref['blob']+'.json')).read_bytes())['text'].encode()
+    need(pin(b,ref),'whole:'+path); F[path]=b
+    parts=path.split('/'); d=''
+    for part in parts[:-1]:
+        nxt=(d+'/' if d else '')+part
+        nodes.setdefault(nxt,{})
+        nodes[d][part]=('40000',nxt)
+        d=nxt
+    nodes[d][parts[-1]]=('100644',ref['blob'])
+need(sum(map(len,F.values()))==374228,'whole_packet_bytes')
+hashes={}
+for d in sorted(nodes,key=lambda x:(x.count('/'),len(x)),reverse=True):
+    rows=nodes[d]; body=b''
+    for name,(mode,target) in sorted(rows.items(),key=lambda x:(x[0]+('/' if x[1][0]=='40000' else '')).encode()):
+        sha=hashes[target] if mode=='40000' else target
+        body+=mode.encode()+b' '+name.encode()+b'\0'+bytes.fromhex(sha)
+    hashes[d]=hashlib.sha1(b'tree '+str(len(body)).encode()+b'\0'+body).hexdigest()
+need(hashes['']==TREE and len(hashes)==26,'all26_Merkle_nodes_root_exact')
+def J(path): return json.loads(F[path])
+def sdk(prefix,native):
+    v=J(prefix)
+    need(v.get('isError') is False and len(v['content'])==1 and v['content'][0]['type']=='text'
+         and v['content'][0]['text'].encode()==F[native],'SDK_native_exact:'+prefix)
+need(meta(F['reference/root-go.original.json'])['blob']==GO,'root_GO_exact')
+hist=J('reference/historical-source-receipt.public.json')
+need(meta(F['reference/historical-source-receipt.public.json'])['blob']=='79471a511eb665193c2dbc05607298e96ac6fa7d','historical_exact_receipt')
+root='/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/'
+files=[('google-manifest',root+'openclaw.plugin.json','518e8e071c1e5720c9fe621ac84c8b550df93af14dac0d96d788d73917835301',28911,'16777233:405240594:28911:1784843466375861317:1784843466375861317'),
+       ('google-package',root+'package.json','398f73305017a1d3813610825814c6e1dd93b683da088cb6df068a31c639fcc3',375,'16777233:405240659:375:1784843466392296043:1784843466392296043')]
+ids=['612a8558f696d18a9cb93d0c55f12135a4343debae1279d3209ffc3ddbfd2f45','a5cd8ac32ba823f6f05673fb277debe7fa69914331ff9608d887f3c64a1c4ddc','cc8a9e9286fc366252299fcecd8c47b55560d1270aee485ff75a946147346862','7a17d296389a4dac43847662e338e39d3955274aadafbd537755d5e9f649c8db']
+metas=[]; bodies=[]; total_pages=0; total_payload=0; observations=[]
+for i,oid in enumerate(ids,1):
+    p='observations/'+str(i).zfill(2)+'/'
+    typ='file_info' if i<=2 else 'binary_read'; f=files[(i-1)%2]
+    request_path='requests/'+str(i).zfill(2)+('-metadata.exact.json' if i<=2 else '-body.exact.json')
+    req=J(request_path); intent=J(p+'intent.public.json'); binding=J(p+'binding.public.json')
+    args={'host':'mac','path':f[1]}
+    kind='metadata' if i<=2 else 'body'
+    if i>2: args.update(expected_version=f[4],offset=0,limit=f[3])
+    key='heptabao-mac-'+f[0]+'-'+kind+'-'+f[2][:8]+'-20261105-r1'
+    need(req=={'idempotency_key':key,'operation':{'tool':typ,'arguments':args}},'fixed_exact_request:'+str(i))
+    need(intent['GO']==GO and intent['sequence']==i and intent['request']==req and pin(F[request_path],intent['exactRequest'])
+         and intent['priorNativeFuturesActive']==0 and intent['submissionsBeforeThisIntent']==0,'external_exact_intent:'+str(i))
+    prev=intent['previousClosedBinding']
+    need(prev is None if i==1 else pin(F['observations/'+str(i-1).zfill(2)+'/binding.public.json'],prev),'prior_closed_binding:'+str(i))
+    sdk(p+'admission.original.sdk.json',p+'admission.original.native.json')
+    ack=J(p+'admission.original.native.json')
+    need(ack['operation_id']==oid and ack['tool_name']==typ and ack['reused'] is False and ack['automatic_retry'] is False,'unique_original_admission:'+str(i))
+    status_p=p+'status-0/'
+    sdk(status_p+'original.sdk.json',status_p+'original.native.json')
+    st=J(status_p+'original.native.json')
+    need(J(status_p+'request.exact.json')=={'operation_id':oid} and st['operation_id']==oid and st['tool_name']==typ
+         and st['async_state']=='completed' and st['result_state']=='stored_observed' and st['owned_future_active'] is False
+         and st['payload_available'] is True,'same_ID_completed_status:'+str(i))
+    pages=sorted(x.rsplit('/',1)[0]+'/' for x in F if x.startswith(p+'pages/') and x.endswith('/request.exact.json'))
+    need(len(pages)==[1,1,5,1][i-1],'exact_page_count:'+str(i))
+    data=b''; whole_sha=None; whole_size=None
+    for k,q in enumerate(pages):
+        offset=k*8192
+        sdk(q+'original.sdk.json',q+'original.native.json')
+        page=J(q+'original.native.json')
+        need(J(q+'request.exact.json')=={'operation_id':oid,'offset':offset,'limit':8192},'immutable_exact_page_request:'+q)
+        if k==0: whole_sha=page['result_sha256']; whole_size=page['total_bytes']
+        b=base64.b64decode(page['data_base64'],validate=True)
+        need(page['operation_id']==oid and page['offset']==offset and page['immutable_snapshot'] is True
+             and page['payload_kind']=='native_result' and page['total_bytes']==whole_size and page['result_sha256']==whole_sha
+             and len(b)==min(8192,whole_size-offset) and page['next_offset']==offset+len(b)
+             and page['eof']==(offset+len(b)==whole_size),'original_page_geometry_and_SHA:'+q)
+        data+=b
+    need(data==F[p+'payload.original.json'] and len(data)==whole_size and hashlib.sha256(data).hexdigest()==whole_sha,'whole_original_payload:'+str(i))
+    total_pages+=len(pages);total_payload+=len(data)
+    payload=json.loads(data)
+    need(payload['resultType']=='complete' and payload['isError'] is False and len(payload['content'])==1
+         and payload['content'][0]['type']=='text' and payload['content'][0]['text'].encode()==F[p+'native.original.json'],'native_original_exact:'+str(i))
+    native=J(p+'native.original.json')
+    need(binding['operationId']==oid and binding['closed'] is True and binding['nativeFutureActive'] is False
+         and pin(F[request_path],binding['request']) and pin(data,binding['payload'])
+         and pin(F[p+'native.original.json'],binding['native']) and binding['pages']==len(pages),'binding_matches_all_originals:'+str(i))
+    if i<=2:
+        m=native['metadata']
+        need(native['path']==f[1] and native['sha256']==f[2]==hist['sourcePins'][f[1]]
+             and native['size']==f[3] and native['version']==f[4],'actual_metadata_matches_historical_pin:'+str(i))
+        need(m['metadata_platform']=='darwin' and m['link_count']==1 and m['uid']==501 and m['gid']==80
+             and m['mode']==native['mode']==0o644 and int(native['version'].split(':')[2])==native['size'],'actual_metadata_gate:'+str(i))
+        need(binding['actual']==native and binding['historicalShaMatched'] is True,'metadata_binding_content:'+str(i))
+        metas.append(native)
+    else:
+        m=metas[i-3];b=base64.b64decode(native['data_base64'],validate=True)
+        target='sources/'+f[0]+'.original.json'
+        need(native['path']==m['path'] and native['version']==m['version'] and native['size']==m['size']
+             and native['offset']==0 and native['next_offset']==m['size'] and native['eof'] is True
+             and len(b)==m['size'] and hashlib.sha256(b).hexdigest()==native['chunk_sha256']==m['sha256']
+             and b==F[target],'actual_version_bound_whole_body:'+str(i))
+        need(pin(b,binding['body']) and binding['body']['version']==m['version']
+             and pin(F['observations/'+str(i-2).zfill(2)+'/binding.public.json'],binding['metadataBinding'])
+             and intent['actualMetadataAllClosed'] is True and pin(F['body-derivation.public.json'],intent['derivation']),'body_and_prior_metadata_bound:'+str(i))
+        bodies.append(meta(b))
+    observations.append({'sequence':i,'operation_id':oid,'tool':typ,'pages':len(pages),'payload':meta(data),'native':meta(F[p+'native.original.json'])})
+der=J('body-derivation.public.json')
+need(der['result']['requests']==[J('requests/03-body.exact.json'),J('requests/04-body.exact.json')]
+     and der['result']['newBodyBytes']==29286 and der['result']['previousBodyBytes']==353689
+     and der['result']['cumulativeBodyBytes']==382975,'frozen_actual_body_derivation_and_accounting')
+need(total_pages==8 and len(bodies)==2 and sum(x['bytes'] for x in bodies)==29286,'finite_four_original_operations')
+package=J('sources/google-package.original.json')
+need(package['openclaw']['extensions']==['./index.js'] and root+'index.js' not in hist['sourcePins'],'one_declared_unobserved_entry_no_historical_pin')
+state=J('STATE.public.json');release=J('RELEASE.public.json')
+need(state['laneReleased'] is True and state['inflight'] is False and state['futureActive'] is False
+     and release['activeCalls']==0 and release['knownActiveNativeFutures']==0 and release['originalOperations']==4
+     and release['originalImmutablePages']==8 and release['RuntimeErrors']==0 and release['localJournalCorrections']==2,'actual_release_scope')
+need('history/local-status-journal-copy-correction.public.json' in F and 'history/local-status-checkpoint-byte-cap.public.json' in F,'both_local_corrections_preserved')
+result={'schema':'heptabao.auth-google-public-two.root-independent-chain-review.v1','ok':True,'checks_passed':len(checks),'checks':checks,
+        'packet':TREE,'whole_files':len(F),'whole_bytes':sum(map(len,F.values())),'Merkle_trees':len(hashes),
+        'original_operations':4,'original_immutable_pages':total_pages,'original_payload_bytes':total_payload,
+        'observations':observations,'actual_bodies':bodies,'previous_body_bytes':353689,'new_body_bytes':29286,'cumulative_body_bytes':382975,
+        'metadata_and_body_original_chain_qualified':True,'declared_entry':root+'index.js','entry_file_observed':False,'selected_owner_proven':False,
+        'independent_review_source_sha256':hashlib.sha256(VERIFIER_SOURCE_TEXT.encode()).hexdigest(),
+        'author_checker_reexecuted':False,'Runtime_calls':0,'private_or_SDK_execution':0,'production_changed':False,'full_replacement':False}
+text=json.dumps(result,ensure_ascii=False,indent=2)+'\n'
+(P/'r33-google78-root-result.public.json').write_text(text)
+print(text,end='')

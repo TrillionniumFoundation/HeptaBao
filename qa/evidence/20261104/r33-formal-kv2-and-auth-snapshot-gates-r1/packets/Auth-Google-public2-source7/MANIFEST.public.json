@@ -1,0 +1,42 @@
+{
+  "schema": "heptabao.immutable-source-packet-manifest.v1",
+  "scope": "SOURCE_ONLY_NO_RUNTIME",
+  "files": [
+    {
+      "path": "README.md",
+      "blob": "16e4e589b08c03746d5104004ca10377fea7960a",
+      "bytes": 1737,
+      "sha256": "70f22f0427d01330adb964ba0d557b1ccd21df842bea027e2605da9d49dc9eec"
+    },
+    {
+      "path": "contract.public.json",
+      "blob": "ea6032ceeac023760187d6733bd066c7df18e98b",
+      "bytes": 3709,
+      "sha256": "0f2b77f0fd947602aef2730bc2c14ab87a1548f220906a6efaa21eb57ab6efd8"
+    },
+    {
+      "path": "derive-body-requests.mjs",
+      "blob": "c09d5016e52d77d05f60377ffa7b5ea1fe325df2",
+      "bytes": 2785,
+      "sha256": "d7fbd67e2490be00231935507696df02c716ddf106d5e927bfeba7972301d207"
+    },
+    {
+      "path": "requests/01-metadata.exact.json",
+      "blob": "c1b435737ad8a9538a1037f1f10b4c396ec9c581",
+      "bytes": 279,
+      "sha256": "453e041ae30ae840ce98e5721b2f8ae18c94ca019939a6df9a6b9b1b9add4331"
+    },
+    {
+      "path": "requests/02-metadata.exact.json",
+      "blob": "e7060cb5323b8169caf3eab29b2e95f3a9def76e",
+      "bytes": 270,
+      "sha256": "6b5dcf0c35e17ca58bd79899f0ec81e9fbdf2c00f5b7698e45e9f409e39a7eed"
+    },
+    {
+      "path": "reference/historical-source-receipt.public.json",
+      "blob": "79471a511eb665193c2dbc05607298e96ac6fa7d",
+      "bytes": 51466,
+      "sha256": "6caa9ebfc2a3bf3ae637676a8055022817ec0efa85b09c6ffc304ac854ca6236"
+    }
+  ]
+}

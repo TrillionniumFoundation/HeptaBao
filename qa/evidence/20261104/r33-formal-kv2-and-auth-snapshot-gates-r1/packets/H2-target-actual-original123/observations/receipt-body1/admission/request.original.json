@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "ha-4e808-h2-stage-receipt-body1-r2-20261105",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "desktop",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/stage.result.public.json",
+      "offset": 16384,
+      "limit": 12231,
+      "expected_version": "2050:7874336:28615:1793915867295097739:1793915867295097739"
+    }
+  }
+}

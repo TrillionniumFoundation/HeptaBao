@@ -1,0 +1,77 @@
+--- baseline/mac_current_fixture_materializer_r1.py
++++ source/mac_current_fixture_materializer_r1.py
+@@ -9,7 +9,7 @@
+ import base64, copy, hashlib, json, math, os, re, sqlite3, stat, time
+ from pathlib import Path
+ 
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1')
+ LIVE=Path('/Users/qianqi/.openclaw')
+ SDK=Path('/opt/homebrew/lib/node_modules/openclaw')
+ CODEX=LIVE/'npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex'
+@@ -40,7 +40,7 @@
+         need(all(isinstance(k,str) for k in value),'json_object_keys')
+         for item in value.values():no_nonfinite(item)
+ 
+-def consumer_profile(phase,port,source_pins,ca_file,harness_roots):
++def consumer_profile(phase,port,source_pins,ca_file,harness_roots,harness_bindings):
+     need(phase in PHASES and type(port) is int and 1024<=port<=65535,'fixed_consumer_sandbox')
+     root=ROOT/phase
+     need(Path(ca_file)==ROOT/'credentials-consumer/ca.crt','only_owned_ca')
+@@ -58,10 +58,43 @@
+     # modules is necessary for the real Node loader and its transitive imports.
+     need(isinstance(harness_roots,list) and 1<=len(harness_roots)<=8
+          and len(set(harness_roots))==len(harness_roots),'actual_finite_harness_root_set')
++    need(isinstance(harness_bindings,list) and len(harness_bindings)==len(harness_roots)
++         and all(isinstance(item,dict) for item in harness_bindings),
++         'finite_admitted_harness_binding_list')
++    by_root={item['rootDir']:item for item in harness_bindings}
++    need(len(by_root)==len(harness_bindings) and set(by_root)==set(harness_roots),
++         'exact_harness_roots_match_admitted_bindings')
+     for value in sorted(set([str(CODEX),*harness_roots])):
+-        path=Path(value)
+-        need(path.is_absolute() and path==Path(os.path.normpath(str(path)))
+-             and path.is_relative_to(LIVE/'npm/projects'),'public_installed_harness_code_scope')
++        path=Path(value);binding=by_root.get(value)
++        need(path.is_absolute() and path==Path(os.path.normpath(str(path))),
++             'normalized_public_installed_harness_root')
++        if path.is_relative_to(LIVE/'npm/projects'):
++            need(binding is None if path==CODEX and value not in harness_roots
++                 else binding is not None and binding.get('layout')=='npm',
++                 'admitted_npm_harness_root')
++        else:
++            need(binding is not None and binding.get('layout')=='sdk-bundled'
++                 and path.parent==SDK/'dist/extensions'
++                 and path.name==binding.get('pluginId'),'exact_admitted_sdk_bundled_root')
++            for field,name in (('manifest','openclaw.plugin.json'),('package','package.json')):
++                metadata=binding.get(field)
++                need(isinstance(metadata,dict) and metadata.get('path')==str(path/name)
++                     and isinstance(metadata.get('sha256'),str)
++                     and re.fullmatch('[0-9a-f]{64}',metadata['sha256'])
++                     and source_pins.get(metadata['path'])==metadata['sha256'],
++                     'bundled_root_has_whole_admitted_metadata')
++            entries=binding.get('entries')
++            need(isinstance(entries,list) and 1<=len(entries)<=8
++                 and all(isinstance(item,dict) and isinstance(item.get('path'),str)
++                         and Path(item['path']).is_absolute()
++                         and Path(item['path'])==Path(os.path.normpath(item['path']))
++                         and Path(item['path']).is_relative_to(path)
++                         and isinstance(item.get('sha256'),str)
++                         and re.fullmatch('[0-9a-f]{64}',item['sha256'])
++                         and source_pins.get(item['path'])==item['sha256'] for item in entries),
++                 'bundled_declared_entries_have_exact_source_pins')
++        # SDK bundled code is already inside the original /opt/homebrew read
++        # subtree; this does not add a new OS-readable private path.
+         lines.append('(allow file-read* (subpath '+q(path)+'))')
+     for path in sorted(source_pins):
+         lines.append('(allow file-read* (literal '+q(path)+'))')
+@@ -319,7 +352,8 @@
+                 for name,value in document['authbusCaches']['files'].items():
+                     if value['present']:self.write(state/'authbus'/name,base64.b64decode(value['base64'],validate=True))
+             sandbox=work/'consumer.sb'
+-            policy=consumer_profile(phase,port,phase_pins,plugin_config['caFile'],runtime['harnessCodeRoots'])
++            policy=consumer_profile(phase,port,phase_pins,plugin_config['caFile'],
++                runtime['harnessCodeRoots'],runtime['harnessOwnerBindings'])
+             self.write(sandbox,policy);phase_pins[str(sandbox)]=sha(policy)
+             common={**runtime,'workRoot':str(ROOT),'phaseRoot':str(work),'stateRoot':str(state),
+                 'pluginConfig':copy.deepcopy(plugin_config),'originalPluginConfig':copy.deepcopy(original_plugin),

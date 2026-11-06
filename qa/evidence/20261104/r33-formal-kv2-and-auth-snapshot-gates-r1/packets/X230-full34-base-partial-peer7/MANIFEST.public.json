@@ -1,0 +1,42 @@
+{
+  "schema": "heptabao.peer-packet.manifest.v1",
+  "entries": [
+    {
+      "path": "PEER.partial.public.json",
+      "blob": "390a10b882789b03c3a559cdfdfafb0f4573d107",
+      "bytes": 2204,
+      "sha256": "92d6c43d02fb19b2a29437aa7f631ec9a1ebe5e08ebff041594d3973b5653c00"
+    },
+    {
+      "path": "verification/base-verifier.py",
+      "blob": "14d4cb50dc5f50cf5580b6104b0bdb4f48e199b2",
+      "bytes": 8604,
+      "sha256": "83d77994b45f756c720540447d880e762edf09e432c48cc3d2e80737cfe6e97a"
+    },
+    {
+      "path": "verification/base-actual.public.json",
+      "blob": "d434814dee3523035f30a371ae84813db4fefc43",
+      "bytes": 11349,
+      "sha256": "728a9c7187b293e201610d9f5e8e2b02c2bd50bff861bd977620138e8cf4aa43"
+    },
+    {
+      "path": "verification/executor.original.json",
+      "blob": "fe4236e938392e09a1297f9c76bab4559a203e6a",
+      "bytes": 10973,
+      "sha256": "9bef530a68c16c7a5ed57b9acfdfc64f849f767e52a1d6f1a9eafda8864c329e"
+    },
+    {
+      "path": "verification/input-index.public.json",
+      "blob": "6f6ef3c57162409295f0cb6daf6bb8b2b6e17149",
+      "bytes": 17408,
+      "sha256": "93b70fcbe482ffd5e3ba91972904a697111c49e696704741e2ddd5d333bd0b64"
+    },
+    {
+      "path": "reference/recovery-journal.public.json",
+      "blob": "83f37c59fa1ca23c12b0583a256db89081ab4388",
+      "bytes": 7819,
+      "sha256": "f12d3c46cc9cf218c08fddd72d4a5c2f8ea42822cf64947cf7ef08984d7b8bf3"
+    }
+  ],
+  "Runtime_calls": 0
+}

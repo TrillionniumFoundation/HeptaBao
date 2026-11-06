@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.comparison69.exact-read-intent.v1",
+  "GO": {
+    "blob": "4cf8d079885984d44cc9654a8ba816438f30b9ed",
+    "bytes": 4623,
+    "sha256": "92a033dc2bfe4b842eea937f825fd523ebd92e66dac7b8f4280ad9cf2daa5f1b"
+  },
+  "original_business_request": {
+    "blob": "6c51aa75507c4ba473d19406ecf51d9ca8c2860d",
+    "bytes": 367,
+    "sha256": "4e6c3e22504fedffbfdead8f50a9856678f1de42d8b1ec2a728befbc507f97ea"
+  },
+  "original_job": "1a1adc377a3-fc05-5acb",
+  "tool": "operation_start",
+  "request": {
+    "name": "comparison69-result-body0-admission-request",
+    "blob": "cb86a2657d33f3d79f4e84f576ff18e78599dbe9",
+    "bytes": 429,
+    "sha256": "536f90901d4576ffd7a6c9f4b22cd148983e49989b6bdc2baa746502bbf55470"
+  },
+  "original_operation_id": null,
+  "business_replay": false,
+  "external_before_call": true
+}

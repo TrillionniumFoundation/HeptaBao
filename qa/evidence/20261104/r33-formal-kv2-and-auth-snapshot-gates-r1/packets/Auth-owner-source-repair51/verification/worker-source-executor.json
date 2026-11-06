@@ -1,0 +1,7 @@
+{
+  "chunk_id": "d1aeb0",
+  "wall_time_seconds": 0.000027201,
+  "exit_code": 0,
+  "original_token_count": 272,
+  "output": "{\"schema\": \"heptabao.owner-worker-clone-correction.source.v2\", \"scope\": \"pure-source-no-sdk-no-runtime\", \"changes\": 3, \"removeThreeInsertionsRestoresOriginal\": true, \"originalSameGlobalInstanceGuardByteExact\": true, \"originalLoaderSelectorOnce\": true, \"pins\": [{\"path\": \"/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/owner-repair/exact/worker.after.draft2.mjs\", \"blob\": \"11d6b0bb0c26019b5a6e4035d42226b6666cab07\", \"bytes\": 33149, \"sha256\": \"26dbfd7cf7b725d07dfb39fdf6de09e8d131a6b184d998aa729b1094d76cad90\"}, {\"path\": \"/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/owner-repair/exact/worker.draft1-to-draft2.diff\", \"blob\": \"244f46aebe097199e9168e1c0f3a7e25e38b10a2\", \"bytes\": 1991, \"sha256\": \"bbf2f48e055d8ffdff3b5273fde892510301a51bf2c54c758331d9ce2205896b\"}, {\"path\": \"/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/owner-repair/exact/worker.draft2.review.diff\", \"blob\": \"7cdbc7bf4e2e5a3420bc503d9d6d20d86528cfcb\", \"bytes\": 6271, \"sha256\": \"75d9c3f46254f4d70d7a4b09865a12a4fd9a7603c1af39c80960b379945d724f\"}]}\n"
+}

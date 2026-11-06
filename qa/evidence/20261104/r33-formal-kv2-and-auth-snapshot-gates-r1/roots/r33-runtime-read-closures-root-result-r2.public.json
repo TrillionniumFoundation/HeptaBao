@@ -1,0 +1,678 @@
+{
+  "schema": "heptabao.r33.comparison69-and-H2-read-closure.root.r1",
+  "checks": [
+    {
+      "name": "h2_recovery_original:page_sdk",
+      "ok": true
+    },
+    {
+      "name": "h2_recovery_original:page_native",
+      "ok": true
+    },
+    {
+      "name": "h2_recovery_original:payload",
+      "ok": true
+    },
+    {
+      "name": "h2_recovery_original:native",
+      "ok": true
+    },
+    {
+      "name": "h2_recovery_original:body_chunk",
+      "ok": true
+    },
+    {
+      "name": "h2_recovery_original:original_git_write_error",
+      "ok": true
+    },
+    {
+      "name": "h2_recovery_original:git_lookup_404",
+      "ok": true
+    },
+    {
+      "name": "h2_recovery_original:git_write_error_record_failure",
+      "ok": true
+    },
+    {
+      "name": "local_blob_identity:9fdd0650028b3cdc7669999782b4782fbc6640a5",
+      "ok": true
+    },
+    {
+      "name": "h2_body0_handler_closed",
+      "ok": true
+    },
+    {
+      "name": "native_page:ha-h2-target-receipt-body0:0",
+      "ok": true
+    },
+    {
+      "name": "native_page:ha-h2-target-receipt-body0:8192",
+      "ok": true
+    },
+    {
+      "name": "native_page:ha-h2-target-receipt-body0:16384",
+      "ok": true
+    },
+    {
+      "name": "original_payload_whole:ha-h2-target-receipt-body0",
+      "ok": true
+    },
+    {
+      "name": "h2_payload_exact_local_original",
+      "ok": true
+    },
+    {
+      "name": "h2_native_equal_original",
+      "ok": true
+    },
+    {
+      "name": "h2_chunk_hash_and_actual_bytes",
+      "ok": true
+    },
+    {
+      "name": "h2_original_fixed_range_version",
+      "ok": true
+    },
+    {
+      "name": "h2_archive_errors_preserved_separately",
+      "ok": true
+    },
+    {
+      "name": "comparison_whole:summary.public.json",
+      "ok": true
+    },
+    {
+      "name": "comparison_whole:result.public.json",
+      "ok": true
+    },
+    {
+      "name": "comparison_whole:authority.original.json",
+      "ok": true
+    },
+    {
+      "name": "comparison_whole:stdout.original.txt",
+      "ok": true
+    },
+    {
+      "name": "comparison_original_durable_terminal",
+      "ok": true
+    },
+    {
+      "name": "comparison_original_stream_counts",
+      "ok": true
+    },
+    {
+      "name": "comparison_7_observers_23_pages",
+      "ok": true
+    },
+    {
+      "name": "local_blob_identity:ad1119c1935a91b63888b16ec6da0301897faadb",
+      "ok": true
+    },
+    {
+      "name": "comparison_closed:authority0",
+      "ok": true
+    },
+    {
+      "name": "native_page:comparison69-authority0:0",
+      "ok": true
+    },
+    {
+      "name": "original_payload_whole:comparison69-authority0",
+      "ok": true
+    },
+    {
+      "name": "local_blob_identity:5c41c6356e8c208623bd539de76128dc4a2c21ff",
+      "ok": true
+    },
+    {
+      "name": "comparison_closed:streams0",
+      "ok": true
+    },
+    {
+      "name": "native_page:comparison69-streams0:0",
+      "ok": true
+    },
+    {
+      "name": "original_payload_whole:comparison69-streams0",
+      "ok": true
+    },
+    {
+      "name": "local_blob_identity:b6e9ccdecf715e66a50dfba0eb827321a35946a8",
+      "ok": true
+    },
+    {
+      "name": "comparison_closed:result-info",
+      "ok": true
+    },
+    {
+      "name": "native_page:comparison69-result-info:0",
+      "ok": true
+    },
+    {
+      "name": "original_payload_whole:comparison69-result-info",
+      "ok": true
+    },
+    {
+      "name": "local_blob_identity:a9f0fbc36892dbd58d209da368b8727f73872491",
+      "ok": true
+    },
+    {
+      "name": "comparison_closed:result-body0",
+      "ok": true
+    },
+    {
+      "name": "native_page:comparison69-result-body0:0",
+      "ok": true
+    },
+    {
+      "name": "original_payload_whole:comparison69-result-body0",
+      "ok": true
+    },
+    {
+      "name": "local_blob_identity:ad57527613c23bad88dd30f20830d6ab9b2a15e5",
+      "ok": true
+    },
+    {
+      "name": "comparison_closed:summary-info",
+      "ok": true
+    },
+    {
+      "name": "native_page:comparison69-summary-info:0",
+      "ok": true
+    },
+    {
+      "name": "original_payload_whole:comparison69-summary-info",
+      "ok": true
+    },
+    {
+      "name": "local_blob_identity:08ba3e565c076e4382ec6676683e7a6339e1d0d4",
+      "ok": true
+    },
+    {
+      "name": "comparison_closed:summary-body0",
+      "ok": true
+    },
+    {
+      "name": "native_page:comparison69-summary-body0:0",
+      "ok": true
+    },
+    {
+      "name": "native_page:comparison69-summary-body0:8192",
+      "ok": true
+    },
+    {
+      "name": "native_page:comparison69-summary-body0:16384",
+      "ok": true
+    },
+    {
+      "name": "native_page:comparison69-summary-body0:24576",
+      "ok": true
+    },
+    {
+      "name": "native_page:comparison69-summary-body0:32768",
+      "ok": true
+    },
+    {
+      "name": "native_page:comparison69-summary-body0:40960",
+      "ok": true
+    },
+    {
+      "name": "native_page:comparison69-summary-body0:49152",
+      "ok": true
+    },
+    {
+      "name": "native_page:comparison69-summary-body0:57344",
+      "ok": true
+    },
+    {
+      "name": "native_page:comparison69-summary-body0:65536",
+      "ok": true
+    },
+    {
+      "name": "native_page:comparison69-summary-body0:73728",
+      "ok": true
+    },
+    {
+      "name": "native_page:comparison69-summary-body0:81920",
+      "ok": true
+    },
+    {
+      "name": "original_payload_whole:comparison69-summary-body0",
+      "ok": true
+    },
+    {
+      "name": "local_blob_identity:22e241a688e3c7a6a79e497ee48cbc8ac806b2ea",
+      "ok": true
+    },
+    {
+      "name": "comparison_closed:summary-body1",
+      "ok": true
+    },
+    {
+      "name": "native_page:comparison69-summary-body1:0",
+      "ok": true
+    },
+    {
+      "name": "native_page:comparison69-summary-body1:8192",
+      "ok": true
+    },
+    {
+      "name": "native_page:comparison69-summary-body1:16384",
+      "ok": true
+    },
+    {
+      "name": "native_page:comparison69-summary-body1:24576",
+      "ok": true
+    },
+    {
+      "name": "native_page:comparison69-summary-body1:32768",
+      "ok": true
+    },
+    {
+      "name": "native_page:comparison69-summary-body1:40960",
+      "ok": true
+    },
+    {
+      "name": "native_page:comparison69-summary-body1:49152",
+      "ok": true
+    },
+    {
+      "name": "original_payload_whole:comparison69-summary-body1",
+      "ok": true
+    },
+    {
+      "name": "comparison_authority_exact_original_payload",
+      "ok": true
+    },
+    {
+      "name": "summary_actual_fixed_chunk:summary-body0",
+      "ok": true
+    },
+    {
+      "name": "summary_actual_fixed_chunk:summary-body1",
+      "ok": true
+    },
+    {
+      "name": "summary_whole_original_two_chunks",
+      "ok": true
+    },
+    {
+      "name": "comparison_no_gap_or_production_claim",
+      "ok": true
+    },
+    {
+      "name": "comparison_native_nonfixture",
+      "ok": true
+    },
+    {
+      "name": "current_candidate_binding",
+      "ok": true
+    },
+    {
+      "name": "official271_server_tls_archive_binding",
+      "ok": true
+    },
+    {
+      "name": "scope13_exact",
+      "ok": true
+    },
+    {
+      "name": "both_exact_69_case_names",
+      "ok": true
+    },
+    {
+      "name": "case:approle.invalid_secret_id_denied",
+      "ok": true
+    },
+    {
+      "name": "case:approle.login",
+      "ok": true
+    },
+    {
+      "name": "case:approle.secret_id_replay_denied",
+      "ok": true
+    },
+    {
+      "name": "case:core.unknown_route_denied",
+      "ok": true
+    },
+    {
+      "name": "case:edge_tls.health",
+      "ok": true
+    },
+    {
+      "name": "case:identity.entity_create",
+      "ok": true
+    },
+    {
+      "name": "case:identity.entity_delete",
+      "ok": true
+    },
+    {
+      "name": "case:identity.entity_deleted",
+      "ok": true
+    },
+    {
+      "name": "case:identity.entity_disable",
+      "ok": true
+    },
+    {
+      "name": "case:identity.entity_disabled",
+      "ok": true
+    },
+    {
+      "name": "case:identity.entity_read",
+      "ok": true
+    },
+    {
+      "name": "case:kv.cas_no_effect",
+      "ok": true
+    },
+    {
+      "name": "case:kv.cas_rejected",
+      "ok": true
+    },
+    {
+      "name": "case:kv.deleted_metadata",
+      "ok": true
+    },
+    {
+      "name": "case:kv.deleted_read",
+      "ok": true
+    },
+    {
+      "name": "case:kv.destroy_v1",
+      "ok": true
+    },
+    {
+      "name": "case:kv.destroyed_metadata",
+      "ok": true
+    },
+    {
+      "name": "case:kv.destroyed_read",
+      "ok": true
+    },
+    {
+      "name": "case:kv.list",
+      "ok": true
+    },
+    {
+      "name": "case:kv.metadata_read",
+      "ok": true
+    },
+    {
+      "name": "case:kv.metadata_write",
+      "ok": true
+    },
+    {
+      "name": "case:kv.mount",
+      "ok": true
+    },
+    {
+      "name": "case:kv.read_old_version",
+      "ok": true
+    },
+    {
+      "name": "case:kv.read_v1",
+      "ok": true
+    },
+    {
+      "name": "case:kv.restored_read",
+      "ok": true
+    },
+    {
+      "name": "case:kv.soft_delete",
+      "ok": true
+    },
+    {
+      "name": "case:kv.undelete",
+      "ok": true
+    },
+    {
+      "name": "case:kv.write_v1",
+      "ok": true
+    },
+    {
+      "name": "case:kv.write_v2",
+      "ok": true
+    },
+    {
+      "name": "case:operations.seal_status",
+      "ok": true
+    },
+    {
+      "name": "case:pki.cert_lookup",
+      "ok": true
+    },
+    {
+      "name": "case:pki.crl_json",
+      "ok": true
+    },
+    {
+      "name": "case:pki.issue",
+      "ok": true
+    },
+    {
+      "name": "case:pki.lease_expire_issue",
+      "ok": true
+    },
+    {
+      "name": "case:pki.lease_expire_lookup",
+      "ok": true
+    },
+    {
+      "name": "case:pki.lease_lookup",
+      "ok": true
+    },
+    {
+      "name": "case:pki.lease_revoke",
+      "ok": true
+    },
+    {
+      "name": "case:pki.mount",
+      "ok": true
+    },
+    {
+      "name": "case:pki.revoked_lease_absent",
+      "ok": true
+    },
+    {
+      "name": "case:pki.role",
+      "ok": true
+    },
+    {
+      "name": "case:pki.role_read",
+      "ok": true
+    },
+    {
+      "name": "case:pki.root",
+      "ok": true
+    },
+    {
+      "name": "case:system.init_status",
+      "ok": true
+    },
+    {
+      "name": "case:token.create",
+      "ok": true
+    },
+    {
+      "name": "case:token.create_expiring",
+      "ok": true
+    },
+    {
+      "name": "case:token.denial_no_effect",
+      "ok": true
+    },
+    {
+      "name": "case:token.expired_denied",
+      "ok": true
+    },
+    {
+      "name": "case:token.invalid_denied",
+      "ok": true
+    },
+    {
+      "name": "case:token.policy",
+      "ok": true
+    },
+    {
+      "name": "case:token.read_allowed",
+      "ok": true
+    },
+    {
+      "name": "case:token.revoke",
+      "ok": true
+    },
+    {
+      "name": "case:token.revoked_denied",
+      "ok": true
+    },
+    {
+      "name": "case:token.write_denied",
+      "ok": true
+    },
+    {
+      "name": "case:totp.mount",
+      "ok": true
+    },
+    {
+      "name": "case:totp.roundtrip",
+      "ok": true
+    },
+    {
+      "name": "case:transit.create_key",
+      "ok": true
+    },
+    {
+      "name": "case:transit.decrypt_old_after_rotation",
+      "ok": true
+    },
+    {
+      "name": "case:transit.decrypt_v1",
+      "ok": true
+    },
+    {
+      "name": "case:transit.decrypt_v2",
+      "ok": true
+    },
+    {
+      "name": "case:transit.encrypt_v1",
+      "ok": true
+    },
+    {
+      "name": "case:transit.encrypt_v2",
+      "ok": true
+    },
+    {
+      "name": "case:transit.mount",
+      "ok": true
+    },
+    {
+      "name": "case:transit.read_key",
+      "ok": true
+    },
+    {
+      "name": "case:transit.read_rotated_key",
+      "ok": true
+    },
+    {
+      "name": "case:transit.rotate",
+      "ok": true
+    },
+    {
+      "name": "case:userpass.login",
+      "ok": true
+    },
+    {
+      "name": "case:wrapping.create",
+      "ok": true
+    },
+    {
+      "name": "case:wrapping.replay_denied",
+      "ok": true
+    },
+    {
+      "name": "case:wrapping.unwrap",
+      "ok": true
+    },
+    {
+      "name": "both_owned_cleanup_passed",
+      "ok": true
+    },
+    {
+      "name": "source_and_binary_unchanged",
+      "ok": true
+    }
+  ],
+  "runtimeCalls": 0,
+  "authorCodeExecuted": false,
+  "H2": {
+    "body0OriginalObserverClosed": true,
+    "wholeOriginalPayload": {
+      "blob": "f6681235e3712ce1cc64e78aae78297d5dfcd79e",
+      "bytes": 22291,
+      "sha256": "77a0c97d77d791f4b25b491429f92a8587af9f25b1158c7e5bd8aabc9e63c01f"
+    },
+    "originalChunk": {
+      "blob": "34ef40bf58318885b710dd4b66d65d8c17998626",
+      "bytes": 16384,
+      "sha256": "4266332e50569244fa1ee981b1b489c18a5fa68fb8e5f15339618f79194509e0"
+    },
+    "noNewRuntimeOrPageReplay": true,
+    "remainingOriginalBodyAdmissions": 2,
+    "archiveRestorationRequiredBeforeResume": true
+  },
+  "comparison69": {
+    "job": "x230/1a1adc377a3-fc05-5acb",
+    "casesPerSide": 69,
+    "numericHttpStatusMatches": 67,
+    "normalizedRejectionCases": {
+      "pki.lease_expire_lookup": "rejected_after_ttl",
+      "pki.revoked_lease_absent": "rejected_400_or_404"
+    },
+    "exact400versus404ParityForNormalizedCasesProved": false,
+    "scopes": [
+      "approle",
+      "core",
+      "edge_tls",
+      "identity",
+      "kv",
+      "operations",
+      "pki",
+      "system",
+      "token",
+      "totp",
+      "transit",
+      "userpass",
+      "wrapping"
+    ],
+    "summary": {
+      "blob": "db965ea9374ddcb7b76c5d21a89036ba9a5d6125",
+      "bytes": 104034,
+      "sha256": "51dbe8ec85e7e18434e48ecf627107267fb49284d18408c448f01a7d38929bc5"
+    },
+    "originalNativeObservers": 7,
+    "originalImmutablePages": 23,
+    "nativeStorage": "native_v6_file",
+    "uncovered": [
+      "full_endpoint_error_precedence",
+      "other_auth_methods",
+      "other_secret_engines",
+      "persistent_restart",
+      "ha",
+      "migration",
+      "upgrade",
+      "agent_proxy_cli",
+      "production_security"
+    ],
+    "fullReplacement": false,
+    "productionQualified": false,
+    "allHistoricalArchiveComplete": false,
+    "archiveNote": "Runtime results and original pages independently verified locally; immutable Git archival restoration is separately tracked."
+  },
+  "passed": 151,
+  "failed": 0,
+  "ok": true
+}

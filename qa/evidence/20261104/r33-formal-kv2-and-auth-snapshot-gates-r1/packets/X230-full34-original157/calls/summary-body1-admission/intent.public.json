@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.x230-full34-original-observation-intent.v1",
+  "GO": "773ffa99d027be4cd77e265b3a40f8432864139c",
+  "lane": "B",
+  "label": "summary-body1-admission",
+  "method": "operation_start",
+  "request_blob": "4c029efe36c5fcdc4f5706a79049f53c6a1c41fd",
+  "request_bytes": 425,
+  "request_sha256": "f2e1e38ebd217e6eac2062e00e26bff73f7cbddcd0f7e7edd3d46ac5df848a85",
+  "request": {
+    "idempotency_key": "heptabao-4e808-x230-full34-summary-body1-r1-20261105",
+    "operation": {
+      "tool": "binary_read",
+      "arguments": {
+        "host": "x230",
+        "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/full34-r1/summary.public.json",
+        "offset": 65536,
+        "limit": 25390,
+        "expected_version": "2053:3066538:90926:1793910257046281214:1793910257046281214"
+      }
+    }
+  },
+  "only_original_job_and_fixed_public_observation": true,
+  "process_start_authorized": false,
+  "prior_active_operation_id": null,
+  "original_call_only": true
+}

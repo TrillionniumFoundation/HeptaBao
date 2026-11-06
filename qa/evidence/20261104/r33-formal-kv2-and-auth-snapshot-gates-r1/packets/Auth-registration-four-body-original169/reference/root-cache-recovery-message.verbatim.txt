@@ -1,0 +1,3 @@
+Source: parent /root session message; verbatim transcription, not a Runtime SDK response.
+
+收到。本地cache错误0Runtime且既有结果已外存，不改业务状态。我正建共享纯离线Node crypto+lossless/whole blob/packet帮助器，保存workspace+Git后给你；先恢复已知exact请求/SDK/GO pins到本地JSON journal。新SDK立即本地持久保存再Git逐项，避免只靠store索引。已知2原ID可按exact8192 offset回读原immutable native payload，但若原offset65536未提交，仍从该处继续；缺失前页索引可通过immutable payload恢复同一original，绝不另admission。

@@ -1,0 +1,25 @@
+{
+  "schema": "heptabao.root-native-process-binding-recovery-validation.r33.v1",
+  "source": {
+    "name": "r33-native-process-start-binding.js",
+    "blob": "82e81aef13d858c865ea05dd762056553a3d1cc6",
+    "bytes": 659,
+    "sha256": "e98c61fceb6eecdd55e6244ad43939320114809163afee67a6b8657235dae042"
+  },
+  "reference_CLI": {
+    "digest": "8a10353c991430800ffe9e2c9ec33a375ff33a6254b3d335abebb8b14ac9c67e",
+    "fingerprint": "9948510111243972736"
+  },
+  "reference_X230full34": {
+    "digest": "5c151114a4d4ae0e2770e4dc7060205cc8d5868cda1da1bd85c3c4347123e3ac",
+    "fingerprint": "6635228406362713614"
+  },
+  "H2_proposed": {
+    "request_blob": "773c7e054a36dfc175632a83ed23db5b5600ad58",
+    "digest": "d09ca5bcec50de31ca854f1b2885ed117bd7a3c6f357d6db39fbc87cd6566a96",
+    "fingerprint": "15032071887093030449"
+  },
+  "correction": "The unqualified helper in recovery source25eb used stdin_text; this explicitly recovered native schema uses stdin. The earlier unqualified function was not used for a Runtime admission or GO.",
+  "actual_tool_schema_read": true,
+  "Runtime_calls": 0
+}

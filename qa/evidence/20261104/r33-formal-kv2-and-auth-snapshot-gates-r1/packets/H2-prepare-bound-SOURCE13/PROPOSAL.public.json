@@ -1,0 +1,54 @@
+{
+  "schema": "heptabao.H2-stage.actual-binding.prepare-SOURCE-only.v1",
+  "runtime_GO": false,
+  "submitted": false,
+  "request": {
+    "blob": "2059cf884472ae55dc799be4b781f9fe96efd10e",
+    "bytes": 619,
+    "sha256": "c5ef6c140c8687b102c532eaab4bfb5537f01e55d2ed4faa6c050dd2b07c55ef"
+  },
+  "original_dispatch_templates": {
+    "blob": "2eabf1e692ca5f64b2bf553af78f02204c3516f5",
+    "bytes": 1858
+  },
+  "only_change": "args[7]: original UNRESOLVED_ACTUAL_FIXTURE_BINDING_SHA256 -> actual independently observed binding SHA256",
+  "original_key_unchanged": "heptabao-native-h2-gate-prepare-4e808-20261105-r2",
+  "original_outer_seconds": 330,
+  "original_prepare_internal_seconds": 300,
+  "host": "desktop",
+  "argv_length": 9,
+  "controller": {
+    "blob": "6687ce5d76ae38ec9f079c876f50d86b04f40448",
+    "bytes": 62344,
+    "sha256": "703e5ecfc9b88ce4d8cdaf81342597a12a7b42c92af583b54d87f4f8a37bcf13"
+  },
+  "binder": {
+    "blob": "9b3a605a2ac2f47729678bdb696d89b0c9b06b9a"
+  },
+  "actual_binding": {
+    "blob": "a11ae732392792888fcf705e3a0ea21c8779f67e",
+    "bytes": 10230,
+    "sha256": "b241c6fc78bbe77ea69fc3b8a707b1747324a81f1da1ade3d9bb15c5cea5b7d8"
+  },
+  "actual_receipt": {
+    "blob": "f492ce4e681ba7d5917d1cda1ebd4a3f8d67f13c",
+    "bytes": 28615,
+    "sha256": "f2bcc9227a235a40afa11c1703595180a925fbd39abd29d4550872ed3a05ae6a"
+  },
+  "read_release": "0093a0be7a54f88393626276c864b5a46b1c8770",
+  "source_only_checks": {
+    "request_reverse_exact": true,
+    "actual_binding_hash": true,
+    "main_argparse_shape_static": true,
+    "original_330_outer_300_prepare_unchanged": true,
+    "no_candidate_execution": true
+  },
+  "scope": "Exact existing prepare entry, including its original owned prepare/private directories and read-only checks; do not submit until separate root GO. No new wrapper, stage or live layer. Five QA sources, dual product/instrument identities, six old fences and H01/H02/H03/TLS-h2/ALPN/caps remain unchanged.",
+  "Runtime_calls": 0,
+  "actual_target_packet": {
+    "tree": "51e78b6600d671e0565c8911b452650812410474",
+    "files": 123,
+    "bytes": 714650,
+    "merkle": 40
+  }
+}

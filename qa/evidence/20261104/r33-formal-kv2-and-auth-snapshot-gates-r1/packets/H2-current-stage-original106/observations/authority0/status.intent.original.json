@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.same-id-status.reconciliation.intent.v1",
+  "action": "operation_status",
+  "original_operation_id": "faa0286530b753ce8e72e49a30c05ae21d92c980e5070cb45209e7d4edd8ba85",
+  "original_job_id": "1a1adb7c0f6-fc05-5ab6",
+  "host": "desktop",
+  "request": {
+    "name": "ha-h2-stage-authority0-status-reconcile1-request",
+    "blob": "252937db6b34cc83968f149abaefdfc4950cd9fe",
+    "bytes": 89,
+    "sha256": "333b8528d51aa54fa53c8f4ac31d98ee5c7775c637cca99421eae6ae6106784d"
+  },
+  "root_go": "065ae72edbb8f330b66f5a40ea4c0134891f60d8",
+  "root_explicit_scope": "One new same-ID status query allowed after cache reset; does not create a native future or replay stage/admission.",
+  "prior_query_boundary": "Whether the preceding context-truncated status query was submitted is unknown; no original SDK or local fsynced wrapper located. This query is new evidence, not recovery of that missing result.",
+  "business_start": false,
+  "operation_start": false,
+  "original_admission_sdk": "5c0602d637538c53fcccbd4b0d6a54ca85b04fbc",
+  "original_admission_native": "937644457801f63b811c061e70a0fc6fa5f1fa8b",
+  "exact_sdk_first": true
+}

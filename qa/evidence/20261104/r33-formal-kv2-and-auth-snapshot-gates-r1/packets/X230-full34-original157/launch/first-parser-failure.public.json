@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.original-ACK-local-parser-mismatch.v1",
+  "error": "ACK typed digest/FP/host",
+  "original_sdk": {
+    "path": "launch/ACK.original.sdk.json",
+    "bytes": 1360,
+    "sha256": "ce68ad30338d9f6f1778c733122f6bc4520a9d35e6604965765f29e9d3ea054f",
+    "blob": "ef97f09d6ec0bb4ea2cfaecd2271025aa4276418",
+    "carrier_tree": "a0912ff8c82d420d3173a108a9c4a71f8dabc9a1"
+  },
+  "original_native": {
+    "path": "launch/ACK.native.original.json",
+    "bytes": 1117,
+    "sha256": "ff725ec568abc5c2895592c23d3b1b93e8040226c2cac6f825b96fa2ecfcb6db",
+    "blob": "33e0133c4bb70ffcd06af1af8ad681030066711a",
+    "carrier_tree": "2bc7792b50f741c1378dae91d81eeed01819e26a"
+  },
+  "cause": "Local parser looked for job_id/request_digest on the ACK top level. The successful original native ACK stores the job record at ACK.job and its identity at job.id.",
+  "Runtime_replayed": false,
+  "new_Runtime_calls_since_error": 0
+}

@@ -1,0 +1,7 @@
+{
+  "chunk_id": "4f18ec",
+  "wall_time_seconds": 0.042469798,
+  "exit_code": 0,
+  "original_token_count": 67,
+  "output": "{\"passed\": true, \"checks\": 247, \"returned_observers\": 3, \"immutable_pages\": 11, \"stdout_bytes\": 23147, \"stderr_bytes\": 0, \"post_finally_closed\": true, \"elapsed_after_closure_ms\": 2438.209864, \"Runtime_calls\": 0, \"staged_module_executed\": false, \"product_cases\": 0}\n"
+}

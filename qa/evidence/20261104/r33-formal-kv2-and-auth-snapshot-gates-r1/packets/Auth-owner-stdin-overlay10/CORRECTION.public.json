@@ -1,0 +1,54 @@
+{
+  "schema": "heptabao.owner-renew-inert-stdin-schema-correction.r1",
+  "status": "SOURCE_ONLY_NOT_SUBMITTED",
+  "oldProposalDirectDispatchValid": false,
+  "reason": "Current process_start accepts stdin; prior proposal incorrectly used stdin_text. No prior proposal submission occurred.",
+  "originalRequest": {
+    "blob": "850fdaf3c82e5067605494f5a8e8d8af3a1ab899",
+    "bytes": 818382,
+    "sha256": "a9bcf643d3108518d1c9645376ce1173db2035d50f0079e900074364488a888c"
+  },
+  "correctedRequest": {
+    "blob": "521c4700c9896ef48c8b710f7b787b5cfb5d1504",
+    "bytes": 818377,
+    "sha256": "6ffc5db0c3d9cf79f00d9484b1d54162b75b7e975e594a1d5ca5d8566d3b9cf4"
+  },
+  "originalGenerator": {
+    "blob": "5870d4b5a1d000aa7d699ab2ade18a8da2e4644b",
+    "bytes": 7819,
+    "sha256": "60de3e8a61939df8031eeb31a9d3deca9001e8c07aa4ed5d3000861fd74cdf54"
+  },
+  "correctedGenerator": {
+    "blob": "1216f5c4a5173027868a2e29338cfa8a69ef6034",
+    "bytes": 7814,
+    "sha256": "7087fd72cffb7e2850fbab3ee8d287181b5dd74acb2d307fe425957c6da23444"
+  },
+  "publisherUnchanged": {
+    "blob": "f7a4a54c204fa2cc01590fb29f1317cc1a2ba531",
+    "bytes": 15541,
+    "sha256": "d89e5169c68a1867738824d87549e6f26635e2c55f31bdbf7d58375f8a5b3fc4"
+  },
+  "stdinPayloadUnchanged": {
+    "blob": "b4caba908690e8b774aa8ee913247d2f9b7cf25d",
+    "bytes": 801859,
+    "sha256": "c84a7e6ba807f90c98f5a8a9e375aff86b9a287281d8e2d001e8566315a3b7d9"
+  },
+  "onlyRequestKeyRename": true,
+  "allOtherRequestValuesExact": true,
+  "rootKeyArgvCwdExecutableTimeoutUnchanged": true,
+  "newRuntimeCalls": 0,
+  "original88Preserved": true,
+  "runtimeRequestUnchanged": {
+    "blob": "ca9a3b37ca8c8a55458460a35a4b183b4356901f",
+    "bytes": 5329,
+    "sha256": "cbb0404036ccaf6c0e03c806de8a569eb4e6143985652428a8f5b6efe1ea6c95"
+  },
+  "checks": {
+    "singleOriginalKey": true,
+    "decodedPayloadBytesExact": true,
+    "inverseRawRequestExact": true,
+    "generatorSingleLiteralChange": true,
+    "generatorParseOnly": true,
+    "generatorNotExecuted": true
+  }
+}

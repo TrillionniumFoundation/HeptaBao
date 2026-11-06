@@ -1,0 +1,109 @@
+{
+  "schema": "heptabao.google-declared-entry.read.actual.r1",
+  "result": "COMPLETE_KNOWN_PUBLIC_ENTRY_OBSERVED",
+  "go": {
+    "blob": "575b8d4e64924d9306677d80e615f1a1ee570bce",
+    "bytes": 4124,
+    "sha256": "2e00b0ea969a50d1e874306342bef200de60478b24853542cb9aec0a26c5829a"
+  },
+  "operations": [
+    {
+      "name": "metadata",
+      "id": "a580f54050582197d19edf79113e4191d04bd0beb7ae12823aafcc7a4bcb41c6",
+      "admission": {
+        "blob": "8dde122e43578077900bde89919043c5f18fadb2"
+      },
+      "status": {
+        "blob": "8ba53bf5723a6cc0fc29f00c223e0166c4d7ac92"
+      },
+      "payload": {
+        "blob": "68e69d5703a3904675c24e4efe0c65acf6ece006",
+        "bytes": 578,
+        "sha256": "aad737c888f6c7c6a523f018e468f37e6dc7228ded1f84f39d41bdef4e53d3f4"
+      },
+      "native": {
+        "name": "entry-metadata.native.original.json",
+        "blob": "5455a5b2e9d5f332c50a995d5976bce1c062dd49",
+        "bytes": 461,
+        "sha256": "de9b4501eeba69fe999813c6fb1d067c67e816ed746d6edf109dab9d08deda0f"
+      },
+      "pages": 1
+    },
+    {
+      "name": "body",
+      "id": "9bc668cbff6899f22f3df1e608172d156062037bb534967dea991082a8d6409b",
+      "admission": {
+        "blob": "2e2accfe9fc31181b516a6eb4a03ffa68c4fd8ab"
+      },
+      "status": {
+        "blob": "b47bc5bc3058d5ecde6c45baea3637fcac61cbbd"
+      },
+      "payload": {
+        "name": "entry-body.payload.original.json",
+        "blob": "ed4673f30bc4ae9be7f6681386ba5e1abb10a3d5",
+        "bytes": 14528,
+        "sha256": "b68f86a7be26b23377f023a14f36401d04c67fdb2941c2bb8690f7717ae17f31"
+      },
+      "native": {
+        "name": "entry-body.native.original.json",
+        "blob": "aadb3e884bee4c482514896eb14df0ad816df7c5",
+        "bytes": 14425,
+        "sha256": "18facf8cbea67478eed47704e4c175611f5e9f8b1e0db12daf92b600ffd8927e"
+      },
+      "pages": 2
+    }
+  ],
+  "originalCalls": {
+    "operation_start": 2,
+    "operation_status": 2,
+    "operation_result": 3,
+    "total": 7
+  },
+  "rawSdkCount": 7,
+  "uniqueOriginalOperations": 2,
+  "immutablePages": 3,
+  "metadata": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 80,
+      "link_count": 1,
+      "metadata_platform": "darwin",
+      "mode": 420,
+      "uid": 501,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 420,
+    "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/index.js",
+    "sha256": "f245758337a55924518852f542a27d49bd786d8e4b80821dc5f98f825ec3fc60",
+    "size": 10582,
+    "version": "16777233:405237094:10582:1784843458496192413:1784843458496192413"
+  },
+  "actualEntry": {
+    "blob": "4a63cd4e06362ad36bb50c481315020b6aec94aa",
+    "bytes": 10582,
+    "sha256": "f245758337a55924518852f542a27d49bd786d8e4b80821dc5f98f825ec3fc60"
+  },
+  "runtimeCallsInFlight": 0,
+  "knownNativeFuturesActive": 0,
+  "errors": [],
+  "reusedAdmissions": 0,
+  "sameIdReconciliations": 0,
+  "scope": {
+    "SDKExecuted": false,
+    "privateCapsuleRead": false,
+    "followedImports": false,
+    "currentOwnerSelected": false,
+    "currentWorkerExecuted": false,
+    "historicalEntryQualificationClaimed": false
+  },
+  "accounting": {
+    "previousBodyBytes": 382975,
+    "additionalBodyBytes": 10582,
+    "cumulativeBodyBytes": 393557,
+    "additionalBodyLimit": 65536,
+    "cumulativeBodyLimit": 448511,
+    "metadataHashWorkIsSeparate": true
+  },
+  "derivation": "Reviewed exact source exports evaluated as local pure definitions after metadata original closed; actual path/size/version/mode/owner/nlink gates passed; body request separately externalized before its unique start."
+}

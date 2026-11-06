@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.mac-registration-body4.original-read-intent.r1",
+  "sequence": 2,
+  "lane": "A",
+  "go": {
+    "blob": "49fa57d6128f99ff425ea798466514564374d3b4",
+    "bytes": 10218,
+    "sha256": "9ab46d2157d77f7045cdd33426c52692bc844424537efb196936f8cef6ef5c8b"
+  },
+  "metadata_actual_packet": "27c4b1be1736069cf4b9fdc6a1bf44acb819624f",
+  "exact_request_pin": {
+    "blob": "de4f483af21acc4f5824876a774d4be6812cef86",
+    "bytes": 410,
+    "sha256": "f4da6cc37d69a217e3ba38f8c048d11aa3f6d0de4354038b5d91b9b824d9c163"
+  },
+  "exact_request": {
+    "idempotency_key": "heptabao-mac-registration-body-plugin-registry-25f3ef82-0-20261105-r1",
+    "operation": {
+      "tool": "binary_read",
+      "arguments": {
+        "host": "mac",
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-B8eQDFB4.js",
+        "expected_version": "16777233:405238776:181581:1784843461889330234:1784843461889330234",
+        "offset": 0,
+        "limit": 65536
+      }
+    }
+  },
+  "previous_body_closed_and_whole": {
+    "blob": "f43374d1f7aa1785d5874d5b5c9af1741bf2e8fc",
+    "bytes": 1171,
+    "sha256": "059a43a34c40bb2f70e56bbde481dcc42f38c94b10a90a7c173f2e0a19e2d809",
+    "operation_id": "dc9cfa8e0e5c674c5eb7cce4fd0cce7e7b917a9ed4049acab400bb11cf68fef5"
+  },
+  "only_one_Runtime_call_and_native_future": true,
+  "start_not_yet_called": true,
+  "immutable_page_limit": 8192,
+  "old_body_bytes_not_reused": 140664,
+  "SDK_execution": false
+}

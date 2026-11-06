@@ -1,0 +1,97 @@
+{
+  "schema": "heptabao.exact-X230-full34-current-terminal-read-GO.r33.v1",
+  "status": "GO_EXACT_TWO_NEW_READONLY_OBSERVATIONS_SAME_TERMINAL_JOB",
+  "owner": "/root/compatibility_audit",
+  "lane": "B",
+  "lane_release": {
+    "blob": "385efa95c64f14e13e581c3fb1c56e8d4207cd8d",
+    "bytes": 1779,
+    "sha256": "113de2c15597c6cb3c538caf580e2b3499eafa11a467438cd68aac4c2ef2a0cb"
+  },
+  "job": "x230/1a1ad5ffad0-fc05-599a",
+  "semantic_review": "899f083f702b43a1e5a698bee81bb5c69a435547",
+  "why": "39 initial observer request/intent/SDK index leaves are temporarily unlocated after functions cache reset although original payload/native result bytes survive. Obtain two complete current observations of the same already-terminal original job to independently bind authority and whole public logs; retain every old record and the indexing gap explicitly.",
+  "gap": {
+    "blob": "febdec346fa99b7eef463f660639c6dd8cd3a664",
+    "bytes": 2978,
+    "sha256": "3774fd8fd4f0d4daa3bfb7d7311c1cd392931defdaaa3c8092a2092e25f780dc"
+  },
+  "historical_original_protocol_archive_complete": false,
+  "new_reads_are_not_recovered_original_observations": true,
+  "business_process_start_or_replay": false,
+  "requests": [
+    {
+      "sequence": 1,
+      "name": "terminal-current-status",
+      "request": {
+        "idempotency_key": "heptabao-4e808-x230-full34-current-status-20261105-r1",
+        "operation": {
+          "tool": "process_status",
+          "arguments": {
+            "host": "x230",
+            "job_id": "1a1ad5ffad0-fc05-599a"
+          }
+        }
+      },
+      "pin": {
+        "name": "r33-X230-full34-terminal-current-status.exact-request.json",
+        "blob": "5c85f2c2516a37147d63d4cf7b586ccea16fb903",
+        "bytes": 220,
+        "sha256": "7860727d82b69e7310a6e3d32d088dcf0b4cec0ad688ac0c2cb794892b4a5714"
+      }
+    },
+    {
+      "sequence": 2,
+      "name": "terminal-current-streams",
+      "request": {
+        "idempotency_key": "heptabao-4e808-x230-full34-current-streams-20261105-r1",
+        "operation": {
+          "tool": "process_read",
+          "arguments": {
+            "host": "x230",
+            "job_id": "1a1ad5ffad0-fc05-599a",
+            "stdout_offset": 0,
+            "stderr_offset": 0,
+            "limit": 4096
+          }
+        }
+      },
+      "pin": {
+        "name": "r33-X230-full34-terminal-current-streams.exact-request.json",
+        "blob": "1a1ae29597953ea9ac5ea55f4bc170b5ec5de5fa",
+        "bytes": 292,
+        "sha256": "c404735767e03b6017f42a76e8a691f60a5aa53c7dff6543a3208225cbf9ff7c"
+      }
+    }
+  ],
+  "expected": {
+    "terminal": "succeeded",
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "cancelled": false,
+    "timed_out": false,
+    "stdout_bytes": 275,
+    "stdout_blob": "c5fc65d0ec823e6201d81aedc37d21ee163e6748",
+    "stdout_sha256": "51b2dc84922edef40315c6ca7ecb6b66dfd44032cfae2432f8551949f1ec6c28",
+    "stderr_bytes": 0,
+    "no_remaining_stream_bytes": true
+  },
+  "protocol": {
+    "one_external_intent_then_one_exact_operation_start": true,
+    "one_Runtime_call_and_one_native_future_maximum": true,
+    "save_whole_original_SDK_before_any_parse_or_isError": true,
+    "local_persistence_and_Git_whole_before_next_native_call": true,
+    "same_original_operation_id_only_after_each_ACK": true,
+    "operation_result_limit": 8192,
+    "finish_status_and_whole_payload_before_next_sequence": true,
+    "no_admission_replay_or_new_key_on_error": true,
+    "no_file_info_or_binary_body_refresh": true,
+    "no_new_product_or_provider_or_J3160_call": true,
+    "stop_on_unexpected_terminal_hash_lengths_or_bytes": true
+  },
+  "after_success": "Return complete two-current-observer packet and release lane. Root will combine it with actual full34 contract and separately reviewed original result/summary chain; the old39-index gap remains open and is not labelled repaired.",
+  "other_lane": "A=/root/ha_validation, exact five H2 metadata only",
+  "root_Runtime_calls": 0
+}

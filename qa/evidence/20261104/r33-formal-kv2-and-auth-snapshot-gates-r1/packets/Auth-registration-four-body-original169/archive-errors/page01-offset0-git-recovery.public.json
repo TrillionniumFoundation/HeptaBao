@@ -1,0 +1,10 @@
+{
+  "schema": "heptabao.same-content-git-readback-recovery.v1",
+  "original_error": "RemoteProtocolError: Server disconnected without sending a response.",
+  "blob": "6669e525ca999f984ee9a49a917f415212ef61fc",
+  "bytes": 11780,
+  "sha256": "d911718b55c50610ed940c05cfb2e86d231e1ef2141f44cd06a07c6bf554876f",
+  "whole_readback_now_exact": true,
+  "Runtime_page_reread": false,
+  "Runtime_future_closed": true
+}

@@ -1,0 +1,154 @@
+{
+  "schema": "heptabao.H2-stage.fixed-two-metadata-and-three-body.GO.r33.v1",
+  "decision": "GO_TWO_FIXED_METADATA_THEN_CONDITIONAL_THREE_FIXED_BODIES",
+  "lane": "A",
+  "owner": "/root/ha_validation",
+  "handoff_root_release": {
+    "blob": "ea4037671f2981197af6a52831ce5c00725d6e50",
+    "bytes": 1417,
+    "sha256": "374074f0ba54bbded527d52eda9ab343b0a7337de46160efca6e3f457705ee49"
+  },
+  "source_review": {
+    "blob": "284a2ff03485b695188c8bcc0403fb087a7cceb9",
+    "bytes": 2163,
+    "sha256": "5ca037c83c174034142d8deecddd01e1e8d8196e3851827a65e6dac83907b781"
+  },
+  "stage_root_terminal_release": {
+    "blob": "89b93c0df9d1d6b9c4695718a46fb86e74d093b3",
+    "bytes": 2341,
+    "sha256": "8131df33f363000ec8fccd99c5cb40243c94707710a8ea89fd08431882360b57"
+  },
+  "original_stage_job": "desktop/1a1adb7c0f6-fc05-5ab6",
+  "source_tree": "c2b12435ed9806d5da84c4b678fb14193879f9f9",
+  "metadata_requests": [
+    {
+      "name": "ha-h2-stage-target-info-0-PROPOSED",
+      "blob": "d37b93c23923941cef6b03bd6fbbce6b655f9206",
+      "bytes": 287,
+      "sha256": "00da4b5dd770f0e50a15aba955617cf62d99903e432ac58e7a74811b29d3e9bd"
+    },
+    {
+      "name": "ha-h2-stage-target-info-1-PROPOSED",
+      "blob": "98a0983bde25dc3158ef7d216d910be3b7aa46a1",
+      "bytes": 283,
+      "sha256": "2a2cc5729bb2fc05d0cd60e7cf7d43ac356df4dc767ca17bde6aa01b3603b05f"
+    }
+  ],
+  "metadata_exact": [
+    {
+      "idempotency_key": "ha-4e808-h2-stage-receipt-info-r2-20261105",
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "desktop",
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/stage.result.public.json"
+        }
+      }
+    },
+    {
+      "idempotency_key": "ha-4e808-h2-stage-binding-info-r2-20261105",
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "desktop",
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/binding.private.json"
+        }
+      }
+    }
+  ],
+  "metadata_admissions": 2,
+  "metadata_hash_work": "Each file_info may read the full fixed file for its SHA; immutable body caps do not cap metadata hash work.",
+  "metadata_gates": "Both original fixed file_info observations must close, have complete original immutable payloads, and match exact source-review content/regular no-symlink API/mode0600 uid1000 gid1000 nlink1 linux. binding must match original source-writer full9/version exactly; receipt version is observed independently, not invented.",
+  "conditional_body": {
+    "deriver": {
+      "blob": "8e1f37cfa36403a76bfa2e96a83b85d40eef3f15",
+      "bytes": 4762,
+      "sha256": "dbdb3952492e3c06b88bab1f7875b286725be863f1a29f10b5a3ebe8a139d1dc"
+    },
+    "config": {
+      "blob": "69db067f16796f8ad85f8f73b0355c2f14707120",
+      "bytes": 3410,
+      "sha256": "885033b5ede85de3a8940ef63a4c6d4616c8f5e4d8090a2eed1d598adf7fd5b9"
+    },
+    "request_transformation": "Only each expected_version null from this exact frozen config is replaced by its actual original file_info version; whole exact request and external intent persist before each single operation_start.",
+    "admissions": 3,
+    "ranges": [
+      {
+        "role": "receipt",
+        "request": {
+          "idempotency_key": "ha-4e808-h2-stage-receipt-body0-r2-20261105",
+          "operation": {
+            "tool": "binary_read",
+            "arguments": {
+              "host": "desktop",
+              "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/stage.result.public.json",
+              "offset": 0,
+              "limit": 16384,
+              "expected_version": null
+            }
+          }
+        },
+        "expected_bytes": 16384
+      },
+      {
+        "role": "receipt",
+        "request": {
+          "idempotency_key": "ha-4e808-h2-stage-receipt-body1-r2-20261105",
+          "operation": {
+            "tool": "binary_read",
+            "arguments": {
+              "host": "desktop",
+              "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/stage.result.public.json",
+              "offset": 16384,
+              "limit": 12231,
+              "expected_version": null
+            }
+          }
+        },
+        "expected_bytes": 12231
+      },
+      {
+        "role": "binding",
+        "request": {
+          "idempotency_key": "ha-4e808-h2-stage-binding-body0-r2-20261105",
+          "operation": {
+            "tool": "binary_read",
+            "arguments": {
+              "host": "desktop",
+              "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/binding.private.json",
+              "offset": 0,
+              "limit": 10230,
+              "expected_version": null
+            }
+          }
+        },
+        "expected_bytes": 10230
+      }
+    ],
+    "chunk_cap": 16384,
+    "total_bytes": 38845,
+    "require_each_original_payload_whole_before_next": true,
+    "require_contiguous_bytes_exact_per_file_SHA_version_and_final_EOF": true
+  },
+  "native_observation_caps": {
+    "one_call_and_one_future_per_lane": true,
+    "operation_result_page_bytes": 8192
+  },
+  "stop_rule": "Any error/refusal/missing ACK/UNKNOWN or size/hash/version/identity mismatch stops new admissions; preserve original boundaries and close only the already returned original observer. No business replay/newkey/path switch/expanded cap. Do not represent derived receipt as observed until actual original body is verified.",
+  "scope": {
+    "target_paths": [
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/stage.result.public.json",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/binding.private.json"
+    ],
+    "target_readonly": true,
+    "prepare_authorized": false,
+    "live_authorized": false,
+    "new_stage_authorized": false,
+    "products_started": 0,
+    "source_or_production_changes": false
+  },
+  "root_Runtime_calls": 0,
+  "other_lane": "B remains original X230 comparison69 fixed public result/summary closure",
+  "whole_stage_observer_independent_review": "Original106 packet is complete; root detailed offline chain review continues independently. This GO performs only the two fixed reads.",
+  "before_start": "Complete the ongoing pure local Auth169 peer at a natural boundary; hold no competing A Runtime operation. AuthBus has released A."
+}

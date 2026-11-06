@@ -1,0 +1,2072 @@
+{
+  "schema": "heptabao.H2-target.actual-original-chain-verification.v1",
+  "passed": true,
+  "checks": 411,
+  "whole_input_files": 113,
+  "whole_input_bytes": 507086,
+  "original_observations": 5,
+  "original_Runtime_calls": 20,
+  "unique_pages": 10,
+  "actual_body_bytes": 38845,
+  "verifier_Runtime_calls": 0,
+  "candidate_executed": false,
+  "prepare_submitted": false,
+  "live_submitted": false,
+  "rows": [
+    {
+      "check": "whole original: observations/receipt-info/admission/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-info/admission/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-info/admission/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-info/admission/original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-info/status0/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-info/status0/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-info/status0/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-info/status0/original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-info/pages/000000/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-info/pages/000000/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-info/pages/000000/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-info/pages/000000/original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-info/admission/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-info/admission/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-info/admission/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-info/admission/original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-info/status0/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-info/status0/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-info/status0/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-info/status0/original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-info/pages/000000/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-info/pages/000000/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-info/pages/000000/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-info/pages/000000/original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body0/admission/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body0/admission/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body0/admission/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body0/admission/original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body0/status0/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body0/status0/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body0/status0/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body0/status0/original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body0/pages/000000/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body0/pages/000000/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body0/pages/000000/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body0/pages/000000/original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body0/pages/008192/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body0/pages/008192/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body0/pages/008192/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body0/pages/008192/original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body0/pages/016384/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body0/pages/016384/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body0/pages/016384/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body0/pages/016384/original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body1/admission/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body1/admission/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body1/admission/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body1/admission/original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body1/status0/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body1/status0/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body1/status0/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body1/status0/original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body1/pages/000000/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body1/pages/000000/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body1/pages/000000/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body1/pages/000000/original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body1/pages/008192/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body1/pages/008192/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body1/pages/008192/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body1/pages/008192/original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body1/pages/016384/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body1/pages/016384/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body1/pages/016384/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body1/pages/016384/original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-body0/admission/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-body0/admission/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-body0/admission/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-body0/admission/original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-body0/status0/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-body0/status0/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-body0/status0/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-body0/status0/original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-body0/pages/000000/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-body0/pages/000000/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-body0/pages/000000/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-body0/pages/000000/original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-body0/pages/008192/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-body0/pages/008192/intent.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-body0/pages/008192/original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-body0/pages/008192/original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-info/payload.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-info/native.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-info/payload.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-info/native.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body0/payload.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body0/native.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: actual/chunks/receipt-body0.original.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body1/payload.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/receipt-body1/native.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: actual/chunks/receipt-body1.original.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-body0/payload.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: observations/binding-body0/native.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: actual/chunks/binding-body0.original.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: actual/receipt.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: actual/binding.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: RELEASE.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: verification/deriver-input.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: verification/deriver-output.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: verification/deriver-executor.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: execution-source/conditional-body-deriver.py",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: execution-source/conditional-body-config.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: execution-source/observer-orchestration.js",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: references/root-read-GO.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: references/original-stage.final.stdout.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: references/original-stage.authority.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: recoveries/Git/archive-recovery-complete.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: recoveries/derived-mode/correction.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: recoveries/derived-mode/before-helper.js",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: recoveries/derived-mode/before-journal.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: recoveries/derived-mode/corrected-helper.js",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: recoveries/Git/original_git_write_error.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: recoveries/Git/git_lookup_404.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole original: recoveries/Git/git_write_error_record_failure.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "exact GO identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "fixed GO scope",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "fixed exact pure deriver",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "fixed exact pure config",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "actual pure deriver exit0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "state released, no pending native future",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "exact five observations / twenty calls",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "no new stage or prepare/live",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infoexact original admission arguments",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infostate exact original request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infoadmission exact intent",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infoadmission intent whole request pin",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infopredecessor whole closure recorded",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-info/admission/SDK non-error",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-info/admission/single original text",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-info/admission/native exact bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infoACK exact tool and no reused claim",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-info/status0/SDK non-error",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-info/status0/single original text",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-info/status0/native exact bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infooriginal same-ID closed status",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infoexact status request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infoexact page count",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infopage request 000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-info/pages/000000/SDK non-error",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-info/pages/000000/single original text",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-info/pages/000000/native exact bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infopage ID offset and cap 000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infoimmutable native payload 000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infowhole hash and EOF 000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infowhole payload complete",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infowhole payload exact archived bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infooriginal handler successful",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infowhole native exact payload text",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-inforelease same ID and original pin chain",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infocall intent admission",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infocall original request pin admission",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infojournal returned originals admission",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infojournal SDK/native exact pins admission",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infocall intent status0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infocall original request pin status0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infojournal returned originals status0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infojournal SDK/native exact pins status0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infocall intent pages/000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infocall original request pin pages/000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infojournal returned originals pages/000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-infojournal SDK/native exact pins pages/000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infoexact original admission arguments",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infostate exact original request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infoadmission exact intent",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infoadmission intent whole request pin",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infopredecessor whole closure recorded",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/binding-info/admission/SDK non-error",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/binding-info/admission/single original text",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/binding-info/admission/native exact bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infoACK exact tool and no reused claim",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/binding-info/status0/SDK non-error",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/binding-info/status0/single original text",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/binding-info/status0/native exact bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infooriginal same-ID closed status",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infoexact status request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infoexact page count",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infopage request 000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/binding-info/pages/000000/SDK non-error",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/binding-info/pages/000000/single original text",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/binding-info/pages/000000/native exact bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infopage ID offset and cap 000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infoimmutable native payload 000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infowhole hash and EOF 000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infowhole payload complete",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infowhole payload exact archived bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infooriginal handler successful",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infowhole native exact payload text",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-inforelease same ID and original pin chain",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infocall intent admission",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infocall original request pin admission",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infojournal returned originals admission",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infojournal SDK/native exact pins admission",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infocall intent status0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infocall original request pin status0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infojournal returned originals status0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infojournal SDK/native exact pins status0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infocall intent pages/000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infocall original request pin pages/000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infojournal returned originals pages/000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-infojournal SDK/native exact pins pages/000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0exact original admission arguments",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0state exact original request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0admission exact intent",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0admission intent whole request pin",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0predecessor whole closure recorded",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body0/admission/SDK non-error",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body0/admission/single original text",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body0/admission/native exact bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0ACK exact tool and no reused claim",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body0/status0/SDK non-error",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body0/status0/single original text",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body0/status0/native exact bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0original same-ID closed status",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0exact status request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0exact page count",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0page request 000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body0/pages/000000/SDK non-error",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body0/pages/000000/single original text",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body0/pages/000000/native exact bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0page ID offset and cap 000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0immutable native payload 000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0whole hash and EOF 000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0page request 008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body0/pages/008192/SDK non-error",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body0/pages/008192/single original text",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body0/pages/008192/native exact bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0page ID offset and cap 008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0immutable native payload 008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0whole hash and EOF 008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0page request 016384",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body0/pages/016384/SDK non-error",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body0/pages/016384/single original text",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body0/pages/016384/native exact bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0page ID offset and cap 016384",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0immutable native payload 016384",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0whole hash and EOF 016384",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0whole payload complete",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0whole payload exact archived bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0original handler successful",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0whole native exact payload text",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0release same ID and original pin chain",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0call intent admission",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0call original request pin admission",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0journal returned originals admission",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0journal SDK/native exact pins admission",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0call intent status0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0call original request pin status0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0journal returned originals status0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0journal SDK/native exact pins status0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0call intent pages/000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0call original request pin pages/000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0journal returned originals pages/000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0journal SDK/native exact pins pages/000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0call intent pages/008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0call original request pin pages/008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0journal returned originals pages/008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0journal SDK/native exact pins pages/008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0call intent pages/016384",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0call original request pin pages/016384",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0journal returned originals pages/016384",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0journal SDK/native exact pins pages/016384",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1exact original admission arguments",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1state exact original request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1admission exact intent",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1admission intent whole request pin",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1predecessor whole closure recorded",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body1/admission/SDK non-error",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body1/admission/single original text",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body1/admission/native exact bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1ACK exact tool and no reused claim",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body1/status0/SDK non-error",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body1/status0/single original text",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body1/status0/native exact bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1original same-ID closed status",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1exact status request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1exact page count",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1page request 000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body1/pages/000000/SDK non-error",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body1/pages/000000/single original text",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body1/pages/000000/native exact bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1page ID offset and cap 000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1immutable native payload 000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1whole hash and EOF 000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1page request 008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body1/pages/008192/SDK non-error",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body1/pages/008192/single original text",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body1/pages/008192/native exact bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1page ID offset and cap 008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1immutable native payload 008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1whole hash and EOF 008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1page request 016384",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body1/pages/016384/SDK non-error",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body1/pages/016384/single original text",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/receipt-body1/pages/016384/native exact bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1page ID offset and cap 016384",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1immutable native payload 016384",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1whole hash and EOF 016384",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1whole payload complete",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1whole payload exact archived bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1original handler successful",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1whole native exact payload text",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1release same ID and original pin chain",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1call intent admission",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1call original request pin admission",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1journal returned originals admission",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1journal SDK/native exact pins admission",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1call intent status0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1call original request pin status0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1journal returned originals status0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1journal SDK/native exact pins status0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1call intent pages/000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1call original request pin pages/000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1journal returned originals pages/000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1journal SDK/native exact pins pages/000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1call intent pages/008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1call original request pin pages/008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1journal returned originals pages/008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1journal SDK/native exact pins pages/008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1call intent pages/016384",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1call original request pin pages/016384",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1journal returned originals pages/016384",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1journal SDK/native exact pins pages/016384",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0exact original admission arguments",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0state exact original request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0admission exact intent",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0admission intent whole request pin",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0predecessor whole closure recorded",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/binding-body0/admission/SDK non-error",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/binding-body0/admission/single original text",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/binding-body0/admission/native exact bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0ACK exact tool and no reused claim",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/binding-body0/status0/SDK non-error",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/binding-body0/status0/single original text",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/binding-body0/status0/native exact bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0original same-ID closed status",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0exact status request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0exact page count",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0page request 000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/binding-body0/pages/000000/SDK non-error",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/binding-body0/pages/000000/single original text",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/binding-body0/pages/000000/native exact bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0page ID offset and cap 000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0immutable native payload 000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0whole hash and EOF 000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0page request 008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/binding-body0/pages/008192/SDK non-error",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/binding-body0/pages/008192/single original text",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/binding-body0/pages/008192/native exact bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0page ID offset and cap 008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0immutable native payload 008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0whole hash and EOF 008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0whole payload complete",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0whole payload exact archived bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0original handler successful",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0whole native exact payload text",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0release same ID and original pin chain",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0call intent admission",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0call original request pin admission",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0journal returned originals admission",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0journal SDK/native exact pins admission",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0call intent status0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0call original request pin status0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0journal returned originals status0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0journal SDK/native exact pins status0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0call intent pages/000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0call original request pin pages/000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0journal returned originals pages/000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0journal SDK/native exact pins pages/000000",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0call intent pages/008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0call original request pin pages/008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0journal returned originals pages/008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0journal SDK/native exact pins pages/008192",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "five unique original native admissions",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "ten unique immutable result pages and twenty Runtime calls",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "no Runtime call retries",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receiptexact content file_info",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receiptexact custody identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receiptfull9 lossless projection",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "bindingexact content file_info",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "bindingexact custody identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "bindingfull9 lossless projection",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding exact original stage-writer version",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0only expected_version replaced",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0actual path/version/file size",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0fixed original chunk/range/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body0chunk SHA and archived body",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1only expected_version replaced",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1actual path/version/file size",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1fixed original chunk/range/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt-body1chunk SHA and archived body",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0only expected_version replaced",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0actual path/version/file size",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0fixed original chunk/range/EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "binding-body0chunk SHA and archived body",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receiptwhole actual from original chunks",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receiptwhole actual matches independent file_info",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receiptrelease actual whole pin",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "bindingwhole actual from original chunks",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "bindingwhole actual matches independent file_info",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "bindingrelease actual whole pin",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "exact observed body budget",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt actual pre-finally projection retained",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "separate original post-finally stage closure remains",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "wrong derived mode retained then corrected",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "wrong derivation original source retained",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "wrong derivation original journal retained",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "corrected derivation original source retained",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "three Git errors retained",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "same original returned page archived, not re-observed",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "recovered original page SDK exact",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "recovered original payload exact",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "release retains historical UNKNOWN and correction",
+      "passed": true,
+      "actual": null
+    }
+  ]
+}

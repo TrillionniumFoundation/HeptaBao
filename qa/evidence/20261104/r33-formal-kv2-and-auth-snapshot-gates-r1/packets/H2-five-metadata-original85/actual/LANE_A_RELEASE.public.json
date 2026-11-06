@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.h2.qa12.metadata5.lane-a.release.v1",
+  "status": "RETURN_LANE_A_TO_ROOT",
+  "actual_table": {
+    "name": "ha-h2-metadata5-actual-table",
+    "blob": "9813a1e98b6328ae7efcf68d5a48345bc754b25e",
+    "bytes": 13599,
+    "sha256": "062239cabb9e82aaab9b493d1ade734153f1b75f3cd02309cd6953441fe167ee"
+  },
+  "operation_ids": [
+    "c3c1d811d17f51182b4f14a01e24ad95744f5dab81fd278e737f8fb175cf2406",
+    "64bb1151a3d6d5bfa986e0d97d2550405800eb41a053a8b9f46738e1ed7217d6",
+    "70fe2096a2e100e2a3aa76957ccb0357b0c42d6a2292ee71b55e4532105f78c2",
+    "47e176ea11760396c8367c5988309068479827f528408da67cb096d326ba960b",
+    "305657f43d13bd23dee3dfe85bf3556f55083911e30289ce1d5b84e105683b6f"
+  ],
+  "all_five_native_states": "completed/stored_observed/owned_future_active=false",
+  "all_five_original_payloads": "whole SHA/EOF/one 8192-bound page verified",
+  "all_five_actual_metadata": "exact expected path/bytes/SHA256/version/full9",
+  "current_Runtime_calls_in_flight": 0,
+  "current_native_futures_active": 0,
+  "new_body_read_RPC": 0,
+  "new_process_start": 0,
+  "historical_UNKNOWN_preserved": true,
+  "next_Runtime_authority": "ROOT_SCHEDULING_REQUIRED",
+  "remaining_work": "pure Git packet and independent X230 summary-chain review only"
+}

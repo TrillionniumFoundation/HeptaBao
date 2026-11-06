@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.h2qa.destination.metadata5.observation.intent.v1",
+  "index": 7,
+  "tool": "operation_result",
+  "request": {
+    "operation_id": "c3c1d811d17f51182b4f14a01e24ad95744f5dab81fd278e737f8fb175cf2406",
+    "offset": 0,
+    "limit": 8192
+  },
+  "closed_status": {
+    "name": "ha-h2-info7-status-native",
+    "blob": "b920ed64b1da76cbcf5048c55946476d6bb2e422",
+    "bytes": 800,
+    "sha256": "d20105330928eb72a9782c71fb9ea0771e89dac930ce3726bc0ded575d9448fe"
+  },
+  "authorization": "8c5542d05ace15c6d1405852ff69b091fa6c88ce",
+  "immutable_original_payload_only": true,
+  "new_native_admission": false
+}

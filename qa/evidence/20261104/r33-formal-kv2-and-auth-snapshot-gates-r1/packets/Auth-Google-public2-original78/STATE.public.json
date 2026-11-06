@@ -1,0 +1,551 @@
+{
+  "schema": "heptabao.auth-google-public2.actual-state.r1",
+  "GO": "a58667829950717eab43010eb2c768f9be24677e",
+  "lane": "A",
+  "inflight": false,
+  "futureActive": false,
+  "stopped": false,
+  "operations": [
+    {
+      "seq": 1,
+      "kind": "file_info",
+      "id": "google-manifest",
+      "request": {
+        "idempotency_key": "heptabao-mac-google-manifest-metadata-518e8e07-20261105-r1",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/openclaw.plugin.json"
+          }
+        }
+      },
+      "requestPin": {
+        "blob": "c1b435737ad8a9538a1037f1f10b4c396ec9c581",
+        "bytes": 279,
+        "sha256": "453e041ae30ae840ce98e5721b2f8ae18c94ca019939a6df9a6b9b1b9add4331"
+      },
+      "intent": {
+        "blob": "d3d5dfc042457278abc0eae65f4bdc9499a8772f",
+        "bytes": 844,
+        "sha256": "7bddcb50b9fd09a5ff9fe3e09c2513c9d7ba5a661c7886f3d991306cede9b50d"
+      },
+      "submitted": true,
+      "closed": true,
+      "pages": [
+        {
+          "offset": 0,
+          "nextOffset": 590,
+          "bytes": 590,
+          "sdk": "2341c2553c519a55c51cc8a5a65f95f8c912097f",
+          "native": "421128c4e2f8e00d79c4f002eb197a7fc11ceaeb"
+        }
+      ],
+      "ackSdk": {
+        "blob": "45c5375b46053cf15d3c0df0952caa5b4fed11cc",
+        "bytes": 704,
+        "sha256": "8803182ed74fca6f4a6cbd0ba33d4f471b3e28fff7471026bc0cb346c5e4e96b"
+      },
+      "operationId": "612a8558f696d18a9cb93d0c55f12135a4343debae1279d3209ffc3ddbfd2f45",
+      "ackNative": {
+        "blob": "c96733bc5385dd34eee317a4900575221640396a",
+        "bytes": 543,
+        "sha256": "ed930bf3dcee1b3f054db5a3ce2cbb6f102e6863aa88152566cb18d4c94ab09b"
+      },
+      "status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "612a8558f696d18a9cb93d0c55f12135a4343debae1279d3209ffc3ddbfd2f45",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "file_info"
+      },
+      "statusCount": 1,
+      "statusNative": {
+        "blob": "aac573db5ff1dbde371a4cdc620f73821c9ba70f",
+        "bytes": 800,
+        "sha256": "cc3330067ca8b4e006124ac0a1301b484a697c4a5e87f06797f1ac7d0103ae3a"
+      },
+      "nativeClosed": true,
+      "totalBytes": 590,
+      "payloadSha256": "ccd508624b726e25792acbd76477167d2aa62845692da8a45997f7e16269662d",
+      "nextOffset": 590,
+      "value": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 80,
+          "link_count": 1,
+          "metadata_platform": "darwin",
+          "mode": 420,
+          "uid": 501,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 420,
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/openclaw.plugin.json",
+        "sha256": "518e8e071c1e5720c9fe621ac84c8b550df93af14dac0d96d788d73917835301",
+        "size": 28911,
+        "version": "16777233:405240594:28911:1784843466375861317:1784843466375861317"
+      },
+      "nativePin": {
+        "blob": "5c4b86cf2d2c42b565b9089c002a08e0fa1d15e0",
+        "bytes": 473,
+        "sha256": "518612279fbc8efb9cf74362e7924531afd6274b13f6bfbb2f64b63abefd5da9"
+      },
+      "payloadPin": {
+        "blob": "58b083dc845f06fc869aea4d6c7d48e1f3be0063",
+        "bytes": 590,
+        "sha256": "ccd508624b726e25792acbd76477167d2aa62845692da8a45997f7e16269662d"
+      },
+      "binding": {
+        "blob": "aad3d619337daaf4d4e21459c9525738fed4f5e6",
+        "bytes": 1393,
+        "sha256": "28e3845a067c6d068820f1aac71c726f216a7d0dfcab5520c66e1e26103148ee"
+      }
+    },
+    {
+      "seq": 2,
+      "kind": "file_info",
+      "id": "google-package",
+      "request": {
+        "idempotency_key": "heptabao-mac-google-package-metadata-398f7330-20261105-r1",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/package.json"
+          }
+        }
+      },
+      "requestPin": {
+        "blob": "e7060cb5323b8169caf3eab29b2e95f3a9def76e",
+        "bytes": 270,
+        "sha256": "6b5dcf0c35e17ca58bd79899f0ec81e9fbdf2c00f5b7698e45e9f409e39a7eed"
+      },
+      "intent": {
+        "blob": "162224bf0210f14901def5a71411b61b13f6cffe",
+        "bytes": 991,
+        "sha256": "a76f08c4635f4e782e01ddbf80f63df283e18cdfdf2b11a6e16765a99ed216c0"
+      },
+      "submitted": true,
+      "closed": true,
+      "pages": [
+        {
+          "offset": 0,
+          "nextOffset": 578,
+          "bytes": 578,
+          "sdk": "18656c2b1ba976e0feac1509f5a865bfc0cc9d8d",
+          "native": "debcae973d667f788dc94fe92f5790cfe284922b"
+        }
+      ],
+      "ackSdk": {
+        "blob": "0627fa06bd16535bdf668e28a5fc643503ec6a78",
+        "bytes": 704,
+        "sha256": "d6b089fd6496a23fd2ebb81b03ec95f7fff9e99b50c950ed45076ea2be52369d"
+      },
+      "operationId": "a5cd8ac32ba823f6f05673fb277debe7fa69914331ff9608d887f3c64a1c4ddc",
+      "ackNative": {
+        "blob": "0ff3f9bfa38ffedfedbe75bed0eaebacb3490f60",
+        "bytes": 543,
+        "sha256": "d0079d1c23337549bf49e36ae60f4bfb519a06d72d4bb1df27fc07f378ca5f1a"
+      },
+      "statusCount": 1,
+      "statusNative": {
+        "blob": "ff8fc7b4251b5c99fe7e815697ed2e9d125a9a60",
+        "bytes": 800,
+        "sha256": "13d2a22cc43f1345faa8be029f814d3c5034bbc36a52a30983edb570e39add5f"
+      },
+      "status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "a5cd8ac32ba823f6f05673fb277debe7fa69914331ff9608d887f3c64a1c4ddc",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "file_info"
+      },
+      "nativeClosed": true,
+      "totalBytes": 578,
+      "payloadSha256": "05c769fd3a65c131a297cf85d3d297c2416a2d4c7fdb6e2917c29568cc3d361c",
+      "nextOffset": 578,
+      "value": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 80,
+          "link_count": 1,
+          "metadata_platform": "darwin",
+          "mode": 420,
+          "uid": 501,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 420,
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/package.json",
+        "sha256": "398f73305017a1d3813610825814c6e1dd93b683da088cb6df068a31c639fcc3",
+        "size": 375,
+        "version": "16777233:405240659:375:1784843466392296043:1784843466392296043"
+      },
+      "nativePin": {
+        "blob": "312a238cf2034035b2d554dd9d5c2e887daa44f5",
+        "bytes": 461,
+        "sha256": "ae160efd51813073008d8ae0b8852eaa2f99ce1c4f4569cc882662dc8fb9f75d"
+      },
+      "payloadPin": {
+        "blob": "d13a9e2e87c020ac5f5324267f62ff0d62a77e3d",
+        "bytes": 578,
+        "sha256": "05c769fd3a65c131a297cf85d3d297c2416a2d4c7fdb6e2917c29568cc3d361c"
+      },
+      "binding": {
+        "blob": "524bffecd8929c42e4db384fb0ca2ec93c667353",
+        "bytes": 1380,
+        "sha256": "49efb3d9c1eff177dad0a8808fd06933ffb62a67ab83eba75633cb126e582775"
+      }
+    },
+    {
+      "seq": 3,
+      "kind": "binary_read",
+      "id": "google-manifest",
+      "request": {
+        "idempotency_key": "heptabao-mac-google-manifest-body-518e8e07-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/openclaw.plugin.json",
+            "expected_version": "16777233:405240594:28911:1784843466375861317:1784843466375861317",
+            "offset": 0,
+            "limit": 28911
+          }
+        }
+      },
+      "requestPin": {
+        "blob": "3962e47ff547ae504ecfcb70b073111771164bd3",
+        "bytes": 412,
+        "sha256": "40b411c2b8a15c7ad2564fd95d0c6d606d439feaa4f25dcbd1fda9a2ece92886"
+      },
+      "intent": {
+        "blob": "6a0d0be76ced8560becd54f2633bb811cf439c9e",
+        "bytes": 1348,
+        "sha256": "356f51734663ac9695378851ff8424f2f9025d9c4c402a587782a8b8e90d8d79"
+      },
+      "submitted": true,
+      "closed": true,
+      "pages": [
+        {
+          "offset": 0,
+          "nextOffset": 8192,
+          "bytes": 8192,
+          "sdk": "0193aebba583ad3c7a9fa47026c425cee096e964",
+          "native": "f9e446e23a2d8b1fb8226bd1e38520f2b3198da0"
+        },
+        {
+          "offset": 8192,
+          "nextOffset": 16384,
+          "bytes": 8192,
+          "sdk": "07fd71bfd41042b9a909e855e504f735e5f874d4",
+          "native": "17391bec06c6a5e855ea7e728767b6f57d36e3ab"
+        },
+        {
+          "offset": 16384,
+          "nextOffset": 24576,
+          "bytes": 8192,
+          "sdk": "47119c74b82e7e2b4a1a3224a07cfdebf8b8a07b",
+          "native": "629291b139ef3d4459f17253375246a110eae27d"
+        },
+        {
+          "offset": 24576,
+          "nextOffset": 32768,
+          "bytes": 8192,
+          "sdk": "47d82b654c7b21ff6a04f950f18beabdee3180e5",
+          "native": "231d8cbbbe50ab4fd301fc752da16d742cff9da3"
+        },
+        {
+          "offset": 32768,
+          "nextOffset": 38976,
+          "bytes": 6208,
+          "sdk": "b4068bebdf2bfe302db50811364dafc69057a035",
+          "native": "bcda5fbb4e07436594c875e600523b00276a2343"
+        }
+      ],
+      "ackSdk": {
+        "blob": "a9463003734a998268dc08f91d66f9062dfa9265",
+        "bytes": 706,
+        "sha256": "1b853b02b777a040e28ba7b36ac3cbc401561f6b63ff1450a004e24b029bf09b"
+      },
+      "operationId": "cc8a9e9286fc366252299fcecd8c47b55560d1270aee485ff75a946147346862",
+      "ackNative": {
+        "blob": "24ee91ec04b9fa4e778775ee827b4c71f2772f27",
+        "bytes": 545,
+        "sha256": "b4c4e40a5a52e462e3fa005caff6477d0a99c8a7bc43947b24045f22c02f874a"
+      },
+      "statusCount": 1,
+      "statusNative": {
+        "blob": "721ac9ee5353a564f87cbaa7621588ddc5bd8949",
+        "bytes": 802,
+        "sha256": "11fda969d975342b8fa8e04be5a73bb4179daf7406cdeb7ebc4d36d049852b2b"
+      },
+      "status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "cc8a9e9286fc366252299fcecd8c47b55560d1270aee485ff75a946147346862",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "binary_read"
+      },
+      "nativeClosed": true,
+      "totalBytes": 38976,
+      "payloadSha256": "03ae439ade6a85d93794f44c165ab5c8e9a8a98c4e1bc6eff5fe625bb1ade1ab",
+      "nextOffset": 38976,
+      "nativePin": {
+        "blob": "7e79cddec5aaed945167adafbe445a730501953e",
+        "bytes": 38873,
+        "sha256": "2899821618d76a854fa35a7ba61bfc5357530d0d9ea163779e5ffe0c162940e9"
+      },
+      "payloadPin": {
+        "blob": "bd496990ae76bcec4f2eb1f9f25a1bda46acb600",
+        "bytes": 38976,
+        "sha256": "03ae439ade6a85d93794f44c165ab5c8e9a8a98c4e1bc6eff5fe625bb1ade1ab"
+      },
+      "binding": {
+        "blob": "8b1fe31a4403b91f032d6043a0052b7275c166ec",
+        "bytes": 1347,
+        "sha256": "b32e5fb36c42319811f178f57f1f5730f2867366c5e223b4a1545a0e598aa1cb"
+      }
+    },
+    {
+      "seq": 4,
+      "kind": "binary_read",
+      "id": "google-package",
+      "request": {
+        "idempotency_key": "heptabao-mac-google-package-body-398f7330-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/package.json",
+            "expected_version": "16777233:405240659:375:1784843466392296043:1784843466392296043",
+            "offset": 0,
+            "limit": 375
+          }
+        }
+      },
+      "requestPin": {
+        "blob": "d47264958f9a498e14d4652e84db91707816011a",
+        "bytes": 399,
+        "sha256": "eb1662f64292602133d56ea8ae0142d2b7bc04c5db7ef278ce60398d07532e46"
+      },
+      "intent": {
+        "blob": "0ea3876fa30e413858c5a7235828a5e012501ec2",
+        "bytes": 1334,
+        "sha256": "f5b6bfa60132124e4d9a9ad1744b11f5883effe1d826f7ecf85d260754d8c89d"
+      },
+      "submitted": true,
+      "closed": true,
+      "pages": [
+        {
+          "offset": 0,
+          "nextOffset": 914,
+          "bytes": 914,
+          "sdk": "e038c248574739c1eb3eda039d2780962bcb3318",
+          "native": "50f9a4ddd0df63d4d03671ed9f392a77f8cd098c"
+        }
+      ],
+      "ackSdk": {
+        "blob": "c5b4f3d76b4147235658dc8313cf4e665f748f88",
+        "bytes": 706,
+        "sha256": "486d84ddf2ec7cb562f4c416b3d7082c313a0143cf34cd797b998ec2096ed950"
+      },
+      "operationId": "7a17d296389a4dac43847662e338e39d3955274aadafbd537755d5e9f649c8db",
+      "ackNative": {
+        "blob": "275566dfe63c7bc3a4e6099ae8f58dec39cc0272",
+        "bytes": 545,
+        "sha256": "23e85b8e02f3dc453acd0229205e2c38dc2df1b0554aa45d9708cabdf77ae491"
+      },
+      "statusCount": 1,
+      "statusNative": {
+        "blob": "0abe152c17a3077f7724f93bc67f31bcc832f0b0",
+        "bytes": 802,
+        "sha256": "64805f3d8819a4195e834f094d52c247a684f47dbe66d8bc1aa2e0e1b653c8d3"
+      },
+      "status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "7a17d296389a4dac43847662e338e39d3955274aadafbd537755d5e9f649c8db",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "binary_read"
+      },
+      "nativeClosed": true,
+      "totalBytes": 914,
+      "payloadSha256": "2901219eb9e16192f9110f54ed4f449a77081c5b3652a6ba514bdb5445498d3a",
+      "nextOffset": 914,
+      "nativePin": {
+        "blob": "a5c9e9943005317adbded114c79a3cc3d163a9a7",
+        "bytes": 811,
+        "sha256": "d37c3b3b64c74594c8075a27563be29aeae3fff51fc400dc057723ecd9d7f104"
+      },
+      "payloadPin": {
+        "blob": "2c6c233c681f6332042553521f658c38b1855137",
+        "bytes": 914,
+        "sha256": "2901219eb9e16192f9110f54ed4f449a77081c5b3652a6ba514bdb5445498d3a"
+      },
+      "binding": {
+        "blob": "5ac7d1c81b4b7c8ffb5c4e425ea8d8df1adde4a1",
+        "bytes": 1330,
+        "sha256": "7a97c938a69818688763d285802f3e13b6f5afd10a849bd914c5d8e8d9a87249"
+      }
+    }
+  ],
+  "metadata": {
+    "google-manifest": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 80,
+        "link_count": 1,
+        "metadata_platform": "darwin",
+        "mode": 420,
+        "uid": 501,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 420,
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/openclaw.plugin.json",
+      "sha256": "518e8e071c1e5720c9fe621ac84c8b550df93af14dac0d96d788d73917835301",
+      "size": 28911,
+      "version": "16777233:405240594:28911:1784843466375861317:1784843466375861317"
+    },
+    "google-package": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 80,
+        "link_count": 1,
+        "metadata_platform": "darwin",
+        "mode": 420,
+        "uid": 501,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 420,
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/package.json",
+      "sha256": "398f73305017a1d3813610825814c6e1dd93b683da088cb6df068a31c639fcc3",
+      "size": 375,
+      "version": "16777233:405240659:375:1784843466392296043:1784843466392296043"
+    }
+  },
+  "bodies": {
+    "google-manifest": {
+      "blob": "dde2aa7b76b6e8eec6e7f9edc368ea3191aca7d6",
+      "bytes": 28911,
+      "sha256": "518e8e071c1e5720c9fe621ac84c8b550df93af14dac0d96d788d73917835301",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/openclaw.plugin.json",
+      "version": "16777233:405240594:28911:1784843466375861317:1784843466375861317"
+    },
+    "google-package": {
+      "blob": "eca1335cb1e73aafcb53f89bba324673f9fa4493",
+      "bytes": 375,
+      "sha256": "398f73305017a1d3813610825814c6e1dd93b683da088cb6df068a31c639fcc3",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/package.json",
+      "version": "16777233:405240659:375:1784843466392296043:1784843466392296043"
+    }
+  },
+  "newBodyBytes": 29286,
+  "previousBodyBytes": 353689,
+  "SDKExecuted": false,
+  "privateCapsuleRead": false,
+  "bodyDerivation": {
+    "blob": "6d6551905fd9ab9edc2411c4e482d4fc203d9aff",
+    "bytes": 2603,
+    "sha256": "98faf7637fcd1e4afdb9465f8260aa2f904c531dc997bc54ee6158048a0c3603"
+  },
+  "frozenSecondBody": {
+    "request": {
+      "idempotency_key": "heptabao-mac-google-package-body-398f7330-20261105-r1",
+      "operation": {
+        "tool": "binary_read",
+        "arguments": {
+          "host": "mac",
+          "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/package.json",
+          "expected_version": "16777233:405240659:375:1784843466392296043:1784843466392296043",
+          "offset": 0,
+          "limit": 375
+        }
+      }
+    },
+    "pin": {
+      "blob": "d47264958f9a498e14d4652e84db91707816011a",
+      "bytes": 399,
+      "sha256": "eb1662f64292602133d56ea8ae0142d2b7bc04c5db7ef278ce60398d07532e46"
+    }
+  },
+  "declaredEntry": {
+    "package": "eca1335cb1e73aafcb53f89bba324673f9fa4493",
+    "relative": [
+      "./index.js"
+    ],
+    "lexicalPath": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/index.js",
+    "historicalEntryPin": null,
+    "observedEntryFile": false,
+    "ownerSelected": false
+  },
+  "release": {
+    "blob": "ee94515d5509f2ba5efce754973da409036b1aec",
+    "bytes": 7355,
+    "sha256": "638a132e9acf4be4005e7afa59843f11025b8f60a0ffa7d06ff8da1d72234610"
+  },
+  "laneReleased": true
+}

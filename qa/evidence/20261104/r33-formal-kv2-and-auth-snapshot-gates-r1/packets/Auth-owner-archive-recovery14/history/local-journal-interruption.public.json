@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.public-git-archival.local-journal-interruption.r1",
+  "runtimeCalls": 0,
+  "candidateBytesChanged": false,
+  "stage": "after successful immutable blob save/whole readback; local pin journal status guard",
+  "error": "archival_pin_journal_failed",
+  "originalFailingExecWrapperRetained": false,
+  "cause": "NOT_ESTABLISHED_FROM_RETAINED_ORIGINAL_WRAPPER",
+  "externalPin": {
+    "name": "owner-bound-renew-source-mac_t5_volume_guard_r1.py",
+    "blob": "5a0177bed2e224de3ec14f68174ec9b6e0ea2525",
+    "bytes": 13391,
+    "sha256": "55a007ae925c6cab6ee228ec5154cff79baa6c2bc38fb65868fd192dfc29d288"
+  },
+  "reconciliation": {
+    "chunk_id": "e299fc",
+    "wall_time_seconds": 2.6709e-05,
+    "exit_code": 0,
+    "original_token_count": 270,
+    "output": "{\"directoryExists\": true}\n{\"count\": 21, \"tail\": [{\"path\": \"source/mac_current_phase_owner_r2.py\", \"name\": \"owner-bound-renew-source-mac_current_phase_owner_r2.py\", \"blob\": \"82f790ff6d26d9e998fe1c5c61f89f5975ec3920\", \"bytes\": 24975, \"sha256\": \"bb674ed1a60b204207af2dbab4d7b06a76e47fdebb19991e2f2c3dda7beac4a5\"}, {\"path\": \"source/mac_current_server_owner_r1.py\", \"name\": \"owner-bound-renew-source-mac_current_server_owner_r1.py\", \"blob\": \"44bf4989f10bad1d6322b182b630769bf93a09c3\", \"bytes\": 13394, \"sha256\": \"fb38bd7ce30e9a0b62539d459939b2ec20d96f84fd08d57199aa095fd3fc5ef6\"}, {\"path\": \"source/mac_owned_launchd_r3.py\", \"name\": \"owner-bound-renew-source-mac_owned_launchd_r3.py\", \"blob\": \"96fe347f2edbda1718b2fd683041b88be8f41e30\", \"bytes\": 35736, \"sha256\": \"4989b58248f7951f825c021402bef611708b8613291d3282761c8c97d0b4adf6\"}, {\"path\": \"source/mac_t5_volume_guard_r1.py\", \"name\": \"owner-bound-renew-source-mac_t5_volume_guard_r1.py\", \"blob\": \"5a0177bed2e224de3ec14f68174ec9b6e0ea2525\", \"bytes\": 13391, \"sha256\": \"55a007ae925c6cab6ee228ec5154cff79baa6c2bc38fb65868fd192dfc29d288\"}]}\n"
+  },
+  "observedExistingJournalCount": 21,
+  "postAction": "fsync existing journal and recover its exact records; no repeated Runtime or blob content change"
+}

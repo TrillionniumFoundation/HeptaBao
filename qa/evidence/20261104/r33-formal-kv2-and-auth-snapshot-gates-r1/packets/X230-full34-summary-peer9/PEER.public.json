@@ -1,0 +1,125 @@
+{
+  "schema": "heptabao.x230-full34.independent-summary-chain-peer.v1",
+  "reviewer": "/root/ha_validation",
+  "decision": "PASS_WITHIN_THREE_ORIGINAL_SUMMARY_OBSERVER_CHAINS",
+  "source_packet": {
+    "tree": "f0f0770bbd740583e9db906627efd57f8a296906",
+    "files": 107,
+    "bytes": 781823,
+    "Merkle_trees": 31
+  },
+  "job_id": "1a1ad5ffad0-fc05-599a",
+  "source_acquisition": "exact shared Git mirror files, independently rehashed against the fixed recursive tree and all 31 Git Merkle nodes; no Runtime observation performed by this peer",
+  "new_independent_checks": 679,
+  "prior_review_carried_without_reexecution": {
+    "tree": "a74af927eedfddd78ae23b3fd03afc6638d76e8f",
+    "review": {
+      "blob": "390a10b882789b03c3a559cdfdfafb0f4573d107",
+      "bytes": 2204,
+      "sha256": "92d6c43d02fb19b2a29437aa7f631ec9a1ebe5e08ebff041594d3973b5653c00"
+    },
+    "checks": 156,
+    "scope": "original launch/content bindings and bounded partial-archive findings"
+  },
+  "actual_verifier": {
+    "source": {
+      "blob": "f0fbb287a382b3aa5ec321f42005a96a67a2d7d0",
+      "bytes": 12352,
+      "sha256": "6938e82b85d3f87e2a415f9e53151db1af7532ad3ec6683c787466c70034a9c6"
+    },
+    "result": {
+      "blob": "f231911b13d608d7dbff42a33afb63a78f305713",
+      "bytes": 73578,
+      "sha256": "9c9b7f95cdb80a215a0ca55257b24c8892ca00799758f6058d254e094b0f82b4"
+    },
+    "executor": {
+      "name": "ha-x230-summary107-independent-executor-sdk",
+      "blob": "65d0df79d21266bc0402ce9857535fd22655cec9",
+      "bytes": 836,
+      "sha256": "131f1085c484237e84fe28d51f7f17501d56db12c6b6c7681cddbe2a78551dc3"
+    },
+    "exit_code": 0
+  },
+  "observers": [
+    {
+      "label": "summary-info",
+      "operation_id": "867d5e9f7afe790244296831583c76b72ded9f3c52e6bf2b2ad215288a4d600a",
+      "tool": "file_info",
+      "pages": 1,
+      "payload": {
+        "blob": "64afb600ac9971355187951f481747201d750c58",
+        "bytes": 602,
+        "sha256": "b6787db40547e062fba17b7d1c36b124178fdffddd21f366745cc5e1dc5523a4"
+      },
+      "native": {
+        "blob": "b21191f87f12444960afc6ff03d6cef8ac48c9b1",
+        "bytes": 485,
+        "sha256": "7e34aa0d8a763f0d43459c5b4b30b5380f6c035d6051d5aa637205e058515819"
+      },
+      "closed": true
+    },
+    {
+      "label": "summary-body0",
+      "operation_id": "3791f6b9560e9c86be4b0ef8c4f152d8f99732c661d5ef115798f56e033fb9f9",
+      "tool": "binary_read",
+      "pages": 11,
+      "payload": {
+        "blob": "fcb04079c04c81ed34cf82c1d0126c808762bf79",
+        "bytes": 87823,
+        "sha256": "6a892e9fad898f16b046a3a8d230179b5ad7b6f95ad24f43102f1dc3ba83d878"
+      },
+      "native": {
+        "blob": "d922621c3df4fe813b0e4cce645498ed025ec0ff",
+        "bytes": 87720,
+        "sha256": "bb8b9ef09a5b30d5fef06f29d5538a6fb661093e56778a016bf74bfdc976c414"
+      },
+      "closed": true
+    },
+    {
+      "label": "summary-body1",
+      "operation_id": "6795dacaa192eda3e62bd6f3de615b035bc881b5bc5cc45e6e6cf989ed97cac2",
+      "tool": "binary_read",
+      "pages": 5,
+      "payload": {
+        "blob": "7d6faf963d5e52417700c84c2a10f9d47cdec25e",
+        "bytes": 34298,
+        "sha256": "d722cce33f9f038fd7735c9727424127e56f1b68d4222138c6c336d041272b3a"
+      },
+      "native": {
+        "blob": "a66ac0db296ec869767434693a23000a5d6d9b79",
+        "bytes": 34195,
+        "sha256": "97a55c6def1cf0fbbfd9452ae6745134a90248bac2361a2f267f5a2977e3f853"
+      },
+      "closed": true
+    }
+  ],
+  "verified_facts": [
+    "All 23 original calls bind exact request values and byte pins to their saved intents; original SDK text equals each saved native call result.",
+    "Three admitted IDs are retained unchanged through their completed / stored_observed / owned_future_active=false statuses and all 17 immutable original result pages.",
+    "Every page has exact ID, offset, 8192 limit, total, original-payload digest, EOF and contiguous coverage. Three original payloads reconstruct byte exactly, then bind to their original native texts.",
+    "The independent file_info fixes summary path, 90,926 bytes, full SHA256 and nanosecond version. Native body0 is 65,536 bytes, body1 is 25,390 bytes; both retain that version and their own chunk SHA, and reconstruct exact summary blob 1368fb13c2478606a2e730ef13f942ede824114b.",
+    "Every closure page pointer, payload pin and native pin equals the corresponding immutable packet leaf.",
+    "The pre-reset journal's pending body0 page0 request and intent equal the completed page's original request and intent; its original operation ID is unchanged. The saved post-reset page orchestrator only calls operation_result and was read, never executed by this peer."
+  ],
+  "cache_boundary": {
+    "journal_blob": "83f37c59fa1ca23c12b0583a256db89081ab4388",
+    "body0_first_page_request": "df642e02440259a79148168979a1f05125ecf445",
+    "body0_first_page_intent": "7eefae1510f8bd5c2d34aebd78bf55d48dbd5dd9",
+    "statement": "The reviewed records and page-only source support continuation of the original immutable payload. No claim is made about unobserved calls outside this finite packet."
+  },
+  "limits": {
+    "historical_unlocated_leaf_count": 39,
+    "historical_finite_gap_blob": "febdec346fa99b7eef463f660639c6dd8cd3a664",
+    "historical_gap_scope": "authority0/authority1/streams0 admission-status-page framework leaves (36) plus result-info admission intent/status request/status intent (3)",
+    "historical_ids": "those earliest three IDs remain author pre-reset state-print provenance, not recovered original SDK bindings",
+    "historical_archive_complete": false,
+    "new_current2_packet": "c20c4a619e0976c546f75443baf1555af6acf4a3 is separate new evidence and was not re-reviewed here; it cannot be labelled recovery of old 39 leaves",
+    "no_synthesized_original_calls": true,
+    "author_verifier_reexecuted": false,
+    "base156_reexecuted": false,
+    "product31_semantics_reviewed": false,
+    "Runtime_calls": 0,
+    "SDK_or_candidate_execution": 0,
+    "no_new_GO": true
+  }
+}

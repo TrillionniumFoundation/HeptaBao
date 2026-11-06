@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.x230-full34-summary-original-chains.v1",
+  "job_id": "1a1ad5ffad0-fc05-599a",
+  "summary_bytes": 90926,
+  "summary_sha256": "b9966b600df2f2c681148b63d03dca3bbceabcdff3fb42dc1eb4bae73677ae9f",
+  "version": "2053:3066538:90926:1793910257046281214:1793910257046281214",
+  "native_chunk_count": 2,
+  "immutable_page_count": 16,
+  "meta_observer_pages": 1,
+  "all_three_observers_completed_stored_inactive": true,
+  "cache_reset_boundary": "After body0 admission/status and page0 request/intent persisted, before page0 submitted; resume used original request/intent/operation ID, no repeated native admission.",
+  "body0_operation": "3791f6b9560e9c86be4b0ef8c4f152d8f99732c661d5ef115798f56e033fb9f9",
+  "body1_operation": "6795dacaa192eda3e62bd6f3de615b035bc881b5bc5cc45e6e6cf989ed97cac2",
+  "Runtime_current_call_count": 0,
+  "native_future_count": 0,
+  "earliest_three_framework_indexes_unlocated": true,
+  "historical_ids_source": "Prior author execution-state print in conversation before cache reset; not a recovered SDK ID binding and not used for new operations.",
+  "historical_unlocated_ids": {
+    "authority0": "bb4f26f9da69a67dbef37d8f0f6da4db028572cd95eeba258f6060a1be8c664e",
+    "authority1": "1de06dae28aa07bcb399ba5f0a7c922002a0ab9826ee518b2a29c4e17cd4fe4b",
+    "streams0": "8100f75441d62efc6e102e1ae4dcf8a0912bd1df5d4a88594b27f367ba8ddebf"
+  },
+  "no_product_or_file_body_replay": true
+}

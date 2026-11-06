@@ -1,0 +1,74 @@
+{
+  "schema": "heptabao.H2-stage.materialized-body-proposal.v1",
+  "runtime_GO": false,
+  "requests": [
+    {
+      "idempotency_key": "ha-4e808-h2-stage-receipt-body0-r2-20261105",
+      "operation": {
+        "tool": "binary_read",
+        "arguments": {
+          "host": "desktop",
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/stage.result.public.json",
+          "offset": 0,
+          "limit": 16384,
+          "expected_version": "2050:7874336:28615:1793915867295097739:1793915867295097739"
+        }
+      }
+    },
+    {
+      "idempotency_key": "ha-4e808-h2-stage-receipt-body1-r2-20261105",
+      "operation": {
+        "tool": "binary_read",
+        "arguments": {
+          "host": "desktop",
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/stage.result.public.json",
+          "offset": 16384,
+          "limit": 12231,
+          "expected_version": "2050:7874336:28615:1793915867295097739:1793915867295097739"
+        }
+      }
+    },
+    {
+      "idempotency_key": "ha-4e808-h2-stage-binding-body0-r2-20261105",
+      "operation": {
+        "tool": "binary_read",
+        "arguments": {
+          "host": "desktop",
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/binding.private.json",
+          "offset": 0,
+          "limit": 10230,
+          "expected_version": "2050:7874334:10230:1793915867275098276:1793915867275098276"
+        }
+      }
+    }
+  ],
+  "current_metadata": {
+    "receipt": {
+      "device": 2050,
+      "inode": 7874336,
+      "uid": 1000,
+      "gid": 1000,
+      "permission_mode": 384,
+      "links": 1,
+      "bytes": 28615,
+      "mtime_ns": 1793915867295097739,
+      "ctime_ns": 1793915867295097739,
+      "version": "2050:7874336:28615:1793915867295097739:1793915867295097739"
+    },
+    "binding": {
+      "device": 2050,
+      "inode": 7874334,
+      "uid": 1000,
+      "gid": 1000,
+      "permission_mode": 384,
+      "links": 1,
+      "bytes": 10230,
+      "mtime_ns": 1793915867275098276,
+      "ctime_ns": 1793915867275098276,
+      "version": "2050:7874334:10230:1793915867275098276:1793915867275098276"
+    }
+  },
+  "planned_bytes": 38845,
+  "request_transformation": "Only each expected_version null is replaced by its original independently closed file_info version.",
+  "before_each_submission": "Persist the exact request and a separate completed external intent; one returned native future at a time; stop on error."
+}

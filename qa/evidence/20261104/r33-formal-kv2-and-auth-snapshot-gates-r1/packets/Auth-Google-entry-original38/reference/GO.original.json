@@ -1,0 +1,96 @@
+{
+  "schema": "heptabao.AuthBus.google-declared-entry.exact-metadata-and-conditional-body.GO.r33.v1",
+  "decision": "GO_ONE_FIXED_METADATA_AND_IF_QUALIFIED_ONE_FIXED_BODY",
+  "lane": "A",
+  "owner": "/root/authbus_migration",
+  "root_runtime_calls": 0,
+  "other_lane": "B remains compatibility_audit original X230 comparison69 closure",
+  "handoff_qualified_by": {
+    "blob": "89b93c0df9d1d6b9c4695718a46fb86e74d093b3",
+    "bytes": 2341,
+    "sha256": "8131df33f363000ec8fccd99c5cb40243c94707710a8ea89fd08431882360b57"
+  },
+  "source_review": {
+    "blob": "cf2f36c029f74a8519db780e1a68b9a99758e5ab",
+    "bytes": 1652,
+    "sha256": "5f5792ec61ebcfb2c76aa0837648f1a3c9d6188f509b25888ffaa3ea40664d60"
+  },
+  "source_tree": "eecd5498a211b869c0a40ad16e415507b1c759b3",
+  "actual_Google_public2_root_review": {
+    "blob": "58c08e40c4d72f3060b053c034e88c1ffa906232",
+    "bytes": 16448,
+    "sha256": "62e2017c201bbba14485d8f016c1aac562df082628454aa7f852df55f7785d80"
+  },
+  "source51_R2_review": {
+    "blob": "d68f03916d51a94f1f92043b928a3dbc0b023046",
+    "bytes": 17356,
+    "sha256": "4bfe5f1ac02bc68dbeadd0c63628959031af267c2a0a5b75d52fac628e26488b"
+  },
+  "metadata_request": {
+    "blob": "28b92dd34125354c01ee4e6b04a61c23103ee88f",
+    "bytes": 273,
+    "sha256": "2707b0502aae10d672a340c85462937bd14cbbb3e98b7c337b278a94ad68b136"
+  },
+  "metadata_exact": {
+    "idempotency_key": "heptabao-mac-google-declared-entry-metadata-eca1335c-20261105-r1",
+    "operation": {
+      "tool": "file_info",
+      "arguments": {
+        "host": "mac",
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/index.js"
+      }
+    }
+  },
+  "metadata_admissions": 1,
+  "metadata_hash_work": "file_info may read the entire fixed file for SHA; body cap is not a cap on metadata hash work",
+  "metadata_body_sequence": "Close original metadata observer, persist whole original SDK/native/pages and version/full SHA; run only reviewed pure derivation. If its gates pass, persist the derived exact body request and intent, then one original version-bound binary_read. No recursive imports.",
+  "conditional_body": {
+    "pure_deriver": {
+      "blob": "3a86d0d14f6fa15e410bc28571db4c8a5202971e",
+      "bytes": 1729,
+      "sha256": "8e5011216fd773608f83a827ce117b93f19c539215d157faaa638a475c98ece1"
+    },
+    "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/index.js",
+    "idempotency_key": "heptabao-mac-google-declared-entry-body-eca1335c-20261105-r1",
+    "offset": 0,
+    "bytes": "actual positive metadata size <=65536",
+    "expected_version": "exact actual original metadata version",
+    "expected_sha256": "actual original metadata whole SHA",
+    "admissions": 1,
+    "chunks": 1,
+    "require_whole_size_sha_version_and_EOF": true
+  },
+  "limits": {
+    "one_call_and_one_native_future_per_lane": true,
+    "operation_result_page_bytes": 8192,
+    "previous_body_bytes": 382975,
+    "additional_body_max_bytes": 65536,
+    "cumulative_body_max_bytes": 448511
+  },
+  "gates": {
+    "regularNoSymlinkByApi": true,
+    "linkCountExactly": 1,
+    "permissionModeNoGroupOtherWrite": true,
+    "uidOneOf": [
+      0,
+      501
+    ],
+    "sizeMin": 1,
+    "sizeMaxForBody": 65536,
+    "hashWorkMayReadWholeTarget": true,
+    "noDirectoryScan": true,
+    "noAlternatePath": true
+  },
+  "failure_rule": "On error, refusal, missing ACK, unknown native outcome, size out of bound or version/hash drift, stop new admissions; retain the original boundary. No same business replay, alternate key/path, widened cap or fabricated historical pin. Same-ID read-only reconciliation is separately journaled.",
+  "prohibited": {
+    "private_capsule_read_or_export": true,
+    "SDK_or_Google_entry_execution": true,
+    "follow_imports": true,
+    "provider_calls": true,
+    "configuration_write": true,
+    "prepare_or_live_worker_start": true,
+    "production_cutover": true,
+    "old_asset_cleanup": true
+  },
+  "purpose": "Bind the one declared current public entry to the already reviewed closed source map; actual selected owner and trusted credentials remain for the original worker."
+}

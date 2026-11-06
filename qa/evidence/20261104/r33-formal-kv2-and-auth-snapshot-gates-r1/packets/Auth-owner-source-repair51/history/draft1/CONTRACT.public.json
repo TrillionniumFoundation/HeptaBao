@@ -1,0 +1,86 @@
+{
+  "schema": "heptabao.mac-actual-harness-owner-repair.unbound-source.r1",
+  "status": "UNBOUND_SOURCE_ONLY_NO_SDK_OR_RUNTIME_GO",
+  "originalFailure": {
+    "packet": "4a4e35f46eabadbfe5e0ccec3f9b49163d02ac08",
+    "rootReview": "bc93e8cdc6c9e0f8330743e115e0aa62662d2148",
+    "code": "actual_finite_harness_code_root",
+    "preserved": true
+  },
+  "originalRootIsTemplateOnly": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1",
+  "plannedFreshRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1",
+  "freshRootObserved": false,
+  "createOnlyPublisherPrepared": false,
+  "exactRuntimeRequest": null,
+  "readiness": {
+    "formalProduct": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "productSourceTree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "ownerPublicBindingReady": false,
+    "GoogleDeclaredEntry": null,
+    "GoogleEntryWholeSha256": null,
+    "actualSelectedOwner": null
+  },
+  "requiredNextActualInput": {
+    "proposal": "20ea640795bcc500830a7e534485851ee93951a8",
+    "metadataAndConditionalBodyOnly": true,
+    "noPrivateCapsuleRead": true,
+    "readOnlyTwoHistoricallyPinnedPublicJson": true,
+    "afterPublicJson": "Bind the precise declared Google module path. A missing whole source pin is a known blocking input, never auto-enrolled, followed, imported or hashed as its own expected value."
+  },
+  "implementation": {
+    "inputs": "Keep the original enabled/startup.agentHarnesses filter and bounded complete set, plus original openai owner. Npm or direct SDK bundled root alone is insufficient: exact historical manifest/package pins, matching manifest id and pre-bound declared-entry whole pins are required. Original 40 code set and original parent predicates remain; a separate fixed path+SHA set alone enables the existing exact-parent fence for the five added public inputs and a later explicitly bound entry.",
+    "materializer": "Carry those exact owner bindings unchanged through original runtime spreading; check the root/pin relation before emitting the consumer policy. The original /opt/homebrew readable subtree already contains bundled code. No new private, write or network permission.",
+    "worker": "Original loader.t/selector.o and codex/global-instance guards remain byte-exact, once each. After real selection, loader implementation export c() gets the current active registry without another load. Verify the same global record, ownerPluginId versus harness.pluginId, unique active plugin/local harness record, root/source and pre-admitted metadata/code pins. Local/global harness objects are different clones; compare critical callable identity, not object equality. Recheck same active/global/local records after native use."
+  },
+  "selectedDiagnosticDesignChange": {
+    "proposedOnly": true,
+    "reason": "The original isolated worker already has the exact original complete configuration, model binding, import prefix and real registry. A separately sanitized config cannot currently claim equivalent arbitrary plugin registration/supports behavior. The proposed repair performs owner admission in that worker under its existing sandbox without adding loader/selector/factory/provider calls. It is not a credential-free standalone execution and is not authorized by this source packet."
+  },
+  "preserved": {
+    "fiveAgents": [
+      "main",
+      "trnm",
+      "hepta-ui",
+      "hepta",
+      "hepta-backend"
+    ],
+    "models": "original current captured declarations/defaults",
+    "config": "original materializer's complete scoped cfg; only original owned-path and four AuthBus connection fields",
+    "enabledCandidateFilteringChanged": false,
+    "googleRemoved": false,
+    "sourceSelectionForced": false,
+    "rawCapsulePassedToNewDiagnostic": false,
+    "originalUnsupportedGuards": true,
+    "oldUnknowns": true
+  },
+  "budget": {
+    "captureSeconds": 45,
+    "querySeconds": 3,
+    "registryWalBytes": 5969912,
+    "rowBytes": 1048576,
+    "aggregateBytes": 8388608,
+    "capsuleBytes": 4194304,
+    "controllerSeconds": 900,
+    "managerSeconds": 600,
+    "phaseSeconds": 120,
+    "httpSeconds": 10,
+    "readySeconds": 30,
+    "nativeSeconds": [
+      15,
+      8,
+      3
+    ],
+    "cleanupSeconds": 60,
+    "outerSeconds": 1080,
+    "inputHashTotalBytes": 1073741824
+  },
+  "scope": {
+    "actualSdkExecutions": 0,
+    "hostCalls": 0,
+    "privateReads": 0,
+    "productChanges": 0,
+    "ownerSourceQualified": false,
+    "productionCredentialsQualified": false,
+    "currentRuntimePassed": false
+  }
+}

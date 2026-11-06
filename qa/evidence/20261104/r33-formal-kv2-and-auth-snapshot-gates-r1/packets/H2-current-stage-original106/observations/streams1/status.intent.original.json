@@ -1,0 +1,18 @@
+{
+  "schema": "heptabao.original-operation.status.intent.v1",
+  "request": {
+    "name": "ha-h2-stage-streams1-status-request",
+    "blob": "4277f385087ac36f2a90d21b0486bae6009788fd",
+    "bytes": 89,
+    "sha256": "cad60fdef8f37f99724512a7c527f934bb7d56fe91204db0da7aea6c069829c4"
+  },
+  "original_admission": {
+    "name": "ha-h2-stage-streams1-admission-native",
+    "blob": "ac3caa0fe50c8122c0a61aeb89dbe3364ee04e7d",
+    "bytes": 546,
+    "sha256": "76c6846ba7f3a55d6e62b78efc669cc6e017f891a3ef1ea18aab969b30253423"
+  },
+  "root_go": "065ae72edbb8f330b66f5a40ea4c0134891f60d8",
+  "new_native_admission": false,
+  "original_job": "1a1adb7c0f6-fc05-5ab6"
+}

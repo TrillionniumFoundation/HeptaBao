@@ -1,0 +1,7 @@
+{
+  "chunk_id": "65cb8b",
+  "wall_time_seconds": 0.00002675,
+  "exit_code": 0,
+  "original_token_count": 84,
+  "output": "{\"ok\": true, \"passed\": 151, \"failed\": 0, \"failureDetails\": [], \"result\": {\"blob\": \"661060e634ee99e2c67c1403f1344a062fd76ee2\", \"bytes\": 14148, \"sha256\": \"2bad201860a65029cf08ce4efbfd3fd7d8688fa37d8384446c6a2b3a2779a4d4\"}, \"resultPath\": \"/workspace/scratch/f86faac821c4/r32_recovery/r33-runtime-read-closures-root-result-r2.public.json\"}\n"
+}

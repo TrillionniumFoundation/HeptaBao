@@ -1,0 +1,81 @@
+{
+  "schema": "heptabao.H2-fixed-targets.root-lane-release.r33.v1",
+  "ownerRelease": {
+    "blob": "0093a0be7a54f88393626276c864b5a46b1c8770",
+    "bytes": 11428,
+    "sha256": "bf794a6f7c7bbe241c71a7b2a4d9d406a9cc60d3002da4200a56fc3674dc2473"
+  },
+  "originalStageJob": "desktop/1a1adb7c0f6-fc05-5ab6",
+  "rootChecks": {
+    "allFiveOriginalStatusPayloadsWholeRead": true,
+    "eachCompletedStoredInactive": true,
+    "actualReceiptWholeRead": {
+      "blob": "f492ce4e681ba7d5917d1cda1ebd4a3f8d67f13c",
+      "bytes": 28615,
+      "sha256": "f2bcc9227a235a40afa11c1703595180a925fbd39abd29d4550872ed3a05ae6a"
+    },
+    "actualBindingWholeRead": {
+      "blob": "a11ae732392792888fcf705e3a0ea21c8779f67e",
+      "bytes": 10230,
+      "sha256": "b241c6fc78bbe77ea69fc3b8a707b1747324a81f1da1ade3d9bb15c5cea5b7d8"
+    },
+    "expectedWholePinsMatch": true,
+    "body0OriginalPagesIndependentlyRebuiltInRoot151": "661060e634ee99e2c67c1403f1344a062fd76ee2",
+    "ownerReportsAllFivePayloadsWhole": true
+  },
+  "originalStatuses": [
+    {
+      "operation_id": "b9e5bcd859097fd5493bcf0bc39cf86ed0ed09db63611d65a2e748376e339957",
+      "pin": {
+        "name": "ha-h2-target-receipt-info-status0-native",
+        "blob": "324ebe7d5f8a654df0b130889a032a51bd440a67",
+        "bytes": 800,
+        "sha256": "a0046ff3b069fc9554058a293208ffae35be2aa68033ca86e7cbd0153008c53f"
+      }
+    },
+    {
+      "operation_id": "80f5828787b4d736969785f5e96e7380a3e7bfa201e7ba487c1c73baaa3d2b9c",
+      "pin": {
+        "name": "ha-h2-target-binding-info-status0-native",
+        "blob": "f0e9ff1ff8ddf7d01a1ae7e7fd791a27a135fd96",
+        "bytes": 800,
+        "sha256": "e0c63eaacb605859912467f324711dd64082311b542aebbce4705be9b49f36dd"
+      }
+    },
+    {
+      "operation_id": "4feddfcdc2b6feb51d39a8716ae9c345cc714dcfaa9e46d1cf013df73251ddda",
+      "pin": {
+        "name": "ha-h2-target-receipt-body0-status0-native",
+        "blob": "9fdd0650028b3cdc7669999782b4782fbc6640a5",
+        "bytes": 802,
+        "sha256": "41442e56f65a59ec7d279c36367ff0151a496a76f4138cc909d2300f8cebe9d6"
+      }
+    },
+    {
+      "operation_id": "2c415530bf269b1cf09a2f8e496a5697177c7184e7a2735b4602638d5d006a76",
+      "pin": {
+        "name": "ha-h2-target-receipt-body1-status0-native",
+        "blob": "fbf9a26f92f842ad4616dce2da083d56316d61c8",
+        "bytes": 802,
+        "sha256": "f6598f7aca57ef87763c16095627a4f1fd05bd16b8128794842f1739304f9723"
+      }
+    },
+    {
+      "operation_id": "4710a015310eb0595a1d843c79205ca5888b2bea68b3bc340b29a25eec1a163b",
+      "pin": {
+        "name": "ha-h2-target-binding-body0-status0-native",
+        "blob": "8bf90f210f4d5528645db7b2a743586fde0cd0ab",
+        "bytes": 802,
+        "sha256": "f0b808e34dbc413dfebec0c3f4337c53a7a23fdd565814a06fb96ffba207262b"
+      }
+    }
+  ],
+  "outstandingRuntimeCalls": 0,
+  "activeNativeFutures": 0,
+  "H2PrepareAuthorized": false,
+  "H2LiveAuthorized": false,
+  "fullTargetChainIndependentAudit": "pending separate full packet review; not required to establish that these five native read handlers are closed",
+  "historicalUnknownAndArchiveErrorsPreserved": true,
+  "root_Runtime_calls": 0,
+  "decision": "RELEASE_A_FROM_H2_TARGET_READS"
+}

@@ -1,0 +1,59 @@
+{
+  "schema": "heptabao.h2-metadata5.lane-A.root-release.v1",
+  "ok": true,
+  "checks": [
+    "status-whole-0",
+    "status-closed-0",
+    "status-whole-1",
+    "status-closed-1",
+    "status-whole-2",
+    "status-closed-2",
+    "status-whole-3",
+    "status-closed-3",
+    "status-whole-4",
+    "status-closed-4"
+  ],
+  "actual_table": "9813a1e98b6328ae7efcf68d5a48345bc754b25e",
+  "owner_release": "da8e77a2dbaecd76c8756d1d519ce5a1561750c5",
+  "statuses": [
+    {
+      "index": 7,
+      "name": "ha-h2-info7-status-native",
+      "blob": "b920ed64b1da76cbcf5048c55946476d6bb2e422",
+      "bytes": 800,
+      "sha256": "d20105330928eb72a9782c71fb9ea0771e89dac930ce3726bc0ded575d9448fe"
+    },
+    {
+      "index": 8,
+      "name": "ha-h2-info8-status-native",
+      "blob": "3023c8bc220404cd316a610e5abe89e8888b59da",
+      "bytes": 800,
+      "sha256": "cac8dd19548119ea04f598ccf25d5f24d239f7444ef14c87e656e10ef3a2d510"
+    },
+    {
+      "index": 9,
+      "name": "ha-h2-info9-status-native",
+      "blob": "f77b76809d4aacdeaa16f90cfbe9c931a4d04885",
+      "bytes": 800,
+      "sha256": "a72a5a6ed39388d5ce05a7baa304e897321dc6d888d01672ca42b4038a5bf15d"
+    },
+    {
+      "index": 10,
+      "name": "ha-h2-info10-status-native",
+      "blob": "f102f71fcf64517e7fd0956d89666ca805679cfc",
+      "bytes": 800,
+      "sha256": "aea5a9f6941eda044b43586b49e78e1e79b73f660a3b6efdf5cd0586ec6838a6"
+    },
+    {
+      "index": 11,
+      "name": "ha-h2-info11-status-native",
+      "blob": "9654a2f798a71bd1fb1e2863f6dba929fa0a48dc",
+      "bytes": 800,
+      "sha256": "7a90995004eb2aaa7c877a4bba140e0c8786658d069d79d0a7bc61b61ff6a6c5"
+    }
+  ],
+  "A_released": true,
+  "full_chain_review_pending": true,
+  "historical_UNKNOWN_unchanged": true,
+  "stage_authorized": false
+}

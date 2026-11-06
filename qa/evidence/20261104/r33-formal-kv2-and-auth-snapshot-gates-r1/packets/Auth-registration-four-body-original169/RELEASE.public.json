@@ -1,0 +1,79 @@
+{
+  "schema": "heptabao.mac-registration-body4.runtime-lane-release.r1",
+  "original_GO": "49fa57d6128f99ff425ea798466514564374d3b4",
+  "lane": "A",
+  "original_operations": [
+    {
+      "sequence": 1,
+      "operation_id": "dc9cfa8e0e5c674c5eb7cce4fd0cce7e7b917a9ed4049acab400bb11cf68fef5",
+      "original_request": "f78c2274f45aa6b9f62422fac6453bd8ec4e96ce",
+      "completed_stored_inactive": true,
+      "full_payload_closed": true,
+      "binding": "f43374d1f7aa1785d5874d5b5c9af1741bf2e8fc",
+      "unique_immutable_pages": 6,
+      "payload_bytes": 42347
+    },
+    {
+      "sequence": 2,
+      "operation_id": "78784ed9b981301e1aa59022af894ec47945371cc21cfe73555bf9142615c123",
+      "original_request": "de4f483af21acc4f5824876a774d4be6812cef86",
+      "completed_stored_inactive": true,
+      "full_payload_closed": true,
+      "binding": "1c6378287c71296d2434f1eac140890fbd3b0956",
+      "unique_immutable_pages": 11,
+      "payload_bytes": 87797
+    },
+    {
+      "sequence": 3,
+      "operation_id": "d717c2f3aabc5d5cc2baa822b85ea2006b736761ea2cccb47dcd8b9a6f93bb61",
+      "original_request": "3fa1a95b06619da84b9af79f429ecda22f28c992",
+      "completed_stored_inactive": true,
+      "full_payload_closed": true,
+      "binding": "067c2e48e048a22f7c92a74a9816921fe98ac4cc",
+      "unique_immutable_pages": 11,
+      "payload_bytes": 87802
+    },
+    {
+      "sequence": 4,
+      "operation_id": "13f5a585ceb44c74904df538162e924b1a9f1d94457c97ac234ae1eff6e2e5d8",
+      "original_request": "14a5cc1d4945973ef7d33b38b514564bd989a9b2",
+      "completed_stored_inactive": true,
+      "full_payload_closed": true,
+      "binding": "20373ecf14ad123ce62625a810d4cadf75b5369a",
+      "unique_immutable_pages": 9,
+      "payload_bytes": 67766
+    }
+  ],
+  "unique_native_admissions": 4,
+  "unique_immutable_payload_pages": 37,
+  "immutable_result_reobservations_for_cache_recovery": 8,
+  "reobservations_are_same_original_ID_not_new_native_reads": true,
+  "originals_preserved": true,
+  "source_wholes": [
+    {
+      "path": "sources/manifest-registry.original.js",
+      "blob": "e9bf738c49a86a2a7aba1d1bb22de14346653c93",
+      "bytes": 31444,
+      "sha256": "819c76c314e6ed1fd39c5ed6b169d63997905b3ae8a98b9373783d626431ace4"
+    },
+    {
+      "path": "sources/plugin-registry.original.js",
+      "blob": "42ea640e392714881fcf908094d691913efb174f",
+      "bytes": 181581,
+      "sha256": "25f3ef82756d85281ad5c25375a5cd2f405989a1145ed438de05992e8c995376"
+    }
+  ],
+  "new_body_bytes": 213025,
+  "previous_completed_body_bytes": 140664,
+  "cumulative_body_bytes": 353689,
+  "Runtime_calls_inflight": 0,
+  "known_native_futures_active": 0,
+  "all_four_original_operations_completed_stored_inactive": true,
+  "all_whole_payloads_hash_closed": true,
+  "all_two_source_whole_SHA_closed": true,
+  "SDK_executions": 0,
+  "private_reads": 0,
+  "actual_selected_owner": null,
+  "remaining_work": "Pure Git archival index recovery for first original six pages from already-pinned payload/template; complete packet and static source analysis. No additional Runtime required.",
+  "release_to_root_scheduler": true
+}

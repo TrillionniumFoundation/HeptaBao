@@ -1,0 +1,8 @@
+{
+  "message": "TypeError: Cannot set properties of undefined (setting 'paused')",
+  "stage": "prior collector and state lookup after functions.store reset",
+  "Runtime_called": false,
+  "known_native_closed": true,
+  "latest_original_page_known_complete": 65536,
+  "next_original_page_not_called": 65536
+}

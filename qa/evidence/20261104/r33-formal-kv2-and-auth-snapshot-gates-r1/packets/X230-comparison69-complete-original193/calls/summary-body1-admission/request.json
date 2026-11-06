@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-4e808-x230-comparison69-summary-body1-20261105-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "x230",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1/summary.public.json",
+      "expected_version": "2053:3074869:104034:1793916669702610630:1793916669702610630",
+      "offset": 65536,
+      "limit": 38498
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "base_input_directory": "input",
+  "output_directory": "proposal",
+  "files": {
+    "before-stage.py": "reference/before-cli-stage.py",
+    "fixture-template.private.json": "payload/files/binding.partially-resolved.json",
+    "instrument12-map.public.json": "reference/source52-instrument12.public.json",
+    "current-normal5-table.public.json": "reference/current-normal5-table.public.json",
+    "H2-product-eight-members.public.json": "reference/H2-product-eight-members.public.json",
+    "original-cli-carrier.json": "reference/before-cli-source-carrier.json",
+    "http_snapshot.rs": "reference/http_snapshot.rs",
+    "qa/phaseb_evidence_r3.py": "payload/files/phaseb_evidence_r3.py",
+    "qa/native_fixture_reference_r8.py": "payload/files/native_fixture_reference_r8.py",
+    "qa/official_cli_reference_r4.py": "payload/files/official_cli_reference_r4.py",
+    "qa/native_h2_gate_r1.py": "payload/files/native_h2_gate_r1.py",
+    "qa/native_h2_binding_r1.py": "payload/files/native_h2_binding_r1.py"
+  },
+  "scope": "Local generation/checker input mapping only; not host source installation."
+}

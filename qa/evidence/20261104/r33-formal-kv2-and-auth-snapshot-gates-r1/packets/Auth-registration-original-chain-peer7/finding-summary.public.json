@@ -1,0 +1,24 @@
+{
+  "source_tree": "58c16429b0cd2dd135df7fe50f7582f51413005e",
+  "original_operations": [
+    "dc9cfa8e0e5c674c5eb7cce4fd0cce7e7b917a9ed4049acab400bb11cf68fef5",
+    "78784ed9b981301e1aa59022af894ec47945371cc21cfe73555bf9142615c123",
+    "d717c2f3aabc5d5cc2baa822b85ea2006b736761ea2cccb47dcd8b9a6f93bb61",
+    "13f5a585ceb44c74904df538162e924b1a9f1d94457c97ac234ae1eff6e2e5d8"
+  ],
+  "unique_page_counts": [
+    6,
+    11,
+    11,
+    9
+  ],
+  "original_payload_bytes": 285712,
+  "new_body_bytes": 213025,
+  "same_ID_reobservation_records": 8,
+  "new_native_admissions_in_recovery": 0,
+  "boundary": "The 23 existing-Git reindex records and eight same-ID recovery records are retained with their stated provenance. This offline peer verifies their exact archived values and reconstructed payload; it does not claim an independent wall-clock ordering proof or execute/fetch the sources.",
+  "prior_metadata_chains": "Reference native values/full9 are matched to the original GO. The earlier two metadata SDK chains are not rerun here.",
+  "selected_owner": null,
+  "production_qualified": false,
+  "Runtime_calls": 0
+}

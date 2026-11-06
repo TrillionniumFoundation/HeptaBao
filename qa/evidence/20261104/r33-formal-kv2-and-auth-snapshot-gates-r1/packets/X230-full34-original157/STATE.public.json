@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.x230-full34-available-original-evidence.v1",
+  "job_id": "1a1ad5ffad0-fc05-599a",
+  "native_product_submission_count": 1,
+  "actual_result_reported_31_of_31": true,
+  "root_177_semantic_review": "separate root responsibility",
+  "public_result_bytes": 1124,
+  "public_summary_bytes": 90926,
+  "summary_sha256": "b9966b600df2f2c681148b63d03dca3bbceabcdff3fb42dc1eb4bae73677ae9f",
+  "available_original_byte_integrity": "whole SHA and Git objects independently fetched",
+  "archive_complete": false,
+  "unlocated_protocol_index_leaf_count": 39,
+  "unlocated_index_blob": "febdec346fa99b7eef463f660639c6dd8cd3a664",
+  "initial_three_operation_ids_are_conversation_state_only": true,
+  "no_original_protocol_bytes_fabricated": true,
+  "new_read_observations_submitted_after_completion": 0,
+  "Runtime_call_active": 0,
+  "native_future_active": 0,
+  "lane_B_released_to_root": true,
+  "comparison69_submitted": false,
+  "CLI_stage_submitted": false,
+  "old_unknowns_preserved": true
+}

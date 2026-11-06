@@ -1,0 +1,18 @@
+{
+  "label": "receipt-body0",
+  "role": "receipt",
+  "expected_bytes": 16384,
+  "request": {
+    "idempotency_key": "ha-4e808-h2-stage-receipt-body0-r2-20261105",
+    "operation": {
+      "tool": "binary_read",
+      "arguments": {
+        "host": "desktop",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/stage.result.public.json",
+        "offset": 0,
+        "limit": 16384,
+        "expected_version": null
+      }
+    }
+  }
+}

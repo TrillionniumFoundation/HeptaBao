@@ -1,0 +1,68 @@
+{
+  "schema": "heptabao.h2qa.destination.metadata5.external-execution-intent.v1",
+  "authorization": {
+    "blob": "8c5542d05ace15c6d1405852ff69b091fa6c88ce",
+    "bytes": 9259,
+    "sha256": "5e7475c2e5cd149681e33bb12bb3a7f875168a12052a4e91a260fb41163bea45"
+  },
+  "lane": "A",
+  "index": 11,
+  "role": "component_list_stdout",
+  "request": {
+    "path": "requests/11-component_list_stdout.file-info.public.json",
+    "blob": "d76f26c6113fdf70d2cc81df84693c94b6d79138",
+    "bytes": 315,
+    "sha256": "2900f918ecf2e489cd355586b3e86c5221db70781e64ff16b12c53cf47459fc7"
+  },
+  "exact_request": {
+    "idempotency_key": "ha-qa12-destination-11-file-info-observation-r1-20261105",
+    "operation": {
+      "tool": "file_info",
+      "arguments": {
+        "host": "desktop",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/components-list.stdout"
+      }
+    }
+  },
+  "expected_historical_receiver": {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/components-list.stdout",
+    "version": "2050:7257435:507:1793882066280717341:1793882066280717341",
+    "full9_decimal": [
+      "2050",
+      "7257435",
+      "1000",
+      "1000",
+      "33024",
+      "1",
+      "507",
+      "1793882066280717341",
+      "1793882066280717341"
+    ],
+    "mode": 256,
+    "bytes": 507,
+    "sha256": "cebfab7307ba716aeebf08514df4cc6cf9a638009579168ced3b621cf8c10d5d",
+    "same_fd_readback": {
+      "bytes": 507,
+      "sha256": "cebfab7307ba716aeebf08514df4cc6cf9a638009579168ced3b621cf8c10d5d"
+    },
+    "create_only": true,
+    "fsynced": true,
+    "source_core_blob": "4f45e1efca410e22d9607352f9ffff451fcbc305"
+  },
+  "previous_closed_indices": [
+    7,
+    8,
+    9,
+    10
+  ],
+  "previous_closure": {
+    "name": "ha-h2-info10-closure",
+    "blob": "ce4c8f2fdef1647a890225ef9d81ba75ea55b0b0",
+    "bytes": 2771,
+    "sha256": "b28ccfc45d610f1c9c6af9cec3168a60f8d744706094fda81d3219d0b5cfa61a"
+  },
+  "one_admission_only": true,
+  "old_UNKNOWN_preserved": true,
+  "new_body_reads": 0,
+  "new_process_start": 0
+}

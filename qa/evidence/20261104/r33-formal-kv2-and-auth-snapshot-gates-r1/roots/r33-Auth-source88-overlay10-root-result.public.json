@@ -1,0 +1,563 @@
+{
+  "schema": "heptabao.r33.auth-owner88-and-stdin-overlay.root.r1",
+  "checks": [
+    {
+      "name": "source218_original_report_identity",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:README.md",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:BINDING.public.json",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:DISPATCH.public.json",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:source-pins.public.json",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:publisher-stdin.public.json",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:volume-anchor.original.json",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:generate_source.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:generate_dispatch.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:source/mac_auth_rows_cas_r1.mjs",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:reference/baseline/mac_auth_rows_cas_r1.mjs",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:diff/from-baseline/mac_auth_rows_cas_r1.mjs.diff",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:source/mac_authbus_cache_cas_r1.mjs",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:source/mac_capture_sqlite_synthetic_r1.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:source/mac_capture_sqlite_synthetic_r2.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:source/mac_current_capture_entry_wal_r1.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:reference/baseline/mac_current_capture_entry_wal_r1.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:diff/from-baseline/mac_current_capture_entry_wal_r1.py.diff",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:source/mac_current_cycle_r2.mjs",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:reference/baseline/mac_current_cycle_r2.mjs",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:diff/from-baseline/mac_current_cycle_r2.mjs.diff",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:source/mac_current_fixture_materializer_r1.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:reference/baseline/mac_current_fixture_materializer_r1.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:diff/from-baseline/mac_current_fixture_materializer_r1.py.diff",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:reference/reviewed/mac_current_fixture_materializer_r1.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:diff/from-reviewed/mac_current_fixture_materializer_r1.py.diff",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:source/mac_current_outer_inputs_r2.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:reference/baseline/mac_current_outer_inputs_r2.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:diff/from-baseline/mac_current_outer_inputs_r2.py.diff",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:reference/reviewed/mac_current_outer_inputs_r2.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:diff/from-reviewed/mac_current_outer_inputs_r2.py.diff",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:source/mac_current_outer_wal_r1.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:reference/baseline/mac_current_outer_wal_r1.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:diff/from-baseline/mac_current_outer_wal_r1.py.diff",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:reference/reviewed/mac_current_outer_wal_r1.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:diff/from-reviewed/mac_current_outer_wal_r1.py.diff",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:source/mac_current_phase_owner_r2.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:reference/baseline/mac_current_phase_owner_r2.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:diff/from-baseline/mac_current_phase_owner_r2.py.diff",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:source/mac_current_server_owner_r1.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:reference/baseline/mac_current_server_owner_r1.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:diff/from-baseline/mac_current_server_owner_r1.py.diff",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:source/mac_darwin_owned_projection_r1.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:source/mac_guarded_current_capture_r3.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:source/mac_native_owned_commands_r1.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:source/mac_native_owned_unreaped_r1.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:source/mac_native_process_observer_r1.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:source/mac_owned_commands_r1.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:source/mac_owned_launchd_r3.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:reference/baseline/mac_owned_launchd_r3.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:diff/from-baseline/mac_owned_launchd_r3.py.diff",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:source/mac_owned_unreaped_r1.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:source/mac_registry_readonly_wal_r1.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:source/mac_single_native_r2.mjs",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:reference/baseline/mac_single_native_r2.mjs",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:diff/from-baseline/mac_single_native_r2.mjs.diff",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:reference/reviewed/mac_single_native_r2.mjs",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:diff/from-reviewed/mac_single_native_r2.mjs.diff",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:source/mac_t5_volume_guard_r1.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:reference/baseline/mac_t5_volume_guard_r1.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:diff/from-baseline/mac_t5_volume_guard_r1.py.diff",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:documents/candidate-current-manager-wal-r1.public.json",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:documents/proofs/native-proc-r2.child-stdout.public.json",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:documents/proofs/synthetic-r2.authority.public.json",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:documents/proofs/registry-wal-r1.authority.public.json",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:documents/proofs/registry-wal-r1.stdout.public.json",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:documents/proofs/native-proc-r2.authority.public.json",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:documents/proofs/native-proc-r2.stdout.public.json",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:documents/proofs/synthetic-r2.stdout.public.json",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:dispatch/inert.exact-request.public.json",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:dispatch/post-inert-targets.public.json",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:dispatch/inert-publisher.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:dispatch/runtime.exact-request.public.json",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:diff/candidate.source-pins.diff",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:diff/inert-publisher.binding.diff",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:diff/runtime.exact-request.diff",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:validation/dispatch.executor.original.json",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:validation/source.executor.original.json",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:reference/old-source-pins.public.json",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:reference/old-candidate.public.json",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:reference/old-inert-publisher.py",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:reference/old-runtime.exact-request.json",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:reference/renewal.original.diff",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:reference/renewal.peer.public.json",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:reference/renewal.fake10-root.public.json",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:reference/entry.original.js",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:reference/entry.metadata.original.json",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:reference/entry.release.public.json",
+      "ok": true
+    },
+    {
+      "name": "source88:whole:MANIFEST.public.json",
+      "ok": true
+    },
+    {
+      "name": "source88:actual_Git_tree_members",
+      "ok": true
+    },
+    {
+      "name": "source88:actual_Git_blob_identity_and_size",
+      "ok": true
+    },
+    {
+      "name": "source88:whole_totals",
+      "ok": true
+    },
+    {
+      "name": "source88:actual_merkle:reference/baseline",
+      "ok": true
+    },
+    {
+      "name": "source88:actual_merkle:diff/from-baseline",
+      "ok": true
+    },
+    {
+      "name": "source88:actual_merkle:reference/reviewed",
+      "ok": true
+    },
+    {
+      "name": "source88:actual_merkle:diff/from-reviewed",
+      "ok": true
+    },
+    {
+      "name": "source88:actual_merkle:documents/proofs",
+      "ok": true
+    },
+    {
+      "name": "source88:actual_merkle:validation",
+      "ok": true
+    },
+    {
+      "name": "source88:actual_merkle:reference",
+      "ok": true
+    },
+    {
+      "name": "source88:actual_merkle:documents",
+      "ok": true
+    },
+    {
+      "name": "source88:actual_merkle:dispatch",
+      "ok": true
+    },
+    {
+      "name": "source88:actual_merkle:source",
+      "ok": true
+    },
+    {
+      "name": "source88:actual_merkle:diff",
+      "ok": true
+    },
+    {
+      "name": "source88:actual_merkle:",
+      "ok": true
+    },
+    {
+      "name": "source88:merkle_count",
+      "ok": true
+    },
+    {
+      "name": "stdin_overlay10:whole:CORRECTION.public.json",
+      "ok": true
+    },
+    {
+      "name": "stdin_overlay10:whole:README.md",
+      "ok": true
+    },
+    {
+      "name": "stdin_overlay10:whole:generate_dispatch.py",
+      "ok": true
+    },
+    {
+      "name": "stdin_overlay10:whole:generate_dispatch.stdin.diff",
+      "ok": true
+    },
+    {
+      "name": "stdin_overlay10:whole:generation.executor.original.json",
+      "ok": true
+    },
+    {
+      "name": "stdin_overlay10:whole:inert-request.key-patch.public.json",
+      "ok": true
+    },
+    {
+      "name": "stdin_overlay10:whole:inert.exact-request.public.json",
+      "ok": true
+    },
+    {
+      "name": "stdin_overlay10:whole:reference/original-request.json",
+      "ok": true
+    },
+    {
+      "name": "stdin_overlay10:whole:reference/original-generator.py",
+      "ok": true
+    },
+    {
+      "name": "stdin_overlay10:whole:MANIFEST.public.json",
+      "ok": true
+    },
+    {
+      "name": "stdin_overlay10:actual_Git_tree_members",
+      "ok": true
+    },
+    {
+      "name": "stdin_overlay10:actual_Git_blob_identity_and_size",
+      "ok": true
+    },
+    {
+      "name": "stdin_overlay10:whole_totals",
+      "ok": true
+    },
+    {
+      "name": "stdin_overlay10:actual_merkle:reference",
+      "ok": true
+    },
+    {
+      "name": "stdin_overlay10:actual_merkle:",
+      "ok": true
+    },
+    {
+      "name": "stdin_overlay10:merkle_count",
+      "ok": true
+    },
+    {
+      "name": "original_wrong_proposal_preserved",
+      "ok": true
+    },
+    {
+      "name": "exact_byte_key_only_patch",
+      "ok": true
+    },
+    {
+      "name": "exact_request_only_schema_key_rename",
+      "ok": true
+    },
+    {
+      "name": "corrected_request_identity",
+      "ok": true
+    },
+    {
+      "name": "original_generator_preserved",
+      "ok": true
+    },
+    {
+      "name": "generator_only_schema_key_literal",
+      "ok": true
+    },
+    {
+      "name": "corrected_request_publisher_stdin_whole",
+      "ok": true
+    },
+    {
+      "name": "native_binding_matches_prior_independent_expected",
+      "ok": true
+    }
+  ],
+  "runtimeCalls": 0,
+  "authorCodeExecuted": false,
+  "sourcePrerequisiteRoot": "65b6f2235fcf055ff15fc9177fd6f80727449462",
+  "source218Root": "68838a0c45042258358892d20778b0aee3b14b27",
+  "inertAuthorized": false,
+  "runtimeAuthorized": false,
+  "source88": {
+    "tree": "71a1656fbe227fcea1e92558a5004e22eaab69c6",
+    "files": 88,
+    "bytes": 2910122,
+    "merkle": 12
+  },
+  "stdin_overlay10": {
+    "tree": "2f213b0e8de72fac88fec0039761390f34f9e946",
+    "files": 10,
+    "bytes": 1662289,
+    "merkle": 2
+  },
+  "correctedInertRequest": {
+    "blob": "521c4700c9896ef48c8b710f7b787b5cfb5d1504",
+    "bytes": 818377,
+    "sha256": "6ffc5db0c3d9cf79f00d9484b1d54162b75b7e975e594a1d5ca5d8566d3b9cf4"
+  },
+  "correctedInertNativeBinding": {
+    "canonicalBytes": 818309,
+    "sha256": "e267418ec6d90ed3d5f9ae3fb2f3fb6cc2346e69e6b70be905777edefa05e38a",
+    "native_fingerprint": "16314080256650186451"
+  },
+  "runtimeRequest": {
+    "blob": "ca9a3b37ca8c8a55458460a35a4b183b4356901f",
+    "bytes": 5329,
+    "sha256": "cbb0404036ccaf6c0e03c806de8a569eb4e6143985652428a8f5b6efe1ea6c95"
+  },
+  "runtimeNativeBinding": {
+    "canonicalBytes": 5218,
+    "sha256": "22cfe25e558dd973d40265b4dc397426b0613d55f56f8821f9b4a79ffc51f7a4",
+    "native_fingerprint": "2508472412258818419"
+  },
+  "scope": "Corrected inert proposal ready for an exact lane admission; actual stage, credentials, ownership and replacement remain unproved.",
+  "passed": 129,
+  "failed": 0,
+  "ok": true
+}

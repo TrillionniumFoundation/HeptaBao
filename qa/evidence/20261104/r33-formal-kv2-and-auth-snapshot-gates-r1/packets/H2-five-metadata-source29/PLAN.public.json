@@ -1,0 +1,328 @@
+{
+  "schema": "heptabao.h2.qa12.remaining-five-metadata.exact-source-proposal.v1",
+  "status": "SOURCE_ONLY_NO_RUNTIME_GO",
+  "source52_tree": "697f7b64102692c5da736eee4cd329211189839a",
+  "existing_instrument_map_blob": "7b3e19fc44b9831d8b80847fa88ed21e41fee93d",
+  "existing_core66_tree": "5c30a0b1956bfb8b0c5fa8ade8f687b9ed84c23b",
+  "existing_root89": "e56e822bf32c1cfa5477e5316732e03116b86725",
+  "existing_info7_tree": "e4c07d230697a3599c6cc2f617f17447eab57efe",
+  "existing_info7_root": "ee3c7c6d358c65d281c1fe13260b28e1fb47dc38",
+  "accepted_independent_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "rows": [
+    {
+      "index": 7,
+      "role": "build_controller",
+      "request": {
+        "path": "requests/07-build_controller.file-info.public.json",
+        "blob": "d6c4523a0ea985ceec897184f2adacd8dfe27e02",
+        "bytes": 320,
+        "sha256": "eed851d3b3c84be824b5a31dd46f4d32489540a1253893504e8d5ab81faedc17"
+      },
+      "exact_request": {
+        "idempotency_key": "ha-qa12-destination-7-file-info-observation-r1-20261105",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/build_native_h2_client_r1.py"
+          }
+        }
+      },
+      "submitted": false,
+      "actual_operation_id": null,
+      "expected_historical_receiver": {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/build_native_h2_client_r1.py",
+        "version": "2050:7257431:59791:1793882066247718382:1793882066247718382",
+        "full9_decimal": [
+          "2050",
+          "7257431",
+          "1000",
+          "1000",
+          "33024",
+          "1",
+          "59791",
+          "1793882066247718382",
+          "1793882066247718382"
+        ],
+        "mode": 256,
+        "bytes": 59791,
+        "sha256": "7ea25347f71764f1ed3d459d24b92750ef82c361878e9c856c7a7e8fe699bc15",
+        "same_fd_readback": {
+          "bytes": 59791,
+          "sha256": "7ea25347f71764f1ed3d459d24b92750ef82c361878e9c856c7a7e8fe699bc15"
+        },
+        "create_only": true,
+        "fsynced": true,
+        "source_core_blob": "4f45e1efca410e22d9607352f9ffff451fcbc305"
+      },
+      "new_observed_info": null,
+      "prior_direct_observation_unknown": {
+        "request_blob": "8e7731cc3717c2a9421f208d2cdc5d37c2c2ee79",
+        "SDK_error_blob": "f2827be6538200f616f9b6365e6a3b2bb0644687",
+        "old_has_no_idempotency_key": true,
+        "old_has_no_returned_operation_id": true,
+        "old_status": "UNKNOWN_PRESERVED"
+      }
+    },
+    {
+      "index": 8,
+      "role": "build_binding",
+      "request": {
+        "path": "requests/08-build_binding.file-info.public.json",
+        "blob": "a26f1abc3870b092e6f77424c8c559674e2a44de",
+        "bytes": 318,
+        "sha256": "e6bed1b646b6251626c052d77a73dbc03cc31cd01e39519d8e9b09e17425545e"
+      },
+      "exact_request": {
+        "idempotency_key": "ha-qa12-destination-8-file-info-observation-r1-20261105",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/build-binding.private.json"
+          }
+        }
+      },
+      "submitted": false,
+      "actual_operation_id": null,
+      "expected_historical_receiver": {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/build-binding.private.json",
+        "version": "2050:7257432:4039:1793882066255718130:1793882066255718130",
+        "full9_decimal": [
+          "2050",
+          "7257432",
+          "1000",
+          "1000",
+          "33024",
+          "1",
+          "4039",
+          "1793882066255718130",
+          "1793882066255718130"
+        ],
+        "mode": 256,
+        "bytes": 4039,
+        "sha256": "ac127d3e67971ad6b9ae987c0fc6437f8882ff00d9480acbc12ed149796dd12a",
+        "same_fd_readback": {
+          "bytes": 4039,
+          "sha256": "ac127d3e67971ad6b9ae987c0fc6437f8882ff00d9480acbc12ed149796dd12a"
+        },
+        "create_only": true,
+        "fsynced": true,
+        "source_core_blob": "4f45e1efca410e22d9607352f9ffff451fcbc305"
+      },
+      "new_observed_info": null,
+      "prior_direct_observation_unknown": null
+    },
+    {
+      "index": 9,
+      "role": "component_stdout",
+      "request": {
+        "path": "requests/09-component_stdout.file-info.public.json",
+        "blob": "55c0271a76986e5094f092d0275a09432e7d7686",
+        "bytes": 309,
+        "sha256": "6bb5d35df08427241725ee8c41b3e47318cc8f9d90512e9d4315339c1f853905"
+      },
+      "exact_request": {
+        "idempotency_key": "ha-qa12-destination-9-file-info-observation-r1-20261105",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/components.stdout"
+          }
+        }
+      },
+      "submitted": false,
+      "actual_operation_id": null,
+      "expected_historical_receiver": {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/components.stdout",
+        "version": "2050:7257433:633:1793882066263717877:1793882066263717877",
+        "full9_decimal": [
+          "2050",
+          "7257433",
+          "1000",
+          "1000",
+          "33024",
+          "1",
+          "633",
+          "1793882066263717877",
+          "1793882066263717877"
+        ],
+        "mode": 256,
+        "bytes": 633,
+        "sha256": "9c8b4f62679c5771d7a0b575674f9961e64afaefe46eb30b1825c2f696ed3274",
+        "same_fd_readback": {
+          "bytes": 633,
+          "sha256": "9c8b4f62679c5771d7a0b575674f9961e64afaefe46eb30b1825c2f696ed3274"
+        },
+        "create_only": true,
+        "fsynced": true,
+        "source_core_blob": "4f45e1efca410e22d9607352f9ffff451fcbc305"
+      },
+      "new_observed_info": null,
+      "prior_direct_observation_unknown": null
+    },
+    {
+      "index": 10,
+      "role": "component_record",
+      "request": {
+        "path": "requests/10-component_record.file-info.public.json",
+        "blob": "85af68bf85098da2e6fec63c10d558addd33eb85",
+        "bytes": 315,
+        "sha256": "c410c0f33ac3c48782d293e222ec5338da09b5098adbdb7a3e88067e62634425"
+      },
+      "exact_request": {
+        "idempotency_key": "ha-qa12-destination-10-file-info-observation-r1-20261105",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/components.public.json"
+          }
+        }
+      },
+      "submitted": false,
+      "actual_operation_id": null,
+      "expected_historical_receiver": {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/components.public.json",
+        "version": "2050:7257434:804:1793882066271717625:1793882066271717625",
+        "full9_decimal": [
+          "2050",
+          "7257434",
+          "1000",
+          "1000",
+          "33024",
+          "1",
+          "804",
+          "1793882066271717625",
+          "1793882066271717625"
+        ],
+        "mode": 256,
+        "bytes": 804,
+        "sha256": "41a0386206a00967a450df01dab89d008d8fc543c4e84702f80aaa1fcbe1f829",
+        "same_fd_readback": {
+          "bytes": 804,
+          "sha256": "41a0386206a00967a450df01dab89d008d8fc543c4e84702f80aaa1fcbe1f829"
+        },
+        "create_only": true,
+        "fsynced": true,
+        "source_core_blob": "4f45e1efca410e22d9607352f9ffff451fcbc305"
+      },
+      "new_observed_info": null,
+      "prior_direct_observation_unknown": null
+    },
+    {
+      "index": 11,
+      "role": "component_list_stdout",
+      "request": {
+        "path": "requests/11-component_list_stdout.file-info.public.json",
+        "blob": "d76f26c6113fdf70d2cc81df84693c94b6d79138",
+        "bytes": 315,
+        "sha256": "2900f918ecf2e489cd355586b3e86c5221db70781e64ff16b12c53cf47459fc7"
+      },
+      "exact_request": {
+        "idempotency_key": "ha-qa12-destination-11-file-info-observation-r1-20261105",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/components-list.stdout"
+          }
+        }
+      },
+      "submitted": false,
+      "actual_operation_id": null,
+      "expected_historical_receiver": {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/components-list.stdout",
+        "version": "2050:7257435:507:1793882066280717341:1793882066280717341",
+        "full9_decimal": [
+          "2050",
+          "7257435",
+          "1000",
+          "1000",
+          "33024",
+          "1",
+          "507",
+          "1793882066280717341",
+          "1793882066280717341"
+        ],
+        "mode": 256,
+        "bytes": 507,
+        "sha256": "cebfab7307ba716aeebf08514df4cc6cf9a638009579168ced3b621cf8c10d5d",
+        "same_fd_readback": {
+          "bytes": 507,
+          "sha256": "cebfab7307ba716aeebf08514df4cc6cf9a638009579168ced3b621cf8c10d5d"
+        },
+        "create_only": true,
+        "fsynced": true,
+        "source_core_blob": "4f45e1efca410e22d9607352f9ffff451fcbc305"
+      },
+      "new_observed_info": null,
+      "prior_direct_observation_unknown": null
+    }
+  ],
+  "key_lineage": {
+    "existing_index6_exact_request": "01cd0f84f0a1353946923a5286f44d8acb8627ee",
+    "existing_index6_key": "ha-qa12-destination-6-file-info-observation-r1-20261105",
+    "new_proposal_indices": [
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "formula": "Same fixed index-specific key family, immutable in these proposals; not a replacement key for any observed failed operation_start.",
+    "earlier_direct_info6_info7_have_no_idempotency_keys": true,
+    "old_operation_start_index6_not_resubmitted": true,
+    "prior_unsubmitted_indices7_11_exact_serialized_plan_recovered": false,
+    "source_of_current_proposals": "Derived from recovered exact index6 request shape and immutable receiver role table; the historical direct index7 call had no key. These proposals do not replace or reconcile any older unknown request."
+  },
+  "protocol": {
+    "external_exact_intent_before_one_start": true,
+    "SDK_original_persist_before_isError_and_parse": true,
+    "one_native_future_maximum": true,
+    "same_ID_status_to_completed_stored_inactive_then_complete_original_payload": true,
+    "result_page_limit": 8192,
+    "match_size_SHA_mode_uid_gid_nlink_full9_and_version_to_frozen_receiver": true,
+    "on_error": "Preserve raw result and stop new admissions; no metadata refresh, key/path change, retries, fallback, cancellation or claim that a missing result proves absence.",
+    "no_body_read": true,
+    "no_process_start": true,
+    "no_stage_or_product": true
+  },
+  "historical_unknowns": {
+    "two_direct_file_info_timeouts": {
+      "indices": [
+        6,
+        7
+      ],
+      "request_blobs": [
+        "275c8d62e43062b1612084095bf61079aff18f6c",
+        "8e7731cc3717c2a9421f208d2cdc5d37c2c2ee79"
+      ],
+      "original_settled_blob": "df9a131fee95a7f339e641d5b69d7e5f0948c084",
+      "original_error_blob": "f2827be6538200f616f9b6365e6a3b2bb0644687",
+      "status": "UNKNOWN_PRESERVED"
+    },
+    "index6_operation_start_lost_ACK": {
+      "request_blob": "01cd0f84f0a1353946923a5286f44d8acb8627ee",
+      "original_error_blob": "f181c1e93e7b64c402b332fd29b23d0141762082",
+      "same_key_reconciled_ACK_blob": "54f0ddcc54d78644f9beb7bb7a70d2d1a39e52e0",
+      "returned_id": "58e9e98dbe378a84ac415f02c25b0a3883c09f4258f820ae2a6c4a27ef61f018",
+      "reused": false,
+      "returned_observer_closed_and_accepted": true,
+      "first_lost_ACK_future_not_proved_closed": true
+    }
+  },
+  "incoming_metadata_current_new_observations": 0,
+  "H2_target_actual_identities": 0,
+  "Runtime_calls": 0,
+  "not_authorization": true
+}

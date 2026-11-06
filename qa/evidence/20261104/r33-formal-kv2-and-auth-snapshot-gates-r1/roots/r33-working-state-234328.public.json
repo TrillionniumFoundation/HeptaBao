@@ -1,0 +1,167 @@
+{
+  "schema": "heptabao.root.working-state.recovery.r33.v2",
+  "as_of_utc": "2026-11-05T23:43:28Z",
+  "task": "Continue until demonstrable full OpenBao2.7.1 replacement across Mac/T5, X230, LAN and all clients/backups. Work remains active.",
+  "published": {
+    "branch": "codex/heptabao-validation-20261104",
+    "commit": "f4a47f951cd39e0f75797a6224f42837a4369044",
+    "tree": "40370ae9364cc27c91d84e5edfe00c6c0e0fbfdb",
+    "R33_published": false
+  },
+  "root_Runtime_calls": 0,
+  "lanes": {
+    "A": {
+      "owner": "/root/authbus_migration",
+      "GO": {
+        "blob": "964c58fa1ae491cad2f815362a2381686e64837a",
+        "bytes": 12272,
+        "sha256": "a6cd32eb138e7a0d78cb61faf81ca2b3f26db77e221f570bbf9e749b35a977e6"
+      },
+      "scope": "Corrected inert request521c once; original job observations; conditioned3fixed metadata and4bodies. Full original worker ca9a not yet approved.",
+      "lastKnown": "GO issued after root five-H2-handler close check; no Auth ACK/result received at this freeze."
+    },
+    "B": {
+      "owner": "/root/compatibility_audit",
+      "GO": {
+        "blob": "e40948ddf621c367c4d24a7190cc95a89d9fd8d5",
+        "bytes": 7211,
+        "sha256": "8f037aff77a4e26aa08f34fba886474ea5f12d76a89f3b03a8fd0a2d0b0c29a8"
+      },
+      "scope": "Two fixed staged CLI files metadata/bodies; no prepare/live",
+      "lastKnown": "metadata1 actual16380/c8ac928d… complete; metadata2 original admission in flight cell g2:29 (agent tracks original)."
+    }
+  },
+  "otherAgent": {
+    "owner": "/root/ha_validation",
+    "Runtime": 0,
+    "work": "H2target full archive/prepare proposal + comparison69 frozen192-object final packet + R33 catalog delta."
+  },
+  "qualificationPins": {
+    "X230_full34": {
+      "blob": "9fd3ec40974a0d7fc2eed14983fd8b621b6bc214",
+      "bytes": 4870,
+      "sha256": "76f7eef134bbb32d862417fd4e0834d67cb4eb5015c72bcd287b20565134c486"
+    },
+    "X23069_GO": {
+      "blob": "4cf8d079885984d44cc9654a8ba816438f30b9ed",
+      "bytes": 4623,
+      "sha256": "92a033dc2bfe4b842eea937f825fd523ebd92e66dac7b8f4280ad9cf2daa5f1b"
+    },
+    "CLI_stage": {
+      "blob": "762a6571965a74d0be6d53727c542346925d3135",
+      "bytes": 3942,
+      "sha256": "566b034d4bad7a41f16d428429d3a7774d2adf89f8603d3f7a5825e9ac9008ec"
+    },
+    "CLI_target_GO": {
+      "blob": "e40948ddf621c367c4d24a7190cc95a89d9fd8d5",
+      "bytes": 7211,
+      "sha256": "8f037aff77a4e26aa08f34fba886474ea5f12d76a89f3b03a8fd0a2d0b0c29a8"
+    },
+    "H2_stage": {
+      "blob": "89b93c0df9d1d6b9c4695718a46fb86e74d093b3",
+      "bytes": 2341,
+      "sha256": "8131df33f363000ec8fccd99c5cb40243c94707710a8ea89fd08431882360b57"
+    },
+    "H2_stage_chain": {
+      "blob": "9f6617e593a66d63da9f7fc10200a2e28ba56c4d",
+      "bytes": 59633,
+      "sha256": "f28359be701e2c8a42721bf17e0aecde366c0f86a9ee56c4166748a88fe9923d"
+    },
+    "H2_target_release": {
+      "blob": "c2545057a868ae12869df0dc8e904398118a5ab8",
+      "bytes": 3203,
+      "sha256": "d53aeba884654133127632231125e5a0f51bf82a51c8513d142dc4aabaa1f3ec"
+    },
+    "Auth_public_source": {
+      "blob": "65b6f2235fcf055ff15fc9177fd6f80727449462",
+      "bytes": 3788,
+      "sha256": "e7f506b8fc5c0e2ebf05f074d9b8b5d565888e81d86c7dc68cf79db1d04a7f67"
+    },
+    "Auth_owner88": {
+      "blob": "68838a0c45042258358892d20778b0aee3b14b27",
+      "bytes": 40331,
+      "sha256": "2fb1335557b1a32685b002019c53a2e61950350c2fbde3fa77ec5d9471dbbd66"
+    },
+    "Auth_bound_source": {
+      "blob": "fb57872b59c10fe82ca348986cd4ddf5ac8bfc58",
+      "bytes": 3157,
+      "sha256": "0d06f9ff3ac20585f60e46b7eceb594747d95004aaf4d6bfb4cb50558c707b5c"
+    },
+    "Auth_inert_GO": {
+      "blob": "964c58fa1ae491cad2f815362a2381686e64837a",
+      "bytes": 12272,
+      "sha256": "a6cd32eb138e7a0d78cb61faf81ca2b3f26db77e221f570bbf9e749b35a977e6"
+    },
+    "native_read_closures": {
+      "blob": "661060e634ee99e2c67c1403f1344a062fd76ee2",
+      "bytes": 14148,
+      "sha256": "2bad201860a65029cf08ce4efbfd3fd7d8688fa37d8384446c6a2b3a2779a4d4"
+    }
+  },
+  "knownCurrentMilestones": {
+    "formalKV2": {
+      "Mac": "31/31 original R29 adopted, not repeated",
+      "X230": "31/31 original job1a1ad5ffad0-fc05-599a qualified;39 original framework index leaves remain explicitly unlocated"
+    },
+    "LAN": "Original real Mac/ROG/Pocket4 leaderkill/election/quorum/ReadIndex/cold98+12 qualified; no rerun",
+    "X23069": {
+      "originalJob": "1a1adc377a3-fc05-5acb",
+      "summaryBlob": "db965ea9374ddcb7b76c5d21a89036ba9a5d6125",
+      "resultBlob": "81e449cb9e40f3d57b1a27007cac9e5158c0c3d1",
+      "minimalRelease": "ae14873adc6ad96375a51ad438f9e3a525c26ae2",
+      "rootIndependent": "661060e634ee99e2c67c1403f1344a062fd76ee2",
+      "casesEach": 69,
+      "numericStatusMatches": 67,
+      "normalizedPKICases": 2,
+      "originalObservers": 7,
+      "originalPages": 23,
+      "frozen192LocalMap": "r32_recovery/comparison69-complete-files-index.json"
+    },
+    "H2targets": {
+      "originalObservers": 5,
+      "originalPages": 10,
+      "actualReceipt": "f492ce4e681ba7d5917d1cda1ebd4a3f8d67f13c",
+      "actualBinding": "a11ae732392792888fcf705e3a0ea21c8779f67e",
+      "ownerRelease": "0093a0be7a54f88393626276c864b5a46b1c8770",
+      "prepare": false,
+      "live": false
+    },
+    "AuthSource": {
+      "source88": "71a1656fbe227fcea1e92558a5004e22eaab69c6",
+      "overlay10": "2f213b0e8de72fac88fec0039761390f34f9e946",
+      "archive14": "bb48916a5f83d37eb7faae2ed139db976bfef658",
+      "threeTargetSource6": "c780abd37895a5cab64775bf3166c67da0f1faf6",
+      "rootOfflineChecks": [
+        218,
+        129
+      ],
+      "legacyWrongRequest": "850fdaf3c82e5067605494f5a8e8d8af3a1ab899",
+      "onlyCorrectedInertRequest": "521c4700c9896ef48c8b710f7b787b5cfb5d1504",
+      "nativeDigest": "e267418ec6d90ed3d5f9ae3fb2f3fb6cc2346e69e6b70be905777edefa05e38a",
+      "nativeFingerprint": "16314080256650186451",
+      "futureRuntimeRequest": "ca9a3b37ca8c8a55458460a35a4b183b4356901f",
+      "futureRuntimeAuthorized": false
+    }
+  },
+  "archiveRecovery": {
+    "recentCreateBlobErrors": "Multiple ReadTimeout/-32603 errors preserved; some immutable objects then404. Same exact public bytes successfully archived by Git create_tree(content), then whole readback. No native reads replayed.",
+    "rootContentTreeSaveHelper": "r32_recovery/r33-git-content-tree-save-helper-source.json",
+    "rootNewProofBatch": "df9f69bbbaa647de024a39a5ea5cf3fc31dbb359",
+    "rootAuthSourceBatch": "28e153cb833757abe8b94d9dfcc8a1abd1b77645",
+    "rootAuthGoBatch": "9eb8ef7b75c41f2f25e6f86283eacdffe415a010",
+    "losslessIntegers": true
+  },
+  "allFlags": {
+    "fullReplacement": false,
+    "productionCutover": false,
+    "allClientsAndBackupsMigrated": false,
+    "cleanup": false
+  },
+  "next": [
+    "Use original A/Auth process and read identities only; complete actual inert3targets, then separate fullworker GO.",
+    "Complete B/CLI actual2targets, prepare and B01–B05 live original clauses.",
+    "After A releases and source qualification, run original H2 prepare/H01–H03.",
+    "Publish R33 with preserved R32 nondoc subtrees/history and new immutable packets; continue task after commit.",
+    "Complete client/backup inventory and real R/W/restart/rollback before traffic cutover. Cleanup only after complete migration."
+  ]
+}

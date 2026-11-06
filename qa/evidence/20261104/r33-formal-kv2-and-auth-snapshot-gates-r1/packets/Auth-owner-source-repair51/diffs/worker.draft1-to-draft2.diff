@@ -1,0 +1,32 @@
+--- worker.after.draft1.mjs
++++ worker.after.draft2.mjs
+@@ -55,8 +55,7 @@
+     'actual_active_plugin_registry_shape');
+   need(registered && registered.harness === selected, 'actual_selected_global_registration');
+   need(typeof registered.ownerPluginId === 'string'
+-    && /^[a-z0-9][a-z0-9_.-]{0,79}$/.test(registered.ownerPluginId)
+-    && selected.pluginId === registered.ownerPluginId, 'actual_harness_owner_identity');
++    && /^[a-z0-9][a-z0-9_.-]{0,79}$/.test(registered.ownerPluginId), 'actual_harness_owner_identity');
+   need(Array.isArray(bindings) && bindings.length >= 1 && bindings.length <= 8,
+     'finite_admitted_harness_owner_bindings');
+   const bound = bindings.filter(value => value.pluginId === registered.ownerPluginId);
+@@ -76,7 +75,7 @@
+   need(typeof selected.supports === 'function' && typeof selected.runAttempt === 'function'
+     && entry.harness.supports === selected.supports
+     && entry.harness.runAttempt === selected.runAttempt
+-    && entry.harness.pluginId === registered.ownerPluginId,
++    && entry.harness.pluginId === selected.pluginId,
+     'actual_registered_harness_callable_lineage');
+   need(Array.isArray(binding.entries) && binding.entries.length >= 1 && binding.entries.length <= 8,
+     'finite_pinned_declared_harness_entries');
+@@ -96,7 +95,9 @@
+     : binding.layout === 'npm' && plugin.origin !== 'bundled', 'actual_owner_layout_matches_registry');
+   return { active, registered, plugin, entry, selected, public: {
+     harnessId: selected.id, ownerPluginId: registered.ownerPluginId,
+-    harnessPluginId: selected.pluginId, rootDir: binding.rootDir,
++    harnessPluginIdMatchesLocal: true,
++    harnessPluginIdEqualsOwner: selected.pluginId === registered.ownerPluginId,
++    rootDir: binding.rootDir,
+     registrySource: source[0].path, registrySourceSha256: source[0].sha256,
+     manifestSha256: binding.manifest.sha256, packageSha256: binding.package.sha256,
+     globalInstanceEqual: true, localCallableLineageEqual: true,

@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.comparison69.local-archive-recovery-addendum.v1",
+  "Git_create_attempt1_error": {
+    "name": "comparison69-final-native-git-write-attempt1-error-original-SDK",
+    "blob": "5b899231bee4585be68efe3224c54e52874e4d18",
+    "bytes": 194,
+    "sha256": "c9e8fcc415695e46f1dbd3d5bca4161cd054987a342569d29826ceea270c76d1"
+  },
+  "Git_read_exact_SHA_not_found": {
+    "name": "comparison69-final-native-git-lookup-original-SDK",
+    "blob": "e29c207758d4c774a30e93068d840967f2b7cd6b",
+    "bytes": 617,
+    "sha256": "d62f54fee07e365fca37f4a79662e88646d97a91452d72b5f37746e03fac29c0"
+  },
+  "same_public_immutable_native_saved_after_same_content_Git_retry": {
+    "name": "comparison69-summary-body1-native-original",
+    "blob": "2114673f0c4c192e29e46046af410c7278baf013",
+    "bytes": 51680,
+    "sha256": "d8aa76d863d3bf1a0cb63c5f8ed729b37979ad543091cfe8a61dfb5dc2f5c851"
+  },
+  "whole_summary": {
+    "name": "comparison69-summary-public-whole-original",
+    "blob": "db965ea9374ddcb7b76c5d21a89036ba9a5d6125",
+    "bytes": 104034,
+    "sha256": "51dbe8ec85e7e18434e48ecf627107267fb49284d18408c448f01a7d38929bc5"
+  },
+  "Runtime_request_replays": 0,
+  "original_body_pages_requeried": 0,
+  "artifact_bytes_modified": false,
+  "fixed_core_files_and_directory_fsync_local_exit0": {
+    "name": "comparison69-fixed-core-fsync-local-exec-original",
+    "blob": "d7adbcc9b4869d2ec4d0a7029737d74b3a8c097e",
+    "bytes": 4433,
+    "sha256": "08357a13c32f455bc8a86e30c6fa9ce328a47173593c841a91d996b8444e27d2"
+  },
+  "local_inspection_error": {
+    "name": "comparison69-local-dictionary-inspection-error-original",
+    "blob": "58c6dd5ac69aac68a92e7f3c904a8b31dd7a120a",
+    "bytes": 217,
+    "sha256": "68eab149307b4bf09d82fa07fc6961c35038269375859aaba37da976af91c0a9"
+  },
+  "inspection_error_scope": "A local metadata inspection assumed cases was a list and raised KeyError(0); the original summary has a dictionary. No product source, evidence bytes or pass criteria changed.",
+  "local_fsync_guard_followup_missing_raw_exec_result": true,
+  "local_fsync_guard_followup_cause_and_completion_unclaimed": true,
+  "local_fsync_guard_followup_is_not_a_Runtime_error": true,
+  "old_failures_and_UNKNOWN_unchanged": true
+}

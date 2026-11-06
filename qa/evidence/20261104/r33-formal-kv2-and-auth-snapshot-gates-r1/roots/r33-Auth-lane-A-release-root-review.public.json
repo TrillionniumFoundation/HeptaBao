@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.root-Auth-four-bodies-lane-release-review.r33.v1",
+  "status": "PASS_LANE_A_RELEASE_ONLY",
+  "checks_passed": 18,
+  "checks": [
+    "exact-lane-GO",
+    "zero-current-calls-and-futures",
+    "four-only-admissions",
+    "original-0-identity",
+    "original-0-native-future-closed",
+    "original-0-declared-whole-scope",
+    "original-1-identity",
+    "original-1-native-future-closed",
+    "original-1-declared-whole-scope",
+    "original-2-identity",
+    "original-2-native-future-closed",
+    "original-2-declared-whole-scope",
+    "original-3-identity",
+    "original-3-native-future-closed",
+    "original-3-declared-whole-scope",
+    "original-body-accounting-no-reset",
+    "read-recovery-not-native-replay",
+    "no-SDK-private-or-owner-claim"
+  ],
+  "original_GO": "49fa57d6128f99ff425ea798466514564374d3b4",
+  "release_blob": "74f318b28bc7bbcdf21b850e7236a4f1015d81ad",
+  "original_operations": [
+    {
+      "sequence": 1,
+      "operation_id": "dc9cfa8e0e5c674c5eb7cce4fd0cce7e7b917a9ed4049acab400bb11cf68fef5",
+      "binding": "f43374d1f7aa1785d5874d5b5c9af1741bf2e8fc"
+    },
+    {
+      "sequence": 2,
+      "operation_id": "78784ed9b981301e1aa59022af894ec47945371cc21cfe73555bf9142615c123",
+      "binding": "1c6378287c71296d2434f1eac140890fbd3b0956"
+    },
+    {
+      "sequence": 3,
+      "operation_id": "d717c2f3aabc5d5cc2baa822b85ea2006b736761ea2cccb47dcd8b9a6f93bb61",
+      "binding": "067c2e48e048a22f7c92a74a9816921fe98ac4cc"
+    },
+    {
+      "sequence": 4,
+      "operation_id": "13f5a585ceb44c74904df538162e924b1a9f1d94457c97ac234ae1eff6e2e5d8",
+      "binding": "20373ecf14ad123ce62625a810d4cadf75b5369a"
+    }
+  ],
+  "no_live_known_future": true,
+  "no_live_Runtime_call": true,
+  "all_body_content_and_original_chain_qualified_by_this_review": false,
+  "actual_owner_qualified": false,
+  "root_Runtime_calls": 0,
+  "verifier": {
+    "name": "r33-Auth-lane-release-root-verifier.js",
+    "blob": "7274d1858d607f0b0427e15baaa94c22ed221a0f",
+    "bytes": 2620,
+    "sha256": "78b61948add21c99ddb0b7ff5fd88aa582305bcc43a540c23fbae68f1ec1a547"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "heptabao.official271-cli.current4e808.stage.execution-intent.v1",
+  "go": {
+    "blob": "2e6623f5d7c9a05e66e4c22b1485dba8a1924d56",
+    "bytes": 3017,
+    "sha256": "adece23342233a343896511e63d52757946a0cad5be6136cafe8df445e91185d"
+  },
+  "request": {
+    "blob": "ec3b323f77bfb2f111f5fc22a06f1bf30ea634eb",
+    "bytes": 346000,
+    "sha256": "bff45cc8f5ee4ca1dc2b6b6515bbb38e68cb61b02cd2f3d2ca34e323042b075f"
+  },
+  "typed_request_sha256": "8a10353c991430800ffe9e2c9ec33a375ff33a6254b3d335abebb8b14ac9c67e",
+  "native_fingerprint": "9948510111243972736",
+  "host": "desktop",
+  "executable": "/usr/bin/python3.12",
+  "idempotency_key": "heptabao-official271-phaseb-4e808-local-stage-87a9c2a7-20261105-r4",
+  "timeout_seconds": 330,
+  "candidate": {
+    "blob": "45ceb135688a2002e845f31e010ca5c010551517",
+    "bytes": 23638,
+    "sha256": "87a9c2a7d1b9b4e789a4fda79fc9a89ba21657493707403f36cb891546e4a34f"
+  },
+  "stdin_carrier": {
+    "blob": "eabd91310302ea038bd023ff681f511511f43db2",
+    "bytes": 302459,
+    "sha256": "a2f1d6b11c206b8b10ec896fd857207e38f72efac24bffd556fa94349bc34915"
+  },
+  "control": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4",
+  "stage_only": true,
+  "prepare_live_authorized": false,
+  "external_intent_completed_before_business_submit": true,
+  "one_process_start_only": true,
+  "no_retry_or_new_key": true,
+  "old39_protocol_gap_preserved": true,
+  "Runtime_calls_submitted_at_intent": 0
+}

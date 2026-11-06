@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.H2-stage.cache-boundary.v1",
+  "source": "Explicit observed execution history; not a reconstructed old SDK",
+  "stage_restart": false,
+  "original_stage_id": "1a1adb7c0f6-fc05-5ab6",
+  "original_authority_observer": "faa0286530b753ce8e72e49a30c05ae21d92c980e5070cb45209e7d4edd8ba85",
+  "before_new_reconciliation": "The summary of a prior context-truncated functions execution described an intended operation_status, but no status_submitted flag, original status SDK, status pin or fixed fsynced local wrapper was found. Submission/delivery of that particular query remains unknown.",
+  "new_reconciliation_intent": "a39c73f84727db010ab6c508fe8b035018230733",
+  "new_reconciliation_sdk": "9c02e3fef093b5badedae0e30566fad74eba03fc",
+  "new_reconciliation_native": "8c6e8b972dee719212c3f9652af4bb57083be131",
+  "local_archive_failure": {
+    "visible_functions_error": "Unable to store \"ha_h2_metadata5_actual_r1_pure_helpers\". Only plain serializable objects can be stored.",
+    "scope": "Occurred after the new status SDK had returned and was still available in store. The same returned object was written and fsynced locally, then whole saved to Git. No second Runtime status was called to fix this local persistence error.",
+    "original_returned_sdk_reused_as_evidence": true
+  },
+  "limits": "No inference that the missing earlier query never ran or was delivered; no new native future or stage was replayed. This does not reopen the three returned observers now independently completed/inactive."
+}

@@ -1,0 +1,1445 @@
+{
+  "schema": "heptabao.r33.auth-owner88.independent-source-root-review.r1",
+  "scope": "offline public bytes and dispatch proposal; no host or SDK execution",
+  "authorCodeExecuted": false,
+  "candidateCodeExecuted": false,
+  "runtimeCalls": 0,
+  "privateCapsuleRead": false,
+  "runtimeAuthorized": false,
+  "inertAuthorized": false,
+  "sourcePrerequisiteRoot": "65b6f2235fcf055ff15fc9177fd6f80727449462",
+  "checks": [
+    {
+      "name": "packet_88_files",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:README.md",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:BINDING.public.json",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:DISPATCH.public.json",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:source-pins.public.json",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:publisher-stdin.public.json",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:volume-anchor.original.json",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:generate_source.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:generate_dispatch.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:source/mac_auth_rows_cas_r1.mjs",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:reference/baseline/mac_auth_rows_cas_r1.mjs",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:diff/from-baseline/mac_auth_rows_cas_r1.mjs.diff",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:source/mac_authbus_cache_cas_r1.mjs",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:source/mac_capture_sqlite_synthetic_r1.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:source/mac_capture_sqlite_synthetic_r2.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:source/mac_current_capture_entry_wal_r1.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:reference/baseline/mac_current_capture_entry_wal_r1.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:diff/from-baseline/mac_current_capture_entry_wal_r1.py.diff",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:source/mac_current_cycle_r2.mjs",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:reference/baseline/mac_current_cycle_r2.mjs",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:diff/from-baseline/mac_current_cycle_r2.mjs.diff",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:source/mac_current_fixture_materializer_r1.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:reference/baseline/mac_current_fixture_materializer_r1.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:diff/from-baseline/mac_current_fixture_materializer_r1.py.diff",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:reference/reviewed/mac_current_fixture_materializer_r1.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:diff/from-reviewed/mac_current_fixture_materializer_r1.py.diff",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:source/mac_current_outer_inputs_r2.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:reference/baseline/mac_current_outer_inputs_r2.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:diff/from-baseline/mac_current_outer_inputs_r2.py.diff",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:reference/reviewed/mac_current_outer_inputs_r2.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:diff/from-reviewed/mac_current_outer_inputs_r2.py.diff",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:source/mac_current_outer_wal_r1.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:reference/baseline/mac_current_outer_wal_r1.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:diff/from-baseline/mac_current_outer_wal_r1.py.diff",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:reference/reviewed/mac_current_outer_wal_r1.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:diff/from-reviewed/mac_current_outer_wal_r1.py.diff",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:source/mac_current_phase_owner_r2.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:reference/baseline/mac_current_phase_owner_r2.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:diff/from-baseline/mac_current_phase_owner_r2.py.diff",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:source/mac_current_server_owner_r1.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:reference/baseline/mac_current_server_owner_r1.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:diff/from-baseline/mac_current_server_owner_r1.py.diff",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:source/mac_darwin_owned_projection_r1.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:source/mac_guarded_current_capture_r3.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:source/mac_native_owned_commands_r1.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:source/mac_native_owned_unreaped_r1.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:source/mac_native_process_observer_r1.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:source/mac_owned_commands_r1.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:source/mac_owned_launchd_r3.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:reference/baseline/mac_owned_launchd_r3.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:diff/from-baseline/mac_owned_launchd_r3.py.diff",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:source/mac_owned_unreaped_r1.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:source/mac_registry_readonly_wal_r1.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:source/mac_single_native_r2.mjs",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:reference/baseline/mac_single_native_r2.mjs",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:diff/from-baseline/mac_single_native_r2.mjs.diff",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:reference/reviewed/mac_single_native_r2.mjs",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:diff/from-reviewed/mac_single_native_r2.mjs.diff",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:source/mac_t5_volume_guard_r1.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:reference/baseline/mac_t5_volume_guard_r1.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:diff/from-baseline/mac_t5_volume_guard_r1.py.diff",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:documents/candidate-current-manager-wal-r1.public.json",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:documents/proofs/native-proc-r2.child-stdout.public.json",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:documents/proofs/synthetic-r2.authority.public.json",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:documents/proofs/registry-wal-r1.authority.public.json",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:documents/proofs/registry-wal-r1.stdout.public.json",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:documents/proofs/native-proc-r2.authority.public.json",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:documents/proofs/native-proc-r2.stdout.public.json",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:documents/proofs/synthetic-r2.stdout.public.json",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:dispatch/inert.exact-request.public.json",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:dispatch/post-inert-targets.public.json",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:dispatch/inert-publisher.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:dispatch/runtime.exact-request.public.json",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:diff/candidate.source-pins.diff",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:diff/inert-publisher.binding.diff",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:diff/runtime.exact-request.diff",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:validation/dispatch.executor.original.json",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:validation/source.executor.original.json",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:reference/old-source-pins.public.json",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:reference/old-candidate.public.json",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:reference/old-inert-publisher.py",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:reference/old-runtime.exact-request.json",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:reference/renewal.original.diff",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:reference/renewal.peer.public.json",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:reference/renewal.fake10-root.public.json",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:reference/entry.original.js",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:reference/entry.metadata.original.json",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:reference/entry.release.public.json",
+      "ok": true
+    },
+    {
+      "name": "whole_blob:MANIFEST.public.json",
+      "ok": true
+    },
+    {
+      "name": "packet_total_2910122",
+      "ok": true
+    },
+    {
+      "name": "manifest_covers_other_87",
+      "ok": true
+    },
+    {
+      "name": "manifest_all_pins_match",
+      "ok": true
+    },
+    {
+      "name": "original_public_payload_identity",
+      "ok": true
+    },
+    {
+      "name": "payload_closed_schema",
+      "ok": true
+    },
+    {
+      "name": "payload_exact_22_plus_8",
+      "ok": true
+    },
+    {
+      "name": "original_pins_cover_original_sources",
+      "ok": true
+    },
+    {
+      "name": "new_source_pins_complete",
+      "ok": true
+    },
+    {
+      "name": "stdin_source_exact:mac_current_fixture_materializer_r1.py",
+      "ok": true
+    },
+    {
+      "name": "reviewed_base_identity:mac_current_fixture_materializer_r1.py",
+      "ok": true
+    },
+    {
+      "name": "baseline_reference_exact:mac_current_fixture_materializer_r1.py",
+      "ok": true
+    },
+    {
+      "name": "only_reviewed_binding_changes:mac_current_fixture_materializer_r1.py",
+      "ok": true
+    },
+    {
+      "name": "all_function_class_bodies_unchanged:mac_current_fixture_materializer_r1.py",
+      "ok": true,
+      "detail": {
+        "definitions": 9
+      }
+    },
+    {
+      "name": "stdin_source_exact:mac_current_capture_entry_wal_r1.py",
+      "ok": true
+    },
+    {
+      "name": "baseline_reference_exact:mac_current_capture_entry_wal_r1.py",
+      "ok": true
+    },
+    {
+      "name": "only_reviewed_binding_changes:mac_current_capture_entry_wal_r1.py",
+      "ok": true
+    },
+    {
+      "name": "all_function_class_bodies_unchanged:mac_current_capture_entry_wal_r1.py",
+      "ok": true,
+      "detail": {
+        "definitions": 18
+      }
+    },
+    {
+      "name": "stdin_source_exact:mac_owned_launchd_r3.py",
+      "ok": true
+    },
+    {
+      "name": "baseline_reference_exact:mac_owned_launchd_r3.py",
+      "ok": true
+    },
+    {
+      "name": "single_old_label:server",
+      "ok": true
+    },
+    {
+      "name": "single_old_label:consumer",
+      "ok": true
+    },
+    {
+      "name": "only_reviewed_binding_changes:mac_owned_launchd_r3.py",
+      "ok": true
+    },
+    {
+      "name": "all_function_class_bodies_unchanged:mac_owned_launchd_r3.py",
+      "ok": true,
+      "detail": {
+        "definitions": 8
+      }
+    },
+    {
+      "name": "stdin_source_exact:mac_current_server_owner_r1.py",
+      "ok": true
+    },
+    {
+      "name": "baseline_reference_exact:mac_current_server_owner_r1.py",
+      "ok": true
+    },
+    {
+      "name": "only_reviewed_binding_changes:mac_current_server_owner_r1.py",
+      "ok": true
+    },
+    {
+      "name": "all_function_class_bodies_unchanged:mac_current_server_owner_r1.py",
+      "ok": true,
+      "detail": {
+        "definitions": 11
+      }
+    },
+    {
+      "name": "stdin_source_exact:mac_current_phase_owner_r2.py",
+      "ok": true
+    },
+    {
+      "name": "baseline_reference_exact:mac_current_phase_owner_r2.py",
+      "ok": true
+    },
+    {
+      "name": "only_reviewed_binding_changes:mac_current_phase_owner_r2.py",
+      "ok": true
+    },
+    {
+      "name": "all_function_class_bodies_unchanged:mac_current_phase_owner_r2.py",
+      "ok": true,
+      "detail": {
+        "definitions": 17
+      }
+    },
+    {
+      "name": "stdin_source_exact:mac_native_process_observer_r1.py",
+      "ok": true
+    },
+    {
+      "name": "only_reviewed_binding_changes:mac_native_process_observer_r1.py",
+      "ok": true
+    },
+    {
+      "name": "all_function_class_bodies_unchanged:mac_native_process_observer_r1.py",
+      "ok": true,
+      "detail": {
+        "definitions": 6
+      }
+    },
+    {
+      "name": "stdin_source_exact:mac_guarded_current_capture_r3.py",
+      "ok": true
+    },
+    {
+      "name": "only_reviewed_binding_changes:mac_guarded_current_capture_r3.py",
+      "ok": true
+    },
+    {
+      "name": "all_function_class_bodies_unchanged:mac_guarded_current_capture_r3.py",
+      "ok": true,
+      "detail": {
+        "definitions": 15
+      }
+    },
+    {
+      "name": "stdin_source_exact:mac_owned_commands_r1.py",
+      "ok": true
+    },
+    {
+      "name": "only_reviewed_binding_changes:mac_owned_commands_r1.py",
+      "ok": true
+    },
+    {
+      "name": "all_function_class_bodies_unchanged:mac_owned_commands_r1.py",
+      "ok": true,
+      "detail": {
+        "definitions": 5
+      }
+    },
+    {
+      "name": "stdin_source_exact:mac_t5_volume_guard_r1.py",
+      "ok": true
+    },
+    {
+      "name": "baseline_reference_exact:mac_t5_volume_guard_r1.py",
+      "ok": true
+    },
+    {
+      "name": "only_reviewed_binding_changes:mac_t5_volume_guard_r1.py",
+      "ok": true
+    },
+    {
+      "name": "all_function_class_bodies_unchanged:mac_t5_volume_guard_r1.py",
+      "ok": true,
+      "detail": {
+        "definitions": 5
+      }
+    },
+    {
+      "name": "stdin_source_exact:mac_owned_unreaped_r1.py",
+      "ok": true
+    },
+    {
+      "name": "only_reviewed_binding_changes:mac_owned_unreaped_r1.py",
+      "ok": true
+    },
+    {
+      "name": "all_function_class_bodies_unchanged:mac_owned_unreaped_r1.py",
+      "ok": true,
+      "detail": {
+        "definitions": 11
+      }
+    },
+    {
+      "name": "stdin_source_exact:mac_capture_sqlite_synthetic_r1.py",
+      "ok": true
+    },
+    {
+      "name": "only_reviewed_binding_changes:mac_capture_sqlite_synthetic_r1.py",
+      "ok": true
+    },
+    {
+      "name": "all_function_class_bodies_unchanged:mac_capture_sqlite_synthetic_r1.py",
+      "ok": true,
+      "detail": {
+        "definitions": 10
+      }
+    },
+    {
+      "name": "stdin_source_exact:mac_capture_sqlite_synthetic_r2.py",
+      "ok": true
+    },
+    {
+      "name": "only_reviewed_binding_changes:mac_capture_sqlite_synthetic_r2.py",
+      "ok": true
+    },
+    {
+      "name": "all_function_class_bodies_unchanged:mac_capture_sqlite_synthetic_r2.py",
+      "ok": true,
+      "detail": {
+        "definitions": 10
+      }
+    },
+    {
+      "name": "stdin_source_exact:mac_current_cycle_r2.mjs",
+      "ok": true
+    },
+    {
+      "name": "baseline_reference_exact:mac_current_cycle_r2.mjs",
+      "ok": true
+    },
+    {
+      "name": "only_reviewed_binding_changes:mac_current_cycle_r2.mjs",
+      "ok": true
+    },
+    {
+      "name": "stdin_source_exact:mac_single_native_r2.mjs",
+      "ok": true
+    },
+    {
+      "name": "reviewed_base_identity:mac_single_native_r2.mjs",
+      "ok": true
+    },
+    {
+      "name": "baseline_reference_exact:mac_single_native_r2.mjs",
+      "ok": true
+    },
+    {
+      "name": "only_reviewed_binding_changes:mac_single_native_r2.mjs",
+      "ok": true
+    },
+    {
+      "name": "stdin_source_exact:mac_auth_rows_cas_r1.mjs",
+      "ok": true
+    },
+    {
+      "name": "baseline_reference_exact:mac_auth_rows_cas_r1.mjs",
+      "ok": true
+    },
+    {
+      "name": "only_reviewed_binding_changes:mac_auth_rows_cas_r1.mjs",
+      "ok": true
+    },
+    {
+      "name": "stdin_source_exact:mac_authbus_cache_cas_r1.mjs",
+      "ok": true
+    },
+    {
+      "name": "only_reviewed_binding_changes:mac_authbus_cache_cas_r1.mjs",
+      "ok": true
+    },
+    {
+      "name": "stdin_source_exact:mac_current_outer_inputs_r2.py",
+      "ok": true
+    },
+    {
+      "name": "reviewed_base_identity:mac_current_outer_inputs_r2.py",
+      "ok": true
+    },
+    {
+      "name": "baseline_reference_exact:mac_current_outer_inputs_r2.py",
+      "ok": true
+    },
+    {
+      "name": "single_unbound_entry_block",
+      "ok": true
+    },
+    {
+      "name": "only_reviewed_binding_changes:mac_current_outer_inputs_r2.py",
+      "ok": true
+    },
+    {
+      "name": "all_function_class_bodies_unchanged:mac_current_outer_inputs_r2.py",
+      "ok": true,
+      "detail": {
+        "definitions": 12
+      }
+    },
+    {
+      "name": "stdin_source_exact:mac_current_outer_wal_r1.py",
+      "ok": true
+    },
+    {
+      "name": "reviewed_base_identity:mac_current_outer_wal_r1.py",
+      "ok": true
+    },
+    {
+      "name": "baseline_reference_exact:mac_current_outer_wal_r1.py",
+      "ok": true
+    },
+    {
+      "name": "single_unbound_outer_flag",
+      "ok": true
+    },
+    {
+      "name": "only_reviewed_binding_changes:mac_current_outer_wal_r1.py",
+      "ok": true
+    },
+    {
+      "name": "all_function_class_bodies_unchanged:mac_current_outer_wal_r1.py",
+      "ok": true,
+      "detail": {
+        "definitions": 27
+      }
+    },
+    {
+      "name": "stdin_source_exact:mac_darwin_owned_projection_r1.py",
+      "ok": true
+    },
+    {
+      "name": "only_reviewed_binding_changes:mac_darwin_owned_projection_r1.py",
+      "ok": true
+    },
+    {
+      "name": "all_function_class_bodies_unchanged:mac_darwin_owned_projection_r1.py",
+      "ok": true,
+      "detail": {
+        "definitions": 8
+      }
+    },
+    {
+      "name": "stdin_source_exact:mac_native_owned_unreaped_r1.py",
+      "ok": true
+    },
+    {
+      "name": "only_reviewed_binding_changes:mac_native_owned_unreaped_r1.py",
+      "ok": true
+    },
+    {
+      "name": "all_function_class_bodies_unchanged:mac_native_owned_unreaped_r1.py",
+      "ok": true,
+      "detail": {
+        "definitions": 12
+      }
+    },
+    {
+      "name": "stdin_source_exact:mac_native_owned_commands_r1.py",
+      "ok": true
+    },
+    {
+      "name": "only_reviewed_binding_changes:mac_native_owned_commands_r1.py",
+      "ok": true
+    },
+    {
+      "name": "all_function_class_bodies_unchanged:mac_native_owned_commands_r1.py",
+      "ok": true,
+      "detail": {
+        "definitions": 5
+      }
+    },
+    {
+      "name": "stdin_source_exact:mac_registry_readonly_wal_r1.py",
+      "ok": true
+    },
+    {
+      "name": "only_reviewed_binding_changes:mac_registry_readonly_wal_r1.py",
+      "ok": true
+    },
+    {
+      "name": "all_function_class_bodies_unchanged:mac_registry_readonly_wal_r1.py",
+      "ok": true,
+      "detail": {
+        "definitions": 16
+      }
+    },
+    {
+      "name": "exact_11_changed_11_unchanged",
+      "ok": true
+    },
+    {
+      "name": "exact_11_root_2_label_literals",
+      "ok": true
+    },
+    {
+      "name": "candidate_matches_original_payload",
+      "ok": true
+    },
+    {
+      "name": "candidate_only_sourcePins_changed",
+      "ok": true
+    },
+    {
+      "name": "candidate_commit_tree_and_budgets_preserved",
+      "ok": true
+    },
+    {
+      "name": "stdin_document_exact:candidate-current-manager-wal-r1.public.json",
+      "ok": true
+    },
+    {
+      "name": "stdin_document_exact:proofs/native-proc-r2.authority.public.json",
+      "ok": true
+    },
+    {
+      "name": "original_proof_unchanged:proofs/native-proc-r2.authority.public.json",
+      "ok": true
+    },
+    {
+      "name": "stdin_document_exact:proofs/native-proc-r2.child-stdout.public.json",
+      "ok": true
+    },
+    {
+      "name": "original_proof_unchanged:proofs/native-proc-r2.child-stdout.public.json",
+      "ok": true
+    },
+    {
+      "name": "stdin_document_exact:proofs/native-proc-r2.stdout.public.json",
+      "ok": true
+    },
+    {
+      "name": "original_proof_unchanged:proofs/native-proc-r2.stdout.public.json",
+      "ok": true
+    },
+    {
+      "name": "stdin_document_exact:proofs/registry-wal-r1.authority.public.json",
+      "ok": true
+    },
+    {
+      "name": "original_proof_unchanged:proofs/registry-wal-r1.authority.public.json",
+      "ok": true
+    },
+    {
+      "name": "stdin_document_exact:proofs/registry-wal-r1.stdout.public.json",
+      "ok": true
+    },
+    {
+      "name": "original_proof_unchanged:proofs/registry-wal-r1.stdout.public.json",
+      "ok": true
+    },
+    {
+      "name": "stdin_document_exact:proofs/synthetic-r2.authority.public.json",
+      "ok": true
+    },
+    {
+      "name": "original_proof_unchanged:proofs/synthetic-r2.authority.public.json",
+      "ok": true
+    },
+    {
+      "name": "stdin_document_exact:proofs/synthetic-r2.stdout.public.json",
+      "ok": true
+    },
+    {
+      "name": "original_proof_unchanged:proofs/synthetic-r2.stdout.public.json",
+      "ok": true
+    },
+    {
+      "name": "anchor_exact_unchanged",
+      "ok": true
+    },
+    {
+      "name": "actual_google_entry_whole_pin",
+      "ok": true
+    },
+    {
+      "name": "publisher_binding_node_kind:PINS",
+      "ok": true
+    },
+    {
+      "name": "publisher_binding_node_kind:PAYLOAD_BYTES",
+      "ok": true
+    },
+    {
+      "name": "publisher_binding_node_kind:PAYLOAD_SHA",
+      "ok": true
+    },
+    {
+      "name": "publisher_binding_node_kind:DOCUMENT_PINS",
+      "ok": true
+    },
+    {
+      "name": "publisher_binding_node_kind:ROOT",
+      "ok": true
+    },
+    {
+      "name": "publisher_whole_inverse_only_five_assignments",
+      "ok": true
+    },
+    {
+      "name": "publisher_12_definitions_byte_identical",
+      "ok": true
+    },
+    {
+      "name": "publisher_original_insertion_order",
+      "ok": true
+    },
+    {
+      "name": "publisher_exact_22_source_pins",
+      "ok": true
+    },
+    {
+      "name": "publisher_exact_8_document_pins",
+      "ok": true
+    },
+    {
+      "name": "publisher_payload_size_sha",
+      "ok": true
+    },
+    {
+      "name": "publisher_original45s_shared_budget",
+      "ok": true
+    },
+    {
+      "name": "legacy_inert_proposal_rejected_known_schema_mismatch",
+      "ok": true
+    },
+    {
+      "name": "inert_inline_publisher_and_stdin_exact",
+      "ok": true
+    },
+    {
+      "name": "inert_exact_control_fields",
+      "ok": true
+    },
+    {
+      "name": "runtime_only_declared_fresh_bindings_and_regular_python",
+      "ok": true
+    },
+    {
+      "name": "actual_qualified_regular_python_pin",
+      "ok": true
+    },
+    {
+      "name": "source_only_31_targets_match_30_files_and_receipt",
+      "ok": true
+    }
+  ],
+  "expectedPacketTree": "71a1656fbe227fcea1e92558a5004e22eaab69c6",
+  "merkleTrees": [
+    {
+      "path": "source",
+      "sha": "f35a128075e2e10a75fee61cc10c6b518b5502cc",
+      "entries": 22
+    },
+    {
+      "path": "reference/baseline",
+      "sha": "511184d196630aa43d9f863ade90de09565eae7e",
+      "entries": 11
+    },
+    {
+      "path": "reference/reviewed",
+      "sha": "e69d77db582b9e2165d9e9c953add01df6020833",
+      "entries": 4
+    },
+    {
+      "path": "reference",
+      "sha": "e7e25d9a654a53c4a7955fe0800c5a2315b14fda",
+      "entries": 12
+    },
+    {
+      "path": "diff/from-baseline",
+      "sha": "1e723d1144614fb5e16e660cbed7282217e56021",
+      "entries": 11
+    },
+    {
+      "path": "diff/from-reviewed",
+      "sha": "d92682440e73caddb0a87ac870dd0178cbb986ad",
+      "entries": 4
+    },
+    {
+      "path": "diff",
+      "sha": "55e2ba2ebc676dc0123fecea14143b0f4c759edc",
+      "entries": 5
+    },
+    {
+      "path": "documents/proofs",
+      "sha": "22946d4ca8344a49bf7c8b56aefe396d89bc0d11",
+      "entries": 7
+    },
+    {
+      "path": "documents",
+      "sha": "5905a054991dbcbd2b4db63ca7cc85538f0d6252",
+      "entries": 2
+    },
+    {
+      "path": "dispatch",
+      "sha": "90856a3074b6fb5ae5978188667aacb2b583f0f0",
+      "entries": 4
+    },
+    {
+      "path": "validation",
+      "sha": "1109b0d710d0b1898171cc52c8ffc2a90282ab78",
+      "entries": 2
+    },
+    {
+      "path": "",
+      "sha": "71a1656fbe227fcea1e92558a5004e22eaab69c6",
+      "entries": 15
+    }
+  ],
+  "sources": [
+    {
+      "name": "mac_current_fixture_materializer_r1.py",
+      "baseline": {
+        "blob": "aa9842e1543eee1dbcacc797161ddda31d59cb5a",
+        "bytes": 23649,
+        "sha256": "686b89842b19da959c5ea1af25f7568ea65070bf6b3cacd25443ea0a3cb809f1"
+      },
+      "reviewed": {
+        "blob": "570f9abdcad9cfdc4c2d06c3895f0f68a1bf8c1b",
+        "bytes": 25974,
+        "sha256": "c9db0d893d2c326f35b8c80ea46c1be53b6d6b3b46caf78309b8f14f28cfe21f"
+      },
+      "bound": {
+        "blob": "d96326268e8048a31b420fda20b32958b99b6753",
+        "bytes": 25972,
+        "sha256": "cf0b78ed54648525b873d91473d603f115e84013c38ba4abaa42771dfa5d1ccf"
+      },
+      "unchangedFromBaseline": false
+    },
+    {
+      "name": "mac_current_capture_entry_wal_r1.py",
+      "baseline": {
+        "blob": "1001b044076205bd8497670a12504439bdf921c8",
+        "bytes": 42084,
+        "sha256": "32fcee225a7d185242bbc9cc792b9ed9572c26f38e04ad7b10c1831e2409cb4a"
+      },
+      "reviewed": {
+        "blob": "1001b044076205bd8497670a12504439bdf921c8",
+        "bytes": 42084,
+        "sha256": "32fcee225a7d185242bbc9cc792b9ed9572c26f38e04ad7b10c1831e2409cb4a"
+      },
+      "bound": {
+        "blob": "6d81fc1a726b43f4b523a416a077c49953d96ac6",
+        "bytes": 42082,
+        "sha256": "f0600e0b8fe1f01a3d68559e724e19d0f76272c2febd4d362b9012d84b1177e2"
+      },
+      "unchangedFromBaseline": false
+    },
+    {
+      "name": "mac_owned_launchd_r3.py",
+      "baseline": {
+        "blob": "04466c9004d80289dac655fcd958a1e33f324ae4",
+        "bytes": 35734,
+        "sha256": "f33b4b61fdb97f4612e1667840e148e69dc2702b49f0832f1491800ddbc6cf29"
+      },
+      "reviewed": {
+        "blob": "04466c9004d80289dac655fcd958a1e33f324ae4",
+        "bytes": 35734,
+        "sha256": "f33b4b61fdb97f4612e1667840e148e69dc2702b49f0832f1491800ddbc6cf29"
+      },
+      "bound": {
+        "blob": "96fe347f2edbda1718b2fd683041b88be8f41e30",
+        "bytes": 35736,
+        "sha256": "4989b58248f7951f825c021402bef611708b8613291d3282761c8c97d0b4adf6"
+      },
+      "unchangedFromBaseline": false
+    },
+    {
+      "name": "mac_current_server_owner_r1.py",
+      "baseline": {
+        "blob": "db0aeb856c01006e6e66ba72269f029dfa13ca81",
+        "bytes": 13396,
+        "sha256": "7ff8a1d8c8b134869d1256826e063e6d22950c3defd03b127ada17061c445f60"
+      },
+      "reviewed": {
+        "blob": "db0aeb856c01006e6e66ba72269f029dfa13ca81",
+        "bytes": 13396,
+        "sha256": "7ff8a1d8c8b134869d1256826e063e6d22950c3defd03b127ada17061c445f60"
+      },
+      "bound": {
+        "blob": "44bf4989f10bad1d6322b182b630769bf93a09c3",
+        "bytes": 13394,
+        "sha256": "fb38bd7ce30e9a0b62539d459939b2ec20d96f84fd08d57199aa095fd3fc5ef6"
+      },
+      "unchangedFromBaseline": false
+    },
+    {
+      "name": "mac_current_phase_owner_r2.py",
+      "baseline": {
+        "blob": "0bb331760813905250de5c0722a74fdcebfc099e",
+        "bytes": 24977,
+        "sha256": "4b545e9b3147cc118565255cdfcd64ee41095f4f957f9c151d103892d4a92500"
+      },
+      "reviewed": {
+        "blob": "0bb331760813905250de5c0722a74fdcebfc099e",
+        "bytes": 24977,
+        "sha256": "4b545e9b3147cc118565255cdfcd64ee41095f4f957f9c151d103892d4a92500"
+      },
+      "bound": {
+        "blob": "82f790ff6d26d9e998fe1c5c61f89f5975ec3920",
+        "bytes": 24975,
+        "sha256": "bb674ed1a60b204207af2dbab4d7b06a76e47fdebb19991e2f2c3dda7beac4a5"
+      },
+      "unchangedFromBaseline": false
+    },
+    {
+      "name": "mac_native_process_observer_r1.py",
+      "baseline": {
+        "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+        "bytes": 13423,
+        "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+      },
+      "reviewed": {
+        "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+        "bytes": 13423,
+        "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+      },
+      "bound": {
+        "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+        "bytes": 13423,
+        "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+      },
+      "unchangedFromBaseline": true
+    },
+    {
+      "name": "mac_guarded_current_capture_r3.py",
+      "baseline": {
+        "blob": "244f98634ab07e96f70585179a1d155fdb34f34f",
+        "bytes": 23578,
+        "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693"
+      },
+      "reviewed": {
+        "blob": "244f98634ab07e96f70585179a1d155fdb34f34f",
+        "bytes": 23578,
+        "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693"
+      },
+      "bound": {
+        "blob": "244f98634ab07e96f70585179a1d155fdb34f34f",
+        "bytes": 23578,
+        "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693"
+      },
+      "unchangedFromBaseline": true
+    },
+    {
+      "name": "mac_owned_commands_r1.py",
+      "baseline": {
+        "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+        "bytes": 5965,
+        "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+      },
+      "reviewed": {
+        "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+        "bytes": 5965,
+        "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+      },
+      "bound": {
+        "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+        "bytes": 5965,
+        "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+      },
+      "unchangedFromBaseline": true
+    },
+    {
+      "name": "mac_t5_volume_guard_r1.py",
+      "baseline": {
+        "blob": "40e12084ba78c86abb3f16c10c64a30664a8b916",
+        "bytes": 13393,
+        "sha256": "56f0490e6b4457ec59f82ffb17984f16108c0856879c21ceabc3ea6670605d70"
+      },
+      "reviewed": {
+        "blob": "40e12084ba78c86abb3f16c10c64a30664a8b916",
+        "bytes": 13393,
+        "sha256": "56f0490e6b4457ec59f82ffb17984f16108c0856879c21ceabc3ea6670605d70"
+      },
+      "bound": {
+        "blob": "5a0177bed2e224de3ec14f68174ec9b6e0ea2525",
+        "bytes": 13391,
+        "sha256": "55a007ae925c6cab6ee228ec5154cff79baa6c2bc38fb65868fd192dfc29d288"
+      },
+      "unchangedFromBaseline": false
+    },
+    {
+      "name": "mac_owned_unreaped_r1.py",
+      "baseline": {
+        "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+        "bytes": 10990,
+        "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+      },
+      "reviewed": {
+        "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+        "bytes": 10990,
+        "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+      },
+      "bound": {
+        "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+        "bytes": 10990,
+        "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+      },
+      "unchangedFromBaseline": true
+    },
+    {
+      "name": "mac_capture_sqlite_synthetic_r1.py",
+      "baseline": {
+        "blob": "992fa2b52760e5f3d0b192837053728011e11500",
+        "bytes": 16476,
+        "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c"
+      },
+      "reviewed": {
+        "blob": "992fa2b52760e5f3d0b192837053728011e11500",
+        "bytes": 16476,
+        "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c"
+      },
+      "bound": {
+        "blob": "992fa2b52760e5f3d0b192837053728011e11500",
+        "bytes": 16476,
+        "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c"
+      },
+      "unchangedFromBaseline": true
+    },
+    {
+      "name": "mac_capture_sqlite_synthetic_r2.py",
+      "baseline": {
+        "blob": "92930e43caa1b87bc857c642fd545b5b0147226d",
+        "bytes": 16915,
+        "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2"
+      },
+      "reviewed": {
+        "blob": "92930e43caa1b87bc857c642fd545b5b0147226d",
+        "bytes": 16915,
+        "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2"
+      },
+      "bound": {
+        "blob": "92930e43caa1b87bc857c642fd545b5b0147226d",
+        "bytes": 16915,
+        "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2"
+      },
+      "unchangedFromBaseline": true
+    },
+    {
+      "name": "mac_current_cycle_r2.mjs",
+      "baseline": {
+        "blob": "d3b981f2c22a8e522555c12571d01c2be0008472",
+        "bytes": 24013,
+        "sha256": "9ebc50e88b990987041f8fb9280b5ebedd96d1211a38cb24d2f6f4c518483fdc"
+      },
+      "reviewed": {
+        "blob": "d3b981f2c22a8e522555c12571d01c2be0008472",
+        "bytes": 24013,
+        "sha256": "9ebc50e88b990987041f8fb9280b5ebedd96d1211a38cb24d2f6f4c518483fdc"
+      },
+      "bound": {
+        "blob": "e9b57fe153e4a8816dcfaae3fb6e028cb80e6496",
+        "bytes": 24011,
+        "sha256": "d8ce076b75794b2ca495ef37c310d9995f092c0563eae262fcaab1582c543878"
+      },
+      "unchangedFromBaseline": false
+    },
+    {
+      "name": "mac_single_native_r2.mjs",
+      "baseline": {
+        "blob": "3614c27cb06f311870ceeeda3f01e806306ae0d1",
+        "bytes": 28533,
+        "sha256": "8c4a2cc09330cfda7a488e7e5caa811f4e190a10054a31f683b3466124210431"
+      },
+      "reviewed": {
+        "blob": "11d6b0bb0c26019b5a6e4035d42226b6666cab07",
+        "bytes": 33149,
+        "sha256": "26dbfd7cf7b725d07dfb39fdf6de09e8d131a6b184d998aa729b1094d76cad90"
+      },
+      "bound": {
+        "blob": "d7e88969213c7195e65d6f4919939789d054e214",
+        "bytes": 33147,
+        "sha256": "c2cf0eaa0c2b4b925bca02e82059152cfe4288786e15c71d49fc09fc54494c4b"
+      },
+      "unchangedFromBaseline": false
+    },
+    {
+      "name": "mac_auth_rows_cas_r1.mjs",
+      "baseline": {
+        "blob": "26e00c58f5daa0d68ceb62b5f0be560c06c39746",
+        "bytes": 3109,
+        "sha256": "aea4fb56bbf8c51457d99f8a46fb1dcce11acc99ef82c8c57ab8c6c4e1b68f64"
+      },
+      "reviewed": {
+        "blob": "26e00c58f5daa0d68ceb62b5f0be560c06c39746",
+        "bytes": 3109,
+        "sha256": "aea4fb56bbf8c51457d99f8a46fb1dcce11acc99ef82c8c57ab8c6c4e1b68f64"
+      },
+      "bound": {
+        "blob": "413e5c6ffe69dddfe1324ec604504fc8e4b93462",
+        "bytes": 3107,
+        "sha256": "dd3d02675212f6e513a4f93573566646c55a1d27cb21ac7bbb528058a96db8b7"
+      },
+      "unchangedFromBaseline": false
+    },
+    {
+      "name": "mac_authbus_cache_cas_r1.mjs",
+      "baseline": {
+        "blob": "a318e427095b6c9273f03208620296b57ab59bc0",
+        "bytes": 6846,
+        "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+      },
+      "reviewed": {
+        "blob": "a318e427095b6c9273f03208620296b57ab59bc0",
+        "bytes": 6846,
+        "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+      },
+      "bound": {
+        "blob": "a318e427095b6c9273f03208620296b57ab59bc0",
+        "bytes": 6846,
+        "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+      },
+      "unchangedFromBaseline": true
+    },
+    {
+      "name": "mac_current_outer_inputs_r2.py",
+      "baseline": {
+        "blob": "7f4802e5225b73af247f371f3dc5c197c6e4425c",
+        "bytes": 27292,
+        "sha256": "6645e7375e1c3a5e0fbf994a2f035d4922c4def4d5bbfd333236293db78f9b11"
+      },
+      "reviewed": {
+        "blob": "1e2a0cfb1bdbaef2d418fd8eb941ac14ec28e9b6",
+        "bytes": 32881,
+        "sha256": "cf335c2aa67c6ba0ecbe7a236c458c18261feb870a71a0b41ca4fb0e2d184a64"
+      },
+      "bound": {
+        "blob": "2d56e56803e76c9bba6c3bba56552508fb50fb92",
+        "bytes": 33000,
+        "sha256": "97db953e7324e31a9bb162d1ee508ed5f2e2a58c98a181131988e9dd3c3cfdce"
+      },
+      "unchangedFromBaseline": false
+    },
+    {
+      "name": "mac_current_outer_wal_r1.py",
+      "baseline": {
+        "blob": "8459b949c07982f56dae2e252565f3db0971e246",
+        "bytes": 68348,
+        "sha256": "bce47fd194be7ec1d1ec340e24d8e759dbf7611ef3c75eca2adeb62e9b4ccf01"
+      },
+      "reviewed": {
+        "blob": "26622454186ba28ada489c9a10b34cf4ad254b97",
+        "bytes": 71496,
+        "sha256": "72ecfcd586a4ab4c48fd95d2e15b4a44165a754570c699eae18dceaa02f3b262"
+      },
+      "bound": {
+        "blob": "12a6fa7a0432281246b36915f1b4b5cd5cd5b400",
+        "bytes": 71506,
+        "sha256": "6ad1b80ac06c90759c2ac5fd01df9c750b077ffa43253486c07658b6e1ddd4d5"
+      },
+      "unchangedFromBaseline": false
+    },
+    {
+      "name": "mac_darwin_owned_projection_r1.py",
+      "baseline": {
+        "blob": "a7b6f61d0ccabc4c29b4d0891663ad2d24ba25bb",
+        "bytes": 12858,
+        "sha256": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740"
+      },
+      "reviewed": {
+        "blob": "a7b6f61d0ccabc4c29b4d0891663ad2d24ba25bb",
+        "bytes": 12858,
+        "sha256": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740"
+      },
+      "bound": {
+        "blob": "a7b6f61d0ccabc4c29b4d0891663ad2d24ba25bb",
+        "bytes": 12858,
+        "sha256": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740"
+      },
+      "unchangedFromBaseline": true
+    },
+    {
+      "name": "mac_native_owned_unreaped_r1.py",
+      "baseline": {
+        "blob": "5a90c395dc7c88335eb7e06f7984a013b280af02",
+        "bytes": 10761,
+        "sha256": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c"
+      },
+      "reviewed": {
+        "blob": "5a90c395dc7c88335eb7e06f7984a013b280af02",
+        "bytes": 10761,
+        "sha256": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c"
+      },
+      "bound": {
+        "blob": "5a90c395dc7c88335eb7e06f7984a013b280af02",
+        "bytes": 10761,
+        "sha256": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c"
+      },
+      "unchangedFromBaseline": true
+    },
+    {
+      "name": "mac_native_owned_commands_r1.py",
+      "baseline": {
+        "blob": "3cf86925b936062de7453193548b8ed32e2c4e45",
+        "bytes": 5972,
+        "sha256": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd"
+      },
+      "reviewed": {
+        "blob": "3cf86925b936062de7453193548b8ed32e2c4e45",
+        "bytes": 5972,
+        "sha256": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd"
+      },
+      "bound": {
+        "blob": "3cf86925b936062de7453193548b8ed32e2c4e45",
+        "bytes": 5972,
+        "sha256": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd"
+      },
+      "unchangedFromBaseline": true
+    },
+    {
+      "name": "mac_registry_readonly_wal_r1.py",
+      "baseline": {
+        "blob": "c97d95b735bb4d76bf90d4c2b78d7b1bbcaa0920",
+        "bytes": 31776,
+        "sha256": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed"
+      },
+      "reviewed": {
+        "blob": "c97d95b735bb4d76bf90d4c2b78d7b1bbcaa0920",
+        "bytes": 31776,
+        "sha256": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed"
+      },
+      "bound": {
+        "blob": "c97d95b735bb4d76bf90d4c2b78d7b1bbcaa0920",
+        "bytes": 31776,
+        "sha256": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed"
+      },
+      "unchangedFromBaseline": true
+    }
+  ],
+  "correctedInertExpectedNativeBinding": {
+    "canonicalBytes": 818309,
+    "sha256": "e267418ec6d90ed3d5f9ae3fb2f3fb6cc2346e69e6b70be905777edefa05e38a",
+    "native_fingerprint": "16314080256650186451"
+  },
+  "legacyInertProposalNotAuthorized": true,
+  "runtimeProposalNativeBinding": {
+    "canonicalBytes": 5218,
+    "sha256": "22cfe25e558dd973d40265b4dc397426b0613d55f56f8821f9b4a79ffc51f7a4",
+    "native_fingerprint": "2508472412258818419"
+  },
+  "notProved": [
+    "host root or labels absent now",
+    "actual selected harness owner",
+    "AppRole/TLS/KV/Policy/renewal/revocation",
+    "cold restart/rollback",
+    "all-client migration",
+    "production cutover",
+    "old-version cleanup"
+  ],
+  "passed": 218,
+  "failed": 0,
+  "ok": true
+}

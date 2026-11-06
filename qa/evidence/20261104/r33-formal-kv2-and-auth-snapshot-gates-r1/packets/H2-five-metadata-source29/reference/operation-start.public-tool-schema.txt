@@ -1,0 +1,46 @@
+Admit one background operation from ten closed native read APIs: read_multiple_files, file_info, binary_read, process_status, process_read, process_wait, process_list, hardware_snapshot, service_status and network_inspect. Original configured-host, filesystem and operator-account policies apply. No write, command, privilege, maintenance, recursive async or arbitrary tool dispatch. Required private idempotency key has a secret HMAC binding; identical retries return the original operation_id without replay. Admission acknowledges neither completion nor delivery. Original SDK success/tool-error/RPC-error bytes up to 1 MiB are encrypted at rest with trusted credential-derived keys; all users sharing that credential share retrieval. Stdio keys are ephemeral. Shared request/operation concurrency is eight globally and four per owner; immutable key retention defaults to 512 globally and 128 per owner and may be raised by validated administrator startup limits up to 65536. Capacity refuses new keys without deleting, expiring or rebinding previous identities. No restart execution resume, ChatGPT caller isolation or full Desktop Commander replacement is implied. This tool is part of plugin `HeptaRuntime Mac Controller`.
+
+MCP server instructions: Filesystem tools. File lines render as `N:hh|content`; `N:hh` is the line id edit tools target, and edit results are diffs with fresh ids, so edits chain without re-viewing files. Reuse returned content and ids; read complete relevant blocks, then act on them. Each response costs a round trip: first decide what you need next, then request every call that doesn't depend on another's result in that one response.
+
+exec tool declaration:
+```ts
+declare const tools: { mcp__codex_apps__heptaruntime_mac_controller_operation_start(args: {
+  // Required private 1..128-byte key, unchanged typed arguments must reuse the same key.
+  idempotency_key: string;
+  operation: { arguments: {
+  // One configured operator host. Caller-selected SSH targets are unavailable.
+  host: string;
+  // Full-file byte ceiling, 1..65536; default 16384. Larger files fail, never truncate.
+  max_file_bytes?: number;
+  // Shared serialized MCP text-result ceiling, 1024..262144; default 65536.
+  // Includes JSON escaping. A failed batch returns no partial file content.
+  max_response_bytes?: number;
+  // 1..16 distinct absolute regular-file paths; symlinks and hardlinks are rejected.
+  paths: Array<string>;
+}; tool: "read_multiple_files"; } | { arguments: { host: string; path: string; }; tool: "file_info"; } | { arguments: {
+  // Bind every chunk to the version returned by the first read.
+  expected_version?: string;
+  host: string;
+  // Maximum returned bytes; capped at 64 KiB. Use next_offset until eof.
+  limit?: number;
+  offset?: number;
+  path: string;
+}; tool: "binary_read"; } | { arguments: { host: string; job_id: string; }; tool: "process_status"; } | { arguments: {
+  host: string;
+  job_id: string;
+  // Maximum bytes returned per stream, capped at 16 KiB with lossless byte cursors.
+  limit?: number;
+  stderr_offset?: number;
+  stdout_offset?: number;
+}; tool: "process_read"; } | { arguments: {
+  host: string;
+  job_id: string;
+  // Maximum wait for this call, capped at 30 seconds.
+  timeout_seconds?: number;
+}; tool: "process_wait"; } | { arguments: { host?: string; }; tool: "process_list"; } | { arguments: { host: string; }; tool: "hardware_snapshot"; } | { arguments: {
+  host: string;
+  // Exact systemd unit or launchd label names, max 64.
+  services: Array<string>;
+}; tool: "service_status"; } | { arguments: { host: string; }; tool: "network_inspect"; };
+}): Promise<CallToolResult>; };
+```

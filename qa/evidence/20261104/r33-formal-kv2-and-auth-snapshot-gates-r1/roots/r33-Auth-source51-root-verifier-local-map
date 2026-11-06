@@ -1,0 +1,118 @@
+import ast,copy,difflib,hashlib,json,pathlib,re
+A=pathlib.Path('/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1')
+P=pathlib.Path('/workspace/scratch/f86faac821c4/r32_recovery')
+checks=[]
+def need(v,n):
+    if not v:raise AssertionError(n)
+    checks.append(n)
+def meta(b):
+    return {'blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest(),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+def pin(b,p):return all(meta(b)[k]==p[k] for k in ('blob','bytes','sha256'))
+idx=json.loads((A/'owner-repair/package-r3/files-index.public.json').read_bytes())
+locations=json.loads((A/'owner-repair/package-r3/local-byte-map.public.json').read_bytes())
+F={};nodes={'':{}}
+for path,pin0 in idx.items():
+    need(not path.startswith('/') and not any(x in ('','..','.') for x in path.split('/')),'safe:'+path)
+    location=locations[path];p=pathlib.Path(location['localPath'])
+    need(p.resolve().is_relative_to(A) or p.resolve().is_relative_to(P),'fixed_local_source_map:'+path)
+    need(all(location[k]==pin0[k] for k in ('blob','bytes','sha256')),'local_map_pin:'+path)
+    b=p.read_bytes()
+    if not pin(b,pin0):
+        wrapper=json.loads(b);need(isinstance(wrapper,dict) and isinstance(wrapper.get('text'),str),'known_text_wrapper:'+path);b=wrapper['text'].encode()
+    need(pin(b,pin0),'whole:'+path);F[path]=b;parts=path.split('/');d=''
+    for name in parts[:-1]:
+        target=(d+'/' if d else '')+name;nodes.setdefault(target,{});nodes[d][name]=('40000',target);d=target
+    nodes[d][parts[-1]]=('100644',pin0['blob'])
+hashes={}
+for d in sorted(nodes,key=lambda x:(x.count('/'),len(x)),reverse=True):
+    b=b''
+    for name,(mode,value) in sorted(nodes[d].items(),key=lambda x:(x[0]+('/' if x[1][0]=='40000' else '')).encode()):
+        h=hashes[value] if mode=='40000' else value
+        b+=mode.encode()+b' '+name.encode()+b'\0'+bytes.fromhex(h)
+    hashes[d]=hashlib.sha1(b'tree '+str(len(b)).encode()+b'\0'+b).hexdigest()
+need(len(F)==51 and sum(map(len,F.values()))==906723 and len(hashes)==11 and hashes['']=='d03ff2c5eeff00a6639f95d66c4c4fca3105056a','source51_whole_exact_Merkle')
+expected={'source/inputs.py':'1e2a0cfb1bdbaef2d418fd8eb941ac14ec28e9b6','source/materializer.py':'570f9abdcad9cfdc4c2d06c3895f0f68a1bf8c1b','source/worker.mjs':'11d6b0bb0c26019b5a6e4035d42226b6666cab07','reference/before/inputs.py':'7f4802e5225b73af247f371f3dc5c197c6e4425c','reference/before/materializer.py':'aa9842e1543eee1dbcacc797161ddda31d59cb5a','reference/before/worker.mjs':'3614c27cb06f311870ceeeda3f01e806306ae0d1'}
+for p,h in expected.items():need(meta(F[p])['blob']==h,'exact_reviewed_source:'+p)
+def dump(n):return ast.dump(n,include_attributes=False)
+def cls(tree,name):return next(n for n in tree.body if isinstance(n,ast.ClassDef) and n.name==name)
+def methods(c):return {n.name:n for n in c.body if isinstance(n,(ast.FunctionDef,ast.AsyncFunctionDef))}
+def imports(t):return [dump(n) for n in t.body if isinstance(n,(ast.Import,ast.ImportFrom))]
+ib=ast.parse(F['reference/before/inputs.py']);ia=ast.parse(F['source/inputs.py'])
+mb=ast.parse(F['reference/before/materializer.py']);ma=ast.parse(F['source/materializer.py'])
+need(imports(ib)==imports(ia) and imports(mb)==imports(ma),'all_original_python_imports_unchanged')
+added={'OWNER_PUBLIC_BINDING_READY','OWNER_ENTRY_PINS','OWNER_PUBLIC_CODE_PINS'}
+def is_added(n):
+    return isinstance(n,ast.Assign) and len(n.targets)==1 and isinstance(n.targets[0],ast.Name) and n.targets[0].id in added
+def drop_inputs(t):return [dump(n) for n in t.body if not (isinstance(n,ast.ClassDef) and n.name=='Inputs') and not is_added(n)]
+need(drop_inputs(ib)==drop_inputs(ia),'all_original_input_module_code_and_constants_unchanged')
+consts={n.targets[0].id:ast.literal_eval(n.value) for n in ia.body if is_added(n)}
+need(set(consts)==added and consts['OWNER_PUBLIC_BINDING_READY'] is False and consts['OWNER_ENTRY_PINS']=={},'unobserved_entry_cannot_execute')
+prefix='/opt/homebrew/lib/node_modules/openclaw/dist/'
+want={prefix+'loader-D8d2EvVh.js':'3a10479bdcbb713692c3ded7dbd5baad27c1b17ae3566172c117d45916dabce7',prefix+'manifest-registry--UiRn6nq.js':'819c76c314e6ed1fd39c5ed6b169d63997905b3ae8a98b9373783d626431ace4',prefix+'registry-B8eQDFB4.js':'25f3ef82756d85281ad5c25375a5cd2f405989a1145ed438de05992e8c995376',prefix+'extensions/google/openclaw.plugin.json':'518e8e071c1e5720c9fe621ac84c8b550df93af14dac0d96d788d73917835301',prefix+'extensions/google/package.json':'398f73305017a1d3813610825814c6e1dd93b683da088cb6df068a31c639fcc3'}
+need(consts['OWNER_PUBLIC_CODE_PINS']==want,'exact_five_additional_public_pins_only')
+im0=methods(cls(ib,'Inputs'));im1=methods(cls(ia,'Inputs'))
+changed=[n for n in im0 if dump(im0[n])!=dump(im1.get(n))]
+need(set(im1)-set(im0)=={'admit_owner_public_code'} and not set(im0)-set(im1),'one_new_input_method_only')
+need(set(changed)=={'__init__','_file','pin_code','admit_actual_harnesses'},'exact_four_changed_existing_input_methods')
+old=im0['admit_actual_harnesses'];new=im1['admit_actual_harnesses']
+def metadata_loops(n):
+    return [x for x in ast.walk(n) if isinstance(x,ast.For) and isinstance(x.target,ast.Name) and x.target.id=='name' and isinstance(x.iter,ast.Tuple) and [e.value for e in x.iter.elts if isinstance(e,ast.Constant)]==['openclaw.plugin.json','package.json','dist/index.js']]
+need(len(metadata_loops(old))==len(metadata_loops(new))==1 and dump(metadata_loops(old)[0])==dump(metadata_loops(new)[0]),'original_npm_three_file_loop_AST_exact')
+def named_assign(n,name):
+    return [x for x in ast.walk(n) if isinstance(x,ast.Assign) and any(isinstance(t,ast.Name) and t.id==name for t in x.targets)]
+need(dump(named_assign(old,'enabled')[0])==dump(named_assign(new,'enabled')[0]),'all_original_enabled_candidates_preserved')
+def remaining_module(t):
+    return [dump(n) for n in t.body if not (isinstance(n,ast.FunctionDef) and n.name=='consumer_profile') and not (isinstance(n,ast.ClassDef) and n.name=='Materializer')]
+need(remaining_module(mb)==remaining_module(ma),'all_other_materializer_module_code_unchanged')
+mm0=methods(cls(mb,'Materializer'));mm1=methods(cls(ma,'Materializer'))
+need(set(mm0)==set(mm1),'materializer_method_set_unchanged')
+class StripBindingArgument(ast.NodeTransformer):
+    def __init__(self):self.count=0
+    def visit_Call(self,node):
+        self.generic_visit(node)
+        if isinstance(node.func,ast.Name) and node.func.id=='consumer_profile':
+            want=ast.parse("runtime['harnessOwnerBindings']",mode='eval').body
+            need(len(node.args)==6 and dump(node.args[-1])==dump(want),'only_added_materializer_binding_argument')
+            node.args=node.args[:-1];self.count+=1
+        return node
+tr=StripBindingArgument()
+normalized=tr.visit(copy.deepcopy(cls(ma,'Materializer')))
+need(tr.count==1 and dump(normalized)==dump(cls(mb,'Materializer')),'entire_materializer_class_restored_by_one_call_argument')
+profile0=next(n for n in mb.body if isinstance(n,ast.FunctionDef) and n.name=='consumer_profile')
+profile1=next(n for n in ma.body if isinstance(n,ast.FunctionDef) and n.name=='consumer_profile')
+need([n.arg for n in profile1.args.args]==[n.arg for n in profile0.args.args]+['harness_bindings'],'profile_only_one_new_argument')
+pre=ast.get_source_segment(F['reference/before/materializer.py'].decode(),profile0)
+post=ast.get_source_segment(F['source/materializer.py'].decode(),profile1)
+need("'/opt/homebrew'" in pre and "'/opt/homebrew'" in post,'bundled_tree_already_in_original_OS_read_subtree')
+needle='    for path in sorted(source_pins):'
+need(pre[pre.index(needle):]==post[post.index(needle):],'source_pins_credentials_write_network_policy_tail_unchanged')
+w0=F['reference/before/worker.mjs'].decode();w=F['source/worker.mjs'].decode()
+# Remove only three manually reviewed insertion ranges, requiring exact original bytes afterward.
+ranges=[('\nfunction actualHarnessOwnerWitness(', '\nfunction privateRead('),
+        ('  // This export only returns the active registry for an argument-free call.', "  const nativeApi = await import("),
+        ('  const ownerAfter = actualHarnessOwnerWitness(', "  check('source_pins_unchanged'")]
+removed=[];rest=w
+for start,end in ranges:
+    need(rest.count(start)==1,'one_worker_insertion_anchor:'+start.strip())
+    a=rest.index(start);b=rest.index(end,a);removed.append(rest[a:b]);rest=rest[:a]+rest[b:]
+need(rest==w0,'remove_three_insertions_recovers_entire_original_worker_bytes')
+original_checks=["check('actual_loader_and_selector_choose_codex', selectedHarness?.id === 'codex');","check('selected_harness_is_actual_registered_instance', registry.r('codex')?.harness === selectedHarness);"]
+for s in original_checks:need(w.count(s)==w0.count(s)==1,'original_worker_check_verbatim:'+s[:42])
+need('entry.harness.pluginId === selected.pluginId' in removed[0] and "&& selected.pluginId === registered.ownerPluginId, 'actual_harness_owner_identity'" not in removed[0]
+     and 'entry.pluginId === registered.ownerPluginId' in removed[0],'owner_is_distinct_from_harness_metadata')
+need('harnessPluginIdMatchesLocal: true' in removed[0] and 'harnessPluginIdEqualsOwner: selected.pluginId === registered.ownerPluginId' in removed[0]
+     and 'harnessPluginId: selected.pluginId' not in removed[0],'harness_metadata_projected_only_as_booleans')
+need('registered.harness === selected' in removed[0] and 'entry.harness.supports === selected.supports' in removed[0] and 'entry.harness.runAttempt === selected.runAttempt' in removed[0],'actual_global_instance_and_local_callable_lineage')
+need('ownerAfter.active === ownerWitness.active' in removed[2] and 'ownerAfter.registered === ownerWitness.registered' in removed[2] and 'digest(ownerAfter.public) === digest(ownerWitness.public)' in removed[2],'owner_same_instance_evidence_rechecked_after_native')
+result={'schema':'heptabao.authbus-three-source-narrow-owner-repair.root-review.v1','ok':True,'checks_passed':len(checks),'checks':checks,'source_packet':'d03ff2c5eeff00a6639f95d66c4c4fca3105056a','whole_files':len(F),'whole_bytes':sum(map(len,F.values())),'Merkle_trees':len(hashes),
+        'sources':{p:meta(F[p]) for p in expected},'outer_reference_unchanged':meta(F['reference/before/outer.unchanged.py']),
+        'changed_existing_Inputs_methods':changed,'new_Inputs_methods':['admit_owner_public_code'],
+        'whole_Materializer_class_change':'one additional harnessOwnerBindings argument; entire other class AST identical',
+        'whole_Worker_change':'three reviewed insertion blocks; removing them recovers original bytes',
+        'worker_insertions':[meta(s.encode()) for s in removed],'root_requested_owner_metadata_semantics_correction_present':True,
+        'manual_review':'Closed exact public pin admission; original npm read loop and enabled candidate filter retained; bundled declaration checked inside captured root; materializer retains original OS scope and credential/network/write policy tail; same registered harness plus owner/root/source/pins and local callable clone relation are checked before and after native work.',
+        'readiness':False,'entry_pins_empty':True,'candidate_or_SDK_executed':False,'author_fake_tests_reexecuted':False,'Runtime_calls':0,'private_capsule_read':False,'full_replacement':False,
+        'verifier_source_sha256':hashlib.sha256(VERIFIER_SOURCE_TEXT.encode()).hexdigest()}
+text=json.dumps(result,ensure_ascii=False,indent=2)+'\n'
+(P/'r33-auth-three-source-root-result.public.json').write_text(text)
+print(text,end='')

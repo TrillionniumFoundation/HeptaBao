@@ -1,0 +1,41 @@
+{
+  "schema": "heptabao.google-public-input.metadata-binding.v1",
+  "id": "google-package",
+  "operationId": "a5cd8ac32ba823f6f05673fb277debe7fa69914331ff9608d887f3c64a1c4ddc",
+  "request": {
+    "blob": "e7060cb5323b8169caf3eab29b2e95f3a9def76e",
+    "bytes": 270,
+    "sha256": "6b5dcf0c35e17ca58bd79899f0ec81e9fbdf2c00f5b7698e45e9f409e39a7eed"
+  },
+  "native": {
+    "blob": "312a238cf2034035b2d554dd9d5c2e887daa44f5",
+    "bytes": 461,
+    "sha256": "ae160efd51813073008d8ae0b8852eaa2f99ce1c4f4569cc882662dc8fb9f75d"
+  },
+  "payload": {
+    "blob": "d13a9e2e87c020ac5f5324267f62ff0d62a77e3d",
+    "bytes": 578,
+    "sha256": "05c769fd3a65c131a297cf85d3d297c2416a2d4c7fdb6e2917c29568cc3d361c"
+  },
+  "pages": 1,
+  "closed": true,
+  "nativeFutureActive": false,
+  "historicalShaMatched": true,
+  "actual": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 80,
+      "link_count": 1,
+      "metadata_platform": "darwin",
+      "mode": 420,
+      "uid": 501,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 420,
+    "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/package.json",
+    "sha256": "398f73305017a1d3813610825814c6e1dd93b683da088cb6df068a31c639fcc3",
+    "size": 375,
+    "version": "16777233:405240659:375:1784843466392296043:1784843466392296043"
+  }
+}

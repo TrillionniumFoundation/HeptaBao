@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.same-job.readonly-intent.v1",
+  "GO": "2e6623f5d7c9a05e66e4c22b1485dba8a1924d56",
+  "original_business_request": "ec3b323f77bfb2f111f5fc22a06f1bf30ea634eb",
+  "original_job": "1a1ada8b25f-fc05-5a8d",
+  "tool": "operation_status",
+  "request": {
+    "name": "cli-stage-authority-status-request",
+    "blob": "bee1d1346905022f235cfc01b8d254e720532864",
+    "bytes": 89,
+    "sha256": "65d6d15dd3029d8cd140143605c186547472a45b73b40f8031cdb2d0fcaf0f71"
+  },
+  "original_operation_id": "d30eb9841641def4c4bd1c262e1a2926c0710552a568a6b46b915a27a92dd0da",
+  "business_replay": false,
+  "external_before_call": true
+}

@@ -1,0 +1,168 @@
+{
+  "schema": "heptabao.owner-renew.post-inert-three-targets.source.r1",
+  "status": "PROPOSAL_ONLY_NO_RUNTIME_GO",
+  "host": "mac",
+  "root": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1",
+  "inertRequest": "521c4700c9896ef48c8b710f7b787b5cfb5d1504",
+  "publisher": "f7a4a54c204fa2cc01590fb29f1317cc1a2ba531",
+  "sourcePacket": "71a1656fbe227fcea1e92558a5004e22eaab69c6",
+  "requestCorrectionPacket": "2f213b0e8de72fac88fec0039761390f34f9e946",
+  "targets": [
+    {
+      "ordinal": 1,
+      "role": "bootstrap_outer",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_outer_wal_r1.py",
+      "bytes": 71506,
+      "sha256": "6ad1b80ac06c90759c2ac5fd01df9c750b077ffa43253486c07658b6e1ddd4d5",
+      "expectedPublicationRecord": {
+        "array": "files",
+        "name": "qa/mac_current_outer_wal_r1.py",
+        "kind": "source"
+      },
+      "bodyOffsets": [
+        0,
+        65536
+      ],
+      "bodyLimits": [
+        65536,
+        5970
+      ],
+      "bodyEof": [
+        false,
+        true
+      ]
+    },
+    {
+      "ordinal": 2,
+      "role": "runtime_candidate",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/candidate-current-manager-wal-r1.public.json",
+      "bytes": 7211,
+      "sha256": "1dcbc2953731c9c29db6a1f599777d3a7b2b4c237b80cf540afafadebb509932",
+      "expectedPublicationRecord": {
+        "array": "files",
+        "name": "candidate-current-manager-wal-r1.public.json",
+        "kind": "public_document"
+      },
+      "bodyOffsets": [
+        0
+      ],
+      "bodyLimits": [
+        7211
+      ],
+      "bodyEof": [
+        true
+      ]
+    },
+    {
+      "ordinal": 3,
+      "role": "inert_receipt",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/inert-registry-wal-4e808-result.public.json",
+      "bytes": null,
+      "sha256": null,
+      "maxBytes": 65536,
+      "expectedPublicationRecord": {
+        "field": "candidateReceipt",
+        "name": "inert-registry-wal-4e808-result.public.json",
+        "kind": "inert_candidate_receipt"
+      },
+      "bodyOffsets": [
+        0
+      ],
+      "bodyLimits": [
+        "actual metadata size, equal to candidateReceipt.bytes and <=65536"
+      ],
+      "bodyEof": [
+        true
+      ]
+    }
+  ],
+  "metadataRequests": [
+    {
+      "path": "requests/01-bootstrap_outer.info.exact.json",
+      "blob": "56c177329ca38cbcdf84ab992e27c5283d843552",
+      "bytes": 313,
+      "sha256": "9c866d9897e81b01b259bade8ca4850b9d77ebdddb21502206a6052d12aa53df"
+    },
+    {
+      "path": "requests/02-runtime_candidate.info.exact.json",
+      "blob": "2263db35a8e968afb6344b539edf630cb4fef109",
+      "bytes": 329,
+      "sha256": "734cec4b2f5534b999ff30d97262fb72bd4427ce62e6afa191b759302fa71052"
+    },
+    {
+      "path": "requests/03-inert_receipt.info.exact.json",
+      "blob": "27f448937660c77a2b8a578e2024d2d56db9f31f",
+      "bytes": 324,
+      "sha256": "59be3479f40bd0a7d950932480f4863bf780236aa2ed1d9a28753e42a7e5baa7"
+    }
+  ],
+  "prerequisite": [
+    "Original exact inert request was submitted at most once and original ACK was saved before parsing.",
+    "Original host/job authoritative terminal is exit0, succeeded, full, durable, terminal-publication-confirmed, no timeout/cancel/retry.",
+    "Complete original final stdout <=65536 bytes and complete stderr; no successful admission from a partial stream or preclosure receipt.",
+    "Final stdout ok=true, unknown=false, originalDeadlineMetAfterClosure=true, elapsedSeconds<45, all owned child/FD/T5 closure true.",
+    "Exactly30 files:22 sources+8 documents; unique exact names/kinds/byte sizes/SHA equal SOURCE88 and all wholeReadbackVerified/readbackUsesSeparateHeldFd true.",
+    "All30 publication full9 and receipt full9 preserved as strings; original27 T5 anchor strings/UUID, fixed diskutil argv/terminal/reap/streams remain exact."
+  ],
+  "metadataAcceptance": [
+    "Fixed paths only; no symlink/special file, regular single-link file, uid501, permission mode0600.",
+    "Size/SHA for outer/candidate equal fixed pins; receipt size/SHA first bound only from successful final candidateReceipt and candidateReceiptSha256.",
+    "All9 identity fields of each actual file_info/version losslessly equal its exact publication record; no guessed inode/time/gid.",
+    "Each original read operation must completed/stored_observed/inactive and its entire original payload be saved/whole-verified before the next operation."
+  ],
+  "conditionalBodies": {
+    "enabledOnlyAfterAllThreeMetadataAccepted": true,
+    "tool": "binary_read",
+    "fixedOrder": [
+      "bootstrap_outer@0",
+      "bootstrap_outer@65536",
+      "runtime_candidate@0",
+      "inert_receipt@0"
+    ],
+    "expectedVersion": "Exact corresponding accepted file_info version on every chunk, including first; no version refresh fallback.",
+    "keyTemplates": [
+      "heptabao-mac-owner-renew-inert-outer-body-000000-20261105-r1",
+      "heptabao-mac-owner-renew-inert-outer-body-065536-20261105-r1",
+      "heptabao-mac-owner-renew-inert-candidate-body-20261105-r1",
+      "heptabao-mac-owner-renew-inert-receipt-body-20261105-r1"
+    ],
+    "receiptReadLimit": "actual accepted size, 1..65536",
+    "maxNativeBodyOperations": 4,
+    "maxChunkBytes": 65536,
+    "maxNewBodyBytes": 144253,
+    "knownBodyBytesExcludingReceipt": 78717,
+    "maxImmutablePageBytes": 8192,
+    "perOperationOriginalPayloadCap": "Existing operation_result retained-result cap, <=1MiB; original observed total/digest and exact EOF govern paging.",
+    "sameVersionContinuousOffsetsAndWholeShaRequired": true,
+    "noImportsOrSdkExecution": true
+  },
+  "budgetsUnchanged": {
+    "publisherSharedSeconds": 45,
+    "publisherDiskutilClippedSeconds": 30,
+    "publisherSupervisorSeconds": 60,
+    "runtimeSupervisorSeconds": 1080,
+    "controllerSeconds": 900,
+    "managerSeconds": 600,
+    "phaseSeconds": 120,
+    "captureSeconds": 45,
+    "querySeconds": 3,
+    "nativeSeconds": [
+      15,
+      8,
+      3
+    ]
+  },
+  "measurementBoundary": {
+    "fileInfoWholeHashWorkIncludedInBodyByteCap": false,
+    "bodyByteCapMeasuresOnlyBinaryReadReturnedBytes": true,
+    "metadata3FixedTargets": true,
+    "runtimeSource22AndProof7GatesUnchanged": true,
+    "independentReadsAreSequentialObservationsNotAtomicExecCustody": true,
+    "old31ApiGoReused": false,
+    "unchangedSource88TargetsList": "Inventory only; this proposal separately and explicitly selects these3 targets, omitting28 external bodies."
+  },
+  "errorRule": "Save original error and stop new admission; no new path/key, no widening, no fallback, no inert/business replay. Any same-ID reconciliation needs the explicit GO terms.",
+  "runtimeCalls": 0,
+  "newRootObserved": false,
+  "actualSelectedOwnerQualified": false
+}

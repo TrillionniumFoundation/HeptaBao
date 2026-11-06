@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "ha-qa12-destination-10-file-info-observation-r1-20261105",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "desktop",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/components.public.json"
+    }
+  }
+}

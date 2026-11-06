@@ -1,0 +1,10 @@
+{
+  "schema": "heptabao.local-verifier.observed-summary.v1",
+  "source": "functions exec tool-return observed in this turn; summarized, not claimed as independently retained original SDK",
+  "command": "python /workspace/scratch/f86faac821c4/ha_h2_metadata5_actual_r1/verify.py",
+  "exit_code": 0,
+  "stdout": "heptabao.h2qa.metadata5.original-chain.verification.v1",
+  "checks": 278,
+  "Runtime_calls": 0,
+  "product_tests": 0
+}

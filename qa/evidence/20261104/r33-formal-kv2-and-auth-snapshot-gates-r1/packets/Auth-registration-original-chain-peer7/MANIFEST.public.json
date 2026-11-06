@@ -1,0 +1,43 @@
+{
+  "schema": "heptabao.Auth169.independent-peer.manifest.v1",
+  "source_tree": "58c16429b0cd2dd135df7fe50f7582f51413005e",
+  "files": [
+    {
+      "path": "verify_original_chains.py",
+      "blob": "f2e3e429aa00b002123d34efb6613cfe09fbc487",
+      "bytes": 19814,
+      "sha256": "5d8109098a632ace4cefc0e8e587024da55b03e21b919e9409d0ad2e5cc4141e"
+    },
+    {
+      "path": "result.public.json",
+      "blob": "11ece4cdb21ae5b651f9580bf573ccaaf55eeb0b",
+      "bytes": 92207,
+      "sha256": "171753952c0b802691273919052f6f0ccba9a5a8776daa1b80566f4a06fb9b1c"
+    },
+    {
+      "path": "input-index.public.json",
+      "blob": "785dcf2960f0810a97ada058c7ba3648d5ae6d03",
+      "bytes": 64171,
+      "sha256": "d897c95e7c78a79c45645766a06910a4cc6076eeff05632bf1ff50caa2e8f84f"
+    },
+    {
+      "path": "finding-summary.public.json",
+      "blob": "36ecd4d8a7828e0689942b7d04f850bcebecde2d",
+      "bytes": 1118,
+      "sha256": "c07d4dadb8891c13d727bf22d24928f960d31e41cde9699bfd1b42f0afac6b2c"
+    },
+    {
+      "path": "REVIEW.md",
+      "blob": "7bf70816e5cb26e8f627b77135b50a4c8918b7b5",
+      "bytes": 4014,
+      "sha256": "4498ad2625d73a1d5193d01416f3ab8f5a531c1f75e6fd8349a3930825750a67"
+    },
+    {
+      "path": "executor.original.json",
+      "blob": "295a2c528faef2d51802372c5f9e6aee65bf58c3",
+      "bytes": 463,
+      "sha256": "fa4ba7d78f0022051f8645391d64a7b5b4dd735849c1d0e28febe18bb71fcf67"
+    }
+  ],
+  "Runtime_calls": 0
+}

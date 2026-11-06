@@ -1,0 +1,14 @@
+{
+  "schema": "heptabao.root-local-review-correction.v1",
+  "failed_verifier": {
+    "blob": "00a9f02d0d2b5594fddc2b776247139636403047",
+    "bytes": 5343,
+    "sha256": "3fc85fe5052fecf85b21f4a10c4787c4759f7c8229ea8e828d9378a32456f9de"
+  },
+  "observed_error": "Error: external_intent_scope_and_sequence:8",
+  "cause": "Root verifier assumed index7's intent schema for all5. Exact original indices8..11 use a second fixed schema with exact_request, request pin, authorization, previous_closed_indices. Original request/native/payload unchanged.",
+  "correction": "Explicitly validate the two observed schema variants, all exact request pins and prior closure membership. No wildcard relaxation.",
+  "Runtime_calls": 0,
+  "candidate_executed": false,
+  "original_evidence_modified": false
+}

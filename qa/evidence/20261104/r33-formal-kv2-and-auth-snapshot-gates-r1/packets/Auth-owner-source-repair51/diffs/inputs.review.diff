@@ -1,0 +1,163 @@
+--- inputs.before.py
++++ inputs.after.draft2.py
+@@ -59,6 +59,18 @@
+  "/opt/homebrew/lib":("16777233","10827971","501","80","16893","459","14688","1791866883454202812","1791866883454202812"),
+ }
+ 
++# Source-only successor: the Google declared entry has not yet been observed.
++# A later exact public binding must fill OWNER_ENTRY_PINS before this can run.
++OWNER_PUBLIC_BINDING_READY=False
++OWNER_ENTRY_PINS={}
++OWNER_PUBLIC_CODE_PINS={
++  "/opt/homebrew/lib/node_modules/openclaw/dist/loader-D8d2EvVh.js": "3a10479bdcbb713692c3ded7dbd5baad27c1b17ae3566172c117d45916dabce7",
++  "/opt/homebrew/lib/node_modules/openclaw/dist/manifest-registry--UiRn6nq.js": "819c76c314e6ed1fd39c5ed6b169d63997905b3ae8a98b9373783d626431ace4",
++  "/opt/homebrew/lib/node_modules/openclaw/dist/registry-B8eQDFB4.js": "25f3ef82756d85281ad5c25375a5cd2f405989a1145ed438de05992e8c995376",
++  "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/openclaw.plugin.json": "518e8e071c1e5720c9fe621ac84c8b550df93af14dac0d96d788d73917835301",
++  "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/package.json": "398f73305017a1d3813610825814c6e1dd93b683da088cb6df068a31c639fcc3"
++}
++
+ class InputRefused(RuntimeError):pass
+ def need(value,code):
+     if not value:raise InputRefused(code)
+@@ -94,12 +106,14 @@
+ class Inputs:
+     def __init__(self,guard,signals,until):
+         need(BINDING_READY is True,'mac_normal61_binding_not_admitted')
++        need(OWNER_PUBLIC_BINDING_READY is True and bool(OWNER_ENTRY_PINS),
++             'owner_public_entry_binding_not_admitted')
+         need(guard.uuid_verified and not guard.closed,'t5_before_any_frozen_private_read')
+         self.guard=guard;self.signals=signals;self.until=until
+         self.rows=[];self.records={};self.code_allowed={};self.aliases={}
+         self.total_hashed=0;self.close_errors=[];self.closed=False
+         self.private_attempted=False;self.projected=False;self.old_sources=None;self.tools_allowed=set()
+-        self.base_public_codes=None;self.base_code_reads={}
++        self.base_public_codes=None;self.base_code_reads={};self.owner_public_codes={}
+ 
+     def remaining(self):
+         need(not self.closed and self.signals.pending is None,'input_reader_open_uncancelled')
+@@ -151,10 +165,12 @@
+         if public_code is not None:
+             need(not private and isinstance(public_code,str)
+                  and self.base_public_codes is not None
+-                 and self.base_public_codes.get(public_code)==pin
++                 and (self.base_public_codes.get(public_code)==pin
++                      or self.owner_public_codes.get(public_code)==pin
++                         =={**OWNER_PUBLIC_CODE_PINS,**OWNER_ENTRY_PINS}.get(public_code))
+                  and self.code_allowed.get(public_code)==pin
+                  and Path(public_code).resolve(strict=True)==path,
+-                 'only_original_closed_public_pin_code_parent_context')
++                 'only_closed_base_or_exact_owner_public_pin_code_parent_context')
+         fdrow=None
+         with self.parents(path,public_code=public_code is not None) as (parent,name):
+             try:
+@@ -224,7 +240,9 @@
+              'resolved_public_code_scope')
+         cap=8*1024*1024 if collect else MAX_CODE
+         original_public=(str(path) if self.base_public_codes is not None
+-                         and self.base_public_codes.get(str(path))==pin else None)
++                         and (self.base_public_codes.get(str(path))==pin
++                              or self.owner_public_codes.get(str(path))==pin
++                                 =={**OWNER_PUBLIC_CODE_PINS,**OWNER_ENTRY_PINS}.get(str(path))) else None)
+         value=self._file(resolved,pin,cap,private=False,collect=collect,public_code=original_public)
+         need(identity(path.lstat())==before and path.resolve(strict=True)==resolved,'fixed_code_alias_before_after')
+         alias={'path':str(path),'resolved':str(resolved),'identity':list(before),'sha256':pin}
+@@ -349,6 +367,13 @@
+             'binarySha256':BINARY_SHA,'sourceCommit':COMMIT,'sourceTree':TREE,
+             'historicalSourceQualificationInherited':False,'currentSelectedSourcePinsRehashed':True}
+ 
++    def admit_owner_public_code(self,path,pin,*,collect=False):
++        fixed={**OWNER_PUBLIC_CODE_PINS,**OWNER_ENTRY_PINS}
++        need(fixed.get(str(path))==pin and valid_pin(pin),
++             'exact_additional_owner_public_code_binding')
++        self._admit_code(path,pin);self.owner_public_codes[str(path)]=pin
++        return self.pin_code(path,collect=collect)
++
+     def admit_actual_harnesses(self,registry,runtime):
+         need(self.old_sources is not None,'source_inventory_before_actual_registry')
+         columns=registry['columns'];row=registry['row']
+@@ -357,20 +382,76 @@
+         enabled=[p for p in plugins if isinstance(p,dict) and p.get('enabled') is True
+                  and isinstance(p.get('startup'),dict) and p['startup'].get('agentHarnesses')]
+         need(1<=len(enabled)<=8,'finite_actual_enabled_harness_roots')
+-        roots=[];ids={'openai'}
++        for name in ('loader-D8d2EvVh.js','manifest-registry--UiRn6nq.js','registry-B8eQDFB4.js'):
++            path=SDK/'dist'/name
++            self.admit_owner_public_code(path,OWNER_PUBLIC_CODE_PINS[str(path)])
++        roots=[];ids={'openai'};bindings=[]
+         for plugin in enabled:
+             identifier=plugin.get('pluginId');root=Path(plugin.get('rootDir',''))
+             need(isinstance(identifier,str) and re.fullmatch('[a-z0-9][a-z0-9_.-]{0,79}',identifier)
+-                 and root.is_absolute() and root==Path(os.path.normpath(str(root)))
+-                 and root.is_relative_to(LIVE/'npm/projects'),'actual_finite_harness_code_root')
+-            need(root not in roots,'unique_actual_harness_roots');roots.append(root);ids.add(identifier)
+-            for name in ('openclaw.plugin.json','package.json','dist/index.js'):
+-                path=root/name
+-                if name=='dist/index.js' and str(path) not in self.old_sources:continue
+-                need(valid_pin(self.old_sources.get(str(path))),'historically_pinned_actual_harness_metadata')
+-                self._admit_code(path,self.old_sources[str(path)]);self.pin_code(path)
++                 and root.is_absolute() and root==Path(os.path.normpath(str(root))),
++                 'actual_finite_harness_code_root')
++            npm=root.is_relative_to(LIVE/'npm/projects')
++            bundled=root.parent==SDK/'dist/extensions' and root.name==identifier
++            need(npm or bundled,'only_npm_or_exact_historically_pinned_bundled_root')
++            need(root not in roots and all(x['pluginId']!=identifier for x in bindings),
++                 'unique_actual_harness_roots_and_owners')
++            roots.append(root);ids.add(identifier)
++            if npm:
++                # Preserve the original npm metadata/code reads exactly. Its
++                # already pinned dist entry is not replaced by a new resolver.
++                for name in ('openclaw.plugin.json','package.json','dist/index.js'):
++                    path=root/name
++                    if name=='dist/index.js' and str(path) not in self.old_sources:continue
++                    need(valid_pin(self.old_sources.get(str(path))),'historically_pinned_actual_harness_metadata')
++                    self._admit_code(path,self.old_sources[str(path)]);self.pin_code(path)
++                metadata={field:{'path':str(root/name),'sha256':self.old_sources[str(root/name)]}
++                    for field,name in (('manifest','openclaw.plugin.json'),('package','package.json'))}
++                entries=([{'path':str(root/'dist/index.js'),
++                           'sha256':self.old_sources[str(root/'dist/index.js')]}]
++                         if str(root/'dist/index.js') in self.old_sources else [])
++            else:
++                metadata={}
++                for field,name in (('manifest','openclaw.plugin.json'),('package','package.json')):
++                    path=root/name;pin=self.old_sources.get(str(path))
++                    need(valid_pin(pin),'historically_pinned_actual_harness_metadata')
++                    if bundled:
++                        raw=self.admit_owner_public_code(path,pin,collect=True)
++                    else:
++                        self._admit_code(path,pin);raw=self.pin_code(path,collect=True)
++                    metadata[field]={'path':str(path),'sha256':pin}
++                    metadata[field+'Value']=exact_json(raw)
++                manifest=metadata['manifestValue'];package=metadata['packageValue']
++                need(isinstance(manifest,dict) and manifest.get('id')==identifier
++                     and isinstance(package,dict),'actual_manifest_id_matches_captured_owner')
++                extension=package.get('openclaw')
++                declared=extension.get('extensions') if isinstance(extension,dict) else None
++                need(isinstance(declared,list) and 1<=len(declared)<=8
++                     and all(isinstance(value,str) and value for value in declared),
++                     'finite_exact_package_declared_entries')
++                entries=[]
++                for value in declared:
++                    relative=Path(value)
++                    need(not relative.is_absolute() and '..' not in relative.parts,
++                         'declared_entry_cannot_escape_admitted_root')
++                    path=root/relative
++                    need(path!=root and path==Path(os.path.normpath(str(path)))
++                         and path.is_relative_to(root)
++                         and all(item['path']!=str(path) for item in entries),
++                         'normalized_unique_declared_entry')
++                    pin=OWNER_ENTRY_PINS.get(str(path),self.old_sources.get(str(path)))
++                    need(valid_pin(pin),'actual_declared_entry_requires_prior_whole_source_pin')
++                    if bundled:
++                        self.admit_owner_public_code(path,pin)
++                    else:
++                        self._admit_code(path,pin);self.pin_code(path)
++                    entries.append({'path':str(path),'sha256':pin})
++            bindings.append({'pluginId':identifier,'rootDir':str(root),
++                'layout':'sdk-bundled' if bundled else 'npm',
++                'manifest':metadata['manifest'],'package':metadata['package'],'entries':entries})
+         updated=dict(runtime);updated['harnessOwnerPluginIds']=sorted(ids)
+         updated['harnessCodeRoots']=[str(path) for path in sorted(roots,key=str)]
++        updated['harnessOwnerBindings']=sorted(bindings,key=lambda item:item['pluginId'])
+         return updated
+ 
+     def verify(self):

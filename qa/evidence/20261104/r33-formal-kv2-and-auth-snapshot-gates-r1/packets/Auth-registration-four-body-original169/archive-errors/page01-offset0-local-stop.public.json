@@ -1,0 +1,5 @@
+{
+  "stage": "collect_page",
+  "message": "Error: External base64 whole readback 7",
+  "stack": "Error: External base64 whole readback 7\n    at saveRawBase64Observed (eval at collectOneOriginalPage (eval at <anonymous> (exec_main.mjs:2:16)), <anonymous>:9:65)\n    at async collectOneOriginalPage (eval at <anonymous> (exec_main.mjs:2:16), <anonymous>:16:15)\n    at async exec_main.mjs:2:10"
+}

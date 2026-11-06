@@ -1,0 +1,93 @@
+--- inputs.after.draft1.py
++++ inputs.after.draft2.py
+@@ -397,41 +397,55 @@
+             need(root not in roots and all(x['pluginId']!=identifier for x in bindings),
+                  'unique_actual_harness_roots_and_owners')
+             roots.append(root);ids.add(identifier)
+-            metadata={}
+-            for field,name in (('manifest','openclaw.plugin.json'),('package','package.json')):
+-                path=root/name;pin=self.old_sources.get(str(path))
+-                need(valid_pin(pin),'historically_pinned_actual_harness_metadata')
+-                if bundled:
+-                    raw=self.admit_owner_public_code(path,pin,collect=True)
+-                else:
+-                    self._admit_code(path,pin);raw=self.pin_code(path,collect=True)
+-                metadata[field]={'path':str(path),'sha256':pin}
+-                metadata[field+'Value']=exact_json(raw)
+-            manifest=metadata['manifestValue'];package=metadata['packageValue']
+-            need(isinstance(manifest,dict) and manifest.get('id')==identifier
+-                 and isinstance(package,dict),'actual_manifest_id_matches_captured_owner')
+-            extension=package.get('openclaw')
+-            declared=extension.get('extensions') if isinstance(extension,dict) else None
+-            need(isinstance(declared,list) and 1<=len(declared)<=8
+-                 and all(isinstance(value,str) and value for value in declared),
+-                 'finite_exact_package_declared_entries')
+-            entries=[]
+-            for value in declared:
+-                relative=Path(value)
+-                need(not relative.is_absolute() and '..' not in relative.parts,
+-                     'declared_entry_cannot_escape_admitted_root')
+-                path=root/relative
+-                need(path!=root and path==Path(os.path.normpath(str(path)))
+-                     and path.is_relative_to(root)
+-                     and all(item['path']!=str(path) for item in entries),
+-                     'normalized_unique_declared_entry')
+-                pin=OWNER_ENTRY_PINS.get(str(path),self.old_sources.get(str(path)))
+-                need(valid_pin(pin),'actual_declared_entry_requires_prior_whole_source_pin')
+-                if bundled:
+-                    self.admit_owner_public_code(path,pin)
+-                else:
+-                    self._admit_code(path,pin);self.pin_code(path)
+-                entries.append({'path':str(path),'sha256':pin})
++            if npm:
++                # Preserve the original npm metadata/code reads exactly. Its
++                # already pinned dist entry is not replaced by a new resolver.
++                for name in ('openclaw.plugin.json','package.json','dist/index.js'):
++                    path=root/name
++                    if name=='dist/index.js' and str(path) not in self.old_sources:continue
++                    need(valid_pin(self.old_sources.get(str(path))),'historically_pinned_actual_harness_metadata')
++                    self._admit_code(path,self.old_sources[str(path)]);self.pin_code(path)
++                metadata={field:{'path':str(root/name),'sha256':self.old_sources[str(root/name)]}
++                    for field,name in (('manifest','openclaw.plugin.json'),('package','package.json'))}
++                entries=([{'path':str(root/'dist/index.js'),
++                           'sha256':self.old_sources[str(root/'dist/index.js')]}]
++                         if str(root/'dist/index.js') in self.old_sources else [])
++            else:
++                metadata={}
++                for field,name in (('manifest','openclaw.plugin.json'),('package','package.json')):
++                    path=root/name;pin=self.old_sources.get(str(path))
++                    need(valid_pin(pin),'historically_pinned_actual_harness_metadata')
++                    if bundled:
++                        raw=self.admit_owner_public_code(path,pin,collect=True)
++                    else:
++                        self._admit_code(path,pin);raw=self.pin_code(path,collect=True)
++                    metadata[field]={'path':str(path),'sha256':pin}
++                    metadata[field+'Value']=exact_json(raw)
++                manifest=metadata['manifestValue'];package=metadata['packageValue']
++                need(isinstance(manifest,dict) and manifest.get('id')==identifier
++                     and isinstance(package,dict),'actual_manifest_id_matches_captured_owner')
++                extension=package.get('openclaw')
++                declared=extension.get('extensions') if isinstance(extension,dict) else None
++                need(isinstance(declared,list) and 1<=len(declared)<=8
++                     and all(isinstance(value,str) and value for value in declared),
++                     'finite_exact_package_declared_entries')
++                entries=[]
++                for value in declared:
++                    relative=Path(value)
++                    need(not relative.is_absolute() and '..' not in relative.parts,
++                         'declared_entry_cannot_escape_admitted_root')
++                    path=root/relative
++                    need(path!=root and path==Path(os.path.normpath(str(path)))
++                         and path.is_relative_to(root)
++                         and all(item['path']!=str(path) for item in entries),
++                         'normalized_unique_declared_entry')
++                    pin=OWNER_ENTRY_PINS.get(str(path),self.old_sources.get(str(path)))
++                    need(valid_pin(pin),'actual_declared_entry_requires_prior_whole_source_pin')
++                    if bundled:
++                        self.admit_owner_public_code(path,pin)
++                    else:
++                        self._admit_code(path,pin);self.pin_code(path)
++                    entries.append({'path':str(path),'sha256':pin})
+             bindings.append({'pluginId':identifier,'rootDir':str(root),
+                 'layout':'sdk-bundled' if bundled else 'npm',
+                 'manifest':metadata['manifest'],'package':metadata['package'],'entries':entries})

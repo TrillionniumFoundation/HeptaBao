@@ -1,0 +1,11 @@
+--- baseline/mac_current_phase_owner_r2.py
++++ source/mac_current_phase_owner_r2.py
+@@ -13,7 +13,7 @@
+ 
+ START = time.monotonic()
+ UNTIL = START + 120
+-ROOT = Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1')
++ROOT = Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1')
+ AGENTS = ('main','trnm','hepta-ui','hepta','hepta-backend')
+ UUID = 'FB804D1B-24CB-4D6E-AEA7-A9E180807758'
+ NODE = '/opt/homebrew/bin/node'

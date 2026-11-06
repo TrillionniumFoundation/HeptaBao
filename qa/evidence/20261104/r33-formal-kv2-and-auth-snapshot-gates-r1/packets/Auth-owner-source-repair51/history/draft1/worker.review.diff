@@ -1,0 +1,90 @@
+--- worker.before.mjs
++++ worker.after.draft1.mjs
+@@ -49,6 +49,61 @@
+ 
+ function need(value, code) { if (!value) throw Object.assign(new Error(code), { safeCode: code }); }
+ function check(code, value) { report.checks.push({ case: code, passed: value === true }); need(value, code); }
++function actualHarnessOwnerWitness(active, registered, selected, bindings, sourcePins) {
++  need(active && Array.isArray(active.plugins) && active.plugins.length <= 128
++    && Array.isArray(active.agentHarnesses) && active.agentHarnesses.length <= 128,
++    'actual_active_plugin_registry_shape');
++  need(registered && registered.harness === selected, 'actual_selected_global_registration');
++  need(typeof registered.ownerPluginId === 'string'
++    && /^[a-z0-9][a-z0-9_.-]{0,79}$/.test(registered.ownerPluginId)
++    && selected.pluginId === registered.ownerPluginId, 'actual_harness_owner_identity');
++  need(Array.isArray(bindings) && bindings.length >= 1 && bindings.length <= 8,
++    'finite_admitted_harness_owner_bindings');
++  const bound = bindings.filter(value => value.pluginId === registered.ownerPluginId);
++  need(bound.length === 1, 'one_admitted_selected_owner');
++  const binding = bound[0];
++  const plugins = active.plugins.filter(value => value.id === registered.ownerPluginId);
++  const entries = active.agentHarnesses.filter(value => value.harness?.id === selected.id);
++  need(plugins.length === 1 && entries.length === 1, 'one_actual_plugin_and_harness_registration');
++  const plugin = plugins[0], entry = entries[0];
++  need(plugin.enabled === true && plugin.status === 'loaded'
++    && Array.isArray(plugin.agentHarnessIds) && plugin.agentHarnessIds.includes(selected.id)
++    && plugin.rootDir === binding.rootDir
++    && entry.pluginId === registered.ownerPluginId && entry.rootDir === plugin.rootDir
++    && entry.source === plugin.source, 'actual_owner_record_root_and_source');
++  // The global registration shallow-copies normalizedHarness; comparing the
++  // local and global objects themselves would reject the genuine registration.
++  need(typeof selected.supports === 'function' && typeof selected.runAttempt === 'function'
++    && entry.harness.supports === selected.supports
++    && entry.harness.runAttempt === selected.runAttempt
++    && entry.harness.pluginId === registered.ownerPluginId,
++    'actual_registered_harness_callable_lineage');
++  need(Array.isArray(binding.entries) && binding.entries.length >= 1 && binding.entries.length <= 8,
++    'finite_pinned_declared_harness_entries');
++  const source = binding.entries.filter(value => value.path === plugin.source);
++  need(source.length === 1
++    && /^[0-9a-f]{64}$/.test(source[0].sha256)
++    && sourcePins[source[0].path] === source[0].sha256,
++    'actual_owner_source_has_exact_admitted_pin');
++  need(binding.manifest?.path === path.join(binding.rootDir, 'openclaw.plugin.json')
++    && binding.package?.path === path.join(binding.rootDir, 'package.json')
++    && /^[0-9a-f]{64}$/.test(binding.manifest.sha256)
++    && /^[0-9a-f]{64}$/.test(binding.package.sha256)
++    && sourcePins[binding.manifest.path] === binding.manifest.sha256
++    && sourcePins[binding.package.path] === binding.package.sha256,
++    'actual_owner_manifest_and_package_pins');
++  need(binding.layout === 'sdk-bundled' ? plugin.origin === 'bundled'
++    : binding.layout === 'npm' && plugin.origin !== 'bundled', 'actual_owner_layout_matches_registry');
++  return { active, registered, plugin, entry, selected, public: {
++    harnessId: selected.id, ownerPluginId: registered.ownerPluginId,
++    harnessPluginId: selected.pluginId, rootDir: binding.rootDir,
++    registrySource: source[0].path, registrySourceSha256: source[0].sha256,
++    manifestSha256: binding.manifest.sha256, packageSha256: binding.package.sha256,
++    globalInstanceEqual: true, localCallableLineageEqual: true,
++    selectedOwnerBoundToActualRegistry: true, atomicCodeExecutionSnapshotClaimed: false
++  } };
++}
++
+ function privateRead(file) {
+   const fd = fs.openSync(file, fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW);
+   try {
+@@ -341,6 +396,12 @@
+     config:cfg, agentId:plan.agentId });
+   check('actual_loader_and_selector_choose_codex', selectedHarness?.id === 'codex');
+   check('selected_harness_is_actual_registered_instance', registry.r('codex')?.harness === selectedHarness);
++  // This export only returns the active registry for an argument-free call.
++  // It cannot invoke loadOpenClawPlugins or replace the original selection.
++  const pluginLoader = await import(pathToFileURL(path.join(plan.sdkRoot, 'dist/loader-D8d2EvVh.js')));
++  const ownerWitness = actualHarnessOwnerWitness(pluginLoader.c(), registry.r('codex'),
++    selectedHarness, plan.harnessOwnerBindings, plan.sourcePins);
++  report.harnessOwner = ownerWitness.public;
+   const nativeApi = await import(pathToFileURL(path.join(plan.codexRoot, 'dist/shared-client-4ICy3U6d.js')));
+   const codexConfig = await import(pathToFileURL(path.join(plan.codexRoot, 'dist/config-CYEDnLJ2.js')));
+   const startOptions = codexConfig.d({ pluginConfig:cfg.plugins.entries.codex.config, env:process.env }).start;
+@@ -379,6 +440,12 @@
+   check('native_preserved_six_caches', digest(cacheApi.captureAuthBusCaches(plan.stateRoot)) === digest(cachesBefore));
+   check('single_actual_native_factory', nativeStarted === 1 && nativeSpawned === 1);
+   check('no_explicit_network_or_other_process', blockedOperations === 0 && report.wire.length === 0);
++  const ownerAfter = actualHarnessOwnerWitness(pluginLoader.c(), registry.r('codex'),
++    selectedHarness, plan.harnessOwnerBindings, plan.sourcePins);
++  check('actual_owner_registration_unchanged_after_native', ownerAfter.active === ownerWitness.active
++    && ownerAfter.registered === ownerWitness.registered && ownerAfter.plugin === ownerWitness.plugin
++    && ownerAfter.entry === ownerWitness.entry && ownerAfter.selected === ownerWitness.selected
++    && digest(ownerAfter.public) === digest(ownerWitness.public));
+   check('source_pins_unchanged', Object.entries(plan.sourcePins).every(([file,pin])=>hash(fs.readFileSync(file))===pin));
+   check('report_contains_no_credential_values', sensitive.every(value=>!JSON.stringify(report).includes(value)));
+   boundedNativeMs(1);

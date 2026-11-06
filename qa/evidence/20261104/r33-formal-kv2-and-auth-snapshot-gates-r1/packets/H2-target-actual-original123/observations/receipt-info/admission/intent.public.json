@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.H2-target-read.exact-call-intent.v1",
+  "root_GO": "012b76fca8a176e1cc15e3115ad38a69977ef8d9",
+  "lane": "A",
+  "label": "receipt-info",
+  "phase": "admission",
+  "method": "operation_start",
+  "request": {
+    "name": "ha-h2-target-receipt-info-admission-request",
+    "blob": "d37b93c23923941cef6b03bd6fbbce6b655f9206",
+    "bytes": 287,
+    "sha256": "00da4b5dd770f0e50a15aba955617cf62d99903e432ac58e7a74811b29d3e9bd"
+  },
+  "arguments": {
+    "idempotency_key": "ha-4e808-h2-stage-receipt-info-r2-20261105",
+    "operation": {
+      "tool": "file_info",
+      "arguments": {
+        "host": "desktop",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/stage.result.public.json"
+      }
+    }
+  },
+  "reference": {
+    "exact_request_blob": "d37b93c23923941cef6b03bd6fbbce6b655f9206",
+    "exact_request_sha256": "00da4b5dd770f0e50a15aba955617cf62d99903e432ac58e7a74811b29d3e9bd"
+  },
+  "previous_whole_closed": null,
+  "only_readonly": true,
+  "stage_replay": false,
+  "prepare_or_live": false,
+  "one_future_per_lane": true
+}

@@ -1,0 +1,38 @@
+{
+  "schema": "heptabao.same-job.process-read.intent.v1",
+  "request": {
+    "name": "ha-h2-stage-streams0-request",
+    "blob": "c7f3b6bca9df333ff434c9087c9348aae90345e0",
+    "bytes": 280,
+    "sha256": "d03d1a75d40b53e064b773ec6dc40e5e1c5b70c49a66a1e70551e53d50913efa"
+  },
+  "root_go": "065ae72edbb8f330b66f5a40ea4c0134891f60d8",
+  "original_job_id": "1a1adb7c0f6-fc05-5ab6",
+  "original_authority": {
+    "name": "ha-h2-stage-authority0-native-original",
+    "blob": "c321bd33305dcdfafa58ce829d414c9c5cbe9f98",
+    "bytes": 733,
+    "sha256": "f8c50e8d3016b1efc99267ad9a9abe99f3ae5b06d2ec8c8461c5a6154508e0fd"
+  },
+  "known_totals": {
+    "stdout": 23147,
+    "stderr": 0
+  },
+  "whole_stream_plan": [
+    {
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    },
+    {
+      "stdout_offset": 16384,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  ],
+  "immutable_page_limit": 8192,
+  "one_future": true,
+  "stage_restart": false,
+  "target_file_reads": false,
+  "previous_original_observer_closed": true
+}

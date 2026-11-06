@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.x230-full34-new-current-read-followup-intent.v1",
+  "GO": "6959e167d282af43d703808e79bc61f39069ef3a",
+  "sequence": 1,
+  "label": "current-authority-status",
+  "method": "operation_status",
+  "requestPin": {
+    "name": "x230-full34-current-authority-status-request",
+    "blob": "d90eeb5abeb2eae2ae1d6ef3d996bac30d416e1b",
+    "bytes": 89,
+    "sha256": "ea5f7dfe8c29ee36046698970a66e9c6783f588e21ece79f0db3888699af6bfc"
+  },
+  "request": {
+    "operation_id": "56366ed11bcb4e8e9d35fe2dde5a8c5c88de3e035978b830604be8a297e24749"
+  },
+  "same_admitted_operation_only": true,
+  "new_native_dispatch": false,
+  "old_39_index_gap_unchanged": true
+}

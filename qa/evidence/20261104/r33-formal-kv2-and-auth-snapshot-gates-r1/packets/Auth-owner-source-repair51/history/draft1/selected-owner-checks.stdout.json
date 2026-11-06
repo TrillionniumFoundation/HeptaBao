@@ -1,0 +1,81 @@
+{
+  "schema": "heptabao.owner-witness.selected-pure-tests.v1",
+  "candidateBytes": 33127,
+  "candidateSha256": "371b0dd20f6cf505ad97925417ea4e143e7a584b1bbc7d230920d85a41ccfbfe",
+  "selectedFunctionBytes": 3617,
+  "selectedFunctionSha256": "fce2a08f818f47d9d5bbdad591469553939dbd2ec8822a13dc55c2d7ee77b211",
+  "passed": 10,
+  "cases": [
+    {
+      "name": "genuine_global_shallow_copy_is_accepted",
+      "expectedCode": null,
+      "observedCode": null,
+      "passed": true
+    },
+    {
+      "name": "same_id_different_selected_object",
+      "expectedCode": "actual_selected_global_registration",
+      "observedCode": "actual_selected_global_registration",
+      "passed": true
+    },
+    {
+      "name": "harness_plugin_id_differs_from_owner",
+      "expectedCode": "actual_harness_owner_identity",
+      "observedCode": "actual_harness_owner_identity",
+      "passed": true
+    },
+    {
+      "name": "active_owner_root_drift",
+      "expectedCode": "actual_owner_record_root_and_source",
+      "observedCode": "actual_owner_record_root_and_source",
+      "passed": true
+    },
+    {
+      "name": "local_registration_source_drift",
+      "expectedCode": "actual_owner_record_root_and_source",
+      "observedCode": "actual_owner_record_root_and_source",
+      "passed": true
+    },
+    {
+      "name": "actual_entry_lacks_admitted_pin",
+      "expectedCode": "actual_owner_source_has_exact_admitted_pin",
+      "observedCode": "actual_owner_source_has_exact_admitted_pin",
+      "passed": true
+    },
+    {
+      "name": "local_callable_differs_from_global_clone",
+      "expectedCode": "actual_registered_harness_callable_lineage",
+      "observedCode": "actual_registered_harness_callable_lineage",
+      "passed": true
+    },
+    {
+      "name": "manifest_pin_mismatch",
+      "expectedCode": "actual_owner_manifest_and_package_pins",
+      "observedCode": "actual_owner_manifest_and_package_pins",
+      "passed": true
+    },
+    {
+      "name": "selected_owner_not_admitted",
+      "expectedCode": "one_admitted_selected_owner",
+      "observedCode": "one_admitted_selected_owner",
+      "passed": true
+    },
+    {
+      "name": "duplicate_active_owner_record",
+      "expectedCode": "one_actual_plugin_and_harness_registration",
+      "observedCode": "one_actual_plugin_and_harness_registration",
+      "passed": true
+    }
+  ],
+  "scope": {
+    "actualFileDescriptors": 0,
+    "actualSdkImports": 0,
+    "actualRegistry": 0,
+    "actualFactory": 0,
+    "actualNativeProcess": 0,
+    "hostCalls": 0,
+    "privateInput": 0,
+    "fullCandidateModuleExecuted": false,
+    "sourceTextReadOnly": true
+  }
+}

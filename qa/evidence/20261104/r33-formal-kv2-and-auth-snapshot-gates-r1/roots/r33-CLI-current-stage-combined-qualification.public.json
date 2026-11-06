@@ -1,0 +1,103 @@
+{
+  "schema": "heptabao.cli-stage.current4e808.combined-qualification.r33.v1",
+  "status": "PASS_CURRENT_SOURCE_AND_ORIGINAL_STAGE_OBSERVATION_CHAIN",
+  "checks_passed": 11,
+  "checks": [
+    "source41_and_distinct_peer379_7_qualified",
+    "current_product_source_bound",
+    "root_terminal9_pass",
+    "independent_actual_chain286_pass",
+    "peer_executor_exact_result",
+    "whole63_1007838_21",
+    "original_job_consistent",
+    "11calls_two_original_closed_observers_7pages",
+    "correct_native_schema_digest_matches",
+    "whole_stdout_and_no_stderr",
+    "scope_does_not_claim_target_prepare_or_product"
+  ],
+  "product_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "original_job": "desktop/1a1ada8b25f-fc05-5a8d",
+  "source_review": {
+    "blob": "c341c7213dfa77b9a32e4326535ee931168c0cce",
+    "bytes": 4695,
+    "sha256": "144c59c685f6e8a524e9a6b513ac914a96ed39e5bed58f88e6437f20a0a34c31"
+  },
+  "root_terminal_review": {
+    "blob": "35c92d88b2fec06a75fe4fa7d0baf5a373e74eea",
+    "bytes": 1575,
+    "sha256": "e5a5df462e509a26dd4fda453737d3d853e3da83bc5bdf4be5c173b12f144249"
+  },
+  "native_binding_validation": {
+    "blob": "edaa40c4535f16d5a8581ab36d65596a0474d288",
+    "bytes": 1092,
+    "sha256": "f4355f1b0dad26f5acd82f220a966028e5714851284215c78f98a96df59033c5"
+  },
+  "independent_chain_peer": {
+    "tree": "350332a96e6c04c5be9746e695e74765e8acd41d",
+    "report": {
+      "blob": "2221bb130887c6baa1f62b86e88e0251a4a954ae",
+      "bytes": 2969,
+      "sha256": "ef2212485548542569c924192c9aa0320d9990cbaf11ec6cbe4dbee489a76b25"
+    },
+    "verifier": {
+      "blob": "041ee3ec8c16c466d37dcab8cca6c98f9b21ccaf",
+      "bytes": 13083,
+      "sha256": "2fabde59cc7d4dacf451f749c080c3617fa73a6c154a68d82ca3815a88b553b3"
+    },
+    "result": {
+      "blob": "75d2f9ee80ccf1d8ba1f024e38c07f33a4533a86",
+      "bytes": 43607,
+      "sha256": "62c465a9873949d8154f22fdf4912f3d16662be3d259943483f6a1bcd5a87bdb"
+    },
+    "executor": {
+      "blob": "5b838d5f99a99629c5e232caf269f6628b847fad",
+      "bytes": 509,
+      "sha256": "93d84aa0e8a3690d1572ef8fc86324be194f7fb50efba0d2307c3230bfe0d484"
+    },
+    "verifier_source_read_by_root": true,
+    "verifier_not_rerun": true
+  },
+  "source_packet": "4b6256ccb13ee3c355d5dcd08388b7a3d06fb28a",
+  "actual_packet": "3ec3bec37a6ef1270525c017618eda810edc8044",
+  "request": {
+    "blob": "ec3b323f77bfb2f111f5fc22a06f1bf30ea634eb",
+    "bytes": 346000,
+    "sha256": "bff45cc8f5ee4ca1dc2b6b6515bbb38e68cb61b02cd2f3d2ca34e323042b075f",
+    "typed_digest": "8a10353c991430800ffe9e2c9ec33a375ff33a6254b3d335abebb8b14ac9c67e",
+    "expected_fingerprint_decimal": "9948510111243972736"
+  },
+  "actual_binding": {
+    "bytes": 6944,
+    "create_only": true,
+    "ctime_ns": {
+      "$exactInteger": "1793914880269005999"
+    },
+    "device": 2050,
+    "gid": 1000,
+    "inode": 7874257,
+    "links": 1,
+    "mode": 384,
+    "mtime_ns": {
+      "$exactInteger": "1793914880269005999"
+    },
+    "name": "binding.private.json",
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/binding.private.json",
+    "sha256": "7ef3458f4a54b74336941229307c0ffb6778e581c18b27518dc03a8fe6107eea",
+    "uid": 1000
+  },
+  "qualification": {
+    "create_only_stage": true,
+    "post_finally_owned_fd_closure": true,
+    "stage_deadline_seconds": 300,
+    "stage_elapsed_after_closure_ms": 2139.90943,
+    "source_full_Git_independent_prepare_pending": true,
+    "target_metadata_body_qualified": false,
+    "readonly_prepare_qualified": false,
+    "live_B01_to_B05_qualified": false,
+    "product_cases_added": 0,
+    "full_OpenBao271_replacement": false,
+    "production_cutover": false,
+    "old_assets_cleanup": false
+  },
+  "historical_boundaries": "Earlier failed B01 fences and local unqualified digest-template exploration remain unchanged; this combination does not recover missing history or authorize target reads or live work."
+}

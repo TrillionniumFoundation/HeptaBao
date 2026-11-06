@@ -1,0 +1,7 @@
+{
+  "chunk_id": "bddd5f",
+  "wall_time_seconds": 0.36331088,
+  "exit_code": 0,
+  "original_token_count": 186,
+  "output": "{\"status\": \"SOURCE_ONLY_NO_EXECUTION_AUTHORIZATION\", \"newRoot\": \"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1\", \"changedSourceCount\": 11, \"unchangedSourceCount\": 11, \"rootLiteralCount\": 11, \"sourcePins\": {\"blob\": \"66bdc764ff66b017a590cb3d27dc5a02c46523d6\", \"bytes\": 2276, \"sha256\": \"324c0b19ad8bf92c99536dd32a8a1b3994f398f34b74d39f056e14bc626b83b3\"}, \"candidate\": {\"blob\": \"42c540b2922123647362fac75008d8ef875e51bc\", \"bytes\": 7211, \"sha256\": \"1dcbc2953731c9c29db6a1f599777d3a7b2b4c237b80cf540afafadebb509932\"}, \"publisherStdin\": {\"blob\": \"b4caba908690e8b774aa8ee913247d2f9b7cf25d\", \"bytes\": 801859, \"sha256\": \"c84a7e6ba807f90c98f5a8a9e375aff86b9a287281d8e2d001e8566315a3b7d9\"}, \"allBudgetsUnchanged\": true}\n"
+}

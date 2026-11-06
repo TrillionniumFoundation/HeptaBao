@@ -1,0 +1,1194 @@
+{
+  "source_tree": "58c16429b0cd2dd135df7fe50f7582f51413005e",
+  "source_tree_sdk_local_path": "/workspace/scratch/f86faac821c4/r32_recovery/tree-58c16429b0cd2dd135df7fe50f7582f51413005e-sdk.json",
+  "files": 169,
+  "bytes": 1711315,
+  "merkle_trees": 60,
+  "records": [
+    {
+      "path": "MANIFEST.public.json",
+      "blob": "f9306b4d480dd27209f9fad3677416b84ec0c301",
+      "bytes": 40219,
+      "sha256": "65b0d363352ca96ea053a03b33bc99cb4a0c99d47d7b304664bb41c726c8d792",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/f9306b4d480dd27209f9fad3677416b84ec0c301.txt"
+    },
+    {
+      "path": "RELEASE.public.json",
+      "blob": "74f318b28bc7bbcdf21b850e7236a4f1015d81ad",
+      "bytes": 3118,
+      "sha256": "13a50f60856823ec40c02c7fe86a32f34efafc0244379d9ed55687e45bce1c53",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/74f318b28bc7bbcdf21b850e7236a4f1015d81ad.txt"
+    },
+    {
+      "path": "SCOPE.md",
+      "blob": "e1553ebea3367b5f323b4d31131071fe3fb70249",
+      "bytes": 2265,
+      "sha256": "3c7a791f7fde190e637b86264d09be9880d0d94b3a0162acaa79da9c228516c2",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/e1553ebea3367b5f323b4d31131071fe3fb70249.txt"
+    },
+    {
+      "path": "SUMMARY.public.json",
+      "blob": "468b57c166723805935c1b1df40adbc5dff2d8de",
+      "bytes": 7767,
+      "sha256": "073a9121a1e93951f736035926ca2241cd79979fa06a3bf147901eb66c1509f4",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/468b57c166723805935c1b1df40adbc5dff2d8de.txt"
+    },
+    {
+      "path": "archive-errors/page01-offset0-git-recovery.public.json",
+      "blob": "95448ee24eefb5f2bef4b82fe71d60b98b512a8a",
+      "bytes": 410,
+      "sha256": "92028ae2f981979fdc26205fd3251b3a2a73ab66fd32e8bb2e17beb658b35eff",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-95448ee24eefb5f2bef4b82fe71d60b98b512a8a.json"
+    },
+    {
+      "path": "archive-errors/page01-offset0-git-whole-read.original.sdk.json",
+      "blob": "ddc8b45cb9056b09ca3a6bc0e94ea3aff95211f2",
+      "bytes": 304,
+      "sha256": "5710b903750ccc9853075a23278fc1cbcc7468c124b9087e9d09c592e5d2bede",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-ddc8b45cb9056b09ca3a6bc0e94ea3aff95211f2.json"
+    },
+    {
+      "path": "archive-errors/page01-offset0-local-stop.public.json",
+      "blob": "d6b26191b6aeff1b5eeb3f64629db985174edd7f",
+      "bytes": 396,
+      "sha256": "e2b66c591539305b13e23fe9eea6dbefd98d49c6a62628900be6074580f3be96",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-d6b26191b6aeff1b5eeb3f64629db985174edd7f.json"
+    },
+    {
+      "path": "observations/01/admission/original.native.txt",
+      "blob": "6dfae1ce1b3c635697c9a3fd78c8a04aff2532df",
+      "bytes": 545,
+      "sha256": "1f5d08c052f68aecdadba97519102e29b67cb91bf83a7a12b7be254332e4a60e",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-6dfae1ce1b3c635697c9a3fd78c8a04aff2532df.json"
+    },
+    {
+      "path": "observations/01/admission/original.sdk.json",
+      "blob": "004b4274cb3cd340ed0f572a8ee759eedd18e226",
+      "bytes": 706,
+      "sha256": "2e960ab5a71904547763a53916e84d0d145a0f4b9de587c1a78f0aa2ab32dfb9",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-004b4274cb3cd340ed0f572a8ee759eedd18e226.json"
+    },
+    {
+      "path": "observations/01/binding.public.json",
+      "blob": "f43374d1f7aa1785d5874d5b5c9af1741bf2e8fc",
+      "bytes": 1171,
+      "sha256": "059a43a34c40bb2f70e56bbde481dcc42f38c94b10a90a7c173f2e0a19e2d809",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-f43374d1f7aa1785d5874d5b5c9af1741bf2e8fc.json"
+    },
+    {
+      "path": "observations/01/intent.public.json",
+      "blob": "9e4581be60d240b45ed16bce2981b9628378c158",
+      "bytes": 1293,
+      "sha256": "d40adb90595e0f99cd0a685fb20eb5fa2ae1ee5ca002fd660e0925b77ac9e84f",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-9e4581be60d240b45ed16bce2981b9628378c158.json"
+    },
+    {
+      "path": "observations/01/native.original.json",
+      "blob": "6f1fc251efe058dba0b11061299d04f090d15d9d",
+      "bytes": 42244,
+      "sha256": "9f55a110892d3f85a9ea5fe87a2a0bdeb4203a4a36c3be53fe1923accea9f153",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-6f1fc251efe058dba0b11061299d04f090d15d9d.json"
+    },
+    {
+      "path": "observations/01/pages/000000/original.native.txt",
+      "blob": "e166632f32536ec32329a3f7af3423f62fc27c6f",
+      "bytes": 11609,
+      "sha256": "a2a4fbf79e42a6b762f6a87d6a68df3116f378d2508d4ee795002ee76197a539",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-e166632f32536ec32329a3f7af3423f62fc27c6f.json"
+    },
+    {
+      "path": "observations/01/pages/000000/original.sdk.json",
+      "blob": "6669e525ca999f984ee9a49a917f415212ef61fc",
+      "bytes": 11780,
+      "sha256": "d911718b55c50610ed940c05cfb2e86d231e1ef2141f44cd06a07c6bf554876f",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-6669e525ca999f984ee9a49a917f415212ef61fc.json"
+    },
+    {
+      "path": "observations/01/pages/000000/request.original.json",
+      "blob": "cac4a70388792022a1b3e54818a8e30ce178ceea",
+      "bytes": 108,
+      "sha256": "00c42da5cbfd4e841e7f3011df54f92fdcea4fbe2b15038e74177844352c8425",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-cac4a70388792022a1b3e54818a8e30ce178ceea.json"
+    },
+    {
+      "path": "observations/01/pages/008192/original.native.txt",
+      "blob": "20258a80c039078cb3a30a262b0f648b89cce937",
+      "bytes": 11613,
+      "sha256": "330bf70b7e201b2e03dcddf4caf05e4c532f423c279b522a26132a19a872b12c",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-20258a80c039078cb3a30a262b0f648b89cce937.json"
+    },
+    {
+      "path": "observations/01/pages/008192/original.sdk.json",
+      "blob": "7e47270304488a8aa6930d25a9b3fce31a418bb1",
+      "bytes": 11784,
+      "sha256": "b55ea3d6c3c426c813748a1064905ef4a6657e580c0321e808793d19d9be5563",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-7e47270304488a8aa6930d25a9b3fce31a418bb1.json"
+    },
+    {
+      "path": "observations/01/pages/008192/request.original.json",
+      "blob": "3c7f840c6c998f62024b459190f50d0a2ffe68bd",
+      "bytes": 111,
+      "sha256": "53ba656ed721b7e0bd71e1f765b760e68f7741229754f0553d39618de4d9e462",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-3c7f840c6c998f62024b459190f50d0a2ffe68bd.json"
+    },
+    {
+      "path": "observations/01/pages/016384/original.native.txt",
+      "blob": "85522fb618b4018944153042547e051a04eef18c",
+      "bytes": 11614,
+      "sha256": "795d1da874a33a0c04965338ba6f19ac9a1ccfc581d4c1d26bc99bc51e85ee14",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-85522fb618b4018944153042547e051a04eef18c.json"
+    },
+    {
+      "path": "observations/01/pages/016384/original.sdk.json",
+      "blob": "9c7a43284eadce8c49bdfa6dd3fed685f63bb533",
+      "bytes": 11785,
+      "sha256": "f0af58b7097ef7c99579db5c98d0a76e793947598bc837419ff304820d1ccd18",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-9c7a43284eadce8c49bdfa6dd3fed685f63bb533.json"
+    },
+    {
+      "path": "observations/01/pages/016384/request.original.json",
+      "blob": "e477c0db18962047133a93459d27856fa238702c",
+      "bytes": 112,
+      "sha256": "a3c8b43e264f99fc72b02dc9ce3924825106062d151c4e57223c8d14552eebcc",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-e477c0db18962047133a93459d27856fa238702c.json"
+    },
+    {
+      "path": "observations/01/pages/024576/original.native.txt",
+      "blob": "97e5ca33d93a0fd2db1ea280bd83fde6857a9a7f",
+      "bytes": 11614,
+      "sha256": "92ba47c0cfa8f10c48a46c4487046dea8c184fb4d5d1c7621b627e398d55d29c",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-97e5ca33d93a0fd2db1ea280bd83fde6857a9a7f.json"
+    },
+    {
+      "path": "observations/01/pages/024576/original.sdk.json",
+      "blob": "a83b3ce0cc29d930436238f73093da4a0227b148",
+      "bytes": 11785,
+      "sha256": "7637b42b7715a085b43fc4d70cf2d158f648dc9a9ad5c800e5eb31922af771dd",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-a83b3ce0cc29d930436238f73093da4a0227b148.json"
+    },
+    {
+      "path": "observations/01/pages/024576/request.original.json",
+      "blob": "236a008b024099fb99cbd5fcf34b8fd3cc0ab830",
+      "bytes": 112,
+      "sha256": "1e394e5d6d196b772a3d6c37e195602590ef19a08ad9af81547629b0f0abb3fc",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-236a008b024099fb99cbd5fcf34b8fd3cc0ab830.json"
+    },
+    {
+      "path": "observations/01/pages/032768/original.native.txt",
+      "blob": "de7d5314390439b6f11c435b48e80d581f4225ce",
+      "bytes": 11614,
+      "sha256": "87d4daae6f640c7a421ad4ba81261dcf8a2482cb06487aac68cce54c7edde563",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-de7d5314390439b6f11c435b48e80d581f4225ce.json"
+    },
+    {
+      "path": "observations/01/pages/032768/original.sdk.json",
+      "blob": "ee5b27142ea5e79d2de1a4f004b08be456f453cd",
+      "bytes": 11785,
+      "sha256": "8decb896fe486ea24bf106ef96c4947da327b8a2093314efae0ff2f972b9bd65",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-ee5b27142ea5e79d2de1a4f004b08be456f453cd.json"
+    },
+    {
+      "path": "observations/01/pages/032768/request.original.json",
+      "blob": "083b6c13d0204f61f9109df0da4f8bf320980b16",
+      "bytes": 112,
+      "sha256": "007a9c375109c08d8b24ba4830eb44bcf5beda7f55193a9e8775c445d61c9123",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-083b6c13d0204f61f9109df0da4f8bf320980b16.json"
+    },
+    {
+      "path": "observations/01/pages/040960/original.native.txt",
+      "blob": "bcbc9360446de8b5a5afebe9413ca34e40b060e5",
+      "bytes": 2541,
+      "sha256": "01d4aa18aba695684a00af49ac90fea0ed6248b326ccb0a16e26285c65c127b2",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-bcbc9360446de8b5a5afebe9413ca34e40b060e5.json"
+    },
+    {
+      "path": "observations/01/pages/040960/original.sdk.json",
+      "blob": "4cfcad85b7005bbaf9cdf86dbb6ce0ce22d15257",
+      "bytes": 2712,
+      "sha256": "722327afc218b7985f4216bad538f0d5764f2e98bd9d7e066dea2dd081a334a2",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-4cfcad85b7005bbaf9cdf86dbb6ce0ce22d15257.json"
+    },
+    {
+      "path": "observations/01/pages/040960/request.original.json",
+      "blob": "a6e986e5c7f04d5668ef3fad00a018ffe45d1951",
+      "bytes": 112,
+      "sha256": "a0193eff4ce22f595076489c21674518d4dbf9806828f3e468f91c618413135b",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-a6e986e5c7f04d5668ef3fad00a018ffe45d1951.json"
+    },
+    {
+      "path": "observations/01/payload.original.json",
+      "blob": "5467fe454517334ca51852bdb6d5261706abba94",
+      "bytes": 42347,
+      "sha256": "ec683fcd8a5be0fcbfd6f34fa73cfc016d822c16083565a4b00a9d3f53f8e9ff",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-5467fe454517334ca51852bdb6d5261706abba94.json"
+    },
+    {
+      "path": "observations/01/status-0/original.native.txt",
+      "blob": "5ff70498e81dc0ee60703c101a0791f06b06284d",
+      "bytes": 802,
+      "sha256": "8fe9e461d782685d531e219f921812d4f3b25980582e240477ae1863220ed140",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-5ff70498e81dc0ee60703c101a0791f06b06284d.json"
+    },
+    {
+      "path": "observations/01/status-0/original.sdk.json",
+      "blob": "93de128d7352dc680eab89e470d9b7fbf05bbd74",
+      "bytes": 977,
+      "sha256": "e120b2e1355b499da840b4f9d0e70585f54418c628da89dc76d881f791910a73",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-93de128d7352dc680eab89e470d9b7fbf05bbd74.json"
+    },
+    {
+      "path": "observations/01/status-0/request.original.json",
+      "blob": "a27869c0524c6d149b29f28d5873e36f06ae2a3d",
+      "bytes": 84,
+      "sha256": "d0f70590462292e3cabb895968e2cd03354fe7e811a8ff2b0c35c493a2fefb4f",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-a27869c0524c6d149b29f28d5873e36f06ae2a3d.json"
+    },
+    {
+      "path": "observations/02/admission/original.native.txt",
+      "blob": "e48fc3d35410d603bd8ccf81ce8567534a057337",
+      "bytes": 545,
+      "sha256": "9d17b3bd8eddf038aabc5af5ccb66fa1c489ad82bd7641969987c5151d4fb196",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-e48fc3d35410d603bd8ccf81ce8567534a057337.json"
+    },
+    {
+      "path": "observations/02/admission/original.sdk.json",
+      "blob": "a7c10556da7ee4ae80b29e40dfffaa43a74b0e4b",
+      "bytes": 706,
+      "sha256": "0fcc1ec486032569336c3a833238539d259878e604498486fc17c407d983c6dd",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-a7c10556da7ee4ae80b29e40dfffaa43a74b0e4b.json"
+    },
+    {
+      "path": "observations/02/binding.public.json",
+      "blob": "1c6378287c71296d2434f1eac140890fbd3b0956",
+      "bytes": 1166,
+      "sha256": "5eecc305df950272e22b07637dcff63551d0a5f99d1802459a3a31ac67c6ed15",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/1c6378287c71296d2434f1eac140890fbd3b0956.txt"
+    },
+    {
+      "path": "observations/02/intent.public.json",
+      "blob": "cb62484f882700f007b8f94922bca5e9bc097de9",
+      "bytes": 1456,
+      "sha256": "d906b741b770c37c6e6eb3e13a73ab4991effd23267459dbecd1f4cbe8206fc3",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-cb62484f882700f007b8f94922bca5e9bc097de9.json"
+    },
+    {
+      "path": "observations/02/native.original.json",
+      "blob": "5911f0b3bbd6af4c11e63934b0c18d7af01e6043",
+      "bytes": 87694,
+      "sha256": "715e703169400252a98ff3e743e95ee024b6bd5bec3921db32cc8d10c1336103",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/5911f0b3bbd6af4c11e63934b0c18d7af01e6043.txt"
+    },
+    {
+      "path": "observations/02/pages/000000/original.native.txt",
+      "blob": "a22f55e6608fed29a6dd9173d2ca4eeb7bb38cc7",
+      "bytes": 11609,
+      "sha256": "7b642fe317e48119e915ad3f9c872e48326d323e71621bf4956d20215ff26abc",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/a22f55e6608fed29a6dd9173d2ca4eeb7bb38cc7.txt"
+    },
+    {
+      "path": "observations/02/pages/000000/original.sdk.json",
+      "blob": "9366d6db5926b71041b4ae0febd66ca4dee714a7",
+      "bytes": 11780,
+      "sha256": "6d34fa84bca155f771ea19e760bd9d654bb97824b4d8a41cafdee2ce41bebfd8",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/9366d6db5926b71041b4ae0febd66ca4dee714a7.txt"
+    },
+    {
+      "path": "observations/02/pages/000000/request.original.json",
+      "blob": "9ccf74caf11b2aabd25b837b6a47934b0b7612c1",
+      "bytes": 108,
+      "sha256": "c0a8881e54de2e7a4eefb4b396d7c5f3ba7789cb3f1da095915249e80b8fe3c3",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/9ccf74caf11b2aabd25b837b6a47934b0b7612c1.txt"
+    },
+    {
+      "path": "observations/02/pages/008192/original.native.txt",
+      "blob": "29da419c1f440d0abf641365451fd78cbfe773aa",
+      "bytes": 11613,
+      "sha256": "77230e7246a38dc79c22a96efa771a5ba6577a4ed6bb304fde48da4e26d9c79d",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/29da419c1f440d0abf641365451fd78cbfe773aa.txt"
+    },
+    {
+      "path": "observations/02/pages/008192/original.sdk.json",
+      "blob": "0ed82983710f2dd4e6c9b7387d75b7e3c244a4d4",
+      "bytes": 11784,
+      "sha256": "18bdaaa525898102e3acbc62a9388b89cc7b44c6bb4034e5be100591f0d10679",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/0ed82983710f2dd4e6c9b7387d75b7e3c244a4d4.txt"
+    },
+    {
+      "path": "observations/02/pages/008192/request.original.json",
+      "blob": "857b4d3b90b786eea2db76ec882a2fc2ec393533",
+      "bytes": 111,
+      "sha256": "2d214e888e46384626f34fcacc36091f3367718cb986542ff14005ffcac6c0b4",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/857b4d3b90b786eea2db76ec882a2fc2ec393533.txt"
+    },
+    {
+      "path": "observations/02/pages/016384/original.native.txt",
+      "blob": "e2fb5ae4df1a439eaa0774b1a0f30549b5475e84",
+      "bytes": 11614,
+      "sha256": "c10d22773f2c1310df2d235280fb2f3a7fa6be7aab270614edcbb1da812bc4e6",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/e2fb5ae4df1a439eaa0774b1a0f30549b5475e84.txt"
+    },
+    {
+      "path": "observations/02/pages/016384/original.sdk.json",
+      "blob": "99628b69bffd292f08dce12b08c7c602ff4b6773",
+      "bytes": 11785,
+      "sha256": "b4072be185d3c8a491343cb07062968539f29bab480c934080f991a852213958",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/99628b69bffd292f08dce12b08c7c602ff4b6773.txt"
+    },
+    {
+      "path": "observations/02/pages/016384/request.original.json",
+      "blob": "a4fdc1005049804d4f03b2c8f483d7b78bd2b666",
+      "bytes": 112,
+      "sha256": "03417b58c790492cd63b666ad2bfcacb691e335d3d76694a353020f28901d5dc",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/a4fdc1005049804d4f03b2c8f483d7b78bd2b666.txt"
+    },
+    {
+      "path": "observations/02/pages/024576/original.native.txt",
+      "blob": "b5fbb5375ecd6238e0923b875187ec5f9c776fe8",
+      "bytes": 11614,
+      "sha256": "3caac90d04861bb5a69e7474d94c7febc8f87bcdadc096c334f1705f7ac6d169",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/b5fbb5375ecd6238e0923b875187ec5f9c776fe8.txt"
+    },
+    {
+      "path": "observations/02/pages/024576/original.sdk.json",
+      "blob": "60f36d15876003bbe1bfa23238367c714071a351",
+      "bytes": 11785,
+      "sha256": "93d56377a95a7befd9d768d39078793d1cf6ca495bdc1eb22fa860df5333198d",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/60f36d15876003bbe1bfa23238367c714071a351.txt"
+    },
+    {
+      "path": "observations/02/pages/024576/request.original.json",
+      "blob": "fc7d7b8e257149448197e2c702507bd0a121a637",
+      "bytes": 112,
+      "sha256": "9cc385adf6d92ed1b7fcd8608356d57b238653cd0982248e9fa521147ba5b5f8",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/fc7d7b8e257149448197e2c702507bd0a121a637.txt"
+    },
+    {
+      "path": "observations/02/pages/032768/original.native.txt",
+      "blob": "f137d5b9de0ebe477f091f2cef3d4bcb203c6dda",
+      "bytes": 11614,
+      "sha256": "292e5f74ddc0beeaf41e35cad8d7e75127f9ebba65cd2fd20dc1be043b4252bc",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/f137d5b9de0ebe477f091f2cef3d4bcb203c6dda.txt"
+    },
+    {
+      "path": "observations/02/pages/032768/original.sdk.json",
+      "blob": "fb9dc176150fadea058a867f935e164c9d531fe1",
+      "bytes": 11785,
+      "sha256": "4f84032385dd60eae7648481f13f76d94ce84ee5cafbd9d21b1896c8a5a3b3cc",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/fb9dc176150fadea058a867f935e164c9d531fe1.txt"
+    },
+    {
+      "path": "observations/02/pages/032768/request.original.json",
+      "blob": "52ced6fa3b107f3dff757d8b619a1fa4b5625355",
+      "bytes": 112,
+      "sha256": "9693a7d761ccbd7918e95b3dad77c7931421398a38c1cb97c07c4e6adf87a5a7",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/52ced6fa3b107f3dff757d8b619a1fa4b5625355.txt"
+    },
+    {
+      "path": "observations/02/pages/040960/original.native.txt",
+      "blob": "56cbe627130015698df383c5271271c17685ce25",
+      "bytes": 11614,
+      "sha256": "db4bf60254046e79772e88deaa8608e45ca184a880db96e7507439167b11b03c",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/56cbe627130015698df383c5271271c17685ce25.txt"
+    },
+    {
+      "path": "observations/02/pages/040960/original.sdk.json",
+      "blob": "75df86c5ab423ecb034e9297d921cea5687f2426",
+      "bytes": 11785,
+      "sha256": "eba05d2d81b7d80ba31b8c172d9822e1feed5fb62aa500ea1264b5452c159887",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/75df86c5ab423ecb034e9297d921cea5687f2426.txt"
+    },
+    {
+      "path": "observations/02/pages/040960/request.original.json",
+      "blob": "b3d48ec0df48d440da89954e930d77a3f976b242",
+      "bytes": 112,
+      "sha256": "9993be7c7c604c86b34163864b47a20f5908806c98f29d1dd1618e00e575992c",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/b3d48ec0df48d440da89954e930d77a3f976b242.txt"
+    },
+    {
+      "path": "observations/02/pages/049152/original.native.txt",
+      "blob": "87a9bc232a4ff6600b321d473a29385aacc0d4e0",
+      "bytes": 11614,
+      "sha256": "5fc300e66b3da3dd0aefc91e0ba2eaffce9caca2a91744d30046293fecc7f79b",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/87a9bc232a4ff6600b321d473a29385aacc0d4e0.txt"
+    },
+    {
+      "path": "observations/02/pages/049152/original.sdk.json",
+      "blob": "0aba527004e8d77809ec5ae3b3cd5c28d0d85d7b",
+      "bytes": 11785,
+      "sha256": "c4d0dda6b94032d68df1f7c9aefedb08a0cc284d39c89fe5b57649779bed16ba",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/0aba527004e8d77809ec5ae3b3cd5c28d0d85d7b.txt"
+    },
+    {
+      "path": "observations/02/pages/049152/request.original.json",
+      "blob": "6431c9a70b7426e740f3b47d32d788a3427a6e30",
+      "bytes": 112,
+      "sha256": "7b245d3294b0365316302699db71cbd542d053070a4470e8e36a57b10825033a",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/6431c9a70b7426e740f3b47d32d788a3427a6e30.txt"
+    },
+    {
+      "path": "observations/02/pages/057344/original.native.txt",
+      "blob": "de9d6abd05ceb1946dc749dca3c7d7d7ca4aa486",
+      "bytes": 11614,
+      "sha256": "a6addf47462fa6c430da36c92f20c09d3dd184415e240ef7da6d5d10d2f9f116",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/de9d6abd05ceb1946dc749dca3c7d7d7ca4aa486.txt"
+    },
+    {
+      "path": "observations/02/pages/057344/original.sdk.json",
+      "blob": "a1f239b971618c314be8c01a39cd23944dca0645",
+      "bytes": 11785,
+      "sha256": "8c3257dc3e61acc7169fc50a967f31b0541a41e00c76212cd0582ce11b5fae14",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/a1f239b971618c314be8c01a39cd23944dca0645.txt"
+    },
+    {
+      "path": "observations/02/pages/057344/request.original.json",
+      "blob": "0861a376495e757235658a622e8154d203a8e24a",
+      "bytes": 112,
+      "sha256": "acfaf21fd08cba4c8ec53ae25b2bc9ad2463c160339d5dc30bd2f9e6bbfac4ab",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/0861a376495e757235658a622e8154d203a8e24a.txt"
+    },
+    {
+      "path": "observations/02/pages/065536/original.native.txt",
+      "blob": "02f70a9b29e73eaa3928cc349db046f61e0ae49d",
+      "bytes": 11614,
+      "sha256": "efe74cd03aab996395f4031599a4c21e9ec08ed139ce734d291c31036ef4a7a3",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/02f70a9b29e73eaa3928cc349db046f61e0ae49d.txt"
+    },
+    {
+      "path": "observations/02/pages/065536/original.sdk.json",
+      "blob": "ebbefe71b56de7a0800706b2f257b645a9c94d55",
+      "bytes": 11785,
+      "sha256": "57670274c28445e25a21c62a81601afb90532ed8593b365743b2c003b5def192",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/ebbefe71b56de7a0800706b2f257b645a9c94d55.txt"
+    },
+    {
+      "path": "observations/02/pages/065536/request.original.json",
+      "blob": "b2b26d330049ff8eadd77a6497024099a552fd87",
+      "bytes": 112,
+      "sha256": "5125a66e656df216b431d82a665acd6a56efa47441442940ae77f8051cfca30c",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/b2b26d330049ff8eadd77a6497024099a552fd87.txt"
+    },
+    {
+      "path": "observations/02/pages/073728/original.native.txt",
+      "blob": "f1210ac119c59423cbc0f349479f6396adc67a83",
+      "bytes": 11614,
+      "sha256": "7cea1530f44a1f8e6595bf41aa8db654bee52aeb019636eef0d09a6afabfea19",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/f1210ac119c59423cbc0f349479f6396adc67a83.txt"
+    },
+    {
+      "path": "observations/02/pages/073728/original.sdk.json",
+      "blob": "29b8159591c08f5c28a37a315ddf9d61f36729c4",
+      "bytes": 11785,
+      "sha256": "6078eb05d25a9a7cecad1c472f3370bd0e628a93eef19d429d8e47a00b036673",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/29b8159591c08f5c28a37a315ddf9d61f36729c4.txt"
+    },
+    {
+      "path": "observations/02/pages/073728/request.original.json",
+      "blob": "ef274663e8f0331c51c7163ffbd1fe57a6c38a7f",
+      "bytes": 112,
+      "sha256": "8f998b35564a4992ee1cd59f355eb23f55253a4d3e66552da4276a3be17b3684",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/ef274663e8f0331c51c7163ffbd1fe57a6c38a7f.txt"
+    },
+    {
+      "path": "observations/02/pages/081920/original.native.txt",
+      "blob": "72163c023afbaf7f356e511b03e337ae3ba40221",
+      "bytes": 8525,
+      "sha256": "216625879e4f31fcd011836a471f6db9b88c15b82b947762b2d3ebfb118a566b",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/72163c023afbaf7f356e511b03e337ae3ba40221.txt"
+    },
+    {
+      "path": "observations/02/pages/081920/original.sdk.json",
+      "blob": "d5125e2cc230446ffcdf78345adc9f7caeeec437",
+      "bytes": 8696,
+      "sha256": "9baa34ddc58201130e8aeec42390e35ee98ba6d4b5eb5de257c1c8ef6691d6fe",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/d5125e2cc230446ffcdf78345adc9f7caeeec437.txt"
+    },
+    {
+      "path": "observations/02/pages/081920/request.original.json",
+      "blob": "fabd3537aff816c45348f1eacf9222b0d19cc76b",
+      "bytes": 112,
+      "sha256": "a7045ab345b34b0351e4ce7bf2bde2ffbf8a1da9851097ee9b465e31a5f50ee0",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/fabd3537aff816c45348f1eacf9222b0d19cc76b.txt"
+    },
+    {
+      "path": "observations/02/payload.original.json",
+      "blob": "dd1b96978e8bf4752e5aa90f19d3acf76acf7670",
+      "bytes": 87797,
+      "sha256": "ceb3fd4538fea89fdadc57ddf5b7efdb23cb5f59dcca0c6833beea8c6869a767",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/dd1b96978e8bf4752e5aa90f19d3acf76acf7670.txt"
+    },
+    {
+      "path": "observations/02/status-0/original.native.txt",
+      "blob": "4951c11301b951ae210f581320d956a5037d186a",
+      "bytes": 802,
+      "sha256": "72980d607df55c4ff8af546bda4bad5cdd38a80809eba6de783a3fff303af2c7",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-4951c11301b951ae210f581320d956a5037d186a.json"
+    },
+    {
+      "path": "observations/02/status-0/original.sdk.json",
+      "blob": "b5112f2dbcbbcd8f050b27677801af88c0dcf205",
+      "bytes": 977,
+      "sha256": "4358002e815904403cce3c170465da814209d150634c8a0c647f4ec7ffc25028",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-b5112f2dbcbbcd8f050b27677801af88c0dcf205.json"
+    },
+    {
+      "path": "observations/02/status-0/request.original.json",
+      "blob": "ff320cab38c33298a9b2a90558051933aef5581b",
+      "bytes": 84,
+      "sha256": "ba28c309e638ce83fb1184a5716aba1c0ead8379590f0ec3312fca97403995a1",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-ff320cab38c33298a9b2a90558051933aef5581b.json"
+    },
+    {
+      "path": "observations/03/admission/original.native.txt",
+      "blob": "f8389ce553bf1eb1adbfb460c20da536b23f9be3",
+      "bytes": 545,
+      "sha256": "447b13370075426d2e186e0d4416d13eeda599f7b83858684288bed45fa58c09",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/f8389ce553bf1eb1adbfb460c20da536b23f9be3.txt"
+    },
+    {
+      "path": "observations/03/admission/original.sdk.json",
+      "blob": "ccb5d068991e7c5bc5f2df27e80c1e3cd45b92d7",
+      "bytes": 706,
+      "sha256": "c8bcade57438eca458c1d9408ba55951afa7fa80b2d391ab2e1519e21816bd82",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/ccb5d068991e7c5bc5f2df27e80c1e3cd45b92d7.txt"
+    },
+    {
+      "path": "observations/03/binding.public.json",
+      "blob": "067c2e48e048a22f7c92a74a9816921fe98ac4cc",
+      "bytes": 1171,
+      "sha256": "e652d2dec5aaca24455ae848cae6c30da9dbb0a977a6b658ccd39e23a5089b7a",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/067c2e48e048a22f7c92a74a9816921fe98ac4cc.txt"
+    },
+    {
+      "path": "observations/03/intent.public.json",
+      "blob": "9465f890c33a2a7d64c301e0c9554f61c9c951ae",
+      "bytes": 1464,
+      "sha256": "2c00910437184f38aacb90a5504ed38d737a0d9e1c79c7bed0437fb7ff97b920",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/9465f890c33a2a7d64c301e0c9554f61c9c951ae.txt"
+    },
+    {
+      "path": "observations/03/native.original.json",
+      "blob": "2726e87532942362fdfba39cf8b7bcef36c48505",
+      "bytes": 87699,
+      "sha256": "ab310061075efa0fc11281b6bb6e39481fad93ac644abe4b0e56cf57ed2a88f9",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/2726e87532942362fdfba39cf8b7bcef36c48505.txt"
+    },
+    {
+      "path": "observations/03/pages/000000/original.native.txt",
+      "blob": "4328d19ab8e45b678898a08d358088cc34bb4bf9",
+      "bytes": 11609,
+      "sha256": "5efcd91d86a8d2b8cd8071a1f72552443bd2a0832eccffa59e3369365a7fbabe",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/4328d19ab8e45b678898a08d358088cc34bb4bf9.txt"
+    },
+    {
+      "path": "observations/03/pages/000000/original.sdk.json",
+      "blob": "40a4e7a241cb63e86cb879d7754b17373b8fc5b0",
+      "bytes": 11780,
+      "sha256": "ecf152de42c11546fb6c3986a9eae2a8297713613277ee2fe831b6e52e56581d",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/40a4e7a241cb63e86cb879d7754b17373b8fc5b0.txt"
+    },
+    {
+      "path": "observations/03/pages/000000/request.original.json",
+      "blob": "0c6aeb5f5cccda362076d315ce7f07cecf6b03ed",
+      "bytes": 108,
+      "sha256": "d9c78ab6b1f15885b34c1fd4ecf7749e416b49a07c46a1a4f95866de64ed589d",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/0c6aeb5f5cccda362076d315ce7f07cecf6b03ed.txt"
+    },
+    {
+      "path": "observations/03/pages/008192/original.native.txt",
+      "blob": "a4224a2945b643b2be3ae697207c3a779abde869",
+      "bytes": 11613,
+      "sha256": "c883e7dea04564e50cd577d3ea0329defb1836d89079652efd2218c5d362a21d",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/a4224a2945b643b2be3ae697207c3a779abde869.txt"
+    },
+    {
+      "path": "observations/03/pages/008192/original.sdk.json",
+      "blob": "80bdcfa3fdfffb7bb59d2d9d53a05c9ff1fbb9c7",
+      "bytes": 11784,
+      "sha256": "e9169b339bbc2d6e0d4d4aae6026b809c4f29d2ad53f2b95962ab4b3503f954f",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/80bdcfa3fdfffb7bb59d2d9d53a05c9ff1fbb9c7.txt"
+    },
+    {
+      "path": "observations/03/pages/008192/request.original.json",
+      "blob": "e9084b05d13a4a1b161f9477dba3e87ca6bc9c17",
+      "bytes": 111,
+      "sha256": "4e6595b86b25f090de747039b25bef52107a3e3f6396f7cfc7930bccb6038ba4",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/e9084b05d13a4a1b161f9477dba3e87ca6bc9c17.txt"
+    },
+    {
+      "path": "observations/03/pages/016384/original.native.txt",
+      "blob": "96133039592eb8fe528cc88b61b531613ba34a33",
+      "bytes": 11614,
+      "sha256": "e865c37de597c527e0291f8857ed135cf04426b1e9f9c99684c87ad891f4cfed",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/96133039592eb8fe528cc88b61b531613ba34a33.txt"
+    },
+    {
+      "path": "observations/03/pages/016384/original.sdk.json",
+      "blob": "5154cb56e172117f3b994d1525418f13fc84ee0c",
+      "bytes": 11785,
+      "sha256": "45f423d745cedde965f4d811c2ad9977f930306a98d7e7de7d6e43750a82b872",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/5154cb56e172117f3b994d1525418f13fc84ee0c.txt"
+    },
+    {
+      "path": "observations/03/pages/016384/request.original.json",
+      "blob": "63ee120d030079dec4789993a8c29bfea3a2a54c",
+      "bytes": 112,
+      "sha256": "b0e300f6f7c974740d1832186ea1ecb4161171771d4a97fd40531766e4e3b9d6",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/63ee120d030079dec4789993a8c29bfea3a2a54c.txt"
+    },
+    {
+      "path": "observations/03/pages/024576/original.native.txt",
+      "blob": "3b66f19a3a6e5af8c152a9e3d928a0b0e2b196c7",
+      "bytes": 11614,
+      "sha256": "cf166a63f90d9b6242a8d8626bad26b21e8c7b371ce6ead0ef971f518d66382d",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/3b66f19a3a6e5af8c152a9e3d928a0b0e2b196c7.txt"
+    },
+    {
+      "path": "observations/03/pages/024576/original.sdk.json",
+      "blob": "3fa405ade506d07429d181bcc046bcc237401088",
+      "bytes": 11785,
+      "sha256": "7ae88fc5844146dee3f4239a7385649efbe21d9c51276bc0e8c51c9c8c4f9b72",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/3fa405ade506d07429d181bcc046bcc237401088.txt"
+    },
+    {
+      "path": "observations/03/pages/024576/request.original.json",
+      "blob": "e6188deaa9ab8e7ee6cbebb7c01b5baefb476029",
+      "bytes": 112,
+      "sha256": "9cda8fa0ed9f1862293e1cea8d1e3654764e1bf8c56f2d3a9656832d6fc980a7",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/e6188deaa9ab8e7ee6cbebb7c01b5baefb476029.txt"
+    },
+    {
+      "path": "observations/03/pages/032768/original.native.txt",
+      "blob": "683048ea546db1bb1411a2c0992b6720a5d8b2bf",
+      "bytes": 11614,
+      "sha256": "61087e01fcb1e362c1adcc58a8f40ac2f7a0a5f8b87d8f0879feb70516498f3e",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/683048ea546db1bb1411a2c0992b6720a5d8b2bf.txt"
+    },
+    {
+      "path": "observations/03/pages/032768/original.sdk.json",
+      "blob": "9effd4464e2e78a8deb86570aaca94a6de002c31",
+      "bytes": 11785,
+      "sha256": "e7282f3d480c4ae2189b5d030cac1d4b09a9441a9c134bcf6b628ed055fab71e",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/9effd4464e2e78a8deb86570aaca94a6de002c31.txt"
+    },
+    {
+      "path": "observations/03/pages/032768/request.original.json",
+      "blob": "1bbb3b257c17131625c6cfa0bbff49b3e5fc9725",
+      "bytes": 112,
+      "sha256": "2a0eb49c73e9f0f3cc3657534a91452745ae6a4ff67a81e982494c86b25fa711",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/1bbb3b257c17131625c6cfa0bbff49b3e5fc9725.txt"
+    },
+    {
+      "path": "observations/03/pages/040960/original.native.txt",
+      "blob": "9eeb12d47b63db4f28b0bc07f606c3636a84b78f",
+      "bytes": 11614,
+      "sha256": "4da42ade16cf95f8a10ba80e550e4d25f40b67090238bd7915ed3f56bfd58796",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/9eeb12d47b63db4f28b0bc07f606c3636a84b78f.txt"
+    },
+    {
+      "path": "observations/03/pages/040960/original.sdk.json",
+      "blob": "1e3060fe16409633c6313ff355dd62da6b4131a1",
+      "bytes": 11785,
+      "sha256": "f08dab47c62dc4d3bb6f91e9f1a586336c34a253d3231b115f80e28073278af6",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/1e3060fe16409633c6313ff355dd62da6b4131a1.txt"
+    },
+    {
+      "path": "observations/03/pages/040960/request.original.json",
+      "blob": "8b7fd0503aeb4ccc0edceb09b50a55411c54c487",
+      "bytes": 112,
+      "sha256": "3964f82f09a490fc29c9980ac392f1cbc24ced1ac98d4b581831fbc65a794dc0",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/8b7fd0503aeb4ccc0edceb09b50a55411c54c487.txt"
+    },
+    {
+      "path": "observations/03/pages/049152/original.native.txt",
+      "blob": "d17c23b4a50e2bd781bf053af44f6001008fbb92",
+      "bytes": 11614,
+      "sha256": "73c00e3093dbd8046c7d2542d931baba79b6f731ce34a595b4ce075f93cd9cd2",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/d17c23b4a50e2bd781bf053af44f6001008fbb92.txt"
+    },
+    {
+      "path": "observations/03/pages/049152/original.sdk.json",
+      "blob": "5dac38c122d667a0fd92ac68642adbda889c2587",
+      "bytes": 11785,
+      "sha256": "68d7b49d55be0332f1703f63c5ba2704e86746fb188bd47b36da5f9414cac5de",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/5dac38c122d667a0fd92ac68642adbda889c2587.txt"
+    },
+    {
+      "path": "observations/03/pages/049152/request.original.json",
+      "blob": "ca5046698c832e311e4a6f4d70c8792b955357fa",
+      "bytes": 112,
+      "sha256": "9334e372ea3f5d99d4a1c7eec89580f8c06a6e391b17e2db4b91b5e745299a2e",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/ca5046698c832e311e4a6f4d70c8792b955357fa.txt"
+    },
+    {
+      "path": "observations/03/pages/057344/original.native.txt",
+      "blob": "552ded3f48bb29603c827690223cb196f9596c34",
+      "bytes": 11614,
+      "sha256": "5b5171efc26102c21077f2c81b6f66d6e5e9f1aeb021036182227e333183f83a",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/552ded3f48bb29603c827690223cb196f9596c34.txt"
+    },
+    {
+      "path": "observations/03/pages/057344/original.sdk.json",
+      "blob": "b4be6b9d4db79d7d396181f91f82245872ad2d11",
+      "bytes": 11785,
+      "sha256": "911d0188e66ae51c021b2d5efa44ae780b9f8f6cde30c295b3a5cc14cd236f90",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/b4be6b9d4db79d7d396181f91f82245872ad2d11.txt"
+    },
+    {
+      "path": "observations/03/pages/057344/request.original.json",
+      "blob": "e4dc676758f4627735a216830af035917179c84d",
+      "bytes": 112,
+      "sha256": "56ebe0578d75d328add79a06831e6d7a9de023f24dc829be223a4362e1a20244",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/e4dc676758f4627735a216830af035917179c84d.txt"
+    },
+    {
+      "path": "observations/03/pages/065536/original.native.txt",
+      "blob": "5c8285b3097ccdeb0b6b06fdf33a7c1e07bcd52a",
+      "bytes": 11614,
+      "sha256": "04820eb75ecf77ee018a88a9068c99b7a8b98111c9c14b3a5d20e199362fd078",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/5c8285b3097ccdeb0b6b06fdf33a7c1e07bcd52a.txt"
+    },
+    {
+      "path": "observations/03/pages/065536/original.sdk.json",
+      "blob": "636d306bc164b84e34878eb0041d84a4aacfff94",
+      "bytes": 11785,
+      "sha256": "edc5f4c73cc6d79f28aed91699f6b6a6b08603201e423f56206f4fed69a22a1c",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/636d306bc164b84e34878eb0041d84a4aacfff94.txt"
+    },
+    {
+      "path": "observations/03/pages/065536/request.original.json",
+      "blob": "7ee6e4d057e746d0937cc6e411984ecca3ddb411",
+      "bytes": 112,
+      "sha256": "cd2c5de85e549ae6f90445d02f2e5f17c94c86414a09ec57a36d65e3a6eb2484",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/7ee6e4d057e746d0937cc6e411984ecca3ddb411.txt"
+    },
+    {
+      "path": "observations/03/pages/073728/original.native.txt",
+      "blob": "744d21bffd8ac0ac7d889844b162eb5f756cb202",
+      "bytes": 11614,
+      "sha256": "0cc1d23eb3c35227c8672f8ac6401445911fa163ed391caf50013a234e49af52",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/744d21bffd8ac0ac7d889844b162eb5f756cb202.txt"
+    },
+    {
+      "path": "observations/03/pages/073728/original.sdk.json",
+      "blob": "070399433e6fa57c3be7fdb7c810ebfc4535926c",
+      "bytes": 11785,
+      "sha256": "46a75f14e69b98a1fa1782a064a6d438a469e3a2ae8876e8de8b0b894c462636",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/070399433e6fa57c3be7fdb7c810ebfc4535926c.txt"
+    },
+    {
+      "path": "observations/03/pages/073728/request.original.json",
+      "blob": "83f83861df48f5cc12e07d96c3ede1035be94bb5",
+      "bytes": 112,
+      "sha256": "6375fa0d9dc9d37ff8de0d22faab80492850cd2f78fa32a8ea20924a4d09b815",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/83f83861df48f5cc12e07d96c3ede1035be94bb5.txt"
+    },
+    {
+      "path": "observations/03/pages/081920/original.native.txt",
+      "blob": "c72feb8f5557f28c9ca3aa7c8e5d8bfd4ece0393",
+      "bytes": 8533,
+      "sha256": "433995e7042d203bbdd2bcbee0dc0dd1925286e4806d61c20cd37783ff053dc4",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/c72feb8f5557f28c9ca3aa7c8e5d8bfd4ece0393.txt"
+    },
+    {
+      "path": "observations/03/pages/081920/original.sdk.json",
+      "blob": "5f50dfabb2f656d7431410891fa858649cf246cd",
+      "bytes": 8704,
+      "sha256": "3797e08e07d6b6500a6fc25e48e62b0a82bb188407b042596e631c23cde59dec",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/5f50dfabb2f656d7431410891fa858649cf246cd.txt"
+    },
+    {
+      "path": "observations/03/pages/081920/request.original.json",
+      "blob": "54256824f77dd96cda5f793ae9a6334b908f5891",
+      "bytes": 112,
+      "sha256": "8270a54e2c96291b6bc04189e6b6c0a6c45ff5d543975b183eb212ba1755ce7b",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/54256824f77dd96cda5f793ae9a6334b908f5891.txt"
+    },
+    {
+      "path": "observations/03/payload.original.json",
+      "blob": "1db414be48cd206f7f4296095da90ef6dbf40d92",
+      "bytes": 87802,
+      "sha256": "734c5eb9bbb56f39d2abf4e1571ed1535f41e81133175968e3a09233eddd9c67",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/1db414be48cd206f7f4296095da90ef6dbf40d92.txt"
+    },
+    {
+      "path": "observations/03/status-0/original.native.txt",
+      "blob": "fe3ca1d356a907f659b55cdbe4c5a75e763bb7b8",
+      "bytes": 802,
+      "sha256": "0e51910453e3a08592e929c33e7f4b0cb3b3a71dd10d7dab6ec90899e7d4c931",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/fe3ca1d356a907f659b55cdbe4c5a75e763bb7b8.txt"
+    },
+    {
+      "path": "observations/03/status-0/original.sdk.json",
+      "blob": "2f787e8dfe8b2b10a1a9991f60ed6ef41066225d",
+      "bytes": 977,
+      "sha256": "c98f96d0e74bc5aad13017ba38b0e7ce57e74ce29ab973c470f3ac34df4b3c7d",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/2f787e8dfe8b2b10a1a9991f60ed6ef41066225d.txt"
+    },
+    {
+      "path": "observations/03/status-0/request.original.json",
+      "blob": "a2fabf0e0cadf60f4a790588b25ddb3d9fb461c6",
+      "bytes": 84,
+      "sha256": "67faf1b4240746ee810ab52c769186b758ba0d5c2911f404807feab6d690a223",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/a2fabf0e0cadf60f4a790588b25ddb3d9fb461c6.txt"
+    },
+    {
+      "path": "observations/04/admission/original.native.txt",
+      "blob": "535fab94bc76a55c339023c537db0a059aad1557",
+      "bytes": 545,
+      "sha256": "1fbf1692a472d6775295a7575d5417d0c4cdb5275d8c5bc43731da45eb8272ea",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/535fab94bc76a55c339023c537db0a059aad1557.txt"
+    },
+    {
+      "path": "observations/04/admission/original.sdk.json",
+      "blob": "3f538cb3926aad0b3928f231f22792af282b72cf",
+      "bytes": 706,
+      "sha256": "26a85c8a1d6a628588b878d3a50a3832b30fc936edaf2111334192d8097b8976",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/3f538cb3926aad0b3928f231f22792af282b72cf.txt"
+    },
+    {
+      "path": "observations/04/binding.public.json",
+      "blob": "20373ecf14ad123ce62625a810d4cadf75b5369a",
+      "bytes": 1170,
+      "sha256": "a9ff5d6a3e3ec0082c4f1338b7cf8b21040ace71a21429a4ed97f543125ae55f",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/20373ecf14ad123ce62625a810d4cadf75b5369a.txt"
+    },
+    {
+      "path": "observations/04/intent.public.json",
+      "blob": "639c76b406487b8f1ad297993d25005bdd3ac518",
+      "bytes": 1466,
+      "sha256": "3fe0b00c7c80af745feafb3f87101cf67c789a14441dfca75cea6a0404525e28",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/639c76b406487b8f1ad297993d25005bdd3ac518.txt"
+    },
+    {
+      "path": "observations/04/native.original.json",
+      "blob": "d2e607c9ddf8e168cddc086f0b9f9bae4f4ff36d",
+      "bytes": 67663,
+      "sha256": "b86123b11910de9d8db42097cad3c6bd30e7f1392a7ef2981b981bc9170b32ad",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/d2e607c9ddf8e168cddc086f0b9f9bae4f4ff36d.txt"
+    },
+    {
+      "path": "observations/04/pages/000000/original.native.txt",
+      "blob": "4a4d4773fa3603024497b1d0e6cb186bc6e38ccf",
+      "bytes": 11609,
+      "sha256": "4ea322c24c56cc07383e3a7909e86f2443fa5a7628c4a52130814f4d842a0123",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/4a4d4773fa3603024497b1d0e6cb186bc6e38ccf.txt"
+    },
+    {
+      "path": "observations/04/pages/000000/original.sdk.json",
+      "blob": "f25058178c9cf2434a7ab2486d3de2726f5fbf3b",
+      "bytes": 11780,
+      "sha256": "ce2791b5b14fcd2bc950d81736fb35e2e88ccb5547e47d45e12c6b27ecfef9b3",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/f25058178c9cf2434a7ab2486d3de2726f5fbf3b.txt"
+    },
+    {
+      "path": "observations/04/pages/000000/request.original.json",
+      "blob": "52d9a84f944e272c95583bd6a55c53744b52132b",
+      "bytes": 108,
+      "sha256": "36263d7e4f7a35fb356685000599a769619666ab31cbdc571c697aeaf96990f7",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/52d9a84f944e272c95583bd6a55c53744b52132b.txt"
+    },
+    {
+      "path": "observations/04/pages/008192/original.native.txt",
+      "blob": "4927b9913b5b1d36d898f9f506ac46e216dfcdde",
+      "bytes": 11613,
+      "sha256": "1f4dce459e32e28ef9e95dffa2c5fbce1dfbd3d125e39b8ec56ff1c1789a7bab",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/4927b9913b5b1d36d898f9f506ac46e216dfcdde.txt"
+    },
+    {
+      "path": "observations/04/pages/008192/original.sdk.json",
+      "blob": "080fa216a818736492c57b05b81962d55ca9493b",
+      "bytes": 11784,
+      "sha256": "d8ba8cd1725cf953643609feb86b0533156434c5313132ee45346b8961fc63f9",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/080fa216a818736492c57b05b81962d55ca9493b.txt"
+    },
+    {
+      "path": "observations/04/pages/008192/request.original.json",
+      "blob": "453c1c289eff1786c9a4a40de3bdbe78bad1332a",
+      "bytes": 111,
+      "sha256": "596d922d0c84bf95b3891e02e0628ba1e180e151ef39b41f173d315a678f024a",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/453c1c289eff1786c9a4a40de3bdbe78bad1332a.txt"
+    },
+    {
+      "path": "observations/04/pages/016384/original.native.txt",
+      "blob": "d9f51054093274ed7f8432f4f80ca83f9da7c16e",
+      "bytes": 11614,
+      "sha256": "d944289098d2af7d77d2f5e75bf8a1ea813ce664239f25102cdf53ea3efced7f",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/d9f51054093274ed7f8432f4f80ca83f9da7c16e.txt"
+    },
+    {
+      "path": "observations/04/pages/016384/original.sdk.json",
+      "blob": "77b04c5c90864f97e723de06cc3cd46f58293074",
+      "bytes": 11785,
+      "sha256": "1b51263413a48578d2016db01bfb0d30520e7f66cc94bf839c98e19b2fb5be1d",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/77b04c5c90864f97e723de06cc3cd46f58293074.txt"
+    },
+    {
+      "path": "observations/04/pages/016384/request.original.json",
+      "blob": "94a30ce6dfadd8f19a822cabee4a7c54cf956e74",
+      "bytes": 112,
+      "sha256": "c669757ef95f26a92d94d235361acf310213fa28b21808cc3ab0de8e6cf9a770",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/94a30ce6dfadd8f19a822cabee4a7c54cf956e74.txt"
+    },
+    {
+      "path": "observations/04/pages/024576/original.native.txt",
+      "blob": "1148056a4d55256ec5169dd42ed616907ad81d3b",
+      "bytes": 11614,
+      "sha256": "188f93fbe529d20f5aaee6021a035a9b7b8f6a27ff579dd2b028081ac82d9d61",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/1148056a4d55256ec5169dd42ed616907ad81d3b.txt"
+    },
+    {
+      "path": "observations/04/pages/024576/original.sdk.json",
+      "blob": "40f7ab48c9c04e781a2738d5dcbab69129414248",
+      "bytes": 11785,
+      "sha256": "82ad5ab9bf25db38da596e372e747bad1fb92683249ddf29e189946fe6431b59",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/40f7ab48c9c04e781a2738d5dcbab69129414248.txt"
+    },
+    {
+      "path": "observations/04/pages/024576/request.original.json",
+      "blob": "1d86e2c88c5ca1a7256440d8826b93817e48a8c0",
+      "bytes": 112,
+      "sha256": "fae645c2acbb40d9f535fa0e4ba4b6b6d2ed544439be8f1cc73f4f22ffcf6435",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/1d86e2c88c5ca1a7256440d8826b93817e48a8c0.txt"
+    },
+    {
+      "path": "observations/04/pages/032768/original.native.txt",
+      "blob": "edc8fbd48b92316b42207b9d69078f51d2c9866f",
+      "bytes": 11614,
+      "sha256": "2a87bae1ec5c7cd2e85a51ca4cf744f78f248f91b787ce6708ed7459987047c3",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/edc8fbd48b92316b42207b9d69078f51d2c9866f.txt"
+    },
+    {
+      "path": "observations/04/pages/032768/original.sdk.json",
+      "blob": "6c5b48d2e54c3797a0d176dbff213d360afed43b",
+      "bytes": 11785,
+      "sha256": "f335f8e388255465fe3b23853064657f78ed868df1df99a3e9c66b01c7996d33",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/6c5b48d2e54c3797a0d176dbff213d360afed43b.txt"
+    },
+    {
+      "path": "observations/04/pages/032768/request.original.json",
+      "blob": "cb9e196469377f862cfd1030b78a00f53f62ce6b",
+      "bytes": 112,
+      "sha256": "485d8cf48f5390755c2fabdf18c2f7a88eba229a5a58532107be0efe31005321",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/cb9e196469377f862cfd1030b78a00f53f62ce6b.txt"
+    },
+    {
+      "path": "observations/04/pages/040960/original.native.txt",
+      "blob": "0972e3e8f3e269dd5cc08cd24d085b6360646ed1",
+      "bytes": 11614,
+      "sha256": "73b6f6cd821157978fb0d593688724d9b2d80f8d55d87de3174c27a00064f508",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/0972e3e8f3e269dd5cc08cd24d085b6360646ed1.txt"
+    },
+    {
+      "path": "observations/04/pages/040960/original.sdk.json",
+      "blob": "a11ea9632aa5cbf7950296333948a2895f150b23",
+      "bytes": 11785,
+      "sha256": "9f1cf8d00b40c6f3f75c4de7878b0cf7066a5ad3f09bbab032d4264c3a64a60b",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/a11ea9632aa5cbf7950296333948a2895f150b23.txt"
+    },
+    {
+      "path": "observations/04/pages/040960/request.original.json",
+      "blob": "c57a494a1cc261445cc6993a23722ce1c20d1659",
+      "bytes": 112,
+      "sha256": "744e91374a0911092ff3154c2a38143abc090f99a6131bea1b817dbadd298e0a",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/c57a494a1cc261445cc6993a23722ce1c20d1659.txt"
+    },
+    {
+      "path": "observations/04/pages/049152/original.native.txt",
+      "blob": "e499e376844bc9911d0224b668181536bb174d77",
+      "bytes": 11614,
+      "sha256": "4cdca34fa829b21c2df31aca4e2cc3a1a0e3387c41fdd6de4c6ac6fa7ba0de0c",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/e499e376844bc9911d0224b668181536bb174d77.txt"
+    },
+    {
+      "path": "observations/04/pages/049152/original.sdk.json",
+      "blob": "5977a55e912edb002acf7212bf8ccc2367675ccb",
+      "bytes": 11785,
+      "sha256": "3e9fecf742e45755968404c8d7701c1f63fea965035acb7193a5a625c8db8b5d",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/5977a55e912edb002acf7212bf8ccc2367675ccb.txt"
+    },
+    {
+      "path": "observations/04/pages/049152/request.original.json",
+      "blob": "5ec90a54c4cd3035a78eaae711d3eefb30930184",
+      "bytes": 112,
+      "sha256": "ebc430fe26e031269933447331d88a8b83ee3261ca2ca065ef212c7608eebe57",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/5ec90a54c4cd3035a78eaae711d3eefb30930184.txt"
+    },
+    {
+      "path": "observations/04/pages/057344/original.native.txt",
+      "blob": "fbf0cc789640ae381f095c9837f090c6b504e98b",
+      "bytes": 11614,
+      "sha256": "aa58f1c666bf1bba67043f14b9c6f7e9c9ba82f0377cd6193c56f3ea1243b1a0",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/fbf0cc789640ae381f095c9837f090c6b504e98b.txt"
+    },
+    {
+      "path": "observations/04/pages/057344/original.sdk.json",
+      "blob": "e74c3e940bf6d13caba936b55722494028baa6b7",
+      "bytes": 11785,
+      "sha256": "224ffc4a9cf6318842e6a5fd08acd6327f00aa9bf9dd664252dd809e4a014a5b",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/e74c3e940bf6d13caba936b55722494028baa6b7.txt"
+    },
+    {
+      "path": "observations/04/pages/057344/request.original.json",
+      "blob": "3868e4134d7ae8c974d1b10b267a2e5f3e0417fd",
+      "bytes": 112,
+      "sha256": "1f6be88cf4361b8935f8b210a7758c7f5c0bed9d24230fdd7ec08fb4d880431c",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/3868e4134d7ae8c974d1b10b267a2e5f3e0417fd.txt"
+    },
+    {
+      "path": "observations/04/pages/065536/original.native.txt",
+      "blob": "7b43f01f9f5ae33a2f7b67919b3ce16f2bb0813b",
+      "bytes": 3665,
+      "sha256": "ba4e9aa497039b70a55b688205ee48194978cacd186279a6a6a4f6556025ba6d",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/7b43f01f9f5ae33a2f7b67919b3ce16f2bb0813b.txt"
+    },
+    {
+      "path": "observations/04/pages/065536/original.sdk.json",
+      "blob": "6038ebb84bf03b66ed9297c67c8c0e38659d72e3",
+      "bytes": 3836,
+      "sha256": "dc277af12aeb411ef7f20b856df2e22bb343a1b0bc484e9f825c9e57a29d58de",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/6038ebb84bf03b66ed9297c67c8c0e38659d72e3.txt"
+    },
+    {
+      "path": "observations/04/pages/065536/request.original.json",
+      "blob": "8b3d9df5996913954deea79c982d5e0f78a8e4af",
+      "bytes": 112,
+      "sha256": "b3554eee95e9578bb339f0c5c7fb6504049fdbae2ff0b39939b69a7ff8419a47",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/8b3d9df5996913954deea79c982d5e0f78a8e4af.txt"
+    },
+    {
+      "path": "observations/04/payload.original.json",
+      "blob": "697d1ac04c141aad5a130dd0954f5dab4567d42a",
+      "bytes": 67766,
+      "sha256": "276e461d104eac03d00473f429fa64b70ac0f892e6b41a93d6b63a3f05d643d4",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/697d1ac04c141aad5a130dd0954f5dab4567d42a.txt"
+    },
+    {
+      "path": "observations/04/status-0/original.native.txt",
+      "blob": "7de84a1f0ea413b7e493b3ab9e9e13d6824dc701",
+      "bytes": 802,
+      "sha256": "5034ced6d088777c22a372ed077ce0bace66d449db951f583ed37743bbdc5cb0",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/7de84a1f0ea413b7e493b3ab9e9e13d6824dc701.txt"
+    },
+    {
+      "path": "observations/04/status-0/original.sdk.json",
+      "blob": "f2463b3e6ab3b77a481418b62460cd0302373850",
+      "bytes": 977,
+      "sha256": "634f2d5bc41183e8ac07151373285a377d6c87043f3d0520b44c94f0a6517339",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/f2463b3e6ab3b77a481418b62460cd0302373850.txt"
+    },
+    {
+      "path": "observations/04/status-0/request.original.json",
+      "blob": "3c671989545764313a130898b3025386e85d23a1",
+      "bytes": 84,
+      "sha256": "750a6c5e0241d43e2c1d4a7701b83a34c6213116134df20ea229d36c228372a2",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/3c671989545764313a130898b3025386e85d23a1.txt"
+    },
+    {
+      "path": "recovery/cache-reset-local-error.public.json",
+      "blob": "fd2f80490908ce7148fa1d2b137c133f008a2c1e",
+      "bytes": 307,
+      "sha256": "fd6e061bfdc5a51390536665a92573d407304729710c29d44bb860373a9c821e",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/fd2f80490908ce7148fa1d2b137c133f008a2c1e.txt"
+    },
+    {
+      "path": "recovery/existing-Git-index-reconstruction.public.json",
+      "blob": "c92cc54825abbd62febd64c55f9b8d63ddf1eb10",
+      "bytes": 6147,
+      "sha256": "d83b69f02b06ebacc44a448795a08ec137e8171f8776852be57dbab23c76e83e",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/c92cc54825abbd62febd64c55f9b8d63ddf1eb10.txt"
+    },
+    {
+      "path": "recovery/same-ID-prefix-pages.public.json",
+      "blob": "67394aa0ad9cb73b9d4c913807e224680323cf58",
+      "bytes": 2797,
+      "sha256": "c3e9214083d47af742e29b5744201b1b46fbc880082ccabaaf2233496908c8ed",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/67394aa0ad9cb73b9d4c913807e224680323cf58.txt"
+    },
+    {
+      "path": "reference/metadata01.binding.public.json",
+      "blob": "135d4ddb97212b3d4af186d37e0d4d8962f1a915",
+      "bytes": 1928,
+      "sha256": "af0b23e2e5f49b826234d5e842f620240583c9ca0c3b82cd60b178bd6e88b539",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-135d4ddb97212b3d4af186d37e0d4d8962f1a915.json"
+    },
+    {
+      "path": "reference/metadata01.native.original.json",
+      "blob": "fda116250a9560c6dbff15ce0815d2a887d25f8c",
+      "bytes": 464,
+      "sha256": "03de9557541da230e61f378709eb492d25b5e18c04cd787f5b3252f19e02041a",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-fda116250a9560c6dbff15ce0815d2a887d25f8c.json"
+    },
+    {
+      "path": "reference/metadata02.binding.public.json",
+      "blob": "4be423ca21e0d9157a922ba21ed4d9568cd46a28",
+      "bytes": 1922,
+      "sha256": "f9974a505995f53beef0504d1b83690d14b2d9efe0df6959eb05172d24c56740",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-4be423ca21e0d9157a922ba21ed4d9568cd46a28.json"
+    },
+    {
+      "path": "reference/metadata02.native.original.json",
+      "blob": "79c97aa723f11a670fadee82726d7bf516b76f89",
+      "bytes": 457,
+      "sha256": "5f17977b62215a5ac52cedbc1a8a610be0d5fbb50f68d2470e82e5e6af719d10",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-79c97aa723f11a670fadee82726d7bf516b76f89.json"
+    },
+    {
+      "path": "reference/root-cache-recovery-message.verbatim.txt",
+      "blob": "84744a22f7bb0d1f829034a236833d2777ef4913",
+      "bytes": 623,
+      "sha256": "c5e7d016e2bc06fc14554fef72a881c035c04fd5acff549be1fb2f2c376bfc67",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/84744a22f7bb0d1f829034a236833d2777ef4913.txt"
+    },
+    {
+      "path": "reference/root-go.original.json",
+      "blob": "49fa57d6128f99ff425ea798466514564374d3b4",
+      "bytes": 10218,
+      "sha256": "9ab46d2157d77f7045cdd33426c52692bc844424537efb196936f8cef6ef5c8b",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-49fa57d6128f99ff425ea798466514564374d3b4.json"
+    },
+    {
+      "path": "requests/01.exact.json",
+      "blob": "f78c2274f45aa6b9f62422fac6453bd8ec4e96ce",
+      "bytes": 420,
+      "sha256": "18cd2d3ccfd8367ef87eae98aba054cd425ab17824af8eaa3e28cb312e6af233",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-f78c2274f45aa6b9f62422fac6453bd8ec4e96ce.json"
+    },
+    {
+      "path": "requests/02.exact.json",
+      "blob": "de4f483af21acc4f5824876a774d4be6812cef86",
+      "bytes": 410,
+      "sha256": "f4da6cc37d69a217e3ba38f8c048d11aa3f6d0de4354038b5d91b9b824d9c163",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-de4f483af21acc4f5824876a774d4be6812cef86.json"
+    },
+    {
+      "path": "requests/03.exact.json",
+      "blob": "3fa1a95b06619da84b9af79f429ecda22f28c992",
+      "bytes": 418,
+      "sha256": "8532186b15b50c5123e3ac2a3e523614e57763ed4ae918ed8177240c4b2a5e66",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-3fa1a95b06619da84b9af79f429ecda22f28c992.json"
+    },
+    {
+      "path": "requests/04.exact.json",
+      "blob": "14a5cc1d4945973ef7d33b38b514564bd989a9b2",
+      "bytes": 420,
+      "sha256": "3fcd59d3e179191032adedd39db914d6ec86612da735918b0e9d9b686c78183f",
+      "local_origin": "/workspace/scratch/f86faac821c4/r32_recovery/blob-14a5cc1d4945973ef7d33b38b514564bd989a9b2.json"
+    },
+    {
+      "path": "sources/manifest-registry.original.js",
+      "blob": "e9bf738c49a86a2a7aba1d1bb22de14346653c93",
+      "bytes": 31444,
+      "sha256": "819c76c314e6ed1fd39c5ed6b169d63997905b3ae8a98b9373783d626431ace4",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/e9bf738c49a86a2a7aba1d1bb22de14346653c93.txt"
+    },
+    {
+      "path": "sources/plugin-registry.original.js",
+      "blob": "42ea640e392714881fcf908094d691913efb174f",
+      "bytes": 181581,
+      "sha256": "25f3ef82756d85281ad5c25375a5cd2f405989a1145ed438de05992e8c995376",
+      "local_origin": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/42ea640e392714881fcf908094d691913efb174f.txt"
+    }
+  ],
+  "new_Git_fetches": 0,
+  "Runtime_calls": 0
+}

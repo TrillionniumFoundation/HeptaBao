@@ -1,0 +1,118 @@
+{
+  "schema": "heptabao.immutable-checkpoint-publication-proof.r32.v1",
+  "published": true,
+  "commit": "f4a47f951cd39e0f75797a6224f42837a4369044",
+  "tree": "40370ae9364cc27c91d84e5edfe00c6c0e0fbfdb",
+  "sole_parent": "d2bfaab64364d07ba339ce96b74a844cdbf40781",
+  "branch": "codex/heptabao-validation-20261104",
+  "expected_sha": "d2bfaab64364d07ba339ce96b74a844cdbf40781",
+  "force": false,
+  "conditional_CAS_succeeded": true,
+  "branch_reread_exact": true,
+  "commit_parent_tree_readback_exact": true,
+  "changed_ancestor_tree_readbacks": [
+    {
+      "path": "qa/evidence/20261104/r32-X230-source-and-LAN-prepared-runtime-r1/packets",
+      "tree": "56d8ee9d3fe4b1c2403b84a35da6746434bbb318",
+      "entries": 24,
+      "matched": true
+    },
+    {
+      "path": "qa/evidence/20261104/r32-X230-source-and-LAN-prepared-runtime-r1/roots",
+      "tree": "5010e960b25d19aed347069661fd6ef90471dfe2",
+      "entries": 33,
+      "matched": true
+    },
+    {
+      "path": "qa/evidence/20261104/r32-X230-source-and-LAN-prepared-runtime-r1",
+      "tree": "10df2b602c4217a9fa9270e68234951c2f0fa3b1",
+      "entries": 4,
+      "matched": true
+    },
+    {
+      "path": "docs/validation",
+      "tree": "6c719c9ed367b6e8284332420754798a1e0e8db1",
+      "entries": 1,
+      "matched": true
+    },
+    {
+      "path": "docs",
+      "tree": "0a9cbe470e9e24907967c70b8385d88ce110c3f6",
+      "entries": 51,
+      "matched": true
+    },
+    {
+      "path": "qa/evidence/20261104",
+      "tree": "c8ce8abf979ca4fea4e996dc8ae86a97e42910b5",
+      "entries": 109,
+      "matched": true
+    },
+    {
+      "path": "qa/evidence",
+      "tree": "997d9cf87c77f2a0e18414ddd46a4c991f2bdccc",
+      "entries": 1,
+      "matched": true
+    },
+    {
+      "path": "qa",
+      "tree": "b8f3e01dd5c2c0a8eead73725699b99cffce2f38",
+      "entries": 3,
+      "matched": true
+    },
+    {
+      "path": "",
+      "tree": "40370ae9364cc27c91d84e5edfe00c6c0e0fbfdb",
+      "entries": 26,
+      "matched": true
+    }
+  ],
+  "unchanged_R31_subtrees_preserved": true,
+  "all22315_prior_nondocument_leaves_preserved_via_Merkle_subtree_identity": true,
+  "new_evidence_leaves": 1960,
+  "deleted_leaves": 0,
+  "total_leaves_using_prior_qualified_count": 24277,
+  "freeze_time": "2026-11-05T21:01:15Z",
+  "packet_totals": {
+    "packets": 24,
+    "files": 1925,
+    "bytes": 15798161,
+    "merkle": 646,
+    "roots_before_state_manifest": 33
+  },
+  "state": {
+    "name": "STATE.public.json",
+    "blob": "d11fa471982c2840d137300a97380bf3de28c9e5",
+    "bytes": 33002,
+    "sha256": "3543c8a9a79f5da391fefa4b89f92d69c27b21075f7b9ac9356a7d116bcb5d3c"
+  },
+  "manifest": {
+    "name": "MANIFEST.public.json",
+    "blob": "1a313b092c4d6e7f8ef72af0288e03afffe39905",
+    "bytes": 18910,
+    "sha256": "582c0347fd755150f7fec4388246abb71d052b87034bab6b40e172e3f15c80d0"
+  },
+  "updated_documents": [
+    {
+      "name": "r32-checkpoint.md",
+      "blob": "5e05bb89b484b949e89a133dc73317839c57f3b3",
+      "bytes": 311472,
+      "sha256": "530435b2a5811ea97f00b9589def0b74461bee91a86da1e73b73bec36a8174ab",
+      "path": "docs/validation/HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md",
+      "previous_blob": "d02226534c06152be44d6b55691bb6e5120b44db"
+    },
+    {
+      "name": "r32-checkpoint-index.public.json",
+      "blob": "23fc5d057e365dfdec534090cc13c47431b22a2f",
+      "bytes": 899535,
+      "sha256": "0b569f09df81ced7db107a2f6f9cde67fc97392e6a211190b4dde32f48185162",
+      "path": "qa/evidence/20261104/36076-checkpoint.public.json",
+      "previous_blob": "d82a2259b405bb72e6f5f53fb347b553ed42dc22"
+    }
+  ],
+  "whole_R31_document_verbatim_retained": true,
+  "old_index_values_lexically_preserved": true,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "post_publication_proof_anchor_next_checkpoint": "R33"
+}

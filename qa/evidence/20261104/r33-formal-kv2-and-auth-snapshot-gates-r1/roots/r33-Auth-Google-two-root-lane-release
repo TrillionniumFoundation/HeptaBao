@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.auth-google-json-four.root-lane-release.v1",
+  "ok": true,
+  "release": {
+    "blob": "ee94515d5509f2ba5efce754973da409036b1aec",
+    "bytes": 7355,
+    "sha256": "638a132e9acf4be4005e7afa59843f11025b8f60a0ffa7d06ff8da1d72234610"
+  },
+  "actual_four_statuses": [
+    {
+      "blob": "aac573db5ff1dbde371a4cdc620f73821c9ba70f",
+      "bytes": 800,
+      "sha256": "cc3330067ca8b4e006124ac0a1301b484a697c4a5e87f06797f1ac7d0103ae3a"
+    },
+    {
+      "blob": "ff8fc7b4251b5c99fe7e815697ed2e9d125a9a60",
+      "bytes": 800,
+      "sha256": "13d2a22cc43f1345faa8be029f814d3c5034bbc36a52a30983edb570e39add5f"
+    },
+    {
+      "blob": "721ac9ee5353a564f87cbaa7621588ddc5bd8949",
+      "bytes": 802,
+      "sha256": "11fda969d975342b8fa8e04be5a73bb4179daf7406cdeb7ebc4d36d049852b2b"
+    },
+    {
+      "blob": "0abe152c17a3077f7724f93bc67f31bcc832f0b0",
+      "bytes": 802,
+      "sha256": "64805f3d8819a4195e834f094d52c247a684f47dbe66d8bc1aa2e0e1b653c8d3"
+    }
+  ],
+  "all_four_actual_futures_closed": true,
+  "A_released": true,
+  "scope": "Whole4 native terminal statuses bind exact returned IDs. Complete original8 page chain separately pending peer; no product/credential/SDK qualification."
+}

@@ -1,0 +1,7 @@
+{
+  "chunk_id": "8ed8a2",
+  "wall_time_seconds": 0.00002646,
+  "exit_code": 0,
+  "original_token_count": 90,
+  "output": "{\"ok\": true, \"checksPassed\": 286, \"originalReadCalls\": 11, \"observers\": 2, \"pages\": 7, \"resultPath\": \"/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/cli-stage-peer-r1/result.public.json\", \"blob\": \"75d2f9ee80ccf1d8ba1f024e38c07f33a4533a86\", \"bytes\": 43607, \"sha256\": \"62c465a9873949d8154f22fdf4912f3d16662be3d259943483f6a1bcd5a87bdb\"}\n"
+}

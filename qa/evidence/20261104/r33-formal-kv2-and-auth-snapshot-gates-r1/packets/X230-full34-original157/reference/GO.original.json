@@ -1,0 +1,153 @@
+{
+  "schema": "heptabao.root-X230-current-normal-full34-exact-live-GO.r32.v1",
+  "status": "GO_ONE_ORIGINAL_FULL34_EXECUTION",
+  "owner": "/root/compatibility_audit",
+  "lane": "B",
+  "source_transfer_qualification": {
+    "name": "r32-X230-source-transfer-complete-root-qualification.public.json",
+    "blob": "14026aab3619c13f2de8c972f5913d0f329730aa",
+    "bytes": 10556,
+    "sha256": "70c679e596110ad000e5b5e31799cec5dc342a1ef565c72b432976c2d024cde9"
+  },
+  "actual_oracles_and_controls_qualification": {
+    "name": "r32-X230-actual-oracles-controls-root-review.public.json",
+    "blob": "31a05798ea870d71c4d08092ad53e895e275c11f",
+    "bytes": 22370,
+    "sha256": "bd98852e1a4f7f22ba7a9467f6b89bcbede8e5f226743863463b887246178301"
+  },
+  "wrapper_source_review": {
+    "name": "r32-X230-two-bound-wrappers-root-review.public.json",
+    "blob": "7934f6369f16912b30775317ed8327cc7d3c0ad5",
+    "bytes": 5427,
+    "sha256": "c23e69003520719b623fefaf05f4dd9369b65849554f7dd86b902dbfc0528ad3"
+  },
+  "exact_request": {
+    "path": "proposed-future-run/full34.process_start.json",
+    "blob": "3839158cca7a7d543d8b277fc4df9f271d45ab83",
+    "bytes": 355,
+    "sha256": "235880f1326aa4d1848b2a9867c5915719c787bb9b58e90140b95838a7c49b69",
+    "mode": "100644"
+  },
+  "request": {
+    "host": "x230",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian/heptabao-same-root-publication-normal-20261105-r1/full34_controller.py"
+    ],
+    "cwd": "/home/qian/heptabao-same-root-publication-normal-20261105-r1",
+    "timeout_seconds": 1800,
+    "idempotency_key": "heptabao-4e808-x230-full34-r1-73f0ff55"
+  },
+  "typed_request_sha256": "5c151114a4d4ae0e2770e4dc7060205cc8d5868cda1da1bd85c3c4347123e3ac",
+  "expected_native_fingerprint_decimal": "6635228406362713614",
+  "candidate": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "binary_sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+    "normal_default": true,
+    "fixture_features": []
+  },
+  "actual_wrapper": {
+    "role": "full34-info",
+    "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/full34_controller.py",
+    "bytes": 10142,
+    "sha256": "73f0ff5583a9323c91625a37afe3502de8f766735ff74baaa66b08f9b922b2b5",
+    "version": "2053:3062745:10142:1793908417811750782:1793908417813750783",
+    "mode": 384,
+    "full9_decimal": [
+      "2053",
+      "3062745",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "10142",
+      "1793908417811750782",
+      "1793908417813750783"
+    ],
+    "original_operation_id": "ab7651c7a158b18750e45937457ba0dd4dda70d39a6ee79580e5f712daf14326"
+  },
+  "scope": {
+    "host": "x230",
+    "loopback_only": true,
+    "new_private_synthetic_target": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/full34-r1/private-run",
+    "official_OpenBao": "2.7.1",
+    "profile": "full34",
+    "migration_lane": "native-large",
+    "original_product_cases": 31,
+    "readable_payload_bytes": 35651584,
+    "versions": 19,
+    "full_replacement_qualified": false,
+    "production_cutover": false
+  },
+  "budgets": {
+    "outer_seconds": 1800,
+    "outer_provenance": "Preserve the R10 explicitly root-authorized supervised 1800-second cap recovered from original typed native ACK. This does not retrospectively establish a pre-R10 outer cap.",
+    "http_seconds": 15,
+    "migration_seconds": 360,
+    "original_case_denominator_unchanged": true,
+    "no_timeout_widening": true
+  },
+  "protocol": {
+    "external_exact_intent_complete_before_one_process_start": true,
+    "save_whole_original_SDK_before_isError_or_parse": true,
+    "one_call_and_one_native_future_on_B": true,
+    "unsafe_native_integers_lossless": true,
+    "only_original_job_ID_after_ACK": true,
+    "no_business_replay_or_changed_key": true,
+    "no_retry_migration_or_HTTP": true,
+    "missing_ACK_or_UNKNOWN": "Preserve the original artifact, stop dependent execution and do not resubmit or invent job identity.",
+    "authoritative_terminal_required": [
+      "exit_code",
+      "state",
+      "output_complete",
+      "output_durable",
+      "terminal_publication_confirmed"
+    ],
+    "owned_process_cleanup_and_source_invariance_required": true
+  },
+  "bounded_original_observation": {
+    "process_status_and_process_read": {
+      "original_job_only": true,
+      "operation_start_wrapper": true,
+      "one_active_observer_at_a_time": true,
+      "exact_read_intent_saved_before_submit": true,
+      "original_SDK_saved_first": true,
+      "immutable_pages": 8192,
+      "process_read_per_stream_limit": 65536,
+      "do_not_replay_business": true
+    },
+    "public_files": [
+      {
+        "id": "result",
+        "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/full34-r1/result.public.json"
+      },
+      {
+        "id": "summary",
+        "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/full34-r1/summary.public.json"
+      }
+    ],
+    "file_info_sequence": "Only after original authoritative terminal, observe the fixed result then summary if it exists according to known result. No directory search or private-run credential read.",
+    "body_derivation": "After each original file_info closes, use its verbatim version, actual size and SHA; derive contiguous offset0 then 65536 increments with limit=min(65536, remaining). Save exact derived intent before each original operation_start, close and fully assemble each immutable payload before next. No body on absent/error/unexpected hash/size.",
+    "maximum_public_body_bytes_combined": 262144,
+    "chunk_limit": 65536,
+    "operation_result_page_limit": 8192,
+    "whole_SHA_and_EOF_required": true,
+    "original_READPLAN_and_all_payloads_retained": true
+  },
+  "exclusions": {
+    "comparison69_authorized": false,
+    "CLI_stage_authorized": false,
+    "new_build": false,
+    "source_edits": false,
+    "HA_runtime": false,
+    "credential_migration": false,
+    "production_switch": false,
+    "old_asset_cleanup": false,
+    "old_relay_UNKNOWN_rewritten": false
+  },
+  "root_Runtime_calls": 0
+}

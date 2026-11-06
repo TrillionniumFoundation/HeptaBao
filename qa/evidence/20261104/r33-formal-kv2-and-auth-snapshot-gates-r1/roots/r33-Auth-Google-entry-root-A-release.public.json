@@ -1,0 +1,43 @@
+{
+  "schema": "heptabao.Auth-Google-entry.root-lane-release.r33.v1",
+  "ok": true,
+  "checks_passed": 5,
+  "checks": [
+    "closed_original_metadata",
+    "closed_original_body",
+    "fixed_entry_body_metadata_match",
+    "public_entry_metadata_guards",
+    "lane_idle_and_finite_count"
+  ],
+  "owner_release": {
+    "blob": "fbe27f3c94adc303417db0e20abaf6d59bdd9950",
+    "bytes": 3117,
+    "sha256": "21d59a9db84ec87ab26ffce2371350f79e290a5857e96f06ff4af16b47a2d779"
+  },
+  "closed_statuses": [
+    {
+      "blob": "8ba53bf5723a6cc0fc29f00c223e0166c4d7ac92",
+      "bytes": 800,
+      "sha256": "4eca51b37211c110089dc3d51f15807f8daffaacce484c929453bd7004e2cb24"
+    },
+    {
+      "blob": "b47bc5bc3058d5ecde6c45baea3637fcac61cbbd",
+      "bytes": 802,
+      "sha256": "cc082f6338bf47c98aa9ca51c47dfc12e9bd59bbb7d6cc9c6b7d71e55c82a39b"
+    }
+  ],
+  "metadata": {
+    "blob": "5455a5b2e9d5f332c50a995d5976bce1c062dd49",
+    "bytes": 461,
+    "sha256": "de9b4501eeba69fe999813c6fb1d067c67e816ed746d6edf109dab9d08deda0f"
+  },
+  "body": {
+    "blob": "4a63cd4e06362ad36bb50c481315020b6aec94aa",
+    "bytes": 10582,
+    "sha256": "f245758337a55924518852f542a27d49bd786d8e4b80821dc5f98f825ec3fc60"
+  },
+  "entry_version": "16777233:405237094:10582:1784843458496192413:1784843458496192413",
+  "A_released": true,
+  "whole_original_observer_chain_review_separately_pending": true,
+  "actual_selected_owner_proven": false
+}

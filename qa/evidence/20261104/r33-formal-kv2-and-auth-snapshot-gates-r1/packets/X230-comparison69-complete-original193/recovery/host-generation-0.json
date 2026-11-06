@@ -1,0 +1,43 @@
+{
+  "schema": "heptabao.comparison69.local-return-recovery.v1",
+  "original_cell": "g3:82",
+  "wait_outcome_exact": "cell belongs to a stale code-mode host generation",
+  "prior_checkpoint": {
+    "name": "comparison69-host-generation-reset-prior-checkpoint",
+    "blob": "fc41cc41a059dfe018d4180737546abc51e510db",
+    "bytes": 94408,
+    "sha256": "15ea9d7b48a767b824a61142b90d9cd8fdc75715da6842a455271d89f67c447e"
+  },
+  "original_call_request": {
+    "name": "comparison69-summary-body1-page-008192-request",
+    "blob": "8f67c2aecf4b446065053496f808869f9ae8531c",
+    "bytes": 124,
+    "sha256": "7332a4e9569e454aa92e0440cf12cc4a686d1849f91d4b708ecdb4a284402db7"
+  },
+  "original_call_intent": {
+    "name": "comparison69-summary-body1-page-008192-intent",
+    "blob": "be6ec3d013cf8abd2851ebe26141171f16d5dca6",
+    "bytes": 890,
+    "sha256": "38b956dbedb3fabb8d3b7b81676d399d5a72a64bc37a7fda8b09a5754ab31f87"
+  },
+  "original_SDK": {
+    "name": "comparison69-summary-body1-page-008192-original-SDK",
+    "blob": "8fa7dd04a710619413270050fa23459f0e0c1e71",
+    "bytes": 11784,
+    "sha256": "fd4fc6d6c2ee0f16ea7fa8d5f50d277c47b3d8d64e3c0900945c5f27736eafc0"
+  },
+  "original_native": {
+    "name": "comparison69-summary-body1-page-008192-original-native",
+    "blob": "691bedbc2e921ef5d54aea7bc55fe398f6637b68",
+    "bytes": 11613,
+    "sha256": "388cd1c110af08b24e5ad80e0c9140827af9adf9efdaca5b520dcc9641ea0008"
+  },
+  "SDK_found_at_fixed_local_path_before_any_new_Runtime_call": true,
+  "recovery_file_and_directory_fsync_exit_code": 0,
+  "previous_fsync_completion_not_independently_reestablished": true,
+  "new_Runtime_calls_during_recovery": 0,
+  "original_page_repeated": false,
+  "business_replayed": false,
+  "native_handler_prior_status": "completed/stored_observed/owned_future_active=false",
+  "limitation": "The code-mode cell completion was unavailable after host-generation reset. The original returned SDK file was present and byte-verified; this recovery archives that existing return and does not fabricate an earlier completion record."
+}

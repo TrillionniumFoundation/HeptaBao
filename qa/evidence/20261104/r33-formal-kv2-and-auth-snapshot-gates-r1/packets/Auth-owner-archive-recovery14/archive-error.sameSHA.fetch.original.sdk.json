@@ -1,0 +1,12 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"tool call error: tool call failed for `codex_apps/github.create_blob`\\n\\nCaused by:\\n    Mcp error: -32603: Internal error\"\n    }\n  ],\n  \"isError\": true\n}\n"
+  },
+  "isError": false
+}

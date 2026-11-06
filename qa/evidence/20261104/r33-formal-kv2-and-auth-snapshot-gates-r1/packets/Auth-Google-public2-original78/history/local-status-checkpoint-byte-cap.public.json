@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.local-journal-byte-cap.v1",
+  "stage": "after complete first body original payload/native were externally archived and state stored",
+  "error": "Error: local journal argument cap",
+  "RuntimeCallFailed": false,
+  "originalPayload": {
+    "blob": "bd496990ae76bcec4f2eb1f9f25a1bda46acb600",
+    "bytes": 38976,
+    "sha256": "03ae439ade6a85d93794f44c165ab5c8e9a8a98c4e1bc6eff5fe625bb1ade1ab"
+  },
+  "originalNative": {
+    "blob": "7e79cddec5aaed945167adafbe445a730501953e",
+    "bytes": 38873,
+    "sha256": "2899821618d76a854fa35a7ba61bfc5357530d0d9ea163779e5ffe0c162940e9"
+  },
+  "pages": 5,
+  "nativeClosed": true,
+  "wholeClosed": true,
+  "extraRuntimeCalls": 0,
+  "fix": "Compact local checkpoint omits duplicate page bytes/base64; all exact raw originals remain recoverable by stored immutable pins."
+}

@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.H2-target-read.local-derived-mode-correction.v1",
+  "before_source": {
+    "name": "ha-h2-target-fullmode-derivation-before-source",
+    "blob": "2af14aa099f697335f8d40df5c2a32376d4033dd",
+    "bytes": 7866,
+    "sha256": "80e9fa5e275b65607a9616fd72725fb156e37bcb11fac9ed6886de589bec77ac"
+  },
+  "before_state": {
+    "name": "ha-h2-target-fullmode-derivation-before-state",
+    "blob": "58a29696c8f776704b82a258d1d7cc42a393fefd",
+    "bytes": 19922,
+    "sha256": "9923e98ca3c0412d0d053c8c35311267558ace4374f9834e4827c3a456489018"
+  },
+  "after_source": {
+    "name": "ha-h2-target-fullmode-corrected-helper",
+    "blob": "a799f52a8c8ae4f9e44c02057ef453e4b731ab05",
+    "bytes": 7868,
+    "sha256": "31c69c5688425fe594a86794fb1528a2256bb49ddcc45a0717c7abdd547b744f"
+  },
+  "old_expression": "33152 + n.mode",
+  "old_derived_full_mode": 33536,
+  "correct_expression": "32768 | n.mode",
+  "correct_derived_full_mode": 33152,
+  "original_native_mode": 384,
+  "original_native": "1621dab12f19b0d746d74af83c8d55de9eabe601",
+  "original_native_unchanged": true,
+  "content_identity_guards_unchanged": true,
+  "receipt_native_read_repeated": false,
+  "Runtime_calls_for_correction": 0,
+  "receipt_already_closed": true,
+  "binding_admission_not_submitted": true
+}

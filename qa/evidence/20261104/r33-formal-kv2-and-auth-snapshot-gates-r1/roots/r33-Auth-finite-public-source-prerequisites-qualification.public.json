@@ -1,0 +1,94 @@
+{
+  "schema": "heptabao.AuthBus.public-source-prerequisites.integration.r33.v1",
+  "status": "PASS_FINITE_PUBLIC_SOURCE_CHAIN_AND_REVIEWED_REPAIRS_READY_FOR_FRESH_BOUND_PACKAGE_REVIEW",
+  "checks_passed": 8,
+  "checks": [
+    "registration_original714_pass",
+    "registration_four_original_ops37pages8reobservations",
+    "Google_two_original_root244_pass",
+    "Google_entry_original_root182_pass",
+    "owner_repair_source236_pass",
+    "renewal_existing_source_review_exact",
+    "renewal_prior_pure_fake_keeps_exact_candidate",
+    "no_actual_selected_owner_or_credential_claim"
+  ],
+  "registration_peer": {
+    "tree": "6d1bfe6fb193bb2ad172fccdb441602e3715c7af",
+    "report": {
+      "blob": "7bf70816e5cb26e8f627b77135b50a4c8918b7b5",
+      "bytes": 4014,
+      "sha256": "4498ad2625d73a1d5193d01416f3ab8f5a531c1f75e6fd8349a3930825750a67"
+    },
+    "verifier": {
+      "blob": "f2e3e429aa00b002123d34efb6613cfe09fbc487",
+      "bytes": 19814,
+      "sha256": "5d8109098a632ace4cefc0e8e587024da55b03e21b919e9409d0ad2e5cc4141e"
+    },
+    "result": {
+      "blob": "11ece4cdb21ae5b651f9580bf573ccaaf55eeb0b",
+      "bytes": 92207,
+      "sha256": "171753952c0b802691273919052f6f0ccba9a5a8776daa1b80566f4a06fb9b1c"
+    },
+    "executor": {
+      "blob": "295a2c528faef2d51802372c5f9e6aee65bf58c3",
+      "bytes": 463,
+      "sha256": "fa4ba7d78f0022051f8645391d64a7b5b4dd735849c1d0e28febe18bb71fcf67"
+    },
+    "source_read_by_root": true,
+    "rerun_by_root": false
+  },
+  "Google_public2_root": {
+    "blob": "58c08e40c4d72f3060b053c034e88c1ffa906232",
+    "bytes": 16448,
+    "sha256": "62e2017c201bbba14485d8f016c1aac562df082628454aa7f852df55f7785d80"
+  },
+  "Google_entry_root": {
+    "blob": "f16164e745a1f0e9fcbcacda0c7072df73965725",
+    "bytes": 21720,
+    "sha256": "88ab3f41b80fb8cda6e8d55a9868a7c42fe451a5041ffbc42329a242ac08d1d4"
+  },
+  "owner_repair_source_root": {
+    "blob": "d68f03916d51a94f1f92043b928a3dbc0b023046",
+    "bytes": 17356,
+    "sha256": "4bfe5f1ac02bc68dbeadd0c63628959031af267c2a0a5b75d52fac628e26488b"
+  },
+  "renewal_increment": {
+    "source": {
+      "blob": "26622454186ba28ada489c9a10b34cf4ad254b97",
+      "bytes": 71496,
+      "sha256": "72ecfcd586a4ab4c48fd95d2e15b4a44165a754570c699eae18dceaa02f3b262"
+    },
+    "diff": {
+      "blob": "27215ad2c8309de2e21335adb5f93c8b5efae6be",
+      "bytes": 7255,
+      "sha256": "1a22d264f16e43df7615e109a9c175cc12045930c4815f21f47e2aa3e43484e0"
+    },
+    "independent_peer": {
+      "blob": "16a748f586a5e109ca1089914b7f42f18ea25403",
+      "bytes": 7745,
+      "sha256": "89888b4b76e98d3d678630a02c73d35ee57423e9d86d8079f970b81df6167e0c"
+    },
+    "prior_targeted_fake_review": {
+      "blob": "4253c59eadd68594ec84dbbc63927da7404b5ef7",
+      "bytes": 1400,
+      "sha256": "1c3ed66630dd62f0cbc494496da771c7dc6d8cc4abef0649b0e7a0381c18deac"
+    },
+    "source_scope": "Original empty-JSON renew and original role token_ttl180s/max600s retained. Adds before/after same-token/accessor lookups, original revoke204 and denied403; final positive-expiry check follows inverses/closure. Original budgets unchanged.",
+    "actual_extension_qualified": false
+  },
+  "new_current_entry": {
+    "blob": "4a63cd4e06362ad36bb50c481315020b6aec94aa",
+    "bytes": 10582,
+    "sha256": "f245758337a55924518852f542a27d49bd786d8e4b80821dc5f98f825ec3fc60"
+  },
+  "entry_version": "16777233:405237094:10582:1784843458496192413:1784843458496192413",
+  "cumulative_public_source_body_bytes": 393557,
+  "fresh_complete_22_source_package_qualified": false,
+  "original_worker_runtime_authorized": false,
+  "actual_selected_registered_owner_qualified": false,
+  "trusted_credential_runtime_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "cleanup": false,
+  "root_Runtime_calls": 0
+}

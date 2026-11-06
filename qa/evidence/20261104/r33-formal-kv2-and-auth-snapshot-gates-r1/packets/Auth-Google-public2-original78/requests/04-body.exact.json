@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-mac-google-package-body-398f7330-20261105-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "mac",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/package.json",
+      "expected_version": "16777233:405240659:375:1784843466392296043:1784843466392296043",
+      "offset": 0,
+      "limit": 375
+    }
+  }
+}

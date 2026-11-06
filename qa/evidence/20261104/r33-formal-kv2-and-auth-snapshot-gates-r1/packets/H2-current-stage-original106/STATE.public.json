@@ -1,0 +1,91 @@
+{
+  "schema": "heptabao.H2-stage.actual-state.v1",
+  "job_id": "1a1adb7c0f6-fc05-5ab6",
+  "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "root_go": "065ae72edbb8f330b66f5a40ea4c0134891f60d8",
+  "release": {
+    "name": "ha-h2-stage-lane-A-release",
+    "blob": "d7dc4ad0d377f269c23c0b920a265f9ede815906",
+    "bytes": 5297,
+    "sha256": "d1a7eaf50efbea5654588aa5a3a9c06076e8f5efd96a411c035f0580bebbeca0"
+  },
+  "original_authority": {
+    "name": "ha-h2-stage-authority0-native-original",
+    "blob": "c321bd33305dcdfafa58ce829d414c9c5cbe9f98",
+    "bytes": 733,
+    "sha256": "f8c50e8d3016b1efc99267ad9a9abe99f3ae5b06d2ec8c8461c5a6154508e0fd"
+  },
+  "stdout": {
+    "name": "ha-h2-stage-stdout-whole",
+    "blob": "e4b2ab7d6800225ad1f8c87e5cb51fb330840907",
+    "bytes": 23147,
+    "sha256": "cd7de0b60ff21476b5812c2159f8c44b55484fd9d1cd1a0900477a61853dd249"
+  },
+  "stderr": {
+    "name": "ha-h2-stage-stderr-whole",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "observers": [
+    {
+      "name": "authority0",
+      "operation_id": "faa0286530b753ce8e72e49a30c05ae21d92c980e5070cb45209e7d4edd8ba85",
+      "status_path": "observations/authority0/status.original.native.json",
+      "page_offsets": [
+        0
+      ],
+      "payload_path": "observations/authority0/payload.original.json",
+      "native_path": "observations/authority0/native.original.json"
+    },
+    {
+      "name": "streams0",
+      "operation_id": "0b68773bd615e06631b3d9a72d1e28cee7cb7f931061beaf2f4c0b5366589467",
+      "status_path": "observations/streams0/status.original.native.json",
+      "page_offsets": [
+        0,
+        8192,
+        16384,
+        24576,
+        32768,
+        40960,
+        49152
+      ],
+      "payload_path": "observations/streams0/payload.original.json",
+      "native_path": "observations/streams0/native.original.json"
+    },
+    {
+      "name": "streams1",
+      "operation_id": "3c74fed64d329f837e7e3f1a019d919c89d71bb8d812c80b9a443e636967958c",
+      "status_path": "observations/streams1/status.original.native.json",
+      "page_offsets": [
+        0,
+        8192,
+        16384
+      ],
+      "payload_path": "observations/streams1/payload.original.json",
+      "native_path": "observations/streams1/native.original.json"
+    }
+  ],
+  "returned_observers": 3,
+  "immutable_pages": 11,
+  "process_start_count": 1,
+  "process_start_replays": 0,
+  "all_returned_read_futures_closed": true,
+  "current_Runtime_calls": 0,
+  "current_native_futures": 0,
+  "lane": "returned to root; no current A ownership",
+  "stage_status": "passed",
+  "post_finally_closed": true,
+  "elapsed_after_closure_ms": 2438.209864,
+  "source_guards_unchanged": true,
+  "artifact_roles_staged": 22,
+  "target_info_observations": 0,
+  "target_body_observations": 0,
+  "prepare_started": false,
+  "live_started": false,
+  "product_cases": 0,
+  "historical_boundary_file": "recovery/limited-boundary.public.json",
+  "raw_shape": "All observed SDK/native texts and immutable pages are original bytes. The proposed receipt is separately marked derived and is not a target body read."
+}

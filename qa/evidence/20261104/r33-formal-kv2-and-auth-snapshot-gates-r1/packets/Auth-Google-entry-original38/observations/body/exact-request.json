@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-mac-google-declared-entry-body-eca1335c-20261105-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "mac",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/index.js",
+      "expected_version": "16777233:405237094:10582:1784843458496192413:1784843458496192413",
+      "offset": 0,
+      "limit": 10582
+    }
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "schema": "heptabao.current4e808-H2.stage.lane-release.v1",
+  "lane": "A",
+  "owner": "/root/ha_validation",
+  "decision": "RELEASE_TO_ROOT_SCHEDULER",
+  "root_go": "065ae72edbb8f330b66f5a40ea4c0134891f60d8",
+  "job_id": "1a1adb7c0f6-fc05-5ab6",
+  "host": "desktop",
+  "original_start_intent": "87f09d19e25b2e9c2131d5df2e47d499cd44226c",
+  "original_start_sdk": "f4a251f9d7dde3a1646cbd89278139950b5b4c1d",
+  "original_start_native": "13e0e2fee6d7b4da5d20abf808bda69338d652a5",
+  "authority": {
+    "name": "ha-h2-stage-authority0-native-original",
+    "blob": "c321bd33305dcdfafa58ce829d414c9c5cbe9f98",
+    "bytes": 733,
+    "sha256": "f8c50e8d3016b1efc99267ad9a9abe99f3ae5b06d2ec8c8461c5a6154508e0fd"
+  },
+  "stdout": {
+    "name": "ha-h2-stage-stdout-whole",
+    "blob": "e4b2ab7d6800225ad1f8c87e5cb51fb330840907",
+    "bytes": 23147,
+    "sha256": "cd7de0b60ff21476b5812c2159f8c44b55484fd9d1cd1a0900477a61853dd249"
+  },
+  "stderr": {
+    "name": "ha-h2-stage-stderr-whole",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "authoritative_exit": 0,
+  "output_complete": true,
+  "output_durable": true,
+  "terminal_publication_confirmed": true,
+  "timed_out": false,
+  "post_finally": {
+    "status": "passed",
+    "all_stage_fds_closed": true,
+    "fd_close_pending": false,
+    "fd_close_errors": [],
+    "within_stage_deadline": true,
+    "elapsed_after_closure_ms": 2438.209864
+  },
+  "returned_observers": [
+    {
+      "name": "authority0",
+      "operation_id": "faa0286530b753ce8e72e49a30c05ae21d92c980e5070cb45209e7d4edd8ba85",
+      "status": {
+        "name": "ha-h2-stage-authority0-status-reconcile1-native",
+        "blob": "8c6e8b972dee719212c3f9652af4bb57083be131",
+        "bytes": 805,
+        "sha256": "701f6415de7decd4ed566afe065eb593ffe763cc2ef5f0b4f795246ecec676ba"
+      },
+      "async_state": "completed",
+      "result_state": "stored_observed",
+      "owned_future_active": false,
+      "payload": {
+        "name": "ha-h2-stage-authority0-payload-original",
+        "blob": "78d8644d14c29428c5c8dbc094ff3bb7d9060c66",
+        "bytes": 912,
+        "sha256": "f6b26a572996f3997e66bb50587824499046a0ae53b16f354d8eb2c289fc9ae6"
+      },
+      "native": {
+        "name": "ha-h2-stage-authority0-native-original",
+        "blob": "c321bd33305dcdfafa58ce829d414c9c5cbe9f98",
+        "bytes": 733,
+        "sha256": "f8c50e8d3016b1efc99267ad9a9abe99f3ae5b06d2ec8c8461c5a6154508e0fd"
+      }
+    },
+    {
+      "name": "streams0",
+      "operation_id": "0b68773bd615e06631b3d9a72d1e28cee7cb7f931061beaf2f4c0b5366589467",
+      "status": {
+        "name": "ha-h2-stage-streams0-status-native",
+        "blob": "3a40adf18df2b9f42960b2c5d4d19c37636c3b59",
+        "bytes": 803,
+        "sha256": "5a802ad50e36ac21a8ce1a4f0584c0677d8223b073db7247e51f9a0f1f8f8050"
+      },
+      "async_state": "completed",
+      "result_state": "stored_observed",
+      "owned_future_active": false,
+      "payload": {
+        "name": "ha-h2-stage-streams0-payload-original",
+        "blob": "f0aa05d7d39e186ad9c05aaee2143803f1b93fcd",
+        "bytes": 53296,
+        "sha256": "b4166269370adc78e8ec99c8fbf4f42fb5fe952eee91d2cd2fe16d8827288646"
+      },
+      "native": {
+        "name": "ha-h2-stage-streams0-native-original",
+        "blob": "a7d95e0d65f30481511b4f9df52f4ea747d59b19",
+        "bytes": 50704,
+        "sha256": "ec53e45f623ba0167dac82fbf689897cfcf20a64431d90ddc30539cc4313ab95"
+      }
+    },
+    {
+      "name": "streams1",
+      "operation_id": "3c74fed64d329f837e7e3f1a019d919c89d71bb8d812c80b9a443e636967958c",
+      "status": {
+        "name": "ha-h2-stage-streams1-status-native",
+        "blob": "47b5a9600d185462a1d84ab0ea60be0b83a40230",
+        "bytes": 803,
+        "sha256": "133a52a3ca15cd2549b96eaa7c5ce6a65112d2550684cbd98a6dcd3740f45191"
+      },
+      "async_state": "completed",
+      "result_state": "stored_observed",
+      "owned_future_active": false,
+      "payload": {
+        "name": "ha-h2-stage-streams1-payload-original",
+        "blob": "52c8a6e80c4b0b459e553143839a41cea96dd00a",
+        "bytes": 22218,
+        "sha256": "aced4dcce24ceda5831268ea592365d4beef46ecdb1ba4227ca14238baf974de"
+      },
+      "native": {
+        "name": "ha-h2-stage-streams1-native-original",
+        "blob": "05a77a108a29ad39ea1afb867057bc976b7a2dbe",
+        "bytes": 21105,
+        "sha256": "d1d8987663136d02a7c3b31808f3a4d14c115f47e96c9d498f3e8c8c2bf6dd5c"
+      }
+    }
+  ],
+  "all3_returned_observers_closed": true,
+  "immutable_pages": 11,
+  "current_runtime_calls": 0,
+  "current_native_futures": 0,
+  "stage_replays": 0,
+  "target_metadata_observations": 0,
+  "target_body_observations": 0,
+  "prepare_started": false,
+  "live_started": false,
+  "products_started": false,
+  "children_spawned": 0,
+  "network_calls": 0,
+  "retained_boundary": "Earlier context-truncated status query submission/delivery remains unknown. This creates no claimed recovered SDK. A newly authorized same-ID status query is explicit; no operation_start or stage replay occurred. Local archive helper failure after returned status SDK was recovered from that original returned object, without another Runtime call.",
+  "target_independent_qualification": false
+}

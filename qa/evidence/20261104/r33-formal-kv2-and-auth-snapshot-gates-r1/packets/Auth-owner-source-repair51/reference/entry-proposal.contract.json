@@ -1,0 +1,82 @@
+{
+  "schema": "heptabao.google-declared-entry.fixed-public-read.proposal.r1",
+  "status": "SOURCE_ONLY_NO_RUNTIME_GO",
+  "source": {
+    "packageBlob": "eca1335cb1e73aafcb53f89bba324673f9fa4493",
+    "packageBytes": 375,
+    "packageSha256": "398f73305017a1d3813610825814c6e1dd93b683da088cb6df068a31c639fcc3",
+    "actualPacket": "385b356167187308221d8c2d5c12ece7c1da24e3",
+    "capturedRoot": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google",
+    "jsonPointer": "/openclaw/extensions/0",
+    "rawRelativeEntry": "./index.js",
+    "declaredEntriesCount": 1,
+    "lexicalDerivedPath": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/index.js",
+    "entryExistenceObserved": false,
+    "entryHistoricalSourcePin": null
+  },
+  "request": {
+    "idempotency_key": "heptabao-mac-google-declared-entry-metadata-eca1335c-20261105-r1",
+    "operation": {
+      "tool": "file_info",
+      "arguments": {
+        "host": "mac",
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/index.js"
+      }
+    }
+  },
+  "proposedSequence": [
+    "one exact metadata; stop on any error/refusal",
+    "only if separately included in root GO: derive one bounded body from this original metadata, external exact intent, one original version-bound body"
+  ],
+  "metadataLimits": {
+    "regularNoSymlinkByApi": true,
+    "linkCountExactly": 1,
+    "permissionModeNoGroupOtherWrite": true,
+    "uidOneOf": [
+      0,
+      501
+    ],
+    "sizeMin": 1,
+    "sizeMaxForBody": 65536,
+    "hashWorkMayReadWholeTarget": true,
+    "noDirectoryScan": true,
+    "noAlternatePath": true
+  },
+  "conditionalBody": {
+    "deriver": "derive-entry-body.mjs",
+    "requestCurrentlyUnbound": true,
+    "requiredOriginalNativeClosed": true,
+    "requiredActualVersion": true,
+    "requiredExactSize": true,
+    "offset": 0,
+    "maxBytes": 65536,
+    "chunks": 1,
+    "expectedSha256": "actual original file_info whole SHA, not an invented historical hash",
+    "wholeEOF": true,
+    "exactOriginalNativePagesLimit": 8192,
+    "stopOnErrorOrDrift": true,
+    "noFollowImports": true
+  },
+  "accounting": {
+    "previousCompletedBodyBytes": 382975,
+    "newBodyMaxBytes": 65536,
+    "cumulativeMaxBodyBytes": 448511,
+    "oldUnusedBudgetNotReused": true
+  },
+  "semantics": {
+    "declaredPathNotExecutableContentProof": true,
+    "newMetadataHashIsCurrentObservationNotHistoricalQualification": true,
+    "actualSelectedOwnerRequiresOriginalWorkerSameRegistry": true,
+    "noGoogleFiltering": true,
+    "allFiveAgentModelsFlagsAndLoaderScopePreserved": true,
+    "SDKCalls": 0,
+    "privateCapsuleReads": 0,
+    "providerCalls": 0,
+    "configurationWrites": 0
+  },
+  "repairTarget": {
+    "inputs": "Bind exactly this observed entry and SHA into the closed public input map; retain historical manifest/package fixed pins and full held/named checks.",
+    "worker": "Original loader.t/selector.o once each, same global registry object and active owner/source/root relation; no direct import of Google entry by the diagnostic.",
+    "runtimeStillRequiresNewWholeSourceAndFreshRoot": true
+  }
+}

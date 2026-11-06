@@ -1,0 +1,92 @@
+{
+  "schema": "heptabao.current4e808-X230-comparison69.execution-intent.v1",
+  "root_GO": {
+    "blob": "4cf8d079885984d44cc9654a8ba816438f30b9ed",
+    "bytes": 4623,
+    "sha256": "92a033dc2bfe4b842eea937f825fd523ebd92e66dac7b8f4280ad9cf2daa5f1b"
+  },
+  "exact_request": {
+    "blob": "6c51aa75507c4ba473d19406ecf51d9ca8c2860d",
+    "bytes": 367,
+    "sha256": "4e6c3e22504fedffbfdead8f50a9856678f1de42d8b1ec2a728befbc507f97ea"
+  },
+  "native_typed_request_sha256": "56ddc986607a02e224a254f604912c4d12b3c4b7de290b2d724b3add50687e35",
+  "native_fingerprint": "6259380636096266978",
+  "host": "x230",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "/home/qian/heptabao-same-root-publication-normal-20261105-r1/comparison69_controller.py"
+  ],
+  "cwd": "/home/qian/heptabao-same-root-publication-normal-20261105-r1",
+  "idempotency_key": "heptabao-4e808-x230-comparison69-r1-836dfd5e",
+  "timeout_seconds": 1800,
+  "wrapper": {
+    "blob": "bd0d7378ccf7502c55712d88253ce39c3508a08c",
+    "bytes": 11716,
+    "sha256": "836dfd5eae25f45a680f08c9a93b9aacccc52c02da9ca6ceea15b89cd121e143"
+  },
+  "driver": {
+    "blob": "c822522ee80e4a713eee4cb42e91cfeb143e6468",
+    "bytes": 9261,
+    "sha256": "fd88ed0b8f1c1010e79f9393dfbf6464cabcac48ece8c6e448a64b7ccc45272e"
+  },
+  "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "fixed_fixture_root": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1",
+  "wrapper_internal_timeout_claimed": false,
+  "original_13_modules": [
+    "approle",
+    "core",
+    "edge_tls",
+    "identity",
+    "kv",
+    "operations",
+    "pki",
+    "system",
+    "token",
+    "totp",
+    "transit",
+    "userpass",
+    "wrapping"
+  ],
+  "case_count_each_side": 69,
+  "visible_history_and_local_journal_confirmed_not_submitted": true,
+  "resume_preflight": {
+    "schema": "heptabao.comparison69.resume-before-intent.v1",
+    "visible_tool_history_next69_START_count": 0,
+    "known_local_execution_intent_count": 0,
+    "Runtime_calls_inflight": 0,
+    "helpers": [
+      {
+        "name": "pure_helpers.js",
+        "blob": "25eb67a1def4c90ed8a6b1308ca2494228587c1c",
+        "bytes": 6684,
+        "sha256": "54047677f4bbcd0d6565b89a58a8b14c483c7988309b7ea010b6408765f60e45",
+        "local_bytes": 6685,
+        "local_sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432",
+        "source": "/workspace/scratch/f86faac821c4/r32_recovery/blob-25eb67a1def4c90ed8a6b1308ca2494228587c1c.json",
+        "local_extra_LF_only": true
+      },
+      {
+        "name": "git_helpers.js",
+        "blob": "85878559fd5af179c2d0f7aac8657145513ed204",
+        "bytes": 3680,
+        "sha256": "96d3543afead13f6d80d7c7d0c8392c1b17d62716e219e2401f8206d385cab70",
+        "local_bytes": 3681,
+        "local_sha256": "31162da3e3bc5770ffd8c79502a32f7ac98ef4a4a2611ea6a9d2867b6567e5cc",
+        "source": "/workspace/scratch/f86faac821c4/r32_recovery/blob-85878559fd5af179c2d0f7aac8657145513ed204.json",
+        "local_extra_LF_only": true
+      }
+    ],
+    "local_expected_hash_rejection_preserved": true,
+    "business_replayed": false
+  },
+  "external_intent_completed_before_unique_start": true,
+  "business_starts_max": 1,
+  "automatic_retry": false,
+  "CLI_reads_prepare_live_authorized": false,
+  "historical_old39_and_old_relay_UNKNOWN_preserved": true
+}

@@ -1,0 +1,31 @@
+{
+  "schema": "heptabao.mac-registration-body4.original-closed-binding.r1",
+  "sequence": 3,
+  "operation_id": "d717c2f3aabc5d5cc2baa822b85ea2006b736761ea2cccb47dcd8b9a6f93bb61",
+  "request_blob": "3fa1a95b06619da84b9af79f429ecda22f28c992",
+  "ack_native": "f8389ce553bf1eb1adbfb460c20da536b23f9be3",
+  "status_native": "fe3ca1d356a907f659b55cdbe4c5a75e763bb7b8",
+  "completed_stored_inactive": true,
+  "payload": {
+    "blob": "1db414be48cd206f7f4296095da90ef6dbf40d92",
+    "bytes": 87802,
+    "sha256": "734c5eb9bbb56f39d2abf4e1571ed1535f41e81133175968e3a09233eddd9c67"
+  },
+  "native": {
+    "blob": "2726e87532942362fdfba39cf8b7bcef36c48505",
+    "bytes": 87699,
+    "sha256": "ab310061075efa0fc11281b6bb6e39481fad93ac644abe4b0e56cf57ed2a88f9"
+  },
+  "pages": 11,
+  "body": {
+    "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-B8eQDFB4.js",
+    "version": "16777233:405238776:181581:1784843461889330234:1784843461889330234",
+    "size": 181581,
+    "offset": 65536,
+    "next_offset": 131072,
+    "bytes": 65536,
+    "chunk_sha256": "defed74e92e406428f36ab5bd7876b75086ddab17471298fc7c22dd2ba87e868",
+    "eof": false
+  },
+  "SDK_execution": false
+}

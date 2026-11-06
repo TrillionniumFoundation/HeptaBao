@@ -1,0 +1,27 @@
+function verifyH2Metadata5(raw,audit,sourceRaw,H){
+ const checks=[];const need=(v,n)=>{if(!v)throw Error(n);checks.push(n);};const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);const J=p=>H.parse(raw[p]);const plan=JSON.parse(sourceRaw["PLAN.public.json"]);
+ need(audit.tree==="8ecca81bb585417a7a8975f010a92652f256192b"&&audit.files===85&&audit.bytes===165725&&audit.merkle.trees_verified===15,"whole85_Merkle");
+ for(const r of audit.records){const m=H.meta(raw[r.path]);need(m.blob===r.blob&&m.bytes===r.bytes&&m.sha256===r.sha256,"whole:"+r.path);}
+ need(H.meta(raw["reference/GO.public.json"]).blob==="8c5542d05ace15c6d1405852ff69b091fa6c88ce","exact_GO");
+ const table=J("actual/metadata5.public.json");need(table.rows.length===5&&table.new_native_operations===5&&table.original_immutable_pages===5&&table.body_read_RPC===0&&table.process_start===0,"finite_observation_scope");
+ let payloadBytes=0,nativeBytes=0;
+ for(let i=0;i<5;i++){
+  const r=plan.rows[i],e=r.expected_historical_receiver,t=table.rows[i],p="observations/"+String(r.index).padStart(2,"0")+"-"+r.role+"/";const req=J(p+"request.original.json"),intent=J(p+"intent.public.json"),ack=J(p+"admission.original.json"),status=J(p+"status.original.json"),page=J(p+"pages/000000.original.json");
+  need(raw[p+"request.original.json"]===sourceRaw[r.request.path]&&H.meta(raw[p+"request.original.json"]).blob===r.request.blob&&same(req,r.exact_request),"frozen_exact_request:"+r.index);
+  need(same(intent.request,req)&&same(intent.expected_historical_receiver,e)&&intent.GO.blob==="8c5542d05ace15c6d1405852ff69b091fa6c88ce"&&same(intent.previous_in_sequence_closed_indices,plan.rows.slice(0,i).map(x=>x.index)),"external_intent_scope_and_sequence:"+r.index);
+  for(const [nat,sdk] of [["admission.original.json","admission.original.sdk.json"],["status.original.json","status.original.sdk.json"],["pages/000000.original.json","pages/000000.original.sdk.json"]]){const s=J(p+sdk);need(s.isError===false&&s.content.length===1&&s.content[0].type==="text"&&s.content[0].text===raw[p+nat],"SDK_native_exact:"+r.index+":"+nat);}
+  need(ack.operation_id===t.operation_id&&ack.tool_name==="file_info"&&ack.reused===false&&ack.automatic_retry===false,"new_exact_admission:"+r.index);
+  const sr=J(p+"status.request.original.json"),si=J(p+"status.intent.public.json"),pr=J(p+"pages/000000.request.original.json"),pi=J(p+"pages/000000.intent.public.json");
+  need(same(sr,{operation_id:t.operation_id})&&same(si.request,sr)&&status.operation_id===t.operation_id&&status.tool_name==="file_info"&&status.async_state==="completed"&&status.result_state==="stored_observed"&&status.owned_future_active===false&&status.payload_available===true,"same_ID_status_closed:"+r.index);
+  need(same(pr,{operation_id:t.operation_id,offset:0,limit:8192})&&same(pi.request,pr)&&page.operation_id===t.operation_id&&page.offset===0&&page.eof===true&&page.immutable_snapshot===true&&page.payload_kind==="native_result","same_ID_single_immutable_page:"+r.index);
+  const payload=H.utf8Text(H.unb64(page.data_base64)),pm=H.meta(payload);need(payload===raw[p+"payload.original.json"]&&pm.bytes===page.total_bytes&&page.next_offset===page.total_bytes&&pm.sha256===page.result_sha256,"whole_original_payload:"+r.index);payloadBytes+=pm.bytes;
+  const obj=H.parse(payload);need(obj.resultType==="complete"&&obj.isError===false&&obj.content.length===1&&obj.content[0].text===raw[p+"native.original.json"],"exact_native_file_info:"+r.index);
+  const n=J(p+"native.original.json"),v=n.version.split(":"),m=n.metadata,f9=[v[0],v[1],String(m.uid),String(m.gid),String(0o100000|m.mode),String(m.link_count),String(n.size),v[3],v[4]];
+  need(n.path===e.path&&n.size===e.bytes&&n.sha256===e.sha256&&n.version===e.version&&same(f9,e.full9_decimal),"actual_full9_version_SHA_equal_receiver:"+r.index);
+  need(n.mode===0o400&&m.mode===n.mode&&m.uid===1000&&m.gid===1000&&m.link_count===1&&m.metadata_platform==="linux","actual_permissions_owner_regular_API_contract:"+r.index);
+  const cl=J(p+"closure.public.json"),nm=H.meta(raw[p+"native.original.json"]);need(same({...n,full9_decimal:f9},t.actual)&&same(cl.actual,t.actual)&&nm.blob===t.actual_info.blob&&nm.bytes===t.actual_info.bytes&&nm.sha256===t.actual_info.sha256,"actual_table_closure_native_binding:"+r.index);nativeBytes+=nm.bytes;
+ }
+ need(payloadBytes===3091&&nativeBytes===2506,"total_original_payload_and_metadata_bytes");
+ need(same(table.historical_unknowns,plan.historical_unknowns)&&table.all_22_H2_stage_target_identities==="UNOBSERVED"&&table.H2_stage_executed===false&&table.H2_prepare_or_live_executed===false,"historical_UNKNOWN_and_unexecuted_targets_preserved");
+ return{schema:"heptabao.h2-incoming-metadata5.root-review.v1",ok:true,checks_passed:checks.length,checks,packet:audit.tree,files:85,bytes:165725,Merkle_trees:15,original_operations:5,original_pages:5,original_payload_bytes:payloadBytes,original_native_metadata_bytes:nativeBytes,all_five_match_original_receiver:true,all_five_native_futures_closed:true,previous_seven_adopted_from:"ee3c7c6d358c65d281c1fe13260b28e1fb47dc38",stage_source_review:"e92d01ad7beebe19ebb316bb850ac2edc35281e2",all_12_incoming_metadata_qualified:true,all_22_stage_target_identities:"UNOBSERVED",candidate_or_QA_executed:false,root_Runtime_calls:0,historical_UNKNOWN_unchanged:true,full_replacement:false};
+}

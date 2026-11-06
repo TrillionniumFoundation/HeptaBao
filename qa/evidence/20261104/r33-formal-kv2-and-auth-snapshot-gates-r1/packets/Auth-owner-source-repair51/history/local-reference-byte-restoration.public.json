@@ -1,0 +1,42 @@
+{
+  "schema": "heptabao.owner-repair.local-reference-byte-restoration.v1",
+  "firstPackageBuildStoppedBeforeManifest": "loader reference had one creation-added trailing LF; no Git or Runtime call occurred",
+  "records": [
+    {
+      "originalLocalCopy": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/owner-repair/loader.before.txt",
+      "originalBytes": 116681,
+      "removedCreationTrailingLF": 1,
+      "canonicalExpectedBlob": "d93477dd8c184405737907803455dd52b214038c",
+      "canonicalBytes": 116680,
+      "canonicalSha256": "3a10479bdcbb713692c3ded7dbd5baad27c1b17ae3566172c117d45916dabce7",
+      "newExactFile": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/d93477dd8c184405737907803455dd52b214038c.txt",
+      "originalLocalCopyUnchanged": true,
+      "networkCalls": 0,
+      "RuntimeCalls": 0
+    },
+    {
+      "originalLocalCopy": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/owner-repair/runtime-loader.before.txt",
+      "originalBytes": 6048,
+      "removedCreationTrailingLF": 1,
+      "canonicalExpectedBlob": "909ec9eab6932b1f9241fbb0969c772639f18cb3",
+      "canonicalBytes": 6047,
+      "canonicalSha256": "bd6a9f363bc7aac2fb0503640e339ffce52e0eab15336e6489b6f8129df748fb",
+      "newExactFile": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/909ec9eab6932b1f9241fbb0969c772639f18cb3.txt",
+      "originalLocalCopyUnchanged": true,
+      "networkCalls": 0,
+      "RuntimeCalls": 0
+    },
+    {
+      "originalLocalCopy": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/owner-repair/harness-registry.before.txt",
+      "originalBytes": 3136,
+      "removedCreationTrailingLF": 1,
+      "canonicalExpectedBlob": "9f5042ec5442239f12975e3680c0568b3c85bdf8",
+      "canonicalBytes": 3135,
+      "canonicalSha256": "a845875a1998c2a6bdd9fe4c824a0a7c3e7da0f3ee75ec56dc6163d4327f7ff0",
+      "newExactFile": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/blobs/9f5042ec5442239f12975e3680c0568b3c85bdf8.txt",
+      "originalLocalCopyUnchanged": true,
+      "networkCalls": 0,
+      "RuntimeCalls": 0
+    }
+  ]
+}

@@ -1,0 +1,456 @@
+{
+  "schema": "heptabao.H2-target-read.actual-state.v1",
+  "root_GO": "012b76fca8a176e1cc15e3115ad38a69977ef8d9",
+  "lane": "A",
+  "stage_job": "desktop/1a1adb7c0f6-fc05-5ab6",
+  "paused": false,
+  "inflight": null,
+  "active_operation": null,
+  "last_closed": {
+    "label": "receipt-info",
+    "operation_id": "b9e5bcd859097fd5493bcf0bc39cf86ed0ed09db63611d65a2e748376e339957",
+    "status": {
+      "name": "ha-h2-target-receipt-info-status0-native",
+      "blob": "324ebe7d5f8a654df0b130889a032a51bd440a67",
+      "bytes": 800,
+      "sha256": "a0046ff3b069fc9554058a293208ffae35be2aa68033ca86e7cbd0153008c53f"
+    },
+    "payload": {
+      "name": "ha-h2-target-receipt-info-payload-original",
+      "blob": "ba0ee96616567a788e0b20f6820c2d0252638df9",
+      "bytes": 606,
+      "sha256": "e900bfa8a701689f1120b5be81f751a8098e8e1661cebf19e3cb5135f9e15471"
+    },
+    "native": {
+      "name": "ha-h2-target-receipt-info-result-native-original",
+      "blob": "1621dab12f19b0d746d74af83c8d55de9eabe601",
+      "bytes": 489,
+      "sha256": "03d4a65ef3cbe3c5d5bc1204118cea59bb7ffabe4d4441e01666a142a53b8198"
+    },
+    "whole": true
+  },
+  "calls": {
+    "receipt-info.admission": {
+      "label": "receipt-info",
+      "phase": "admission",
+      "method": "operation_start",
+      "args": {
+        "idempotency_key": "ha-4e808-h2-stage-receipt-info-r2-20261105",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/stage.result.public.json"
+          }
+        }
+      },
+      "request": {
+        "name": "ha-h2-target-receipt-info-admission-request",
+        "blob": "d37b93c23923941cef6b03bd6fbbce6b655f9206",
+        "bytes": 287,
+        "sha256": "00da4b5dd770f0e50a15aba955617cf62d99903e432ac58e7a74811b29d3e9bd"
+      },
+      "intent": {
+        "name": "ha-h2-target-receipt-info-admission-intent",
+        "blob": "05b05f77873cc2b0c44d038ed78906dd5bb48658",
+        "bytes": 1101,
+        "sha256": "30dd1f6d1871288372c6201827286e8bc9da3ec25e04e88db82bda9fb3174cd9"
+      },
+      "submitted": true,
+      "returned": true,
+      "sdk": {
+        "name": "ha-h2-target-receipt-info-admission-SDK",
+        "blob": "d635adba5eec276141475980d5f6a3d2ccb2f4e1",
+        "bytes": 704,
+        "sha256": "0537152a5e6d75b822481d945637e86d7396b682105302c7e4f568e5fa45974a"
+      },
+      "native": {
+        "name": "ha-h2-target-receipt-info-admission-native",
+        "blob": "ec4c00a7a13e4fc4972a9bd3b8817b0faf70db8f",
+        "bytes": 543,
+        "sha256": "d54bdbf84527fb64219baeb01e0ceae21a28845d8156024c137f379257468dc9"
+      },
+      "value": {
+        "admission_is_not_dispatch_completion": true,
+        "async_state": "queued",
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "execution_resume_after_restart": false,
+        "idempotency_binding_retained": true,
+        "operation_id": "b9e5bcd859097fd5493bcf0bc39cf86ed0ed09db63611d65a2e748376e339957",
+        "ownership_scope": "authenticated_private_operator_credential",
+        "reused": false,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "file_info"
+      }
+    },
+    "receipt-info.status0": {
+      "label": "receipt-info",
+      "phase": "status0",
+      "method": "operation_status",
+      "args": {
+        "operation_id": "b9e5bcd859097fd5493bcf0bc39cf86ed0ed09db63611d65a2e748376e339957"
+      },
+      "request": {
+        "name": "ha-h2-target-receipt-info-status0-request",
+        "blob": "56e8662723bfcee22e60dbea084c209e08ae76d8",
+        "bytes": 89,
+        "sha256": "00862573642a5dc781f393c31f9b3c5c9251f591e3a3125ca6aa2710350473e9"
+      },
+      "intent": {
+        "name": "ha-h2-target-receipt-info-status0-intent",
+        "blob": "b90df08deb18e7298caa2122685ec0487ce7bc75",
+        "bytes": 717,
+        "sha256": "e168a37b8f4c02d83aefd7afba780d74c3aac71c670fdedd9682f79817d912f9"
+      },
+      "submitted": true,
+      "returned": true,
+      "sdk": {
+        "name": "ha-h2-target-receipt-info-status0-SDK",
+        "blob": "cb0ef0756b2f5afbe8b1bb8485b8a9f512a52045",
+        "bytes": 975,
+        "sha256": "63feb2f94d254105d1657c7a2713d10d7df46b33abe81415ead7bf27f0d3c46e"
+      },
+      "native": {
+        "name": "ha-h2-target-receipt-info-status0-native",
+        "blob": "324ebe7d5f8a654df0b130889a032a51bd440a67",
+        "bytes": 800,
+        "sha256": "a0046ff3b069fc9554058a293208ffae35be2aa68033ca86e7cbd0153008c53f"
+      },
+      "value": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "b9e5bcd859097fd5493bcf0bc39cf86ed0ed09db63611d65a2e748376e339957",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "file_info"
+      }
+    },
+    "receipt-info.page000000": {
+      "label": "receipt-info",
+      "phase": "page000000",
+      "method": "operation_result",
+      "args": {
+        "operation_id": "b9e5bcd859097fd5493bcf0bc39cf86ed0ed09db63611d65a2e748376e339957",
+        "offset": 0,
+        "limit": 8192
+      },
+      "request": {
+        "name": "ha-h2-target-receipt-info-page000000-request",
+        "blob": "c1aec94932042aff10b267c9d1b80091560c2b70",
+        "bytes": 121,
+        "sha256": "44ec38330afba725af6481f4e5de55005386ebdb6ce4637a374da4298d30978b"
+      },
+      "intent": {
+        "name": "ha-h2-target-receipt-info-page000000-intent",
+        "blob": "55799c39a625f0cbc46d9fb54a2ef9fd5b855fbd",
+        "bytes": 760,
+        "sha256": "8a3b42ef4a7801e217b6acee5148315925e3063bb9c2c7e38e9849f3dd2c82b0"
+      },
+      "submitted": true,
+      "returned": true,
+      "sdk": {
+        "name": "ha-h2-target-receipt-info-page000000-SDK",
+        "blob": "19a76e7a013a788b0a1b6d81f15eb826e9be2c70",
+        "bytes": 1660,
+        "sha256": "44d4aedaaa29e91639c79dec7dbf4d7ab168b83d28755a023a640adab668672c"
+      },
+      "native": {
+        "name": "ha-h2-target-receipt-info-page000000-native",
+        "blob": "42556446a73c68f93ebc1d60d72ec68e57835f75",
+        "bytes": 1489,
+        "sha256": "156734b961672dacf3eccd99741f609366eb155b6eddc71ef0faf3cb55205711"
+      },
+      "value": {
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "data_base64": "eyJyZXN1bHRUeXBlIjoiY29tcGxldGUiLCJjb250ZW50IjpbeyJ0eXBlIjoidGV4dCIsInRleHQiOiJ7XCJtZXRhZGF0YVwiOntcImFjbF9zaGEyNTZcIjpcImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTVcIixcImdpZFwiOjEwMDAsXCJsaW5rX2NvdW50XCI6MSxcIm1ldGFkYXRhX3BsYXRmb3JtXCI6XCJsaW51eFwiLFwibW9kZVwiOjM4NCxcInVpZFwiOjEwMDAsXCJ4YXR0cl9uYW1lc1wiOltdLFwieGF0dHJfc2hhMjU2XCI6e319LFwibW9kZVwiOjM4NCxcInBhdGhcIjpcIi9ob21lL3FpYW4tcWkvaGVwdGFiYW8taGEtY2xvc3VyZS0yMDI2MTEwMy1yMS9ub3JtYWwtbmF0aXZlLWgyLWdhdGUtY29udHJvbC1yMi9zdGFnZS5yZXN1bHQucHVibGljLmpzb25cIixcInNoYTI1NlwiOlwiZjJiY2M5MjI3YTIzNWE0MGFmYTExYzE3MDM1OTUxODBhOTI1ZmJkMzlhYmQyOWQ0NTUwODcyZWQzYTA1YWU2YVwiLFwic2l6ZVwiOjI4NjE1LFwidmVyc2lvblwiOlwiMjA1MDo3ODc0MzM2OjI4NjE1OjE3OTM5MTU4NjcyOTUwOTc3Mzk6MTc5MzkxNTg2NzI5NTA5NzczOVwifSJ9XSwiaXNFcnJvciI6ZmFsc2V9",
+        "delivery_proven": false,
+        "eof": true,
+        "format": "serialized_original_native_sdk_payload_before_operation_metadata_and_transport_normalization",
+        "immutable_snapshot": true,
+        "next_offset": 606,
+        "offset": 0,
+        "operation_id": "b9e5bcd859097fd5493bcf0bc39cf86ed0ed09db63611d65a2e748376e339957",
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_kind": "native_result",
+        "result_sha256": "e900bfa8a701689f1120b5be81f751a8098e8e1661cebf19e3cb5135f9e15471",
+        "session_scope": "authenticated_private_operator_credential",
+        "total_bytes": 606
+      }
+    },
+    "binding-info.admission": {
+      "label": "binding-info",
+      "phase": "admission",
+      "method": "operation_start",
+      "args": {
+        "idempotency_key": "ha-4e808-h2-stage-binding-info-r2-20261105",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/binding.private.json"
+          }
+        }
+      },
+      "request": {
+        "name": "ha-h2-target-binding-info-admission-request",
+        "blob": "98a0983bde25dc3158ef7d216d910be3b7aa46a1",
+        "bytes": 283,
+        "sha256": "2a2cc5729bb2fc05d0cd60e7cf7d43ac356df4dc767ca17bde6aa01b3603b05f"
+      },
+      "intent": {
+        "name": "ha-h2-target-binding-info-admission-intent",
+        "blob": "8c77aa0bdd0cb026536e8a688459f77e29ad9f86",
+        "bytes": 1970,
+        "sha256": "dbcbbbda29427b1d34c1957908fb7a363e405873d9bfdd6b6e42816282dfa08f"
+      },
+      "submitted": false
+    }
+  },
+  "observations": {
+    "receipt-info": {
+      "request": {
+        "idempotency_key": "ha-4e808-h2-stage-receipt-info-r2-20261105",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/stage.result.public.json"
+          }
+        }
+      },
+      "request_pin": {
+        "name": "ha-h2-target-receipt-info-admission-request",
+        "blob": "d37b93c23923941cef6b03bd6fbbce6b655f9206",
+        "bytes": 287,
+        "sha256": "00da4b5dd770f0e50a15aba955617cf62d99903e432ac58e7a74811b29d3e9bd"
+      },
+      "intent_pin": {
+        "name": "ha-h2-target-receipt-info-admission-intent",
+        "blob": "05b05f77873cc2b0c44d038ed78906dd5bb48658",
+        "bytes": 1101,
+        "sha256": "30dd1f6d1871288372c6201827286e8bc9da3ec25e04e88db82bda9fb3174cd9"
+      },
+      "pages": [
+        {
+          "request": {
+            "operation_id": "b9e5bcd859097fd5493bcf0bc39cf86ed0ed09db63611d65a2e748376e339957",
+            "offset": 0,
+            "limit": 8192
+          },
+          "request_pin": {
+            "name": "ha-h2-target-receipt-info-page000000-request",
+            "blob": "c1aec94932042aff10b267c9d1b80091560c2b70",
+            "bytes": 121,
+            "sha256": "44ec38330afba725af6481f4e5de55005386ebdb6ce4637a374da4298d30978b"
+          },
+          "intent_pin": {
+            "name": "ha-h2-target-receipt-info-page000000-intent",
+            "blob": "55799c39a625f0cbc46d9fb54a2ef9fd5b855fbd",
+            "bytes": 760,
+            "sha256": "8a3b42ef4a7801e217b6acee5148315925e3063bb9c2c7e38e9849f3dd2c82b0"
+          },
+          "sdk_pin": {
+            "name": "ha-h2-target-receipt-info-page000000-SDK",
+            "blob": "19a76e7a013a788b0a1b6d81f15eb826e9be2c70",
+            "bytes": 1660,
+            "sha256": "44d4aedaaa29e91639c79dec7dbf4d7ab168b83d28755a023a640adab668672c"
+          },
+          "native_pin": {
+            "name": "ha-h2-target-receipt-info-page000000-native",
+            "blob": "42556446a73c68f93ebc1d60d72ec68e57835f75",
+            "bytes": 1489,
+            "sha256": "156734b961672dacf3eccd99741f609366eb155b6eddc71ef0faf3cb55205711"
+          },
+          "value": {
+            "authenticated_chatgpt_caller_isolation": false,
+            "automatic_retry": false,
+            "credential_metadata_resume": true,
+            "cross_session_resume": true,
+            "data_base64": "eyJyZXN1bHRUeXBlIjoiY29tcGxldGUiLCJjb250ZW50IjpbeyJ0eXBlIjoidGV4dCIsInRleHQiOiJ7XCJtZXRhZGF0YVwiOntcImFjbF9zaGEyNTZcIjpcImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTVcIixcImdpZFwiOjEwMDAsXCJsaW5rX2NvdW50XCI6MSxcIm1ldGFkYXRhX3BsYXRmb3JtXCI6XCJsaW51eFwiLFwibW9kZVwiOjM4NCxcInVpZFwiOjEwMDAsXCJ4YXR0cl9uYW1lc1wiOltdLFwieGF0dHJfc2hhMjU2XCI6e319LFwibW9kZVwiOjM4NCxcInBhdGhcIjpcIi9ob21lL3FpYW4tcWkvaGVwdGFiYW8taGEtY2xvc3VyZS0yMDI2MTEwMy1yMS9ub3JtYWwtbmF0aXZlLWgyLWdhdGUtY29udHJvbC1yMi9zdGFnZS5yZXN1bHQucHVibGljLmpzb25cIixcInNoYTI1NlwiOlwiZjJiY2M5MjI3YTIzNWE0MGFmYTExYzE3MDM1OTUxODBhOTI1ZmJkMzlhYmQyOWQ0NTUwODcyZWQzYTA1YWU2YVwiLFwic2l6ZVwiOjI4NjE1LFwidmVyc2lvblwiOlwiMjA1MDo3ODc0MzM2OjI4NjE1OjE3OTM5MTU4NjcyOTUwOTc3Mzk6MTc5MzkxNTg2NzI5NTA5NzczOVwifSJ9XSwiaXNFcnJvciI6ZmFsc2V9",
+            "delivery_proven": false,
+            "eof": true,
+            "format": "serialized_original_native_sdk_payload_before_operation_metadata_and_transport_normalization",
+            "immutable_snapshot": true,
+            "next_offset": 606,
+            "offset": 0,
+            "operation_id": "b9e5bcd859097fd5493bcf0bc39cf86ed0ed09db63611d65a2e748376e339957",
+            "ownership_scope": "authenticated_private_operator_credential",
+            "payload_kind": "native_result",
+            "result_sha256": "e900bfa8a701689f1120b5be81f751a8098e8e1661cebf19e3cb5135f9e15471",
+            "session_scope": "authenticated_private_operator_credential",
+            "total_bytes": 606
+          }
+        }
+      ],
+      "admission": {
+        "admission_is_not_dispatch_completion": true,
+        "async_state": "queued",
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "execution_resume_after_restart": false,
+        "idempotency_binding_retained": true,
+        "operation_id": "b9e5bcd859097fd5493bcf0bc39cf86ed0ed09db63611d65a2e748376e339957",
+        "ownership_scope": "authenticated_private_operator_credential",
+        "reused": false,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "file_info"
+      },
+      "admission_pin": {
+        "name": "ha-h2-target-receipt-info-admission-native",
+        "blob": "ec4c00a7a13e4fc4972a9bd3b8817b0faf70db8f",
+        "bytes": 543,
+        "sha256": "d54bdbf84527fb64219baeb01e0ceae21a28845d8156024c137f379257468dc9"
+      },
+      "admission_sdk": {
+        "name": "ha-h2-target-receipt-info-admission-SDK",
+        "blob": "d635adba5eec276141475980d5f6a3d2ccb2f4e1",
+        "bytes": 704,
+        "sha256": "0537152a5e6d75b822481d945637e86d7396b682105302c7e4f568e5fa45974a"
+      },
+      "status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "b9e5bcd859097fd5493bcf0bc39cf86ed0ed09db63611d65a2e748376e339957",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "file_info"
+      },
+      "status_pin": {
+        "name": "ha-h2-target-receipt-info-status0-native",
+        "blob": "324ebe7d5f8a654df0b130889a032a51bd440a67",
+        "bytes": 800,
+        "sha256": "a0046ff3b069fc9554058a293208ffae35be2aa68033ca86e7cbd0153008c53f"
+      },
+      "status_sdk": {
+        "name": "ha-h2-target-receipt-info-status0-SDK",
+        "blob": "cb0ef0756b2f5afbe8b1bb8485b8a9f512a52045",
+        "bytes": 975,
+        "sha256": "63feb2f94d254105d1657c7a2713d10d7df46b33abe81415ead7bf27f0d3c46e"
+      },
+      "payload_pin": {
+        "name": "ha-h2-target-receipt-info-payload-original",
+        "blob": "ba0ee96616567a788e0b20f6820c2d0252638df9",
+        "bytes": 606,
+        "sha256": "e900bfa8a701689f1120b5be81f751a8098e8e1661cebf19e3cb5135f9e15471"
+      },
+      "native_pin": {
+        "name": "ha-h2-target-receipt-info-result-native-original",
+        "blob": "1621dab12f19b0d746d74af83c8d55de9eabe601",
+        "bytes": 489,
+        "sha256": "03d4a65ef3cbe3c5d5bc1204118cea59bb7ffabe4d4441e01666a142a53b8198"
+      },
+      "native": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 384,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/stage.result.public.json",
+        "sha256": "f2bcc9227a235a40afa11c1703595180a925fbd39abd29d4550872ed3a05ae6a",
+        "size": 28615,
+        "version": "2050:7874336:28615:1793915867295097739:1793915867295097739"
+      },
+      "original_payload_verified_whole": true,
+      "full9": {
+        "device": "2050",
+        "inode": "7874336",
+        "uid": 1000,
+        "gid": 1000,
+        "full_mode": 33536,
+        "links": 1,
+        "bytes": 28615,
+        "mtime_ns": "1793915867295097739",
+        "ctime_ns": "1793915867295097739",
+        "version": "2050:7874336:28615:1793915867295097739:1793915867295097739"
+      },
+      "info": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 384,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/stage.result.public.json",
+        "sha256": "f2bcc9227a235a40afa11c1703595180a925fbd39abd29d4550872ed3a05ae6a",
+        "size": 28615,
+        "version": "2050:7874336:28615:1793915867295097739:1793915867295097739"
+      },
+      "closed": true
+    },
+    "binding-info": {
+      "request": {
+        "idempotency_key": "ha-4e808-h2-stage-binding-info-r2-20261105",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/binding.private.json"
+          }
+        }
+      },
+      "request_pin": {
+        "name": "ha-h2-target-binding-info-admission-request",
+        "blob": "98a0983bde25dc3158ef7d216d910be3b7aa46a1",
+        "bytes": 283,
+        "sha256": "2a2cc5729bb2fc05d0cd60e7cf7d43ac356df4dc767ca17bde6aa01b3603b05f"
+      },
+      "intent_pin": {
+        "name": "ha-h2-target-binding-info-admission-intent",
+        "blob": "8c77aa0bdd0cb026536e8a688459f77e29ad9f86",
+        "bytes": 1970,
+        "sha256": "dbcbbbda29427b1d34c1957908fb7a363e405873d9bfdd6b6e42816282dfa08f"
+      },
+      "pages": []
+    }
+  },
+  "body_admissions": 0
+}

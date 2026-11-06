@@ -1,0 +1,368 @@
+: {
+        "bytes": 101193,
+        "ctime_ns": 1793915867053104239,
+        "device": 2050,
+        "gid": 1000,
+        "inode": 7874295,
+        "links": 1,
+        "mode": 384,
+        "mtime_ns": 1793915867053104239,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/h2qa/canonical.Cargo.lock",
+        "sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5",
+        "uid": 1000
+      }
+    },
+    "cargo_lock": {
+      "create_only": true,
+      "same_fd_readback": true,
+      "source": {
+        "bytes": 17409,
+        "ctime_ns": 1793882066153721347,
+        "device": 2050,
+        "gid": 1000,
+        "inode": 7255771,
+        "links": 1,
+        "mode": 256,
+        "mtime_ns": 1793882066153721347,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/Cargo.lock",
+        "sha256": "f1882bc0bb81e5f74da28502e8cbd718e87fcda0100bf85ad118b007a8faf9bf",
+        "uid": 1000
+      },
+      "target": {
+        "bytes": 17409,
+        "ctime_ns": 1793915867041104561,
+        "device": 2050,
+        "gid": 1000,
+        "inode": 7874292,
+        "links": 1,
+        "mode": 384,
+        "mtime_ns": 1793915867041104561,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/h2qa/Cargo.lock",
+        "sha256": "f1882bc0bb81e5f74da28502e8cbd718e87fcda0100bf85ad118b007a8faf9bf",
+        "uid": 1000
+      }
+    },
+    "cargo_manifest": {
+      "create_only": true,
+      "same_fd_readback": true,
+      "source": {
+        "bytes": 957,
+        "ctime_ns": 1793882066145884356,
+        "device": 2050,
+        "gid": 1000,
+        "inode": 7255770,
+        "links": 1,
+        "mode": 256,
+        "mtime_ns": 1793882066145884356,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/Cargo.toml",
+        "sha256": "960de7b19776cda4bd8a00561a417f72b08ca320efb93ec05028a3be0e7315e5",
+        "uid": 1000
+      },
+      "target": {
+        "bytes": 957,
+        "ctime_ns": 1793915867030104856,
+        "device": 2050,
+        "gid": 1000,
+        "inode": 7874286,
+        "links": 1,
+        "mode": 384,
+        "mtime_ns": 1793915867030104856,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/h2qa/Cargo.toml",
+        "sha256": "960de7b19776cda4bd8a00561a417f72b08ca320efb93ec05028a3be0e7315e5",
+        "uid": 1000
+      }
+    },
+    "component_list_stdout": {
+      "create_only": true,
+      "same_fd_readback": true,
+      "source": {
+        "bytes": 507,
+        "ctime_ns": 1793882066280717341,
+        "device": 2050,
+        "gid": 1000,
+        "inode": 7257435,
+        "links": 1,
+        "mode": 256,
+        "mtime_ns": 1793882066280717341,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/components-list.stdout",
+        "sha256": "cebfab7307ba716aeebf08514df4cc6cf9a638009579168ced3b621cf8c10d5d",
+        "uid": 1000
+      },
+      "target": {
+        "bytes": 507,
+        "ctime_ns": 1793915867147101714,
+        "device": 2050,
+        "gid": 1000,
+        "inode": 7874314,
+        "links": 1,
+        "mode": 384,
+        "mtime_ns": 1793915867147101714,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/h2qa/components-list.stdout",
+        "sha256": "cebfab7307ba716aeebf08514df4cc6cf9a638009579168ced3b621cf8c10d5d",
+        "uid": 1000
+      }
+    },
+    "component_record": {
+      "create_only": true,
+      "same_fd_readback": true,
+      "source": {
+        "bytes": 804,
+        "ctime_ns": 1793882066271717625,
+        "device": 2050,
+        "gid": 1000,
+        "inode": 7257434,
+        "links": 1,
+        "mode": 256,
+        "mtime_ns": 1793882066271717625,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/components.public.json",
+        "sha256": "41a0386206a00967a450df01dab89d008d8fc543c4e84702f80aaa1fcbe1f829",
+        "uid": 1000
+      },
+      "target": {
+        "bytes": 804,
+        "ctime_ns": 1793915867129102197,
+        "device": 2050,
+        "gid": 1000,
+        "inode": 7874311,
+        "links": 1,
+        "mode": 384,
+        "mtime_ns": 1793915867129102197,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/h2qa/components.public.json",
+        "sha256": "41a0386206a00967a450df01dab89d008d8fc543c4e84702f80aaa1fcbe1f829",
+        "uid": 1000
+      }
+    },
+    "component_stdout": {
+      "create_only": true,
+      "same_fd_readback": true,
+      "source": {
+        "bytes": 633,
+        "ctime_ns": 1793882066263717877,
+        "device": 2050,
+        "gid": 1000,
+        "inode": 7257433,
+        "links": 1,
+        "mode": 256,
+        "mtime_ns": 1793882066263717877,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/components.stdout",
+        "sha256": "9c8b4f62679c5771d7a0b575674f9961e64afaefe46eb30b1825c2f696ed3274",
+        "uid": 1000
+      },
+      "target": {
+        "bytes": 633,
+        "ctime_ns": 1793915867113102627,
+        "device": 2050,
+        "gid": 1000,
+        "inode": 7874306,
+        "links": 1,
+        "mode": 384,
+        "mtime_ns": 1793915867113102627,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/h2qa/components.stdout",
+        "sha256": "9c8b4f62679c5771d7a0b575674f9961e64afaefe46eb30b1825c2f696ed3274",
+        "uid": 1000
+      }
+    },
+    "executable": {
+      "create_only": true,
+      "same_fd_readback": true,
+      "source": {
+        "bytes": 4616576,
+        "ctime_ns": 1793882066021725510,
+        "device": 2050,
+        "gid": 1000,
+        "inode": 7241038,
+        "links": 1,
+        "mode": 320,
+        "mtime_ns": 1793882066021725510,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/heptabao-native-h2-qa",
+        "sha256": "1f1c6eccf1ac9652a69572cb270b1d3d99a3402eaabf6d7feed6e4b2c4d55b13",
+        "uid": 1000
+      },
+      "target": {
+        "bytes": 4616576,
+        "ctime_ns": 1793915866973106387,
+        "device": 2050,
+        "gid": 1000,
+        "inode": 7874274,
+        "links": 1,
+        "mode": 320,
+        "mtime_ns": 1793915866973106387,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/h2qa/heptabao-native-h2-qa",
+        "sha256": "1f1c6eccf1ac9652a69572cb270b1d3d99a3402eaabf6d7feed6e4b2c4d55b13",
+        "uid": 1000
+      }
+    },
+    "rust_source": {
+      "create_only": true,
+      "same_fd_readback": true,
+      "source": {
+        "bytes": 19382,
+        "ctime_ns": 1793882066124722262,
+        "device": 2050,
+        "gid": 1000,
+        "inode": 7241039,
+        "links": 1,
+        "mode": 256,
+        "mtime_ns": 1793882066124722262,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/native_h2_client.rs",
+        "sha256": "41347a71055e5c7086a256549f25f20d52ba8361e16926b4470f3448425f90dd",
+        "uid": 1000
+      },
+      "target": {
+        "bytes": 19382,
+        "ctime_ns": 1793915867008105447,
+        "device": 2050,
+        "gid": 1000,
+        "inode": 7874278,
+        "links": 1,
+        "mode": 384,
+        "mtime_ns": 1793915867008105447,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/h2qa/native_h2_client.rs",
+        "sha256": "41347a71055e5c7086a256549f25f20d52ba8361e16926b4470f3448425f90dd",
+        "uid": 1000
+      }
+    },
+    "test_source": {
+      "create_only": true,
+      "same_fd_readback": true,
+      "source": {
+        "bytes": 8942,
+        "ctime_ns": 1793882066131722041,
+        "device": 2050,
+        "gid": 1000,
+        "inode": 7241041,
+        "links": 1,
+        "mode": 256,
+        "mtime_ns": 1793882066131722041,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/native_h2_client_tests.rs",
+        "sha256": "7f23470287fe953f0271e974d6eda759b7daf9f15bc363d522a02d3633e012c2",
+        "uid": 1000
+      },
+      "target": {
+        "bytes": 8942,
+        "ctime_ns": 1793915867018105179,
+        "device": 2050,
+        "gid": 1000,
+        "inode": 7874281,
+        "links": 1,
+        "mode": 384,
+        "mtime_ns": 1793915867018105179,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/h2qa/native_h2_client_tests.rs",
+        "sha256": "7f23470287fe953f0271e974d6eda759b7daf9f15bc363d522a02d3633e012c2",
+        "uid": 1000
+      }
+    }
+  },
+  "machine_id_sha256": "d90fa41f7e59edf2f2a732ea082cac83085a2a3695a503cd82b6b4eef9cab9f3",
+  "network_calls": 0,
+  "next_step": "root reviews stage and canonical/transport receipts before separate prepare",
+  "original_existing_assets_replaced": false,
+  "product_started": false,
+  "production_changed": false,
+  "qa_files": [
+    {
+      "bytes": 15201,
+      "create_only": true,
+      "ctime_ns": 1793915867158101419,
+      "device": 2050,
+      "gid": 1000,
+      "inode": 7874316,
+      "links": 1,
+      "mode": 384,
+      "mtime_ns": 1793915867158101419,
+      "name": "phaseb_evidence_r3.py",
+      "sha256": "4fb452f9eabbbc9f66913e0b824f7f3db5b2a75848b2adf4186e76078f2c9024",
+      "uid": 1000
+    },
+    {
+      "bytes": 68149,
+      "create_only": true,
+      "ctime_ns": 1793915867171101069,
+      "device": 2050,
+      "gid": 1000,
+      "inode": 7874319,
+      "links": 1,
+      "mode": 384,
+      "mtime_ns": 1793915867171101069,
+      "name": "native_fixture_reference_r8.py",
+      "sha256": "a0bac9972fbb9d65ed3edf537f732a08b5177864516b33ada0a6e98c4c6a0416",
+      "uid": 1000
+    },
+    {
+      "bytes": 46586,
+      "create_only": true,
+      "ctime_ns": 1793915867185100693,
+      "device": 2050,
+      "gid": 1000,
+      "inode": 7874322,
+      "links": 1,
+      "mode": 384,
+      "mtime_ns": 1793915867185100693,
+      "name": "official_cli_reference_r4.py",
+      "sha256": "18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9",
+      "uid": 1000
+    },
+    {
+      "bytes": 62344,
+      "create_only": true,
+      "ctime_ns": 1793915867212099968,
+      "device": 2050,
+      "gid": 1000,
+      "inode": 7874324,
+      "links": 1,
+      "mode": 384,
+      "mtime_ns": 1793915867212099968,
+      "name": "native_h2_gate_r1.py",
+      "sha256": "703e5ecfc9b88ce4d8cdaf81342597a12a7b42c92af583b54d87f4f8a37bcf13",
+      "uid": 1000
+    },
+    {
+      "bytes": 41350,
+      "create_only": true,
+      "ctime_ns": 1793915867230099485,
+      "device": 2050,
+      "gid": 1000,
+      "inode": 7874326,
+      "links": 1,
+      "mode": 384,
+      "mtime_ns": 1793915867230099485,
+      "name": "native_h2_binding_r1.py",
+      "sha256": "6bbaa72dcb899d359f14c6e442c824c46a8c52aa74aa0d6be8b1820596c34cf4",
+      "uid": 1000
+    }
+  ],
+  "readonly_prepare_started": false,
+  "runtime_qualification": false,
+  "schema": "heptabao.normal-native-h2-gate.local-stage.v1",
+  "source_carrier_sha256": "6700283209e4de4433d0ef562c696c9d95ea6a12a2f0c3926701e4cc11674883",
+  "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "source_directory_fences": {
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming": [
+      2050,
+      7241037,
+      1000,
+      1000,
+      16704
+    ],
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming": [
+      2050,
+      7361464,
+      1000,
+      1000,
+      16704
+    ],
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-validation-source-r1": [
+      2050,
+      7361664,
+      1000,
+      1000,
+      16832
+    ]
+  },
+  "source_full_git_verification_performed_by_stage": false,
+  "source_full_git_verification_required_in_readonly_prepare": true,
+  "source_metadata_unchanged": true,
+  "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "source_tree_modified": false,
+  "status": "passed"
+}

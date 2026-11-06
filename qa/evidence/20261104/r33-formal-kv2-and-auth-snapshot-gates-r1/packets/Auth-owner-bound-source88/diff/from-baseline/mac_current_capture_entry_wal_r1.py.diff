@@ -1,0 +1,11 @@
+--- baseline/mac_current_capture_entry_wal_r1.py
++++ source/mac_current_capture_entry_wal_r1.py
+@@ -11,7 +11,7 @@
+ from contextlib import contextmanager
+ from pathlib import Path
+ 
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1')
+ QA=ROOT/'qa'
+ LIVE=Path('/Users/qianqi/.openclaw')
+ AGENTS=('main','trnm','hepta-ui','hepta','hepta-backend')

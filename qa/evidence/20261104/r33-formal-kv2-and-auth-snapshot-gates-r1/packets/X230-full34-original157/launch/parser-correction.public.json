@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.original-ACK-named-job-qualification.v1",
+  "status": "PASS_ORIGINAL_ACK_ONLY",
+  "original_native": {
+    "path": "launch/ACK.native.original.json",
+    "bytes": 1117,
+    "sha256": "ff725ec568abc5c2895592c23d3b1b93e8040226c2cac6f825b96fa2ecfcb6db",
+    "blob": "33e0133c4bb70ffcd06af1af8ad681030066711a",
+    "carrier_tree": "2bc7792b50f741c1378dae91d81eeed01819e26a"
+  },
+  "previous_local_parser_failure": {
+    "path": "launch/first-parser-failure.public.json",
+    "bytes": 933,
+    "sha256": "ac2289b1c203db042f8b2824c3eb8a62fc5f2bb1346d70bcc2077b09b68006ef",
+    "blob": "1c8db6a8dfe28f751c0650f222513d9af685a97d",
+    "carrier_tree": "8ee3ff1a798e8f2339217e02b7347f874a35b129"
+  },
+  "actual_job_id": "1a1ad5ffad0-fc05-599a",
+  "host": "x230",
+  "exact_request_digest": "5c151114a4d4ae0e2770e4dc7060205cc8d5868cda1da1bd85c3c4347123e3ac",
+  "request_fingerprint_decimal": "6635228406362713614",
+  "original_key": "heptabao-4e808-x230-full34-r1-73f0ff55",
+  "launch_state": "launched",
+  "backend": "systemd",
+  "reused": false,
+  "exact_argv_cwd_executable": true,
+  "independent_new_Runtime_calls": 0
+}

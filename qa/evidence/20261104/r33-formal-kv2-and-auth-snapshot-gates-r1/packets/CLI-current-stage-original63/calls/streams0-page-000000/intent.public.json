@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.same-job.readonly-intent.v1",
+  "GO": "2e6623f5d7c9a05e66e4c22b1485dba8a1924d56",
+  "original_business_request": "ec3b323f77bfb2f111f5fc22a06f1bf30ea634eb",
+  "original_job": "1a1ada8b25f-fc05-5a8d",
+  "tool": "operation_result",
+  "request": {
+    "name": "cli-stage-streams0-page-000000-request",
+    "blob": "aba65233cc834b881589d4944480c78614d44d54",
+    "bytes": 121,
+    "sha256": "de4a34db3582caa3748c12933d1b67d7ce8c4eedbd3f05308821cabf8a7806d3"
+  },
+  "original_operation_id": "3d7bcfb13c1898aa6c675e7894fc8510754c18a209f9a6efca21cb74bc79979a",
+  "business_replay": false,
+  "external_before_call": true
+}

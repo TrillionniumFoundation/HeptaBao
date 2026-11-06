@@ -1,0 +1,1248 @@
+{
+  "schema": "heptabao.H2-stage.actual-offline-verification.v1",
+  "passed": true,
+  "checks": 247,
+  "rows": [
+    {
+      "check": "whole Git blob: references/ROOT-GO.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: references/stage-source.py",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: execution/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: execution/intent.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: execution/ACK.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: execution/ACK.original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: execution/ACK-binding.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/authority0/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/authority0/intent.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/authority0/admission.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/authority0/admission.original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/authority0/status.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/authority0/status.intent.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/authority0/status.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/authority0/status.original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/authority0/pages/000000.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/authority0/pages/000000.intent.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/authority0/pages/000000.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/authority0/pages/000000.original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/authority0/payload.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/authority0/native.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/intent.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/admission.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/admission.original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/status.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/status.intent.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/status.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/status.original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/000000.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/000000.intent.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/000000.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/000000.original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/008192.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/008192.intent.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/008192.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/008192.original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/016384.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/016384.intent.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/016384.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/016384.original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/024576.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/024576.intent.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/024576.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/024576.original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/032768.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/032768.intent.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/032768.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/032768.original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/040960.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/040960.intent.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/040960.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/040960.original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/049152.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/049152.intent.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/049152.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/pages/049152.original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/payload.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams0/native.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams1/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams1/intent.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams1/admission.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams1/admission.original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams1/status.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams1/status.intent.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams1/status.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams1/status.original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams1/pages/000000.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams1/pages/000000.intent.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams1/pages/000000.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams1/pages/000000.original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams1/pages/008192.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams1/pages/008192.intent.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams1/pages/008192.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams1/pages/008192.original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams1/pages/016384.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams1/pages/016384.intent.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams1/pages/016384.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams1/pages/016384.original.native.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams1/payload.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: observations/streams1/native.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: actual/stdout.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: actual/stderr.original.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: LANE-A-RELEASE.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: proposed_reads/metadata/PROPOSAL.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: proposed_reads/metadata/info-0.PROPOSED.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: proposed_reads/metadata/info-1.PROPOSED.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: proposed_reads/metadata/derived-receipt.EXPECTATION-NOT-HOST-READ.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: proposed_reads/metadata/derived-receipt-proof.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: proposed_reads/bodies/derive_body_requests.py",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: proposed_reads/bodies/conditional-body-config.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: proposed_reads/bodies/AST-COMPILE.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: proposed_reads/bodies/templates/receipt-body0.UNBOUND.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: proposed_reads/bodies/templates/receipt-body1.UNBOUND.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: proposed_reads/bodies/templates/binding-body0.UNBOUND.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole Git blob: proposed_reads/bodies/PROPOSAL.public.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: execution/ACK.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK native exact: execution/ACK.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "original exact raw request pin",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "original job identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "ACK request field: args",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "ACK request field: cwd",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "ACK request field: executable",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "ACK request field: idempotency_key",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "original seven argv and exact candidate",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "source self hash argument",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "exact stdin source pin",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "original supervisor cap",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "native digest and lossless fingerprint",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "ACK no replay and launched",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "intent exact request: observations/authority0/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/authority0/admission.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK native exact: observations/authority0/admission.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/authority0/status.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK native exact: observations/authority0/status.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "intent exact request: observations/authority0/status.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "authority0 same-ID status request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "authority0 same admitted ID/tool",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "authority0 original job only",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "authority0 closed original observer",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "intent exact request: observations/authority0/pages/000000.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/authority0/pages/000000 exact original result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/authority0/pages/000000.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK native exact: observations/authority0/pages/000000.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/authority0/pages/000000 same immutable payload",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/authority0/pages/000000 exact cursor and bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "authority0 payload EOF and whole",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "authority0 original payload non-error",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "authority0 original native exact",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "intent exact request: observations/streams0/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/streams0/admission.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK native exact: observations/streams0/admission.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/streams0/status.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK native exact: observations/streams0/status.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "intent exact request: observations/streams0/status.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "streams0 same-ID status request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "streams0 same admitted ID/tool",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "streams0 original job only",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "streams0 closed original observer",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "intent exact request: observations/streams0/pages/000000.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams0/pages/000000 exact original result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/streams0/pages/000000.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK native exact: observations/streams0/pages/000000.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams0/pages/000000 same immutable payload",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams0/pages/000000 exact cursor and bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "intent exact request: observations/streams0/pages/008192.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams0/pages/008192 exact original result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/streams0/pages/008192.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK native exact: observations/streams0/pages/008192.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams0/pages/008192 same immutable payload",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams0/pages/008192 exact cursor and bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "intent exact request: observations/streams0/pages/016384.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams0/pages/016384 exact original result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/streams0/pages/016384.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK native exact: observations/streams0/pages/016384.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams0/pages/016384 same immutable payload",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams0/pages/016384 exact cursor and bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "intent exact request: observations/streams0/pages/024576.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams0/pages/024576 exact original result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/streams0/pages/024576.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK native exact: observations/streams0/pages/024576.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams0/pages/024576 same immutable payload",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams0/pages/024576 exact cursor and bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "intent exact request: observations/streams0/pages/032768.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams0/pages/032768 exact original result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/streams0/pages/032768.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK native exact: observations/streams0/pages/032768.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams0/pages/032768 same immutable payload",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams0/pages/032768 exact cursor and bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "intent exact request: observations/streams0/pages/040960.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams0/pages/040960 exact original result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/streams0/pages/040960.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK native exact: observations/streams0/pages/040960.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams0/pages/040960 same immutable payload",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams0/pages/040960 exact cursor and bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "intent exact request: observations/streams0/pages/049152.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams0/pages/049152 exact original result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/streams0/pages/049152.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK native exact: observations/streams0/pages/049152.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams0/pages/049152 same immutable payload",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams0/pages/049152 exact cursor and bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "streams0 payload EOF and whole",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "streams0 original payload non-error",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "streams0 original native exact",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "intent exact request: observations/streams1/request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/streams1/admission.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK native exact: observations/streams1/admission.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/streams1/status.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK native exact: observations/streams1/status.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "intent exact request: observations/streams1/status.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "streams1 same-ID status request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "streams1 same admitted ID/tool",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "streams1 original job only",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "streams1 closed original observer",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "intent exact request: observations/streams1/pages/000000.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams1/pages/000000 exact original result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/streams1/pages/000000.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK native exact: observations/streams1/pages/000000.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams1/pages/000000 same immutable payload",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams1/pages/000000 exact cursor and bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "intent exact request: observations/streams1/pages/008192.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams1/pages/008192 exact original result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/streams1/pages/008192.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK native exact: observations/streams1/pages/008192.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams1/pages/008192 same immutable payload",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams1/pages/008192 exact cursor and bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "intent exact request: observations/streams1/pages/016384.request.original.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams1/pages/016384 exact original result request",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK non-error: observations/streams1/pages/016384.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "SDK native exact: observations/streams1/pages/016384.original.sdk.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams1/pages/016384 same immutable payload",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "observations/streams1/pages/016384 exact cursor and bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "streams1 payload EOF and whole",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "streams1 original payload non-error",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "streams1 original native exact",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "authoritative original stage terminal",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "complete durable original log totals",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "streams0 exact stdout text/hex/cursor",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "streams0 exact stdout EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "streams0 empty stderr dual EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "streams1 exact stdout text/hex/cursor",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "streams1 exact stdout EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "streams1 empty stderr dual EOF",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole stdout original bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "whole stderr empty",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "post-finally closure conjunct",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "no product/process/network/prepare/cutover",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "exact product canonical identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "source custody unchanged",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "fixed staged role counts",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "same-FD copy/readback 0",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "same-FD copy/readback 1",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "same-FD copy/readback 2",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "same-FD copy/readback 3",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "same-FD copy/readback 4",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "same-FD copy/readback 5",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "same-FD copy/readback 6",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "same-FD copy/readback 7",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "same-FD copy/readback 8",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "same-FD copy/readback 9",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "same-FD copy/readback 10",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "same-FD copy/readback 11",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "same-FD copy/readback 12",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "same-FD copy/readback 13",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "same-FD copy/readback 14",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "receipt derived expectation only",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "released without target file observations",
+      "passed": true,
+      "actual": null
+    }
+  ],
+  "Runtime_calls": 0,
+  "staged_module_executed": false,
+  "product_cases": 0,
+  "target_file_info_calls": 0,
+  "target_body_calls": 0,
+  "historical_unlocated_status_query_preserved": true
+}

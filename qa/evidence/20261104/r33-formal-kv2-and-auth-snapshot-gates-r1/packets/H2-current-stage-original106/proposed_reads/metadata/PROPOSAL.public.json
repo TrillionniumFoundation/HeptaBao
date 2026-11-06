@@ -1,0 +1,133 @@
+{
+  "schema": "heptabao.current4e808.H2-stage.fixed-target-read-proposal.v1",
+  "decision": "PROPOSED_ONLY_NO_RUNTIME_GO",
+  "stage_go": "065ae72edbb8f330b66f5a40ea4c0134891f60d8",
+  "stage_release": {
+    "name": "ha-h2-stage-lane-A-release",
+    "blob": "d7dc4ad0d377f269c23c0b920a265f9ede815906",
+    "bytes": 5297,
+    "sha256": "d1a7eaf50efbea5654588aa5a3a9c06076e8f5efd96a411c035f0580bebbeca0"
+  },
+  "actual_authority": {
+    "name": "ha-h2-stage-authority0-native-original",
+    "blob": "c321bd33305dcdfafa58ce829d414c9c5cbe9f98",
+    "bytes": 733,
+    "sha256": "f8c50e8d3016b1efc99267ad9a9abe99f3ae5b06d2ec8c8461c5a6154508e0fd"
+  },
+  "original_stdout": {
+    "name": "ha-h2-stage-stdout-whole",
+    "blob": "e4b2ab7d6800225ad1f8c87e5cb51fb330840907",
+    "bytes": 23147,
+    "sha256": "cd7de0b60ff21476b5812c2159f8c44b55484fd9d1cd1a0900477a61853dd249"
+  },
+  "stage_candidate": "678e519f17c474b5610651bcbb93b43d186124c5",
+  "metadata_requests": [
+    {
+      "name": "ha-h2-stage-target-info-0-PROPOSED",
+      "blob": "d37b93c23923941cef6b03bd6fbbce6b655f9206",
+      "bytes": 287,
+      "sha256": "00da4b5dd770f0e50a15aba955617cf62d99903e432ac58e7a74811b29d3e9bd"
+    },
+    {
+      "name": "ha-h2-stage-target-info-1-PROPOSED",
+      "blob": "98a0983bde25dc3158ef7d216d910be3b7aa46a1",
+      "bytes": 283,
+      "sha256": "2a2cc5729bb2fc05d0cd60e7cf7d43ac356df4dc767ca17bde6aa01b3603b05f"
+    }
+  ],
+  "metadata_request_bodies": [
+    {
+      "idempotency_key": "ha-4e808-h2-stage-receipt-info-r2-20261105",
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "desktop",
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/stage.result.public.json"
+        }
+      }
+    },
+    {
+      "idempotency_key": "ha-4e808-h2-stage-binding-info-r2-20261105",
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "desktop",
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/binding.private.json"
+        }
+      }
+    }
+  ],
+  "expected": [
+    {
+      "index": 0,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/stage.result.public.json",
+      "bytes": 28615,
+      "sha256": "f2bcc9227a235a40afa11c1703595180a925fbd39abd29d4550872ed3a05ae6a",
+      "expectation_source": "Exact writer output derived from stdout; not a target file read",
+      "derived_receipt": {
+        "name": "ha-h2-stage-receipt-derived-expectation",
+        "blob": "f492ce4e681ba7d5917d1cda1ebd4a3f8d67f13c",
+        "bytes": 28615,
+        "sha256": "f2bcc9227a235a40afa11c1703595180a925fbd39abd29d4550872ed3a05ae6a"
+      },
+      "derivation_proof": {
+        "name": "ha-h2-stage-receipt-derived-proof",
+        "blob": "875124aea49aa0a10369912ce785e1edbbc4e10d",
+        "bytes": 939,
+        "sha256": "5389c5ee4d8d1573493c4f89751be02d0f068ddb929f59af1832971e3f845032"
+      },
+      "version": null,
+      "full9": null
+    },
+    {
+      "index": 1,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/binding.private.json",
+      "bytes": 10230,
+      "sha256": "b241c6fc78bbe77ea69fc3b8a707b1747324a81f1da1ade3d9bb15c5cea5b7d8",
+      "expectation_source": "Original stage stdout same-FD writer/readback record; not independent file_info",
+      "stage_writer_record": {
+        "bytes": 10230,
+        "create_only": true,
+        "ctime_ns": {
+          "$exactInteger": "1793915867275098276"
+        },
+        "device": 2050,
+        "gid": 1000,
+        "inode": 7874334,
+        "links": 1,
+        "mode": 384,
+        "mtime_ns": {
+          "$exactInteger": "1793915867275098276"
+        },
+        "name": "binding.private.json",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/binding.private.json",
+        "sha256": "b241c6fc78bbe77ea69fc3b8a707b1747324a81f1da1ade3d9bb15c5cea5b7d8",
+        "uid": 1000
+      },
+      "independent_version": null,
+      "independent_full9": null
+    }
+  ],
+  "constraints": {
+    "metadata_only_at_this_step": true,
+    "one_native_future": true,
+    "original_SDK_saved_before_parse": true,
+    "status_must_be_completed_inactive": true,
+    "immutable_page_limit": 8192,
+    "expected_two_regular_files": true,
+    "source_writer_mode_decimal": 384,
+    "source_writer_uid": 1000,
+    "source_writer_gid": 1000,
+    "source_writer_links": 1,
+    "no_body_before_metadata_match": true,
+    "body_followup": "After independently matching file_info supplies exact version, freeze finite binary_read requests; planned 16384-byte max blocks, three total if expected sizes match. No versions guessed.",
+    "no_product": true,
+    "no_prepare": true,
+    "no_live": true,
+    "no_new_stage": true
+  },
+  "all_target_info_RPC_count": 0,
+  "all_target_body_RPC_count": 0,
+  "stage_22_targets_independent_observation_status": "UNOBSERVED",
+  "lane": "none; returned to root"
+}

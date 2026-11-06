@@ -1,0 +1,7 @@
+{
+  "chunk_id": "9381a5",
+  "wall_time_seconds": 0.000024907,
+  "exit_code": 0,
+  "original_token_count": 166,
+  "output": "{\"schema\": \"heptabao.x230.full34.independent-summary-chain-increment.v1\", \"passed\": true, \"source_tree\": \"f0f0770bbd740583e9db906627efd57f8a296906\", \"source_files\": 107, \"source_bytes\": 781823, \"Merkle_trees\": 31, \"checks\": 679, \"native_operations\": 3, \"immutable_pages\": 17, \"native_summary_chunks\": 2, \"native_summary_bytes\": 90926, \"original_call_records\": 23, \"carried_base_review\": \"390a10b882789b03c3a559cdfdfafb0f4573d107\", \"base156_reexecuted\": false, \"prior39_unlocated_leaves_preserved\": true, \"new_current2_observation_packet_reviewed\": false, \"Runtime_calls_by_this_verifier\": 0, \"author_checker_executed\": false, \"product_semantics_reviewed\": false}\n"
+}

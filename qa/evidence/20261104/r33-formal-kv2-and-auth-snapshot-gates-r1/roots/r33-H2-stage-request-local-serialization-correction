@@ -1,0 +1,14 @@
+{
+  "schema": "heptabao.root-request-source-correction.v1",
+  "original_request_blob": "773c7e054a36dfc175632a83ed23db5b5600ad58",
+  "original_bytes": 369727,
+  "original_sha256": "12373f98e11e1040558067bfdffe0604dc71c2ed720cf6261b238ea79ca3c01b",
+  "local_error": "H2 exact typed binding",
+  "cause": "Root cache held request object without exact text; compact JSON.stringify produced different raw-byte identity although native typed digest and candidate/carrier were unchanged.",
+  "correction": "Use whole fetched original frozen blob bytes; do not reserialize or replace request.",
+  "Runtime_calls": 0,
+  "new_request_keys": 0,
+  "business_admission": 0,
+  "typed_digest": "d09ca5bcec50de31ca854f1b2885ed117bd7a3c6f357d6db39fbc87cd6566a96",
+  "native_fingerprint": "15032071887093030449"
+}

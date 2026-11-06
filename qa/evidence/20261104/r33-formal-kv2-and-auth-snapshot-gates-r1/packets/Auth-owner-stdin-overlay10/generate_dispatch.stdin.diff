@@ -1,0 +1,11 @@
+--- source88/generate_dispatch.py
++++ stdin-schema-overlay-r1/generate_dispatch.py
+@@ -43,7 +43,7 @@
+ save(HERE/'diff/inert-publisher.binding.diff',''.join(difflib.unified_diff(before.splitlines(keepends=True),source.splitlines(keepends=True),fromfile='baseline/inert-publisher.py',tofile='dispatch/inert-publisher.py')).encode())
+ pub_pin=pin(source.encode())
+ inert={'host':'mac','executable':PYTHON,'args':['-I','-S','-B','-c',source],
+-       'cwd':'/Users/qianqi','stdin_text':payload_raw.decode(),'timeout_seconds':60,
++       'cwd':'/Users/qianqi','stdin':payload_raw.decode(),'timeout_seconds':60,
+        'idempotency_key':'heptabao-mac-current-owner-renew-inert-'+pub_pin['sha256'][:8]+'-20261105-r1'}
+ save(HERE/'dispatch/inert.exact-request.public.json',encoded(inert))
+ 

@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-S\",\n      \"-B\",\n      \"/home/qian/heptabao-same-root-publication-normal-20261105-r1/comparison69_controller.py\"\n    ],\n    \"created_unix_ms\": 1793916630947,\n    \"cwd\": \"/home/qian/heptabao-same-root-publication-normal-20261105-r1\",\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"x230\",\n    \"id\": \"1a1adc377a3-fc05-5acb\",\n    \"idempotency_key\": \"heptabao-4e808-x230-comparison69-r1-836dfd5e\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qian/.local/state/hepta-runtime-mac-worker/jobs/1a1adc377a3-fc05-5acb\",\n    \"request_digest\": \"56ddc986607a02e224a254f604912c4d12b3c4b7de290b2d724b3add50687e35\",\n    \"request_fingerprint\": 6259380636096266978,\n    \"ssh_target\": \"x230-ts\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1adc377a3-fc05-5acb\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1adc377a3-fc05-5acb\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

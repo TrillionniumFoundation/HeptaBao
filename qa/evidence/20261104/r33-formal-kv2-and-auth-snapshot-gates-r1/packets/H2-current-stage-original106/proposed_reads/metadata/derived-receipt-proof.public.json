@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.H2-stage.receipt-derived-expectation.v1",
+  "source_candidate": "678e519f17c474b5610651bcbb93b43d186124c5",
+  "original_stdout": "e4b2ab7d6800225ad1f8c87e5cb51fb330840907",
+  "exact_source_lines": [
+    489,
+    495,
+    509,
+    518
+  ],
+  "removed_post_finally_fields": {
+    "all_stage_fds_closed": true,
+    "fd_close_errors": [],
+    "elapsed_after_closure_ms": 2438.209864,
+    "within_stage_deadline": true
+  },
+  "restored_field": {
+    "fd_close_pending": true
+  },
+  "render": "Python json.dumps(sort_keys=True,indent=2)+LF",
+  "expected_receipt": {
+    "blob": "f492ce4e681ba7d5917d1cda1ebd4a3f8d67f13c",
+    "bytes": 28615,
+    "sha256": "f2bcc9227a235a40afa11c1703595180a925fbd39abd29d4550872ed3a05ae6a"
+  },
+  "source": "Derived expectation from original stdout and exact candidate; no target body or metadata RPC",
+  "current_target_file_info_observed": false,
+  "current_target_body_rpc_count": 0
+}

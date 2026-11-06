@@ -1,0 +1,78 @@
+{
+  "schema": "heptabao.google-public-input.actual-body-derivation.v1",
+  "source": {
+    "blob": "c09d5016e52d77d05f60377ffa7b5ea1fe325df2",
+    "bytes": 2785,
+    "sha256": "d7fbd67e2490be00231935507696df02c716ddf106d5e927bfeba7972301d207"
+  },
+  "metadata": [
+    {
+      "id": "google-manifest",
+      "operationId": "612a8558f696d18a9cb93d0c55f12135a4343debae1279d3209ffc3ddbfd2f45",
+      "native": {
+        "blob": "5c4b86cf2d2c42b565b9089c002a08e0fa1d15e0",
+        "bytes": 473,
+        "sha256": "518612279fbc8efb9cf74362e7924531afd6274b13f6bfbb2f64b63abefd5da9"
+      },
+      "binding": {
+        "blob": "aad3d619337daaf4d4e21459c9525738fed4f5e6",
+        "bytes": 1393,
+        "sha256": "28e3845a067c6d068820f1aac71c726f216a7d0dfcab5520c66e1e26103148ee"
+      },
+      "nativeClosed": true,
+      "whole": true
+    },
+    {
+      "id": "google-package",
+      "operationId": "a5cd8ac32ba823f6f05673fb277debe7fa69914331ff9608d887f3c64a1c4ddc",
+      "native": {
+        "blob": "312a238cf2034035b2d554dd9d5c2e887daa44f5",
+        "bytes": 461,
+        "sha256": "ae160efd51813073008d8ae0b8852eaa2f99ce1c4f4569cc882662dc8fb9f75d"
+      },
+      "binding": {
+        "blob": "524bffecd8929c42e4db384fb0ca2ec93c667353",
+        "bytes": 1380,
+        "sha256": "49efb3d9c1eff177dad0a8808fd06933ffb62a67ab83eba75633cb126e582775"
+      },
+      "nativeClosed": true,
+      "whole": true
+    }
+  ],
+  "result": {
+    "requests": [
+      {
+        "idempotency_key": "heptabao-mac-google-manifest-body-518e8e07-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/openclaw.plugin.json",
+            "expected_version": "16777233:405240594:28911:1784843466375861317:1784843466375861317",
+            "offset": 0,
+            "limit": 28911
+          }
+        }
+      },
+      {
+        "idempotency_key": "heptabao-mac-google-package-body-398f7330-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/package.json",
+            "expected_version": "16777233:405240659:375:1784843466392296043:1784843466392296043",
+            "offset": 0,
+            "limit": 375
+          }
+        }
+      }
+    ],
+    "newBodyBytes": 29286,
+    "newBodyChunks": 2,
+    "previousBodyBytes": 353689,
+    "cumulativeBodyBytes": 382975
+  },
+  "actualSdkExecuted": false,
+  "hostCallsDuringDerivation": 0
+}

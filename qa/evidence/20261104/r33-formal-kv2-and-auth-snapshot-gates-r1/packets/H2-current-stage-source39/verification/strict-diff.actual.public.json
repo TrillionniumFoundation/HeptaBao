@@ -1,0 +1,22 @@
+{
+  "status": "PASS_STRICT_WHOLE_SOURCE",
+  "before": {
+    "blob": "45ceb135688a2002e845f31e010ca5c010551517",
+    "bytes": 23638,
+    "sha256": "87a9c2a7d1b9b4e789a4fda79fc9a89ba21657493707403f36cb891546e4a34f"
+  },
+  "after": {
+    "blob": "678e519f17c474b5610651bcbb93b43d186124c5",
+    "bytes": 26823,
+    "sha256": "a8bf27675b1a00b08f60d33fbed84405c033d537fb9562d963b9ff725264fca1"
+  },
+  "diff": {
+    "blob": "a1414f43cd222f3e9c63a36b41d63ebdc071ef36",
+    "bytes": 18443,
+    "sha256": "9c67821ff3a1b6d4988a6b982494ee75331985285906c4764affffc0c21417d1"
+  },
+  "forward_hunks": 14,
+  "reverse_hunks": 14,
+  "Runtime_calls": 0,
+  "modules_executed": 0
+}

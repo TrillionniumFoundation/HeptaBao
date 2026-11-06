@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.same-job.process-read.intent.v1",
+  "request": {
+    "name": "ha-h2-stage-streams1-request",
+    "blob": "a8d754bf6e2220890981619e2e47e0b809b7f19f",
+    "bytes": 284,
+    "sha256": "595ea0e737d41c1bc7c047f821f9adf2c9ef719c49d6d0aa3c9dcdf544a61210"
+  },
+  "root_go": "065ae72edbb8f330b66f5a40ea4c0134891f60d8",
+  "previous_native": {
+    "name": "ha-h2-stage-streams0-native-original",
+    "blob": "a7d95e0d65f30481511b4f9df52f4ea747d59b19",
+    "bytes": 50704,
+    "sha256": "ec53e45f623ba0167dac82fbf689897cfcf20a64431d90ddc30539cc4313ab95"
+  },
+  "previous_observer_status": {
+    "name": "ha-h2-stage-streams0-status-native",
+    "blob": "3a40adf18df2b9f42960b2c5d4d19c37636c3b59",
+    "bytes": 803,
+    "sha256": "5a802ad50e36ac21a8ce1a4f0584c0677d8223b073db7247e51f9a0f1f8f8050"
+  },
+  "original_authority": {
+    "name": "ha-h2-stage-authority0-native-original",
+    "blob": "c321bd33305dcdfafa58ce829d414c9c5cbe9f98",
+    "bytes": 733,
+    "sha256": "f8c50e8d3016b1efc99267ad9a9abe99f3ae5b06d2ec8c8461c5a6154508e0fd"
+  },
+  "expected_remaining_stdout_bytes": 6763,
+  "expected_stderr_bytes": 0,
+  "immutable_page_limit": 8192,
+  "one_future": true,
+  "business_replay": false,
+  "target_file_reads": false
+}

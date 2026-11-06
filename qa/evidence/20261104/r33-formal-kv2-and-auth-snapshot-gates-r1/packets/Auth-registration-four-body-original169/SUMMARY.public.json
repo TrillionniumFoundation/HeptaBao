@@ -1,0 +1,197 @@
+{
+  "schema": "heptabao.mac-registration-four-body.actual-complete.r1",
+  "ok": true,
+  "GO": "49fa57d6128f99ff425ea798466514564374d3b4",
+  "metadata_packet": "27c4b1be1736069cf4b9fdc6a1bf44acb819624f",
+  "original_operations": [
+    {
+      "sequence": 1,
+      "operation_id": "dc9cfa8e0e5c674c5eb7cce4fd0cce7e7b917a9ed4049acab400bb11cf68fef5",
+      "request": {
+        "blob": "f78c2274f45aa6b9f62422fac6453bd8ec4e96ce",
+        "bytes": 420,
+        "sha256": "18cd2d3ccfd8367ef87eae98aba054cd425ab17824af8eaa3e28cb312e6af233"
+      },
+      "admission_SDK": "004b4274cb3cd340ed0f572a8ee759eedd18e226",
+      "status_native": "5ff70498e81dc0ee60703c101a0791f06b06284d",
+      "completed_stored_inactive": true,
+      "unique_pages": 6,
+      "payload": {
+        "blob": "5467fe454517334ca51852bdb6d5261706abba94",
+        "bytes": 42347,
+        "sha256": "ec683fcd8a5be0fcbfd6f34fa73cfc016d822c16083565a4b00a9d3f53f8e9ff"
+      },
+      "native": {
+        "blob": "6f1fc251efe058dba0b11061299d04f090d15d9d",
+        "bytes": 42244,
+        "sha256": "9f55a110892d3f85a9ea5fe87a2a0bdeb4203a4a36c3be53fe1923accea9f153"
+      },
+      "body": {
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/manifest-registry--UiRn6nq.js",
+        "version": "16777233:405237428:31444:1784843459184750747:1784843459184750747",
+        "size": 31444,
+        "offset": 0,
+        "next_offset": 31444,
+        "bytes": 31444,
+        "chunk_sha256": "819c76c314e6ed1fd39c5ed6b169d63997905b3ae8a98b9373783d626431ace4",
+        "eof": true
+      },
+      "binding": "f43374d1f7aa1785d5874d5b5c9af1741bf2e8fc"
+    },
+    {
+      "sequence": 2,
+      "operation_id": "78784ed9b981301e1aa59022af894ec47945371cc21cfe73555bf9142615c123",
+      "request": {
+        "blob": "de4f483af21acc4f5824876a774d4be6812cef86",
+        "bytes": 410,
+        "sha256": "f4da6cc37d69a217e3ba38f8c048d11aa3f6d0de4354038b5d91b9b824d9c163"
+      },
+      "admission_SDK": "a7c10556da7ee4ae80b29e40dfffaa43a74b0e4b",
+      "status_native": "4951c11301b951ae210f581320d956a5037d186a",
+      "completed_stored_inactive": true,
+      "unique_pages": 11,
+      "payload": {
+        "blob": "dd1b96978e8bf4752e5aa90f19d3acf76acf7670",
+        "bytes": 87797,
+        "sha256": "ceb3fd4538fea89fdadc57ddf5b7efdb23cb5f59dcca0c6833beea8c6869a767"
+      },
+      "native": {
+        "blob": "5911f0b3bbd6af4c11e63934b0c18d7af01e6043",
+        "bytes": 87694,
+        "sha256": "715e703169400252a98ff3e743e95ee024b6bd5bec3921db32cc8d10c1336103"
+      },
+      "body": {
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-B8eQDFB4.js",
+        "version": "16777233:405238776:181581:1784843461889330234:1784843461889330234",
+        "size": 181581,
+        "offset": 0,
+        "next_offset": 65536,
+        "bytes": 65536,
+        "chunk_sha256": "bb94a8bdbeca2824ae78102c3226c8915ddb98dc961ad0d1e4e98cfb988939cb",
+        "eof": false
+      },
+      "binding": "1c6378287c71296d2434f1eac140890fbd3b0956"
+    },
+    {
+      "sequence": 3,
+      "operation_id": "d717c2f3aabc5d5cc2baa822b85ea2006b736761ea2cccb47dcd8b9a6f93bb61",
+      "request": {
+        "blob": "3fa1a95b06619da84b9af79f429ecda22f28c992",
+        "bytes": 418,
+        "sha256": "8532186b15b50c5123e3ac2a3e523614e57763ed4ae918ed8177240c4b2a5e66"
+      },
+      "admission_SDK": "ccb5d068991e7c5bc5f2df27e80c1e3cd45b92d7",
+      "status_native": "fe3ca1d356a907f659b55cdbe4c5a75e763bb7b8",
+      "completed_stored_inactive": true,
+      "unique_pages": 11,
+      "payload": {
+        "blob": "1db414be48cd206f7f4296095da90ef6dbf40d92",
+        "bytes": 87802,
+        "sha256": "734c5eb9bbb56f39d2abf4e1571ed1535f41e81133175968e3a09233eddd9c67"
+      },
+      "native": {
+        "blob": "2726e87532942362fdfba39cf8b7bcef36c48505",
+        "bytes": 87699,
+        "sha256": "ab310061075efa0fc11281b6bb6e39481fad93ac644abe4b0e56cf57ed2a88f9"
+      },
+      "body": {
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-B8eQDFB4.js",
+        "version": "16777233:405238776:181581:1784843461889330234:1784843461889330234",
+        "size": 181581,
+        "offset": 65536,
+        "next_offset": 131072,
+        "bytes": 65536,
+        "chunk_sha256": "defed74e92e406428f36ab5bd7876b75086ddab17471298fc7c22dd2ba87e868",
+        "eof": false
+      },
+      "binding": "067c2e48e048a22f7c92a74a9816921fe98ac4cc"
+    },
+    {
+      "sequence": 4,
+      "operation_id": "13f5a585ceb44c74904df538162e924b1a9f1d94457c97ac234ae1eff6e2e5d8",
+      "request": {
+        "blob": "14a5cc1d4945973ef7d33b38b514564bd989a9b2",
+        "bytes": 420,
+        "sha256": "3fcd59d3e179191032adedd39db914d6ec86612da735918b0e9d9b686c78183f"
+      },
+      "admission_SDK": "3f538cb3926aad0b3928f231f22792af282b72cf",
+      "status_native": "7de84a1f0ea413b7e493b3ab9e9e13d6824dc701",
+      "completed_stored_inactive": true,
+      "unique_pages": 9,
+      "payload": {
+        "blob": "697d1ac04c141aad5a130dd0954f5dab4567d42a",
+        "bytes": 67766,
+        "sha256": "276e461d104eac03d00473f429fa64b70ac0f892e6b41a93d6b63a3f05d643d4"
+      },
+      "native": {
+        "blob": "d2e607c9ddf8e168cddc086f0b9f9bae4f4ff36d",
+        "bytes": 67663,
+        "sha256": "b86123b11910de9d8db42097cad3c6bd30e7f1392a7ef2981b981bc9170b32ad"
+      },
+      "body": {
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-B8eQDFB4.js",
+        "version": "16777233:405238776:181581:1784843461889330234:1784843461889330234",
+        "size": 181581,
+        "offset": 131072,
+        "next_offset": 181581,
+        "bytes": 50509,
+        "chunk_sha256": "fa58f8f32080311b0deec4890209563c794e8753500292005c8180b5d78ecf03",
+        "eof": true
+      },
+      "binding": "20373ecf14ad123ce62625a810d4cadf75b5369a"
+    }
+  ],
+  "unique_operations": 4,
+  "unique_pages": 37,
+  "original_payload_bytes": 285712,
+  "extra_same_ID_cache_recovery_page_calls": 8,
+  "total_operation_result_calls": 45,
+  "new_body_files": 2,
+  "new_body_chunks": 4,
+  "new_body_bytes": 213025,
+  "previous_body_files": 6,
+  "previous_body_chunks": 7,
+  "previous_body_bytes": 140664,
+  "cumulative_body_files": 8,
+  "cumulative_body_chunks": 11,
+  "cumulative_body_bytes": 353689,
+  "old_caps_reused_or_reset": false,
+  "sources": [
+    {
+      "path": "sources/manifest-registry.original.js",
+      "blob": "e9bf738c49a86a2a7aba1d1bb22de14346653c93",
+      "bytes": 31444,
+      "sha256": "819c76c314e6ed1fd39c5ed6b169d63997905b3ae8a98b9373783d626431ace4"
+    },
+    {
+      "path": "sources/plugin-registry.original.js",
+      "blob": "42ea640e392714881fcf908094d691913efb174f",
+      "bytes": 181581,
+      "sha256": "25f3ef82756d85281ad5c25375a5cd2f405989a1145ed438de05992e8c995376"
+    }
+  ],
+  "scope": {
+    "SDK_execution": false,
+    "private_capsule_read": false,
+    "provider_call": false,
+    "config_mutation": false,
+    "actual_selected_owner": null,
+    "production_qualified": false
+  },
+  "history": {
+    "Git_whole_read_RemoteProtocolError": "archive-errors/page01-offset0-git-whole-read.original.sdk.json",
+    "same_blob_Git_recovery": "archive-errors/page01-offset0-git-recovery.public.json",
+    "cache_reset": "recovery/cache-reset-local-error.public.json",
+    "original_first_page_reconstruction": "recovery/existing-Git-index-reconstruction.public.json",
+    "same_ID_prefix_recovery": "recovery/same-ID-prefix-pages.public.json",
+    "partial_tree": "4b768a56f6203ad267294598fe2f4042cbf6e73a",
+    "all_original_failing_runtime_qa_outcomes_unchanged": true
+  },
+  "release": {
+    "blob": "74f318b28bc7bbcdf21b850e7236a4f1015d81ad",
+    "bytes": 3118,
+    "sha256": "13a50f60856823ec40c02c7fe86a32f34efafc0244379d9ed55687e45bce1c53"
+  },
+  "Runtime_calls_inflight": 0,
+  "known_native_futures_active": 0
+}

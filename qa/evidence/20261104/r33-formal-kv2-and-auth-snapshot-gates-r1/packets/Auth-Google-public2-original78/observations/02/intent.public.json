@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.exact-native-read.external-intent.r1",
+  "GO": "a58667829950717eab43010eb2c768f9be24677e",
+  "sequence": 2,
+  "operation": "metadata-google-package",
+  "exactRequest": {
+    "blob": "e7060cb5323b8169caf3eab29b2e95f3a9def76e",
+    "bytes": 270,
+    "sha256": "6b5dcf0c35e17ca58bd79899f0ec81e9fbdf2c00f5b7698e45e9f409e39a7eed"
+  },
+  "request": {
+    "idempotency_key": "heptabao-mac-google-package-metadata-398f7330-20261105-r1",
+    "operation": {
+      "tool": "file_info",
+      "arguments": {
+        "host": "mac",
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/package.json"
+      }
+    }
+  },
+  "priorNativeFuturesActive": 0,
+  "previousClosedBinding": {
+    "blob": "aad3d619337daaf4d4e21459c9525738fed4f5e6",
+    "bytes": 1393,
+    "sha256": "28e3845a067c6d068820f1aac71c726f216a7d0dfcab5520c66e1e26103148ee"
+  },
+  "submissionsBeforeThisIntent": 0,
+  "scope": "fixed public JSON metadata only; no body/SDK/private capsule"
+}

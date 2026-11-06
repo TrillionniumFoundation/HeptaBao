@@ -1,0 +1,62 @@
+{
+  "schema": "heptabao.public-evidence.packet-manifest.v1",
+  "scope": "independent summary107 raw-chain peer; prior156 not rerun",
+  "entries": [
+    {
+      "path": "PEER.public.json",
+      "mode": "100644",
+      "blob": "75b1a363c89a5c4a5e0837e855a029600780fc44",
+      "bytes": 6002,
+      "sha256": "15e54c46d099db31e4fc54b7f2878e00f88323c78ac5b6aaca574926692965a1"
+    },
+    {
+      "path": "verification/independent-summary-chain-verifier.py",
+      "mode": "100644",
+      "blob": "f0fbb287a382b3aa5ec321f42005a96a67a2d7d0",
+      "bytes": 12352,
+      "sha256": "6938e82b85d3f87e2a415f9e53151db1af7532ad3ec6683c787466c70034a9c6"
+    },
+    {
+      "path": "verification/actual-result.public.json",
+      "mode": "100644",
+      "blob": "f231911b13d608d7dbff42a33afb63a78f305713",
+      "bytes": 73578,
+      "sha256": "9c9b7f95cdb80a215a0ca55257b24c8892ca00799758f6058d254e094b0f82b4"
+    },
+    {
+      "path": "verification/executor.original.json",
+      "mode": "100644",
+      "blob": "65d0df79d21266bc0402ce9857535fd22655cec9",
+      "bytes": 836,
+      "sha256": "131f1085c484237e84fe28d51f7f17501d56db12c6b6c7681cddbe2a78551dc3"
+    },
+    {
+      "path": "verification/input-index.public.json",
+      "mode": "100644",
+      "blob": "e97e071fc5c1417489752f1a46f186a94aa8df2e",
+      "bytes": 26204,
+      "sha256": "59395f6013aec614be321b99f7eef12781339e5b5d738229b72c3273a74c076d"
+    },
+    {
+      "path": "reference/base156-peer.original.json",
+      "mode": "100644",
+      "blob": "390a10b882789b03c3a559cdfdfafb0f4573d107",
+      "bytes": 2204,
+      "sha256": "92d6c43d02fb19b2a29437aa7f631ec9a1ebe5e08ebff041594d3973b5653c00"
+    },
+    {
+      "path": "reference/recovery-journal.original.json",
+      "mode": "100644",
+      "blob": "83f37c59fa1ca23c12b0583a256db89081ab4388",
+      "bytes": 7819,
+      "sha256": "f12d3c46cc9cf218c08fddd72d4a5c2f8ea42822cf64947cf7ef08984d7b8bf3"
+    },
+    {
+      "path": "reference/finite-gap.historical.original.json",
+      "mode": "100644",
+      "blob": "febdec346fa99b7eef463f660639c6dd8cd3a664",
+      "bytes": 2978,
+      "sha256": "3774fd8fd4f0d4daa3bfb7d7311c1cd392931defdaaa3c8092a2092e25f780dc"
+    }
+  ]
+}

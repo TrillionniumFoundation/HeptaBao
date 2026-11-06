@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-mac-google-manifest-body-518e8e07-20261105-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "mac",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/openclaw.plugin.json",
+      "expected_version": "16777233:405240594:28911:1784843466375861317:1784843466375861317",
+      "offset": 0,
+      "limit": 28911
+    }
+  }
+}

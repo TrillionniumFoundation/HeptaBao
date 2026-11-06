@@ -1,0 +1,95 @@
+{
+  "schema": "heptabao.H2-prepare.SOURCE-only.manifest.v1",
+  "submitted": false,
+  "runtime_GO": false,
+  "only_request_binding_SHA_resolved": true,
+  "non_manifest_files": 12,
+  "non_manifest_bytes": 183428,
+  "files": [
+    {
+      "path": "PROPOSAL.public.json",
+      "mode": "100644",
+      "blob": "49b45263ae1ac9c420f6f5ad45019f0d4be1a276",
+      "bytes": 2130,
+      "sha256": "691211128a32c37d7101e11df70076fd81d8bb60319edbab78fd8d0cee998139"
+    },
+    {
+      "path": "actual/binding.file_info.original.json",
+      "mode": "100644",
+      "blob": "8c8a33e62a76f2f58f32aec8ca0d47d83b8df942",
+      "bytes": 485,
+      "sha256": "0cd46e03c0ffc5f53db357885959a6f7e96f1ebcdb8a415abd1954f359042581"
+    },
+    {
+      "path": "actual/binding.original.json",
+      "mode": "100644",
+      "blob": "a11ae732392792888fcf705e3a0ea21c8779f67e",
+      "bytes": 10230,
+      "sha256": "b241c6fc78bbe77ea69fc3b8a707b1747324a81f1da1ade3d9bb15c5cea5b7d8"
+    },
+    {
+      "path": "actual/receipt.file_info.original.json",
+      "mode": "100644",
+      "blob": "1621dab12f19b0d746d74af83c8d55de9eabe601",
+      "bytes": 489,
+      "sha256": "03d4a65ef3cbe3c5d5bc1204118cea59bb7ffabe4d4441e01666a142a53b8198"
+    },
+    {
+      "path": "actual/receipt.original.json",
+      "mode": "100644",
+      "blob": "f492ce4e681ba7d5917d1cda1ebd4a3f8d67f13c",
+      "bytes": 28615,
+      "sha256": "f2bcc9227a235a40afa11c1703595180a925fbd39abd29d4550872ed3a05ae6a"
+    },
+    {
+      "path": "actual/target-read.release.public.json",
+      "mode": "100644",
+      "blob": "0093a0be7a54f88393626276c864b5a46b1c8770",
+      "bytes": 11428,
+      "sha256": "bf794a6f7c7bbe241c71a7b2a4d9d406a9cc60d3002da4200a56fc3674dc2473"
+    },
+    {
+      "path": "references/native_h2_binding_r1.py",
+      "mode": "100644",
+      "blob": "9b3a605a2ac2f47729678bdb696d89b0c9b06b9a",
+      "bytes": 41350,
+      "sha256": "6bbaa72dcb899d359f14c6e442c824c46a8c52aa74aa0d6be8b1820596c34cf4"
+    },
+    {
+      "path": "references/native_h2_gate_r1.py",
+      "mode": "100644",
+      "blob": "6687ce5d76ae38ec9f079c876f50d86b04f40448",
+      "bytes": 62344,
+      "sha256": "703e5ecfc9b88ce4d8cdaf81342597a12a7b42c92af583b54d87f4f8a37bcf13"
+    },
+    {
+      "path": "references/original-dispatch-templates.public.json",
+      "mode": "100644",
+      "blob": "2eabf1e692ca5f64b2bf553af78f02204c3516f5",
+      "bytes": 1858,
+      "sha256": "8df14e936412fa559cfec18fb70c2ccbde5bd6950f5956122c7692faba737387"
+    },
+    {
+      "path": "references/stage.authority.original.json",
+      "mode": "100644",
+      "blob": "c321bd33305dcdfafa58ce829d414c9c5cbe9f98",
+      "bytes": 733,
+      "sha256": "f8c50e8d3016b1efc99267ad9a9abe99f3ae5b06d2ec8c8461c5a6154508e0fd"
+    },
+    {
+      "path": "references/stage.final.stdout.original.json",
+      "mode": "100644",
+      "blob": "e4b2ab7d6800225ad1f8c87e5cb51fb330840907",
+      "bytes": 23147,
+      "sha256": "cd7de0b60ff21476b5812c2159f8c44b55484fd9d1cd1a0900477a61853dd249"
+    },
+    {
+      "path": "requests/PREPARE.PROPOSAL.exact.json",
+      "mode": "100644",
+      "blob": "2059cf884472ae55dc799be4b781f9fe96efd10e",
+      "bytes": 619,
+      "sha256": "c5ef6c140c8687b102c532eaab4bfb5537f01e55d2ed4faa6c050dd2b07c55ef"
+    }
+  ],
+  "Runtime_calls_during_packaging": 0
+}

@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.x230-full34-new-current-read-execution-intent.v1",
+  "GO": {
+    "blob": "6959e167d282af43d703808e79bc61f39069ef3a",
+    "bytes": 4039,
+    "sha256": "cf57785da8449b4f60ba6f05ef85c67d71a0df020e4f061cc51a9560a5dfcc59"
+  },
+  "sequence": 2,
+  "label": "current-streams",
+  "method": "operation_start",
+  "request_blob": "1a1ae29597953ea9ac5ea55f4bc170b5ec5de5fa",
+  "request_bytes": 292,
+  "request_sha256": "c404735767e03b6017f42a76e8a691f60a5aa53c7dff6543a3208225cbf9ff7c",
+  "request": {
+    "idempotency_key": "heptabao-4e808-x230-full34-current-streams-20261105-r1",
+    "operation": {
+      "tool": "process_read",
+      "arguments": {
+        "host": "x230",
+        "job_id": "1a1ad5ffad0-fc05-599a",
+        "stdout_offset": 0,
+        "stderr_offset": 0,
+        "limit": 4096
+      }
+    }
+  },
+  "new_readonly_observation": true,
+  "not_recovered_original_protocol": true,
+  "historical_gap_blob": "febdec346fa99b7eef463f660639c6dd8cd3a664",
+  "business_start_or_replay": false,
+  "same_original_terminal_job": "x230/1a1ad5ffad0-fc05-599a",
+  "only_one_native_future": true,
+  "prior_current_authority_closed": "56366ed11bcb4e8e9d35fe2dde5a8c5c88de3e035978b830604be8a297e24749"
+}

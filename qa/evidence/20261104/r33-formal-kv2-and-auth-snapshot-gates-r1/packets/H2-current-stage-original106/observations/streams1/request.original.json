@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "ha-4e808-h2-stage-streams1-r2-20261105",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1adb7c0f6-fc05-5ab6",
+      "stdout_offset": 16384,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

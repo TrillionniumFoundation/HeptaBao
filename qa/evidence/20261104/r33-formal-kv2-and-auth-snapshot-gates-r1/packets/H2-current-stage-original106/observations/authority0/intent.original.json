@@ -1,0 +1,36 @@
+{
+  "schema": "heptabao.H2-stage.original-job-observation-intent.v1",
+  "GO": {
+    "blob": "065ae72edbb8f330b66f5a40ea4c0134891f60d8",
+    "bytes": 3222,
+    "sha256": "56fb58ec14115a0c4c7a01fe9098cfc544477d364bbcd46d158840656b475127"
+  },
+  "lane": "A",
+  "label": "authority0",
+  "method": "operation_start",
+  "request": {
+    "name": "ha-h2-stage-authority0-request",
+    "blob": "c1d6bbc2c259d2ef7affae095cb38b6bb4596ef8",
+    "bytes": 210,
+    "sha256": "164994aa221d092cb91126574e950374f55165c422b060c246b6446678cd19e6"
+  },
+  "exact_request": {
+    "idempotency_key": "ha-4e808-h2-stage-authority0-r2-20261105",
+    "operation": {
+      "tool": "process_status",
+      "arguments": {
+        "host": "desktop",
+        "job_id": "1a1adb7c0f6-fc05-5ab6"
+      }
+    }
+  },
+  "only_original_job": "1a1adb7c0f6-fc05-5ab6",
+  "ACK_binding": {
+    "name": "ha-h2-4e808-stage-ACK-binding",
+    "blob": "acb5c8362ab0576c6d29fa57ba5675bbf80970b1",
+    "bytes": 1492,
+    "sha256": "51caa524135d299b3c49c801319e112d34f34232c7ec0e16afe2cbecc34f1137"
+  },
+  "new_process_start": false,
+  "automatic_retry": false
+}

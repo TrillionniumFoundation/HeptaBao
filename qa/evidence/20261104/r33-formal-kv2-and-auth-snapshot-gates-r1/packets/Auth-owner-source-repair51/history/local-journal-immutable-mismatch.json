@@ -1,0 +1,9 @@
+{
+  "type": "local-source-journal-only",
+  "message": "FileExistsError followed by ValueError: immutable local journal mismatch",
+  "path": "owner-repair/inputs.after.draft1.py",
+  "reason": "apply_patch had appended one trailing LF; immutable journal refused overwrite",
+  "runtimeCalls": 0,
+  "originalSourcesUnchanged": true,
+  "action": "retain original draft1 file and create exact-byte canonical paths separately"
+}

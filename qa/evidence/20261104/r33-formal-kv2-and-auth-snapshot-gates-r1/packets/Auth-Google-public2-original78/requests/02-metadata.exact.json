@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-mac-google-package-metadata-398f7330-20261105-r1",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "mac",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google/package.json"
+    }
+  }
+}

@@ -1,0 +1,376 @@
+{
+  "schema": "heptabao.x230-current4e808-comparison69-B-release.v1",
+  "GO": {
+    "blob": "4cf8d079885984d44cc9654a8ba816438f30b9ed",
+    "bytes": 4623,
+    "sha256": "92a033dc2bfe4b842eea937f825fd523ebd92e66dac7b8f4280ad9cf2daa5f1b"
+  },
+  "request": {
+    "blob": "6c51aa75507c4ba473d19406ecf51d9ca8c2860d",
+    "bytes": 367,
+    "sha256": "4e6c3e22504fedffbfdead8f50a9856678f1de42d8b1ec2a728befbc507f97ea"
+  },
+  "execution_intent": {
+    "name": "comparison69-current4e808-execution-intent",
+    "blob": "e3d5e6ed0dcee240d4e01951e68ffd92ed8a3c37",
+    "bytes": 3430,
+    "sha256": "66912a99854b7159fac32984f86bdbe439c5cb918b7cb2282b7a90567fb3e66e"
+  },
+  "host": "x230",
+  "job_id": "1a1adc377a3-fc05-5acb",
+  "business_process_start_count": 1,
+  "start_SDK": {
+    "name": "comparison69-current4e808-start-original-SDK",
+    "blob": "415f5f7c5d45264497e602b2250c4b87b024291e",
+    "bytes": 1372,
+    "sha256": "e9df4b67d241f7603b0582345307be1756d97585d6ce690ef1bb689c02ea3785"
+  },
+  "start_native": {
+    "name": "comparison69-current4e808-start-original-native",
+    "blob": "a9aa615df153a50b631814761d24c3c00238d348",
+    "bytes": 1129,
+    "sha256": "b908f7e31d53491ceab5b3da43fd2d0532e46547a5698d30a33db7ccf0c8f093"
+  },
+  "authority": {
+    "name": "comparison69-authority0-native-original",
+    "blob": "9dc7c90f85b22d1f64c6e4cb7c0052e80c282366",
+    "bytes": 729,
+    "sha256": "67915694edce07ac30389411c4a068068866fb8d3cb706d876eb0749a3d8ec78"
+  },
+  "stdout": {
+    "name": "comparison69-stdout-original",
+    "blob": "b346f0ad48be39db09df8fc53813b8665c5e07f1",
+    "bytes": 561,
+    "sha256": "7e363d917ca50188a36dba59d793b264463638735ca2df8de3765e4e0dd2937b"
+  },
+  "stderr": {
+    "name": "comparison69-stderr-original",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "result": {
+    "name": "comparison69-result-public-whole-original",
+    "blob": "81e449cb9e40f3d57b1a27007cac9e5158c0c3d1",
+    "bytes": 2111,
+    "sha256": "6221e46262b314d7a966605f35e17bd8c146085edb47397c424295fd0649fcaa"
+  },
+  "summary": {
+    "name": "comparison69-summary-public-whole-original",
+    "blob": "db965ea9374ddcb7b76c5d21a89036ba9a5d6125",
+    "bytes": 104034,
+    "sha256": "51dbe8ec85e7e18434e48ecf627107267fb49284d18408c448f01a7d38929bc5"
+  },
+  "observations": [
+    {
+      "name": "authority0",
+      "operation_id": "5c495335fc951a58a709ae67dcf6ce0ce5b336f4563e42a710b6af38e8d17a75",
+      "tool": "process_status",
+      "status_native": {
+        "name": "comparison69-authority0-status-original-native",
+        "blob": "ad1119c1935a91b63888b16ec6da0301897faadb",
+        "bytes": 805,
+        "sha256": "932d51134eb8416b783aa0b63eb7893d5bd1199b9fb3cb83e355e6463f4b74ce"
+      },
+      "original_payload": {
+        "name": "comparison69-authority0-payload-original",
+        "blob": "a619ba0e4474e6badd3eb7040bd7c2dcbd34314e",
+        "bytes": 908,
+        "sha256": "8fdb2a5d7f209f9e3b8e3f70126296ae08f14f573d8a53676be47749856a6243"
+      },
+      "original_native": {
+        "name": "comparison69-authority0-native-original",
+        "blob": "9dc7c90f85b22d1f64c6e4cb7c0052e80c282366",
+        "bytes": 729,
+        "sha256": "67915694edce07ac30389411c4a068068866fb8d3cb706d876eb0749a3d8ec78"
+      },
+      "immutable_pages": 1,
+      "completed_stored_observed_inactive": true,
+      "original_payload_whole_closed": true
+    },
+    {
+      "name": "streams0",
+      "operation_id": "43830e8eeb0a2864bfb4a9a57c8a56e0858c791430e9850f65777248271aea5d",
+      "tool": "process_read",
+      "status_native": {
+        "name": "comparison69-streams0-status-original-native",
+        "blob": "5c41c6356e8c208623bd539de76128dc4a2c21ff",
+        "bytes": 803,
+        "sha256": "5189257a3b587739c454179eeac4c84474ac8a3015f7ad0def7fff6b23cbb9e6"
+      },
+      "original_payload": {
+        "name": "comparison69-streams0-payload-original",
+        "blob": "3aa9859f4518e4292f55535bde1729b418dcb96f",
+        "bytes": 2290,
+        "sha256": "43fb40ca84bec3b4952e32ff3d216de3aa7a0531d8fc45d37a87bc508fb727e3"
+      },
+      "original_native": {
+        "name": "comparison69-streams0-native-original",
+        "blob": "c6c2de87eb79ed2c54cb8c4c0abc9bf7d3f66c47",
+        "bytes": 2053,
+        "sha256": "753cc04b0089d359f303837613018f73149ecf0881c309bb7659a8f4cdb2f24e"
+      },
+      "immutable_pages": 1,
+      "completed_stored_observed_inactive": true,
+      "original_payload_whole_closed": true
+    },
+    {
+      "name": "result-info",
+      "operation_id": "edfcb5b3537ebe15984b3a158a148770500dc1b963076c93b436895bfe42bb9b",
+      "tool": "file_info",
+      "status_native": {
+        "name": "comparison69-result-info-status-original-native",
+        "blob": "b6e9ccdecf715e66a50dfba0eb827321a35946a8",
+        "bytes": 800,
+        "sha256": "6f09ce4caf49a732796b5a52012295b10ce80d20fadf1b6c4659e3fb585a3340"
+      },
+      "original_payload": {
+        "name": "comparison69-result-info-payload-original",
+        "blob": "d072953855cb6aa19eb21bbb8a95db659c11d855",
+        "bytes": 605,
+        "sha256": "22a2d631f8046104f313ce3995c0935ec9a6222e37bc36c990365ecfd4c95e52"
+      },
+      "original_native": {
+        "name": "comparison69-result-info-native-original",
+        "blob": "bbac9a33a23fec12840b787cc5f27b43c9242955",
+        "bytes": 488,
+        "sha256": "fa402021b245e50eff36ded3f2e9f63cc4aa2510df472177844edde748df3035"
+      },
+      "immutable_pages": 1,
+      "completed_stored_observed_inactive": true,
+      "original_payload_whole_closed": true
+    },
+    {
+      "name": "result-body0",
+      "operation_id": "bc997fcecd478a8d7d1a72eb69c1a11aabff9c36448951f365aa17849f767fe6",
+      "tool": "binary_read",
+      "status_native": {
+        "name": "comparison69-result-body0-status-original-native",
+        "blob": "a9f0fbc36892dbd58d209da368b8727f73872491",
+        "bytes": 802,
+        "sha256": "074b2098834655247c13e92072d38b08351bd737acf489e99020d99eda877c36"
+      },
+      "original_payload": {
+        "name": "comparison69-result-body0-payload-original",
+        "blob": "9f06cf19e4b7c77f07450cd162c416dcf850d545",
+        "bytes": 3256,
+        "sha256": "bf03544cef277b364d1327d46ae524f865dfbff90e73160cd8e16b49f63a26b4"
+      },
+      "original_native": {
+        "name": "comparison69-result-body0-native-original",
+        "blob": "3b628390f3a48437a995d77e50f6558bd31891df",
+        "bytes": 3153,
+        "sha256": "747650237855af1942fd40e8ce60ae19e04a53c23ac72c0354ddd51a315c9439"
+      },
+      "immutable_pages": 1,
+      "completed_stored_observed_inactive": true,
+      "original_payload_whole_closed": true
+    },
+    {
+      "name": "summary-info",
+      "operation_id": "8a1c8b6e1814f1bc0c9ef0eeb2f72ccaa288553e37c6c02edbbab1d4680fccfb",
+      "tool": "file_info",
+      "status_native": {
+        "name": "comparison69-summary-info-status-original-native",
+        "blob": "ad57527613c23bad88dd30f20830d6ab9b2a15e5",
+        "bytes": 800,
+        "sha256": "9a6e56cb33fb4dad1c5cce8f25c98cc45acfc4cd1f92f6cdd89a3d1c6b31a0aa"
+      },
+      "original_payload": {
+        "name": "comparison69-summary-info-payload-original",
+        "blob": "02f8c68d32f94b69794f7401fb0629a258f95ed9",
+        "bytes": 610,
+        "sha256": "3751c7ce94cb763ba518c971f2524274f5cafbeb2874a6209407d66b0c9851e5"
+      },
+      "original_native": {
+        "name": "comparison69-summary-info-native-original",
+        "blob": "cf1ce0c996c28c70b37dc24c6cf6631aa54e272b",
+        "bytes": 493,
+        "sha256": "efc8d663738f053fc9e3faebe57aae4cade3b59e9e844132591ea7e0ded47621"
+      },
+      "immutable_pages": 1,
+      "completed_stored_observed_inactive": true,
+      "original_payload_whole_closed": true
+    },
+    {
+      "name": "summary-body0",
+      "operation_id": "984b902e0efc2fd2369f4b29a7c06ac65f1fb637745ef0a186abbc2c628982cb",
+      "tool": "binary_read",
+      "status_native": {
+        "name": "comparison69-summary-body0-status-original-native",
+        "blob": "08ba3e565c076e4382ec6676683e7a6339e1d0d4",
+        "bytes": 802,
+        "sha256": "c08bb54e025b2e996d8053c6d3fd69ae978f02909dbfd507a2c1b4b36fd515ab"
+      },
+      "original_payload": {
+        "name": "comparison69-summary-body0-payload-original",
+        "blob": "a41dd6d35dd00802e12c3151dc8e05da69e21a38",
+        "bytes": 87831,
+        "sha256": "ed6ec651f7df703254a2c2d9d47fe1484ac9dc5639997d4157dcdc78a8b0839c"
+      },
+      "original_native": {
+        "name": "comparison69-summary-body0-native-original",
+        "blob": "f92a58129757a7a2dcbb670dafe99129185c99f7",
+        "bytes": 87728,
+        "sha256": "d3f756113666ce01c71f07b8ef981ee350d353ef7529b8a98125891493f8a5e8"
+      },
+      "immutable_pages": 11,
+      "completed_stored_observed_inactive": true,
+      "original_payload_whole_closed": true
+    },
+    {
+      "name": "summary-body1",
+      "operation_id": "e53ae94cd479f5ebcad1e28accf066a56262974d52b891d9c3ed1ee808357392",
+      "tool": "binary_read",
+      "status_native": {
+        "name": "comparison69-summary-body1-status-original-native",
+        "blob": "22e241a688e3c7a6a79e497ee48cbc8ac806b2ea",
+        "bytes": 802,
+        "sha256": "671f97978b8a071a3a0286cc996a64e2f1565aafd08c9139350be79112d0f893"
+      },
+      "original_payload": {
+        "name": "comparison69-summary-body1-payload-original",
+        "blob": "d310a19b65df7465a38993d0c58162bc9f403127",
+        "bytes": 51783,
+        "sha256": "2b4d424f9d702eba4681a886a729c1f0b850378ab4b3884700f3baa69b1591f7"
+      },
+      "original_native": {
+        "name": "comparison69-summary-body1-native-original",
+        "blob": "2114673f0c4c192e29e46046af410c7278baf013",
+        "bytes": 51680,
+        "sha256": "d8aa76d863d3bf1a0cb63c5f8ed729b37979ad543091cfe8a61dfb5dc2f5c851"
+      },
+      "immutable_pages": 7,
+      "completed_stored_observed_inactive": true,
+      "original_payload_whole_closed": true
+    }
+  ],
+  "native_admissions": 7,
+  "immutable_pages": 23,
+  "binary_read_chunks": 3,
+  "total_file_body_bytes": 106145,
+  "metadata": [
+    {
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1/result.public.json",
+      "size": 2111,
+      "sha256": "6221e46262b314d7a966605f35e17bd8c146085edb47397c424295fd0649fcaa",
+      "version": "2053:3074871:2111:1793916670100610710:1793916670100610710",
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "native": {
+        "name": "comparison69-result-info-native-original",
+        "blob": "bbac9a33a23fec12840b787cc5f27b43c9242955",
+        "bytes": 488,
+        "sha256": "fa402021b245e50eff36ded3f2e9f63cc4aa2510df472177844edde748df3035"
+      },
+      "payload": {
+        "name": "comparison69-result-info-payload-original",
+        "blob": "d072953855cb6aa19eb21bbb8a95db659c11d855",
+        "bytes": 605,
+        "sha256": "22a2d631f8046104f313ce3995c0935ec9a6222e37bc36c990365ecfd4c95e52"
+      }
+    },
+    {
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1/summary.public.json",
+      "size": 104034,
+      "sha256": "51dbe8ec85e7e18434e48ecf627107267fb49284d18408c448f01a7d38929bc5",
+      "version": "2053:3074869:104034:1793916669702610630:1793916669702610630",
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "native": {
+        "name": "comparison69-summary-info-native-original",
+        "blob": "cf1ce0c996c28c70b37dc24c6cf6631aa54e272b",
+        "bytes": 493,
+        "sha256": "efc8d663738f053fc9e3faebe57aae4cade3b59e9e844132591ea7e0ded47621"
+      },
+      "payload": {
+        "name": "comparison69-summary-info-payload-original",
+        "blob": "02f8c68d32f94b69794f7401fb0629a258f95ed9",
+        "bytes": 610,
+        "sha256": "3751c7ce94cb763ba518c971f2524274f5cafbeb2874a6209407d66b0c9851e5"
+      }
+    }
+  ],
+  "reported_actual": {
+    "candidate_passed": 69,
+    "oracle_passed": 69,
+    "failed_each": 0,
+    "not_run_each": 0,
+    "case_sets_match": true,
+    "owned_cleanup_completed": true,
+    "cleanup_errors": [],
+    "source_and_binary_unchanged": true,
+    "native_profile": "native_v6_file",
+    "activation_status": 204,
+    "target": "OpenBao 2.7.1",
+    "full_openbao_compatibility": false,
+    "production_qualified": false
+  },
+  "Runtime_call_inflight": false,
+  "native_futures_active": 0,
+  "pending_Runtime_requests": 0,
+  "lane_B_released": true,
+  "business_replays": 0,
+  "native_read_admission_replays": 0,
+  "immutable_page_requeries": 0,
+  "archival_history": {
+    "local_first_fsync_guard_error": [
+      {
+        "name": "comparison69-local-archive-error-recovery",
+        "blob": "5a220847e17f6ed9f25079738896746c6881e951",
+        "bytes": 1609,
+        "sha256": "ed1d6f6f75de39d84228e9c79f1441cc33215ca230ab642405d23e2ba26d95c8"
+      }
+    ],
+    "host_generation_reset_existing_SDK_recovery": [
+      {
+        "name": "comparison69-host-generation-reset-recovery",
+        "blob": "a82ebfa98991d1038e6cbdf1ed7718f73737e942",
+        "bytes": 2065,
+        "sha256": "2519b608e61a0b834299e58301cd9c6cd22d7b1e5efd43fbf063180d99c109f0"
+      }
+    ],
+    "Git_native_create_ReadTimeout_original": {
+      "name": "comparison69-final-native-git-write-attempt1-error-original-SDK",
+      "blob": "5b899231bee4585be68efe3224c54e52874e4d18",
+      "bytes": 194,
+      "sha256": "c9e8fcc415695e46f1dbd3d5bca4161cd054987a342569d29826ceea270c76d1"
+    },
+    "Git_native_lookup404_original": {
+      "name": "comparison69-final-native-git-lookup-original-SDK",
+      "blob": "e29c207758d4c774a30e93068d840967f2b7cd6b",
+      "bytes": 617,
+      "sha256": "d62f54fee07e365fca37f4a79662e88646d97a91452d72b5f37746e03fac29c0"
+    },
+    "final_native_same_bytes_now_Git_whole": {
+      "name": "comparison69-summary-body1-native-original",
+      "blob": "2114673f0c4c192e29e46046af410c7278baf013",
+      "bytes": 51680,
+      "sha256": "d8aa76d863d3bf1a0cb63c5f8ed729b37979ad543091cfe8a61dfb5dc2f5c851"
+    },
+    "local_followup_fsync_guard_result_unlocated": true,
+    "local_followup_fsync_guard_cause_not_claimed": true,
+    "later_fixed_core_file_and_directory_fsync_observed_exit0": true
+  },
+  "qualifier": "This is original observation closure and the reported bounded69 result. Root independently reviews product semantics. Full OpenBao replacement, production cutover and untested surfaces are not claimed.",
+  "prior_full34_historical39_protocol_gap_preserved": true,
+  "old_X230_relay_UNKNOWN_preserved": true,
+  "CLI_new_target_reads_or_prepare_live_submitted": false,
+  "complete_packet": "pending pure Git tree assembly; all raw Runtime returns and full public bodies are individually saved"
+}
