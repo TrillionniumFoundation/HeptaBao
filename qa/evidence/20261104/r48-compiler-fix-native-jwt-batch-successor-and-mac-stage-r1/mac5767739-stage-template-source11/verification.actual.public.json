@@ -1,0 +1,141 @@
+{
+  "schema": "heptabao.mac.successor576.pure-source-verification.v1",
+  "pass": true,
+  "check_count": 27,
+  "checks": [
+    {
+      "name": "exact_existing_stage_source",
+      "pass": true
+    },
+    {
+      "name": "exact_new_unbound_template",
+      "pass": true
+    },
+    {
+      "name": "strict_diff_forward",
+      "pass": true
+    },
+    {
+      "name": "strict_diff_reverse",
+      "pass": true
+    },
+    {
+      "name": "four_strict_hunks",
+      "pass": true
+    },
+    {
+      "name": "all20_definitions_unchanged",
+      "pass": true
+    },
+    {
+      "name": "failure_finally_terminal_tail_identical",
+      "pass": true
+    },
+    {
+      "name": "actual_candidate_manifest_whole",
+      "pass": true
+    },
+    {
+      "name": "actual_successor_parent_bound",
+      "pass": true
+    },
+    {
+      "name": "full_index_whole",
+      "pass": true
+    },
+    {
+      "name": "3932_rows_62553540_bytes",
+      "pass": true
+    },
+    {
+      "name": "five_known_modifications",
+      "pass": true
+    },
+    {
+      "name": "after_leaf:crates/heptabao-server/src/auth_native_jwt.rs",
+      "pass": true
+    },
+    {
+      "name": "after_leaf:crates/heptabao-server/src/service_native_auth.rs",
+      "pass": true
+    },
+    {
+      "name": "after_leaf:crates/heptabao-server/src/service_native_jwt_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "after_leaf:crates/heptabao-server/src/service_snapshot_forward_client.rs",
+      "pass": true
+    },
+    {
+      "name": "after_leaf:crates/heptabao-server/src/service_snapshot_forward_source.rs",
+      "pass": true
+    },
+    {
+      "name": "five_before_substitutions_restore_exact02b_index",
+      "pass": true
+    },
+    {
+      "name": "runtime_hardpin_unchanged",
+      "pass": true
+    },
+    {
+      "name": "unbound_bundle_fails_before_main_writes",
+      "pass": true
+    },
+    {
+      "name": "canonical_transport_and_dispatch_unobserved",
+      "pass": true
+    },
+    {
+      "name": "staged_and_product_actual_slots_unobserved",
+      "pass": true
+    },
+    {
+      "name": "source_budgets_unchanged",
+      "pass": true
+    },
+    {
+      "name": "exact_normal_groups_original",
+      "pass": true
+    },
+    {
+      "name": "normal61_and_original_budget",
+      "pass": true
+    },
+    {
+      "name": "canonical_full34_driver_unchanged",
+      "pass": true
+    },
+    {
+      "name": "full34_scope_original",
+      "pass": true
+    }
+  ],
+  "definitions": [
+    "on_signal",
+    "digest",
+    "blob",
+    "identity",
+    "stable_read",
+    "fsync_dir",
+    "create",
+    "public",
+    "group_members",
+    "stop_owned",
+    "owned",
+    "git",
+    "stage_remaining",
+    "owned",
+    "freeze",
+    "walk_error",
+    "independent_git",
+    "verify_full_worktree",
+    "canonical_bundle_header",
+    "prewrite_volume_guard"
+  ],
+  "Native_calls": 0,
+  "Python_runs": 0,
+  "Cargo_runs": 0,
+  "product_cases": 0
+}

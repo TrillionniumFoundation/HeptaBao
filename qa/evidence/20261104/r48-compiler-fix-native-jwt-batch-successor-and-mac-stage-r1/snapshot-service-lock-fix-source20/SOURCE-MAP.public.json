@@ -1,0 +1,108 @@
+[
+  {
+    "name": "service_snapshot_forward_client.rs",
+    "path": "crates/heptabao-server/src/service_snapshot_forward_client.rs",
+    "before": {
+      "blob": "a8a00094d2c4efb26a9be5c1af9b7b5f0c8e04cf",
+      "bytes": 20232,
+      "sha256": "f76bdf9fc65fcf99b0a214c00df7660436509036c107f5486b3226981635004f"
+    },
+    "after": {
+      "blob": "ab70d9abc8abda8d605f055ba0eaeda74d369803",
+      "bytes": 20359,
+      "sha256": "e53ba84411f23c8c822d8a4f546dbead8bc643097de419a7e70c5eac99015d58"
+    },
+    "points": [
+      {
+        "ordinal": 0,
+        "line": 268,
+        "context": "READY authentication callback: Transport error",
+        "before": "service\n                .lock_for_request()",
+        "after": "crate::request_deadline::lock_until(service.as_ref(), self.owner.deadline)",
+        "deadline": "self.owner.deadline"
+      },
+      {
+        "ordinal": 1,
+        "line": 302,
+        "context": "completion authentication/final delivery: unavailable then conservative UNKNOWN",
+        "before": "service.lock_for_request()",
+        "after": "crate::request_deadline::lock_until(service.as_ref(), self.owner.deadline)",
+        "deadline": "self.owner.deadline"
+      },
+      {
+        "ordinal": 2,
+        "line": 362,
+        "context": "failure response audit: audit_veto_response(None) on lock error",
+        "before": "service.lock_for_request()",
+        "after": "crate::request_deadline::lock_until(service.as_ref(), self.owner.deadline)",
+        "deadline": "self.owner.deadline"
+      }
+    ],
+    "hunks": 3
+  },
+  {
+    "name": "service_snapshot_forward_source.rs",
+    "path": "crates/heptabao-server/src/service_snapshot_forward_source.rs",
+    "before": {
+      "blob": "7178177f6156cce780c7044721ed53120c86a563",
+      "bytes": 19516,
+      "sha256": "2644931919fdafdc2d68d8e9927ebca77647e7ce8839cec1abef3e7563635c73"
+    },
+    "after": {
+      "blob": "a360aa111114da8aa16827de528839ca8eb90eec",
+      "bytes": 19632,
+      "sha256": "bc7e833e0faced417249756c78e546e955271b6ed25da1d3dbfbdff2bf56ef76"
+    },
+    "points": [
+      {
+        "ordinal": 0,
+        "line": 61,
+        "context": "original begin_snapshot_request_before admission",
+        "before": "service\n                .lock_for_request()",
+        "after": "crate::request_deadline::lock_until(service.as_ref(), deadline)",
+        "deadline": "deadline"
+      },
+      {
+        "ordinal": 1,
+        "line": 105,
+        "context": "snapshot_peer_admission capture",
+        "before": "service\n                .lock_for_request()",
+        "after": "crate::request_deadline::lock_until(service.as_ref(), deadline)",
+        "deadline": "deadline"
+      },
+      {
+        "ordinal": 2,
+        "line": 113,
+        "context": "admission failure original finalizer",
+        "before": "service\n                    .lock_for_request()",
+        "after": "crate::request_deadline::lock_until(service.as_ref(), deadline)",
+        "deadline": "deadline"
+      },
+      {
+        "ordinal": 3,
+        "line": 146,
+        "context": "body parser failure original finalizer",
+        "before": "service\n                .lock_for_request()",
+        "after": "crate::request_deadline::lock_until(service.as_ref(), deadline)",
+        "deadline": "deadline"
+      },
+      {
+        "ordinal": 4,
+        "line": 162,
+        "context": "private sealed-file failure original finalizer",
+        "before": "service\n                    .lock_for_request()",
+        "after": "crate::request_deadline::lock_until(service.as_ref(), deadline)",
+        "deadline": "deadline"
+      },
+      {
+        "ordinal": 5,
+        "line": 177,
+        "context": "original completion finalizer and signed publication",
+        "before": "service\n            .lock_for_request()",
+        "after": "crate::request_deadline::lock_until(service.as_ref(), deadline)",
+        "deadline": "deadline"
+      }
+    ],
+    "hunks": 5
+  }
+]

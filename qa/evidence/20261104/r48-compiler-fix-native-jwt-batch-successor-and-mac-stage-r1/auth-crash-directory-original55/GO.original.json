@@ -1,0 +1,160 @@
+{
+  "schema": "heptabao.root.DiagnosticReports-directory-metadata-exact-GO.r1",
+  "authorization": "GO",
+  "issuedAtUtc": "2026-11-06 20:22:18 UTC",
+  "agent": "/root/authbus_migration",
+  "scope": "one_fixed_final_directory_metadata_snapshot_no_body",
+  "source_packet": "0b41f27aa596301988fd5075c8bf959af88de569",
+  "source": {
+    "blob": "9e408efea2e6a5143ea377880da1f6b2361ca9ef",
+    "bytes": 11963,
+    "sha256": "11d8bdb092af7e1fb6da8a861381a3b3e14340ad8682a905bfce56c0c813ad18"
+  },
+  "exact_request": {
+    "blob": "608337c6667b83e1f379b5255b23a71b0da2dd58",
+    "bytes": 12569,
+    "sha256": "e8b74ca5f718e2fc2a23342bac0f35636b70c03581cf1c26a9cf48e52baa9387"
+  },
+  "journal": {
+    "slot": "owner_authbus_crash_directory_metadata_gitfirst_r1",
+    "source": {
+      "blob": "c6dd3be3c8948c35c61666289d1e57c2972446a5",
+      "bytes": 19054,
+      "sha256": "46b793feb22d3f23bfa04b3e4a2e7d0370028f69210dabc9a06c43a59a801415"
+    }
+  },
+  "digest": "6bcb5427c7d04f67f9f0e5f06ed2dc34bcf093a2e994d2536b2b74c4be4f1246",
+  "fingerprint": "7767394512163327847",
+  "root_review": {
+    "blob": "f87bdc7968ed206b3827929e775a724b5aa398a1",
+    "bytes": 1867,
+    "sha256": "306ebd3f7dd5a95a3c225925489fa2b72f4dc8c185db59e8bf8493d484f48fbf"
+  },
+  "prior": {
+    "source": {
+      "blob": "41ea46286a45ae651d7444e87efa7a8f3c6c438e",
+      "bytes": 28062,
+      "sha256": "33b29c19d960409b9d32e5e6770e493d564e85ba19ccf8e638c95d76443df35c"
+    },
+    "job": "mac/1a1b27a443e-fc05-7e31",
+    "actualMinTree": "64aa03bf6c1605c995c22316077613756415e30c",
+    "actualFullTree": "6212afa1492fc1d7f0d581a82ceb80d58de28c7a",
+    "stdout": {
+      "blob": "2efead8a4275b7f1298c45833a64ec229fc240b4",
+      "bytes": 1783,
+      "sha256": "5bc611df8194b881da135d0406b081d616289f3531aa848ea60328e4fdffdb2c"
+    },
+    "failure": "fixed_directory_shape",
+    "metadataOfRejectedTargetPreviouslyPublished": false,
+    "mutationOfOldSource": false
+  },
+  "fixedTarget": "/Users/qianqi/Library/Logs/DiagnosticReports",
+  "fixedAncestorDirectoryFds": [
+    "/",
+    "/Users",
+    "/Users/qianqi",
+    "/Users/qianqi/Library",
+    "/Users/qianqi/Library/Logs"
+  ],
+  "io": {
+    "targetOperation": "one os.stat of literal DiagnosticReports with dir_fd of held Logs and follow_symlinks=False",
+    "targetOpen": 0,
+    "targetMetadataCalls": 1,
+    "ancestorOpenCap": 5,
+    "metadataCap": 64,
+    "completePathMetadataCount": 26,
+    "directoryEnumeration": 0,
+    "bodyRead": 0,
+    "write": 0,
+    "chmod": 0,
+    "child": 0,
+    "signalOtherPid": 0,
+    "deadlineSeconds": 5,
+    "closureCheckSecondsFromStart": 8,
+    "processTimeoutSeconds": 60,
+    "publicReportBytes": 8192
+  },
+  "publicProjection": {
+    "target": [
+      "type in directory/symlink/regular/other",
+      "mode integer",
+      "modeOctal",
+      "uid integer",
+      "gid integer",
+      "nine decimal string stat fields",
+      "isDirectory boolean",
+      "uidIsRootOrOperator boolean",
+      "noGroupOrOtherWrite boolean",
+      "fixedDirectoryShape boolean"
+    ],
+    "full9Order": [
+      "dev",
+      "ino",
+      "uid",
+      "gid",
+      "mode",
+      "nlink",
+      "size",
+      "mtime_ns",
+      "ctime_ns"
+    ],
+    "onAncestorFailure": "only the already fixed ancestor path and same typed metadata/predicates; original guard still refuses descent",
+    "arbitraryTextOrBodyHashes": false
+  },
+  "semantics": {
+    "metadataObservationMayCompleteWhileOriginalPredicateIsFalse": true,
+    "finalMetadataIsOneSequentialSnapshotNotAtomicHistory": true,
+    "ancestorHeldNamedFull9RecheckedBeforeClose": true,
+    "previousFailureUnchanged": true,
+    "reportExistenceUnknown": true,
+    "bodyReadAdmission": false,
+    "permissionChange": false,
+    "originalCrashReaderGuardUnchanged": true,
+    "originalRuntimeCauseUnproved": true,
+    "historicalManagedUnknownUnchanged": true
+  },
+  "observation": {
+    "statusMax": 8,
+    "readMax": 8,
+    "perObserverStatusMax": 8,
+    "readLimit": 16384,
+    "immutablePageLimit": 8192,
+    "immutablePagesPerObserver": 128,
+    "immutablePayloadCap": 1048576,
+    "sameJobOnly": true,
+    "unknownNoReplay": true,
+    "SDKWholeBeforeParse": true
+  },
+  "start": {
+    "maximumCalls": 1,
+    "host": "mac",
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-"
+    ],
+    "cwd": "/Users/qianqi",
+    "timeout_seconds": 60,
+    "idempotency_key": "heptabao-mac-crash-directory-metadata-11d8bdb0-20261106-r1"
+  },
+  "sequence": [
+    "Whole exact GO/source/request then initialize this absent slot once.",
+    "External whole request/intent/armed before a model boundary and unique process_start.",
+    "Whole original SDK and original observer payload before parsing; only same job full bounded streams.",
+    "No permission change, fallback, target directory opening, crash body admission or unknown replay."
+  ],
+  "lane_allocation": {
+    "maximumNativeLanes": 2,
+    "authbus_migration": 1,
+    "compatibility_audit": 1,
+    "ha_validation": 0,
+    "root": 0
+  },
+  "crashBodyReadAuthorized": false,
+  "crashCauseProved": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

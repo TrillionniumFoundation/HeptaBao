@@ -1,0 +1,43 @@
+{
+  "schema": "heptabao.root.mac02b.source-stage-qualification.r1",
+  "report": {
+    "blob": "a148ebe5d4d729f4a1a76fd18e7a2e25b68a571d",
+    "bytes": 10558,
+    "sha256": "7d2e75f8038ba68c4ceeb5af4ec75bf8a6f528b2d394acad97ea0364b70d33e9"
+  },
+  "bodyGO": {
+    "blob": "41242c3423cac787f42285c0faf67ca5df0aab62",
+    "bytes": 2460,
+    "sha256": "e311ad0ec7aad308ba231831a7302c529cb9a66263b00d5c476c4367638da1c9"
+  },
+  "pass": true,
+  "check_count": 22,
+  "checks": {
+    "exactBodyHash": true,
+    "sourceCommit": true,
+    "sourceTree": true,
+    "sourceSoleParent": true,
+    "externalVolume": true,
+    "fixedExternalSource": true,
+    "allWorktreeBytes": true,
+    "fullLeafIndex": true,
+    "fullWorktreeMatches": true,
+    "fullStrictFsck": true,
+    "sourceClean": true,
+    "independentGit": true,
+    "sameTransportBundle": true,
+    "correctBundlePrerequisite": true,
+    "canonicalHistory": true,
+    "oldBaseUnchanged": true,
+    "childrenClosed": true,
+    "originalBudgets": true,
+    "prepared": true,
+    "noBuildOrServer": true,
+    "noProduction": true,
+    "noHostNetwork": true
+  },
+  "scope": "Whole actual source staging report and independently observed report metadata; not final candidate compilation, tests, server or LAN qualification.",
+  "sourceQualified": true,
+  "buildQualified": false,
+  "productionCutover": false
+}

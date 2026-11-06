@@ -1,0 +1,39 @@
+{
+  "schema": "heptabao.fresh-build-report-body.owner-release.r1",
+  "originalJob": "1a1b282ded0-fc05-7e57",
+  "slot": "combined_02b90762_fresh_build_gitfirst_r2",
+  "operation": "6d813c6f6fd62632675eab72ef1446f7d5ef3ef98b1b20be6f24d7737deac949",
+  "operationCompletedInactive": true,
+  "originalCalls": 9,
+  "immutablePages": 7,
+  "body": {
+    "blob": "3749276afcc6e1ead912370e9626dc3645c111df",
+    "bytes": 40591,
+    "sha256": "db0079589bd50c271486056283825ba1c3a415c19204f707ed4b5d1b786ec3b4"
+  },
+  "bodyWholeArchive": "a91e65ce935632e47dcdc59b167a6c0940ffca30",
+  "metadata": {
+    "blob": "39ea5396f7b4c910b531f27151d0c9cbc36f8c3c",
+    "bytes": 468,
+    "sha256": "b82542605edf781a9dc6bce738a283f879c33ddc30f9028f2ade5d17c3611989"
+  },
+  "actualStage": "normal-release-build",
+  "actualCargoExitCode": 101,
+  "actualCommandElapsedSeconds": 360.1929270219989,
+  "timedOut": false,
+  "testsStarted": false,
+  "actualTestCount": 0,
+  "originalChild": {
+    "direct_child_reaped": true,
+    "exit_code": 101,
+    "label": "normal-release-build",
+    "pid": 1503516,
+    "remaining": []
+  },
+  "nativeCallsInFlight": 0,
+  "nativeFuturesActive": 0,
+  "oldPrepareFailureRetained": "29702a6bdaa45a33b23389cef0d89b6cce7edb8e",
+  "specificCompilerDiagnosticKnown": false,
+  "newCargoAuthorized": false,
+  "logsReadAuthorized": false
+}

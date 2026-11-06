@@ -1,0 +1,133 @@
+{
+  "schema": "heptabao.mac-node-crash-projection-original-release.r1",
+  "job": "mac/1a1b27a443e-fc05-7e31",
+  "GO": {
+    "blob": "534fead45b43bf119c03a6d4c1bcad528322ae94",
+    "bytes": 8877,
+    "sha256": "c7ee1e95d6d1097aa185205f513f5d8c32cf4a2832b03e74810370e3b6929f8c"
+  },
+  "source": {
+    "blob": "41ea46286a45ae651d7444e87efa7a8f3c6c438e",
+    "bytes": 28062,
+    "sha256": "33b29c19d960409b9d32e5e6770e493d564e85ba19ccf8e638c95d76443df35c"
+  },
+  "request": {
+    "blob": "2b4cd128883dccf1db47584729a44f9662969875",
+    "bytes": 28997,
+    "sha256": "95ea411168b80cef09e78451e71eb8b7b281869f119076a7929663416de7ea6e"
+  },
+  "journal": {
+    "blob": "c74d45d02fd3e8b7db5c3f4b46c843d3f73ddddd",
+    "bytes": 19051,
+    "sha256": "131419db2d70a58488e07912a49bd15b62c27e4f1173ddc08e0bb5a99dd86524"
+  },
+  "originalCalls": 7,
+  "originalObservers": 2,
+  "immutablePages": 2,
+  "allOriginalCallsAccepted": true,
+  "observers": [
+    {
+      "id": "ecccc3e5645e5d27442af503d53fd60632daa460aefe13e43673be4c28608dd5",
+      "tool": "process_status",
+      "payload": {
+        "blob": "9fbe0acd95542ed6739223898d3f052be0b5ae25",
+        "bytes": 907,
+        "sha256": "69653b5ea5752178f5a407cabe148bfa00fc270230d60ae34adf21e4787bdaf1"
+      },
+      "payloadTree": "b745864960f7d4cef1eb8745a28e601b93b10b02",
+      "nativeText": {
+        "blob": "c74624866960b95b976b5441fd673b99780a6619",
+        "bytes": 728,
+        "sha256": "b4dac05b865ac10708448dde0ee90fe717aa9549b29716849bc6b31c075ebbf5"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "b41cba40f6ed45c6246dd161b5359758f765f5f53dce7e0ba02d0e6539f6203b",
+      "tool": "process_read",
+      "payload": {
+        "blob": "dd3c5afe7618fd2afea633b6983d6437f6070542",
+        "bytes": 6246,
+        "sha256": "4363f7ab635d85e8e45b618b7dbfec5a95afc24a1a8900b2d7c03435a29ead17"
+      },
+      "payloadTree": "bc4a44574d452e4cb7f47e111afbf8dca6cc85fe",
+      "nativeText": {
+        "blob": "37291c6e13134da82c7ef4d5e08a65f5ab7b30cb",
+        "bytes": 5817,
+        "sha256": "01fb161573b3247ad5e5a3931697808c5446be3dec1cda599f4a10b2855ea032"
+      },
+      "pages": 1,
+      "completedInactive": true
+    }
+  ],
+  "stdout": {
+    "blob": "2efead8a4275b7f1298c45833a64ec229fc240b4",
+    "bytes": 1783,
+    "sha256": "5bc611df8194b881da135d0406b081d616289f3531aa848ea60328e4fdffdb2c"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "authority": {
+    "blob": "c74624866960b95b976b5441fd673b99780a6619",
+    "bytes": 728,
+    "sha256": "b4dac05b865ac10708448dde0ee90fe717aa9549b29716849bc6b31c075ebbf5"
+  },
+  "state": {
+    "nativeCallInFlight": false,
+    "pending": null,
+    "activeObserver": null,
+    "paused": false,
+    "nextStdout": 1783,
+    "nextStderr": 0
+  },
+  "lane": {
+    "activeCalls": 0,
+    "activeNativeFutures": 0,
+    "released": true
+  },
+  "result": {
+    "observationComplete": false,
+    "outcomeUnknown": false,
+    "error": {
+      "code": "fixed_directory_shape",
+      "errno": null,
+      "type": "Refused"
+    },
+    "allOwnResourcesClosed": true,
+    "finalHeldNamedFencesPassed": true,
+    "handlersRestored": true,
+    "deadlineMet": true,
+    "actualIO": {
+      "allReturnedFdsAndIteratorClosed": true,
+      "childProcesses": 0,
+      "closeErrors": [],
+      "metadataCalls": 26,
+      "readCalls": 0,
+      "returnedFdLedger": {
+        "attempts": 5,
+        "knownNoReturnErrors": 0,
+        "pending": 0,
+        "registered": 5,
+        "registrationUnknown": false
+      },
+      "returnedReadBytes": 0,
+      "scan": {
+        "attempted": false,
+        "closeAttempted": false,
+        "closed": false,
+        "coverageComplete": false,
+        "entriesExamined": 0,
+        "knownNoReturnError": false,
+        "pending": false,
+        "registrationUnknown": false,
+        "returned": false
+      },
+      "writes": 0
+    }
+  },
+  "interpretation": "Known original failure at fixed_directory_shape; 5 successful opens plus exact six-directory control flow locates the final DiagnosticReports metadata gate. Actual failing mode/uid/type were not published. No directory enumeration or report-body read occurred; no report absence or crash cause follows. Historical UNKNOWN and old progress remain unchanged."
+}

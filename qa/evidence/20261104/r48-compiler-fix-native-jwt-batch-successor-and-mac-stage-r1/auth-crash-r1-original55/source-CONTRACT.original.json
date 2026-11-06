@@ -1,0 +1,236 @@
+{
+  "schema": "heptabao.mac-one-node-crash-projection-source-contract.r1",
+  "status": "SOURCE_ONLY_NO_NATIVE_GO",
+  "source": {
+    "blob": "41ea46286a45ae651d7444e87efa7a8f3c6c438e",
+    "bytes": 28062,
+    "sha256": "33b29c19d960409b9d32e5e6770e493d564e85ba19ccf8e638c95d76443df35c"
+  },
+  "request": {
+    "blob": "2b4cd128883dccf1db47584729a44f9662969875",
+    "bytes": 28997,
+    "sha256": "95ea411168b80cef09e78451e71eb8b7b281869f119076a7929663416de7ea6e"
+  },
+  "journal": {
+    "blob": "c74d45d02fd3e8b7db5c3f4b46c843d3f73ddddd",
+    "bytes": 19051,
+    "sha256": "131419db2d70a58488e07912a49bd15b62c27e4f1173ddc08e0bb5a99dd86524"
+  },
+  "freshSlot": "owner_authbus_public_node_crash_projection_gitfirst_r1",
+  "prefix": "heptabao-mac-public-node-crash-33b29c19-",
+  "NativeCalls": 0,
+  "evidence": {
+    "freshJob": "mac/1a1b25c3c54-fc05-7db1",
+    "actualWholeTree": "73e04ba4466bcdd042bff9c776c2c607c7150057",
+    "stdout": {
+      "blob": "215ee5f9d647568a2a785c239fe8e0e90b1b9539",
+      "bytes": 9930,
+      "sha256": "14fe6172b38a4a036ebe5fff0ca7f616ea6fbe757d3abd2996b64fa602ac6cc0"
+    },
+    "authority": {
+      "blob": "b4032586eeca0965a7ab2decc811d47aa82b06d0",
+      "bytes": 731,
+      "sha256": "b14a2dc0cba4c2227ba0cb30339e60eb2ceb565d47084aa4c3f46337390faea4"
+    },
+    "startSDK": {
+      "blob": "1c8c67d1e1fd29cf453967197edc731673d2dc2d",
+      "bytes": 1420,
+      "sha256": "6f1a8879903640df8523c81b4ab73630e88b357e060820ea1281693391acb57b"
+    },
+    "pid": 51494,
+    "parent": 51483,
+    "pgid": 51494,
+    "uid": 501,
+    "psStartLocal": "Sat Nov 7 03:35:52 2026",
+    "childFinalReturnCode": -6,
+    "retainedExitCode": 2,
+    "retainedExitStatus": 6,
+    "oldRuntimeProgressUnknown": true
+  },
+  "scope": {
+    "directory": "/Users/qianqi/Library/Logs/DiagnosticReports",
+    "pathChain": [
+      "/",
+      "/Users",
+      "/Users/qianqi",
+      "/Users/qianqi/Library",
+      "/Users/qianqi/Library/Logs",
+      "/Users/qianqi/Library/Logs/DiagnosticReports"
+    ],
+    "noFollowEveryComponent": true,
+    "fixedUidForBody": 501,
+    "regularSingleLinkBody": true,
+    "groupOrOtherWritableBodyRefused": true,
+    "currentHeldNamedFull9BeforeAndAfter": true,
+    "directoryIdentityNotPreviouslyObserved": true,
+    "reportIdentityNotPreviouslyObserved": true,
+    "directoryEntriesMax": 4096,
+    "coverageCompleteRequiresObservedStopIteration": true,
+    "noRecursion": true,
+    "noFallbackDirectory": true,
+    "strictFilenameRegex": "^node[-_](2026-11-06|2026-11-07)[-_]([0-9]{6})(?:[-_][0-9]{1,6})?\\.ips$",
+    "filenameOffsetsSeconds": [
+      0,
+      28800
+    ],
+    "filenameMarginSeconds": 120,
+    "maximumNameCandidates": 8,
+    "maximumOpenedBodies": 2,
+    "candidateNamesOverTwoStopsBeforeAnyBody": true,
+    "bodyBytesEachMax": 1048576,
+    "returnedBytesTotalIncludingTwoEOFSentinels": 2097154,
+    "matchingReportMustBeUnique": true
+  },
+  "timeBinding": {
+    "originalNativeCreatedMs": 1793993751636,
+    "originalNativeTerminalMs": 1793993752149,
+    "utcStart": "2026-11-06T19:35:51.636Z",
+    "utcTerminal": "2026-11-06T19:35:52.149Z",
+    "actualLocalPsStart": "Sat Nov 7 03:35:52 2026",
+    "offsetIsObservedConventionNotMachineTimezoneQualification": true,
+    "filenameWindowOnly": "derived original interval plus/minus120seconds, accepting UTC or observed local +08:00 filename clock",
+    "reportCorrelationWindowNs": [
+      "1793993749636000000",
+      "1793993754149000000"
+    ],
+    "reportCorrelationMarginMs": 2000,
+    "requiresBothProcLaunchAndCaptureTime": true,
+    "requiredTimeOrdering": "lower <= procLaunch <= captureTime <= upper",
+    "metadataTimestampNotUsedAsCrashTime": true,
+    "fileMtimeNotUsedAsCrashTime": true
+  },
+  "budgets": {
+    "workSeconds": 5,
+    "afterClosureSeconds": 8,
+    "NativeOuterSeconds": 60,
+    "readCalls": 36,
+    "metadataCalls": 256,
+    "returnedExplicitFdAttempts": 8,
+    "scandirIteratorAttempts": 1,
+    "scandirInternalFdSeparate": true,
+    "applicationWrites": 0,
+    "directChildren": 0,
+    "signalsToOtherProcesses": 0,
+    "publicStdoutMaximum": 65536,
+    "synchronousReadChecksNotPreemptiveTimeout": true,
+    "observation": {
+      "processStatusMaximum": 8,
+      "processReadObserverMaximum": 8,
+      "processReadBytes": 16384,
+      "perObserverStatusMaximum": 8,
+      "immutablePageBytes": 8192,
+      "perObserverPagesMaximum": 128,
+      "perObserverPayloadMaximum": 1048576
+    }
+  },
+  "publicAllowlist": {
+    "identity": [
+      "exact predetermined PID51494/parent51483/procName node only after full correlation",
+      "procPath only exact observed real or alias path",
+      "strict timestamp text plus exact nanosecond decimal",
+      "safe regex macOS train/build; releaseType User/Beta"
+    ],
+    "exception": [
+      "fixed Mach type enumeration",
+      "fixed signal enumeration",
+      "<=4 numeric hexadecimal codes"
+    ],
+    "termination": [
+      "fixed namespace enumeration",
+      "uint64 decimal code/flags",
+      "fixed indicator/byProc enumeration",
+      "byPid equals predetermined target/parent booleans"
+    ],
+    "fixedTextSlots": [
+      "termination.indicator",
+      "termination.reasons[]",
+      "termination.details[]",
+      "asi.dyld[]"
+    ],
+    "textBudgets": {
+      "stringsMax": 32,
+      "eachUTF8BytesMax": 4096,
+      "totalUTF8BytesMax": 32768,
+      "linesMax": 64,
+      "hardFailureNoTruncation": true
+    },
+    "libraryMissingLinePrefixes": [
+      "Library not loaded:",
+      "Library not found:"
+    ],
+    "libraryPaths": [
+      "ASCII canonical absolute under /opt/homebrew/",
+      "ASCII canonical absolute under /System/",
+      "ASCII canonical absolute under /usr/lib/"
+    ],
+    "libraryOutput": [
+      ".dylib basename or exact same-name .framework binary",
+      "public prefix category",
+      "under fixed observed Node installation boolean",
+      "equals observed Node executable/alias boolean"
+    ],
+    "libraryMax": 8,
+    "noLibraryFullUnknownPath": true,
+    "noLibraryFileExistenceOrContentClaim": true,
+    "fixedLexicalOnly": [
+      "libraryNotLoaded",
+      "libraryNotFound",
+      "symbolNotFound",
+      "codeSignature",
+      "sandbox",
+      "operationNotPermitted",
+      "permissionDenied",
+      "abortCalled",
+      "dyld"
+    ],
+    "excluded": [
+      "raw IPS",
+      "raw or hash of unknown text",
+      "environment",
+      "threads",
+      "usedImages",
+      "arbitrary dictionary keys",
+      "incident identifiers",
+      "machine identifiers",
+      "other process PID values"
+    ]
+  },
+  "failureSemantics": {
+    "malformedOrUnsupportedSchema": "closed failure or unqualified correlation; never guessed identity",
+    "missingOrNoMatch": "only no qualified match within finite inspected scope, no global absence or old closure",
+    "limitsOrDrift": "hard refusal with original error, no automatic fallback/retry",
+    "unknownResourceRegistration": "pending/registrationUnknown conservatively prevents allClosed",
+    "historicalUnknownsUnchanged": true,
+    "originalAbortCauseNotAutomaticallyProved": true,
+    "newProbeCauseNotAutomaticallyProved": true
+  },
+  "originalMethods": {
+    "open_fd": {
+      "blob": "f37f8cad57e8b45c1a2cfb26ff0738f46697422e",
+      "bytes": 1490,
+      "sha256": "807f519034edf774a80e74b5ef7227768da027b0c8ace99cb353d1b971bc81d6"
+    },
+    "close_one": {
+      "blob": "91ea967f61a16f08cd89419cd553a77e0642c185",
+      "bytes": 458,
+      "sha256": "f900ad678de9c765cb93793009ceb98f23f4881fa671cac86040e27257a7543f"
+    },
+    "close": {
+      "blob": "c6cb1f5af500c99b8a4fee9f1c97522b5a310ef4",
+      "bytes": 139,
+      "sha256": "42057aa2bfbfe146a206cab868e7e518a93003553ab9c8e07d55432ad25b02aa"
+    }
+  },
+  "typedNativeDigest": null,
+  "typedNativeFingerprint": null,
+  "sourceOnlyWordingCorrection": {
+    "originalCoreTree": "ffdd063738e36a71a229741f2ca886c0a4e71aa9",
+    "originalSource": {
+      "blob": "c50ec41725d365ba1149ec9331750b84cab6203c",
+      "bytes": 28069,
+      "sha256": "10f661986c6c69de5121761be02d798a6af01fcdc69e85f6aa18d8c8f7b98290"
+    },
+    "change": "One declaration key renamed newPotentiallyPrivateIpsBodiesReadLocally to potentiallyPrivateIpsBodyReadScope; no read or resource logic changed.",
+    "oldRequestNeverSubmitted": true
+  }
+}

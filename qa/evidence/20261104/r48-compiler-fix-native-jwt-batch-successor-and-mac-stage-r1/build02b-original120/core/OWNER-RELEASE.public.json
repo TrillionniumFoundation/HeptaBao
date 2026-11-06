@@ -1,0 +1,177 @@
+{
+  "schema": "heptabao.combined02b.fresh-build-owner-release.r2",
+  "job": "1a1b282ded0-fc05-7e57",
+  "rootGo": {
+    "blob": "ca932562c2bd9d65b155114a7c0de75c07120270",
+    "bytes": 9154,
+    "sha256": "22d3a6811594660271e63863bff5eb9691b1a4ed169872852c382c02cee412c9"
+  },
+  "request": {
+    "blob": "dc8f695b48db595fd84d438ee1d240679c0a936c",
+    "bytes": 153606,
+    "sha256": "042ceb19df239ee4febd6eda9ea84fb1693fe5bdda9bda92ab94e8fe5374dce9"
+  },
+  "sourcePacket": "a61c32405e1e2ca7fd1681a96393523232bba7b1",
+  "authority": {
+    "id": "82eca3d912f7ed4550db60ff96d55d340f7f842ad0e087eb8c6ba08fc5625caf",
+    "tool": "process_status",
+    "payload": {
+      "blob": "2576cbcac3a689ad3a192303e771417b7403a9ce",
+      "bytes": 907,
+      "sha256": "501f9a362aebc90cbd5ae2daf7262386bd0a8b133477c186b57424ff99a61667"
+    },
+    "payloadTree": "58b25738c0565fec210ca08da15004ace34fca1d",
+    "nativeText": {
+      "blob": "10702d460d97a546576be01007e1ad1b3745a50c",
+      "bytes": 728,
+      "sha256": "c3ed05955b190e4e607e458c94269c3bb6768c87f0088d9678e8295c8587f1db"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "exitCode": 1,
+  "timedOut": false,
+  "outputComplete": true,
+  "outputDurable": true,
+  "stdout": {
+    "blob": "23f98408bd7b822dfb2f66f8acfb87c44fee0534",
+    "bytes": 2391,
+    "sha256": "4063a65b162e678ac10dd7afb2a7f8613bfe6005f1d5169409483e0ce1f860ef"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "calls": 19,
+  "allCallsAccepted": true,
+  "observers": [
+    {
+      "id": "7d4ec76a4a718a242db11f0ada1828b6dd82db82e26f88ac5c4a374bb53e5f6a",
+      "tool": "process_status",
+      "payload": {
+        "blob": "2b486ae5b890cd64b47c662498a448047562122e",
+        "bytes": 618,
+        "sha256": "bdcabbc52c21027cacb2cec284bf00539e2c96ca9de2fc623c6f0863591e270f"
+      },
+      "payloadTree": "9dcc05a9fe11de777f06c42e7234c05930504e71",
+      "nativeText": {
+        "blob": "81691165fe70b3fbeb56f2dc043c47884f5cdac1",
+        "bytes": 471,
+        "sha256": "983c98ef3e5f6682de3d14d185d83434d157c613c0c3e4e2ab3d4483cf7fc7b2"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "b41b8414ce7a13bf55869a359187e237566305eb5f32576a2e9ee05a509b25d6",
+      "tool": "process_read",
+      "payload": {
+        "blob": "4bdd9dda8d1b795ffe07a87f054ff2855aa92fe7",
+        "bytes": 6845,
+        "sha256": "ed580f2d0afcda653ce631f59fd22817b9aeb994fd7b9ca9cfb25e44205d9cfe"
+      },
+      "payloadTree": "3bde7f257bf8a351b8dee6fbd01b10e4990f915f",
+      "nativeText": {
+        "blob": "8d4db2b90fb1a1d5685696cff725e72ecf314ed4",
+        "bytes": 6443,
+        "sha256": "951c5d73f68597edc2072a9c6498588e9eed50274603815adfc56181a630ec74"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "dc30f2abe13b97b31bb1da47af91540e41f565096cd306b19842fbf67fe9959f",
+      "tool": "process_status",
+      "payload": {
+        "blob": "2b486ae5b890cd64b47c662498a448047562122e",
+        "bytes": 618,
+        "sha256": "bdcabbc52c21027cacb2cec284bf00539e2c96ca9de2fc623c6f0863591e270f"
+      },
+      "payloadTree": "9dcc05a9fe11de777f06c42e7234c05930504e71",
+      "nativeText": {
+        "blob": "81691165fe70b3fbeb56f2dc043c47884f5cdac1",
+        "bytes": 471,
+        "sha256": "983c98ef3e5f6682de3d14d185d83434d157c613c0c3e4e2ab3d4483cf7fc7b2"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "09f8f9f2e0c1f4ffe228a7b4aeb75612662d0da229b18a6dda562899dfe5c245",
+      "tool": "process_status",
+      "payload": {
+        "blob": "2b486ae5b890cd64b47c662498a448047562122e",
+        "bytes": 618,
+        "sha256": "bdcabbc52c21027cacb2cec284bf00539e2c96ca9de2fc623c6f0863591e270f"
+      },
+      "payloadTree": "9dcc05a9fe11de777f06c42e7234c05930504e71",
+      "nativeText": {
+        "blob": "81691165fe70b3fbeb56f2dc043c47884f5cdac1",
+        "bytes": 471,
+        "sha256": "983c98ef3e5f6682de3d14d185d83434d157c613c0c3e4e2ab3d4483cf7fc7b2"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "82eca3d912f7ed4550db60ff96d55d340f7f842ad0e087eb8c6ba08fc5625caf",
+      "tool": "process_status",
+      "payload": {
+        "blob": "2576cbcac3a689ad3a192303e771417b7403a9ce",
+        "bytes": 907,
+        "sha256": "501f9a362aebc90cbd5ae2daf7262386bd0a8b133477c186b57424ff99a61667"
+      },
+      "payloadTree": "58b25738c0565fec210ca08da15004ace34fca1d",
+      "nativeText": {
+        "blob": "10702d460d97a546576be01007e1ad1b3745a50c",
+        "bytes": 728,
+        "sha256": "c3ed05955b190e4e607e458c94269c3bb6768c87f0088d9678e8295c8587f1db"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "807617b190e7e8f67a87456fe3d78c25fd5d0dd4f14c84e9511445d94839fe04",
+      "tool": "process_read",
+      "payload": {
+        "blob": "eaff86f89ba18f3e05aece631ee4f6490e1ff54d",
+        "bytes": 1725,
+        "sha256": "3abd9e9d9500127ad2ce601835192914053412af52d0e3ff99eecbdec8079806"
+      },
+      "payloadTree": "bc0ad3ec248ad13d34b81c501b6d3e8cff064bbf",
+      "nativeText": {
+        "blob": "8efab367ea32f4f8ff6d29fa1a2db5fc614e8b6f",
+        "bytes": 1536,
+        "sha256": "93e841edcf0ad8cf50c8ebe989f786765114702134af663284a61638d1247eae"
+      },
+      "pages": 1,
+      "completedInactive": true
+    }
+  ],
+  "immutablePages": 6,
+  "nativeCallInFlight": false,
+  "activeObserver": null,
+  "pending": null,
+  "jobTerminal": true,
+  "originalSummaryAllOwnedStopped": true,
+  "ownedCleanupDetailedQualification": false,
+  "laneReleased": true,
+  "NativeFutureCount": 0,
+  "NativeCallCount": 0,
+  "productQualified": false,
+  "fullReplacement": false,
+  "resultPointer": {
+    "status": "failed",
+    "source_commit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "source_tree": "9781e9615ac5fb068d217241c74bb54bf87942cf",
+    "result_path": "/home/qian-qi/hb-02b90762-controls-20261106-r2/build-tests-r1/result.public.json",
+    "result_sha256": "db0079589bd50c271486056283825ba1c3a415c19204f707ed4b5d1b786ec3b4",
+    "publication_within_original_outer": true,
+    "all_owned_stopped": true
+  },
+  "reportBodyObserved": false,
+  "failureReasonKnown": false,
+  "businessReplay": false,
+  "priorOldTargetFailurePreserved": true
+}

@@ -1,0 +1,30 @@
+--- a/crates/heptabao-server/src/service_snapshot_forward_client.rs
++++ b/crates/heptabao-server/src/service_snapshot_forward_client.rs
+@@ -265,7 +265,8 @@
+         // A failed exchange is never treated as proof that the leader did no work.
+         self.transport_attempted = true;
+         let exchange = endpoint.exchange(&self.metadata, upload, &mut file, limits, |metadata| {
+-            let mut writer = crate::request_deadline::lock_until(service.as_ref(), self.owner.deadline)
++            let mut writer = service
++                .lock_for_request()
+                 .map_err(|_| heptabao_ha_service::HaError::Transport)?;
+             let checkpoint = self
+                 .accept_ready(&mut writer, metadata)
+@@ -298,7 +299,7 @@
+             }
+         };
+         let completion: Result<CompletedSnapshotForward, Response> = (|| {
+-            let mut writer = crate::request_deadline::lock_until(service.as_ref(), self.owner.deadline).map_err(|_| unavailable())?;
++            let mut writer = service.lock_for_request().map_err(|_| unavailable())?;
+             self.owner.check(&writer)?;
+             let wire: wire::CompletionWire = wire::decode(result.metadata())?;
+             if wire.reply.status != result.status() {
+@@ -358,7 +359,7 @@
+         service: &Arc<Mutex<Service>>,
+         response: Response,
+     ) -> CompletedSnapshotForward {
+-        match crate::request_deadline::lock_until(service.as_ref(), self.owner.deadline) {
++        match service.lock_for_request() {
+             Ok(mut writer) => self.audit_failure(&mut writer, response, None),
+             Err(_) => CompletedSnapshotForward {
+                 response: self.audit_veto_response(None),

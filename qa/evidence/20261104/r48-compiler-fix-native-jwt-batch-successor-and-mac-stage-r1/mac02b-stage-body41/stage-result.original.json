@@ -1,0 +1,427 @@
+{
+  "actual_build_qualification": false,
+  "canonical_bundle": {
+    "bytes": 171016,
+    "header": {
+      "header_sha256": "bc421f87f1547daeef2cdd4ffce357d0eac193e380297296919658640be05ab5",
+      "heads": [
+        [
+          "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+          "HEAD"
+        ]
+      ],
+      "prerequisites": [
+        "49503322c7f446e5eb41e7744f1fdbd7f1192ecc"
+      ],
+      "version": 2
+    },
+    "identity": [
+      16777244,
+      72751497,
+      501,
+      20,
+      33152,
+      1,
+      171016,
+      1793996064537718140,
+      1793996064537728890
+    ],
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/canonical-hb-02b90762-from495-20261106-r1.bundle",
+    "public_network_import_required_on_mac": false,
+    "sha256": "069e0e07ef05dc6ec7f75407f8a06edd5efd53764833334fee74dcbf5719a800"
+  },
+  "canonical_bundle_published_after_volume_guard": true,
+  "canonical_history_count": 3768,
+  "carrier_sha256": "1f67ce22d3f43e378eb76b8fb2a40feaffa1809e282931b33feec93c86c85141",
+  "cleanup": [
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "045-git-status",
+      "pid": 64402,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "044-git-rev-parse",
+      "pid": 64400,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "043-git-rev-parse",
+      "pid": 64398,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "042-git-status",
+      "pid": 64396,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "041-git-rev-parse",
+      "pid": 64394,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "040-git-rev-parse",
+      "pid": 64392,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "039-git-ls-files",
+      "pid": 64390,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "038-git-ls-tree",
+      "pid": 64388,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "037-git-rev-parse",
+      "pid": 64386,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "036-git-rev-parse",
+      "pid": 64384,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "035-git-fsck",
+      "pid": 64364,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "034-git-status",
+      "pid": 64354,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "033-git-rev-parse",
+      "pid": 64352,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "032-git-rev-parse",
+      "pid": 64350,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "031-git-checkout",
+      "pid": 64341,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "030-git-rev-list",
+      "pid": 64339,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "029-git-rev-list",
+      "pid": 64337,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "028-git-rev-list",
+      "pid": 64335,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "027-git-rev-list",
+      "pid": 64333,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "026-git-show",
+      "pid": 64331,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "025-git-show",
+      "pid": 64329,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "024-git-show",
+      "pid": 64327,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "023-git-show",
+      "pid": 64325,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "022-git-show",
+      "pid": 64323,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "021-git-show",
+      "pid": 64321,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "020-git-show",
+      "pid": 64319,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "019-git-show",
+      "pid": 64317,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "018-git-show",
+      "pid": 64315,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "017-git-show",
+      "pid": 64313,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "016-git-show",
+      "pid": 64311,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "015-git-show",
+      "pid": 64309,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "014-git-show",
+      "pid": 64307,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "013-git-show",
+      "pid": 64305,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "012-git-show",
+      "pid": 64303,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "011-git-show",
+      "pid": 64301,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "010-git-rev-parse",
+      "pid": 64299,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "009-git--c",
+      "pid": 64294,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "008-git-bundle",
+      "pid": 64292,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "007-git-bundle",
+      "pid": 64289,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "006-git-remote",
+      "pid": 64287,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "005-git-remote",
+      "pid": 64285,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "004-independent-local-clone",
+      "pid": 64275,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "003-git-status",
+      "pid": 64273,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "002-git-rev-parse",
+      "pid": 64271,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "001-git-rev-parse",
+      "pid": 64269,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "000-t5-volume-identity",
+      "pid": 64267,
+      "remaining": []
+    }
+  ],
+  "compiler_started": false,
+  "controls_published": false,
+  "elapsed_seconds_after_cleanup": 4.05972950020805,
+  "external_volume_uuid": "FB804D1B-24CB-4D6E-AEA7-A9E180807758",
+  "full_strict_fsck_passed": true,
+  "full_worktree": {
+    "all_tracked_worktree_blobs_and_modes_match": true,
+    "full_leaf_index_sha256": "c6cef770842a1b0006b4c86a58e325802d00dd5779dede468262f2693c3246cc",
+    "index_matches_tree": true,
+    "tracked_bytes": 62537554,
+    "tracked_leaf_count": 3932
+  },
+  "host": "mac",
+  "independent_git_directory": true,
+  "new_commits_since_actual_495": [
+    "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "025b05a340de841b8161c1120344e86eae30eb97",
+    "33b814c7034ec853151b1ff13e7529c83f65ea70",
+    "808e45d690f177ecb922e13d1ed19f7877156094",
+    "e3afc157447d35c861f275a761b29da3e42aff8e",
+    "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "1c66541993662f92cf717154e33717abedb2ea74",
+    "6d02ceca629163e1c07480fa1f21520434407143",
+    "19ba09ab5c494f25a3531749b0b99fc5c651d56c",
+    "e69e52f28c653d28c5ae36dbbf6eb51b844536bc",
+    "c133d7e7b8a1df5f0be8f4337893f234c6ccede2",
+    "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "6304a898192bfdf7eabec3c4ea40f7166e59a137",
+    "e5de554f5dfe99f0de30012122fe3e248fb60532",
+    "fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd",
+    "6d3040a2dbd06661a67f5c62df259ff446eb8515"
+  ],
+  "new_stage_total_seconds": 300,
+  "new_supervisor_seconds": 360,
+  "no_alternates": true,
+  "no_shared_object_links": true,
+  "object_files_checked": 205,
+  "old_source_after": {
+    "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "status": "",
+    "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9"
+  },
+  "old_source_before": {
+    "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "status": "",
+    "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9"
+  },
+  "old_source_unchanged": true,
+  "original_clone_cap_seconds": 180,
+  "original_git_leaf_cap_seconds": 90,
+  "production_changed": false,
+  "public_network_fetch_used": false,
+  "root": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-02b90762-src-20261106-r1",
+  "schema": "heptabao.final-mac-source-only-stage.v1",
+  "server_started": false,
+  "sole_parent": "025b05a340de841b8161c1120344e86eae30eb97",
+  "source": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-02b90762-src-20261106-r1/source",
+  "source_clean": true,
+  "source_commit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+  "source_ref": "refs/heads/codex/heptabao-snapshot49-jwt147-9781e961-20261106",
+  "source_tree": "9781e9615ac5fb068d217241c74bb54bf87942cf",
+  "stage_purpose": "SOURCE_ONLY_NO_BUILD_CONTROLS",
+  "stager_sha256": "ea096d7a13c4501d4d39d7d953fb6fd35c49aad6051227884c06e179bc8db9fd",
+  "started_ns": 1793996064453413000,
+  "status": "prepared",
+  "terminal_ns": 1793996068500547000,
+  "within_new_stage_deadline": true
+}

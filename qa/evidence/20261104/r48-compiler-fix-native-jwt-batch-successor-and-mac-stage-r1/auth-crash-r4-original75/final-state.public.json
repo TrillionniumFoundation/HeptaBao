@@ -1,0 +1,818 @@
+{
+  "rootGoWhole": true,
+  "goRaw": "{\n  \"schema\": \"heptabao.root.mac-fixed-node-ips-r4.expanded-diagnostics-go.r1\",\n  \"authorization\": \"GO\",\n  \"issuedAtUtc\": \"2026-11-06 21:07:19 UTC\",\n  \"agent\": \"authbus_migration\",\n  \"scope\": \"one_fixed_previously_observed_IPS_safe_projection\",\n  \"source_packet\": \"6431d5535301bc39b6eaafd7697ae29c81652843\",\n  \"root_review\": {\n    \"blob\": \"b0ed05f333654e1ecbf1cfd00b80d884a9f451f2\",\n    \"bytes\": 7950,\n    \"sha256\": \"470098a915ee0dee599c97873cdc717a678cf8299d8bd8a27eb8140098edfae6\"\n  },\n  \"source\": {\n    \"blob\": \"6813e19bf3d6fed77d6f0705d8c10b22104af2cb\",\n    \"bytes\": 37634,\n    \"sha256\": \"9e758b73a9a487e7ffa19f2815583761e44d545f8e8a40467fb160de8871b612\"\n  },\n  \"exact_request\": {\n    \"blob\": \"0d3d2ad6dd3c856b4179816671a011e805a8b6e7\",\n    \"bytes\": 38683,\n    \"sha256\": \"3d50ba16e276f11d97a52cfbd21664d7008d0a8e75f907be008af7923a53fcd8\"\n  },\n  \"journal\": {\n    \"blob\": \"7eccb4f5207863714b7f4ee8f8f6428fbb6a87c5\",\n    \"bytes\": 19051,\n    \"sha256\": \"487dd32f42e797c931b3b7caf60783cd717fd0e1209ef6850e236033095e38c6\"\n  },\n  \"digest\": \"5d59a26ad362935fc8130dd8a8d86408a93a90178063dd7b12354aab52c35451\",\n  \"fingerprint\": \"6726586098151232351\",\n  \"start\": {\n    \"maximum\": 1,\n    \"host\": \"mac\",\n    \"executable\": \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",\n    \"args\": [\n      \"-I\",\n      \"-S\",\n      \"-B\",\n      \"-\"\n    ],\n    \"cwd\": \"/Users/qianqi\",\n    \"timeout_seconds\": 60,\n    \"idempotency_key\": \"heptabao-mac-public-node-crash-9e758b73-20261106-r4\",\n    \"slot\": \"owner_authbus_public_node_crash_fixed_file_gitfirst_r4\"\n  },\n  \"original_public_probe\": {\n    \"freshJob\": \"mac/1a1b25c3c54-fc05-7db1\",\n    \"actualWholeTree\": \"73e04ba4466bcdd042bff9c776c2c607c7150057\",\n    \"stdout\": {\n      \"blob\": \"215ee5f9d647568a2a785c239fe8e0e90b1b9539\",\n      \"bytes\": 9930,\n      \"sha256\": \"14fe6172b38a4a036ebe5fff0ca7f616ea6fbe757d3abd2996b64fa602ac6cc0\"\n    },\n    \"authority\": {\n      \"blob\": \"b4032586eeca0965a7ab2decc811d47aa82b06d0\",\n      \"bytes\": 731,\n      \"sha256\": \"b14a2dc0cba4c2227ba0cb30339e60eb2ceb565d47084aa4c3f46337390faea4\"\n    },\n    \"startSDK\": {\n      \"blob\": \"1c8c67d1e1fd29cf453967197edc731673d2dc2d\",\n      \"bytes\": 1420,\n      \"sha256\": \"6f1a8879903640df8523c81b4ab73630e88b357e060820ea1281693391acb57b\"\n    },\n    \"pid\": 51494,\n    \"parent\": 51483,\n    \"pgid\": 51494,\n    \"uid\": 501,\n    \"psStartLocal\": \"Sat Nov 7 03:35:52 2026\",\n    \"childFinalReturnCode\": -6,\n    \"retainedExitCode\": 2,\n    \"retainedExitStatus\": 6,\n    \"oldRuntimeProgressUnknown\": true\n  },\n  \"priorReader\": {\n    \"job\": \"1a1b2a2f2f6-fc05-7f15\",\n    \"minTree\": \"4d314a102c828b6e4ecf50b4beec516bb40c55fa\",\n    \"fullTree\": \"89b14ba62dc988fc7ff08ee931e0391407d3b9a1\",\n    \"stdout\": {\n      \"blob\": \"3f38de4e73c785677d17e3e634b70a4347bd719a\",\n      \"bytes\": 6060,\n      \"sha256\": \"a4013398d0427092504bd11b867cf185ecd9e8229f4362216691637d36108874\"\n    },\n    \"release\": {\n      \"blob\": \"cca03cd50e4aa9048e46edba9d1dfff976ee8938\",\n      \"bytes\": 7275,\n      \"sha256\": \"6eb17f52c364a8daabcf9e86d73ddea7e789065f7af621fa0119062a3aba83b8\"\n    },\n    \"observedEightPredicates\": {\n      \"crashType309\": true,\n      \"launchAndCaptureTimesTyped\": true,\n      \"metadataNameAbsentOrNode\": true,\n      \"parentIs51483\": true,\n      \"pidIs51494\": true,\n      \"procNameNode\": true,\n      \"procPathIsKnownNodePath\": false,\n      \"withinOriginalCorrelatedTimeWindow\": true\n    },\n    \"pathLiteralClassification\": \"literal-homebrew-star-node\",\n    \"namespacePresentButOldEnumUnknown\": true,\n    \"namespaceRawNotObservedByAssistant\": true,\n    \"oldOutputNeverReclassified\": true\n  },\n  \"fixed_read_scope\": {\n    \"fixedPath\": \"/Users/qianqi/Library/Logs/DiagnosticReports/node-2026-11-07-033552.ips\",\n    \"fixedBasename\": \"node-2026-11-07-033552.ips\",\n    \"fixedFull9\": [\n      \"16777233\",\n      \"593533598\",\n      \"501\",\n      \"250\",\n      \"33152\",\n      \"1\",\n      \"6809\",\n      \"1793993752090245618\",\n      \"1793993752090848927\"\n    ],\n    \"regularUid501Mode0600Nlink1\": true,\n    \"full9RequiredBeforeOpenAndHeldNamedBeforeAfterReadAndFinal\": true,\n    \"directoryException\": {\n      \"path\": \"/Users/qianqi/Library/Logs/DiagnosticReports\",\n      \"identity5\": [\n        \"16777233\",\n        \"565199774\",\n        \"501\",\n        \"250\",\n        \"16888\"\n      ],\n      \"modeOctal\": \"0o40770\",\n      \"fiveAncestorsOriginalGuardUnchanged\": true,\n      \"perInvocationCurrentHeldNamedFull9Unchanged\": true,\n      \"groupWritableDirectoryNotWholeReportTrust\": true,\n      \"noPermissionChange\": true\n    },\n    \"noDirectoryEnumeration\": true,\n    \"scanMethodRemoved\": true,\n    \"dormantIteratorClosureAndEmptyLedgerUnchanged\": true,\n    \"noRecursion\": true,\n    \"noFallback\": true,\n    \"noBodyHashExported\": true,\n    \"sameBytesAsPriorReadClaimed\": false,\n    \"wholeMeansCurrent6809BytesAndEOFWithFull9FencesNotPreviousBodyHash\": true,\n    \"driftOrMissingStopsWithoutFallback\": true,\n    \"pathChain\": [\n      \"/\",\n      \"/Users\",\n      \"/Users/qianqi\",\n      \"/Users/qianqi/Library\",\n      \"/Users/qianqi/Library/Logs\",\n      \"/Users/qianqi/Library/Logs/DiagnosticReports\"\n    ]\n  },\n  \"timeBinding\": {\n    \"originalNativeCreatedMs\": 1793993751636,\n    \"originalNativeTerminalMs\": 1793993752149,\n    \"utcStart\": \"2026-11-06T19:35:51.636Z\",\n    \"utcTerminal\": \"2026-11-06T19:35:52.149Z\",\n    \"actualLocalPsStart\": \"Sat Nov 7 03:35:52 2026\",\n    \"offsetIsObservedConventionNotMachineTimezoneQualification\": true,\n    \"filenameWindowOnly\": \"derived original interval plus/minus120seconds, accepting UTC or observed local +08:00 filename clock\",\n    \"reportCorrelationWindowNs\": [\n      \"1793993749636000000\",\n      \"1793993754149000000\"\n    ],\n    \"reportCorrelationMarginMs\": 2000,\n    \"requiresBothProcLaunchAndCaptureTime\": true,\n    \"requiredTimeOrdering\": \"lower <= procLaunch <= captureTime <= upper\",\n    \"metadataTimestampNotUsedAsCrashTime\": true,\n    \"fileMtimeNotUsedAsCrashTime\": true\n  },\n  \"budgets\": {\n    \"workSeconds\": 5,\n    \"afterClosureSeconds\": 8,\n    \"NativeOuterSeconds\": 60,\n    \"readCalls\": 36,\n    \"metadataCalls\": 256,\n    \"returnedExplicitFdAttempts\": 8,\n    \"scandirIteratorAttempts\": 0,\n    \"scandirInternalFdSeparate\": false,\n    \"applicationWrites\": 0,\n    \"directChildren\": 0,\n    \"signalsToOtherProcesses\": 0,\n    \"publicStdoutMaximum\": 65536,\n    \"synchronousReadChecksNotPreemptiveTimeout\": true,\n    \"observation\": {\n      \"processStatusMaximum\": 8,\n      \"processReadObserverMaximum\": 8,\n      \"processReadBytes\": 16384,\n      \"perObserverStatusMaximum\": 8,\n      \"immutablePageBytes\": 8192,\n      \"perObserverPagesMaximum\": 128,\n      \"perObserverPayloadMaximum\": 1048576\n    },\n    \"maximumOpenedBodies\": 1,\n    \"bodyBytesMaximum\": 6809,\n    \"returnedBytesMaximum\": 6810,\n    \"originalBodyLimits\": {\n      \"maximumOpenedBodies\": 2,\n      \"bodyBytesEachMaximum\": 1048576,\n      \"returnedBytesMaximum\": 2097154\n    },\n    \"currentSuccessfulReadShape\": {\n      \"explicitFds\": 7,\n      \"metadataCalls\": 37,\n      \"bodyPreadCallsWhenNoShortRead\": 2,\n      \"bodyBytesReturned\": 6809\n    },\n    \"noBudgetIncrease\": true\n  },\n  \"projectionAdmission\": {\n    \"originalCorrelationPredicatesUnchanged\": [\n      \"crashType309\",\n      \"launchAndCaptureTimesTyped\",\n      \"metadataNameAbsentOrNode\",\n      \"parentIs51483\",\n      \"pidIs51494\",\n      \"procNameNode\",\n      \"procPathIsKnownNodePath\",\n      \"withinOriginalCorrelatedTimeWindow\"\n    ],\n    \"fullMatch\": \"exact fixed file whole identity AND all eight original predicates including exact known real/alias procPath\",\n    \"additionalSafeFieldsGate\": \"exact fixed file whole identity AND the same seven non-path predicates; original path predicate remains separate and is never forced true\",\n    \"safeFieldsWhenPathUnqualified\": true,\n    \"outputDistinctions\": [\n      \"matchesOriginalFreshChild\",\n      \"fixedObservedFileWholeReadBound\",\n      \"nonPathCorrelationSatisfied\",\n      \"safeCrashFieldsAdmitted\",\n      \"pathQualificationSatisfied\",\n      \"safeCrashProjectionCount\"\n    ],\n    \"unqualifiedPathKeepsMatchesOriginalFreshChildFalse\": true,\n    \"causalConclusionClaimed\": false,\n    \"causeClaim\": false,\n    \"noOriginalRuntimeProgressOrCauseOrHistoricalClosureClaim\": true,\n    \"requiredNonPathTypeOrValueGateFailureWithholdsSafeFields\": true\n  },\n  \"pathClassification\": {\n    \"onlyAfterAdditionalSafeFieldsGate\": true,\n    \"typedClass\": [\n      \"string\",\n      \"null\",\n      \"boolean\",\n      \"integer\",\n      \"number\",\n      \"array\",\n      \"object\",\n      \"other\"\n    ],\n    \"closedBooleans\": [\n      \"boundedPrintableAscii\",\n      \"absolute\",\n      \"canonicalComponents\",\n      \"underHomebrewPrefix\",\n      \"basenameIsNode\",\n      \"endsWithBinNode\",\n      \"containsLiteralAsterisk\",\n      \"equalsKnownReal\",\n      \"equalsKnownAlias\"\n    ],\n    \"boundedPrintableAsciiMaximum\": 512,\n    \"literalHypotheses\": {\n      \"/opt/homebrew/Cellar/node/25.9.0_1/bin/node\": \"known-node-real\",\n      \"/opt/homebrew/bin/node\": \"known-node-alias\",\n      \"/opt/homebrew/*/node\": \"literal-homebrew-star-node\",\n      \"/opt/homebrew/*/bin/node\": \"literal-homebrew-star-bin-node\",\n      \"/opt/homebrew/Cellar/node/*/bin/node\": \"literal-homebrew-cellar-node-star-bin-node\",\n      \"/opt/homebrew/Cellar/*/bin/node\": \"literal-homebrew-cellar-star-bin-node\"\n    },\n    \"noGlobExpansion\": true,\n    \"noRedactionMeaningInferred\": true,\n    \"unmatchedClass\": \"unrecognized\",\n    \"actualValueOnlyForTwoPriorKnownRealOrAliasLiterals\": true,\n    \"unknownProcPathIsNullNoRawNoHash\": true,\n    \"kernelImageOrFileContentQualified\": false\n  },\n  \"publicAllowlist\": {\n    \"identity\": [\n      \"Exact predetermined PID51494/parent51483/procName node and original timestamps only after exact fixed-file plus all seven original non-path gates; full correlation separately retains the path gate\",\n      \"procPath only exact observed real or alias path\",\n      \"strict timestamp text plus exact nanosecond decimal\",\n      \"safe regex macOS train/build; releaseType User/Beta\"\n    ],\n    \"exception\": [\n      \"fixed Mach type enumeration\",\n      \"fixed signal enumeration\",\n      \"<=4 numeric hexadecimal codes\"\n    ],\n    \"termination\": [\n      \"termination.namespace only: original value iff exact string matching [A-Z0-9_]{1,64}; typed shape/previous-enum-membership are separate, no semantic meaning inferred\",\n      \"uint64 decimal code/flags\",\n      \"fixed indicator/byProc enumeration\",\n      \"byPid equals predetermined target/parent booleans\"\n    ],\n    \"fixedTextSlots\": [\n      \"termination.indicator\",\n      \"termination.reasons[]\",\n      \"termination.details[]\",\n      \"asi (string or bounded list only)\",\n      \"asiSignatures (string or bounded list only)\",\n      \"asi.dyld (string or bounded list)\",\n      \"asi.libsystem_c.dylib (string or bounded list)\",\n      \"asi.libsystem_kernel.dylib (string or bounded list)\",\n      \"asi.libsystem_platform.dylib (string or bounded list)\",\n      \"asi.libdispatch.dylib (string or bounded list)\",\n      \"asi.libc++abi.dylib (string or bounded list)\",\n      \"asi.node (string or bounded list)\",\n      \"asi.Node (string or bounded list)\",\n      \"asi.libsystem_pthread.dylib (string or bounded list)\",\n      \"asi.libsystem_sandbox.dylib (string or bounded list)\",\n      \"asi.libsystem_secinit.dylib (string or bounded list)\",\n      \"asi.libxpc.dylib (string or bounded list)\",\n      \"asiSignatures.dyld (string or bounded list)\",\n      \"asiSignatures.libsystem_c.dylib (string or bounded list)\",\n      \"asiSignatures.libsystem_kernel.dylib (string or bounded list)\",\n      \"asiSignatures.libsystem_platform.dylib (string or bounded list)\",\n      \"asiSignatures.libdispatch.dylib (string or bounded list)\",\n      \"asiSignatures.libc++abi.dylib (string or bounded list)\",\n      \"asiSignatures.node (string or bounded list)\",\n      \"asiSignatures.Node (string or bounded list)\",\n      \"asiSignatures.libsystem_pthread.dylib (string or bounded list)\",\n      \"asiSignatures.libsystem_sandbox.dylib (string or bounded list)\",\n      \"asiSignatures.libsystem_secinit.dylib (string or bounded list)\",\n      \"asiSignatures.libxpc.dylib (string or bounded list)\"\n    ],\n    \"textBudgets\": {\n      \"stringsMax\": 32,\n      \"eachUTF8BytesMax\": 4096,\n      \"totalUTF8BytesMax\": 32768,\n      \"linesMax\": 64,\n      \"hardFailureNoTruncation\": true,\n      \"cumulativeAcrossOldTerminationDyldAndNewASISlots\": true,\n      \"asiDyldNotDoubleCounted\": true\n    },\n    \"libraryMissingLinePrefixes\": [\n      \"Library not loaded:\",\n      \"Library not found:\"\n    ],\n    \"libraryPaths\": [\n      \"ASCII canonical absolute under /opt/homebrew/\",\n      \"ASCII canonical absolute under /System/\",\n      \"ASCII canonical absolute under /usr/lib/\"\n    ],\n    \"libraryOutput\": [\n      \".dylib basename or exact same-name .framework binary\",\n      \"public prefix category\",\n      \"under fixed observed Node installation boolean\",\n      \"equals observed Node executable/alias boolean\"\n    ],\n    \"libraryMax\": 8,\n    \"noLibraryFullUnknownPath\": true,\n    \"noLibraryFileExistenceOrContentClaim\": true,\n    \"fixedLexicalOnly\": [\n      \"libraryNotLoaded\",\n      \"libraryNotFound\",\n      \"symbolNotFound\",\n      \"codeSignature\",\n      \"sandbox\",\n      \"operationNotPermitted\",\n      \"permissionDenied\",\n      \"abortCalled\",\n      \"dyld\"\n    ],\n    \"excluded\": [\n      \"raw IPS\",\n      \"raw or hash of unknown text\",\n      \"environment\",\n      \"threads\",\n      \"usedImages\",\n      \"arbitrary dictionary keys\",\n      \"incident identifiers\",\n      \"machine identifiers\",\n      \"other process PID values\"\n    ],\n    \"candidateMetadataBeforeShapeCheck\": {\n      \"source\": \"the same existing nofollow stat inside read_one, before unchanged leaf guards\",\n      \"maximum\": 1,\n      \"fields\": [\n        \"already lexically admitted basename\",\n        \"full9 decimal strings\",\n        \"closed type directory/regular/symlink/other\",\n        \"uid/gid/mode/nlink/size integers\",\n        \"modeOctal\",\n        \"regular/uidIs501/singleLink/noSetIdOrGroupOtherWrite/regularSingleLinkOwner/positiveSizeWithinOriginalCap booleans\"\n      ],\n      \"extraMetadataCalls\": 0,\n      \"extraBodyCalls\": 0,\n      \"extraFdOpens\": 0,\n      \"rawOrUnknownTextOrHash\": false\n    },\n    \"diagnosticShapes\": {\n      \"rows\": 29,\n      \"staticRootKeys\": [\n        \"asi\",\n        \"asiSignatures\"\n      ],\n      \"staticDictionaryKeys\": [\n        \"dyld\",\n        \"libsystem_c.dylib\",\n        \"libsystem_kernel.dylib\",\n        \"libsystem_platform.dylib\",\n        \"libdispatch.dylib\",\n        \"libc++abi.dylib\",\n        \"node\",\n        \"Node\",\n        \"libsystem_pthread.dylib\",\n        \"libsystem_sandbox.dylib\",\n        \"libsystem_secinit.dylib\",\n        \"libxpc.dylib\"\n      ],\n      \"noArbitraryKeyEnumeration\": true,\n      \"fields\": [\n        \"slot (one predetermined label)\",\n        \"present\",\n        \"type (closed JSON kind)\",\n        \"stringCount\",\n        \"listLength or null\",\n        \"nonStringListItems\",\n        \"supportedTextShape\",\n        \"rawValueOrHashExported=false\"\n      ],\n      \"eachListMaximum\": 16,\n      \"unsupportedValuesNotTraversedOrExported\": true,\n      \"nonStringListItemsCountedNotInterpreted\": true\n    },\n    \"diagnosticLexicalOnly\": [\n      \"abortWithPayload\",\n      \"abortWithReason\",\n      \"abortCalled\",\n      \"missingSymbol\",\n      \"missingLibrary\",\n      \"dynamicLoader\",\n      \"libraryInitialization\",\n      \"initializationFailure\",\n      \"threadCreation\",\n      \"pthreadDiagnostic\",\n      \"lockOrSemaphore\",\n      \"dispatchDiagnostic\",\n      \"recursiveOrDeadlock\",\n      \"resourceExhaustion\",\n      \"permissionOrSandbox\",\n      \"sandboxInitialization\",\n      \"jitOrExecutableMemory\",\n      \"forkSafety\",\n      \"runtimeAssertion\",\n      \"uncaughtException\",\n      \"codeSignature\",\n      \"architectureMismatch\"\n    ],\n    \"publicApiTokens\": [\n      \"abort_with_payload\",\n      \"abort_with_reason\",\n      \"pthread_create\",\n      \"pthread_mutex_init\",\n      \"pthread_cond_init\",\n      \"pthread_rwlock_init\",\n      \"pthread_once\",\n      \"pthread_jit_write_protect_np\",\n      \"uv_thread_create\",\n      \"uv__thread_create\",\n      \"uv_loop_init\",\n      \"uv_sem_init\",\n      \"dispatch_once\",\n      \"dispatch_async\",\n      \"dispatch_queue_create\",\n      \"dlopen\",\n      \"dlsym\",\n      \"sandbox_init\",\n      \"sandbox_init_with_parameters\",\n      \"sandbox_apply\",\n      \"sandbox_check\",\n      \"node::InitializeOncePerProcess\",\n      \"node::WorkerThreadsTaskRunner\",\n      \"v8::V8::Initialize\",\n      \"v8::base::OS::Allocate\"\n    ],\n    \"publicErrnoTokens\": [\n      \"EPERM\",\n      \"EACCES\",\n      \"EAGAIN\",\n      \"ENOMEM\",\n      \"EINVAL\",\n      \"ENOSYS\",\n      \"EDEADLK\"\n    ],\n    \"fixedTokenMatchesAreLexicalOnly\": true,\n    \"freeFormDiagnosticSentencesAllowed\": false,\n    \"noExtraLibraryReads\": true\n  },\n  \"failureSemantics\": {\n    \"malformedOrUnsupportedSchema\": \"closed failure or unqualified correlation; never guessed identity\",\n    \"missingOrNoMatch\": \"only this fixed file; no enumeration or directory coverage claim\",\n    \"limitsOrDrift\": \"hard refusal with original error, no automatic fallback/retry\",\n    \"unknownResourceRegistration\": \"pending/registrationUnknown conservatively prevents allClosed\",\n    \"historicalUnknownsUnchanged\": true,\n    \"originalAbortCauseNotAutomaticallyProved\": true,\n    \"newProbeCauseNotAutomaticallyProved\": true,\n    \"fullFileIdentityFailure\": \"stop before body; prior current identity preserved as typed metadata\",\n    \"pathMismatch\": \"retained unmatched; new explicitly scoped safe projection may still be admitted\",\n    \"unsupportedDiagnosticSlot\": \"publish only predetermined label, presence/type and bounded list non-string count; no traversal or interpretation of unsupported values\",\n    \"unrecognizedNamespace\": \"only type/presence/publicSyntaxQualified=false and null value; no hash or guessed namespace\"\n  },\n  \"sequence\": [\n    \"Whole reviewed request and root GO before fresh journal initialize.\",\n    \"Archive each exact request, intent, arm before crossing a model boundary to its unique Native call.\",\n    \"Whole original SDK before parse; only original job authority and contiguous streams/status/pages within retained caps.\",\n    \"Close every own resource, complete original output and release A0; no replay, no fallback.\"\n  ],\n  \"lane_allocation\": {\n    \"A\": 1,\n    \"B\": 1,\n    \"C\": 0,\n    \"root\": 0,\n    \"maximum\": 2\n  },\n  \"oldRuntimeProgressReclassified\": false,\n  \"productBusinessOperationAuthorized\": false,\n  \"fullReplacement\": false,\n  \"productionCutover\": false,\n  \"legacyCleanup\": false\n}\n",
+  "goPin": {
+    "blob": "c2e39fba3a81f1c7d8335f453cb9a0877abefa12",
+    "bytes": 18422,
+    "sha256": "2e21908d905eb32b9fbc22763e0d567c14889a5518113803c542a3740867cb9d"
+  },
+  "digest": "5d59a26ad362935fc8130dd8a8d86408a93a90178063dd7b12354aab52c35451",
+  "fingerprint": "6726586098151232351",
+  "job": "1a1b2b3248a-fc05-7f5e",
+  "startCalled": true,
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "paused": false,
+  "calls": {
+    "public-node-crash-fixed-r4-start": {
+      "kind": "process_start",
+      "requestRaw": "{\"host\":\"mac\",\"executable\":\"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",\"args\":[\"-I\",\"-S\",\"-B\",\"-\"],\"cwd\":\"/Users/qianqi\",\"timeout_seconds\":60,\"idempotency_key\":\"heptabao-mac-public-node-crash-9e758b73-20261106-r4\",\"stdin\":\"#!/usr/bin/env python3\\n\\\"\\\"\\\"Read only one already observed crash-report file for one retained Node child.\\nPotentially private IPS bodies stay local; only the explicit typed projection is emitted.\\nNo child, SDK, T5, launchd, signal to another process, filesystem write or fallback root.\\n\\\"\\\"\\\"\\nfrom __future__ import annotations\\nimport datetime,json,os,re,signal,stat,sys,time\\nfrom pathlib import Path\\nfrom contextlib import contextmanager\\n\\nPYTHON='/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14'\\nDIRECTORY=Path('/Users/qianqi/Library/Logs/DiagnosticReports')\\nOBSERVED_DIRECTORY_IDENTITY5=(16777233,565199774,501,250,16888)\\nFIXED_REPORT_NAME='node-2026-11-07-033552.ips'\\nOBSERVED_REPORT_FULL9=(16777233,593533598,501,250,33152,1,6809,\\n                       1793993752090245618,1793993752090848927)\\nDIRECTORIES=(Path('/'),Path('/Users'),Path('/Users/qianqi'),\\n             Path('/Users/qianqi/Library'),Path('/Users/qianqi/Library/Logs'),DIRECTORY)\\nNODE_REAL='/opt/homebrew/Cellar/node/25.9.0_1/bin/node'\\nNODE_ALIAS='/opt/homebrew/bin/node'\\nNODE_ROOT='/opt/homebrew/Cellar/node/25.9.0_1/'\\nTARGET_PID=51494\\nTARGET_PARENT=51483\\nSTART_MS=1793993751636\\nTERMINAL_MS=1793993752149\\n# Actual local ps start was Sat Nov 7 03:35:52 2026; actual UTC bounds are Nov 6.\\n# Filename time may be rendered in UTC or that observed local convention.\\nNAME_OFFSETS_SECONDS=(0,28800)\\nNAME_MARGIN_SECONDS=120\\nCORRELATION_MARGIN_MS=2000\\nNAME_RE=re.compile(r'^node[-_](2026-11-06|2026-11-07)[-_]([0-9]{6})(?:[-_][0-9]{1,6})?\\\\.ips$')\\nMAX_BODIES=1\\nMAX_BODY_BYTES=6809\\nMAX_TOTAL_RETURNED_BYTES=6810\\nMAX_READ_CALLS=36\\nMAX_METADATA_CALLS=256\\nMAX_PUBLIC_BYTES=65536\\nSTART=time.monotonic()\\nUNTIL=START+5.0\\nFINAL_UNTIL=START+8.0\\nprotected=0\\npending_signal=None\\n\\nclass Refused(Exception):pass\\nclass Cancelled(Exception):pass\\ndef need(value,code):\\n    if not value:raise Refused(code)\\n@contextmanager\\ndef critical():\\n    global protected\\n    protected+=1\\n    try:yield\\n    finally:protected-=1\\ndef interrupt(signum,_frame):\\n    global pending_signal\\n    pending_signal=signum\\n    if protected==0:raise Cancelled()\\ndef remaining():\\n    need(pending_signal is None,'interrupted')\\n    need(time.monotonic()<UNTIL,'readonly_deadline')\\ndef identity(s):\\n    return (s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode,s.st_nlink,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\\nclass SignalFacade:\\n    def critical(self):return critical()\\ndef error_projection(error):\\n    code=str(error) if isinstance(error,Refused) and str(error) in ERROR_CODES else None\\n    kind=type(error).__name__\\n    return {'type':kind if kind in ('Refused','Cancelled','OSError','FileNotFoundError',\\n             'PermissionError','UnicodeDecodeError','JSONDecodeError','ValueError',\\n             'RecursionError','KeyboardInterrupt','MemoryError') else 'Other',\\n            'code':code,\\n            'errno':error.errno if isinstance(error,OSError) and type(error.errno) is int\\n                    and 0<=error.errno<=255 else None}\\n\\nERROR_CODES=frozenset([\\\"interrupted\\\",\\\"readonly_deadline\\\",\\\"fd_ledger_cap\\\",\\\"metadata_cap\\\",\\\"fixed_directory_shape\\\",\\\"fixed_final_directory_observed_identity\\\",\\\"held_directory_full9\\\",\\\"one_directory_enumeration\\\",\\\"candidate_name_cap\\\",\\\"enumeration_incomplete\\\",\\\"directory_iterator_closed\\\",\\\"directory_stable_after_enumeration\\\",\\\"fixed_candidate_body_scope\\\",\\\"fixed_candidate_original_full9\\\",\\\"candidate_regular_single_link_owner\\\",\\\"candidate_size_cap\\\",\\\"candidate_full9_open\\\",\\\"body_read_cap\\\",\\\"positive_bounded_read\\\",\\\"body_growth_or_total_cap\\\",\\\"whole_body_extent\\\",\\\"candidate_full9_after_read\\\",\\\"final_held_named_full9\\\",\\\"duplicate_json_key\\\",\\\"nonfinite_json_number\\\",\\\"bounded_termination_text_slots\\\",\\\"bounded_diagnostic_slot_items\\\",\\\"typed_termination_text_slots\\\",\\\"bounded_dyld_text_slots\\\",\\\"bounded_text_bytes\\\",\\\"bounded_text_lines\\\",\\\"public_library_projection_cap\\\",\\\"bounded_ips_body\\\",\\\"ips_first_metadata_line\\\",\\\"two_ips_objects\\\",\\\"fixed_regular_python_operator\\\",\\\"body_candidate_count_cap\\\",\\\"multiple_matching_reports\\\",\\\"public_report_cap\\\"])\\n\\nclass CrashIO:\\n    def __init__(self,signals):\\n        self.signals=signals;self.remaining=remaining\\n        self.rows=[];self.close_errors=[];self.max_rows=8\\n        self.open_ledger={'attempts':0,'knownNoReturnErrors':0,'registered':0,\\n                          'pending':0,'registrationUnknown':False}\\n        self.metadata_calls=0;self.read_calls=0;self.read_bytes=0\\n        self.dirs=[];self.leaves=[];self.iterator=None\\n        self.candidate_metadata=[]\\n        self.scan={'attempted':False,'returned':False,'pending':False,'closed':False,\\n                   'closeAttempted':False,'knownNoReturnError':False,'registrationUnknown':False,\\n                   'entriesExamined':0,'coverageComplete':False}\\n    def meta(self,fn,*args,**kwargs):\\n        remaining();need(self.metadata_calls<MAX_METADATA_CALLS,'metadata_cap')\\n        self.metadata_calls+=1\\n        value=fn(*args,**kwargs);remaining();return value\\n    def open_fd(self, path, flags, mode=None, *, parent=None, role='file'):\\n        need(len(self.rows) < self.max_rows and self.open_ledger['attempts'] < self.max_rows,\\n             'fd_ledger_cap')\\n        with self.signals.critical():\\n            self.remaining()\\n            ledger = self.open_ledger\\n            ledger['attempts'] += 1\\n            ledger['pending'] += 1\\n            try:\\n                fd = os.open(str(path) if parent is None else path.name, flags,\\n                             *(() if mode is None else (mode,)),\\n                             **({} if parent is None else {'dir_fd':parent['fd']}))\\n            except OSError:\\n                # This handler covers the syscall expression only: no FD was returned.\\n                ledger['knownNoReturnErrors'] += 1\\n                ledger['pending'] -= 1\\n                raise\\n            try:\\n                row = {'fd':fd, 'path':str(path), 'role':role,\\n                       'created':bool(flags & os.O_CREAT), 'writeComplete':False,\\n                       'closeAttempted':False, 'closed':False}\\n                self.rows.append(row)\\n                ledger['registered'] += 1\\n                ledger['pending'] -= 1\\n            except BaseException:\\n                # Even a subsequently closed row cannot erase this incomplete transfer.\\n                # Do not guess a descriptor, blind-close, or retry registration.\\n                ledger['registrationUnknown'] = True\\n                raise\\n        return row\\n    def close_one(self, row):\\n        if row['closeAttempted']:\\n            return row['closed']\\n        with self.signals.critical():\\n            row['closeAttempted'] = True\\n            try:\\n                os.close(row['fd'])\\n                row['closed'] = True\\n            except BaseException as error:\\n                row['closeError'] = error_projection(error)\\n                self.close_errors.append(row['closeError'])\\n        return row['closed']\\n    def close(self):\\n        with self.signals.critical():\\n            for row in reversed(self.rows):\\n                self.close_one(row)\\n\\n    def named(self,row):\\n        if row.get('parent') is None:return self.meta(os.lstat,Path(row['path']))\\n        return self.meta(os.stat,Path(row['path']).name,dir_fd=row['parent']['fd'],follow_symlinks=False)\\n    def open_chain(self):\\n        parent=None\\n        for path in DIRECTORIES:\\n            before=self.meta(os.lstat,path) if parent is None else self.meta(\\n                os.stat,path.name,dir_fd=parent['fd'],follow_symlinks=False)\\n            if path==DIRECTORY:\\n                need(identity(before)[:5]==OBSERVED_DIRECTORY_IDENTITY5,\\n                     'fixed_final_directory_observed_identity')\\n            else:\\n                need(stat.S_ISDIR(before.st_mode) and before.st_uid in (0,501)\\n                     and not (before.st_mode & 0o022),'fixed_directory_shape')\\n            row=self.open_fd(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_DIRECTORY,parent=parent,role='directory')\\n            row['parent']=parent;row['expected']=identity(before)\\n            need(identity(self.meta(os.fstat,row['fd']))==row['expected']\\n                 ==identity(self.named(row)),'held_directory_full9')\\n            self.dirs.append(row);parent=row\\n        return parent\\n    def close_scan(self):\\n        if not self.scan['returned'] or self.scan['closeAttempted']:return\\n        with self.signals.critical():\\n            self.scan['closeAttempted']=True\\n            try:\\n                self.iterator.close()\\n                self.scan['closed']=True\\n            except BaseException as error:\\n                self.scan['closeError']=error_projection(error)\\n    def read_one(self,root,name):\\n        need(name==FIXED_REPORT_NAME and name_allowed(name) and len(self.leaves)<MAX_BODIES,\\n             'fixed_candidate_body_scope')\\n        path=DIRECTORY/name\\n        before=self.meta(os.stat,name,dir_fd=root['fd'],follow_symlinks=False)\\n        self.candidate_metadata.append({'basename':name,\\n            'full9':[str(v) for v in identity(before)],\\n            'type':('regular' if stat.S_ISREG(before.st_mode) else\\n                    'directory' if stat.S_ISDIR(before.st_mode) else\\n                    'symlink' if stat.S_ISLNK(before.st_mode) else 'other'),\\n            'uid':before.st_uid,'gid':before.st_gid,'mode':before.st_mode,\\n            'modeOctal':oct(before.st_mode),'nlink':before.st_nlink,'size':before.st_size,\\n            'originalPredicates':{'regular':stat.S_ISREG(before.st_mode),\\n                'uidIs501':before.st_uid==501,'singleLink':before.st_nlink==1,\\n                'noSetIdOrGroupOtherWrite':not (before.st_mode & 0o6022),\\n                'regularSingleLinkOwner':bool(stat.S_ISREG(before.st_mode) and before.st_uid==501\\n                    and before.st_nlink==1 and not (before.st_mode & 0o6022)),\\n                'positiveSizeWithinOriginalCap':0<before.st_size<=MAX_BODY_BYTES}})\\n        need(identity(before)==OBSERVED_REPORT_FULL9,'fixed_candidate_original_full9')\\n        need(stat.S_ISREG(before.st_mode) and before.st_uid==501 and before.st_nlink==1\\n             and not(before.st_mode & 0o6022),'candidate_regular_single_link_owner')\\n        need(0<before.st_size<=MAX_BODY_BYTES,'candidate_size_cap')\\n        row=self.open_fd(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK,parent=root,role='candidate')\\n        row['parent']=root;row['expected']=identity(before);self.leaves.append(row)\\n        need(row['expected']==identity(self.meta(os.fstat,row['fd']))\\n             ==identity(self.named(row)),'candidate_full9_open')\\n        parts=[];total=0\\n        while True:\\n            remaining()\\n            need(self.read_calls<MAX_READ_CALLS and self.read_bytes<MAX_TOTAL_RETURNED_BYTES,'body_read_cap')\\n            limit=min(65536,before.st_size+1-total,MAX_TOTAL_RETURNED_BYTES-self.read_bytes)\\n            need(limit>0,'positive_bounded_read')\\n            self.read_calls+=1\\n            block=os.pread(row['fd'],limit,total)\\n            self.read_bytes+=len(block);total+=len(block)\\n            need(total<=before.st_size and self.read_bytes<=MAX_TOTAL_RETURNED_BYTES,'body_growth_or_total_cap')\\n            if not block:break\\n            parts.append(block)\\n        need(total==before.st_size,'whole_body_extent')\\n        need(row['expected']==identity(self.meta(os.fstat,row['fd']))\\n             ==identity(self.named(row)),'candidate_full9_after_read')\\n        return b''.join(parts),{'basename':name,'identity':[str(v) for v in row['expected']],\\n                               'wholeBytesRead':total,'wholeBodyHashExported':False}\\n    def verify_all(self):\\n        for row in self.dirs+self.leaves:\\n            need(not row['closed'] and row['expected']==identity(self.meta(os.fstat,row['fd']))\\n                 ==identity(self.named(row)),'final_held_named_full9')\\n        return True\\n    def public(self):\\n        ledger=dict(self.open_ledger)\\n        scan=dict(self.scan)\\n        scan_closed=(not scan['pending'] and not scan['registrationUnknown']\\n                     and (not scan['returned'] or scan['closed']) and 'closeError' not in scan)\\n        all_closed=(not ledger['pending'] and not ledger['registrationUnknown']\\n                    and ledger['registered']==len(self.rows) and all(r['closed'] for r in self.rows)\\n                    and not self.close_errors and scan_closed)\\n        return {'candidateMetadataBeforeShapeCheck':list(self.candidate_metadata),\\n                'returnedFdLedger':ledger,'scan':scan,'metadataCalls':self.metadata_calls,\\n                'readCalls':self.read_calls,'returnedReadBytes':self.read_bytes,\\n                'allReturnedFdsAndIteratorClosed':all_closed,'closeErrors':list(self.close_errors),\\n                'writes':0,'childProcesses':0}\\n\\n\\nEPOCH=datetime.datetime(1970,1,1,tzinfo=datetime.timezone.utc)\\ndef date_epoch_seconds(year,month,day,hour,minute,second,offset_seconds=0):\\n    value=datetime.datetime(year,month,day,hour,minute,second,\\n            tzinfo=datetime.timezone(datetime.timedelta(seconds=offset_seconds)))\\n    delta=value-EPOCH\\n    return delta.days*86400+delta.seconds\\ndef name_allowed(name):\\n    if type(name) is not str or len(name)>96:return False\\n    match=NAME_RE.fullmatch(name)\\n    if match is None:return False\\n    try:\\n        year,month,day=(int(v) for v in match.group(1).split('-'))\\n        hhmmss=match.group(2)\\n        epoch=date_epoch_seconds(year,month,day,int(hhmmss[:2]),int(hhmmss[2:4]),int(hhmmss[4:6]))\\n    except (ValueError,OverflowError):return False\\n    return any(START_MS//1000-NAME_MARGIN_SECONDS<=epoch-offset\\n               <=(TERMINAL_MS+999)//1000+NAME_MARGIN_SECONDS\\n               for offset in NAME_OFFSETS_SECONDS)\\ndef crash_time(value):\\n    if type(value) is not str or len(value)>40:return None\\n    match=re.fullmatch(r'([0-9]{4})-([0-9]{2})-([0-9]{2})[ T]([0-9]{2}):([0-9]{2}):([0-9]{2})(?:\\\\.([0-9]{1,9}))? ?([+-])([0-9]{2}):?([0-9]{2})',value)\\n    if match is None:return None\\n    try:\\n        y,mo,d,h,mi,se=(int(match.group(i)) for i in range(1,7))\\n        oh,om=int(match.group(9)),int(match.group(10))\\n        if oh>14 or om>59 or (oh==14 and om):return None\\n        offset=(oh*3600+om*60)*(1 if match.group(8)=='+' else -1)\\n        seconds=date_epoch_seconds(y,mo,d,h,mi,se,offset)\\n        fraction=int((match.group(7) or '').ljust(9,'0'))\\n        return {'epochNs':seconds*1000000000+fraction,'fixedFormat':value}\\n    except (ValueError,OverflowError):return None\\ndef exact_pairs(pairs):\\n    value={}\\n    for key,item in pairs:\\n        need(type(key) is str and key not in value,'duplicate_json_key')\\n        value[key]=item\\n    return value\\ndef reject_constant(_value):\\n    raise Refused('nonfinite_json_number')\\ndef bounded_integer(value,minimum=0,maximum=18446744073709551615):\\n    return str(value) if type(value) is int and minimum<=value<=maximum else None\\ndef enum_field(value,allowed):\\n    return {'present':value is not None,'known':value in allowed if type(value) is str else False,\\n            'value':value if type(value) is str and value in allowed else None}\\ndef json_kind(value):\\n    return ('null' if value is None else 'boolean' if type(value) is bool else\\n            'string' if type(value) is str else 'integer' if type(value) is int else\\n            'number' if type(value) is float else 'array' if type(value) is list else\\n            'object' if type(value) is dict else 'other')\\ndef namespace_field(value):\\n    accepted=bool(type(value) is str and re.fullmatch(r'[A-Z0-9_]{1,64}',value))\\n    old_known=bool(type(value) is str and value in ('DYLD','SIGNAL','CODESIGNING',\\n        'SANDBOX','LIBSYSTEM','RUNNINGBOARD','WATCHDOG','ENDPOINTSECURITY','TCC'))\\n    return {'present':value is not None,'type':json_kind(value),\\n            'publicSyntaxQualified':accepted,'knownInPreviousEnum':old_known,\\n            'value':value if accepted else None,'semanticMeaningClaimed':False}\\ndef diagnostic_slot(label,present,value):\\n    texts=[]\\n    row={'slot':label,'present':present,'type':json_kind(value),\\n         'stringCount':0,'listLength':None,'nonStringListItems':0,\\n         'supportedTextShape':False,'rawValueOrHashExported':False}\\n    if present and type(value) is str:\\n        texts=[value];row['supportedTextShape']=True\\n    elif present and type(value) is list:\\n        need(len(value)<=16,'bounded_diagnostic_slot_items')\\n        row['listLength']=len(value)\\n        texts=[x for x in value if type(x) is str]\\n        row['nonStringListItems']=len(value)-len(texts)\\n        row['supportedTextShape']=row['nonStringListItems']==0\\n    row['stringCount']=len(texts)\\n    return row,texts\\ndef fixed_os(value):\\n    obj=value if type(value) is dict else {}\\n    train=obj.get('train');build=obj.get('build');release=obj.get('releaseType')\\n    return {'present':type(value) is dict,\\n       'train':train if type(train) is str and re.fullmatch(r'macOS [0-9]{1,2}(?:\\\\.[0-9]{1,3}){0,2}',train) else None,\\n       'build':build if type(build) is str and re.fullmatch(r'[0-9]{1,2}[A-Z][0-9]{1,5}[a-z]?',build) else None,\\n       'releaseType':release if release in ('User','Beta') else None}\\ndef library_line(line):\\n    match=re.fullmatch(r'Library (?:not loaded|not found):[ \\\\t]+(.{1,512})[ \\\\t]*',line)\\n    if match is None:return None\\n    path=match.group(1).strip()\\n    if len(path)>=2 and path[0]==path[-1] and path[0] in (\\\"'\\\",'\\\"'):path=path[1:-1]\\n    if not re.fullmatch(r'/(?:opt/homebrew|System|usr/lib)/[A-Za-z0-9_@.+/-]{1,480}',path):return None\\n    parts=path.split('/')\\n    if any(part in ('','.','..') for part in parts[1:]):return None\\n    basename=parts[-1]\\n    if re.fullmatch(r'[A-Za-z0-9_+.-]{1,120}\\\\.dylib',basename):\\n        kind='dylib'\\n    elif re.fullmatch(r'[A-Za-z0-9_+.-]{1,100}',basename) and basename+'.framework' in parts:\\n        kind='framework-binary'\\n    else:return None\\n    category=('homebrew' if path.startswith('/opt/homebrew/') else\\n              'System' if path.startswith('/System/') else 'usr-lib')\\n    return {'kind':kind,'basename':basename,'allowedPublicPrefix':category,\\n            'underPinnedNodeInstall':path.startswith(NODE_ROOT),\\n            'equalsKnownNodeExecutable':path==NODE_REAL,'equalsKnownNodeAlias':path==NODE_ALIAS,\\n            'fullUnknownPathExported':False,'fileExistenceOrContentQualified':False}\\ndef fixed_text_projection(crash,termination):\\n    # Only these fixed slots, never arbitrary keys, full dictionaries or stack frames.\\n    slots=[];shapes=[]\\n    indicator=termination.get('indicator')\\n    if type(indicator) is str:slots.append(indicator)\\n    for key in ('reasons','details'):\\n        value=termination.get(key)\\n        if value is not None:\\n            need(type(value) is list and len(value)<=16,'bounded_termination_text_slots')\\n            need(all(type(x) is str for x in value),'typed_termination_text_slots')\\n            slots.extend(value)\\n    asi=crash.get('asi')\\n    dyld=asi.get('dyld') if type(asi) is dict else None\\n    if dyld is not None:\\n        need(type(dyld) is list and len(dyld)<=16 and all(type(x) is str for x in dyld),\\n             'bounded_dyld_text_slots')\\n        slots.extend(dyld)\\n    for key in ('indicator','reasons','details'):\\n        shape,_=diagnostic_slot('termination.'+key,key in termination,termination.get(key))\\n        shapes.append(shape)\\n    public_keys=('dyld','libsystem_c.dylib','libsystem_kernel.dylib',\\n        'libsystem_platform.dylib','libdispatch.dylib','libc++abi.dylib','node','Node',\\n        'libsystem_pthread.dylib','libsystem_sandbox.dylib','libsystem_secinit.dylib','libxpc.dylib')\\n    for root_key in ('asi','asiSignatures'):\\n        obj=crash.get(root_key)\\n        shape,texts=diagnostic_slot(root_key,root_key in crash,obj)\\n        shapes.append(shape);slots.extend(texts)\\n        # A dictionary is not traversed. Only the twelve listed public key names are queried.\\n        for key in public_keys:\\n            present=type(obj) is dict and key in obj\\n            value=obj.get(key) if type(obj) is dict else None\\n            shape,texts=diagnostic_slot(root_key+'.'+key,present,value)\\n            shapes.append(shape)\\n            if not (root_key=='asi' and key=='dyld'):\\n                slots.extend(texts)  # asi.dyld was collected by the unchanged original guard above.\\n    need(len(slots)<=32 and all(len(x.encode('utf-8'))<=4096 for x in slots)\\n         and sum(len(x.encode('utf-8')) for x in slots)<=32768,'bounded_text_bytes')\\n    lines=[]\\n    for text in slots:lines.extend(text.splitlines())\\n    need(len(lines)<=64,'bounded_text_lines')\\n    lower='\\\\n'.join(slots).lower()\\n    words={'libraryNotLoaded':'library not loaded:','libraryNotFound':'library not found:',\\n           'symbolNotFound':'symbol not found:','codeSignature':'code signature',\\n           'sandbox':'sandbox','operationNotPermitted':'operation not permitted',\\n           'permissionDenied':'permission denied','abortCalled':'abort() called',\\n           'dyld':'dyld'}\\n    libraries=[]\\n    for line in lines:\\n        item=library_line(line)\\n        if item is not None and item not in libraries:\\n            need(len(libraries)<8,'public_library_projection_cap')\\n            libraries.append(item)\\n    patterns={\\n        'abortWithPayload':r'\\\\babort[_ -]with[_ -]payload\\\\b',\\n        'abortWithReason':r'\\\\babort[_ -]with[_ -]reason\\\\b',\\n        'abortCalled':r'\\\\babort\\\\(\\\\) called\\\\b|\\\\babort called\\\\b',\\n        'missingSymbol':r'symbol not found|undefined symbol|unresolved symbol|missing symbol',\\n        'missingLibrary':r'library not loaded|library not found|image not found',\\n        'dynamicLoader':r'\\\\bdyld\\\\b|\\\\bdlopen\\\\b|\\\\bdlsym\\\\b',\\n        'libraryInitialization':r'initiali[sz](?:e|er|ation)|library constructor|load-time initializer',\\n        'initializationFailure':r'(?:initiali[sz]\\\\w*|constructor).{0,80}(?:fail|error|abort)|(?:fail|error|abort).{0,80}(?:initiali[sz]\\\\w*|constructor)',\\n        'threadCreation':r'pthread_create|uv_+thread_create|thread creat|creat.{0,20}thread',\\n        'pthreadDiagnostic':r'\\\\bpthread_[a-z0-9_]+\\\\b|libsystem_pthread',\\n        'lockOrSemaphore':r'\\\\bmutex\\\\b|rwlock|semaphore|spinlock|unfair_lock|uv_sem_|pthread_mutex_|pthread_cond_',\\n        'dispatchDiagnostic':r'\\\\blibdispatch\\\\b|\\\\bdispatch_[a-z0-9_]+\\\\b',\\n        'recursiveOrDeadlock':r'recurs|deadlock|lock order',\\n        'resourceExhaustion':r'resource temporarily unavailable|out of memory|cannot allocate|\\\\beagain\\\\b|\\\\benomem\\\\b',\\n        'permissionOrSandbox':r'\\\\bsandbox\\\\b|operation not permitted|permission denied|\\\\beperm\\\\b|\\\\beacces\\\\b',\\n        'sandboxInitialization':r'sandbox_init|sandbox_apply|libsystem_secinit|libsystem_sandbox',\\n        'jitOrExecutableMemory':r'\\\\bjit\\\\b|map_jit|jit_write_protect|executable memory|write.protect',\\n        'forkSafety':r'unsafe.{0,40}fork|fork.{0,40}unsafe|multi.threaded.{0,40}fork|fork.{0,40}multi.threaded',\\n        'runtimeAssertion':r'assertion|check failed|fatal error|assertion failed',\\n        'uncaughtException':r'uncaught exception|terminating with uncaught|std::terminate',\\n        'codeSignature':r'code signature|codesigning|invalid signature',\\n        'architectureMismatch':r'incompatible architecture|wrong architecture|bad cpu type'}\\n    api_tokens=('abort_with_payload','abort_with_reason','pthread_create','pthread_mutex_init',\\n        'pthread_cond_init','pthread_rwlock_init','pthread_once','pthread_jit_write_protect_np',\\n        'uv_thread_create','uv__thread_create','uv_loop_init','uv_sem_init',\\n        'dispatch_once','dispatch_async','dispatch_queue_create','dlopen','dlsym',\\n        'sandbox_init','sandbox_init_with_parameters','sandbox_apply','sandbox_check',\\n        'node::InitializeOncePerProcess','node::WorkerThreadsTaskRunner',\\n        'v8::V8::Initialize','v8::base::OS::Allocate')\\n    text='\\\\n'.join(slots)\\n    public_api=[token for token in api_tokens if re.search(\\n        r'(?<![A-Za-z0-9_])'+re.escape(token)+r'(?![A-Za-z0-9_])',text)]\\n    public_errno=[token for token in ('EPERM','EACCES','EAGAIN','ENOMEM','EINVAL','ENOSYS','EDEADLK')\\n        if re.search(r'(?<![A-Za-z0-9_])'+token+r'(?![A-Za-z0-9_])',text)]\\n    return {'fixedSlotStringCount':len(slots),'fixedSlotLineCount':len(lines),\\n            'lexicalOnly':{key:value in lower for key,value in words.items()},\\n            'publicMissingLibraries':libraries,'allTextClassified':False,\\n            'diagnosticSlotShapes':shapes,\\n            'diagnosticLexicalOnly':{key:re.search(pattern,lower) is not None for key,pattern in patterns.items()},\\n            'publicApiTokens':public_api,'publicErrnoTokens':public_errno,\\n            'arbitraryDictionaryKeysEnumerated':False,'freeFormDiagnosticTextExported':False,\\n            'unknownSlotValuesOrTypesInterpreted':False,'causalConclusionClaimed':False,\\n            'rawOrUnknownTextOrHashExported':False}\\ndef proc_path_projection(value):\\n    # Exact string matches below are classification hypotheses, not wildcard expansion.\\n    typed=type(value) is str\\n    bounded_ascii=bool(typed and len(value)<=512 and re.fullmatch(r'[\\\\x20-\\\\x7e]{1,512}',value))\\n    absolute=bool(bounded_ascii and value.startswith('/'))\\n    canonical=bool(absolute and all(part not in ('','.','..') for part in value.split('/')[1:]))\\n    forms=((NODE_REAL,'known-node-real'),(NODE_ALIAS,'known-node-alias'),\\n           ('/opt/homebrew/*/node','literal-homebrew-star-node'),\\n           ('/opt/homebrew/*/bin/node','literal-homebrew-star-bin-node'),\\n           ('/opt/homebrew/Cellar/node/*/bin/node','literal-homebrew-cellar-node-star-bin-node'),\\n           ('/opt/homebrew/Cellar/*/bin/node','literal-homebrew-cellar-star-bin-node'))\\n    form=next((label for known,label in forms if typed and value==known),'unrecognized')\\n    kind=('string' if typed else 'null' if value is None else 'boolean' if type(value) is bool else\\n          'integer' if type(value) is int else 'number' if type(value) is float else\\n          'array' if type(value) is list else 'object' if type(value) is dict else 'other')\\n    return {'type':kind,'boundedPrintableAscii':bounded_ascii,'absolute':absolute,\\n            'canonicalComponents':canonical,\\n            'underHomebrewPrefix':bool(canonical and value.startswith('/opt/homebrew/')),\\n            'basenameIsNode':bool(canonical and value.rsplit('/',1)[-1]=='node'),\\n            'endsWithBinNode':bool(canonical and value.endswith('/bin/node')),\\n            'containsLiteralAsterisk':bool(bounded_ascii and '*' in value),\\n            'equalsKnownReal':bool(typed and value==NODE_REAL),\\n            'equalsKnownAlias':bool(typed and value==NODE_ALIAS),\\n            'closedLiteralForm':form,'literalAsteriskMeaningInferred':False,\\n            'unknownPathOrHashExported':False,'kernelImageOrFileContentQualified':False}\\ndef crash_projection(raw,file_info):\\n    need(type(raw) is bytes and 0<len(raw)<=MAX_BODY_BYTES,'bounded_ips_body')\\n    split=raw.find(b'\\\\n')\\n    need(0<split<=16384,'ips_first_metadata_line')\\n    header=json.loads(raw[:split].decode('utf-8'),object_pairs_hook=exact_pairs,parse_constant=reject_constant)\\n    crash=json.loads(raw[split+1:].decode('utf-8'),object_pairs_hook=exact_pairs,parse_constant=reject_constant)\\n    need(type(header) is dict and type(crash) is dict,'two_ips_objects')\\n    bug=header.get('bug_type')\\n    bug_match=bug=='309' or (type(bug) is int and bug==309)\\n    name_match=crash.get('procName')=='node'\\n    header_name=header.get('name')\\n    header_match=header_name is None or header_name=='node'\\n    pid_match=type(crash.get('pid')) is int and crash['pid']==TARGET_PID\\n    parent_match=type(crash.get('parentPid')) is int and crash['parentPid']==TARGET_PARENT\\n    launched=crash_time(crash.get('procLaunch'));captured=crash_time(crash.get('captureTime'))\\n    lower=(START_MS-CORRELATION_MARGIN_MS)*1000000\\n    upper=(TERMINAL_MS+CORRELATION_MARGIN_MS)*1000000\\n    time_typed=launched is not None and captured is not None\\n    time_match=(time_typed and lower<=launched['epochNs']<=captured['epochNs']<=upper)\\n    path=crash.get('procPath')\\n    path_known=path in (NODE_REAL,NODE_ALIAS) if type(path) is str else False\\n    predicates={'crashType309':bug_match,'metadataNameAbsentOrNode':header_match,\\n                'procNameNode':name_match,'pidIs51494':pid_match,'parentIs51483':parent_match,\\n                'launchAndCaptureTimesTyped':time_typed,'withinOriginalCorrelatedTimeWindow':bool(time_match),\\n                'procPathIsKnownNodePath':path_known}\\n    fixed_file_bound=(type(file_info) is dict and file_info.get('basename')==FIXED_REPORT_NAME\\n        and file_info.get('identity')==[str(v) for v in OBSERVED_REPORT_FULL9]\\n        and type(file_info.get('wholeBytesRead')) is int\\n        and file_info['wholeBytesRead']==OBSERVED_REPORT_FULL9[6])\\n    nonpath_matched=all(predicates[key] for key in ('crashType309','metadataNameAbsentOrNode',\\n        'procNameNode','pidIs51494','parentIs51483','launchAndCaptureTimesTyped',\\n        'withinOriginalCorrelatedTimeWindow'))\\n    matched=fixed_file_bound and all(predicates.values())\\n    safe_fields_admitted=bool(fixed_file_bound and nonpath_matched)\\n    result={'correlation':predicates,'matchesOriginalFreshChild':matched,\\n            'fixedObservedFileWholeReadBound':fixed_file_bound,\\n            'nonPathCorrelationSatisfied':nonpath_matched,\\n            'safeCrashFieldsAdmitted':safe_fields_admitted,\\n            'pathQualificationSatisfied':path_known,\\n            'metadataTimestampUsedAsCrashTime':False,'unknownFieldsExported':False,\\n            'privateBodyOrHashExported':False,'sameBytesAsPriorReadClaimed':False,\\n            'causalConclusionClaimed':False,'causeClaim':False}\\n    result['correlationFullyEvaluated']=(type(crash.get('pid')) is int\\n        and type(crash.get('parentPid')) is int and type(crash.get('procName')) is str\\n        and time_typed and type(path) is str)\\n    if not safe_fields_admitted:\\n        result['disposition']='not-qualified-for-safe-crash-field-projection'\\n        return result\\n    result['procPathClassification']=proc_path_projection(path)\\n    exception=crash.get('exception');exception=exception if type(exception) is dict else {}\\n    termination=crash.get('termination');termination=termination if type(termination) is dict else {}\\n    codes=exception.get('codes')\\n    code_safe=(codes if type(codes) is str and re.fullmatch(\\n         r'0x[0-9a-fA-F]{1,16}(?:, ?0x[0-9a-fA-F]{1,16}){0,3}',codes) else None)\\n    indicator=termination.get('indicator')\\n    result.update({'disposition':('matched-one-fresh-child' if matched else\\n            'fixed-file-nonpath-matched-path-unqualified'),\\n       'pid':TARGET_PID,'parentPid':TARGET_PARENT,'procName':'node',\\n       'procPath':path if path_known else None,\\n       'procLaunch':launched['fixedFormat'],'captureTime':captured['fixedFormat'],\\n       'launchEpochNs':str(launched['epochNs']),'captureEpochNs':str(captured['epochNs']),\\n       'osVersion':fixed_os(crash.get('osVersion')),\\n       'exception':{\\n          'type':enum_field(exception.get('type'),('EXC_CRASH','EXC_BAD_ACCESS','EXC_BAD_INSTRUCTION',\\n               'EXC_BREAKPOINT','EXC_RESOURCE','EXC_GUARD','EXC_SOFTWARE','EXC_ARITHMETIC')),\\n          'signal':enum_field(exception.get('signal'),('SIGABRT','SIGSEGV','SIGILL','SIGTRAP','SIGKILL',\\n               'SIGBUS','SIGFPE','SIGTERM','SIGSYS')),\\n          'numericHexCodes':code_safe},\\n       'termination':{\\n          'namespace':namespace_field(termination.get('namespace')),\\n          'codeDecimal':bounded_integer(termination.get('code')),\\n          'flagsDecimal':bounded_integer(termination.get('flags')),\\n          'indicator':enum_field(indicator,('Abort trap: 6','Library missing','Symbol missing',\\n             'Code Signature Invalid','Invalid Page','Segmentation fault: 11')),\\n          'byProc':enum_field(termination.get('byProc'),('node','dyld','kernel','launchd','sandboxd','exc handler')),\\n          'byPidEqualsTarget':termination.get('byPid')==TARGET_PID,\\n          'byPidEqualsOriginalParent':termination.get('byPid')==TARGET_PARENT},\\n       'dyldAndTerminationText':fixed_text_projection(crash,termination),\\n       'fullCrashReportClassified':False,'causalConclusionClaimed':False,\\n       'threadsEnvironmentOrUsedImagesExported':False})\\n    return result\\n\\n\\ndef main():\\n    report={'schema':'heptabao.mac-one-public-node-ips-fixed-file-projection.r4',\\n      'ok':False,'observationComplete':False,'outcomeUnknown':False,\\n      'directory':str(DIRECTORY),'targetPid':TARGET_PID,'targetParentPid':TARGET_PARENT,\\n      'sourceJob':'mac/1a1b25c3c54-fc05-7db1',\\n      'originalNativeCreatedMs':START_MS,'originalNativeTerminalMs':TERMINAL_MS,\\n      'actualLocalPsStart':'Sat Nov 7 03:35:52 2026',\\n      'filenameUTCAndObservedLocalOffsetsSeconds':list(NAME_OFFSETS_SECONDS),\\n      'filenameMarginSeconds':NAME_MARGIN_SECONDS,'correlationMarginMs':CORRELATION_MARGIN_MS,\\n      'fixedPathChainObserved':[],'candidates':[],\\n      'fixedReportBasename':FIXED_REPORT_NAME,'fixedObservedReportFull9':[str(v) for v in OBSERVED_REPORT_FULL9],\\n      'directoryEnumerationRequested':False,'directoryCoverageClaimed':False,\\n      'sameBytesAsPriorReadClaimed':False,'safeCrashProjectionCount':0,\\n      'matchedReportCount':0,'matchingFreshReportFound':False,\\n      'historicalManagedClosureClaimed':False,'originalRuntimeCauseProved':False,\\n      'originalRuntimeProgressReclassified':False,'newProbeCauseConclusionClaimed':False,\\n      'oldPrivateLogsOrCapsuleRequested':False,'potentiallyPrivateIpsBodyReadScope':True,\\n      'rawIpsOrUnknownTextOrHashExported':False,'SDKOrCredentialOrProviderCalled':False,\\n      'filesystemWrites':0,'childProcesses':0,'otherPidSignalOrWait':False,\\n      'launchdOperation':False,'T5ReadOrWrite':False,'fallbackDirectory':False}\\n    signals=SignalFacade();io=None;query_complete=False;final_fences=False\\n    saved={sig:signal.getsignal(sig) for sig in (signal.SIGTERM,signal.SIGINT)}\\n    handlers_restored=False\\n    try:\\n        for sig in saved:signal.signal(sig,interrupt)\\n        need(sys.platform=='darwin' and os.geteuid()==501 and sys.executable==PYTHON,\\n             'fixed_regular_python_operator')\\n        io=CrashIO(signals)\\n        directory=io.open_chain()\\n        report['fixedPathChainObserved']=[{'path':row['path'],\\n           'identity':[str(x) for x in row['expected']]} for row in io.dirs]\\n        names=[FIXED_REPORT_NAME]\\n        report['candidateNameCount']=len(names)\\n        need(len(names)<=MAX_BODIES,'body_candidate_count_cap')\\n        for name in names:\\n            raw,file_info=io.read_one(directory,name)\\n            projection=crash_projection(raw,file_info)\\n            report['candidates'].append({'file':file_info,'projection':projection})\\n        matches=[r for r in report['candidates'] if r['projection']['matchesOriginalFreshChild']]\\n        report['matchedReportCount']=len(matches)\\n        need(len(matches)<=1,'multiple_matching_reports')\\n        report['matchingFreshReportFound']=len(matches)==1\\n        report['safeCrashProjectionCount']=sum(1 for r in report['candidates']\\n            if r['projection']['safeCrashFieldsAdmitted'])\\n        query_complete=all(r['projection']['correlationFullyEvaluated'] for r in report['candidates'])\\n        report['allCandidateCorrelationsEvaluated']=query_complete\\n        report['noQualifiedMatchWithinThisExactScope']=(len(matches)==0 and query_complete)\\n        report['noGlobalAbsenceClaim']=True\\n    except BaseException as error:\\n        report['error']=error_projection(error)\\n    finally:\\n        if io is not None:\\n            try:\\n                final_fences=io.verify_all()\\n            except BaseException as error:\\n                report['finalFenceError']=error_projection(error)\\n            try:\\n                with critical():\\n                    io.close_scan()\\n                    io.close()\\n            except BaseException as error:\\n                report['closeLoopError']=error_projection(error)\\n            report['io']=io.public()\\n        else:\\n            report['io']={'allReturnedFdsAndIteratorClosed':True,'noIoObjectCreated':True}\\n        restored=True\\n        for sig,handler in saved.items():\\n            try:signal.signal(sig,handler)\\n            except BaseException:\\n                restored=False\\n        handlers_restored=restored\\n        report['finalHeldNamedFencesPassed']=final_fences\\n        report['handlersRestored']=handlers_restored\\n        report['pendingSignalObserved']=pending_signal is not None\\n        report['elapsedSeconds']=time.monotonic()-START\\n        report['afterClosureDeadlineMet']=time.monotonic()<=FINAL_UNTIL\\n        closed=report['io']['allReturnedFdsAndIteratorClosed'] and handlers_restored\\n        report['allOwnResourcesClosed']=closed\\n        report['outcomeUnknown']=(not closed or not final_fences or pending_signal is not None\\n                                 or not report['afterClosureDeadlineMet'])\\n        report['observationComplete']=(query_complete and 'error' not in report\\n            and final_fences and closed and not report['outcomeUnknown'])\\n        report['ok']=report['observationComplete']\\n    raw=json.dumps(report,sort_keys=True,separators=(',',':'),ensure_ascii=True)+'\\\\n'\\n    if len(raw.encode('ascii'))>MAX_PUBLIC_BYTES:\\n        report={'schema':'heptabao.mac-one-public-node-ips-fixed-file-projection.r4','ok':False,\\n         'observationComplete':False,'outcomeUnknown':True,'error':{'type':'Refused','code':'public_report_cap'},\\n         'allOwnResourcesClosed':report['allOwnResourcesClosed'],\\n         'handlersRestored':handlers_restored,'rawIpsOrUnknownTextOrHashExported':False,\\n         'projectionDroppedForReportCap':True,'historicalManagedClosureClaimed':False}\\n        raw=json.dumps(report,sort_keys=True,separators=(',',':'))+'\\\\n'\\n    sys.stdout.write(raw);sys.stdout.flush()\\n    return 0 if report['ok'] else 1\\n\\nif __name__=='__main__':raise SystemExit(main())\\n\"}\n",
+      "requestPin": {
+        "blob": "0d3d2ad6dd3c856b4179816671a011e805a8b6e7",
+        "bytes": 38683,
+        "sha256": "3d50ba16e276f11d97a52cfbd21664d7008d0a8e75f907be008af7923a53fcd8"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "d098572475465c26ff1fbae93dec549fad5491ab",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "df35267bb943f68736efa730478512ab5f6919eb",
+            "bytes": 841,
+            "sha256": "934b3591c4f3446d82903de6d0e7df7459f2516bc86f5085ee903926aa132e4b",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "78550f1d8c6de95cdcd02408592f051ba1649489",
+            "bytes": 704,
+            "sha256": "cb333e3837098ffe0ba48049c31d6857e73363455f53b9f0ac30c82e0a3810e3",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "0d3d2ad6dd3c856b4179816671a011e805a8b6e7",
+            "bytes": 38683,
+            "sha256": "3d50ba16e276f11d97a52cfbd21664d7008d0a8e75f907be008af7923a53fcd8",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 40228,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "519ab0a22be6930745ce341b42b4e12b936ad70d",
+        "bytes": 1417,
+        "sha256": "50fe00ed6d3f9ff08861cba24a0ca67e43bdab4bc78acd9f3b5b5d45f4ca8841"
+      },
+      "sdkArchive": {
+        "tree": "ba588c155526cb92259e0d894a85e08d10430755",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "519ab0a22be6930745ce341b42b4e12b936ad70d",
+            "bytes": 1417,
+            "sha256": "50fe00ed6d3f9ff08861cba24a0ca67e43bdab4bc78acd9f3b5b5d45f4ca8841",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 1417,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "6829fd6172fb72782cda0b309101d2fc57e3ee16",
+        "bytes": 1169,
+        "sha256": "eb07d5e2bd7f879e6b72e2f48621916dcb3bc75b13a8bc7250a7a37b58b1c0e1"
+      }
+    },
+    "public-node-crash-fixed-r4-authority-01": {
+      "kind": "operation_start",
+      "requestRaw": "{\"idempotency_key\":\"heptabao-mac-public-node-crash-9e758b73-authority-01\",\"operation\":{\"tool\":\"process_status\",\"arguments\":{\"host\":\"mac\",\"job_id\":\"1a1b2b3248a-fc05-7f5e\"}}}",
+      "requestPin": {
+        "blob": "ae0bea28974cc84990e259eb35186c1009c38250",
+        "bytes": 172,
+        "sha256": "e464ff09f1ab0fc4bdccca8e0805c3d60fffa012e6a76af260b3650f2f5aea00"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "29175a03958f6da97b2e785846d35de1fa461ea4",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "2e9bb7cd819b3c20e09cf4a40c9656b23f61e42a",
+            "bytes": 867,
+            "sha256": "c8758d6bad710bd8f05f7480cf55cd91983ffc3c4655e7f060a942f7520515bc",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "6dd59cecf4f0e0803220ff476097136d51c2d839",
+            "bytes": 730,
+            "sha256": "e9c3b819de379d490a80104cdd673ef31c3ef0e4468bce6c9490df8b4cd12ffc",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "ae0bea28974cc84990e259eb35186c1009c38250",
+            "bytes": 172,
+            "sha256": "e464ff09f1ab0fc4bdccca8e0805c3d60fffa012e6a76af260b3650f2f5aea00",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1769,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "9cfd3118511e0edd71feaf92428088503b583a42",
+        "bytes": 709,
+        "sha256": "3a5ff0545bd3b0f1919a767e01f72e9418a24f16ae2a255bd265d74893e1646b"
+      },
+      "sdkArchive": {
+        "tree": "e34dafbf85266c343eaf621728bbfd18aae876b0",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "9cfd3118511e0edd71feaf92428088503b583a42",
+            "bytes": 709,
+            "sha256": "3a5ff0545bd3b0f1919a767e01f72e9418a24f16ae2a255bd265d74893e1646b",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 709,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "6520e480e26457fe1d84978ff39785eeca8c26f3",
+        "bytes": 548,
+        "sha256": "a18f721ce9e7d313907fbb2ed0d07ae4c1c8de0d726cb11fd3febda1131f2cc2"
+      }
+    },
+    "public-node-crash-fixed-r4-authority-01-status-01": {
+      "kind": "operation_status",
+      "requestRaw": "{\"operation_id\":\"b889431010bb4a4144ac6a95afe55ee60980c3e769251ed9192de6cd981fc922\"}",
+      "requestPin": {
+        "blob": "9bcc092fe2cc96a59f1a7ad0a6e30d938ba96e16",
+        "bytes": 83,
+        "sha256": "29a89ea621dd467376a2d64c505042130dc250a05b12b729b28b38f1de23ef54"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "2c5e200549c4d3409c762ea344da9f791f120580",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "21c78bedc5995ed2f45023140af255f524b22296",
+            "bytes": 939,
+            "sha256": "36d4a407f7c9b8352c80509e38d9c73116c5f82918e52d9d23da6cb75e77dd80",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "36e114542752d0b881bcaea279d0ee70c6c940be",
+            "bytes": 802,
+            "sha256": "ca9c2b7c703ef2d83a97d2f96f7af0a1344a6cd1b82638354d1dc20ba08b5888",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "9bcc092fe2cc96a59f1a7ad0a6e30d938ba96e16",
+            "bytes": 83,
+            "sha256": "29a89ea621dd467376a2d64c505042130dc250a05b12b729b28b38f1de23ef54",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1824,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "1d3fe3c8174717716676be328cbe9253109a7eef",
+        "bytes": 980,
+        "sha256": "cde2ea205916f7c54ccef838cfb190beb7f4ddc27e1ff5efffe2088f38896539"
+      },
+      "sdkArchive": {
+        "tree": "056f55fbc9389d670594b1c437793b41795b7012",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "1d3fe3c8174717716676be328cbe9253109a7eef",
+            "bytes": 980,
+            "sha256": "cde2ea205916f7c54ccef838cfb190beb7f4ddc27e1ff5efffe2088f38896539",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 980,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "90cb2b8bbd1b5e05a1a0933662c1289782724742",
+        "bytes": 805,
+        "sha256": "5ca9997cf966b68da3d252c9733e013ffc3341e6ccd89f772c5a3bc7831aaf7d"
+      }
+    },
+    "public-node-crash-fixed-r4-authority-01-page-000000": {
+      "kind": "operation_result",
+      "requestRaw": "{\"operation_id\":\"b889431010bb4a4144ac6a95afe55ee60980c3e769251ed9192de6cd981fc922\",\"offset\":0,\"limit\":8192}",
+      "requestPin": {
+        "blob": "1a7bf55a911247e34c02bf507044e33a215fe4c6",
+        "bytes": 107,
+        "sha256": "b93197ec92e409c827dc5c46eb457995b3b79b4b0ccdd9b3e3d9423523fd918e"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "41b558b650083e40ee8ff3e4dca43d1653b3a355",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "5bec42827fc59f85263c676d5a68b43035bc67cb",
+            "bytes": 942,
+            "sha256": "4c503a8ce0c69e0cd66e5369c2a7046ff04f4d9efde4e265036ef8fdfda944d7",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "598d9b002cd393ad597aa70da5a8f29d65dbe34a",
+            "bytes": 805,
+            "sha256": "1626f692829316fbe769dcc0a6f3cdc3d38085e98de1124903ccaba9fe3fe8e0",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "1a7bf55a911247e34c02bf507044e33a215fe4c6",
+            "bytes": 107,
+            "sha256": "b93197ec92e409c827dc5c46eb457995b3b79b4b0ccdd9b3e3d9423523fd918e",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1854,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "45962ccc24e961473244900a7b17c29c6361d294",
+        "bytes": 2068,
+        "sha256": "b23444630116465e8807edfbd6922c3b6dc309dd425f0a79a18871ea6a23e9e7"
+      },
+      "sdkArchive": {
+        "tree": "53aab4fea6983691188dd09bb731774d42e6e796",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "45962ccc24e961473244900a7b17c29c6361d294",
+            "bytes": 2068,
+            "sha256": "b23444630116465e8807edfbd6922c3b6dc309dd425f0a79a18871ea6a23e9e7",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 2068,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "c2ca1e89368d3842f02794185cdc3309d8eec66e",
+        "bytes": 1897,
+        "sha256": "750341ad3200f43272f3846c595fe3e25c9ae995bfbcc2a64fd4e79bad709be8"
+      }
+    },
+    "public-node-crash-fixed-r4-streams-01": {
+      "kind": "operation_start",
+      "requestRaw": "{\"idempotency_key\":\"heptabao-mac-public-node-crash-9e758b73-streams-01\",\"operation\":{\"tool\":\"process_read\",\"arguments\":{\"host\":\"mac\",\"job_id\":\"1a1b2b3248a-fc05-7f5e\",\"stdout_offset\":0,\"stderr_offset\":0,\"limit\":16384}}}",
+      "requestPin": {
+        "blob": "88bf19ad71bc638915ffd205abaf439912a7c5af",
+        "bytes": 218,
+        "sha256": "52382bf93308ee3981ace21ce9e7a33b763aa29bb305526d031d9490be9b314e"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "a86c3a48723edaae23222c6f65cf3d94f6fe79c1",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "b8cdb1a98752f6142764b7829199d8e29eae83b1",
+            "bytes": 865,
+            "sha256": "4424b70929f9cd19ebfc1215af5ca54fcc323f30b679482a4cfd3d8cc0a51694",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "5988e1648d8cc3e300b4cb5a2f7d57ea7d2629c3",
+            "bytes": 728,
+            "sha256": "7c37f399c87bd53a4545973d956e1ba22820016c4549bad0b675d2349849dbac",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "88bf19ad71bc638915ffd205abaf439912a7c5af",
+            "bytes": 218,
+            "sha256": "52382bf93308ee3981ace21ce9e7a33b763aa29bb305526d031d9490be9b314e",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1811,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "a96e548bee79d872d4fc833718482cfc49c32947",
+        "bytes": 707,
+        "sha256": "a4659bb5ee184a03118e12fb4919e2bf46cda7d1e8a1dd00d142a74a45bc9a69"
+      },
+      "sdkArchive": {
+        "tree": "50d68dcb0dc47496c6f50f904eb9a2c105fed955",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "a96e548bee79d872d4fc833718482cfc49c32947",
+            "bytes": 707,
+            "sha256": "a4659bb5ee184a03118e12fb4919e2bf46cda7d1e8a1dd00d142a74a45bc9a69",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 707,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "3f06baeff911547f7042f3df5c66e922150b9ef3",
+        "bytes": 546,
+        "sha256": "01fd6dd2f2516987347fa6ad5fc250ed7f7bdef970f90af2e5c785efdf0eae7d"
+      }
+    },
+    "public-node-crash-fixed-r4-streams-01-status-01": {
+      "kind": "operation_status",
+      "requestRaw": "{\"operation_id\":\"1aa5c12ae3c11dcbcbcba9e55b595b1f9f23343c3d9baf4d874cf65bee16d735\"}",
+      "requestPin": {
+        "blob": "51b58afd2660f0388ed0397a79d8a11876c2cb67",
+        "bytes": 83,
+        "sha256": "7ed4b7a170965ac3d6057c556d1af647873a9f477ddd73263e160d5944f6952a"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "0c002466739e6dfc4e1720c02b56ca10ac818763",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "5f18f5e6c7f59da9bf41b972a2d0621b39c94f3f",
+            "bytes": 937,
+            "sha256": "1f3306b1a5f526fe934596fb779b6efb8cffdb8cba0559e54faca27b633cf1b2",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "81c5d545e44697552489438f540857abba3ed688",
+            "bytes": 800,
+            "sha256": "a44cbab6eab1a2f2f927bb7c11d41049c870155d191b0eaa6c3c31c6d1b60896",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "51b58afd2660f0388ed0397a79d8a11876c2cb67",
+            "bytes": 83,
+            "sha256": "7ed4b7a170965ac3d6057c556d1af647873a9f477ddd73263e160d5944f6952a",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1820,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "51748b2d5507d6dbcd57b7f9825f6378a516da0f",
+        "bytes": 978,
+        "sha256": "61fcad61f50082f88129bfc727fb695299157e764fc3c5f19716dd7a0e5215a6"
+      },
+      "sdkArchive": {
+        "tree": "fcd17f30a3c3714b3a5cad14c462200c65392b59",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "51748b2d5507d6dbcd57b7f9825f6378a516da0f",
+            "bytes": 978,
+            "sha256": "61fcad61f50082f88129bfc727fb695299157e764fc3c5f19716dd7a0e5215a6",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 978,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "cbd61040880e85460fe53aec574ce4317709316d",
+        "bytes": 803,
+        "sha256": "a725155af5c3322d04925876664001abc83e894589f4f5f499e2f19c27a64fb5"
+      }
+    },
+    "public-node-crash-fixed-r4-streams-01-page-000000": {
+      "kind": "operation_result",
+      "requestRaw": "{\"operation_id\":\"1aa5c12ae3c11dcbcbcba9e55b595b1f9f23343c3d9baf4d874cf65bee16d735\",\"offset\":0,\"limit\":8192}",
+      "requestPin": {
+        "blob": "bc804e8ef3115a97f567549a1e77d0940432e1b8",
+        "bytes": 107,
+        "sha256": "f7643d73dde59728033b03a20fbeebbf33da06384ea8407a40264c45603704b2"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "ab6e018fa540a42ffb22fef94404bff131eb2939",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "6b5128caae8527f1bae7858cd7062b76ea7768c6",
+            "bytes": 940,
+            "sha256": "33a9e8955de5aa0cd2a42d7cf3a96216f7142d9eb1ece72f935728b21f46fef0",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "02194797f5b008d92d9ef0c4140bfc1488e35af5",
+            "bytes": 803,
+            "sha256": "85c5830f104ece3a6385dfbc0f77591126d1ff22a03fd36f4a5cb90bc36a0671",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "bc804e8ef3115a97f567549a1e77d0940432e1b8",
+            "bytes": 107,
+            "sha256": "f7643d73dde59728033b03a20fbeebbf33da06384ea8407a40264c45603704b2",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1850,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "f3e39111e24f5d1d278fc808993f5f0f65f194ac",
+        "bytes": 11780,
+        "sha256": "99a87661010624278c754818ee7c56797fc19115ed21bd56591c5b6b92c4bd87"
+      },
+      "sdkArchive": {
+        "tree": "cdae1a16efa3573386c9bcd8820f766c6e959cc5",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "f3e39111e24f5d1d278fc808993f5f0f65f194ac",
+            "bytes": 11780,
+            "sha256": "99a87661010624278c754818ee7c56797fc19115ed21bd56591c5b6b92c4bd87",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 11780,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "5c06adc29c78e79683804b23828c5c2a29500cdb",
+        "bytes": 11609,
+        "sha256": "22a6f0a99654f5dad441eb4adcc62fb8b1a119183ee8a8d996d3d26e1383afbd"
+      }
+    },
+    "public-node-crash-fixed-r4-streams-01-page-008192": {
+      "kind": "operation_result",
+      "requestRaw": "{\"operation_id\":\"1aa5c12ae3c11dcbcbcba9e55b595b1f9f23343c3d9baf4d874cf65bee16d735\",\"offset\":8192,\"limit\":8192}",
+      "requestPin": {
+        "blob": "0789390fb75ea46fd39885b6b55acb0c33355a52",
+        "bytes": 110,
+        "sha256": "718e06bcbd8cd75e78f2ab64b3ab0542102058f070b0c228a58bf514a9b0f2d5"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "78bc91158d8b5718aafda70758e107d4f903f2cc",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "f0d7f4444373a15234a930eaca3bdc8d66059634",
+            "bytes": 940,
+            "sha256": "f99b11b19cc77f27dd2a06e08e5892dbffa37796b6ccd3b5127f14a3c89f1bbe",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "b15d0ab2eb3e8fe60f48bbe030b9739cd5d359a7",
+            "bytes": 803,
+            "sha256": "2e90e7ea7359e8d4fa44a6bc8a9ed8a1c37d8ba8db5a4d21279bc8f22a518065",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "0789390fb75ea46fd39885b6b55acb0c33355a52",
+            "bytes": 110,
+            "sha256": "718e06bcbd8cd75e78f2ab64b3ab0542102058f070b0c228a58bf514a9b0f2d5",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1853,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "9e14fd1f0e18d086f02c5fe9314920341b5deb14",
+        "bytes": 11784,
+        "sha256": "530c1643b534a6776efba2f5613f929d5882d0837a1efa6f06e4008dd787415c"
+      },
+      "sdkArchive": {
+        "tree": "bbbb3f4d6ddb7a4ee9a612783b2a6f9421469484",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "9e14fd1f0e18d086f02c5fe9314920341b5deb14",
+            "bytes": 11784,
+            "sha256": "530c1643b534a6776efba2f5613f929d5882d0837a1efa6f06e4008dd787415c",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 11784,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "c52ae3429253a0c22370c2f07a24996407a130c2",
+        "bytes": 11613,
+        "sha256": "31244034c0592b27562207c037d5b2de146a6e1e881eb9f0eedc78770d012fe6"
+      }
+    },
+    "public-node-crash-fixed-r4-streams-01-page-016384": {
+      "kind": "operation_result",
+      "requestRaw": "{\"operation_id\":\"1aa5c12ae3c11dcbcbcba9e55b595b1f9f23343c3d9baf4d874cf65bee16d735\",\"offset\":16384,\"limit\":8192}",
+      "requestPin": {
+        "blob": "2e5e57020aee13e11ddf77e66d742218f2fe8b4b",
+        "bytes": 111,
+        "sha256": "4e550451f2efcf692fbf824b9e741f622ae5caca5b2d60f294850751063bb363"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "958270551eb213b1ec9a24488d61fc40228eab97",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "b57aa9339f7467e4ca376609d50f8f268c4b6d1c",
+            "bytes": 940,
+            "sha256": "a31825e646d1ea4a8993af331496ff6d4a10beed9c7498228b57fe93d3b70949",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "4d9307fcd8c2387c50ec2b9812dc0c2e831acb3b",
+            "bytes": 803,
+            "sha256": "2dd0ad64d7e08cfffd1d154424b2a12112c8ce958766324e76150eb402a22f3e",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "2e5e57020aee13e11ddf77e66d742218f2fe8b4b",
+            "bytes": 111,
+            "sha256": "4e550451f2efcf692fbf824b9e741f622ae5caca5b2d60f294850751063bb363",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1854,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "6509e87dfb9ce6d7d740f4810ef1afa696e57305",
+        "bytes": 11785,
+        "sha256": "d9619a7f6aa782a6bfc798126cdeb3523cc71d5d887c4ba507eb0ffcf441fcea"
+      },
+      "sdkArchive": {
+        "tree": "05420a4e72eabfad98d2c961cc17b068cf054d7a",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "6509e87dfb9ce6d7d740f4810ef1afa696e57305",
+            "bytes": 11785,
+            "sha256": "d9619a7f6aa782a6bfc798126cdeb3523cc71d5d887c4ba507eb0ffcf441fcea",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 11785,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "b898cc4d40e0e9a2969ab22018cd149cd4279a9c",
+        "bytes": 11614,
+        "sha256": "6a5a33cb3c39d1c2942d27d930a2323742fa2eaa926651c9f7f86f4b5713c15b"
+      }
+    },
+    "public-node-crash-fixed-r4-streams-01-page-024576": {
+      "kind": "operation_result",
+      "requestRaw": "{\"operation_id\":\"1aa5c12ae3c11dcbcbcba9e55b595b1f9f23343c3d9baf4d874cf65bee16d735\",\"offset\":24576,\"limit\":8192}",
+      "requestPin": {
+        "blob": "2cb970e1ed92126c3ec9d1f8287ba548cc8c5b88",
+        "bytes": 111,
+        "sha256": "0c4edec2d371b510807bddc67eefc869598aee82516b2d135acceb7b60a143cc"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "50c7e1ea93dd67c60cf51115a039419a1740d646",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "9ae2f8aead55dd172c73b2396d05f5aad0b345bb",
+            "bytes": 940,
+            "sha256": "84e7331b3b78cc0bc49bb30c518a246aa64dd07ffec3db8892e79327574c241d",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "9026d4d7e3149847df7a0a0dfc5a2345f4d620a6",
+            "bytes": 803,
+            "sha256": "6962274295cc737a13c035ae10016eef859c7be651198f68399d1c659f2d28ea",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "2cb970e1ed92126c3ec9d1f8287ba548cc8c5b88",
+            "bytes": 111,
+            "sha256": "0c4edec2d371b510807bddc67eefc869598aee82516b2d135acceb7b60a143cc",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1854,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "376394047a87bfe0faa27f35daeedfc622d50b5b",
+        "bytes": 11785,
+        "sha256": "9d99bfad1c259e4ae74e39d8b7d958d08dd0e16994549917b1e1950a415e810e"
+      },
+      "sdkArchive": {
+        "tree": "1a55dc711950449a98a6dce6c693a99dd0652ba0",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "376394047a87bfe0faa27f35daeedfc622d50b5b",
+            "bytes": 11785,
+            "sha256": "9d99bfad1c259e4ae74e39d8b7d958d08dd0e16994549917b1e1950a415e810e",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 11785,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "50586aa11b9e06445b6795469a3c3ec9642561f2",
+        "bytes": 11614,
+        "sha256": "53eb66ad99c4089ec9ec941ee16fb7b27bec0722a201a3bb6a77b95ae36c118b"
+      }
+    },
+    "public-node-crash-fixed-r4-streams-01-page-032768": {
+      "kind": "operation_result",
+      "requestRaw": "{\"operation_id\":\"1aa5c12ae3c11dcbcbcba9e55b595b1f9f23343c3d9baf4d874cf65bee16d735\",\"offset\":32768,\"limit\":8192}",
+      "requestPin": {
+        "blob": "5a87cc19df06cab6661e398e1984065bab25f634",
+        "bytes": 111,
+        "sha256": "6d705acd823be3ffcfb91a0fb3063254917c895ffe5460a6737b18dd15a367dc"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "f40c5aafb4f962e0aad1ae613ac39b49a3c94333",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "2c25f9323c40927612ddd8aae38e0a9708e16c41",
+            "bytes": 940,
+            "sha256": "6f535174e0cf935333affe46971ecb6b34f29b1dcd8d17346283e314a7f56183",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "7ada9b0d4fdd53609ba1f679b24da4bad1de336f",
+            "bytes": 803,
+            "sha256": "6b82b2d77511a65e5f871bc2dba9cc64c86bbff640a74dc13a2d253d92235944",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "5a87cc19df06cab6661e398e1984065bab25f634",
+            "bytes": 111,
+            "sha256": "6d705acd823be3ffcfb91a0fb3063254917c895ffe5460a6737b18dd15a367dc",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1854,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "9d49f9845e212c8e198781cd8580f684764476c8",
+        "bytes": 11628,
+        "sha256": "47f98208b634821f2c89d0c41bfd9ca8a0da102085bf7127543778b2d1e64cf9"
+      },
+      "sdkArchive": {
+        "tree": "a6653b7ce25a380c002c2529f1ef3dc8bf79b824",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "9d49f9845e212c8e198781cd8580f684764476c8",
+            "bytes": 11628,
+            "sha256": "47f98208b634821f2c89d0c41bfd9ca8a0da102085bf7127543778b2d1e64cf9",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 11628,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "3ca4a91dd7cbd0408b581f2c721cd25e47a436cd",
+        "bytes": 11457,
+        "sha256": "cf030e15fb73a7caf974a13b2e24f24837fca49ce8fdc3188e40eba5fb544799"
+      }
+    }
+  },
+  "completedObservers": [
+    {
+      "id": "b889431010bb4a4144ac6a95afe55ee60980c3e769251ed9192de6cd981fc922",
+      "tool": "process_status",
+      "payload": {
+        "blob": "8b8527cf3944e490595fb1bd9398314b960d6e09",
+        "bytes": 912,
+        "sha256": "b301d9339094da9ac92732476a681cb661438f864a9fc22836f235f61fc61027"
+      },
+      "payloadTree": "a47db963a0d30296bf96d48e9123807349dbb4c8",
+      "nativeText": {
+        "blob": "2478f4b3263c7a059e31bc133156596356163b8a",
+        "bytes": 733,
+        "sha256": "20b64a1f362b386df4515235c7798c79c805514ab5860542323134c943c07636"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "1aa5c12ae3c11dcbcbcba9e55b595b1f9f23343c3d9baf4d874cf65bee16d735",
+      "tool": "process_read",
+      "payload": {
+        "blob": "f10484cc2e95547e7df011068e8d6e368addc7e4",
+        "bytes": 40844,
+        "sha256": "a05d25455f2373850b7f039a4ab074ba5bde60af84c137de2d244f9368fe3f7c"
+      },
+      "payloadTree": "c94df3f5f20951eed67167ca114a8c19409ff4e7",
+      "nativeText": {
+        "blob": "354a1eb0dcf9b78722ac6fd498b798bfb9a7ed5d",
+        "bytes": 38151,
+        "sha256": "3eb214f9793d655428e3db4f807bf24ee25331a0b795880d785e669d1b2e654b"
+      },
+      "pages": 5,
+      "completedInactive": true
+    }
+  ],
+  "nextStdout": 12183,
+  "nextStderr": 0,
+  "localJournalAvailable": false,
+  "gitFirstExplicitlyRequiredByThisRootGO": true
+}

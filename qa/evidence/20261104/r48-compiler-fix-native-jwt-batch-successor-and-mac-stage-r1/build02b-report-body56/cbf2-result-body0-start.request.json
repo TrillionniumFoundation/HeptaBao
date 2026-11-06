@@ -1,0 +1,13 @@
+{
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "rog",
+      "path": "/home/qian-qi/hb-02b90762-controls-20261106-r2/build-tests-r1/result.public.json",
+      "offset": 0,
+      "limit": 40591,
+      "expected_version": "66306:28484413:40591:1793996644769259586:1793996644769259586"
+    }
+  },
+  "idempotency_key": "heptabao-combined-02b90762-fresh-observe-r2-result-body"
+}

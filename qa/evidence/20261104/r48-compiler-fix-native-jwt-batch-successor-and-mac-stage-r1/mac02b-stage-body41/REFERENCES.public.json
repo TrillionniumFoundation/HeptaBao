@@ -1,0 +1,12 @@
+{
+  "sourceStage64": "cc74120000e4e266bd0e5c37e8e7cb7d45d7ae36",
+  "info33": "44d6028793cb72681386ce20056c68e9fdf40812",
+  "source19": "f928b8c8970a01ef439942ca38c19d863ee9454b",
+  "parentRootReport22": {
+    "blob": "91614d1f693343c6772302930a10b5f1c792d21e",
+    "bytes": 1353,
+    "sha256": "3e51bf9631201bcb4d67709e6ed98c2202e5d4f668126534dd3bf914362aebb4",
+    "tree": "973fc5c71023727649c5242fa3c0cb7c88e87768"
+  },
+  "scope": "SOURCE stage actual only, no Cargo/normal61/full34/LAN on current candidate"
+}

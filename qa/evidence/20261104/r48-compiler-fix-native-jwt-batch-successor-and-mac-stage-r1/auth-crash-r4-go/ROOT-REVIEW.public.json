@@ -1,0 +1,239 @@
+{
+  "schema": "heptabao.root.fixed-ips-r4.source-review.r1",
+  "sourceTree": "6431d5535301bc39b6eaafd7697ae29c81652843",
+  "reproducedChecks": 92,
+  "actualChecks": [
+    {
+      "name": "actual R3 whole stdout equal",
+      "passed": true
+    },
+    {
+      "name": "actual R3 whole release equal",
+      "passed": true
+    },
+    {
+      "name": "old admitted R3 source unchanged",
+      "passed": true
+    },
+    {
+      "name": "core14 request/source/journal/contract unchanged",
+      "passed": true
+    }
+  ],
+  "onlyFunctionalChanges": "Bounded explicit termination.namespace field plus fixed ASI shape/lexical projections. Existing complete file fences, time correlation, original path predicate, IO caps and closure logic unchanged.",
+  "publicScope": {
+    "identity": [
+      "Exact predetermined PID51494/parent51483/procName node and original timestamps only after exact fixed-file plus all seven original non-path gates; full correlation separately retains the path gate",
+      "procPath only exact observed real or alias path",
+      "strict timestamp text plus exact nanosecond decimal",
+      "safe regex macOS train/build; releaseType User/Beta"
+    ],
+    "exception": [
+      "fixed Mach type enumeration",
+      "fixed signal enumeration",
+      "<=4 numeric hexadecimal codes"
+    ],
+    "termination": [
+      "termination.namespace only: original value iff exact string matching [A-Z0-9_]{1,64}; typed shape/previous-enum-membership are separate, no semantic meaning inferred",
+      "uint64 decimal code/flags",
+      "fixed indicator/byProc enumeration",
+      "byPid equals predetermined target/parent booleans"
+    ],
+    "fixedTextSlots": [
+      "termination.indicator",
+      "termination.reasons[]",
+      "termination.details[]",
+      "asi (string or bounded list only)",
+      "asiSignatures (string or bounded list only)",
+      "asi.dyld (string or bounded list)",
+      "asi.libsystem_c.dylib (string or bounded list)",
+      "asi.libsystem_kernel.dylib (string or bounded list)",
+      "asi.libsystem_platform.dylib (string or bounded list)",
+      "asi.libdispatch.dylib (string or bounded list)",
+      "asi.libc++abi.dylib (string or bounded list)",
+      "asi.node (string or bounded list)",
+      "asi.Node (string or bounded list)",
+      "asi.libsystem_pthread.dylib (string or bounded list)",
+      "asi.libsystem_sandbox.dylib (string or bounded list)",
+      "asi.libsystem_secinit.dylib (string or bounded list)",
+      "asi.libxpc.dylib (string or bounded list)",
+      "asiSignatures.dyld (string or bounded list)",
+      "asiSignatures.libsystem_c.dylib (string or bounded list)",
+      "asiSignatures.libsystem_kernel.dylib (string or bounded list)",
+      "asiSignatures.libsystem_platform.dylib (string or bounded list)",
+      "asiSignatures.libdispatch.dylib (string or bounded list)",
+      "asiSignatures.libc++abi.dylib (string or bounded list)",
+      "asiSignatures.node (string or bounded list)",
+      "asiSignatures.Node (string or bounded list)",
+      "asiSignatures.libsystem_pthread.dylib (string or bounded list)",
+      "asiSignatures.libsystem_sandbox.dylib (string or bounded list)",
+      "asiSignatures.libsystem_secinit.dylib (string or bounded list)",
+      "asiSignatures.libxpc.dylib (string or bounded list)"
+    ],
+    "textBudgets": {
+      "stringsMax": 32,
+      "eachUTF8BytesMax": 4096,
+      "totalUTF8BytesMax": 32768,
+      "linesMax": 64,
+      "hardFailureNoTruncation": true,
+      "cumulativeAcrossOldTerminationDyldAndNewASISlots": true,
+      "asiDyldNotDoubleCounted": true
+    },
+    "libraryMissingLinePrefixes": [
+      "Library not loaded:",
+      "Library not found:"
+    ],
+    "libraryPaths": [
+      "ASCII canonical absolute under /opt/homebrew/",
+      "ASCII canonical absolute under /System/",
+      "ASCII canonical absolute under /usr/lib/"
+    ],
+    "libraryOutput": [
+      ".dylib basename or exact same-name .framework binary",
+      "public prefix category",
+      "under fixed observed Node installation boolean",
+      "equals observed Node executable/alias boolean"
+    ],
+    "libraryMax": 8,
+    "noLibraryFullUnknownPath": true,
+    "noLibraryFileExistenceOrContentClaim": true,
+    "fixedLexicalOnly": [
+      "libraryNotLoaded",
+      "libraryNotFound",
+      "symbolNotFound",
+      "codeSignature",
+      "sandbox",
+      "operationNotPermitted",
+      "permissionDenied",
+      "abortCalled",
+      "dyld"
+    ],
+    "excluded": [
+      "raw IPS",
+      "raw or hash of unknown text",
+      "environment",
+      "threads",
+      "usedImages",
+      "arbitrary dictionary keys",
+      "incident identifiers",
+      "machine identifiers",
+      "other process PID values"
+    ],
+    "candidateMetadataBeforeShapeCheck": {
+      "source": "the same existing nofollow stat inside read_one, before unchanged leaf guards",
+      "maximum": 1,
+      "fields": [
+        "already lexically admitted basename",
+        "full9 decimal strings",
+        "closed type directory/regular/symlink/other",
+        "uid/gid/mode/nlink/size integers",
+        "modeOctal",
+        "regular/uidIs501/singleLink/noSetIdOrGroupOtherWrite/regularSingleLinkOwner/positiveSizeWithinOriginalCap booleans"
+      ],
+      "extraMetadataCalls": 0,
+      "extraBodyCalls": 0,
+      "extraFdOpens": 0,
+      "rawOrUnknownTextOrHash": false
+    },
+    "diagnosticShapes": {
+      "rows": 29,
+      "staticRootKeys": [
+        "asi",
+        "asiSignatures"
+      ],
+      "staticDictionaryKeys": [
+        "dyld",
+        "libsystem_c.dylib",
+        "libsystem_kernel.dylib",
+        "libsystem_platform.dylib",
+        "libdispatch.dylib",
+        "libc++abi.dylib",
+        "node",
+        "Node",
+        "libsystem_pthread.dylib",
+        "libsystem_sandbox.dylib",
+        "libsystem_secinit.dylib",
+        "libxpc.dylib"
+      ],
+      "noArbitraryKeyEnumeration": true,
+      "fields": [
+        "slot (one predetermined label)",
+        "present",
+        "type (closed JSON kind)",
+        "stringCount",
+        "listLength or null",
+        "nonStringListItems",
+        "supportedTextShape",
+        "rawValueOrHashExported=false"
+      ],
+      "eachListMaximum": 16,
+      "unsupportedValuesNotTraversedOrExported": true,
+      "nonStringListItemsCountedNotInterpreted": true
+    },
+    "diagnosticLexicalOnly": [
+      "abortWithPayload",
+      "abortWithReason",
+      "abortCalled",
+      "missingSymbol",
+      "missingLibrary",
+      "dynamicLoader",
+      "libraryInitialization",
+      "initializationFailure",
+      "threadCreation",
+      "pthreadDiagnostic",
+      "lockOrSemaphore",
+      "dispatchDiagnostic",
+      "recursiveOrDeadlock",
+      "resourceExhaustion",
+      "permissionOrSandbox",
+      "sandboxInitialization",
+      "jitOrExecutableMemory",
+      "forkSafety",
+      "runtimeAssertion",
+      "uncaughtException",
+      "codeSignature",
+      "architectureMismatch"
+    ],
+    "publicApiTokens": [
+      "abort_with_payload",
+      "abort_with_reason",
+      "pthread_create",
+      "pthread_mutex_init",
+      "pthread_cond_init",
+      "pthread_rwlock_init",
+      "pthread_once",
+      "pthread_jit_write_protect_np",
+      "uv_thread_create",
+      "uv__thread_create",
+      "uv_loop_init",
+      "uv_sem_init",
+      "dispatch_once",
+      "dispatch_async",
+      "dispatch_queue_create",
+      "dlopen",
+      "dlsym",
+      "sandbox_init",
+      "sandbox_init_with_parameters",
+      "sandbox_apply",
+      "sandbox_check",
+      "node::InitializeOncePerProcess",
+      "node::WorkerThreadsTaskRunner",
+      "v8::V8::Initialize",
+      "v8::base::OS::Allocate"
+    ],
+    "publicErrnoTokens": [
+      "EPERM",
+      "EACCES",
+      "EAGAIN",
+      "ENOMEM",
+      "EINVAL",
+      "ENOSYS",
+      "EDEADLK"
+    ],
+    "fixedTokenMatchesAreLexicalOnly": true,
+    "freeFormDiagnosticSentencesAllowed": false,
+    "noExtraLibraryReads": true
+  },
+  "RustOrPythonExecuted": false,
+  "NativeCalls": 0
+}

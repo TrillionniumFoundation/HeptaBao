@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.local-pure-builder-parse-failure.r1",
+  "errorType": "SyntaxError",
+  "message": "Unexpected token ')'",
+  "stage": "functions.exec script parse before any evaluation",
+  "faultLine": "v=v.slice(0,v.indexOf(' eq(\"failure/exact-error\"')))+...",
+  "correction": "remove one extra ')' from the slice/indexOf expression",
+  "NativeCalls": 0,
+  "GitMutations": 0,
+  "candidateChanged": false,
+  "oldActualChanged": false,
+  "sourceOfError": "original functions.exec tool return"
+}

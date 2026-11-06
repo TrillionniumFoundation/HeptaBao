@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.fresh-build.aggregate-index-correction.r1",
+  "initialWholeCore": "a44df98e64440c93b2abc0775c3c678b165d4e20",
+  "initialIndex": {
+    "blob": "fd66c619bca3a72e592dcfd9eca8a60b21a05f33",
+    "bytes": 17523,
+    "sha256": "fd3fb5b00225fc790f70809a13c2df6c7129eea72cc7088754734da99a06e713"
+  },
+  "correctIndex": {
+    "blob": "e59002b5e68d9eef5349ae76b0137ef02b33fc3f",
+    "bytes": 19683,
+    "sha256": "0209dc40da3aac4f3c49502c9399f665d6e4fc68d9ba640364df2e5dbe2d6b4e"
+  },
+  "cause": "Object spread order allowed the child leaf path to overwrite its explicit parent prefix; no original raw content or pin changed.",
+  "change": "Use {...entry,path:parent+'/'+entry.path}.",
+  "checks": {
+    "same82LeafPins": true,
+    "unique82ParentedPaths": true,
+    "all44ExistingSubtreesBound": true,
+    "original19Calls6ObserversUnchanged": true
+  },
+  "newNativeCalls": 0
+}

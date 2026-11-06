@@ -1,0 +1,252 @@
+{
+  "schema": "heptabao.root.public-node-crash-projection-exact-GO.r1",
+  "authorization": "GO",
+  "issuedAtUtc": "2026-11-06 20:07:40 UTC",
+  "agent": "/root/authbus_migration",
+  "scope": "one_bounded_readonly_projection_of_matching_public_Node_probe_crash",
+  "source_packet": "03695fb13e3c2ee4ecaa90ad3e5da7836aedaed8",
+  "root_review": {
+    "blob": "213245a8cbf944b28074d959ba8866eaa24e8abb",
+    "bytes": 1618,
+    "sha256": "ad9d869678d3601a8c600cb041428b62e3bef117fa4a60cb8ac6650d534b2309"
+  },
+  "source": {
+    "blob": "41ea46286a45ae651d7444e87efa7a8f3c6c438e",
+    "bytes": 28062,
+    "sha256": "33b29c19d960409b9d32e5e6770e493d564e85ba19ccf8e638c95d76443df35c"
+  },
+  "exact_request": {
+    "blob": "2b4cd128883dccf1db47584729a44f9662969875",
+    "bytes": 28997,
+    "sha256": "95ea411168b80cef09e78451e71eb8b7b281869f119076a7929663416de7ea6e"
+  },
+  "journal": {
+    "slot": "owner_authbus_public_node_crash_projection_gitfirst_r1",
+    "source": {
+      "blob": "c74d45d02fd3e8b7db5c3f4b46c843d3f73ddddd",
+      "bytes": 19051,
+      "sha256": "131419db2d70a58488e07912a49bd15b62c27e4f1173ddc08e0bb5a99dd86524"
+    }
+  },
+  "digest": "bfea733e4a9d370ad41ce02af89ec49477ec519bf6ab5257b1f841062dfe7b28",
+  "fingerprint": "13828992317171513098",
+  "bindingIncludes": "exact typed stdin source",
+  "start": {
+    "maximumCalls": 1,
+    "idempotencyKey": "heptabao-mac-public-node-crash-33b29c19-20261106-r1",
+    "host": "mac",
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-"
+    ],
+    "cwd": "/Users/qianqi",
+    "timeout_seconds": 60
+  },
+  "original_public_probe": {
+    "freshJob": "mac/1a1b25c3c54-fc05-7db1",
+    "actualWholeTree": "73e04ba4466bcdd042bff9c776c2c607c7150057",
+    "stdout": {
+      "blob": "215ee5f9d647568a2a785c239fe8e0e90b1b9539",
+      "bytes": 9930,
+      "sha256": "14fe6172b38a4a036ebe5fff0ca7f616ea6fbe757d3abd2996b64fa602ac6cc0"
+    },
+    "authority": {
+      "blob": "b4032586eeca0965a7ab2decc811d47aa82b06d0",
+      "bytes": 731,
+      "sha256": "b14a2dc0cba4c2227ba0cb30339e60eb2ceb565d47084aa4c3f46337390faea4"
+    },
+    "startSDK": {
+      "blob": "1c8c67d1e1fd29cf453967197edc731673d2dc2d",
+      "bytes": 1420,
+      "sha256": "6f1a8879903640df8523c81b4ab73630e88b357e060820ea1281693391acb57b"
+    },
+    "pid": 51494,
+    "parent": 51483,
+    "pgid": 51494,
+    "uid": 501,
+    "psStartLocal": "Sat Nov 7 03:35:52 2026",
+    "childFinalReturnCode": -6,
+    "retainedExitCode": 2,
+    "retainedExitStatus": 6,
+    "oldRuntimeProgressUnknown": true
+  },
+  "timeBinding": {
+    "originalNativeCreatedMs": 1793993751636,
+    "originalNativeTerminalMs": 1793993752149,
+    "utcStart": "2026-11-06T19:35:51.636Z",
+    "utcTerminal": "2026-11-06T19:35:52.149Z",
+    "actualLocalPsStart": "Sat Nov 7 03:35:52 2026",
+    "offsetIsObservedConventionNotMachineTimezoneQualification": true,
+    "filenameWindowOnly": "derived original interval plus/minus120seconds, accepting UTC or observed local +08:00 filename clock",
+    "reportCorrelationWindowNs": [
+      "1793993749636000000",
+      "1793993754149000000"
+    ],
+    "reportCorrelationMarginMs": 2000,
+    "requiresBothProcLaunchAndCaptureTime": true,
+    "requiredTimeOrdering": "lower <= procLaunch <= captureTime <= upper",
+    "metadataTimestampNotUsedAsCrashTime": true,
+    "fileMtimeNotUsedAsCrashTime": true
+  },
+  "fixed_read_scope": {
+    "directory": "/Users/qianqi/Library/Logs/DiagnosticReports",
+    "pathChain": [
+      "/",
+      "/Users",
+      "/Users/qianqi",
+      "/Users/qianqi/Library",
+      "/Users/qianqi/Library/Logs",
+      "/Users/qianqi/Library/Logs/DiagnosticReports"
+    ],
+    "noFollowEveryComponent": true,
+    "fixedUidForBody": 501,
+    "regularSingleLinkBody": true,
+    "groupOrOtherWritableBodyRefused": true,
+    "currentHeldNamedFull9BeforeAndAfter": true,
+    "directoryIdentityNotPreviouslyObserved": true,
+    "reportIdentityNotPreviouslyObserved": true,
+    "directoryEntriesMax": 4096,
+    "coverageCompleteRequiresObservedStopIteration": true,
+    "noRecursion": true,
+    "noFallbackDirectory": true,
+    "strictFilenameRegex": "^node[-_](2026-11-06|2026-11-07)[-_]([0-9]{6})(?:[-_][0-9]{1,6})?\\.ips$",
+    "filenameOffsetsSeconds": [
+      0,
+      28800
+    ],
+    "filenameMarginSeconds": 120,
+    "maximumNameCandidates": 8,
+    "maximumOpenedBodies": 2,
+    "candidateNamesOverTwoStopsBeforeAnyBody": true,
+    "bodyBytesEachMax": 1048576,
+    "returnedBytesTotalIncludingTwoEOFSentinels": 2097154,
+    "matchingReportMustBeUnique": true
+  },
+  "budgets": {
+    "workSeconds": 5,
+    "afterClosureSeconds": 8,
+    "NativeOuterSeconds": 60,
+    "readCalls": 36,
+    "metadataCalls": 256,
+    "returnedExplicitFdAttempts": 8,
+    "scandirIteratorAttempts": 1,
+    "scandirInternalFdSeparate": true,
+    "applicationWrites": 0,
+    "directChildren": 0,
+    "signalsToOtherProcesses": 0,
+    "publicStdoutMaximum": 65536,
+    "synchronousReadChecksNotPreemptiveTimeout": true,
+    "observation": {
+      "processStatusMaximum": 8,
+      "processReadObserverMaximum": 8,
+      "processReadBytes": 16384,
+      "perObserverStatusMaximum": 8,
+      "immutablePageBytes": 8192,
+      "perObserverPagesMaximum": 128,
+      "perObserverPayloadMaximum": 1048576
+    }
+  },
+  "publicAllowlist": {
+    "identity": [
+      "exact predetermined PID51494/parent51483/procName node only after full correlation",
+      "procPath only exact observed real or alias path",
+      "strict timestamp text plus exact nanosecond decimal",
+      "safe regex macOS train/build; releaseType User/Beta"
+    ],
+    "exception": [
+      "fixed Mach type enumeration",
+      "fixed signal enumeration",
+      "<=4 numeric hexadecimal codes"
+    ],
+    "termination": [
+      "fixed namespace enumeration",
+      "uint64 decimal code/flags",
+      "fixed indicator/byProc enumeration",
+      "byPid equals predetermined target/parent booleans"
+    ],
+    "fixedTextSlots": [
+      "termination.indicator",
+      "termination.reasons[]",
+      "termination.details[]",
+      "asi.dyld[]"
+    ],
+    "textBudgets": {
+      "stringsMax": 32,
+      "eachUTF8BytesMax": 4096,
+      "totalUTF8BytesMax": 32768,
+      "linesMax": 64,
+      "hardFailureNoTruncation": true
+    },
+    "libraryMissingLinePrefixes": [
+      "Library not loaded:",
+      "Library not found:"
+    ],
+    "libraryPaths": [
+      "ASCII canonical absolute under /opt/homebrew/",
+      "ASCII canonical absolute under /System/",
+      "ASCII canonical absolute under /usr/lib/"
+    ],
+    "libraryOutput": [
+      ".dylib basename or exact same-name .framework binary",
+      "public prefix category",
+      "under fixed observed Node installation boolean",
+      "equals observed Node executable/alias boolean"
+    ],
+    "libraryMax": 8,
+    "noLibraryFullUnknownPath": true,
+    "noLibraryFileExistenceOrContentClaim": true,
+    "fixedLexicalOnly": [
+      "libraryNotLoaded",
+      "libraryNotFound",
+      "symbolNotFound",
+      "codeSignature",
+      "sandbox",
+      "operationNotPermitted",
+      "permissionDenied",
+      "abortCalled",
+      "dyld"
+    ],
+    "excluded": [
+      "raw IPS",
+      "raw or hash of unknown text",
+      "environment",
+      "threads",
+      "usedImages",
+      "arbitrary dictionary keys",
+      "incident identifiers",
+      "machine identifiers",
+      "other process PID values"
+    ]
+  },
+  "failureSemantics": {
+    "malformedOrUnsupportedSchema": "closed failure or unqualified correlation; never guessed identity",
+    "missingOrNoMatch": "only no qualified match within finite inspected scope, no global absence or old closure",
+    "limitsOrDrift": "hard refusal with original error, no automatic fallback/retry",
+    "unknownResourceRegistration": "pending/registrationUnknown conservatively prevents allClosed",
+    "historicalUnknownsUnchanged": true,
+    "originalAbortCauseNotAutomaticallyProved": true,
+    "newProbeCauseNotAutomaticallyProved": true
+  },
+  "sequence": [
+    "Whole exact GO/source/request; initialize this absent slot once.",
+    "Externally archive exact request/intent/armed, cross a model boundary, invoke unique process_start once.",
+    "Archive original SDK before interpreting; observe only the original job and contiguous full bounded streams using original immutable observer IDs.",
+    "Do not fall back, restart, widen directories, read old private logs, or reclassify original AuthBus progress."
+  ],
+  "lane_allocation": {
+    "maximumNativeLanes": 2,
+    "authbus_migration": 1,
+    "compatibility_audit": 0,
+    "ha_validation": 0,
+    "root": 0
+  },
+  "actualCrashReportObserved": false,
+  "automaticOldRuntimeCauseClaim": false,
+  "productBusinessOperationAuthorized": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false
+}

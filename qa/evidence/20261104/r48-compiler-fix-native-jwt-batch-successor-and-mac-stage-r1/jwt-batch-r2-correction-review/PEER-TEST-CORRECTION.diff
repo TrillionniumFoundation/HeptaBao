@@ -1,0 +1,18 @@
+--- a/crates/heptabao-server/src/service_native_jwt_tests.rs
++++ b/crates/heptabao-server/src/service_native_jwt_tests.rs
+@@ -1376,9 +1376,14 @@
+     let bytes = owner_store::serialize_owner(&state.auth).map_err(|_| "Auth projection")?;
+     let mut auth: Value = serde_json::from_slice(&bytes)?;
+     let base: Value = serde_json::from_slice(f.snapshot()?.as_slice())?;
++    let namespace_bytes = owner_store::serialize_owner(&state.namespaces)
++        .map_err(|_| "Namespace projection")?;
++    let namespaces: Value = serde_json::from_slice(&namespace_bytes)?;
+     let mut projection = json!({
+         "auth_and_identity": base,
+-        "batch_authority": auth["batch_authority"].take()
++        "batch_authority": auth["batch_authority"].take(),
++        "namespace_batch_registry": auth["namespace_batch_registry"].take(),
++        "namespaces": namespaces
+     });
+     let result = Zeroizing::new(serde_json::to_vec(&projection)?);
+     erase_json(&mut projection);

@@ -1,0 +1,10 @@
+{
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "rog",
+      "path": "/home/qian-qi/hb-02b90762-controls-20261106-r2/build-tests-r1/normal-release-build.stderr"
+    }
+  },
+  "idempotency_key": "heptabao-combined-02b90762-fresh-observe-r2-release-stderr-info"
+}

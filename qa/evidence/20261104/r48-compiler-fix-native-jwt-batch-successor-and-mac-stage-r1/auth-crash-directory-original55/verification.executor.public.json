@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.actual-pure-execution.r1",
+  "interface": "verifyDirectoryMetadataOriginalChain(files: Record<string,string>)",
+  "verifier": {
+    "blob": "03f4970175f1974f88dc36ce70da7d3b8f18c7df",
+    "bytes": 13009,
+    "sha256": "7d2ca7303b5043aa32ebccebd498e4315ccc870df0baa166f6ef043ecf2c5754"
+  },
+  "passed": true,
+  "checkCount": 211,
+  "NativeCalls": 0,
+  "sourceOrRequestChanged": false
+}

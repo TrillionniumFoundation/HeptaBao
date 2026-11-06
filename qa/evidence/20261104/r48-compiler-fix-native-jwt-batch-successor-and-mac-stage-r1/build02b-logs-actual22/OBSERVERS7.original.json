@@ -1,0 +1,121 @@
+[
+  {
+    "id": "e890ca89e3ddd755d086731b429e608f700648ad063074219256f312c6ccce46",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "5dc03d2e45bfc1db7dbe0fb2bf878878d9d2c144",
+      "bytes": 27950,
+      "sha256": "35b03b64cbf7fe11f89b96639225b1e4b513122bc56f43c87f0c6e82874f19c3"
+    },
+    "payloadTree": "0fd40443800a2c191a6677c86d1ad9d02e4b96b1",
+    "nativeText": {
+      "blob": "056cb661cfecea770ab6139751e4c247b4de6023",
+      "bytes": 27847,
+      "sha256": "c01c5c30c12a7c5253d1ab4ed7ef08d9bd8d41a67be2b331580581045a436e30"
+    },
+    "pages": 2,
+    "completedInactive": true
+  },
+  {
+    "id": "424401766961590708bf64a00e753fc9884fcda60769e85c193cdf78bdeadc62",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "e10d963029606dac0078b636e46c6bd1c88ad854",
+      "bytes": 87817,
+      "sha256": "a4dfb49f218ea7854cab0230619108c7d5ea355d9315390a21d54eeafd26bfdb"
+    },
+    "payloadTree": "e4bea0c2aadb942f88c688bb65db8dfbe22aff70",
+    "nativeText": {
+      "blob": "fdaf98be6f876e23ec42f6c4dc6adc1391cae65b",
+      "bytes": 87714,
+      "sha256": "3a977198c1b1c2d8268b72cff5de44c1ab2e8e79f59d5794ffbe79daca1a2722"
+    },
+    "pages": 6,
+    "completedInactive": true
+  },
+  {
+    "id": "023aa129f52e2843a25a6d813a617e7c859d39dfba4335e40da97ff9df61f3d2",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "27bc4d8cdade7c94f56f8e398b3cac91244a82c3",
+      "bytes": 87822,
+      "sha256": "6775784e4930cbc69cb1824dffed79bb8443cbb5a698552a2f7fa7841af56734"
+    },
+    "payloadTree": "9b09a283fca1c9dd1a80c0177a46099f22460af0",
+    "nativeText": {
+      "blob": "9e1a3c97c6270c0eda7b25a6c70ef2b2c6e3f1e6",
+      "bytes": 87719,
+      "sha256": "f4c3360102d3dae3435710d609c8b28511e8d039474eb13aa2d86ef6ff7f9b85"
+    },
+    "pages": 6,
+    "completedInactive": true
+  },
+  {
+    "id": "5e2215701e51e77e84891c51cfbd44d087182c79bedc5a7fe66bd8939e2d893d",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "1278a87c6d948336dcaa91c6664c22176f181a6c",
+      "bytes": 87823,
+      "sha256": "9635363d2a333ae65fa5f6db3789b7de2db7934dcddbba3fbeaa6ee0fa947cc4"
+    },
+    "payloadTree": "168b5ca44a27a90790b2fa9002ffec419821ef88",
+    "nativeText": {
+      "blob": "fe275e20d5799ea5a213108b8b3c0c4b696b8df4",
+      "bytes": 87720,
+      "sha256": "2d750f5558602e8f46f26c098304ad823adcc6e8786c45f9d733feb3b9f4d39d"
+    },
+    "pages": 6,
+    "completedInactive": true
+  },
+  {
+    "id": "3ad2621f1ec43fc6518c6c462f7abfa67eb6748faa7b4e6f2dc1c2b694015f77",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "fd6f81abd58cee13baacfc9600e4fadaced3020b",
+      "bytes": 87823,
+      "sha256": "e57200f09322d680337719f1a01c00436fe8cdd761525fb0782ffc97ae65b0d1"
+    },
+    "payloadTree": "808ce7c40be26412c72ff7276fa48ed184d99065",
+    "nativeText": {
+      "blob": "8ac9c697c2b544f13e46cafa7d803a6e248cb9de",
+      "bytes": 87720,
+      "sha256": "db3b306d4c19399f342675f3ba6b61a05fdc3331f14614c72d667c4d44010b72"
+    },
+    "pages": 6,
+    "completedInactive": true
+  },
+  {
+    "id": "dddfd1ee5c64842683f7fe64900877e1b47a4170131fb40f4a8adae7f0a94fb6",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "9c3db7a8fe996b3acbb1bcd72c5a328480586317",
+      "bytes": 87823,
+      "sha256": "cc53f1278557bfc386768ef85d5690c9564d671453fef175142bb287920b46cc"
+    },
+    "payloadTree": "a6bdd0067227ecd8bdd795b2a87466e79d1eebe6",
+    "nativeText": {
+      "blob": "1db2ebcbd6646e05a70bb834cc38d1ce7de585ef",
+      "bytes": 87720,
+      "sha256": "9a170fd021ada409f49599bbbf931b777da999774f8dfb88abdae0c5a0818189"
+    },
+    "pages": 6,
+    "completedInactive": true
+  },
+  {
+    "id": "5f4fbafd9c644ff26e9e1baf951a1b45822baaa7c87fbaed85c655c2fb8f5a46",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "ee9debd394870d92ac76cde03363022f44132ed8",
+      "bytes": 75774,
+      "sha256": "e09da2179473e829f6029337c6c9db996175c9f574ebfcee355478aa3e51c5d9"
+    },
+    "payloadTree": "4951e2a68e6c4cf2e57e5834cdc113d7fbafa990",
+    "nativeText": {
+      "blob": "73ddc135511c903d677e874f027cce3b580bb7b0",
+      "bytes": 75671,
+      "sha256": "e25b971bb65eb0e68d159c07607b01009403607354864f2725bb8338e1606acb"
+    },
+    "pages": 5,
+    "completedInactive": true
+  }
+]

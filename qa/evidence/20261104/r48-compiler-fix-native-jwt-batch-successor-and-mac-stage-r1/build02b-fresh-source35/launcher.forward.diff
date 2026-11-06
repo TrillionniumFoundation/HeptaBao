@@ -1,0 +1,220 @@
+--- a/launcher.py
++++ b/launcher.py
+@@ -18,9 +18,8 @@
+ SOURCE_STAGE_ROOT = Path('/home/qian-qi/hb-02b90762-src-20261106-r1')
+ SOURCE_STAGE_SCHEMA = 'heptabao.native-jwt-independent-source-stage.v1'
+ GROUPS_SHA256 = '7c0fb6c5b6819c2cab60f3044e0aec767ad8abbf22e31ff0f7fab742ea4cd786'
+-OUTER_STARTED = time.monotonic()
++LAUNCHER_ENTERED = time.monotonic()
+ ORIGINAL_OUTER_SECONDS = 12000
+-OUTER_UNTIL = OUTER_STARTED + ORIGINAL_OUTER_SECONDS
+ os.umask(0o077)
+ parser = argparse.ArgumentParser()
+ parser.add_argument('--host', choices=('rog',), required=True)
+@@ -28,7 +27,15 @@
+     parser.add_argument('--' + name, required=True)
+ for name in ('r9-resume-sha256', 'r9-resume-terminal-sha256', 'r9-resume-authority-sha256'):
+     parser.add_argument('--' + name)
++parser.add_argument('--publisher-started-monotonic', required=True, type=float)
++parser.add_argument('--publisher-pid', required=True, type=int)
+ args = parser.parse_args()
++assert args.publisher_pid == os.getpid(), 'same-PID publication exec required'
++assert 0 < args.publisher_started_monotonic <= LAUNCHER_ENTERED
++assert LAUNCHER_ENTERED - args.publisher_started_monotonic < 60
++OUTER_STARTED = args.publisher_started_monotonic
++OUTER_UNTIL = OUTER_STARTED + ORIGINAL_OUTER_SECONDS
++assert time.monotonic() < OUTER_UNTIL, 'original joint deadline expired'
+ assert args.commit == FINAL_COMMIT and args.tree == FINAL_TREE
+ for name in ('r9_resume_sha256', 'r9_resume_terminal_sha256', 'r9_resume_authority_sha256'):
+     value = getattr(args, name)
+@@ -66,7 +73,7 @@
+     expected_system, expected_uid = ('Darwin', 'arm64'), 501
+ else:
+     BASE = Path('/home/qian-qi/heptabao-native-ssh-owner-20261104-r1')
+-    ROOT = Path('/home/qian-qi/hb-02b90762-controls-20261106-r1')
++    ROOT = Path('/home/qian-qi/hb-02b90762-controls-20261106-r2')
+     R9 = BASE / 'r9-http-routing-r1'
+     OLD = BASE / 'normal-release-tests-r8-r1'
+     OLD_SOURCE = BASE / 'source-r8-test-fixtures-r1'
+@@ -81,7 +88,7 @@
+     OLD_LIBTEST_SHA = '9f498c4c2c14f2198dcbe746be81be1cf0c7caabca28671bba83fb003a65b46a'
+     OLD_LIBTEST_BYTES = 188077176
+     OLD_STATUS = 'passed'
+-    TARGET = Path('/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3')
++    TARGET = Path('/home/qian-qi/hb-02b90762-controls-20261106-r2/cargo-target-r1')
+     TOOLCHAIN = '/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin'
+     CARGO_HOME = '/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home'
+     PYTHON = '/usr/bin/python3'
+@@ -467,8 +474,8 @@
+ assert os.getuid() == expected_uid == ROOT.stat().st_uid
+ assert ROOT.resolve(strict=True) == ROOT
+ assert Path(__file__).resolve(strict=True) == CONTROL / 'launch_native_jwt_build.py'
+-assert TARGET.resolve(strict=True) == TARGET
+-assert identity(TARGET.stat())[:5] == (66306, 31606588, 1000, 1000, 16832)
++assert TARGET.parent == ROOT and TARGET.name == 'cargo-target-r1'
++assert not os.path.lexists(TARGET), 'fresh target must not already exist'
+ assert not ADMISSION.exists() and not ADMISSION.is_symlink()
+ assert not OUTPUT.exists() and not OUTPUT.is_symlink()
+ stage_raw, stage_pin = read_bound(SOURCE_STAGE_CONTROL / 'stage-result.public.json', args.stage_sha256, 150000)
+@@ -479,6 +486,10 @@
+ assert all(x['direct_child_reaped'] and not x['remaining'] for x in stage['cleanup'])
+ assert stage['full_strict_fsck_passed'] and stage['no_alternates'] and stage['no_shared_object_links']
+ assert stage['source'] == str(SOURCE) and stage['root'] == str(SOURCE_STAGE_ROOT)
++assert stage['full_worktree'] == {
++    'all_tracked_worktree_blobs_and_modes_match': True,
++    'full_leaf_index_sha256': 'c6cef770842a1b0006b4c86a58e325802d00dd5779dede468262f2693c3246cc',
++    'index_matches_tree': True, 'tracked_bytes': 62537554, 'tracked_leaf_count': 3932}
+ assert stage['within_new_stage_deadline'] and not stage['compiler_started'] and not stage['rust_tests_executed']
+ assert not stage['formatter_executed'] and not stage['historical_controls_executed']
+ runner = CONTROL / RUNNER_NAME
+@@ -538,70 +549,59 @@
+           'stage': stage_pin, 'runner': runner_pin, 'groups': groups_pin,
+           'controls_receipt': controls_pin, 'launcher': launcher_pin,
+           'target': str(TARGET), 'production_changed': False, 'normal_runner_started': False,
+-          'fresh_cache': False, 'inherits_prior_cache_performance': False,
+-          'reuses_existing_df026_target': True, 'target_identity_before': list(identity(TARGET.stat())),
++          'fresh_cache': True, 'inherits_prior_cache_performance': False,
++          'reuses_existing_df026_target': False, 'target_created': False,
++          'historical_artifact_qualification_inherited': False,
++          'historical_host_fences_reexecuted': False,
++          'prior_pre_target_failure_job': '1a1b2580881-fc05-7da1',
++          'prior_failure_evidence_tree': '55ace66fb7c0d963385fd481f8088cb920d22546',
++          'prerequisite_metadata_sha256': '47ea247da0a38c51468821bbcd8c34800ebf9c27790b5968e09141b53f799972',
+           'started_ns': time.time_ns()}
+ public(ADMISSION / 'launch-intent.public.json', result)
+-lock_fd = None
++parent_fd = target_fd = None
+ try:
+-    before, old_before = freeze(SOURCE), freeze(OLD_SOURCE)
++    before = freeze(SOURCE)
+     assert before == {'commit': args.commit, 'tree': args.tree, 'status': ''}
+-    assert old_before == {'commit': OLD_COMMIT, 'tree': OLD_TREE, 'status': ''}
+-    result.update(source_before=before, old_source_before=old_before)
+-    build_raw, result['old_build_receipt'] = read_bound(OLD_BUILD, OLD_BUILD_SHA, 30000)
+-    native_raw, result['old_native_receipt'] = read_bound(OLD_NATIVE, OLD_NATIVE_SHA, 5000)
+-    test_raw, result['old_exact_test_receipt'] = read_bound(OLD_TEST, OLD_TEST_SHA, 40000)
+-    build, native, old_test = map(json.loads, (build_raw, native_raw, test_raw))
+-    assert build['source_commit'] == native['source_commit'] == old_test['source_commit'] == OLD_COMMIT
+-    assert build['source_tree'] == native['source_tree'] == old_test['source_tree'] == OLD_TREE
+-    assert build['source_freeze_verified'] and build['build_exit_code'] == 0 and build['build_finished_success'] and not build['timed_out'] and not build['owned_group_survivors_after_wait']
+-    assert old_test['status'] == OLD_STATUS and old_test['test_count'] == 33
+-    assert old_test['binary']['sha256'] == OLD_LIBTEST_SHA and old_test['binary']['bytes'] == OLD_LIBTEST_BYTES
+-    assert sorted(build['artifacts']) == ['heptabao-seed', 'heptabao-server']
+-    retained = []
+-    for value in build['artifacts'].values():
+-        _, artifact_pin = read_bound(Path(value['path']), value['sha256'], value['bytes'], retain=False)
+-        assert artifact_pin['bytes'] == value['bytes']
+-        assert sorted(value['features']) == ['default', 'native-v6-ha', 'native-v6-storage']
+-        assert not Path(value['path']).is_relative_to(TARGET)
+-        retained.append(artifact_pin)
+-    _, libtest_pin = read_bound(OLD_LIBTEST, OLD_LIBTEST_SHA, OLD_LIBTEST_BYTES, retain=False)
+-    assert libtest_pin['bytes'] == OLD_LIBTEST_BYTES and not OLD_LIBTEST.is_relative_to(TARGET)
+-    retained.append(libtest_pin)
+-    assert freeze(SOURCE) == before and freeze(OLD_SOURCE) == old_before
+-    result['retained_r9_evidence'] = preserve_r9()
+-    result['retained_r10_evidence'] = preserve_r10()
+-    result['retained_successful_observer'] = preserve_successful_observer()
+-    result['retained_failed_observer'] = preserve_failed_observer()
+-    assert result['retained_failed_observer'] == stage['failed_observer_after']
+-    assert freeze(SOURCE) == before and freeze(OLD_SOURCE) == old_before
+-    result['retained_current_early_failure'] = preserve_current_early_failure()
+-    assert identity(TARGET.stat())[:5] == tuple(result['target_identity_before'][:5])
+-    result['compiler_holders_before_lock'] = holders()
+-    assert not result['compiler_holders_before_lock']
+-    lock_fd = os.open(TARGET / 'release/.cargo-lock', os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+-    info = os.fstat(lock_fd)
+-    assert stat.S_ISREG(info.st_mode) and info.st_uid == os.getuid() and info.st_nlink == 1
+-    fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+-    result['compiler_holders_under_lock'] = holders()
+-    if args.host == 'mac':
+-        # lsof also observes this controller's own temporary lock descriptor.
+-        assert all(pid == os.getpid() for pid in result['compiler_holders_under_lock'])
+-    else:
+-        assert not result['compiler_holders_under_lock']
+-    result['target_lock'] = {'identity': list(identity(info)), 'nonblocking_exclusive_probe': True}
+-    assert preserve_current_early_failure() == result['retained_current_early_failure']
+-    assert identity(TARGET.stat())[:5] == tuple(result['target_identity_before'][:5])
+-    assert freeze(SOURCE) == before and freeze(OLD_SOURCE) == old_before
++    result['source_before'] = before
++    assert freeze(SOURCE) == before
++    assert time.monotonic() < OUTER_UNTIL
++    parent_fd = os.open(ROOT, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
++    parent_before = os.fstat(parent_fd)
++    assert stat.S_ISDIR(parent_before.st_mode)
++    assert parent_before.st_uid == parent_before.st_gid == expected_uid
++    assert stat.S_IMODE(parent_before.st_mode) == 0o700
++    assert identity(parent_before) == identity(ROOT.lstat())
++    os.mkdir(TARGET.name, mode=0o700, dir_fd=parent_fd)
++    result['target_created'] = True
++    target_fd = os.open(TARGET.name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
++                        dir_fd=parent_fd)
++    target_info = os.fstat(target_fd)
++    assert stat.S_ISDIR(target_info.st_mode)
++    assert target_info.st_uid == target_info.st_gid == expected_uid
++    assert stat.S_IMODE(target_info.st_mode) == 0o700
++    assert not os.listdir(target_fd), 'new target must be empty before Cargo'
++    assert identity(target_info) == identity(TARGET.lstat())
++    parent_after = os.fstat(parent_fd)
++    assert identity(parent_before)[:5] == identity(parent_after)[:5]
++    assert identity(parent_after) == identity(ROOT.lstat())
++    result['fresh_parent_before'] = list(identity(parent_before))
++    result['fresh_parent_after_create'] = list(identity(parent_after))
++    result['target_identity_before'] = list(identity(target_info))
++    result['target_empty_at_admission'] = True
++    result['old_target_opened_or_recreated'] = False
++    result['old_target_lock_touched'] = False
++    assert identity(os.fstat(target_fd))[:5] == identity(TARGET.lstat())[:5] == identity(target_info)[:5]
++    assert freeze(SOURCE) == before
+     argv = [PYTHON, '-I', '-S', '-B', str(runner), '--source', str(SOURCE),
+             '--output', str(OUTPUT), '--commit', args.commit, '--tree', args.tree,
+             '--toolchain', TOOLCHAIN, '--cargo-home', CARGO_HOME, '--target', str(TARGET),
+             '--groups', str(CONTROL / 'jwt-test-groups.public.json'),
+             '--groups-sha256', args.groups_sha256,
+-            '--outer-started-monotonic', repr(OUTER_STARTED), '--launcher-pid', str(os.getpid())]
++            '--outer-started-monotonic', repr(OUTER_STARTED), '--launcher-pid', str(os.getpid()),
++            '--fresh-target-first5', json.dumps(list(identity(target_info)[:5]), separators=(',', ':'))]
+     assert time.monotonic() < OUTER_UNTIL, 'original outer deadline expired before exec admission'
+-    result.update(status='admitted', retained_r8_artifacts=retained,
+-                  prior_r8_failure_replayed=False, source_and_retained_artifacts_unchanged=True,
++    result.update(status='admitted', historical_artifacts_not_reverified=True,
++                  prior_r8_failure_replayed=False, source_unchanged=True,
+                   normal_runner_argv=argv, original_release_build_cap_seconds=1800,
+                   original_libtest_build_cap_seconds=1800 if args.host == 'mac' else 3600,
+                   each_listing_cap_seconds=30, each_runtime_group_cap_seconds=600,
+@@ -619,20 +619,30 @@
+ except BaseException as error:
+     result.update(error_type=type(error).__name__, error=str(error))
+ finally:
++    closed = []
++    for name, fd in (('fresh-target', target_fd), ('fresh-parent', parent_fd)):
++        if fd is not None:
++            row = {'scope': name, 'once_close_attempted': True, 'closed': False}
++            closed.append(row)
++            try:
++                os.close(fd)
++                row['closed'] = True
++            except BaseException as error:
++                row['error_type'] = type(error).__name__
++                row['close_outcome_unknown'] = True
++                result['status'] = 'failed'
++    result['fresh_directory_descriptors'] = closed
+     result['terminal_ns'] = time.time_ns()
+     public(ADMISSION / 'launch-preflight.public.json', result)
+-    if lock_fd is not None:
+-        os.close(lock_fd)
+ if result['status'] != 'admitted':
+     print(json.dumps({'status': 'refused', 'receipt': str(ADMISSION / 'launch-preflight.public.json'),
+                       'error_type': result.get('error_type')}), flush=True)
+     raise SystemExit(1)
+ print(json.dumps({'status': 'preflight-admitted', 'source_commit': args.commit,
+                   'source_tree': args.tree, 'unique_test_count': 246, 'profile_instance_test_count': 268,
+-                  'retained_r8_artifacts_verified': True, 'retained_r9_evidence_verified': True,
+-                  'retained_r10_evidence_verified': True,
+-                  'retained_failed_observer_verified': True,
+-                  'retained_successful_observer_verified': True,
++                  'fresh_target_admitted': True, 'old_target_reused': False,
++                  'historical_artifact_qualification_inherited': False,
++                  'historical_host_fences_reexecuted': False,
+                   'original_budgets_preserved': True}), flush=True)
+ assert time.monotonic() < OUTER_UNTIL, 'original outer deadline expired before same-PID exec'
+ os.execv(argv[0], argv)

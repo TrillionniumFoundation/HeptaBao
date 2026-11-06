@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.pure-v8-actual-verifier-execution.r1",
+  "function": "verifyNodeCrashFixedR4OriginalChain",
+  "input": "Flat path-to-original-UTF8-text map from this packet; uses pure-helpers.original.js only.",
+  "verifier": {
+    "blob": "97ba58ada01b96022ee5c45e7de74e948b58d60c",
+    "bytes": 17257,
+    "sha256": "e2f6bb15276337ba3853464e2ae1149f0cad50f72edbc820e97bc0b06300561d"
+  },
+  "result": {
+    "blob": "53be14d3e7b1d34b3862157e5b089a8de9f52c51",
+    "bytes": 25890,
+    "sha256": "447a058557952d203a7702e41fc6c15aa34c5791672b50d2b9370eba36c64182"
+  },
+  "actualExecuted": true,
+  "passed": true,
+  "checkCount": 322,
+  "PythonOrSDKOrFixtureExecuted": false,
+  "NativeCallsAdded": 0,
+  "scope": "Original SDK/intent/arm Merkle/native/same-ID status/immutable pages/payload/hex streams/typed public projection only; no private IPS bytes or hash in this packet."
+}

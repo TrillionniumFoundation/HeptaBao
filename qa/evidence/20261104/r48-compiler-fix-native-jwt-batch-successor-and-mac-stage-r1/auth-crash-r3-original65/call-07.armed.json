@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.gitfirst.fixed-native-call-armed.r1",
+  "callKey": "public-node-crash-fixed-r3-streams-01-page-008192",
+  "kind": "operation_result",
+  "request": {
+    "blob": "7eb4c3030ec1790593429c6ca77c4dfc76033056",
+    "bytes": 111,
+    "sha256": "ee6cf9658fbc5de6c30c791e0921d8d7d2f30bb57398c4d57bae1bae72892614"
+  },
+  "rootGo": {
+    "blob": "f9e612bd4f292ade46c321957b7a50b68dd10778",
+    "bytes": 13655,
+    "sha256": "55c238d0f05701425937a6c888afa261e85d46c443ef2cbfe29c06d77d580734"
+  },
+  "originalJob": "1a1b2a2f2f6-fc05-7f15",
+  "originalOperation": "aa197656a0c18e34435973b8a34ad4ea8370b458fc55b5838053ae3769cf846b",
+  "maximumNativeCalls": 1,
+  "nativeNotYetCalled": true,
+  "lossOfAcknowledgmentNeverGrantsReplay": true,
+  "localFirstExplicitlyReplacedByExactRootGO": true,
+  "mayHaveDispatchedAfterThisCheckpoint": true,
+  "recovery": "Read exact original job/operation only; absence of later ACK is UNKNOWN."
+}

@@ -1,0 +1,44 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "--host",
+      "unix:///var/run/docker.sock",
+      "container",
+      "inspect",
+      "--format",
+      "{{$server := false}}{{$dev := false}}{{range .Args}}{{if eq . \"server\"}}{{$server = true}}{{end}}{{if or (eq . \"-dev\") (eq . \"--dev\") (eq . \"-dev=true\") (eq . \"--dev=true\")}}{{$dev = true}}{{end}}{{end}}{\"container_id\":{{json .Id}},\"name\":{{json .Name}},\"image_reference\":{{json .Config.Image}},\"running\":{{json .State.Running}},\"pid\":{{json .State.Pid}},\"started_at\":{{json .State.StartedAt}},\"restart_count\":{{json .RestartCount}},\"network_mode\":{{json .HostConfig.NetworkMode}},\"restart_policy\":{{json .HostConfig.RestartPolicy.Name}},\"server_literal_argument\":{{$server}},\"dev_literal_argument\":{{$dev}}}",
+      "f67985499a16bc15917152d8083b9aa985edcbea868e3f15bdcef3aea6ab0bb9"
+    ],
+    "created_unix_ms": 1793995737473,
+    "cwd": "/",
+    "env_keys": [
+      "DOCKER_API_VERSION",
+      "DOCKER_CONTEXT",
+      "DOCKER_HOST",
+      "DOCKER_TLS",
+      "DOCKER_TLS_VERIFY"
+    ],
+    "executable": "/usr/bin/docker",
+    "execution_mode": "operator",
+    "host": "x230",
+    "id": "1a1b27a8981-fc05-7e33",
+    "idempotency_key": "heptabao-x230-current-container-networkrole-r1-f6798549",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian/.local/state/hepta-runtime-mac-worker/jobs/1a1b27a8981-fc05-7e33",
+    "request_digest": "e934c929844255c0ae9ba5feb72d2e9d6ae16af9979f1e935544cbeda8c54583",
+    "request_fingerprint": 16804277289775945152,
+    "ssh_target": "x230-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b27a8981-fc05-7e33"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1b27a8981-fc05-7e33"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

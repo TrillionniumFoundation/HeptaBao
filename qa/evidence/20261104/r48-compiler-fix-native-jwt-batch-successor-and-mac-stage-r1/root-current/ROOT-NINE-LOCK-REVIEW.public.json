@@ -1,0 +1,190 @@
+{
+  "schema": "heptabao.root.nine-service-lock-fix.qualification.r1",
+  "sourceTree": "3e506b922c214561c9dd22678354b55dcff38fc1",
+  "checks": {
+    "schema": "snapshot-service-lock-fix-source-verifier-r1",
+    "ok": true,
+    "checks": [
+      {
+        "name": "exact base candidate",
+        "pass": true
+      },
+      {
+        "name": "two modified Rust files only",
+        "pass": true
+      },
+      {
+        "name": "0 before blob",
+        "pass": true
+      },
+      {
+        "name": "0 before bytes/SHA",
+        "pass": true
+      },
+      {
+        "name": "0 after blob",
+        "pass": true
+      },
+      {
+        "name": "0 after bytes/SHA",
+        "pass": true
+      },
+      {
+        "name": "0 exact old Service count",
+        "pass": true
+      },
+      {
+        "name": "0 fixed original deadline",
+        "pass": true
+      },
+      {
+        "name": "0 only exact Service expressions changed",
+        "pass": true
+      },
+      {
+        "name": "0 no Service implicit HA lock remains",
+        "pass": true
+      },
+      {
+        "name": "0 original HA lock remains",
+        "pass": true
+      },
+      {
+        "name": "0 forward exact",
+        "pass": true
+      },
+      {
+        "name": "0 reverse exact",
+        "pass": true
+      },
+      {
+        "name": "0 standalone reverse exact",
+        "pass": true
+      },
+      {
+        "name": "1 before blob",
+        "pass": true
+      },
+      {
+        "name": "1 before bytes/SHA",
+        "pass": true
+      },
+      {
+        "name": "1 after blob",
+        "pass": true
+      },
+      {
+        "name": "1 after bytes/SHA",
+        "pass": true
+      },
+      {
+        "name": "1 exact old Service count",
+        "pass": true
+      },
+      {
+        "name": "1 fixed original deadline",
+        "pass": true
+      },
+      {
+        "name": "1 only exact Service expressions changed",
+        "pass": true
+      },
+      {
+        "name": "1 no Service implicit HA lock remains",
+        "pass": true
+      },
+      {
+        "name": "1 original HA lock remains",
+        "pass": true
+      },
+      {
+        "name": "1 forward exact",
+        "pass": true
+      },
+      {
+        "name": "1 reverse exact",
+        "pass": true
+      },
+      {
+        "name": "1 standalone reverse exact",
+        "pass": true
+      },
+      {
+        "name": "nine exact Service expressions",
+        "pass": true
+      },
+      {
+        "name": "client original scope",
+        "pass": true
+      },
+      {
+        "name": "source accepted-at business bound retained",
+        "pass": true
+      },
+      {
+        "name": "source restrict then same peer deadline",
+        "pass": true
+      },
+      {
+        "name": "source typed completion remains Vec",
+        "pass": true
+      },
+      {
+        "name": "helper exact whole",
+        "pass": true
+      },
+      {
+        "name": "generic deadline helper exists",
+        "pass": true
+      },
+      {
+        "name": "helper min scope retained",
+        "pass": true
+      },
+      {
+        "name": "HA trait still only concrete process",
+        "pass": true
+      },
+      {
+        "name": "helper pre/post try_lock deadline checks",
+        "pass": true
+      },
+      {
+        "name": "stderr exact whole",
+        "pass": true
+      },
+      {
+        "name": "actual nine E0599",
+        "pass": true
+      },
+      {
+        "name": "actual two E0277 retained",
+        "pass": true
+      }
+    ],
+    "total": 39,
+    "replacedServiceExpressions": 9,
+    "files": 2,
+    "sourceOnly": true,
+    "rustCompileExecuted": false,
+    "runtimeTestsExecuted": 0,
+    "e0277Resolution": "unverified until actual Rust compilation"
+  },
+  "independentActualChecks": [
+    {
+      "name": "service_snapshot_forward_client.rs actual frozen base",
+      "pass": true
+    },
+    {
+      "name": "service_snapshot_forward_source.rs actual frozen base",
+      "pass": true
+    },
+    {
+      "name": "Actual complete compiler stderr",
+      "pass": true
+    }
+  ],
+  "RustCompiled": false,
+  "runtimeTestsExecuted": 0,
+  "sourceOnly": true
+}

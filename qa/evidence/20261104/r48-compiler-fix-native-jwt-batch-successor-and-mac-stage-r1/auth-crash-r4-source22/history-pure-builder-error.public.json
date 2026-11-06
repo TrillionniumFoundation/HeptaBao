@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.pure-source-builder-error.r1",
+  "message": "unique_patch:explicit-namespace-field-syntax",
+  "stage": "pure source literal replacement before final source freeze or tool call",
+  "cause": "Replacement omitted exact existing spaces in the multiline namespace tuple.",
+  "NativeCalls": 0,
+  "GitCalls": 0,
+  "priorSourceAndActualUnchanged": true
+}

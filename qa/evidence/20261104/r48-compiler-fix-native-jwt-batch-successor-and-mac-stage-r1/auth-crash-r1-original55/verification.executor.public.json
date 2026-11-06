@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.actual-pure-execution.r1",
+  "interface": "verifyNodeCrashOriginalFailure(files: Record<string,string>)",
+  "verifier": {
+    "blob": "2e8963ebeb3b8d3f6a2a57788890d2944570bc82",
+    "bytes": 12046,
+    "sha256": "68246eb53e21470392a708c05465a36e43c0803750071d820352303b646cee48"
+  },
+  "passed": true,
+  "checkCount": 205,
+  "NativeCalls": 0,
+  "sourceOrRequestChanged": false
+}

@@ -1,0 +1,35 @@
+{
+  "sha": "5767739cd25e458ac052dc8d384019bab8688ae0",
+  "node_id": "C_kwDOUGncwNoAKDU3Njc3MzljZDI1ZTQ1OGFjMDUyZGM4ZDM4NDAxOWJhYjg2ODhhZTA",
+  "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/5767739cd25e458ac052dc8d384019bab8688ae0",
+  "html_url": "https://github.com/TrillionniumFoundation/HeptaBao/commit/5767739cd25e458ac052dc8d384019bab8688ae0",
+  "author": {
+    "name": "Franksudoman",
+    "email": "273670192+Franksudoman@users.noreply.github.com",
+    "date": "2026-11-06T21:09:10Z"
+  },
+  "committer": {
+    "name": "Franksudoman",
+    "email": "273670192+Franksudoman@users.noreply.github.com",
+    "date": "2026-11-06T21:09:10Z"
+  },
+  "tree": {
+    "sha": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/42477d622dcf96e1e2b0929fe9ecc6b7ba484740"
+  },
+  "message": "Fix snapshot Service deadline locks and admit native local JWT batch tokens\n\nThe current release build rejects nine snapshot-forwarding Service lock calls because HaLock only applies to HaProcess. Use the existing deadline-aware Service helper with each original deadline, retaining error, audit, and uncertain-outcome handling.\n\nAdmit local JWT batch issuance through the existing sealed-batch and paired Auth/Namespace lifecycle. Retain the single original verifier lifetime, real Identity binding, clock, publication proof, and post-audit response checks. Add cold-reopen, stateless issuance, disabled Identity, expiry, policy, and audit regressions, including complete Namespace lifecycle failure snapshots.\n\nValidation at commit creation: independent source review and exact forward/reverse source checks. Rust compilation, runtime regressions, and platform qualification remain pending. No production cutover or cleanup.",
+  "parents": [
+    {
+      "sha": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+      "html_url": "https://github.com/TrillionniumFoundation/HeptaBao/commit/02b90762b3d6cc8699cc88bffb6f76cb1f07e270"
+    }
+  ],
+  "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+  }
+}

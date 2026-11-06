@@ -1,0 +1,46 @@
+{
+  "entry": "verifyFreshBuildLogBodiesSource(I)",
+  "evaluateInOrder": [
+    "pure_helpers.js",
+    "git_archive_once.js",
+    "strict_diff.js",
+    "source-verifier.js"
+  ],
+  "inputs": {
+    "before": "journal.before.js",
+    "after": "journal.after.js",
+    "forward": "journal.forward.diff",
+    "reverse": "journal.reverse.diff",
+    "edits": "journal.edits.json",
+    "ranges": "RANGES.public.json",
+    "infos": "INFOS.public.json",
+    "state": "actual.STATE.original.json",
+    "pure": "pure_helpers.js",
+    "archive": "git_archive_once.js",
+    "toolContract": "operation-result.tool-contract.public.json"
+  },
+  "infoNativeRaws": {
+    "stderr": "actual.stderr.INFO.native.json",
+    "stdout": "actual.stdout.INFO.native.json"
+  },
+  "pins": {
+    "beforePin": {
+      "blob": "9e8a21a570290556c81392bec727f897e33fab80",
+      "bytes": 34518,
+      "sha256": "d77c575ed1539c0cab2ee51113fdd13ea0df8cad14130320d8852b3bc4292761"
+    },
+    "afterPin": {
+      "blob": "c0e25529bcb57b5d394c40dbfcc7848a0addc098",
+      "bytes": 45147,
+      "sha256": "ed8d552501b46832caeb2a45e8b4b05d87664dd5ce273f8df676a165c242d425"
+    }
+  },
+  "slot": "combined_02b90762_fresh_build_gitfirst_r2",
+  "objectInputsAreJsonParsed": [
+    "edits",
+    "ranges",
+    "infos",
+    "state"
+  ],
+  "runtimeCalls": 0
+}

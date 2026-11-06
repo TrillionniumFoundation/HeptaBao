@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.pure-original-chain-executor.r1",
+  "verifier": {
+    "blob": "0043e1cf4632d774a7817974305607b85e9e8af4",
+    "bytes": 15554,
+    "sha256": "a41e37092313641c76d4ebb43c9595504b38abbd0e85bb354cd78e1286b5f2a0"
+  },
+  "interface": "verifyNodeCrashFixedR3OriginalChain(files: Record<string,string>)",
+  "result": {
+    "blob": "2baf9615366853a4ca22fcccd57f139fc6390009",
+    "bytes": 22071,
+    "sha256": "0c28589f703351eba41a8458ef30fc0f35c234a8695e13379c118b254ea58e65"
+  },
+  "passed": true,
+  "checkCount": 269,
+  "execution": "pure V8 original SDK/intent/arm/status/immutable payload/native/hex stream verification",
+  "NativeCallsAdded": 0,
+  "PythonExecuted": false
+}

@@ -1,0 +1,151 @@
+{
+  "schema": "heptabao.mac-diagnosticreports-fixed-metadata-source.r1",
+  "status": "SOURCE_ONLY_NOT_AUTHORIZED",
+  "runtimeSubmitted": false,
+  "purpose": "Identify the current final directory metadata and separately evaluate each original fixed_directory_shape predicate; preserve the prior failure.",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "source": {
+    "blob": "9e408efea2e6a5143ea377880da1f6b2361ca9ef",
+    "bytes": 11963,
+    "sha256": "11d8bdb092af7e1fb6da8a861381a3b3e14340ad8682a905bfce56c0c813ad18"
+  },
+  "request": {
+    "blob": "608337c6667b83e1f379b5255b23a71b0da2dd58",
+    "bytes": 12569,
+    "sha256": "e8b74ca5f718e2fc2a23342bac0f35636b70c03581cf1c26a9cf48e52baa9387"
+  },
+  "journal": {
+    "blob": "c6dd3be3c8948c35c61666289d1e57c2972446a5",
+    "bytes": 19054,
+    "sha256": "46b793feb22d3f23bfa04b3e4a2e7d0370028f69210dabc9a06c43a59a801415"
+  },
+  "prior": {
+    "source": {
+      "blob": "41ea46286a45ae651d7444e87efa7a8f3c6c438e",
+      "bytes": 28062,
+      "sha256": "33b29c19d960409b9d32e5e6770e493d564e85ba19ccf8e638c95d76443df35c"
+    },
+    "job": "mac/1a1b27a443e-fc05-7e31",
+    "actualMinTree": "64aa03bf6c1605c995c22316077613756415e30c",
+    "actualFullTree": "6212afa1492fc1d7f0d581a82ceb80d58de28c7a",
+    "stdout": {
+      "blob": "2efead8a4275b7f1298c45833a64ec229fc240b4",
+      "bytes": 1783,
+      "sha256": "5bc611df8194b881da135d0406b081d616289f3531aa848ea60328e4fdffdb2c"
+    },
+    "failure": "fixed_directory_shape",
+    "metadataOfRejectedTargetPreviouslyPublished": false,
+    "mutationOfOldSource": false
+  },
+  "fixedTarget": "/Users/qianqi/Library/Logs/DiagnosticReports",
+  "fixedAncestorDirectoryFds": [
+    "/",
+    "/Users",
+    "/Users/qianqi",
+    "/Users/qianqi/Library",
+    "/Users/qianqi/Library/Logs"
+  ],
+  "io": {
+    "targetOperation": "one os.stat of literal DiagnosticReports with dir_fd of held Logs and follow_symlinks=False",
+    "targetOpen": 0,
+    "targetMetadataCalls": 1,
+    "ancestorOpenCap": 5,
+    "metadataCap": 64,
+    "completePathMetadataCount": 26,
+    "directoryEnumeration": 0,
+    "bodyRead": 0,
+    "write": 0,
+    "chmod": 0,
+    "child": 0,
+    "signalOtherPid": 0,
+    "deadlineSeconds": 5,
+    "closureCheckSecondsFromStart": 8,
+    "processTimeoutSeconds": 60,
+    "publicReportBytes": 8192
+  },
+  "publicProjection": {
+    "target": [
+      "type in directory/symlink/regular/other",
+      "mode integer",
+      "modeOctal",
+      "uid integer",
+      "gid integer",
+      "nine decimal string stat fields",
+      "isDirectory boolean",
+      "uidIsRootOrOperator boolean",
+      "noGroupOrOtherWrite boolean",
+      "fixedDirectoryShape boolean"
+    ],
+    "full9Order": [
+      "dev",
+      "ino",
+      "uid",
+      "gid",
+      "mode",
+      "nlink",
+      "size",
+      "mtime_ns",
+      "ctime_ns"
+    ],
+    "onAncestorFailure": "only the already fixed ancestor path and same typed metadata/predicates; original guard still refuses descent",
+    "arbitraryTextOrBodyHashes": false
+  },
+  "semantics": {
+    "metadataObservationMayCompleteWhileOriginalPredicateIsFalse": true,
+    "finalMetadataIsOneSequentialSnapshotNotAtomicHistory": true,
+    "ancestorHeldNamedFull9RecheckedBeforeClose": true,
+    "previousFailureUnchanged": true,
+    "reportExistenceUnknown": true,
+    "bodyReadAdmission": false,
+    "permissionChange": false,
+    "originalCrashReaderGuardUnchanged": true,
+    "originalRuntimeCauseUnproved": true,
+    "historicalManagedUnknownUnchanged": true
+  },
+  "ancestry": {
+    "supportFromOriginalCrashSource": {
+      "blob": "41ea46286a45ae651d7444e87efa7a8f3c6c438e",
+      "bytes": 28062,
+      "sha256": "33b29c19d960409b9d32e5e6770e493d564e85ba19ccf8e638c95d76443df35c"
+    },
+    "fdMethodsUnchanged": [
+      "open_fd",
+      "close_one",
+      "close"
+    ],
+    "supportWhole": {
+      "blob": "3fea51e90a5d856b9291a47766f9cfb865bc9b9b",
+      "bytes": 1317,
+      "sha256": "7b2b23b0552a1d643bae93a4733bc2d03665037507b54ec241b5e48ade535ad5"
+    },
+    "journalParent": {
+      "blob": "c74d45d02fd3e8b7db5c3f4b46c843d3f73ddddd",
+      "bytes": 19051,
+      "sha256": "131419db2d70a58488e07912a49bd15b62c27e4f1173ddc08e0bb5a99dd86524"
+    },
+    "journalLiteralChangesOnly": [
+      "GF_SLOT",
+      "GF_REQUEST",
+      "fixed observer key prefix"
+    ],
+    "journalForwardHunks": 2,
+    "journalInverseHunks": 2
+  },
+  "newSlot": "owner_authbus_crash_directory_metadata_gitfirst_r1",
+  "idempotencyKey": "heptabao-mac-crash-directory-metadata-11d8bdb0-20261106-r1",
+  "nativeObservation": {
+    "statusMax": 8,
+    "readMax": 8,
+    "perObserverStatusMax": 8,
+    "readLimit": 16384,
+    "immutablePageLimit": 8192,
+    "immutablePagesPerObserver": 128,
+    "immutablePayloadCap": 1048576,
+    "sameJobOnly": true,
+    "unknownNoReplay": true,
+    "SDKWholeBeforeParse": true
+  },
+  "nativeStartBinding": {
+    "status": "root independently recomputes current typed stdin; old helper processStartBinding must not be used"
+  }
+}

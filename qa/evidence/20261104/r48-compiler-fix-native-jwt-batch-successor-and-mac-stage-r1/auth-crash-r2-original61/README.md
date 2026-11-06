@@ -1,0 +1,7 @@
+# Crash-reader R2 original observation
+
+The exact new job mac/1a1b290bf3f-fc05-7ea9 completed with exit0/full/durable and3802 stdout bytes, empty stderr. Eight original calls, two observers and three immutable pages closed. All original SDKs, arm triples, completed/inactive statuses, payloads and lossless stdout are retained. A has zero calls/futures.
+
+Ten entries were examined to iterator exhaustion. One filename candidate, node-2026-11-07-033552.ips, passed regular uid501/gid250/mode0600/nlink1 and full9 checks and was read whole locally (6809 B; hash/body not exported). PID51494, parent51483, node name, crash type309 and both correlated times passed. The procPath exact-known-path predicate was false, so the existing projection withheld exception/termination and classified this candidate not-qualified-for-this-child. This is not report absence, path identity, crash-cause or product success qualification.
+
+Seven explicit FDs plus the iterator closed;39 metadata calls and2 file read calls; no child, write, chmod, other PID action or fallback. Historical failures, original runtime progress and managed UNKNOWN remain unchanged. Verification ran only as pure V8 over the original public evidence, with no Native calls or Python execution. A pure packet-builder expression initially failed JavaScript parsing before evaluation due to an extra closing parenthesis; the error boundary is retained separately and caused no Git or Native call or original-data change.

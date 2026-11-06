@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.gitfirst.fixed-native-call-intent.r1",
+  "callKey": "crash-directory-metadata-r1-start",
+  "kind": "process_start",
+  "request": {
+    "blob": "608337c6667b83e1f379b5255b23a71b0da2dd58",
+    "bytes": 12569,
+    "sha256": "e8b74ca5f718e2fc2a23342bac0f35636b70c03581cf1c26a9cf48e52baa9387"
+  },
+  "rootGo": {
+    "blob": "40c94a812e52b9efa27c425ce660840721305a47",
+    "bytes": 5254,
+    "sha256": "5777370622b82c313fb3c557b6e87b96abb386942dec7261018fbc2272499a81"
+  },
+  "originalJob": null,
+  "originalOperation": null,
+  "maximumNativeCalls": 1,
+  "nativeNotYetCalled": true,
+  "lossOfAcknowledgmentNeverGrantsReplay": true,
+  "localFirstExplicitlyReplacedByExactRootGO": true
+}

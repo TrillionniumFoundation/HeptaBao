@@ -1,0 +1,92 @@
+{
+  "schema": "combined-02b90762-fresh-build-final-log-release-r1",
+  "job": "1a1b282ded0-fc05-7e57",
+  "originalBuildSourceCommit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+  "businessStarts": 1,
+  "businessOutcome": "failed normal-release-build; Cargo exit101; no tests",
+  "currentNativeCalls": 0,
+  "currentOwnedFutures": 0,
+  "currentOwnedProcess": 0,
+  "paused": false,
+  "pending": null,
+  "activeObserver": null,
+  "callTotal": 88,
+  "observerTotal": 17,
+  "pageTotal": 53,
+  "newScope": {
+    "go": {
+      "blob": "5f3d776427de4a4007b8c60456b1e827abae573b",
+      "bytes": 10208,
+      "sha256": "6730fc0ff98865ca768739efcafd5acc4dc9047dc843ed40719356904591ed01"
+    },
+    "calls": 51,
+    "observers": 7,
+    "pages": 37,
+    "ranges": 7,
+    "bytes": 404821,
+    "metadataRefreshes": 0,
+    "businessReplay": 0
+  },
+  "fullLogBodies": [
+    {
+      "stream": "stderr",
+      "path": "/home/qian-qi/hb-02b90762-controls-20261106-r2/build-tests-r1/normal-release-build.stderr",
+      "version": "66306:28477815:20639:1793996644686260313:1793996644686260313",
+      "body": {
+        "blob": "01ad767ff659ea7f5d7ccfcb9d73d01cc7b03a31",
+        "bytes": 20639,
+        "sha256": "0b2916602918b7e3d05457d6445c20a55478846d99d7cd7067db0058f66c23cc"
+      },
+      "wholeArchive": "ee351112cb5c53392b6e949173c70b04663c053a",
+      "wholeReadback": true,
+      "originalOperations": [
+        "e890ca89e3ddd755d086731b429e608f700648ad063074219256f312c6ccce46"
+      ],
+      "semanticQualification": false
+    },
+    {
+      "stream": "stdout",
+      "path": "/home/qian-qi/hb-02b90762-controls-20261106-r2/build-tests-r1/normal-release-build.stdout",
+      "version": "66306:28477813:384182:1793996644686260313:1793996644686260313",
+      "body": {
+        "blob": "54c14319f1502d7f5c78783a48465af2aafd4cb1",
+        "bytes": 384182,
+        "sha256": "9fc6bdccb931b4cf5febb609921cb849a74e56920869dd4e2988bcebde9d0948"
+      },
+      "wholeArchive": "e2d67be908dd18e78d56ae9bf7987d8589f8561a",
+      "wholeReadback": true,
+      "originalOperations": [
+        "424401766961590708bf64a00e753fc9884fcda60769e85c193cdf78bdeadc62",
+        "023aa129f52e2843a25a6d813a617e7c859d39dfba4335e40da97ff9df61f3d2",
+        "5e2215701e51e77e84891c51cfbd44d087182c79bedc5a7fe66bd8939e2d893d",
+        "3ad2621f1ec43fc6518c6c462f7abfa67eb6748faa7b4e6f2dc1c2b694015f77",
+        "dddfd1ee5c64842683f7fe64900877e1b47a4170131fb40f4a8adae7f0a94fb6",
+        "5f4fbafd9c644ff26e9e1baf951a1b45822baaa7c87fbaed85c655c2fb8f5a46"
+      ],
+      "semanticQualification": false
+    }
+  ],
+  "originalState": {
+    "blob": "57c97443b3916ce995936146570fa2d2284343d3",
+    "bytes": 965533,
+    "sha256": "46c2d9cf84e22caceda0da65e8dee19c57daeef984232a32ee3cb0bb41b124df",
+    "wholeTree": "f3441297c94fc3869e204bd41f6df809575cc85e"
+  },
+  "oldPurePrepareFailure": {
+    "schema": "heptabao.gitfirst.outer-caught-failure.r1",
+    "action": "prepare",
+    "name": "Error",
+    "message": "same_closed_original_operation_next_page",
+    "automaticRetry": false,
+    "newAdmissionAllowed": false,
+    "returnedNormally": true
+  },
+  "oldFailureRecovery": "ca60b794a6bb1e2d7bc28bca4a94f475e2ff226e retained; no operation or page replay",
+  "qualification": {
+    "normalReleasePassed": false,
+    "runtimeTestsStarted": false,
+    "newArtifactsQualified": false,
+    "compatibilityQualified": false
+  },
+  "B": 0
+}

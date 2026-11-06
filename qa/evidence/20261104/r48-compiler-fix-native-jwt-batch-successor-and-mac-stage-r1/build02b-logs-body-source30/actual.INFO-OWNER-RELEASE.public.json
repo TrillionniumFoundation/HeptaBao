@@ -1,0 +1,72 @@
+{
+  "schema": "heptabao.fresh-build-log-info.owner-release.r1",
+  "slot": "combined_02b90762_fresh_build_gitfirst_r2",
+  "job": "1a1b282ded0-fc05-7e57",
+  "originalCalls": 6,
+  "observers": 2,
+  "pages": 2,
+  "allCompletedInactive": true,
+  "nativeCallsInFlight": 0,
+  "nativeFuturesActive": 0,
+  "metadata": [
+    {
+      "index": 0,
+      "stream": "stderr",
+      "path": "/home/qian-qi/hb-02b90762-controls-20261106-r2/build-tests-r1/normal-release-build.stderr",
+      "size": 20639,
+      "sha256": "0b2916602918b7e3d05457d6445c20a55478846d99d7cd7067db0058f66c23cc",
+      "version": "66306:28477815:20639:1793996644686260313:1793996644686260313",
+      "nativeText": {
+        "blob": "74dcc914acc1a0718c206a7e963018936b942390",
+        "bytes": 477,
+        "sha256": "63e7af3d5867fe5e6042975e81b71b9649a1ed23796c569c2fd8ac2c1b2f2a1b"
+      },
+      "originalOperation": "aa636e3172f3db62ce4df425ae55997b2b4bde19011caa0eab9a46905d680bf9",
+      "full9Strings": [
+        "66306",
+        "28477815",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "20639",
+        "1793996644686260313",
+        "1793996644686260313"
+      ],
+      "regularFileFromNativeFileInfoContract": true,
+      "binaryReadAuthorized": false
+    },
+    {
+      "index": 1,
+      "stream": "stdout",
+      "path": "/home/qian-qi/hb-02b90762-controls-20261106-r2/build-tests-r1/normal-release-build.stdout",
+      "size": 384182,
+      "sha256": "9fc6bdccb931b4cf5febb609921cb849a74e56920869dd4e2988bcebde9d0948",
+      "version": "66306:28477813:384182:1793996644686260313:1793996644686260313",
+      "nativeText": {
+        "blob": "ddfe06f45322b80000ce01e66ea04970873fcba4",
+        "bytes": 479,
+        "sha256": "d6f7b2c7ba8fe19308bfeb708319e1df6150b7cec91d3566844b8b7083e46abf"
+      },
+      "originalOperation": "4f501a3e7177c46291be7e1f878e8ad20f52d7e0aff27ae631984abba0a6c70d",
+      "full9Strings": [
+        "66306",
+        "28477813",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "384182",
+        "1793996644686260313",
+        "1793996644686260313"
+      ],
+      "regularFileFromNativeFileInfoContract": true,
+      "binaryReadAuthorized": false
+    }
+  ],
+  "logsBodyRead": false,
+  "bodyAuthorized": false,
+  "newCargoAuthorized": false,
+  "report": "3749276afcc6e1ead912370e9626dc3645c111df",
+  "oldErrorsRetained": true
+}

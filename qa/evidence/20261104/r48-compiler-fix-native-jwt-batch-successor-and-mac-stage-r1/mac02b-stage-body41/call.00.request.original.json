@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-final02b-mac-source-only-ea096d7a-stage-report-body-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "mac",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-02b90762-src-20261106-r1/control/stage-result.public.json",
+      "offset": 0,
+      "limit": 10558,
+      "expected_version": "16777244:72756440:10558:1793996068500746233:1793996068500755233"
+    }
+  }
+}

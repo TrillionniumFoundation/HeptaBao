@@ -1,0 +1,1 @@
+Evaluate pure_helpers.js, strict_diff.js, correct_stdin_binding.js (last), SOURCE-VERIFIER.js in a pure V8 scope; call verifyFreshJointSource(pathToExactText). It does not invoke Python, candidate functions, Git, Native, or initialize a slot.

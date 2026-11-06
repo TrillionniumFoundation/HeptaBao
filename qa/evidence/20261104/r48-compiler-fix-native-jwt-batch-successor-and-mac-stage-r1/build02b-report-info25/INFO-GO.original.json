@@ -1,0 +1,105 @@
+{
+  "schema": "heptabao.root.fresh-build-result-INFO-exact-GO.r1",
+  "authorization": "GO",
+  "issuedAtUtc": "2026-11-06 20:31:00 UTC",
+  "agent": "/root/compatibility_audit",
+  "scope": "build_result_file_info_only",
+  "original_job": "1a1b282ded0-fc05-7e57",
+  "maximum_file_info_starts": 1,
+  "binary_read_authorized": false,
+  "exact_request": {
+    "blob": "7fd64e245a2030d5b71b26d62a4909f01fb9f28d",
+    "bytes": 273,
+    "sha256": "e79bc3486e419d122d50ae5142bcc1673982d7b3d7d9439747789a8ca7c761c4"
+  },
+  "source_packet": "6ce159c069b776907509fee67fa292fa13e4e4f7",
+  "root_review": {
+    "blob": "d6eb28be6840dc0830b877b9dff14855a87a0f43",
+    "bytes": 1413,
+    "sha256": "433c52e13fb60c5fa7c9e910f6ebf66fb27b927c0f7a240c672c531c838dadbc"
+  },
+  "journal": {
+    "slot": "combined_02b90762_fresh_build_gitfirst_r2",
+    "source": {
+      "blob": "9f3983788920c9087c607132772d72d2a380c9b8",
+      "bytes": 25177,
+      "sha256": "2385858f083dbd4e09599c55d51ff345a811ae614c85de70ddfc97b45e3afaea"
+    },
+    "action": "authorize_stage_result_info",
+    "initialize": false
+  },
+  "metadata_gate": {
+    "maximum_bytes": 4194304,
+    "mode": 384,
+    "full_mode": 33152,
+    "uid": 1000,
+    "gid": 1000,
+    "link_count": 1,
+    "exact_reported_sha": true,
+    "regular_from_tool_contract": true,
+    "version_strings_lossless": true
+  },
+  "path": "/home/qian-qi/hb-02b90762-controls-20261106-r2/build-tests-r1/result.public.json",
+  "expected_sha256": "db0079589bd50c271486056283825ba1c3a415c19204f707ed4b5d1b786ec3b4",
+  "observation": {
+    "statusPerOriginalObserver": 8,
+    "immutablePagesPerOriginalObserver": 128,
+    "immutablePageBytes": 8192,
+    "immutablePayloadBytes": 1048576,
+    "simultaneousCallOrFuture": 1
+  },
+  "original_prerequisites": [
+    {
+      "id": "82eca3d912f7ed4550db60ff96d55d340f7f842ad0e087eb8c6ba08fc5625caf",
+      "tool": "process_status",
+      "nativeText": {
+        "blob": "10702d460d97a546576be01007e1ad1b3745a50c",
+        "bytes": 728,
+        "sha256": "c3ed05955b190e4e607e458c94269c3bb6768c87f0088d9678e8295c8587f1db"
+      }
+    },
+    {
+      "id": "b41b8414ce7a13bf55869a359187e237566305eb5f32576a2e9ee05a509b25d6",
+      "tool": "process_read",
+      "nativeText": {
+        "blob": "8d4db2b90fb1a1d5685696cff725e72ecf314ed4",
+        "bytes": 6443,
+        "sha256": "951c5d73f68597edc2072a9c6498588e9eed50274603815adfc56181a630ec74"
+      }
+    },
+    {
+      "id": "807617b190e7e8f67a87456fe3d78c25fd5d0dd4f14c84e9511445d94839fe04",
+      "tool": "process_read",
+      "nativeText": {
+        "blob": "8efab367ea32f4f8ff6d29fa1a2db5fc614e8b6f",
+        "bytes": 1536,
+        "sha256": "93e841edcf0ad8cf50c8ebe989f786765114702134af663284a61638d1247eae"
+      }
+    }
+  ],
+  "original_terminal_min_packet": "46ef3af03e6e71f5cafa33b177cd7d7b38811fd3",
+  "original_build_GO": {
+    "blob": "ca932562c2bd9d65b155114a7c0de75c07120270",
+    "bytes": 9154,
+    "sha256": "22d3a6811594660271e63863bff5eb9691b1a4ed169872852c382c02cee412c9"
+  },
+  "sequence": [
+    "Whole exact new GO/source/request, attach only to the already closed original build context; no initialize.",
+    "External whole exact request/intent/arm referencing this INFO GO, model boundary, unique fixed file_info operation.",
+    "Whole SDK and complete immutable payload before interpreting; only same original operation ID and bounded status/pages.",
+    "Stop on SHA/path/identity drift or unknown; no replacement operation, process_start, other file or binary_read."
+  ],
+  "lane_allocation": {
+    "maximumNativeLanes": 2,
+    "compatibility_audit": 1,
+    "ha_validation": 0,
+    "authbus_migration": 0,
+    "root": 0
+  },
+  "actualMetadataObserved": false,
+  "buildFailureReasonKnown": false,
+  "productQualified": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"data_base64\":\"eyJyZXN1bHRUeXBlIjoiY29tcGxldGUiLCJjb250ZW50IjpbeyJ0eXBlIjoidGV4dCIsInRleHQiOiJ7XG4gIFwiYXRfdW5peF9tc1wiOiAxNzkzOTk5NDQ3NDQwLFxuICBcImF1ZGl0X3JlY29yZGVkXCI6IHRydWUsXG4gIFwiYXV0b21hdGljX3JldHJ5XCI6IGZhbHNlLFxuICBcImNhbmNlbGxlZFwiOiBmYWxzZSxcbiAgXCJleGl0X2NvZGVcIjogMCxcbiAgXCJqb2JfaWRcIjogXCIxYTFiMmIzMjQ4YS1mYzA1LTdmNWVcIixcbiAgXCJsYXVuY2hfbm9uY2VcIjogXCIyMzEzMWNkZmQ0M2NhOTM3NTFhZjJjMGM4ZWM1NGUyOFwiLFxuICBcImxvZ19ieXRlc1wiOiB7XG4gICAgXCJzdGRlcnJcIjoge1xuICAgICAgXCJzZWVuXCI6IDAsXG4gICAgICBcInN0b3JlZFwiOiAwXG4gICAgfSxcbiAgICBcInN0ZG91dFwiOiB7XG4gICAgICBcInNlZW5cIjogMTIxODMsXG4gICAgICBcInN0b3JlZFwiOiAxMjE4M1xuICAgIH1cbiAgfSxcbiAgXCJsb2dfZXJyb3JzXCI6IHtcbiAgICBcInN0ZGVyclwiOiBudWxsLFxuICAgIFwic3Rkb3V0XCI6IG51bGxcbiAgfSxcbiAgXCJsb2dfc3luY2VkXCI6IHtcbiAgICBcInN0ZGVyclwiOiB0cnVlLFxuICAgIFwic3Rkb3V0XCI6IHRydWVcbiAgfSxcbiAgXCJsb2dfdHJ1bmNhdGVkXCI6IHtcbiAgICBcInN0ZGVyclwiOiBmYWxzZSxcbiAgICBcInN0ZG91dFwiOiBmYWxzZVxuICB9LFxuICBcIm91dHB1dF9jb21wbGV0ZVwiOiB0cnVlLFxuICBcIm91dHB1dF9kdXJhYmxlXCI6IHRydWUsXG4gIFwic3RhdGVcIjogXCJzdWNjZWVkZWRcIixcbiAgXCJ0ZXJtaW5hbF9wdWJsaWNhdGlvbl9jb25maXJtZWRcIjogdHJ1ZSxcbiAgXCJ0ZXJtaW5hbF9wdWJsaWNhdGlvbl9wcm90b2NvbFwiOiAxLFxuICBcInRpbWVkX291dFwiOiBmYWxzZVxufSJ9XSwiaXNFcnJvciI6ZmFsc2V9\",\"delivery_proven\":false,\"eof\":true,\"format\":\"serialized_original_native_sdk_payload_before_operation_metadata_and_transport_normalization\",\"immutable_snapshot\":true,\"next_offset\":912,\"offset\":0,\"operation_id\":\"b889431010bb4a4144ac6a95afe55ee60980c3e769251ed9192de6cd981fc922\",\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_kind\":\"native_result\",\"result_sha256\":\"b301d9339094da9ac92732476a681cb661438f864a9fc22836f235f61fc61027\",\"session_scope\":\"authenticated_private_operator_credential\",\"total_bytes\":912}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

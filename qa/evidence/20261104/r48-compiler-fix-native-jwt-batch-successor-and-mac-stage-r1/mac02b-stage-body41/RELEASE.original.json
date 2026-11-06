@@ -1,0 +1,75 @@
+{
+  "schema": "heptabao.final02b.mac-stage-report.body-release.r1",
+  "slot": "final02b_mac_source_only_stage_gitfirst_r1",
+  "job": "1a1b27f85d6-fc05-7e49",
+  "totalNativeCalls": 14,
+  "totalObservers": 4,
+  "bodyCalls": 4,
+  "bodyPages": 2,
+  "originalObserver": {
+    "id": "c8a9adc35bb44bdc84c54bbd70a51ed84bf8a008d3651d47b7104d41895f7ba2",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "eb9d87d26a1dcb487f4bb7448585550461402bd8",
+      "bytes": 14526,
+      "sha256": "1a782a3ac2cc22e297125f8af28e3c6fbdc931063d68d99e5d20affcc1ef7707"
+    },
+    "payloadTree": "9cf9d9b2d281f271fe1e50f79ebbd9e0cfee792c",
+    "nativeText": {
+      "blob": "37ac1e3f11b8603d8fe0189f012c9e8170af41f5",
+      "bytes": 14423,
+      "sha256": "955d479dd6db2566988bf0b1b14406502b0c35d56046fc8d639a1bf124d8e9fb"
+    },
+    "pages": 2,
+    "completedInactive": true
+  },
+  "body": {
+    "pin": {
+      "blob": "a148ebe5d4d729f4a1a76fd18e7a2e25b68a571d",
+      "bytes": 10558,
+      "sha256": "7d2e75f8038ba68c4ceeb5af4ec75bf8a6f528b2d394acad97ea0364b70d33e9"
+    },
+    "tree": "e425f4c98b0066255cfec03678695034012e3de6",
+    "originalOperation": "c8a9adc35bb44bdc84c54bbd70a51ed84bf8a008d3651d47b7104d41895f7ba2",
+    "infoOperation": "a425aca935a47c7745f1b3693bd22b0dcee73ecd7a82117311656417f114c10f",
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-02b90762-src-20261106-r1/control/stage-result.public.json",
+    "version": "16777244:72756440:10558:1793996068500746233:1793996068500755233",
+    "whole": true
+  },
+  "metadata": {
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-02b90762-src-20261106-r1/control/stage-result.public.json",
+    "size": 10558,
+    "sha256": "7d2e75f8038ba68c4ceeb5af4ec75bf8a6f528b2d394acad97ea0364b70d33e9",
+    "version": "16777244:72756440:10558:1793996068500746233:1793996068500755233",
+    "nativeText": {
+      "blob": "403c4e42950c658effdc705056ef1a4cd3a497f9",
+      "bytes": 491,
+      "sha256": "1bf1e54851a12c1bf47d8a8aea24a27697c753c758e7297256a5c374a8c7950b"
+    },
+    "originalOperation": "a425aca935a47c7745f1b3693bd22b0dcee73ecd7a82117311656417f114c10f",
+    "metadataPlatform": "darwin",
+    "groupObservedFromOriginalMetadata": true,
+    "full9Strings": [
+      "16777244",
+      "72756440",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "10558",
+      "1793996068500746233",
+      "1793996068500755233"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "originalWholeTenCallsPreserved": true,
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "paused": false,
+  "currentNativeCalls": 0,
+  "currentNativeFutures": 0,
+  "macCargoStarted": false,
+  "controlsPublished": false
+}

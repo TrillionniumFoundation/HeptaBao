@@ -1,0 +1,156 @@
+--- a/logs-info.js
++++ b/logs-info.js
+@@ -147,6 +147,50 @@
+  return {exactRequests:GF_BUILD_LOG_INFOS.map(x=>x.request),maximumFileInfoStarts:2,binaryReadAuthorized:false};
+ }
+ 
++/* Seven fixed version-bound ranges for the two original closed Cargo logs.
++ * New log-body observers alone use 16 KiB immutable pages; old routes stay 8 KiB.
++ * Per-file bytes are joined and whole-hashed before one UTF8 decode.
++ */
++const GF_BUILD_LOG_BODY_INFOS = [{"index":0,"stream":"stderr","path":"/home/qian-qi/hb-02b90762-controls-20261106-r2/build-tests-r1/normal-release-build.stderr","size":20639,"sha256":"0b2916602918b7e3d05457d6445c20a55478846d99d7cd7067db0058f66c23cc","version":"66306:28477815:20639:1793996644686260313:1793996644686260313","nativeText":{"blob":"74dcc914acc1a0718c206a7e963018936b942390","bytes":477,"sha256":"63e7af3d5867fe5e6042975e81b71b9649a1ed23796c569c2fd8ac2c1b2f2a1b"},"originalOperation":"aa636e3172f3db62ce4df425ae55997b2b4bde19011caa0eab9a46905d680bf9","full9Strings":["66306","28477815","1000","1000","33152","1","20639","1793996644686260313","1793996644686260313"],"regularFileFromNativeFileInfoContract":true,"binaryReadAuthorized":false},{"index":1,"stream":"stdout","path":"/home/qian-qi/hb-02b90762-controls-20261106-r2/build-tests-r1/normal-release-build.stdout","size":384182,"sha256":"9fc6bdccb931b4cf5febb609921cb849a74e56920869dd4e2988bcebde9d0948","version":"66306:28477813:384182:1793996644686260313:1793996644686260313","nativeText":{"blob":"ddfe06f45322b80000ce01e66ea04970873fcba4","bytes":479,"sha256":"d6f7b2c7ba8fe19308bfeb708319e1df6150b7cec91d3566844b8b7083e46abf"},"originalOperation":"4f501a3e7177c46291be7e1f878e8ad20f52d7e0aff27ae631984abba0a6c70d","full9Strings":["66306","28477813","1000","1000","33152","1","384182","1793996644686260313","1793996644686260313"],"regularFileFromNativeFileInfoContract":true,"binaryReadAuthorized":false}];
++const GF_BUILD_LOG_RANGES = [{"index":0,"fileIndex":0,"stream":"stderr","path":"/home/qian-qi/hb-02b90762-controls-20261106-r2/build-tests-r1/normal-release-build.stderr","bytes":20639,"sha256":"0b2916602918b7e3d05457d6445c20a55478846d99d7cd7067db0058f66c23cc","version":"66306:28477815:20639:1793996644686260313:1793996644686260313","offset":0,"limit":20639,"eof":true,"idempotencyKey":"heptabao-combined-02b90762-fresh-observe-r2-release-stderr-body0","request":{"blob":"1b7d38ad753a643df0bd00fad92565abbe7b24b8","bytes":424,"sha256":"caac2dbb5b378a83d0cd9c84f00baabb65c9dc9e718ca219b4f7c4d615b58a92"}},{"index":1,"fileIndex":1,"stream":"stdout","path":"/home/qian-qi/hb-02b90762-controls-20261106-r2/build-tests-r1/normal-release-build.stdout","bytes":384182,"sha256":"9fc6bdccb931b4cf5febb609921cb849a74e56920869dd4e2988bcebde9d0948","version":"66306:28477813:384182:1793996644686260313:1793996644686260313","offset":0,"limit":65536,"eof":false,"idempotencyKey":"heptabao-combined-02b90762-fresh-observe-r2-release-stdout-body0","request":{"blob":"0d0c82ad90e49197b5b133bb94d53fbc21627bee","bytes":425,"sha256":"70c8ff6027f9242871976da0d8ebe93b1a4e3b67d71a5a98cf7b986a6cf2e642"}},{"index":2,"fileIndex":1,"stream":"stdout","path":"/home/qian-qi/hb-02b90762-controls-20261106-r2/build-tests-r1/normal-release-build.stdout","bytes":384182,"sha256":"9fc6bdccb931b4cf5febb609921cb849a74e56920869dd4e2988bcebde9d0948","version":"66306:28477813:384182:1793996644686260313:1793996644686260313","offset":65536,"limit":65536,"eof":false,"idempotencyKey":"heptabao-combined-02b90762-fresh-observe-r2-release-stdout-body1","request":{"blob":"23fd903f426df732a3fa2b9d894903599b4122b2","bytes":429,"sha256":"d2ef6c599a2655922f978c04defd53d50799a3945fe2ed9fbe1556a8cf971531"}},{"index":3,"fileIndex":1,"stream":"stdout","path":"/home/qian-qi/hb-02b90762-controls-20261106-r2/build-tests-r1/normal-release-build.stdout","bytes":384182,"sha256":"9fc6bdccb931b4cf5febb609921cb849a74e56920869dd4e2988bcebde9d0948","version":"66306:28477813:384182:1793996644686260313:1793996644686260313","offset":131072,"limit":65536,"eof":false,"idempotencyKey":"heptabao-combined-02b90762-fresh-observe-r2-release-stdout-body2","request":{"blob":"484a738f535e476874acb1a42a26e7a62f52c8c5","bytes":430,"sha256":"10aaf8751d8e102972b4e7686503f138f5b383b0286b75c1195be4a476022ed9"}},{"index":4,"fileIndex":1,"stream":"stdout","path":"/home/qian-qi/hb-02b90762-controls-20261106-r2/build-tests-r1/normal-release-build.stdout","bytes":384182,"sha256":"9fc6bdccb931b4cf5febb609921cb849a74e56920869dd4e2988bcebde9d0948","version":"66306:28477813:384182:1793996644686260313:1793996644686260313","offset":196608,"limit":65536,"eof":false,"idempotencyKey":"heptabao-combined-02b90762-fresh-observe-r2-release-stdout-body3","request":{"blob":"c31805ba762fd82a42a5f366f07847ddbb40a4cf","bytes":430,"sha256":"b00122e9ded6e0118e9ac44b2993ed8c90177acab42b413326890bcc92056660"}},{"index":5,"fileIndex":1,"stream":"stdout","path":"/home/qian-qi/hb-02b90762-controls-20261106-r2/build-tests-r1/normal-release-build.stdout","bytes":384182,"sha256":"9fc6bdccb931b4cf5febb609921cb849a74e56920869dd4e2988bcebde9d0948","version":"66306:28477813:384182:1793996644686260313:1793996644686260313","offset":262144,"limit":65536,"eof":false,"idempotencyKey":"heptabao-combined-02b90762-fresh-observe-r2-release-stdout-body4","request":{"blob":"7d77c62f4c5ab15171dc9d99aa6f76f03bbfea0b","bytes":430,"sha256":"817dadaf6303d956392f6ae17305f376dc18715b6f568528ffa4e8162672e1db"}},{"index":6,"fileIndex":1,"stream":"stdout","path":"/home/qian-qi/hb-02b90762-controls-20261106-r2/build-tests-r1/normal-release-build.stdout","bytes":384182,"sha256":"9fc6bdccb931b4cf5febb609921cb849a74e56920869dd4e2988bcebde9d0948","version":"66306:28477813:384182:1793996644686260313:1793996644686260313","offset":327680,"limit":56502,"eof":true,"idempotencyKey":"heptabao-combined-02b90762-fresh-observe-r2-release-stdout-body5","request":{"blob":"a01b2f211179576916eb333beb01bba011a864eb","bytes":430,"sha256":"ee7c55e48921c006478794f5252d44e6ebe4d0193adbe95d4ab6a4e04df2cc1e"}}];
++function gfBuildLogPageBytes(s) {
++ const a=s.activeObserver,n=GF_BUILD_LOG_RANGES[s.buildLogBodyNext];
++ return s.buildLogsBodyGO?.whole===true && a?.tool==="binary_read" && n
++  && a.request.idempotency_key===n.idempotencyKey
++  && a.request.operation.arguments.path===n.path
++  && a.request.operation.arguments.offset===n.offset ? 16384 : 8192;
++}
++function gfAuthorizeBuildLogBodiesOnly({goRaw,goPin,goWholeReadback}) {
++ const s=gfState();
++ gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null && s.activeObserver===null
++  && s.job==="1a1b282ded0-fc05-7e57" && s.buildLogsInfoGO?.whole===true
++  && s.buildLogInfoNext===2 && s.buildLogInfoCalled===2
++  && s.buildLogsBodyGO===undefined && s.buildLogBodies===undefined,
++  "both_original_log_infos_closed_before_body_GO");
++ gfNeed(JSON.stringify(s.buildLogInfos)===JSON.stringify(GF_BUILD_LOG_BODY_INFOS),
++  "unchanged_actual_two_log_full9");
++ for(const f of GF_BUILD_LOG_BODY_INFOS) {
++  const original=s.completedObservers.find(x=>x.id===f.originalOperation);
++  gfNeed(original?.tool==="file_info" && original.completedInactive===true
++   && original.nativeText.blob===f.nativeText.blob
++   && gfMetaEquals(load(GF_SLOT+":closed_native:"+f.originalOperation),f.nativeText),
++   "both_exact_original_info_native_whole");
++ }
++ gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin)
++  && ![s.goPin.blob,s.stageResultInfoGO.pin.blob,s.stageResultBodyGO.pin.blob,s.buildLogsInfoGO.pin.blob].includes(goPin.blob),
++  "separate_whole_log_body_GO");
++ const g=JSON.parse(goRaw);
++ gfNeed(g.authorization==="GO" && g.scope==="build_logs_binary_read_ranges_only"
++  && g.original_job===s.job && g.maximum_binary_read_starts===7
++  && g.new_body_page_bytes===16384 && g.maximum_body_bytes===404821
++  && JSON.stringify(g.exact_requests)===JSON.stringify(GF_BUILD_LOG_RANGES.map(x=>x.request)),
++  "exact_seven_ranges_and_new_body_page_width");
++ s.buildLogsBodyGO={pin:goPin,raw:goRaw,whole:true};
++ s.buildLogBodyNext=0;s.buildLogBodyCalled=0;s.buildLogParts={stderr:[],stdout:[]};s.buildLogBodies=[];
++ gfSave(s);
++ return {maximumBinaryReadStarts:7,totalBytes:404821,newBodyPageBytes:16384};
++}
++
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {
+  const actual=gitBlobMeta(raw);
+@@ -189,7 +233,14 @@
+   const op=q.operation,a=op?.arguments;
+   gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"
+     && a && a.host==="rog","same_original_host_only");
+-  if(op.tool==="file_info" && s.buildLogsInfoGO?.whole===true) {
++  if(op.tool==="binary_read" && s.buildLogsBodyGO?.whole===true) {
++   const n=GF_BUILD_LOG_RANGES[s.buildLogBodyNext];
++   gfNeed(n && s.buildLogBodyCalled===s.buildLogBodyNext
++    && gfMetaEquals(raw,n.request)
++    && Object.keys(a).sort().join(",")==="expected_version,host,limit,offset,path"
++    && a.path===n.path && a.offset===n.offset && a.limit===n.limit && a.limit<=65536
++    && a.expected_version===n.version,"next_once_exact_original_log_range");
++  } else if(op.tool==="file_info" && s.buildLogsInfoGO?.whole===true) {
+    const need=GF_BUILD_LOG_INFOS[s.buildLogInfoNext];
+    gfNeed(need && s.buildLogInfoCalled===s.buildLogInfoNext
+     && gfMetaEquals(raw,need.request) && Object.keys(a).sort().join(",")==="host,path"
+@@ -223,7 +274,7 @@
+  } else if(kind==="operation_result") {
+   gfNeed(s.activeObserver?.futureClosed===true
+    && Object.keys(q).sort().join(",")==="limit,offset,operation_id"
+-   && q.operation_id===s.activeObserver.id && q.limit===8192
++   && q.operation_id===s.activeObserver.id && q.limit===gfBuildLogPageBytes(s)
+    && q.offset===s.activeObserver.nextPageOffset && !s.activeObserver.eof,
+    "same_closed_original_operation_next_page");
+  } else throw new Error("closed_native_tool_set");
+@@ -236,7 +287,10 @@
+  const requestPin=gitBlobMeta(requestRaw);
+  const intent={schema:"heptabao.gitfirst.fixed-native-call-intent.r1",
+   callKey,kind,request:requestPin,
+-  rootGo:(s.buildLogsInfoGO?.whole===true
++  rootGo:(s.buildLogsBodyGO?.whole===true
++    && ((kind==="operation_start" && q.operation.tool==="binary_read")
++      || s.activeObserver?.tool==="binary_read")) ? s.buildLogsBodyGO.pin
++    : (s.buildLogsInfoGO?.whole===true
+     && ((kind==="operation_start" && q.operation.tool==="file_info")
+       || s.activeObserver?.tool==="file_info")) ? s.buildLogsInfoGO.pin
+     : ((kind==="operation_start" && q.operation.tool==="binary_read")
+@@ -277,7 +331,10 @@
+   if(s.buildLogsInfoGO?.whole===true)s.buildLogInfoCalled++;
+   else s.stageResultInfoStarted=true;
+  }
+- if(c.kind==="operation_start" && q.operation.tool==="binary_read")s.stageResultBodyStarted=true;
++ if(c.kind==="operation_start" && q.operation.tool==="binary_read") {
++  if(s.buildLogsBodyGO?.whole===true)s.buildLogBodyCalled++;
++  else s.stageResultBodyStarted=true;
++ }
+  gfSave(s); // No await or second dispatch between this marker and the one call.
+  let sdk;
+  try {
+@@ -361,7 +418,7 @@
+     && Number.isSafeInteger(v.total_bytes) && v.total_bytes>=0 && v.total_bytes<=1048576
+     && /^[a-f0-9]{64}$/.test(v.result_sha256),"exact_original_immutable_payload");
+    const b=unb64(v.data_base64);
+-   gfNeed(b.length<=8192 && v.next_offset===q.offset+b.length
++   gfNeed(b.length<=gfBuildLogPageBytes(s) && b.length<=q.limit && v.next_offset===q.offset+b.length
+      && v.next_offset<=v.total_bytes && v.eof===(v.next_offset===v.total_bytes)
+      && (b.length>0||v.eof),"exact_original_page_extent");
+    gfNeed(a.total===null || (a.total===v.total_bytes && a.digest===v.result_sha256),
+@@ -403,7 +460,35 @@
+   gfNeed(p.resultType==="complete" && p.isError===false
+     && p.content?.length===1 && p.content[0].type==="text","original_native_result_success");
+   const nativeRaw=p.content[0].text,v=parseLosslessIntegers(nativeRaw);
+-  if(a.tool==="file_info" && s.buildLogsInfoGO?.whole===true) {
++  if(a.tool==="binary_read" && s.buildLogsBodyGO?.whole===true) {
++   const n=GF_BUILD_LOG_RANGES[s.buildLogBodyNext],parts=s.buildLogParts[n?.stream];
++   gfNeed(n && parts && s.buildLogBodyCalled===s.buildLogBodyNext+1
++    && a.request.idempotency_key===n.idempotencyKey
++    && v.path===n.path && v.version===n.version && v.size===n.bytes
++    && v.offset===n.offset && v.next_offset===n.offset+n.limit && v.eof===n.eof
++    && typeof v.data_base64==="string","exact_original_log_range_extent");
++   const bytes=unb64(v.data_base64),chunkSHA=sha256Latin1(byteString(bytes));
++   gfNeed(bytes.length===n.limit && chunkSHA===v.chunk_sha256
++    && parts.reduce((sum,x)=>sum+x.bytes,0)===n.offset,"actual_chunk_bytes_hash_continuity");
++   parts.push({index:n.index,offset:n.offset,bytes:bytes.length,base64:v.data_base64,
++    chunkSHA256:chunkSHA,originalOperation:a.id,originalPayload:pin});
++   if(n.eof) {
++    let joined=[];for(const part of parts)joined=joined.concat(unb64(part.base64));
++    gfNeed(joined.length===n.bytes && sha256Latin1(byteString(joined))===n.sha256,
++     "complete_log_bytes_and_whole_SHA_before_UTF8");
++    const bodyRaw=utf8Text(joined),bodyPin=gitBlobMeta(bodyRaw);
++    gfNeed(bodyPin.bytes===n.bytes && bodyPin.sha256===n.sha256,"whole_log_UTF8_exact");
++    store(GF_SLOT+":build_log_body_original:"+n.stream,bodyRaw);
++    const bodyArchive=await archiveFlatPublicTextsOnce({
++     key:"gflog-"+s.job+"-"+n.stream,
++     repository:"TrillionniumFoundation/HeptaBao",
++     texts:{[n.stream+".original.txt"]:bodyRaw}});
++    s.buildLogBodies.push({stream:n.stream,path:n.path,version:n.version,body:bodyPin,
++     wholeArchive:bodyArchive.tree,wholeReadback:bodyArchive.whole,
++     originalOperations:parts.map(x=>x.originalOperation),semanticQualification:false});
++   }
++   s.buildLogBodyNext++;
++  } else if(a.tool==="file_info" && s.buildLogsInfoGO?.whole===true) {
+    const need=GF_BUILD_LOG_INFOS[s.buildLogInfoNext],md=v.metadata;
+    const parts=typeof v.version==="string"?v.version.split(":"):[];
+    gfNeed(need && s.buildLogInfoCalled===s.buildLogInfoNext+1
+@@ -535,6 +620,7 @@
+   else if(action==="authorize_stage_result_info")value=gfAuthorizeStageResultInfoOnly(args);
+   else if(action==="authorize_stage_result_body")value=gfAuthorizeStageResultBodyOnly(args);
+   else if(action==="authorize_build_logs_info")value=gfAuthorizeBuildLogsInfoOnly(args);
++  else if(action==="authorize_build_log_bodies")value=gfAuthorizeBuildLogBodiesOnly(args);
+   else if(action==="prepare")value=await gfPrepareOne(args);
+   else if(action==="invoke")value=await gfInvokePreparedOnce(args.callKey);
+   else if(action==="accept")value=gfAcceptArchivedSDK(args.callKey);

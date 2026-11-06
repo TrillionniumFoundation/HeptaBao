@@ -1,0 +1,122 @@
+{
+  "authorization": "GO",
+  "scope": "stage_result_file_info_only",
+  "original_job": "1a1b27f85d6-fc05-7e49",
+  "maximum_file_info_starts": 1,
+  "binary_read_authorized": false,
+  "exact_request": {
+    "blob": "c86913b26b9cd099b5e22d1c00285d74ba6c6db6",
+    "bytes": 303,
+    "sha256": "526c709a592bc6f7014e88a775d6d13c8c02918c19122ff0bab0b29a999e283c"
+  },
+  "metadata_guard": {
+    "host": "mac",
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-02b90762-src-20261106-r1/control/stage-result.public.json",
+    "max_bytes": 65536,
+    "mode": 384,
+    "uid": 501,
+    "link_count": 1,
+    "gid": null,
+    "metadata_platform": null
+  },
+  "observation": {
+    "status_per_observer": 8,
+    "pages_per_observer": 128,
+    "immutable_page_bytes": 8192,
+    "payload_bytes": 1048576,
+    "simultaneous_call_or_future": 1
+  },
+  "not_authorized": [
+    "process_start",
+    "initialize_existing_slot",
+    "binary_read",
+    "another_path",
+    "controls_publication",
+    "Cargo"
+  ],
+  "schema": "heptabao.root.finalMac-stage-report-INFO-exact-GO.r1",
+  "issuedAtUtc": "2026-11-06 20:26:01 UTC",
+  "agent": "/root/ha_validation",
+  "source_packet": "c25d17e478e11d11e620106b06e0fb815cbc2fae",
+  "root_review": {
+    "blob": "117cb53c258987014557b349504eea38d83656f1",
+    "bytes": 1306,
+    "sha256": "cf857adc048e84a79b83c2d660947689e5d608495c4e8b5e092292e28a055857"
+  },
+  "source": {
+    "blob": "8d25ff1cfea6172e3728addfd9ffb5bb1e96b4e1",
+    "bytes": 24084,
+    "sha256": "a1ae560ac511116ec61a612a13f4b76e9c0b581ce2271791b233cbf5b2d2bb48"
+  },
+  "journal": {
+    "slot": "final02b_mac_source_only_stage_gitfirst_r1",
+    "action": "authorize_stage_result_info",
+    "initialize": false
+  },
+  "original_closed_state": {
+    "blob": "e82d1941b8648b9b7aaf5c32560f38cfc9c2b790",
+    "bytes": 279495,
+    "sha256": "bfac204edde767d039087ceb7f317db9b4aab7fe43895cc440fbfd5b1fec3071"
+  },
+  "original_stage_GO": {
+    "blob": "4f814f5f6e4b88ce900b83dce23bcf9533c4acb6",
+    "bytes": 4657,
+    "sha256": "3b99639f850cd3b416ab382fc7377b113bcd17cdf477af48df1fea08a121b0ae"
+  },
+  "actual_minimum_packet": "2128db0d1d1f6f2268542a3c6d7f200ec8eedb85",
+  "original_prerequisites": [
+    {
+      "id": "d2da0ade8fb73ddc8ce70733c2aa9c9b98afcef410e80117c81dbdbaffff6735",
+      "tool": "process_status",
+      "payload": {
+        "blob": "dbb56549a89311adaafb9e0cea5eab2f4f044c3c",
+        "bytes": 908,
+        "sha256": "9def244e098855f19131311114bad621e88c031533cef14bc8558830cbc952eb"
+      },
+      "payloadTree": "e750bfdf8f695be6c31647cd5930239fe5b4f556",
+      "nativeText": {
+        "blob": "3c0a55e37cca8e3992bb96788d79318afec949ea",
+        "bytes": 729,
+        "sha256": "797ce9266b89c41200c81c7ad14acb5537a3adffd0d519b31c71135bfbea4552"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "159a60d28de3f8427b562d226deb88bbb701d762b343d28ef8540b15b9abd3c0",
+      "tool": "process_read",
+      "payload": {
+        "blob": "ad3d54aeec240c1d3c85a177e1131339dfc27379",
+        "bytes": 1669,
+        "sha256": "44c2b1ffd172b6a3ccd51aeef558cfe1349619243f998c8ed15e3f33211393f1"
+      },
+      "payloadTree": "519e487946ea483c8a08b832e13c38280b727faf",
+      "nativeText": {
+        "blob": "7133c9c51156c30090818ac1d7c83571218c9e5b",
+        "bytes": 1480,
+        "sha256": "7d9aa76a92780145374df6f2235d9f3b26450969c217663ca678a3d150594b32"
+      },
+      "pages": 1,
+      "completedInactive": true
+    }
+  ],
+  "sequence": [
+    "Whole exact new GO/source/request; attach to exact closed existing Mac stage context using authorize_stage_result_info. Do not initialize.",
+    "Whole external exact request/intent/armed referencing this INFO GO, model boundary, one unique file_info operation_start.",
+    "Original SDK whole before interpretation; only same returned operation status and contiguous immutable pages; original native payload whole before parsing.",
+    "Preserve actual gid/platform/full9/size/SHA/version, stop on mismatch or UNKNOWN. BODY is not authorized by this GO."
+  ],
+  "lane_allocation": {
+    "maximumNativeLanes": 2,
+    "ha_validation": 1,
+    "compatibility_audit": 1,
+    "authbus_migration": 0,
+    "root": 0
+  },
+  "actualMetadataObserved": false,
+  "MacSourceReportBodyQualified": false,
+  "productQualified": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

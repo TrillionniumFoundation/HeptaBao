@@ -1,0 +1,27 @@
+{
+  "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-02b90762-src-20261106-r1/control/stage-result.public.json",
+  "size": 10558,
+  "sha256": "7d2e75f8038ba68c4ceeb5af4ec75bf8a6f528b2d394acad97ea0364b70d33e9",
+  "version": "16777244:72756440:10558:1793996068500746233:1793996068500755233",
+  "nativeText": {
+    "blob": "403c4e42950c658effdc705056ef1a4cd3a497f9",
+    "bytes": 491,
+    "sha256": "1bf1e54851a12c1bf47d8a8aea24a27697c753c758e7297256a5c374a8c7950b"
+  },
+  "originalOperation": "a425aca935a47c7745f1b3693bd22b0dcee73ecd7a82117311656417f114c10f",
+  "metadataPlatform": "darwin",
+  "groupObservedFromOriginalMetadata": true,
+  "full9Strings": [
+    "16777244",
+    "72756440",
+    "501",
+    "20",
+    "33152",
+    "1",
+    "10558",
+    "1793996068500746233",
+    "1793996068500755233"
+  ],
+  "regularFileFromNativeFileInfoContract": true,
+  "binaryReadAuthorized": false
+}

@@ -1,0 +1,157 @@
+--- a/source.py
++++ b/source.before.original.py
+@@ -72,7 +72,7 @@
+             'errno':error.errno if isinstance(error,OSError) and type(error.errno) is int
+                     and 0<=error.errno<=255 else None}
+ 
++ERROR_CODES=frozenset(["interrupted","readonly_deadline","fd_ledger_cap","metadata_cap","fixed_directory_shape","fixed_final_directory_observed_identity","held_directory_full9","one_directory_enumeration","candidate_name_cap","enumeration_incomplete","directory_iterator_closed","directory_stable_after_enumeration","fixed_candidate_body_scope","fixed_candidate_original_full9","candidate_regular_single_link_owner","candidate_size_cap","candidate_full9_open","body_read_cap","positive_bounded_read","body_growth_or_total_cap","whole_body_extent","candidate_full9_after_read","final_held_named_full9","duplicate_json_key","nonfinite_json_number","bounded_termination_text_slots","typed_termination_text_slots","bounded_dyld_text_slots","bounded_text_bytes","bounded_text_lines","public_library_projection_cap","bounded_ips_body","ips_first_metadata_line","two_ips_objects","fixed_regular_python_operator","body_candidate_count_cap","multiple_matching_reports","public_report_cap"])
+-ERROR_CODES=frozenset(["interrupted","readonly_deadline","fd_ledger_cap","metadata_cap","fixed_directory_shape","fixed_final_directory_observed_identity","held_directory_full9","one_directory_enumeration","candidate_name_cap","enumeration_incomplete","directory_iterator_closed","directory_stable_after_enumeration","fixed_candidate_body_scope","fixed_candidate_original_full9","candidate_regular_single_link_owner","candidate_size_cap","candidate_full9_open","body_read_cap","positive_bounded_read","body_growth_or_total_cap","whole_body_extent","candidate_full9_after_read","final_held_named_full9","duplicate_json_key","nonfinite_json_number","bounded_termination_text_slots","bounded_diagnostic_slot_items","typed_termination_text_slots","bounded_dyld_text_slots","bounded_text_bytes","bounded_text_lines","public_library_projection_cap","bounded_ips_body","ips_first_metadata_line","two_ips_objects","fixed_regular_python_operator","body_candidate_count_cap","multiple_matching_reports","public_report_cap"])
+ 
+ class CrashIO:
+     def __init__(self,signals):
+@@ -273,33 +273,6 @@
+ def enum_field(value,allowed):
+     return {'present':value is not None,'known':value in allowed if type(value) is str else False,
+             'value':value if type(value) is str and value in allowed else None}
+-def json_kind(value):
+-    return ('null' if value is None else 'boolean' if type(value) is bool else
+-            'string' if type(value) is str else 'integer' if type(value) is int else
+-            'number' if type(value) is float else 'array' if type(value) is list else
+-            'object' if type(value) is dict else 'other')
+-def namespace_field(value):
+-    accepted=bool(type(value) is str and re.fullmatch(r'[A-Z0-9_]{1,64}',value))
+-    old_known=bool(type(value) is str and value in ('DYLD','SIGNAL','CODESIGNING',
+-        'SANDBOX','LIBSYSTEM','RUNNINGBOARD','WATCHDOG','ENDPOINTSECURITY','TCC'))
+-    return {'present':value is not None,'type':json_kind(value),
+-            'publicSyntaxQualified':accepted,'knownInPreviousEnum':old_known,
+-            'value':value if accepted else None,'semanticMeaningClaimed':False}
+-def diagnostic_slot(label,present,value):
+-    texts=[]
+-    row={'slot':label,'present':present,'type':json_kind(value),
+-         'stringCount':0,'listLength':None,'nonStringListItems':0,
+-         'supportedTextShape':False,'rawValueOrHashExported':False}
+-    if present and type(value) is str:
+-        texts=[value];row['supportedTextShape']=True
+-    elif present and type(value) is list:
+-        need(len(value)<=16,'bounded_diagnostic_slot_items')
+-        row['listLength']=len(value)
+-        texts=[x for x in value if type(x) is str]
+-        row['nonStringListItems']=len(value)-len(texts)
+-        row['supportedTextShape']=row['nonStringListItems']==0
+-    row['stringCount']=len(texts)
+-    return row,texts
+ def fixed_os(value):
+     obj=value if type(value) is dict else {}
+     train=obj.get('train');build=obj.get('build');release=obj.get('releaseType')
+@@ -329,7 +302,7 @@
+             'fullUnknownPathExported':False,'fileExistenceOrContentQualified':False}
+ def fixed_text_projection(crash,termination):
+     # Only these fixed slots, never arbitrary keys, full dictionaries or stack frames.
++    slots=[]
+-    slots=[];shapes=[]
+     indicator=termination.get('indicator')
+     if type(indicator) is str:slots.append(indicator)
+     for key in ('reasons','details'):
+@@ -344,24 +317,6 @@
+         need(type(dyld) is list and len(dyld)<=16 and all(type(x) is str for x in dyld),
+              'bounded_dyld_text_slots')
+         slots.extend(dyld)
+-    for key in ('indicator','reasons','details'):
+-        shape,_=diagnostic_slot('termination.'+key,key in termination,termination.get(key))
+-        shapes.append(shape)
+-    public_keys=('dyld','libsystem_c.dylib','libsystem_kernel.dylib',
+-        'libsystem_platform.dylib','libdispatch.dylib','libc++abi.dylib','node','Node',
+-        'libsystem_pthread.dylib','libsystem_sandbox.dylib','libsystem_secinit.dylib','libxpc.dylib')
+-    for root_key in ('asi','asiSignatures'):
+-        obj=crash.get(root_key)
+-        shape,texts=diagnostic_slot(root_key,root_key in crash,obj)
+-        shapes.append(shape);slots.extend(texts)
+-        # A dictionary is not traversed. Only the twelve listed public key names are queried.
+-        for key in public_keys:
+-            present=type(obj) is dict and key in obj
+-            value=obj.get(key) if type(obj) is dict else None
+-            shape,texts=diagnostic_slot(root_key+'.'+key,present,value)
+-            shapes.append(shape)
+-            if not (root_key=='asi' and key=='dyld'):
+-                slots.extend(texts)  # asi.dyld was collected by the unchanged original guard above.
+     need(len(slots)<=32 and all(len(x.encode('utf-8'))<=4096 for x in slots)
+          and sum(len(x.encode('utf-8')) for x in slots)<=32768,'bounded_text_bytes')
+     lines=[]
+@@ -379,49 +334,9 @@
+         if item is not None and item not in libraries:
+             need(len(libraries)<8,'public_library_projection_cap')
+             libraries.append(item)
+-    patterns={
+-        'abortWithPayload':r'\babort[_ -]with[_ -]payload\b',
+-        'abortWithReason':r'\babort[_ -]with[_ -]reason\b',
+-        'abortCalled':r'\babort\(\) called\b|\babort called\b',
+-        'missingSymbol':r'symbol not found|undefined symbol|unresolved symbol|missing symbol',
+-        'missingLibrary':r'library not loaded|library not found|image not found',
+-        'dynamicLoader':r'\bdyld\b|\bdlopen\b|\bdlsym\b',
+-        'libraryInitialization':r'initiali[sz](?:e|er|ation)|library constructor|load-time initializer',
+-        'initializationFailure':r'(?:initiali[sz]\w*|constructor).{0,80}(?:fail|error|abort)|(?:fail|error|abort).{0,80}(?:initiali[sz]\w*|constructor)',
+-        'threadCreation':r'pthread_create|uv_+thread_create|thread creat|creat.{0,20}thread',
+-        'pthreadDiagnostic':r'\bpthread_[a-z0-9_]+\b|libsystem_pthread',
+-        'lockOrSemaphore':r'\bmutex\b|rwlock|semaphore|spinlock|unfair_lock|uv_sem_|pthread_mutex_|pthread_cond_',
+-        'dispatchDiagnostic':r'\blibdispatch\b|\bdispatch_[a-z0-9_]+\b',
+-        'recursiveOrDeadlock':r'recurs|deadlock|lock order',
+-        'resourceExhaustion':r'resource temporarily unavailable|out of memory|cannot allocate|\beagain\b|\benomem\b',
+-        'permissionOrSandbox':r'\bsandbox\b|operation not permitted|permission denied|\beperm\b|\beacces\b',
+-        'sandboxInitialization':r'sandbox_init|sandbox_apply|libsystem_secinit|libsystem_sandbox',
+-        'jitOrExecutableMemory':r'\bjit\b|map_jit|jit_write_protect|executable memory|write.protect',
+-        'forkSafety':r'unsafe.{0,40}fork|fork.{0,40}unsafe|multi.threaded.{0,40}fork|fork.{0,40}multi.threaded',
+-        'runtimeAssertion':r'assertion|check failed|fatal error|assertion failed',
+-        'uncaughtException':r'uncaught exception|terminating with uncaught|std::terminate',
+-        'codeSignature':r'code signature|codesigning|invalid signature',
+-        'architectureMismatch':r'incompatible architecture|wrong architecture|bad cpu type'}
+-    api_tokens=('abort_with_payload','abort_with_reason','pthread_create','pthread_mutex_init',
+-        'pthread_cond_init','pthread_rwlock_init','pthread_once','pthread_jit_write_protect_np',
+-        'uv_thread_create','uv__thread_create','uv_loop_init','uv_sem_init',
+-        'dispatch_once','dispatch_async','dispatch_queue_create','dlopen','dlsym',
+-        'sandbox_init','sandbox_init_with_parameters','sandbox_apply','sandbox_check',
+-        'node::InitializeOncePerProcess','node::WorkerThreadsTaskRunner',
+-        'v8::V8::Initialize','v8::base::OS::Allocate')
+-    text='\n'.join(slots)
+-    public_api=[token for token in api_tokens if re.search(
+-        r'(?<![A-Za-z0-9_])'+re.escape(token)+r'(?![A-Za-z0-9_])',text)]
+-    public_errno=[token for token in ('EPERM','EACCES','EAGAIN','ENOMEM','EINVAL','ENOSYS','EDEADLK')
+-        if re.search(r'(?<![A-Za-z0-9_])'+token+r'(?![A-Za-z0-9_])',text)]
+     return {'fixedSlotStringCount':len(slots),'fixedSlotLineCount':len(lines),
+             'lexicalOnly':{key:value in lower for key,value in words.items()},
+             'publicMissingLibraries':libraries,'allTextClassified':False,
+-            'diagnosticSlotShapes':shapes,
+-            'diagnosticLexicalOnly':{key:re.search(pattern,lower) is not None for key,pattern in patterns.items()},
+-            'publicApiTokens':public_api,'publicErrnoTokens':public_errno,
+-            'arbitraryDictionaryKeysEnumerated':False,'freeFormDiagnosticTextExported':False,
+-            'unknownSlotValuesOrTypesInterpreted':False,'causalConclusionClaimed':False,
+             'rawOrUnknownTextOrHashExported':False}
+ def proc_path_projection(value):
+     # Exact string matches below are classification hypotheses, not wildcard expansion.
+@@ -517,7 +432,8 @@
+                'SIGBUS','SIGFPE','SIGTERM','SIGSYS')),
+           'numericHexCodes':code_safe},
+        'termination':{
++          'namespace':enum_field(termination.get('namespace'),('DYLD','SIGNAL','CODESIGNING',
++             'SANDBOX','LIBSYSTEM','RUNNINGBOARD','WATCHDOG','ENDPOINTSECURITY','TCC')),
+-          'namespace':namespace_field(termination.get('namespace')),
+           'codeDecimal':bounded_integer(termination.get('code')),
+           'flagsDecimal':bounded_integer(termination.get('flags')),
+           'indicator':enum_field(indicator,('Abort trap: 6','Library missing','Symbol missing',
+@@ -532,7 +448,7 @@
+ 
+ 
+ def main():
++    report={'schema':'heptabao.mac-one-public-node-ips-fixed-file-projection.r3',
+-    report={'schema':'heptabao.mac-one-public-node-ips-fixed-file-projection.r4',
+       'ok':False,'observationComplete':False,'outcomeUnknown':False,
+       'directory':str(DIRECTORY),'targetPid':TARGET_PID,'targetParentPid':TARGET_PARENT,
+       'sourceJob':'mac/1a1b25c3c54-fc05-7db1',
+@@ -616,7 +532,7 @@
+         report['ok']=report['observationComplete']
+     raw=json.dumps(report,sort_keys=True,separators=(',',':'),ensure_ascii=True)+'\n'
+     if len(raw.encode('ascii'))>MAX_PUBLIC_BYTES:
++        report={'schema':'heptabao.mac-one-public-node-ips-fixed-file-projection.r3','ok':False,
+-        report={'schema':'heptabao.mac-one-public-node-ips-fixed-file-projection.r4','ok':False,
+          'observationComplete':False,'outcomeUnknown':True,'error':{'type':'Refused','code':'public_report_cap'},
+          'allOwnResourcesClosed':report['allOwnResourcesClosed'],
+          'handlersRestored':handlers_restored,'rawIpsOrUnknownTextOrHashExported':False,

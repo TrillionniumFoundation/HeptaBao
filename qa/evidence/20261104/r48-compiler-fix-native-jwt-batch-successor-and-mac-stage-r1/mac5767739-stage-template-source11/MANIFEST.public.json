@@ -1,0 +1,72 @@
+{
+  "schema": "heptabao.mac.successor576.source-only-packet.v1",
+  "status": "UNBOUND_CANONICAL_TRANSPORT_PENDING",
+  "files": [
+    {
+      "path": "stage.template.py",
+      "blob": "79c2bae6e400b385a5efa8c57a23c6e5f0ea72ed",
+      "bytes": 23651,
+      "sha256": "7addc497cc836a7b6cc43081518d9fc37dbec009eddedcf2bc9f5b532a83f83c"
+    },
+    {
+      "path": "stage.strict.diff",
+      "blob": "15ae23fce07754e40d325e2168727c47a8ff41ba",
+      "bytes": 6541,
+      "sha256": "390a533d946c6531b35a22db01e676475feafce131590607956641b320c4a8d4"
+    },
+    {
+      "path": "PLAN.public.json",
+      "blob": "c0887cff02dd7a905113f181a4c9cfd2a94cb93f",
+      "bytes": 10309,
+      "sha256": "05abad85cb766aaa24a59682c42db6af227ed4982172c70746e4f21a71e39a2b"
+    },
+    {
+      "path": "INTERFACE.unbound.public.json",
+      "blob": "ea84b99045af7ee126f7be242785602b812758a1",
+      "bytes": 5153,
+      "sha256": "b6ecd68325142b24d42f41cd629352262eb821d9c482d7081f862ce1af24cb7c"
+    },
+    {
+      "path": "CANDIDATE.original.public.json",
+      "blob": "d9d3fa89aecbdf276f8e22651559caa94b0ea518",
+      "bytes": 3876,
+      "sha256": "6d8a34410afcf535c20044bfa5e78d3d2d4115c6749f49baf8e37ef9e93256f5"
+    },
+    {
+      "path": "verifier.source.js",
+      "blob": "1bed234d7e75896c057a7735b244b0a8380d5c76",
+      "bytes": 5197,
+      "sha256": "e624f5162b5b5f3157b6b28215b54a5b99a4ce07dedfcca5877195eddf257dea"
+    },
+    {
+      "path": "verification.actual.public.json",
+      "blob": "96cd147f9462037f3c0ddc178cee8116aa0d741b",
+      "bytes": 2901,
+      "sha256": "699e6356a4d44da8272954765c626964afe34e4a8873801d4c2c094701a46128"
+    },
+    {
+      "path": "REPLAY-INPUTS.public.json",
+      "blob": "3776e45773eb15273b2d9898b1cf2cd6cb1b33b8",
+      "bytes": 2832,
+      "sha256": "1fd109bd1aa0e646e13133699288312b52ce4efd97f613c2ead8691428fc777e"
+    },
+    {
+      "path": "GENERATION-HISTORY.public.json",
+      "blob": "323ef124ac32d8db4ee8d596b8b72dc1b0656e86",
+      "bytes": 416,
+      "sha256": "7b45f2a2fc7a9d704609865b0b484ccca2cd3c09f4e1acca23108788aaa77b27"
+    },
+    {
+      "path": "README.md",
+      "blob": "aa116e0f5649ba559e902b6d10f87155046f30b0",
+      "bytes": 1668,
+      "sha256": "25c5b037a5fd051e317647490359aa626703e2b8d247e746ae2341c328aed882"
+    }
+  ],
+  "actual": {
+    "Native_calls": 0,
+    "Python_runs": 0,
+    "Cargo_runs": 0
+  },
+  "product_cases": 0
+}

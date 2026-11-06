@@ -1,0 +1,39 @@
+{
+  "schema": "heptabao.root.fresh-build-info.page-prepare-correction.r1",
+  "authorization": "GO",
+  "scope": "pure_paused_flag_recovery_and_existing_original_info_page_only",
+  "sourceTree": "e0c7b4ab365906b643082c54ba873d26a031ee17",
+  "exactState": {
+    "blob": "96ff172cac3bb886f91310946bd1632c7ab2f5cd",
+    "bytes": 225634,
+    "sha256": "1faf51187e7a84df3c51ede6b3f4b426fbd1fa947846515ef7f8926f28bf245b"
+  },
+  "exactPlan": {
+    "blob": "5481e57b18b87aa03976e61a4b3107e6f8a7721e",
+    "bytes": 1201,
+    "sha256": "cfa71ddcca589faf97296bab445198a5f519ed8266e8566301a4d4433844cd58"
+  },
+  "exactRequest": {
+    "blob": "1d9bd02238acf92dc63b5d3e7cca1133a23fff12",
+    "bytes": 121,
+    "sha256": "1a1f774a105de153178332f2414ee53efda043761dff2d8e82df3e31431efce7"
+  },
+  "checks": {
+    "expectedClosedInfo": true,
+    "noPending": true,
+    "pagesZero": true,
+    "noAttemptedPage": true,
+    "knownPureError": true,
+    "correctPage": true,
+    "originalGo": true
+  },
+  "mutation": {
+    "paused": false,
+    "preserveOuterFailureAndAllHistory": true
+  },
+  "sameExistingJournal": true,
+  "noReinitialize": true,
+  "noInfoReplay": true,
+  "noStatusReplay": true,
+  "lane": "B1 existing reservation"
+}

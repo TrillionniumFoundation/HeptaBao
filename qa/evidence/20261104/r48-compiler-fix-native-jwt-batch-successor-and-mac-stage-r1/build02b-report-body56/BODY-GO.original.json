@@ -1,0 +1,75 @@
+{
+  "schema": "heptabao.root.fresh-build-result-body.GO.r1",
+  "authorization": "GO",
+  "scope": "build_result_binary_read_only",
+  "original_job": "1a1b282ded0-fc05-7e57",
+  "info_operation": "a051062b0017b159aef24eaa85196061a1a066845d3fc3e12ff213ee30e08e59",
+  "maximum_binary_read_starts": 1,
+  "exact_request": {
+    "blob": "f5e60c6c72aca21ca5a7717571ddcefe6916eded",
+    "bytes": 406,
+    "sha256": "08e4972311e7f124f21b595fd3de45926033d30c13919cfae4d03cbdeb168ab3"
+  },
+  "exactJournal": {
+    "blob": "61ed09d9cb4839d493ad6d52ae7965f62596a01b",
+    "bytes": 29541,
+    "sha256": "75aec84e808c030ae53abf0215c400305f217ea3b316ec1fa9519e8ce11abd42"
+  },
+  "exactClosedState": {
+    "blob": "c53fe32f405125e46bdcc9b3e7278140dcf34a29",
+    "bytes": 229026,
+    "sha256": "7900a97fad29c9e1d7fb26d6a95f93f76d684317b4998f5a4a651d454f53aa01"
+  },
+  "sourceTree": "7a482aec7a818e48eb928c6e26e63685b5976a19",
+  "metadataPacket": "2b0d7981ca8d7c722a2a7b8c3ad58ee0f264ac63",
+  "expectedReport": {
+    "path": "/home/qian-qi/hb-02b90762-controls-20261106-r2/build-tests-r1/result.public.json",
+    "bytes": 40591,
+    "sha256": "db0079589bd50c271486056283825ba1c3a415c19204f707ed4b5d1b786ec3b4",
+    "version": "66306:28484413:40591:1793996644769259586:1793996644769259586",
+    "infoOperation": "a051062b0017b159aef24eaa85196061a1a066845d3fc3e12ff213ee30e08e59",
+    "infoNative": {
+      "blob": "39ea5396f7b4c910b531f27151d0c9cbc36f8c3c",
+      "bytes": 468,
+      "sha256": "b82542605edf781a9dc6bce738a283f879c33ddc30f9028f2ade5d17c3611989"
+    }
+  },
+  "sourceVerifier": {
+    "blob": "b662effa84d6161f378c8528c4a31f74d617b6be",
+    "bytes": 3502,
+    "sha256": "59109592bb8f75caf77162b0c24f5eedb3844083a869c602971892ec52b05289"
+  },
+  "rootChecks": {
+    "infoPacketWhole": true,
+    "sameActualNative": true,
+    "sameClosedState": true,
+    "fixedOwnerMode": true,
+    "fixedReport": true,
+    "losslessVersion": true,
+    "closed22Calls": true,
+    "failureHistoryRetained": true
+  },
+  "conditions": {
+    "attachExistingSlot": true,
+    "noInitialize": true,
+    "decodedOriginalBodyWholeArchiveBeforeJSONParse": true,
+    "oneCallOrFuture": true,
+    "noOtherPathOrRange": true,
+    "noProcessStart": true,
+    "noNewCargo": true
+  },
+  "budgets": {
+    "statusCalls": 8,
+    "pages": 128,
+    "pageBytes": 8192,
+    "payloadBytes": 1048576,
+    "bodyBytes": 40591
+  },
+  "lane": {
+    "B": 1,
+    "A": 0,
+    "C": 0,
+    "root": 0,
+    "max": 2
+  }
+}

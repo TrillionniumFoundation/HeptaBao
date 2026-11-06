@@ -1,0 +1,10 @@
+[
+  {
+    "phase": "unpublished_pure_generation",
+    "error": "literal uniqueness: actual frozen successor",
+    "cause": "Unanchored COMMIT substring also matched the newly rebound OLD_COMMIT. Guard rejected before any candidate artifact, Git mutation or Native call.",
+    "correction": "Use complete newline-delimited assignment lines for every replacement.",
+    "native_calls": 0,
+    "git_mutations": 0
+  }
+]

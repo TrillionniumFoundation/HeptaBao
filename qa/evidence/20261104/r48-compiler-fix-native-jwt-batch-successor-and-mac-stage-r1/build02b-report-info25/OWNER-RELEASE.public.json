@@ -1,0 +1,86 @@
+{
+  "schema": "heptabao.fresh-build-result-info.owner-release.r1",
+  "slot": "combined_02b90762_fresh_build_gitfirst_r2",
+  "originalJob": "1a1b282ded0-fc05-7e57",
+  "processStartAdded": 0,
+  "fileInfoStarts": 1,
+  "originalCalls": 3,
+  "immutablePages": 1,
+  "operation": "a051062b0017b159aef24eaa85196061a1a066845d3fc3e12ff213ee30e08e59",
+  "completedInactive": true,
+  "nativeCallsInFlight": 0,
+  "nativeFuturesActive": 0,
+  "metadata": {
+    "path": "/home/qian-qi/hb-02b90762-controls-20261106-r2/build-tests-r1/result.public.json",
+    "size": 40591,
+    "sha256": "db0079589bd50c271486056283825ba1c3a415c19204f707ed4b5d1b786ec3b4",
+    "version": "66306:28484413:40591:1793996644769259586:1793996644769259586",
+    "nativeText": {
+      "blob": "39ea5396f7b4c910b531f27151d0c9cbc36f8c3c",
+      "bytes": 468,
+      "sha256": "b82542605edf781a9dc6bce738a283f879c33ddc30f9028f2ade5d17c3611989"
+    },
+    "originalOperation": "a051062b0017b159aef24eaa85196061a1a066845d3fc3e12ff213ee30e08e59",
+    "full9Strings": [
+      "66306",
+      "28484413",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "40591",
+      "1793996644769259586",
+      "1793996644769259586"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false,
+    "closure": {
+      "original": {
+        "id": "a051062b0017b159aef24eaa85196061a1a066845d3fc3e12ff213ee30e08e59",
+        "tool": "file_info",
+        "payload": {
+          "blob": "be49c34eba8560718f93cd0a87d6164967cea83e",
+          "bytes": 585,
+          "sha256": "5606fb96b57e8b966db710382b273f8d000f93e84f2f7c36c7192da8e95f66bf"
+        },
+        "payloadTree": "e61a2b1dbbf2d57fd46b36110e718ac65d914210",
+        "nativeText": {
+          "blob": "39ea5396f7b4c910b531f27151d0c9cbc36f8c3c",
+          "bytes": 468,
+          "sha256": "b82542605edf781a9dc6bce738a283f879c33ddc30f9028f2ade5d17c3611989"
+        },
+        "pages": 1,
+        "completedInactive": true
+      },
+      "nativeRaw": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":1000,\"link_count\":1,\"metadata_platform\":\"linux\",\"mode\":384,\"uid\":1000,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":384,\"path\":\"/home/qian-qi/hb-02b90762-controls-20261106-r2/build-tests-r1/result.public.json\",\"sha256\":\"db0079589bd50c271486056283825ba1c3a415c19204f707ed4b5d1b786ec3b4\",\"size\":40591,\"version\":\"66306:28484413:40591:1793996644769259586:1793996644769259586\"}",
+      "value": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 384,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 384,
+        "path": "/home/qian-qi/hb-02b90762-controls-20261106-r2/build-tests-r1/result.public.json",
+        "sha256": "db0079589bd50c271486056283825ba1c3a415c19204f707ed4b5d1b786ec3b4",
+        "size": 40591,
+        "version": "66306:28484413:40591:1793996644769259586:1793996644769259586"
+      }
+    }
+  },
+  "wholeReportBodyRead": false,
+  "bodyAuthorized": false,
+  "priorBuildStatus": "failed",
+  "failureReasonKnown": false,
+  "localPrepareErrorRetained": "29702a6bdaa45a33b23389cef0d89b6cce7edb8e",
+  "pureRecoveryGO": {
+    "blob": "ca60b794a6bb1e2d7bc28bca4a94f475e2ff226e",
+    "bytes": 1211,
+    "sha256": "6d4e83ea7e6bb1a240e6d7632520eecc72769cf7f32d50811e8a9cf98eef0dfc"
+  },
+  "pureRecoveryTree": "35e5388fb18b158b4e83480b4dc0d8fbe2f2570d"
+}

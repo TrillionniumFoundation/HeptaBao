@@ -1,0 +1,42 @@
+--- a/crates/heptabao-server/src/service_native_auth.rs
++++ b/crates/heptabao-server/src/service_native_auth.rs
+@@ -2084,9 +2084,12 @@
+             None
+         };
+         let batch_lifecycle_owner = if (public_login
+-            && userpass_owner
++            && (userpass_owner
+                 .as_ref()
+-                .is_some_and(|owner| owner.is_login()))
++                .is_some_and(|owner| owner.is_login())
++                || jwt_owner
++                    .as_ref()
++                    .is_some_and(|owner| owner.is_batch_login())))
+             || batch_issuer_owner.is_some()
+         {
+             let Some(root) = self.native_root.as_ref() else {
+@@ -2573,6 +2576,7 @@
+                         &response.body,
+                         lifetime,
+                         time,
++                        delivery.origin_peer,
+                     )
+                     .map_err(|error| Response::error(error.status, &error.message))
+             })();
+@@ -2732,6 +2736,16 @@
+                             delivery.origin_peer,
+                         )
+                         .map_err(|error| Response::error(error.status, &error.message))
++                } else if let Some(owner) = delivery
++                    .jwt_owner
++                    .as_ref()
++                    .filter(|owner| owner.is_batch_login())
++                {
++                    // The original dispatch already bound this exact sealed
++                    // reply and the one real signature-verifier lifetime.
++                    owner
++                        .check_bound_batch_login(time)
++                        .map_err(|error| Response::error(error.status, &error.message))
+                 } else if let Some(owner) = delivery.batch_issuer_owner.as_mut() {
+                     owner
+                         .bind_batch_reply(

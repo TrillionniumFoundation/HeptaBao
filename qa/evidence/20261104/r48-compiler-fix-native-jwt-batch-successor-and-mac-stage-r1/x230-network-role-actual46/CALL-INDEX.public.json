@@ -1,0 +1,156 @@
+[
+  {
+    "index": 0,
+    "key": "root-x230-networkrole-r1-start",
+    "kind": "process_start",
+    "request": {
+      "blob": "eccb89f3db9048af3cea29f57c8754d486142208",
+      "bytes": 1180,
+      "sha256": "e5c359c01e3b73241142c314780cdf5113cb6f75409ac1af8ee80a0225c24f4b"
+    },
+    "armedTree": "bd5f0a2692cfc799783f6db9ebd5f4d16f19d57e",
+    "sdk": {
+      "blob": "b43f51fce39c661316ae91c1f0564a8e67fab10c",
+      "bytes": 2235,
+      "sha256": "96ee41951fedf14c36e51ab418afefb9f842ba0448e978e73af678c1e3dc61f3"
+    },
+    "sdkTree": "a7705ea843c2e81b8d975a59b372ea404a32f271",
+    "native": {
+      "blob": "c938ff32576b47e8f83899217e10f70b79a282a2",
+      "bytes": 1903,
+      "sha256": "dcd0087f57ae9e854fd2d7c49e3fd0428709cd87dd33ea69c1800f3dfb932efa"
+    }
+  },
+  {
+    "index": 1,
+    "key": "root-x230-networkrole-r1-status1-start",
+    "kind": "operation_start",
+    "request": {
+      "blob": "d93db1ffae8d98b3ecdcd07512cf0fada85181e0",
+      "bytes": 231,
+      "sha256": "ad3bb4fd4e18f44870fa42fb6bf4eee4e4e8f44e4aad6cff81e2aa6c3a0a3d2b"
+    },
+    "armedTree": "c5a3780e1165e5ec60fcf14ff60515827b4db3ce",
+    "sdk": {
+      "blob": "a4af800178a15490973493eef8661d5eebf02d33",
+      "bytes": 709,
+      "sha256": "b412999c9cf299c17b383847da65b9e9213936e3e86221c96a003b110b2cc3c9"
+    },
+    "sdkTree": "9694e3276072aa62da56dbcbc1af078e2a16eae3",
+    "native": {
+      "blob": "46b18dd175d7cff6ffe665ec654492ed190ee163",
+      "bytes": 548,
+      "sha256": "7aef83e5abd43f090a08bc208667ab443003102ab0623c2709d2267a360f2513"
+    }
+  },
+  {
+    "index": 2,
+    "key": "root-x230-networkrole-r1-status1-poll1",
+    "kind": "operation_status",
+    "request": {
+      "blob": "fa85d519bbb8f23ea57ecaa69b3676fe200218b6",
+      "bytes": 89,
+      "sha256": "101a7aa030c973c5e07731aeb2b727149ba449de59ae3fea6f28b59cd90246ff"
+    },
+    "armedTree": "ec6e56ba6e9249351bb85353e1a09ee66ccae274",
+    "sdk": {
+      "blob": "c3f9038b1b2d933eb73d4b624a6f4df48a6d23be",
+      "bytes": 980,
+      "sha256": "e77e3c03f23a753de1ab0643fdb03a91cfd2b885d5e67ebeb0b028ebae7dbd11"
+    },
+    "sdkTree": "0e720065111f9008b490f0ff721398b8136403de",
+    "native": {
+      "blob": "576b3f12f10d661dfb9b7990a3e83e7412ea2138",
+      "bytes": 805,
+      "sha256": "b7342d64fc44c88a05cc3d87f69d793dec163ae8f24010e6e81fb359b7db2832"
+    }
+  },
+  {
+    "index": 3,
+    "key": "root-x230-networkrole-r1-status1-page0",
+    "kind": "operation_result",
+    "request": {
+      "blob": "cb5533fca7aea402ec90797b4c331e26cd0299ca",
+      "bytes": 121,
+      "sha256": "2aa001b24a10deda3500c2c5d99b5cb7b126edd8d026a6c397662c2ff61e2d41"
+    },
+    "armedTree": "dbdf632adb105bc9008875d7cfc6a01ebbbf51ae",
+    "sdk": {
+      "blob": "9386d335803a88392d460df89fdba526fa935963",
+      "bytes": 2064,
+      "sha256": "70b210a5e7ee40e88055819e3968e19ff73098d36abbb930573a77e95b3e7af8"
+    },
+    "sdkTree": "d487eba06e351c461ba690395fb0efd8bccb54d9",
+    "native": {
+      "blob": "9646e846eb62f0c470d9d418b9e1c4834f76a0dc",
+      "bytes": 1893,
+      "sha256": "47255c0d7b13e42aed5d54c3de65e5659fdfd30b629a7cd95e317e4308e1da67"
+    }
+  },
+  {
+    "index": 4,
+    "key": "root-x230-networkrole-r1-read1-start",
+    "kind": "operation_start",
+    "request": {
+      "blob": "5651d576fa17aa63579ba06d052c7c33747cfb27",
+      "bytes": 301,
+      "sha256": "bb3da30be14547599a9eb34242fb313ef3219db4617466f03229edc2f5ccf44d"
+    },
+    "armedTree": "c402ff25b38932393d650a7fc2f924cc290726c7",
+    "sdk": {
+      "blob": "1d54fdd0ceb783a152464369f911344044d3955b",
+      "bytes": 707,
+      "sha256": "e1e1bbeca5ea30806bfa3327ae1685b7b94bddf79366e584f0f9521460fda8bd"
+    },
+    "sdkTree": "6a3fbd2fc0ea22f0c6b3338c25d1d199521c9358",
+    "native": {
+      "blob": "39fb565b3ed437956131d6dea85422237a088c9d",
+      "bytes": 546,
+      "sha256": "0160c4c85f052e6c4eac7d18227708c386a51bd725cd997f27a02a80998bcf71"
+    }
+  },
+  {
+    "index": 5,
+    "key": "root-x230-networkrole-r1-read1-poll1",
+    "kind": "operation_status",
+    "request": {
+      "blob": "ca8c002234b71f93944b6d4adac7caab03d5d7ef",
+      "bytes": 89,
+      "sha256": "cbd2cc8b0694aa1fe0b34dd5d185b31668e3c3fc000b6b0a9744060f4d61e36a"
+    },
+    "armedTree": "d25a51ecf462eefd80704ece41f9a1c4f5f6bf74",
+    "sdk": {
+      "blob": "615b44f6569f72f95a668946f568b757274a2b47",
+      "bytes": 978,
+      "sha256": "ddbc7bcadeaadcd7263a61e8fdc6e53d349d9ce3837376661d32abfd39bf6838"
+    },
+    "sdkTree": "2f8b42c819b4995b04325202e3cffc8a14624f20",
+    "native": {
+      "blob": "7906b6a21d7c36b56bf01a2b97bbee783e614079",
+      "bytes": 803,
+      "sha256": "794e9fd4074676c53687edecc1e793046bb1f57596c2883eac186033ca4fb147"
+    }
+  },
+  {
+    "index": 6,
+    "key": "root-x230-networkrole-r1-read1-page0",
+    "kind": "operation_result",
+    "request": {
+      "blob": "d0844d5c3f199ff6815864b9d616433afed89043",
+      "bytes": 121,
+      "sha256": "933eee286559dba91303a375cea46411e1c3e865a0198f5cf52916fabbf7ca23"
+    },
+    "armedTree": "d43da605efb4f107b07e1c853816d8bfdbf9ef21",
+    "sdk": {
+      "blob": "64e7907a682946e7e74edf7bb5b71b4f88f69b1e",
+      "bytes": 3094,
+      "sha256": "c8e2c6fb56886464b1b95298f34fad66d8bf775800a4dc18557b45b73098b3dc"
+    },
+    "sdkTree": "53a26142bf6afe6cca6cc33e188ee9774f31f846",
+    "native": {
+      "blob": "73a91439566877a8c764ef936209f03b8c409420",
+      "bytes": 2923,
+      "sha256": "39dccbf5bfec8b7694a47f4682d6920f55e44d05ff64a251c6b839e5d8b03bd2"
+    }
+  }
+]

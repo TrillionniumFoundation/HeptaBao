@@ -1,0 +1,107 @@
+{
+  "schema": "heptabao.root.native-jwt-batch.source-proposal.r2",
+  "baseCommit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+  "baseTree": "9781e9615ac5fb068d217241c74bb54bf87942cf",
+  "candidate02bUnchanged": true,
+  "files": [
+    {
+      "path": "crates/heptabao-server/src/auth_native_jwt.rs",
+      "before": {
+        "blob": "7a318b86ebdd47872fde86fbcce732f885571868",
+        "bytes": 19107,
+        "sha256": "59eb89dbd69dde8cd8d70c8cd340a47e5e3855e6e19f127914986ec228a8a87f"
+      },
+      "after": {
+        "blob": "e082580797241ba4b57b3808e8a53f75ddcfece8",
+        "bytes": 21936,
+        "sha256": "76dcc4afa617c2d8a3a7089996428c7306f9447e0f33873b2b54fa0b0dd370a6"
+      },
+      "diff": {
+        "blob": "dcf9ed3f74bfb89a54ff9c750d73c88625ddad16",
+        "bytes": 9506,
+        "sha256": "5a700713ccecdd8c7f2625a61695001ec687d7a2965d5b6ccf684d5c64f1c149"
+      },
+      "hunks": 11
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_auth.rs",
+      "before": {
+        "blob": "449f263ff0a911842f9e69ad18a92de6a8d4638c",
+        "bytes": 143153,
+        "sha256": "42a3080d030e6bc22318bf574e47209666f47aa7f336d91fef2c81f0c6b7e165"
+      },
+      "after": {
+        "blob": "2b344d01edbe52e0fc4241b79461c50db2cf7fd5",
+        "bytes": 143838,
+        "sha256": "7a7b5a2aaa4bd185b4499ce31927a145a6a014a401e95031f26e7212c453a882"
+      },
+      "diff": {
+        "blob": "1cee08d0490b600d00fe8c1152e0493f864b4de0",
+        "bytes": 1841,
+        "sha256": "579b362beed9ab40948c6039e1a0005bceb12cc8fdf8447dec9d243b90f255c2"
+      },
+      "hunks": 3
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_jwt_tests.rs",
+      "before": {
+        "blob": "e26bb55f3a6c167104581ac0e5450f98aed1cc0d",
+        "bytes": 49655,
+        "sha256": "d909c5fa2fe1044e49372b9168619feed28968d48d34fa9af111e39fc31f056a"
+      },
+      "after": {
+        "blob": "407283ae222030d8baeec7fc0aef6a38b6859fff",
+        "bytes": 61884,
+        "sha256": "41e611618aa18298eb6b94318bd30a210571a323c7602fa3f58fe7d9aca122f9"
+      },
+      "diff": {
+        "blob": "93cee89d4fb0d230a975d21391e4f7f9bf7226c5",
+        "bytes": 13600,
+        "sha256": "0c832c430703828c69cc6e690b960e2941aab5c2ab2f3449815403e12c40f265"
+      },
+      "hunks": 3
+    }
+  ],
+  "addedTests": [
+    "native_jwt_batch_type_matrix_keeps_identity_and_stateless_grants_across_cold_reopen",
+    "native_jwt_batch_bad_signature_and_expiry_before_publication_keep_old_issuance_state",
+    "native_jwt_batch_identity_disable_veto_and_reenable_use_the_real_entity",
+    "native_jwt_batch_forced_mount_retains_domain_ttl_and_discards_service_use_limits",
+    "native_jwt_batch_no_default_policy_and_root_rejection_survive_cold_reopen",
+    "native_jwt_batch_post_commit_audit_response_and_assertion_guards_keep_the_committed_root"
+  ],
+  "renamedTest": {
+    "from": "native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta",
+    "to": "native_jwt_rejects_remote_and_bad_signature_without_candidate_delta"
+  },
+  "mechanicalChecks": {
+    "strictForwardAndReverseEveryFile": true,
+    "allBaseBlobsWholeFromFrozenTree": true,
+    "hunks": 17
+  },
+  "design": {
+    "issuer": "Existing jwt_route_with_native_lifetime remains the only assertion verifier and token issuer.",
+    "native": "Select paired Auth/Namespace batch lifecycle only for an actual root local JWT batch login; bind the real sealed claims and original verifier lifetime before publication; exact response proof remains.",
+    "domainChanged": false,
+    "persistedSchemaChanged": false,
+    "remoteJWKSAndChildNamespaceStillUnqualified": true
+  },
+  "runtimeTestsExecuted": 0,
+  "RustCompiled": false,
+  "sourceFormatted": false,
+  "fullReplacement": false,
+  "peerReviewRequiredBeforePublication": true,
+  "primaryReferences": [
+    "https://openbao.org/docs/concepts/tokens/",
+    "https://pkg.go.dev/github.com/openbao/openbao/sdk/v2@v2.7.1/logical"
+  ],
+  "next": "Independent source review, resolve current candidate compilation failure first, then build and run the concrete new regressions before any replacement claim.",
+  "peerReview": {
+    "tree": "a33e59aa868b10282b5d4e28404d80a67b1a6704",
+    "report": "7b5aee771760515d24fbef4b8e3a899560246905",
+    "productionFinding": "No concrete new production safety or Rust interface blocker found by independent source review; no compile/runtime qualification.",
+    "acceptedTestEvidenceGap": "Include complete auth.namespace_batch_registry and state.namespaces in private pre/post snapshots.",
+    "testCorrectionInThisRevision": true,
+    "correctionPeerRecheckPending": true
+  }
+}

@@ -1,0 +1,442 @@
+{
+  "schema": "heptabao.fresh-build-closure-local-record-checks.r1",
+  "status": "passed",
+  "checks": 107,
+  "details": [
+    {
+      "label": "cbf2-start accepted and whole",
+      "ok": true
+    },
+    {
+      "label": "cbf2-start SDK exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-start native exact SDK extraction",
+      "ok": true
+    },
+    {
+      "label": "cbf2-start native exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-start request exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority0-start accepted and whole",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority0-start SDK exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority0-start native exact SDK extraction",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority0-start native exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority0-start request exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority0-status0 accepted and whole",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority0-status0 SDK exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority0-status0 native exact SDK extraction",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority0-status0 native exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority0-status0 request exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority0-page0 accepted and whole",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority0-page0 SDK exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority0-page0 native exact SDK extraction",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority0-page0 native exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority0-page0 request exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams0-start accepted and whole",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams0-start SDK exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams0-start native exact SDK extraction",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams0-start native exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams0-start request exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams0-status0 accepted and whole",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams0-status0 SDK exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams0-status0 native exact SDK extraction",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams0-status0 native exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams0-status0 request exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams0-page0 accepted and whole",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams0-page0 SDK exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams0-page0 native exact SDK extraction",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams0-page0 native exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams0-page0 request exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority1-start accepted and whole",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority1-start SDK exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority1-start native exact SDK extraction",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority1-start native exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority1-start request exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority1-status0 accepted and whole",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority1-status0 SDK exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority1-status0 native exact SDK extraction",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority1-status0 native exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority1-status0 request exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority1-page0 accepted and whole",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority1-page0 SDK exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority1-page0 native exact SDK extraction",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority1-page0 native exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority1-page0 request exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority2-start accepted and whole",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority2-start SDK exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority2-start native exact SDK extraction",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority2-start native exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority2-start request exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority2-status0 accepted and whole",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority2-status0 SDK exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority2-status0 native exact SDK extraction",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority2-status0 native exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority2-status0 request exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority2-page0 accepted and whole",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority2-page0 SDK exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority2-page0 native exact SDK extraction",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority2-page0 native exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority2-page0 request exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority3-start accepted and whole",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority3-start SDK exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority3-start native exact SDK extraction",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority3-start native exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority3-start request exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority3-status0 accepted and whole",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority3-status0 SDK exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority3-status0 native exact SDK extraction",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority3-status0 native exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority3-status0 request exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority3-page0 accepted and whole",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority3-page0 SDK exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority3-page0 native exact SDK extraction",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority3-page0 native exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-authority3-page0 request exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams1-start accepted and whole",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams1-start SDK exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams1-start native exact SDK extraction",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams1-start native exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams1-start request exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams1-status0 accepted and whole",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams1-status0 SDK exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams1-status0 native exact SDK extraction",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams1-status0 native exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams1-status0 request exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams1-page0 accepted and whole",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams1-page0 SDK exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams1-page0 native exact SDK extraction",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams1-page0 native exact",
+      "ok": true
+    },
+    {
+      "label": "cbf2-streams1-page0 request exact",
+      "ok": true
+    },
+    {
+      "label": "observer0 original payload",
+      "ok": true
+    },
+    {
+      "label": "observer0 native extraction",
+      "ok": true
+    },
+    {
+      "label": "observer1 original payload",
+      "ok": true
+    },
+    {
+      "label": "observer1 native extraction",
+      "ok": true
+    },
+    {
+      "label": "observer2 original payload",
+      "ok": true
+    },
+    {
+      "label": "observer2 native extraction",
+      "ok": true
+    },
+    {
+      "label": "observer3 original payload",
+      "ok": true
+    },
+    {
+      "label": "observer3 native extraction",
+      "ok": true
+    },
+    {
+      "label": "observer4 original payload",
+      "ok": true
+    },
+    {
+      "label": "observer4 native extraction",
+      "ok": true
+    },
+    {
+      "label": "observer5 original payload",
+      "ok": true
+    },
+    {
+      "label": "observer5 native extraction",
+      "ok": true
+    }
+  ],
+  "calls": 19,
+  "observers": 6,
+  "pages": 6,
+  "job": "1a1b282ded0-fc05-7e57",
+  "productQualified": false,
+  "failedActualBuild": true,
+  "NativeCallsDuringPackaging": 0
+}

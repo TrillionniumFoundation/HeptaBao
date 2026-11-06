@@ -1,0 +1,128 @@
+{
+  "schema": "heptabao.mac.successor576.bundle-and-execution-interface.v1",
+  "status": "SOURCE_ONLY_UNBOUND_NO_RUNTIME",
+  "candidate": {
+    "commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "tree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+    "parent": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "branch": "codex/heptabao-snapshot-lock-jwt-batch-42477d62-20261106"
+  },
+  "source_stage": {
+    "base_source": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-02b90762-src-20261106-r1/source",
+    "proposed_fresh_root": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1",
+    "proposed_source": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/source",
+    "proposed_control": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/control",
+    "proposed_result": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/control/stage-result.public.json",
+    "proposed_canonical": "/Volumes/T5/hepta-vnext-recovery-20261013/canonical-hb-5767739c-from02b-20261106-r1.bundle",
+    "runtime_slot": null,
+    "idempotency_key": null,
+    "exact_request": null,
+    "typed_binding": null,
+    "actual_result": null,
+    "actual_original_job": null,
+    "root_qualification": null
+  },
+  "canonical_bundle": {
+    "producer_host": "rog",
+    "producer_root": null,
+    "producer_actual_path": null,
+    "expected_prerequisites": [
+      "02b90762b3d6cc8699cc88bffb6f76cb1f07e270"
+    ],
+    "expected_heads": [
+      [
+        "5767739cd25e458ac052dc8d384019bab8688ae0",
+        "HEAD"
+      ]
+    ],
+    "format": "v2 git bundle",
+    "actual_bytes": null,
+    "actual_sha256": null,
+    "actual_full9": null,
+    "actual_version": null,
+    "actual_header_sha256": null,
+    "actual_info_operation": null,
+    "actual_body_operations": null,
+    "canonical_base64_pin": null,
+    "transport_manifest_pin": null,
+    "complete_carrier_pin": null,
+    "carrier_bytes_cap": 262144,
+    "transport": "Use the existing exact fixed-path INFO then version-bound contiguous binary reads only after producer stage output and a separate exact GO. No Mac network fetch and no reuse of the prior171016-byte bundle."
+  },
+  "controls": {
+    "baseline_source_tree": "ed813dd7e3fc2f344737da2655e3af3ed69a3c2c",
+    "proposed_run_root": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/normal-build-r1",
+    "proposed_control": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/normal-build-r1/control",
+    "proposed_admission": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/normal-build-r1/build-control-r1",
+    "proposed_output": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/normal-build-r1/normal-release-tests-r1",
+    "proposed_target": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/normal-build-r1/target-normal-r1",
+    "ready": false,
+    "publisher_source_pin": null,
+    "runner_source_pin": null,
+    "launcher_source_pin": null,
+    "groups_unchanged": {
+      "blob": "302e5d5a5bfe501dcaf75f8c4cfc166acd58ea5f",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"
+    },
+    "actual_publication_receipt": null,
+    "runtime_slot": null,
+    "exact_request": null,
+    "typed_binding": null
+  },
+  "normal": {
+    "selected_tests": 61,
+    "selection": {
+      "six_groups": 44,
+      "ingress": 7,
+      "cold_h2": 9,
+      "same_root_ABA": 1
+    },
+    "actual_server": null,
+    "actual_seed": null,
+    "actual_libtest": null,
+    "actual_normal_release_report": null,
+    "actual_native_build_report": null,
+    "actual_normal61_report": null,
+    "root_qualification": null,
+    "runtime_slot": null,
+    "exact_request": null,
+    "typed_binding": null,
+    "qualification_inherited": false
+  },
+  "full34": {
+    "baseline_interface_tree": "e8ef2d41704440ea7fecfa7178ccb9a8dfadd9b1",
+    "driver": {
+      "blob": "87db25eab1258c8a2d7f9047e2009b62404b6259",
+      "bytes": 49393,
+      "sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581"
+    },
+    "official_launcher": {
+      "blob": "d7ac02bceeb6ec0751c3ff0d2ec6126e36ac8405",
+      "bytes": 20008,
+      "sha256": "5c11b432e1180fb40394fab382da774cf4171bf51431aab7e5823068cfba01d6"
+    },
+    "wrapper_source_pin": null,
+    "proposed_fresh_control_root": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-full34-20261106-r1",
+    "proposed_fresh_work_root": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-full34-20261106-r1/actual-r1",
+    "actual_input_identities": null,
+    "actual_readonly_prepare": null,
+    "actual_live_result": null,
+    "root_qualification": null,
+    "prepare_slot": null,
+    "live_slot": null,
+    "prepare_exact_request": null,
+    "live_exact_request": null,
+    "profile": "full34",
+    "keys": 17,
+    "value_bytes": 2097152,
+    "logical_bytes": 35651584,
+    "required_checks": 31,
+    "including_storage_checks": 3,
+    "qualification_inherited": false
+  },
+  "Native_calls": 0,
+  "Cargo_runs": 0,
+  "product_tree_mutations": 0,
+  "product_ref_mutations": 0
+}

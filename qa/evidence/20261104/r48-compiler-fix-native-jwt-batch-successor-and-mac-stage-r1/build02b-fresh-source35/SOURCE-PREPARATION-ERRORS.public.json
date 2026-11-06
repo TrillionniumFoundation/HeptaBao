@@ -1,0 +1,24 @@
+[
+  "{\n  \"where\": \"uncommitted fresh-target SOURCE builder\",\n  \"error\": \"unique patch fresh evidence semantics\",\n  \"native\": false,\n  \"filesChanged\": false,\n  \"reason\": \"Exact baseline text mismatch, builder failed before publishing or storing candidate. Re-read exact baseline segment before a new source derivation.\"\n}\n",
+  {
+    "kind": "pure_source_builder",
+    "error": "stdout scope",
+    "native_called": false,
+    "candidate_returned": false,
+    "original_sources_unchanged": true
+  },
+  {
+    "kind": "pure_source_cap_check",
+    "error": "original cap",
+    "launcher_bytes": 41948,
+    "runner_bytes": 33107,
+    "cap": 40000,
+    "native_called": false,
+    "proposal_ready": false
+  },
+  {
+    "error": "expected donor key prefix was not actual string",
+    "beforeUnchanged": true,
+    "noNativeCalls": true
+  }
+]

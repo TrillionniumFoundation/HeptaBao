@@ -1,0 +1,79 @@
+{
+  "schema": "heptabao.root.fresh-build-logs-info.GO.r1",
+  "authorization": "GO",
+  "scope": "build_logs_file_info_only",
+  "original_job": "1a1b282ded0-fc05-7e57",
+  "maximum_file_info_starts": 2,
+  "binary_read_authorized": false,
+  "exact_requests": [
+    {
+      "blob": "63319a0c58aa7fc8f71737de66230e46b50af98a",
+      "bytes": 290,
+      "sha256": "48d21505a5d1996eee1d9697a74f79d52686c742d8960d9c34cdea46d2a4aa8f"
+    },
+    {
+      "blob": "3103f0f552b07501d8e689500fdb6839d16412e0",
+      "bytes": 290,
+      "sha256": "d66ba4e596732bcf1c5474e55803a87b147f966f72e7b1a8255fc93801698bd1"
+    }
+  ],
+  "exactJournal": {
+    "blob": "9e8a21a570290556c81392bec727f897e33fab80",
+    "bytes": 34518,
+    "sha256": "d77c575ed1539c0cab2ee51113fdd13ea0df8cad14130320d8852b3bc4292761"
+  },
+  "exactClosedState": {
+    "blob": "9f967d290e070464c16bda4d2ba85421473a6611",
+    "bytes": 255887,
+    "sha256": "23c219d4d282e97ebe6d5f8d30c5eb1c52e2a03591ab01b91039903b7c19c196"
+  },
+  "sourceTree": "d55766ea955e9ae7b48da30c30fa803e7a9da210",
+  "originalWholeReport": {
+    "blob": "3749276afcc6e1ead912370e9626dc3645c111df",
+    "bytes": 40591,
+    "sha256": "db0079589bd50c271486056283825ba1c3a415c19204f707ed4b5d1b786ec3b4"
+  },
+  "orderedFiles": [
+    {
+      "index": 0,
+      "stream": "stderr",
+      "path": "/home/qian-qi/hb-02b90762-controls-20261106-r2/build-tests-r1/normal-release-build.stderr",
+      "sha256": "0b2916602918b7e3d05457d6445c20a55478846d99d7cd7067db0058f66c23cc",
+      "maximumBytes": 4194304
+    },
+    {
+      "index": 1,
+      "stream": "stdout",
+      "path": "/home/qian-qi/hb-02b90762-controls-20261106-r2/build-tests-r1/normal-release-build.stdout",
+      "sha256": "9fc6bdccb931b4cf5febb609921cb849a74e56920869dd4e2988bcebde9d0948",
+      "maximumBytes": 4194304
+    }
+  ],
+  "sourceVerifier": {
+    "blob": "148668c9f4a6929c8454db8d907879caf4e23401",
+    "bytes": 3827,
+    "sha256": "b4e8be20eb4a6cfcacdd7f0be6dedc57b462c312fdc6af84d64bb3ab9d179a44"
+  },
+  "budgets": {
+    "maximumStatus": 8,
+    "maximumPages": 128,
+    "pageBytes": 8192,
+    "payloadBytes": 1048576
+  },
+  "conditions": {
+    "sameExistingSlot": true,
+    "noInitialize": true,
+    "wholeSDKBeforeParse": true,
+    "nextOnlyAfterOriginalClosed": true,
+    "noProcessStart": true,
+    "noCargo": true,
+    "noBody": true
+  },
+  "lane": {
+    "B": 1,
+    "A": 0,
+    "C": 0,
+    "root": 0,
+    "max": 2
+  }
+}

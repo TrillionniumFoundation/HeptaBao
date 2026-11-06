@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-mac-crash-directory-metadata-11d8bdb0-streams-01",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1b2878800-fc05-7e6f",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

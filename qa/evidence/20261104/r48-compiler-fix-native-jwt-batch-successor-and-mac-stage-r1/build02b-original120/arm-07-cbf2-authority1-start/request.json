@@ -1,0 +1,10 @@
+{
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "rog",
+      "job_id": "1a1b282ded0-fc05-7e57"
+    }
+  },
+  "idempotency_key": "heptabao-combined-02b90762-fresh-observe-r2-authority1"
+}

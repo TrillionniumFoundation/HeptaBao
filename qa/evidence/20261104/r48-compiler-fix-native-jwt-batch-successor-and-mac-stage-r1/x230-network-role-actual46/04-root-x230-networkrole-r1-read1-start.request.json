@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-x230-current-container-networkrole-r1-f6798549-read-1",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "x230",
+      "job_id": "1a1b27a8981-fc05-7e33",
+      "limit": 16384,
+      "stdout_offset": 0,
+      "stderr_offset": 0
+    }
+  }
+}

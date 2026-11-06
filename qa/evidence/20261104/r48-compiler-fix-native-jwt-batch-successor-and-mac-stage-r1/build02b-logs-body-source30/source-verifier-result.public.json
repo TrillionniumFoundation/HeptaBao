@@ -1,0 +1,342 @@
+{
+  "schema": "heptabao.fresh-build-log-body-seven-range-source-checks.r1",
+  "status": "passed",
+  "checkCount": 83,
+  "checks": [
+    {
+      "name": "current_info_journal_exact",
+      "ok": true
+    },
+    {
+      "name": "body_ranges_journal_exact",
+      "ok": true
+    },
+    {
+      "name": "strict_eight_hunk_forward",
+      "ok": true
+    },
+    {
+      "name": "strict_eight_hunk_reverse",
+      "ok": true
+    },
+    {
+      "name": "eight_bounded_edits",
+      "ok": true
+    },
+    {
+      "name": "unique_edit_5",
+      "ok": true
+    },
+    {
+      "name": "unique_edit_6",
+      "ok": true
+    },
+    {
+      "name": "unique_edit_7",
+      "ok": true
+    },
+    {
+      "name": "unique_edit_8",
+      "ok": true
+    },
+    {
+      "name": "unique_edit_9",
+      "ok": true
+    },
+    {
+      "name": "unique_edit_10",
+      "ok": true
+    },
+    {
+      "name": "unique_edit_11",
+      "ok": true
+    },
+    {
+      "name": "unique_edit_12",
+      "ok": true
+    },
+    {
+      "name": "whole_reconstruction",
+      "ok": true
+    },
+    {
+      "name": "seven_ranges_total404821",
+      "ok": true
+    },
+    {
+      "name": "actual_info_native_stderr",
+      "ok": true
+    },
+    {
+      "name": "actual_file_identity_stderr",
+      "ok": true
+    },
+    {
+      "name": "exact_request_0",
+      "ok": true
+    },
+    {
+      "name": "same_file_version_0",
+      "ok": true
+    },
+    {
+      "name": "exact_range_0",
+      "ok": true
+    },
+    {
+      "name": "complete_file_geometry_stderr",
+      "ok": true
+    },
+    {
+      "name": "actual_info_native_stdout",
+      "ok": true
+    },
+    {
+      "name": "actual_file_identity_stdout",
+      "ok": true
+    },
+    {
+      "name": "exact_request_1",
+      "ok": true
+    },
+    {
+      "name": "same_file_version_1",
+      "ok": true
+    },
+    {
+      "name": "exact_range_1",
+      "ok": true
+    },
+    {
+      "name": "exact_request_2",
+      "ok": true
+    },
+    {
+      "name": "same_file_version_2",
+      "ok": true
+    },
+    {
+      "name": "exact_range_2",
+      "ok": true
+    },
+    {
+      "name": "exact_request_3",
+      "ok": true
+    },
+    {
+      "name": "same_file_version_3",
+      "ok": true
+    },
+    {
+      "name": "exact_range_3",
+      "ok": true
+    },
+    {
+      "name": "exact_request_4",
+      "ok": true
+    },
+    {
+      "name": "same_file_version_4",
+      "ok": true
+    },
+    {
+      "name": "exact_range_4",
+      "ok": true
+    },
+    {
+      "name": "exact_request_5",
+      "ok": true
+    },
+    {
+      "name": "same_file_version_5",
+      "ok": true
+    },
+    {
+      "name": "exact_range_5",
+      "ok": true
+    },
+    {
+      "name": "exact_request_6",
+      "ok": true
+    },
+    {
+      "name": "same_file_version_6",
+      "ok": true
+    },
+    {
+      "name": "exact_range_6",
+      "ok": true
+    },
+    {
+      "name": "complete_file_geometry_stdout",
+      "ok": true
+    },
+    {
+      "name": "actual_2_sizes",
+      "ok": true
+    },
+    {
+      "name": "closed_original_two_infos",
+      "ok": true
+    },
+    {
+      "name": "old37calls10observers_preserved",
+      "ok": true
+    },
+    {
+      "name": "original_pure_prepare_failure_preserved",
+      "ok": true
+    },
+    {
+      "name": "current_original_tool_page_and_payload_contract",
+      "ok": true
+    },
+    {
+      "name": "original_payload_1MiB_cap_retained",
+      "ok": true
+    },
+    {
+      "name": "new_once_marker_before_dispatch",
+      "ok": true
+    },
+    {
+      "name": "whole_byte_SHA_before_UTF8",
+      "ok": true
+    },
+    {
+      "name": "whole_file_archive_before_next_range_advance",
+      "ok": true
+    },
+    {
+      "name": "private_range_0_accepted_without_dispatch",
+      "ok": true
+    },
+    {
+      "name": "private_range_1_accepted_without_dispatch",
+      "ok": true
+    },
+    {
+      "name": "private_range_2_accepted_without_dispatch",
+      "ok": true
+    },
+    {
+      "name": "private_range_3_accepted_without_dispatch",
+      "ok": true
+    },
+    {
+      "name": "private_range_4_accepted_without_dispatch",
+      "ok": true
+    },
+    {
+      "name": "private_range_5_accepted_without_dispatch",
+      "ok": true
+    },
+    {
+      "name": "private_range_6_accepted_without_dispatch",
+      "ok": true
+    },
+    {
+      "name": "reject_eighth_range",
+      "ok": true
+    },
+    {
+      "name": "reject_same_range_after_called",
+      "ok": true
+    },
+    {
+      "name": "reject_duplicate_authorization",
+      "ok": true
+    },
+    {
+      "name": "reject_paused",
+      "ok": true
+    },
+    {
+      "name": "reject_pending",
+      "ok": true
+    },
+    {
+      "name": "reject_active",
+      "ok": true
+    },
+    {
+      "name": "reject_inflight",
+      "ok": true
+    },
+    {
+      "name": "reject_wrongJob",
+      "ok": true
+    },
+    {
+      "name": "reject_incompleteInfos",
+      "ok": true
+    },
+    {
+      "name": "reject_versionDrift",
+      "ok": true
+    },
+    {
+      "name": "reject_wrong_scope",
+      "ok": true
+    },
+    {
+      "name": "reject_page_cap_change",
+      "ok": true
+    },
+    {
+      "name": "reject_total_change",
+      "ok": true
+    },
+    {
+      "name": "new_log_body_16K_only",
+      "ok": true
+    },
+    {
+      "name": "reject_new_page_32K",
+      "ok": true
+    },
+    {
+      "name": "old_info_pages_8K_unchanged",
+      "ok": true
+    },
+    {
+      "name": "reject_metadata_page_widening",
+      "ok": true
+    },
+    {
+      "name": "unmatched_old_binary_page_8K",
+      "ok": true
+    },
+    {
+      "name": "reject_mutated_path",
+      "ok": true
+    },
+    {
+      "name": "reject_mutated_version",
+      "ok": true
+    },
+    {
+      "name": "reject_mutated_offset",
+      "ok": true
+    },
+    {
+      "name": "reject_mutated_limit",
+      "ok": true
+    },
+    {
+      "name": "reject_mutated_key",
+      "ok": true
+    },
+    {
+      "name": "actual_join_block_preserves_split_multibyte_UTF8",
+      "ok": true
+    },
+    {
+      "name": "reject_whole_join_SHA_mismatch",
+      "ok": true
+    }
+  ],
+  "runtimeCalls": 0,
+  "sourceOnly": true,
+  "privateClonedStoreOnly": true
+}

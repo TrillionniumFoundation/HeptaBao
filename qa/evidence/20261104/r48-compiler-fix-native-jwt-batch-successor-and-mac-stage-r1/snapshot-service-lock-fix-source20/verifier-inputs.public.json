@@ -1,0 +1,55 @@
+{
+  "baseCommit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+  "files": [
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_client.rs",
+      "beforeFile": "source0.before.rs",
+      "afterFile": "source0.after.rs",
+      "diffFile": "source0.forward.diff",
+      "reverseFile": "source0.reverse.diff",
+      "beforePin": {
+        "blob": "a8a00094d2c4efb26a9be5c1af9b7b5f0c8e04cf",
+        "bytes": 20232,
+        "sha256": "f76bdf9fc65fcf99b0a214c00df7660436509036c107f5486b3226981635004f"
+      },
+      "afterPin": {
+        "blob": "ab70d9abc8abda8d605f055ba0eaeda74d369803",
+        "bytes": 20359,
+        "sha256": "e53ba84411f23c8c822d8a4f546dbead8bc643097de419a7e70c5eac99015d58"
+      },
+      "expectedCount": 3,
+      "deadline": "self.owner.deadline"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_source.rs",
+      "beforeFile": "source1.before.rs",
+      "afterFile": "source1.after.rs",
+      "diffFile": "source1.forward.diff",
+      "reverseFile": "source1.reverse.diff",
+      "beforePin": {
+        "blob": "7178177f6156cce780c7044721ed53120c86a563",
+        "bytes": 19516,
+        "sha256": "2644931919fdafdc2d68d8e9927ebca77647e7ce8839cec1abef3e7563635c73"
+      },
+      "afterPin": {
+        "blob": "a360aa111114da8aa16827de528839ca8eb90eec",
+        "bytes": 19632,
+        "sha256": "bc7e833e0faced417249756c78e546e955271b6ed25da1d3dbfbdff2bf56ef76"
+      },
+      "expectedCount": 6,
+      "deadline": "deadline"
+    }
+  ],
+  "helper": "request_deadline.original.rs",
+  "stderr": "normal-release-build.stderr",
+  "helperPin": {
+    "blob": "27f12abcfa36e3fdb85d21d07a2bbe7fa00d7d94",
+    "bytes": 5157,
+    "sha256": "7aaf9bee2e6de6d4183970c0b11b58a648b2b0f9b51c2ce66acbd3ee258cf75c"
+  },
+  "stderrPin": {
+    "blob": "01ad767ff659ea7f5d7ccfcb9d73d01cc7b03a31",
+    "bytes": 20639,
+    "sha256": "0b2916602918b7e3d05457d6445c20a55478846d99d7cd7067db0058f66c23cc"
+  }
+}

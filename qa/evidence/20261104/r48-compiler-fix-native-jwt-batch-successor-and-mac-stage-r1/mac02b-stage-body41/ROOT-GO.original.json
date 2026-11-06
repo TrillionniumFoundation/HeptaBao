@@ -1,0 +1,79 @@
+{
+  "schema": "heptabao.root.mac-stage-result-body.go.r1",
+  "authorization": "GO",
+  "scope": "stage_result_binary_read_only",
+  "original_job": "1a1b27f85d6-fc05-7e49",
+  "info_operation": "a425aca935a47c7745f1b3693bd22b0dcee73ecd7a82117311656417f114c10f",
+  "maximum_binary_read_starts": 1,
+  "immutable_page_bytes": 8192,
+  "exact_request": {
+    "blob": "88c79d363417624e16bed4822694652637854543",
+    "bytes": 439,
+    "sha256": "cc93c7809930d28ac9efebb2e78935bf6f93ef56b9e0db8e12e64d760e1c1b90"
+  },
+  "sourceTree": "f928b8c8970a01ef439942ca38c19d863ee9454b",
+  "exactJournal": {
+    "blob": "bdccb9101c0c5a59577cb9c24ff7343b028189d7",
+    "bytes": 29848,
+    "sha256": "fc9d8b014dd8911694a678cbef783f557040612c09cd4aceb1385f93cf3320b8"
+  },
+  "exactState": {
+    "blob": "ea1634b5464fc169818595de47f289759ccc9d16",
+    "bytes": 293697,
+    "sha256": "94c89371d188cf48e8f942e1e913d68018239125c61b29ccb87aa557266df5d2"
+  },
+  "actualMetadata": {
+    "host": "mac",
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-02b90762-src-20261106-r1/control/stage-result.public.json",
+    "bytes": 10558,
+    "sha256": "7d2e75f8038ba68c4ceeb5af4ec75bf8a6f528b2d394acad97ea0364b70d33e9",
+    "version": "16777244:72756440:10558:1793996068500746233:1793996068500755233",
+    "full9": [
+      "16777244",
+      "72756440",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "10558",
+      "1793996068500746233",
+      "1793996068500755233"
+    ],
+    "infoOperation": "a425aca935a47c7745f1b3693bd22b0dcee73ecd7a82117311656417f114c10f",
+    "infoNative": {
+      "blob": "403c4e42950c658effdc705056ef1a4cd3a497f9",
+      "bytes": 491,
+      "sha256": "1bf1e54851a12c1bf47d8a8aea24a27697c753c758e7297256a5c374a8c7950b"
+    }
+  },
+  "rootSourceVerifier": {
+    "blob": "a714a4b4cb69589fd83eccebf9d9e62b28220af3",
+    "bytes": 1515,
+    "sha256": "cdd352ac29f9953210b9f9e7114cf7b33244fc3095d8d63e5025a5fe09097375"
+  },
+  "budgets": {
+    "maximum_binary_read_starts": 1,
+    "bodyBytes": 10558,
+    "statusCalls": 8,
+    "resultPages": 128,
+    "immutable_page_bytes": 8192,
+    "payloadBytes": 1048576,
+    "oneActiveObserver": true
+  },
+  "conditions": {
+    "attachOriginalSlotOnly": true,
+    "noInitialize": true,
+    "noProcessStart": true,
+    "noFileInfo": true,
+    "wholeDecodedBodyArchiveBeforeInterpretation": true,
+    "noCargo": true,
+    "noServer": true
+  },
+  "lane": {
+    "C": 1,
+    "A": 0,
+    "B": 1,
+    "root": 0,
+    "max": 2
+  }
+}

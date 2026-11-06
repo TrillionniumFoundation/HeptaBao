@@ -1,0 +1,72 @@
+{
+  "schema": "heptabao.mac.successor576.replay-inputs.v1",
+  "verifier_function": "verifyMacSuccessorStageTemplate",
+  "helper_sources": {
+    "pure": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    "strict_diff": {
+      "blob": "d667a66c20e20dac7241cff3a35fdda4d50f6f1a",
+      "bytes": 2209,
+      "sha256": "1c94876fa6a8ae89bf0f1b10164da0b1aff98f1400eefe322085429770c6c827"
+    }
+  },
+  "input_fields": {
+    "before": {
+      "blob": "b6a9190bc5856e42be2d8e750875675521ecf22d",
+      "bytes": 25130,
+      "sha256": "ea096d7a13c4501d4d39d7d953fb6fd35c49aad6051227884c06e179bc8db9fd"
+    },
+    "after": {
+      "blob": "79c2bae6e400b385a5efa8c57a23c6e5f0ea72ed",
+      "bytes": 23651,
+      "sha256": "7addc497cc836a7b6cc43081518d9fc37dbec009eddedcf2bc9f5b532a83f83c"
+    },
+    "diff": {
+      "blob": "15ae23fce07754e40d325e2168727c47a8ff41ba",
+      "bytes": 6541,
+      "sha256": "390a533d946c6531b35a22db01e676475feafce131590607956641b320c4a8d4"
+    },
+    "candidateRaw": {
+      "blob": "d9d3fa89aecbdf276f8e22651559caa94b0ea518",
+      "bytes": 3876,
+      "sha256": "6d8a34410afcf535c20044bfa5e78d3d2d4115c6749f49baf8e37ef9e93256f5"
+    },
+    "indexRaw": {
+      "blob": "4e4052b40639f1f490adf7c4f9c8a9bab1b7ac99",
+      "bytes": 453838,
+      "sha256": "20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423"
+    },
+    "groupsRaw": {
+      "blob": "302e5d5a5bfe501dcaf75f8c4cfc166acd58ea5f",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"
+    },
+    "plan": {
+      "blob": "c0887cff02dd7a905113f181a4c9cfd2a94cb93f",
+      "bytes": 10309,
+      "sha256": "05abad85cb766aaa24a59682c42db6af227ed4982172c70746e4f21a71e39a2b"
+    },
+    "interface": {
+      "blob": "ea84b99045af7ee126f7be242785602b812758a1",
+      "bytes": 5153,
+      "sha256": "b6ecd68325142b24d42f41cd629352262eb821d9c482d7081f862ce1af24cb7c"
+    }
+  },
+  "parse_as_json": [
+    "plan",
+    "interface"
+  ],
+  "previous_packages": {
+    "Mac_source_stage": "d5fcaddbe3987efef34698b761b63a08169deea0",
+    "Mac_stage_actual_body": "2e51dfad5cdb55e313cbc93467b2960da96cd7c6",
+    "Mac_stage_root_qualification": "973fc5c71023727649c5242fa3c0cb7c88e87768",
+    "Mac_fresh_controls_SOURCE_ONLY": "ed813dd7e3fc2f344737da2655e3af3ed69a3c2c",
+    "Mac_full34_INTERFACE_ONLY": "e8ef2d41704440ea7fecfa7178ccb9a8dfadd9b1",
+    "candidate_freeze": "f74d33fc97820415c8f62c5bebc7718f0d5376b6",
+    "JWT_batch_R2_peer": "cc078b497102e43d8c7bca3e6fa085566df29c8f"
+  },
+  "note": "Immutable originals are referenced, not re-archived. Load exact UTF-8 blob bytes; parse only the two JSON object fields before passing input. No Python import or candidate execution."
+}

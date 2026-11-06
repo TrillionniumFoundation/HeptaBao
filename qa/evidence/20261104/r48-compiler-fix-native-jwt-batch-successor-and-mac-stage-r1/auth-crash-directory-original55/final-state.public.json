@@ -1,0 +1,542 @@
+{
+  "rootGoWhole": true,
+  "goRaw": "{\n  \"schema\": \"heptabao.root.DiagnosticReports-directory-metadata-exact-GO.r1\",\n  \"authorization\": \"GO\",\n  \"issuedAtUtc\": \"2026-11-06 20:22:18 UTC\",\n  \"agent\": \"/root/authbus_migration\",\n  \"scope\": \"one_fixed_final_directory_metadata_snapshot_no_body\",\n  \"source_packet\": \"0b41f27aa596301988fd5075c8bf959af88de569\",\n  \"source\": {\n    \"blob\": \"9e408efea2e6a5143ea377880da1f6b2361ca9ef\",\n    \"bytes\": 11963,\n    \"sha256\": \"11d8bdb092af7e1fb6da8a861381a3b3e14340ad8682a905bfce56c0c813ad18\"\n  },\n  \"exact_request\": {\n    \"blob\": \"608337c6667b83e1f379b5255b23a71b0da2dd58\",\n    \"bytes\": 12569,\n    \"sha256\": \"e8b74ca5f718e2fc2a23342bac0f35636b70c03581cf1c26a9cf48e52baa9387\"\n  },\n  \"journal\": {\n    \"slot\": \"owner_authbus_crash_directory_metadata_gitfirst_r1\",\n    \"source\": {\n      \"blob\": \"c6dd3be3c8948c35c61666289d1e57c2972446a5\",\n      \"bytes\": 19054,\n      \"sha256\": \"46b793feb22d3f23bfa04b3e4a2e7d0370028f69210dabc9a06c43a59a801415\"\n    }\n  },\n  \"digest\": \"6bcb5427c7d04f67f9f0e5f06ed2dc34bcf093a2e994d2536b2b74c4be4f1246\",\n  \"fingerprint\": \"7767394512163327847\",\n  \"root_review\": {\n    \"blob\": \"f87bdc7968ed206b3827929e775a724b5aa398a1\",\n    \"bytes\": 1867,\n    \"sha256\": \"306ebd3f7dd5a95a3c225925489fa2b72f4dc8c185db59e8bf8493d484f48fbf\"\n  },\n  \"prior\": {\n    \"source\": {\n      \"blob\": \"41ea46286a45ae651d7444e87efa7a8f3c6c438e\",\n      \"bytes\": 28062,\n      \"sha256\": \"33b29c19d960409b9d32e5e6770e493d564e85ba19ccf8e638c95d76443df35c\"\n    },\n    \"job\": \"mac/1a1b27a443e-fc05-7e31\",\n    \"actualMinTree\": \"64aa03bf6c1605c995c22316077613756415e30c\",\n    \"actualFullTree\": \"6212afa1492fc1d7f0d581a82ceb80d58de28c7a\",\n    \"stdout\": {\n      \"blob\": \"2efead8a4275b7f1298c45833a64ec229fc240b4\",\n      \"bytes\": 1783,\n      \"sha256\": \"5bc611df8194b881da135d0406b081d616289f3531aa848ea60328e4fdffdb2c\"\n    },\n    \"failure\": \"fixed_directory_shape\",\n    \"metadataOfRejectedTargetPreviouslyPublished\": false,\n    \"mutationOfOldSource\": false\n  },\n  \"fixedTarget\": \"/Users/qianqi/Library/Logs/DiagnosticReports\",\n  \"fixedAncestorDirectoryFds\": [\n    \"/\",\n    \"/Users\",\n    \"/Users/qianqi\",\n    \"/Users/qianqi/Library\",\n    \"/Users/qianqi/Library/Logs\"\n  ],\n  \"io\": {\n    \"targetOperation\": \"one os.stat of literal DiagnosticReports with dir_fd of held Logs and follow_symlinks=False\",\n    \"targetOpen\": 0,\n    \"targetMetadataCalls\": 1,\n    \"ancestorOpenCap\": 5,\n    \"metadataCap\": 64,\n    \"completePathMetadataCount\": 26,\n    \"directoryEnumeration\": 0,\n    \"bodyRead\": 0,\n    \"write\": 0,\n    \"chmod\": 0,\n    \"child\": 0,\n    \"signalOtherPid\": 0,\n    \"deadlineSeconds\": 5,\n    \"closureCheckSecondsFromStart\": 8,\n    \"processTimeoutSeconds\": 60,\n    \"publicReportBytes\": 8192\n  },\n  \"publicProjection\": {\n    \"target\": [\n      \"type in directory/symlink/regular/other\",\n      \"mode integer\",\n      \"modeOctal\",\n      \"uid integer\",\n      \"gid integer\",\n      \"nine decimal string stat fields\",\n      \"isDirectory boolean\",\n      \"uidIsRootOrOperator boolean\",\n      \"noGroupOrOtherWrite boolean\",\n      \"fixedDirectoryShape boolean\"\n    ],\n    \"full9Order\": [\n      \"dev\",\n      \"ino\",\n      \"uid\",\n      \"gid\",\n      \"mode\",\n      \"nlink\",\n      \"size\",\n      \"mtime_ns\",\n      \"ctime_ns\"\n    ],\n    \"onAncestorFailure\": \"only the already fixed ancestor path and same typed metadata/predicates; original guard still refuses descent\",\n    \"arbitraryTextOrBodyHashes\": false\n  },\n  \"semantics\": {\n    \"metadataObservationMayCompleteWhileOriginalPredicateIsFalse\": true,\n    \"finalMetadataIsOneSequentialSnapshotNotAtomicHistory\": true,\n    \"ancestorHeldNamedFull9RecheckedBeforeClose\": true,\n    \"previousFailureUnchanged\": true,\n    \"reportExistenceUnknown\": true,\n    \"bodyReadAdmission\": false,\n    \"permissionChange\": false,\n    \"originalCrashReaderGuardUnchanged\": true,\n    \"originalRuntimeCauseUnproved\": true,\n    \"historicalManagedUnknownUnchanged\": true\n  },\n  \"observation\": {\n    \"statusMax\": 8,\n    \"readMax\": 8,\n    \"perObserverStatusMax\": 8,\n    \"readLimit\": 16384,\n    \"immutablePageLimit\": 8192,\n    \"immutablePagesPerObserver\": 128,\n    \"immutablePayloadCap\": 1048576,\n    \"sameJobOnly\": true,\n    \"unknownNoReplay\": true,\n    \"SDKWholeBeforeParse\": true\n  },\n  \"start\": {\n    \"maximumCalls\": 1,\n    \"host\": \"mac\",\n    \"executable\": \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",\n    \"args\": [\n      \"-I\",\n      \"-S\",\n      \"-B\",\n      \"-\"\n    ],\n    \"cwd\": \"/Users/qianqi\",\n    \"timeout_seconds\": 60,\n    \"idempotency_key\": \"heptabao-mac-crash-directory-metadata-11d8bdb0-20261106-r1\"\n  },\n  \"sequence\": [\n    \"Whole exact GO/source/request then initialize this absent slot once.\",\n    \"External whole request/intent/armed before a model boundary and unique process_start.\",\n    \"Whole original SDK and original observer payload before parsing; only same job full bounded streams.\",\n    \"No permission change, fallback, target directory opening, crash body admission or unknown replay.\"\n  ],\n  \"lane_allocation\": {\n    \"maximumNativeLanes\": 2,\n    \"authbus_migration\": 1,\n    \"compatibility_audit\": 1,\n    \"ha_validation\": 0,\n    \"root\": 0\n  },\n  \"crashBodyReadAuthorized\": false,\n  \"crashCauseProved\": false,\n  \"fullReplacement\": false,\n  \"productionCutover\": false,\n  \"legacyCleanup\": false\n}\n",
+  "goPin": {
+    "blob": "40c94a812e52b9efa27c425ce660840721305a47",
+    "bytes": 5254,
+    "sha256": "5777370622b82c313fb3c557b6e87b96abb386942dec7261018fbc2272499a81"
+  },
+  "digest": "6bcb5427c7d04f67f9f0e5f06ed2dc34bcf093a2e994d2536b2b74c4be4f1246",
+  "fingerprint": "7767394512163327847",
+  "job": "1a1b2878800-fc05-7e6f",
+  "startCalled": true,
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "paused": false,
+  "calls": {
+    "crash-directory-metadata-r1-start": {
+      "kind": "process_start",
+      "requestRaw": "{\n  \"host\": \"mac\",\n  \"executable\": \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",\n  \"args\": [\n    \"-I\",\n    \"-S\",\n    \"-B\",\n    \"-\"\n  ],\n  \"cwd\": \"/Users/qianqi\",\n  \"timeout_seconds\": 60,\n  \"idempotency_key\": \"heptabao-mac-crash-directory-metadata-11d8bdb0-20261106-r1\",\n  \"stdin\": \"#!/usr/bin/env python3\\n\\\"\\\"\\\"Observe one fixed directory's metadata without opening or enumerating it.\\nFive fixed ancestor directory FDs only anchor the final nofollow stat.\\nNo crash-report body, child, write, permission change or fallback path.\\n\\\"\\\"\\\"\\nfrom __future__ import annotations\\nimport json,os,signal,stat,sys,time\\nfrom pathlib import Path\\nfrom contextlib import contextmanager\\n\\nPYTHON='/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14'\\nDIRECTORY=Path('/Users/qianqi/Library/Logs/DiagnosticReports')\\nANCESTORS=(Path('/'),Path('/Users'),Path('/Users/qianqi'),\\n           Path('/Users/qianqi/Library'),Path('/Users/qianqi/Library/Logs'))\\nMAX_METADATA_CALLS=64\\nMAX_PUBLIC_BYTES=8192\\nSTART=time.monotonic()\\nUNTIL=START+5.0\\nFINAL_UNTIL=START+8.0\\nprotected=0\\npending_signal=None\\n\\nclass Refused(Exception):pass\\nclass Cancelled(Exception):pass\\ndef need(value,code):\\n    if not value:raise Refused(code)\\n@contextmanager\\ndef critical():\\n    global protected\\n    protected+=1\\n    try:yield\\n    finally:protected-=1\\ndef interrupt(signum,_frame):\\n    global pending_signal\\n    pending_signal=signum\\n    if protected==0:raise Cancelled()\\ndef remaining():\\n    need(pending_signal is None,'interrupted')\\n    need(time.monotonic()<UNTIL,'readonly_deadline')\\ndef identity(s):\\n    return (s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode,s.st_nlink,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\\nclass SignalFacade:\\n    def critical(self):return critical()\\ndef error_projection(error):\\n    code=str(error) if isinstance(error,Refused) and str(error) in ERROR_CODES else None\\n    kind=type(error).__name__\\n    return {'type':kind if kind in ('Refused','Cancelled','OSError','FileNotFoundError',\\n             'PermissionError','UnicodeDecodeError','JSONDecodeError','ValueError',\\n             'RecursionError','KeyboardInterrupt','MemoryError') else 'Other',\\n            'code':code,\\n            'errno':error.errno if isinstance(error,OSError) and type(error.errno) is int\\n                    and 0<=error.errno<=255 else None}\\n\\ndef metadata_projection(value):\\n    is_directory=stat.S_ISDIR(value.st_mode)\\n    allowed_owner=value.st_uid in (0,501)\\n    no_group_or_other_write=not (value.st_mode & 0o022)\\n    kind=('directory' if is_directory else 'symlink' if stat.S_ISLNK(value.st_mode)\\n          else 'regular' if stat.S_ISREG(value.st_mode) else 'other')\\n    return {'type':kind,'mode':value.st_mode,'modeOctal':oct(value.st_mode),\\n            'uid':value.st_uid,'gid':value.st_gid,\\n            'full9':[str(v) for v in identity(value)],\\n            'originalPredicates':{'isDirectory':is_directory,\\n              'uidIsRootOrOperator':allowed_owner,\\n              'noGroupOrOtherWrite':no_group_or_other_write,\\n              'fixedDirectoryShape':bool(is_directory and allowed_owner and no_group_or_other_write)}}\\n\\nclass FixedDirectoryMetadataIO:\\n    def __init__(self,signals):\\n        self.signals=signals;self.remaining=remaining\\n        self.rows=[];self.close_errors=[];self.max_rows=5\\n        self.open_ledger={'attempts':0,'knownNoReturnErrors':0,'registered':0,\\n                          'pending':0,'registrationUnknown':False}\\n        self.metadata_calls=0;self.ancestor_guard_failure=None\\n    def meta(self,fn,*args,**kwargs):\\n        remaining();need(self.metadata_calls<MAX_METADATA_CALLS,'metadata_cap')\\n        self.metadata_calls+=1\\n        value=fn(*args,**kwargs);remaining();return value\\n    def open_fd(self, path, flags, mode=None, *, parent=None, role='file'):\\n        need(len(self.rows) < self.max_rows and self.open_ledger['attempts'] < self.max_rows,\\n             'fd_ledger_cap')\\n        with self.signals.critical():\\n            self.remaining()\\n            ledger = self.open_ledger\\n            ledger['attempts'] += 1\\n            ledger['pending'] += 1\\n            try:\\n                fd = os.open(str(path) if parent is None else path.name, flags,\\n                             *(() if mode is None else (mode,)),\\n                             **({} if parent is None else {'dir_fd':parent['fd']}))\\n            except OSError:\\n                # This handler covers the syscall expression only: no FD was returned.\\n                ledger['knownNoReturnErrors'] += 1\\n                ledger['pending'] -= 1\\n                raise\\n            try:\\n                row = {'fd':fd, 'path':str(path), 'role':role,\\n                       'created':bool(flags & os.O_CREAT), 'writeComplete':False,\\n                       'closeAttempted':False, 'closed':False}\\n                self.rows.append(row)\\n                ledger['registered'] += 1\\n                ledger['pending'] -= 1\\n            except BaseException:\\n                # Even a subsequently closed row cannot erase this incomplete transfer.\\n                # Do not guess a descriptor, blind-close, or retry registration.\\n                ledger['registrationUnknown'] = True\\n                raise\\n        return row\\n    def close_one(self, row):\\n        if row['closeAttempted']:\\n            return row['closed']\\n        with self.signals.critical():\\n            row['closeAttempted'] = True\\n            try:\\n                os.close(row['fd'])\\n                row['closed'] = True\\n            except BaseException as error:\\n                row['closeError'] = error_projection(error)\\n                self.close_errors.append(row['closeError'])\\n        return row['closed']\\n    def close(self):\\n        with self.signals.critical():\\n            for row in reversed(self.rows):\\n                self.close_one(row)\\n\\n    def named(self,row):\\n        if row['parent'] is None:return self.meta(os.lstat,Path(row['path']))\\n        return self.meta(os.stat,Path(row['path']).name,dir_fd=row['parent']['fd'],follow_symlinks=False)\\n    def open_ancestors(self):\\n        parent=None\\n        for path in ANCESTORS:\\n            before=self.meta(os.lstat,path) if parent is None else self.meta(\\n                os.stat,path.name,dir_fd=parent['fd'],follow_symlinks=False)\\n            projection=metadata_projection(before)\\n            if not projection['originalPredicates']['fixedDirectoryShape']:\\n                self.ancestor_guard_failure={'path':str(path),'metadata':projection}\\n            need(stat.S_ISDIR(before.st_mode) and before.st_uid in (0,501)\\n                 and not (before.st_mode & 0o022),'fixed_directory_shape')\\n            row=self.open_fd(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_DIRECTORY,parent=parent,role='directory')\\n            row['parent']=parent;row['expected']=identity(before)\\n            need(identity(self.meta(os.fstat,row['fd']))==row['expected']\\n                 ==identity(self.named(row)),'held_directory_full9')\\n            parent=row\\n        return parent\\n    def observe_target(self,parent):\\n        need(parent['path']==str(ANCESTORS[-1]) and not parent['closed'],'fixed_parent_for_target')\\n        value=self.meta(os.stat,DIRECTORY.name,dir_fd=parent['fd'],follow_symlinks=False)\\n        return metadata_projection(value)\\n    def verify_all(self):\\n        for row in self.rows:\\n            need('parent' in row and 'expected' in row,'complete_registered_directory_fence')\\n            need(not row['closed'] and row['expected']==identity(self.meta(os.fstat,row['fd']))\\n                 ==identity(self.named(row)),'final_held_named_full9')\\n        return True\\n    def public(self):\\n        ledger=dict(self.open_ledger)\\n        all_closed=(not ledger['pending'] and not ledger['registrationUnknown']\\n                    and ledger['registered']==len(self.rows) and all(r['closed'] for r in self.rows)\\n                    and not self.close_errors)\\n        return {'returnedFdLedger':ledger,'metadataCalls':self.metadata_calls,\\n                'allReturnedFdsClosed':all_closed,'closeErrors':list(self.close_errors),\\n                'ancestorGuardFailure':self.ancestor_guard_failure,\\n                'directoryEnumerationCalls':0,'bodyReadCalls':0,'bodyReadBytes':0,\\n                'writes':0,'childProcesses':0,'targetDirectoryOpened':False}\\n\\nERROR_CODES=frozenset([\\\"fd_ledger_cap\\\",\\\"interrupted\\\",\\\"readonly_deadline\\\",\\\"metadata_cap\\\",\\\"fixed_directory_shape\\\",\\\"held_directory_full9\\\",\\\"fixed_parent_for_target\\\",\\\"complete_registered_directory_fence\\\",\\\"final_held_named_full9\\\",\\\"fixed_regular_python_operator\\\",\\\"public_report_cap\\\"])\\n\\ndef main():\\n    report={'schema':'heptabao.mac-diagnosticreports-fixed-metadata.r1',\\n      'ok':False,'observationComplete':False,'outcomeUnknown':False,\\n      'directory':str(DIRECTORY),'metadata':None,'targetMetadataObserved':False,\\n      'priorFailedJob':'mac/1a1b27a443e-fc05-7e31',\\n      'priorFailureChanged':False,'priorRejectedMetadataReconstructed':False,\\n      'targetNoFollowStat':True,'targetSnapshotCount':0,\\n      'targetOpened':False,'directoryScanned':False,'reportBodyRead':False,\\n      'filesystemWrites':0,'permissionChanges':0,'childProcesses':0,\\n      'historicalManagedClosureClaimed':False,'crashReportExistenceClaimed':False,\\n      'crashReaderGuardChanged':False,'crashBodyAdmissionGranted':False,\\n      'SDKOrCredentialOrProviderCalled':False,'T5ReadOrWrite':False,\\n      'unknownTextOrBodyHashExported':False}\\n    io=None;observed=False;final_fences=False\\n    saved={sig:signal.getsignal(sig) for sig in (signal.SIGTERM,signal.SIGINT)}\\n    handlers_restored=False\\n    try:\\n        for sig in saved:signal.signal(sig,interrupt)\\n        need(sys.platform=='darwin' and os.geteuid()==501 and sys.executable==PYTHON,\\n             'fixed_regular_python_operator')\\n        io=FixedDirectoryMetadataIO(SignalFacade())\\n        parent=io.open_ancestors()\\n        report['metadata']=io.observe_target(parent)\\n        report['targetSnapshotCount']=1\\n        report['targetMetadataObserved']=True;observed=True\\n    except BaseException as error:\\n        report['error']=error_projection(error)\\n    finally:\\n        if io is not None:\\n            try:final_fences=io.verify_all()\\n            except BaseException as error:report['finalFenceError']=error_projection(error)\\n            try:\\n                with critical():io.close()\\n            except BaseException as error:report['closeLoopError']=error_projection(error)\\n            report['io']=io.public()\\n        else:\\n            report['io']={'allReturnedFdsClosed':True,'noIoObjectCreated':True}\\n        restored=True\\n        for sig,handler in saved.items():\\n            try:signal.signal(sig,handler)\\n            except BaseException:restored=False\\n        handlers_restored=restored\\n        report['finalHeldNamedAncestorFencesPassed']=final_fences\\n        report['handlersRestored']=handlers_restored\\n        report['pendingSignalObserved']=pending_signal is not None\\n        report['elapsedSeconds']=time.monotonic()-START\\n        report['afterClosureDeadlineMet']=time.monotonic()<=FINAL_UNTIL\\n        closed=report['io']['allReturnedFdsClosed'] and handlers_restored\\n        report['allOwnResourcesClosed']=closed\\n        report['outcomeUnknown']=(not closed or not final_fences or pending_signal is not None\\n                                 or not report['afterClosureDeadlineMet'])\\n        report['observationComplete']=(observed and 'error' not in report\\n            and final_fences and closed and not report['outcomeUnknown'])\\n        report['ok']=report['observationComplete']\\n    raw=json.dumps(report,sort_keys=True,separators=(',',':'),ensure_ascii=True)+'\\\\n'\\n    if len(raw.encode('ascii'))>MAX_PUBLIC_BYTES:\\n        report={'schema':'heptabao.mac-diagnosticreports-fixed-metadata.r1','ok':False,\\n          'observationComplete':False,'outcomeUnknown':True,\\n          'error':{'type':'Refused','code':'public_report_cap'},\\n          'allOwnResourcesClosed':report['allOwnResourcesClosed'],\\n          'projectionDroppedForReportCap':True,'reportBodyRead':False,\\n          'historicalManagedClosureClaimed':False}\\n        raw=json.dumps(report,sort_keys=True,separators=(',',':'))+'\\\\n'\\n    sys.stdout.write(raw);sys.stdout.flush()\\n    return 0 if report['ok'] else 1\\n\\nif __name__=='__main__':raise SystemExit(main())\\n\"\n}\n",
+      "requestPin": {
+        "blob": "608337c6667b83e1f379b5255b23a71b0da2dd58",
+        "bytes": 12569,
+        "sha256": "e8b74ca5f718e2fc2a23342bac0f35636b70c03581cf1c26a9cf48e52baa9387"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "7edbc9003c410e72e163a462a1c35b5baea1c1b4",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "882a375f8db072d75825801052289354e38ec479",
+            "bytes": 841,
+            "sha256": "83fe761b3afbd975d15f8ee86120c40313dbd14417654d9a490c135f1dc6fce2",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "24eef8544afa0034fa024676bd986ad07216fe29",
+            "bytes": 704,
+            "sha256": "d3ad52240e63be5357103baaeb4fba757daa2d76c4117f50335f22853ebd5c43",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "608337c6667b83e1f379b5255b23a71b0da2dd58",
+            "bytes": 12569,
+            "sha256": "e8b74ca5f718e2fc2a23342bac0f35636b70c03581cf1c26a9cf48e52baa9387",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 14114,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "b5104e2931eb081180962d2b7021999eeca8cbce",
+        "bytes": 1424,
+        "sha256": "2e053d766988db016222b73f5b8616f3a6a6258aa86b34fcdb21bf55b55241df"
+      },
+      "sdkArchive": {
+        "tree": "165133ea9b85b5fdd2254a43c98aec78df108f3f",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "b5104e2931eb081180962d2b7021999eeca8cbce",
+            "bytes": 1424,
+            "sha256": "2e053d766988db016222b73f5b8616f3a6a6258aa86b34fcdb21bf55b55241df",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 1424,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "e4c1c5a8dfbe282b2880d9a07839bbe90a59e16d",
+        "bytes": 1176,
+        "sha256": "a0b0d51fc8884810e4691f8a664827aa72db693fce92f50562595357e5ab9f83"
+      }
+    },
+    "crash-directory-metadata-r1-authority-01": {
+      "kind": "operation_start",
+      "requestRaw": "{\n  \"idempotency_key\": \"heptabao-mac-crash-directory-metadata-11d8bdb0-authority-01\",\n  \"operation\": {\n    \"tool\": \"process_status\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"job_id\": \"1a1b2878800-fc05-7e6f\"\n    }\n  }\n}\n",
+      "requestPin": {
+        "blob": "7b58e4a0907aa476b67264c5c373affb8160150b",
+        "bytes": 225,
+        "sha256": "db50f4a78c4e7f1fc3f3cfb05fc871abf83bd939fd52ebdc41fe4902d0d25373"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "f312519d9c9bdffc375a5019c2334debfafa0489",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "fe8d6bf91f45b7f3f6f34f584023aeb30be40350",
+            "bytes": 867,
+            "sha256": "77923fd98b3b522d50aa1b7e1036e2b6707d9b09cbf775e73bcc534cbd4cc780",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "2a0fe5d562be788991953df5d5a2eaed308ea531",
+            "bytes": 730,
+            "sha256": "80ec7a2a3bb2bb4aca451e3bdad211846eef7fda6f9ecfccd50ca919420b1923",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "7b58e4a0907aa476b67264c5c373affb8160150b",
+            "bytes": 225,
+            "sha256": "db50f4a78c4e7f1fc3f3cfb05fc871abf83bd939fd52ebdc41fe4902d0d25373",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1822,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "3a2628863136de767f8bf6d84df6ac02d4a21993",
+        "bytes": 709,
+        "sha256": "8cf2fe8f6b67646b55f716cc38b7710448f9558971482db6d5ba533a74d1ba20"
+      },
+      "sdkArchive": {
+        "tree": "c51b364e8a46df29ceb9977fdd6dd4b898a6c5fa",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "3a2628863136de767f8bf6d84df6ac02d4a21993",
+            "bytes": 709,
+            "sha256": "8cf2fe8f6b67646b55f716cc38b7710448f9558971482db6d5ba533a74d1ba20",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 709,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "1d13806e697cf45ce10820c71daf10587b28fde0",
+        "bytes": 548,
+        "sha256": "a444ab3d3c5f3478906316d2caef2732a6976e66c521500846e66a04c50a534f"
+      }
+    },
+    "crash-directory-metadata-r1-authority-01-status-01": {
+      "kind": "operation_status",
+      "requestRaw": "{\n  \"operation_id\": \"2851b281ace8ee7ee6105083af2e8ca18595aa27340e1eb815044eb1360f0904\"\n}\n",
+      "requestPin": {
+        "blob": "97ce0add76d7d608118bc28494415aabe0ae774f",
+        "bytes": 89,
+        "sha256": "516ec05bcb5ea1a809c881f06ea37a870b10ecce4f0adadb9086b95033315e94"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "f5bbd0f8ca9ea50f16b0de75d733efce37a6a070",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "81a4f331ff1723b6bf57bdfd6aff2ca78e8f0bd3",
+            "bytes": 939,
+            "sha256": "fbc7736aa19db8b8a5ecc28875eb89153c24a5592982dbd9757c16f4d0b420fe",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "24aa75cc149d9d333d58abf8014e6cfe51302074",
+            "bytes": 802,
+            "sha256": "087322d753bccccfe82eb4455cd342bf3215a883fc544cee904a39b32c37285e",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "97ce0add76d7d608118bc28494415aabe0ae774f",
+            "bytes": 89,
+            "sha256": "516ec05bcb5ea1a809c881f06ea37a870b10ecce4f0adadb9086b95033315e94",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1830,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "673150130a27847fc31239204ebadd35fd52da1a",
+        "bytes": 980,
+        "sha256": "7f38b1148bad50302f598521b95838c0ac6bd0ee9f07313c7897f262b981c272"
+      },
+      "sdkArchive": {
+        "tree": "c5091e9cbd479b876f0a5a0cd92e1be28c95734b",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "673150130a27847fc31239204ebadd35fd52da1a",
+            "bytes": 980,
+            "sha256": "7f38b1148bad50302f598521b95838c0ac6bd0ee9f07313c7897f262b981c272",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 980,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "2a531d41af118f3a1e94dd924d41be789625db5b",
+        "bytes": 805,
+        "sha256": "0f6892ff1639b9040807b952accb48c5c7f1db528e502b8a62eb8af939a60520"
+      }
+    },
+    "crash-directory-metadata-r1-authority-01-page-000000": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"2851b281ace8ee7ee6105083af2e8ca18595aa27340e1eb815044eb1360f0904\",\n  \"offset\": 0,\n  \"limit\": 8192\n}\n",
+      "requestPin": {
+        "blob": "70b3553ce396faeeb87d5fe8f4f0638715abd05a",
+        "bytes": 121,
+        "sha256": "3de9e24c90905de52d2bb45543030066c4c476c28fbf31d3e4516a9775e21e57"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "ac556ba79c5319cdad35f861b80a1980d70056f6",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "e3afa49d69fa9f9a2a1104e822923ab1d5a191b4",
+            "bytes": 942,
+            "sha256": "2980777dc347cb3c29ea4594c3e95cf687045050951f7944945ac39e29989609",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "d0989577c11847c47dfe4ec2437b325ac2837223",
+            "bytes": 805,
+            "sha256": "ac32e38bd811811eb60ee823e43efe453c7794385522a74617aee26ecd0853b9",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "70b3553ce396faeeb87d5fe8f4f0638715abd05a",
+            "bytes": 121,
+            "sha256": "3de9e24c90905de52d2bb45543030066c4c476c28fbf31d3e4516a9775e21e57",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1868,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "104c0d67b0766d588cddb5889896b708cfb04b14",
+        "bytes": 2068,
+        "sha256": "59153ae3eaede1229b304906f65b084a8ab5938229663fcb619101bb376b56ec"
+      },
+      "sdkArchive": {
+        "tree": "c4cc8341d97263c3f6df3fda0f0c7a71710fbd8a",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "104c0d67b0766d588cddb5889896b708cfb04b14",
+            "bytes": 2068,
+            "sha256": "59153ae3eaede1229b304906f65b084a8ab5938229663fcb619101bb376b56ec",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 2068,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "216a0899fe5b584ef706e0dc0764fd599c74e391",
+        "bytes": 1897,
+        "sha256": "dd848bb11d8ad4fad1d216a69d618d3717aa76524e4e36fabd8b89d0513fcf84"
+      }
+    },
+    "crash-directory-metadata-r1-streams-01": {
+      "kind": "operation_start",
+      "requestRaw": "{\n  \"idempotency_key\": \"heptabao-mac-crash-directory-metadata-11d8bdb0-streams-01\",\n  \"operation\": {\n    \"tool\": \"process_read\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"job_id\": \"1a1b2878800-fc05-7e6f\",\n      \"stdout_offset\": 0,\n      \"stderr_offset\": 0,\n      \"limit\": 16384\n    }\n  }\n}\n",
+      "requestPin": {
+        "blob": "ecae352a6f9960a27b954ce6e596a99c63eccb62",
+        "bytes": 295,
+        "sha256": "08f3cce37cfcff4a7c7a5092bb0e1afe6751570f3fd5eaf7009868cbdece6b55"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "ece93e4a4d20f4783917e89785d02f32cec5feed",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "0cddc29d621151c5b616b1521d1ab18349dd320b",
+            "bytes": 865,
+            "sha256": "f6427cd622daad3796ede3b18d71c178ed9d0da0ac918453f368219d262f13cb",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "7f4c3f77d5e7a78d13aaf977da30ce2a3ff9fb03",
+            "bytes": 728,
+            "sha256": "7c220378650acc77fe159f512de64e1180c4a175f10b8cde67aab3c00fc00542",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "ecae352a6f9960a27b954ce6e596a99c63eccb62",
+            "bytes": 295,
+            "sha256": "08f3cce37cfcff4a7c7a5092bb0e1afe6751570f3fd5eaf7009868cbdece6b55",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1888,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "2a36e3e56cae76aa9a0af812678a5f223dcd2c70",
+        "bytes": 707,
+        "sha256": "52de9f58e72a8feae37e8112355360629ef8aacd44e2978d90ac4066180947a5"
+      },
+      "sdkArchive": {
+        "tree": "c0248cd97af27c4c4d94f723b4148af1e53fd4ce",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "2a36e3e56cae76aa9a0af812678a5f223dcd2c70",
+            "bytes": 707,
+            "sha256": "52de9f58e72a8feae37e8112355360629ef8aacd44e2978d90ac4066180947a5",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 707,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "af268e2a6408da3b8e8b048fce480ef847f6defa",
+        "bytes": 546,
+        "sha256": "d9190c6066477505980213ff7295730e74ac7a737c9df82778b532b0b1d9a8ad"
+      }
+    },
+    "crash-directory-metadata-r1-streams-01-status-01": {
+      "kind": "operation_status",
+      "requestRaw": "{\n  \"operation_id\": \"db18ef812e8b44fc254dbf107e3cf355e36927ecd58cb75b30c24072cf592d70\"\n}\n",
+      "requestPin": {
+        "blob": "13981eaaaf74bedf19ca3e61e2f67ab7c011665f",
+        "bytes": 89,
+        "sha256": "6d419ebb6b97a0b15b65260f2d5372fdae0ad0cd24f6265e94169ec020b45926"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "8f5d318e4c64581dda25cbd8288257f81c88608a",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "b118cdf1e1072832e14077a0811590da5f46a66e",
+            "bytes": 937,
+            "sha256": "9bfe592efafe007e487192bda4d17181aae95f292a1bc274914c8f453cb112a9",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "916f42320cf2d17157cdc9362b63fa6bbbbfd2e4",
+            "bytes": 800,
+            "sha256": "bba86b30435df87e85821fe068a060f6a9210145de5ff2b3e532c2b3fa840f96",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "13981eaaaf74bedf19ca3e61e2f67ab7c011665f",
+            "bytes": 89,
+            "sha256": "6d419ebb6b97a0b15b65260f2d5372fdae0ad0cd24f6265e94169ec020b45926",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1826,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "c58785ef89658495c4c8669ea96e4871f05de6c6",
+        "bytes": 978,
+        "sha256": "07f3783c7f6bebb570f4eef8c284a06ed12cb653387d28fe8ad69e8bec0f8800"
+      },
+      "sdkArchive": {
+        "tree": "57290a8d1bdf26894cdaec38283b6d0d3121be7d",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "c58785ef89658495c4c8669ea96e4871f05de6c6",
+            "bytes": 978,
+            "sha256": "07f3783c7f6bebb570f4eef8c284a06ed12cb653387d28fe8ad69e8bec0f8800",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 978,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "a9fcc0e23d184c72f40439fe70a507009a2b7b5a",
+        "bytes": 803,
+        "sha256": "89f9bf3ef1827c2cd5a6227070120ac3d5b23ef136667f6f71379e646c07c60b"
+      }
+    },
+    "crash-directory-metadata-r1-streams-01-page-000000": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"db18ef812e8b44fc254dbf107e3cf355e36927ecd58cb75b30c24072cf592d70\",\n  \"offset\": 0,\n  \"limit\": 8192\n}\n",
+      "requestPin": {
+        "blob": "bbe69400b4db4e50831fbab363e1a359c5d55ff7",
+        "bytes": 121,
+        "sha256": "bb7be2c173bfee2d9f57fb992a731e5e685bf7a64e9eee1ffbd3341c7db97d10"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "88231b45e76d81664bf8f24491fede8a60a2749c",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "58f5898ddb3df10a7d4a404b9803b112d4553d52",
+            "bytes": 940,
+            "sha256": "ace7706c311f1f646bd6cffc3e0ea29b6278dcb6129f01668893d13f91324970",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "7ee74812f8985265b3ee88acff3f2a5083df2315",
+            "bytes": 803,
+            "sha256": "e715f21df4cadd73aca37299709c921efc2ef224dbb9a0c9b4af523aa95ac2f1",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "bbe69400b4db4e50831fbab363e1a359c5d55ff7",
+            "bytes": 121,
+            "sha256": "bb7be2c173bfee2d9f57fb992a731e5e685bf7a64e9eee1ffbd3341c7db97d10",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1864,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "7bf16fd68a9bb2cfacba3f1c4dd232efeee3c567",
+        "bytes": 8474,
+        "sha256": "01317f79631686c141e7580f53aaa853297aa7df5ace4b89b789c6b52a3703a2"
+      },
+      "sdkArchive": {
+        "tree": "ef9e385f6fa5b767491eb996bd10784570c1778e",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "7bf16fd68a9bb2cfacba3f1c4dd232efeee3c567",
+            "bytes": 8474,
+            "sha256": "01317f79631686c141e7580f53aaa853297aa7df5ace4b89b789c6b52a3703a2",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 8474,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "ab0101cc6315a4c6d0ab299970c43e3ca2f66821",
+        "bytes": 8303,
+        "sha256": "3be5985f35752611ffb5715cc107fb705fc044c60e678b5be164f713a2c12cb2"
+      }
+    }
+  },
+  "completedObservers": [
+    {
+      "id": "2851b281ace8ee7ee6105083af2e8ca18595aa27340e1eb815044eb1360f0904",
+      "tool": "process_status",
+      "payload": {
+        "blob": "f4ae239798ace931833de601a852ed98dd3aeab1",
+        "bytes": 910,
+        "sha256": "e7c39881720a952025811f66c1621cf1f14506e0383e07f617f5f60fda4a4570"
+      },
+      "payloadTree": "339b9c9095184d21e8038f480026bb14c6dd96ed",
+      "nativeText": {
+        "blob": "eff29a981b623eccb231cf37de7427344b48b0f3",
+        "bytes": 731,
+        "sha256": "a4b2bcc06482a45c893f1c31bb1cadfd1da4e410d979c18ae5133bfa81e035b2"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "db18ef812e8b44fc254dbf107e3cf355e36927ecd58cb75b30c24072cf592d70",
+      "tool": "process_read",
+      "payload": {
+        "blob": "fe5587c8d9d39d6de062f006b415ea2c2ab9d4d8",
+        "bytes": 5715,
+        "sha256": "81a310ea06bc4c1a417c9650b2f3f38dbdc78836160e1d74ffe819447fb1bdfa"
+      },
+      "payloadTree": "82aef7c6f05e6c8449e6e7f6baede748e862ab97",
+      "nativeText": {
+        "blob": "6eadd71112f91be41fe210bb2227ab6e659ffaaf",
+        "bytes": 5282,
+        "sha256": "2f7036ae47b52c1e20e1030838814d1ab8b53e80009eb6d093162ccc4b33fcd9"
+      },
+      "pages": 1,
+      "completedInactive": true
+    }
+  ],
+  "nextStdout": 1604,
+  "nextStderr": 0,
+  "localJournalAvailable": false,
+  "gitFirstExplicitlyRequiredByThisRootGO": true
+}

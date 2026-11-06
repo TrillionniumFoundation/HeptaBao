@@ -1,0 +1,109 @@
+{
+  "schema": "heptabao.independent.native-jwt-batch.source-review.r1",
+  "review_scope": "Substantive offline review of native local JWT batch custody on frozen 02b; no Rust compilation, execution, Native or product changes.",
+  "proposal_tree": "050412090f97b0e98624bb0e87703ec886efbfff",
+  "base_commit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+  "base_tree": "9781e9615ac5fb068d217241c74bb54bf87942cf",
+  "conclusion": "No concrete production security or Rust type/visibility blocker found in the reviewed three-file proposal and actual pinned dependencies. One meaningful regression proof gap must be corrected before claiming paired Auth/Namespace atomicity. Compile and real regressions remain mandatory.",
+  "required_test_correction": {
+    "id": "JWT-BATCH-PAIR-SNAPSHOT",
+    "severity": "test-proof-gap",
+    "source_blob": "5dda793e51541daf720936d6e0521fe9280d7ad6",
+    "function": "native_jwt_batch_snapshot",
+    "finding": "The helper includes the old complete auth_mounts/jwt_mounts/tokens/root Identity projection plus batch_authority, but omits both the Auth namespace_batch_registry and the complete NamespaceRegistry. Its failure comparisons therefore cannot detect a standalone Namespace lifecycle change or ledger mismatch.",
+    "minimal_fix": "Retain all existing fields, add the complete serialized state.namespaces and the auth namespace_batch_registry value. Use existing bounded owner_store/secret serializer, private Zeroizing byte equality and erase_json; do not serialize EngineState or remove fields to make comparisons pass.",
+    "root_acknowledged": true,
+    "successor_reviewed": false
+  },
+  "reviewed_boundaries": [
+    {
+      "name": "One verifier, fresh private witness",
+      "evidence": "auth.rs c755af145c643bba143a0733459764bdb6fbd256: one verify_native_with_user_claim_and_lifetime branch; service.rs 2c850912c06599a46430d3cf59bda3f5b512b391 initializes authenticated_jwt_lifetime=None and exports only after finish_identity_response_observed succeeds. Native service candidate independently initializes jwt_lifetime=None; ownership uses take(). No second assertion verification was added."
+    },
+    {
+      "name": "Real Identity before sealing",
+      "evidence": "service_identity.rs 3ecc61336c4678fe99b0224dce4650b1744e59d3 binds mount accessor/alias, checks disabled entity, binds actual issued entity and computes Identity policies before finish_pending_batch_observed. Auth batch finalizer 8142c4226a0fb6d9e010a3e52613ecc0c8a03e2e requires login entity, installs actual namespace binding, seals once and updates only candidate authority."
+    },
+    {
+      "name": "Closed batch claim inspection",
+      "evidence": "auth_native_jwt.rs e082580797241ba4b57b3808e8a53f75ddcfece8 opens actual sealed batch through batch_principal_observed, validates root namespace/current namespace binding, no parent/origin/token-role/precision/CIDRs, exact role metadata/path/policies/expiry and same response entity, empty accessor/nonrenewable, no service-token backing row. Opening is batch authentication, not a second JWT assertion verifier."
+    },
+    {
+      "name": "Paired lifecycle and exact root delta",
+      "evidence": "service_native_batch_lifecycle.rs 2e6b2df10e70aa0669ab27877fde75a1c5ad1068 prepares only a throw-away deterministic catalog; admit_domain_candidate checks original catalog/registry/root and candidate equality; admit_plan permits only exact Namespace ledger plus existing Auth/Identity delta. Candidate non-Identity engine changes remain rejected by native_namespace_identity_only_change."
+    },
+    {
+      "name": "Source and candidate eligibility",
+      "evidence": "Both source and candidate still require root-only JWT mount/state, local config, valid user-claim/renewal/token graph and real origin markers. Added batch issuance validator checks existing authority and allowed typed mount state. The patch removes the service-only type guard without removing the retained JWT local/root, graph, renewal and public-origin constraints."
+    },
+    {
+      "name": "Expiry and original clock",
+      "evidence": "Recomputed claims expiry uses the same source jwt_token_expiry function, role TTL/max/period and explicit cap calculated from actual signed-batch issued_at. Original NativeJwtLifetime from the JWT verifier is checked at bind, prepublication callbacks and post-audit reply. Existing RequestClock and OriginalDeadline are retained; no renewed deadline or JWT revalidation is added."
+    },
+    {
+      "name": "Delivery after audit",
+      "evidence": "Before publication the exact JWT status/body digest is retained. Final complete_native_auth_delivery compares it and checks exact generation/checkpoint, original source Auth digest and warm NativeProof, current Auth and issued credential under original clock. Post-commit audit failure keeps the durable root and suppresses credentials; no rollback or automatic replay is claimed."
+    },
+    {
+      "name": "Rust shape and visibility",
+      "evidence": "VerifiedBatchClaims getters exist in 7098a1b76c1d0b83414bf93697f0d24a1a052e28; auth sibling visibility permits all accessed pub(super) methods. The one bind_successful_login production call adds the matching origin_peer argument; no new public AuthResponse field or enum/provider variant. This is a source check only, not a successful compiler result."
+    }
+  ],
+  "namespace_snapshot_support": {
+    "state_type": "CowOwner<namespaces::NamespaceRegistry>",
+    "namespace_source": {
+      "blob": "336d6de0c1937c82d776e2e6538c213981e2b052",
+      "fields": [
+        "entries",
+        "native_flat_retirement_format",
+        "batch_lifecycle",
+        "deletions",
+        "next_incarnation",
+        "retired_custody",
+        "custody_frontiers",
+        "closed_auth_routes",
+        "workflows"
+      ],
+      "deriveSerialize": true
+    },
+    "auth_registry_source": {
+      "blob": "ca30ec7d2dca07c70ce34b8495ec0fce9a44adf0",
+      "fields": [
+        "cluster_id",
+        "active",
+        "next_incarnation",
+        "retired_legacy_paths"
+      ],
+      "deriveSerialize": true
+    },
+    "ordinary_terminal_clock_in_these_registry_types": false,
+    "justification": "The existing native lifecycle independently hashes the complete Namespace object and expects it unchanged at delivery; ordinary terminal Auth clock updates are already excluded by the old fixture projection. Durable workflow/catalog fields must remain included."
+  },
+  "tests": {
+    "new_test_functions": 6,
+    "renamed_existing_negative_test": true,
+    "covered_source_paths": [
+      "12 mount/role type combinations",
+      "sealed stateless grants versus real service rows",
+      "same Identity and cold reopen",
+      "bad signature and prepublication assertion expiry",
+      "disabled/re-enabled Identity",
+      "forced batch and service period/use-limit semantics",
+      "empty policies/no-default/root rejection",
+      "postcommit audit/response/assertion expiry"
+    ],
+    "limits": [
+      "No execution or Rust compile.",
+      "The proposed helper does not yet prove the paired Namespace invariants until required correction is applied.",
+      "New batch tests do not replace old source-clock/deadline/proof tests or imply HA, remote JWKS or child-namespace qualification.",
+      "No separate direct-batch role-deletion or mount-disable semantic claim is made by these six tests."
+    ]
+  },
+  "action_counts": {
+    "Native": 0,
+    "Rust": 0,
+    "Python": 0,
+    "product_mutations": 0,
+    "author_verifier_runs": 0
+  }
+}

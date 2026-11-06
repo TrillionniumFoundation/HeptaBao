@@ -1,0 +1,3 @@
+# Final 02b Mac source-stage report original body
+
+Four original native calls, one returned binary observer, two immutable payload pages. The original ten earlier calls are unchanged. Every original request, intent, arm, SDK, native text and Git mutation ACK is carried with the whole immutable payload and 10,558-byte decoded report. All returned observers are completed/inactive; there is no pending call or future. The final JSON is read only after its whole external archive. The independent root report22 qualification is cited separately and grants only source-stage qualification. No Cargo, controls or candidate runtime was started by this body observation.

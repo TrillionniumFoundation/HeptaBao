@@ -1,0 +1,92 @@
+{
+  "schema": "heptabao.root.x230-container-network-role-exact-GO.r1",
+  "authorization": "GO",
+  "issuedAtUtc": "2026-11-06 20:08:41 UTC",
+  "owner": "/root",
+  "source_packet": "abe40c20c32ea362dcec420bc955a1f343ad19dd",
+  "request": {
+    "blob": "eccb89f3db9048af3cea29f57c8754d486142208",
+    "bytes": 1180,
+    "sha256": "e5c359c01e3b73241142c314780cdf5113cb6f75409ac1af8ee80a0225c24f4b"
+  },
+  "journal": {
+    "slot": "root_x230_current_container_networkrole_20261106_r1",
+    "source": {
+      "blob": "9b0214d854b48bd5d8ea519fe471dd75dcd7408d",
+      "bytes": 19069,
+      "sha256": "dda879136ce4991237c65621098b377bbb4c1ab54870c3eb6b61b2b6c521e303"
+    }
+  },
+  "digest": "e934c929844255c0ae9ba5feb72d2e9d6ae16af9979f1e935544cbeda8c54583",
+  "fingerprint": "16804277289775945152",
+  "maximumProcessStarts": 1,
+  "start": {
+    "host": "x230",
+    "executable": "/usr/bin/docker",
+    "cwd": "/",
+    "timeout_seconds": 30,
+    "idempotency_key": "heptabao-x230-current-container-networkrole-r1-f6798549"
+  },
+  "scope": {
+    "host": "x230",
+    "command": "one docker container inspect on exact current container ID",
+    "knownUnixSocketOnly": true,
+    "fields": [
+      "container_id",
+      "name",
+      "image_reference",
+      "running",
+      "pid",
+      "started_at",
+      "restart_count",
+      "network_mode",
+      "restart_policy",
+      "server_literal_argument",
+      "dev_literal_argument"
+    ],
+    "argsValuesExported": false,
+    "argsInspectedOnlyForFixedLiteralBoolean": true,
+    "containerExec": false,
+    "containerMutation": false,
+    "clientInventoryComplete": false,
+    "backupInventoryComplete": false,
+    "environmentValuesProjectedOrExported": false,
+    "labelsProjectedOrExported": false,
+    "dockerCLIReceivesFullInspectResponseInternally": true
+  },
+  "budgets": {
+    "outerSeconds": 30,
+    "statusObservers": 8,
+    "streamObservers": 8,
+    "perObserverStatus": 8,
+    "perObserverPages": 128,
+    "immutablePageBytes": 8192,
+    "payloadMaxBytes": 1048576,
+    "streamReadBytes": 16384
+  },
+  "sourceChecks": {
+    "onlyFormatAndIdempotencyChanged": true,
+    "onlyThreeJournalLiteralChanges": true,
+    "reverseReconstructedOriginal": true,
+    "correctStdinBindingApplied": true,
+    "NoNativeDispatched": true
+  },
+  "priorFullObservation": "eda7584d47e6be19ca62f54ef866934a6b132199",
+  "sequence": [
+    "Initialize absent slot once from this exact whole GO.",
+    "Whole external request/intent/armed before a separate model boundary and unique process_start.",
+    "Archive original SDK before interpreting; only same returned job and same immutable observer IDs with full contiguous streams.",
+    "No restart, widened inspect, container exec, credentials, environment projection or mutation; UNKNOWN never grants replay."
+  ],
+  "lane_allocation": {
+    "maximumNativeLanes": 2,
+    "root": 1,
+    "authbus_migration": 1,
+    "compatibility_audit": 0,
+    "ha_validation": 0
+  },
+  "inventoryComplete": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

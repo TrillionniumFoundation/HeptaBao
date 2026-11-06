@@ -1,0 +1,60 @@
+function verifyFixedCrashR4Source(files){
+ const checks=[];function ck(name,v){checks.push({name,passed:v===true});if(v!==true)throw Error(name);}
+ const b=files["source.before.original.py"],a=files["source.py"],jb=files["journal.before.original.js"],ja=files["journal.js"],c=JSON.parse(files["CONTRACT.public.json"]),p=JSON.parse(files["patches.exact.public.json"]);
+ const samePin=(s,p)=>JSON.stringify(gitBlobMeta(s))===JSON.stringify(p);
+ ck("before/source-exact",gitBlobMeta(b).blob==="40be985785395775c3c80140b632da82185db21c");
+ ck("before/journal-exact",gitBlobMeta(jb).blob==="6726c0f76b9fdd4fd28c270c0e4b25fca799a648");
+ ck("after/source-pin",samePin(a,c.source));ck("after/request-pin",samePin(files["request.exact.json"],c.request));ck("after/journal-pin",samePin(ja,c.journal));
+ let r=b;ck("patches/eight",p.length===8);for(const [i,x]of p.entries()){ck("patch/"+i+"/unique",r.split(x.before).length===2);r=r.replace(x.before,x.after);}ck("patches/exact-reconstruction",r===a);
+ const sf=strictApplySource(b,files["source.forward.diff"]),si=strictApplySource(a,files["source.inverse.diff"]);
+ ck("source/strict-8-forward",sf.raw===a&&sf.hunks===8);ck("source/strict-8-inverse",si.raw===b&&si.hunks===8);
+ const jf=strictApplySource(jb,files["journal.forward.diff"]),ji=strictApplySource(ja,files["journal.inverse.diff"]);
+ ck("journal/strict-2-forward",jf.raw===ja&&jf.hunks===2);ck("journal/strict-2-inverse",ji.raw===jb&&ji.hunks===2);
+ function defs(s){const lines=s.split("\n"),out={};let cls="";for(let i=0;i<lines.length;i++){const cm=/^class (\w+)/.exec(lines[i]);if(cm)cls=cm[1];const m=/^( *)def (\w+)\(/.exec(lines[i]);if(!m)continue;let end=i+1;while(end<lines.length){const l=lines[end];if(l.trim()&&l.length-l.trimStart().length<=m[1].length)break;end++;}out[(m[1].length?cls+".":"")+m[2]]=lines.slice(i,end).join("\n").trimEnd();}return out;}
+ const bd=defs(b),ad=defs(a);
+ for(const [name,text]of Object.entries(bd)){if(["fixed_text_projection","crash_projection","main"].includes(name))continue;ck("unchanged/"+name,ad[name]===text);}
+ ck("definitions/none-removed",Object.keys(bd).every(k=>k in ad));
+ ck("definitions/only-three-added",Object.keys(ad).filter(k=>!(k in bd)).sort().join(",")==="diagnostic_slot,json_kind,namespace_field");
+ ck("constants/all-original",b.slice(0,b.indexOf("class Refused"))===a.slice(0,a.indexOf("class Refused")));
+ ck("full-crash-function-only-namespace-call",ad.crash_projection.replace("namespace_field(termination.get('namespace'))","enum_field(termination.get('namespace'),('DYLD','SIGNAL','CODESIGNING',\n             'SANDBOX','LIBSYSTEM','RUNNINGBOARD','WATCHDOG','ENDPOINTSECURITY','TCC'))")===bd.crash_projection);
+ ck("main-only-schema",ad.main.replaceAll("heptabao.mac-one-public-node-ips-fixed-file-projection.r4","heptabao.mac-one-public-node-ips-fixed-file-projection.r3")===bd.main);
+ ck("namespace/ascii-64",ad.namespace_field.includes("re.fullmatch(r'[A-Z0-9_]{1,64}',value)")&&ad.namespace_field.includes("type(value) is str"));
+ ck("namespace/no-unaccepted-value",ad.namespace_field.includes("'value':value if accepted else None"));
+ ck("namespace/no-semantic-claim",ad.namespace_field.includes("'semanticMeaningClaimed':False"));
+ ck("slot/list16",ad.diagnostic_slot.includes("need(len(value)<=16,'bounded_diagnostic_slot_items')"));
+ ck("slot/nonstring-count",ad.diagnostic_slot.includes("row['nonStringListItems']=len(value)-len(texts)")&&ad.diagnostic_slot.includes("texts=[x for x in value if type(x) is str]"));
+ ck("slot/no-unknown-traversal",!/\.(?:keys|items|values)\(/.test(ad.diagnostic_slot));
+ ck("slot/closed-shape-no-value",ad.diagnostic_slot.includes("'rawValueOrHashExported':False")&&!/['"](?:value|raw|text)['"]\s*:/.test(ad.diagnostic_slot));
+ const start="    indicator=termination.get('indicator')",stop="    for key in ('indicator','reasons','details'):";
+ ck("old-termination-dyld-guards-unchanged",ad.fixed_text_projection.slice(ad.fixed_text_projection.indexOf(start),ad.fixed_text_projection.indexOf(stop))===bd.fixed_text_projection.slice(bd.fixed_text_projection.indexOf(start),bd.fixed_text_projection.indexOf("    need(len(slots)<=32")));
+ const oldMiddle=bd.fixed_text_projection.slice(bd.fixed_text_projection.indexOf("    need(len(slots)<=32"),bd.fixed_text_projection.indexOf("    return {"));
+ const newMiddle=ad.fixed_text_projection.slice(ad.fixed_text_projection.indexOf("    need(len(slots)<=32"),ad.fixed_text_projection.indexOf("    patterns={"));
+ ck("shared-text-limits-and-library-parser-unchanged",oldMiddle===newMiddle);
+ ck("slots/two-fixed-roots",ad.fixed_text_projection.includes("for root_key in ('asi','asiSignatures'):"));
+ ck("slots/no-arbitrary-dict-enumeration",!/\b(?:crash|termination|asi|obj)\.(?:keys|items|values)\(/.test(ad.fixed_text_projection));
+ ck("slots/dyld-not-double-counted",ad.fixed_text_projection.includes("if not (root_key=='asi' and key=='dyld'):\n                slots.extend(texts)"));
+ ck("slots/static-29-contract",c.publicAllowlist.diagnosticShapes.rows===29&&c.publicAllowlist.diagnosticShapes.staticDictionaryKeys.length===12&&c.publicAllowlist.fixedTextSlots.length===29);
+ for(const key of c.publicAllowlist.diagnosticShapes.staticDictionaryKeys)ck("slot-key/"+key,ad.fixed_text_projection.includes("'"+key+"'"));
+ ck("tokens/22-25-7",c.publicAllowlist.diagnosticLexicalOnly.length===22&&c.publicAllowlist.publicApiTokens.length===25&&c.publicAllowlist.publicErrnoTokens.length===7);
+ ck("projection/no-freeform",ad.fixed_text_projection.includes("'freeFormDiagnosticTextExported':False")&&c.publicAllowlist.freeFormDiagnosticSentencesAllowed===false);
+ ck("projection/no-full-text-or-cause",ad.fixed_text_projection.includes("'allTextClassified':False")&&ad.fixed_text_projection.includes("'causalConclusionClaimed':False"));
+ ck("projection/no-value-return",!/'(?:text|lower|lines|slots)':/.test(ad.fixed_text_projection));
+ ck("projection/only-known-api-token-output",ad.fixed_text_projection.includes("public_api=[token for token in api_tokens if re.search("));
+ ck("projection/only-known-errno-token-output",ad.fixed_text_projection.includes("public_errno=[token for token in ('EPERM','EACCES','EAGAIN','ENOMEM','EINVAL','ENOSYS','EDEADLK')"));
+ const req=JSON.parse(files["request.exact.json"]),old=JSON.parse(files["request.before.original.json"]);
+ ck("request/whole-source-in-stdin",req.stdin===a&&!("stdin_text" in req));
+ const rr={...req},oo={...old};delete rr.stdin;delete rr.idempotency_key;delete oo.stdin;delete oo.idempotency_key;
+ ck("request/other-fields-identical",JSON.stringify(rr)===JSON.stringify(oo));
+ ck("request/one-new-key",req.idempotency_key==="heptabao-mac-public-node-crash-"+gitBlobMeta(a).sha256.slice(0,8)+"-20261106-r4");
+ const pin=gitBlobMeta(files["request.exact.json"]);
+ let expected=jb.replace('const GF_SLOT = "owner_authbus_public_node_crash_fixed_file_gitfirst_r3";','const GF_SLOT = "owner_authbus_public_node_crash_fixed_file_gitfirst_r4";');
+ expected=expected.replace(/const GF_REQUEST = \{blob:"[a-f0-9]{40}",\n bytes:\d+,sha256:"[a-f0-9]{64}"\};/,'const GF_REQUEST = {blob:"'+pin.blob+'",\n bytes:'+pin.bytes+',sha256:"'+pin.sha256+'"};').replace("heptabao-mac-public-node-crash-4515e617-","heptabao-mac-public-node-crash-"+gitBlobMeta(a).sha256.slice(0,8)+"-");
+ ck("journal/only-slot-pin-prefix",expected===ja);
+ const report=JSON.parse(files["prior-R3.stdout.original.json"]);
+ ck("evidence/exact-prior-stdout",gitBlobMeta(files["prior-R3.stdout.original.json"]).blob==="3f38de4e73c785677d17e3e634b70a4347bd719a");
+ ck("evidence/exact-fixed-file",JSON.stringify(report.candidates[0].file.identity)===JSON.stringify(c.scope.fixedFull9));
+ ck("evidence/path-unqualified-preserved",report.candidates[0].projection.matchesOriginalFreshChild===false&&report.candidates[0].projection.procPath===null);
+ ck("evidence/unknown-namespace-preserved",report.candidates[0].projection.termination.namespace.present===true&&report.candidates[0].projection.termination.namespace.known===false&&report.candidates[0].projection.termination.namespace.value===null);
+ ck("contract/source-only",c.NativeCalls===0&&c.status==="SOURCE_ONLY_NO_NATIVE_GO");
+ return {schema:"heptabao.fixed-ips-r4-source-mechanical-checks.r1",passed:checks.every(x=>x.passed),checkCount:checks.length,checks,NativeCalls:0,PythonExecuted:false,sourceOnly:true,crashCauseQualified:false};
+}

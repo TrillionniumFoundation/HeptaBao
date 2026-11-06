@@ -1,0 +1,118 @@
+{
+  "schema": "heptabao.root.final02b-Mac-source-only-stage-exact-GO.r1",
+  "authorization": "GO",
+  "issuedAtUtc": "2026-11-06 20:13:14 UTC",
+  "agent": "/root/ha_validation",
+  "scope": "one_create_only_independent_Mac_source_stage_on_exact_T5",
+  "source_packet": "d5fcaddbe3987efef34698b761b63a08169deea0",
+  "source": {
+    "blob": "b6a9190bc5856e42be2d8e750875675521ecf22d",
+    "bytes": 25130,
+    "sha256": "ea096d7a13c4501d4d39d7d953fb6fd35c49aad6051227884c06e179bc8db9fd"
+  },
+  "request": {
+    "blob": "bd3f20cc6390cc8519265142cf2fb8624cf87008",
+    "bytes": 254446,
+    "sha256": "21ca75b8e1ca736dd96f3e564a70e757dc487d758d216793af5b420c5d46c99e"
+  },
+  "carrier": {
+    "blob": "59b28b96c0f197d3f4d48a5fef0525aacfba753b",
+    "bytes": 228108,
+    "sha256": "1f67ce22d3f43e378eb76b8fb2a40feaffa1809e282931b33feec93c86c85141"
+  },
+  "journal": {
+    "slot": "final02b_mac_source_only_stage_gitfirst_r1",
+    "source": {
+      "blob": "0bcb0ae541da1865f788a26cdb4a884425c50cbd",
+      "bytes": 19047,
+      "sha256": "f74c58e06d949fe5e3aac9c9e7f33b3f68504ce9e6721bc59c3309c6a7c7424d"
+    }
+  },
+  "digest": "d48fe264fd2e15696a71c504cffb22a12b2b7cb852e6918a17d4b55694e4bcb1",
+  "fingerprint": "15316709781082609001",
+  "root_review": {
+    "blob": "882b596fa97f2f0b4eb686dba40a473ea0af3555",
+    "bytes": 1870,
+    "sha256": "a77c58a60af8b3bc642ca5340ec60f3e564c7e09e83182da808e106c4f5ffd6c"
+  },
+  "root_bundle_transport": {
+    "blob": "6b95f49c60c5a7441668cb0edb43ea2769d0c606",
+    "bytes": 1419,
+    "sha256": "92a4159d9eb18f77b3ab6019874a9669d1b06e73ccf158060f76a77b8b4f25e4"
+  },
+  "candidate": {
+    "commit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "tree": "9781e9615ac5fb068d217241c74bb54bf87942cf",
+    "sole_parent": "025b05a340de841b8161c1120344e86eae30eb97",
+    "branch": "codex/heptabao-snapshot49-jwt147-9781e961-20261106",
+    "leaf_count": 3932,
+    "tracked_bytes": 62537554,
+    "index_sha256": "c6cef770842a1b0006b4c86a58e325802d00dd5779dede468262f2693c3246cc",
+    "ancestry_from495_count": 16,
+    "history_count": 3768
+  },
+  "roots": {
+    "new_source_root": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-02b90762-src-20261106-r1",
+    "new_source": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-02b90762-src-20261106-r1/source",
+    "control": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-02b90762-src-20261106-r1/control",
+    "new_bundle": "/Volumes/T5/hepta-vnext-recovery-20261013/canonical-hb-02b90762-from495-20261106-r1.bundle",
+    "retained_old_source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/source",
+    "old_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "old_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+    "T5_VolumeUUID": "FB804D1B-24CB-4D6E-AEA7-A9E180807758"
+  },
+  "original_budgets": {
+    "stage_absolute_seconds": 300,
+    "Git_leaf_seconds": 90,
+    "clone_seconds": 180,
+    "outer_seconds": 360,
+    "diskutil_seconds": 30,
+    "cleanup_TERM_seconds": 5,
+    "cleanup_KILL_seconds": 5,
+    "stdin_bytes": 262144,
+    "one_tracked_file_bytes": 2097152,
+    "tracked_read_total_bytes": 134217728,
+    "canonical_read_cap": 4194304
+  },
+  "observation": {
+    "process_starts": 1,
+    "process_status_total": 16,
+    "process_read_total": 4,
+    "stream_read_bytes_each": 16384,
+    "total_stream_observation_bytes": 131072,
+    "status_per_returned_observer": 8,
+    "immutable_pages_per_observer": 128,
+    "immutable_page_bytes": 8192,
+    "payload_bytes": 1048576,
+    "simultaneous_call_or_future": 1
+  },
+  "start": {
+    "maximumCalls": 1,
+    "host": "mac",
+    "executable": "/opt/homebrew/bin/python3",
+    "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013",
+    "timeout_seconds": 360,
+    "idempotency_key": "heptabao-final02b-mac-source-only-20261106-r1-ea096d7a"
+  },
+  "sequence": [
+    "Whole exact GO and SOURCE; initialize absent slot once.",
+    "External whole exact request/intent/arm, cross model boundary, unique process_start.",
+    "Only original job authority and contiguous bounded stdout/stderr through same original observers; preserve all originals before interpretation.",
+    "Any failure or unknown stops this context without replay, new roots, wider limits or automatic replacement key."
+  ],
+  "lane_allocation": {
+    "maximumNativeLanes": 2,
+    "ha_validation": 1,
+    "compatibility_audit": 0,
+    "authbus_migration": 0,
+    "root": 0
+  },
+  "controlsPublished": false,
+  "CargoAuthorized": false,
+  "actualMacStageAtGO": false,
+  "futureStageReportInfoBodyAuthorized": false,
+  "productQualified": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

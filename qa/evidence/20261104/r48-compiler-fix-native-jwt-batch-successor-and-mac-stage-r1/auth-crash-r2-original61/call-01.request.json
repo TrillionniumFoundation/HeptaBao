@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-mac-public-node-crash-c9787a49-authority-01",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1b290bf3f-fc05-7ea9"
+    }
+  }
+}

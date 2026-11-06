@@ -1,0 +1,84 @@
+{
+  "schema": "heptabao.finalMac.stage-report-info.actual.r1",
+  "slot": "final02b_mac_source_only_stage_gitfirst_r1",
+  "originalJob": "1a1b27f85d6-fc05-7e49",
+  "originalMetadataObserver": {
+    "id": "a425aca935a47c7745f1b3693bd22b0dcee73ecd7a82117311656417f114c10f",
+    "tool": "file_info",
+    "payload": {
+      "blob": "bb35138fcd17e1013301fa3cf68c00a1d0be93f4",
+      "bytes": 608,
+      "sha256": "bf7a552123f3b3e08d6a07e767e8f7361fad7809f1d12c204d8954ae2ae1408d"
+    },
+    "payloadTree": "043d11cb5cc618ccbca373cf73ac0e619d8cd008",
+    "nativeText": {
+      "blob": "403c4e42950c658effdc705056ef1a4cd3a497f9",
+      "bytes": 491,
+      "sha256": "1bf1e54851a12c1bf47d8a8aea24a27697c753c758e7297256a5c374a8c7950b"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "actual": {
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-02b90762-src-20261106-r1/control/stage-result.public.json",
+    "size": 10558,
+    "sha256": "7d2e75f8038ba68c4ceeb5af4ec75bf8a6f528b2d394acad97ea0364b70d33e9",
+    "version": "16777244:72756440:10558:1793996068500746233:1793996068500755233",
+    "nativeText": {
+      "blob": "403c4e42950c658effdc705056ef1a4cd3a497f9",
+      "bytes": 491,
+      "sha256": "1bf1e54851a12c1bf47d8a8aea24a27697c753c758e7297256a5c374a8c7950b"
+    },
+    "originalOperation": "a425aca935a47c7745f1b3693bd22b0dcee73ecd7a82117311656417f114c10f",
+    "metadataPlatform": "darwin",
+    "groupObservedFromOriginalMetadata": true,
+    "full9Strings": [
+      "16777244",
+      "72756440",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "10558",
+      "1793996068500746233",
+      "1793996068500755233"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "newNativeCalls": 3,
+  "newImmutablePages": 1,
+  "totalOriginalCalls": 10,
+  "totalOriginalObservers": 3,
+  "oldSevenCallsUnchanged": true,
+  "oldState": {
+    "blob": "e82d1941b8648b9b7aaf5c32560f38cfc9c2b790",
+    "bytes": 279495,
+    "sha256": "bfac204edde767d039087ceb7f317db9b4aab7fe43895cc440fbfd5b1fec3071"
+  },
+  "newState": {
+    "blob": "ea1634b5464fc169818595de47f289759ccc9d16",
+    "bytes": 293697,
+    "sha256": "94c89371d188cf48e8f942e1e913d68018239125c61b29ccb87aa557266df5d2"
+  },
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "paused": false,
+  "currentNativeCalls": 0,
+  "currentFutures": 0,
+  "binaryReadAuthorized": false,
+  "sourceReportBodyQualified": false,
+  "rootGO": {
+    "blob": "785c98e66170b71b0a121ef554db8efb012d6f16",
+    "bytes": 4381,
+    "sha256": "c1bd94a351a60afb7b3e6219a9605eb8c52afe87b34f907e28d05e92aca21c84"
+  },
+  "preparationInspectionHistory": [
+    {
+      "kind": "preparation_not_submitted",
+      "reason": "Used completedInactive (closed summary field) in read-only check; actual active observer uses futureClosed. No prepare/arm/Native call occurred.",
+      "actualFutureClosed": true
+    }
+  ]
+}

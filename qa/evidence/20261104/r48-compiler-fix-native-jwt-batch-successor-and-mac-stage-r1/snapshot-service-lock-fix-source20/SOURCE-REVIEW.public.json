@@ -1,0 +1,31 @@
+{
+  "schema": "snapshot-service-lock-fix-source-r1",
+  "baseCommit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+  "scope": "two existing snapshot forwarding Rust files; nine Service lock expressions",
+  "reason": "Actual normal-release-build rejected nine implicit HA-lock calls on Arc<Mutex<Service>>.",
+  "diagnostic": {
+    "blob": "01ad767ff659ea7f5d7ccfcb9d73d01cc7b03a31",
+    "bytes": 20639,
+    "sha256": "0b2916602918b7e3d05457d6445c20a55478846d99d7cd7067db0058f66c23cc"
+  },
+  "admissionClock": {
+    "client": "All three calls pass the retained self.owner.deadline. execute also retains RequestDeadlineScope; reject_before_exchange now uses that same explicit deadline through finish_failure without relying on a thread-local scope.",
+    "source": "All six calls pass the one deadline from peer.restrict_deadline(accepted_at + request_timeout); no new Instant or duration is introduced."
+  },
+  "errorAndLifetime": "Only receiver expressions change. Existing map_err values, guard bindings, statement/block scopes, explicit drop(file)/drop(writer), original finalizers, authenticated completion, response audit and conservative outcome_unknown/retry_allowed=false paths are byte-for-byte retained outside these expressions.",
+  "helper": "Existing lock_until clamps to the current scope, checks time before and after try_lock, and reports Busy/Poisoned. HaLock and request_deadline.rs remain unchanged.",
+  "postPublication": "No new retry, peer chase, success classification or recovery-reference construction. Original retained plan/authenticated receipt gates remain intact.",
+  "e0277": "The original source finalizer return is explicitly Result<(u16, Zeroizing<Vec<u8>>), Response>. Two unsized-[u8] diagnostics may be cascaded inference errors; this SOURCE does not claim resolution before actual compile.",
+  "validation": {
+    "pureSourceChecks": 39,
+    "strictHunks": 8,
+    "rustfmt": false,
+    "rustCompile": false,
+    "runtimeTests": 0,
+    "testNamesChanged": 0,
+    "testDenominatorChanged": false
+  },
+  "requiredNext": "Root source review; combine separately with any root-owned JWT batch successor, freeze exact candidate, then separately authorize a fresh actual compile. No old build replay.",
+  "nativeDuringSourceWork": 0,
+  "refsChanged": false
+}

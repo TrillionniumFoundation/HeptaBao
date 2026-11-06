@@ -1,0 +1,93 @@
+{
+  "schema": "heptabao.root.x230-fixed-container-network-role-source.r1",
+  "authorization": "SOURCE_ONLY",
+  "sourceOfFixedContainer": "eda7584d47e6be19ca62f54ef866934a6b132199",
+  "containerId": "f67985499a16bc15917152d8083b9aa985edcbea868e3f15bdcef3aea6ab0bb9",
+  "exactRequest": {
+    "blob": "eccb89f3db9048af3cea29f57c8754d486142208",
+    "bytes": 1180,
+    "sha256": "e5c359c01e3b73241142c314780cdf5113cb6f75409ac1af8ee80a0225c24f4b"
+  },
+  "journal": {
+    "blob": "9b0214d854b48bd5d8ea519fe471dd75dcd7408d",
+    "bytes": 19069,
+    "sha256": "dda879136ce4991237c65621098b377bbb4c1ab54870c3eb6b61b2b6c521e303"
+  },
+  "journalBase": {
+    "blob": "dca5d3670d121eac6f3f65dc67e24ff371d53a7b",
+    "bytes": 19054,
+    "sha256": "1fe968b5dcf9b1e20b1420d4678558e3bf6d0e2a52284b8fc9fb9772f277a637"
+  },
+  "journalLiteralSwaps": [
+    {
+      "name": "slot",
+      "before": "\"root_x230_current_container_metadata_20261106_r2\"",
+      "after": "\"root_x230_current_container_networkrole_20261106_r1\""
+    },
+    {
+      "name": "request",
+      "before": "const GF_REQUEST = {\"blob\":\"3f60eab767749ee30b576dc8e8f46c1a1212d236\",\"bytes\":1136,\"sha256\":\"f9094ec40b4c94b6a530b3e3e4c99d9876fa7af01f27577275d83f5858af301e\"};",
+      "after": "const GF_REQUEST = {\"blob\":\"eccb89f3db9048af3cea29f57c8754d486142208\",\"bytes\":1180,\"sha256\":\"e5c359c01e3b73241142c314780cdf5113cb6f75409ac1af8ee80a0225c24f4b\"};"
+    },
+    {
+      "name": "observer_prefix",
+      "before": "heptabao-x230-current-container-r2-f6798549-",
+      "after": "heptabao-x230-current-container-networkrole-r1-f6798549-"
+    }
+  ],
+  "slot": "root_x230_current_container_networkrole_20261106_r1",
+  "observerKeyPrefix": "heptabao-x230-current-container-networkrole-r1-f6798549-",
+  "typed": {
+    "sha256": "e934c929844255c0ae9ba5feb72d2e9d6ae16af9979f1e935544cbeda8c54583",
+    "native_fingerprint": "16804277289775945152"
+  },
+  "scope": {
+    "host": "x230",
+    "command": "one docker container inspect on exact current container ID",
+    "knownUnixSocketOnly": true,
+    "fields": [
+      "container_id",
+      "name",
+      "image_reference",
+      "running",
+      "pid",
+      "started_at",
+      "restart_count",
+      "network_mode",
+      "restart_policy",
+      "server_literal_argument",
+      "dev_literal_argument"
+    ],
+    "argsValuesExported": false,
+    "argsInspectedOnlyForFixedLiteralBoolean": true,
+    "containerExec": false,
+    "containerMutation": false,
+    "clientInventoryComplete": false,
+    "backupInventoryComplete": false,
+    "environmentValuesProjectedOrExported": false,
+    "labelsProjectedOrExported": false,
+    "dockerCLIReceivesFullInspectResponseInternally": true
+  },
+  "budgets": {
+    "outerSeconds": 30,
+    "statusObservers": 8,
+    "streamObservers": 8,
+    "perObserverStatus": 8,
+    "perObserverPages": 128,
+    "immutablePageBytes": 8192,
+    "payloadMaxBytes": 1048576,
+    "streamReadBytes": 16384
+  },
+  "meaning": "A current network mode and exact literal flag projection can classify known configuration, but cannot establish actual clients, absence of listeners, backup coverage or full migration.",
+  "requiredActivation": "Separate exact root GO plus one free Native lane before initialization or dispatch.",
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false,
+  "sourceChecks": {
+    "onlyFormatAndIdempotencyChanged": true,
+    "onlyThreeJournalLiteralChanges": true,
+    "reverseReconstructedOriginal": true,
+    "correctStdinBindingApplied": true,
+    "NoNativeDispatched": true
+  }
+}

@@ -1,0 +1,1 @@
+{"container_id":"f67985499a16bc15917152d8083b9aa985edcbea868e3f15bdcef3aea6ab0bb9","name":"/heptabao-openbao271-oracle-r46","image_reference":"ghcr.io/openbao/openbao:2.7.1","running":true,"pid":2031520,"started_at":"2026-10-10T17:14:55.727875418Z","restart_count":0,"network_mode":"none","restart_policy":"no","server_literal_argument":true,"dev_literal_argument":true}

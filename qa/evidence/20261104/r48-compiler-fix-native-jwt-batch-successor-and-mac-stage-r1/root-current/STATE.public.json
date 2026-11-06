@@ -1,0 +1,374 @@
+{
+  "schema": "heptabao.replacement-checkpoint.r48",
+  "cutoff_UTC": "2026-11-06 21:19:08 UTC",
+  "task_continues": true,
+  "full_OpenBao_2_7_1_replacement": false,
+  "production_cutover": false,
+  "productionClientCutovers": 0,
+  "all_current_clients_and_backup_paths_migrated": false,
+  "legacy_cleanup": false,
+  "previousCheckpoint": {
+    "commit": "a693cc9d0062f6b1479ab6ee4a3d4f361b7fae52",
+    "tree": "a7197d3a90b81902bb380b6f871e591c3e0463d8",
+    "prefix": "qa/evidence/20261104/r47-candidate02b-build-precondition-node-abort-lan-identity-and-container-r1"
+  },
+  "candidate": {
+    "schema": "heptabao.root.snapshot-lock-native-jwt-batch.candidate.r1",
+    "commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "tree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+    "parent": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "branch": "codex/heptabao-snapshot-lock-jwt-batch-42477d62-20261106",
+    "leafCount": 3932,
+    "trackedBytes": 62553540,
+    "fullLeafIndexSha256": "20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423",
+    "changedFiles": [
+      {
+        "path": "crates/heptabao-server/src/auth_native_jwt.rs",
+        "before": {
+          "blob": "7a318b86ebdd47872fde86fbcce732f885571868",
+          "bytes": 19107,
+          "sha256": "59eb89dbd69dde8cd8d70c8cd340a47e5e3855e6e19f127914986ec228a8a87f"
+        },
+        "after": {
+          "blob": "e082580797241ba4b57b3808e8a53f75ddcfece8",
+          "bytes": 21936,
+          "sha256": "76dcc4afa617c2d8a3a7089996428c7306f9447e0f33873b2b54fa0b0dd370a6"
+        }
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_auth.rs",
+        "before": {
+          "blob": "449f263ff0a911842f9e69ad18a92de6a8d4638c",
+          "bytes": 143153,
+          "sha256": "42a3080d030e6bc22318bf574e47209666f47aa7f336d91fef2c81f0c6b7e165"
+        },
+        "after": {
+          "blob": "2b344d01edbe52e0fc4241b79461c50db2cf7fd5",
+          "bytes": 143838,
+          "sha256": "7a7b5a2aaa4bd185b4499ce31927a145a6a014a401e95031f26e7212c453a882"
+        }
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_jwt_tests.rs",
+        "before": {
+          "blob": "e26bb55f3a6c167104581ac0e5450f98aed1cc0d",
+          "bytes": 49655,
+          "sha256": "d909c5fa2fe1044e49372b9168619feed28968d48d34fa9af111e39fc31f056a"
+        },
+        "after": {
+          "blob": "407283ae222030d8baeec7fc0aef6a38b6859fff",
+          "bytes": 61884,
+          "sha256": "41e611618aa18298eb6b94318bd30a210571a323c7602fa3f58fe7d9aca122f9"
+        }
+      },
+      {
+        "path": "crates/heptabao-server/src/service_snapshot_forward_client.rs",
+        "before": {
+          "blob": "a8a00094d2c4efb26a9be5c1af9b7b5f0c8e04cf",
+          "bytes": 20232,
+          "sha256": "f76bdf9fc65fcf99b0a214c00df7660436509036c107f5486b3226981635004f"
+        },
+        "after": {
+          "blob": "ab70d9abc8abda8d605f055ba0eaeda74d369803",
+          "bytes": 20359,
+          "sha256": "e53ba84411f23c8c822d8a4f546dbead8bc643097de419a7e70c5eac99015d58"
+        }
+      },
+      {
+        "path": "crates/heptabao-server/src/service_snapshot_forward_source.rs",
+        "before": {
+          "blob": "7178177f6156cce780c7044721ed53120c86a563",
+          "bytes": 19516,
+          "sha256": "2644931919fdafdc2d68d8e9927ebca77647e7ce8839cec1abef3e7563635c73"
+        },
+        "after": {
+          "blob": "a360aa111114da8aa16827de528839ca8eb90eec",
+          "bytes": 19632,
+          "sha256": "bc7e833e0faced417249756c78e546e955271b6ed25da1d3dbfbdff2bf56ef76"
+        }
+      }
+    ],
+    "baseFullLeafIndexReproduced": true,
+    "wholeRecursiveTree": true,
+    "rootAndAllSubtreesMerkleVerified": true,
+    "baseHistoryCount": 3768,
+    "expectedHistoryCount": 3769,
+    "sourceProposals": {
+      "jwtBatchR2": "8234672429914b80e03f7c1f0c3f70cd325cd5cb",
+      "serviceLocks": "3e506b922c214561c9dd22678354b55dcff38fc1"
+    },
+    "independentReview": {
+      "productionTree": "a33e59aa868b10282b5d4e28404d80a67b1a6704",
+      "testCorrectionConfirmedByC": true,
+      "testCorrectionTree": "cc078b497102e43d8c7bca3e6fa085566df29c8f"
+    },
+    "testPlan": {
+      "pin": {
+        "blob": "0a3d746de42bfc31d3072cee1073f3908fc5811c",
+        "bytes": 35287,
+        "sha256": "617d5c104309ec8fcd006d97a60cb519c7b26ad203359ca6dc84146855f746df"
+      },
+      "uniqueTests": 252,
+      "instances": 280,
+      "profiles": {
+        "file": 28,
+        "default": 235,
+        "ha-native-v6-peer-ingress": 17
+      },
+      "groups": 18
+    },
+    "runtimeTestsExecuted": 0,
+    "RustCompiled": false,
+    "formatted": false,
+    "platformsQualified": [],
+    "fullReplacement": false,
+    "productionCutover": false,
+    "legacyCleanup": false
+  },
+  "priorCandidateBuild": {
+    "commit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "job": "rog/1a1b282ded0-fc05-7e57",
+    "normalReleaseExitCode": 101,
+    "elapsedSeconds": 360.1929270219989,
+    "timedOut": false,
+    "directChildReaped": true,
+    "remainingChildren": [],
+    "runtimeTestsExecuted": 0,
+    "errorCodes": {
+      "E0599": 9,
+      "E0277": 2
+    },
+    "actualReport": {
+      "blob": "3749276afcc6e1ead912370e9626dc3645c111df",
+      "bytes": 40591,
+      "sha256": "db0079589bd50c271486056283825ba1c3a415c19204f707ed4b5d1b786ec3b4"
+    },
+    "stderr": {
+      "blob": "01ad767ff659ea7f5d7ccfcb9d73d01cc7b03a31",
+      "bytes": 20639,
+      "sha256": "0b2916602918b7e3d05457d6445c20a55478846d99d7cd7067db0058f66c23cc"
+    },
+    "fix": "Nine Service-only calls now use existing lock_until and original deadlines; actual compilation of the successor still required.",
+    "e0277Resolved": false,
+    "stdout": {
+      "lines": 442,
+      "reasons": {
+        "compiler-artifact": 396,
+        "build-script-executed": 45,
+        "build-finished": 1
+      },
+      "buildFinished": [
+        {
+          "reason": "build-finished",
+          "success": false
+        }
+      ],
+      "allJSON": true,
+      "pin": {
+        "path": "stdout.original.txt",
+        "blob": "54c14319f1502d7f5c78783a48465af2aafd4cb1",
+        "bytes": 384182,
+        "sha256": "9fc6bdccb931b4cf5febb609921cb849a74e56920869dd4e2988bcebde9d0948"
+      }
+    },
+    "originalChainClosure": {
+      "callTotal": 88,
+      "observerTotal": 17,
+      "pageTotal": 53,
+      "currentNativeCalls": 0,
+      "currentOwnedFutures": 0,
+      "currentOwnedProcess": 0,
+      "pending": null,
+      "activeObserver": null,
+      "releaseTree": "e5ec86e39658d6fbb9ae3e1b1170171c5a5de718",
+      "fullStateTree": "f3441297c94fc3869e204bd41f6df809575cc85e"
+    }
+  },
+  "MacPriorCandidateStage": {
+    "commit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "sourceQualified": true,
+    "T5UUID": "FB804D1B-24CB-4D6E-AEA7-A9E180807758",
+    "report": {
+      "blob": "a148ebe5d4d729f4a1a76fd18e7a2e25b68a571d",
+      "bytes": 10558,
+      "sha256": "7d2e75f8038ba68c4ceeb5af4ec75bf8a6f528b2d394acad97ea0364b70d33e9"
+    },
+    "rootQualification": {
+      "blob": "91614d1f693343c6772302930a10b5f1c792d21e",
+      "bytes": 1353,
+      "sha256": "3e51bf9631201bcb4d67709e6ed98c2202e5d4f668126534dd3bf914362aebb4"
+    },
+    "children": {
+      "count": 46,
+      "allExit0": true,
+      "allReaped": true,
+      "remaining": []
+    },
+    "compilerStarted": false,
+    "serverStarted": false,
+    "successorQualificationInherited": false
+  },
+  "AuthBus": {
+    "priorPublicNodeCrash": {
+      "job": "mac/1a1b25c3c54-fc05-7db1",
+      "pid": 51494,
+      "parent": 51483,
+      "finalReturnCode": -6,
+      "stdoutBytes": 0,
+      "stderrBytes": 0,
+      "SDKOrCredentialOrProviderCalled": false,
+      "crashCauseQualified": false
+    },
+    "fixedReportProjectionR3": {
+      "tree": "89b14ba62dc988fc7ff08ee931e0391407d3b9a1",
+      "safeFieldsAdmitted": true,
+      "originalPathPredicate": false,
+      "fullOriginalChildMatch": false,
+      "closedLiteralPathForm": "/opt/homebrew/*/node",
+      "literalAsteriskMeaningInferred": false,
+      "exception": "EXC_CRASH/SIGABRT",
+      "termination": {
+        "code": "2",
+        "flags": "582",
+        "namespacePresent": true,
+        "namespaceKnown": false,
+        "namespaceValue": null
+      },
+      "causeQualified": false
+    },
+    "R4": {
+      "GO": {
+        "blob": "c2e39fba3a81f1c7d8335f453cb9a0877abefa12",
+        "bytes": 18422,
+        "sha256": "2e21908d905eb32b9fbc22763e0d567c14889a5518113803c542a3740867cb9d"
+      },
+      "sourceTree": "6431d5535301bc39b6eaafd7697ae29c81652843",
+      "actualTree": "a49ff0c382f7c2f50b9b2bd79717a29619837623",
+      "job": "mac/1a1b2b3248a-fc05-7f5e",
+      "exitCode": 0,
+      "full": true,
+      "durable": true,
+      "confirmed": true,
+      "allOriginalObserversClosed": true,
+      "originalCalls": 11,
+      "observers": 2,
+      "pages": 6,
+      "stdoutBytes": 12183,
+      "namespace": {
+        "type": "string",
+        "present": true,
+        "publicSyntaxQualified": false,
+        "value": null
+      },
+      "all29DiagnosticSlotsAbsent": true,
+      "diagnosticStringCount": 0,
+      "publicApiTokens": [],
+      "publicErrnoTokens": [],
+      "causeQualified": false,
+      "newNodeProcessStarted": false,
+      "SDKOrCredentialOrProviderCalled": false
+    },
+    "newTrustedIssuerRuntimeQualified": false,
+    "AppRoleTLSKVPolicyRenewRevokeQualified": false,
+    "priorPrivateRuntimeProgressUnknownPreserved": true,
+    "ROGEnabledFalsePreserved": true,
+    "next": "Source review for one fixed-report projection with the actual bounded namespace text and only the unique crashed thread's public symbols; no new probe until actionable diagnosis."
+  },
+  "LAN": {
+    "routes": 6,
+    "hosts": [
+      "mac",
+      "rog",
+      "pocket4"
+    ],
+    "nativeSSHIdentityPairsEqual": true,
+    "distinctHostnamesAndBoots": true,
+    "exactKernelModelLabelsApproved": true,
+    "hardwareAttestation": false,
+    "portsReserved": false,
+    "originalCalls": 46,
+    "originalObservers": 12,
+    "originalPages": 16,
+    "rootOriginalChecks": 1048,
+    "finalCandidateBinaryQualified": false,
+    "finalLANFailureElectionReadIndexPersistenceRestartQualified": false,
+    "successorRuntimeQualified": false
+  },
+  "X230": {
+    "exactContainer": "f67985499a16bc15917152d8083b9aa985edcbea868e3f15bdcef3aea6ab0bb9",
+    "image": "ghcr.io/openbao/openbao:2.7.1",
+    "networkMode": "none",
+    "restartPolicy": "no",
+    "serverLiteralArgument": true,
+    "devLiteralArgument": true,
+    "networkRoleActualTree": "6a8371fdaf2e7130d65e704071ebdd39ca60b351",
+    "noOtherClientsOrInstancesClaimed": false,
+    "successorRuntimeQualified": false
+  },
+  "finiteMigrationScope": {
+    "registeredHosts": [
+      "mac",
+      "rog",
+      "pocket4",
+      "x230"
+    ],
+    "closedForPlanning": true,
+    "unregisteredManualPathsAreNotAnAddedGate": true,
+    "reopenOnlyNewObservedRelevantClientConfigOrRestore": true,
+    "currentClientCutovers": 0,
+    "backupRestorationCompleted": false
+  },
+  "historicalBaseline": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "MacFormal34MiB": 31,
+    "X230Formal34MiB": 31,
+    "MacNormal": 61,
+    "ROGNormal": 61,
+    "LANHA": 98,
+    "independentColdRestart": 12,
+    "oldX230Comparison": {
+      "profiles": 69,
+      "exact": 67,
+      "normalizedPKI": 2
+    },
+    "notInheritedByCandidate": true
+  },
+  "remainingGates": [
+    "Compile and execute exact successor252/280 plan; run strict HTTP12 and actual OpenBao2.7.1 comparison.",
+    "Repeat same-candidate formal34MiB migration/recovery on Mac and X230; run real Mac/ROG/Pocket4 leader loss, election, quorum, ReadIndex, persistence and restart.",
+    "Resolve actual public Node crash, then establish a new trusted AuthBus issuer without J3160 and verify actual SDK AppRole/TLS/KV/Policy/renew/revoke.",
+    "Each registered client must complete real credential read/write, restart and rollback; verify registered backups by restore before its cutover.",
+    "Only after all client and backup migration gates remove obsolete services, binaries and regenerable assets; retain the latest qualified HeptaBao service."
+  ],
+  "knownProductGaps": [
+    "Native local JWT batch is newly implemented in successor source and independently reviewed, but is not compiled or runtime-qualified yet.",
+    "Remote JWKS/OIDC/Kubernetes/MFA/SDK nonroot and previously recorded Database/Kubernetes/RabbitMQ/admin/seal/root/rekey/ACME/EAB/plugin capabilities remain unqualified.",
+    "Old CLI snapshot B04/B05 failures remain retained; the source and nine-lock fixes require current leader/standby runtime evidence."
+  ],
+  "maximumNativeLanes": 2,
+  "activeNativeJobsAtCutoff": [],
+  "ownedNativeFuturesAtCutoff": 0,
+  "publication": {
+    "evidenceOnly": true,
+    "productionChanged": false,
+    "branch": "codex/heptabao-validation-20261104"
+  },
+  "ownerLaneStateAtCutoff": {
+    "A": 0,
+    "B": 0,
+    "C": 0,
+    "root": 0
+  },
+  "currentSourceOnlyWork": {
+    "ROG": "Independent successor source stage and fresh build controls being prepared; no Native GO.",
+    "Mac": {
+      "stageTemplateTree": "a928d42c1558a0b48c40c10af6c76c63eae97a51",
+      "bundleBinding": null,
+      "request": null,
+      "stageStarted": false,
+      "normalPlan": "Preserve original61; prepare explicit default28 and file28 native JWT/PKI profiles with actual compile argv and budgets; not admitted yet.",
+      "full34Checks": 31
+    },
+    "AuthBus": "R5 diagnostic source preparation only."
+  }
+}

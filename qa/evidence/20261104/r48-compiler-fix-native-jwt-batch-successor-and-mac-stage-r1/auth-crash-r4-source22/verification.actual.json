@@ -1,0 +1,379 @@
+{
+  "schema": "heptabao.fixed-ips-r4-source-mechanical-checks.r1",
+  "passed": true,
+  "checkCount": 92,
+  "checks": [
+    {
+      "name": "before/source-exact",
+      "passed": true
+    },
+    {
+      "name": "before/journal-exact",
+      "passed": true
+    },
+    {
+      "name": "after/source-pin",
+      "passed": true
+    },
+    {
+      "name": "after/request-pin",
+      "passed": true
+    },
+    {
+      "name": "after/journal-pin",
+      "passed": true
+    },
+    {
+      "name": "patches/eight",
+      "passed": true
+    },
+    {
+      "name": "patch/0/unique",
+      "passed": true
+    },
+    {
+      "name": "patch/1/unique",
+      "passed": true
+    },
+    {
+      "name": "patch/2/unique",
+      "passed": true
+    },
+    {
+      "name": "patch/3/unique",
+      "passed": true
+    },
+    {
+      "name": "patch/4/unique",
+      "passed": true
+    },
+    {
+      "name": "patch/5/unique",
+      "passed": true
+    },
+    {
+      "name": "patch/6/unique",
+      "passed": true
+    },
+    {
+      "name": "patch/7/unique",
+      "passed": true
+    },
+    {
+      "name": "patches/exact-reconstruction",
+      "passed": true
+    },
+    {
+      "name": "source/strict-8-forward",
+      "passed": true
+    },
+    {
+      "name": "source/strict-8-inverse",
+      "passed": true
+    },
+    {
+      "name": "journal/strict-2-forward",
+      "passed": true
+    },
+    {
+      "name": "journal/strict-2-inverse",
+      "passed": true
+    },
+    {
+      "name": "unchanged/need",
+      "passed": true
+    },
+    {
+      "name": "unchanged/critical",
+      "passed": true
+    },
+    {
+      "name": "unchanged/interrupt",
+      "passed": true
+    },
+    {
+      "name": "unchanged/remaining",
+      "passed": true
+    },
+    {
+      "name": "unchanged/identity",
+      "passed": true
+    },
+    {
+      "name": "unchanged/SignalFacade.critical",
+      "passed": true
+    },
+    {
+      "name": "unchanged/error_projection",
+      "passed": true
+    },
+    {
+      "name": "unchanged/CrashIO.__init__",
+      "passed": true
+    },
+    {
+      "name": "unchanged/CrashIO.meta",
+      "passed": true
+    },
+    {
+      "name": "unchanged/CrashIO.open_fd",
+      "passed": true
+    },
+    {
+      "name": "unchanged/CrashIO.close_one",
+      "passed": true
+    },
+    {
+      "name": "unchanged/CrashIO.close",
+      "passed": true
+    },
+    {
+      "name": "unchanged/CrashIO.named",
+      "passed": true
+    },
+    {
+      "name": "unchanged/CrashIO.open_chain",
+      "passed": true
+    },
+    {
+      "name": "unchanged/CrashIO.close_scan",
+      "passed": true
+    },
+    {
+      "name": "unchanged/CrashIO.read_one",
+      "passed": true
+    },
+    {
+      "name": "unchanged/CrashIO.verify_all",
+      "passed": true
+    },
+    {
+      "name": "unchanged/CrashIO.public",
+      "passed": true
+    },
+    {
+      "name": "unchanged/date_epoch_seconds",
+      "passed": true
+    },
+    {
+      "name": "unchanged/name_allowed",
+      "passed": true
+    },
+    {
+      "name": "unchanged/crash_time",
+      "passed": true
+    },
+    {
+      "name": "unchanged/exact_pairs",
+      "passed": true
+    },
+    {
+      "name": "unchanged/reject_constant",
+      "passed": true
+    },
+    {
+      "name": "unchanged/bounded_integer",
+      "passed": true
+    },
+    {
+      "name": "unchanged/enum_field",
+      "passed": true
+    },
+    {
+      "name": "unchanged/fixed_os",
+      "passed": true
+    },
+    {
+      "name": "unchanged/library_line",
+      "passed": true
+    },
+    {
+      "name": "unchanged/proc_path_projection",
+      "passed": true
+    },
+    {
+      "name": "definitions/none-removed",
+      "passed": true
+    },
+    {
+      "name": "definitions/only-three-added",
+      "passed": true
+    },
+    {
+      "name": "constants/all-original",
+      "passed": true
+    },
+    {
+      "name": "full-crash-function-only-namespace-call",
+      "passed": true
+    },
+    {
+      "name": "main-only-schema",
+      "passed": true
+    },
+    {
+      "name": "namespace/ascii-64",
+      "passed": true
+    },
+    {
+      "name": "namespace/no-unaccepted-value",
+      "passed": true
+    },
+    {
+      "name": "namespace/no-semantic-claim",
+      "passed": true
+    },
+    {
+      "name": "slot/list16",
+      "passed": true
+    },
+    {
+      "name": "slot/nonstring-count",
+      "passed": true
+    },
+    {
+      "name": "slot/no-unknown-traversal",
+      "passed": true
+    },
+    {
+      "name": "slot/closed-shape-no-value",
+      "passed": true
+    },
+    {
+      "name": "old-termination-dyld-guards-unchanged",
+      "passed": true
+    },
+    {
+      "name": "shared-text-limits-and-library-parser-unchanged",
+      "passed": true
+    },
+    {
+      "name": "slots/two-fixed-roots",
+      "passed": true
+    },
+    {
+      "name": "slots/no-arbitrary-dict-enumeration",
+      "passed": true
+    },
+    {
+      "name": "slots/dyld-not-double-counted",
+      "passed": true
+    },
+    {
+      "name": "slots/static-29-contract",
+      "passed": true
+    },
+    {
+      "name": "slot-key/dyld",
+      "passed": true
+    },
+    {
+      "name": "slot-key/libsystem_c.dylib",
+      "passed": true
+    },
+    {
+      "name": "slot-key/libsystem_kernel.dylib",
+      "passed": true
+    },
+    {
+      "name": "slot-key/libsystem_platform.dylib",
+      "passed": true
+    },
+    {
+      "name": "slot-key/libdispatch.dylib",
+      "passed": true
+    },
+    {
+      "name": "slot-key/libc++abi.dylib",
+      "passed": true
+    },
+    {
+      "name": "slot-key/node",
+      "passed": true
+    },
+    {
+      "name": "slot-key/Node",
+      "passed": true
+    },
+    {
+      "name": "slot-key/libsystem_pthread.dylib",
+      "passed": true
+    },
+    {
+      "name": "slot-key/libsystem_sandbox.dylib",
+      "passed": true
+    },
+    {
+      "name": "slot-key/libsystem_secinit.dylib",
+      "passed": true
+    },
+    {
+      "name": "slot-key/libxpc.dylib",
+      "passed": true
+    },
+    {
+      "name": "tokens/22-25-7",
+      "passed": true
+    },
+    {
+      "name": "projection/no-freeform",
+      "passed": true
+    },
+    {
+      "name": "projection/no-full-text-or-cause",
+      "passed": true
+    },
+    {
+      "name": "projection/no-value-return",
+      "passed": true
+    },
+    {
+      "name": "projection/only-known-api-token-output",
+      "passed": true
+    },
+    {
+      "name": "projection/only-known-errno-token-output",
+      "passed": true
+    },
+    {
+      "name": "request/whole-source-in-stdin",
+      "passed": true
+    },
+    {
+      "name": "request/other-fields-identical",
+      "passed": true
+    },
+    {
+      "name": "request/one-new-key",
+      "passed": true
+    },
+    {
+      "name": "journal/only-slot-pin-prefix",
+      "passed": true
+    },
+    {
+      "name": "evidence/exact-prior-stdout",
+      "passed": true
+    },
+    {
+      "name": "evidence/exact-fixed-file",
+      "passed": true
+    },
+    {
+      "name": "evidence/path-unqualified-preserved",
+      "passed": true
+    },
+    {
+      "name": "evidence/unknown-namespace-preserved",
+      "passed": true
+    },
+    {
+      "name": "contract/source-only",
+      "passed": true
+    }
+  ],
+  "NativeCalls": 0,
+  "PythonExecuted": false,
+  "sourceOnly": true,
+  "crashCauseQualified": false
+}

@@ -1,0 +1,27 @@
+{
+  "stdout": {
+    "blob": "54c14319f1502d7f5c78783a48465af2aafd4cb1",
+    "bytes": 384182,
+    "sha256": "9fc6bdccb931b4cf5febb609921cb849a74e56920869dd4e2988bcebde9d0948"
+  },
+  "records": 442,
+  "reasons": {
+    "compiler-artifact": 396,
+    "build-script-executed": 45,
+    "build-finished": 1
+  },
+  "levels": {},
+  "errors": [],
+  "buildFinished": [
+    {
+      "reason": "build-finished",
+      "success": false
+    }
+  ],
+  "sourceFix": {
+    "tree": "3e506b922c214561c9dd22678354b55dcff38fc1",
+    "compiled": false
+  },
+  "runtimeTestsStarted": false,
+  "e0277ResolutionUnverified": true
+}

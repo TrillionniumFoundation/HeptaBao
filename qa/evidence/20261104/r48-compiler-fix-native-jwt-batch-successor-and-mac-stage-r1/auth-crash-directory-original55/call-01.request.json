@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-mac-crash-directory-metadata-11d8bdb0-authority-01",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1b2878800-fc05-7e6f"
+    }
+  }
+}

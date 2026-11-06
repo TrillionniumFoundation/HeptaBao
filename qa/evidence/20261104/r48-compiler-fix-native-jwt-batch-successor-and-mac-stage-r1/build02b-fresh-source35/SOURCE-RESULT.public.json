@@ -1,0 +1,431 @@
+{
+  "schema": "heptabao.fresh-joint-build-source-verification.v1",
+  "status": "passed",
+  "checks": 105,
+  "details": [
+    {
+      "label": "launcher forward strict",
+      "ok": true
+    },
+    {
+      "label": "launcher reverse strict",
+      "ok": true
+    },
+    {
+      "label": "runner forward strict",
+      "ok": true
+    },
+    {
+      "label": "runner reverse strict",
+      "ok": true
+    },
+    {
+      "label": "publisher forward strict",
+      "ok": true
+    },
+    {
+      "label": "publisher reverse strict",
+      "ok": true
+    },
+    {
+      "label": "journal forward strict",
+      "ok": true
+    },
+    {
+      "label": "journal reverse strict",
+      "ok": true
+    },
+    {
+      "label": "actual old launcher",
+      "ok": true
+    },
+    {
+      "label": "actual old runner",
+      "ok": true
+    },
+    {
+      "label": "actual old publisher",
+      "ok": true
+    },
+    {
+      "label": "launcher old function identity exact",
+      "ok": true
+    },
+    {
+      "label": "launcher old function read_bound exact",
+      "ok": true
+    },
+    {
+      "label": "launcher old function freeze exact",
+      "ok": true
+    },
+    {
+      "label": "launcher old function public exact",
+      "ok": true
+    },
+    {
+      "label": "launcher old function preserve_r9 exact",
+      "ok": true
+    },
+    {
+      "label": "launcher old function preserve_r10 exact",
+      "ok": true
+    },
+    {
+      "label": "launcher old function preserve_successful_observer exact",
+      "ok": true
+    },
+    {
+      "label": "launcher old function preserve_failed_observer exact",
+      "ok": true
+    },
+    {
+      "label": "launcher old function preserve_current_early_failure exact",
+      "ok": true
+    },
+    {
+      "label": "launcher old function holders exact",
+      "ok": true
+    },
+    {
+      "label": "runner old function signal_received exact",
+      "ok": true
+    },
+    {
+      "label": "runner old function sha exact",
+      "ok": true
+    },
+    {
+      "label": "runner old function preserve_prior_df026 exact",
+      "ok": true
+    },
+    {
+      "label": "runner old function write exact",
+      "ok": true
+    },
+    {
+      "label": "runner old function git exact",
+      "ok": true
+    },
+    {
+      "label": "runner old function freeze exact",
+      "ok": true
+    },
+    {
+      "label": "runner old function group_members exact",
+      "ok": true
+    },
+    {
+      "label": "runner old function terminate_owned exact",
+      "ok": true
+    },
+    {
+      "label": "runner old function bounded_remaining exact",
+      "ok": true
+    },
+    {
+      "label": "runner old function owned exact",
+      "ok": true
+    },
+    {
+      "label": "publisher old function sha exact",
+      "ok": true
+    },
+    {
+      "label": "publisher old function ident exact",
+      "ok": true
+    },
+    {
+      "label": "publisher old function sync_dir exact",
+      "ok": true
+    },
+    {
+      "label": "publisher old function exact exact",
+      "ok": true
+    },
+    {
+      "label": "publisher old function publish exact",
+      "ok": true
+    },
+    {
+      "label": "unchanged control caps",
+      "ok": true
+    },
+    {
+      "label": "complete original compile and 268 cases code exact",
+      "ok": true
+    },
+    {
+      "label": "original owned cleanup exact",
+      "ok": true
+    },
+    {
+      "label": "old twelve-file table exact",
+      "ok": true
+    },
+    {
+      "label": "old function retained uncalled",
+      "ok": true
+    },
+    {
+      "label": "old host fences not executed",
+      "ok": true
+    },
+    {
+      "label": "no old source or target lock access",
+      "ok": true
+    },
+    {
+      "label": "create-only new target",
+      "ok": true
+    },
+    {
+      "label": "own mkdir preserves parent object",
+      "ok": true
+    },
+    {
+      "label": "actual new target full identity and empty",
+      "ok": true
+    },
+    {
+      "label": "actual first5 handed over",
+      "ok": true
+    },
+    {
+      "label": "runner exact target owner identity",
+      "ok": true
+    },
+    {
+      "label": "whole tools before first rustc or cargo",
+      "ok": true
+    },
+    {
+      "label": "actual tool full9 strict",
+      "ok": true
+    },
+    {
+      "label": "tool bounded full regular read",
+      "ok": true
+    },
+    {
+      "label": "tool fd/name stable",
+      "ok": true
+    },
+    {
+      "label": "no invented prior tool hash or cache qualification",
+      "ok": true
+    },
+    {
+      "label": "new tool FD signal deferral and no retry",
+      "ok": true
+    },
+    {
+      "label": "missing historical evidence remains distinct",
+      "ok": true
+    },
+    {
+      "label": "one publication deadline callback no child",
+      "ok": true
+    },
+    {
+      "label": "joint original budgets",
+      "ok": true
+    },
+    {
+      "label": "hard cap applies to original publication phase",
+      "ok": true
+    },
+    {
+      "label": "receipt byte verification before exec",
+      "ok": true
+    },
+    {
+      "label": "actual receipt hash and same PID clock",
+      "ok": true
+    },
+    {
+      "label": "launcher does not reset deadline",
+      "ok": true
+    },
+    {
+      "label": "runner original same PID deadline exact",
+      "ok": true
+    },
+    {
+      "label": "control whole receipt gate precedes writes",
+      "ok": true
+    },
+    {
+      "label": "actual stage complete source leaf index",
+      "ok": true
+    },
+    {
+      "label": "fresh FDs once closed before exec",
+      "ok": true
+    },
+    {
+      "label": "original entire groups unchanged",
+      "ok": true
+    },
+    {
+      "label": "family native-jwt-pki-file22 original600",
+      "ok": true
+    },
+    {
+      "label": "family native-jwt-pki-default22 original600",
+      "ok": true
+    },
+    {
+      "label": "family legacy-jwt-default67 original600",
+      "ok": true
+    },
+    {
+      "label": "family native-auth-identity-default69 original600",
+      "ok": true
+    },
+    {
+      "label": "family snapshot-body10 original600",
+      "ok": true
+    },
+    {
+      "label": "family snapshot-peer7 original600",
+      "ok": true
+    },
+    {
+      "label": "family snapshot-actor2 original600",
+      "ok": true
+    },
+    {
+      "label": "family snapshot-wire4 original600",
+      "ok": true
+    },
+    {
+      "label": "family snapshot-service-audit4 original600",
+      "ok": true
+    },
+    {
+      "label": "family ssh25 original600",
+      "ok": true
+    },
+    {
+      "label": "family mount1 original600",
+      "ok": true
+    },
+    {
+      "label": "family redirect5 original600",
+      "ok": true
+    },
+    {
+      "label": "family actor2 original600",
+      "ok": true
+    },
+    {
+      "label": "family ordinary5 original600",
+      "ok": true
+    },
+    {
+      "label": "family no_forward6 original600",
+      "ok": true
+    },
+    {
+      "label": "family ingress_observer original600",
+      "ok": true
+    },
+    {
+      "label": "family cold_h2 original600",
+      "ok": true
+    },
+    {
+      "label": "family same_root_publication original600",
+      "ok": true
+    },
+    {
+      "label": "exact denominator 246/268/18",
+      "ok": true
+    },
+    {
+      "label": "exact profile partition",
+      "ok": true
+    },
+    {
+      "label": "exact stdin original cap",
+      "ok": true
+    },
+    {
+      "label": "actual inline publisher argv",
+      "ok": true
+    },
+    {
+      "label": "exact host executable cwd outer",
+      "ok": true
+    },
+    {
+      "label": "whole payload source native_jwt_build.py",
+      "ok": true
+    },
+    {
+      "label": "publisher exact pin native_jwt_build.py",
+      "ok": true
+    },
+    {
+      "label": "whole payload source launch_native_jwt_build.py",
+      "ok": true
+    },
+    {
+      "label": "publisher exact pin launch_native_jwt_build.py",
+      "ok": true
+    },
+    {
+      "label": "whole payload source jwt-test-groups.public.json",
+      "ok": true
+    },
+    {
+      "label": "publisher exact pin jwt-test-groups.public.json",
+      "ok": true
+    },
+    {
+      "label": "correct stdin typed binding",
+      "ok": true
+    },
+    {
+      "label": "single journal literal",
+      "ok": true
+    },
+    {
+      "label": "single journal literal",
+      "ok": true
+    },
+    {
+      "label": "single journal literal",
+      "ok": true
+    },
+    {
+      "label": "journal only three bindings",
+      "ok": true
+    },
+    {
+      "label": "actual metadata complete finite list",
+      "ok": true
+    },
+    {
+      "label": "actual lossless cargo full9 bound",
+      "ok": true
+    },
+    {
+      "label": "actual lossless rustc full9 bound",
+      "ok": true
+    },
+    {
+      "label": "actual Cargo-home object bound",
+      "ok": true
+    },
+    {
+      "label": "SOURCE only",
+      "ok": true
+    }
+  ],
+  "NativeCalls": 0,
+  "pythonCompile": false,
+  "rustCompile": false,
+  "runtimeTests": false
+}

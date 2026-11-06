@@ -1,0 +1,14 @@
+{
+  "pure": {
+    "blob": "b6890e8b7217c546bec073dcb04988fc37652721"
+  },
+  "strictDiff": {
+    "blob": "f595a6490497f54ea2b533fcbb98cdb306583286",
+    "bytes": 3497,
+    "sha256": "c872292668150c3b22396b4d23f315a709ef5b35eb9a286ded9cf7bbe7fd51f5"
+  },
+  "verifier": "verifier.js",
+  "inputs": "verifier-inputs.public.json",
+  "entry": "verifySnapshotServiceLockFix(inputs, exactPathToTextMap)",
+  "noCandidateExecution": true
+}

@@ -1,0 +1,50 @@
+{
+  "schema": "heptabao.root.x230-current-container-networkrole-release.r1",
+  "job": "x230/1a1b27a8981-fc05-7e33",
+  "state": "succeeded",
+  "exit_code": 0,
+  "output_complete": true,
+  "output_durable": true,
+  "terminal_confirmed": true,
+  "stdout": {
+    "blob": "85c64885cd066b69d18e333a40ba7fbcb667a5bc",
+    "bytes": 371,
+    "sha256": "952f7857bc791c6f074d3b1dcdf5dd4d5571819fb7dc6f235ee5d7ea68768a40"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "original_calls": 7,
+  "original_observers": 2,
+  "original_pages": 2,
+  "all_original_calls_accepted": true,
+  "all_observers_completed_inactive": true,
+  "lane_released": true,
+  "current_root_calls": 0,
+  "current_root_futures": 0,
+  "container": {
+    "container_id": "f67985499a16bc15917152d8083b9aa985edcbea868e3f15bdcef3aea6ab0bb9",
+    "name": "/heptabao-openbao271-oracle-r46",
+    "image_reference": "ghcr.io/openbao/openbao:2.7.1",
+    "running": true,
+    "pid": 2031520,
+    "started_at": "2026-10-10T17:14:55.727875418Z",
+    "restart_count": 0,
+    "network_mode": "none",
+    "restart_policy": "no",
+    "server_literal_argument": true,
+    "dev_literal_argument": true
+  },
+  "interpretation": "This fixed current container is configured with Docker network_mode none, no restart policy, and exact server and dev argument literals. This does not establish absence of docker-exec clients, host-side automated use, other OpenBao instances, or backup coverage.",
+  "prior_full_metadata": "eda7584d47e6be19ca62f54ef866934a6b132199",
+  "no_container_exec": true,
+  "no_container_mutation": true,
+  "no_environment_projection": true,
+  "current_inventory_complete": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "allClientsAndBackupsMigrated": false,
+  "legacyCleanup": false
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.pure-source-executor.r1",
+  "verifier": {
+    "blob": "2a528e33548774300b333b490725fe6939c49490",
+    "bytes": 8372,
+    "sha256": "df7c41d0bffa0d3f3a8ce1e8984919c0d8cde3b489d51c0eb937ef7a481a991e"
+  },
+  "interface": "verifyFixedCrashR4Source(files: Record<string,string>)",
+  "result": {
+    "blob": "42a50a267b8a2243d8612d696e48cf988994d8b8",
+    "bytes": 7196,
+    "sha256": "7f29f4f9bd7f82a0bebf83f66df9f0463dbee563cbb35254fb6efd0012104141"
+  },
+  "passed": true,
+  "checkCount": 92,
+  "execution": "pure V8 strict-diff/whole/source-field verification only",
+  "NativeCalls": 0,
+  "PythonExecuted": false
+}

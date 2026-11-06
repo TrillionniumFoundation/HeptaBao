@@ -1,0 +1,211 @@
+{
+  "schema": "heptabao.mac.successor576.minimum-adaptation-plan.v1",
+  "status": "SOURCE_ONLY_TEMPLATE_BUNDLE_UNOBSERVED",
+  "initial_null_candidate_plan_superseded_by_actual_freeze": "5767739cd25e458ac052dc8d384019bab8688ae0",
+  "candidate_manifest": {
+    "blob": "d9d3fa89aecbdf276f8e22651559caa94b0ea518",
+    "bytes": 3876,
+    "sha256": "6d8a34410afcf535c20044bfa5e78d3d2d4115c6749f49baf8e37ef9e93256f5"
+  },
+  "candidate_freeze_packet": "f74d33fc97820415c8f62c5bebc7718f0d5376b6",
+  "candidate": {
+    "commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "tree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+    "parent": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "branch": "codex/heptabao-snapshot-lock-jwt-batch-42477d62-20261106",
+    "leaves": 3932,
+    "tracked_bytes": 62553540,
+    "index": {
+      "blob": "4e4052b40639f1f490adf7c4f9c8a9bab1b7ac99",
+      "bytes": 453838,
+      "sha256": "20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423"
+    },
+    "expected_history": 3769,
+    "formatted": false,
+    "RustCompiled": false
+  },
+  "exact_five_leaf_delta": [
+    {
+      "path": "crates/heptabao-server/src/auth_native_jwt.rs",
+      "before": {
+        "blob": "7a318b86ebdd47872fde86fbcce732f885571868",
+        "bytes": 19107,
+        "sha256": "59eb89dbd69dde8cd8d70c8cd340a47e5e3855e6e19f127914986ec228a8a87f"
+      },
+      "after": {
+        "blob": "e082580797241ba4b57b3808e8a53f75ddcfece8",
+        "bytes": 21936,
+        "sha256": "76dcc4afa617c2d8a3a7089996428c7306f9447e0f33873b2b54fa0b0dd370a6"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_auth.rs",
+      "before": {
+        "blob": "449f263ff0a911842f9e69ad18a92de6a8d4638c",
+        "bytes": 143153,
+        "sha256": "42a3080d030e6bc22318bf574e47209666f47aa7f336d91fef2c81f0c6b7e165"
+      },
+      "after": {
+        "blob": "2b344d01edbe52e0fc4241b79461c50db2cf7fd5",
+        "bytes": 143838,
+        "sha256": "7a7b5a2aaa4bd185b4499ce31927a145a6a014a401e95031f26e7212c453a882"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_jwt_tests.rs",
+      "before": {
+        "blob": "e26bb55f3a6c167104581ac0e5450f98aed1cc0d",
+        "bytes": 49655,
+        "sha256": "d909c5fa2fe1044e49372b9168619feed28968d48d34fa9af111e39fc31f056a"
+      },
+      "after": {
+        "blob": "407283ae222030d8baeec7fc0aef6a38b6859fff",
+        "bytes": 61884,
+        "sha256": "41e611618aa18298eb6b94318bd30a210571a323c7602fa3f58fe7d9aca122f9"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_client.rs",
+      "before": {
+        "blob": "a8a00094d2c4efb26a9be5c1af9b7b5f0c8e04cf",
+        "bytes": 20232,
+        "sha256": "f76bdf9fc65fcf99b0a214c00df7660436509036c107f5486b3226981635004f"
+      },
+      "after": {
+        "blob": "ab70d9abc8abda8d605f055ba0eaeda74d369803",
+        "bytes": 20359,
+        "sha256": "e53ba84411f23c8c822d8a4f546dbead8bc643097de419a7e70c5eac99015d58"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_source.rs",
+      "before": {
+        "blob": "7178177f6156cce780c7044721ed53120c86a563",
+        "bytes": 19516,
+        "sha256": "2644931919fdafdc2d68d8e9927ebca77647e7ce8839cec1abef3e7563635c73"
+      },
+      "after": {
+        "blob": "a360aa111114da8aa16827de528839ca8eb90eec",
+        "bytes": 19632,
+        "sha256": "bc7e833e0faced417249756c78e546e955271b6ed25da1d3dbfbdff2bf56ef76"
+      }
+    }
+  ],
+  "read_only_base": {
+    "source": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-02b90762-src-20261106-r1/source",
+    "commit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "tree": "9781e9615ac5fb068d217241c74bb54bf87942cf",
+    "history": 3768,
+    "tracked_bytes": 62537554,
+    "index_sha256": "c6cef770842a1b0006b4c86a58e325802d00dd5779dede468262f2693c3246cc",
+    "actual_stage_report": {
+      "blob": "a148ebe5d4d729f4a1a76fd18e7a2e25b68a571d",
+      "bytes": 10558,
+      "sha256": "7d2e75f8038ba68c4ceeb5af4ec75bf8a6f528b2d394acad97ea0364b70d33e9"
+    },
+    "root_qualification": {
+      "blob": "91614d1f693343c6772302930a10b5f1c792d21e",
+      "bytes": 1353,
+      "sha256": "3e51bf9631201bcb4d67709e6ed98c2202e5d4f668126534dd3bf914362aebb4"
+    },
+    "volume_uuid": "FB804D1B-24CB-4D6E-AEA7-A9E180807758",
+    "semantics": "Observed historical source base, revalidated by the unchanged in-stage freeze-before/freeze-after, local independent-clone and T5 checks. It is not an inherited build qualification or a new presence observation."
+  },
+  "adaptation": [
+    {
+      "phase": "source-stage",
+      "baseline": {
+        "source": {
+          "blob": "b6a9190bc5856e42be2d8e750875675521ecf22d",
+          "bytes": 25130,
+          "sha256": "ea096d7a13c4501d4d39d7d953fb6fd35c49aad6051227884c06e179bc8db9fd"
+        },
+        "tree": "d5fcaddbe3987efef34698b761b63a08169deea0"
+      },
+      "template": {
+        "blob": "79c2bae6e400b385a5efa8c57a23c6e5f0ea72ed",
+        "bytes": 23651,
+        "sha256": "7addc497cc836a7b6cc43081518d9fc37dbec009eddedcf2bc9f5b532a83f83c"
+      },
+      "changes": "19 bounded data/label replacements in4 strict hunks. New root, actual successor/base commits and trees, one ancestor edge, history3768->3769, tracked total/index. Bundle bytes/SHA explicitly None. All original functions, failure/finally tail, source-only schema, local-only clone/fetch, T5/FD/link guards and deadlines unchanged.",
+      "next": "After B's actual bundle and exact transport close, bind only the two bundle None constants; derive source/carrier/request/journal pins through the existing stage binder shape and present exact GO. No request or slot exists in this package."
+    },
+    {
+      "phase": "normal-controls",
+      "baseline_tree": "ed813dd7e3fc2f344737da2655e3af3ed69a3c2c",
+      "changes": "Retain the separate fresh-root publisher/launcher/runner design already prepared. Bind successor commit/tree and paths, and only then the actual successor stage receipt full9/wholeSHA and canonical count/index. No prior02b stage receipt may satisfy the new-stage condition. The three published controls and publication receipt remain unobserved.",
+      "next": "Publish only after a successful exact successor stage and independent root acceptance; build entry rechecks actual controls and receipts. Use create-only target under the new run root, no old shared target or retained-cache execution fence."
+    },
+    {
+      "phase": "normal61",
+      "changes": "Keep the original6 groups44 + ingress7 + coldH2 9 + same-root ABA1, original feature/profile verification and exact listing/count/pass assertions. Rebind commit/tree and source/artifact provenance. These61 are not the new Linux252 unique/280 profile plan or coverage of the6 new JWT tests.",
+      "next": "An independent Mac Cargo GO and dedicated target window. A release phase alone does not qualify normal61. Retained server/seed/libtest identities and reports remain null until actual complete execution."
+    },
+    {
+      "phase": "full34",
+      "baseline_tree": "e8ef2d41704440ea7fecfa7178ccb9a8dfadd9b1",
+      "changes": "Retain the canonical49393B driver and20008B official launcher. Rebind the wrapper to the actual new normal61/release/native reports and actual bound Mac runner, plus the new server and six-role input table; use a fresh work root. Keep original31 checks/34MiB, failure/status values and original owner cleanup.",
+      "next": "Fresh fixed-file input identities and separate readonly-prepare/live GO remain required. Historical official2.7.1 pins are expectations only. Neither old4e808 nor failed02b is transferred."
+    }
+  ],
+  "unchanged_budgets": {
+    "source_stage": {
+      "internal_seconds": 300,
+      "git_leaf_seconds": 90,
+      "clone_seconds": 180,
+      "outer_seconds": 360,
+      "carrier_bytes": 262144,
+      "tracked_worktree_bytes": 134217728
+    },
+    "controls": {
+      "publisher_outer_seconds": 60,
+      "publisher_stdin_bytes": 262144
+    },
+    "normal": {
+      "absolute_outer_seconds": 8280,
+      "release_seconds": 1800,
+      "libtest_compile_seconds": 1800,
+      "listing_seconds": 30,
+      "family_seconds": 600,
+      "TERM_seconds": 5,
+      "KILL_seconds": 5
+    },
+    "full34": {
+      "outer_seconds": 1800,
+      "http_seconds": 15,
+      "migration_seconds": 360,
+      "json_bytes": 4194304,
+      "archive_bytes": 134217728,
+      "prepare_internal_seconds": 60,
+      "prepare_outer_seconds": 90,
+      "internal_wrapper_subprocess_timeout": null
+    }
+  },
+  "blocking_actual_inputs": [
+    "B producer's new canonical bundle path/bytes/SHA/full9 and header",
+    "Independent original INFO version and complete binary transport",
+    "Exact bound stage request/journal and root GO",
+    "Actual successor Mac stage receipt",
+    "Actual separate controls publication receipt and bound build request",
+    "Successful actual Mac normal61 and artifact identities",
+    "Fresh six-role full34 input identities and prepare/live GO"
+  ],
+  "boundary_notes": [
+    "No new product code, branch or ref was changed by C. Only an unbound control source template and explicit interfaces are produced.",
+    "The source template rejects its None bundle bindings before any new file is written. No Python or component execution was used to assert this source control-flow fact.",
+    "The candidate manifest says formatted=false. No formatting qualification is inherited; any formatter that changes candidate bytes requires a separate frozen successor and rebindings.",
+    "All new runtime slots/keys/requests/actual artifact SHA fields stay null. The candidate source commit/tree and reviewed component source pins are filled only because root has now frozen them.",
+    "Root and B agreed the canonical prerequisite02b/head576 route. B will first finish the original compiler-log observations; this plan grants no extra B operations.",
+    "The existing NB flock remains an admission probe closed before same-PID exec, not a lifetime-held Cargo lock. Root still coordinates the Mac target window."
+  ],
+  "actual": {
+    "Native_calls": 0,
+    "Cargo_runs": 0,
+    "Python_runs": 0,
+    "stage_passed": false,
+    "controls_published": false,
+    "normal61_passed": false,
+    "full34_passed": false,
+    "final_LAN_passed": false
+  }
+}

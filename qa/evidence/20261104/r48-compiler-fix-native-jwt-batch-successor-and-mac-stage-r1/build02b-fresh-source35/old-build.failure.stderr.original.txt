@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/home/qian-qi/hb-02b90762-controls-20261106-r1/launch_native_jwt_build.py", line 470, in <module>
+    assert TARGET.resolve(strict=True) == TARGET
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/pathlib/__init__.py", line 939, in resolve
+    return self.with_segments(os.path.realpath(self, strict=strict))
+                              ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen posixpath>", line 457, in realpath
+FileNotFoundError: [Errno 2] No such file or directory: '/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3'

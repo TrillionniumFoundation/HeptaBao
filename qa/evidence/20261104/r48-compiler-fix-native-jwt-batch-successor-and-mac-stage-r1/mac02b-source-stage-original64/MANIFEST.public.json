@@ -1,0 +1,386 @@
+{
+  "schema": "heptabao.original-Mac-stage-fullchain.v1",
+  "call_count": 7,
+  "observer_count": 2,
+  "page_count": 2,
+  "files": [
+    {
+      "path": "call.00.request.original.json",
+      "blob": "bd3f20cc6390cc8519265142cf2fb8624cf87008",
+      "bytes": 254446,
+      "sha256": "21ca75b8e1ca736dd96f3e564a70e757dc487d758d216793af5b420c5d46c99e"
+    },
+    {
+      "path": "call.00.intent.original.json",
+      "blob": "d348aafd3489918316481a9b0dc12b39d0c4e1ea",
+      "bytes": 700,
+      "sha256": "a2b2f18d132b95023359d7ca7a3e457f29b162c9c166de919940bfbfbda102a3"
+    },
+    {
+      "path": "call.00.armed.original.json",
+      "blob": "9186528564bd8fb96703a39f47a8bc18ba036569",
+      "bytes": 837,
+      "sha256": "4fdc4633bf5e37e7fa33a3fd5281fd30037290b2419222899cce994b94a4802f"
+    },
+    {
+      "path": "call.00.SDK.original.json",
+      "blob": "8c85c32481966c2e20da335bf8d546f503b242e4",
+      "bytes": 28031,
+      "sha256": "64c4604be96a9dd7b5700548546b319faa6132fbb654ec7e18a3b16ea208c181"
+    },
+    {
+      "path": "call.00.native.original.json",
+      "blob": "967e644502f6d25d1b0f00b93fbba3a7f69c4a0f",
+      "bytes": 27181,
+      "sha256": "45784a4c17c46ba63497e5271f311ae9ff7e4a1863d9606859065961e1c159fa"
+    },
+    {
+      "path": "call.00.armGitACK.original.json",
+      "blob": "33b808c7e41f77b9143d3b28a1057a29e87af467",
+      "bytes": 195,
+      "sha256": "0d308b5f691717a65cfab4c8fbd267c25ab534d7846a064b64e330e704460fc2"
+    },
+    {
+      "path": "call.00.SDKGitACK.original.json",
+      "blob": "731af0752b733ffe9c75769b7a48fca3a2d8b254",
+      "bytes": 195,
+      "sha256": "9e236b1ccfd9449560869797fe623d179254ded27daff8f9f6d02d2fa714707f"
+    },
+    {
+      "path": "call.01.request.original.json",
+      "blob": "a310481b897a26fb4aaf691aac2f70fde9abcdd3",
+      "bytes": 222,
+      "sha256": "941ebce8214c274be03a160491d1f7d956948d32ade03732f3529e2b3c0023bc"
+    },
+    {
+      "path": "call.01.intent.original.json",
+      "blob": "71b87dd391f0ca46bff474f5061fdbe04efb0233",
+      "bytes": 729,
+      "sha256": "a3f2b32636235585d137737b64ac63e9f2913d5d439a1cf8757277462e9ee77b"
+    },
+    {
+      "path": "call.01.armed.original.json",
+      "blob": "ce53c3cc5b54d686b80ba6fb15a8df7ec4a30106",
+      "bytes": 866,
+      "sha256": "cb36217178c4f8e14d66f0ff7edd1f210ba70f7d9f2b91dad3b6a20e146a485b"
+    },
+    {
+      "path": "call.01.SDK.original.json",
+      "blob": "64e9b97bdc118af754a1d622be7bd0c585b4d7de",
+      "bytes": 709,
+      "sha256": "2cd6203389402c3b1f864de77149451d93e52cb77afdd401caa26a4a5140183a"
+    },
+    {
+      "path": "call.01.native.original.json",
+      "blob": "65753943e4ae4f72bec71788c8a5d347ac6ab00a",
+      "bytes": 548,
+      "sha256": "8c755aa11e9b85636279d17f54835bffecf0238f419b6c0e1225af29d1e62f28"
+    },
+    {
+      "path": "call.01.armGitACK.original.json",
+      "blob": "b78504a4b3bad7f55beb28f8cf12cfb7c2c8c7dd",
+      "bytes": 195,
+      "sha256": "9969762cd1a14fbbd6298714e12973abee18899b5c3aa3ccf0c886cfa9494e31"
+    },
+    {
+      "path": "call.01.SDKGitACK.original.json",
+      "blob": "ced3c5da2d77cc1e5d8a5a3b1c6cfbd8e5a7e9cd",
+      "bytes": 195,
+      "sha256": "7325189398c04697b8ce39c29b77c5be7227b3d1a8e6b791bf0cb3ea4c6f0635"
+    },
+    {
+      "path": "call.02.request.original.json",
+      "blob": "b795bd256e94dbeebc8c358daaead5b4ab1e8d45",
+      "bytes": 89,
+      "sha256": "388cb60dc3568399ccb9a551aa92baa66200919e4570b920661ce765ed21cba0"
+    },
+    {
+      "path": "call.02.intent.original.json",
+      "blob": "75ef5030b49961b16ad6d18e6bd2f0f046e00e69",
+      "bytes": 793,
+      "sha256": "4bd51cb0607dcd0925199259834840c2bf7a38f29310cd04251b138035059a0c"
+    },
+    {
+      "path": "call.02.armed.original.json",
+      "blob": "d22546ff43e74b4e159950993d07ca372d244844",
+      "bytes": 930,
+      "sha256": "f3deebd5ddac86dcc40d48075f3fe6d8223561611b9a3cae5c87f7e96a33e7e7"
+    },
+    {
+      "path": "call.02.SDK.original.json",
+      "blob": "6604b16751111fe3d65e0c51168cdd722f7018c1",
+      "bytes": 980,
+      "sha256": "9989f8e7ff8f674760579dfcd33e65e9d44506fc9bb0e1834e67775094c8e0d1"
+    },
+    {
+      "path": "call.02.native.original.json",
+      "blob": "b7ba3f0e9a78ddb01ba7fcc323dc7b9f93abd85a",
+      "bytes": 805,
+      "sha256": "142bfcdd77e1a113252272bb94c9d4eecb80218a98f2628efe3ebc466a0ea12e"
+    },
+    {
+      "path": "call.02.armGitACK.original.json",
+      "blob": "0e03442fd55e7c547e3cb41e68cd68d8134b1df4",
+      "bytes": 195,
+      "sha256": "3371a26da4932b5750387a53931f6cb8f311c157506b63f2ed591ae5cc1d010b"
+    },
+    {
+      "path": "call.02.SDKGitACK.original.json",
+      "blob": "b788b72feea240cccccccd996887daa7c0c739d1",
+      "bytes": 195,
+      "sha256": "8e747f54b64587bac3dca7135f4015269bf8d0119651a36bffa2a67274e6df50"
+    },
+    {
+      "path": "call.03.request.original.json",
+      "blob": "698087f1d73a207740542abb6b6f1dc11db26a78",
+      "bytes": 121,
+      "sha256": "a9ab1b3203706532bde9c7a65407ca9205fb5c144c67a922e92b9f1936156faf"
+    },
+    {
+      "path": "call.03.intent.original.json",
+      "blob": "eabc8065d200edf35097016fb409bf488d371048",
+      "bytes": 792,
+      "sha256": "2c3557f29157fa1e7c5dd2dad3a84b41c073251e85440d086fd497e69d8f76ac"
+    },
+    {
+      "path": "call.03.armed.original.json",
+      "blob": "1bade8c41472d47445fda8bb1fe2a26e803a1c72",
+      "bytes": 929,
+      "sha256": "2ff3156c3228ee568f92150dc5a8603bbbd2d916764648bffda6b27f618bfacc"
+    },
+    {
+      "path": "call.03.SDK.original.json",
+      "blob": "7c0750794ddb456d8f1c2f29170ca2fe2189b1a4",
+      "bytes": 2064,
+      "sha256": "e09541772b1541320e663c0fdda04332408b4f4e418fabf6e85fa7f2aa235863"
+    },
+    {
+      "path": "call.03.native.original.json",
+      "blob": "c1277c6a73384a9ac87da9e26b247c6966b995b7",
+      "bytes": 1893,
+      "sha256": "7f0519647d8bbaaff03b3debb997aca41b18b2c38431278adf3e9bf2a9d11485"
+    },
+    {
+      "path": "call.03.armGitACK.original.json",
+      "blob": "34b2a27592706cb5aced465134a96bf3f1a1d784",
+      "bytes": 195,
+      "sha256": "cf4258d2e74f587437fa7a7ce9004faea739381f7645534df47653e782fed9f6"
+    },
+    {
+      "path": "call.03.SDKGitACK.original.json",
+      "blob": "1f066b7ff8ad822d409ebb982da635db7f49b30d",
+      "bytes": 195,
+      "sha256": "74a9f1f1a81f65740e93622e05650a95891d48f0a890559c536f53b7bcde803e"
+    },
+    {
+      "path": "call.04.request.original.json",
+      "blob": "ad5553ea4f2a8ef2f48756cf1481a2b1fc001eb0",
+      "bytes": 292,
+      "sha256": "2780e5b2c9225820ea2779ef60079b6c45c62da6cc459321f7aa1ae714263fb7"
+    },
+    {
+      "path": "call.04.intent.original.json",
+      "blob": "9f8e3027e2d6c9a8fc2a23c5c9dd8a7cbb089101",
+      "bytes": 727,
+      "sha256": "b473d25a254dcbbaddc1d38794ce5f99c7f91a6e8cca2bd7847d012275be8d16"
+    },
+    {
+      "path": "call.04.armed.original.json",
+      "blob": "91fa3e278a0085967eb9e0fc25bf1273b50384fd",
+      "bytes": 864,
+      "sha256": "ad38e45be33b5faa74f57e9ef92d9a5f5a52161dfe729f92829834a92fce5dec"
+    },
+    {
+      "path": "call.04.SDK.original.json",
+      "blob": "7265101bab0122ca2ccce707a68585acc2dad2e6",
+      "bytes": 707,
+      "sha256": "fbaa8c70ca311b7fa729bff63571c3351ca125e5b8c5e179b9a5ec9ae1ecc8fa"
+    },
+    {
+      "path": "call.04.native.original.json",
+      "blob": "ccf3500e184e2fc0458553949a29851ae53bfc82",
+      "bytes": 546,
+      "sha256": "e38556a48d1ddb44973616ec7aac55c523cc1784c42ab037713b1b931b1bdc20"
+    },
+    {
+      "path": "call.04.armGitACK.original.json",
+      "blob": "d86955553a0b3380f731876478d648dd8144bfa7",
+      "bytes": 195,
+      "sha256": "fb920f669b56c8145b4028c07dff7e875f0c0b18b9d8af58b66116473b5cefe9"
+    },
+    {
+      "path": "call.04.SDKGitACK.original.json",
+      "blob": "9fdd696254ed9d6eb3141d878814a6029228b8d2",
+      "bytes": 195,
+      "sha256": "995ea54acf200102f8df5f568170b814a41648b711015de83b93b3a01ea0353e"
+    },
+    {
+      "path": "call.05.request.original.json",
+      "blob": "2c38daf89e75bffb851c4a5bd76274c22bfa81fc",
+      "bytes": 89,
+      "sha256": "b49b8e96863cdd42ba6d0a1215c2a8c59b8182fb4854aaf5286da230f65f75be"
+    },
+    {
+      "path": "call.05.intent.original.json",
+      "blob": "5b0f4d24ab7e26aab6e5ab39417a78a9a30a616e",
+      "bytes": 791,
+      "sha256": "66aaae383a9bdb2310c887f97cc52ec201c55cacdb9e36140679356fb64b429b"
+    },
+    {
+      "path": "call.05.armed.original.json",
+      "blob": "010113e545dddfcd536f20dbe47df75b9e09c1d0",
+      "bytes": 928,
+      "sha256": "54809c2996b5b48fff9a62e9f25511afe44033f2d62bbef75f095c943d5644f7"
+    },
+    {
+      "path": "call.05.SDK.original.json",
+      "blob": "642f9505a8e5451bd90fceca5286ce025c6449fd",
+      "bytes": 978,
+      "sha256": "91b314015ed8a1e6216a222294ed9bd81b6d7fd08d4f4206812823cdaecce901"
+    },
+    {
+      "path": "call.05.native.original.json",
+      "blob": "6275392514e97e97c520468a495a18d6e7253c3b",
+      "bytes": 803,
+      "sha256": "c795e152cf7e29417ae30a06814f561a0e863fd61ee2db5509da695194ff16bd"
+    },
+    {
+      "path": "call.05.armGitACK.original.json",
+      "blob": "6bb2e5b867563d781fac02afe32b0093c7994adb",
+      "bytes": 195,
+      "sha256": "cab79ed40532156835ccbffc833720563ab22ee05320684b63e44f430e5bad21"
+    },
+    {
+      "path": "call.05.SDKGitACK.original.json",
+      "blob": "864fd966f5f04fe1cdc85c7faf1492faccfcffb3",
+      "bytes": 195,
+      "sha256": "e93cfc5d1160b639659e8fb43d05b96bf8cb59b2c24544e48b00f672f3faa56b"
+    },
+    {
+      "path": "call.06.request.original.json",
+      "blob": "4a3c67c93a119a020509f69f737b63354c88fe2f",
+      "bytes": 121,
+      "sha256": "1ad82500bcc0418d1cb251c6dd7fa5de9dac15f0d1d0a061c80d804e150f6c4c"
+    },
+    {
+      "path": "call.06.intent.original.json",
+      "blob": "815cc1ebf8b861d2a354c5290c2f06429ef9f795",
+      "bytes": 790,
+      "sha256": "72581abc8b150817609939a42328499b1305b0f08cb54b72ba47d5e24873d309"
+    },
+    {
+      "path": "call.06.armed.original.json",
+      "blob": "71d8411f70cffe8e2a00ca04950e0e0f99859074",
+      "bytes": 927,
+      "sha256": "48fec2c870bccbaaa6362817b089c9a9a2ad5f61e21549cf82c7487479fa4cf1"
+    },
+    {
+      "path": "call.06.SDK.original.json",
+      "blob": "9f3497e7e4fcb32c60b1cfec300285282664671c",
+      "bytes": 3082,
+      "sha256": "49b2c0647d48457e1f1d5eab4977f4c8396e8bd4b484f201c2bcca2d83783e24"
+    },
+    {
+      "path": "call.06.native.original.json",
+      "blob": "d1573a33c48b255a05302c10c3a32890572ddfd4",
+      "bytes": 2911,
+      "sha256": "68f74200af348be2afa2fdc11df62ff464de724cfbec3a85fd6a56c65cbdb07c"
+    },
+    {
+      "path": "call.06.armGitACK.original.json",
+      "blob": "4ed66e5047f263ce2681e2c5e4771524d479de18",
+      "bytes": 195,
+      "sha256": "8e7156d3b4a8ffe688c01af796ce07980532361b5546acf9ddadf1f8f3a6d993"
+    },
+    {
+      "path": "call.06.SDKGitACK.original.json",
+      "blob": "10b4356abbf64edc29d89ae50ca9cc11d8acb168",
+      "bytes": 195,
+      "sha256": "f54bc534fc3543c276963bbba2b2a4edfe9b31fdbbefacd300af7b7016a843f8"
+    },
+    {
+      "path": "observer0.payload.original.json",
+      "blob": "dbb56549a89311adaafb9e0cea5eab2f4f044c3c",
+      "bytes": 908,
+      "sha256": "9def244e098855f19131311114bad621e88c031533cef14bc8558830cbc952eb"
+    },
+    {
+      "path": "observer0.native.original.json",
+      "blob": "3c0a55e37cca8e3992bb96788d79318afec949ea",
+      "bytes": 729,
+      "sha256": "797ce9266b89c41200c81c7ad14acb5537a3adffd0d519b31c71135bfbea4552"
+    },
+    {
+      "path": "observer0.payloadGitACK.original.json",
+      "blob": "f8f20d02e8e3fa56e3cdc73364ea3a94bbad3b6b",
+      "bytes": 195,
+      "sha256": "31cca493e34a35742d0e6d9c399607fb0b1e87880bcb1c5f642458365a538411"
+    },
+    {
+      "path": "observer1.payload.original.json",
+      "blob": "ad3d54aeec240c1d3c85a177e1131339dfc27379",
+      "bytes": 1669,
+      "sha256": "44c2b1ffd172b6a3ccd51aeef558cfe1349619243f998c8ed15e3f33211393f1"
+    },
+    {
+      "path": "observer1.native.original.json",
+      "blob": "7133c9c51156c30090818ac1d7c83571218c9e5b",
+      "bytes": 1480,
+      "sha256": "7d9aa76a92780145374df6f2235d9f3b26450969c217663ca678a3d150594b32"
+    },
+    {
+      "path": "observer1.payloadGitACK.original.json",
+      "blob": "3e35901f7e42986931b5a042d25010155032a8b4",
+      "bytes": 195,
+      "sha256": "7315e0592aaf0584ed0ccb2c16326481ca566efe6ffb58932d73f4b4343f9e02"
+    },
+    {
+      "path": "CALL-INDEX.public.json",
+      "blob": "af5c059df63f6a26831c37352c1432df52270e08",
+      "bytes": 271804,
+      "sha256": "2dad825a89f142382ca1acb3e56a06747348c3f7f2a933c776181c0976c6a427"
+    },
+    {
+      "path": "STATE.original.json",
+      "blob": "e82d1941b8648b9b7aaf5c32560f38cfc9c2b790",
+      "bytes": 279495,
+      "sha256": "bfac204edde767d039087ceb7f317db9b4aab7fe43895cc440fbfd5b1fec3071"
+    },
+    {
+      "path": "ROOT-GO.original.json",
+      "blob": "4f814f5f6e4b88ce900b83dce23bcf9533c4acb6",
+      "bytes": 4657,
+      "sha256": "3b99639f850cd3b416ab382fc7377b113bcd17cdf477af48df1fea08a121b0ae"
+    },
+    {
+      "path": "journal.original.js",
+      "blob": "0bcb0ae541da1865f788a26cdb4a884425c50cbd",
+      "bytes": 19047,
+      "sha256": "f74c58e06d949fe5e3aac9c9e7f33b3f68504ce9e6721bc59c3309c6a7c7424d"
+    },
+    {
+      "path": "request.exact.json",
+      "blob": "bd3f20cc6390cc8519265142cf2fb8624cf87008",
+      "bytes": 254446,
+      "sha256": "21ca75b8e1ca736dd96f3e564a70e757dc487d758d216793af5b420c5d46c99e"
+    },
+    {
+      "path": "stdout.original.txt",
+      "blob": "c066a7a0125516b8da901c53c9e37e351edf8d9a",
+      "bytes": 378,
+      "sha256": "458c8accecdcaf5ecf1b0bd8aa5c571f31efc2eb1adc7a8332e0a4e8c6e4e691"
+    },
+    {
+      "path": "RELEASE.original.json",
+      "blob": "3504966923db1b74751ce32083ba67051748d50d",
+      "bytes": 2769,
+      "sha256": "75a5fab5bf1affbc237f535ca715d5bf2dc24ec6ee7d95f7a3bdeea71c251128"
+    },
+    {
+      "path": "README.md",
+      "blob": "a3e920c728fb14a181f7157d7815f260e3e0b26a",
+      "bytes": 718,
+      "sha256": "99e803a18ba9f5f92b42e66edf2cf345b74b8fe747d38f52aaf024ad67ec1f01"
+    }
+  ]
+}

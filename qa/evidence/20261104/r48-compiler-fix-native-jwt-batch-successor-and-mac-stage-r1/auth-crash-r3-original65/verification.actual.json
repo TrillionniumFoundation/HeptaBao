@@ -1,0 +1,1093 @@
+{
+  "schema": "heptabao.node-crash-fixed-r3-original-chain-pure-checks.r1",
+  "passed": true,
+  "checkCount": 269,
+  "checks": [
+    {
+      "name": "go/original-whole",
+      "passed": true
+    },
+    {
+      "name": "exact/counts",
+      "passed": true
+    },
+    {
+      "name": "call/0/ordinal",
+      "passed": true
+    },
+    {
+      "name": "call/0/unique",
+      "passed": true
+    },
+    {
+      "name": "call/0/request-pin",
+      "passed": true
+    },
+    {
+      "name": "call/0/sdk-pin",
+      "passed": true
+    },
+    {
+      "name": "call/0/native-pin",
+      "passed": true
+    },
+    {
+      "name": "call/0/intent-binding",
+      "passed": true
+    },
+    {
+      "name": "call/0/armed-once",
+      "passed": true
+    },
+    {
+      "name": "call/0/arm-identity",
+      "passed": true
+    },
+    {
+      "name": "call/0/arm-merkle",
+      "passed": true
+    },
+    {
+      "name": "call/0/sdk-merkle",
+      "passed": true
+    },
+    {
+      "name": "call/0/actual-called-accepted",
+      "passed": true
+    },
+    {
+      "name": "call/0/sdk-success",
+      "passed": true
+    },
+    {
+      "name": "call/0/native-raw",
+      "passed": true
+    },
+    {
+      "name": "start/unique-first",
+      "passed": true
+    },
+    {
+      "name": "start/exact-request",
+      "passed": true
+    },
+    {
+      "name": "start/source",
+      "passed": true
+    },
+    {
+      "name": "start/identity",
+      "passed": true
+    },
+    {
+      "name": "start/typed-binding",
+      "passed": true
+    },
+    {
+      "name": "start/unique-success",
+      "passed": true
+    },
+    {
+      "name": "call/1/ordinal",
+      "passed": true
+    },
+    {
+      "name": "call/1/unique",
+      "passed": true
+    },
+    {
+      "name": "call/1/request-pin",
+      "passed": true
+    },
+    {
+      "name": "call/1/sdk-pin",
+      "passed": true
+    },
+    {
+      "name": "call/1/native-pin",
+      "passed": true
+    },
+    {
+      "name": "call/1/intent-binding",
+      "passed": true
+    },
+    {
+      "name": "call/1/armed-once",
+      "passed": true
+    },
+    {
+      "name": "call/1/arm-identity",
+      "passed": true
+    },
+    {
+      "name": "call/1/arm-merkle",
+      "passed": true
+    },
+    {
+      "name": "call/1/sdk-merkle",
+      "passed": true
+    },
+    {
+      "name": "call/1/actual-called-accepted",
+      "passed": true
+    },
+    {
+      "name": "call/1/sdk-success",
+      "passed": true
+    },
+    {
+      "name": "call/1/native-raw",
+      "passed": true
+    },
+    {
+      "name": "op/1/previous-closed",
+      "passed": true
+    },
+    {
+      "name": "op/1/key-prefix",
+      "passed": true
+    },
+    {
+      "name": "op/1/scope",
+      "passed": true
+    },
+    {
+      "name": "op/1/admitted-once",
+      "passed": true
+    },
+    {
+      "name": "call/2/ordinal",
+      "passed": true
+    },
+    {
+      "name": "call/2/unique",
+      "passed": true
+    },
+    {
+      "name": "call/2/request-pin",
+      "passed": true
+    },
+    {
+      "name": "call/2/sdk-pin",
+      "passed": true
+    },
+    {
+      "name": "call/2/native-pin",
+      "passed": true
+    },
+    {
+      "name": "call/2/intent-binding",
+      "passed": true
+    },
+    {
+      "name": "call/2/armed-once",
+      "passed": true
+    },
+    {
+      "name": "call/2/arm-identity",
+      "passed": true
+    },
+    {
+      "name": "call/2/arm-merkle",
+      "passed": true
+    },
+    {
+      "name": "call/2/sdk-merkle",
+      "passed": true
+    },
+    {
+      "name": "call/2/actual-called-accepted",
+      "passed": true
+    },
+    {
+      "name": "call/2/sdk-success",
+      "passed": true
+    },
+    {
+      "name": "call/2/native-raw",
+      "passed": true
+    },
+    {
+      "name": "status/2/same-id",
+      "passed": true
+    },
+    {
+      "name": "status/2/bound",
+      "passed": true
+    },
+    {
+      "name": "status/2/closed",
+      "passed": true
+    },
+    {
+      "name": "call/3/ordinal",
+      "passed": true
+    },
+    {
+      "name": "call/3/unique",
+      "passed": true
+    },
+    {
+      "name": "call/3/request-pin",
+      "passed": true
+    },
+    {
+      "name": "call/3/sdk-pin",
+      "passed": true
+    },
+    {
+      "name": "call/3/native-pin",
+      "passed": true
+    },
+    {
+      "name": "call/3/intent-binding",
+      "passed": true
+    },
+    {
+      "name": "call/3/armed-once",
+      "passed": true
+    },
+    {
+      "name": "call/3/arm-identity",
+      "passed": true
+    },
+    {
+      "name": "call/3/arm-merkle",
+      "passed": true
+    },
+    {
+      "name": "call/3/sdk-merkle",
+      "passed": true
+    },
+    {
+      "name": "call/3/actual-called-accepted",
+      "passed": true
+    },
+    {
+      "name": "call/3/sdk-success",
+      "passed": true
+    },
+    {
+      "name": "call/3/native-raw",
+      "passed": true
+    },
+    {
+      "name": "page/3/same-closed-id",
+      "passed": true
+    },
+    {
+      "name": "page/3/original-width",
+      "passed": true
+    },
+    {
+      "name": "page/3/offset",
+      "passed": true
+    },
+    {
+      "name": "page/3/native-immutable",
+      "passed": true
+    },
+    {
+      "name": "page/3/payload-bound",
+      "passed": true
+    },
+    {
+      "name": "page/3/size-bound",
+      "passed": true
+    },
+    {
+      "name": "page/3/extent",
+      "passed": true
+    },
+    {
+      "name": "page/3/eof",
+      "passed": true
+    },
+    {
+      "name": "page/3/page-bound",
+      "passed": true
+    },
+    {
+      "name": "observer/c5850a55de6cb68c740edc8431be85fff58fc7115d2a64df05adfa9112ac5caf/listed",
+      "passed": true
+    },
+    {
+      "name": "observer/c5850a55de6cb68c740edc8431be85fff58fc7115d2a64df05adfa9112ac5caf/payload-whole",
+      "passed": true
+    },
+    {
+      "name": "observer/c5850a55de6cb68c740edc8431be85fff58fc7115d2a64df05adfa9112ac5caf/payload-pin",
+      "passed": true
+    },
+    {
+      "name": "observer/c5850a55de6cb68c740edc8431be85fff58fc7115d2a64df05adfa9112ac5caf/payload-sha-and-bytes",
+      "passed": true
+    },
+    {
+      "name": "observer/c5850a55de6cb68c740edc8431be85fff58fc7115d2a64df05adfa9112ac5caf/pages",
+      "passed": true
+    },
+    {
+      "name": "observer/c5850a55de6cb68c740edc8431be85fff58fc7115d2a64df05adfa9112ac5caf/payload-tree",
+      "passed": true
+    },
+    {
+      "name": "observer/c5850a55de6cb68c740edc8431be85fff58fc7115d2a64df05adfa9112ac5caf/native-success",
+      "passed": true
+    },
+    {
+      "name": "observer/c5850a55de6cb68c740edc8431be85fff58fc7115d2a64df05adfa9112ac5caf/native-original",
+      "passed": true
+    },
+    {
+      "name": "observer/c5850a55de6cb68c740edc8431be85fff58fc7115d2a64df05adfa9112ac5caf/native-pin",
+      "passed": true
+    },
+    {
+      "name": "observer/c5850a55de6cb68c740edc8431be85fff58fc7115d2a64df05adfa9112ac5caf/job",
+      "passed": true
+    },
+    {
+      "name": "observer/c5850a55de6cb68c740edc8431be85fff58fc7115d2a64df05adfa9112ac5caf/tool",
+      "passed": true
+    },
+    {
+      "name": "observer/c5850a55de6cb68c740edc8431be85fff58fc7115d2a64df05adfa9112ac5caf/closed",
+      "passed": true
+    },
+    {
+      "name": "authority/original",
+      "passed": true
+    },
+    {
+      "name": "authority/terminal",
+      "passed": true
+    },
+    {
+      "name": "authority/no-cancel-timeout",
+      "passed": true
+    },
+    {
+      "name": "authority/stdout/complete",
+      "passed": true
+    },
+    {
+      "name": "authority/stdout/durable",
+      "passed": true
+    },
+    {
+      "name": "authority/stderr/complete",
+      "passed": true
+    },
+    {
+      "name": "authority/stderr/durable",
+      "passed": true
+    },
+    {
+      "name": "call/4/ordinal",
+      "passed": true
+    },
+    {
+      "name": "call/4/unique",
+      "passed": true
+    },
+    {
+      "name": "call/4/request-pin",
+      "passed": true
+    },
+    {
+      "name": "call/4/sdk-pin",
+      "passed": true
+    },
+    {
+      "name": "call/4/native-pin",
+      "passed": true
+    },
+    {
+      "name": "call/4/intent-binding",
+      "passed": true
+    },
+    {
+      "name": "call/4/armed-once",
+      "passed": true
+    },
+    {
+      "name": "call/4/arm-identity",
+      "passed": true
+    },
+    {
+      "name": "call/4/arm-merkle",
+      "passed": true
+    },
+    {
+      "name": "call/4/sdk-merkle",
+      "passed": true
+    },
+    {
+      "name": "call/4/actual-called-accepted",
+      "passed": true
+    },
+    {
+      "name": "call/4/sdk-success",
+      "passed": true
+    },
+    {
+      "name": "call/4/native-raw",
+      "passed": true
+    },
+    {
+      "name": "op/4/previous-closed",
+      "passed": true
+    },
+    {
+      "name": "op/4/key-prefix",
+      "passed": true
+    },
+    {
+      "name": "op/4/scope",
+      "passed": true
+    },
+    {
+      "name": "op/4/original-cursors",
+      "passed": true
+    },
+    {
+      "name": "op/4/admitted-once",
+      "passed": true
+    },
+    {
+      "name": "call/5/ordinal",
+      "passed": true
+    },
+    {
+      "name": "call/5/unique",
+      "passed": true
+    },
+    {
+      "name": "call/5/request-pin",
+      "passed": true
+    },
+    {
+      "name": "call/5/sdk-pin",
+      "passed": true
+    },
+    {
+      "name": "call/5/native-pin",
+      "passed": true
+    },
+    {
+      "name": "call/5/intent-binding",
+      "passed": true
+    },
+    {
+      "name": "call/5/armed-once",
+      "passed": true
+    },
+    {
+      "name": "call/5/arm-identity",
+      "passed": true
+    },
+    {
+      "name": "call/5/arm-merkle",
+      "passed": true
+    },
+    {
+      "name": "call/5/sdk-merkle",
+      "passed": true
+    },
+    {
+      "name": "call/5/actual-called-accepted",
+      "passed": true
+    },
+    {
+      "name": "call/5/sdk-success",
+      "passed": true
+    },
+    {
+      "name": "call/5/native-raw",
+      "passed": true
+    },
+    {
+      "name": "status/5/same-id",
+      "passed": true
+    },
+    {
+      "name": "status/5/bound",
+      "passed": true
+    },
+    {
+      "name": "status/5/closed",
+      "passed": true
+    },
+    {
+      "name": "call/6/ordinal",
+      "passed": true
+    },
+    {
+      "name": "call/6/unique",
+      "passed": true
+    },
+    {
+      "name": "call/6/request-pin",
+      "passed": true
+    },
+    {
+      "name": "call/6/sdk-pin",
+      "passed": true
+    },
+    {
+      "name": "call/6/native-pin",
+      "passed": true
+    },
+    {
+      "name": "call/6/intent-binding",
+      "passed": true
+    },
+    {
+      "name": "call/6/armed-once",
+      "passed": true
+    },
+    {
+      "name": "call/6/arm-identity",
+      "passed": true
+    },
+    {
+      "name": "call/6/arm-merkle",
+      "passed": true
+    },
+    {
+      "name": "call/6/sdk-merkle",
+      "passed": true
+    },
+    {
+      "name": "call/6/actual-called-accepted",
+      "passed": true
+    },
+    {
+      "name": "call/6/sdk-success",
+      "passed": true
+    },
+    {
+      "name": "call/6/native-raw",
+      "passed": true
+    },
+    {
+      "name": "page/6/same-closed-id",
+      "passed": true
+    },
+    {
+      "name": "page/6/original-width",
+      "passed": true
+    },
+    {
+      "name": "page/6/offset",
+      "passed": true
+    },
+    {
+      "name": "page/6/native-immutable",
+      "passed": true
+    },
+    {
+      "name": "page/6/payload-bound",
+      "passed": true
+    },
+    {
+      "name": "page/6/size-bound",
+      "passed": true
+    },
+    {
+      "name": "page/6/extent",
+      "passed": true
+    },
+    {
+      "name": "page/6/eof",
+      "passed": true
+    },
+    {
+      "name": "page/6/page-bound",
+      "passed": true
+    },
+    {
+      "name": "call/7/ordinal",
+      "passed": true
+    },
+    {
+      "name": "call/7/unique",
+      "passed": true
+    },
+    {
+      "name": "call/7/request-pin",
+      "passed": true
+    },
+    {
+      "name": "call/7/sdk-pin",
+      "passed": true
+    },
+    {
+      "name": "call/7/native-pin",
+      "passed": true
+    },
+    {
+      "name": "call/7/intent-binding",
+      "passed": true
+    },
+    {
+      "name": "call/7/armed-once",
+      "passed": true
+    },
+    {
+      "name": "call/7/arm-identity",
+      "passed": true
+    },
+    {
+      "name": "call/7/arm-merkle",
+      "passed": true
+    },
+    {
+      "name": "call/7/sdk-merkle",
+      "passed": true
+    },
+    {
+      "name": "call/7/actual-called-accepted",
+      "passed": true
+    },
+    {
+      "name": "call/7/sdk-success",
+      "passed": true
+    },
+    {
+      "name": "call/7/native-raw",
+      "passed": true
+    },
+    {
+      "name": "page/7/same-closed-id",
+      "passed": true
+    },
+    {
+      "name": "page/7/original-width",
+      "passed": true
+    },
+    {
+      "name": "page/7/offset",
+      "passed": true
+    },
+    {
+      "name": "page/7/native-immutable",
+      "passed": true
+    },
+    {
+      "name": "page/7/payload-bound",
+      "passed": true
+    },
+    {
+      "name": "page/7/size-bound",
+      "passed": true
+    },
+    {
+      "name": "page/7/extent",
+      "passed": true
+    },
+    {
+      "name": "page/7/eof",
+      "passed": true
+    },
+    {
+      "name": "page/7/one-payload",
+      "passed": true
+    },
+    {
+      "name": "page/7/page-bound",
+      "passed": true
+    },
+    {
+      "name": "call/8/ordinal",
+      "passed": true
+    },
+    {
+      "name": "call/8/unique",
+      "passed": true
+    },
+    {
+      "name": "call/8/request-pin",
+      "passed": true
+    },
+    {
+      "name": "call/8/sdk-pin",
+      "passed": true
+    },
+    {
+      "name": "call/8/native-pin",
+      "passed": true
+    },
+    {
+      "name": "call/8/intent-binding",
+      "passed": true
+    },
+    {
+      "name": "call/8/armed-once",
+      "passed": true
+    },
+    {
+      "name": "call/8/arm-identity",
+      "passed": true
+    },
+    {
+      "name": "call/8/arm-merkle",
+      "passed": true
+    },
+    {
+      "name": "call/8/sdk-merkle",
+      "passed": true
+    },
+    {
+      "name": "call/8/actual-called-accepted",
+      "passed": true
+    },
+    {
+      "name": "call/8/sdk-success",
+      "passed": true
+    },
+    {
+      "name": "call/8/native-raw",
+      "passed": true
+    },
+    {
+      "name": "page/8/same-closed-id",
+      "passed": true
+    },
+    {
+      "name": "page/8/original-width",
+      "passed": true
+    },
+    {
+      "name": "page/8/offset",
+      "passed": true
+    },
+    {
+      "name": "page/8/native-immutable",
+      "passed": true
+    },
+    {
+      "name": "page/8/payload-bound",
+      "passed": true
+    },
+    {
+      "name": "page/8/size-bound",
+      "passed": true
+    },
+    {
+      "name": "page/8/extent",
+      "passed": true
+    },
+    {
+      "name": "page/8/eof",
+      "passed": true
+    },
+    {
+      "name": "page/8/one-payload",
+      "passed": true
+    },
+    {
+      "name": "page/8/page-bound",
+      "passed": true
+    },
+    {
+      "name": "observer/aa197656a0c18e34435973b8a34ad4ea8370b458fc55b5838053ae3769cf846b/listed",
+      "passed": true
+    },
+    {
+      "name": "observer/aa197656a0c18e34435973b8a34ad4ea8370b458fc55b5838053ae3769cf846b/payload-whole",
+      "passed": true
+    },
+    {
+      "name": "observer/aa197656a0c18e34435973b8a34ad4ea8370b458fc55b5838053ae3769cf846b/payload-pin",
+      "passed": true
+    },
+    {
+      "name": "observer/aa197656a0c18e34435973b8a34ad4ea8370b458fc55b5838053ae3769cf846b/payload-sha-and-bytes",
+      "passed": true
+    },
+    {
+      "name": "observer/aa197656a0c18e34435973b8a34ad4ea8370b458fc55b5838053ae3769cf846b/pages",
+      "passed": true
+    },
+    {
+      "name": "observer/aa197656a0c18e34435973b8a34ad4ea8370b458fc55b5838053ae3769cf846b/payload-tree",
+      "passed": true
+    },
+    {
+      "name": "observer/aa197656a0c18e34435973b8a34ad4ea8370b458fc55b5838053ae3769cf846b/native-success",
+      "passed": true
+    },
+    {
+      "name": "observer/aa197656a0c18e34435973b8a34ad4ea8370b458fc55b5838053ae3769cf846b/native-original",
+      "passed": true
+    },
+    {
+      "name": "observer/aa197656a0c18e34435973b8a34ad4ea8370b458fc55b5838053ae3769cf846b/native-pin",
+      "passed": true
+    },
+    {
+      "name": "observer/aa197656a0c18e34435973b8a34ad4ea8370b458fc55b5838053ae3769cf846b/job",
+      "passed": true
+    },
+    {
+      "name": "observer/aa197656a0c18e34435973b8a34ad4ea8370b458fc55b5838053ae3769cf846b/tool",
+      "passed": true
+    },
+    {
+      "name": "observer/aa197656a0c18e34435973b8a34ad4ea8370b458fc55b5838053ae3769cf846b/closed",
+      "passed": true
+    },
+    {
+      "name": "stream/aa197656a0c18e34435973b8a34ad4ea8370b458fc55b5838053ae3769cf846b/stdout/cursor",
+      "passed": true
+    },
+    {
+      "name": "stream/aa197656a0c18e34435973b8a34ad4ea8370b458fc55b5838053ae3769cf846b/stdout/hex",
+      "passed": true
+    },
+    {
+      "name": "stream/aa197656a0c18e34435973b8a34ad4ea8370b458fc55b5838053ae3769cf846b/stdout/16K",
+      "passed": true
+    },
+    {
+      "name": "stream/aa197656a0c18e34435973b8a34ad4ea8370b458fc55b5838053ae3769cf846b/stdout/text",
+      "passed": true
+    },
+    {
+      "name": "stream/aa197656a0c18e34435973b8a34ad4ea8370b458fc55b5838053ae3769cf846b/stdout/extent",
+      "passed": true
+    },
+    {
+      "name": "stream/aa197656a0c18e34435973b8a34ad4ea8370b458fc55b5838053ae3769cf846b/stdout/size",
+      "passed": true
+    },
+    {
+      "name": "stream/aa197656a0c18e34435973b8a34ad4ea8370b458fc55b5838053ae3769cf846b/stdout/eof",
+      "passed": true
+    },
+    {
+      "name": "stream/aa197656a0c18e34435973b8a34ad4ea8370b458fc55b5838053ae3769cf846b/stderr/cursor",
+      "passed": true
+    },
+    {
+      "name": "stream/aa197656a0c18e34435973b8a34ad4ea8370b458fc55b5838053ae3769cf846b/stderr/hex",
+      "passed": true
+    },
+    {
+      "name": "stream/aa197656a0c18e34435973b8a34ad4ea8370b458fc55b5838053ae3769cf846b/stderr/16K",
+      "passed": true
+    },
+    {
+      "name": "stream/aa197656a0c18e34435973b8a34ad4ea8370b458fc55b5838053ae3769cf846b/stderr/text",
+      "passed": true
+    },
+    {
+      "name": "stream/aa197656a0c18e34435973b8a34ad4ea8370b458fc55b5838053ae3769cf846b/stderr/extent",
+      "passed": true
+    },
+    {
+      "name": "stream/aa197656a0c18e34435973b8a34ad4ea8370b458fc55b5838053ae3769cf846b/stderr/size",
+      "passed": true
+    },
+    {
+      "name": "stream/aa197656a0c18e34435973b8a34ad4ea8370b458fc55b5838053ae3769cf846b/stderr/eof",
+      "passed": true
+    },
+    {
+      "name": "counts/native",
+      "passed": true
+    },
+    {
+      "name": "final/all-observers-closed",
+      "passed": true
+    },
+    {
+      "name": "final/stdout-original",
+      "passed": true
+    },
+    {
+      "name": "final/stderr-original",
+      "passed": true
+    },
+    {
+      "name": "final/extents",
+      "passed": true
+    },
+    {
+      "name": "final/whole-stdout",
+      "passed": true
+    },
+    {
+      "name": "final/context-zero",
+      "passed": true
+    },
+    {
+      "name": "final/release-zero",
+      "passed": true
+    },
+    {
+      "name": "final/release-counts",
+      "passed": true
+    },
+    {
+      "name": "report/no-error",
+      "passed": true
+    },
+    {
+      "name": "report/observation-only",
+      "passed": true
+    },
+    {
+      "name": "report/own-close",
+      "passed": true
+    },
+    {
+      "name": "report/io",
+      "passed": true
+    },
+    {
+      "name": "report/scan",
+      "passed": true
+    },
+    {
+      "name": "report/no-close-errors",
+      "passed": true
+    },
+    {
+      "name": "candidate/count",
+      "passed": true
+    },
+    {
+      "name": "candidate/basename",
+      "passed": true
+    },
+    {
+      "name": "candidate/full9",
+      "passed": true
+    },
+    {
+      "name": "candidate/metadata-same-stat",
+      "passed": true
+    },
+    {
+      "name": "candidate/leaf-predicates",
+      "passed": true
+    },
+    {
+      "name": "candidate/body-read-no-hash",
+      "passed": true
+    },
+    {
+      "name": "candidate/correlation",
+      "passed": true
+    },
+    {
+      "name": "candidate/closed-disposition",
+      "passed": true
+    },
+    {
+      "name": "candidate/no-unknown-path-or-private-export",
+      "passed": true
+    },
+    {
+      "name": "candidate/safe-fields-distinct",
+      "passed": true
+    },
+    {
+      "name": "candidate/path-literal",
+      "passed": true
+    },
+    {
+      "name": "candidate/exception",
+      "passed": true
+    },
+    {
+      "name": "candidate/termination-safe",
+      "passed": true
+    },
+    {
+      "name": "candidate/no-cause-or-prior-byte-claim",
+      "passed": true
+    },
+    {
+      "name": "candidate/empty-fixed-text-slots",
+      "passed": true
+    },
+    {
+      "name": "candidate/only-false-lexical-booleans",
+      "passed": true
+    },
+    {
+      "name": "candidate/safe-count-no-coverage",
+      "passed": true
+    },
+    {
+      "name": "report/no-qualified-match",
+      "passed": true
+    },
+    {
+      "name": "report/current-final-directory",
+      "passed": true
+    },
+    {
+      "name": "scope/historicalManagedClosureClaimed",
+      "passed": true
+    },
+    {
+      "name": "scope/originalRuntimeCauseProved",
+      "passed": true
+    },
+    {
+      "name": "scope/originalRuntimeProgressReclassified",
+      "passed": true
+    },
+    {
+      "name": "scope/newProbeCauseConclusionClaimed",
+      "passed": true
+    },
+    {
+      "name": "scope/oldPrivateLogsOrCapsuleRequested",
+      "passed": true
+    },
+    {
+      "name": "scope/SDKOrCredentialOrProviderCalled",
+      "passed": true
+    },
+    {
+      "name": "scope/otherPidSignalOrWait",
+      "passed": true
+    },
+    {
+      "name": "scope/launchdOperation",
+      "passed": true
+    },
+    {
+      "name": "scope/T5ReadOrWrite",
+      "passed": true
+    },
+    {
+      "name": "scope/fallbackDirectory",
+      "passed": true
+    },
+    {
+      "name": "scope/rawIpsOrUnknownTextOrHashExported",
+      "passed": true
+    },
+    {
+      "name": "scope/writes-children",
+      "passed": true
+    }
+  ],
+  "originalCalls": 9,
+  "returnedObservers": 2,
+  "immutablePages": 4,
+  "NativeCallsAdded": 0,
+  "execution": "pure V8 original public SDK/intent/payload/stream verification only",
+  "fixedCandidateObserved": true,
+  "pathCorrelationQualified": false,
+  "crashCauseClaimed": false,
+  "privateBodyOrHashExported": false,
+  "historicalUnknownPreserved": true
+}

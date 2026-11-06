@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-final02b-mac-source-only-ea096d7a-authority0-r1",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1b27f85d6-fc05-7e49"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "host": "x230",
+  "executable": "/usr/bin/docker",
+  "args": [
+    "--host",
+    "unix:///var/run/docker.sock",
+    "container",
+    "inspect",
+    "--format",
+    "{{$server := false}}{{$dev := false}}{{range .Args}}{{if eq . \"server\"}}{{$server = true}}{{end}}{{if or (eq . \"-dev\") (eq . \"--dev\") (eq . \"-dev=true\") (eq . \"--dev=true\")}}{{$dev = true}}{{end}}{{end}}{\"container_id\":{{json .Id}},\"name\":{{json .Name}},\"image_reference\":{{json .Config.Image}},\"running\":{{json .State.Running}},\"pid\":{{json .State.Pid}},\"started_at\":{{json .State.StartedAt}},\"restart_count\":{{json .RestartCount}},\"network_mode\":{{json .HostConfig.NetworkMode}},\"restart_policy\":{{json .HostConfig.RestartPolicy.Name}},\"server_literal_argument\":{{$server}},\"dev_literal_argument\":{{$dev}}}",
+    "f67985499a16bc15917152d8083b9aa985edcbea868e3f15bdcef3aea6ab0bb9"
+  ],
+  "env": {
+    "DOCKER_API_VERSION": "",
+    "DOCKER_CONTEXT": "",
+    "DOCKER_HOST": "unix:///var/run/docker.sock",
+    "DOCKER_TLS": "",
+    "DOCKER_TLS_VERIFY": ""
+  },
+  "cwd": "/",
+  "timeout_seconds": 30,
+  "idempotency_key": "heptabao-x230-current-container-networkrole-r1-f6798549"
+}

@@ -1,0 +1,9 @@
+{
+  "kind": "pure_git_response_shape_correction",
+  "facts": [
+    "Three original successful /contents SDKs were stored before JSON.parse(raw Rust) raised SyntaxError.",
+    "Recovered original SDKs from immutable byte-hash keys; structuredContent.content is raw Rust text.",
+    "No new Git GET; no Native call or source change; original SDKs and error facts preserved."
+  ],
+  "nativeCalls": 0
+}

@@ -1,0 +1,10 @@
+{
+  "ref": "refs/heads/codex/heptabao-snapshot-lock-jwt-batch-42477d62-20261106",
+  "node_id": "REF_kwDOUGncwNoAQ3JlZnMvaGVhZHMvY29kZXgvaGVwdGFiYW8tc25hcHNob3QtbG9jay1qd3QtYmF0Y2gtNDI0NzdkNjItMjAyNjExMDY",
+  "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/refs/heads/codex/heptabao-snapshot-lock-jwt-batch-42477d62-20261106",
+  "object": {
+    "sha": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "type": "commit",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/5767739cd25e458ac052dc8d384019bab8688ae0"
+  }
+}

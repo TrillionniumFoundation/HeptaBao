@@ -1,0 +1,111 @@
+{
+  "schema": "heptabao.peer.root-jwt-batch-r2-snapshot-correction.v1",
+  "status": "SOURCE_REVIEW_CORRECTION_ACCEPTED",
+  "source_tree": "8234672429914b80e03f7c1f0c3f70cd325cd5cb",
+  "prior_review": {
+    "tree": "a33e59aa868b10282b5d4e28404d80a67b1a6704",
+    "blob": "7b5aee771760515d24fbef4b8e3a899560246905"
+  },
+  "before": {
+    "blob": "5dda793e51541daf720936d6e0521fe9280d7ad6",
+    "bytes": 61581,
+    "sha256": "f2386b76d8aa5d6ce6984ae8884fb7683bf6be5a9f75c964fb0e465c855c380b"
+  },
+  "after": {
+    "blob": "407283ae222030d8baeec7fc0aef6a38b6859fff",
+    "bytes": 61884,
+    "sha256": "41e611618aa18298eb6b94318bd30a210571a323c7602fa3f58fe7d9aca122f9"
+  },
+  "diff": {
+    "blob": "746c4805e1fc950c0b50d9a362a03c88557a4a27",
+    "bytes": 978,
+    "sha256": "a746d7c66c015042581b7dc76663447c71fb3c81501043ffe6fe1968f8c8d202"
+  },
+  "conclusion": "The one-helper correction closes the identified test-observation gap: snapshots now include the complete Auth batch-namespace registry and complete NamespaceRegistry, in addition to the prior Auth/Identity projection and batch authority.",
+  "scope": [
+    "Only the R1-to-R2 snapshot helper correction was re-reviewed.",
+    "No production re-review, Rust compilation, test execution, Python execution, Native operation or host access."
+  ],
+  "reasoning": [
+    "Actual NamespaceRegistry derives Serialize; the whole typed owner is passed through the existing bounded secret serializer. No Namespace field is filtered or defaulted.",
+    "The actual Auth namespace_batch_registry field is Option<Registry> with skip_serializing_if None. The JSON take includes the complete present registry and null for an absent registry, consistent with this typed state.",
+    "NamespaceRegistry contains no request-terminal clock field requiring exclusion. No lifecycle, custody, deletion or workflow field was excluded.",
+    "The old root Identity projection remains intact. This does not serialize the NativeReadView-backed EngineState container.",
+    "Namespace serialized bytes retain the existing Zeroizing owner serializer type; the final comparison is private Zeroizing bytes. The existing successful-construction erase_json calls remain. This review does not claim new failure-path zeroization guarantees beyond the existing helper."
+  ],
+  "checks": [
+    {
+      "name": "strict_forward",
+      "pass": true
+    },
+    {
+      "name": "strict_reverse",
+      "pass": true
+    },
+    {
+      "name": "only_snapshot_helper_changed",
+      "pass": true
+    },
+    {
+      "name": "function_names_unchanged",
+      "pass": true
+    },
+    {
+      "name": "production_auth_exact_R1",
+      "pass": true
+    },
+    {
+      "name": "production_service_exact_R1",
+      "pass": true
+    },
+    {
+      "name": "complete_namespace_owner_input",
+      "pass": true
+    },
+    {
+      "name": "complete_auth_namespace_batch_registry",
+      "pass": true
+    },
+    {
+      "name": "retained_auth_identity_and_batch",
+      "pass": true
+    },
+    {
+      "name": "namespace_value_moved_into_projection",
+      "pass": true
+    },
+    {
+      "name": "private_zeroizing_result_and_erasure_retained",
+      "pass": true
+    },
+    {
+      "name": "one_diff_hunk",
+      "pass": true
+    }
+  ],
+  "dependencies_carried_without_refetch": [
+    {
+      "path": "service.rs",
+      "blob": "2c850912c06599a46430d3cf59bda3f5b512b391"
+    },
+    {
+      "path": "service_namespaces.rs",
+      "blob": "336d6de0c1937c82d776e2e6538c213981e2b052"
+    },
+    {
+      "path": "auth_batch_namespace.rs",
+      "blob": "ca30ec7d2dca07c70ce34b8495ec0fce9a44adf0"
+    },
+    {
+      "path": "auth.rs",
+      "blob": "c755af145c643bba143a0733459764bdb6fbd256"
+    }
+  ],
+  "counters": {
+    "pure_source_assertions": 12,
+    "native_calls": 0,
+    "rust_runs": 0,
+    "test_runs": 0
+  },
+  "actual_product_result": null
+}

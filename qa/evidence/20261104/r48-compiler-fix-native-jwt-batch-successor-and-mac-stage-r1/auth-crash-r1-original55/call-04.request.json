@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-mac-public-node-crash-33b29c19-streams-01",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1b27a443e-fc05-7e31",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}
