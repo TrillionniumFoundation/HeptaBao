@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.owned-build-cancellation-intent.r1",
+  "host": "mac",
+  "job_id": "1a1b08761fb-fc05-7131",
+  "source_commit": "2b38f091c2903eac74b4ed9dc32b1f1f00fd8a8a",
+  "source_tree": "e2da9354cf482a8d3ebd67898812e2fcb026832a",
+  "controller_sha256": "40e80e093af97e821658754dfc54551258e2143bae739d7528f0a0c78bec11c5",
+  "reason": "Explicit parent instruction after independently reviewed source test-assertion correction; restore transition ID must bind its own sealed intent and exact terminal-clock successor. Avoid continuing a known incorrect assertion in superseded candidate.",
+  "classification": "source_correction_cancel_requested_not_test_failure",
+  "requested_grace_seconds": 30,
+  "already_observed_normal_release": {
+    "exit_code": 0,
+    "seconds": 270.910406,
+    "server_sha256": "5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c",
+    "seed_sha256": "203c7af52c0f9aa4ca71e591c1428acac9382f3c4105036a494631b0e1cae8e7"
+  },
+  "running_input_modified": false,
+  "production_changed": false,
+  "foreign_processes_touched": false,
+  "new_candidate_will_require_same107_and_original_budgets": true
+}

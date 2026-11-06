@@ -1,0 +1,32 @@
+{
+  "argv": [
+    "/usr/bin/git",
+    "--no-optional-locks",
+    "-c",
+    "core.hooksPath=/dev/null",
+    "checkout",
+    "--detach",
+    "2b38f091c2903eac74b4ed9dc32b1f1f00fd8a8a"
+  ],
+  "attempts": 1,
+  "effective_budget_seconds": 60,
+  "exit_code": 0,
+  "owned_group_cleanup": {
+    "all_owned_processes_gone": true,
+    "direct_child_reaped": true,
+    "pgid": 74252,
+    "remaining_after_cleanup": [],
+    "signals": [],
+    "signals_after_reap": false
+  },
+  "pid": 74252,
+  "requested_cap_seconds": 60,
+  "seconds": 0.383749,
+  "started_at_unix": 1793963026.245478,
+  "stderr_bytes": 191,
+  "stderr_sha256": "a2d750d94a2ee67d8712076fc83df8a03be175b629dead53391f905daeee9839",
+  "stdout_bytes": 0,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "step": "08-checkout-canonical",
+  "timed_out": false
+}

@@ -1,0 +1,596 @@
+{
+  "files": [
+    {
+      "bytes": 6446,
+      "path": "build-test-2b38-r2/runtime-stdout.original",
+      "sha256": "c4dcaba15b8f59428512cd460e04ef8d32bc8df23381a53f2867601440fb5eea"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/runtime-stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 730,
+      "path": "build-test-2b38-r2/runtime-terminal.original.json",
+      "sha256": "c097a185227970075befb2bf9aa84e105a05594ba5aa02f5b7cb2e109bca11ee"
+    },
+    {
+      "bytes": 244,
+      "path": "build-test-2b38-r2/runtime-cancel.original.json",
+      "sha256": "631c5dfc288e5ec8417acd8ea0712caf661746b69ae03cc41a4e9c33d5528e18"
+    },
+    {
+      "bytes": 46654,
+      "path": "build-test-2b38-r2/result.public.json",
+      "sha256": "2c64baf258c54c207e4bad4c4ec362fc17d404f867cca0c312a2acfd9862ee7e",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/result.public.json"
+    },
+    {
+      "bytes": 744,
+      "path": "build-test-2b38-r2/00-t5-volume.public.json",
+      "sha256": "e63ad26bda5a40b6069bf20a849bd2f230b66778e8258eb9d49296235cd999f2",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/00-t5-volume.public.json"
+    },
+    {
+      "bytes": 3069,
+      "path": "build-test-2b38-r2/00-t5-volume.stdout",
+      "sha256": "3bddbd3d0cafc81d69bb4f384737e26d80be0636dc560afaf126283c0a2360d4",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/00-t5-volume.stdout"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/00-t5-volume.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/00-t5-volume.stderr"
+    },
+    {
+      "bytes": 795,
+      "path": "build-test-2b38-r2/00-old-source-head.public.json",
+      "sha256": "03b7d9491549e8b578780610dc3c839912b8bec386dca1da17e8bc171f3f9414",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/00-old-source-head.public.json"
+    },
+    {
+      "bytes": 41,
+      "path": "build-test-2b38-r2/00-old-source-head.stdout",
+      "sha256": "563acb7c1de815cc6e990150190f137d1c218db6566a228fadd8e550a3f9d57c",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/00-old-source-head.stdout"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/00-old-source-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/00-old-source-head.stderr"
+    },
+    {
+      "bytes": 803,
+      "path": "build-test-2b38-r2/00-old-source-tree.public.json",
+      "sha256": "53ef56c0eba5b02a326b291309a9c1b04059985bbf7e440b007a2469a3c1b87f",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/00-old-source-tree.public.json"
+    },
+    {
+      "bytes": 41,
+      "path": "build-test-2b38-r2/00-old-source-tree.stdout",
+      "sha256": "9f5293c8c19686df077cfb69270edefb2df2c42411b37dcdd974a7aa092b4ba0",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/00-old-source-tree.stdout"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/00-old-source-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/00-old-source-tree.stderr"
+    },
+    {
+      "bytes": 832,
+      "path": "build-test-2b38-r2/00-old-source-clean.public.json",
+      "sha256": "4af15379e005e24320363fc386c9e2a88a2b621e9e16ec2e4866339a8eaae247",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/00-old-source-clean.public.json"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/00-old-source-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/00-old-source-clean.stdout"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/00-old-source-clean.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/00-old-source-clean.stderr"
+    },
+    {
+      "bytes": 753,
+      "path": "build-test-2b38-r2/01-preflight-process-metadata.public.json",
+      "sha256": "6837810691d19df0d4b3e19c703508f9137369b6d4becc04f174c464189dbd99",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/01-preflight-process-metadata.public.json"
+    },
+    {
+      "bytes": 733,
+      "path": "build-test-2b38-r2/01-preflight-ram-total.public.json",
+      "sha256": "83f94337d75389624cfe2bc0cb571ac4b6e72b36e25aa47822d8d5e807b27619",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/01-preflight-ram-total.public.json"
+    },
+    {
+      "bytes": 12,
+      "path": "build-test-2b38-r2/01-preflight-ram-total.stdout",
+      "sha256": "901c81a29f7611d5eeaf6432d3f21c8408a04c14f88f531c68c201db9699d1fa",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/01-preflight-ram-total.stdout"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/01-preflight-ram-total.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/01-preflight-ram-total.stderr"
+    },
+    {
+      "bytes": 704,
+      "path": "build-test-2b38-r2/01-preflight-vm-stat.public.json",
+      "sha256": "512438f3c515a51d049be9335b8c260d0cc1c2487b8edbaf99afc962614524ec",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/01-preflight-vm-stat.public.json"
+    },
+    {
+      "bytes": 1841,
+      "path": "build-test-2b38-r2/01-preflight-vm-stat.stdout",
+      "sha256": "6315a8ea7aa09a23db41bc56e613a8cfeeeefc6f5bb80110f4eb7dd77e1c1e11",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/01-preflight-vm-stat.stdout"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/01-preflight-vm-stat.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/01-preflight-vm-stat.stderr"
+    },
+    {
+      "bytes": 871,
+      "path": "build-test-2b38-r2/01-preflight-cargo-lock.public.json",
+      "sha256": "76eb175ebab4e99929387e11e7242a40ae9a4f94e47496805dde66f6fae04e0a",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/01-preflight-cargo-lock.public.json"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/01-preflight-cargo-lock.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/01-preflight-cargo-lock.stdout"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/01-preflight-cargo-lock.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/01-preflight-cargo-lock.stderr"
+    },
+    {
+      "bytes": 884,
+      "path": "build-test-2b38-r2/01-cache-admission-holders-under-lock.public.json",
+      "sha256": "eb9c3fc27ec7ff5da3d1ec68f02f9e62a581dfc2a3810c9cc0dee37329121d14",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/01-cache-admission-holders-under-lock.public.json"
+    },
+    {
+      "bytes": 6,
+      "path": "build-test-2b38-r2/01-cache-admission-holders-under-lock.stdout",
+      "sha256": "2f59119de599042a9d7f6d8babe1c4af4bf8777728df4538dbef2ebd261f1ea3",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/01-cache-admission-holders-under-lock.stdout"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/01-cache-admission-holders-under-lock.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/01-cache-admission-holders-under-lock.stderr"
+    },
+    {
+      "bytes": 1062,
+      "path": "build-test-2b38-r2/02-independent-source-clone.public.json",
+      "sha256": "4e8bbbb9e6601992c98131da6e792591e9a0f9461920ff850817b4d219ab0c17",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/02-independent-source-clone.public.json"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/02-independent-source-clone.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/02-independent-source-clone.stdout"
+    },
+    {
+      "bytes": 125,
+      "path": "build-test-2b38-r2/02-independent-source-clone.stderr",
+      "sha256": "70981497aea371aee74a96923bf23ba556f2d649eb46153a71afd05e2bfe0a10",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/02-independent-source-clone.stderr"
+    },
+    {
+      "bytes": 929,
+      "path": "build-test-2b38-r2/03-bundle-verify.public.json",
+      "sha256": "b2c1c00ab0e54f6ae861a311d8cbf9233c2d1b7385bcca802440dbb5a70869be",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/03-bundle-verify.public.json"
+    },
+    {
+      "bytes": 190,
+      "path": "build-test-2b38-r2/03-bundle-verify.stdout",
+      "sha256": "ae7434b6fef3975323dce9f0a30661aa1421985dbd382fabc9869db1b2f62bde",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/03-bundle-verify.stdout"
+    },
+    {
+      "bytes": 135,
+      "path": "build-test-2b38-r2/03-bundle-verify.stderr",
+      "sha256": "e9cfa3ee8017a249a5982e5e4d36bc9410737f073682c97d23f971a86ba8d4a4",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/03-bundle-verify.stderr"
+    },
+    {
+      "bytes": 946,
+      "path": "build-test-2b38-r2/04-fetch-local-bundle.public.json",
+      "sha256": "4d2e247c59bdc1638857dbd874370b1d157f993c86453cadf2ac28794963ee15",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/04-fetch-local-bundle.public.json"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/04-fetch-local-bundle.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/04-fetch-local-bundle.stdout"
+    },
+    {
+      "bytes": 180,
+      "path": "build-test-2b38-r2/04-fetch-local-bundle.stderr",
+      "sha256": "6fbe21c36cc39b9bbd01010277cd6d0b2b62797b26efac7c414300051f669f0d",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/04-fetch-local-bundle.stderr"
+    },
+    {
+      "bytes": 837,
+      "path": "build-test-2b38-r2/05-canonical-tree.public.json",
+      "sha256": "a6a915f24c90d96ae56b870bdc5f36367645cc229b8709db5595ecb820ecea28",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/05-canonical-tree.public.json"
+    },
+    {
+      "bytes": 41,
+      "path": "build-test-2b38-r2/05-canonical-tree.stdout",
+      "sha256": "1a962936bb5ebc78e7588f292b6398c5b920724afce87906db193fc225bab7dd",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/05-canonical-tree.stdout"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/05-canonical-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/05-canonical-tree.stderr"
+    },
+    {
+      "bytes": 833,
+      "path": "build-test-2b38-r2/06-canonical-parent.public.json",
+      "sha256": "7fea1fc48e6ca9a917c425cce8f9decbc6a77424fb2f1f4f4536cc3339f559f3",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/06-canonical-parent.public.json"
+    },
+    {
+      "bytes": 41,
+      "path": "build-test-2b38-r2/06-canonical-parent.stdout",
+      "sha256": "8c673bf42ca418a39d551e02c3dc5a797e60a505a303c0ed3c4110b111c70046",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/06-canonical-parent.stdout"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/06-canonical-parent.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/06-canonical-parent.stderr"
+    },
+    {
+      "bytes": 902,
+      "path": "build-test-2b38-r2/07-original-ancestor.public.json",
+      "sha256": "4eb757c1222a28ea0169bc615ca66c8cf3a0d165258efbb3373b0c2b2e332342",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/07-original-ancestor.public.json"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/07-original-ancestor.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/07-original-ancestor.stdout"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/07-original-ancestor.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/07-original-ancestor.stderr"
+    },
+    {
+      "bytes": 850,
+      "path": "build-test-2b38-r2/08-checkout-canonical.public.json",
+      "sha256": "2e8407c2bd49444c1e790498be567ea1e1d35b6c7f20a52090d5518af761c439",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/08-checkout-canonical.public.json"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/08-checkout-canonical.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/08-checkout-canonical.stdout"
+    },
+    {
+      "bytes": 191,
+      "path": "build-test-2b38-r2/08-checkout-canonical.stderr",
+      "sha256": "a2d750d94a2ee67d8712076fc83df8a03be175b629dead53391f905daeee9839",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/08-checkout-canonical.stderr"
+    },
+    {
+      "bytes": 827,
+      "path": "build-test-2b38-r2/09-clean-source.public.json",
+      "sha256": "30f72e2ac6b77ff316f783ddeba8dfeb3e8f770489ce92212a94b7b619ecd81f",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/09-clean-source.public.json"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/09-clean-source.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/09-clean-source.stdout"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/09-clean-source.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/09-clean-source.stderr"
+    },
+    {
+      "bytes": 813,
+      "path": "build-test-2b38-r2/10-full-repository.public.json",
+      "sha256": "65f1878c8ce75b4563e4ca42575f8fb839b90d9a187b8cc555661da772d7b428",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/10-full-repository.public.json"
+    },
+    {
+      "bytes": 6,
+      "path": "build-test-2b38-r2/10-full-repository.stdout",
+      "sha256": "2ed27c1421e6928dbe13dbfdb5c59e1045b30341fe7ebe05700006bc5ac572c0",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/10-full-repository.stdout"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/10-full-repository.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/10-full-repository.stderr"
+    },
+    {
+      "bytes": 797,
+      "path": "build-test-2b38-r2/11-fsck.public.json",
+      "sha256": "7635637481903427851a4413c92d5c49f827b36fb479855010958454b9c11b70",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/11-fsck.public.json"
+    },
+    {
+      "bytes": 627,
+      "path": "build-test-2b38-r2/11-fsck.stdout",
+      "sha256": "0be73bbc1562601e1cbf16e9fca956f64ed16f205d602cac3bedf10c96988a1a",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/11-fsck.stdout"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/11-fsck.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/11-fsck.stderr"
+    },
+    {
+      "bytes": 800,
+      "path": "build-test-2b38-r2/12-format-check.public.json",
+      "sha256": "acc52fad626e631a30480e950c6d22c2386701f332994a2f41d425f44c829352",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/12-format-check.public.json"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/12-format-check.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/12-format-check.stdout"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/12-format-check.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/12-format-check.stderr"
+    },
+    {
+      "bytes": 895,
+      "path": "build-test-2b38-r2/12-precompile-cache-admission-holders-under-lock.public.json",
+      "sha256": "b4d993d46a4d5fe9b59c57251036471316606ff4db41640c249b24999c4c3618",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/12-precompile-cache-admission-holders-under-lock.public.json"
+    },
+    {
+      "bytes": 6,
+      "path": "build-test-2b38-r2/12-precompile-cache-admission-holders-under-lock.stdout",
+      "sha256": "2f59119de599042a9d7f6d8babe1c4af4bf8777728df4538dbef2ebd261f1ea3",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/12-precompile-cache-admission-holders-under-lock.stdout"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/12-precompile-cache-admission-holders-under-lock.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/12-precompile-cache-admission-holders-under-lock.stderr"
+    },
+    {
+      "bytes": 987,
+      "path": "build-test-2b38-r2/13-normal-release-build.public.json",
+      "sha256": "da9c39a8d87d9b2c7b65512751915010be5c3d5181f2036fd45030ae27b47e47",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/13-normal-release-build.public.json"
+    },
+    {
+      "bytes": 2653,
+      "path": "build-test-2b38-r2/13-normal-release-build.stderr",
+      "sha256": "07bd2c81102d80523ed2513363deff6f7d332101f556343e0bcf7a694d57baf2",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/13-normal-release-build.stderr"
+    },
+    {
+      "bytes": 1110,
+      "path": "build-test-2b38-r2/14-server-libtest-build.public.json",
+      "sha256": "37cb090334e352a0c4e2cc41cfdad1b448e05f3a6223fd3c06317947afd7fff5",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/14-server-libtest-build.public.json"
+    },
+    {
+      "bytes": 162,
+      "path": "build-test-2b38-r2/14-server-libtest-build.stderr",
+      "sha256": "44c0694f14088690c80cdc60693e872fc83f91ddf84bb0df6c96b07d7aa84b9e",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/14-server-libtest-build.stderr"
+    },
+    {
+      "bytes": 795,
+      "path": "build-test-2b38-r2/98-old-final-head.public.json",
+      "sha256": "6ecdd179f8baee8be0f1a43c5cb535cd249a9b518855236503bd00807499c4d7",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/98-old-final-head.public.json"
+    },
+    {
+      "bytes": 41,
+      "path": "build-test-2b38-r2/98-old-final-head.stdout",
+      "sha256": "563acb7c1de815cc6e990150190f137d1c218db6566a228fadd8e550a3f9d57c",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/98-old-final-head.stdout"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/98-old-final-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/98-old-final-head.stderr"
+    },
+    {
+      "bytes": 801,
+      "path": "build-test-2b38-r2/98-old-final-tree.public.json",
+      "sha256": "2e669b89ac1898477ad18d3d85a0321a6662a507223c7043e7e0da23a85d61d5",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/98-old-final-tree.public.json"
+    },
+    {
+      "bytes": 41,
+      "path": "build-test-2b38-r2/98-old-final-tree.stdout",
+      "sha256": "9f5293c8c19686df077cfb69270edefb2df2c42411b37dcdd974a7aa092b4ba0",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/98-old-final-tree.stdout"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/98-old-final-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/98-old-final-tree.stderr"
+    },
+    {
+      "bytes": 830,
+      "path": "build-test-2b38-r2/98-old-final-clean.public.json",
+      "sha256": "f371ef8cb80d7831cd77a03f3f6cd58c294ba5a34906b4e3801405c4a13a07fe",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/98-old-final-clean.public.json"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/98-old-final-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/98-old-final-clean.stdout"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/98-old-final-clean.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/98-old-final-clean.stderr"
+    },
+    {
+      "bytes": 754,
+      "path": "build-test-2b38-r2/98-postflight-process-metadata.public.json",
+      "sha256": "b06efbc3ceb0236b99145378162892e3f3c34096ffbd2b50bf39c20990102c5a",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/98-postflight-process-metadata.public.json"
+    },
+    {
+      "bytes": 734,
+      "path": "build-test-2b38-r2/98-postflight-ram-total.public.json",
+      "sha256": "a4fceafbfd5f7c7b62f28c7ab20861b10b7855bb4ed0a8d6543ac13778a6d7a6",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/98-postflight-ram-total.public.json"
+    },
+    {
+      "bytes": 12,
+      "path": "build-test-2b38-r2/98-postflight-ram-total.stdout",
+      "sha256": "901c81a29f7611d5eeaf6432d3f21c8408a04c14f88f531c68c201db9699d1fa",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/98-postflight-ram-total.stdout"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/98-postflight-ram-total.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/98-postflight-ram-total.stderr"
+    },
+    {
+      "bytes": 706,
+      "path": "build-test-2b38-r2/98-postflight-vm-stat.public.json",
+      "sha256": "049792810968deff5d9e2ed34549012d4a0723313b3524812d6c04c68273c107",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/98-postflight-vm-stat.public.json"
+    },
+    {
+      "bytes": 1841,
+      "path": "build-test-2b38-r2/98-postflight-vm-stat.stdout",
+      "sha256": "6006b87c9b8bde1332909dadee52e9f7ab734eafba9350eaad1d5cc733af8f5d",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/98-postflight-vm-stat.stdout"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/98-postflight-vm-stat.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/98-postflight-vm-stat.stderr"
+    },
+    {
+      "bytes": 873,
+      "path": "build-test-2b38-r2/98-postflight-cargo-lock.public.json",
+      "sha256": "5bfd8144199ada5dd1e7638425e5714dbb34899508cd7d5849037774a743d4ba",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/98-postflight-cargo-lock.public.json"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/98-postflight-cargo-lock.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/98-postflight-cargo-lock.stdout"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r2/98-postflight-cargo-lock.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/98-postflight-cargo-lock.stderr"
+    },
+    {
+      "bytes": 1142,
+      "path": "build-test-2b38-r2/mac-build-2b38-r2-cancellation-intent.public.json",
+      "sha256": "1d859f4b4677b11d2432411952072a6555d927831337d2afe472cad106095d5d",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/mac-build-2b38-r2-cancellation-intent.public.json"
+    },
+    {
+      "bytes": 440432,
+      "lossless_chunk_sha256_verified": true,
+      "path": "build-test-2b38-r2/13-normal-release-build.stdout",
+      "pinned_remote_version": "16777244:72677182:440432:1793963303307004388:1793963303307004388",
+      "sha256": "165f9f68422adf09cbe68b6d950e82ca937ff8cf7c11ae29c66559df83963e34",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/13-normal-release-build.stdout"
+    },
+    {
+      "bytes": 436920,
+      "lossless_chunk_sha256_verified": true,
+      "path": "build-test-2b38-r2/14-server-libtest-build.stdout",
+      "pinned_remote_version": "16777244:72679157:436920:1793963304994988487:1793963304994988487",
+      "sha256": "fb5dbdbd9a38b75b5b26b7a6c49a3328969cd0d0698af127fb3e1ef74ccce2e7",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/14-server-libtest-build.stdout"
+    },
+    {
+      "bytes": 3725,
+      "path": "build-test-2b38-r2/CANCELLATION_RECONCILIATION.public.json",
+      "sha256": "2c99efcb744f3a70214c5d952537e0551b12b8bff3e8e95d722746f37b5c236a"
+    }
+  ],
+  "original_controller_result_preserved": true,
+  "public_allowlist": true,
+  "qualification": "Source correction cancellation; normal release passed, 0/107 tests executed.",
+  "runtime_terminal_is_authoritative_for_cancellation": true,
+  "schema": "heptabao.mac-cancelled-build-publication-allowlist.r1",
+  "transport_wrappers_not_publishable": [
+    "cancelled-build-recovery-inputs.json",
+    "cancelled-build-transport"
+  ],
+  "withheld_remote_logs": [
+    {
+      "bytes": 73224,
+      "reason": "Raw full-host process metadata, not copied or published; relevant compiler/resource projection remains in original result.",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/01-preflight-process-metadata.stdout",
+      "sha256": "3fa733c16f72e3a2d1d7caade6d7f3181f50758fcf8c83ee03ae1a08771acfeb"
+    },
+    {
+      "bytes": 0,
+      "reason": "Raw full-host process metadata, not copied or published; relevant compiler/resource projection remains in original result.",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/01-preflight-process-metadata.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 72743,
+      "reason": "Raw full-host process metadata, not copied or published; relevant compiler/resource projection remains in original result.",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/98-postflight-process-metadata.stdout",
+      "sha256": "88fedea15ab3fd4671b0bf3841bf68f52e656337b36c98204acdaca53d06d096"
+    },
+    {
+      "bytes": 0,
+      "reason": "Raw full-host process metadata, not copied or published; relevant compiler/resource projection remains in original result.",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/98-postflight-process-metadata.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

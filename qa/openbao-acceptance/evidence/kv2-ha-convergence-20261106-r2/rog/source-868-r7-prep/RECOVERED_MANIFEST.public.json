@@ -1,0 +1,28 @@
+{
+  "files": [
+    {
+      "bytes": 732,
+      "path": "runtime-terminal.public.json",
+      "provenance": {
+        "kind": "parsed_native_tool_response",
+        "store_key": "rog_source_r7_prep_0"
+      },
+      "sha256": "a982a1c7dc7206f0b578f159ed0c930e6b73f5a47caa2a8d050a1113e08d95d7"
+    },
+    {
+      "bytes": 6311,
+      "path": "result.public.json",
+      "provenance": {
+        "bytes": 6311,
+        "kind": "native_read_multiple_files",
+        "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-868-r7-prep/result.public.json",
+        "sha256": "97f2890d353d8eb5d81611ad7a9f0c1210cade26b8b7b805d83741108fea1539",
+        "version": "66306:35178669:6311:1793966618894542476:1793966618894542476"
+      },
+      "sha256": "97f2890d353d8eb5d81611ad7a9f0c1210cade26b8b7b805d83741108fea1539"
+    }
+  ],
+  "production_credentials_included": false,
+  "public_allowlist": true,
+  "schema": "heptabao.remote-evidence-recovery.v1"
+}

@@ -1,0 +1,90 @@
+{
+  "inputs": [
+    {
+      "allowlisted_files": 9,
+      "manifest": "rog/build-test-r5/RECOVERED_MANIFEST.public.json",
+      "sha256": "7e9ae64d7bb7cda1c11759d575529827cb84f73881585f54fd919c25162b6fb7"
+    },
+    {
+      "allowlisted_files": 5,
+      "manifest": "rog/build-test-r6/RECOVERED_MANIFEST.public.json",
+      "sha256": "dc570d6068f36f90a5fb9050079908941eabcab6dea633b23c47a1063eb696f8"
+    },
+    {
+      "allowlisted_files": 2,
+      "manifest": "rog/build-test-r7/RECOVERED_MANIFEST.public.json",
+      "sha256": "e147ce3cd19ae976b935df1c41d5f6e8b2a14df7fe57f41050073b09480f21ce"
+    },
+    {
+      "allowlisted_files": 2,
+      "manifest": "rog/source-868-r7-prep/RECOVERED_MANIFEST.public.json",
+      "sha256": "9e306cb3618713dd96f60ca94a7887233080159878751e79ec9a87c76de2fbb1"
+    },
+    {
+      "allowlisted_files": 5,
+      "manifest": "rog/jwt-regression-fix-format-r1/RECOVERED_MANIFEST.public.json",
+      "sha256": "7fc442b4e81a7356ebdbd94080ea97cb4f51e7bbcde840965225d9452abbdb53"
+    },
+    {
+      "allowlisted_files": 3,
+      "manifest": "rog/jwt-regression-fix-format-r2/RECOVERED_MANIFEST.public.json",
+      "sha256": "77cb192b9fda8ed61d7637aea61ce943700ff0f98b5d7c63e78109bad1eb988e"
+    },
+    {
+      "allowlisted_files": 5,
+      "manifest": "rog/build-test-r7/FAILURE_MANIFEST.public.json",
+      "sha256": "760b055fb6d8a58bb0d73c292387eb502ea110155c866f6225f780b1ee55960e"
+    },
+    {
+      "allowlisted_files": 95,
+      "manifest": "rog/build-test-r7/complete-step-logs-r1/COMPLETE_LOG_MANIFEST.public.json",
+      "sha256": "57d5b4aacc21824ca12fe204d3747298293dce6181cc69b8f27d82538262fa85"
+    },
+    {
+      "allowlisted_files": 23,
+      "manifest": "mac/earlier-attempt-supplement/SUPPLEMENTAL_MANIFEST.public.json",
+      "sha256": "0231efd0d52224599e627ffa0d7d61fc7bf28c313596cc9382753bba3b203c52"
+    },
+    {
+      "allowlisted_files": 93,
+      "manifest": "mac/earlier-attempt-supplement/CANCELLED_BUILD_MANIFEST.public.json",
+      "sha256": "a6699d89b06e35ac0a0f7a352f083c6600ec9da174f99d61730aef317e46e3dc"
+    },
+    {
+      "allowlisted_files": 152,
+      "manifest": "mac/build-test-f301-r1/MANIFEST.public.json",
+      "sha256": "187a4d538468b3dddcda0985fe2e0a4204520eaa529c2ef061e889aad969667e"
+    },
+    {
+      "allowlisted_files": 21,
+      "manifest": "mac/build-test-868-r1/MANIFEST.public.json",
+      "sha256": "7cb5e5b5d7d91ddfecc27b162831bb8ff3ab35042225187710675d1e0e64ec75"
+    },
+    {
+      "allowlisted_files": 149,
+      "manifest": "mac/build-test-868-r1/complete-step-logs-r1/COMPLETE_LOG_MANIFEST.public.json",
+      "sha256": "a2abd9325208b5f5b5eb0c2b18f29bb9878be19ed406e6ec9105b2162c88975a"
+    },
+    {
+      "allowlisted_files": 18,
+      "manifest": "mac/jwt868-fixture-rustfmt-r1/MANIFEST.public.json",
+      "sha256": "9db674e9444ca28590495b36474e87403c861824752a9e47f8c0a70241c47ce6"
+    },
+    {
+      "allowlisted_files": 9,
+      "manifest": "mac/parent-fd-guards-r1/MANIFEST.public.json",
+      "sha256": "8845b6eaff14b343943c0ef9005ffaf865ec18c4c45f894fc81648cfdd342210"
+    },
+    {
+      "allowlisted_files": 9,
+      "manifest": "mac/raw-killpg-guards-r1/MANIFEST.public.json",
+      "sha256": "357ede73c2dadfc98b9e72de8620efa8fcb702e18d75b96356dac2118b967e32"
+    },
+    {
+      "allowlisted_files": 8,
+      "manifest": "mac/dr-wrapper-guards-r2/MANIFEST.public.json",
+      "sha256": "65cb01fea57e012ce3f952a46d87fdc086ecb262423fe116235e8b201328f6e6"
+    }
+  ],
+  "schema": "heptabao.reviewed-input-manifests.v1"
+}

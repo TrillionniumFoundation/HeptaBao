@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.pinned-rustfmt-start-projection.v1",
+  "executable": "/opt/homebrew/bin/python3",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "-"
+  ],
+  "host": "mac",
+  "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control",
+  "env": {
+    "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+    "LANG": "C.UTF-8",
+    "TZ": "UTC"
+  },
+  "timeout_seconds": 60,
+  "idempotency_key": "heptabao-mac-jwt868-fixture-rustfmt-20261106-r1",
+  "stdin_file": "controller.original.py",
+  "stdin_bytes": 54216,
+  "stdin_sha256": "82d9c34251487c03888b7f32b75c7ab500ea960cf3d57d17ee85199225d7460b",
+  "job_id": "1a1b0dff6e5-fc05-7384",
+  "original_request_metadata_preserved_privately": true
+}

@@ -1,0 +1,208 @@
+{
+  "compiler_started": false,
+  "cooperative_lock_removed": false,
+  "elapsed_seconds": 3.0677123439963907,
+  "new_source": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source-868-r7",
+  "new_source_clean": true,
+  "old_after": {
+    "head": "9cee0f7f54824f30d9bcaeab0ba5e5f73c99d7e9",
+    "lock_identity": [
+      66306,
+      34261291,
+      1000,
+      1000,
+      33152,
+      0
+    ],
+    "patch_sha256": "0e7be54931ba7e506b64795c842e5b3229f8486a4d883ab440b499cbc56322fc"
+  },
+  "old_before": {
+    "head": "9cee0f7f54824f30d9bcaeab0ba5e5f73c99d7e9",
+    "lock_identity": [
+      66306,
+      34261291,
+      1000,
+      1000,
+      33152,
+      0
+    ],
+    "patch_sha256": "0e7be54931ba7e506b64795c842e5b3229f8486a4d883ab440b499cbc56322fc"
+  },
+  "old_source_preserved": true,
+  "production_changed": false,
+  "schema": "heptabao.fresh-clean-source-preparation.v1",
+  "source_commit": "868439e6df9f12291842898763ccba581e346bfb",
+  "source_tree": "c211d66343235fbb8a220744f3e97768559007c8",
+  "status": "passed",
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "label": "00-before-head",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "ec0b3f301a00983a7656ba07b341841a32ca6fbb9fec6fffd5ad9b720d059738"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--binary",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "label": "00-before-patch",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "0e7be54931ba7e506b64795c842e5b3229f8486a4d883ab440b499cbc56322fc"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-files",
+        "--others",
+        "--exclude-standard"
+      ],
+      "exit_code": 0,
+      "label": "00-before-untracked",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e91a7ff89b6590b344f9e5dce1801aa8b2247da7852420dd8daf22f60a5ce167"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "gc.auto=0",
+        "clone",
+        "--no-hardlinks",
+        "--no-checkout",
+        "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source",
+        "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source-868-r7"
+      ],
+      "exit_code": 0,
+      "label": "01-clone",
+      "stderr_sha256": "f933ae952b94764d5e12bc8216069f3d2618aee8a259fdbf003f916d4b101083",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "bundle",
+        "verify",
+        "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r6/candidate.bundle"
+      ],
+      "exit_code": 0,
+      "label": "02-bundle-verify",
+      "stderr_sha256": "6f6aa8f51f1531d10bee1287c336a1a3f40f931dce2387b5780898acf5548434",
+      "stdout_sha256": "c9072f4c69507db37ec16a82b8b3d1916fb5a8dd1093d0f3d6f72010ece19c12"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "gc.auto=0",
+        "fetch",
+        "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r6/candidate.bundle",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "label": "03-fetch",
+      "stderr_sha256": "f016bba61c7d2cb328dbc10fa229479b1cedfee736bb9c754d4ef81dbb0d8b4f",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "checkout",
+        "--detach",
+        "868439e6df9f12291842898763ccba581e346bfb"
+      ],
+      "exit_code": 0,
+      "label": "04-checkout",
+      "stderr_sha256": "4dca852cbc13c1a10c2cab070039b6952777d5412b492ebc4dc774b3a4d4638b",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "label": "05-head",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "25804477d7c72bdb8fced61fcc04d49af396fa8dd2e8149eea48b6f7a2356a60"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "label": "06-tree",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "c8d7dc67a786f4aace70fc59511e00b7b25c0ba77d6e3e3e5c62c553b6e9d2b0"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "label": "07-clean",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "fsck",
+        "--full",
+        "--strict"
+      ],
+      "exit_code": 0,
+      "label": "08-fsck",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "06d08a38c9d941e05bbdee406c042e53c9cb8cdffe667744881aab4b43447be3"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "label": "09-after-head",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "ec0b3f301a00983a7656ba07b341841a32ca6fbb9fec6fffd5ad9b720d059738"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--binary",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "label": "09-after-patch",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "0e7be54931ba7e506b64795c842e5b3229f8486a4d883ab440b499cbc56322fc"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-files",
+        "--others",
+        "--exclude-standard"
+      ],
+      "exit_code": 0,
+      "label": "09-after-untracked",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e91a7ff89b6590b344f9e5dce1801aa8b2247da7852420dd8daf22f60a5ce167"
+    }
+  ]
+}

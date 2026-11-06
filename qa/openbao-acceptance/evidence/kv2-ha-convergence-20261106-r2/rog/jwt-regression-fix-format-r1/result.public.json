@@ -1,0 +1,195 @@
+{
+  "base_commit": "9cee0f7f54824f30d9bcaeab0ba5e5f73c99d7e9",
+  "base_tree": "3fd318c95fdefa11fafe0246999ebd303ead79b1",
+  "compiler_started": false,
+  "formatted_patch_bytes": 7007,
+  "formatted_patch_sha256": "75eeccb73b3e910e07d3aa688a3364a1babe1d544a9274a9d125f8f2010d572c",
+  "input_patch_sha256": "920d8a67be8437341a10cd1dea59a7042bb4c9f6b13b8394e266eb49cc7b8e31",
+  "old_product_commit": "f301a0f391096a2a8daf149f16bbbbd5bbf7a9e3",
+  "production_changed": false,
+  "schema": "heptabao.actual-native-jwt-test-fix-format.v1",
+  "status": "passed",
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "label": "00-head",
+      "seconds": 0.0030023339786566794,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "d86c0426c505c2d72325cf9ffbb4acb50d18284add43177933936725d8f3783f"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "label": "01-clean",
+      "seconds": 0.0289637100067921,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "bundle",
+        "verify",
+        "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/jwt-regression-fix-format-r1/qa.bundle"
+      ],
+      "exit_code": 0,
+      "label": "02-bundle-verify",
+      "seconds": 0.005136330029927194,
+      "stderr_sha256": "bf21940fc126a49712a29365d4ea79ea58f2224da50183b6a8d24d44ed42110b",
+      "stdout_sha256": "4531e283a387072f509980ca563f1cafd1d1c63775687ee94792b8fe7e6ef3b8"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "fetch",
+        "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/jwt-regression-fix-format-r1/qa.bundle",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "label": "03-bundle-fetch",
+      "seconds": 0.039916615991387516,
+      "stderr_sha256": "98e0c32a079863213abaffa8ce6df4c3fd96123da25718086ebc91a6939cfddc",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "9cee0f7f54824f30d9bcaeab0ba5e5f73c99d7e9^{tree}"
+      ],
+      "exit_code": 0,
+      "label": "04-base-tree",
+      "seconds": 0.0011975429952144623,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "406f98861c5fecde1ef7dab752f1a0b3eb82775121b3bd1a490f30e464e28cf7"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--exit-code",
+        "f301a0f391096a2a8daf149f16bbbbd5bbf7a9e3",
+        "9cee0f7f54824f30d9bcaeab0ba5e5f73c99d7e9",
+        "--",
+        ".",
+        ":(exclude)qa/**",
+        ":(exclude)docs/**"
+      ],
+      "exit_code": 0,
+      "label": "05-qa-product-diff",
+      "seconds": 0.0010985570261254907,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "checkout",
+        "--detach",
+        "9cee0f7f54824f30d9bcaeab0ba5e5f73c99d7e9"
+      ],
+      "exit_code": 0,
+      "label": "06-checkout-qa",
+      "seconds": 0.011100801988504827,
+      "stderr_sha256": "ad7676f4570b582b1f87c18a2e102fa0637268dc475b0de4eef6294a1e22eee3",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "label": "07-clean-qa",
+      "seconds": 0.006711961992550641,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "apply",
+        "--check",
+        "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/jwt-regression-fix-format-r1/input.patch"
+      ],
+      "exit_code": 0,
+      "label": "08-apply-check",
+      "seconds": 0.0012106079957447946,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "apply",
+        "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/jwt-regression-fix-format-r1/input.patch"
+      ],
+      "exit_code": 0,
+      "label": "09-apply",
+      "seconds": 0.0023446419509127736,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "fmt",
+        "--all"
+      ],
+      "exit_code": 0,
+      "label": "10-fmt",
+      "seconds": 5.406210421992,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "label": "11-fmt-check",
+      "seconds": 5.233086497988552,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "label": "12-diff-check",
+      "seconds": 0.004754965950269252,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--binary",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "label": "13-formatted-patch",
+      "seconds": 0.005286120984237641,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "75eeccb73b3e910e07d3aa688a3364a1babe1d544a9274a9d125f8f2010d572c"
+    }
+  ]
+}

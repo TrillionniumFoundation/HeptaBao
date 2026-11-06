@@ -1,0 +1,89 @@
+{
+  "actual_executed": 103,
+  "actual_failed": 3,
+  "actual_ignored": 0,
+  "actual_passed": 100,
+  "all_owned_processes_gone": true,
+  "artifacts": {
+    "heptabao-ha-service-libtest": {
+      "bytes": 17068112,
+      "normal_features_profile_and_source_verified": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/artifacts/heptabao-ha-service-libtest",
+      "sha256": "3c5fd3113ff107db07c833c4d7c80070f29e3bbd1937928af670f1bb6bd2e6f0",
+      "source_commit": "868439e6df9f12291842898763ccba581e346bfb",
+      "source_tree": "c211d66343235fbb8a220744f3e97768559007c8"
+    },
+    "heptabao-seed": {
+      "bytes": 86355760,
+      "normal_features_profile_and_source_verified": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/artifacts/heptabao-seed",
+      "sha256": "203c7af52c0f9aa4ca71e591c1428acac9382f3c4105036a494631b0e1cae8e7",
+      "source_commit": "868439e6df9f12291842898763ccba581e346bfb",
+      "source_tree": "c211d66343235fbb8a220744f3e97768559007c8"
+    },
+    "heptabao-server": {
+      "bytes": 92359328,
+      "normal_features_profile_and_source_verified": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/artifacts/heptabao-server",
+      "sha256": "5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c",
+      "source_commit": "868439e6df9f12291842898763ccba581e346bfb",
+      "source_tree": "c211d66343235fbb8a220744f3e97768559007c8"
+    },
+    "heptabao-server-libtest": {
+      "bytes": 154467648,
+      "normal_features_profile_and_source_verified": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/artifacts/heptabao-server-libtest",
+      "sha256": "3cc7245de6b41ba4b017051901450262c357be3ea9e03e9bc063db47b5824d7b",
+      "source_commit": "868439e6df9f12291842898763ccba581e346bfb",
+      "source_tree": "c211d66343235fbb8a220744f3e97768559007c8"
+    }
+  },
+  "clone_source": {
+    "commit": "f301a0f391096a2a8daf149f16bbbbd5bbf7a9e3",
+    "status": "",
+    "tree": "1a27a26315eaf20df11792f74305160f7a3b89b6"
+  },
+  "completed_group_passes": 88,
+  "controller_sha256": "c497c9fd40df0d2bb6776a32733d45ef3d56f2a74665ee5a01050186ef2bb499",
+  "dr_started": false,
+  "elapsed_seconds": 984.08198,
+  "failure": "native-jwt15_exact_test_result_failed",
+  "formal_kv2_qualified": false,
+  "not_qualified_cases": 19,
+  "old_artifacts_count": 9,
+  "old_artifacts_unchanged": true,
+  "old_source": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "status": "",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255"
+  },
+  "original_failed_receipt_not_modified": true,
+  "physical_ha_qualified": false,
+  "postflight_compilers": [
+    {
+      "comm": "cargo",
+      "pgid": 1700,
+      "pid": 1701,
+      "ppid": 1700
+    }
+  ],
+  "preserved_2b": {
+    "commit": "2b38f091c2903eac74b4ed9dc32b1f1f00fd8a8a",
+    "status": "",
+    "tree": "e2da9354cf482a8d3ebd67898812e2fcb026832a"
+  },
+  "production_changed": false,
+  "receipt": {
+    "bytes": 152164,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/result.public.json",
+    "sha256": "8f8ecf43e2fbca843d0c0635b19a774a61f8fb0e17d87c019ade20f8a738a419",
+    "version": "16777244:72694220:152164:1793967412867684123:1793967412871256363"
+  },
+  "selection_sha256": "4177229337bb7ffc7d1c81b9ea515bd48b0cbd529fd48537815cd40bbfdb53e7",
+  "source_and_four_new_artifacts_independently_preserved_after_failure": true,
+  "source_commit": "868439e6df9f12291842898763ccba581e346bfb",
+  "source_tree": "c211d66343235fbb8a220744f3e97768559007c8",
+  "status": "failed",
+  "target_cache_holders": [],
+  "unexecuted": 4
+}

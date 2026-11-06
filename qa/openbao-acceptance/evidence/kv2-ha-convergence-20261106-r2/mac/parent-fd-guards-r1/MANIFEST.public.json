@@ -1,0 +1,65 @@
+{
+  "actual_count": 2,
+  "authoritative_runtime_state": "succeeded",
+  "compilers_started": false,
+  "exit_code": 0,
+  "expected_count": 2,
+  "files": [
+    {
+      "bytes": 3270,
+      "path": "runtime-start.original.json",
+      "sha256": "4b8e99cb742434fb4ae9e29629fa6b2b6b12a79c9f79a3a4a19129139a9133de"
+    },
+    {
+      "bytes": 733,
+      "path": "runtime-terminal.original.json",
+      "sha256": "beb6529aa4217f0765c5d530657b6a1e9f97976516bfa35f932e1506eb3a5e5a"
+    },
+    {
+      "bytes": 2026,
+      "path": "launch-script.original.py",
+      "sha256": "8d7a67b2a680ffc2d222279e972dde043404c53755f5052b6ed4cf5ea7f1f6fc"
+    },
+    {
+      "bytes": 1021,
+      "path": "selection.public.json",
+      "sha256": "4f892dab4ed86eb84ffc7dafddec66aeef8b167c5993ba76f1b6a42d267ff718"
+    },
+    {
+      "bytes": 132,
+      "path": "stdout.original",
+      "sha256": "d689456c6063a43d7b344c75e1dc7ddd3d51476228af2eb0390148f20b605255"
+    },
+    {
+      "bytes": 528,
+      "path": "stderr.original",
+      "sha256": "b2594d4530a0e7305519db12d670a2b0b5182448559950f3d18ac5377633b9c4"
+    },
+    {
+      "bytes": 70045,
+      "path": "inputs/kv2_native_fresh_directory_dr_live.py",
+      "sha256": "388f763d810e1694ce9fe3d4ce52325318aad8ec4fa4d87ebbcd6cfbe7f1f5a0"
+    },
+    {
+      "bytes": 34985,
+      "path": "inputs/tests/test_kv2_native_fresh_directory_dr_live.py",
+      "sha256": "79a837e1b3932ac409546dc6f54e24e4a73e5fe0be9293c6bcfd12de0f81c782"
+    },
+    {
+      "bytes": 49393,
+      "path": "inputs/kv2_271_lossless_native_live.py",
+      "sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581"
+    }
+  ],
+  "host": "mac",
+  "job_id": "1a1b0849c16-fc05-711a",
+  "original_outer_seconds": 60,
+  "product_services_started": false,
+  "production_or_dr25_qualified": false,
+  "publication_allowlist": true,
+  "schema": "heptabao.mac-native-fd-guard-evidence.r1",
+  "scope": "Exactly two newly added parent FD retirement guards; real Darwin /dev/fd temporary file/directory and closed boundary plus synthetic denied observation. No product servers, no credentials.",
+  "status": "passed",
+  "test_elapsed_seconds": 0.005,
+  "timed_out": false
+}

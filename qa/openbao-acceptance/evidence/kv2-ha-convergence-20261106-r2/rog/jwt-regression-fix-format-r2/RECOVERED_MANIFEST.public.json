@@ -1,0 +1,40 @@
+{
+  "files": [
+    {
+      "bytes": 732,
+      "path": "runtime-terminal.public.json",
+      "provenance": {
+        "kind": "parsed_native_tool_response",
+        "store_key": "jwt_fmt_r2_0"
+      },
+      "sha256": "7c6da719eec946fce0e7933969fde6a75c3c622d8adef6cfef8341463c13d651"
+    },
+    {
+      "bytes": 2472,
+      "path": "result.public.json",
+      "provenance": {
+        "bytes": 2472,
+        "kind": "native_read_multiple_files",
+        "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/jwt-regression-fix-format-r2/result.public.json",
+        "sha256": "ae76cec4e8bc54ace7be2ffca7d116c6143fcd74470f6a57a3650af68ce8c125",
+        "version": "66306:35137970:2472:1793965891098642447:1793965891098642447"
+      },
+      "sha256": "ae76cec4e8bc54ace7be2ffca7d116c6143fcd74470f6a57a3650af68ce8c125"
+    },
+    {
+      "bytes": 7653,
+      "path": "04-formatted-patch.stdout",
+      "provenance": {
+        "bytes": 7653,
+        "kind": "native_read_multiple_files",
+        "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/jwt-regression-fix-format-r2/04-formatted-patch.stdout",
+        "sha256": "0e7be54931ba7e506b64795c842e5b3229f8486a4d883ab440b499cbc56322fc",
+        "version": "66306:35137968:7653:1793965891098503877:1793965891098503877"
+      },
+      "sha256": "0e7be54931ba7e506b64795c842e5b3229f8486a4d883ab440b499cbc56322fc"
+    }
+  ],
+  "production_credentials_included": false,
+  "public_allowlist": true,
+  "schema": "heptabao.remote-evidence-recovery.v1"
+}

@@ -1,0 +1,70 @@
+{
+  "actual_count": 3,
+  "authoritative_runtime_state": "succeeded",
+  "compilers_started": false,
+  "exit_code": 0,
+  "expected_count": 3,
+  "files": [
+    {
+      "bytes": 3306,
+      "path": "runtime-start.original.json",
+      "sha256": "3548a7700e42682ee2d37cb5e1e6cf3ad3c87568b14f6037a9fd825abdb5cd94"
+    },
+    {
+      "bytes": 733,
+      "path": "runtime-terminal.original.json",
+      "sha256": "644d4cf639b015aba24ed8b7d2d963ca0fe2921b6c297fb1a05863a8c36583ff"
+    },
+    {
+      "bytes": 2052,
+      "path": "launch-script.original.py",
+      "sha256": "c74b76e6230b1971898e29a844be4cbee1a16d4f8fb8e3512abbb90921c1568f"
+    },
+    {
+      "bytes": 1155,
+      "path": "selection.public.json",
+      "sha256": "08accd912e3f608c58a4b223933c27b4e9f81bd393cbfc5aac635d99e92f1422"
+    },
+    {
+      "bytes": 149,
+      "path": "stdout.original",
+      "sha256": "2df8ffab99187efd1eb10558a94d88ccae6025dc5857e310a5a727222b833877"
+    },
+    {
+      "bytes": 733,
+      "path": "stderr.original",
+      "sha256": "17a2f89fa1d0c468a01e23bb640eecbc6e7d98850082b84b735273dcb066c9cb"
+    },
+    {
+      "bytes": 26131,
+      "path": "inputs/kv2_dr_process_custody.py",
+      "sha256": "669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008"
+    },
+    {
+      "bytes": 17148,
+      "path": "inputs/tests/test_kv2_dr_process_custody.py",
+      "sha256": "41d3b0e079b2b17a0ece458f907adf380542cbdf96530213869636e81a447807"
+    },
+    {
+      "bytes": 28442,
+      "path": "inputs/owned_process.py",
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0"
+    }
+  ],
+  "host": "mac",
+  "job_id": "1a1b09446fa-fc05-717a",
+  "original_child_seconds": 5,
+  "original_outer_seconds": 60,
+  "product_services_started": false,
+  "production_or_dr25_qualified": false,
+  "publication_allowlist": true,
+  "schema": "heptabao.mac-native-legacy-killpg-evidence.r1",
+  "scope": "Exactly three legacy raw-killpg guards; every short child and foreign-group fixture is created by the test, no existing process is signalled. Native Darwin runtime, fixed module and test inputs, no repeated custody15 or FD2.",
+  "status": "passed",
+  "test_elapsed_seconds": 0.176,
+  "timed_out": false,
+  "withhold": [
+    "recovery-inputs.json"
+  ],
+  "withhold_reason": "Transport duplication only; publish enumerated originals and manifest, not the recovery transport wrapper."
+}

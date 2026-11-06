@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "/usr/sbin/lsof",
+    "-t",
+    "--",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/.cargo-lock"
+  ],
+  "attempts": 1,
+  "effective_budget_seconds": 10,
+  "exit_code": 1,
+  "owned_group_cleanup": {
+    "all_owned_processes_gone": true,
+    "direct_child_reaped": true,
+    "pgid": 74212,
+    "remaining_after_cleanup": [],
+    "signals": [],
+    "signals_after_reap": false
+  },
+  "pid": 74212,
+  "requested_cap_seconds": 10,
+  "seconds": 0.101466,
+  "started_at_unix": 1793963025.563721,
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_bytes": 0,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "step": "01-preflight-cargo-lock",
+  "timed_out": false
+}

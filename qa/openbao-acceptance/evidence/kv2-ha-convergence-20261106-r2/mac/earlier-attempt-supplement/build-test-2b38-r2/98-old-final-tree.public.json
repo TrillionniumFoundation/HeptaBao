@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "/usr/bin/git",
+    "--no-optional-locks",
+    "-c",
+    "core.hooksPath=/dev/null",
+    "rev-parse",
+    "HEAD^{tree}"
+  ],
+  "attempts": 1,
+  "effective_budget_seconds": 30,
+  "exit_code": 0,
+  "owned_group_cleanup": {
+    "all_owned_processes_gone": true,
+    "direct_child_reaped": true,
+    "pgid": 78625,
+    "remaining_after_cleanup": [],
+    "signals": [],
+    "signals_after_reap": false
+  },
+  "pid": 78625,
+  "requested_cap_seconds": 30,
+  "seconds": 0.033605,
+  "started_at_unix": 1793963499.999655,
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_bytes": 41,
+  "stdout_sha256": "9f5293c8c19686df077cfb69270edefb2df2c42411b37dcdd974a7aa092b4ba0",
+  "step": "98-old-final-tree",
+  "timed_out": false
+}

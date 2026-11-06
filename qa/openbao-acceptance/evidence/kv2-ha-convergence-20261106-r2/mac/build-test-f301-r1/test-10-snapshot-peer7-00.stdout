@@ -1,0 +1,12 @@
+
+running 7 tests
+test authenticated_peer_frame::snapshot::tests::snapshot_peer_actual_mtls_bare_tcp_eof_cannot_finalize_upload ... ok
+test authenticated_peer_frame::snapshot::tests::snapshot_peer_actual_mtls_terminal_rejection_consumes_no_upload ... ok
+test authenticated_peer_frame::snapshot::tests::snapshot_peer_actual_mtls_upload_close_notify_allows_opposite_download ... ok
+test authenticated_peer_frame::snapshot::tests::snapshot_peer_actual_mtls_wrong_selected_leaf_never_admits_body ... ok
+test authenticated_peer_frame::snapshot::tests::snapshot_peer_expired_deadline_refuses_before_connect ... ok
+test authenticated_peer_frame::snapshot::tests::snapshot_peer_original_frame_still_uses_only_old_callback ... ok
+test authenticated_peer_frame::snapshot::tests::snapshot_peer_ready_veto_reads_no_upload_and_cannot_extend_deadline ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 112 filtered out; finished in 0.62s
+

@@ -1,0 +1,10 @@
+{
+  "all_functions_classes_and_nonbinding_ast_unchanged": true,
+  "binding_constants_changed": 7,
+  "controller_bytes": 21709,
+  "controller_sha256": "56b4696cc252d50d3ddeb9edad90465654e011045d2e3d9feba5919d42247c7f",
+  "original_groups_and_budgets_unchanged": true,
+  "retained_artifacts": 17,
+  "selection_bytes": 45631,
+  "selection_sha256": "d7f6d0971e7a6b3e0096e50a1e3d607bff851ce2295563ad068b80adf2294bfd"
+}

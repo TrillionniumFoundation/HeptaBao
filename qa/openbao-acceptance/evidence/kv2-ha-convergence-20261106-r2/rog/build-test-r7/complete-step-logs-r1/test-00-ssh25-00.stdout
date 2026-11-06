@@ -1,0 +1,30 @@
+
+running 25 tests
+test ha_forward::native_ssh_tests::native_ssh_reply_profile_does_not_upgrade_ordinary_suffix_or_shrink_large_json ... ok
+test ha_forward::native_ssh_tests::native_ssh_reply_profile_refuses_missing_ingress_nonce_or_wrong_root_get ... ok
+test ha_forward::native_ssh_tests::native_ssh_reply_profile_rejects_wire_downgrade_and_missing_or_unknown_metadata ... ok
+test ha_forward::native_ssh_tests::native_ssh_reply_profile_retains_original_ingress_nonce_and_custom_route ... ok
+test service::native_auth::ssh_tests::archive::native_ssh_actual_archive_restore_preserves_otp_consumption_ca_and_observed_issuer_floor ... ok
+test service::native_auth::ssh_tests::native_ssh_actual_audit_cannot_refresh_original_deadline_or_repeat_signature ... ok
+test service::native_auth::ssh_tests::native_ssh_actual_audit_io_failure_never_returns_the_signed_private_reply ... ok
+test service::native_auth::ssh_tests::native_ssh_actual_audited_otp_retains_original_precise_issuer_expiry ... ok
+test service::native_auth::ssh_tests::native_ssh_actual_audited_reply_cannot_follow_recreated_mount_incarnation ... ok
+test service::native_auth::ssh_tests::native_ssh_after_actual_audit_actor_revocation_never_delivers_otp ... ok
+test service::native_auth::ssh_tests::native_ssh_after_actual_audit_changed_status_does_not_bypass_or_resign ... ok
+test service::native_auth::ssh_tests::native_ssh_and_pki_original_idle_retire_both_without_touching_ca_or_kv ... ok
+test service::native_auth::ssh_tests::native_ssh_child_and_response_wrap_ownership_remain_explicitly_closed ... ok
+test service::native_auth::ssh_tests::native_ssh_consumed_verify_rechecks_original_issuer_after_actual_audit ... ok
+test service::native_auth::ssh_tests::native_ssh_formal_acl_nonrenewable_revoke_and_segment_prefix ... ok
+test service::native_auth::ssh_tests::native_ssh_formal_batch_expiry_is_clipped_persistent_and_not_revivable ... ok
+test service::native_auth::ssh_tests::native_ssh_formal_ca_real_signature_cold_typed_public_transport ... ok
+test service::native_auth::ssh_tests::native_ssh_formal_disabled_login_identity_stays_retired_after_reenable_and_cold ... ok
+test service::native_auth::ssh_tests::native_ssh_formal_otp_promotion_cold_verify_and_replay ... ok
+test service::native_auth::ssh_tests::native_ssh_formal_registry_tune_retire_and_recreate_preserves_other_graphs ... ok
+test service::native_auth::ssh_tests::native_ssh_public_reply_cannot_lose_affine_transport_after_audit ... ok
+test service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_actual_ca_signature_and_raw_public_cold_readindex ... ok
+test service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_custom_public_reply_transport_keeps_kv_json ... ok
+test service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_forwarded_otp_election_cold_consume_and_replay ... ok
+test service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_lost_quorum_cannot_issue_sign_or_disclose_public_key ... ok
+
+test result: ok. 25 passed; 0 failed; 0 ignored; 0 measured; 3735 filtered out; finished in 43.89s
+

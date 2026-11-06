@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.mac-fd-guards-only.r1",
+  "expected_count": 2,
+  "tests": [
+    "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_parent_fd_retirement_detects_real_open_file_directory_and_closed_boundary",
+    "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_parent_fd_retirement_rejects_unclosed_stdio_and_observation_gaps"
+  ],
+  "inputs": [
+    {
+      "relative": "kv2_native_fresh_directory_dr_live.py",
+      "bytes": 70045,
+      "sha256": "388f763d810e1694ce9fe3d4ce52325318aad8ec4fa4d87ebbcd6cfbe7f1f5a0"
+    },
+    {
+      "relative": "tests/test_kv2_native_fresh_directory_dr_live.py",
+      "bytes": 34985,
+      "sha256": "79a837e1b3932ac409546dc6f54e24e4a73e5fe0be9293c6bcfd12de0f81c782"
+    },
+    {
+      "relative": "kv2_271_lossless_native_live.py",
+      "bytes": 49393,
+      "sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581"
+    }
+  ],
+  "outer_seconds": 60,
+  "compilers_or_services_started": false,
+  "full34_or_dr25_executed": false
+}

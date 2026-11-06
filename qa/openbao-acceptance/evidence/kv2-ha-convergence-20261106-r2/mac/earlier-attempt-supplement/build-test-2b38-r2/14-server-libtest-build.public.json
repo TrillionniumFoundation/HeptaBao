@@ -1,0 +1,45 @@
+{
+  "argv": [
+    "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+    "test",
+    "--release",
+    "--locked",
+    "--offline",
+    "-p",
+    "heptabao-server",
+    "--lib",
+    "--no-run",
+    "--message-format=json-render-diagnostics"
+  ],
+  "attempts": 1,
+  "effective_budget_seconds": 1800,
+  "exception_type": "Interrupted",
+  "exit_code": -15,
+  "owned_group_cleanup": {
+    "all_owned_processes_gone": false,
+    "direct_child_reaped": true,
+    "pgid": 77195,
+    "remaining_after_cleanup": [
+      {
+        "pgid": 77195,
+        "pid": 77199,
+        "ppid": 1,
+        "state": "?E"
+      }
+    ],
+    "signals": [
+      "SIGTERM"
+    ],
+    "signals_after_reap": false
+  },
+  "pid": 77195,
+  "requested_cap_seconds": 1800,
+  "seconds": 195.436567,
+  "started_at_unix": 1793963304.376672,
+  "stderr_bytes": 162,
+  "stderr_sha256": "44c0694f14088690c80cdc60693e872fc83f91ddf84bb0df6c96b07d7aa84b9e",
+  "stdout_bytes": 436920,
+  "stdout_sha256": "fb5dbdbd9a38b75b5b26b7a6c49a3328969cd0d0698af127fb3e1ef74ccce2e7",
+  "step": "14-server-libtest-build",
+  "timed_out": false
+}

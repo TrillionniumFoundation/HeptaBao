@@ -1,0 +1,35 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-B",
+      "-c",
+      "import hashlib,json,os,subprocess,sys,time\nfrom pathlib import Path\nstart=time.monotonic()\nsource=Path(\"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-868-r1\")\nexpected={'head':'868439e6df9f12291842898763ccba581e346bfb','tree':'c211d66343235fbb8a220744f3e97768559007c8'}\nreport={'schema':'heptabao.mac-postfailure-source-preservation.v1','source':str(source),'read_only':True,'service_started':False,'test_rerun':False,'checks':{}}\ndef git(label,args):\n p=subprocess.run(['/usr/bin/git','--no-optional-locks','-c','core.hooksPath=/dev/null',*args],cwd=source,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=15,check=False)\n report['checks'][label]={'exit_code':p.returncode,'stderr_bytes':len(p.stderr),'stderr_sha256':hashlib.sha256(p.stderr).hexdigest()}\n if p.returncode or p.stderr: raise RuntimeError('git_'+label+'_failed')\n return p.stdout.decode().strip()\ntry:\n head=git('head',['rev-parse','HEAD']);tree=git('tree',['rev-parse','HEAD^{tree}'])\n clean=git('clean',['status','--porcelain=v1','--untracked-files=all'])\n report.update(head=head,tree=tree,clean=not clean,dirty_entry_count=len(clean.splitlines()))\n report['matches_failed_candidate']=head==expected['head'] and tree==expected['tree'] and not clean\n report['status']='passed' if report['matches_failed_candidate'] else 'failed'\nexcept BaseException as e:\n report.update(status='failed',error_type=type(e).__name__)\nfinally:\n report['seconds']=round(time.monotonic()-start,6)\n print(json.dumps(report,sort_keys=True),flush=True)\nsys.exit(0 if report['status']=='passed' else 1)\n"
+    ],
+    "created_unix_ms": 1793967688082,
+    "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1",
+    "env_keys": [],
+    "executable": "/opt/homebrew/bin/python3",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1b0ce8992-fc05-7316",
+    "idempotency_key": "heptabao-mac-868-postfailure-readonly-source-preservation-20261106-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b0ce8992-fc05-7316",
+    "request_digest": "7bbdd87adc6f2410171830a48757a02476d5c19fd4039caa1b3971b86b0860cc",
+    "request_fingerprint": 8916520859459331000,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b0ce8992-fc05-7316"
+  },
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 16972,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1b0ce8992-fc05-7316"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

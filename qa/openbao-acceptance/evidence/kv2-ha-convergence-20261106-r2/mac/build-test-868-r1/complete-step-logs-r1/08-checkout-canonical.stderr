@@ -1,0 +1,2 @@
+Previous HEAD position was f301a0f3 test: bind restore audit vetoes to the exact terminal clock successor
+HEAD is now at 868439e6 test: observe native JWT identity and preserve orphan token semantics

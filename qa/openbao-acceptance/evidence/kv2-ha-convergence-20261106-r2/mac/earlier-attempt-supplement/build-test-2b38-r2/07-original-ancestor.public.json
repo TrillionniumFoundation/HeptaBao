@@ -1,0 +1,33 @@
+{
+  "argv": [
+    "/usr/bin/git",
+    "--no-optional-locks",
+    "-c",
+    "core.hooksPath=/dev/null",
+    "merge-base",
+    "--is-ancestor",
+    "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "2b38f091c2903eac74b4ed9dc32b1f1f00fd8a8a"
+  ],
+  "attempts": 1,
+  "effective_budget_seconds": 30,
+  "exit_code": 0,
+  "owned_group_cleanup": {
+    "all_owned_processes_gone": true,
+    "direct_child_reaped": true,
+    "pgid": 74249,
+    "remaining_after_cleanup": [],
+    "signals": [],
+    "signals_after_reap": false
+  },
+  "pid": 74249,
+  "requested_cap_seconds": 30,
+  "seconds": 0.021951,
+  "started_at_unix": 1793963026.222262,
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_bytes": 0,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "step": "07-original-ancestor",
+  "timed_out": false
+}

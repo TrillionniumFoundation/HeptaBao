@@ -1,0 +1,62 @@
+{"event": "launch-pins-verified", "source_commit": "2b38f091c2903eac74b4ed9dc32b1f1f00fd8a8a", "expected_tests": 107, "outer_seconds": 8280, "controller_sha256": "40e80e093af97e821658754dfc54551258e2143bae739d7528f0a0c78bec11c5"}
+{"event": "step_started", "step": "00-t5-volume", "budget_seconds": 10}
+{"event": "step_finished", "step": "00-t5-volume", "exit_code": 0, "timed_out": false, "seconds": 0.093178}
+{"event": "step_started", "step": "00-old-source-head", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-old-source-head", "exit_code": 0, "timed_out": false, "seconds": 0.059094}
+{"event": "step_started", "step": "00-old-source-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-old-source-tree", "exit_code": 0, "timed_out": false, "seconds": 0.021311}
+{"event": "step_started", "step": "00-old-source-clean", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-old-source-clean", "exit_code": 0, "timed_out": false, "seconds": 0.033224}
+{"event": "step_started", "step": "01-preflight-process-metadata", "budget_seconds": 10}
+{"event": "step_finished", "step": "01-preflight-process-metadata", "exit_code": 0, "timed_out": false, "seconds": 0.031553}
+{"event": "step_started", "step": "01-preflight-ram-total", "budget_seconds": 10}
+{"event": "step_finished", "step": "01-preflight-ram-total", "exit_code": 0, "timed_out": false, "seconds": 0.011683}
+{"event": "step_started", "step": "01-preflight-vm-stat", "budget_seconds": 10}
+{"event": "step_finished", "step": "01-preflight-vm-stat", "exit_code": 0, "timed_out": false, "seconds": 0.011666}
+{"event": "step_started", "step": "01-preflight-cargo-lock", "budget_seconds": 10}
+{"event": "step_finished", "step": "01-preflight-cargo-lock", "exit_code": 1, "timed_out": false, "seconds": 0.101466}
+{"event": "step_started", "step": "01-cache-admission-holders-under-lock", "budget_seconds": 15}
+{"event": "step_finished", "step": "01-cache-admission-holders-under-lock", "exit_code": 0, "timed_out": false, "seconds": 0.10159}
+{"event": "step_started", "step": "02-independent-source-clone", "budget_seconds": 120}
+{"event": "step_finished", "step": "02-independent-source-clone", "exit_code": 0, "timed_out": false, "seconds": 0.274352}
+{"event": "step_started", "step": "03-bundle-verify", "budget_seconds": 30}
+{"event": "step_finished", "step": "03-bundle-verify", "exit_code": 0, "timed_out": false, "seconds": 0.031949}
+{"event": "step_started", "step": "04-fetch-local-bundle", "budget_seconds": 60}
+{"event": "step_finished", "step": "04-fetch-local-bundle", "exit_code": 0, "timed_out": false, "seconds": 0.094998}
+{"event": "step_started", "step": "05-canonical-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "05-canonical-tree", "exit_code": 0, "timed_out": false, "seconds": 0.022515}
+{"event": "step_started", "step": "06-canonical-parent", "budget_seconds": 30}
+{"event": "step_finished", "step": "06-canonical-parent", "exit_code": 0, "timed_out": false, "seconds": 0.021751}
+{"event": "step_started", "step": "07-original-ancestor", "budget_seconds": 30}
+{"event": "step_finished", "step": "07-original-ancestor", "exit_code": 0, "timed_out": false, "seconds": 0.021951}
+{"event": "step_started", "step": "08-checkout-canonical", "budget_seconds": 60}
+{"event": "step_finished", "step": "08-checkout-canonical", "exit_code": 0, "timed_out": false, "seconds": 0.383749}
+{"event": "step_started", "step": "09-clean-source", "budget_seconds": 30}
+{"event": "step_finished", "step": "09-clean-source", "exit_code": 0, "timed_out": false, "seconds": 0.218026}
+{"event": "step_started", "step": "10-full-repository", "budget_seconds": 30}
+{"event": "step_finished", "step": "10-full-repository", "exit_code": 0, "timed_out": false, "seconds": 0.021933}
+{"event": "step_started", "step": "11-fsck", "budget_seconds": 60}
+{"event": "step_finished", "step": "11-fsck", "exit_code": 0, "timed_out": false, "seconds": 1.227525}
+{"event": "step_started", "step": "12-format-check", "budget_seconds": 60}
+{"event": "step_finished", "step": "12-format-check", "exit_code": 0, "timed_out": false, "seconds": 4.273367}
+{"event": "step_started", "step": "12-precompile-cache-admission-holders-under-lock", "budget_seconds": 15}
+{"event": "step_finished", "step": "12-precompile-cache-admission-holders-under-lock", "exit_code": 0, "timed_out": false, "seconds": 0.10187}
+{"event": "step_started", "step": "13-normal-release-build", "budget_seconds": 1800}
+{"event": "step_finished", "step": "13-normal-release-build", "exit_code": 0, "timed_out": false, "seconds": 270.910406}
+{"event": "step_started", "step": "14-server-libtest-build", "budget_seconds": 1800}
+{"event": "step_finished", "step": "14-server-libtest-build", "exit_code": -15, "timed_out": false, "seconds": 195.436567}
+{"event": "step_started", "step": "98-old-final-head", "budget_seconds": 30}
+{"event": "step_finished", "step": "98-old-final-head", "exit_code": 0, "timed_out": false, "seconds": 0.061869}
+{"event": "step_started", "step": "98-old-final-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "98-old-final-tree", "exit_code": 0, "timed_out": false, "seconds": 0.033605}
+{"event": "step_started", "step": "98-old-final-clean", "budget_seconds": 30}
+{"event": "step_finished", "step": "98-old-final-clean", "exit_code": 0, "timed_out": false, "seconds": 0.100946}
+{"event": "step_started", "step": "98-postflight-process-metadata", "budget_seconds": 10}
+{"event": "step_finished", "step": "98-postflight-process-metadata", "exit_code": 0, "timed_out": false, "seconds": 0.034045}
+{"event": "step_started", "step": "98-postflight-ram-total", "budget_seconds": 10}
+{"event": "step_finished", "step": "98-postflight-ram-total", "exit_code": 0, "timed_out": false, "seconds": 0.01494}
+{"event": "step_started", "step": "98-postflight-vm-stat", "budget_seconds": 10}
+{"event": "step_finished", "step": "98-postflight-vm-stat", "exit_code": 0, "timed_out": false, "seconds": 0.012309}
+{"event": "step_started", "step": "98-postflight-cargo-lock", "budget_seconds": 10}
+{"event": "step_finished", "step": "98-postflight-cargo-lock", "exit_code": 1, "timed_out": false, "seconds": 0.221772}
+{"event": "terminal", "status": "failed", "failure": "14-server-libtest-build_failed", "executed_passed_cases": 0, "result": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/result.public.json"}

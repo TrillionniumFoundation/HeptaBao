@@ -1,0 +1,19 @@
+{
+  "build_candidate": "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+  "build_candidate_parent": "868439e6df9f12291842898763ccba581e346bfb",
+  "build_candidate_tree": "dfb0df97a2c74b1c0154f45342f3debb0ce438ab",
+  "candidate_changed_files": [
+    "crates/heptabao-server/src/service_native_jwt_tests.rs"
+  ],
+  "candidate_file_sha256": "d36bd868975958093c50218ad1e06b20a58b5156a37cd58718dfdc1654c1f156",
+  "candidate_product_validator_changed": false,
+  "candidate_runtime_budgets_changed": false,
+  "candidate_test_names_changed": false,
+  "ci_harness_qa_repair": "9cee0f7f54824f30d9bcaeab0ba5e5f73c99d7e9",
+  "dr_custody_qa_repair": "b2d1eae952dd14fb973fa93571ec789f0dae4ba1",
+  "libtest_compilation_repair": "2b38f091c2903eac74b4ed9dc32b1f1f00fd8a8a",
+  "normal_release_compilation_repair": "1d63ec98ce0fc5cbc7d74a37f6307be148dd5aeb",
+  "previous_observer_repair": "868439e6df9f12291842898763ccba581e346bfb",
+  "schema": "heptabao.convergence-source-chain.v1",
+  "snapshot_clock_successor_assertion_repair": "f301a0f391096a2a8daf149f16bbbbd5bbf7a9e3"
+}

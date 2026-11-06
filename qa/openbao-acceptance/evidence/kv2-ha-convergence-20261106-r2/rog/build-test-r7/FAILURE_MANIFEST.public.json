@@ -1,0 +1,51 @@
+{
+  "actual_executed": 103,
+  "completed_group_passes": 88,
+  "counts": {
+    "failed": 3,
+    "ignored": 0,
+    "passed": 100
+  },
+  "files": [
+    {
+      "bytes": 105961,
+      "path": "result.public.json",
+      "sha256": "423799fbc2e69b08e8bc2f29f9813b1365f017765f9292394a48ce1b7d068a9e",
+      "version": "66306:35309468:105961:1793968683783133584:1793968683785133581"
+    },
+    {
+      "bytes": 2347,
+      "path": "test-14-native-jwt15-00.stdout",
+      "sha256": "cb56f46b46c838333add49b78f75d1cfbb60a2bef37ce3bfa921dd9c74b62400",
+      "version": "66306:35309462:2347:1793968681383136529:1793968681383136529"
+    },
+    {
+      "bytes": 6163,
+      "path": "test-14-native-jwt15-00.stderr",
+      "sha256": "8890c04ffeb9a47af3f907672e4ee23e437140a6891dd7212c0c80d958bf35cb",
+      "version": "66306:35309466:6163:1793968681342136579:1793968681342136579"
+    },
+    {
+      "bytes": 731,
+      "path": "runtime-terminal.public.json",
+      "sha256": "1765beb9c9792456a57d88e28a152130fd8d935e6422dc62c5c47b27a8847f9e",
+      "version": null
+    },
+    {
+      "bytes": 553,
+      "path": "result.native-file-info.json",
+      "sha256": "79b8e42a3571ea5d3a49cb12aa6a22e1350dd512308e49d9702cf32e4bfe86e3",
+      "version": null
+    }
+  ],
+  "formal_production_qualified": false,
+  "host": "rog",
+  "job_id": "1a1b0bf6f25-fc05-7292",
+  "not_executed": 4,
+  "original_case_denominator": 107,
+  "product107_qualified": false,
+  "public_allowlist": true,
+  "schema": "heptabao.failed-native-build-evidence.v1",
+  "source_commit": "868439e6df9f12291842898763ccba581e346bfb",
+  "source_tree": "c211d66343235fbb8a220744f3e97768559007c8"
+}

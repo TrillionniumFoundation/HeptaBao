@@ -1,0 +1,103 @@
+{
+  "actual_controller_seconds": 0.149246,
+  "actual_unittest_seconds": 0.127,
+  "artifact_paths_are_relative_to_this_manifest": true,
+  "cancelled": false,
+  "dr_started": false,
+  "errors": 0,
+  "failed": 0,
+  "files": [
+    {
+      "bytes": 22618,
+      "original_sha256_verified": true,
+      "path": "dr25_mac_fixed_wrapper.py",
+      "recovery_kind": "exact_base64_input_bytes",
+      "session_field": "macWrapperGuardR2Inputs.files",
+      "sha256": "f622f5b44d56b5e44fb6027505f9c655ae7974467e59cfa08f819c9dfd3a7d7c"
+    },
+    {
+      "bytes": 8172,
+      "original_sha256_verified": true,
+      "path": "test_dr25_mac_fixed_wrapper.py",
+      "recovery_kind": "exact_base64_input_bytes",
+      "session_field": "macWrapperGuardR2Inputs.files",
+      "sha256": "a60cc7a72d2df9a8fbd7c357b41722c2bdd3d3207c93e0e281b54eb00dcb5aff"
+    },
+    {
+      "bytes": 45268,
+      "path": "launcher.original.py",
+      "recovery_kind": "exact_submitted_python_source",
+      "same_as_request_and_launch_args": true,
+      "session_field": "macWrapperGuardR2Launcher",
+      "sha256": "c585fda46ecd92516b8a12038478183f5cb281919bb594088d413a56a61e0a83"
+    },
+    {
+      "bytes": 45739,
+      "original_serialization_byte_identity_claimed": false,
+      "path": "runtime-request.recovered.json",
+      "recovery_kind": "lossless_parsed_request_reserialized",
+      "session_field": "macWrapperGuardR2Request",
+      "sha256": "4fabb9b00d3882100ee49c4b79ad60e857ac0e584941e3f16c72faa8ada9d7f5"
+    },
+    {
+      "bytes": 46591,
+      "original_serialization_byte_identity_claimed": false,
+      "path": "runtime-start.recovered.json",
+      "recovery_kind": "lossless_parsed_start_reserialized",
+      "session_field": "macWrapperGuardR2Start",
+      "sha256": "b677bdbe337dad13bbbf728694e9b8f2bfb23b821cbaa418de1456e3429187b5"
+    },
+    {
+      "bytes": 738,
+      "original_sha256_verified": true,
+      "path": "runtime-terminal.original.json",
+      "recovery_kind": "serialization_verified_against_retained_original_sha256",
+      "session_field": "macWrapperGuardR2Result0",
+      "sha256": "afd14b6deb08d9033ec2b2d22305743175f34f02ec5b8fb610a245598225d604"
+    },
+    {
+      "bytes": 1700,
+      "complete_stream": true,
+      "original_sha256_verified": true,
+      "path": "runtime-stdout.original",
+      "recovery_kind": "exact_lossless_hex_bytes",
+      "session_field": "macWrapperGuardR2Result1.stdout",
+      "sha256": "aea59ed47e10a93ccf3c7b84d95979018758de4f89a4e740dcd29ef10393b0f2"
+    },
+    {
+      "bytes": 1190,
+      "complete_stream": true,
+      "original_sha256_verified": true,
+      "path": "runtime-stderr.original",
+      "recovery_kind": "exact_lossless_hex_bytes",
+      "session_field": "macWrapperGuardR2Result1.stderr",
+      "sha256": "36bee57b9a661809ed91399b7e3480ef65d7769cff43c9fdac1bb1c380e499c6"
+    }
+  ],
+  "inputs_unchanged": true,
+  "job_id": "1a1b0b212fb-fc05-7239",
+  "original_outer_seconds": 60,
+  "passed": 6,
+  "previous_manifest_bytes_not_reconstructed": true,
+  "previous_manifest_sha256_reference": "69389ce1c69fc68f1104fb3ea0005b119f2876d169991eebf6ca8e4da44d13da",
+  "product_started": false,
+  "publication_allowlist_confirmed_by": "host_evidence",
+  "qualification_scope": "Actual Darwin wrapper-only guards using stubs and short Python children; no product, KV2 DR, HA, AuthBus or production qualification.",
+  "recovery_performed_without_rerun": true,
+  "runtime_exit_code": 0,
+  "runtime_terminal": "succeeded",
+  "schema": "heptabao.mac-dr-wrapper-guards-original-recovery.v1",
+  "skipped": 0,
+  "test_names_in_actual_execution_order": [
+    "test_dr25_mac_fixed_wrapper.WrapperGuards.test_actual_alarm_cancels_in_process_work_and_is_not_a_pass",
+    "test_dr25_mac_fixed_wrapper.WrapperGuards.test_controller_error_payload_and_guessable_fingerprint_stay_private",
+    "test_dr25_mac_fixed_wrapper.WrapperGuards.test_foreign_timer_and_handler_are_refused_without_being_replaced",
+    "test_dr25_mac_fixed_wrapper.WrapperGuards.test_native_inherited_output_is_private_and_descriptors_are_restored",
+    "test_dr25_mac_fixed_wrapper.WrapperGuards.test_protected_cleanup_can_return_zero_but_deadline_cannot_pass",
+    "test_dr25_mac_fixed_wrapper.WrapperGuards.test_same_entry_deadline_includes_preparation_and_restores_timer"
+  ],
+  "tests_run": 6,
+  "timed_out": false,
+  "timer_and_handler_restored": true,
+  "transport_payload_and_tool_wrapper_excluded": true
+}

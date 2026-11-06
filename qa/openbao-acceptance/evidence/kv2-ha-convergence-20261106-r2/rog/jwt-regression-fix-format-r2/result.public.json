@@ -1,0 +1,77 @@
+{
+  "base_commit": "9cee0f7f54824f30d9bcaeab0ba5e5f73c99d7e9",
+  "compiler_started": false,
+  "formatted_patch_bytes": 7653,
+  "formatted_patch_sha256": "0e7be54931ba7e506b64795c842e5b3229f8486a4d883ab440b499cbc56322fc",
+  "only_followup_change": "Correct the stale R2 historical comment; no code or assertion change",
+  "prior_format_job": "1a1b0ae174c-fc05-7221",
+  "production_changed": false,
+  "schema": "heptabao.actual-native-jwt-final-test-format.v1",
+  "status": "passed",
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "label": "00-head",
+      "seconds": 0.002859723987057805,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "ec0b3f301a00983a7656ba07b341841a32ca6fbb9fec6fffd5ad9b720d059738"
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "label": "01-fmt-check",
+      "seconds": 5.265488111996092,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "label": "02-diff-check",
+      "seconds": 0.004166400001849979,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--name-only",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "label": "03-names",
+      "seconds": 0.0028958210023120046,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "9b7f12b0560d2cac315fe6075e17460b55d3e98a6313de4bd4ab283018b49611"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--binary",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "label": "04-formatted-patch",
+      "seconds": 0.005279773962683976,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "0e7be54931ba7e506b64795c842e5b3229f8486a4d883ab440b499cbc56322fc"
+    }
+  ]
+}

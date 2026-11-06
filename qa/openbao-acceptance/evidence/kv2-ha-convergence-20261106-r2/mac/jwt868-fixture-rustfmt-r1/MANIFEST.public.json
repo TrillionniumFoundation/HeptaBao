@@ -1,0 +1,145 @@
+{
+  "schema": "heptabao.mac-pinned-rustfmt-evidence.v1",
+  "job_id": "1a1b0dff6e5-fc05-7384",
+  "status": "passed",
+  "source_commit": "868439e6df9f12291842898763ccba581e346bfb",
+  "rust_compilation_executed": false,
+  "rust_tests_executed": false,
+  "product_or_dr_started": false,
+  "production_authority": false,
+  "input_and_formatted_bytes_equal": true,
+  "files": [
+    {
+      "name": "controller.original.py",
+      "bytes": 54216,
+      "sha256": "82d9c34251487c03888b7f32b75c7ab500ea960cf3d57d17ee85199225d7460b",
+      "origin": "exact_native_runtime_stdin"
+    },
+    {
+      "name": "input.original.rs",
+      "bytes": 42377,
+      "sha256": "d36bd868975958093c50218ad1e06b20a58b5156a37cd58718dfdc1654c1f156",
+      "origin": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt868-fixture-rustfmt-r1/input.original.rs"
+    },
+    {
+      "name": "base868.original.rs",
+      "bytes": 39999,
+      "sha256": "3c146567bc9cea6e26beaa7da9719edf698218a3cccf9b93c29f034d7b49f44d",
+      "origin": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt868-fixture-rustfmt-r1/base868.original.rs"
+    },
+    {
+      "name": "service_native_jwt_tests.formatted.rs",
+      "bytes": 42377,
+      "sha256": "d36bd868975958093c50218ad1e06b20a58b5156a37cd58718dfdc1654c1f156",
+      "origin": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt868-fixture-rustfmt-r1/service_native_jwt_tests.formatted.rs"
+    },
+    {
+      "name": "three-fixture-fixes.formatted.patch",
+      "bytes": 5956,
+      "sha256": "11f23a712e5c7db5670ef0ba517f0d45e38d514fc701171719fb91f0772e7ac2",
+      "origin": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt868-fixture-rustfmt-r1/three-fixture-fixes.formatted.patch"
+    },
+    {
+      "name": "formatter-only.diff",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "origin": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt868-fixture-rustfmt-r1/formatter-only.diff"
+    },
+    {
+      "name": "rustfmt.toml",
+      "bytes": 17,
+      "sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584",
+      "origin": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt868-fixture-rustfmt-r1/rustfmt.toml"
+    },
+    {
+      "name": "result.public.json",
+      "bytes": 12307,
+      "sha256": "a0b305b390abd96a38de80dadcae4f86b0db884d8c01cd87fb073ddadf505760",
+      "origin": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt868-fixture-rustfmt-r1/result.public.json"
+    },
+    {
+      "name": "01-version.stdout",
+      "bytes": 45,
+      "sha256": "f0e7a732a40b95640a1d26e3f12b8260eab948c6b5cf346eb4ec8eeac6c48bfe",
+      "origin": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt868-fixture-rustfmt-r1/01-version.stdout"
+    },
+    {
+      "name": "01-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "origin": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt868-fixture-rustfmt-r1/01-version.stderr"
+    },
+    {
+      "name": "02-format.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "origin": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt868-fixture-rustfmt-r1/02-format.stdout"
+    },
+    {
+      "name": "02-format.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "origin": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt868-fixture-rustfmt-r1/02-format.stderr"
+    },
+    {
+      "name": "03-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "origin": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt868-fixture-rustfmt-r1/03-check.stdout"
+    },
+    {
+      "name": "03-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "origin": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt868-fixture-rustfmt-r1/03-check.stderr"
+    },
+    {
+      "name": "runtime-terminal.original.json",
+      "bytes": 731,
+      "sha256": "65d38fa19290f5512c21231d45ebb08695207413c3bfddb9b1559e852d9b270f",
+      "origin": "native_runtime_original"
+    },
+    {
+      "name": "runtime-stdout.original",
+      "bytes": 9221,
+      "sha256": "653a2dc179ab7b8ec23567b21bdd199ee7add6fd748967eb2b2b12284d7eccbd",
+      "origin": "native_runtime_original"
+    },
+    {
+      "name": "runtime-stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "origin": "native_runtime_original"
+    },
+    {
+      "name": "runtime-start.public.json",
+      "bytes": 728,
+      "sha256": "341145825be3630b32b08ce7ac4f048801313a8e6329bb7113a2e6ae8898c086",
+      "origin": "derived_public_projection"
+    }
+  ],
+  "publication_allowlist": [
+    "controller.original.py",
+    "input.original.rs",
+    "base868.original.rs",
+    "service_native_jwt_tests.formatted.rs",
+    "three-fixture-fixes.formatted.patch",
+    "formatter-only.diff",
+    "rustfmt.toml",
+    "result.public.json",
+    "01-version.stdout",
+    "01-version.stderr",
+    "02-format.stdout",
+    "02-format.stderr",
+    "03-check.stdout",
+    "03-check.stderr",
+    "runtime-terminal.original.json",
+    "runtime-stdout.original",
+    "runtime-stderr.original",
+    "runtime-start.public.json"
+  ],
+  "publication_withheld": [
+    "runtime-start.transport.private.json",
+    "runtime-read.transport.private.json"
+  ]
+}

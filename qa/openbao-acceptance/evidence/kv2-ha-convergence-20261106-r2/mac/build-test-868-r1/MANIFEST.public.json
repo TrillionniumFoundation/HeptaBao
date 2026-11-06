@@ -1,0 +1,194 @@
+{
+  "actual_executed": 103,
+  "actual_failed": 3,
+  "actual_ignored": 0,
+  "actual_passed": 100,
+  "all_owned_processes_gone": true,
+  "all_step_logs_recovered": false,
+  "completed_group_passes": 88,
+  "failed_receipt_sha256": "8f8ecf43e2fbca843d0c0635b19a774a61f8fb0e17d87c019ade20f8a738a419",
+  "files": [
+    {
+      "bytes": 152164,
+      "path": "result.public.json",
+      "sha256": "8f8ecf43e2fbca843d0c0635b19a774a61f8fb0e17d87c019ade20f8a738a419",
+      "source": {
+        "host": "mac",
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/result.public.json",
+        "transport": "bounded version-locked reads; each chunk hash verified",
+        "version": "16777244:72694220:152164:1793967412867684123:1793967412871256363"
+      }
+    },
+    {
+      "bytes": 2348,
+      "path": "test-14-native-jwt15-00.stdout",
+      "sha256": "d21ca39abb127a867d03503c77bba122682570afd46bacead1b463c93e66cf1d",
+      "source": {
+        "host": "mac",
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-14-native-jwt15-00.stdout",
+        "version": "16777244:72694151:2348:1793967407143056125:1793967407143056125"
+      }
+    },
+    {
+      "bytes": 6169,
+      "path": "test-14-native-jwt15-00.stderr",
+      "sha256": "c135bdb6fcba7e0d3a607dcc26e73e8dc35cec2fdf1ad40fd58119289d2f30e6",
+      "source": {
+        "host": "mac",
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-14-native-jwt15-00.stderr",
+        "version": "16777244:72694152:6169:1793967406864974859:1793967406864974859"
+      }
+    },
+    {
+      "bytes": 30573,
+      "path": "controller.py",
+      "sha256": "c497c9fd40df0d2bb6776a32733d45ef3d56f2a74665ee5a01050186ef2bb499",
+      "source": "fixed executed input"
+    },
+    {
+      "bytes": 41675,
+      "path": "test-selection.public.json",
+      "sha256": "4177229337bb7ffc7d1c81b9ea515bd48b0cbd529fd48537815cd40bbfdb53e7",
+      "source": "fixed executed input"
+    },
+    {
+      "bytes": 1568,
+      "path": "launcher.py",
+      "sha256": "48a3285dac63a39d318faa31c88e16fb6515d0afefbd90537d1a3c43e28a077a",
+      "source": "actual process_start -c entry"
+    },
+    {
+      "bytes": 2773,
+      "path": "runtime-start.original.json",
+      "sha256": "38e408f5e0f8ea260d1f07c872f1a802fd2fb877b01c5eaae6bf5b15eecdb9b5",
+      "source": "authoritative structured process_start response"
+    },
+    {
+      "bytes": 731,
+      "path": "runtime-terminal.original.json",
+      "sha256": "4c363853aba48c79340cd48a26ecc753c453392635a237e67316c63099f1bf7f",
+      "source": "authoritative structured process_status response"
+    },
+    {
+      "bytes": 15978,
+      "path": "runtime-stdout.original",
+      "sha256": "5db9f92563de4a7221c41f0b48f2200e6f1b190d1d284c6ceb9b903af388d04c",
+      "source": "contiguous process_read exact bytes_hex"
+    },
+    {
+      "bytes": 0,
+      "path": "runtime-stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "contiguous process_read exact bytes_hex"
+    },
+    {
+      "bytes": 2567,
+      "path": "postfailure-artifacts.metadata.original.json",
+      "sha256": "aaa262ff3260d5ca4b1fe0c510567d3d667b5b1f4817b0aef8cc9b21fb8a82ae",
+      "source": "four independent file_info reads after failed terminal"
+    },
+    {
+      "bytes": 590,
+      "path": "postfailure-receipt.metadata.original.json",
+      "sha256": "337573f7cb647541b480a9052d1fb95720b4140d2e56de0cfe94634e7b2e1023",
+      "source": "independent file_info read after failed terminal"
+    },
+    {
+      "bytes": 2823,
+      "path": "postfailure-source-start.original.json",
+      "sha256": "2340cdfe60be7c28ff95ead260224fbeb3119f0b4b49e5b76f0f74519216f030"
+    },
+    {
+      "bytes": 730,
+      "path": "postfailure-source-terminal.original.json",
+      "sha256": "731a9dbf8bb8e4774762b8933dc35e45539b57391962e36baaffeb1324399865"
+    },
+    {
+      "bytes": 1975,
+      "path": "postfailure-source-request.json",
+      "sha256": "626025d6fa84a408761984b2f7522ef61b8d581fd0a39f05e803ceea5edf5865"
+    },
+    {
+      "bytes": 1624,
+      "path": "postfailure-source-probe.py",
+      "sha256": "7636942557b5511e641bfc42449346bc09e68ec6c2d0e3eb9c7d48188626c160"
+    },
+    {
+      "bytes": 862,
+      "path": "postfailure-source-stdout.original",
+      "sha256": "b77681e1d05b6274ba3fe094bf2cfb4941f20e1f4fa26a98ceac5d3f00bb10fe"
+    },
+    {
+      "bytes": 0,
+      "path": "postfailure-source-stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 36408,
+      "path": "initial-progress.original.public.json",
+      "sha256": "7ba75de1a2ef91ab561e9a528acf6658e97d80313820f23f52b5f429dda775f8",
+      "source": {
+        "host": "mac",
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/progress.public.json",
+        "version": "16777244:72691854:36408:1793966438289561919:1793966438289808253"
+      }
+    },
+    {
+      "bytes": 40149,
+      "path": "release-progress.original.public.json",
+      "sha256": "f75b9243e38b87ab71dab1439a8344fa0ef749d52a7ce37a1c60b10e4718ba87",
+      "source": {
+        "host": "mac",
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/progress.public.json",
+        "version": "16777244:72693709:40149:1793966708046042548:1793966708046338340"
+      }
+    },
+    {
+      "bytes": 3873,
+      "path": "RECONCILIATION.public.json",
+      "sha256": "e202f57b475e41363dcaa28d84f8d905cf00ba928c5d4576add3903ea3251a6c"
+    }
+  ],
+  "formal_production_qualified": false,
+  "job_id": "1a1b0bb5170-fc05-726c",
+  "product107_qualified": false,
+  "raw_global_process_metadata_not_copied": [
+    {
+      "bytes": 73091,
+      "name": "01-preflight-process-metadata.stdout",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/01-preflight-process-metadata.stdout",
+      "sha256": "2eaff9a04f68c56bbeed4924721d1850a3f25d65b123837b5de98ad9973bd2cb",
+      "withheld": true
+    },
+    {
+      "bytes": 0,
+      "name": "01-preflight-process-metadata.stderr",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/01-preflight-process-metadata.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "withheld": true
+    },
+    {
+      "bytes": 73315,
+      "name": "98-postflight-process-metadata.stdout",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-postflight-process-metadata.stdout",
+      "sha256": "48cf17758913c3c62a0e84ef3d6cb9e07c6b5a6023bec8a0e6a061de05c8c5ca",
+      "withheld": true
+    },
+    {
+      "bytes": 0,
+      "name": "98-postflight-process-metadata.stderr",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-postflight-process-metadata.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "withheld": true
+    }
+  ],
+  "relative_paths": true,
+  "resource_benchmark_qualified": false,
+  "schema": "heptabao.mac-native-failed-attempt-complete-evidence.v1",
+  "source_and_four_new_artifacts_preserved_after_failure": true,
+  "source_commit": "868439e6df9f12291842898763ccba581e346bfb",
+  "source_tree": "c211d66343235fbb8a220744f3e97768559007c8",
+  "step_log_files_recovered": 2,
+  "transport_scope": "private-recovery-transport is excluded from publication; only listed files and this manifest are allowlisted",
+  "unexecuted": 4
+}

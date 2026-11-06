@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "/usr/sbin/diskutil",
+    "info",
+    "-plist",
+    "/Volumes/T5"
+  ],
+  "attempts": 1,
+  "effective_budget_seconds": 10,
+  "exit_code": 0,
+  "owned_group_cleanup": {
+    "all_owned_processes_gone": true,
+    "direct_child_reaped": true,
+    "pgid": 74198,
+    "remaining_after_cleanup": [],
+    "signals": [],
+    "signals_after_reap": false
+  },
+  "pid": 74198,
+  "requested_cap_seconds": 10,
+  "seconds": 0.093178,
+  "started_at_unix": 1793963025.173422,
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_bytes": 3069,
+  "stdout_sha256": "3bddbd3d0cafc81d69bb4f384737e26d80be0636dc560afaf126283c0a2360d4",
+  "step": "00-t5-volume",
+  "timed_out": false
+}

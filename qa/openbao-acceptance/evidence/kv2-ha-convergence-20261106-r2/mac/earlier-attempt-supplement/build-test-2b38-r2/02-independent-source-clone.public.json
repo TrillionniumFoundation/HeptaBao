@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "/usr/bin/git",
+    "--no-optional-locks",
+    "-c",
+    "core.hooksPath=/dev/null",
+    "clone",
+    "--no-hardlinks",
+    "--no-checkout",
+    "--",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/source",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-2b38-r2"
+  ],
+  "attempts": 1,
+  "effective_budget_seconds": 120,
+  "exit_code": 0,
+  "owned_group_cleanup": {
+    "all_owned_processes_gone": true,
+    "direct_child_reaped": true,
+    "pgid": 74223,
+    "remaining_after_cleanup": [],
+    "signals": [],
+    "signals_after_reap": false
+  },
+  "pid": 74223,
+  "requested_cap_seconds": 120,
+  "seconds": 0.274352,
+  "started_at_unix": 1793963025.770463,
+  "stderr_bytes": 125,
+  "stderr_sha256": "70981497aea371aee74a96923bf23ba556f2d649eb46153a71afd05e2bfe0a10",
+  "stdout_bytes": 0,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "step": "02-independent-source-clone",
+  "timed_out": false
+}

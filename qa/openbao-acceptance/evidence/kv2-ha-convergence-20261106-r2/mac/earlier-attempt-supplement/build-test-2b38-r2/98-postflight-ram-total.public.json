@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "/usr/sbin/sysctl",
+    "-n",
+    "hw.memsize"
+  ],
+  "attempts": 1,
+  "effective_budget_seconds": 10,
+  "exit_code": 0,
+  "owned_group_cleanup": {
+    "all_owned_processes_gone": true,
+    "direct_child_reaped": true,
+    "pgid": 78642,
+    "remaining_after_cleanup": [],
+    "signals": [],
+    "signals_after_reap": false
+  },
+  "pid": 78642,
+  "requested_cap_seconds": 10,
+  "seconds": 0.01494,
+  "started_at_unix": 1793963500.1732538,
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_bytes": 12,
+  "stdout_sha256": "901c81a29f7611d5eeaf6432d3f21c8408a04c14f88f531c68c201db9699d1fa",
+  "step": "98-postflight-ram-total",
+  "timed_out": false
+}

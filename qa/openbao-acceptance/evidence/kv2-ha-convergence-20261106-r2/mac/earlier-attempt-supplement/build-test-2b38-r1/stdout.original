@@ -1,0 +1,18 @@
+{"event": "launch-pins-verified", "source_commit": "2b38f091c2903eac74b4ed9dc32b1f1f00fd8a8a", "expected_tests": 107, "outer_seconds": 8280, "controller_sha256": "39ddbb77648443a58f2fc2b238014c59f70116873016cb241f369f0bc888ecb6"}
+{"event": "step_started", "step": "00-t5-volume", "budget_seconds": 10}
+{"event": "step_finished", "step": "00-t5-volume", "exit_code": 1, "timed_out": false, "seconds": 0.037781}
+{"event": "step_started", "step": "98-old-final-head", "budget_seconds": 30}
+{"event": "step_finished", "step": "98-old-final-head", "exit_code": 0, "timed_out": false, "seconds": 0.060196}
+{"event": "step_started", "step": "98-old-final-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "98-old-final-tree", "exit_code": 0, "timed_out": false, "seconds": 0.033376}
+{"event": "step_started", "step": "98-old-final-clean", "budget_seconds": 30}
+{"event": "step_finished", "step": "98-old-final-clean", "exit_code": 0, "timed_out": false, "seconds": 0.055785}
+{"event": "step_started", "step": "98-postflight-process-metadata", "budget_seconds": 10}
+{"event": "step_finished", "step": "98-postflight-process-metadata", "exit_code": 0, "timed_out": false, "seconds": 0.055796}
+{"event": "step_started", "step": "98-postflight-ram-total", "budget_seconds": 10}
+{"event": "step_finished", "step": "98-postflight-ram-total", "exit_code": 0, "timed_out": false, "seconds": 0.013901}
+{"event": "step_started", "step": "98-postflight-vm-stat", "budget_seconds": 10}
+{"event": "step_finished", "step": "98-postflight-vm-stat", "exit_code": 0, "timed_out": false, "seconds": 0.013417}
+{"event": "step_started", "step": "98-postflight-cargo-lock", "budget_seconds": 10}
+{"event": "step_finished", "step": "98-postflight-cargo-lock", "exit_code": 1, "timed_out": false, "seconds": 0.093395}
+{"event": "terminal", "status": "failed", "failure": "00-t5-volume_failed", "executed_passed_cases": 0, "result": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r1/result.public.json"}

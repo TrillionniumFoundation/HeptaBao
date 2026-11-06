@@ -1,0 +1,10 @@
+{
+  "atomic_identity": false,
+  "audit_recorded": true,
+  "automatic_retry": false,
+  "job_id": "1a1b08761fb-fc05-7131",
+  "reconcile_via": "process_status",
+  "result": "term_sent",
+  "supervisor_pid": 74194,
+  "termination_confirmed": false
+}

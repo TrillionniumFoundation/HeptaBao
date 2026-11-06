@@ -1,0 +1,97 @@
+{
+  "files": [
+    {
+      "bytes": 99847,
+      "path": "result.public.json",
+      "provenance": {
+        "bytes": 99847,
+        "kind": "version_bound_binary_read",
+        "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r5/result.public.json",
+        "sha256": "3c5b97830c373d8366fabfb4f8362fd0710d72d366975609a1baa2cde6bce3e9",
+        "version": "66306:34392125:99847:1793964888878746755:1793964888879746749"
+      },
+      "sha256": "3c5b97830c373d8366fabfb4f8362fd0710d72d366975609a1baa2cde6bce3e9"
+    },
+    {
+      "bytes": 731,
+      "path": "runtime-terminal.public.json",
+      "provenance": {
+        "kind": "parsed_native_tool_response",
+        "store_key": "r5_failure_0"
+      },
+      "sha256": "42c2088a28894d3c07822ac34c3eaf4b2aa3c4b488e3ccf9856acf500725eabf"
+    },
+    {
+      "bytes": 3084,
+      "path": "test-14-native-jwt15-00.stdout",
+      "provenance": {
+        "bytes": 3084,
+        "kind": "native_read_multiple_files",
+        "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r5/test-14-native-jwt15-00.stdout",
+        "sha256": "342daa49b3ce42a9a6c981f51b8367114f77c31f48453b7bc537f1fced3c3616",
+        "version": "66306:34392119:3084:1793964888213750549:1793964888213750549"
+      },
+      "sha256": "342daa49b3ce42a9a6c981f51b8367114f77c31f48453b7bc537f1fced3c3616"
+    },
+    {
+      "bytes": 5137,
+      "path": "test-14-native-jwt15-00.stderr",
+      "provenance": {
+        "bytes": 5137,
+        "kind": "native_read_multiple_files",
+        "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r5/test-14-native-jwt15-00.stderr",
+        "sha256": "961f7dd57edeab846426d14c655c6088852929ae991abd0561c5ad02ab93c331",
+        "version": "66306:34392123:5137:1793964888173750778:1793964888173750778"
+      },
+      "sha256": "961f7dd57edeab846426d14c655c6088852929ae991abd0561c5ad02ab93c331"
+    },
+    {
+      "bytes": 551,
+      "path": "result.native-file-info.json",
+      "provenance": {
+        "kind": "parsed_native_tool_response",
+        "store_key": "r5_failure_2"
+      },
+      "sha256": "d03b8bcb5fa2a0af64e56e0a36a029a4c6175f18dabf3b613babb2e3c92132f0"
+    },
+    {
+      "bytes": 566,
+      "path": "artifact-0.native-file-info.json",
+      "provenance": {
+        "kind": "parsed_native_tool_response",
+        "store_key": "r5_preservation_0"
+      },
+      "sha256": "362c9c97b2c5355a0ef38d36fe2b9725c7ae1115e2367857418420b7ef54117f"
+    },
+    {
+      "bytes": 564,
+      "path": "artifact-1.native-file-info.json",
+      "provenance": {
+        "kind": "parsed_native_tool_response",
+        "store_key": "r5_preservation_1"
+      },
+      "sha256": "7eb0021afd9feec9ada566578380b5a85c4f59a0df7a984a1dfbc5bb69d7034a"
+    },
+    {
+      "bytes": 574,
+      "path": "artifact-2.native-file-info.json",
+      "provenance": {
+        "kind": "parsed_native_tool_response",
+        "store_key": "r5_preservation_2"
+      },
+      "sha256": "42835e415cc9c9afb1f556fbbc949177ca86c139b6c42e68b9b4080704d913e0"
+    },
+    {
+      "bytes": 576,
+      "path": "artifact-3.native-file-info.json",
+      "provenance": {
+        "kind": "parsed_native_tool_response",
+        "store_key": "r5_preservation_3"
+      },
+      "sha256": "c74b3e5eacd326971f08f97c0051da96e9a194ea2c68c732b078e6ef61d8ee45"
+    }
+  ],
+  "production_credentials_included": false,
+  "public_allowlist": true,
+  "schema": "heptabao.remote-evidence-recovery.v1"
+}

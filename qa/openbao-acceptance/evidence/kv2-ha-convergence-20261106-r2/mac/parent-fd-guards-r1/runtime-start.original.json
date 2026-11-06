@@ -1,0 +1,37 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "import pathlib,hashlib,os,json,stat\nos.umask(0o077)\nroot=pathlib.Path(\"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/fd-guards-r1\")\npins=[[\"kv2_native_fresh_directory_dr_live.py\",\"388f763d810e1694ce9fe3d4ce52325318aad8ec4fa4d87ebbcd6cfbe7f1f5a0\",70045],[\"tests/test_kv2_native_fresh_directory_dr_live.py\",\"79a837e1b3932ac409546dc6f54e24e4a73e5fe0be9293c6bcfd12de0f81c782\",34985],[\"kv2_271_lossless_native_live.py\",\"383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581\",49393]]\nfor relative,sha,size in pins:\n p=root/'qa/openbao-acceptance'/relative;s=p.lstat()\n assert stat.S_ISREG(s.st_mode) and s.st_uid==501 and s.st_nlink==1 and s.st_size==size\n assert hashlib.sha256(p.read_bytes()).hexdigest()==sha;p.chmod(0o600)\nfor p in (root,root/'qa',root/'qa/openbao-acceptance',root/'qa/openbao-acceptance/tests'):\n assert p.stat().st_uid==501 and not p.is_symlink();p.chmod(0o700)\ntmp=root/'temporary';tmp.mkdir(mode=0o700)\npython='/opt/homebrew/bin/python3'\nassert hashlib.sha256(pathlib.Path(python).read_bytes()).hexdigest()=='cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13'\nprint(json.dumps({'event':'fd-guards-pins-verified','expected_count':2,'outer_seconds':60,'service_started':False,'compiler_started':False}),flush=True)\nenv={k:os.environ[k] for k in ('HOME','USER','LOGNAME','LANG','LC_ALL','TZ') if k in os.environ};env.update(PATH='/opt/homebrew/bin:/usr/bin:/bin',TMPDIR=str(tmp))\nos.execve(python,[python,'-I','-S','-B','-c',\"import sys,unittest;sys.path.insert(0,\\\"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/fd-guards-r1/qa/openbao-acceptance/tests\\\");unittest.main(module=None,argv=[\\\"unittest\\\",\\\"-v\\\",\\\"test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_parent_fd_retirement_detects_real_open_file_directory_and_closed_boundary\\\",\\\"test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_parent_fd_retirement_rejects_unclosed_stdio_and_observation_gaps\\\"])\"],env)\n"
+    ],
+    "created_unix_ms": 1793962843158,
+    "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/fd-guards-r1",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1b0849c16-fc05-711a",
+    "idempotency_key": "heptabao-mac-native-dr-parent-fd-guards2-20261106-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b0849c16-fc05-711a",
+    "request_digest": "5edf435c95e369a6c2c1bee1fd933a6cae0d0c9fc86da3535e8cbf91587347f9",
+    "request_fingerprint": 6836256824302463398,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b0849c16-fc05-711a"
+  },
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 72383,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1b0849c16-fc05-711a"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

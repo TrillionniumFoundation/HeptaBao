@@ -1,0 +1,12 @@
+{
+  "args": [
+    "-B",
+    "-c",
+    "import hashlib,json,os,subprocess,sys,time\nfrom pathlib import Path\nstart=time.monotonic()\nsource=Path(\"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-f301-r1\")\nexpected={'head':'f301a0f391096a2a8daf149f16bbbbd5bbf7a9e3','tree':'1a27a26315eaf20df11792f74305160f7a3b89b6'}\nreport={'schema':'heptabao.mac-postfailure-source-preservation.v1','source':str(source),'read_only':True,'service_started':False,'test_rerun':False,'checks':{}}\ndef git(label,args):\n p=subprocess.run(['/usr/bin/git','--no-optional-locks','-c','core.hooksPath=/dev/null',*args],cwd=source,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=15,check=False)\n report['checks'][label]={'exit_code':p.returncode,'stderr_bytes':len(p.stderr),'stderr_sha256':hashlib.sha256(p.stderr).hexdigest()}\n if p.returncode or p.stderr: raise RuntimeError('git_'+label+'_failed')\n return p.stdout.decode().strip()\ntry:\n head=git('head',['rev-parse','HEAD']);tree=git('tree',['rev-parse','HEAD^{tree}'])\n clean=git('clean',['status','--porcelain=v1','--untracked-files=all'])\n report.update(head=head,tree=tree,clean=not clean,dirty_entry_count=len(clean.splitlines()))\n report['matches_failed_candidate']=head==expected['head'] and tree==expected['tree'] and not clean\n report['status']='passed' if report['matches_failed_candidate'] else 'failed'\nexcept BaseException as e:\n report.update(status='failed',error_type=type(e).__name__)\nfinally:\n report['seconds']=round(time.monotonic()-start,6)\n print(json.dumps(report,sort_keys=True),flush=True)\nsys.exit(0 if report['status']=='passed' else 1)\n"
+  ],
+  "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1",
+  "executable": "/opt/homebrew/bin/python3",
+  "host": "mac",
+  "idempotency_key": "heptabao-mac-f301-postfailure-readonly-source-preservation-20261106-r1",
+  "timeout_seconds": 60
+}

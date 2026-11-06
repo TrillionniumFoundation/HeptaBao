@@ -1,0 +1,36 @@
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+
+thread 'service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_first_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen' (909331) panicked at crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs:264:5:
+assertion `left == right` failed
+  left: [78, 239, 113, 240, 61, 226, 22, 177, 141, 88, 24, 56, 188, 195, 234, 179, 30, 174, 2, 243, 90, 211, 196, 49, 22, 3, 2, 3, 169, 183, 86, 1]
+ right: [144, 10, 203, 166, 103, 94, 171, 81, 73, 82, 224, 36, 54, 0, 135, 130, 101, 114, 57, 246, 193, 96, 180, 49, 4, 84, 23, 153, 152, 222, 251, 199]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+
+thread 'service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_second_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen' (910067) panicked at crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs:264:5:
+assertion `left == right` failed
+  left: [43, 231, 135, 163, 60, 89, 48, 164, 23, 77, 87, 118, 91, 9, 56, 221, 179, 180, 6, 149, 56, 195, 34, 52, 93, 230, 171, 19, 57, 187, 165, 33]
+ right: [113, 13, 225, 236, 6, 105, 143, 236, 224, 112, 81, 247, 21, 210, 210, 207, 137, 4, 158, 133, 170, 76, 193, 79, 106, 187, 50, 18, 200, 198, 71, 200]
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+
+thread 'service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_source_publication_audit_veto_keeps_real_restore_after_cold_reopen' (910839) panicked at crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs:264:5:
+assertion `left == right` failed
+  left: [175, 71, 248, 104, 182, 24, 239, 48, 20, 185, 221, 63, 111, 68, 92, 214, 74, 146, 33, 197, 227, 62, 8, 16, 219, 48, 27, 101, 237, 234, 103, 177]
+ right: [1, 177, 118, 93, 43, 152, 162, 100, 12, 184, 27, 149, 194, 5, 70, 218, 179, 110, 155, 205, 14, 204, 208, 243, 203, 248, 100, 125, 199, 147, 244, 57]
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true

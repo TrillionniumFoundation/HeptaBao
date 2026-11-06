@@ -1,0 +1,89 @@
+{
+  "authoritative_state": "cancelled",
+  "cancelled": true,
+  "exit_code": 1,
+  "final_all_owned_groups_gone": true,
+  "job_id": "1a1b08761fb-fc05-7131",
+  "normal2b_artifacts_retained": {
+    "heptabao-seed": {
+      "bytes": 86355760,
+      "cargo_artifact_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/heptabao-seed",
+      "cargo_features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "cargo_fresh": false,
+      "cargo_package_id": "path+file:///Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-2b38-r2/crates/heptabao-server#0.1.0",
+      "cargo_profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": false
+      },
+      "cargo_source_entry": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-2b38-r2/crates/heptabao-server/src/bin/heptabao-seed.rs",
+      "normal_features_profile_and_source_verified": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/artifacts/heptabao-seed",
+      "sha256": "203c7af52c0f9aa4ca71e591c1428acac9382f3c4105036a494631b0e1cae8e7",
+      "source_commit": "2b38f091c2903eac74b4ed9dc32b1f1f00fd8a8a",
+      "source_tree": "e2da9354cf482a8d3ebd67898812e2fcb026832a"
+    },
+    "heptabao-server": {
+      "bytes": 92359328,
+      "cargo_artifact_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/heptabao-server",
+      "cargo_features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "cargo_fresh": false,
+      "cargo_package_id": "path+file:///Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-2b38-r2/crates/heptabao-server#0.1.0",
+      "cargo_profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": false
+      },
+      "cargo_source_entry": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-2b38-r2/crates/heptabao-server/src/main.rs",
+      "normal_features_profile_and_source_verified": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r2/artifacts/heptabao-server",
+      "sha256": "5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c",
+      "source_commit": "2b38f091c2903eac74b4ed9dc32b1f1f00fd8a8a",
+      "source_tree": "e2da9354cf482a8d3ebd67898812e2fcb026832a"
+    }
+  },
+  "normal_release": {
+    "group_retired": true,
+    "seconds": 270.910406,
+    "status": "passed"
+  },
+  "old4e_source_and_three_artifacts_preserved": true,
+  "postflight_compilers": [],
+  "postflight_target_cache_locks": [],
+  "qualification": {
+    "dr": false,
+    "expected_test_cases": 107,
+    "ha": false,
+    "production": false,
+    "test_cases_executed": 0
+  },
+  "reason": "Explicit source-test assertion correction after independent review; superseded candidate cancelled, not a test failure.",
+  "schema": "heptabao.mac-source-correction-cancellation-reconciliation.r1",
+  "server_libtest": {
+    "exception_type": "Interrupted",
+    "exit_code": -15,
+    "seconds": 195.436567,
+    "status": "cancelled",
+    "test_cases_executed": 0
+  },
+  "timed_out": false,
+  "transient_cleanup_observation": {
+    "pgid": 77195,
+    "pid": 77199,
+    "ppid": 1,
+    "signals_after_reap": false,
+    "state": "?E"
+  }
+}

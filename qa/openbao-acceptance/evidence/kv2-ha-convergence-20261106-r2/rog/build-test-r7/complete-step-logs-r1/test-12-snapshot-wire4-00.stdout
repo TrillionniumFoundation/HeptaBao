@@ -1,0 +1,9 @@
+
+running 4 tests
+test service::snapshot_transfer::forward::wire::tests::snapshot_publication_actual_byte_witnesses_bind_save_and_restore ... ok
+test service::snapshot_transfer::forward::wire::tests::snapshot_publication_metadata_and_original_owner_mutations_are_rejected ... ok
+test service::snapshot_transfer::forward::wire::tests::snapshot_publication_valid_mac_cannot_substitute_a_binary_body ... ok
+test service::snapshot_transfer::forward::wire::tests::snapshot_ready_rejects_retarget_replay_and_non_snapshot_routes ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 3756 filtered out; finished in 0.00s
+

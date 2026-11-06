@@ -1,0 +1,70 @@
+[
+  {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 20,
+      "link_count": 1,
+      "metadata_platform": "darwin",
+      "mode": 448,
+      "uid": 501,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 448,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/artifacts/heptabao-ha-service-libtest",
+    "sha256": "3c5fd3113ff107db07c833c4d7c80070f29e3bbd1937928af670f1bb6bd2e6f0",
+    "size": 17068112,
+    "version": "16777244:72693876:17068112:1793967210040659175:1793967210064587733"
+  },
+  {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 20,
+      "link_count": 1,
+      "metadata_platform": "darwin",
+      "mode": 448,
+      "uid": 501,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 448,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/artifacts/heptabao-seed",
+    "sha256": "203c7af52c0f9aa4ca71e591c1428acac9382f3c4105036a494631b0e1cae8e7",
+    "size": 86355760,
+    "version": "16777244:72693708:86355760:1793966707964016230:1793966707987325773"
+  },
+  {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 20,
+      "link_count": 1,
+      "metadata_platform": "darwin",
+      "mode": 448,
+      "uid": 501,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 448,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/artifacts/heptabao-server",
+    "sha256": "5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c",
+    "size": 92359328,
+    "version": "16777244:72693705:92359328:1793966707491366600:1793966707515597312"
+  },
+  {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 20,
+      "link_count": 1,
+      "metadata_platform": "darwin",
+      "mode": 448,
+      "uid": 501,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 448,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/artifacts/heptabao-server-libtest",
+    "sha256": "3cc7245de6b41ba4b017051901450262c357be3ea9e03e9bc063db47b5824d7b",
+    "size": 154467648,
+    "version": "16777244:72693782:154467648:1793967164376661034:1793967164400272969"
+  }
+]

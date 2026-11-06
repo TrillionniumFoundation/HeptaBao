@@ -1,0 +1,70 @@
+{
+  "actual_107_pass_claimed": false,
+  "checks": [
+    {
+      "binding_scope": "receipt_own_source",
+      "expected_commit": "f301a0f391096a2a8daf149f16bbbbd5bbf7a9e3",
+      "failure_label": "completed_bound_build_receipt_required",
+      "observed_not_qualified_cases": 19,
+      "observed_qualified_passed_cases": 88,
+      "observed_receipt_status": "failed",
+      "receipt_sha256": "31b60348a98aef69c57381637cc59d7c69ba3f6729ba63f89c2b7ff76e5ea155",
+      "rejected": true,
+      "run": "build-test-f301-r1",
+      "selection_sha256": "a5079af9cfdf051b2c926cad6799b22d6bab9f6682b27e74bb7017a37424a57d"
+    },
+    {
+      "binding_scope": "current_09c14_source",
+      "expected_commit": "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+      "failure_label": "completed_bound_build_receipt_required",
+      "observed_not_qualified_cases": 19,
+      "observed_qualified_passed_cases": 88,
+      "observed_receipt_status": "failed",
+      "receipt_sha256": "31b60348a98aef69c57381637cc59d7c69ba3f6729ba63f89c2b7ff76e5ea155",
+      "rejected": true,
+      "run": "build-test-f301-r1",
+      "selection_sha256": "a5079af9cfdf051b2c926cad6799b22d6bab9f6682b27e74bb7017a37424a57d"
+    },
+    {
+      "binding_scope": "receipt_own_source",
+      "expected_commit": "868439e6df9f12291842898763ccba581e346bfb",
+      "failure_label": "completed_bound_build_receipt_required",
+      "observed_not_qualified_cases": 19,
+      "observed_qualified_passed_cases": 88,
+      "observed_receipt_status": "failed",
+      "receipt_sha256": "8f8ecf43e2fbca843d0c0635b19a774a61f8fb0e17d87c019ade20f8a738a419",
+      "rejected": true,
+      "run": "build-test-868-r1",
+      "selection_sha256": "4177229337bb7ffc7d1c81b9ea515bd48b0cbd529fd48537815cd40bbfdb53e7"
+    },
+    {
+      "binding_scope": "current_09c14_source",
+      "expected_commit": "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+      "failure_label": "completed_bound_build_receipt_required",
+      "observed_not_qualified_cases": 19,
+      "observed_qualified_passed_cases": 88,
+      "observed_receipt_status": "failed",
+      "receipt_sha256": "8f8ecf43e2fbca843d0c0635b19a774a61f8fb0e17d87c019ade20f8a738a419",
+      "rejected": true,
+      "run": "build-test-868-r1",
+      "selection_sha256": "4177229337bb7ffc7d1c81b9ea515bd48b0cbd529fd48537815cd40bbfdb53e7"
+    }
+  ],
+  "dr_executed": false,
+  "elapsed_seconds": 0.086155,
+  "expected_rejections": 4,
+  "failure": null,
+  "forbidden_operations_observed": 0,
+  "full_wrapper_preparation_executed": false,
+  "inputs_unchanged": true,
+  "main_sha256": "388f763d810e1694ce9fe3d4ce52325318aad8ec4fa4d87ebbcd6cfbe7f1f5a0",
+  "network_attempted": false,
+  "product_executed": false,
+  "production_authority": false,
+  "rejected_cases": 4,
+  "schema": "heptabao.actual-failed-build-receipt-guard.v1",
+  "scope": "local exact validator consumed by the fixed Mac wrapper",
+  "signal_and_timer_restored": true,
+  "status": "passed",
+  "wrapper_sha256": "7e4310f29591b40fb6df04d1e322f2fcb727887d82a52d090fcd0262c02c0fe1"
+}

@@ -1,0 +1,11 @@
+test_actual_alarm_cancels_in_process_work_and_is_not_a_pass (test_dr25_mac_fixed_wrapper.WrapperGuards.test_actual_alarm_cancels_in_process_work_and_is_not_a_pass) ... ok
+test_controller_error_payload_and_guessable_fingerprint_stay_private (test_dr25_mac_fixed_wrapper.WrapperGuards.test_controller_error_payload_and_guessable_fingerprint_stay_private) ... ok
+test_foreign_timer_and_handler_are_refused_without_being_replaced (test_dr25_mac_fixed_wrapper.WrapperGuards.test_foreign_timer_and_handler_are_refused_without_being_replaced) ... ok
+test_native_inherited_output_is_private_and_descriptors_are_restored (test_dr25_mac_fixed_wrapper.WrapperGuards.test_native_inherited_output_is_private_and_descriptors_are_restored) ... ok
+test_protected_cleanup_can_return_zero_but_deadline_cannot_pass (test_dr25_mac_fixed_wrapper.WrapperGuards.test_protected_cleanup_can_return_zero_but_deadline_cannot_pass) ... ok
+test_same_entry_deadline_includes_preparation_and_restores_timer (test_dr25_mac_fixed_wrapper.WrapperGuards.test_same_entry_deadline_includes_preparation_and_restores_timer) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.127s
+
+OK

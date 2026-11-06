@@ -1,0 +1,68 @@
+{
+  "dr_executed": false,
+  "exact_changed_assignments": [
+    "BUILD",
+    "OUT",
+    "PRODUCT_COMMIT",
+    "PRODUCT_TREE",
+    "QA_COMMIT",
+    "QA_TREE",
+    "SELECTION_SHA",
+    "SOURCE"
+  ],
+  "new_candidate_actual_107_qualified": false,
+  "production_authority": false,
+  "r2_actual_mac6_scope": "only f622f5b44d56b5e44fb6027505f9c655ae7974467e59cfa08f819c9dfd3a7d7c was run for the six original wrapper guards",
+  "rows": {
+    "dr25_mac_fixed_wrapper.py": {
+      "bindings": {
+        "BUILD": "ROOT / 'build-test-09c14-r1'",
+        "OUT": "ROOT / 'dr25-execution-09c14-r1'",
+        "PRODUCT_COMMIT": "'09c14eae7a3b52dee8ce3af3175dad5900ac59ec'",
+        "PRODUCT_TREE": "'dfb0df97a2c74b1c0154f45342f3debb0ce438ab'",
+        "QA_COMMIT": "'09c14eae7a3b52dee8ce3af3175dad5900ac59ec'",
+        "QA_TREE": "'dfb0df97a2c74b1c0154f45342f3debb0ce438ab'",
+        "SELECTION_SHA": "'97c5c2ab931db0623c3c788b8cc0dbda238d0ad346144f4626aac07effd1fc25'",
+        "SOURCE": "ROOT / 'source-dr25-09c14-r1'"
+      },
+      "bytes": 22623,
+      "function_class_ast_sha256": "ac0c1390d5e4615a110fb7649875aa6ef7c5ccc69f848f1c388868f9199b6c9a",
+      "masked_module_ast_sha256": "25bd1b5f7dc3bbe767f8dc46fea83908780349c9d374303f4c1e7cd483b41726",
+      "sha256": "7e4310f29591b40fb6df04d1e322f2fcb727887d82a52d090fcd0262c02c0fe1"
+    },
+    "r2-baseline.original.py": {
+      "bindings": {
+        "BUILD": "ROOT / 'build-test-f301-r1'",
+        "OUT": "ROOT / 'dr25-execution-b2d-r1'",
+        "PRODUCT_COMMIT": "'f301a0f391096a2a8daf149f16bbbbd5bbf7a9e3'",
+        "PRODUCT_TREE": "'1a27a26315eaf20df11792f74305160f7a3b89b6'",
+        "QA_COMMIT": "'b2d1eae952dd14fb973fa93571ec789f0dae4ba1'",
+        "QA_TREE": "'3ec37acc262f1eeafb4e3654ff9e59eccee2476c'",
+        "SELECTION_SHA": "'a5079af9cfdf051b2c926cad6799b22d6bab9f6682b27e74bb7017a37424a57d'",
+        "SOURCE": "ROOT / 'source-dr25-b2d-r1'"
+      },
+      "bytes": 22618,
+      "function_class_ast_sha256": "ac0c1390d5e4615a110fb7649875aa6ef7c5ccc69f848f1c388868f9199b6c9a",
+      "masked_module_ast_sha256": "25bd1b5f7dc3bbe767f8dc46fea83908780349c9d374303f4c1e7cd483b41726",
+      "sha256": "f622f5b44d56b5e44fb6027505f9c655ae7974467e59cfa08f819c9dfd3a7d7c"
+    },
+    "r3-868.original.py": {
+      "bindings": {
+        "BUILD": "ROOT / 'build-test-868-r1'",
+        "OUT": "ROOT / 'dr25-execution-868-r1'",
+        "PRODUCT_COMMIT": "'868439e6df9f12291842898763ccba581e346bfb'",
+        "PRODUCT_TREE": "'c211d66343235fbb8a220744f3e97768559007c8'",
+        "QA_COMMIT": "'868439e6df9f12291842898763ccba581e346bfb'",
+        "QA_TREE": "'c211d66343235fbb8a220744f3e97768559007c8'",
+        "SELECTION_SHA": "'4177229337bb7ffc7d1c81b9ea515bd48b0cbd529fd48537815cd40bbfdb53e7'",
+        "SOURCE": "ROOT / 'source-dr25-868-r1'"
+      },
+      "bytes": 22617,
+      "function_class_ast_sha256": "ac0c1390d5e4615a110fb7649875aa6ef7c5ccc69f848f1c388868f9199b6c9a",
+      "masked_module_ast_sha256": "25bd1b5f7dc3bbe767f8dc46fea83908780349c9d374303f4c1e7cd483b41726",
+      "sha256": "c53f7fe160dbbed6fcb8eb8e600d3a29e4aa575c0d0a8842944b50d45179be12"
+    }
+  },
+  "schema": "heptabao.mac-dr25-eight-bindings-recheck.v1",
+  "status": "logic_unchanged_bindings_only"
+}

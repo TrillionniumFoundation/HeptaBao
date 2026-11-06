@@ -1,0 +1,10 @@
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+
+thread 'tokio-rt-worker' (989402) panicked at /home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.53.1/src/net/tcp/stream.rs:164:18:
+A Tokio 1.x context was found, but IO is disabled. Call `enable_io` on the runtime builder to enable IO.
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'tokio-rt-worker' (989403) panicked at /home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.53.1/src/net/tcp/stream.rs:164:18:
+A Tokio 1.x context was found, but IO is disabled. Call `enable_io` on the runtime builder to enable IO.
+HBHA-NATIVE-SYNC-FAIL step=fresh_ingress_original_repair code=fresh_ingress_read_refused reason_sha=0d8ae792b77b8b0e70481a13c0b797fd19a495e62ad381c494ce05f866c72254 elapsed_us=303 step_elapsed_us=255 original_deadline_expired=false original_remaining_ns=14999381821 panicking=false

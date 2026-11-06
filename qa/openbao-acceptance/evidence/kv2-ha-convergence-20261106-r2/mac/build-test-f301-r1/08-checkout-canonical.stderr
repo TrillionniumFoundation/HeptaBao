@@ -1,0 +1,2 @@
+Previous HEAD position was 2b38f091 test: repair native snapshot fixtures for stable Rust libtests
+HEAD is now at f301a0f3 test: bind restore audit vetoes to the exact terminal clock successor

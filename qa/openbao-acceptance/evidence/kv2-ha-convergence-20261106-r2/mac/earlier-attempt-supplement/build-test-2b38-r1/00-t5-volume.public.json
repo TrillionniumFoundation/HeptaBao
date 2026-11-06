@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "/usr/sbin/diskutil",
+    "info",
+    "-plist",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1"
+  ],
+  "attempts": 1,
+  "effective_budget_seconds": 10,
+  "exit_code": 1,
+  "owned_group_cleanup": {
+    "all_owned_processes_gone": true,
+    "direct_child_reaped": true,
+    "pgid": 65142,
+    "remaining_after_cleanup": [],
+    "signals": [],
+    "signals_after_reap": false
+  },
+  "pid": 65142,
+  "requested_cap_seconds": 10,
+  "seconds": 0.037781,
+  "started_at_unix": 1793962184.961129,
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_bytes": 408,
+  "stdout_sha256": "1b6d40511c1528cdae4645876d6d10ae22de1b43bca6dca01dbf0949c0a665a9",
+  "step": "00-t5-volume",
+  "timed_out": false
+}

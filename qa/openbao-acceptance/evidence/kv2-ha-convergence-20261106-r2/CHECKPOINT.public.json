@@ -1,0 +1,58 @@
+{
+  "accepted_complete_groups_in_each_source_868_attempt": 88,
+  "all_real_clients_and_backups_migrated": false,
+  "assembled_at_utc": "2026-11-06T13:01:41.792733+00:00",
+  "authbus_without_j3160_qualified": false,
+  "case_denominator": 107,
+  "formal_kv2_production_accepted": false,
+  "fresh_directory_dr_executed": false,
+  "full_openbao_2_7_1_replacement_qualified": false,
+  "kind": "historical-failure-evidence-and-next-candidate-inputs",
+  "legacy_service_or_binary_cleanup_performed": false,
+  "next_source_09c14_jobs_submitted": {
+    "mac": "1a1b0e9a401-fc05-73ec",
+    "rog": "1a1b0e79889-fc05-73db"
+  },
+  "next_source_09c14_results_in_this_checkpoint": false,
+  "not_qualified_in_each_source_868_attempt": 19,
+  "ordered_gates": [
+    "formal_kv2_migration_and_recovery",
+    "physical_ha",
+    "authbus_trusted_source",
+    "host_by_host_real_client_cutover",
+    "legacy_cleanup"
+  ],
+  "physical_mac_rog_pocket4_ha_qualified": false,
+  "production_traffic_cutover_performed": false,
+  "raw_global_process_lists_or_private_recovery_transports_published": false,
+  "same_workload_resource_comparison_qualified": false,
+  "schema": "heptabao.convergence-evidence-checkpoint.v2",
+  "source_868_completed_attempts": {
+    "mac": {
+      "executed": 103,
+      "exit_code": 1,
+      "failed": 3,
+      "ignored": 0,
+      "job_id": "1a1b0bb5170-fc05-726c",
+      "not_executed": 4,
+      "passed": 100,
+      "receipt_sha256": "8f8ecf43e2fbca843d0c0635b19a774a61f8fb0e17d87c019ade20f8a738a419",
+      "state": "failed"
+    },
+    "rog": {
+      "executed": 103,
+      "exit_code": 1,
+      "failed": 3,
+      "ignored": 0,
+      "job_id": "1a1b0bf6f25-fc05-7292",
+      "not_executed": 4,
+      "passed": 100,
+      "receipt_sha256": "423799fbc2e69b08e8bc2f29f9813b1365f017765f9292394a48ce1b7d068a9e",
+      "state": "failed"
+    }
+  },
+  "source_bound_case_groups": {
+    "ha_service_with_native_v6_peer_ingress": 17,
+    "server": 90
+  }
+}

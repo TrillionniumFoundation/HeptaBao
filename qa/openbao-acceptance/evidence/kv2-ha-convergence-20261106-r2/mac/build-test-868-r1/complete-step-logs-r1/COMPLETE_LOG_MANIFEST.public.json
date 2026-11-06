@@ -1,0 +1,1234 @@
+{
+  "authoritative_status": "failed",
+  "cancelled": false,
+  "exit_code": 1,
+  "files": [
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "00-clone-source-clean.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/00-clone-source-clean.stderr",
+      "remote_read_version": "16777244:72686792:0:1793966429884584239:1793966429884584239",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "00-clone-source-clean.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/00-clone-source-clean.stdout",
+      "remote_read_version": "16777244:72686791:0:1793966429884553947:1793966429884553947",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "00-clone-source-head.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/00-clone-source-head.stderr",
+      "remote_read_version": "16777244:72686784:0:1793966429800899417:1793966429800899417",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "original_bytes": true,
+      "path": "00-clone-source-head.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/00-clone-source-head.stdout",
+      "remote_read_version": "16777244:72686783:41:1793966429837527818:1793966429837527818",
+      "sha256": "d86c0426c505c2d72325cf9ffbb4acb50d18284add43177933936725d8f3783f"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "00-clone-source-tree.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/00-clone-source-tree.stderr",
+      "remote_read_version": "16777244:72686788:0:1793966429861616571:1793966429861616571",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "original_bytes": true,
+      "path": "00-clone-source-tree.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/00-clone-source-tree.stdout",
+      "remote_read_version": "16777244:72686787:41:1793966429872228675:1793966429872228675",
+      "sha256": "f0681b4e459b6e0fc72a3c7fc2b077cc86f342640855412255a9d6326acc2a36"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "00-old-source-clean.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/00-old-source-clean.stderr",
+      "remote_read_version": "16777244:72686805:0:1793966430339184959:1793966430339184959",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "00-old-source-clean.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/00-old-source-clean.stdout",
+      "remote_read_version": "16777244:72686804:0:1793966430339150918:1793966430339150918",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "00-old-source-head.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/00-old-source-head.stderr",
+      "remote_read_version": "16777244:72686797:0:1793966430281638186:1793966430281638186",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "original_bytes": true,
+      "path": "00-old-source-head.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/00-old-source-head.stdout",
+      "remote_read_version": "16777244:72686796:41:1793966430291965538:1793966430291965538",
+      "sha256": "563acb7c1de815cc6e990150190f137d1c218db6566a228fadd8e550a3f9d57c"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "00-old-source-tree.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/00-old-source-tree.stderr",
+      "remote_read_version": "16777244:72686801:0:1793966430304255603:1793966430304255603",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "original_bytes": true,
+      "path": "00-old-source-tree.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/00-old-source-tree.stdout",
+      "remote_read_version": "16777244:72686800:41:1793966430316141792:1793966430316141792",
+      "sha256": "9f5293c8c19686df077cfb69270edefb2df2c42411b37dcdd974a7aa092b4ba0"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "00-preserved-2b-source-clean.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/00-preserved-2b-source-clean.stderr",
+      "remote_read_version": "16777244:72686819:0:1793966430494437749:1793966430494437749",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "00-preserved-2b-source-clean.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/00-preserved-2b-source-clean.stdout",
+      "remote_read_version": "16777244:72686818:0:1793966430494409457:1793966430494409457",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "00-preserved-2b-source-head.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/00-preserved-2b-source-head.stderr",
+      "remote_read_version": "16777244:72686811:0:1793966430437891935:1793966430437891935",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "original_bytes": true,
+      "path": "00-preserved-2b-source-head.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/00-preserved-2b-source-head.stdout",
+      "remote_read_version": "16777244:72686810:41:1793966430447663286:1793966430447663286",
+      "sha256": "727d9c94f287e8130b776e8b0c28f8f07bad5140258a57b715a9532f86e37bcb"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "00-preserved-2b-source-tree.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/00-preserved-2b-source-tree.stderr",
+      "remote_read_version": "16777244:72686815:0:1793966430459894518:1793966430459894518",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "original_bytes": true,
+      "path": "00-preserved-2b-source-tree.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/00-preserved-2b-source-tree.stdout",
+      "remote_read_version": "16777244:72686814:41:1793966430472598583:1793966430472598583",
+      "sha256": "1a962936bb5ebc78e7588f292b6398c5b920724afce87906db193fc225bab7dd"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "00-t5-volume.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/00-t5-volume.stderr",
+      "remote_read_version": "16777244:72686780:0:1793966428850705690:1793966428850705690",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3069,
+      "original_bytes": true,
+      "path": "00-t5-volume.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/00-t5-volume.stdout",
+      "remote_read_version": "16777244:72686779:3069:1793966428929806796:1793966428929806796",
+      "sha256": "76a74deee196b39e99e4ce2433b838d8e77b81d446b76f5c6cd644a1c3370a6e"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "01-cache-admission-holders-under-lock.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/01-cache-admission-holders-under-lock.stderr",
+      "remote_read_version": "16777244:72686844:0:1793966431542771158:1793966431542771158",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 5,
+      "original_bytes": true,
+      "path": "01-cache-admission-holders-under-lock.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/01-cache-admission-holders-under-lock.stdout",
+      "remote_read_version": "16777244:72686843:5:1793966431589031035:1793966431589031035",
+      "sha256": "1a98f2a4a3d7e44d49fb3be9a935073398ef4c4184c9e85a56238e8b0511cd62"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "01-preflight-cargo-lock.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/01-preflight-cargo-lock.stderr",
+      "remote_read_version": "16777244:72686837:0:1793966431376649015:1793966431376649015",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "01-preflight-cargo-lock.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/01-preflight-cargo-lock.stdout",
+      "remote_read_version": "16777244:72686836:0:1793966431376619973:1793966431376619973",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "01-preflight-ram-total.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/01-preflight-ram-total.stderr",
+      "remote_read_version": "16777244:72686828:0:1793966431344541372:1793966431344541372",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 12,
+      "original_bytes": true,
+      "path": "01-preflight-ram-total.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/01-preflight-ram-total.stdout",
+      "remote_read_version": "16777244:72686827:12:1793966431350849342:1793966431350849342",
+      "sha256": "901c81a29f7611d5eeaf6432d3f21c8408a04c14f88f531c68c201db9699d1fa"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "01-preflight-vm-stat.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/01-preflight-vm-stat.stderr",
+      "remote_read_version": "16777244:72686833:0:1793966431362819906:1793966431362819906",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1841,
+      "original_bytes": true,
+      "path": "01-preflight-vm-stat.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/01-preflight-vm-stat.stdout",
+      "remote_read_version": "16777244:72686832:1841:1793966431365265702:1793966431365265702",
+      "sha256": "335c7bc42be064790196db357a262dca1401bd13d3d170c111b3d9c5b0c776cf"
+    },
+    {
+      "bytes": 124,
+      "original_bytes": true,
+      "path": "02-independent-source-clone.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/02-independent-source-clone.stderr",
+      "remote_read_version": "16777244:72686849:124:1793966431917158480:1793966431917158480",
+      "sha256": "0fa6fc7a5effea1bb176783fc7ef2eb9adbddf3d9071881f45a4d42f0a18e97d"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "02-independent-source-clone.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/02-independent-source-clone.stdout",
+      "remote_read_version": "16777244:72686848:0:1793966431602262310:1793966431602262310",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 133,
+      "original_bytes": true,
+      "path": "03-bundle-verify.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/03-bundle-verify.stderr",
+      "remote_read_version": "16777244:72686923:133:1793966431956729303:1793966431956729303",
+      "sha256": "0ce7e9df30e75e979079047e20442f123ac7dfc5c6f0c2eaa984f844233d54a7"
+    },
+    {
+      "bytes": 190,
+      "original_bytes": true,
+      "path": "03-bundle-verify.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/03-bundle-verify.stdout",
+      "remote_read_version": "16777244:72686922:190:1793966431956740345:1793966431956740345",
+      "sha256": "9008113d4e492e17ffb14b3739ccc05cc26c50a67788a3ee1fdad6a47ccef350"
+    },
+    {
+      "bytes": 178,
+      "original_bytes": true,
+      "path": "04-fetch-local-bundle.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/04-fetch-local-bundle.stderr",
+      "remote_read_version": "16777244:72686928:178:1793966432004571309:1793966432004571309",
+      "sha256": "72200cca05f4a8b4db778efcfe33c1fe9aa7eff22ec909ca284dcab2d93ddd62"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "04-fetch-local-bundle.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/04-fetch-local-bundle.stdout",
+      "remote_read_version": "16777244:72686927:0:1793966431978740219:1793966431978740219",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "05-canonical-tree.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/05-canonical-tree.stderr",
+      "remote_read_version": "16777244:72686943:0:1793966432035909866:1793966432035909866",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "original_bytes": true,
+      "path": "05-canonical-tree.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/05-canonical-tree.stdout",
+      "remote_read_version": "16777244:72686942:41:1793966432044921133:1793966432044921133",
+      "sha256": "c8d7dc67a786f4aace70fc59511e00b7b25c0ba77d6e3e3e5c62c553b6e9d2b0"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "06-canonical-parent.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/06-canonical-parent.stderr",
+      "remote_read_version": "16777244:72686947:0:1793966432058083991:1793966432058083991",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "original_bytes": true,
+      "path": "06-canonical-parent.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/06-canonical-parent.stdout",
+      "remote_read_version": "16777244:72686946:41:1793966432066861090:1793966432066861090",
+      "sha256": "ec0b3f301a00983a7656ba07b341841a32ca6fbb9fec6fffd5ad9b720d059738"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "07-clone-ancestor.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/07-clone-ancestor.stderr",
+      "remote_read_version": "16777244:72686955:0:1793966432102773282:1793966432102773282",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "07-clone-ancestor.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/07-clone-ancestor.stdout",
+      "remote_read_version": "16777244:72686954:0:1793966432102747991:1793966432102747991",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "07-original-ancestor.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/07-original-ancestor.stderr",
+      "remote_read_version": "16777244:72686951:0:1793966432080229574:1793966432080229574",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "07-original-ancestor.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/07-original-ancestor.stdout",
+      "remote_read_version": "16777244:72686950:0:1793966432080199032:1793966432080199032",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "07-preserved-2b-ancestor.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/07-preserved-2b-ancestor.stderr",
+      "remote_read_version": "16777244:72686960:0:1793966432125621991:1793966432125621991",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "07-preserved-2b-ancestor.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/07-preserved-2b-ancestor.stdout",
+      "remote_read_version": "16777244:72686959:0:1793966432125593408:1793966432125593408",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 200,
+      "original_bytes": true,
+      "path": "08-checkout-canonical.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/08-checkout-canonical.stderr",
+      "remote_read_version": "16777244:72686965:200:1793966432737370047:1793966432737370047",
+      "sha256": "9a648de82a95e95bd432cbb11aebc73ef99312d62c9ac4d180a266065c21bac7"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "08-checkout-canonical.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/08-checkout-canonical.stdout",
+      "remote_read_version": "16777244:72686964:0:1793966432148061825:1793966432148061825",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "09-clean-source.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/09-clean-source.stderr",
+      "remote_read_version": "16777244:72691450:0:1793966432766779227:1793966432766779227",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "09-clean-source.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/09-clean-source.stdout",
+      "remote_read_version": "16777244:72691449:0:1793966432766753393:1793966432766753393",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "10-full-repository.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/10-full-repository.stderr",
+      "remote_read_version": "16777244:72691454:0:1793966432988925515:1793966432988925515",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 6,
+      "original_bytes": true,
+      "path": "10-full-repository.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/10-full-repository.stdout",
+      "remote_read_version": "16777244:72691453:6:1793966432998588617:1793966432998588617",
+      "sha256": "2ed27c1421e6928dbe13dbfdb5c59e1045b30341fe7ebe05700006bc5ac572c0"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "11-fsck.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/11-fsck.stderr",
+      "remote_read_version": "16777244:72691458:0:1793966433011587849:1793966433011587849",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 627,
+      "original_bytes": true,
+      "path": "11-fsck.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/11-fsck.stdout",
+      "remote_read_version": "16777244:72691457:627:1793966434147509837:1793966434147509837",
+      "sha256": "0be73bbc1562601e1cbf16e9fca956f64ed16f205d602cac3bedf10c96988a1a"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "12-format-check.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/12-format-check.stderr",
+      "remote_read_version": "16777244:72691533:0:1793966434190933834:1793966434190933834",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "12-format-check.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/12-format-check.stdout",
+      "remote_read_version": "16777244:72691532:0:1793966434190908501:1793966434190908501",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "12-precompile-cache-admission-holders-under-lock.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/12-precompile-cache-admission-holders-under-lock.stderr",
+      "remote_read_version": "16777244:72691840:0:1793966438188385897:1793966438188385897",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 5,
+      "original_bytes": true,
+      "path": "12-precompile-cache-admission-holders-under-lock.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/12-precompile-cache-admission-holders-under-lock.stdout",
+      "remote_read_version": "16777244:72691839:5:1793966438239906785:1793966438239906785",
+      "sha256": "1a98f2a4a3d7e44d49fb3be9a935073398ef4c4184c9e85a56238e8b0511cd62"
+    },
+    {
+      "bytes": 2638,
+      "original_bytes": true,
+      "path": "13-normal-release-build.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/13-normal-release-build.stderr",
+      "remote_read_version": "16777244:72691857:2638:1793966706982346445:1793966706982346445",
+      "sha256": "325abfdb8c6815673631a18af866ebf95367dcc5dc9112583f0b7b6ac3ca9dca"
+    },
+    {
+      "bytes": 440381,
+      "original_bytes": true,
+      "path": "13-normal-release-build.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/13-normal-release-build.stdout",
+      "remote_read_version": "16777244:72691856:440381:1793966706982146778:1793966706982146778",
+      "sha256": "a924ac5620c9e9ee151d606d21e4ed39eae75e576864d2004b686b778e924a85"
+    },
+    {
+      "bytes": 224,
+      "original_bytes": true,
+      "path": "14-server-libtest-build.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/14-server-libtest-build.stderr",
+      "remote_read_version": "16777244:72693711:224:1793967163927777161:1793967163927777161",
+      "sha256": "1054e97aeee49d0ade4efa496f26aee44ce580cf171975d2c2cc4a58602c6ea2"
+    },
+    {
+      "bytes": 438073,
+      "original_bytes": true,
+      "path": "14-server-libtest-build.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/14-server-libtest-build.stdout",
+      "remote_read_version": "16777244:72693710:438073:1793967163927516078:1793967163927516078",
+      "sha256": "14411f25c9d871b8f8b2f0c1322b1a6f175d5c6a05e28a549b9b254d65d1a095"
+    },
+    {
+      "bytes": 586,
+      "original_bytes": true,
+      "path": "15-peer-libtest-build.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/15-peer-libtest-build.stderr",
+      "remote_read_version": "16777244:72693785:586:1793967209969904747:1793967209969904747",
+      "sha256": "a67580889f209d5a99943573d91d68c71ab063d74868323dc50092e70b9a995c"
+    },
+    {
+      "bytes": 163368,
+      "original_bytes": true,
+      "path": "15-peer-libtest-build.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/15-peer-libtest-build.stdout",
+      "remote_read_version": "16777244:72693784:163368:1793967209969892372:1793967209969892372",
+      "sha256": "8c825640be1b90b5fb1ae1fee0cda0b35712eaf5c47b5a80dabf6076a275ae1e"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "98-clone-final-clean.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-clone-final-clean.stderr",
+      "remote_read_version": "16777244:72694171:0:1793967409366013844:1793967409366013844",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "98-clone-final-clean.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-clone-final-clean.stdout",
+      "remote_read_version": "16777244:72694170:0:1793967409365975261:1793967409365975261",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "98-clone-final-head.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-clone-final-head.stderr",
+      "remote_read_version": "16777244:72694163:0:1793967409293490671:1793967409293490671",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "original_bytes": true,
+      "path": "98-clone-final-head.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-clone-final-head.stdout",
+      "remote_read_version": "16777244:72694162:41:1793967409308373255:1793967409308373255",
+      "sha256": "d86c0426c505c2d72325cf9ffbb4acb50d18284add43177933936725d8f3783f"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "98-clone-final-tree.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-clone-final-tree.stderr",
+      "remote_read_version": "16777244:72694167:0:1793967409329814320:1793967409329814320",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "original_bytes": true,
+      "path": "98-clone-final-tree.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-clone-final-tree.stdout",
+      "remote_read_version": "16777244:72694166:41:1793967409347676020:1793967409347676020",
+      "sha256": "f0681b4e459b6e0fc72a3c7fc2b077cc86f342640855412255a9d6326acc2a36"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "98-old-final-clean.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-old-final-clean.stderr",
+      "remote_read_version": "16777244:72694183:0:1793967410609365627:1793967410609365627",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "98-old-final-clean.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-old-final-clean.stdout",
+      "remote_read_version": "16777244:72694182:0:1793967410609331877:1793967410609331877",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "98-old-final-head.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-old-final-head.stderr",
+      "remote_read_version": "16777244:72694175:0:1793967410537301912:1793967410537301912",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "original_bytes": true,
+      "path": "98-old-final-head.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-old-final-head.stdout",
+      "remote_read_version": "16777244:72694174:41:1793967410549803585:1793967410549803585",
+      "sha256": "563acb7c1de815cc6e990150190f137d1c218db6566a228fadd8e550a3f9d57c"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "98-old-final-tree.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-old-final-tree.stderr",
+      "remote_read_version": "16777244:72694179:0:1793967410573257478:1793967410573257478",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "original_bytes": true,
+      "path": "98-old-final-tree.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-old-final-tree.stdout",
+      "remote_read_version": "16777244:72694178:41:1793967410586651816:1793967410586651816",
+      "sha256": "9f5293c8c19686df077cfb69270edefb2df2c42411b37dcdd974a7aa092b4ba0"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "98-postflight-cargo-lock.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-postflight-cargo-lock.stderr",
+      "remote_read_version": "16777244:72694216:0:1793967411968114672:1793967411968114672",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "98-postflight-cargo-lock.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-postflight-cargo-lock.stdout",
+      "remote_read_version": "16777244:72694215:0:1793967411968081714:1793967411968081714",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "98-postflight-ram-total.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-postflight-ram-total.stderr",
+      "remote_read_version": "16777244:72694207:0:1793967411933527394:1793967411933527394",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 12,
+      "original_bytes": true,
+      "path": "98-postflight-ram-total.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-postflight-ram-total.stdout",
+      "remote_read_version": "16777244:72694206:12:1793967411938848337:1793967411938848337",
+      "sha256": "901c81a29f7611d5eeaf6432d3f21c8408a04c14f88f531c68c201db9699d1fa"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "98-postflight-vm-stat.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-postflight-vm-stat.stderr",
+      "remote_read_version": "16777244:72694211:0:1793967411953648671:1793967411953648671",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1841,
+      "original_bytes": true,
+      "path": "98-postflight-vm-stat.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-postflight-vm-stat.stdout",
+      "remote_read_version": "16777244:72694210:1841:1793967411955689165:1793967411955689165",
+      "sha256": "d8208e62a7d00213e83d5728762753d3ad54ecd969c76da47af2584953665d35"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "98-preserved-2b-final-clean.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-preserved-2b-final-clean.stderr",
+      "remote_read_version": "16777244:72694197:0:1793967410780387026:1793967410780387026",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "98-preserved-2b-final-clean.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-preserved-2b-final-clean.stdout",
+      "remote_read_version": "16777244:72694196:0:1793967410780352484:1793967410780352484",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "98-preserved-2b-final-head.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-preserved-2b-final-head.stderr",
+      "remote_read_version": "16777244:72694189:0:1793967410707911061:1793967410707911061",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "original_bytes": true,
+      "path": "98-preserved-2b-final-head.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-preserved-2b-final-head.stdout",
+      "remote_read_version": "16777244:72694188:41:1793967410719425362:1793967410719425362",
+      "sha256": "727d9c94f287e8130b776e8b0c28f8f07bad5140258a57b715a9532f86e37bcb"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "98-preserved-2b-final-tree.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-preserved-2b-final-tree.stderr",
+      "remote_read_version": "16777244:72694193:0:1793967410744250543:1793967410744250543",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "original_bytes": true,
+      "path": "98-preserved-2b-final-tree.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-preserved-2b-final-tree.stdout",
+      "remote_read_version": "16777244:72694192:41:1793967410758255129:1793967410758255129",
+      "sha256": "1a962936bb5ebc78e7588f292b6398c5b920724afce87906db193fc225bab7dd"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "heptabao-ha-service-list.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/heptabao-ha-service-list.stderr",
+      "remote_read_version": "16777244:72693884:0:1793967213055119812:1793967213055119812",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 13827,
+      "original_bytes": true,
+      "path": "heptabao-ha-service-list.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/heptabao-ha-service-list.stdout",
+      "remote_read_version": "16777244:72693883:13827:1793967213608894809:1793967213608894809",
+      "sha256": "36bea4d74e2a1414075e0d8138da08fd96bef2b0d51139259f23588bff70267e"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "heptabao-server-list.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/heptabao-server-list.stderr",
+      "remote_read_version": "16777244:72693879:0:1793967210077338072:1793967210077338072",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 410863,
+      "original_bytes": true,
+      "path": "heptabao-server-list.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/heptabao-server-list.stdout",
+      "remote_read_version": "16777244:72693878:410863:1793967213007131737:1793967213007131737",
+      "sha256": "2fd4e6db986e79cfbadd20edc759562c084ffd90f123b478ba1a25869ba9deb8"
+    },
+    {
+      "bytes": 26131,
+      "original_bytes": true,
+      "path": "test-00-ssh25-00.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-00-ssh25-00.stderr",
+      "remote_read_version": "16777244:72693890:26131:1793967283187652564:1793967283187652564",
+      "sha256": "1fd6f272dff6097095df7f1a462f317fbd9f7d54db90977eef149f2cd11ecb1c"
+    },
+    {
+      "bytes": 3163,
+      "original_bytes": true,
+      "path": "test-00-ssh25-00.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-00-ssh25-00.stdout",
+      "remote_read_version": "16777244:72693889:3163:1793967283217913854:1793967283217913854",
+      "sha256": "57d056074b75727d303a7c3c389f5ebd8d1f3b55323bca8950398e953d8e6647"
+    },
+    {
+      "bytes": 162,
+      "original_bytes": true,
+      "path": "test-01-mount1-00.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-01-mount1-00.stderr",
+      "remote_read_version": "16777244:72693903:162:1793967283435237206:1793967283435237206",
+      "sha256": "b1b6a5231fd9cccbe919c8f65a55c58c18686e8c2e1a61f72df6ceb6e0df59c0"
+    },
+    {
+      "bytes": 233,
+      "original_bytes": true,
+      "path": "test-01-mount1-00.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-01-mount1-00.stdout",
+      "remote_read_version": "16777244:72693902:233:1793967285013619598:1793967285013619598",
+      "sha256": "cfe1205869b1cea9dd76f78c04bfec9a4646f94b9e8267bd4a1f7218801f8d89"
+    },
+    {
+      "bytes": 1304,
+      "original_bytes": true,
+      "path": "test-02-redirect5-00.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-02-redirect5-00.stderr",
+      "remote_read_version": "16777244:72693917:1304:1793967287167689425:1793967287167689425",
+      "sha256": "0d1b1bbb8ca8447a0d365222beef62eb6526abd06fb4462a4c7875287bdc90f9"
+    },
+    {
+      "bytes": 722,
+      "original_bytes": true,
+      "path": "test-02-redirect5-00.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-02-redirect5-00.stdout",
+      "remote_read_version": "16777244:72693916:722:1793967287190766486:1793967287190766486",
+      "sha256": "a05cc6501c5fbe8d0ecb0763f5ff2fd28893857c417ab8ceb87219f9e43fea0f"
+    },
+    {
+      "bytes": 324,
+      "original_bytes": true,
+      "path": "test-03-actor2-00.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-03-actor2-00.stderr",
+      "remote_read_version": "16777244:72693929:324:1793967290738193720:1793967290738193720",
+      "sha256": "f0fc5cee225a412f5b9abc239baf8c412437476b6fd7960d30ee6c0b271c8727"
+    },
+    {
+      "bytes": 440,
+      "original_bytes": true,
+      "path": "test-03-actor2-00.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-03-actor2-00.stdout",
+      "remote_read_version": "16777244:72693928:440:1793967298281237897:1793967298281237897",
+      "sha256": "8f09fe2ca1060e745ca7ceb7df5860daf1a8f951dce2a3a37a0a8af89ac4058f"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "test-04-ordinary5-00.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-04-ordinary5-00.stderr",
+      "remote_read_version": "16777244:72693941:0:1793967298392170046:1793967298392170046",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 699,
+      "original_bytes": true,
+      "path": "test-04-ordinary5-00.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-04-ordinary5-00.stdout",
+      "remote_read_version": "16777244:72693940:699:1793967298430737314:1793967298430737314",
+      "sha256": "196d5edd26cac09940a52d1dee00ce9a4fd9f4dde5f1863546b808709b69638a"
+    },
+    {
+      "bytes": 19397,
+      "original_bytes": true,
+      "path": "test-05-no_forward6-00.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-05-no_forward6-00.stderr",
+      "remote_read_version": "16777244:72693949:19397:1793967310902068625:1793967310902068625",
+      "sha256": "62959f5553e2c3e9af98c6108732e5f55b0b1ff4b586c91566ee25ac4ca2a41f"
+    },
+    {
+      "bytes": 877,
+      "original_bytes": true,
+      "path": "test-05-no_forward6-00.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-05-no_forward6-00.stdout",
+      "remote_read_version": "16777244:72693948:877:1793967316472641802:1793967316472641802",
+      "sha256": "61ceaeb22b3bcb30d2f0df07bc2f4cd73bda68a6a82894ad72b6f15530603dfe"
+    },
+    {
+      "bytes": 428,
+      "original_bytes": true,
+      "path": "test-06-legacy-ingress7-00.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-06-legacy-ingress7-00.stderr",
+      "remote_read_version": "16777244:72693962:428:1793967318258433073:1793967318258433073",
+      "sha256": "fab22fdbf161148b0248e7706069491924df3d54c0531fd1189184f397cee086"
+    },
+    {
+      "bytes": 256,
+      "original_bytes": true,
+      "path": "test-06-legacy-ingress7-00.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-06-legacy-ingress7-00.stdout",
+      "remote_read_version": "16777244:72693961:256:1793967318263852683:1793967318263852683",
+      "sha256": "428707beb55650441e35c5d689ad9b3431b2dc1be4f5af01ac25728185e31f1c"
+    },
+    {
+      "bytes": 832,
+      "original_bytes": true,
+      "path": "test-06-legacy-ingress7-01.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-06-legacy-ingress7-01.stderr",
+      "remote_read_version": "16777244:72693974:832:1793967319970703882:1793967319970703882",
+      "sha256": "54855f14d8651a20911bc21e5509da42f98e4b3cf4217ead871a8c9b618a6cfc"
+    },
+    {
+      "bytes": 265,
+      "original_bytes": true,
+      "path": "test-06-legacy-ingress7-01.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-06-legacy-ingress7-01.stdout",
+      "remote_read_version": "16777244:72693973:265:1793967319976626907:1793967319976626907",
+      "sha256": "9f4e900c41b638bf33661a8a9b3e1266f12741011970c4d1f5983da4a69e0ab7"
+    },
+    {
+      "bytes": 1418,
+      "original_bytes": true,
+      "path": "test-06-legacy-ingress7-02.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-06-legacy-ingress7-02.stderr",
+      "remote_read_version": "16777244:72693984:1418:1793967321773815355:1793967321773815355",
+      "sha256": "7994f109510f961fbaf590d5e54ecf89918de1a8ca0b0a226f63030398f43ebe"
+    },
+    {
+      "bytes": 262,
+      "original_bytes": true,
+      "path": "test-06-legacy-ingress7-02.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-06-legacy-ingress7-02.stdout",
+      "remote_read_version": "16777244:72693983:262:1793967321778985591:1793967321778985591",
+      "sha256": "dc86f49273367be221858e788c5d6bcc27627c1c05cc6b06a1ab59d619e45669"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "test-06-legacy-ingress7-03.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-06-legacy-ingress7-03.stderr",
+      "remote_read_version": "16777244:72693994:0:1793967321857101664:1793967321857101664",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 235,
+      "original_bytes": true,
+      "path": "test-06-legacy-ingress7-03.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-06-legacy-ingress7-03.stdout",
+      "remote_read_version": "16777244:72693993:235:1793967321864296353:1793967321864296353",
+      "sha256": "86786f8ca4e40a6d1519dd106652b5bb59c6b11973ba13006f11d53baca7c44c"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "test-06-legacy-ingress7-04.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-06-legacy-ingress7-04.stderr",
+      "remote_read_version": "16777244:72694000:0:1793967321884350005:1793967321884350005",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 242,
+      "original_bytes": true,
+      "path": "test-06-legacy-ingress7-04.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-06-legacy-ingress7-04.stdout",
+      "remote_read_version": "16777244:72693999:242:1793967321889702199:1793967321889702199",
+      "sha256": "574e55d812e83cb9a1bc5f19ca0cfea2cd90068c9c64d17d143f09c4b46f140c"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "test-06-legacy-ingress7-05.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-06-legacy-ingress7-05.stderr",
+      "remote_read_version": "16777244:72694006:0:1793967321904546282:1793967321904546282",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 245,
+      "original_bytes": true,
+      "path": "test-06-legacy-ingress7-05.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-06-legacy-ingress7-05.stdout",
+      "remote_read_version": "16777244:72694005:245:1793967321909379019:1793967321909379019",
+      "sha256": "88d32ef40b197cb86faedaf117f2cd7a6c34a75689b85421f4e98a8125056274"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "test-06-legacy-ingress7-06.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-06-legacy-ingress7-06.stderr",
+      "remote_read_version": "16777244:72694012:0:1793967321924186144:1793967321924186144",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 243,
+      "original_bytes": true,
+      "path": "test-06-legacy-ingress7-06.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-06-legacy-ingress7-06.stdout",
+      "remote_read_version": "16777244:72694011:243:1793967321929103005:1793967321929103005",
+      "sha256": "5bf02e8f70fd408d582792210a72ffecea60f67d6457e309caa17a2b4d414494"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "test-07-legacy-cold-h2-9-00.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-07-legacy-cold-h2-9-00.stderr",
+      "remote_read_version": "16777244:72694020:0:1793967321946988414:1793967321946988414",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 246,
+      "original_bytes": true,
+      "path": "test-07-legacy-cold-h2-9-00.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-07-legacy-cold-h2-9-00.stdout",
+      "remote_read_version": "16777244:72694019:246:1793967321951820525:1793967321951820525",
+      "sha256": "320c3f6ce742671a7154aefb12d0adc32537605b8bcd298e24314430138c8891"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "test-07-legacy-cold-h2-9-01.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-07-legacy-cold-h2-9-01.stderr",
+      "remote_read_version": "16777244:72694026:0:1793967321967073191:1793967321967073191",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 247,
+      "original_bytes": true,
+      "path": "test-07-legacy-cold-h2-9-01.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-07-legacy-cold-h2-9-01.stdout",
+      "remote_read_version": "16777244:72694025:247:1793967321972678801:1793967321972678801",
+      "sha256": "dffa6eb3580dfbf991e8eefbbf575831f29138cc1e79a428a3e570f6c94acdd9"
+    },
+    {
+      "bytes": 324,
+      "original_bytes": true,
+      "path": "test-07-legacy-cold-h2-9-02.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-07-legacy-cold-h2-9-02.stderr",
+      "remote_read_version": "16777244:72694034:324:1793967325420871353:1793967325420871353",
+      "sha256": "f0fc5cee225a412f5b9abc239baf8c412437476b6fd7960d30ee6c0b271c8727"
+    },
+    {
+      "bytes": 238,
+      "original_bytes": true,
+      "path": "test-07-legacy-cold-h2-9-02.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-07-legacy-cold-h2-9-02.stdout",
+      "remote_read_version": "16777244:72694033:238:1793967330856736531:1793967330856736531",
+      "sha256": "909ba7dc19cb0adec7b7a9ebf22afdc2f52a67256373d25af98918982f6270d7"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "test-07-legacy-cold-h2-9-03.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-07-legacy-cold-h2-9-03.stderr",
+      "remote_read_version": "16777244:72694048:0:1793967330926079879:1793967330926079879",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 220,
+      "original_bytes": true,
+      "path": "test-07-legacy-cold-h2-9-03.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-07-legacy-cold-h2-9-03.stdout",
+      "remote_read_version": "16777244:72694047:220:1793967330931773821:1793967330931773821",
+      "sha256": "06027e6cc2be7a383b24e4d8bc717a31803081500870525602d43a81d6acdb6e"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "test-07-legacy-cold-h2-9-04.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-07-legacy-cold-h2-9-04.stderr",
+      "remote_read_version": "16777244:72694054:0:1793967330946162281:1793967330946162281",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 215,
+      "original_bytes": true,
+      "path": "test-07-legacy-cold-h2-9-04.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-07-legacy-cold-h2-9-04.stdout",
+      "remote_read_version": "16777244:72694053:215:1793967330950897810:1793967330950897810",
+      "sha256": "8ee0d082d3924c660581164e785f270014766172d26a93d3006fc823cc5043e3"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "test-07-legacy-cold-h2-9-05.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-07-legacy-cold-h2-9-05.stderr",
+      "remote_read_version": "16777244:72694060:0:1793967330965833060:1793967330965833060",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 204,
+      "original_bytes": true,
+      "path": "test-07-legacy-cold-h2-9-05.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-07-legacy-cold-h2-9-05.stdout",
+      "remote_read_version": "16777244:72694059:204:1793967330970615880:1793967330970615880",
+      "sha256": "c26510e06d4e8d806d209f28f3f0500f150f38a44d2bb7d8db79e49172e7f3eb"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "test-07-legacy-cold-h2-9-06.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-07-legacy-cold-h2-9-06.stderr",
+      "remote_read_version": "16777244:72694066:0:1793967330986000837:1793967330986000837",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 219,
+      "original_bytes": true,
+      "path": "test-07-legacy-cold-h2-9-06.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-07-legacy-cold-h2-9-06.stdout",
+      "remote_read_version": "16777244:72694065:219:1793967330991062573:1793967330991062573",
+      "sha256": "ad31cf1b5ce1cdb4eea6b00f5901ffff57d0bc951d42508bac5a58e31202c723"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "test-07-legacy-cold-h2-9-07.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-07-legacy-cold-h2-9-07.stderr",
+      "remote_read_version": "16777244:72694072:0:1793967331006099364:1793967331006099364",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 223,
+      "original_bytes": true,
+      "path": "test-07-legacy-cold-h2-9-07.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-07-legacy-cold-h2-9-07.stdout",
+      "remote_read_version": "16777244:72694071:223:1793967331010973600:1793967331010973600",
+      "sha256": "861f2aa925af70718e958fb0a783a33124bb46fe97a7cdb27668eb6308182d2a"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "test-07-legacy-cold-h2-9-08.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-07-legacy-cold-h2-9-08.stderr",
+      "remote_read_version": "16777244:72694078:0:1793967331026278891:1793967331026278891",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 224,
+      "original_bytes": true,
+      "path": "test-07-legacy-cold-h2-9-08.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-07-legacy-cold-h2-9-08.stdout",
+      "remote_read_version": "16777244:72694077:224:1793967331031607835:1793967331031607835",
+      "sha256": "db02bb9228be190d8a2e4f277517bafffad7e9aab0c81c881a312883195f7e91"
+    },
+    {
+      "bytes": 724,
+      "original_bytes": true,
+      "path": "test-08-legacy-same-root1-00.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-08-legacy-same-root1-00.stderr",
+      "remote_read_version": "16777244:72694087:724:1793967347059927229:1793967347059927229",
+      "sha256": "253b3b2d6e0155eedd0cf519a017548d7ab16ef9fac8c8ee2b828d14664d780f"
+    },
+    {
+      "bytes": 262,
+      "original_bytes": true,
+      "path": "test-08-legacy-same-root1-00.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-08-legacy-same-root1-00.stdout",
+      "remote_read_version": "16777244:72694086:262:1793967347239036979:1793967347239036979",
+      "sha256": "28f00abe4ec2b63dbae578e92eb7fe1f8d80aaca4f096df801269fb4ce11614e"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "test-09-snapshot-body10-00.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-09-snapshot-body10-00.stderr",
+      "remote_read_version": "16777244:72694104:0:1793967347287936010:1793967347287936010",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1134,
+      "original_bytes": true,
+      "path": "test-09-snapshot-body10-00.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-09-snapshot-body10-00.stdout",
+      "remote_read_version": "16777244:72694103:1134:1793967347294283075:1793967347294283075",
+      "sha256": "37ee7e76198fec5dd079c851adc6459e6d7e363c5565a122bf0a67976779a499"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "test-10-snapshot-peer7-00.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-10-snapshot-peer7-00.stderr",
+      "remote_read_version": "16777244:72694112:0:1793967347317392719:1793967347317392719",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 941,
+      "original_bytes": true,
+      "path": "test-10-snapshot-peer7-00.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-10-snapshot-peer7-00.stdout",
+      "remote_read_version": "16777244:72694111:941:1793967347867348394:1793967347867348394",
+      "sha256": "fb7b20d9486266dc76a5212d34788716753cc474c58467f070720c01c33fa751"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "test-11-snapshot-actor2-00.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-11-snapshot-actor2-00.stderr",
+      "remote_read_version": "16777244:72694120:0:1793967347898776098:1793967347898776098",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 353,
+      "original_bytes": true,
+      "path": "test-11-snapshot-actor2-00.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-11-snapshot-actor2-00.stdout",
+      "remote_read_version": "16777244:72694119:353:1793967347905030747:1793967347905030747",
+      "sha256": "658e4b8cff0e979b21c47427dd3e644a311e5a644b16d3daeed43c834a292237"
+    },
+    {
+      "bytes": 0,
+      "original_bytes": true,
+      "path": "test-12-snapshot-wire4-00.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-12-snapshot-wire4-00.stderr",
+      "remote_read_version": "16777244:72694128:0:1793967347929226722:1793967347929226722",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 627,
+      "original_bytes": true,
+      "path": "test-12-snapshot-wire4-00.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-12-snapshot-wire4-00.stdout",
+      "remote_read_version": "16777244:72694127:627:1793967347937594323:1793967347937594323",
+      "sha256": "17e71207003d92c6efa5fd35a8e0ed015824a2d4c73fe2db987e43ed16d25f99"
+    },
+    {
+      "bytes": 4880,
+      "original_bytes": true,
+      "path": "test-13-snapshot-audit4-00.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-13-snapshot-audit4-00.stderr",
+      "remote_read_version": "16777244:72694139:4880:1793967381409369041:1793967381409369041",
+      "sha256": "bbb1103a1cb13019e8b985cdaf16ec9d20a97349a1c832a64a207f90e3dd0ae0"
+    },
+    {
+      "bytes": 921,
+      "original_bytes": true,
+      "path": "test-13-snapshot-audit4-00.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-13-snapshot-audit4-00.stdout",
+      "remote_read_version": "16777244:72694138:921:1793967383563086244:1793967383563086244",
+      "sha256": "ae190153910a0b4c73034ed616fd1f0aff483c346be0c5b4b71f5edefeba61cd"
+    },
+    {
+      "bytes": 6169,
+      "original_bytes": true,
+      "path": "test-14-native-jwt15-00.stderr",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-14-native-jwt15-00.stderr",
+      "remote_read_version": "16777244:72694152:6169:1793967406864974859:1793967406864974859",
+      "sha256": "c135bdb6fcba7e0d3a607dcc26e73e8dc35cec2fdf1ad40fd58119289d2f30e6"
+    },
+    {
+      "bytes": 2348,
+      "original_bytes": true,
+      "path": "test-14-native-jwt15-00.stdout",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/test-14-native-jwt15-00.stdout",
+      "remote_read_version": "16777244:72694151:2348:1793967407143056125:1793967407143056125",
+      "sha256": "d21ca39abb127a867d03503c77bba122682570afd46bacead1b463c93e66cf1d"
+    },
+    {
+      "bytes": 22853,
+      "original_bytes": false,
+      "path": "ACTUAL_CASE_RECONCILIATION.public.json",
+      "sha256": "bc3fd0257623b3568248304a064fd520f1f27ce1b7b1b5829585d557c3223985"
+    }
+  ],
+  "job_id": "1a1b0bb5170-fc05-726c",
+  "original_critical_manifest_unchanged": true,
+  "original_receipt_sha256": "8f8ecf43e2fbca843d0c0635b19a774a61f8fb0e17d87c019ade20f8a738a419",
+  "pattern_scan": "No PEM private key, long hv-prefixed bearer token, or JWT-shaped token found in selected logs. This scan supplements explicit scope review; it is not a general secret classifier.",
+  "private_transport_excluded": true,
+  "raw_process_metadata_files_withheld": [
+    {
+      "name": "01-preflight-process-metadata.stdout",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/01-preflight-process-metadata.stdout",
+      "sha256": "2eaff9a04f68c56bbeed4924721d1850a3f25d65b123837b5de98ad9973bd2cb",
+      "size": 73091
+    },
+    {
+      "name": "01-preflight-process-metadata.stderr",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/01-preflight-process-metadata.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "name": "98-postflight-process-metadata.stdout",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-postflight-process-metadata.stdout",
+      "sha256": "48cf17758913c3c62a0e84ef3d6cb9e07c6b5a6023bec8a0e6a061de05c8c5ca",
+      "size": 73315
+    },
+    {
+      "name": "98-postflight-process-metadata.stderr",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-868-r1/98-postflight-process-metadata.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    }
+  ],
+  "safe_original_log_files": 148,
+  "schema": "heptabao.mac868.complete-original-step-log-manifest.v1",
+  "scope": "Original compile, enumeration, exact synthetic unit-test logs and non-secret host/source/cache metadata. Production credentials were not used by this controller. Raw global process metadata remains host-only.",
+  "source_commit": "868439e6df9f12291842898763ccba581e346bfb",
+  "source_tree": "c211d66343235fbb8a220744f3e97768559007c8",
+  "timed_out": false
+}

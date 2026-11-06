@@ -1,0 +1,17 @@
+{
+  "metadata": {
+    "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "gid": 20,
+    "link_count": 1,
+    "metadata_platform": "darwin",
+    "mode": 384,
+    "uid": 501,
+    "xattr_names": [],
+    "xattr_sha256": {}
+  },
+  "mode": 384,
+  "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-f301-r1/result.public.json",
+  "sha256": "31b60348a98aef69c57381637cc59d7c69ba3f6729ba63f89c2b7ff76e5ea155",
+  "size": 140444,
+  "version": "16777244:72686708:140444:1793964731190795385:1793964731194522225"
+}

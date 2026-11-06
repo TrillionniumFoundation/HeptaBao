@@ -1,0 +1,58 @@
+{
+  "files": [
+    {
+      "bytes": 729,
+      "path": "runtime-terminal.public.json",
+      "provenance": {
+        "kind": "parsed_native_tool_response",
+        "store_key": "r6_failure_0"
+      },
+      "sha256": "41752922aaa3998ee90ed65b5d4c43b3943c155d96326add44e8d22195f75dc7"
+    },
+    {
+      "bytes": 64,
+      "path": "02-untracked.stdout",
+      "provenance": {
+        "bytes": 64,
+        "kind": "native_read_multiple_files",
+        "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r6/02-untracked.stdout",
+        "sha256": "e91a7ff89b6590b344f9e5dce1801aa8b2247da7852420dd8daf22f60a5ce167",
+        "version": "66306:35137979:64:1793966185965477594:1793966185965477594"
+      },
+      "sha256": "e91a7ff89b6590b344f9e5dce1801aa8b2247da7852420dd8daf22f60a5ce167"
+    },
+    {
+      "bytes": 13851,
+      "path": "result.public.json",
+      "provenance": {
+        "bytes": 13851,
+        "kind": "native_read_multiple_files",
+        "remote_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r6/result.public.json",
+        "sha256": "c08e70f085cfcc1657e01ad4f9c9e9b7bb910e63ce89f1018cbe03b7cc9e8b8f",
+        "version": "66306:35137982:13851:1793966186677163733:1793966186678474708"
+      },
+      "sha256": "c08e70f085cfcc1657e01ad4f9c9e9b7bb910e63ce89f1018cbe03b7cc9e8b8f"
+    },
+    {
+      "bytes": 21700,
+      "path": "controller.py",
+      "provenance": {
+        "kind": "actual_submitted_execution_input",
+        "store_key": "convergence_execution_payload_r6"
+      },
+      "sha256": "91d8091ee5c101b068f8cc0bb25f0fa8008e2b4a69087454a21365e29787091d"
+    },
+    {
+      "bytes": 42133,
+      "path": "test-selection.public.json",
+      "provenance": {
+        "kind": "actual_submitted_execution_input",
+        "store_key": "convergence_execution_payload_r6"
+      },
+      "sha256": "53197d1b65a3e108b14da7d9943bd158fb6fce7ae24d63dddb295eddd82b212c"
+    }
+  ],
+  "production_credentials_included": false,
+  "public_allowlist": true,
+  "schema": "heptabao.remote-evidence-recovery.v1"
+}

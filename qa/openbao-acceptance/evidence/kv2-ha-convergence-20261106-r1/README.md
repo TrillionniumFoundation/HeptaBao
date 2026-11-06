@@ -230,3 +230,7 @@ The release decision remains closed until the ordered production gates have
 their own complete results. An old pass, a new component pass, a successful
 bootstrap, a node directory, or a metadata inventory cannot replace those
 missing results.
+
+## Subsequent evidence checkpoint
+
+The [r2 checkpoint](../kv2-ha-convergence-20261106-r2/README.md) preserves the later Mac and ROG failures, full safe logs, source repairs, and next-candidate inputs. This earlier checkpoint remains historical and does not qualify the later source or any production migration.

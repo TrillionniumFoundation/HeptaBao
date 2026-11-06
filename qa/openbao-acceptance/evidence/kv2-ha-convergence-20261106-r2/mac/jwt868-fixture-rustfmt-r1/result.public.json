@@ -1,0 +1,376 @@
+{
+  "all_fifteen_names_retained": true,
+  "base": {
+    "bytes": 39999,
+    "device": 16777244,
+    "inode": 72688157,
+    "mode": 384,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-868-r1/crates/heptabao-server/src/service_native_jwt_tests.rs",
+    "sha256": "3c146567bc9cea6e26beaa7da9719edf698218a3cccf9b93c29f034d7b49f44d"
+  },
+  "commands": [
+    {
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustfmt",
+        "--version"
+      ],
+      "elapsed_seconds": 0.15330337500199676,
+      "label": "01-version",
+      "returncode": 0,
+      "stderr": {
+        "bytes": 0,
+        "device": 16777244,
+        "inode": 72694239,
+        "mode": 384,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt868-fixture-rustfmt-r1/01-version.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 45,
+        "device": 16777244,
+        "inode": 72694238,
+        "mode": 384,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt868-fixture-rustfmt-r1/01-version.stdout",
+        "sha256": "f0e7a732a40b95640a1d26e3f12b8260eab948c6b5cf346eb4ec8eeac6c48bfe"
+      }
+    },
+    {
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--config-path",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt868-fixture-rustfmt-r1/rustfmt.toml",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt868-fixture-rustfmt-r1/work/service_native_jwt_tests.rs"
+      ],
+      "elapsed_seconds": 0.07765329070389271,
+      "label": "02-format",
+      "returncode": 0,
+      "stderr": {
+        "bytes": 0,
+        "device": 16777244,
+        "inode": 72694241,
+        "mode": 384,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt868-fixture-rustfmt-r1/02-format.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "device": 16777244,
+        "inode": 72694240,
+        "mode": 384,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt868-fixture-rustfmt-r1/02-format.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--config-path",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt868-fixture-rustfmt-r1/rustfmt.toml",
+        "--check",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt868-fixture-rustfmt-r1/work/service_native_jwt_tests.rs"
+      ],
+      "elapsed_seconds": 0.06227708421647549,
+      "label": "03-check",
+      "returncode": 0,
+      "stderr": {
+        "bytes": 0,
+        "device": 16777244,
+        "inode": 72694243,
+        "mode": 384,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt868-fixture-rustfmt-r1/03-check.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "device": 16777244,
+        "inode": 72694242,
+        "mode": 384,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt868-fixture-rustfmt-r1/03-check.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "deadline_fired": false,
+  "edition": "2024",
+  "elapsed_seconds": 0.3516922499984503,
+  "existing_build_artifacts_opened": false,
+  "existing_git_checkout_written": false,
+  "existing_source_inputs_unchanged": true,
+  "format_check_unchanged": true,
+  "formatted": {
+    "bytes": 42377,
+    "device": 16777244,
+    "inode": 72694246,
+    "mode": 384,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt868-fixture-rustfmt-r1/service_native_jwt_tests.formatted.rs",
+    "sha256": "d36bd868975958093c50218ad1e06b20a58b5156a37cd58718dfdc1654c1f156"
+  },
+  "formatter_diff": {
+    "bytes": 0,
+    "device": 16777244,
+    "inode": 72694244,
+    "mode": 384,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt868-fixture-rustfmt-r1/formatter-only.diff",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "input": {
+    "bytes": 42377,
+    "sha256": "d36bd868975958093c50218ad1e06b20a58b5156a37cd58718dfdc1654c1f156"
+  },
+  "original_work_seconds": 52,
+  "patch": {
+    "bytes": 5956,
+    "device": 16777244,
+    "inode": 72694245,
+    "mode": 384,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/jwt868-fixture-rustfmt-r1/three-fixture-fixes.formatted.patch",
+    "sha256": "11f23a712e5c7db5670ef0ba517f0d45e38d514fc701171719fb91f0772e7ac2"
+  },
+  "process_custody": {
+    "children": [
+      {
+        "argv_sha256": "2aef4859295d124cb7f4408532cdb2d0bf0d8bcfbc9cf764b8f3bfc7f6aef670",
+        "birth": {
+          "pgid": 26065,
+          "pid": 26065,
+          "ppid": 26063,
+          "sid": 26065,
+          "state": "R",
+          "uid": 501
+        },
+        "darwin_waitable_zombie_anchor": {
+          "live_birth": {
+            "pgid": 26065,
+            "pid": 26065,
+            "ppid": 26063,
+            "sid": 26065,
+            "state": "R",
+            "uid": 501
+          },
+          "observed": {
+            "pgid": 26065,
+            "pid": 26065,
+            "ppid": 26063,
+            "sid": 26065,
+            "sid_basis": "admitted_immutable_unreaped_session_leader",
+            "state": "Z",
+            "uid": 501
+          },
+          "waitid": {
+            "si_code": 1,
+            "si_pid": 26065,
+            "si_signo": 20,
+            "si_status": 0,
+            "si_uid": 0,
+            "si_uid_used_as_authority": false
+          }
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 26065,
+            "pid": 26065,
+            "ppid": 26063,
+            "sid": 26065,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 26065,
+            "pid": 26065,
+            "ppid": 26063,
+            "sid": 26065,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 26065,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "19bc819b6d97d9f33ea73aa9ac3628d7f60a173183f6d3751293b4ea43bafbbb",
+        "birth": {
+          "pgid": 26071,
+          "pid": 26071,
+          "ppid": 26063,
+          "sid": 26071,
+          "state": "R",
+          "uid": 501
+        },
+        "darwin_waitable_zombie_anchor": {
+          "live_birth": {
+            "pgid": 26071,
+            "pid": 26071,
+            "ppid": 26063,
+            "sid": 26071,
+            "state": "R",
+            "uid": 501
+          },
+          "observed": {
+            "pgid": 26071,
+            "pid": 26071,
+            "ppid": 26063,
+            "sid": 26071,
+            "sid_basis": "admitted_immutable_unreaped_session_leader",
+            "state": "Z",
+            "uid": 501
+          },
+          "waitid": {
+            "si_code": 1,
+            "si_pid": 26071,
+            "si_signo": 20,
+            "si_status": 0,
+            "si_uid": 0,
+            "si_uid_used_as_authority": false
+          }
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 26071,
+            "pid": 26071,
+            "ppid": 26063,
+            "sid": 26071,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 26071,
+            "pid": 26071,
+            "ppid": 26063,
+            "sid": 26071,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 26071,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "96cd40892c0e5b950391cdf39b967dc25829334f7e3073b2960647862453d941",
+        "birth": {
+          "pgid": 26077,
+          "pid": 26077,
+          "ppid": 26063,
+          "sid": 26077,
+          "state": "R",
+          "uid": 501
+        },
+        "darwin_waitable_zombie_anchor": {
+          "live_birth": {
+            "pgid": 26077,
+            "pid": 26077,
+            "ppid": 26063,
+            "sid": 26077,
+            "state": "R",
+            "uid": 501
+          },
+          "observed": {
+            "pgid": 26077,
+            "pid": 26077,
+            "ppid": 26063,
+            "sid": 26077,
+            "sid_basis": "admitted_immutable_unreaped_session_leader",
+            "state": "Z",
+            "uid": 501
+          },
+          "waitid": {
+            "si_code": 1,
+            "si_pid": 26077,
+            "si_signo": 20,
+            "si_status": 0,
+            "si_uid": 0,
+            "si_uid_used_as_authority": false
+          }
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 26077,
+            "pid": 26077,
+            "ppid": 26063,
+            "sid": 26077,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 26077,
+            "pid": 26077,
+            "ppid": 26063,
+            "sid": 26077,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 26077,
+        "returncode": 0,
+        "signals": []
+      }
+    ],
+    "controls": [],
+    "escaped_session_containment_claim": false,
+    "failed": false,
+    "finished": true,
+    "interrupted": false,
+    "original_count": 3,
+    "passed_process_custody": true,
+    "platform": "darwin",
+    "schema": "heptabao.dr-original-process-custody.v1",
+    "storage_or_production_authority": false,
+    "unreaped_original_is_signal_anchor": true
+  },
+  "product_or_dr_started": false,
+  "python": {
+    "bytes": 34640,
+    "device": 16777233,
+    "inode": 587518380,
+    "mode": 493,
+    "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+  },
+  "runtime_outer_seconds": 60,
+  "rustfmt": {
+    "bytes": 4453976,
+    "device": 16777233,
+    "inode": 553102051,
+    "mode": 448,
+    "path": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustfmt",
+    "sha256": "ca9cbe15a4add6baf62d8ce177015c9c48f209ebcf4364416b1953142e8701f8"
+  },
+  "rustfmt_only": true,
+  "rustfmt_version": "rustfmt 1.9.0-stable (88d9e12ae1 2026-08-18)",
+  "schema": "heptabao.mac-pinned-rustfmt-only.v1",
+  "source_commit": "868439e6df9f12291842898763ccba581e346bfb",
+  "status": "passed",
+  "timer_handler_restored": true
+}

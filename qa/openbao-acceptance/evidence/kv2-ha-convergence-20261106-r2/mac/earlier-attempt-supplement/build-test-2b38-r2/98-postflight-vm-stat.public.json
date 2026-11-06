@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "/usr/bin/vm_stat"
+  ],
+  "attempts": 1,
+  "effective_budget_seconds": 10,
+  "exit_code": 0,
+  "owned_group_cleanup": {
+    "all_owned_processes_gone": true,
+    "direct_child_reaped": true,
+    "pgid": 78644,
+    "remaining_after_cleanup": [],
+    "signals": [],
+    "signals_after_reap": false
+  },
+  "pid": 78644,
+  "requested_cap_seconds": 10,
+  "seconds": 0.012309,
+  "started_at_unix": 1793963500.190146,
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_bytes": 1841,
+  "stdout_sha256": "6006b87c9b8bde1332909dadee52e9f7ab734eafba9350eaad1d5cc733af8f5d",
+  "step": "98-postflight-vm-stat",
+  "timed_out": false
+}

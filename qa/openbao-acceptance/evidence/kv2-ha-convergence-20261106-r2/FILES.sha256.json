@@ -1,0 +1,3255 @@
+{
+  "files": [
+    {
+      "bytes": 1952,
+      "path": "CHECKPOINT.public.json",
+      "sha256": "7d56ff325ac935ca0234d31f5b27d52d315aec02b8de60ddff75dcf465af0637"
+    },
+    {
+      "bytes": 3517,
+      "path": "INPUT_MANIFESTS.public.json",
+      "sha256": "ebf13c58c7fa7bcb4c9d9e22b74fdec28447ecf5af7e8ee21ab881f0abd5fcc9"
+    },
+    {
+      "bytes": 13205,
+      "path": "README.md",
+      "sha256": "edf7fdb8ef59b046789c4ad8a0031dd024c154ed49215acef20f41c3617cfa9a"
+    },
+    {
+      "bytes": 1053,
+      "path": "SOURCE_CHAIN.public.json",
+      "sha256": "eec41e7935fa256f3bc0e9f8de303c02d0d1d3abc722cc34cbe188ef31f62004"
+    },
+    {
+      "bytes": 3220,
+      "path": "dr/prepared-wrapper-09c14/binding-change.review.json",
+      "sha256": "21bf5e6fa827c22838f89e819c36c5896e498dac623ab3d0600bdc52d260763a"
+    },
+    {
+      "bytes": 6877,
+      "path": "dr/prepared-wrapper-09c14/check_actual_failed_receipts.py",
+      "sha256": "b2858d89a86cf03e4a2b17728a5c28ef0badfcba94e952e0baac67214cc5ba20"
+    },
+    {
+      "bytes": 22623,
+      "path": "dr/prepared-wrapper-09c14/dr25_mac_fixed_wrapper.py",
+      "sha256": "7e4310f29591b40fb6df04d1e322f2fcb727887d82a52d090fcd0262c02c0fe1"
+    },
+    {
+      "bytes": 3015,
+      "path": "dr/prepared-wrapper-09c14/failed-receipts-guard-r1.public.json",
+      "sha256": "3bfb4b6efc389b1626a251fbd076f3ab6f4f54bdba5b1ac7fa9cb9d261ae2775"
+    },
+    {
+      "bytes": 22618,
+      "path": "dr/prepared-wrapper-09c14/r2-baseline.original.py",
+      "sha256": "f622f5b44d56b5e44fb6027505f9c655ae7974467e59cfa08f819c9dfd3a7d7c"
+    },
+    {
+      "bytes": 22617,
+      "path": "dr/prepared-wrapper-09c14/r3-868.original.py",
+      "sha256": "c53f7fe160dbbed6fcb8eb8e600d3a29e4aa575c0d0a8842944b50d45179be12"
+    },
+    {
+      "bytes": 7867,
+      "path": "mac/build-test-868-r1/MANIFEST.public.json",
+      "sha256": "7cb5e5b5d7d91ddfecc27b162831bb8ff3ab35042225187710675d1e0e64ec75"
+    },
+    {
+      "bytes": 3873,
+      "path": "mac/build-test-868-r1/RECONCILIATION.public.json",
+      "sha256": "e202f57b475e41363dcaa28d84f8d905cf00ba928c5d4576add3903ea3251a6c"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/00-clone-source-clean.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/00-clone-source-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/00-clone-source-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/00-clone-source-head.stdout",
+      "sha256": "d86c0426c505c2d72325cf9ffbb4acb50d18284add43177933936725d8f3783f"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/00-clone-source-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/00-clone-source-tree.stdout",
+      "sha256": "f0681b4e459b6e0fc72a3c7fc2b077cc86f342640855412255a9d6326acc2a36"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/00-old-source-clean.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/00-old-source-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/00-old-source-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/00-old-source-head.stdout",
+      "sha256": "563acb7c1de815cc6e990150190f137d1c218db6566a228fadd8e550a3f9d57c"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/00-old-source-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/00-old-source-tree.stdout",
+      "sha256": "9f5293c8c19686df077cfb69270edefb2df2c42411b37dcdd974a7aa092b4ba0"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/00-preserved-2b-source-clean.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/00-preserved-2b-source-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/00-preserved-2b-source-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/00-preserved-2b-source-head.stdout",
+      "sha256": "727d9c94f287e8130b776e8b0c28f8f07bad5140258a57b715a9532f86e37bcb"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/00-preserved-2b-source-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/00-preserved-2b-source-tree.stdout",
+      "sha256": "1a962936bb5ebc78e7588f292b6398c5b920724afce87906db193fc225bab7dd"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/00-t5-volume.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3069,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/00-t5-volume.stdout",
+      "sha256": "76a74deee196b39e99e4ce2433b838d8e77b81d446b76f5c6cd644a1c3370a6e"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/01-cache-admission-holders-under-lock.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 5,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/01-cache-admission-holders-under-lock.stdout",
+      "sha256": "1a98f2a4a3d7e44d49fb3be9a935073398ef4c4184c9e85a56238e8b0511cd62"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/01-preflight-cargo-lock.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/01-preflight-cargo-lock.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/01-preflight-ram-total.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 12,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/01-preflight-ram-total.stdout",
+      "sha256": "901c81a29f7611d5eeaf6432d3f21c8408a04c14f88f531c68c201db9699d1fa"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/01-preflight-vm-stat.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1841,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/01-preflight-vm-stat.stdout",
+      "sha256": "335c7bc42be064790196db357a262dca1401bd13d3d170c111b3d9c5b0c776cf"
+    },
+    {
+      "bytes": 124,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/02-independent-source-clone.stderr",
+      "sha256": "0fa6fc7a5effea1bb176783fc7ef2eb9adbddf3d9071881f45a4d42f0a18e97d"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/02-independent-source-clone.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 133,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/03-bundle-verify.stderr",
+      "sha256": "0ce7e9df30e75e979079047e20442f123ac7dfc5c6f0c2eaa984f844233d54a7"
+    },
+    {
+      "bytes": 190,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/03-bundle-verify.stdout",
+      "sha256": "9008113d4e492e17ffb14b3739ccc05cc26c50a67788a3ee1fdad6a47ccef350"
+    },
+    {
+      "bytes": 178,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/04-fetch-local-bundle.stderr",
+      "sha256": "72200cca05f4a8b4db778efcfe33c1fe9aa7eff22ec909ca284dcab2d93ddd62"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/04-fetch-local-bundle.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/05-canonical-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/05-canonical-tree.stdout",
+      "sha256": "c8d7dc67a786f4aace70fc59511e00b7b25c0ba77d6e3e3e5c62c553b6e9d2b0"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/06-canonical-parent.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/06-canonical-parent.stdout",
+      "sha256": "ec0b3f301a00983a7656ba07b341841a32ca6fbb9fec6fffd5ad9b720d059738"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/07-clone-ancestor.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/07-clone-ancestor.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/07-original-ancestor.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/07-original-ancestor.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/07-preserved-2b-ancestor.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/07-preserved-2b-ancestor.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 200,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/08-checkout-canonical.stderr",
+      "sha256": "9a648de82a95e95bd432cbb11aebc73ef99312d62c9ac4d180a266065c21bac7"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/08-checkout-canonical.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/09-clean-source.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/09-clean-source.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/10-full-repository.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 6,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/10-full-repository.stdout",
+      "sha256": "2ed27c1421e6928dbe13dbfdb5c59e1045b30341fe7ebe05700006bc5ac572c0"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/11-fsck.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 627,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/11-fsck.stdout",
+      "sha256": "0be73bbc1562601e1cbf16e9fca956f64ed16f205d602cac3bedf10c96988a1a"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/12-format-check.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/12-format-check.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/12-precompile-cache-admission-holders-under-lock.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 5,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/12-precompile-cache-admission-holders-under-lock.stdout",
+      "sha256": "1a98f2a4a3d7e44d49fb3be9a935073398ef4c4184c9e85a56238e8b0511cd62"
+    },
+    {
+      "bytes": 2638,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/13-normal-release-build.stderr",
+      "sha256": "325abfdb8c6815673631a18af866ebf95367dcc5dc9112583f0b7b6ac3ca9dca"
+    },
+    {
+      "bytes": 440381,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/13-normal-release-build.stdout",
+      "sha256": "a924ac5620c9e9ee151d606d21e4ed39eae75e576864d2004b686b778e924a85"
+    },
+    {
+      "bytes": 224,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/14-server-libtest-build.stderr",
+      "sha256": "1054e97aeee49d0ade4efa496f26aee44ce580cf171975d2c2cc4a58602c6ea2"
+    },
+    {
+      "bytes": 438073,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/14-server-libtest-build.stdout",
+      "sha256": "14411f25c9d871b8f8b2f0c1322b1a6f175d5c6a05e28a549b9b254d65d1a095"
+    },
+    {
+      "bytes": 586,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/15-peer-libtest-build.stderr",
+      "sha256": "a67580889f209d5a99943573d91d68c71ab063d74868323dc50092e70b9a995c"
+    },
+    {
+      "bytes": 163368,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/15-peer-libtest-build.stdout",
+      "sha256": "8c825640be1b90b5fb1ae1fee0cda0b35712eaf5c47b5a80dabf6076a275ae1e"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/98-clone-final-clean.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/98-clone-final-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/98-clone-final-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/98-clone-final-head.stdout",
+      "sha256": "d86c0426c505c2d72325cf9ffbb4acb50d18284add43177933936725d8f3783f"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/98-clone-final-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/98-clone-final-tree.stdout",
+      "sha256": "f0681b4e459b6e0fc72a3c7fc2b077cc86f342640855412255a9d6326acc2a36"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/98-old-final-clean.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/98-old-final-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/98-old-final-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/98-old-final-head.stdout",
+      "sha256": "563acb7c1de815cc6e990150190f137d1c218db6566a228fadd8e550a3f9d57c"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/98-old-final-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/98-old-final-tree.stdout",
+      "sha256": "9f5293c8c19686df077cfb69270edefb2df2c42411b37dcdd974a7aa092b4ba0"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/98-postflight-cargo-lock.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/98-postflight-cargo-lock.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/98-postflight-ram-total.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 12,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/98-postflight-ram-total.stdout",
+      "sha256": "901c81a29f7611d5eeaf6432d3f21c8408a04c14f88f531c68c201db9699d1fa"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/98-postflight-vm-stat.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1841,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/98-postflight-vm-stat.stdout",
+      "sha256": "d8208e62a7d00213e83d5728762753d3ad54ecd969c76da47af2584953665d35"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/98-preserved-2b-final-clean.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/98-preserved-2b-final-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/98-preserved-2b-final-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/98-preserved-2b-final-head.stdout",
+      "sha256": "727d9c94f287e8130b776e8b0c28f8f07bad5140258a57b715a9532f86e37bcb"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/98-preserved-2b-final-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/98-preserved-2b-final-tree.stdout",
+      "sha256": "1a962936bb5ebc78e7588f292b6398c5b920724afce87906db193fc225bab7dd"
+    },
+    {
+      "bytes": 22853,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/ACTUAL_CASE_RECONCILIATION.public.json",
+      "sha256": "bc3fd0257623b3568248304a064fd520f1f27ce1b7b1b5829585d557c3223985"
+    },
+    {
+      "bytes": 68355,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/COMPLETE_LOG_MANIFEST.public.json",
+      "sha256": "a2abd9325208b5f5b5eb0c2b18f29bb9878be19ed406e6ec9105b2162c88975a"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/heptabao-ha-service-list.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 13827,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/heptabao-ha-service-list.stdout",
+      "sha256": "36bea4d74e2a1414075e0d8138da08fd96bef2b0d51139259f23588bff70267e"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/heptabao-server-list.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 410863,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/heptabao-server-list.stdout",
+      "sha256": "2fd4e6db986e79cfbadd20edc759562c084ffd90f123b478ba1a25869ba9deb8"
+    },
+    {
+      "bytes": 26131,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-00-ssh25-00.stderr",
+      "sha256": "1fd6f272dff6097095df7f1a462f317fbd9f7d54db90977eef149f2cd11ecb1c"
+    },
+    {
+      "bytes": 3163,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-00-ssh25-00.stdout",
+      "sha256": "57d056074b75727d303a7c3c389f5ebd8d1f3b55323bca8950398e953d8e6647"
+    },
+    {
+      "bytes": 162,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-01-mount1-00.stderr",
+      "sha256": "b1b6a5231fd9cccbe919c8f65a55c58c18686e8c2e1a61f72df6ceb6e0df59c0"
+    },
+    {
+      "bytes": 233,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-01-mount1-00.stdout",
+      "sha256": "cfe1205869b1cea9dd76f78c04bfec9a4646f94b9e8267bd4a1f7218801f8d89"
+    },
+    {
+      "bytes": 1304,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-02-redirect5-00.stderr",
+      "sha256": "0d1b1bbb8ca8447a0d365222beef62eb6526abd06fb4462a4c7875287bdc90f9"
+    },
+    {
+      "bytes": 722,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-02-redirect5-00.stdout",
+      "sha256": "a05cc6501c5fbe8d0ecb0763f5ff2fd28893857c417ab8ceb87219f9e43fea0f"
+    },
+    {
+      "bytes": 324,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-03-actor2-00.stderr",
+      "sha256": "f0fc5cee225a412f5b9abc239baf8c412437476b6fd7960d30ee6c0b271c8727"
+    },
+    {
+      "bytes": 440,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-03-actor2-00.stdout",
+      "sha256": "8f09fe2ca1060e745ca7ceb7df5860daf1a8f951dce2a3a37a0a8af89ac4058f"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-04-ordinary5-00.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 699,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-04-ordinary5-00.stdout",
+      "sha256": "196d5edd26cac09940a52d1dee00ce9a4fd9f4dde5f1863546b808709b69638a"
+    },
+    {
+      "bytes": 19397,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-05-no_forward6-00.stderr",
+      "sha256": "62959f5553e2c3e9af98c6108732e5f55b0b1ff4b586c91566ee25ac4ca2a41f"
+    },
+    {
+      "bytes": 877,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-05-no_forward6-00.stdout",
+      "sha256": "61ceaeb22b3bcb30d2f0df07bc2f4cd73bda68a6a82894ad72b6f15530603dfe"
+    },
+    {
+      "bytes": 428,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-06-legacy-ingress7-00.stderr",
+      "sha256": "fab22fdbf161148b0248e7706069491924df3d54c0531fd1189184f397cee086"
+    },
+    {
+      "bytes": 256,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-06-legacy-ingress7-00.stdout",
+      "sha256": "428707beb55650441e35c5d689ad9b3431b2dc1be4f5af01ac25728185e31f1c"
+    },
+    {
+      "bytes": 832,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-06-legacy-ingress7-01.stderr",
+      "sha256": "54855f14d8651a20911bc21e5509da42f98e4b3cf4217ead871a8c9b618a6cfc"
+    },
+    {
+      "bytes": 265,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-06-legacy-ingress7-01.stdout",
+      "sha256": "9f4e900c41b638bf33661a8a9b3e1266f12741011970c4d1f5983da4a69e0ab7"
+    },
+    {
+      "bytes": 1418,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-06-legacy-ingress7-02.stderr",
+      "sha256": "7994f109510f961fbaf590d5e54ecf89918de1a8ca0b0a226f63030398f43ebe"
+    },
+    {
+      "bytes": 262,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-06-legacy-ingress7-02.stdout",
+      "sha256": "dc86f49273367be221858e788c5d6bcc27627c1c05cc6b06a1ab59d619e45669"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-06-legacy-ingress7-03.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 235,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-06-legacy-ingress7-03.stdout",
+      "sha256": "86786f8ca4e40a6d1519dd106652b5bb59c6b11973ba13006f11d53baca7c44c"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-06-legacy-ingress7-04.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 242,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-06-legacy-ingress7-04.stdout",
+      "sha256": "574e55d812e83cb9a1bc5f19ca0cfea2cd90068c9c64d17d143f09c4b46f140c"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-06-legacy-ingress7-05.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 245,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-06-legacy-ingress7-05.stdout",
+      "sha256": "88d32ef40b197cb86faedaf117f2cd7a6c34a75689b85421f4e98a8125056274"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-06-legacy-ingress7-06.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 243,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-06-legacy-ingress7-06.stdout",
+      "sha256": "5bf02e8f70fd408d582792210a72ffecea60f67d6457e309caa17a2b4d414494"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-07-legacy-cold-h2-9-00.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 246,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-07-legacy-cold-h2-9-00.stdout",
+      "sha256": "320c3f6ce742671a7154aefb12d0adc32537605b8bcd298e24314430138c8891"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-07-legacy-cold-h2-9-01.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 247,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-07-legacy-cold-h2-9-01.stdout",
+      "sha256": "dffa6eb3580dfbf991e8eefbbf575831f29138cc1e79a428a3e570f6c94acdd9"
+    },
+    {
+      "bytes": 324,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-07-legacy-cold-h2-9-02.stderr",
+      "sha256": "f0fc5cee225a412f5b9abc239baf8c412437476b6fd7960d30ee6c0b271c8727"
+    },
+    {
+      "bytes": 238,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-07-legacy-cold-h2-9-02.stdout",
+      "sha256": "909ba7dc19cb0adec7b7a9ebf22afdc2f52a67256373d25af98918982f6270d7"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-07-legacy-cold-h2-9-03.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 220,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-07-legacy-cold-h2-9-03.stdout",
+      "sha256": "06027e6cc2be7a383b24e4d8bc717a31803081500870525602d43a81d6acdb6e"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-07-legacy-cold-h2-9-04.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 215,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-07-legacy-cold-h2-9-04.stdout",
+      "sha256": "8ee0d082d3924c660581164e785f270014766172d26a93d3006fc823cc5043e3"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-07-legacy-cold-h2-9-05.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 204,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-07-legacy-cold-h2-9-05.stdout",
+      "sha256": "c26510e06d4e8d806d209f28f3f0500f150f38a44d2bb7d8db79e49172e7f3eb"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-07-legacy-cold-h2-9-06.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 219,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-07-legacy-cold-h2-9-06.stdout",
+      "sha256": "ad31cf1b5ce1cdb4eea6b00f5901ffff57d0bc951d42508bac5a58e31202c723"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-07-legacy-cold-h2-9-07.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 223,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-07-legacy-cold-h2-9-07.stdout",
+      "sha256": "861f2aa925af70718e958fb0a783a33124bb46fe97a7cdb27668eb6308182d2a"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-07-legacy-cold-h2-9-08.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 224,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-07-legacy-cold-h2-9-08.stdout",
+      "sha256": "db02bb9228be190d8a2e4f277517bafffad7e9aab0c81c881a312883195f7e91"
+    },
+    {
+      "bytes": 724,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-08-legacy-same-root1-00.stderr",
+      "sha256": "253b3b2d6e0155eedd0cf519a017548d7ab16ef9fac8c8ee2b828d14664d780f"
+    },
+    {
+      "bytes": 262,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-08-legacy-same-root1-00.stdout",
+      "sha256": "28f00abe4ec2b63dbae578e92eb7fe1f8d80aaca4f096df801269fb4ce11614e"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-09-snapshot-body10-00.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1134,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-09-snapshot-body10-00.stdout",
+      "sha256": "37ee7e76198fec5dd079c851adc6459e6d7e363c5565a122bf0a67976779a499"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-10-snapshot-peer7-00.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 941,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-10-snapshot-peer7-00.stdout",
+      "sha256": "fb7b20d9486266dc76a5212d34788716753cc474c58467f070720c01c33fa751"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-11-snapshot-actor2-00.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 353,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-11-snapshot-actor2-00.stdout",
+      "sha256": "658e4b8cff0e979b21c47427dd3e644a311e5a644b16d3daeed43c834a292237"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-12-snapshot-wire4-00.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 627,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-12-snapshot-wire4-00.stdout",
+      "sha256": "17e71207003d92c6efa5fd35a8e0ed015824a2d4c73fe2db987e43ed16d25f99"
+    },
+    {
+      "bytes": 4880,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-13-snapshot-audit4-00.stderr",
+      "sha256": "bbb1103a1cb13019e8b985cdaf16ec9d20a97349a1c832a64a207f90e3dd0ae0"
+    },
+    {
+      "bytes": 921,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-13-snapshot-audit4-00.stdout",
+      "sha256": "ae190153910a0b4c73034ed616fd1f0aff483c346be0c5b4b71f5edefeba61cd"
+    },
+    {
+      "bytes": 6169,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-14-native-jwt15-00.stderr",
+      "sha256": "c135bdb6fcba7e0d3a607dcc26e73e8dc35cec2fdf1ad40fd58119289d2f30e6"
+    },
+    {
+      "bytes": 2348,
+      "path": "mac/build-test-868-r1/complete-step-logs-r1/test-14-native-jwt15-00.stdout",
+      "sha256": "d21ca39abb127a867d03503c77bba122682570afd46bacead1b463c93e66cf1d"
+    },
+    {
+      "bytes": 30573,
+      "path": "mac/build-test-868-r1/controller.py",
+      "sha256": "c497c9fd40df0d2bb6776a32733d45ef3d56f2a74665ee5a01050186ef2bb499"
+    },
+    {
+      "bytes": 36408,
+      "path": "mac/build-test-868-r1/initial-progress.original.public.json",
+      "sha256": "7ba75de1a2ef91ab561e9a528acf6658e97d80313820f23f52b5f429dda775f8"
+    },
+    {
+      "bytes": 1568,
+      "path": "mac/build-test-868-r1/launcher.py",
+      "sha256": "48a3285dac63a39d318faa31c88e16fb6515d0afefbd90537d1a3c43e28a077a"
+    },
+    {
+      "bytes": 2567,
+      "path": "mac/build-test-868-r1/postfailure-artifacts.metadata.original.json",
+      "sha256": "aaa262ff3260d5ca4b1fe0c510567d3d667b5b1f4817b0aef8cc9b21fb8a82ae"
+    },
+    {
+      "bytes": 590,
+      "path": "mac/build-test-868-r1/postfailure-receipt.metadata.original.json",
+      "sha256": "337573f7cb647541b480a9052d1fb95720b4140d2e56de0cfe94634e7b2e1023"
+    },
+    {
+      "bytes": 1624,
+      "path": "mac/build-test-868-r1/postfailure-source-probe.py",
+      "sha256": "7636942557b5511e641bfc42449346bc09e68ec6c2d0e3eb9c7d48188626c160"
+    },
+    {
+      "bytes": 1975,
+      "path": "mac/build-test-868-r1/postfailure-source-request.json",
+      "sha256": "626025d6fa84a408761984b2f7522ef61b8d581fd0a39f05e803ceea5edf5865"
+    },
+    {
+      "bytes": 2823,
+      "path": "mac/build-test-868-r1/postfailure-source-start.original.json",
+      "sha256": "2340cdfe60be7c28ff95ead260224fbeb3119f0b4b49e5b76f0f74519216f030"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/postfailure-source-stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 862,
+      "path": "mac/build-test-868-r1/postfailure-source-stdout.original",
+      "sha256": "b77681e1d05b6274ba3fe094bf2cfb4941f20e1f4fa26a98ceac5d3f00bb10fe"
+    },
+    {
+      "bytes": 730,
+      "path": "mac/build-test-868-r1/postfailure-source-terminal.original.json",
+      "sha256": "731a9dbf8bb8e4774762b8933dc35e45539b57391962e36baaffeb1324399865"
+    },
+    {
+      "bytes": 40149,
+      "path": "mac/build-test-868-r1/release-progress.original.public.json",
+      "sha256": "f75b9243e38b87ab71dab1439a8344fa0ef749d52a7ce37a1c60b10e4718ba87"
+    },
+    {
+      "bytes": 152164,
+      "path": "mac/build-test-868-r1/result.public.json",
+      "sha256": "8f8ecf43e2fbca843d0c0635b19a774a61f8fb0e17d87c019ade20f8a738a419"
+    },
+    {
+      "bytes": 2773,
+      "path": "mac/build-test-868-r1/runtime-start.original.json",
+      "sha256": "38e408f5e0f8ea260d1f07c872f1a802fd2fb877b01c5eaae6bf5b15eecdb9b5"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-868-r1/runtime-stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 15978,
+      "path": "mac/build-test-868-r1/runtime-stdout.original",
+      "sha256": "5db9f92563de4a7221c41f0b48f2200e6f1b190d1d284c6ceb9b903af388d04c"
+    },
+    {
+      "bytes": 731,
+      "path": "mac/build-test-868-r1/runtime-terminal.original.json",
+      "sha256": "4c363853aba48c79340cd48a26ecc753c453392635a237e67316c63099f1bf7f"
+    },
+    {
+      "bytes": 6169,
+      "path": "mac/build-test-868-r1/test-14-native-jwt15-00.stderr",
+      "sha256": "c135bdb6fcba7e0d3a607dcc26e73e8dc35cec2fdf1ad40fd58119289d2f30e6"
+    },
+    {
+      "bytes": 2348,
+      "path": "mac/build-test-868-r1/test-14-native-jwt15-00.stdout",
+      "sha256": "d21ca39abb127a867d03503c77bba122682570afd46bacead1b463c93e66cf1d"
+    },
+    {
+      "bytes": 41675,
+      "path": "mac/build-test-868-r1/test-selection.public.json",
+      "sha256": "4177229337bb7ffc7d1c81b9ea515bd48b0cbd529fd48537815cd40bbfdb53e7"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/00-clone-source-clean.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/00-clone-source-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/00-clone-source-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/build-test-f301-r1/00-clone-source-head.stdout",
+      "sha256": "727d9c94f287e8130b776e8b0c28f8f07bad5140258a57b715a9532f86e37bcb"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/00-clone-source-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/build-test-f301-r1/00-clone-source-tree.stdout",
+      "sha256": "1a962936bb5ebc78e7588f292b6398c5b920724afce87906db193fc225bab7dd"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/00-old-source-clean.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/00-old-source-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/00-old-source-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/build-test-f301-r1/00-old-source-head.stdout",
+      "sha256": "563acb7c1de815cc6e990150190f137d1c218db6566a228fadd8e550a3f9d57c"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/00-old-source-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/build-test-f301-r1/00-old-source-tree.stdout",
+      "sha256": "9f5293c8c19686df077cfb69270edefb2df2c42411b37dcdd974a7aa092b4ba0"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/00-t5-volume.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3069,
+      "path": "mac/build-test-f301-r1/00-t5-volume.stdout",
+      "sha256": "232641e56521372136f5c0eadf1f785ed93202c3843d09a250023fd5a78ba34a"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/01-cache-admission-holders-under-lock.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 6,
+      "path": "mac/build-test-f301-r1/01-cache-admission-holders-under-lock.stdout",
+      "sha256": "2c9990f20a85dbf76619dc48cfe3f5b96648100ebabc0ed6c2f525452b23d914"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/01-preflight-cargo-lock.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/01-preflight-cargo-lock.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/01-preflight-ram-total.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 12,
+      "path": "mac/build-test-f301-r1/01-preflight-ram-total.stdout",
+      "sha256": "901c81a29f7611d5eeaf6432d3f21c8408a04c14f88f531c68c201db9699d1fa"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/01-preflight-vm-stat.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1841,
+      "path": "mac/build-test-f301-r1/01-preflight-vm-stat.stdout",
+      "sha256": "65f72281a5196011ac1a4576b049abbaab45334645ae8a4f42eb6d51d2f64362"
+    },
+    {
+      "bytes": 125,
+      "path": "mac/build-test-f301-r1/02-independent-source-clone.stderr",
+      "sha256": "aa85a16dd96915dbeb4b8bb5b41e5dbc237a7f6c4fe6788d0b1f36d9e3c9b385"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/02-independent-source-clone.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 134,
+      "path": "mac/build-test-f301-r1/03-bundle-verify.stderr",
+      "sha256": "5caf4cdebb70c50ea0b4141c28ba10ec05231512f1e24e8e74db498b5b0ab8b5"
+    },
+    {
+      "bytes": 190,
+      "path": "mac/build-test-f301-r1/03-bundle-verify.stdout",
+      "sha256": "fe602ed232f0f9167a7d49760c9ec73d136c833b7eb2cb03f34f22b535586f45"
+    },
+    {
+      "bytes": 179,
+      "path": "mac/build-test-f301-r1/04-fetch-local-bundle.stderr",
+      "sha256": "c8f57a9cb83d91cca17fc7aebfee03d33a7e6ef6e44e93ee1d9a626890b2c998"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/04-fetch-local-bundle.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/05-canonical-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/build-test-f301-r1/05-canonical-tree.stdout",
+      "sha256": "f0681b4e459b6e0fc72a3c7fc2b077cc86f342640855412255a9d6326acc2a36"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/06-canonical-parent.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/build-test-f301-r1/06-canonical-parent.stdout",
+      "sha256": "52e01f247400eea836d48bde64752e851684e8ca96c0d10e8e743854638ac4d7"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/07-clone-ancestor.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/07-clone-ancestor.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/07-original-ancestor.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/07-original-ancestor.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 193,
+      "path": "mac/build-test-f301-r1/08-checkout-canonical.stderr",
+      "sha256": "ca78b204e7449685f0db3d8da741f4bd68aa5246534a511c00b0df59153051c2"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/08-checkout-canonical.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/09-clean-source.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/09-clean-source.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/10-full-repository.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 6,
+      "path": "mac/build-test-f301-r1/10-full-repository.stdout",
+      "sha256": "2ed27c1421e6928dbe13dbfdb5c59e1045b30341fe7ebe05700006bc5ac572c0"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/11-fsck.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 627,
+      "path": "mac/build-test-f301-r1/11-fsck.stdout",
+      "sha256": "0be73bbc1562601e1cbf16e9fca956f64ed16f205d602cac3bedf10c96988a1a"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/12-format-check.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/12-format-check.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/12-precompile-cache-admission-holders-under-lock.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 6,
+      "path": "mac/build-test-f301-r1/12-precompile-cache-admission-holders-under-lock.stdout",
+      "sha256": "2c9990f20a85dbf76619dc48cfe3f5b96648100ebabc0ed6c2f525452b23d914"
+    },
+    {
+      "bytes": 2653,
+      "path": "mac/build-test-f301-r1/13-normal-release-build.stderr",
+      "sha256": "cda0acac91b5836c9dfc5dba9bd5e76eda23b1849c12ad6f396e49d773cfaeef"
+    },
+    {
+      "bytes": 440432,
+      "path": "mac/build-test-f301-r1/13-normal-release-build.stdout",
+      "sha256": "265f95c010081e5531ff6df14753baae836590a522bbe92a566ee17ee4019238"
+    },
+    {
+      "bytes": 225,
+      "path": "mac/build-test-f301-r1/14-server-libtest-build.stderr",
+      "sha256": "b11b563ff4e1ec3a66af886de3f2f2a768bda32e45945ca513817d084f74334e"
+    },
+    {
+      "bytes": 438118,
+      "path": "mac/build-test-f301-r1/14-server-libtest-build.stdout",
+      "sha256": "fb25f2b7623c0bef5bacc71c6c799c26e8c34b06a9575e8e332d4e19759af4ca"
+    },
+    {
+      "bytes": 589,
+      "path": "mac/build-test-f301-r1/15-peer-libtest-build.stderr",
+      "sha256": "098abde3689924eb78766748e17efb3a09898cebe7ed5d9f2054adc9f35376de"
+    },
+    {
+      "bytes": 163380,
+      "path": "mac/build-test-f301-r1/15-peer-libtest-build.stdout",
+      "sha256": "5501c7e0e2fee473f7342ceab69e60c4ebd49a0975aa15c18df44ba186c09f16"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/98-clone-final-clean.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/98-clone-final-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/98-clone-final-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/build-test-f301-r1/98-clone-final-head.stdout",
+      "sha256": "727d9c94f287e8130b776e8b0c28f8f07bad5140258a57b715a9532f86e37bcb"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/98-clone-final-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/build-test-f301-r1/98-clone-final-tree.stdout",
+      "sha256": "1a962936bb5ebc78e7588f292b6398c5b920724afce87906db193fc225bab7dd"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/98-old-final-clean.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/98-old-final-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/98-old-final-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/build-test-f301-r1/98-old-final-head.stdout",
+      "sha256": "563acb7c1de815cc6e990150190f137d1c218db6566a228fadd8e550a3f9d57c"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/98-old-final-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/build-test-f301-r1/98-old-final-tree.stdout",
+      "sha256": "9f5293c8c19686df077cfb69270edefb2df2c42411b37dcdd974a7aa092b4ba0"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/98-postflight-cargo-lock.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/98-postflight-cargo-lock.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/98-postflight-ram-total.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 12,
+      "path": "mac/build-test-f301-r1/98-postflight-ram-total.stdout",
+      "sha256": "901c81a29f7611d5eeaf6432d3f21c8408a04c14f88f531c68c201db9699d1fa"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/98-postflight-vm-stat.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1841,
+      "path": "mac/build-test-f301-r1/98-postflight-vm-stat.stdout",
+      "sha256": "5efae2b040b41ed4abf9ced4a38603fff93d0d29d59095294237dddeeac234f8"
+    },
+    {
+      "bytes": 66997,
+      "path": "mac/build-test-f301-r1/MANIFEST.public.json",
+      "sha256": "187a4d538468b3dddcda0985fe2e0a4204520eaa529c2ef061e889aad969667e"
+    },
+    {
+      "bytes": 3918,
+      "path": "mac/build-test-f301-r1/RECONCILIATION.public.json",
+      "sha256": "62bf62bfc21aa2f0c2cdd7b91c2988221a7b658bb2c879c5153df95620b1d2b0"
+    },
+    {
+      "bytes": 29754,
+      "path": "mac/build-test-f301-r1/controller.py",
+      "sha256": "6d283c73714f2a87f4ce9259da116306c61e429a30cc23c881d841aaa0086fc0"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/heptabao-ha-service-list.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 13827,
+      "path": "mac/build-test-f301-r1/heptabao-ha-service-list.stdout",
+      "sha256": "36bea4d74e2a1414075e0d8138da08fd96bef2b0d51139259f23588bff70267e"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/heptabao-server-list.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 410863,
+      "path": "mac/build-test-f301-r1/heptabao-server-list.stdout",
+      "sha256": "2fd4e6db986e79cfbadd20edc759562c084ffd90f123b478ba1a25869ba9deb8"
+    },
+    {
+      "bytes": 34563,
+      "path": "mac/build-test-f301-r1/initial-progress.original.public.json",
+      "sha256": "1bde60471adce082017de80ef9b67a37cbe9f610587a1de26b55d5277e2779f2"
+    },
+    {
+      "bytes": 1574,
+      "path": "mac/build-test-f301-r1/launcher.py",
+      "sha256": "e3793f1989f66f0f294c264992ea79efe247bfd84a9af8eebcb0329e18d39216"
+    },
+    {
+      "bytes": 2571,
+      "path": "mac/build-test-f301-r1/postfailure-artifacts.metadata.original.json",
+      "sha256": "a2b1bdd18176b7b60cc12feb1bd0b5bd65c542024919e33b05d9e7d0bd658409"
+    },
+    {
+      "bytes": 591,
+      "path": "mac/build-test-f301-r1/postfailure-receipt.metadata.original.json",
+      "sha256": "117029d2700d3632607a19da8729d01f198bc3f331e039aa63a866eafced70b1"
+    },
+    {
+      "bytes": 1625,
+      "path": "mac/build-test-f301-r1/postfailure-source-probe.py",
+      "sha256": "3bb9f69e7e7a7cede58ecdf355ec6ff200bfe5401e18818e306671739b03ff0b"
+    },
+    {
+      "bytes": 1977,
+      "path": "mac/build-test-f301-r1/postfailure-source-request.json",
+      "sha256": "1b60f267ff5e44be75ea8032cafa7ebb76c75f7d1774bc817845dd3ca727723f"
+    },
+    {
+      "bytes": 2826,
+      "path": "mac/build-test-f301-r1/postfailure-source-start.original.json",
+      "sha256": "88154f45f94ced0b21409516b7d0c13c323f5ef0fc0bbf9a38456db57663bcdf"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/postfailure-source-stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 863,
+      "path": "mac/build-test-f301-r1/postfailure-source-stdout.original",
+      "sha256": "018e4a88f224a980b92262a3edbfb63260bdd2a755536dd5787c6da7085c2e36"
+    },
+    {
+      "bytes": 730,
+      "path": "mac/build-test-f301-r1/postfailure-source-terminal.original.json",
+      "sha256": "77af6d459f25809f5b4c4e9ad8110e7f9d63f1711d7b2db405c96887a738d446"
+    },
+    {
+      "bytes": 140444,
+      "path": "mac/build-test-f301-r1/result.public.json",
+      "sha256": "31b60348a98aef69c57381637cc59d7c69ba3f6729ba63f89c2b7ff76e5ea155"
+    },
+    {
+      "bytes": 3052,
+      "path": "mac/build-test-f301-r1/runtime-start.original.json",
+      "sha256": "6dd51309f83e37edd4dca1da0d5c829c44a0e5e59070c6187497fcec462e0385"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/runtime-stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 14520,
+      "path": "mac/build-test-f301-r1/runtime-stdout.original",
+      "sha256": "6bfea27585bf5432b1a91abb7296691acb1be139e308d3d786dd7d8425798718"
+    },
+    {
+      "bytes": 731,
+      "path": "mac/build-test-f301-r1/runtime-terminal.original.json",
+      "sha256": "588175c79578ccf294045b092bbe8ce9d10212c7b728c7e31fc7418b09711aa4"
+    },
+    {
+      "bytes": 26029,
+      "path": "mac/build-test-f301-r1/test-00-ssh25-00.stderr",
+      "sha256": "1835abed89d1d884fab105fc6739596030886b659578f80a0ad17227c3503340"
+    },
+    {
+      "bytes": 3163,
+      "path": "mac/build-test-f301-r1/test-00-ssh25-00.stdout",
+      "sha256": "629ac3884c0d212fa10ee96275cb954b4dd5061831e304da1ba823500089d2e6"
+    },
+    {
+      "bytes": 162,
+      "path": "mac/build-test-f301-r1/test-01-mount1-00.stderr",
+      "sha256": "b1b6a5231fd9cccbe919c8f65a55c58c18686e8c2e1a61f72df6ceb6e0df59c0"
+    },
+    {
+      "bytes": 233,
+      "path": "mac/build-test-f301-r1/test-01-mount1-00.stdout",
+      "sha256": "395fff869a7b4f47e7467c6392d0fc8b50c17798d2e368f557a1b51d55a27c60"
+    },
+    {
+      "bytes": 1304,
+      "path": "mac/build-test-f301-r1/test-02-redirect5-00.stderr",
+      "sha256": "0d1b1bbb8ca8447a0d365222beef62eb6526abd06fb4462a4c7875287bdc90f9"
+    },
+    {
+      "bytes": 722,
+      "path": "mac/build-test-f301-r1/test-02-redirect5-00.stdout",
+      "sha256": "2f3f808569b5cb8f82c9ed238e06a9173212b813d6c9c8dc5a97f318e480cec1"
+    },
+    {
+      "bytes": 324,
+      "path": "mac/build-test-f301-r1/test-03-actor2-00.stderr",
+      "sha256": "f0fc5cee225a412f5b9abc239baf8c412437476b6fd7960d30ee6c0b271c8727"
+    },
+    {
+      "bytes": 440,
+      "path": "mac/build-test-f301-r1/test-03-actor2-00.stdout",
+      "sha256": "cd354ed94fc21cbd8fd81845f6c58d0c26586e4cdff236eb5dc343ccd875317c"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/test-04-ordinary5-00.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 699,
+      "path": "mac/build-test-f301-r1/test-04-ordinary5-00.stdout",
+      "sha256": "196d5edd26cac09940a52d1dee00ce9a4fd9f4dde5f1863546b808709b69638a"
+    },
+    {
+      "bytes": 19397,
+      "path": "mac/build-test-f301-r1/test-05-no_forward6-00.stderr",
+      "sha256": "9657c1b0a466a65cd6a763b439c2b429743950db1c53f17f7b9f8eaf5cb52cff"
+    },
+    {
+      "bytes": 877,
+      "path": "mac/build-test-f301-r1/test-05-no_forward6-00.stdout",
+      "sha256": "170468243581a65ff8fb3caa8a7b7c9c33b468a48a88fd32f572d470af499435"
+    },
+    {
+      "bytes": 428,
+      "path": "mac/build-test-f301-r1/test-06-legacy-ingress7-00.stderr",
+      "sha256": "bf242ff1f87b64e04e744c31b376d60f73dc3033a9b2517bc7abeb85cc9c3d08"
+    },
+    {
+      "bytes": 256,
+      "path": "mac/build-test-f301-r1/test-06-legacy-ingress7-00.stdout",
+      "sha256": "a0e5b4558c8812ee3a0c23ef00475b42b0b9e13b1085256ab33b2d6e37feb705"
+    },
+    {
+      "bytes": 832,
+      "path": "mac/build-test-f301-r1/test-06-legacy-ingress7-01.stderr",
+      "sha256": "589dd3ed2a75c91a6d3980c52b7ec7cdb63af95db4c980c6cc1a3140c4641200"
+    },
+    {
+      "bytes": 265,
+      "path": "mac/build-test-f301-r1/test-06-legacy-ingress7-01.stdout",
+      "sha256": "4ee67f507aa588da74c03191a7bd41f3f1139fdc26266c55bf9685269861e95a"
+    },
+    {
+      "bytes": 1314,
+      "path": "mac/build-test-f301-r1/test-06-legacy-ingress7-02.stderr",
+      "sha256": "28298dbd1eaac98a28218f4cd39e01dcdeeb51c6e0048385bf2985e9b6cc2108"
+    },
+    {
+      "bytes": 262,
+      "path": "mac/build-test-f301-r1/test-06-legacy-ingress7-02.stdout",
+      "sha256": "dc86f49273367be221858e788c5d6bcc27627c1c05cc6b06a1ab59d619e45669"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/test-06-legacy-ingress7-03.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 235,
+      "path": "mac/build-test-f301-r1/test-06-legacy-ingress7-03.stdout",
+      "sha256": "86786f8ca4e40a6d1519dd106652b5bb59c6b11973ba13006f11d53baca7c44c"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/test-06-legacy-ingress7-04.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 242,
+      "path": "mac/build-test-f301-r1/test-06-legacy-ingress7-04.stdout",
+      "sha256": "574e55d812e83cb9a1bc5f19ca0cfea2cd90068c9c64d17d143f09c4b46f140c"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/test-06-legacy-ingress7-05.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 245,
+      "path": "mac/build-test-f301-r1/test-06-legacy-ingress7-05.stdout",
+      "sha256": "88d32ef40b197cb86faedaf117f2cd7a6c34a75689b85421f4e98a8125056274"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/test-06-legacy-ingress7-06.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 243,
+      "path": "mac/build-test-f301-r1/test-06-legacy-ingress7-06.stdout",
+      "sha256": "5bf02e8f70fd408d582792210a72ffecea60f67d6457e309caa17a2b4d414494"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/test-07-legacy-cold-h2-9-00.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 246,
+      "path": "mac/build-test-f301-r1/test-07-legacy-cold-h2-9-00.stdout",
+      "sha256": "320c3f6ce742671a7154aefb12d0adc32537605b8bcd298e24314430138c8891"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/test-07-legacy-cold-h2-9-01.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 247,
+      "path": "mac/build-test-f301-r1/test-07-legacy-cold-h2-9-01.stdout",
+      "sha256": "dffa6eb3580dfbf991e8eefbbf575831f29138cc1e79a428a3e570f6c94acdd9"
+    },
+    {
+      "bytes": 324,
+      "path": "mac/build-test-f301-r1/test-07-legacy-cold-h2-9-02.stderr",
+      "sha256": "f0fc5cee225a412f5b9abc239baf8c412437476b6fd7960d30ee6c0b271c8727"
+    },
+    {
+      "bytes": 238,
+      "path": "mac/build-test-f301-r1/test-07-legacy-cold-h2-9-02.stdout",
+      "sha256": "6d6924d8e3b860c1b9cca08abc2f9c53aded2732ff8d4013edfbb4325820b431"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/test-07-legacy-cold-h2-9-03.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 220,
+      "path": "mac/build-test-f301-r1/test-07-legacy-cold-h2-9-03.stdout",
+      "sha256": "06027e6cc2be7a383b24e4d8bc717a31803081500870525602d43a81d6acdb6e"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/test-07-legacy-cold-h2-9-04.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 215,
+      "path": "mac/build-test-f301-r1/test-07-legacy-cold-h2-9-04.stdout",
+      "sha256": "8ee0d082d3924c660581164e785f270014766172d26a93d3006fc823cc5043e3"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/test-07-legacy-cold-h2-9-05.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 204,
+      "path": "mac/build-test-f301-r1/test-07-legacy-cold-h2-9-05.stdout",
+      "sha256": "c26510e06d4e8d806d209f28f3f0500f150f38a44d2bb7d8db79e49172e7f3eb"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/test-07-legacy-cold-h2-9-06.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 219,
+      "path": "mac/build-test-f301-r1/test-07-legacy-cold-h2-9-06.stdout",
+      "sha256": "ad31cf1b5ce1cdb4eea6b00f5901ffff57d0bc951d42508bac5a58e31202c723"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/test-07-legacy-cold-h2-9-07.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 223,
+      "path": "mac/build-test-f301-r1/test-07-legacy-cold-h2-9-07.stdout",
+      "sha256": "861f2aa925af70718e958fb0a783a33124bb46fe97a7cdb27668eb6308182d2a"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/test-07-legacy-cold-h2-9-08.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 224,
+      "path": "mac/build-test-f301-r1/test-07-legacy-cold-h2-9-08.stdout",
+      "sha256": "db02bb9228be190d8a2e4f277517bafffad7e9aab0c81c881a312883195f7e91"
+    },
+    {
+      "bytes": 724,
+      "path": "mac/build-test-f301-r1/test-08-legacy-same-root1-00.stderr",
+      "sha256": "34a70a6b2f2fe8b0f58eb29e4870e96c712ea21b0fb5161e3f1b2ee9e39b29f2"
+    },
+    {
+      "bytes": 262,
+      "path": "mac/build-test-f301-r1/test-08-legacy-same-root1-00.stdout",
+      "sha256": "6b51a77005f24f687db594ccdf93985156b644fe57f9f0741c480628f7a55867"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/test-09-snapshot-body10-00.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1134,
+      "path": "mac/build-test-f301-r1/test-09-snapshot-body10-00.stdout",
+      "sha256": "37ee7e76198fec5dd079c851adc6459e6d7e363c5565a122bf0a67976779a499"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/test-10-snapshot-peer7-00.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 941,
+      "path": "mac/build-test-f301-r1/test-10-snapshot-peer7-00.stdout",
+      "sha256": "7765ad66637d32666412c648783181eb10ea069902edc7afacc9ca28f5f3adc7"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/test-11-snapshot-actor2-00.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 353,
+      "path": "mac/build-test-f301-r1/test-11-snapshot-actor2-00.stdout",
+      "sha256": "658e4b8cff0e979b21c47427dd3e644a311e5a644b16d3daeed43c834a292237"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/build-test-f301-r1/test-12-snapshot-wire4-00.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 627,
+      "path": "mac/build-test-f301-r1/test-12-snapshot-wire4-00.stdout",
+      "sha256": "17e71207003d92c6efa5fd35a8e0ed015824a2d4c73fe2db987e43ed16d25f99"
+    },
+    {
+      "bytes": 4982,
+      "path": "mac/build-test-f301-r1/test-13-snapshot-audit4-00.stderr",
+      "sha256": "e73c585ed202e9907bf9fac52831ab5fb007c1ff024f71cce1c7b29558e47c19"
+    },
+    {
+      "bytes": 921,
+      "path": "mac/build-test-f301-r1/test-13-snapshot-audit4-00.stdout",
+      "sha256": "aa98ea33b6f11911a8075535655fc63b4b5cdfae8c58af47105d466811cc5108"
+    },
+    {
+      "bytes": 5139,
+      "path": "mac/build-test-f301-r1/test-14-native-jwt15-00.stderr",
+      "sha256": "8777fe22563b937982a22de79fb0fcd3be2162b524a41d11ac41aca954bdf281"
+    },
+    {
+      "bytes": 3085,
+      "path": "mac/build-test-f301-r1/test-14-native-jwt15-00.stdout",
+      "sha256": "96e67cf998f989654b08469a1741f996e5fedd94146fac2d50f26d7567232818"
+    },
+    {
+      "bytes": 39103,
+      "path": "mac/build-test-f301-r1/test-selection.public.json",
+      "sha256": "a5079af9cfdf051b2c926cad6799b22d6bab9f6682b27e74bb7017a37424a57d"
+    },
+    {
+      "bytes": 4424,
+      "path": "mac/dr-wrapper-guards-r2/MANIFEST.public.json",
+      "sha256": "65cb01fea57e012ce3f952a46d87fdc086ecb262423fe116235e8b201328f6e6"
+    },
+    {
+      "bytes": 22618,
+      "path": "mac/dr-wrapper-guards-r2/dr25_mac_fixed_wrapper.py",
+      "sha256": "f622f5b44d56b5e44fb6027505f9c655ae7974467e59cfa08f819c9dfd3a7d7c"
+    },
+    {
+      "bytes": 45268,
+      "path": "mac/dr-wrapper-guards-r2/launcher.original.py",
+      "sha256": "c585fda46ecd92516b8a12038478183f5cb281919bb594088d413a56a61e0a83"
+    },
+    {
+      "bytes": 45739,
+      "path": "mac/dr-wrapper-guards-r2/runtime-request.recovered.json",
+      "sha256": "4fabb9b00d3882100ee49c4b79ad60e857ac0e584941e3f16c72faa8ada9d7f5"
+    },
+    {
+      "bytes": 46591,
+      "path": "mac/dr-wrapper-guards-r2/runtime-start.recovered.json",
+      "sha256": "b677bdbe337dad13bbbf728694e9b8f2bfb23b821cbaa418de1456e3429187b5"
+    },
+    {
+      "bytes": 1190,
+      "path": "mac/dr-wrapper-guards-r2/runtime-stderr.original",
+      "sha256": "36bee57b9a661809ed91399b7e3480ef65d7769cff43c9fdac1bb1c380e499c6"
+    },
+    {
+      "bytes": 1700,
+      "path": "mac/dr-wrapper-guards-r2/runtime-stdout.original",
+      "sha256": "aea59ed47e10a93ccf3c7b84d95979018758de4f89a4e740dcd29ef10393b0f2"
+    },
+    {
+      "bytes": 738,
+      "path": "mac/dr-wrapper-guards-r2/runtime-terminal.original.json",
+      "sha256": "afd14b6deb08d9033ec2b2d22305743175f34f02ec5b8fb610a245598225d604"
+    },
+    {
+      "bytes": 8172,
+      "path": "mac/dr-wrapper-guards-r2/test_dr25_mac_fixed_wrapper.py",
+      "sha256": "a60cc7a72d2df9a8fbd7c357b41722c2bdd3d3207c93e0e281b54eb00dcb5aff"
+    },
+    {
+      "bytes": 33437,
+      "path": "mac/earlier-attempt-supplement/CANCELLED_BUILD_MANIFEST.public.json",
+      "sha256": "a6699d89b06e35ac0a0f7a352f083c6600ec9da174f99d61730aef317e46e3dc"
+    },
+    {
+      "bytes": 5301,
+      "path": "mac/earlier-attempt-supplement/SUPPLEMENTAL_MANIFEST.public.json",
+      "sha256": "0231efd0d52224599e627ffa0d7d61fc7bf28c313596cc9382753bba3b203c52"
+    },
+    {
+      "bytes": 817,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r1/00-t5-volume.public.json",
+      "sha256": "1aae6eceb04f91f2e3ebeafe1d45c70b0f9f31023157a144793e5a6f5174f165"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r1/00-t5-volume.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 408,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r1/00-t5-volume.stdout",
+      "sha256": "1b6d40511c1528cdae4645876d6d10ae22de1b43bca6dca01dbf0949c0a665a9"
+    },
+    {
+      "bytes": 26275,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r1/controller.original.py",
+      "sha256": "39ddbb77648443a58f2fc2b238014c59f70116873016cb241f369f0bc888ecb6"
+    },
+    {
+      "bytes": 1575,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r1/launch-script.original.py",
+      "sha256": "5d12f3b6c7a14ce1dd92032844640e7e113d3c7db22f2bf0c4a894b95785c273"
+    },
+    {
+      "bytes": 14190,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r1/result.public.json",
+      "sha256": "215a020cabe962c91c99e538fbda48f5ad761e029c354ce6412a365a997d905e"
+    },
+    {
+      "bytes": 2782,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r1/runtime-start.original.json",
+      "sha256": "67700762da4c99ca3b0b6235b1d11f59629afc1ee27992603b9be71f428a3f62"
+    },
+    {
+      "bytes": 728,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r1/runtime-terminal.original.json",
+      "sha256": "a69f533ac3c7b604e00c1f46e8f304878efd903b9d39cf630a32d2030ed04e1d"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r1/stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2043,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r1/stdout.original",
+      "sha256": "b809965fa2bbf9cea917cdd860958fc3e41a9c8ea5f5f10e91362ef5751eb5af"
+    },
+    {
+      "bytes": 37226,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r1/test-selection.public.json",
+      "sha256": "21c8eb41909568ebf1d33cf65c7a1fc1f920a5c5f7a2b9a66affe19fd66ffe76"
+    },
+    {
+      "bytes": 832,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/00-old-source-clean.public.json",
+      "sha256": "4af15379e005e24320363fc386c9e2a88a2b621e9e16ec2e4866339a8eaae247"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/00-old-source-clean.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/00-old-source-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 795,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/00-old-source-head.public.json",
+      "sha256": "03b7d9491549e8b578780610dc3c839912b8bec386dca1da17e8bc171f3f9414"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/00-old-source-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/00-old-source-head.stdout",
+      "sha256": "563acb7c1de815cc6e990150190f137d1c218db6566a228fadd8e550a3f9d57c"
+    },
+    {
+      "bytes": 803,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/00-old-source-tree.public.json",
+      "sha256": "53ef56c0eba5b02a326b291309a9c1b04059985bbf7e440b007a2469a3c1b87f"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/00-old-source-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/00-old-source-tree.stdout",
+      "sha256": "9f5293c8c19686df077cfb69270edefb2df2c42411b37dcdd974a7aa092b4ba0"
+    },
+    {
+      "bytes": 744,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/00-t5-volume.public.json",
+      "sha256": "e63ad26bda5a40b6069bf20a849bd2f230b66778e8258eb9d49296235cd999f2"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/00-t5-volume.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3069,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/00-t5-volume.stdout",
+      "sha256": "3bddbd3d0cafc81d69bb4f384737e26d80be0636dc560afaf126283c0a2360d4"
+    },
+    {
+      "bytes": 884,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/01-cache-admission-holders-under-lock.public.json",
+      "sha256": "eb9c3fc27ec7ff5da3d1ec68f02f9e62a581dfc2a3810c9cc0dee37329121d14"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/01-cache-admission-holders-under-lock.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 6,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/01-cache-admission-holders-under-lock.stdout",
+      "sha256": "2f59119de599042a9d7f6d8babe1c4af4bf8777728df4538dbef2ebd261f1ea3"
+    },
+    {
+      "bytes": 871,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/01-preflight-cargo-lock.public.json",
+      "sha256": "76eb175ebab4e99929387e11e7242a40ae9a4f94e47496805dde66f6fae04e0a"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/01-preflight-cargo-lock.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/01-preflight-cargo-lock.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 753,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/01-preflight-process-metadata.public.json",
+      "sha256": "6837810691d19df0d4b3e19c703508f9137369b6d4becc04f174c464189dbd99"
+    },
+    {
+      "bytes": 733,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/01-preflight-ram-total.public.json",
+      "sha256": "83f94337d75389624cfe2bc0cb571ac4b6e72b36e25aa47822d8d5e807b27619"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/01-preflight-ram-total.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 12,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/01-preflight-ram-total.stdout",
+      "sha256": "901c81a29f7611d5eeaf6432d3f21c8408a04c14f88f531c68c201db9699d1fa"
+    },
+    {
+      "bytes": 704,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/01-preflight-vm-stat.public.json",
+      "sha256": "512438f3c515a51d049be9335b8c260d0cc1c2487b8edbaf99afc962614524ec"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/01-preflight-vm-stat.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1841,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/01-preflight-vm-stat.stdout",
+      "sha256": "6315a8ea7aa09a23db41bc56e613a8cfeeeefc6f5bb80110f4eb7dd77e1c1e11"
+    },
+    {
+      "bytes": 1062,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/02-independent-source-clone.public.json",
+      "sha256": "4e8bbbb9e6601992c98131da6e792591e9a0f9461920ff850817b4d219ab0c17"
+    },
+    {
+      "bytes": 125,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/02-independent-source-clone.stderr",
+      "sha256": "70981497aea371aee74a96923bf23ba556f2d649eb46153a71afd05e2bfe0a10"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/02-independent-source-clone.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 929,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/03-bundle-verify.public.json",
+      "sha256": "b2c1c00ab0e54f6ae861a311d8cbf9233c2d1b7385bcca802440dbb5a70869be"
+    },
+    {
+      "bytes": 135,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/03-bundle-verify.stderr",
+      "sha256": "e9cfa3ee8017a249a5982e5e4d36bc9410737f073682c97d23f971a86ba8d4a4"
+    },
+    {
+      "bytes": 190,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/03-bundle-verify.stdout",
+      "sha256": "ae7434b6fef3975323dce9f0a30661aa1421985dbd382fabc9869db1b2f62bde"
+    },
+    {
+      "bytes": 946,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/04-fetch-local-bundle.public.json",
+      "sha256": "4d2e247c59bdc1638857dbd874370b1d157f993c86453cadf2ac28794963ee15"
+    },
+    {
+      "bytes": 180,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/04-fetch-local-bundle.stderr",
+      "sha256": "6fbe21c36cc39b9bbd01010277cd6d0b2b62797b26efac7c414300051f669f0d"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/04-fetch-local-bundle.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 837,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/05-canonical-tree.public.json",
+      "sha256": "a6a915f24c90d96ae56b870bdc5f36367645cc229b8709db5595ecb820ecea28"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/05-canonical-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/05-canonical-tree.stdout",
+      "sha256": "1a962936bb5ebc78e7588f292b6398c5b920724afce87906db193fc225bab7dd"
+    },
+    {
+      "bytes": 833,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/06-canonical-parent.public.json",
+      "sha256": "7fea1fc48e6ca9a917c425cce8f9decbc6a77424fb2f1f4f4536cc3339f559f3"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/06-canonical-parent.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/06-canonical-parent.stdout",
+      "sha256": "8c673bf42ca418a39d551e02c3dc5a797e60a505a303c0ed3c4110b111c70046"
+    },
+    {
+      "bytes": 902,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/07-original-ancestor.public.json",
+      "sha256": "4eb757c1222a28ea0169bc615ca66c8cf3a0d165258efbb3373b0c2b2e332342"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/07-original-ancestor.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/07-original-ancestor.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 850,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/08-checkout-canonical.public.json",
+      "sha256": "2e8407c2bd49444c1e790498be567ea1e1d35b6c7f20a52090d5518af761c439"
+    },
+    {
+      "bytes": 191,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/08-checkout-canonical.stderr",
+      "sha256": "a2d750d94a2ee67d8712076fc83df8a03be175b629dead53391f905daeee9839"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/08-checkout-canonical.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 827,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/09-clean-source.public.json",
+      "sha256": "30f72e2ac6b77ff316f783ddeba8dfeb3e8f770489ce92212a94b7b619ecd81f"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/09-clean-source.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/09-clean-source.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 813,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/10-full-repository.public.json",
+      "sha256": "65f1878c8ce75b4563e4ca42575f8fb839b90d9a187b8cc555661da772d7b428"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/10-full-repository.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 6,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/10-full-repository.stdout",
+      "sha256": "2ed27c1421e6928dbe13dbfdb5c59e1045b30341fe7ebe05700006bc5ac572c0"
+    },
+    {
+      "bytes": 797,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/11-fsck.public.json",
+      "sha256": "7635637481903427851a4413c92d5c49f827b36fb479855010958454b9c11b70"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/11-fsck.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 627,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/11-fsck.stdout",
+      "sha256": "0be73bbc1562601e1cbf16e9fca956f64ed16f205d602cac3bedf10c96988a1a"
+    },
+    {
+      "bytes": 800,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/12-format-check.public.json",
+      "sha256": "acc52fad626e631a30480e950c6d22c2386701f332994a2f41d425f44c829352"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/12-format-check.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/12-format-check.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 895,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/12-precompile-cache-admission-holders-under-lock.public.json",
+      "sha256": "b4d993d46a4d5fe9b59c57251036471316606ff4db41640c249b24999c4c3618"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/12-precompile-cache-admission-holders-under-lock.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 6,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/12-precompile-cache-admission-holders-under-lock.stdout",
+      "sha256": "2f59119de599042a9d7f6d8babe1c4af4bf8777728df4538dbef2ebd261f1ea3"
+    },
+    {
+      "bytes": 987,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/13-normal-release-build.public.json",
+      "sha256": "da9c39a8d87d9b2c7b65512751915010be5c3d5181f2036fd45030ae27b47e47"
+    },
+    {
+      "bytes": 2653,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/13-normal-release-build.stderr",
+      "sha256": "07bd2c81102d80523ed2513363deff6f7d332101f556343e0bcf7a694d57baf2"
+    },
+    {
+      "bytes": 440432,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/13-normal-release-build.stdout",
+      "sha256": "165f9f68422adf09cbe68b6d950e82ca937ff8cf7c11ae29c66559df83963e34"
+    },
+    {
+      "bytes": 1110,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/14-server-libtest-build.public.json",
+      "sha256": "37cb090334e352a0c4e2cc41cfdad1b448e05f3a6223fd3c06317947afd7fff5"
+    },
+    {
+      "bytes": 162,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/14-server-libtest-build.stderr",
+      "sha256": "44c0694f14088690c80cdc60693e872fc83f91ddf84bb0df6c96b07d7aa84b9e"
+    },
+    {
+      "bytes": 436920,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/14-server-libtest-build.stdout",
+      "sha256": "fb5dbdbd9a38b75b5b26b7a6c49a3328969cd0d0698af127fb3e1ef74ccce2e7"
+    },
+    {
+      "bytes": 830,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/98-old-final-clean.public.json",
+      "sha256": "f371ef8cb80d7831cd77a03f3f6cd58c294ba5a34906b4e3801405c4a13a07fe"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/98-old-final-clean.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/98-old-final-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 795,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/98-old-final-head.public.json",
+      "sha256": "6ecdd179f8baee8be0f1a43c5cb535cd249a9b518855236503bd00807499c4d7"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/98-old-final-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/98-old-final-head.stdout",
+      "sha256": "563acb7c1de815cc6e990150190f137d1c218db6566a228fadd8e550a3f9d57c"
+    },
+    {
+      "bytes": 801,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/98-old-final-tree.public.json",
+      "sha256": "2e669b89ac1898477ad18d3d85a0321a6662a507223c7043e7e0da23a85d61d5"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/98-old-final-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/98-old-final-tree.stdout",
+      "sha256": "9f5293c8c19686df077cfb69270edefb2df2c42411b37dcdd974a7aa092b4ba0"
+    },
+    {
+      "bytes": 873,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/98-postflight-cargo-lock.public.json",
+      "sha256": "5bfd8144199ada5dd1e7638425e5714dbb34899508cd7d5849037774a743d4ba"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/98-postflight-cargo-lock.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/98-postflight-cargo-lock.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 754,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/98-postflight-process-metadata.public.json",
+      "sha256": "b06efbc3ceb0236b99145378162892e3f3c34096ffbd2b50bf39c20990102c5a"
+    },
+    {
+      "bytes": 734,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/98-postflight-ram-total.public.json",
+      "sha256": "a4fceafbfd5f7c7b62f28c7ab20861b10b7855bb4ed0a8d6543ac13778a6d7a6"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/98-postflight-ram-total.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 12,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/98-postflight-ram-total.stdout",
+      "sha256": "901c81a29f7611d5eeaf6432d3f21c8408a04c14f88f531c68c201db9699d1fa"
+    },
+    {
+      "bytes": 706,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/98-postflight-vm-stat.public.json",
+      "sha256": "049792810968deff5d9e2ed34549012d4a0723313b3524812d6c04c68273c107"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/98-postflight-vm-stat.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1841,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/98-postflight-vm-stat.stdout",
+      "sha256": "6006b87c9b8bde1332909dadee52e9f7ab734eafba9350eaad1d5cc733af8f5d"
+    },
+    {
+      "bytes": 3725,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/CANCELLATION_RECONCILIATION.public.json",
+      "sha256": "2c99efcb744f3a70214c5d952537e0551b12b8bff3e8e95d722746f37b5c236a"
+    },
+    {
+      "bytes": 1142,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/mac-build-2b38-r2-cancellation-intent.public.json",
+      "sha256": "1d859f4b4677b11d2432411952072a6555d927831337d2afe472cad106095d5d"
+    },
+    {
+      "bytes": 46654,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/result.public.json",
+      "sha256": "2c64baf258c54c207e4bad4c4ec362fc17d404f867cca0c312a2acfd9862ee7e"
+    },
+    {
+      "bytes": 244,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/runtime-cancel.original.json",
+      "sha256": "631c5dfc288e5ec8417acd8ea0712caf661746b69ae03cc41a4e9c33d5528e18"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/runtime-stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 6446,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/runtime-stdout.original",
+      "sha256": "c4dcaba15b8f59428512cd460e04ef8d32bc8df23381a53f2867601440fb5eea"
+    },
+    {
+      "bytes": 730,
+      "path": "mac/earlier-attempt-supplement/build-test-2b38-r2/runtime-terminal.original.json",
+      "sha256": "c097a185227970075befb2bf9aa84e105a05594ba5aa02f5b7cb2e109bca11ee"
+    },
+    {
+      "bytes": 1367,
+      "path": "mac/earlier-attempt-supplement/foreign-compiler-birth-cache-r1/launch-script.original.py",
+      "sha256": "c8bcba56a6fd74502d657733979e8b7fa5bb0f248c8f6cd4cf694e02f5d44aa6"
+    },
+    {
+      "bytes": 2481,
+      "path": "mac/earlier-attempt-supplement/foreign-compiler-birth-cache-r1/runtime-start.original.json",
+      "sha256": "6df022c8cd1be73f0e0dd1c17336135dfa1126552c94e58e944e8066e86f83ba"
+    },
+    {
+      "bytes": 731,
+      "path": "mac/earlier-attempt-supplement/foreign-compiler-birth-cache-r1/runtime-terminal.original.json",
+      "sha256": "3b64a217d8f1039e994a7729fc1be985c14fc0ceda039e0350180c1bd2511244"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/foreign-compiler-birth-cache-r1/stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2045,
+      "path": "mac/earlier-attempt-supplement/foreign-compiler-birth-cache-r1/stdout.original",
+      "sha256": "0f227f5ba17066ae89ae99154d7ea34938212bb9961e8a9558cd0455251cbdce"
+    },
+    {
+      "bytes": 1161,
+      "path": "mac/earlier-attempt-supplement/foreign-compiler-metadata-r1/launch-script.original.py",
+      "sha256": "1fcf46774ac7d7ff2674a546aef027484076826041676ed9ec90af11232e5b53"
+    },
+    {
+      "bytes": 2274,
+      "path": "mac/earlier-attempt-supplement/foreign-compiler-metadata-r1/runtime-start.original.json",
+      "sha256": "8c6f3b1158856c2aec43ae22c572e1ab6d3304f192e4f4a753a1f6b708b1b041"
+    },
+    {
+      "bytes": 731,
+      "path": "mac/earlier-attempt-supplement/foreign-compiler-metadata-r1/runtime-terminal.original.json",
+      "sha256": "6c495c479bb9ba2755e77bfadd8fd8cdee788fd8036a7f50d5464e1e9fc5c724"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/earlier-attempt-supplement/foreign-compiler-metadata-r1/stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1218,
+      "path": "mac/earlier-attempt-supplement/foreign-compiler-metadata-r1/stdout.original",
+      "sha256": "e677c227f41cc038cfa87f078d0e8bc0b6ac3a32ef1e1324660519f460b0a16e"
+    },
+    {
+      "bytes": 26421,
+      "path": "mac/earlier-attempt-supplement/prepared-build-test-2b38-r2/mac_build_test_2b38_r2.py",
+      "sha256": "51c126e15fc802598721c1e0555f9b7726ad2a618598d70a5e11dd7274dae895"
+    },
+    {
+      "bytes": 37669,
+      "path": "mac/earlier-attempt-supplement/prepared-build-test-2b38-r2/test-selection-2b38-r2.public.json",
+      "sha256": "666116a237a02165a06db787e8e5aedd9407064cfba99c3a5c8a0bdc520ee785"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/jwt868-fixture-rustfmt-r1/01-version.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 45,
+      "path": "mac/jwt868-fixture-rustfmt-r1/01-version.stdout",
+      "sha256": "f0e7a732a40b95640a1d26e3f12b8260eab948c6b5cf346eb4ec8eeac6c48bfe"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/jwt868-fixture-rustfmt-r1/02-format.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/jwt868-fixture-rustfmt-r1/02-format.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/jwt868-fixture-rustfmt-r1/03-check.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/jwt868-fixture-rustfmt-r1/03-check.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 6126,
+      "path": "mac/jwt868-fixture-rustfmt-r1/MANIFEST.public.json",
+      "sha256": "9db674e9444ca28590495b36474e87403c861824752a9e47f8c0a70241c47ce6"
+    },
+    {
+      "bytes": 39999,
+      "path": "mac/jwt868-fixture-rustfmt-r1/base868.original.rs",
+      "sha256": "3c146567bc9cea6e26beaa7da9719edf698218a3cccf9b93c29f034d7b49f44d"
+    },
+    {
+      "bytes": 54216,
+      "path": "mac/jwt868-fixture-rustfmt-r1/controller.original.py",
+      "sha256": "82d9c34251487c03888b7f32b75c7ab500ea960cf3d57d17ee85199225d7460b"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/jwt868-fixture-rustfmt-r1/formatter-only.diff",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 42377,
+      "path": "mac/jwt868-fixture-rustfmt-r1/input.original.rs",
+      "sha256": "d36bd868975958093c50218ad1e06b20a58b5156a37cd58718dfdc1654c1f156"
+    },
+    {
+      "bytes": 12307,
+      "path": "mac/jwt868-fixture-rustfmt-r1/result.public.json",
+      "sha256": "a0b305b390abd96a38de80dadcae4f86b0db884d8c01cd87fb073ddadf505760"
+    },
+    {
+      "bytes": 728,
+      "path": "mac/jwt868-fixture-rustfmt-r1/runtime-start.public.json",
+      "sha256": "341145825be3630b32b08ce7ac4f048801313a8e6329bb7113a2e6ae8898c086"
+    },
+    {
+      "bytes": 0,
+      "path": "mac/jwt868-fixture-rustfmt-r1/runtime-stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 9221,
+      "path": "mac/jwt868-fixture-rustfmt-r1/runtime-stdout.original",
+      "sha256": "653a2dc179ab7b8ec23567b21bdd199ee7add6fd748967eb2b2b12284d7eccbd"
+    },
+    {
+      "bytes": 731,
+      "path": "mac/jwt868-fixture-rustfmt-r1/runtime-terminal.original.json",
+      "sha256": "65d38fa19290f5512c21231d45ebb08695207413c3bfddb9b1559e852d9b270f"
+    },
+    {
+      "bytes": 17,
+      "path": "mac/jwt868-fixture-rustfmt-r1/rustfmt.toml",
+      "sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584"
+    },
+    {
+      "bytes": 42377,
+      "path": "mac/jwt868-fixture-rustfmt-r1/service_native_jwt_tests.formatted.rs",
+      "sha256": "d36bd868975958093c50218ad1e06b20a58b5156a37cd58718dfdc1654c1f156"
+    },
+    {
+      "bytes": 5956,
+      "path": "mac/jwt868-fixture-rustfmt-r1/three-fixture-fixes.formatted.patch",
+      "sha256": "11f23a712e5c7db5670ef0ba517f0d45e38d514fc701171719fb91f0772e7ac2"
+    },
+    {
+      "bytes": 2176,
+      "path": "mac/parent-fd-guards-r1/MANIFEST.public.json",
+      "sha256": "8845b6eaff14b343943c0ef9005ffaf865ec18c4c45f894fc81648cfdd342210"
+    },
+    {
+      "bytes": 49393,
+      "path": "mac/parent-fd-guards-r1/inputs/kv2_271_lossless_native_live.py",
+      "sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581"
+    },
+    {
+      "bytes": 70045,
+      "path": "mac/parent-fd-guards-r1/inputs/kv2_native_fresh_directory_dr_live.py",
+      "sha256": "388f763d810e1694ce9fe3d4ce52325318aad8ec4fa4d87ebbcd6cfbe7f1f5a0"
+    },
+    {
+      "bytes": 34985,
+      "path": "mac/parent-fd-guards-r1/inputs/tests/test_kv2_native_fresh_directory_dr_live.py",
+      "sha256": "79a837e1b3932ac409546dc6f54e24e4a73e5fe0be9293c6bcfd12de0f81c782"
+    },
+    {
+      "bytes": 2026,
+      "path": "mac/parent-fd-guards-r1/launch-script.original.py",
+      "sha256": "8d7a67b2a680ffc2d222279e972dde043404c53755f5052b6ed4cf5ea7f1f6fc"
+    },
+    {
+      "bytes": 3270,
+      "path": "mac/parent-fd-guards-r1/runtime-start.original.json",
+      "sha256": "4b8e99cb742434fb4ae9e29629fa6b2b6b12a79c9f79a3a4a19129139a9133de"
+    },
+    {
+      "bytes": 733,
+      "path": "mac/parent-fd-guards-r1/runtime-terminal.original.json",
+      "sha256": "beb6529aa4217f0765c5d530657b6a1e9f97976516bfa35f932e1506eb3a5e5a"
+    },
+    {
+      "bytes": 1021,
+      "path": "mac/parent-fd-guards-r1/selection.public.json",
+      "sha256": "4f892dab4ed86eb84ffc7dafddec66aeef8b167c5993ba76f1b6a42d267ff718"
+    },
+    {
+      "bytes": 528,
+      "path": "mac/parent-fd-guards-r1/stderr.original",
+      "sha256": "b2594d4530a0e7305519db12d670a2b0b5182448559950f3d18ac5377633b9c4"
+    },
+    {
+      "bytes": 132,
+      "path": "mac/parent-fd-guards-r1/stdout.original",
+      "sha256": "d689456c6063a43d7b344c75e1dc7ddd3d51476228af2eb0390148f20b605255"
+    },
+    {
+      "bytes": 2388,
+      "path": "mac/raw-killpg-guards-r1/MANIFEST.public.json",
+      "sha256": "357ede73c2dadfc98b9e72de8620efa8fcb702e18d75b96356dac2118b967e32"
+    },
+    {
+      "bytes": 26131,
+      "path": "mac/raw-killpg-guards-r1/inputs/kv2_dr_process_custody.py",
+      "sha256": "669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008"
+    },
+    {
+      "bytes": 28442,
+      "path": "mac/raw-killpg-guards-r1/inputs/owned_process.py",
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0"
+    },
+    {
+      "bytes": 17148,
+      "path": "mac/raw-killpg-guards-r1/inputs/tests/test_kv2_dr_process_custody.py",
+      "sha256": "41d3b0e079b2b17a0ece458f907adf380542cbdf96530213869636e81a447807"
+    },
+    {
+      "bytes": 2052,
+      "path": "mac/raw-killpg-guards-r1/launch-script.original.py",
+      "sha256": "c74b76e6230b1971898e29a844be4cbee1a16d4f8fb8e3512abbb90921c1568f"
+    },
+    {
+      "bytes": 3306,
+      "path": "mac/raw-killpg-guards-r1/runtime-start.original.json",
+      "sha256": "3548a7700e42682ee2d37cb5e1e6cf3ad3c87568b14f6037a9fd825abdb5cd94"
+    },
+    {
+      "bytes": 733,
+      "path": "mac/raw-killpg-guards-r1/runtime-terminal.original.json",
+      "sha256": "644d4cf639b015aba24ed8b7d2d963ca0fe2921b6c297fb1a05863a8c36583ff"
+    },
+    {
+      "bytes": 1155,
+      "path": "mac/raw-killpg-guards-r1/selection.public.json",
+      "sha256": "08accd912e3f608c58a4b223933c27b4e9f81bd393cbfc5aac635d99e92f1422"
+    },
+    {
+      "bytes": 733,
+      "path": "mac/raw-killpg-guards-r1/stderr.original",
+      "sha256": "17a2f89fa1d0c468a01e23bb640eecbc6e7d98850082b84b735273dcb066c9cb"
+    },
+    {
+      "bytes": 149,
+      "path": "mac/raw-killpg-guards-r1/stdout.original",
+      "sha256": "2df8ffab99187efd1eb10558a94d88ccae6025dc5857e310a5a727222b833877"
+    },
+    {
+      "bytes": 96367,
+      "path": "rog/build-test-r4/result.public.json",
+      "sha256": "3e7ff56be3e36f32aabf77ff67f84678d4f13e597e3ef40490b1bbc4e3547902"
+    },
+    {
+      "bytes": 729,
+      "path": "rog/build-test-r4/runtime-terminal.public.json",
+      "sha256": "56425d3088b013764c63399aa671af2e4a6c32367524f1c160128ead51589d57"
+    },
+    {
+      "bytes": 5227,
+      "path": "rog/build-test-r4/test-13-snapshot-audit4-00.stderr",
+      "sha256": "656f5a62d81d353ae3a64180b8228b0e143f6ab7371661f685d284ca58e5f2db"
+    },
+    {
+      "bytes": 1545,
+      "path": "rog/build-test-r4/test-13-snapshot-audit4-00.stdout",
+      "sha256": "0a3868a06f713f7d3b5b00262cc921bc3b41fc9e020678dfb802f206960fc3d9"
+    },
+    {
+      "bytes": 3485,
+      "path": "rog/build-test-r5/RECOVERED_MANIFEST.public.json",
+      "sha256": "7e9ae64d7bb7cda1c11759d575529827cb84f73881585f54fd919c25162b6fb7"
+    },
+    {
+      "bytes": 566,
+      "path": "rog/build-test-r5/artifact-0.native-file-info.json",
+      "sha256": "362c9c97b2c5355a0ef38d36fe2b9725c7ae1115e2367857418420b7ef54117f"
+    },
+    {
+      "bytes": 564,
+      "path": "rog/build-test-r5/artifact-1.native-file-info.json",
+      "sha256": "7eb0021afd9feec9ada566578380b5a85c4f59a0df7a984a1dfbc5bb69d7034a"
+    },
+    {
+      "bytes": 574,
+      "path": "rog/build-test-r5/artifact-2.native-file-info.json",
+      "sha256": "42835e415cc9c9afb1f556fbbc949177ca86c139b6c42e68b9b4080704d913e0"
+    },
+    {
+      "bytes": 576,
+      "path": "rog/build-test-r5/artifact-3.native-file-info.json",
+      "sha256": "c74b3e5eacd326971f08f97c0051da96e9a194ea2c68c732b078e6ef61d8ee45"
+    },
+    {
+      "bytes": 551,
+      "path": "rog/build-test-r5/result.native-file-info.json",
+      "sha256": "d03b8bcb5fa2a0af64e56e0a36a029a4c6175f18dabf3b613babb2e3c92132f0"
+    },
+    {
+      "bytes": 99847,
+      "path": "rog/build-test-r5/result.public.json",
+      "sha256": "3c5b97830c373d8366fabfb4f8362fd0710d72d366975609a1baa2cde6bce3e9"
+    },
+    {
+      "bytes": 731,
+      "path": "rog/build-test-r5/runtime-terminal.public.json",
+      "sha256": "42c2088a28894d3c07822ac34c3eaf4b2aa3c4b488e3ccf9856acf500725eabf"
+    },
+    {
+      "bytes": 5137,
+      "path": "rog/build-test-r5/test-14-native-jwt15-00.stderr",
+      "sha256": "961f7dd57edeab846426d14c655c6088852929ae991abd0561c5ad02ab93c331"
+    },
+    {
+      "bytes": 3084,
+      "path": "rog/build-test-r5/test-14-native-jwt15-00.stdout",
+      "sha256": "342daa49b3ce42a9a6c981f51b8367114f77c31f48453b7bc537f1fced3c3616"
+    },
+    {
+      "bytes": 64,
+      "path": "rog/build-test-r6/02-untracked.stdout",
+      "sha256": "e91a7ff89b6590b344f9e5dce1801aa8b2247da7852420dd8daf22f60a5ce167"
+    },
+    {
+      "bytes": 2074,
+      "path": "rog/build-test-r6/RECOVERED_MANIFEST.public.json",
+      "sha256": "dc570d6068f36f90a5fb9050079908941eabcab6dea633b23c47a1063eb696f8"
+    },
+    {
+      "bytes": 21700,
+      "path": "rog/build-test-r6/controller.py",
+      "sha256": "91d8091ee5c101b068f8cc0bb25f0fa8008e2b4a69087454a21365e29787091d"
+    },
+    {
+      "bytes": 13851,
+      "path": "rog/build-test-r6/result.public.json",
+      "sha256": "c08e70f085cfcc1657e01ad4f9c9e9b7bb910e63ce89f1018cbe03b7cc9e8b8f"
+    },
+    {
+      "bytes": 729,
+      "path": "rog/build-test-r6/runtime-terminal.public.json",
+      "sha256": "41752922aaa3998ee90ed65b5d4c43b3943c155d96326add44e8d22195f75dc7"
+    },
+    {
+      "bytes": 42133,
+      "path": "rog/build-test-r6/test-selection.public.json",
+      "sha256": "53197d1b65a3e108b14da7d9943bd158fb6fce7ae24d63dddb295eddd82b212c"
+    },
+    {
+      "bytes": 1639,
+      "path": "rog/build-test-r7/FAILURE_MANIFEST.public.json",
+      "sha256": "760b055fb6d8a58bb0d73c292387eb502ea110155c866f6225f780b1ee55960e"
+    },
+    {
+      "bytes": 733,
+      "path": "rog/build-test-r7/RECOVERED_MANIFEST.public.json",
+      "sha256": "e147ce3cd19ae976b935df1c41d5f6e8b2a14df7fe57f41050073b09480f21ce"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/00-source-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "rog/build-test-r7/complete-step-logs-r1/00-source-head.stdout",
+      "sha256": "25804477d7c72bdb8fced61fcc04d49af396fa8dd2e8149eea48b6f7a2356a60"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/01-preserved-format-diff.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/01-preserved-format-diff.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/02-untracked.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/02-untracked.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 93,
+      "path": "rog/build-test-r7/complete-step-logs-r1/03-bundle-verify.stderr",
+      "sha256": "3dc6915d805158614672a61ca308e1ef1f1a2b13244bd44d528d4ced382943a7"
+    },
+    {
+      "bytes": 190,
+      "path": "rog/build-test-r7/complete-step-logs-r1/03-bundle-verify.stdout",
+      "sha256": "c9072f4c69507db37ec16a82b8b3d1916fb5a8dd1093d0f3d6f72010ece19c12"
+    },
+    {
+      "bytes": 140,
+      "path": "rog/build-test-r7/complete-step-logs-r1/04-fetch.stderr",
+      "sha256": "e5aef5f792d710f92c349a3381d2cb28996a70f3e94e684948bab7b89499868f"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/04-fetch.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/05-canonical-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "rog/build-test-r7/complete-step-logs-r1/05-canonical-tree.stdout",
+      "sha256": "c8d7dc67a786f4aace70fc59511e00b7b25c0ba77d6e3e3e5c62c553b6e9d2b0"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/06-canonical-parent.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "rog/build-test-r7/complete-step-logs-r1/06-canonical-parent.stdout",
+      "sha256": "ec0b3f301a00983a7656ba07b341841a32ca6fbb9fec6fffd5ad9b720d059738"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/07-stage-exact-format.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/07-stage-exact-format.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/08-format-working-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "rog/build-test-r7/complete-step-logs-r1/08-format-working-tree.stdout",
+      "sha256": "c8d7dc67a786f4aace70fc59511e00b7b25c0ba77d6e3e3e5c62c553b6e9d2b0"
+    },
+    {
+      "bytes": 95,
+      "path": "rog/build-test-r7/complete-step-logs-r1/09-checkout-canonical.stderr",
+      "sha256": "cd701180f93c447b532a7e07934f529734bb4b1e74a120e4d709ccad9485d2d0"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/09-checkout-canonical.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/10-clean-source.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/10-clean-source.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/11-fsck.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 562,
+      "path": "rog/build-test-r7/complete-step-logs-r1/11-fsck.stdout",
+      "sha256": "06d08a38c9d941e05bbdee406c042e53c9cb8cdffe667744881aab4b43447be3"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/12-format-check.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/12-format-check.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2004,
+      "path": "rog/build-test-r7/complete-step-logs-r1/13-normal-release-build.stderr",
+      "sha256": "99326454f66349036b7362fc310adc16d7c9da2ddde62795310b8e02292271e7"
+    },
+    {
+      "bytes": 390465,
+      "path": "rog/build-test-r7/complete-step-logs-r1/13-normal-release-build.stdout",
+      "sha256": "abc6cd67ef171f8bb17d9f68a5afe1f4d7453dd1a64946248090d3e4ffd85289"
+    },
+    {
+      "bytes": 193,
+      "path": "rog/build-test-r7/complete-step-logs-r1/14-server-libtest-build.stderr",
+      "sha256": "fd4e43a672a7cbf1a8fe8b844b898adf2a89398b5f7d124faa153a49b6d3989d"
+    },
+    {
+      "bytes": 388566,
+      "path": "rog/build-test-r7/complete-step-logs-r1/14-server-libtest-build.stdout",
+      "sha256": "489a05c12eeebb3d65eca8cbaded731691ee6165412e9e2b7f405d9c5eff4ca3"
+    },
+    {
+      "bytes": 490,
+      "path": "rog/build-test-r7/complete-step-logs-r1/15-peer-libtest-build.stderr",
+      "sha256": "ffaa688b376d3f5af2b707f496597a8948c27c74eab53c80984ae1e12849ccbb"
+    },
+    {
+      "bytes": 141459,
+      "path": "rog/build-test-r7/complete-step-logs-r1/15-peer-libtest-build.stdout",
+      "sha256": "aabe5d4d923d4317bb59a53eba091a75b3ed4182371f3cff87bcc44249da845a"
+    },
+    {
+      "bytes": 22853,
+      "path": "rog/build-test-r7/complete-step-logs-r1/ACTUAL_CASE_RECONCILIATION.public.json",
+      "sha256": "fc794f5f32c3bd9fb6ef25cf395b850d22fdd259b311fe752223d7c2e8402451"
+    },
+    {
+      "bytes": 39391,
+      "path": "rog/build-test-r7/complete-step-logs-r1/COMPLETE_LOG_MANIFEST.public.json",
+      "sha256": "57d5b4aacc21824ca12fe204d3747298293dce6181cc69b8f27d82538262fa85"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/heptabao-ha-service-list.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 13827,
+      "path": "rog/build-test-r7/complete-step-logs-r1/heptabao-ha-service-list.stdout",
+      "sha256": "36bea4d74e2a1414075e0d8138da08fd96bef2b0d51139259f23588bff70267e"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/heptabao-server-list.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 429619,
+      "path": "rog/build-test-r7/complete-step-logs-r1/heptabao-server-list.stdout",
+      "sha256": "f2a54a30d00d57094be760b4dde4afc6b0a8367588b5c35152e4471a325176fc"
+    },
+    {
+      "bytes": 26124,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-00-ssh25-00.stderr",
+      "sha256": "3d7d903bd51f18f760f85d40989af8743bc0974c3fbaf3e1f11c127ed178c016"
+    },
+    {
+      "bytes": 3163,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-00-ssh25-00.stdout",
+      "sha256": "0a9a90017306ec05f0d2d06ae1b2d110588a2ce8606b36a4e29faad94a8d0379"
+    },
+    {
+      "bytes": 162,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-01-mount1-00.stderr",
+      "sha256": "b1b6a5231fd9cccbe919c8f65a55c58c18686e8c2e1a61f72df6ceb6e0df59c0"
+    },
+    {
+      "bytes": 233,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-01-mount1-00.stdout",
+      "sha256": "9cd4a925c4ab6a9662dfec8cf8b8de22a796ebe79a6206a5d413442de668c133"
+    },
+    {
+      "bytes": 1304,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-02-redirect5-00.stderr",
+      "sha256": "0d1b1bbb8ca8447a0d365222beef62eb6526abd06fb4462a4c7875287bdc90f9"
+    },
+    {
+      "bytes": 722,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-02-redirect5-00.stdout",
+      "sha256": "e9fa61c4fd7bcd9152a95c209bb3e36d95788dbc68d4654ab1a37949045b6b13"
+    },
+    {
+      "bytes": 324,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-03-actor2-00.stderr",
+      "sha256": "f0fc5cee225a412f5b9abc239baf8c412437476b6fd7960d30ee6c0b271c8727"
+    },
+    {
+      "bytes": 440,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-03-actor2-00.stdout",
+      "sha256": "3f5fc06df3e55370a4291b377f758208674c71f56dedd7213857eb6622d9ca7c"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-04-ordinary5-00.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 699,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-04-ordinary5-00.stdout",
+      "sha256": "a8e136f2a1635294981446c5b6cf8364ee16907c40f05450964a7f65bb9e29f3"
+    },
+    {
+      "bytes": 19377,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-05-no_forward6-00.stderr",
+      "sha256": "0d5a4dd81dc7f9d53dde6e9f7d9483a798a063db9790f9c5335a3bfad57d36c8"
+    },
+    {
+      "bytes": 876,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-05-no_forward6-00.stdout",
+      "sha256": "76035382e9aabd35a2196b7119c5d8d09a5b1cbae6cb7a7e4fd22c8197404dca"
+    },
+    {
+      "bytes": 428,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-06-legacy-ingress7-00.stderr",
+      "sha256": "fab22fdbf161148b0248e7706069491924df3d54c0531fd1189184f397cee086"
+    },
+    {
+      "bytes": 256,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-06-legacy-ingress7-00.stdout",
+      "sha256": "5afc9017039fa4caf19cc1e87fc8d2c40460d91d2ccfe24d6c72ee88895e0d1a"
+    },
+    {
+      "bytes": 728,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-06-legacy-ingress7-01.stderr",
+      "sha256": "03f3d65958cb660db21fcc204806d5e769a1b3b02a6b386ff0554fc66305996a"
+    },
+    {
+      "bytes": 265,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-06-legacy-ingress7-01.stdout",
+      "sha256": "863d92dd52cda1a8a4f8f51f52420e17ee77f62ada1103b680645a10db26a0be"
+    },
+    {
+      "bytes": 1282,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-06-legacy-ingress7-02.stderr",
+      "sha256": "60604d4b43494c0bf7a2df7275113a28d617a01926a96da674feb12d58071b8b"
+    },
+    {
+      "bytes": 262,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-06-legacy-ingress7-02.stdout",
+      "sha256": "62f2f03c7e9976abfee907547e75cf8d02f018485cbf507a5264fc6cf9ed1e46"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-06-legacy-ingress7-03.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 235,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-06-legacy-ingress7-03.stdout",
+      "sha256": "6384d3c8f5d24ebeeaac207cad4bd55f8ed84e89f3278255fda2efc7478bc4e8"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-06-legacy-ingress7-04.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 242,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-06-legacy-ingress7-04.stdout",
+      "sha256": "def1b8dd9c4a68c4e869deff7f5e5e9860f6d8a2fe261b6704dfb2f0f6f9a700"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-06-legacy-ingress7-05.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 245,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-06-legacy-ingress7-05.stdout",
+      "sha256": "ea64f6b5025616c942592650157a45c4bac5efdbd6b8f003206ff3a49ec6f7bc"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-06-legacy-ingress7-06.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 243,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-06-legacy-ingress7-06.stdout",
+      "sha256": "f5efaa6f08fd9a7da841d698abe73b1fce613672c8a2fc85557ada96ba0e52a8"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-07-legacy-cold-h2-9-00.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 246,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-07-legacy-cold-h2-9-00.stdout",
+      "sha256": "9da5df74bfe38f80ad6d62468ecaafe0da0701743ac5398ee9a0eba26b63cd19"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-07-legacy-cold-h2-9-01.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 247,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-07-legacy-cold-h2-9-01.stdout",
+      "sha256": "85bb0d5fb256a9d56921fff25acc63d09cb94d025eb42e27ef2e9b12e62fe897"
+    },
+    {
+      "bytes": 324,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-07-legacy-cold-h2-9-02.stderr",
+      "sha256": "f0fc5cee225a412f5b9abc239baf8c412437476b6fd7960d30ee6c0b271c8727"
+    },
+    {
+      "bytes": 238,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-07-legacy-cold-h2-9-02.stdout",
+      "sha256": "b9dd8c5afc7e4ba8bdca11d32f2821cbc0e287b059ac3df2edd73214bad4848a"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-07-legacy-cold-h2-9-03.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 220,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-07-legacy-cold-h2-9-03.stdout",
+      "sha256": "10a3770e9dea200e576021bc18e8f1ce24893a9bcc7aa8a24b8dcca19e2aae97"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-07-legacy-cold-h2-9-04.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 215,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-07-legacy-cold-h2-9-04.stdout",
+      "sha256": "8c306e424dc65afa96ccdf1a723f250994ecc647c826ba120337832ca5076504"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-07-legacy-cold-h2-9-05.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 204,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-07-legacy-cold-h2-9-05.stdout",
+      "sha256": "e310d8a6ace3a3a1e7df77d5093cbeacd29239d316919f01bbef7713b518c5dc"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-07-legacy-cold-h2-9-06.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 219,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-07-legacy-cold-h2-9-06.stdout",
+      "sha256": "0459ef3b314ffdfceb2f22170954caaaf7b8e9bd14bbc5627593d01ba92710a5"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-07-legacy-cold-h2-9-07.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 223,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-07-legacy-cold-h2-9-07.stdout",
+      "sha256": "c4c9d65524416345c887fac09703fa31fe5ec07aee102d030e5afc3ef130e5c7"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-07-legacy-cold-h2-9-08.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 224,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-07-legacy-cold-h2-9-08.stdout",
+      "sha256": "452052e33a5d57955564570ea661b6101e4d9fdb83c0765b9cc6cd2adf3b01df"
+    },
+    {
+      "bytes": 722,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-08-legacy-same-root1-00.stderr",
+      "sha256": "c6464d94b09d77b77770f3c9322cc84f2d36556846964ab79de67d458a9fb825"
+    },
+    {
+      "bytes": 261,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-08-legacy-same-root1-00.stdout",
+      "sha256": "1b2390c613ad8c196e317f957d5c160f00859e8c833377ed3d5ed273e2623bb5"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-09-snapshot-body10-00.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1134,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-09-snapshot-body10-00.stdout",
+      "sha256": "37ee7e76198fec5dd079c851adc6459e6d7e363c5565a122bf0a67976779a499"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-10-snapshot-peer7-00.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 941,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-10-snapshot-peer7-00.stdout",
+      "sha256": "2753c75ad7b3972cebf5adce61199e4654315093f7af45b415d8685c66a6495e"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-11-snapshot-actor2-00.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 353,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-11-snapshot-actor2-00.stdout",
+      "sha256": "e5abcf499788ebd1d3d241cc95c45923ff40b25063f512ff8bfefe586227147f"
+    },
+    {
+      "bytes": 0,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-12-snapshot-wire4-00.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 627,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-12-snapshot-wire4-00.stdout",
+      "sha256": "080c2a24405d16858b18820a824288b907d965eb0e174dabf26e7535cdb6bb0a"
+    },
+    {
+      "bytes": 4980,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-13-snapshot-audit4-00.stderr",
+      "sha256": "d19310fe6c663b12cc09c6d9684d6a1c078813ff860fc7987fafb92976d46c76"
+    },
+    {
+      "bytes": 921,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-13-snapshot-audit4-00.stdout",
+      "sha256": "341f6996fda92b2090163b86951f6d6dc1589cd354d6d9aeabe543b4674c3075"
+    },
+    {
+      "bytes": 6163,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-14-native-jwt15-00.stderr",
+      "sha256": "8890c04ffeb9a47af3f907672e4ee23e437140a6891dd7212c0c80d958bf35cb"
+    },
+    {
+      "bytes": 2347,
+      "path": "rog/build-test-r7/complete-step-logs-r1/test-14-native-jwt15-00.stdout",
+      "sha256": "cb56f46b46c838333add49b78f75d1cfbb60a2bef37ce3bfa921dd9c74b62400"
+    },
+    {
+      "bytes": 21707,
+      "path": "rog/build-test-r7/controller.py",
+      "sha256": "40e8537906d77d5e322dd1c2017a47246170621c10013aef1f28954e9d03b4a1"
+    },
+    {
+      "bytes": 576,
+      "path": "rog/build-test-r7/heptabao-ha-service-libtest.postfailure-native-file-info.json",
+      "sha256": "61979ede14d1ac47edbff9bc647648e1412c39ac9f2ce55a180ac474b687fb71"
+    },
+    {
+      "bytes": 564,
+      "path": "rog/build-test-r7/heptabao-seed.postfailure-native-file-info.json",
+      "sha256": "5994f913cc42c4e095ef9f00d7c3ad1fb92970bdfaaee55eddfe5716cc8a14f1"
+    },
+    {
+      "bytes": 574,
+      "path": "rog/build-test-r7/heptabao-server-libtest.postfailure-native-file-info.json",
+      "sha256": "b4e89d3ca9453bb6385c14bba641a6aac755b644048e250b588bfab550477697"
+    },
+    {
+      "bytes": 566,
+      "path": "rog/build-test-r7/heptabao-server.postfailure-native-file-info.json",
+      "sha256": "9720a9bf05c4a181005c17b063985d2b2aa301209f0025ff5e867f9a56c53b85"
+    },
+    {
+      "bytes": 553,
+      "path": "rog/build-test-r7/result.native-file-info.json",
+      "sha256": "79b8e42a3571ea5d3a49cb12aa6a22e1350dd512308e49d9702cf32e4bfe86e3"
+    },
+    {
+      "bytes": 105961,
+      "path": "rog/build-test-r7/result.public.json",
+      "sha256": "423799fbc2e69b08e8bc2f29f9813b1365f017765f9292394a48ce1b7d068a9e"
+    },
+    {
+      "bytes": 731,
+      "path": "rog/build-test-r7/runtime-terminal.public.json",
+      "sha256": "1765beb9c9792456a57d88e28a152130fd8d935e6422dc62c5c47b27a8847f9e"
+    },
+    {
+      "bytes": 6163,
+      "path": "rog/build-test-r7/test-14-native-jwt15-00.stderr",
+      "sha256": "8890c04ffeb9a47af3f907672e4ee23e437140a6891dd7212c0c80d958bf35cb"
+    },
+    {
+      "bytes": 2347,
+      "path": "rog/build-test-r7/test-14-native-jwt15-00.stdout",
+      "sha256": "cb56f46b46c838333add49b78f75d1cfbb60a2bef37ce3bfa921dd9c74b62400"
+    },
+    {
+      "bytes": 43057,
+      "path": "rog/build-test-r7/test-selection.public.json",
+      "sha256": "47ff7512290744393853c97e179db5161c04a5ff05119c14bdc96aabad9e11a3"
+    },
+    {
+      "bytes": 93555,
+      "path": "rog/build-test-r8-inputs/bootstrap.py",
+      "sha256": "0d99ab98589392a1ccbde4edb1853803a50becf8e76572f91be135da14d3c1b6"
+    },
+    {
+      "bytes": 21709,
+      "path": "rog/build-test-r8-inputs/controller.py",
+      "sha256": "56b4696cc252d50d3ddeb9edad90465654e011045d2e3d9feba5919d42247c7f"
+    },
+    {
+      "bytes": 414,
+      "path": "rog/build-test-r8-inputs/input-binding.public.json",
+      "sha256": "41f57b6f8a181cc38c8b379d5821e9f70c5ff0036eac072fca88f6251322dea4"
+    },
+    {
+      "bytes": 45631,
+      "path": "rog/build-test-r8-inputs/test-selection.public.json",
+      "sha256": "d7f6d0971e7a6b3e0096e50a1e3d607bff851ce2295563ad068b80adf2294bfd"
+    },
+    {
+      "bytes": 7007,
+      "path": "rog/jwt-regression-fix-format-r1/13-formatted-patch.stdout",
+      "sha256": "75eeccb73b3e910e07d3aa688a3364a1babe1d544a9274a9d125f8f2010d572c"
+    },
+    {
+      "bytes": 2684,
+      "path": "rog/jwt-regression-fix-format-r1/RECOVERED_MANIFEST.public.json",
+      "sha256": "7fc442b4e81a7356ebdbd94080ea97cb4f51e7bbcde840965225d9452abbdb53"
+    },
+    {
+      "bytes": 11355,
+      "path": "rog/jwt-regression-fix-format-r1/engine_identity_api.rs",
+      "sha256": "6b286cbd5526ee02159938961130bf7def3a8c76ab4dbb162e7dd46364e58156"
+    },
+    {
+      "bytes": 6645,
+      "path": "rog/jwt-regression-fix-format-r1/result.public.json",
+      "sha256": "33505d707dd0605a2dc1d77eb9335e62b45dc9091cbb4ce4285fae4512187fdb"
+    },
+    {
+      "bytes": 732,
+      "path": "rog/jwt-regression-fix-format-r1/runtime-terminal.public.json",
+      "sha256": "322e3ca7fe819d422200523d1c25ea82d279f068fa8428a7f9612c25f6684e08"
+    },
+    {
+      "bytes": 39934,
+      "path": "rog/jwt-regression-fix-format-r1/service_native_jwt_tests.rs",
+      "sha256": "5976bc49397f81db193931078791332ac7313989559995f4ba073a5c6a34854c"
+    },
+    {
+      "bytes": 7653,
+      "path": "rog/jwt-regression-fix-format-r2/04-formatted-patch.stdout",
+      "sha256": "0e7be54931ba7e506b64795c842e5b3229f8486a4d883ab440b499cbc56322fc"
+    },
+    {
+      "bytes": 1546,
+      "path": "rog/jwt-regression-fix-format-r2/RECOVERED_MANIFEST.public.json",
+      "sha256": "77cb192b9fda8ed61d7637aea61ce943700ff0f98b5d7c63e78109bad1eb988e"
+    },
+    {
+      "bytes": 2472,
+      "path": "rog/jwt-regression-fix-format-r2/result.public.json",
+      "sha256": "ae76cec4e8bc54ace7be2ffca7d116c6143fcd74470f6a57a3650af68ce8c125"
+    },
+    {
+      "bytes": 732,
+      "path": "rog/jwt-regression-fix-format-r2/runtime-terminal.public.json",
+      "sha256": "7c6da719eec946fce0e7933969fde6a75c3c622d8adef6cfef8341463c13d651"
+    },
+    {
+      "bytes": 7530,
+      "path": "rog/source-09c14-r8-prep/controller.py",
+      "sha256": "f4691f710e84ca19ba76a969f0ee2fa2c04fe0376923f6b46405dbbabfdb5a2f"
+    },
+    {
+      "bytes": 6797,
+      "path": "rog/source-09c14-r8-prep/result.public.json",
+      "sha256": "fe2e7dee34e5a9b5d21d517d892ff6954d544509096afcb7e9db2deb52d643c3"
+    },
+    {
+      "bytes": 732,
+      "path": "rog/source-09c14-r8-prep/runtime-terminal.public.json",
+      "sha256": "e9cd5b3f8fa4baff0eb49605d5ef2babc4a4ec5b369af85991e7128c4c7fda5d"
+    },
+    {
+      "bytes": 974,
+      "path": "rog/source-868-r7-prep/RECOVERED_MANIFEST.public.json",
+      "sha256": "9e306cb3618713dd96f60ca94a7887233080159878751e79ec9a87c76de2fbb1"
+    },
+    {
+      "bytes": 6311,
+      "path": "rog/source-868-r7-prep/result.public.json",
+      "sha256": "97f2890d353d8eb5d81611ad7a9f0c1210cade26b8b7b805d83741108fea1539"
+    },
+    {
+      "bytes": 732,
+      "path": "rog/source-868-r7-prep/runtime-terminal.public.json",
+      "sha256": "a982a1c7dc7206f0b578f159ed0c930e6b73f5a47caa2a8d050a1113e08d95d7"
+    }
+  ],
+  "schema": "heptabao.evidence-file-manifest.v1"
+}

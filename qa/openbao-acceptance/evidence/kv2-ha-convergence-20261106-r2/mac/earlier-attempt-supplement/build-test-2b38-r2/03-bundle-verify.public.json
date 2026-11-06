@@ -1,0 +1,32 @@
+{
+  "argv": [
+    "/usr/bin/git",
+    "--no-optional-locks",
+    "-c",
+    "core.hooksPath=/dev/null",
+    "bundle",
+    "verify",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/candidate-2b38-from-4e808.bundle"
+  ],
+  "attempts": 1,
+  "effective_budget_seconds": 30,
+  "exit_code": 0,
+  "owned_group_cleanup": {
+    "all_owned_processes_gone": true,
+    "direct_child_reaped": true,
+    "pgid": 74230,
+    "remaining_after_cleanup": [],
+    "signals": [],
+    "signals_after_reap": false
+  },
+  "pid": 74230,
+  "requested_cap_seconds": 30,
+  "seconds": 0.031949,
+  "started_at_unix": 1793963026.045986,
+  "stderr_bytes": 135,
+  "stderr_sha256": "e9cfa3ee8017a249a5982e5e4d36bc9410737f073682c97d23f971a86ba8d4a4",
+  "stdout_bytes": 190,
+  "stdout_sha256": "ae7434b6fef3975323dce9f0a30661aa1421985dbd382fabc9869db1b2f62bde",
+  "step": "03-bundle-verify",
+  "timed_out": false
+}

@@ -1,0 +1,37 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "import subprocess,json,pathlib,plistlib\ndef call(argv):return subprocess.run(argv,stdin=subprocess.DEVNULL,capture_output=True,text=True,timeout=5)\ndef ident(pid):\n p=call(['/bin/ps','-p',str(pid),'-o','pid=,ppid=,pgid=,uid=,lstart=,comm='])\n return {'exit_code':p.returncode,'value':p.stdout.strip()}\nbefore={str(p):ident(p) for p in (60950,60947,60889)}\nf=call(['/usr/sbin/lsof','-a','-p','60950,60947','-Fpn'])\npaths=[x[1:] for x in f.stdout.splitlines() if x.startswith('n') and ('/.cargo-lock' in x or '/target' in x)]\nafter={str(p):ident(p) for p in (60950,60947,60889)}\nv=call(['/usr/sbin/diskutil','info','-plist','/Volumes/T5'])\nvolume=plistlib.loads(v.stdout.encode()) if v.returncode==0 else {'error':True}\nprint(json.dumps({'schema':'heptabao.mac-compiler-birth-cache-boundary.r1','birth_identity_before':before,'birth_identity_after':after,'stable_identity':before==after,'open_target_or_cargo_lock_paths':paths[:30],'matched_path_count':len(paths),'lsof_exit':f.returncode,'t5_mount_probe_exit':v.returncode,'t5':{k:volume.get(k) for k in ('VolumeUUID','DeviceIdentifier','MountPoint','FilesystemType')},'root_same_device_as_mount':pathlib.Path('/Volumes/T5').stat().st_dev==pathlib.Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1').stat().st_dev,'argv_read':False,'processes_changed':False},sort_keys=True))\n"
+    ],
+    "created_unix_ms": 1793962347451,
+    "cwd": null,
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1b07d0bbb-fc05-70d7",
+    "idempotency_key": "heptabao-mac-convergence-compiler-birth-cache-readonly-20261106-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b07d0bbb-fc05-70d7",
+    "request_digest": "25a61d247178e177b6e5ddb9b0de4d34fc412aa87cda6a6e19b12d55a1c7ccd8",
+    "request_fingerprint": 2712887867897078135,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b07d0bbb-fc05-70d7"
+  },
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 67366,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1b07d0bbb-fc05-70d7"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

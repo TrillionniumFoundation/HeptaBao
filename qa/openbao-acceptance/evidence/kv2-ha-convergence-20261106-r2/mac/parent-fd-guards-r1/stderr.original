@@ -1,0 +1,7 @@
+test_parent_fd_retirement_detects_real_open_file_directory_and_closed_boundary (test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_parent_fd_retirement_detects_real_open_file_directory_and_closed_boundary) ... ok
+test_parent_fd_retirement_rejects_unclosed_stdio_and_observation_gaps (test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_parent_fd_retirement_rejects_unclosed_stdio_and_observation_gaps) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.005s
+
+OK

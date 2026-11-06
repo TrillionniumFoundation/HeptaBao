@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "/bin/ps",
+    "-axo",
+    "pid=,ppid=,pgid=,uid=,comm="
+  ],
+  "attempts": 1,
+  "effective_budget_seconds": 10,
+  "exit_code": 0,
+  "owned_group_cleanup": {
+    "all_owned_processes_gone": true,
+    "direct_child_reaped": true,
+    "pgid": 78639,
+    "remaining_after_cleanup": [],
+    "signals": [],
+    "signals_after_reap": false
+  },
+  "pid": 78639,
+  "requested_cap_seconds": 10,
+  "seconds": 0.034045,
+  "started_at_unix": 1793963500.136818,
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_bytes": 72743,
+  "stdout_sha256": "88fedea15ab3fd4671b0bf3841bf68f52e656337b36c98204acdaca53d06d096",
+  "step": "98-postflight-process-metadata",
+  "timed_out": false
+}

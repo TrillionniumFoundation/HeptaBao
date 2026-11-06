@@ -1,0 +1,140 @@
+{"event": "launch-pins-verified", "source_commit": "f301a0f391096a2a8daf149f16bbbbd5bbf7a9e3", "expected_tests": 107, "outer_seconds": 8280, "controller_sha256": "6d283c73714f2a87f4ce9259da116306c61e429a30cc23c881d841aaa0086fc0"}
+{"event": "step_started", "step": "00-t5-volume", "budget_seconds": 10}
+{"event": "step_finished", "step": "00-t5-volume", "exit_code": 0, "timed_out": false, "seconds": 0.100815}
+{"event": "step_started", "step": "00-clone-source-head", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-clone-source-head", "exit_code": 0, "timed_out": false, "seconds": 0.024331}
+{"event": "step_started", "step": "00-clone-source-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-clone-source-tree", "exit_code": 0, "timed_out": false, "seconds": 0.020747}
+{"event": "step_started", "step": "00-clone-source-clean", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-clone-source-clean", "exit_code": 0, "timed_out": false, "seconds": 0.273794}
+{"event": "step_started", "step": "00-old-source-head", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-old-source-head", "exit_code": 0, "timed_out": false, "seconds": 0.021067}
+{"event": "step_started", "step": "00-old-source-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-old-source-tree", "exit_code": 0, "timed_out": false, "seconds": 0.021419}
+{"event": "step_started", "step": "00-old-source-clean", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-old-source-clean", "exit_code": 0, "timed_out": false, "seconds": 0.033348}
+{"event": "step_started", "step": "01-preflight-process-metadata", "budget_seconds": 10}
+{"event": "step_finished", "step": "01-preflight-process-metadata", "exit_code": 0, "timed_out": false, "seconds": 0.034435}
+{"event": "step_started", "step": "01-preflight-ram-total", "budget_seconds": 10}
+{"event": "step_finished", "step": "01-preflight-ram-total", "exit_code": 0, "timed_out": false, "seconds": 0.01151}
+{"event": "step_started", "step": "01-preflight-vm-stat", "budget_seconds": 10}
+{"event": "step_finished", "step": "01-preflight-vm-stat", "exit_code": 0, "timed_out": false, "seconds": 0.020772}
+{"event": "step_started", "step": "01-preflight-cargo-lock", "budget_seconds": 10}
+{"event": "step_finished", "step": "01-preflight-cargo-lock", "exit_code": 1, "timed_out": false, "seconds": 0.101098}
+{"event": "step_started", "step": "01-cache-admission-holders-under-lock", "budget_seconds": 15}
+{"event": "step_finished", "step": "01-cache-admission-holders-under-lock", "exit_code": 0, "timed_out": false, "seconds": 0.05761}
+{"event": "step_started", "step": "02-independent-source-clone", "budget_seconds": 120}
+{"event": "step_finished", "step": "02-independent-source-clone", "exit_code": 0, "timed_out": false, "seconds": 0.217432}
+{"event": "step_started", "step": "03-bundle-verify", "budget_seconds": 30}
+{"event": "step_finished", "step": "03-bundle-verify", "exit_code": 0, "timed_out": false, "seconds": 0.033619}
+{"event": "step_started", "step": "04-fetch-local-bundle", "budget_seconds": 60}
+{"event": "step_finished", "step": "04-fetch-local-bundle", "exit_code": 0, "timed_out": false, "seconds": 0.057604}
+{"event": "step_started", "step": "05-canonical-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "05-canonical-tree", "exit_code": 0, "timed_out": false, "seconds": 0.020664}
+{"event": "step_started", "step": "06-canonical-parent", "budget_seconds": 30}
+{"event": "step_finished", "step": "06-canonical-parent", "exit_code": 0, "timed_out": false, "seconds": 0.020779}
+{"event": "step_started", "step": "07-original-ancestor", "budget_seconds": 30}
+{"event": "step_finished", "step": "07-original-ancestor", "exit_code": 0, "timed_out": false, "seconds": 0.020904}
+{"event": "step_started", "step": "07-clone-ancestor", "budget_seconds": 30}
+{"event": "step_finished", "step": "07-clone-ancestor", "exit_code": 0, "timed_out": false, "seconds": 0.02093}
+{"event": "step_started", "step": "08-checkout-canonical", "budget_seconds": 60}
+{"event": "step_finished", "step": "08-checkout-canonical", "exit_code": 0, "timed_out": false, "seconds": 0.458426}
+{"event": "step_started", "step": "09-clean-source", "budget_seconds": 30}
+{"event": "step_finished", "step": "09-clean-source", "exit_code": 0, "timed_out": false, "seconds": 0.220458}
+{"event": "step_started", "step": "10-full-repository", "budget_seconds": 30}
+{"event": "step_finished", "step": "10-full-repository", "exit_code": 0, "timed_out": false, "seconds": 0.021499}
+{"event": "step_started", "step": "11-fsck", "budget_seconds": 60}
+{"event": "step_finished", "step": "11-fsck", "exit_code": 0, "timed_out": false, "seconds": 1.23067}
+{"event": "step_started", "step": "12-format-check", "budget_seconds": 60}
+{"event": "step_finished", "step": "12-format-check", "exit_code": 0, "timed_out": false, "seconds": 4.061448}
+{"event": "step_started", "step": "12-precompile-cache-admission-holders-under-lock", "budget_seconds": 15}
+{"event": "step_finished", "step": "12-precompile-cache-admission-holders-under-lock", "exit_code": 0, "timed_out": false, "seconds": 0.058144}
+{"event": "step_started", "step": "13-normal-release-build", "budget_seconds": 1800}
+{"event": "step_finished", "step": "13-normal-release-build", "exit_code": 0, "timed_out": false, "seconds": 267.417472}
+{"event": "step_started", "step": "14-server-libtest-build", "budget_seconds": 1800}
+{"event": "step_finished", "step": "14-server-libtest-build", "exit_code": 0, "timed_out": false, "seconds": 464.793077}
+{"event": "step_started", "step": "15-peer-libtest-build", "budget_seconds": 1800}
+{"event": "step_finished", "step": "15-peer-libtest-build", "exit_code": 0, "timed_out": false, "seconds": 44.981438}
+{"event": "step_started", "step": "heptabao-server-list", "budget_seconds": 30}
+{"event": "step_finished", "step": "heptabao-server-list", "exit_code": 0, "timed_out": false, "seconds": 1.935699}
+{"event": "step_started", "step": "heptabao-ha-service-list", "budget_seconds": 30}
+{"event": "step_finished", "step": "heptabao-ha-service-list", "exit_code": 0, "timed_out": false, "seconds": 0.788467}
+{"event": "step_started", "step": "test-00-ssh25-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-00-ssh25-00", "exit_code": 0, "timed_out": false, "seconds": 69.415571}
+{"event": "step_started", "step": "test-01-mount1-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-01-mount1-00", "exit_code": 0, "timed_out": false, "seconds": 1.707989}
+{"event": "step_started", "step": "test-02-redirect5-00", "budget_seconds": 599.999}
+{"event": "step_finished", "step": "test-02-redirect5-00", "exit_code": 0, "timed_out": false, "seconds": 2.197406}
+{"event": "step_started", "step": "test-03-actor2-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-03-actor2-00", "exit_code": 0, "timed_out": false, "seconds": 11.087101}
+{"event": "step_started", "step": "test-04-ordinary5-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-04-ordinary5-00", "exit_code": 0, "timed_out": false, "seconds": 0.064301}
+{"event": "step_started", "step": "test-05-no_forward6-00", "budget_seconds": 599.999}
+{"event": "step_finished", "step": "test-05-no_forward6-00", "exit_code": 0, "timed_out": false, "seconds": 17.708894}
+{"event": "step_started", "step": "test-06-legacy-ingress7-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-00", "exit_code": 0, "timed_out": false, "seconds": 1.849957}
+{"event": "step_started", "step": "test-06-legacy-ingress7-01", "budget_seconds": 598.144}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-01", "exit_code": 0, "timed_out": false, "seconds": 1.873073}
+{"event": "step_started", "step": "test-06-legacy-ingress7-02", "budget_seconds": 596.266}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-02", "exit_code": 0, "timed_out": false, "seconds": 1.739604}
+{"event": "step_started", "step": "test-06-legacy-ingress7-03", "budget_seconds": 594.522}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-03", "exit_code": 0, "timed_out": false, "seconds": 0.015786}
+{"event": "step_started", "step": "test-06-legacy-ingress7-04", "budget_seconds": 594.502}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-04", "exit_code": 0, "timed_out": false, "seconds": 0.015488}
+{"event": "step_started", "step": "test-06-legacy-ingress7-05", "budget_seconds": 594.483}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-05", "exit_code": 0, "timed_out": false, "seconds": 0.015702}
+{"event": "step_started", "step": "test-06-legacy-ingress7-06", "budget_seconds": 594.463}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-06", "exit_code": 0, "timed_out": false, "seconds": 0.015619}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-00", "exit_code": 0, "timed_out": false, "seconds": 0.015967}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-01", "budget_seconds": 599.978}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-01", "exit_code": 0, "timed_out": false, "seconds": 0.021676}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-02", "budget_seconds": 599.952}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-02", "exit_code": 0, "timed_out": false, "seconds": 9.210792}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-03", "budget_seconds": 590.736}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-03", "exit_code": 0, "timed_out": false, "seconds": 0.021608}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-04", "budget_seconds": 590.71}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-04", "exit_code": 0, "timed_out": false, "seconds": 0.015522}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-05", "budget_seconds": 590.69}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-05", "exit_code": 0, "timed_out": false, "seconds": 0.015545}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-06", "budget_seconds": 590.67}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-06", "exit_code": 0, "timed_out": false, "seconds": 0.015543}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-07", "budget_seconds": 590.65}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-07", "exit_code": 0, "timed_out": false, "seconds": 0.015796}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-08", "budget_seconds": 590.629}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-08", "exit_code": 0, "timed_out": false, "seconds": 0.022113}
+{"event": "step_started", "step": "test-08-legacy-same-root1-00", "budget_seconds": 599.999}
+{"event": "step_finished", "step": "test-08-legacy-same-root1-00", "exit_code": 0, "timed_out": false, "seconds": 16.576745}
+{"event": "step_started", "step": "test-09-snapshot-body10-00", "budget_seconds": 599.999}
+{"event": "step_finished", "step": "test-09-snapshot-body10-00", "exit_code": 0, "timed_out": false, "seconds": 0.021245}
+{"event": "step_started", "step": "test-10-snapshot-peer7-00", "budget_seconds": 599.999}
+{"event": "step_finished", "step": "test-10-snapshot-peer7-00", "exit_code": 0, "timed_out": false, "seconds": 0.689826}
+{"event": "step_started", "step": "test-11-snapshot-actor2-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-11-snapshot-actor2-00", "exit_code": 0, "timed_out": false, "seconds": 0.022262}
+{"event": "step_started", "step": "test-12-snapshot-wire4-00", "budget_seconds": 599.999}
+{"event": "step_finished", "step": "test-12-snapshot-wire4-00", "exit_code": 0, "timed_out": false, "seconds": 0.022109}
+{"event": "step_started", "step": "test-13-snapshot-audit4-00", "budget_seconds": 599.999}
+{"event": "step_finished", "step": "test-13-snapshot-audit4-00", "exit_code": 0, "timed_out": false, "seconds": 34.258091}
+{"event": "step_started", "step": "test-14-native-jwt15-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-14-native-jwt15-00", "exit_code": 101, "timed_out": false, "seconds": 16.914755}
+{"event": "step_started", "step": "98-clone-final-head", "budget_seconds": 30}
+{"event": "step_finished", "step": "98-clone-final-head", "exit_code": 0, "timed_out": false, "seconds": 0.027512}
+{"event": "step_started", "step": "98-clone-final-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "98-clone-final-tree", "exit_code": 0, "timed_out": false, "seconds": 0.033583}
+{"event": "step_started", "step": "98-clone-final-clean", "budget_seconds": 30}
+{"event": "step_finished", "step": "98-clone-final-clean", "exit_code": 0, "timed_out": false, "seconds": 0.342424}
+{"event": "step_started", "step": "98-old-final-head", "budget_seconds": 30}
+{"event": "step_finished", "step": "98-old-final-head", "exit_code": 0, "timed_out": false, "seconds": 0.022002}
+{"event": "step_started", "step": "98-old-final-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "98-old-final-tree", "exit_code": 0, "timed_out": false, "seconds": 0.032413}
+{"event": "step_started", "step": "98-old-final-clean", "budget_seconds": 30}
+{"event": "step_finished", "step": "98-old-final-clean", "exit_code": 0, "timed_out": false, "seconds": 0.099072}
+{"event": "step_started", "step": "98-postflight-process-metadata", "budget_seconds": 10}
+{"event": "step_finished", "step": "98-postflight-process-metadata", "exit_code": 0, "timed_out": false, "seconds": 0.03383}
+{"event": "step_started", "step": "98-postflight-ram-total", "budget_seconds": 10}
+{"event": "step_finished", "step": "98-postflight-ram-total", "exit_code": 0, "timed_out": false, "seconds": 0.017587}
+{"event": "step_started", "step": "98-postflight-vm-stat", "budget_seconds": 10}
+{"event": "step_finished", "step": "98-postflight-vm-stat", "exit_code": 0, "timed_out": false, "seconds": 0.012263}
+{"event": "step_started", "step": "98-postflight-cargo-lock", "budget_seconds": 10}
+{"event": "step_finished", "step": "98-postflight-cargo-lock", "exit_code": 1, "timed_out": false, "seconds": 0.220983}
+{"event": "terminal", "status": "failed", "failure": "native-jwt15_exact_test_result_failed", "executed_passed_cases": 88, "result": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-f301-r1/result.public.json"}

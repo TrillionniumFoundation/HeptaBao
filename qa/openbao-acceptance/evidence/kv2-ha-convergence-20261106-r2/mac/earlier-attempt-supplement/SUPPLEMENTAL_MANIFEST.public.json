@@ -1,0 +1,128 @@
+{
+  "files": [
+    {
+      "bytes": 2782,
+      "path": "build-test-2b38-r1/runtime-start.original.json",
+      "sha256": "67700762da4c99ca3b0b6235b1d11f59629afc1ee27992603b9be71f428a3f62"
+    },
+    {
+      "bytes": 728,
+      "path": "build-test-2b38-r1/runtime-terminal.original.json",
+      "sha256": "a69f533ac3c7b604e00c1f46e8f304878efd903b9d39cf630a32d2030ed04e1d"
+    },
+    {
+      "bytes": 1575,
+      "path": "build-test-2b38-r1/launch-script.original.py",
+      "sha256": "5d12f3b6c7a14ce1dd92032844640e7e113d3c7db22f2bf0c4a894b95785c273"
+    },
+    {
+      "bytes": 2043,
+      "path": "build-test-2b38-r1/stdout.original",
+      "sha256": "b809965fa2bbf9cea917cdd860958fc3e41a9c8ea5f5f10e91362ef5751eb5af"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r1/stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2274,
+      "path": "foreign-compiler-metadata-r1/runtime-start.original.json",
+      "sha256": "8c6f3b1158856c2aec43ae22c572e1ab6d3304f192e4f4a753a1f6b708b1b041"
+    },
+    {
+      "bytes": 731,
+      "path": "foreign-compiler-metadata-r1/runtime-terminal.original.json",
+      "sha256": "6c495c479bb9ba2755e77bfadd8fd8cdee788fd8036a7f50d5464e1e9fc5c724"
+    },
+    {
+      "bytes": 1161,
+      "path": "foreign-compiler-metadata-r1/launch-script.original.py",
+      "sha256": "1fcf46774ac7d7ff2674a546aef027484076826041676ed9ec90af11232e5b53"
+    },
+    {
+      "bytes": 1218,
+      "path": "foreign-compiler-metadata-r1/stdout.original",
+      "sha256": "e677c227f41cc038cfa87f078d0e8bc0b6ac3a32ef1e1324660519f460b0a16e"
+    },
+    {
+      "bytes": 0,
+      "path": "foreign-compiler-metadata-r1/stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2481,
+      "path": "foreign-compiler-birth-cache-r1/runtime-start.original.json",
+      "sha256": "6df022c8cd1be73f0e0dd1c17336135dfa1126552c94e58e944e8066e86f83ba"
+    },
+    {
+      "bytes": 731,
+      "path": "foreign-compiler-birth-cache-r1/runtime-terminal.original.json",
+      "sha256": "3b64a217d8f1039e994a7729fc1be985c14fc0ceda039e0350180c1bd2511244"
+    },
+    {
+      "bytes": 1367,
+      "path": "foreign-compiler-birth-cache-r1/launch-script.original.py",
+      "sha256": "c8bcba56a6fd74502d657733979e8b7fa5bb0f248c8f6cd4cf694e02f5d44aa6"
+    },
+    {
+      "bytes": 2045,
+      "path": "foreign-compiler-birth-cache-r1/stdout.original",
+      "sha256": "0f227f5ba17066ae89ae99154d7ea34938212bb9961e8a9558cd0455251cbdce"
+    },
+    {
+      "bytes": 0,
+      "path": "foreign-compiler-birth-cache-r1/stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "build-test-2b38-r1/00-t5-volume.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r1/00-t5-volume.stderr"
+    },
+    {
+      "bytes": 408,
+      "path": "build-test-2b38-r1/00-t5-volume.stdout",
+      "sha256": "1b6d40511c1528cdae4645876d6d10ae22de1b43bca6dca01dbf0949c0a665a9",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r1/00-t5-volume.stdout"
+    },
+    {
+      "bytes": 817,
+      "path": "build-test-2b38-r1/00-t5-volume.public.json",
+      "sha256": "1aae6eceb04f91f2e3ebeafe1d45c70b0f9f31023157a144793e5a6f5174f165",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r1/00-t5-volume.public.json"
+    },
+    {
+      "bytes": 14190,
+      "path": "build-test-2b38-r1/result.public.json",
+      "sha256": "215a020cabe962c91c99e538fbda48f5ad761e029c354ce6412a365a997d905e",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-2b38-r1/result.public.json"
+    },
+    {
+      "bytes": 26275,
+      "path": "build-test-2b38-r1/controller.original.py",
+      "sha256": "39ddbb77648443a58f2fc2b238014c59f70116873016cb241f369f0bc888ecb6"
+    },
+    {
+      "bytes": 37226,
+      "path": "build-test-2b38-r1/test-selection.public.json",
+      "sha256": "21c8eb41909568ebf1d33cf65c7a1fc1f920a5c5f7a2b9a66affe19fd66ffe76"
+    },
+    {
+      "bytes": 26421,
+      "path": "prepared-build-test-2b38-r2/mac_build_test_2b38_r2.py",
+      "sha256": "51c126e15fc802598721c1e0555f9b7726ad2a618598d70a5e11dd7274dae895"
+    },
+    {
+      "bytes": 37669,
+      "path": "prepared-build-test-2b38-r2/test-selection-2b38-r2.public.json",
+      "sha256": "666116a237a02165a06db787e8e5aedd9407064cfba99c3a5c8a0bdc520ee785"
+    }
+  ],
+  "prior_manifest_sha256": "bed8696eee390cbcd9d97fc018644c260e582b5b871f34e0aa1e9484abf071b2",
+  "public_allowlist": true,
+  "qualification": "0/107 executed; no KV2, HA, AuthBus or production qualification",
+  "review_scope": "Known newly authored scripts and fixed artifact pins, numeric process identity, safe cwd/cache lock paths, original no-compiler preflight failure; no argv/environment values/provider or credential material",
+  "schema": "heptabao.mac-native-recovered-supplement.r1"
+}

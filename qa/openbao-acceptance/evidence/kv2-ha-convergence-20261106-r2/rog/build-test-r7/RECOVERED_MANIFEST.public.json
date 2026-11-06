@@ -1,0 +1,25 @@
+{
+  "files": [
+    {
+      "bytes": 21707,
+      "path": "controller.py",
+      "provenance": {
+        "kind": "actual_submitted_execution_input",
+        "store_key": "convergence_execution_payload_r7"
+      },
+      "sha256": "40e8537906d77d5e322dd1c2017a47246170621c10013aef1f28954e9d03b4a1"
+    },
+    {
+      "bytes": 43057,
+      "path": "test-selection.public.json",
+      "provenance": {
+        "kind": "actual_submitted_execution_input",
+        "store_key": "convergence_execution_payload_r7"
+      },
+      "sha256": "47ff7512290744393853c97e179db5161c04a5ff05119c14bdc96aabad9e11a3"
+    }
+  ],
+  "production_credentials_included": false,
+  "public_allowlist": true,
+  "schema": "heptabao.remote-evidence-recovery.v1"
+}

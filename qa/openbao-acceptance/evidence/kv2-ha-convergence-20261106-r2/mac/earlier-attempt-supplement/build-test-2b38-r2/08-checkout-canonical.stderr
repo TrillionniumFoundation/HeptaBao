@@ -1,0 +1,2 @@
+Previous HEAD position was 4e808d0e test(ha): retain the first A projection for same-root republication
+HEAD is now at 2b38f091 test: repair native snapshot fixtures for stable Rust libtests

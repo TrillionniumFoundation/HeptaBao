@@ -1,0 +1,8 @@
+test_legacy_raw_killpg_after_nonzero_communicate_never_signals_retired_id (test_kv2_dr_process_custody.ProcessCustodyTests.test_legacy_raw_killpg_after_nonzero_communicate_never_signals_retired_id) ... ok
+test_legacy_raw_killpg_unknown_group_is_refused_without_touching_foreign_process (test_kv2_dr_process_custody.ProcessCustodyTests.test_legacy_raw_killpg_unknown_group_is_refused_without_touching_foreign_process) ... ok
+test_legacy_raw_killpg_live_owned_group_routes_once_and_restores_global_hook (test_kv2_dr_process_custody.ProcessCustodyTests.test_legacy_raw_killpg_live_owned_group_routes_once_and_restores_global_hook) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.176s
+
+OK
