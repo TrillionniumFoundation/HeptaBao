@@ -17,7 +17,7 @@ from implementation in progress.
 | P1: agent/developer use | Executable Rust CLI/SDK, local socket broker, exact-operation owner grants, controlled loopback API use, SSHSIG and actual `git commit -S` followed by `git verify-commit`. The separately frozen Ed25519-only build passed **13/13 integration tests**, including all original eleven tests and real RSA/ECDSA rejection. Durable unknown outcomes are never automatically retried. | Task/run labels are owner-issued, not attested HeptaRuntime identities. Current runtime aliases use the same trusted OS account. External HTTPS APIs and SSH login are unsupported. |
 | P2: personal vault | Encrypted login/note/API entries, password generation, RFC-vector TOTP, local health, bounded sessions, offline CLI, encrypted backup/recovery, explicit JSON import/export and password change. Independent process and actual SIGKILL recovery observed. | Linux/Unix private local filesystem, trusted owner account; no hostile-owner isolation, hardware anti-rollback, third-party import or independent security review. |
 | P3: daily clients | Real headed Chromium/native-host login and rejection profile: **26/26**. Physical two-device opaque synchronization: **14 stages and 18 authenticated transfers** across ai395 and ROG retained conflicting edits and restored both histories. Native backpressure fix: **8/8**. | Target Android Autofill qualification is in progress. Browser observation covers the fixed Chrome 157 Linux combination. Sync is an explicit CLI workflow, not an automatic daemon or field merger. |
-| P4: extended vault | Android native Passkey provider and CredentialManager fixture implemented. Frozen r4 host cryptography/format profile: **10/10**, including separate JVMs, latest-backup recovery, restart and stale-counter rejection. Independent RP: **68/68** per tested backend and **21/21** real loopback HTTP/restart cases. | The r4 phone run failed import before password entry: **one failed, one cleanup passed, sixteen blocked**, retaining all eighteen cases. No completed phone create/login/recovery evidence yet. Credential exchange, sharing, device revocation, additional browsers/platforms remain unsupported. |
+| P4: extended vault | Android native Passkey provider and CredentialManager fixture implemented. Separately frozen r4, r5b and r6 host cryptography/format profiles each passed **10/10**, including separate JVMs, latest-backup recovery, restart and stale-counter rejection. Independent RP: **68/68** per tested backend and **21/21** real loopback HTTP/restart cases. | The r4 and r5b phone runs each failed import before password entry: **one failed, one cleanup passed, sixteen blocked**, retaining all eighteen cases. A diagnostic r6 phone candidate is in progress; no completed phone create/login/recovery evidence yet. Credential exchange, sharing, device revocation, additional browsers/platforms remain unsupported. |
 | P5: production adoption | Published `a38dab7`, `0a0bed8` and `2280c36` each passed synthetic-core CI and the workflow-trust checks for both exact head and prospective merge. A separate clean `c447536` Python preflight has no failures across 300 repository, 1510 acceptance and 183 client tests, with five explicit platform skips. Immutable evidence, an internal dependency review, runtime trust analysis and an operations/recovery procedure are available. | Full replacement qualification for `2280c36` is running and has not passed. No result is inherited across heads. Independent review, measured long-term stability, signed releases, tested upgrade/rollback and operational support are not complete. |
 
 These are separate acceptance boundaries. For example, a real local Git signing
@@ -148,6 +148,32 @@ earlier state. The UI-hidden change has not been shown to solve the failure.
 Both original source archives, build receipts and failed device results are
 retained. A full successful device profile is still required.
 
+The same c5 APK's QA9 run r7 also stopped after **1/12**. The ordinary Request
+Autofill button was pressed and the system menu was visible, but the driver's
+foreground guard classified the context as unavailable/other and did not tap
+the menu. Immediately beforehand, the package-scoped query found no own
+PendingIntent record. Two `memory_pressure_locked` events were observed before
+opening the diagnostic Activity. Those events do not identify the callback
+level or prove physical memory pressure, and absence of a PendingIntent does
+not distinguish cancellation from one-shot delivery. These observations do
+not retroactively establish r6's cause. The fourteen original r7 packet files
+and their index retain the failed run, actual wrapper and durable Runtime
+requests/results. Independent release verification confirmed the original
+Autofill setting and exact installed/retained absence of all three owned
+packages before handing the phone back to the Passkey run.
+
+Candidate 6 now separates plaintext invalidation from the single opaque
+locked challenge. Every trim notification clears login/handoff and advances
+the KDF epoch; the existing challenge keeps its original PendingIntent,
+timer and deadline. Cancellation, expiry, import, replacement and Auth
+backgrounding still invalidate the full request. A stale KDF result is
+cleared before fresh input is enabled for the same still-live foreground
+request. The author and a separate internal reviewer each ran all sixteen
+host lifecycle checks on the actual two product classes, using minimal
+Android, crypto and policy stubs. These results do not exercise the actual
+Android lifecycle, PendingIntent delivery or Autofill framework, and do not
+qualify candidate 6 on the device.
+
 Passkey candidate r4 has 28 source files matching its original build inventory.
 It implements a separate Android credential provider for one pinned native
 fixture and relying-party ID. Its password-protected `.hbv` store preserves the
@@ -178,8 +204,10 @@ The observed phone error is `unsafe_directory`. The
 but the private phone directory mode was not directly measured. A new r5b
 candidate restricts normalization to the fixed Context files leaf, checks its
 type/UID/mode and stable descriptor identity, tightens it to 0700 and retains
-strict later checks. The first r5 SDK34 compile failure and the corrected r5b
-source archive remain separate originals. New builds and device observations
+strict later checks. The first r5 SDK34 compile failed because its SDK stub had
+no `OsConstants.O_DIRECTORY`; the original compiler stderr and failed receipt
+are retained. That failed source and the corrected r5b source archive remain
+separate originals. New builds and device observations
 must retain their own identities.
 
 The r5b build receipt `b46691b4...` binds all 28 product source files to that
@@ -191,12 +219,36 @@ vault executable, with the original `a1b6ff4` source/build receipt and actual
 producer wrapper separately bound. This closes the new seed's producer chain;
 it does not change the r4 seed's historical provenance limit.
 
-The first r5b phone attempt selected that exact seed through ordinary SAF and
-returned `operation_failed`, before any master-password entry. M01 remains
-failed, and no phone CredentialManager create/get result has been established.
+The r5b phone run selected that exact seed through ordinary SAF and returned
+`operation_failed`, before any master-password entry. Its eighteen-case ledger
+records M01 failed, M07 cleanup passed and sixteen dependent cases blocked.
+Final cleanup restored all three original settings and confirmed absence of
+the three owned packages, reverse mapping and tracked synthetic document,
+media index and directory. All thirteen owned jobs were terminal and the RP
+was stopped before the phone was released. No phone CredentialManager
+create/get result has been established.
 This differs from r4's `unsafe_directory` observation. The frozen candidate's
 generic error does not reveal the exception class or failing stage, so a cause
 has not yet been established. Its host checks do not override the phone failure.
+
+Candidate r6 preserves the staging operation and adds closed, bounded error
+codes for unexpected staging exceptions. Forty-one exact source-frame
+bindings identify only known sites; an unknown/absent line returns UNKNOWN,
+without guessing a caller. The mapper exposes no exception messages, raw
+stack traces, paths, URIs or credential material. Existing typed failures,
+ENOENT handling and `save_outcome_unknown` behavior remain unchanged. The
+fourteen host diagnostic checks passed for the author and an independent
+internal rerun, separately from Android execution.
+
+Its source archive `90d66751...`, build receipt `cb70894e...` and host result
+`69a03e93...` are archived as new originals. All twenty-nine product files and
+four QA files match the source archive, and the build's before/after source
+inventories agree. Its ten host cryptography/format checks passed, with
+`android_device_exercised=false` and `credential_manager_exercised=false`.
+The newly pinned r6 phone profile retains all eighteen cases and their causal
+requirements; it reuses only the still-empty seed with the established
+`b0cccc3c` producer chain. Its actual phone run is in progress and cannot
+inherit a result from r4, r5b or host checks.
 
 The archived r4 packet contains the complete eighteen-case ledger, cleanup and
 correction receipts, a twenty-four-attempt index and five actual QA source
@@ -233,9 +285,10 @@ provenance. It does not claim a password-path read in that later observation.
 
 | Frozen mobile artifact | SHA-256 | Current evidence boundary |
 | --- | --- | --- |
-| Autofill candidate 5 provider APK | `5c643afa5a08c6e8dd0baf751fe56dadf0f66947284d119d2da7051f4ab88ff8` | Build/decoded manifest and 12 host format checks; its r6 phone profile failed after 1/12 checks. |
+| Autofill candidate 5 provider APK | `5c643afa5a08c6e8dd0baf751fe56dadf0f66947284d119d2da7051f4ab88ff8` | Build/decoded manifest and 12 host format checks; its r6 and r7 phone profiles each failed after 1/12 checks. |
 | Passkey r4 provider APK | `e96218bc0ab1c228120471d5168a336e6b526bfd5e39e1a0a533335300d7c6e8` | Build/decoded manifest and 10 host checks; phone import failed before any credential creation, with all eighteen cases retained. |
 | Passkey r5b provider APK | `9985457ba13ddef5c286c6017d6c675cb0e64bafa97f119516a3fc4fcce5fc3a` | Separately fixed source/build and 10 host checks; its first ordinary-SAF phone import returned `operation_failed` before password entry. |
+| Passkey r6 provider APK | `0240a545d9ed9518201cfda945a26c5f7dc8742534d1ab21d5e84f23bf9c4ac7` | Separately fixed diagnostic source/build and 10 host checks; complete eighteen-case phone profile in progress. |
 
 ### Case-bound synthetic reset helper
 
@@ -304,9 +357,11 @@ and both combinations of
 completed successfully. Its three original public core receipts are archived
 after byte-identical SHA-256 verification. Its separate
 [full replacement run 42186444220](https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/42186444220)
-was running at the 2026-11-06 09:20 UTC observation: both exact head and
-prospective merge passed repository/fixture preflight and were executing the
-complete locked Rust workspace tests. The older results do not qualify a newer
+was running at the 2026-11-06 10:50 UTC observation: both exact head and
+prospective merge passed repository/fixture preflight; the prospective merge
+also passed the complete locked Rust workspace tests and was executing strict
+Clippy, while the exact-head workspace tests remained in progress.
+The older results do not qualify a newer
 publication, and an in-progress run is not a passing gate. This draft remains
 unmerged.
 

@@ -141,16 +141,32 @@ public final class VaultApplication extends Application {
     @Override public void onCreate() { super.onCreate(); timers.setRemoveOnCancelPolicy(true); }
     @Override public void onTrimMemory(int level) {
         super.onTrimMemory(level);
-        // This application also serves locked challenges while its settings UI is hidden.
-        // UI_HIDDEN can arrive after that UI closed and must not revoke a newer request.
-        // AuthActivity.onPause owns the precise authorization/background boundary.
-        if (level == TRIM_MEMORY_UI_HIDDEN) {
-            android.util.Log.i("HeptaBaoPreview", "ui_hidden_notification");
-            return;
+        final String event;
+        synchronized (this) {
+            // The single pending challenge has no decrypted credentials. Its
+            // original deadline and launch are retained; it grants only entry
+            // to fresh local authentication. Cancellation/expiry/onPause still
+            // clear it through lockAll. Always advance generation, even when
+            // login is null, so a KDF already running cannot install its result.
+            String before = stateBits();
+            clearLogin(); generation++; lastDecision = "memory_locked";
+            event = "trim_" + trimLevel(level) + "_before_" + before
+                + "_after_" + stateBits() + "_epoch_advanced";
         }
-        if (level >= TRIM_MEMORY_RUNNING_LOW) {
-            lockAll("memory_locked");
-            android.util.Log.i("HeptaBaoPreview", "memory_pressure_locked");
-        }
+        android.util.Log.i("HeptaBaoPreview", event);
+    }
+    private String stateBits() {
+        return "p" + (pending != null ? "1" : "0") + "l" + (login != null ? "1" : "0")
+            + "h" + (handoff != null ? "1" : "0");
+    }
+    private static String trimLevel(int level) {
+        if (level == TRIM_MEMORY_RUNNING_MODERATE) return "running_moderate";
+        if (level == TRIM_MEMORY_RUNNING_LOW) return "running_low";
+        if (level == TRIM_MEMORY_RUNNING_CRITICAL) return "running_critical";
+        if (level == TRIM_MEMORY_UI_HIDDEN) return "ui_hidden";
+        if (level == TRIM_MEMORY_BACKGROUND) return "background";
+        if (level == TRIM_MEMORY_MODERATE) return "moderate";
+        if (level == TRIM_MEMORY_COMPLETE) return "complete";
+        return "other";
     }
 }

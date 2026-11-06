@@ -1,0 +1,56 @@
+{
+  "completed_unix_ns": 1793960522925742840,
+  "credential_manager_exercised": false,
+  "empty_owned_directory_removed": true,
+  "file_and_media_deletion_redispatched": false,
+  "master_entered": false,
+  "ok": true,
+  "owned_documents_absent": true,
+  "owned_media_index_absent": true,
+  "owned_packages": [
+    "org.heptabao.passkey.decoy",
+    "org.heptabao.passkey.fixture",
+    "org.heptabao.passkey.preview"
+  ],
+  "packages_absent": true,
+  "prior_attempt": {
+    "job": "1a1b05d47cc-fc05-6fff",
+    "outcome": "format_assertion_failed_after_file_delete",
+    "retained": true
+  },
+  "production_qualified": false,
+  "read_only_reconciliation_job": "1a1b05efdcc-fc05-700a",
+  "retained_package_records_checked": true,
+  "reverse_absent": true,
+  "rp": {
+    "ceremony_counts": {
+      "consumed": 0,
+      "pending": 0,
+      "restart_invalidated": 0
+    },
+    "counters": {
+      "authentications": 0,
+      "options": 0,
+      "registrations": 0,
+      "rejected": 0,
+      "restart_invalidated": 0,
+      "verification_attempts": 0
+    },
+    "credential_count": 0,
+    "credentials": [],
+    "event_count": 1,
+    "fixture_cert_sha256": "3a3d3406393e840f4a5779a9caa2c20a51c8ad77dba4213cdf391823ca8416f3",
+    "ok": true,
+    "origin": "android:apk-key-hash:Oj00Bjk-hA9KV3mpyqLCClHIrXfbpCE83zkYI8qEFvM",
+    "revision": 1,
+    "rp_id": "passkeys.heptabao.test"
+  },
+  "schema": 1,
+  "scope": "r5b_synthetic_phone_cleanup",
+  "settings_match_original": true,
+  "settings_sha256": {
+    "autofill_service": "9fb252f02fa059931879ba0cd6179b9890d0e25538994d63d70290a333124a6e",
+    "credential_service": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "credential_service_primary": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

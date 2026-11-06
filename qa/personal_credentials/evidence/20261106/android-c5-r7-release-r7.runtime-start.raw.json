@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-u\",\n      \"/home/alex/heptabao-android-autofill-20261106-r1/release-r7.readonly.py\"\n    ],\n    \"created_unix_ms\": 1793960949802,\n    \"cwd\": \"/home/alex/heptabao-android-autofill-20261106-r1\",\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"pocket4\",\n    \"id\": \"1a1b067b82a-fc05-7048\",\n    \"idempotency_key\": \"heptabao-android-autofill-qa9-r7-readonly-release-20261106\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/alex/.local/state/hepta-runtime-mac-worker/jobs/1a1b067b82a-fc05-7048\",\n    \"request_digest\": \"4b729adf8f768d3d74c3b45f9442ecae167834ea173f054ba5ed3bec88f13479\",\n    \"request_fingerprint\": 5436577985164905789,\n    \"ssh_target\": \"hepta-pocket4\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b067b82a-fc05-7048\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1b067b82a-fc05-7048\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

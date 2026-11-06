@@ -238,13 +238,15 @@ final class VaultFiles {
         } catch (Exception error) { guard.close(); throw error; }
     }
     static String stage(Context context, Uri uri, DocumentIO operation) throws Exception {
-        byte[] incoming = readContent(context, uri, operation); operation.check();
-        try (Guard guard = new Guard(context)) {
-            operation.check();
-            File target = new File(context.getFilesDir(), "incoming.hbv"); byte[] old = maybeRead(target, Json.MAX_BYTES);
-            publish(target, incoming, old == null ? null : Codec.sha(old), Json.MAX_BYTES);
-            operation.check(); return Codec.hex(Codec.sha(incoming));
-        }
+        try {
+            byte[] incoming = readContent(context, uri, operation); operation.check();
+            try (Guard guard = new Guard(context)) {
+                operation.check();
+                File target = new File(context.getFilesDir(), "incoming.hbv"); byte[] old = maybeRead(target, Json.MAX_BYTES);
+                publish(target, incoming, old == null ? null : Codec.sha(old), Json.MAX_BYTES);
+                operation.check(); return Codec.hex(Codec.sha(incoming));
+            }
+        } catch (Exception error) { throw StageDiagnostics.failure(error); }
     }
     private static byte[] readContent(Context context, Uri uri, DocumentIO operation) throws Exception {
         ParcelFileDescriptor descriptor = operation.open(context, uri, "r");

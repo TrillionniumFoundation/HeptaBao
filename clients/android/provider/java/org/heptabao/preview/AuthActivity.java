@@ -90,7 +90,17 @@ public final class AuthActivity extends Activity {
             finally { Arrays.fill(password, (byte)0); }
             final VaultCrypto.Login value = result; final String code = error;
             app.handler.post(() -> {
-                if (!foreground || isFinishing() || app.ticket(token) != ticket) { if (value != null) value.close(); return; }
+                if (!foreground || isFinishing() || app.ticket(token) != ticket) {
+                    if (value != null) value.close();
+                    // A trim can revoke this KDF ticket while retaining the
+                    // same locked challenge. Permit fresh input only for that
+                    // still-live token in this foreground activity; never use
+                    // the stale result or recreate a cancelled request.
+                    if (foreground && !isFinishing() && app.ticket(token) >= 0) {
+                        unlock.setEnabled(true); status.setText("Locked or expired");
+                    }
+                    return;
+                }
                 unlock.setEnabled(true);
                 try { boundRequest(); }
                 catch (TargetPolicy.Rejected rejection) { if (value != null) value.close(); app.lockAll(rejection.code); status.setText("Authorization rejected"); return; }

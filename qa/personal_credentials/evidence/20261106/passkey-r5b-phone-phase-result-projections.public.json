@@ -1,0 +1,460 @@
+{
+  "phases": [
+    {
+      "case": "SETUP",
+      "driver_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+      "exit_code": 0,
+      "finished_unix_ns": 1793959114927708366,
+      "original_path": "/home/alex/HeptaBaoPasskey-20261106-r5/attempts/1793959114623909175-a3a0ddde-0.result.public.json",
+      "original_sha256": "ebb5e51d1e743cea7363ea6843b5dd36b328133d2f08b7f149daae19d3466e61",
+      "phase": "preflight",
+      "raw_ui_included": false,
+      "result_projection": {
+        "ok": true,
+        "phase": "preflight"
+      },
+      "runner_sha256": "0d3bae80db588f433d403f38ceaf1695c880f4bc4e1a336a6d71a3b7f081aa9a",
+      "started_unix_ns": 1793959114625395167
+    },
+    {
+      "case": "SETUP",
+      "driver_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+      "exit_code": 0,
+      "finished_unix_ns": 1793959116429535907,
+      "original_path": "/home/alex/HeptaBaoPasskey-20261106-r5/attempts/1793959114623909175-a3a0ddde-1.result.public.json",
+      "original_sha256": "a391e9a0c1606058d3a6ce23e3301255ed8443d8de8032e081c70e4a3dfc2792",
+      "phase": "install",
+      "raw_ui_included": false,
+      "result_projection": {
+        "installed_sha256": {
+          "org.heptabao.passkey.decoy": "0642879f96a3d536b5790828c80419af2f118288bf339938dd6ec48261cd1ad5",
+          "org.heptabao.passkey.fixture": "6c5f2f2eabce831db5d3a7386d6dc85a3fbf0d5f3b3d22cfe32b81cfba0951b4",
+          "org.heptabao.passkey.preview": "9985457ba13ddef5c286c6017d6c675cb0e64bafa97f119516a3fc4fcce5fc3a"
+        },
+        "ok": true,
+        "phase": "install"
+      },
+      "runner_sha256": "0d3bae80db588f433d403f38ceaf1695c880f4bc4e1a336a6d71a3b7f081aa9a",
+      "started_unix_ns": 1793959114929322241
+    },
+    {
+      "case": "SETUP",
+      "driver_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+      "exit_code": 0,
+      "finished_unix_ns": 1793959116504049679,
+      "original_path": "/home/alex/HeptaBaoPasskey-20261106-r5/attempts/1793959114623909175-a3a0ddde-2.result.public.json",
+      "original_sha256": "e4ee8726b7f95baae731d98a79985ffdc02dca442a5b3732d4b6448acaa57adf",
+      "phase": "reverse",
+      "raw_ui_included": false,
+      "result_projection": {
+        "ok": true,
+        "phase": "reverse"
+      },
+      "runner_sha256": "0d3bae80db588f433d403f38ceaf1695c880f4bc4e1a336a6d71a3b7f081aa9a",
+      "started_unix_ns": 1793959116430468013
+    },
+    {
+      "case": "SETUP",
+      "driver_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+      "exit_code": 0,
+      "finished_unix_ns": 1793959116823177906,
+      "original_path": "/home/alex/HeptaBaoPasskey-20261106-r5/attempts/1793959114623909175-a3a0ddde-3.result.public.json",
+      "original_sha256": "984abca84d6f712deeab483693d9622eea48229bb45a5c592246e4f2c4d8abe5",
+      "phase": "settings-arm-primary-system-bridge",
+      "raw_ui_included": false,
+      "result_projection": {
+        "joint_expected_states": 4,
+        "ok": true,
+        "phase": "settings-arm-primary-system-bridge",
+        "prior_primary_empty": true,
+        "system_bridge_apk_sha256": "05d91aee432f7e1db6bcaaec3721f94752e40a4895519c17cc81c51b850f75a9"
+      },
+      "runner_sha256": "0d3bae80db588f433d403f38ceaf1695c880f4bc4e1a336a6d71a3b7f081aa9a",
+      "started_unix_ns": 1793959116504807543
+    },
+    {
+      "case": "SETUP",
+      "driver_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+      "exit_code": 0,
+      "finished_unix_ns": 1793959117147948263,
+      "original_path": "/home/alex/HeptaBaoPasskey-20261106-r5/attempts/1793959114623909175-a3a0ddde-4.result.public.json",
+      "original_sha256": "befd3ec1cdbab61391e6a7288d81f597ff8defc190b3f64d101682bb26924996",
+      "phase": "launch-provider",
+      "raw_ui_included": false,
+      "result_projection": {
+        "activity": "org.heptabao.passkey.preview/org.heptabao.passkey.preview.HomeActivity",
+        "ok": true,
+        "phase": "launch-provider"
+      },
+      "runner_sha256": "0d3bae80db588f433d403f38ceaf1695c880f4bc4e1a336a6d71a3b7f081aa9a",
+      "started_unix_ns": 1793959116823939647
+    },
+    {
+      "case": "SETUP",
+      "driver_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+      "exit_code": 0,
+      "finished_unix_ns": 1793959119451073048,
+      "original_path": "/home/alex/HeptaBaoPasskey-20261106-r5/attempts/1793959114623909175-a3a0ddde-5.result.public.json",
+      "original_sha256": "c8b577de4524d5ec6e47cb82413c14cad61a29853c82e5e76d23e42a6a6d44d0",
+      "phase": "inspect",
+      "raw_ui_included": false,
+      "result_projection": {
+        "fixed_statuses_observed": [
+          "Locked until you import or unlock"
+        ],
+        "foreground": [
+          "org.heptabao.passkey.preview",
+          "org.heptabao.passkey.preview.HomeActivity"
+        ],
+        "ok": true,
+        "phase": "inspect"
+      },
+      "runner_sha256": "0d3bae80db588f433d403f38ceaf1695c880f4bc4e1a336a6d71a3b7f081aa9a",
+      "started_unix_ns": 1793959117148581409
+    },
+    {
+      "case": "SETUP",
+      "driver_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+      "exit_code": 0,
+      "finished_unix_ns": 1793959190366250409,
+      "original_path": "/home/alex/HeptaBaoPasskey-20261106-r5/attempts/1793959187824033566-3c68022a-0.result.public.json",
+      "original_sha256": "996bdb2fe3ad84e29cf831147ae615a7d957f997a540608350774d5a96a710ae",
+      "phase": "tap",
+      "raw_ui_included": false,
+      "result_projection": {
+        "ok": true,
+        "phase": "tap",
+        "selector": "OPEN PROVIDER SETTINGS"
+      },
+      "runner_sha256": "0d3bae80db588f433d403f38ceaf1695c880f4bc4e1a336a6d71a3b7f081aa9a",
+      "started_unix_ns": 1793959187824966774
+    },
+    {
+      "case": "SETUP",
+      "driver_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+      "exit_code": 0,
+      "finished_unix_ns": 1793959192658586169,
+      "original_path": "/home/alex/HeptaBaoPasskey-20261106-r5/attempts/1793959187824033566-3c68022a-1.result.public.json",
+      "original_sha256": "53d1089768e139540f734d61c1a56ba6369b5ccd0ecd4d8a4a03bcaf74f5f365",
+      "phase": "inspect",
+      "raw_ui_included": false,
+      "result_projection": {
+        "fixed_statuses_observed": [],
+        "foreground": [
+          "com.android.settings",
+          "com.android.settings.Settings$AccountDashboardActivity"
+        ],
+        "ok": true,
+        "phase": "inspect"
+      },
+      "runner_sha256": "0d3bae80db588f433d403f38ceaf1695c880f4bc4e1a336a6d71a3b7f081aa9a",
+      "started_unix_ns": 1793959190367378018
+    },
+    {
+      "case": "SETUP",
+      "driver_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+      "exit_code": 0,
+      "finished_unix_ns": 1793959335429276380,
+      "original_path": "/home/alex/HeptaBaoPasskey-20261106-r5/attempts/1793959332764046573-22c42920-0.result.public.json",
+      "original_sha256": "304b313332d4ec793e06c8e35c81a10e8f1f6409a7083b67f58a632e90fa23cc",
+      "phase": "tap",
+      "raw_ui_included": false,
+      "result_projection": {
+        "ok": true,
+        "phase": "tap",
+        "selector": "com.android.settings:id/change_button"
+      },
+      "runner_sha256": "0d3bae80db588f433d403f38ceaf1695c880f4bc4e1a336a6d71a3b7f081aa9a",
+      "started_unix_ns": 1793959332764917162
+    },
+    {
+      "case": "SETUP",
+      "driver_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+      "exit_code": 0,
+      "finished_unix_ns": 1793959337716265846,
+      "original_path": "/home/alex/HeptaBaoPasskey-20261106-r5/attempts/1793959332764046573-22c42920-1.result.public.json",
+      "original_sha256": "9701da746cdaf15dccba379f14d6b5a2b8a78fb36704a977397ed57cb1f8c1a7",
+      "phase": "inspect",
+      "raw_ui_included": false,
+      "result_projection": {
+        "fixed_statuses_observed": [],
+        "foreground": [
+          "com.android.settings",
+          "com.android.settings.applications.credentials.CredentialsPickerActivity"
+        ],
+        "ok": true,
+        "phase": "inspect"
+      },
+      "runner_sha256": "0d3bae80db588f433d403f38ceaf1695c880f4bc4e1a336a6d71a3b7f081aa9a",
+      "started_unix_ns": 1793959335430420751
+    },
+    {
+      "case": "SETUP",
+      "driver_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+      "exit_code": 1,
+      "finished_unix_ns": 1793959340248788744,
+      "original_path": "/home/alex/HeptaBaoPasskey-20261106-r5/attempts/1793959332764046573-22c42920-2.result.public.json",
+      "original_sha256": "01aba88f55c9a5e21c0747107e90d45b06040ef7e05c97086b3de2bdf4555516",
+      "phase": "tap",
+      "raw_ui_included": false,
+      "result_projection": {
+        "error": "ui_target_not_unique",
+        "ok": false
+      },
+      "runner_sha256": "0d3bae80db588f433d403f38ceaf1695c880f4bc4e1a336a6d71a3b7f081aa9a",
+      "started_unix_ns": 1793959337717174147
+    },
+    {
+      "case": "SETUP",
+      "driver_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+      "exit_code": 0,
+      "finished_unix_ns": 1793959451971339329,
+      "original_path": "/home/alex/HeptaBaoPasskey-20261106-r5/attempts/1793959449318830135-947f36f6-0.result.public.json",
+      "original_sha256": "2428537af0fa7b95b264c0b530237ea0f8d714b9f91a22809f999fd70a674c73",
+      "phase": "tap",
+      "raw_ui_included": false,
+      "result_projection": {
+        "ok": true,
+        "phase": "tap",
+        "selector": "HeptaBao synthetic passkeys"
+      },
+      "runner_sha256": "0d3bae80db588f433d403f38ceaf1695c880f4bc4e1a336a6d71a3b7f081aa9a",
+      "started_unix_ns": 1793959449319781515
+    },
+    {
+      "case": "SETUP",
+      "driver_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+      "exit_code": 0,
+      "finished_unix_ns": 1793959454293499109,
+      "original_path": "/home/alex/HeptaBaoPasskey-20261106-r5/attempts/1793959449318830135-947f36f6-1.result.public.json",
+      "original_sha256": "133f0257d9a8c25a70bda56fe9aeb9e14f83abe75fc044c547df4ab8cfed7665",
+      "phase": "inspect",
+      "raw_ui_included": false,
+      "result_projection": {
+        "fixed_statuses_observed": [],
+        "foreground": [
+          "com.android.settings",
+          "com.android.settings.applications.credentials.CredentialsPickerActivity"
+        ],
+        "ok": true,
+        "phase": "inspect"
+      },
+      "runner_sha256": "0d3bae80db588f433d403f38ceaf1695c880f4bc4e1a336a6d71a3b7f081aa9a",
+      "started_unix_ns": 1793959451972330814
+    },
+    {
+      "case": "SETUP",
+      "driver_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+      "exit_code": 0,
+      "finished_unix_ns": 1793959644035866532,
+      "original_path": "/home/alex/HeptaBaoPasskey-20261106-r5/attempts/1793959641374255011-8cff584f-0.result.public.json",
+      "original_sha256": "28cdc93f6fea0fe8e278fb0d72e219879340ae10f768ef458a6c6a09a7f3b6e9",
+      "phase": "tap",
+      "raw_ui_included": false,
+      "result_projection": {
+        "ok": true,
+        "phase": "tap",
+        "selector": "android:id/button1"
+      },
+      "runner_sha256": "0d3bae80db588f433d403f38ceaf1695c880f4bc4e1a336a6d71a3b7f081aa9a",
+      "started_unix_ns": 1793959641375401748
+    },
+    {
+      "case": "SETUP",
+      "driver_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+      "exit_code": 0,
+      "finished_unix_ns": 1793959644169557005,
+      "original_path": "/home/alex/HeptaBaoPasskey-20261106-r5/attempts/1793959641374255011-8cff584f-1.result.public.json",
+      "original_sha256": "f992afbf017da972ba694456c3d249560c432d686a59cb7c8daf39246530f221",
+      "phase": "settings-selected",
+      "raw_ui_included": false,
+      "result_projection": {
+        "ok": true,
+        "phase": "settings-selected",
+        "provider_enabled": true,
+        "settings_sha256": {
+          "autofill_service": "8c2f5be9a25e52146575a2c6acfc4c3ff7096f38918f612b0f5c03499a89c0c0",
+          "credential_service": "5c64efa774fdb8b483e5c3dc0df1c4d57d9d9a79224b249bc9753a17d0b74dfe",
+          "credential_service_primary": "5c64efa774fdb8b483e5c3dc0df1c4d57d9d9a79224b249bc9753a17d0b74dfe"
+        }
+      },
+      "runner_sha256": "0d3bae80db588f433d403f38ceaf1695c880f4bc4e1a336a6d71a3b7f081aa9a",
+      "started_unix_ns": 1793959644036790735
+    },
+    {
+      "case": "SETUP",
+      "driver_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+      "exit_code": 0,
+      "finished_unix_ns": 1793959644399037240,
+      "original_path": "/home/alex/HeptaBaoPasskey-20261106-r5/attempts/1793959641374255011-8cff584f-2.result.public.json",
+      "original_sha256": "a66de28eadb5bc7a0085215b7539595d39ab06f8a1ce39c6176183f39eccf8e0",
+      "phase": "launch-provider",
+      "raw_ui_included": false,
+      "result_projection": {
+        "activity": "org.heptabao.passkey.preview/org.heptabao.passkey.preview.HomeActivity",
+        "ok": true,
+        "phase": "launch-provider"
+      },
+      "runner_sha256": "0d3bae80db588f433d403f38ceaf1695c880f4bc4e1a336a6d71a3b7f081aa9a",
+      "started_unix_ns": 1793959644170544095
+    },
+    {
+      "case": "M01",
+      "driver_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+      "exit_code": 0,
+      "finished_unix_ns": 1793959713184500120,
+      "original_path": "/home/alex/HeptaBaoPasskey-20261106-r5/attempts/1793959710569935474-154e23b4-0.result.public.json",
+      "original_sha256": "0194f7c25fce0f96d85f9b404c6f5ac0dd71588637c15b9f1f5513fee07a85b5",
+      "phase": "tap",
+      "raw_ui_included": false,
+      "result_projection": {
+        "ok": true,
+        "phase": "tap",
+        "selector": "CHOOSE ENCRYPTED VAULT FILE"
+      },
+      "runner_sha256": "0d3bae80db588f433d403f38ceaf1695c880f4bc4e1a336a6d71a3b7f081aa9a",
+      "started_unix_ns": 1793959710570837669
+    },
+    {
+      "case": "M01",
+      "driver_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+      "exit_code": 0,
+      "finished_unix_ns": 1793959715598960031,
+      "original_path": "/home/alex/HeptaBaoPasskey-20261106-r5/attempts/1793959710569935474-154e23b4-1.result.public.json",
+      "original_sha256": "9c725a96fc17e7f0a6efb9a672a55d824d26b83f4a60a09508fa7076f7e9bb12",
+      "phase": "inspect",
+      "raw_ui_included": false,
+      "result_projection": {
+        "fixed_statuses_observed": [],
+        "foreground": [
+          "com.google.android.documentsui",
+          "com.android.documentsui.picker.PickActivity"
+        ],
+        "ok": true,
+        "phase": "inspect"
+      },
+      "runner_sha256": "0d3bae80db588f433d403f38ceaf1695c880f4bc4e1a336a6d71a3b7f081aa9a",
+      "started_unix_ns": 1793959713185532479
+    },
+    {
+      "case": "M01",
+      "driver_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+      "exit_code": 0,
+      "finished_unix_ns": 1793959805576228299,
+      "original_path": "/home/alex/HeptaBaoPasskey-20261106-r5/attempts/1793959802892585318-310b404c-0.result.public.json",
+      "original_sha256": "de37f83506fb0a5c93c1b30017de9c8b552a632bbd5b0d8fe91cb6751b64b4bc",
+      "phase": "tap",
+      "raw_ui_included": false,
+      "result_projection": {
+        "ok": true,
+        "phase": "tap",
+        "selector": "\u663e\u793a\u6839\u76ee\u5f55"
+      },
+      "runner_sha256": "0d3bae80db588f433d403f38ceaf1695c880f4bc4e1a336a6d71a3b7f081aa9a",
+      "started_unix_ns": 1793959802893447653
+    },
+    {
+      "case": "M01",
+      "driver_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+      "exit_code": 0,
+      "finished_unix_ns": 1793959808483484885,
+      "original_path": "/home/alex/HeptaBaoPasskey-20261106-r5/attempts/1793959802892585318-310b404c-1.result.public.json",
+      "original_sha256": "91cedea4f1470a99f6fd69f4363ce7c48d0c4e3bacbe76a66c3a249237feccbd",
+      "phase": "tap",
+      "raw_ui_included": false,
+      "result_projection": {
+        "ok": true,
+        "phase": "tap",
+        "selector": "\u4e0b\u8f7d"
+      },
+      "runner_sha256": "0d3bae80db588f433d403f38ceaf1695c880f4bc4e1a336a6d71a3b7f081aa9a",
+      "started_unix_ns": 1793959805576892232
+    },
+    {
+      "case": "M01",
+      "driver_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+      "exit_code": 0,
+      "finished_unix_ns": 1793959811055855986,
+      "original_path": "/home/alex/HeptaBaoPasskey-20261106-r5/attempts/1793959802892585318-310b404c-2.result.public.json",
+      "original_sha256": "ae4ce55941627511bb6e49d5c62f7fe72eb7707f00c85b588290e49dd8ab796d",
+      "phase": "tap",
+      "raw_ui_included": false,
+      "result_projection": {
+        "ok": true,
+        "phase": "tap",
+        "selector": "HeptaBao-Passkey-QA-20261106-r5"
+      },
+      "runner_sha256": "0d3bae80db588f433d403f38ceaf1695c880f4bc4e1a336a6d71a3b7f081aa9a",
+      "started_unix_ns": 1793959808484397815
+    },
+    {
+      "case": "M01",
+      "driver_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+      "exit_code": 0,
+      "finished_unix_ns": 1793959813634886957,
+      "original_path": "/home/alex/HeptaBaoPasskey-20261106-r5/attempts/1793959802892585318-310b404c-3.result.public.json",
+      "original_sha256": "50387faf891b38fd8e1eb890ef67084ebae3f29bcecee61662450cda77534c4f",
+      "phase": "tap",
+      "raw_ui_included": false,
+      "result_projection": {
+        "ok": true,
+        "phase": "tap",
+        "selector": "heptabao-passkey-qa-r5-seed.hbv"
+      },
+      "runner_sha256": "0d3bae80db588f433d403f38ceaf1695c880f4bc4e1a336a6d71a3b7f081aa9a",
+      "started_unix_ns": 1793959811056898950
+    },
+    {
+      "case": "M01",
+      "driver_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+      "exit_code": 0,
+      "finished_unix_ns": 1793959815950399294,
+      "original_path": "/home/alex/HeptaBaoPasskey-20261106-r5/attempts/1793959802892585318-310b404c-4.result.public.json",
+      "original_sha256": "1cb9552da809d795c7f525cb38b43f5a7b1b3a92b4b277499ba417b0ee1ff923",
+      "phase": "inspect",
+      "raw_ui_included": false,
+      "result_projection": {
+        "fixed_statuses_observed": [
+          "operation_failed"
+        ],
+        "foreground": [
+          "org.heptabao.passkey.preview",
+          "org.heptabao.passkey.preview.HomeActivity"
+        ],
+        "ok": true,
+        "phase": "inspect"
+      },
+      "runner_sha256": "0d3bae80db588f433d403f38ceaf1695c880f4bc4e1a336a6d71a3b7f081aa9a",
+      "started_unix_ns": 1793959813635842347
+    },
+    {
+      "case": "M07",
+      "driver_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+      "exit_code": 0,
+      "finished_unix_ns": 1793960203879713508,
+      "original_path": "/home/alex/HeptaBaoPasskey-20261106-r5/attempts/1793960202335545712-08fa76c4-0.result.public.json",
+      "original_sha256": "15e97c9c11ad3364d90808781f7c935f04fe77df8c3749259a5def7daff7b848",
+      "phase": "restore",
+      "raw_ui_included": false,
+      "result_projection": {
+        "ok": true,
+        "packages_removed": [
+          "org.heptabao.passkey.decoy",
+          "org.heptabao.passkey.fixture",
+          "org.heptabao.passkey.preview"
+        ],
+        "phase": "restore",
+        "restoration": {
+          "autofill_service": "restored_original",
+          "credential_service": "restored_original",
+          "credential_service_primary": "restored_original"
+        },
+        "reverse_restoration": "removed_and_absence_verified"
+      },
+      "runner_sha256": "0d3bae80db588f433d403f38ceaf1695c880f4bc4e1a336a6d71a3b7f081aa9a",
+      "started_unix_ns": 1793960202336381848
+    }
+  ],
+  "schema": 1,
+  "scope": "fixed-code_public_projection_original_phase_hashes_preserved"
+}

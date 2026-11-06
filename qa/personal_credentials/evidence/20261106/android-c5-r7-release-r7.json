@@ -1,0 +1,32 @@
+{
+  "created_unix_ns": 1793960950817717503,
+  "current_setting_sha256": "9fb252f02fa059931879ba0cd6179b9890d0e25538994d63d70290a333124a6e",
+  "device_mutations": false,
+  "device_serial_sha256": "41ad305f8562a6c47710afe71fabf30cb8692a71d3de1a47ca9949b669bcc6c1",
+  "original_setting_sha256": "9fb252f02fa059931879ba0cd6179b9890d0e25538994d63d70290a333124a6e",
+  "packages": {
+    "org.heptabao.personal.preview": {
+      "installed_absent": true,
+      "query_succeeded": true,
+      "retained_record_absent": true
+    },
+    "org.heptabao.synthetic.decoy": {
+      "installed_absent": true,
+      "query_succeeded": true,
+      "retained_record_absent": true
+    },
+    "org.heptabao.synthetic.fixture": {
+      "installed_absent": true,
+      "query_succeeded": true,
+      "retained_record_absent": true
+    }
+  },
+  "phone_driver_job": "1a1b065558e-fc05-7038",
+  "phone_driver_terminal_exit_code": 1,
+  "qa_script_sha256": "4d20ac12535e592da591b5c63cf7971ef2443c6b219f36e250aac2074fd3ce1e",
+  "report_sha256": "be859adb806b91a57f8cf206e5880e5b995e596641b3caca8a321bd29b2af251",
+  "restoration": "restored_original",
+  "run": "r7",
+  "schema": 1,
+  "scope": "readonly_post_cleanup_verification"
+}
