@@ -1,0 +1,320 @@
+{
+  "schema": "heptabao.root-GO.PKI-fixed10-public-formatter-output-collector.v1",
+  "authorization": "GO",
+  "agent": "/root/ha_validation",
+  "scope": "one_fixed10_public_collection_and_new_report_only",
+  "source_packet": "734f301b73cf19a31b159265a768016704617d91",
+  "source_review": {
+    "blob": "b9ab467d5a8c03523c2429bb7f94ebf98a2f9d98",
+    "bytes": 8746,
+    "sha256": "e8f0abcc3b3b5a96d3adf932065f1581fb98d6fa64c829de5e0e8b9888cde41c"
+  },
+  "source": {
+    "blob": "682e85d037c2b4fdd5c3b6412645a8027cda48d7",
+    "bytes": 30445,
+    "sha256": "592f1f112a4a3a3d48e07f33c8cf2ba493b1c63e4215ffe8ca0ba9fec80cd6f6"
+  },
+  "exact_request": {
+    "blob": "22dd45be52462f7a001abf985abe48c523dc48a4",
+    "bytes": 33330,
+    "sha256": "d16edddff2f496d84fb41eb50fdf266716b274388beb1031baec8111579e2c0f"
+  },
+  "native_binding": {
+    "sha256": "0fda8cc772c1ace1cf1c91faef8fa77e322cf8f58e33689439cf3c22ffe86454",
+    "native_fingerprint": "1142380243743517921"
+  },
+  "helpers": {
+    "native": {
+      "blob": "318cc953dde2cf72bd2431cc6a2f536bf07b97cf",
+      "bytes": 19063,
+      "sha256": "4ac9ec88c195ce9d52eb4a9738563cd56a8309f53db60351f1f07408041f3ab6"
+    },
+    "archive": {
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    "pure": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    }
+  },
+  "slot": "native_pki_lease400_formatter10_collector_gitfirst_r1",
+  "start": {
+    "host": "rog",
+    "executable": "/usr/bin/python3",
+    "args_prefix": [
+      "-I",
+      "-S",
+      "-B",
+      "-c"
+    ],
+    "args_source": {
+      "blob": "682e85d037c2b4fdd5c3b6412645a8027cda48d7",
+      "bytes": 30445,
+      "sha256": "592f1f112a4a3a3d48e07f33c8cf2ba493b1c63e4215ffe8ca0ba9fec80cd6f6"
+    },
+    "args_final_sha256": "592f1f112a4a3a3d48e07f33c8cf2ba493b1c63e4215ffe8ca0ba9fec80cd6f6",
+    "cwd": "/home/qian-qi",
+    "stdin_absent": true,
+    "timeout_seconds": 60,
+    "idempotency_key": "heptabao-native-pki-lease400-format10-collector-20261106-r1-592f1f11",
+    "maximum_START_count": 1
+  },
+  "input_root": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1",
+  "fixed_inputs": [
+    {
+      "index": 0,
+      "role": "candidate",
+      "name": "pki.rs",
+      "relative": "candidate/pki.rs",
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/candidate/pki.rs",
+      "bytes": 136672,
+      "sha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba",
+      "cap": 136672,
+      "expected_full9": null,
+      "immutable_blob": "3c6fd86dcd641eb16af64b835d2252163dd1488e"
+    },
+    {
+      "index": 1,
+      "role": "formatted",
+      "name": "pki.rs",
+      "relative": "formatted/pki.rs",
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/formatted/pki.rs",
+      "bytes": 136672,
+      "sha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba",
+      "cap": 262144,
+      "expected_full9": null,
+      "immutable_blob": null
+    },
+    {
+      "index": 2,
+      "role": "stdout",
+      "name": "pki.rs",
+      "relative": "pki.rs.rustfmt.stdout",
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/pki.rs.rustfmt.stdout",
+      "bytes": 136672,
+      "sha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba",
+      "cap": 262144,
+      "expected_full9": null,
+      "immutable_blob": null
+    },
+    {
+      "index": 3,
+      "role": "stderr",
+      "name": "pki.rs",
+      "relative": "pki.rs.rustfmt.stderr",
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/pki.rs.rustfmt.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cap": 65536,
+      "expected_full9": null,
+      "immutable_blob": null
+    },
+    {
+      "index": 4,
+      "role": "candidate",
+      "name": "service_native_pki_tests.rs",
+      "relative": "candidate/service_native_pki_tests.rs",
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/candidate/service_native_pki_tests.rs",
+      "bytes": 42863,
+      "sha256": "3dfea1dccd78187517f3cb9ca04ed036073eb7ed6b7c604815aa745f4402f208",
+      "cap": 42863,
+      "expected_full9": null,
+      "immutable_blob": "352e581f5a901f21ee7c7af4c9bc5b3bed1a1439"
+    },
+    {
+      "index": 5,
+      "role": "formatted",
+      "name": "service_native_pki_tests.rs",
+      "relative": "formatted/service_native_pki_tests.rs",
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/formatted/service_native_pki_tests.rs",
+      "bytes": 42909,
+      "sha256": "6a1fd1fbaf6caa1c206844e8d97414ea231a1cba663ebb704d26cdff42417d56",
+      "cap": 262144,
+      "expected_full9": null,
+      "immutable_blob": null
+    },
+    {
+      "index": 6,
+      "role": "stdout",
+      "name": "service_native_pki_tests.rs",
+      "relative": "service_native_pki_tests.rs.rustfmt.stdout",
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/service_native_pki_tests.rs.rustfmt.stdout",
+      "bytes": 42909,
+      "sha256": "6a1fd1fbaf6caa1c206844e8d97414ea231a1cba663ebb704d26cdff42417d56",
+      "cap": 262144,
+      "expected_full9": null,
+      "immutable_blob": null
+    },
+    {
+      "index": 7,
+      "role": "stderr",
+      "name": "service_native_pki_tests.rs",
+      "relative": "service_native_pki_tests.rs.rustfmt.stderr",
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/service_native_pki_tests.rs.rustfmt.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cap": 65536,
+      "expected_full9": null,
+      "immutable_blob": null
+    },
+    {
+      "index": 8,
+      "role": "config",
+      "name": "rustfmt.toml",
+      "relative": "rustfmt.toml",
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/rustfmt.toml",
+      "bytes": 17,
+      "sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584",
+      "cap": 17,
+      "expected_full9": [
+        "66306",
+        "28071611",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "17",
+        "1793944550719366866",
+        "1793944550719366866"
+      ],
+      "immutable_blob": null
+    },
+    {
+      "index": 9,
+      "role": "receipt",
+      "name": "result.public.json",
+      "relative": "result.public.json",
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/result.public.json",
+      "bytes": 4907,
+      "sha256": "7b2560af593a62c7de4b8ca3a8cb7c2fffaed1408b2f1b356a302a38a7617776",
+      "cap": 65536,
+      "expected_full9": [
+        "66306",
+        "28071628",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "4907",
+        "1793944550782366173",
+        "1793944550782366173"
+      ],
+      "immutable_blob": "6638b8f22581832b5451d8b79e275feccec54959"
+    }
+  ],
+  "original_formatter": {
+    "job": "rog/1a1af6d62a1-fc05-686a",
+    "replay_allowed": false,
+    "receipt": {
+      "blob": "6638b8f22581832b5451d8b79e275feccec54959",
+      "bytes": 4907,
+      "sha256": "7b2560af593a62c7de4b8ca3a8cb7c2fffaed1408b2f1b356a302a38a7617776",
+      "rootQualification": "4ba7ea70dc1d2221dc5ba4f21e46221b4f89ff22",
+      "twoDirectChildrenReaped": true,
+      "sharedSupervisorPgid": 82826,
+      "independentGroupEmptyObserved": false
+    },
+    "root_receipt_qualification": {
+      "blob": "4ba7ea70dc1d2221dc5ba4f21e46221b4f89ff22",
+      "bytes": 8602,
+      "sha256": "d3e2a20bd9c14d78e98f26673da7f802a7fc0d095d4a23255a01ca96140d574d"
+    }
+  },
+  "new_report": {
+    "root": "/home/qian-qi/heptabao-native-pki-lease400-format-observe-20261106-r1",
+    "name": "observation.public.json",
+    "root_mode": "0700",
+    "file_mode": "0600",
+    "must_be_absent": true,
+    "create_only": true,
+    "maximum_bytes": 262144,
+    "whole_same_FD_readback_required": true
+  },
+  "source_provenance": {
+    "baseCommit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+    "baseTree": "5497775d9d473541e13e1603be8c893a3e27681b",
+    "baseOnly": true,
+    "uncommittedCandidateInputs": true,
+    "candidateSourcePacket": "6e4bf23de8f7fdac6dd9b152232a905bedb87744",
+    "candidates": [
+      {
+        "name": "pki.rs",
+        "repositoryPath": "crates/heptabao-server/src/engines/pki.rs",
+        "inputBlob": "3c6fd86dcd641eb16af64b835d2252163dd1488e",
+        "bytes": 136672,
+        "sha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba"
+      },
+      {
+        "name": "service_native_pki_tests.rs",
+        "repositoryPath": "crates/heptabao-server/src/service_native_pki_tests.rs",
+        "inputBlob": "352e581f5a901f21ee7c7af4c9bc5b3bed1a1439",
+        "bytes": 42863,
+        "sha256": "3dfea1dccd78187517f3cb9ca04ed036073eb7ed6b7c604815aa745f4402f208"
+      }
+    ],
+    "futureParent": "808e45d690f177ecb922e13d1ed19f7877156094",
+    "futureCombinedCommit": null
+  },
+  "limits": {
+    "internalSeconds": 50,
+    "outerSeconds": 60,
+    "readCap": 1424736,
+    "originalJWT38ReadCap": 7906155,
+    "perReadCap": 65536,
+    "readCallCap": 256,
+    "metadataCap": 320,
+    "fdAcquisitions": 18,
+    "peakFDs": 16,
+    "diffBytes": 131072,
+    "reportBytes": 262144,
+    "stdoutBytes": 16384,
+    "reportReadbackIncludedInReadCap": true,
+    "maxActualInputPlusReportReadback": 805765,
+    "clocksReset": false,
+    "maximum_Runtime_lanes": 2,
+    "maximum_native_call_or_future_per_lane": 1,
+    "process_read_bytes": 16384,
+    "immutable_page_bytes": 8192,
+    "original_payload_cap": 1048576
+  },
+  "lane_activation": "C may activate its empty lane after all previous original receipt observers are closed; A has only its separately reviewed scope. Root and B issue no Runtime calls. Maximum2 Native lanes globally.",
+  "sequence": [
+    "Whole this exact GO, initialize only the fresh dedicated slot, and bind the exact independently computed native digest and decimal fingerprint.",
+    "Whole exact request, intent and armed; return across a dispatch boundary; submit the one exact process_start only.",
+    "Preserve and externally whole the complete original SDK before parse/isError. UNKNOWN retains original identity without replay, re-key or replacement process.",
+    "Observe only the returned original rog job status and stdout/stderr with original IDs and next8192 immutable pages; preserve whole payloads and completed inactive status.",
+    "Require known exit0/full/durable/confirmed authority and complete untruncated streams plus post-finally terminal. All18 acquisitions once closed, handlers/umask restored, no pending signal, shared50/outer60 unchanged.",
+    "Stop after complete original terminal/streams. The new report metadata/body read and strict source reconstruction require their separately bound source and exact GO."
+  ],
+  "success_requires": {
+    "authority": "exit0/full/durable/confirmed",
+    "stdoutSchema": "heptabao.native-pki-formatter10-terminal.v1",
+    "status": "passed",
+    "all18OnceClosed": true,
+    "handlersAndUmaskRestored": true,
+    "noPendingSignal": true,
+    "withinOriginalDeadline": true,
+    "reportSameFDWholeReadback": true,
+    "originalInputWrites": 0,
+    "children": 0,
+    "networkCalls": 0,
+    "directoryListings": 0
+  },
+  "excludes": [
+    "new formatter or replay of prior formatter",
+    "writes to original input root, other file reads, listing, network, child processes, product or Cargo execution",
+    "changing current source checkout or branch",
+    "automatic retry, timeout extension, re-key, or ambiguous FD close retries",
+    "metadata/body observation of the new report under this GO"
+  ],
+  "ten_output_report_independently_read": false,
+  "formatted_source_reconstructed": false,
+  "compile_or_product_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

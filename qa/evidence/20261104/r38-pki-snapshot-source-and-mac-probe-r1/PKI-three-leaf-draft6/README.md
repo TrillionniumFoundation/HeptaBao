@@ -1,0 +1,5 @@
+# PKI three-leaf child of the formatted JWT source — draft only
+
+The exact proposed sole parent is 808e45d690f177ecb922e13d1ed19f7877156094. Only the two actually formatted PKI Rust files and the previously reviewed acceptance.py candidate change. The canonical before and computed after each verify 3,916 leaves and 358 Merkle trees; 3,913 leaves and every mode remain unchanged. Seven affected directory trees are included as full Git entry lists and exact encoded tree bodies. No product tree, commit, ref, host operation, compilation or test was created or executed by this proposal.
+
+Expected product tree: b7f276f70e0da1a33306564f385ab7bc12fd44f6. The unchanged formatter input/source-base identity is not inherited as new runtime qualification. Source-stage parameters can bind this expected tree, 62,297,347 tracked bytes and the exact Git ls-tree-order full-leaf index SHA after root creates and reads back the actual commit. The future commit ID remains unresolved. Build149 unique /166 profile instances remains separate from snapshot B's 23 tests.

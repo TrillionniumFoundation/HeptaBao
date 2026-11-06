@@ -1,0 +1,5 @@
+{
+  "first_error": "Error: only_one_guarded_rejection_insert_service_snapshot_transfer.rs",
+  "correction": "The test fixture arm has12 spaces while free helpers have8; exact insertion checker now inherits the original anchor indentation. Candidate bytes and strict diff checks unchanged.",
+  "Runtime_calls": 0
+}

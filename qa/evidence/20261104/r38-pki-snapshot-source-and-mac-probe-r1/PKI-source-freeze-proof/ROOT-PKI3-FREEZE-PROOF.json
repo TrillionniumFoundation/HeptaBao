@@ -1,0 +1,105 @@
+{
+  "schema": "heptabao.root-PKI3-freeze-preflight.v1",
+  "parent": "808e45d690f177ecb922e13d1ed19f7877156094",
+  "base_tree": "0506d30b02f5a2a2dc7d6364299365ae8d1d7cc7",
+  "expected_tree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+  "leaves": 3916,
+  "unchanged": 3913,
+  "modified": 3,
+  "index": {
+    "blob": "274ab44690eb8992c7bb7954757cb81c994b6575",
+    "bytes": 452026,
+    "sha256": "7a2ab1d97a5140120034276c0d21547ffa935867055a0c5af95f7f061f8f3df0"
+  },
+  "tracked_bytes": 62297347,
+  "formatted_content_qualification": "804c07ab40bb0be24776fd6ec110935f1cf064fb",
+  "draft_tree": "2268a8e714bdec077116b8675773506a0ede68b2",
+  "branch": "codex/heptabao-native-jwt-pki-source-20261106",
+  "source_only": true,
+  "commit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+  "sole_parent": "808e45d690f177ecb922e13d1ed19f7877156094",
+  "tree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+  "branch_read_back_verified": true,
+  "commit_read_back_verified": true,
+  "tree_layers_verified": [
+    {
+      "path": "crates/heptabao-server/src/engines",
+      "sha": "73153086733f7c586a5b9db968c933cbdeafaa55",
+      "entries": 116,
+      "whole": true
+    },
+    {
+      "path": "crates/heptabao-server/src",
+      "sha": "30df5c0f2c8c0dde945bd3447a48821712324cd7",
+      "entries": 782,
+      "whole": true
+    },
+    {
+      "path": "crates/heptabao-server",
+      "sha": "1f4f1a2806d2cde84ff1522ad01c4364d5dd1439",
+      "entries": 8,
+      "whole": true
+    },
+    {
+      "path": "qa/openbao-acceptance",
+      "sha": "1844411ab50ee681a3ae4e22258e5041d7a64c71",
+      "entries": 381,
+      "whole": true
+    },
+    {
+      "path": "crates",
+      "sha": "b2c01aa42fff7f8480749fdb3b312e1d1a69371e",
+      "entries": 49,
+      "whole": true
+    },
+    {
+      "path": "qa",
+      "sha": "f5f6a877d49a3df3c1a2be612c87ac57c62139e1",
+      "entries": 2,
+      "whole": true
+    },
+    {
+      "path": "",
+      "sha": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+      "entries": 26,
+      "whole": true
+    }
+  ],
+  "files": [
+    {
+      "path": "crates/heptabao-server/src/engines/pki.rs",
+      "blob": "3c6fd86dcd641eb16af64b835d2252163dd1488e",
+      "bytes": 136672,
+      "sha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_pki_tests.rs",
+      "blob": "23b2c1344eec6ad1cc659f665df14d6379687a49",
+      "bytes": 42909,
+      "sha256": "6a1fd1fbaf6caa1c206844e8d97414ea231a1cba663ebb704d26cdff42417d56"
+    },
+    {
+      "path": "qa/openbao-acceptance/acceptance.py",
+      "blob": "8ffd4f530426968fa396ceb8cb3299e80f25a9d0",
+      "bytes": 36333,
+      "sha256": "c10e3e009dfd3273a26c2b313f26e616de5a9b28c874dfd191bdffc208a79042"
+    }
+  ],
+  "mutation_journals": {
+    "tree_intent": "75cb8603324f652fdc303294b8dbd84c9ead2a2e",
+    "tree_original_sdk": "d6251b2ca91f9e88f1e71f8165057b55ed1abd63",
+    "commit_intent": "4132c03349e54803c2280a943140cd4a8e77e2ef",
+    "commit_original_sdk": "27926ef6d88550d23844633b6877d24f394f28c3",
+    "branch_intent": "f1fb20c3d1522bde5902e2a53a5a2a2b8de082e7",
+    "branch_original_sdk": "d05dbdf33b69a29d744af6a6c1fecf59222bfa3e"
+  },
+  "limits": {
+    "compiled": false,
+    "product_runtime": false,
+    "http_12": false,
+    "full_replacement": false,
+    "production_cutover": false,
+    "cleanup": false
+  },
+  "tree_comparator_correction": "All seven returned hashes matched; cached entry arrays compared as exact path/mode/type/sha sets and independently Merkle-recomputed. Initial order-only comparison failure remains in commit intent. No mutation was repeated."
+}

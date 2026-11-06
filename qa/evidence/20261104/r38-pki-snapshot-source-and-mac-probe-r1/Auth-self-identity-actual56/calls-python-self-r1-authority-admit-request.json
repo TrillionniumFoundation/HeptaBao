@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-mac-public-python-identity-77b33bcb-authority-20261106-r1",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1afab06b9-fc05-6aa0"
+    }
+  }
+}

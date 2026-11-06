@@ -1,0 +1,85 @@
+{
+  "schema": "heptabao.public-python-self-identity.source-checks.v1",
+  "passed": true,
+  "checkCount": 19,
+  "checks": [
+    {
+      "name": "original_reader_exact_embedded_once",
+      "passed": true
+    },
+    {
+      "name": "original_signals_exact_embedded_once",
+      "passed": true
+    },
+    {
+      "name": "same_self_only_two_bounded_reads",
+      "passed": true
+    },
+    {
+      "name": "no_call_to_children_projection",
+      "passed": true
+    },
+    {
+      "name": "original_six_boolean_forms",
+      "passed": true
+    },
+    {
+      "name": "exact_full_identity_equality",
+      "passed": true
+    },
+    {
+      "name": "bounded_public_path_only",
+      "passed": true
+    },
+    {
+      "name": "no_application_acquisition_or_child_calls",
+      "passed": true
+    },
+    {
+      "name": "fixed_short_budgets",
+      "passed": true
+    },
+    {
+      "name": "signal_restore_before_final_report",
+      "passed": true
+    },
+    {
+      "name": "public_diagnostic_not_all_predicates_success",
+      "passed": true
+    },
+    {
+      "name": "final_postflush_deadline_exit",
+      "passed": true
+    },
+    {
+      "name": "stdout_cap_and_ascii",
+      "passed": true
+    },
+    {
+      "name": "request_stdin_whole",
+      "passed": true
+    },
+    {
+      "name": "fixed_native_host_arguments",
+      "passed": true
+    },
+    {
+      "name": "journal_forward_exact",
+      "passed": true
+    },
+    {
+      "name": "journal_inverse_exact",
+      "passed": true
+    },
+    {
+      "name": "journal_function_scope_unchanged",
+      "passed": true
+    },
+    {
+      "name": "new_slot_uninitialized",
+      "passed": true
+    }
+  ],
+  "PythonExecuted": false,
+  "NativeCalls": 0
+}

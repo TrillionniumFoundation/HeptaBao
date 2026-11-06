@@ -1,0 +1,8 @@
+{
+  "stage": "pure-V8 request copy",
+  "error": "ReferenceError: structuredClone is not defined",
+  "nativeCalls": 0,
+  "gitMutations": 0,
+  "candidateWritten": false,
+  "correction": "Use fresh JSON.parse object as the local request value; no typed numeric conversion or source changes."
+}

@@ -1,0 +1,92 @@
+{
+  "status": "pure_source_checker_failed",
+  "at": "all-four-whole-pins",
+  "file": "service_native_v6_ha_cold_restore_tests.rs",
+  "message": "Error: service_native_v6_ha_cold_restore_tests.rs: all four whole pins",
+  "runtimeCalls": 0,
+  "candidateExecuted": false,
+  "cause": "The first eight cached diff keys used suffix naming; the new verifier read prefix naming and hashed undefined as the string 'undefined'. Candidate and actual diff bytes remained unchanged.",
+  "correction": [
+    {
+      "from": "service_snapshot_transfer.rs.forward.diff",
+      "to": "forward-service_snapshot_transfer.rs.diff",
+      "byteChange": false
+    },
+    {
+      "from": "service_snapshot_transfer.rs.reverse.diff",
+      "to": "reverse-service_snapshot_transfer.rs.diff",
+      "byteChange": false
+    },
+    {
+      "from": "service_native_v6_ha_historical_restore_tests.rs.forward.diff",
+      "to": "forward-service_native_v6_ha_historical_restore_tests.rs.diff",
+      "byteChange": false
+    },
+    {
+      "from": "service_native_v6_ha_historical_restore_tests.rs.reverse.diff",
+      "to": "reverse-service_native_v6_ha_historical_restore_tests.rs.diff",
+      "byteChange": false
+    },
+    {
+      "from": "service_native_v6_ha_snapshot_tests.rs.forward.diff",
+      "to": "forward-service_native_v6_ha_snapshot_tests.rs.diff",
+      "byteChange": false
+    },
+    {
+      "from": "service_native_v6_ha_snapshot_tests.rs.reverse.diff",
+      "to": "reverse-service_native_v6_ha_snapshot_tests.rs.diff",
+      "byteChange": false
+    },
+    {
+      "from": "service_native_v6_ha_cold_restore_tests.rs.forward.diff",
+      "to": "forward-service_native_v6_ha_cold_restore_tests.rs.diff",
+      "byteChange": false
+    },
+    {
+      "from": "service_native_v6_ha_cold_restore_tests.rs.reverse.diff",
+      "to": "reverse-service_native_v6_ha_cold_restore_tests.rs.diff",
+      "byteChange": false
+    },
+    {
+      "from": "service_native_v6_ha_restore_borrowed_tests.rs.forward.diff",
+      "to": "forward-service_native_v6_ha_restore_borrowed_tests.rs.diff",
+      "byteChange": false
+    },
+    {
+      "from": "service_native_v6_ha_restore_borrowed_tests.rs.reverse.diff",
+      "to": "reverse-service_native_v6_ha_restore_borrowed_tests.rs.diff",
+      "byteChange": false
+    },
+    {
+      "from": "service_native_v6_ha_snapshot_repair_tests.rs.forward.diff",
+      "to": "forward-service_native_v6_ha_snapshot_repair_tests.rs.diff",
+      "byteChange": false
+    },
+    {
+      "from": "service_native_v6_ha_snapshot_repair_tests.rs.reverse.diff",
+      "to": "reverse-service_native_v6_ha_snapshot_repair_tests.rs.diff",
+      "byteChange": false
+    },
+    {
+      "from": "service_snapshot_lossless_export_tests.rs.forward.diff",
+      "to": "forward-service_snapshot_lossless_export_tests.rs.diff",
+      "byteChange": false
+    },
+    {
+      "from": "service_snapshot_lossless_export_tests.rs.reverse.diff",
+      "to": "reverse-service_snapshot_lossless_export_tests.rs.diff",
+      "byteChange": false
+    },
+    {
+      "from": "service_snapshot_v6_tests.rs.forward.diff",
+      "to": "forward-service_snapshot_v6_tests.rs.diff",
+      "byteChange": false
+    },
+    {
+      "from": "service_snapshot_v6_tests.rs.reverse.diff",
+      "to": "reverse-service_snapshot_v6_tests.rs.diff",
+      "byteChange": false
+    }
+  ],
+  "sourceBytesChanged": false
+}

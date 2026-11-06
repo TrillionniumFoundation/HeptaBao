@@ -1,0 +1,103 @@
+{
+  "schema": "heptabao.root-GO.PKI-formatter-single-receipt-binary-read.v1",
+  "authorization": "GO",
+  "agent": "/root/ha_validation",
+  "scope": "formatter_receipt_binary_read_only",
+  "original_job": "1a1af6d62a1-fc05-686a",
+  "info_operation": "d20c3dc1bb81c7f2ada4ea0ff79b48a59a03e4d943adf6ec90dd8da584166ff6",
+  "maximum_binary_read_starts": 1,
+  "immutable_page_bytes": 16384,
+  "all_other_original_pages": 8192,
+  "original_payload_cap": 1048576,
+  "exact_request": {
+    "blob": "f5b7c12b685181b4f6aab474c3b966c80a098f88",
+    "bytes": 412,
+    "sha256": "279ba67b486d5752c4a161ede92a75407f858ab517de4c407f5c34684d9230ac"
+  },
+  "candidate": {
+    "blob": "9a8d858bb10b7ff74ed001d2d1736bd2f31e2a25",
+    "bytes": 29144,
+    "sha256": "fcbb04854f838ee75c49a6d978d7c8db060e48808f40d2dd92fc0cd3e604f43b"
+  },
+  "source_packet": "07e1789c9a50329cb181f6a96f22f6284a3b4629",
+  "source_review": {
+    "blob": "244e18c8502f2dbff31b4ef4fdcad5faee3b7f0b",
+    "bytes": 2874,
+    "sha256": "bb5769e3870ee66e08d4395e061ea619e8b0f1e50f897a6f99c8bbe0eaff7dc3"
+  },
+  "info_qualification": {
+    "blob": "ec2678e7c4c813e34e2b66ae3b6405f5e16ac754",
+    "bytes": 4259,
+    "sha256": "6d077e0ef8d272baea13c1f1e39b4e3dd7a0f48d30b66f1e6631a9cbd8d8b432"
+  },
+  "actual_metadata": {
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/result.public.json",
+    "size": 4907,
+    "sha256": "7b2560af593a62c7de4b8ca3a8cb7c2fffaed1408b2f1b356a302a38a7617776",
+    "version": "66306:28071628:4907:1793944550782366173:1793944550782366173",
+    "nativeText": {
+      "blob": "87e770a58b2d4cbe9d6ab71d8c61d5d3634a9556",
+      "bytes": 466,
+      "sha256": "9bdc226bd5fecc495a4a4b17c4593324f01bd7f95b3e5315052c90cc9a4ac2f1"
+    },
+    "originalOperation": "d20c3dc1bb81c7f2ada4ea0ff79b48a59a03e4d943adf6ec90dd8da584166ff6",
+    "full9Strings": [
+      "66306",
+      "28071628",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "4907",
+      "1793944550782366173",
+      "1793944550782366173"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "request": {
+    "operation": {
+      "tool": "binary_read",
+      "arguments": {
+        "host": "rog",
+        "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/result.public.json",
+        "offset": 0,
+        "limit": 4907,
+        "expected_version": "66306:28071628:4907:1793944550782366173:1793944550782366173"
+      }
+    },
+    "idempotency_key": "heptabao-native-pki-lease400-formatter-observe-r1-receipt-body0"
+  },
+  "existing_context": "native_pki_lease400_formatter_gitfirst_r1",
+  "initialize_allowed": false,
+  "action": "authorize_formatter_receipt_body",
+  "sequence": [
+    "Whole this exact GO and attach it to the original closed PKI formatter slot; no reinitialize.",
+    "Whole fixed request, intent and armed before independent dispatch boundary; one version-bound binary_read only.",
+    "Externally whole original SDK before parse/isError; follow only returned original ID with status and next16384 immutable pages.",
+    "Require completed/stored/inactive original observer, whole payload SHA/EOF and exactly4907 actual bytes at original path/version, offset0/EOF; verify whole SHA and preserve original UTF8 bytes.",
+    "Archive the complete original public receipt before semantic checks. Any dispatch/result unknown preserves its identity without replay or a new key."
+  ],
+  "limits": {
+    "maximum_Runtime_lanes": 2,
+    "maximum_native_call_or_future_per_lane": 1,
+    "whole_body_bytes": 4907,
+    "original_info_admission_cap": 65536,
+    "new_process_starts": 0,
+    "new_file_info": 0,
+    "other_output_body_reads": 0
+  },
+  "lane_activation": "C may use its currently empty lane. A only its separately reviewed exact scope; B/root0. Global maximum2 lanes.",
+  "excluded": [
+    "formatter/process replay and new slot initialization",
+    "new metadata query, different version/path, listing or other outputs",
+    "Cargo, component/product/provider execution",
+    "automatic retry, re-key, expanded range or timeout after unknown"
+  ],
+  "ten_output_qualification": false,
+  "formatted_source_reconstructed": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

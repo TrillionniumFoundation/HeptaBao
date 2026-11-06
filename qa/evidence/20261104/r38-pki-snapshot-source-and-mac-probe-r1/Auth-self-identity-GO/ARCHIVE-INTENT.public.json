@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "R38-root-Mac-self-identity-GO",
+  "records": [
+    {
+      "name": "GO.json",
+      "blob": "021678a807e5b69de2bc1ef7a867bee4281fccb1",
+      "bytes": 7096,
+      "sha256": "8c674b99ebfae5fd11734777ad3fc8a954ec138ad624a4a77c114ded99e0b7fa"
+    },
+    {
+      "name": "source-review.json",
+      "blob": "26ba40b55548b5bc1aa6450d5fa6cb720a3852d8",
+      "bytes": 5009,
+      "sha256": "a7f5101a1262a53746b04aed7080a5176c75edd87048232fdb03c260bb1d4ff3"
+    },
+    {
+      "name": "source-verifier.js",
+      "blob": "e59d35dee22f2803dd15e791f5894d581a5b27d7",
+      "bytes": 9316,
+      "sha256": "4e57da7b4ce3fe28a334c5db74f817fb4da3d4e04cfc902a2717e0ac5e6468ac"
+    },
+    {
+      "name": "source-verifier-first-failed.js",
+      "blob": "693479258893b4a264a5ae8a9c23965e696a0e77",
+      "bytes": 9243,
+      "sha256": "69f2382d1718f8547bb134a2434edb9b185c66a5eaf7eff4d288fa052a365a73"
+    },
+    {
+      "name": "root-checker-correction.json",
+      "blob": "e6aac89e561f7be064ce18e5bbdc04e2305a4a9d",
+      "bytes": 457,
+      "sha256": "df3af306e952476beb2e0429adc43773931c9a57de8e67a18b3fb23d4a3c5d3c"
+    }
+  ],
+  "expected_data_tree": "3689cd56d7f72550c237fa8631563ab18c7afbb1",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

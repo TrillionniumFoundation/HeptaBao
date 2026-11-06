@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r38-auth-home-t5-probe-r4-root-GO",
+  "records": [
+    {
+      "name": "ROOT-SOURCE-REVIEW.json",
+      "blob": "7b1dfdb5e0c3cad52e401c99654fd8e9bdb1e8fd",
+      "bytes": 5266,
+      "sha256": "13bde1668b79d254c331cf5ad1e0de43aaed2bc0027734f3d9087c9b4ecbabfa"
+    },
+    {
+      "name": "ROOT-SOURCE-VERIFIER.js",
+      "blob": "a260f441a040d951f3ba6e7417ac8e61e97c01db",
+      "bytes": 7578,
+      "sha256": "3a644530db29feb27abd8c5fe433b7669833a0e7926e10c7d296e2c8cf29813e"
+    },
+    {
+      "name": "ROOT-GO.json",
+      "blob": "806c1e15bf4fbb6d88bfa1443e9b58eb38ed1210",
+      "bytes": 14378,
+      "sha256": "70fed9554a7c01f885b534475bad329aae1dc60bda93639df437f92c3a4837ab"
+    },
+    {
+      "name": "STRICT-DIFF-HELPER.js",
+      "blob": "af8c8db9ee76ccea0bb1dc4df1b0cdb61a8152d3",
+      "bytes": 2273,
+      "sha256": "eee83dbb8f629571ef33063873f55be75dd17aa40796e22e5f9a70ec36ddf7e3"
+    },
+    {
+      "name": "NATIVE-PROCESS-BINDING.js",
+      "blob": "82e81aef13d858c865ea05dd762056553a3d1cc6",
+      "bytes": 659,
+      "sha256": "e98c61fceb6eecdd55e6244ad43939320114809163afee67a6b8657235dae042"
+    }
+  ],
+  "expected_data_tree": "cd583231f3534dbfa56b9061ed31ba55998be8d2",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

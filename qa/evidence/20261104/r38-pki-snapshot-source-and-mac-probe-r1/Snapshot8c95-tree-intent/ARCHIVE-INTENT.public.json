@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "Snapshot-forward-r3-source-tree-intent-r1",
+  "records": [
+    {
+      "name": "tree-intent.json",
+      "blob": "91896745d9209957441afc9fbf0f3fe4236384b6",
+      "bytes": 3218,
+      "sha256": "75412c8e5253c0fe616f910a5ae0832003fea0756068ac23a937a4dd9c870003"
+    },
+    {
+      "name": "exact-request.json",
+      "blob": "69e70cd9313c7abaebef0f7e8e2995f84d8528f7",
+      "bytes": 4420,
+      "sha256": "0ca30674b13d7b14fa241a53193b031e8302c0df9e3bacbb94885b64bc9cd363"
+    }
+  ],
+  "expected_data_tree": "d384e2e84653df43a2e96f1673028b11d74e32c3",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

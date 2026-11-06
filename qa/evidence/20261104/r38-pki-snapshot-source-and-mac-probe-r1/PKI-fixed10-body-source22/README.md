@@ -1,0 +1,7 @@
+# PKI fixed10 collector report — one whole binary range
+
+SOURCE ONLY. The independent file_info is complete and exactly matches the original terminal's 30,131-byte report identity, including full9, full SHA256 and immutable version. This candidate attaches the existing closed slot and adds the same previously reviewed finite-range body mechanism, limited here to one offset0 / limit30131 request. It preserves the complete current info branch and all earlier 8192-byte page semantics. Only the new binary observer uses 16384-byte immutable payload pages, with the original 1MiB payload limit.
+
+No read body has been submitted. A separate exact root GO is mandatory. The actual info ID/native pin replace two previously unbound fields; original observer/source pins and the original request bytes are not reserialized or retagged as a different execution. The one-range repeat, second authorization and changed-version negative guards are covered by the reused pure selected verifier. 36 checks and strict eight-hunk forward/reverse whole reconstruction passed; no Python, Rust, Native, or full candidate execution occurred.
+
+Once its original binary payload is closed, the journal archives the complete report bytes under a new PKI-specific content archive key. Report content qualification, two formatted-source reconstructions and source commit creation remain later independent decisions; this proposal is not Cargo or product authorization.

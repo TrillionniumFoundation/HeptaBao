@@ -1,0 +1,14 @@
+{
+  "schema": "heptabao.root-source-branch-intent.v1",
+  "request": {
+    "repository_full_name": "TrillionniumFoundation/HeptaBao",
+    "branch_name": "codex/heptabao-native-snapshot-forward-r4-source-20261106",
+    "sha": "b6949024dc5d0922ca9b27d865923d28982286c3"
+  },
+  "commit_original_sdk": "aeb45dd53d1fd5c4f6140c381e47d2f020bebf53",
+  "independent_commit_verified": true,
+  "absence_original": "dc53d52ab7a1bcbfc621536c8e9a84d1427fee23",
+  "not_yet_called": true,
+  "no_replay": true,
+  "no_production_ref_change": true
+}

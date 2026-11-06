@@ -1,0 +1,166 @@
+{
+  "schema": "heptabao.root-qualification.snapshot8c95-stage-report-independent-info.v1",
+  "status": "PASS_ORIGINAL_INDEPENDENT_FILE_METADATA",
+  "evidence_qualified": true,
+  "checks": [
+    {
+      "name": "whole22_28294",
+      "passed": true
+    },
+    {
+      "name": "exact_info_GO",
+      "passed": true
+    },
+    {
+      "name": "snapshotInfo_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "snapshotInfo_call_snapshot-8c95-rog-source-report-info-admit",
+      "passed": true
+    },
+    {
+      "name": "snapshotInfo_armed_tree_snapshot-8c95-rog-source-report-info-admit",
+      "passed": true
+    },
+    {
+      "name": "snapshotInfo_call_snapshot-8c95-rog-source-report-info-status0",
+      "passed": true
+    },
+    {
+      "name": "snapshotInfo_armed_tree_snapshot-8c95-rog-source-report-info-status0",
+      "passed": true
+    },
+    {
+      "name": "snapshotInfo_call_snapshot-8c95-rog-source-report-info-page0",
+      "passed": true
+    },
+    {
+      "name": "snapshotInfo_armed_tree_snapshot-8c95-rog-source-report-info-page0",
+      "passed": true
+    },
+    {
+      "name": "snapshotInfo_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "snapshotInfo_observer_500bddf3a5ca158179ff8dfb356f711452c68ac220261552fdf63611512681a3",
+      "passed": true
+    },
+    {
+      "name": "snapshotInfo_page_500bddf3a5ca158179ff8dfb356f711452c68ac220261552fdf63611512681a3_0",
+      "passed": true
+    },
+    {
+      "name": "snapshotInfo_payload_500bddf3a5ca158179ff8dfb356f711452c68ac220261552fdf63611512681a3",
+      "passed": true
+    },
+    {
+      "name": "snapshotInfo_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "three_calls_one_info_one_status_one_page",
+      "passed": true
+    },
+    {
+      "name": "one_exact_fixed_file_info_no_reuse",
+      "passed": true
+    },
+    {
+      "name": "original_native_and_payload_pins",
+      "passed": true
+    },
+    {
+      "name": "exact_report_metadata",
+      "passed": true
+    },
+    {
+      "name": "linux_private_single_link",
+      "passed": true
+    },
+    {
+      "name": "lossless_full9_and_actual_binding",
+      "passed": true
+    },
+    {
+      "name": "original_job_and_lane_closed",
+      "passed": true
+    },
+    {
+      "name": "no_body_no_formatter_no_detailed_qualification",
+      "passed": true
+    }
+  ],
+  "check_count": 22,
+  "packet": {
+    "tree": "877827728cbdd8233ac520e2b08852e5184173de",
+    "files": 22,
+    "bytes": 28294,
+    "merkle": {
+      "root_sha": "877827728cbdd8233ac520e2b08852e5184173de",
+      "trees_verified": 1,
+      "leaf_count": 22
+    },
+    "whole": true
+  },
+  "original_job": "rog/1a1afa74868-fc05-6a7e",
+  "original_operation": {
+    "id": "500bddf3a5ca158179ff8dfb356f711452c68ac220261552fdf63611512681a3",
+    "tool": "file_info",
+    "payload": {
+      "blob": "6c5b389e72331acda520b6ae5eaacd8f338c8136",
+      "bytes": 612,
+      "sha256": "bd38efb3f89bd66bc1b9cb0678a5e8451852e6b7477ec0740a2e64e5e93c36b7"
+    },
+    "payloadTree": "b7e1a32f28753f89033ca4b6e5f9dc985298c8ef",
+    "nativeText": {
+      "blob": "9b8eea5cac4b35965c5f1d9078d90550d8ed2b94",
+      "bytes": 495,
+      "sha256": "ab251eb0e600d80800b10c9ce23a069f554ab1efe9c48cc90b53a1eb2be6f277"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "actual_file_info": {
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-8c95fb0a-20261106-r1/control/stage-result.public.json",
+    "size": 28015,
+    "sha256": "750f5cb413cf08f1a7ba9b126320e4bbd1a9682e308b9076d2f13e54e98157c6",
+    "version": "66306:31235361:28015:1793948357106358650:1793948357106358650",
+    "nativeText": {
+      "blob": "9b8eea5cac4b35965c5f1d9078d90550d8ed2b94",
+      "bytes": 495,
+      "sha256": "ab251eb0e600d80800b10c9ce23a069f554ab1efe9c48cc90b53a1eb2be6f277"
+    },
+    "originalOperation": "500bddf3a5ca158179ff8dfb356f711452c68ac220261552fdf63611512681a3",
+    "full9Strings": [
+      "66306",
+      "31235361",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "28015",
+      "1793948357106358650",
+      "1793948357106358650"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "actual": {
+    "native_calls": 3,
+    "observers": 1,
+    "immutable_pages": 1,
+    "whole_payload_bytes": 612
+  },
+  "limitations": [
+    "Metadata is an independent observation of this exact report identity; report body and its detailed stage semantics are not yet qualified.",
+    "No compiler, product, full replacement or production qualification follows."
+  ],
+  "report_body_observed": false,
+  "detailed_stage_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

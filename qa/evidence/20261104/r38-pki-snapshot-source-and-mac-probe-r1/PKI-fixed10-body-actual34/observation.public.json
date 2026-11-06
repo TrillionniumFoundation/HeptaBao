@@ -1,0 +1,1260 @@
+{
+  "all_10_input_fds_once_closed": true,
+  "candidate_source_packet": "6e4bf23de8f7fdac6dd9b152232a905bedb87744",
+  "cargo_executed": false,
+  "changed_files": 1,
+  "child_count": 0,
+  "collector_source_sha256": "592f1f112a4a3a3d48e07f33c8cf2ba493b1c63e4215ffe8ca0ba9fec80cd6f6",
+  "configuration_utf8": "edition = \"2024\"\n",
+  "counters_before_publication": {
+    "fd_acquisition_attempts": 16,
+    "fd_acquisitions": 16,
+    "fsync_calls": 0,
+    "input_read_bytes": 543621,
+    "metadata_calls": 84,
+    "peak_owned_fds": 16,
+    "read_bytes": 543621,
+    "read_calls": 24,
+    "report_read_bytes": 0,
+    "write_bytes": 0
+  },
+  "diff_total_bytes": 592,
+  "diffs": [
+    {
+      "after_bytes": 136672,
+      "after_sha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba",
+      "before_bytes": 136672,
+      "before_sha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba",
+      "changed": false,
+      "diff_bytes": 0,
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "immutable_candidate_blob": "3c6fd86dcd641eb16af64b835d2252163dd1488e",
+      "name": "pki.rs",
+      "stderr_empty": true,
+      "stdout_byte_equal": true,
+      "strict_forward_equal": true,
+      "strict_reverse_equal": true,
+      "unified_diff": ""
+    },
+    {
+      "after_bytes": 42909,
+      "after_sha256": "6a1fd1fbaf6caa1c206844e8d97414ea231a1cba663ebb704d26cdff42417d56",
+      "before_bytes": 42863,
+      "before_sha256": "3dfea1dccd78187517f3cb9ca04ed036073eb7ed6b7c604815aa745f4402f208",
+      "changed": true,
+      "diff_bytes": 592,
+      "diff_sha256": "20d07e64ee043d498a01c0fb25a1e3618ce4a9f8a5a0dcb0f27700c3c24a7f10",
+      "immutable_candidate_blob": "352e581f5a901f21ee7c7af4c9bc5b3bed1a1439",
+      "name": "service_native_pki_tests.rs",
+      "stderr_empty": true,
+      "stdout_byte_equal": true,
+      "strict_forward_equal": true,
+      "strict_reverse_equal": true,
+      "unified_diff": "--- a/service_native_pki_tests.rs\n+++ b/service_native_pki_tests.rs\n@@ -1181,7 +1181,6 @@\n     f.sentinel()\n }\n \n-\n #[test]\n fn native_pki_formal_expired_lease_lookup_matches_openbao_271_400_and_cold() -> TestResult {\n     let mut f = Fixture::new()?;\n@@ -1237,7 +1236,11 @@\n         200,\n     );\n     status(\n-        &f.admin(\"POST\", \"sys/leases/revoke\", json!({\"lease_id\":lease,\"sync\":true}))?,\n+        &f.admin(\n+            \"POST\",\n+            \"sys/leases/revoke\",\n+            json!({\"lease_id\":lease,\"sync\":true}),\n+        )?,\n         204,\n     );\n     for cold in [false, true] {\n"
+    }
+  ],
+  "directories_after_inputs": {
+    "candidate": {
+      "held": [
+        "66306",
+        "28071601",
+        "1000",
+        "1000",
+        "16832",
+        "2",
+        "4096",
+        "1793944550761366404",
+        "1793944550761366404"
+      ],
+      "named": [
+        "66306",
+        "28071601",
+        "1000",
+        "1000",
+        "16832",
+        "2",
+        "4096",
+        "1793944550761366404",
+        "1793944550761366404"
+      ]
+    },
+    "formatted": {
+      "held": [
+        "66306",
+        "28071605",
+        "1000",
+        "1000",
+        "16832",
+        "2",
+        "4096",
+        "1793944550777366228",
+        "1793944550777366228"
+      ],
+      "named": [
+        "66306",
+        "28071605",
+        "1000",
+        "1000",
+        "16832",
+        "2",
+        "4096",
+        "1793944550777366228",
+        "1793944550777366228"
+      ]
+    },
+    "home": {
+      "held": [
+        "66306",
+        "27000833",
+        "0",
+        "0",
+        "16877",
+        "4",
+        "4096",
+        "1784453401668797886",
+        "1784453401668797886"
+      ],
+      "named": [
+        "66306",
+        "27000833",
+        "0",
+        "0",
+        "16877",
+        "4",
+        "4096",
+        "1784453401668797886",
+        "1784453401668797886"
+      ]
+    },
+    "input": {
+      "held": [
+        "66306",
+        "28071598",
+        "1000",
+        "1000",
+        "16832",
+        "4",
+        "4096",
+        "1793944550782366173",
+        "1793944550782366173"
+      ],
+      "named": [
+        "66306",
+        "28071598",
+        "1000",
+        "1000",
+        "16832",
+        "4",
+        "4096",
+        "1793944550782366173",
+        "1793944550782366173"
+      ]
+    },
+    "root": {
+      "held": [
+        "66306",
+        "2",
+        "0",
+        "0",
+        "16877",
+        "21",
+        "4096",
+        "1793920622621283887",
+        "1793920622621283887"
+      ],
+      "named": [
+        "66306",
+        "2",
+        "0",
+        "0",
+        "16877",
+        "21",
+        "4096",
+        "1793920622621283887",
+        "1793920622621283887"
+      ]
+    },
+    "user": {
+      "held": [
+        "66306",
+        "27000834",
+        "1000",
+        "1000",
+        "16877",
+        "493",
+        "53248",
+        "1793945049556822490",
+        "1793945049556822490"
+      ],
+      "named": [
+        "66306",
+        "27000834",
+        "1000",
+        "1000",
+        "16877",
+        "493",
+        "53248",
+        "1793945049556822490",
+        "1793945049556822490"
+      ]
+    }
+  },
+  "directories_before": {
+    "candidate": {
+      "full9": [
+        "66306",
+        "28071601",
+        "1000",
+        "1000",
+        "16832",
+        "2",
+        "4096",
+        "1793944550761366404",
+        "1793944550761366404"
+      ],
+      "shared_identity_only": false
+    },
+    "formatted": {
+      "full9": [
+        "66306",
+        "28071605",
+        "1000",
+        "1000",
+        "16832",
+        "2",
+        "4096",
+        "1793944550777366228",
+        "1793944550777366228"
+      ],
+      "shared_identity_only": false
+    },
+    "home": {
+      "full9": [
+        "66306",
+        "27000833",
+        "0",
+        "0",
+        "16877",
+        "4",
+        "4096",
+        "1784453401668797886",
+        "1784453401668797886"
+      ],
+      "shared_identity_only": true
+    },
+    "input": {
+      "full9": [
+        "66306",
+        "28071598",
+        "1000",
+        "1000",
+        "16832",
+        "4",
+        "4096",
+        "1793944550782366173",
+        "1793944550782366173"
+      ],
+      "shared_identity_only": false
+    },
+    "root": {
+      "full9": [
+        "66306",
+        "2",
+        "0",
+        "0",
+        "16877",
+        "21",
+        "4096",
+        "1793920622621283887",
+        "1793920622621283887"
+      ],
+      "shared_identity_only": true
+    },
+    "user": {
+      "full9": [
+        "66306",
+        "27000834",
+        "1000",
+        "1000",
+        "16877",
+        "493",
+        "53248",
+        "1793945049556822490",
+        "1793945049556822490"
+      ],
+      "shared_identity_only": true
+    }
+  },
+  "directory_listings": 0,
+  "elapsed_seconds_before_publication": 0.0068745509488508105,
+  "formatted_bytes": 179581,
+  "formatter_receipt": {
+    "candidate_source_packet": "6e4bf23de8f7fdac6dd9b152232a905bedb87744",
+    "compile_executed": false,
+    "direct_children_reaped": 2,
+    "independent_group_empty_observed": false,
+    "job_id": "1a1af6d62a1-fc05-686a",
+    "receipt_blob": "6638b8f22581832b5451d8b79e275feccec54959",
+    "receipt_sha256": "7b2560af593a62c7de4b8ca3a8cb7c2fffaed1408b2f1b356a302a38a7617776",
+    "same_supervisor_pgid": true,
+    "source_commit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+    "source_identity_is_base_only": true,
+    "source_tree": "5497775d9d473541e13e1603be8c893a3e27681b",
+    "uncommitted_candidate_inputs": true
+  },
+  "formatter_source_blob": "4bea36c9c2c80c280429a90d2f22523fd80e95d5",
+  "identity_fields": [
+    "dev",
+    "ino",
+    "uid",
+    "gid",
+    "full_mode",
+    "nlink",
+    "size",
+    "mtime_ns",
+    "ctime_ns"
+  ],
+  "identity_numbers": "decimal strings",
+  "input_bytes": 543621,
+  "input_count": 10,
+  "input_fds_closed_before_report_publication": true,
+  "input_files": [
+    {
+      "before_full9": [
+        "66306",
+        "28071616",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "136672",
+        "1793944550720366855",
+        "1793944550720366855"
+      ],
+      "bytes": 136672,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "28071616",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "136672",
+          "1793944550720366855",
+          "1793944550720366855"
+        ],
+        "named": [
+          "66306",
+          "28071616",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "136672",
+          "1793944550720366855",
+          "1793944550720366855"
+        ]
+      },
+      "immutable_blob": "3c6fd86dcd641eb16af64b835d2252163dd1488e",
+      "index": 0,
+      "name": "pki.rs",
+      "named_before_full9": [
+        "66306",
+        "28071616",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "136672",
+        "1793944550720366855",
+        "1793944550720366855"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 136672,
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/candidate/pki.rs",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "28071616",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "136672",
+          "1793944550720366855",
+          "1793944550720366855"
+        ],
+        "named": [
+          "66306",
+          "28071616",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "136672",
+          "1793944550720366855",
+          "1793944550720366855"
+        ]
+      },
+      "read_bytes": 136672,
+      "read_calls": 4,
+      "role": "candidate",
+      "sha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba",
+      "version": "66306:28071616:136672:1793944550720366855:1793944550720366855"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "28071620",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "136672",
+        "1793944550759366426",
+        "1793944550759366426"
+      ],
+      "bytes": 136672,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "28071620",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "136672",
+          "1793944550759366426",
+          "1793944550759366426"
+        ],
+        "named": [
+          "66306",
+          "28071620",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "136672",
+          "1793944550759366426",
+          "1793944550759366426"
+        ]
+      },
+      "immutable_blob": null,
+      "index": 1,
+      "name": "pki.rs",
+      "named_before_full9": [
+        "66306",
+        "28071620",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "136672",
+        "1793944550759366426",
+        "1793944550759366426"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 262144,
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/formatted/pki.rs",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "28071620",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "136672",
+          "1793944550759366426",
+          "1793944550759366426"
+        ],
+        "named": [
+          "66306",
+          "28071620",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "136672",
+          "1793944550759366426",
+          "1793944550759366426"
+        ]
+      },
+      "read_bytes": 136672,
+      "read_calls": 4,
+      "role": "formatted",
+      "sha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba",
+      "version": "66306:28071620:136672:1793944550759366426:1793944550759366426"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "28071618",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "136672",
+        "1793944550758366437",
+        "1793944550758366437"
+      ],
+      "bytes": 136672,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "28071618",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "136672",
+          "1793944550758366437",
+          "1793944550758366437"
+        ],
+        "named": [
+          "66306",
+          "28071618",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "136672",
+          "1793944550758366437",
+          "1793944550758366437"
+        ]
+      },
+      "immutable_blob": null,
+      "index": 2,
+      "name": "pki.rs",
+      "named_before_full9": [
+        "66306",
+        "28071618",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "136672",
+        "1793944550758366437",
+        "1793944550758366437"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 262144,
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/pki.rs.rustfmt.stdout",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "28071618",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "136672",
+          "1793944550758366437",
+          "1793944550758366437"
+        ],
+        "named": [
+          "66306",
+          "28071618",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "136672",
+          "1793944550758366437",
+          "1793944550758366437"
+        ]
+      },
+      "read_bytes": 136672,
+      "read_calls": 4,
+      "role": "stdout",
+      "sha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba",
+      "version": "66306:28071618:136672:1793944550758366437:1793944550758366437"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "28071617",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "0",
+        "1793944550757366448",
+        "1793944550757366448"
+      ],
+      "bytes": 0,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "28071617",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793944550757366448",
+          "1793944550757366448"
+        ],
+        "named": [
+          "66306",
+          "28071617",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793944550757366448",
+          "1793944550757366448"
+        ]
+      },
+      "immutable_blob": null,
+      "index": 3,
+      "name": "pki.rs",
+      "named_before_full9": [
+        "66306",
+        "28071617",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "0",
+        "1793944550757366448",
+        "1793944550757366448"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 65536,
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/pki.rs.rustfmt.stderr",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "28071617",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793944550757366448",
+          "1793944550757366448"
+        ],
+        "named": [
+          "66306",
+          "28071617",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793944550757366448",
+          "1793944550757366448"
+        ]
+      },
+      "read_bytes": 0,
+      "read_calls": 1,
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "66306:28071617:0:1793944550757366448:1793944550757366448"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "28071621",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "42863",
+        "1793944550761366404",
+        "1793944550761366404"
+      ],
+      "bytes": 42863,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "28071621",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "42863",
+          "1793944550761366404",
+          "1793944550761366404"
+        ],
+        "named": [
+          "66306",
+          "28071621",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "42863",
+          "1793944550761366404",
+          "1793944550761366404"
+        ]
+      },
+      "immutable_blob": "352e581f5a901f21ee7c7af4c9bc5b3bed1a1439",
+      "index": 4,
+      "name": "service_native_pki_tests.rs",
+      "named_before_full9": [
+        "66306",
+        "28071621",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "42863",
+        "1793944550761366404",
+        "1793944550761366404"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 42863,
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/candidate/service_native_pki_tests.rs",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "28071621",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "42863",
+          "1793944550761366404",
+          "1793944550761366404"
+        ],
+        "named": [
+          "66306",
+          "28071621",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "42863",
+          "1793944550761366404",
+          "1793944550761366404"
+        ]
+      },
+      "read_bytes": 42863,
+      "read_calls": 2,
+      "role": "candidate",
+      "sha256": "3dfea1dccd78187517f3cb9ca04ed036073eb7ed6b7c604815aa745f4402f208",
+      "version": "66306:28071621:42863:1793944550761366404:1793944550761366404"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "28071625",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "42909",
+        "1793944550777366228",
+        "1793944550777366228"
+      ],
+      "bytes": 42909,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "28071625",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "42909",
+          "1793944550777366228",
+          "1793944550777366228"
+        ],
+        "named": [
+          "66306",
+          "28071625",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "42909",
+          "1793944550777366228",
+          "1793944550777366228"
+        ]
+      },
+      "immutable_blob": null,
+      "index": 5,
+      "name": "service_native_pki_tests.rs",
+      "named_before_full9": [
+        "66306",
+        "28071625",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "42909",
+        "1793944550777366228",
+        "1793944550777366228"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 262144,
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/formatted/service_native_pki_tests.rs",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "28071625",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "42909",
+          "1793944550777366228",
+          "1793944550777366228"
+        ],
+        "named": [
+          "66306",
+          "28071625",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "42909",
+          "1793944550777366228",
+          "1793944550777366228"
+        ]
+      },
+      "read_bytes": 42909,
+      "read_calls": 2,
+      "role": "formatted",
+      "sha256": "6a1fd1fbaf6caa1c206844e8d97414ea231a1cba663ebb704d26cdff42417d56",
+      "version": "66306:28071625:42909:1793944550777366228:1793944550777366228"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "28071624",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "42909",
+        "1793944550776366239",
+        "1793944550776366239"
+      ],
+      "bytes": 42909,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "28071624",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "42909",
+          "1793944550776366239",
+          "1793944550776366239"
+        ],
+        "named": [
+          "66306",
+          "28071624",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "42909",
+          "1793944550776366239",
+          "1793944550776366239"
+        ]
+      },
+      "immutable_blob": null,
+      "index": 6,
+      "name": "service_native_pki_tests.rs",
+      "named_before_full9": [
+        "66306",
+        "28071624",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "42909",
+        "1793944550776366239",
+        "1793944550776366239"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 262144,
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/service_native_pki_tests.rs.rustfmt.stdout",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "28071624",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "42909",
+          "1793944550776366239",
+          "1793944550776366239"
+        ],
+        "named": [
+          "66306",
+          "28071624",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "42909",
+          "1793944550776366239",
+          "1793944550776366239"
+        ]
+      },
+      "read_bytes": 42909,
+      "read_calls": 2,
+      "role": "stdout",
+      "sha256": "6a1fd1fbaf6caa1c206844e8d97414ea231a1cba663ebb704d26cdff42417d56",
+      "version": "66306:28071624:42909:1793944550776366239:1793944550776366239"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "28071623",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "0",
+        "1793944550775366250",
+        "1793944550775366250"
+      ],
+      "bytes": 0,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "28071623",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793944550775366250",
+          "1793944550775366250"
+        ],
+        "named": [
+          "66306",
+          "28071623",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793944550775366250",
+          "1793944550775366250"
+        ]
+      },
+      "immutable_blob": null,
+      "index": 7,
+      "name": "service_native_pki_tests.rs",
+      "named_before_full9": [
+        "66306",
+        "28071623",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "0",
+        "1793944550775366250",
+        "1793944550775366250"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 65536,
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/service_native_pki_tests.rs.rustfmt.stderr",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "28071623",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793944550775366250",
+          "1793944550775366250"
+        ],
+        "named": [
+          "66306",
+          "28071623",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793944550775366250",
+          "1793944550775366250"
+        ]
+      },
+      "read_bytes": 0,
+      "read_calls": 1,
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "66306:28071623:0:1793944550775366250:1793944550775366250"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "28071611",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "17",
+        "1793944550719366866",
+        "1793944550719366866"
+      ],
+      "bytes": 17,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "28071611",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "17",
+          "1793944550719366866",
+          "1793944550719366866"
+        ],
+        "named": [
+          "66306",
+          "28071611",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "17",
+          "1793944550719366866",
+          "1793944550719366866"
+        ]
+      },
+      "immutable_blob": null,
+      "index": 8,
+      "name": "rustfmt.toml",
+      "named_before_full9": [
+        "66306",
+        "28071611",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "17",
+        "1793944550719366866",
+        "1793944550719366866"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 17,
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/rustfmt.toml",
+      "prior_full9": [
+        "66306",
+        "28071611",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "17",
+        "1793944550719366866",
+        "1793944550719366866"
+      ],
+      "read_after": {
+        "held": [
+          "66306",
+          "28071611",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "17",
+          "1793944550719366866",
+          "1793944550719366866"
+        ],
+        "named": [
+          "66306",
+          "28071611",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "17",
+          "1793944550719366866",
+          "1793944550719366866"
+        ]
+      },
+      "read_bytes": 17,
+      "read_calls": 2,
+      "role": "config",
+      "sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584",
+      "version": "66306:28071611:17:1793944550719366866:1793944550719366866"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "28071628",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "4907",
+        "1793944550782366173",
+        "1793944550782366173"
+      ],
+      "bytes": 4907,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "28071628",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "4907",
+          "1793944550782366173",
+          "1793944550782366173"
+        ],
+        "named": [
+          "66306",
+          "28071628",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "4907",
+          "1793944550782366173",
+          "1793944550782366173"
+        ]
+      },
+      "immutable_blob": "6638b8f22581832b5451d8b79e275feccec54959",
+      "index": 9,
+      "name": "result.public.json",
+      "named_before_full9": [
+        "66306",
+        "28071628",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "4907",
+        "1793944550782366173",
+        "1793944550782366173"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 65536,
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/result.public.json",
+      "prior_full9": [
+        "66306",
+        "28071628",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "4907",
+        "1793944550782366173",
+        "1793944550782366173"
+      ],
+      "read_after": {
+        "held": [
+          "66306",
+          "28071628",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "4907",
+          "1793944550782366173",
+          "1793944550782366173"
+        ],
+        "named": [
+          "66306",
+          "28071628",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "4907",
+          "1793944550782366173",
+          "1793944550782366173"
+        ]
+      },
+      "read_bytes": 4907,
+      "read_calls": 2,
+      "role": "receipt",
+      "sha256": "7b2560af593a62c7de4b8ca3a8cb7c2fffaed1408b2f1b356a302a38a7617776",
+      "version": "66306:28071628:4907:1793944550782366173:1793944550782366173"
+    }
+  ],
+  "input_observation_complete": true,
+  "input_observations_are_sequential": true,
+  "input_root": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1",
+  "limits": {
+    "diff_bytes": 131072,
+    "fd_acquisitions": 18,
+    "metadata_calls": 320,
+    "outer_seconds": 60,
+    "peak_owned_fds": 16,
+    "per_read_bytes": 65536,
+    "read_bytes": 1424736,
+    "read_calls": 256,
+    "report_bytes": 262144,
+    "shared_seconds": 50,
+    "stdout_bytes": 16384
+  },
+  "network_calls": 0,
+  "original_input_writes": 0,
+  "original_read_cap": 1424736,
+  "output_and_directory_fd_closure_requires_final_stdout_and_authority": true,
+  "output_root": "/home/qian-qi/heptabao-native-pki-lease400-format-observe-20261106-r1",
+  "product_executed": false,
+  "reconstruction": {
+    "candidates": "two exact immutable PKI candidate blobs supplied in candidate_source_packet; not base-tree leaves",
+    "config": "configuration_utf8 encoded as UTF-8",
+    "formatted": "strict bidirectional unified diffs against those candidate bytes",
+    "receipt": "exact already archived receipt blob 6638b8f22581832b5451d8b79e275feccec54959",
+    "stderr": "two empty byte strings",
+    "stdout": "byte equal to corresponding actual formatted file"
+  },
+  "schema": "heptabao.native-pki-formatter10-observation.v1",
+  "source_bytes": 179535,
+  "source_commit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+  "source_identity_is_base_only": true,
+  "source_tree": "5497775d9d473541e13e1603be8c893a3e27681b",
+  "unchanged_files": 1,
+  "uncommitted_candidate_inputs": true
+}

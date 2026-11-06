@@ -1,0 +1,11 @@
+--- a/crates/heptabao-server/src/service_snapshot_lossless_export_tests.rs
++++ b/crates/heptabao-server/src/service_snapshot_lossless_export_tests.rs
+@@ -138,8 +138,6 @@
+             Ok((response, Some(bytes)))
+         }
+         NativeSnapshotAdmission::Redirect(_) => Err("standalone export redirected".into()),
+-        #[cfg(feature = "native-v6-ha")]
+-        NativeSnapshotAdmission::Forward(_) => Err("standalone export forwarded".into()),
+     }
+ }
+ 

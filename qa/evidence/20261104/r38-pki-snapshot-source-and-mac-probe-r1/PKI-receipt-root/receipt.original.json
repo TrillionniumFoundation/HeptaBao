@@ -1,0 +1,157 @@
+{
+  "allOwnedStopped": true,
+  "children": [
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--config-path",
+        "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/rustfmt.toml",
+        "--edition",
+        "2024",
+        "--emit",
+        "stdout"
+      ],
+      "cwd": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1",
+      "exitCode": 0,
+      "newProcessGroupCreated": false,
+      "pgid": 82826,
+      "pid": 82829,
+      "reaped": true,
+      "stopped": true,
+      "supervisorGroup": 82826,
+      "timeoutSeconds": 10
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--config-path",
+        "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/rustfmt.toml",
+        "--edition",
+        "2024",
+        "--emit",
+        "stdout"
+      ],
+      "cwd": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1",
+      "exitCode": 0,
+      "newProcessGroupCreated": false,
+      "pgid": 82826,
+      "pid": 82831,
+      "reaped": true,
+      "stopped": true,
+      "supervisorGroup": 82826,
+      "timeoutSeconds": 10
+    }
+  ],
+  "compileExecuted": false,
+  "edition": "2024",
+  "elapsedSeconds": 0.07592940400354564,
+  "files": [
+    {
+      "afterBytes": 136672,
+      "afterSha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba",
+      "beforeBytes": 136672,
+      "beforeSha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba",
+      "name": "pki.rs",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "afterBytes": 42909,
+      "afterSha256": "6a1fd1fbaf6caa1c206844e8d97414ea231a1cba663ebb704d26cdff42417d56",
+      "beforeBytes": 42863,
+      "beforeSha256": "3dfea1dccd78187517f3cb9ca04ed036073eb7ed6b7c604815aa745f4402f208",
+      "name": "service_native_pki_tests.rs",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "formatConfigurationAfter": {
+    "bytes": 17,
+    "identity": [
+      66306,
+      28071611,
+      17,
+      1793944550719366866,
+      1793944550719366866,
+      33152,
+      1000,
+      1000,
+      1
+    ],
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/rustfmt.toml",
+    "sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584"
+  },
+  "formatConfigurationBefore": {
+    "bytes": 17,
+    "identity": [
+      66306,
+      28071611,
+      17,
+      1793944550719366866,
+      1793944550719366866,
+      33152,
+      1000,
+      1000,
+      1
+    ],
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/rustfmt.toml",
+    "sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584"
+  },
+  "inputCarrierSha256": "b04208ff4a3787e229b8cd7a86316ef6b0d90fdb941ebd5ef166b14cb06e1489",
+  "inputOriginalAndCandidatePins": {
+    "pki.rs": [
+      "c7f86b2eccaa4756dbffc1ed30c6f6e00f2f3874c35b76d46705e64cb87302e9",
+      "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba"
+    ],
+    "service_native_pki_tests.rs": [
+      "b5dbe7c3b75182f44213495e764c4ebfa6760b9c915219720cee0b711cc8931b",
+      "3dfea1dccd78187517f3cb9ca04ed036073eb7ed6b7c604815aa745f4402f208"
+    ]
+  },
+  "internalSeconds": 50,
+  "newRemoteSupervisorSeconds": 60,
+  "originalSourceProvenance": "Immutable Git blobs supplied by the root; original host repository is not read or written",
+  "ownedConfiguration": "Edition 2024 only; all other rustfmt defaults; explicit config path excludes ambient parent configuration",
+  "productExecuted": false,
+  "productionChanged": false,
+  "repositoryRustfmtConfigPresent": false,
+  "rustfmtAfter": {
+    "bytes": 5255144,
+    "identity": [
+      66306,
+      28970682,
+      5255144,
+      1791677524979153708,
+      1791677525080580886,
+      33261,
+      1000,
+      1000,
+      1
+    ],
+    "path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+    "sha256": "5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877"
+  },
+  "rustfmtBefore": {
+    "bytes": 5255144,
+    "identity": [
+      66306,
+      28970682,
+      5255144,
+      1791677524979153708,
+      1791677525080580886,
+      33261,
+      1000,
+      1000,
+      1
+    ],
+    "path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+    "sha256": "5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877"
+  },
+  "schema": "heptabao.native-pki-lease-status-input-rustfmt.v1",
+  "sourceCommit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+  "sourceIdentityIsBaseOnly": true,
+  "sourceTree": "5497775d9d473541e13e1603be8c893a3e27681b",
+  "status": "passed",
+  "uncommittedCandidateInputs": true,
+  "withinDeadline": true
+}

@@ -1,0 +1,125 @@
+{
+  "schema": "heptabao.native-jwt-pki149-166-build-controls.correction.r2",
+  "status": "SOURCE_ONLY_UNBOUND",
+  "previous_packet": "2144357ec4843fa01d3bae656621bbf47e789149",
+  "previous_packet_preserved": true,
+  "root_findings": [
+    {
+      "kind": "admission",
+      "before": "Runner asserts previous groups SHA8651 while new groups, launcher and publisher use35153; actual execution would refuse before build.",
+      "fix": "Only the runner exact groups assertion is updated to the already frozen35153 table."
+    },
+    {
+      "kind": "intent_denominator",
+      "before": "Runner generic new_unique_test_total15 missed2PKI names.",
+      "fix": "Generic count17; launcher preserves JWT15/30 and adds separate PKI2/4."
+    }
+  ],
+  "components": {
+    "runner": {
+      "before": {
+        "blob": "0af739b9ddef17ba1fbef0b8d24981ba5c8b9800",
+        "bytes": 30322,
+        "sha256": "6392a732adc6b80144abcd65d8fbcfc1b29d1be205b0ea3d432af16881f832ef"
+      },
+      "after": {
+        "blob": "4bee748e9c313702f5a35a02e94d98eb7fe984b2",
+        "bytes": 30322,
+        "sha256": "4a68d6ee41ec098db7d78c3594df70016ce5096b1dc43da972fa0e405793a9b1"
+      },
+      "diff": {
+        "blob": "801affa00fbc124093097c209c93a30e4566cc68",
+        "bytes": 1369,
+        "sha256": "a7cf8efe755e832f04d9a8e592487b987caf31f6bb662996f99ad65102dfaa36"
+      },
+      "hunks": 2
+    },
+    "launcher": {
+      "before": {
+        "blob": "0bd1c0681ce4a4980d0872569a8acfffbc16673f",
+        "bytes": 38344,
+        "sha256": "bab2215cf042fc8d01055aaf305e37f3189183333421f6a0c0c92e9204c186fa"
+      },
+      "after": {
+        "blob": "66e353d9b7adace3fcc07bd0e7298d3f6b6d0851",
+        "bytes": 38413,
+        "sha256": "2f24a0877f290092053ca22e974d6a4a500fb182181963ac657e540b1a53227d"
+      },
+      "diff": {
+        "blob": "98faece888dc11dcb1cb3c5757c64ae5346b87d9",
+        "bytes": 648,
+        "sha256": "f3fa72dba610abd10d0caa86dd3e0ca304cc4561180efbc5871304a89910b356"
+      },
+      "hunks": 1
+    },
+    "publisher": {
+      "before": {
+        "blob": "f51fdfc7f5a7129e57229b5699aa947ee4ae3f34",
+        "bytes": 5183,
+        "sha256": "96574ba9dc831253aafb26231506e00fec437b2479af508c362dd0850350924e"
+      },
+      "after": {
+        "blob": "5c808c81b30d63d6614375178133e6607d07ebcf",
+        "bytes": 5183,
+        "sha256": "844726cb9d62b0be87b6e676045f16dd07f8a31d27739b826cd77caf54cb670a"
+      },
+      "diff": {
+        "blob": "a07047b9af4603ff70aefb5137bef8712dd3737a",
+        "bytes": 589,
+        "sha256": "4b600af6d18bc3475b99c6759f810466e95451fb5fe9a71743a884265326b614"
+      },
+      "hunks": 1
+    }
+  },
+  "groups": {
+    "blob": "5d563b1c7a1b7070395f6d8a03b512ddb019fae0",
+    "bytes": 19789,
+    "sha256": "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869"
+  },
+  "carrier": {
+    "blob": "0bd40889328596fbfc922853e20ab891d4c4b621",
+    "bytes": 118231,
+    "sha256": "188762e2997a27b5c0f6410367d0703d433468fbde14ae423b8b0476ee411b64"
+  },
+  "runtime_authorized": false,
+  "Native": 0,
+  "compile": 0,
+  "tests": 0,
+  "final_binding": {
+    "commit": null,
+    "tree": null,
+    "sourceStageRoot": null,
+    "sourceStageBodySha256": null,
+    "sourceStageAuthority": null,
+    "controlsReceiptSha256": null,
+    "controlsActualThreeFiles": null,
+    "NativeBuildRequest": null
+  },
+  "budgets": {
+    "release": 1800,
+    "compileShared": 3600,
+    "compileCommands": 3,
+    "listingMax": 30,
+    "familyShared": 600,
+    "families": 4,
+    "outer": 12000,
+    "cleanupTerm": 5,
+    "cleanupKill": 5,
+    "deadlineReset": false,
+    "publisherOuter": 60,
+    "publisherStdin": 262144,
+    "publisherPayloadActual": 118231
+  },
+  "denominators": {
+    "existing_unique": 132,
+    "new_jwt_unique": 15,
+    "new_pki_unique": 2,
+    "new_unique": 17,
+    "selected_unique": 149,
+    "selected_profile_instances": 166,
+    "new_jwt_profile_instances": 30,
+    "new_pki_profile_instances": 4
+  },
+  "all_other_definitions_commands_deadlines_and_retained_guards_byte_identical": true,
+  "checks": 41
+}

@@ -1,0 +1,86 @@
+{
+  "schema": "heptabao.pki10-collector-report-one-range-source-plan.v1",
+  "runtime_authorized": false,
+  "action": "authorize_collector_report_body",
+  "scope": "collector_report_binary_read_ranges_only",
+  "original_slot": "native_pki_lease400_formatter10_collector_gitfirst_r1",
+  "original_job": "1a1af917594-fc05-69b4",
+  "no_reinitialize": true,
+  "no_process_start": true,
+  "base_journal": {
+    "blob": "ad4e06490a7a041e7dacdf282db4bcade736fe6d",
+    "bytes": 25316,
+    "sha256": "cf3df54daa121359853dcaf56d82c0a63ffd7cd70850025de90ae062239e4d75"
+  },
+  "candidate": {
+    "blob": "6683583ad51c779bb92b34f2bdcb3ea206d94cdf",
+    "bytes": 32473,
+    "sha256": "858136fecd0ebb798977f7960dda8267ba2baf40f7f37cbec409080afb989e9f"
+  },
+  "reference_finite_range_journal": {
+    "blob": "e67a6034ff37401b9c0d9bdf6f40749f3c4eb407",
+    "bytes": 32939,
+    "sha256": "295b223e6d9cfc5f0a5661407e2a653f3a9637f3c1fcedd7c72fdc775c4ce4ea"
+  },
+  "reference_only_not_scope_or_identity_inheritance": true,
+  "actual_info_packet": "6780aed65014330e82a77a4bbba6fb05572a3a14",
+  "actual_info": {
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-observe-20261106-r1/observation.public.json",
+    "size": 30131,
+    "sha256": "f2d35f46f7fec2d9d9ce81d7e3bd8dca21c9c6f44d5f990314cfd4dcb5c4da46",
+    "version": "66306:30842948:30131:1793946915079275200:1793946915079275200",
+    "nativeText": {
+      "blob": "31a0dafbdf896a40a7f31c426e3b07de1d31fef8",
+      "bytes": 481,
+      "sha256": "6ef4f65835eb727f86892a9b23f0adc70d475280685a17fbfd2c4a9580b9f438"
+    },
+    "originalOperation": "97808443f5d922af35c74107721bf17a5b9c65f46a3e3be525318c0aabecbb07",
+    "full9Strings": [
+      "66306",
+      "30842948",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "30131",
+      "1793946915079275200",
+      "1793946915079275200"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "maximum_binary_read_starts": 1,
+  "immutable_body_page_bytes": 16384,
+  "original_status_and_info_pages": 8192,
+  "maximum_original_payload_bytes": 1048576,
+  "exact_ranges": [
+    {
+      "offset": 0,
+      "limit": 30131,
+      "request": {
+        "blob": "2425ced7f4789632651b30e5b2c95b10a15e51de",
+        "bytes": 425,
+        "sha256": "9024255e19ba7d8b210147b584c5f2e8a039da384c1843f06bc2fa60fe577fd8"
+      }
+    }
+  ],
+  "total_data_bytes": 30131,
+  "body_reads_submitted": 0,
+  "requires_separate_whole_root_go": true,
+  "sequence": [
+    "Attach existing closed collector/info context, never initialize again.",
+    "Authorize only a new whole exact root GO: fixed report, actual independent info operation, one exact request and 16KiB immutable body pages.",
+    "External exact request/intent/armed whole before independent model boundary and one operation_start.",
+    "Store original SDK whole before isError/parse; use only returned original operation ID status/contiguous immutable pages; complete payload SHA and inactive closure.",
+    "Require exact returned binary path/version/size/offset0/30131/EOF, actual chunk SHA and reconstructed whole report SHA before publishing the same public report bytes."
+  ],
+  "report_semantic_qualification": false,
+  "unchanged": [
+    "collector/formatter and closed observations",
+    "old8192 immutable pages",
+    "one future and external SDK before parsing",
+    "1MiB payload cap",
+    "no product/Cargo/format rerun/input write/scan"
+  ],
+  "unknown": "Stop with original records, no automatic retry, new key, alternate path, or replay."
+}

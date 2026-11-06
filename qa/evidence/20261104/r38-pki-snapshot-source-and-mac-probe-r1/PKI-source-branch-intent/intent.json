@@ -1,0 +1,14 @@
+{
+  "schema": "heptabao.root-PKI3-new-branch-intent.v1",
+  "maximum_calls": 1,
+  "request": {
+    "repository_full_name": "TrillionniumFoundation/HeptaBao",
+    "branch_name": "codex/heptabao-native-jwt-pki-source-20261106",
+    "sha": "33b814c7034ec853151b1ff13e7529c83f65ea70"
+  },
+  "expected_branch_absent": true,
+  "absence_before_tree_create": true,
+  "sole_parent": "808e45d690f177ecb922e13d1ed19f7877156094",
+  "tree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+  "missing_ack_is_unknown_no_replay": true
+}

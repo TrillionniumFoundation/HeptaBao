@@ -1,0 +1,166 @@
+{
+  "schema": "heptabao.root-GO.snapshot8c95-independent-source-stage.v1",
+  "authorization": "GO",
+  "agent": "/root/compatibility_audit",
+  "purpose": "One independent exact8c95 source checkout and canonical incremental bundle; historical controls remain inert.",
+  "scope": "independent_source_stage_only",
+  "source_packet": "e75ac52e5ab19454c144ad830ce6017b58083c0b",
+  "source_review": {
+    "blob": "9ce8b72d3bab2b57a05d249a705940888805f823",
+    "bytes": 8252,
+    "sha256": "332a6c4b8f1d339a964b1ed935b864b1d043a2c140803cd03033cdb37a9fb878"
+  },
+  "source": {
+    "blob": "75593a6bf87243491247aecf007b1f029d33d59b",
+    "bytes": 28857,
+    "sha256": "6d38079e9d0e41fd1a705647786bdbc5cde8a374d0477482fe3a355e10f668d9"
+  },
+  "exact_request": {
+    "blob": "5f908e91a5cd38e8e3cfab448ec38d45e97b6310",
+    "bytes": 111878,
+    "sha256": "b3a2bb5d470ba645b275d289aabb188d9b6c542fd2a48ee3df5881f192a686bf"
+  },
+  "stdin": {
+    "blob": "f9166bc801c5b10e12b77274f485d27d61cd499a",
+    "bytes": 79951,
+    "sha256": "85fd6e473ce1e231f1bcfbd2bcf2bef760e6a4e551040c55ee3274606acebb77",
+    "historical_controls_executed": false
+  },
+  "native_binding": {
+    "sha256": "041f9b79429e5825a1f8f5efae84a1bb0534316e76ffb344f0fbdb001cedc6b5",
+    "native_fingerprint": "297127045540763685"
+  },
+  "start": {
+    "host": "rog",
+    "executable": "/usr/bin/python3",
+    "args_prefix": [
+      "-I",
+      "-S",
+      "-B",
+      "-c"
+    ],
+    "args_source": {
+      "blob": "75593a6bf87243491247aecf007b1f029d33d59b",
+      "bytes": 28857,
+      "sha256": "6d38079e9d0e41fd1a705647786bdbc5cde8a374d0477482fe3a355e10f668d9"
+    },
+    "self_sha256": "6d38079e9d0e41fd1a705647786bdbc5cde8a374d0477482fe3a355e10f668d9",
+    "carrier_sha256": "85fd6e473ce1e231f1bcfbd2bcf2bef760e6a4e551040c55ee3274606acebb77",
+    "cwd": "/home/qian-qi",
+    "timeout_seconds": 360,
+    "idempotency_key": "heptabao-native-snapshot-forward-8c95fb0a-rog-source-20261106-r1-6d38079e",
+    "maximum_START_count": 1
+  },
+  "canonical": {
+    "commit": "8c95fb0a8b2f61933a09b04986df2bafc9e7095c",
+    "tree": "f412f1524e08a56e23374897d329bfcf6295f4fe",
+    "sole_parent": "808e45d690f177ecb922e13d1ed19f7877156094",
+    "merkle": {
+      "root_sha": "f412f1524e08a56e23374897d329bfcf6295f4fe",
+      "trees_verified": 358,
+      "leaf_count": 3928
+    },
+    "leaves": 3928,
+    "tracked_bytes": 62460068,
+    "index": {
+      "blob": "50b826f20fea45f537ca433e6035865b62f8a9d2",
+      "bytes": 453379,
+      "sha256": "6baa9290fa3ee8f67bc22a77697d38a7ad1c4c776fc769f5f04ee645de204574"
+    },
+    "source_changed_files": 23
+  },
+  "root_source_freeze": {
+    "blob": "a9cafa556e673ab51db70ddc5d4b7d5747b9f111",
+    "bytes": 2861,
+    "sha256": "d93ce53156983edf3f4d82bf4139e1135b044feeb1ba1da63cd4a39d79276d4e"
+  },
+  "new_create_only_root": "/home/qian-qi/heptabao-native-snapshot-forward-source-8c95fb0a-20261106-r1",
+  "source_checkout": "/home/qian-qi/heptabao-native-snapshot-forward-source-8c95fb0a-20261106-r1/source",
+  "new_control_directory": "/home/qian-qi/heptabao-native-snapshot-forward-source-8c95fb0a-20261106-r1/control",
+  "old_readonly_source": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source",
+  "old_source_and_failed_observer_fences_required": true,
+  "public_fetch": {
+    "origin": "https://github.com/TrillionniumFoundation/HeptaBao.git",
+    "exact_commit": "8c95fb0a8b2f61933a09b04986df2bafc9e7095c",
+    "recursive_submodules": false,
+    "implicit_bootstrap": false
+  },
+  "bundle": {
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-8c95fb0a-20261106-r1/control/canonical-native-snapshot-forward-8c95fb0a-from495.bundle",
+    "standalone": false,
+    "onlyPrerequisite": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "actualBytes": null,
+    "actualSha256": null,
+    "actualVersion": null
+  },
+  "helpers": {
+    "native": {
+      "blob": "0123c47889d3b64d00774e2d7f29835500d9f88a",
+      "bytes": 19050,
+      "sha256": "f21485c0e6092e8dbbdbb7f98887084fd195adeb9afa4b47aa7e780389df0bbb"
+    },
+    "archive": {
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    "pure": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    "do_not_use_legacy_processStartBinding": true
+  },
+  "budgets": {
+    "internalSeconds": 300,
+    "gitSeconds": 90,
+    "cloneSeconds": 180,
+    "outerSeconds": 360,
+    "termSeconds": 5,
+    "killSeconds": 5,
+    "carrierBytes": 262144,
+    "bundleBytes": 4194304,
+    "process_read_bytes": 16384,
+    "immutable_page_bytes": 8192,
+    "original_payload_cap_bytes": 1048576,
+    "maximum_Runtime_lanes": 2,
+    "maximum_native_call_or_future_per_lane": 1
+  },
+  "journal": {
+    "slot": "snapshot_8c95_rog_source_gitfirst_r1",
+    "call_key_prefix": "snapshot-8c95-rog-source-",
+    "observer_key_prefix": "heptabao-native-snapshot-8c95fb0a-rog-source-observe-r1-",
+    "invoke_only_through": "gfRun",
+    "initialize_only_once_with_exact_whole_GO": true
+  },
+  "lane_activation": "B may use one Runtime lane. C may use its separately approved PKI original report observation lane. A/root are0 Runtime until one lane has released; global maximum2.",
+  "sequence": [
+    "Whole exact GO then initialize only the fresh stage slot with root-correct typed-stdin digest/fingerprint.",
+    "Whole exact request,intent,armed externally; cross an independent dispatch boundary and submit the one exact process_start.",
+    "Preserve and externally whole original SDK before parse/isError. UNKNOWN retains original admission,never replays or re-keys.",
+    "Observe only actual original rog job status/streams with original operation IDs,next8192 pages,full immutable SHA/EOF and completed inactive closure.",
+    "Require known exit0/full/durable/confirmed terminal,original whole streams,actual source/tree/index/old fences and direct-child closure within original300/360.",
+    "Stop after original terminal/streams; report metadata/body and formatter each require their own exact scope."
+  ],
+  "excluded": [
+    "rustfmt,Cargo,rustc,tests,product or historical control execution",
+    "implicit dependency/tool install or alternate root/source/commit",
+    "production services,credentials,providers,J3160,client switching or deletion",
+    "new report file_info/binary_read or automatic bundle transport/import",
+    "retry,rekey,deadline extension or inference that UNKNOWN is closed"
+  ],
+  "qualification": {
+    "historical_controls_executed": false,
+    "candidate_build_qualification": false,
+    "formatter_executed": false,
+    "rust_tests_executed": false,
+    "actual_Service_audit_failure_tests": false,
+    "fresh_CLI_gate": false,
+    "prior_failed_CLI_preserved": true,
+    "C149_unique166_profiles_unchanged": true
+  },
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

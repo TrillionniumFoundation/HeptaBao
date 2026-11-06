@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r38-snapshot24-root-review-and-tree-intent",
+  "records": [
+    {
+      "name": "ROOT-SOURCE-REVIEW.json",
+      "blob": "bd007cb047410776261834ac6c355469537d4334",
+      "bytes": 20633,
+      "sha256": "2c1780032f60cab058616b858a54ed3d783396ef7da434d129bc2298aab66be4"
+    },
+    {
+      "name": "ROOT-SOURCE-VERIFIER.js",
+      "blob": "62909a5a523586f81b774f822d8c93c9ba58fd48",
+      "bytes": 6585,
+      "sha256": "f461e12c522ea9e29bc11a3a89496bb8c9ab26116bac5f84679b564dc1329949"
+    },
+    {
+      "name": "ROOT-VERIFIER-FIRST-FAILED.js",
+      "blob": "6a28db9f76c8bb78d11e56324eca9bfee83c1378",
+      "bytes": 6571,
+      "sha256": "d91740d48ccaf9452e26d485c95e42323ce1d8c7069db8f7ce6046482413dd86"
+    },
+    {
+      "name": "ROOT-VERIFIER-CORRECTION.json",
+      "blob": "6ba1b31c3357134f4774506cde8bb182c60350b9",
+      "bytes": 314,
+      "sha256": "1d29ab34bcb3941058e634ec75ecaa4947e4fb7032e2a23e2d00e11dc180b597"
+    },
+    {
+      "name": "TREE-INTENT.json",
+      "blob": "995b5d2b8d43c7b37a469e855cd6a9dbd9a72e02",
+      "bytes": 6019,
+      "sha256": "dc8f6fe8656dbccf92a7f5a1455f2b99719b05199e9655d258b8cd45722dc873"
+    },
+    {
+      "name": "BRANCH-ABSENCE.original.sdk.json",
+      "blob": "47cd51d22561d8222ca1cb3f9fe45fd9c8877060",
+      "bytes": 629,
+      "sha256": "929fdc37b1bd92a54d1a68b22cde5c9ceb70e2eab86f02af7b921970af5aac8b"
+    },
+    {
+      "name": "PARENT-READ.original.sdk.json",
+      "blob": "aa5a5639a60a402609f404852d42de7a02d55012",
+      "bytes": 4011,
+      "sha256": "031dafd8b44f5a9597f875dfbfb76d0c8527d3577c8380efd6986b361387f501"
+    }
+  ],
+  "expected_data_tree": "65a2f252729e3296a343fb177958171347ed401a",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

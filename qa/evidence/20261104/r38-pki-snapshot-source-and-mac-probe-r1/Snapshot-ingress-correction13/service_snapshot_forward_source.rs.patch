@@ -1,0 +1,11 @@
+--- a/crates/heptabao-server/src/service_snapshot_forward_source.rs
++++ b/crates/heptabao-server/src/service_snapshot_forward_source.rs
+@@ -297,7 +297,7 @@
+                 {
+                     Err(response)
+                 } else {
+-                    Err(failed_delivery(self, &fingerprint, clock.0, error))
++                    Err(failed_delivery(self, &fingerprint, clock.0, error, unavailable))
+                 }
+             }
+         }

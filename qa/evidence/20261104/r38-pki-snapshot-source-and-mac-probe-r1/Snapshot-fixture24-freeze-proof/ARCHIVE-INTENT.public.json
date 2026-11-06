@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r38-snapshot24-source-freeze-proof",
+  "records": [
+    {
+      "name": "ROOT-SNAPSHOT24-FREEZE-PROOF.json",
+      "blob": "98647b553634c669c84ba1dcd82058af3cf25dd3",
+      "bytes": 2121,
+      "sha256": "262b2d19958f94c134a963d9a3bfcd9e53f134a95f719863fec4716527756968"
+    },
+    {
+      "name": "BRANCH-READBACK.original.sdk.json",
+      "blob": "2d6bce61188573a55c6a38a5c1dae3d9fb6e674f",
+      "bytes": 2043,
+      "sha256": "13ef761d3182c20732988bcb4ff8c51c9bee5bc49d2177ad5bdc5b0273b54a39"
+    }
+  ],
+  "expected_data_tree": "d8d44d9c434ff8305d282bd9d6615040e9c70913",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

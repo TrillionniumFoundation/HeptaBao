@@ -1,0 +1,47 @@
+    pub(crate) fn begin_forwarded(&mut self, request: ServiceRequest<'_>) -> RequestExecution {
+        let started = std::time::Instant::now();
+        let observed = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or(Duration::MAX);
+        let clock = match RequestClock::anchored(observed, started) {
+            Ok(clock) => clock,
+            Err(_) => {
+                return RequestExecution::Complete(Response::error(
+                    503,
+                    "trusted token clock is unavailable",
+                ));
+            }
+        };
+        let now = observed.as_secs();
+        let _publication_clock = external_pki::PublicationClockScope::enter(
+            clock.admitted_at().duration_since_epoch(),
+            started,
+        );
+        let ServiceRequest {
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            wrap_ttl_seconds,
+            origin_peer,
+            client_certificates,
+        } = request;
+        self.begin_at_mode_precise(
+            RequestDispatch {
+                method,
+                path,
+                namespace,
+                token,
+                body,
+                now,
+                allow_forward: false,
+                enforce_namespace: true,
+                wrap_ttl_seconds,
+                origin_peer,
+                client_certificates,
+            },
+            clock,
+        )
+        .with_realtime_remote_jwt()
+    }

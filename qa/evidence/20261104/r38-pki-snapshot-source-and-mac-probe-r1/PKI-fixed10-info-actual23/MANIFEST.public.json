@@ -1,0 +1,137 @@
+{
+  "schema": "heptabao.exact-public-packet-manifest.r1",
+  "files": [
+    {
+      "path": "01.pki-lease400-format10-report-info-start-r1.armed.json",
+      "blob": "b67d84198b9f05f211d85d25e713b17e15211dfd",
+      "bytes": 869,
+      "sha256": "4f8376a779c4b5bd12263b5e1c7ce425f9ef8eae4f147f61319cbaa9071bbfd1"
+    },
+    {
+      "path": "01.pki-lease400-format10-report-info-start-r1.intent.json",
+      "blob": "70d9ef66228fe53546065b3c032ac2542539cdbe",
+      "bytes": 732,
+      "sha256": "65bfd240c513b891d1aeaff7704455a455baa65bb32788e2767815e1f98e0431"
+    },
+    {
+      "path": "01.pki-lease400-format10-report-info-start-r1.native.original.json",
+      "blob": "f33864b689506fdc20cadc199358d1261dc76eb1",
+      "bytes": 543,
+      "sha256": "a58cecb128d906c60c6d7103b1f88140f5978e9c2d150426343d97bcb91d27da"
+    },
+    {
+      "path": "01.pki-lease400-format10-report-info-start-r1.request.json",
+      "blob": "da2d04756281187d875950219a8c1e584ea5a029",
+      "bytes": 291,
+      "sha256": "ef290e736dc818892e12dd00e0a32523b21b3a24b30734fd1aa7fe561cce7e51"
+    },
+    {
+      "path": "01.pki-lease400-format10-report-info-start-r1.sdk.original.json",
+      "blob": "e2f2c72b823042a01e7ab294ae4a3e0de57f4304",
+      "bytes": 704,
+      "sha256": "a42a024866f8a28e6cb59b5d6b26de032a5fc92039f6b72e11d50a21bc3baaad"
+    },
+    {
+      "path": "02.pki-lease400-format10-report-info-status0-r1.armed.json",
+      "blob": "e12c92c398c6929d3d78e33bd10f4b47c63bce93",
+      "bytes": 933,
+      "sha256": "ca9816f145fe1daa3d9d90686e00b4a334eb66fddfe572df91bf4e87d4069771"
+    },
+    {
+      "path": "02.pki-lease400-format10-report-info-status0-r1.intent.json",
+      "blob": "09f5424ae707c57cabcab7bbb06561914819268a",
+      "bytes": 796,
+      "sha256": "b353e6ea6e3eb056fe43a1b63b422f9f8f17115a5e0e0bc594723f34983f94b7"
+    },
+    {
+      "path": "02.pki-lease400-format10-report-info-status0-r1.native.original.json",
+      "blob": "64ba19ad1960800c5ec49afb0e9e85e8cb6f9130",
+      "bytes": 800,
+      "sha256": "482219a7e946a50e40e40610c4d339f2232e5ec826bd03fd5e436b79fde0c985"
+    },
+    {
+      "path": "02.pki-lease400-format10-report-info-status0-r1.request.json",
+      "blob": "48816c83554c72a449a19e1a96e6b06345130c3b",
+      "bytes": 89,
+      "sha256": "7c9cd9b6076814c3af22d0e5b485438f77f0d53f080f712d5b15bcbdf8cb80db"
+    },
+    {
+      "path": "02.pki-lease400-format10-report-info-status0-r1.sdk.original.json",
+      "blob": "3649cb6b03d9bbb09e969049e34d624555dee7d0",
+      "bytes": 975,
+      "sha256": "a1532dfdef9e059fdb6d3cf77c5d2082e4af681f40562b294a5032d5ff03b8cb"
+    },
+    {
+      "path": "03.pki-lease400-format10-report-info-page0-r1.armed.json",
+      "blob": "4941345c98416f6888cca109451eb421593156e3",
+      "bytes": 932,
+      "sha256": "48e5d809737d1e6f3660fffa0e791f0bcb784beca4518521235397b2f70de99f"
+    },
+    {
+      "path": "03.pki-lease400-format10-report-info-page0-r1.intent.json",
+      "blob": "1a34754db65297b70947e3795c937c5a14e2a846",
+      "bytes": 795,
+      "sha256": "efd1021a7e3ded0589cee37a3cf60338102d3a7a257ff0f0320117375a8dff22"
+    },
+    {
+      "path": "03.pki-lease400-format10-report-info-page0-r1.native.original.json",
+      "blob": "c052fb65e479b98b1d36d0575936f96b1290424d",
+      "bytes": 1481,
+      "sha256": "f05e9a0259d53520db7b4ddb3befc324c16dd63d63f90560ab8366c607840690"
+    },
+    {
+      "path": "03.pki-lease400-format10-report-info-page0-r1.request.json",
+      "blob": "633ed1b0d4a203ac601738872e2819a749adf390",
+      "bytes": 121,
+      "sha256": "af014d9f1a120b1ed2b405d1187f1e5df41c7bc3aff3b86e563be8444f94fc6e"
+    },
+    {
+      "path": "03.pki-lease400-format10-report-info-page0-r1.sdk.original.json",
+      "blob": "33ca969188fcaa22ae20dd9316330a6fec3d396a",
+      "bytes": 1652,
+      "sha256": "607ee5ee3c9041c5701096e6c95704e769e7b40ab0a87caaf72a3d401de4d2d5"
+    },
+    {
+      "path": "CALL-INDEX.public.json",
+      "blob": "1470d6b3424cb210fa5ac3b828d6218030dcc1e7",
+      "bytes": 3603,
+      "sha256": "85abd909ca1b7fc5d9ba050e2461760242434df029e8b1ab8eaf82b51a3c3d73"
+    },
+    {
+      "path": "LANE-RELEASE.public.json",
+      "blob": "c943cab6a5345ef5528b9f7aeda1b34bdd952d63",
+      "bytes": 2642,
+      "sha256": "bba00825f897a9c620a104195ddfc00cd1f5f84f44d924f3232bac0e3d3c2e13"
+    },
+    {
+      "path": "collector-terminal.reference.original.json",
+      "blob": "f7555930ff44447253bd6ebd4fa9be899a6952b3",
+      "bytes": 4775,
+      "sha256": "e33445fcf1f52b6c090023679daa34a4354ff1b2f41e5a6bbec9bc5a73f4dc22"
+    },
+    {
+      "path": "file-info.native.original.json",
+      "blob": "31a0dafbdf896a40a7f31c426e3b07de1d31fef8",
+      "bytes": 481,
+      "sha256": "6ef4f65835eb727f86892a9b23f0adc70d475280685a17fbfd2c4a9580b9f438"
+    },
+    {
+      "path": "journal.executed.original.js",
+      "blob": "ad4e06490a7a041e7dacdf282db4bcade736fe6d",
+      "bytes": 25316,
+      "sha256": "cf3df54daa121359853dcaf56d82c0a63ffd7cd70850025de90ae062239e4d75"
+    },
+    {
+      "path": "payload.original.json",
+      "blob": "752bf47428edbe112145551b46ac9b1d13b45af6",
+      "bytes": 598,
+      "sha256": "38682575d3352e00c8f4cd3fdc75e1ada6c9ea979880bad0fa5fadad8e85863a"
+    },
+    {
+      "path": "root-GO.original.json",
+      "blob": "b6c22fb82f75beec7fdf8168f5527f65e141993c",
+      "bytes": 4573,
+      "sha256": "3a767372cd99d80747132c0181e07c9bd0139d3b3bb86364f6cba2ae39569afb"
+    }
+  ]
+}

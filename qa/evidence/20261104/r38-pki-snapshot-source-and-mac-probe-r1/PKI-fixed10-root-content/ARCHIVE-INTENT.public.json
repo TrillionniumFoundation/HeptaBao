@@ -1,0 +1,70 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "R38-root-PKI-fixed10-content-reconstruction",
+  "records": [
+    {
+      "name": "root-content-qualification.json",
+      "blob": "804c07ab40bb0be24776fd6ec110935f1cf064fb",
+      "bytes": 12977,
+      "sha256": "fd197b6c32fc6d2fcfd25cb38b76dfdbb18c0b1a2f760c75a8a771082c82a6eb"
+    },
+    {
+      "name": "root-content-verifier.js",
+      "blob": "f9cf859223ce97730a95625d644238915b62a5d2",
+      "bytes": 11203,
+      "sha256": "a20e69e1e7b26f7bf539fbde25e40bcdfffba80758bdb3017c05b97fe951515c"
+    },
+    {
+      "name": "root-body-qualification.json",
+      "blob": "5421add900ee34e1019d8d28d8c81559500dcabe",
+      "bytes": 5631,
+      "sha256": "ffe5e427628412e6ba00627e50db90846be79c8c2fcbc842568e5fc08d6b9d81"
+    },
+    {
+      "name": "root-body-verifier.js",
+      "blob": "118213ec74aa816be232c8b4305c8a88c74af50d",
+      "bytes": 4517,
+      "sha256": "68608b5b76a92391ce0cea12f0460cafa60b95441ffc590b7f730c92ec8444c0"
+    },
+    {
+      "name": "original-journal-verifier.unchanged.js",
+      "blob": "3c0ef26c0193c7e39724add83657466d88f560bb",
+      "bytes": 3404,
+      "sha256": "600711669602a25a77f41b713b51409130853ba1918af398aea928c01c5c6e01"
+    },
+    {
+      "name": "strict-diff-helper.js",
+      "blob": "af8c8db9ee76ccea0bb1dc4df1b0cdb61a8152d3",
+      "bytes": 2273,
+      "sha256": "eee83dbb8f629571ef33063873f55be75dd17aa40796e22e5f9a70ec36ddf7e3"
+    },
+    {
+      "name": "pki.rs",
+      "blob": "3c6fd86dcd641eb16af64b835d2252163dd1488e",
+      "bytes": 136672,
+      "sha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba"
+    },
+    {
+      "name": "pki.rs.actual-format.diff",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "service_native_pki_tests.rs",
+      "blob": "23b2c1344eec6ad1cc659f665df14d6379687a49",
+      "bytes": 42909,
+      "sha256": "6a1fd1fbaf6caa1c206844e8d97414ea231a1cba663ebb704d26cdff42417d56"
+    },
+    {
+      "name": "service_native_pki_tests.rs.actual-format.diff",
+      "blob": "cc7938d777d8bdd3364e22a3ef8af71b35885d58",
+      "bytes": 592,
+      "sha256": "20d07e64ee043d498a01c0fb25a1e3618ce4a9f8a5a0dcb0f27700c3c24a7f10"
+    }
+  ],
+  "expected_data_tree": "561f532de0145736431123d508bb8dec2477e20c",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

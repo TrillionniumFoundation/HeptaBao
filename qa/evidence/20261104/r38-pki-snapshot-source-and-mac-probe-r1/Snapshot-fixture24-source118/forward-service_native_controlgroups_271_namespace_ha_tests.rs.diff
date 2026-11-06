@@ -1,0 +1,13 @@
+--- a/crates/heptabao-server/src/service_native_controlgroups_271_namespace_ha_tests.rs
++++ b/crates/heptabao-server/src/service_native_controlgroups_271_namespace_ha_tests.rs
+@@ -194,6 +194,10 @@
+         NativeSnapshotAdmission::Redirect(_) => {
+             return Err("selected child snapshot leader redirected".into());
+         }
++        #[cfg(feature = "native-v6-ha")]
++        NativeSnapshotAdmission::Forward(_) => {
++            return Err("selected child snapshot leader forwarded".into());
++        }
+     };
+     // Match the production HTTP external phase: no transfer/body I/O while
+     // holding the Service writer. Completion reacquires the same real owner

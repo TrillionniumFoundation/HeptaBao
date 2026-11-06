@@ -1,0 +1,19 @@
+--- a/publisher.before.py
++++ b/publisher.prebound.py
+@@ -12,12 +12,12 @@
+ RECEIPT = BASE / 'inert-stage.result.public.json'
+ PINS = {
+     "native_jwt_build.py": [
++        30398,
++        "9750305c0c64c90e688d8a80c6cee933cf472070bfffbecc7e3e6fcf17e1587a"
+-        30322,
+-        "4a68d6ee41ec098db7d78c3594df70016ce5096b1dc43da972fa0e405793a9b1"
+     ],
+     "launch_native_jwt_build.py": [
++        38566,
++        "7501ac044320dc6215a363e8feeb7f8f56b159c2a6e4504773485370dc3b5113"
+-        38421,
+-        "004f9ea61b85a76b73c4be930fe7be5fbcca809c20c70db07e820bd931002c0f"
+     ],
+     "jwt-test-groups.public.json": [
+         19789,

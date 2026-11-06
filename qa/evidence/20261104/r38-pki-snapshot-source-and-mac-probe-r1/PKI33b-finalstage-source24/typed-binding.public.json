@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.native-jwt-pki.finalstage-typed-binding.v1",
+  "helper": {
+    "blob": "82e81aef13d858c865ea05dd762056553a3d1cc6",
+    "bytes": 659,
+    "sha256": "e98c61fceb6eecdd55e6244ad43939320114809163afee67a6b8657235dae042"
+  },
+  "baseRequest": {
+    "blob": "c1429991e9c597d1639f02a68f791043e6c8b9e5",
+    "bytes": 111605,
+    "sha256": "aebf043cfcb5d60611dd67f3ed93c0caee8098091a70c8b61c8306de05fc5b65"
+  },
+  "baseRootGo": {
+    "blob": "92ffd3b9237746902816675e3718376662185ca7",
+    "whole": true
+  },
+  "baseActualRootBinding": {
+    "sha256": "cf25a0596615538ba565454b443a661e50cb1daa6b80181e85c580d33e0b3f6b",
+    "native_fingerprint": "14926512845814584203",
+    "typed_stdin_field": "stdin"
+  },
+  "baseRecomputed": {
+    "sha256": "cf25a0596615538ba565454b443a661e50cb1daa6b80181e85c580d33e0b3f6b",
+    "native_fingerprint": "14926512845814584203",
+    "typed_bytes": 111516
+  },
+  "request": {
+    "blob": "1b3da82ecf429adc5d816a2ff2cb78810059ac90",
+    "bytes": 111811,
+    "sha256": "576e7eb3f5f6a20d49e7fdae8939f002153ec69ebb41a891a08c80a8eb75dde4"
+  },
+  "current": {
+    "sha256": "043dd4147f135f879d2ad30d1d31bec7ee692a940eac9b8a31a892ce6da7e732",
+    "native_fingerprint": "305633534227472263",
+    "typed_bytes": 111718
+  },
+  "absent_env": "typed BTreeMap defaults to {}, unlike absent Option fields which use null",
+  "initial_env_null_mismatch_preserved": true,
+  "authorizes_Runtime": false
+}

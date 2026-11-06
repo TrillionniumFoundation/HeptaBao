@@ -1,0 +1,162 @@
+{
+  "schema": "heptabao.root-source-review.build-launcher-group-shape-r3.v1",
+  "status": "PASS_MINIMAL_SHAPE_AND_MECHANICAL_BINDING_CORRECTION",
+  "checks": [
+    {
+      "name": "whole17_402669",
+      "passed": true
+    },
+    {
+      "name": "exact_prior_root31",
+      "passed": true
+    },
+    {
+      "name": "all_prior_whole_pins",
+      "passed": true
+    },
+    {
+      "name": "launcher_one_hunk_exact_both_directions",
+      "passed": true
+    },
+    {
+      "name": "launcher_pins_exact",
+      "passed": true
+    },
+    {
+      "name": "publisher_one_hunk_exact_both_directions",
+      "passed": true
+    },
+    {
+      "name": "publisher_pins_exact",
+      "passed": true
+    },
+    {
+      "name": "exact_only_two_shape_tuples",
+      "passed": true
+    },
+    {
+      "name": "publisher_only_mechanical_launcher_size_and_SHA",
+      "passed": true
+    },
+    {
+      "name": "all_four_group_shapes_exact",
+      "passed": true
+    },
+    {
+      "name": "old_shape_rejected_new_shape_matches",
+      "passed": true
+    },
+    {
+      "name": "runner_same_group_shapes",
+      "passed": true
+    },
+    {
+      "name": "149_unique_166_instances_600_each",
+      "passed": true
+    },
+    {
+      "name": "carrier_schema_and_names_unchanged",
+      "passed": true
+    },
+    {
+      "name": "actual_base64_body_native_jwt_build.py",
+      "passed": true
+    },
+    {
+      "name": "actual_base64_body_launch_native_jwt_build.py",
+      "passed": true
+    },
+    {
+      "name": "actual_base64_body_jwt-test-groups.public.json",
+      "passed": true
+    },
+    {
+      "name": "actual_new_payload_pin",
+      "passed": true
+    },
+    {
+      "name": "unbound_and_no_native_request",
+      "passed": true
+    },
+    {
+      "name": "denominators_unchanged",
+      "passed": true
+    }
+  ],
+  "check_count": 20,
+  "source_packet": "1146ab7dacb15e8748700c3c081b51e6f835ecdc",
+  "previous_root_review": "ac6ba549205c12ba4169d63a617dedd5fdd41f61",
+  "components": {
+    "runner": {
+      "before": {
+        "blob": "4bee748e9c313702f5a35a02e94d98eb7fe984b2",
+        "bytes": 30322,
+        "sha256": "4a68d6ee41ec098db7d78c3594df70016ce5096b1dc43da972fa0e405793a9b1"
+      },
+      "after": {
+        "blob": "4bee748e9c313702f5a35a02e94d98eb7fe984b2",
+        "bytes": 30322,
+        "sha256": "4a68d6ee41ec098db7d78c3594df70016ce5096b1dc43da972fa0e405793a9b1"
+      }
+    },
+    "launcher": {
+      "before": {
+        "blob": "66e353d9b7adace3fcc07bd0e7298d3f6b6d0851",
+        "bytes": 38413,
+        "sha256": "2f24a0877f290092053ca22e974d6a4a500fb182181963ac657e540b1a53227d"
+      },
+      "after": {
+        "blob": "05c3e582d255670cb49660919524fb154e610329",
+        "bytes": 38421,
+        "sha256": "004f9ea61b85a76b73c4be930fe7be5fbcca809c20c70db07e820bd931002c0f"
+      }
+    },
+    "publisher": {
+      "before": {
+        "blob": "5c808c81b30d63d6614375178133e6607d07ebcf",
+        "bytes": 5183,
+        "sha256": "844726cb9d62b0be87b6e676045f16dd07f8a31d27739b826cd77caf54cb670a"
+      },
+      "after": {
+        "blob": "5b7dac48f538278c801079a4862f1d7ea4432f53",
+        "bytes": 5183,
+        "sha256": "25d4479695cd49c05c4760ec0a05b20d6e41b44f9f08f5c3086f051bc9813cdb"
+      }
+    }
+  },
+  "groups": {
+    "blob": "5d563b1c7a1b7070395f6d8a03b512ddb019fae0",
+    "bytes": 19789,
+    "sha256": "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869"
+  },
+  "payload": {
+    "before": {
+      "blob": "0bd40889328596fbfc922853e20ab891d4c4b621",
+      "bytes": 118231,
+      "sha256": "188762e2997a27b5c0f6410367d0703d433468fbde14ae423b8b0476ee411b64"
+    },
+    "after": {
+      "blob": "5736995633b0947f5cbe6c72b7236a480642b95e",
+      "bytes": 118239,
+      "sha256": "6bf2721905c9e363cddb6a98e0cf74293393724b5c71bf17dbd98580540a4fea"
+    }
+  },
+  "denominators": {
+    "existing_unique": 132,
+    "new_jwt_unique": 15,
+    "new_pki_unique": 2,
+    "new_unique": 17,
+    "selected_unique": 149,
+    "profile_instances": 166
+  },
+  "documentation_correction": {
+    "field": "PLAN.budgets.publisherPayloadActual",
+    "recorded": 118231,
+    "actual": 118239,
+    "meaning": "Stale prior payload size only; runtime source, exact payload pin and 262144 cap are correct. Preserve source17 and derive the final bound PLAN from actual new bytes."
+  },
+  "final_binding_ready": false,
+  "compile_executed": false,
+  "tests_executed": false,
+  "root_Runtime_calls": 0
+}

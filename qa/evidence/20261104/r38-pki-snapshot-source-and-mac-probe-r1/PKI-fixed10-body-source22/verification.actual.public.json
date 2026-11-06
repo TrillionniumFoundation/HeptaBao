@@ -1,0 +1,155 @@
+{
+  "schema": "heptabao.pki10-collector-report-one-range-source-verification.v1",
+  "status": "passed",
+  "checks": [
+    {
+      "name": "body_delta_unique_0",
+      "pass": true
+    },
+    {
+      "name": "body_delta_unique_1",
+      "pass": true
+    },
+    {
+      "name": "body_delta_unique_2",
+      "pass": true
+    },
+    {
+      "name": "body_delta_unique_3",
+      "pass": true
+    },
+    {
+      "name": "body_delta_unique_4",
+      "pass": true
+    },
+    {
+      "name": "body_delta_unique_5",
+      "pass": true
+    },
+    {
+      "name": "body_delta_unique_6",
+      "pass": true
+    },
+    {
+      "name": "body_delta_unique_7",
+      "pass": true
+    },
+    {
+      "name": "unbound_whole",
+      "pass": true
+    },
+    {
+      "name": "actual_binding_unique_0",
+      "pass": true
+    },
+    {
+      "name": "actual_binding_unique_1",
+      "pass": true
+    },
+    {
+      "name": "bound_whole",
+      "pass": true
+    },
+    {
+      "name": "full_inverse_whole",
+      "pass": true
+    },
+    {
+      "name": "old_info_authorizer_body_preserved",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition_gfNeed",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition_gfMetaEquals",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition_gfState",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition_gfSave",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition_gfIntegerText",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition_gfInitializeOnlyAfterRootGO",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition_gfReconcileSameGitArchiveReadOnly",
+      "pass": true
+    },
+    {
+      "name": "closed_actual_info_allows_exact_one_range_GO",
+      "pass": true
+    },
+    {
+      "name": "first_exact_body_range_allowed",
+      "pass": true
+    },
+    {
+      "name": "unbound_source_never_authorizes",
+      "pass": true
+    },
+    {
+      "name": "second_body_authorization_refused",
+      "pass": true
+    },
+    {
+      "name": "active_future_refused",
+      "pass": true
+    },
+    {
+      "name": "changed_metadata_version_refused",
+      "pass": true
+    },
+    {
+      "name": "second_range_GO_refused",
+      "pass": true
+    },
+    {
+      "name": "body_without_GO_refused",
+      "pass": true
+    },
+    {
+      "name": "completed_single_range_repeat_refused",
+      "pass": true
+    },
+    {
+      "name": "new_binary_page16384_allowed",
+      "pass": true
+    },
+    {
+      "name": "oversize_binary_page_refused",
+      "pass": true
+    },
+    {
+      "name": "old_info_page8192_retained",
+      "pass": true
+    },
+    {
+      "name": "old_info_page_not_widened",
+      "pass": true
+    },
+    {
+      "name": "exact_fixed_range_0",
+      "pass": true
+    },
+    {
+      "name": "exact_total_no_gap_no_overlap",
+      "pass": true
+    }
+  ],
+  "checks_count": 36,
+  "Native": 0,
+  "Git": 0,
+  "Python": 0,
+  "synthetic_go_not_authorization": true
+}

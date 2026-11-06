@@ -1,0 +1,13 @@
+{
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "rog",
+      "job_id": "1a1afa74868-fc05-6a7e",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  },
+  "idempotency_key": "heptabao-native-snapshot-8c95fb0a-rog-source-observe-r1-streams0"
+}

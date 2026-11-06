@@ -1,0 +1,11 @@
+--- a/launcher.before.py
++++ b/launcher.after.py
+@@ -489,7 +489,7 @@
+ assert stage['failed_observer_before'] == stage['failed_observer_after']
+ assert args.groups_sha256 == GROUPS_SHA256
+ assert [(g['label'], g['libtest_profile'], len(g['tests'])) for g in groups] == [
++    ('native-jwt-pki-file17', 'file', 17), ('native-jwt-pki-default17', 'default', 17),
+-    ('native-jwt-file15', 'file', 15), ('native-jwt-default15', 'default', 15),
+     ('legacy-jwt-default63', 'default', 63), ('native-auth-identity-default69', 'default', 69)]
+ assert all(set(g) == {'label', 'libtest_profile', 'tests', 'runtime_seconds'}
+            and g['runtime_seconds'] == 600 and len(g['tests']) == len(set(g['tests'])) for g in groups)

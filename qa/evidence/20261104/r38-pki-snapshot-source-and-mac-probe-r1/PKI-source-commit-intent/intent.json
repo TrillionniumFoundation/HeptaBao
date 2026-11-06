@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.root-PKI3-source-commit-intent.v1",
+  "request": {
+    "repository_full_name": "TrillionniumFoundation/HeptaBao",
+    "parent_sha": "808e45d690f177ecb922e13d1ed19f7877156094",
+    "tree_sha": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+    "message": "source: freeze native JWT and exact PKI lease lookup compatibility\n\nAdd the reviewed PKI lease lookup400 correction and two cold regression sources on the actual formatted JWT baseline. Preserve exact acceptance status comparisons. Three leaves only; source remains uncompiled and product qualification is pending."
+  },
+  "maximum_calls": 1,
+  "tree_original_SDK": "d6251b2ca91f9e88f1e71f8165057b55ed1abd63",
+  "tree_verified_layers": [
+    {
+      "path": "crates/heptabao-server/src/engines",
+      "sha": "73153086733f7c586a5b9db968c933cbdeafaa55",
+      "entries": 116,
+      "whole": true
+    },
+    {
+      "path": "crates/heptabao-server/src",
+      "sha": "30df5c0f2c8c0dde945bd3447a48821712324cd7",
+      "entries": 782,
+      "whole": true
+    },
+    {
+      "path": "crates/heptabao-server",
+      "sha": "1f4f1a2806d2cde84ff1522ad01c4364d5dd1439",
+      "entries": 8,
+      "whole": true
+    },
+    {
+      "path": "qa/openbao-acceptance",
+      "sha": "1844411ab50ee681a3ae4e22258e5041d7a64c71",
+      "entries": 381,
+      "whole": true
+    },
+    {
+      "path": "crates",
+      "sha": "b2c01aa42fff7f8480749fdb3b312e1d1a69371e",
+      "entries": 49,
+      "whole": true
+    },
+    {
+      "path": "qa",
+      "sha": "f5f6a877d49a3df3c1a2be612c87ac57c62139e1",
+      "entries": 2,
+      "whole": true
+    },
+    {
+      "path": "",
+      "sha": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+      "entries": 26,
+      "whole": true
+    }
+  ],
+  "expected_sole_parent": "808e45d690f177ecb922e13d1ed19f7877156094",
+  "may_have_dispatched_after_checkpoint": true,
+  "missing_ack_is_unknown_no_replay": true
+}

@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "Root-Auth-home-T5-r3-exact-GO-r1",
+  "records": [
+    {
+      "name": "GO.json",
+      "blob": "640e6002f976213fb2d57910a850c72ad2eb6c0f",
+      "bytes": 13636,
+      "sha256": "43a8d6b94dacfb9a751c5dbe57f1156979b418cb1c187d72ddac15d67ec5e818"
+    },
+    {
+      "name": "root-source-review.original.json",
+      "blob": "74e6780ff67e5ce2f8871c012e5cb71e8af5bf9a",
+      "bytes": 9887,
+      "sha256": "c97506323043b2eca609b6dc202cee921461f3f924a7e3bc4ac5f059e427edd0"
+    },
+    {
+      "name": "peer-review.original.md",
+      "blob": "d4ee22f210c05ee6d34b666892a29dc9aac63a43",
+      "bytes": 5726,
+      "sha256": "193b2dd21f50071e51c12abda78a7c14472e5121fc84bfc4e66cec70f88456ad"
+    },
+    {
+      "name": "peer-result.original.json",
+      "blob": "52b35c9406738849b25803f8198df18ba02cc720",
+      "bytes": 13538,
+      "sha256": "d46432664da0c02fa58b48150924e2d0bf998f120aafe18a62ba4d2fe69ccce7"
+    }
+  ],
+  "expected_data_tree": "22c0e91e653793f4d98a4fd1c6ebb54c46a8868c",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

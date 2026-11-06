@@ -1,0 +1,224 @@
+{
+  "schema": "heptabao.native-pki-formatter10-collector.source.v1",
+  "status": "SOURCE_ONLY_REQUIRES_SEPARATE_EXACT_GO",
+  "Runtime": 0,
+  "PythonCompile": 0,
+  "RustCompile": 0,
+  "scope": "Read exactly ten public files beneath the closed original PKI formatter root and publish one new create-only public observation report. No formatter replay or input writes.",
+  "source": {
+    "blob": "682e85d037c2b4fdd5c3b6412645a8027cda48d7",
+    "bytes": 30445,
+    "sha256": "592f1f112a4a3a3d48e07f33c8cf2ba493b1c63e4215ffe8ca0ba9fec80cd6f6"
+  },
+  "referenceCollector": {
+    "blob": "6346d622e31526522459ae4c1a2cdc858369d2ed",
+    "sourcePacket": "0dcf428adc4dfd924b529949e89428af367c17c7",
+    "sourcePeer": "d6e094e39ace01a6475e7a38909b23311e806245",
+    "actualRootQualification": "75d61db6321b5a680ef7b5a84d0079c6f9360f38",
+    "qualificationTransfers": false
+  },
+  "request": {
+    "blob": "22dd45be52462f7a001abf985abe48c523dc48a4",
+    "bytes": 33330,
+    "sha256": "d16edddff2f496d84fb41eb50fdf266716b274388beb1031baec8111579e2c0f"
+  },
+  "journal": {
+    "blob": "318cc953dde2cf72bd2431cc6a2f536bf07b97cf",
+    "bytes": 19063,
+    "sha256": "4ac9ec88c195ce9d52eb4a9738563cd56a8309f53db60351f1f07408041f3ab6"
+  },
+  "journalReference": {
+    "blob": "3f6bb9e67890d08af99adb01c29054869fff75c3",
+    "bytes": 19053,
+    "sha256": "4ae9e6ad844350e9fd182f8208e7b8bda91589b83e8d8e0cd9ee7b6e01ac84e6"
+  },
+  "journalSlot": "native_pki_lease400_formatter10_collector_gitfirst_r1",
+  "archive": {
+    "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+    "bytes": 5957,
+    "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+  },
+  "pure": {
+    "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+    "bytes": 6685,
+    "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+  },
+  "origin": {
+    "receipt_body_packet": "90ca24f4befcb5f91a7cdf36f67ad1c855edd2e8",
+    "root_receipt_qualification": "4ba7ea70dc1d2221dc5ba4f21e46221b4f89ff22",
+    "root_receipt_tree": "c88e63da2567c8b75c40cdfdc15614d2c6ab9ced",
+    "original_formatter_packet": "3bb5db7fbe55a5007b5d24ee0efdd14fd2d7972a",
+    "original_metadata_packet": "7a391b1535898da4e61b36029f6c951ccb8e8b50"
+  },
+  "inputRoot": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1",
+  "outputRoot": "/home/qian-qi/heptabao-native-pki-lease400-format-observe-20261106-r1",
+  "fixedReportName": "observation.public.json",
+  "reportMode": "0600",
+  "outputMode": "0700",
+  "inputIdentity": {
+    "uid": 1000,
+    "gid": 1000,
+    "mode": "0600",
+    "singleLink": true,
+    "NOFOLLOW": true,
+    "NONBLOCK": true,
+    "full9BeforeNamedHeldReadAfterFinal": true,
+    "sequentialNotAtomic": true,
+    "alreadyObservedFull9Indices": [
+      8,
+      9
+    ],
+    "otherEightPriorFull9": null,
+    "actualObserverWillRecordAllTenFull9": true
+  },
+  "sourceIdentity": {
+    "baseCommit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+    "baseTree": "5497775d9d473541e13e1603be8c893a3e27681b",
+    "baseOnly": true,
+    "uncommittedCandidateInputs": true,
+    "candidateSourcePacket": "6e4bf23de8f7fdac6dd9b152232a905bedb87744",
+    "candidates": [
+      {
+        "name": "pki.rs",
+        "repositoryPath": "crates/heptabao-server/src/engines/pki.rs",
+        "inputBlob": "3c6fd86dcd641eb16af64b835d2252163dd1488e",
+        "bytes": 136672,
+        "sha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba"
+      },
+      {
+        "name": "service_native_pki_tests.rs",
+        "repositoryPath": "crates/heptabao-server/src/service_native_pki_tests.rs",
+        "inputBlob": "352e581f5a901f21ee7c7af4c9bc5b3bed1a1439",
+        "bytes": 42863,
+        "sha256": "3dfea1dccd78187517f3cb9ca04ed036073eb7ed6b7c604815aa745f4402f208"
+      }
+    ],
+    "futureParent": "808e45d690f177ecb922e13d1ed19f7877156094",
+    "futureCombinedCommit": null
+  },
+  "receipt": {
+    "blob": "6638b8f22581832b5451d8b79e275feccec54959",
+    "bytes": 4907,
+    "sha256": "7b2560af593a62c7de4b8ca3a8cb7c2fffaed1408b2f1b356a302a38a7617776",
+    "rootQualification": "4ba7ea70dc1d2221dc5ba4f21e46221b4f89ff22",
+    "twoDirectChildrenReaped": true,
+    "sharedSupervisorPgid": 82826,
+    "independentGroupEmptyObserved": false
+  },
+  "denominators": {
+    "inputFiles": 10,
+    "sourceCandidates": 2,
+    "candidateBytes": 179535,
+    "formattedBytes": 179581,
+    "stdoutBytes": 179581,
+    "stderrBytes": 0,
+    "configBytes": 17,
+    "receiptBytes": 4907,
+    "totalInputBytes": 543621,
+    "changed": 1,
+    "unchanged": 1
+  },
+  "resourceBudget": {
+    "internalSeconds": 50,
+    "outerSeconds": 60,
+    "readCap": 1424736,
+    "originalJWT38ReadCap": 7906155,
+    "perReadCap": 65536,
+    "readCallCap": 256,
+    "metadataCap": 320,
+    "fdAcquisitions": 18,
+    "peakFDs": 16,
+    "diffBytes": 131072,
+    "reportBytes": 262144,
+    "stdoutBytes": 16384,
+    "reportReadbackIncludedInReadCap": true,
+    "maxActualInputPlusReportReadback": 805765,
+    "clocksReset": false
+  },
+  "fdGeometry": {
+    "heldDirectories": 6,
+    "inputFiles": 10,
+    "newOutputDirectoryAndFile": 2,
+    "allAcquiredMustBeOnceClosedOnSuccess": true,
+    "peakBeforeInputClose": 16,
+    "peakAfterInputClose": 8,
+    "originalCustodyClassByteEqual": true
+  },
+  "preservedDefinitions": {
+    "total": 23,
+    "byteEqual": 16,
+    "changed": [
+      "open_inputs",
+      "read_inputs",
+      "validate_receipt",
+      "make_diffs",
+      "recheck_inputs_and_close",
+      "public_input_records",
+      "main"
+    ],
+    "allChanges": "Fixed data, counts and PKI base-only receipt/provenance/schema fields; no new IO, signal, deadline, close or publication primitive."
+  },
+  "diffs": {
+    "collector": {
+      "blob": "12d24adbc55590a7de60b494dad57a628ee44406",
+      "bytes": 31251,
+      "sha256": "26267d35cecf84d44f8823950481e58d970926b0c64343cc612e039fe2d09ee8",
+      "hunks": 10
+    },
+    "journal": {
+      "blob": "44b71b8d4a6692fbc7bb01896860d9b772cbac9e",
+      "bytes": 1368,
+      "sha256": "13598aa752523d742da3cefaeca7df1cc507cf5a7b3f44a6eef6fc124674c014",
+      "hunks": 2
+    }
+  },
+  "validation": {
+    "pureV8": 164,
+    "PythonCompilation": 0,
+    "candidateExecution": 0,
+    "oldHarnessReruns": 0,
+    "productTests": 0
+  },
+  "requiredOriginalTerminal": {
+    "authority": "exit0/full/durable/confirmed",
+    "stdoutSchema": "heptabao.native-pki-formatter10-terminal.v1",
+    "status": "passed",
+    "all18OnceClosed": true,
+    "handlersAndUmaskRestored": true,
+    "noPendingSignal": true,
+    "withinOriginalDeadline": true,
+    "reportSameFDWholeReadback": true,
+    "originalInputWrites": 0,
+    "children": 0,
+    "networkCalls": 0,
+    "directoryListings": 0
+  },
+  "futureReportQualification": {
+    "metadataAndWholeBodySeparateGO": true,
+    "reconstructCandidatesFromTwoExactGitBlobs": true,
+    "strictForwardAndReverseActualDiff": true,
+    "reconstructedFormattedMatchesBothFormattedAndStdoutWholePins": true,
+    "twoStderrEmpty": true,
+    "configExact17": true,
+    "receiptExact4907": true,
+    "rootMustVerifyActualTenFull9AndWhole": true
+  },
+  "failureSemantics": {
+    "originalInputDirectoriesNeverWritten": true,
+    "inputFDsClosedBeforeReportCreation": true,
+    "freshOutputMustBeAbsent": true,
+    "failedOwnedArtifactsRetained": true,
+    "noAutomaticRetry": true,
+    "noUnknownReplay": true,
+    "ledgerCloseFailureNeverGreen": true,
+    "postFinallyStdoutAndAuthorityRequired": true
+  },
+  "buildGate": {
+    "previousCorrection": "b927d7237a59ee51617a21b1d6d11e7d210c6aba",
+    "rootReview": "ac6ba549205c12ba4169d63a617dedd5fdd41f61",
+    "unique149": 149,
+    "profileInstances166": 166,
+    "otherAgentSnapshot23NotIncluded": true,
+    "buildAuthorized": false
+  }
+}

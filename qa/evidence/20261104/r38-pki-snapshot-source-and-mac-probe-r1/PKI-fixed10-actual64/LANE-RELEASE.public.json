@@ -1,0 +1,129 @@
+{
+  "schema": "heptabao.native-pki-formatter10-collector-lane-release.r1",
+  "state": "KNOWN_PASSED_TERMINAL_AND_COMPLETE_ORIGINAL_STREAMS_ONLY",
+  "job": {
+    "host": "rog",
+    "job_id": "1a1af917594-fc05-69b4"
+  },
+  "root_go": {
+    "blob": "ef2c5b0a698573ce1587c1f35864619c77ea7080",
+    "bytes": 12102,
+    "sha256": "244c3fd455e819d70eb89ee120603628e97470cbf2f065f37ae1d41fd0977a8f"
+  },
+  "authority": {
+    "blob": "1f785781e47d8637ac2249f5f245bdca4435fdcd",
+    "bytes": 731,
+    "sha256": "ce499b2a8443c1d82364d688198fd01172f10a548a01042aba8a8bc1823c92d5"
+  },
+  "stdout": {
+    "blob": "f7555930ff44447253bd6ebd4fa9be899a6952b3",
+    "bytes": 4775,
+    "sha256": "e33445fcf1f52b6c090023679daa34a4354ff1b2f41e5a6bbec9bc5a73f4dc22"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "original_calls": 9,
+  "returned_observers": [
+    {
+      "id": "3ebfdff449e99f89163aa16c0e183420cf29b710506c0f3357cf74c2282c22eb",
+      "tool": "process_status",
+      "payload": {
+        "blob": "efde6be79587654b0620709961961f77c39c07ac",
+        "bytes": 910,
+        "sha256": "f19e7c7270ad7bf24c26d12652ad864ad3c5ca4463614480314803ab18f06a87"
+      },
+      "payloadTree": "e4619f2cec6f018e8906faf89950b6db677b6a4b",
+      "nativeText": {
+        "blob": "1f785781e47d8637ac2249f5f245bdca4435fdcd",
+        "bytes": 731,
+        "sha256": "ce499b2a8443c1d82364d688198fd01172f10a548a01042aba8a8bc1823c92d5"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "db6e1476ae45cbada5e78cfafd6860ad22ad0b2f08192396f64b0abe94174dcf",
+      "tool": "process_read",
+      "payload": {
+        "blob": "4ffcdd5ff37281a53a41536ab03aad9e847da277",
+        "bytes": 16806,
+        "sha256": "fd3996ae8dde2b54b3912a3ddf874aca9a2826820e96663cac6420259283669f"
+      },
+      "payloadTree": "c62110f575d62865137e44519e82a9a5076c088a",
+      "nativeText": {
+        "blob": "a71bdddadc0fa795f0422d17df988f9fc07e831c",
+        "bytes": 15321,
+        "sha256": "3d868afe45885e93200dea23aa235e80e074cd443d8cfa77e5422857eacf4203"
+      },
+      "pages": 3,
+      "completedInactive": true
+    }
+  ],
+  "closed_statuses": [
+    {
+      "call_key": "pki-lease400-format10-authority0-status0-r1",
+      "pin": {
+        "blob": "71bec6110050d8cbe8bea153d0b7ecc3d0c4bd32",
+        "bytes": 805,
+        "sha256": "1ee1184e9d6d09576ebac5d2dea0df961429f98e536f1a1cadad0bd36a44d57e"
+      },
+      "operation_id": "3ebfdff449e99f89163aa16c0e183420cf29b710506c0f3357cf74c2282c22eb"
+    },
+    {
+      "call_key": "pki-lease400-format10-streams0-status0-r1",
+      "pin": {
+        "blob": "6f9192eac4c5c294090428e807a7631178281d6b",
+        "bytes": 803,
+        "sha256": "133bf0c18f2607a80aee9ec14efd310cd9b7cf11c0e5404e58a3f600a5d6a44d"
+      },
+      "operation_id": "db6e1476ae45cbada5e78cfafd6860ad22ad0b2f08192396f64b0abe94174dcf"
+    }
+  ],
+  "pending_native_calls": 0,
+  "pending_native_futures": 0,
+  "resource_closure": {
+    "fds": 18,
+    "once_closed": 18,
+    "elapsed_seconds": 0.009818419988732785,
+    "child_count": 0
+  },
+  "report_declared_by_original_terminal": {
+    "bytes": 30131,
+    "directory_full9_after": [
+      "66306",
+      "30842947",
+      "1000",
+      "1000",
+      "16832",
+      "2",
+      "4096",
+      "1793946915079275200",
+      "1793946915079275200"
+    ],
+    "eof": true,
+    "full9": [
+      "66306",
+      "30842948",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "30131",
+      "1793946915079275200",
+      "1793946915079275200"
+    ],
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-observe-20261106-r1/observation.public.json",
+    "same_fd_readback": true,
+    "sha256": "f2d35f46f7fec2d9d9ce81d7e3bd8dca21c9c6f44d5f990314cfd4dcb5c4da46",
+    "version": "66306:30842948:30131:1793946915079275200:1793946915079275200"
+  },
+  "report_independent_metadata_observed": false,
+  "report_independent_body_observed": false,
+  "formatter_output_content_qualified": false,
+  "compile_test_product_permission": false,
+  "next_scope_requires_separate_root_go": "fixed_report_file_info_then_version_pinned_whole_body",
+  "old_source_and_budget_unchanged": true
+}

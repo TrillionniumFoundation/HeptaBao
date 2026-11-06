@@ -1,0 +1,10 @@
+{
+  "schema": "heptabao.source-only.packaging-error.r1",
+  "name": "Error",
+  "message": "flat_public_text_entry",
+  "cause": "nested archive paths supplied to flat-only archival helper",
+  "stage": "entry validation before any create_tree or Native call",
+  "nativeCalls": 0,
+  "gitMutationAdmitted": false,
+  "correction": "Use a new flat path map with the identical original file contents; retain this error in the final packet."
+}

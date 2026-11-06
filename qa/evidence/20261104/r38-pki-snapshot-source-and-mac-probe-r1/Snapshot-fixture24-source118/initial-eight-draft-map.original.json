@@ -1,0 +1,218 @@
+[
+  {
+    "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+    "name": "service_snapshot_transfer.rs",
+    "before": {
+      "blob": "50867f6ced7c34594e668a519df9c796fa333b0f",
+      "bytes": 52229,
+      "sha256": "3925de0802e77fc331b6e02a96155040a4bbe580cac0fc5619b135875ffecfd5"
+    },
+    "after": {
+      "blob": "9dcea728cd9afd0ba9f78a65537e7cac6ccadf55",
+      "bytes": 52444,
+      "sha256": "fb6440b75feddef609a5ddf54de163f3ec4ad5ddb9d607c19586cfb000a0d223"
+    },
+    "forward": {
+      "blob": "24fff2aa253302f98f970bf4452deb5feb4bda3c",
+      "bytes": 489,
+      "sha256": "1ceecc0f7da16c2d2dab1ce4b1211de2c41198fbd6d9da535bc96ed74b7086c3"
+    },
+    "reverse": {
+      "blob": "ba3516b6fcf9be96864274a7288cad92b4cfe348",
+      "bytes": 489,
+      "sha256": "3ad439b55b3e19ee5cf10e7b5571c6cbfcb3439d287a91aa0d575fc6bc20e4bd"
+    },
+    "anchor": "            NativeSnapshotAdmission::Redirect(_) => Err(Response::error(\n                501,\n                \"fixture refuses a redirected native upload\",\n            )),\n",
+    "insertion": "            #[cfg(feature = \"native-v6-ha\")]\n            NativeSnapshotAdmission::Forward(_) => Err(Response::error(\n                501,\n                \"fixture refuses a forwarded native upload\",\n            )),\n",
+    "hunks": 1
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_v6_ha_historical_restore_tests.rs",
+    "name": "service_native_v6_ha_historical_restore_tests.rs",
+    "before": {
+      "blob": "6c9d8e5b205340ae54bde2600b09771b7325536e",
+      "bytes": 52901,
+      "sha256": "a0f79c19eaccba34651510f7286dbb478fcab162182e89409e857547296d144a"
+    },
+    "after": {
+      "blob": "1ff6e42dade56eb4431271aae5a9dee90e9cca39",
+      "bytes": 53072,
+      "sha256": "2ea71a8fc8a009f4505792dee58165ecacbfa677e7b339f0f25a43be257a26b5"
+    },
+    "forward": {
+      "blob": "9c2dcf91f205fcf231b723d7bbf443c14e7d245f",
+      "bytes": 583,
+      "sha256": "466964084f78207795aaf4aa726761a70da498cde5583a22d0e09e966c3336ab"
+    },
+    "reverse": {
+      "blob": "1747c2212d03bef5fab748480824f342348a7e02",
+      "bytes": 583,
+      "sha256": "c20603446e7fc5954ef4335948a73deb8f1cf86e7307e0d1cfc8804f202f80fc"
+    },
+    "anchor": "        NativeSnapshotAdmission::Redirect(_) => {\n            Err(\"selected historical restore leader redirected\".into())\n        }\n",
+    "insertion": "        #[cfg(feature = \"native-v6-ha\")]\n        NativeSnapshotAdmission::Forward(_) => {\n            Err(\"selected historical restore leader forwarded\".into())\n        }\n",
+    "hunks": 1
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_v6_ha_snapshot_tests.rs",
+    "name": "service_native_v6_ha_snapshot_tests.rs",
+    "before": {
+      "blob": "2a4fbc6bf26ee49aef0dc7eca081116f91a67aa5",
+      "bytes": 12698,
+      "sha256": "0f65f9268096a6c5e7781a3c43266aeedd22bb7b3cf7369a8ab57f5371d8573c"
+    },
+    "after": {
+      "blob": "001413918726abb14faa742f291dde633ddbd036",
+      "bytes": 12836,
+      "sha256": "a7999ef4dc72fbc3b776ad9e86d6fd19ccabfba7cdfc839b6d91dab4a988e404"
+    },
+    "forward": {
+      "blob": "1beaf9a9bfb9e98d21833321b3c61fb5929c3d16",
+      "bytes": 505,
+      "sha256": "7942777ed6e5cd64c95e6087ed3d2e24dbacce4eb4eea48d8fbe15c24cc24849"
+    },
+    "reverse": {
+      "blob": "5b91aa1af7134f3cac120ba52d24e7f1dd5ce7bf",
+      "bytes": 505,
+      "sha256": "6c7f6ee235d3c0f91e20acf30e9799d38e49537a1033c530a8a67974cf406f85"
+    },
+    "anchor": "        NativeSnapshotAdmission::Redirect(_) => Err(\"selected leader redirected snapshot\".into()),\n",
+    "insertion": "        #[cfg(feature = \"native-v6-ha\")]\n        NativeSnapshotAdmission::Forward(_) => Err(\"selected leader forwarded snapshot\".into()),\n",
+    "hunks": 1
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs",
+    "name": "service_native_v6_ha_cold_restore_tests.rs",
+    "before": {
+      "blob": "e6fc168b8813dfe046fadb446bdc880ffa2d8984",
+      "bytes": 33157,
+      "sha256": "8ed048c97e624d81ce3ff2478e776b461c81013173821d20ea3faf795e5345bd"
+    },
+    "after": {
+      "blob": "d6359eeb2d31bfc07636bbc2c2809688ebfc3467",
+      "bytes": 33328,
+      "sha256": "bbbd43e5fd049b193da9fc092bc6feec314263f62dc7859b35e2b018afbbeff4"
+    },
+    "forward": {
+      "blob": "dbde25a42460b5257db073e1a6bafb2104128e4c",
+      "bytes": 595,
+      "sha256": "17573e6fea71c08067150e66408fb662f4ef26c73a0399bbde5ee3d9457bbc7e"
+    },
+    "reverse": {
+      "blob": "98554d0b1a746d8e61608aaa1df73ad8964e3552",
+      "bytes": 595,
+      "sha256": "efdd8bd354734883cdedb2a2a4a89a7c5b28b914034b5abf9644e15777c46c95"
+    },
+    "anchor": "        NativeSnapshotAdmission::Redirect(_) => {\n            return Err(\"cold force selected leader redirected\".into());\n        }\n",
+    "insertion": "        #[cfg(feature = \"native-v6-ha\")]\n        NativeSnapshotAdmission::Forward(_) => {\n            return Err(\"cold force selected leader forwarded\".into());\n        }\n",
+    "hunks": 1
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_v6_ha_restore_borrowed_tests.rs",
+    "name": "service_native_v6_ha_restore_borrowed_tests.rs",
+    "before": {
+      "blob": "4de9450047a084ddcfb164b54a4ff661db787d2d",
+      "bytes": 21090,
+      "sha256": "e698a994b8d99726b7bf375cc827ebd88724a91bb2b00d6b84db6facb93289c9"
+    },
+    "after": {
+      "blob": "74669ad0f4e3fd26f34d10b53ed29a06ae8a2032",
+      "bytes": 21227,
+      "sha256": "39d87fbdaa26716890b2bb9c4d12577224400bdd1c9611a073c616fd78847e97"
+    },
+    "forward": {
+      "blob": "96df64a9e050c2512e45f7cfa59ff54013644866",
+      "bytes": 521,
+      "sha256": "e5ed5b251ff86ed2a8cde99fe6475373e908fb95b5683d05492697affba04eb7"
+    },
+    "reverse": {
+      "blob": "533ab2ed5b45fb181546ef4ce9c27a5a009ef520",
+      "bytes": 521,
+      "sha256": "ca6155727eee2a26528cac86f1b50ff45183a33bd94cf96ebfb7f43df5a0b547"
+    },
+    "anchor": "        NativeSnapshotAdmission::Redirect(_) => Err(\"selected leader redirected restore\".into()),\n",
+    "insertion": "        #[cfg(feature = \"native-v6-ha\")]\n        NativeSnapshotAdmission::Forward(_) => Err(\"selected leader forwarded restore\".into()),\n",
+    "hunks": 1
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_v6_ha_snapshot_repair_tests.rs",
+    "name": "service_native_v6_ha_snapshot_repair_tests.rs",
+    "before": {
+      "blob": "26897662a968abfc839fea5774c5b2405e8b63e9",
+      "bytes": 23398,
+      "sha256": "162d02f64aa177eaccc8e9751a404827ee58dee2ea038fd46d17687b8f4fd538"
+    },
+    "after": {
+      "blob": "d4b85c648162480a0ebd1900624a33d063c11eb7",
+      "bytes": 23538,
+      "sha256": "0cbc4d8e5855cd6726d6673b860ae514c9042f3788f8016e0fcb9403c0445814"
+    },
+    "forward": {
+      "blob": "920942940dbe70ef8f0aed244ca4074a2b3a346b",
+      "bytes": 521,
+      "sha256": "c909c4bf129ef19e579acd70537865a7be33924c953bc61b56e1d9b075608349"
+    },
+    "reverse": {
+      "blob": "0dba9b2cbaa5b095e4dab520e8d4fcd5fb83c50c",
+      "bytes": 521,
+      "sha256": "75ba968d26cf0790337275105d1539273e030b2314234ca227c00393e9e5f75f"
+    },
+    "anchor": "        NativeSnapshotAdmission::Redirect(_) => Err(\"repair leader unexpectedly redirected\".into()),\n",
+    "insertion": "        #[cfg(feature = \"native-v6-ha\")]\n        NativeSnapshotAdmission::Forward(_) => Err(\"repair leader unexpectedly forwarded\".into()),\n",
+    "hunks": 1
+  },
+  {
+    "path": "crates/heptabao-server/src/service_snapshot_lossless_export_tests.rs",
+    "name": "service_snapshot_lossless_export_tests.rs",
+    "before": {
+      "blob": "815cc88c81df0721e7016bf04a733a9ee7da8c96",
+      "bytes": 13326,
+      "sha256": "9589c8d8e157a411515ee38389f4d2a17bfc35668f0defd88aca248be35c2bc7"
+    },
+    "after": {
+      "blob": "dfe6f5e80709418b69bb1b33fee48dadb9ed6aa1",
+      "bytes": 13457,
+      "sha256": "9f222edca204bd1b325d1d520ee927338d587d14f5df95fd085017f9943d5072"
+    },
+    "forward": {
+      "blob": "a44faf765d4545981adf654e6a5160e3417f8715",
+      "bytes": 460,
+      "sha256": "7538ce20777ab9e8475c66ff704ca92d06e34d3194a5fc46b4f3ba5105303eb2"
+    },
+    "reverse": {
+      "blob": "500c717406cbd495be52971e9e36d61291a89890",
+      "bytes": 460,
+      "sha256": "20f928d0ad8997aee7e4b668b58c262963307c075e353b9fb1e05cca4c3384a8"
+    },
+    "anchor": "        NativeSnapshotAdmission::Redirect(_) => Err(\"standalone export redirected\".into()),\n",
+    "insertion": "        #[cfg(feature = \"native-v6-ha\")]\n        NativeSnapshotAdmission::Forward(_) => Err(\"standalone export forwarded\".into()),\n",
+    "hunks": 1
+  },
+  {
+    "path": "crates/heptabao-server/src/service_snapshot_v6_tests.rs",
+    "name": "service_snapshot_v6_tests.rs",
+    "before": {
+      "blob": "28d00dcb4193d725c9d9cb9a36f6e52518be0404",
+      "bytes": 17819,
+      "sha256": "5a10c1c4d46e38d8f49a029445408ecda5b12fc2754ea8af5d8389f4511fcc32"
+    },
+    "after": {
+      "blob": "2f6c5383d4303a60d15801bd348f3f337fbe144b",
+      "bytes": 17988,
+      "sha256": "293a7c730a279633b32054bde007be59275370a8c2b6d56f0e5d07ba4b07d769"
+    },
+    "forward": {
+      "blob": "2a591850ac4a13a73f149324c668b88531c926c3",
+      "bytes": 472,
+      "sha256": "bf60d4aaf6c3ed3414e3306cf22fe755b4d484595cf756c175577ec2b95bcd97"
+    },
+    "reverse": {
+      "blob": "7e5be002418456b28d3e0d6e85b72534f58691ae",
+      "bytes": 472,
+      "sha256": "9f1a2120b30a205b49fdcdb38767b94ba52c1ec878658a224357cc42f407792d"
+    },
+    "anchor": "        NativeSnapshotAdmission::Redirect(_) => {\n            Err(\"single-node fixture unexpectedly redirected\".into())\n        }\n",
+    "insertion": "        #[cfg(feature = \"native-v6-ha\")]\n        NativeSnapshotAdmission::Forward(_) => {\n            Err(\"single-node fixture unexpectedly forwarded\".into())\n        }\n",
+    "hunks": 1
+  }
+]

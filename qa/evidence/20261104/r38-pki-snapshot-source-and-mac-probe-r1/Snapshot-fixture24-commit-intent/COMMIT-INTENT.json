@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.root-source-commit-intent.v1",
+  "request": {
+    "repository_full_name": "TrillionniumFoundation/HeptaBao",
+    "parent_sha": "8c95fb0a8b2f61933a09b04986df2bafc9e7095c",
+    "tree_sha": "9c800e97a2527e7f01c3a4b0be594e6762f9581e",
+    "message": "test: reject snapshot forwarding in local and selected-leader fixtures\n\nAdd 24 feature-gated Forward rejection arms to existing exhaustive matches. Preserve every prior assertion, deadline and production HTTP callback. Source only: unformatted, uncompiled; original CLI failures and Service audit regression gates remain open."
+  },
+  "tree_intent": "dc53d52ab7a1bcbfc621536c8e9a84d1427fee23",
+  "tree_sdk": "be04320fa059865da322e2fadaf87d65779a7bc6",
+  "layers": [
+    {
+      "path": "",
+      "sha": "9c800e97a2527e7f01c3a4b0be594e6762f9581e",
+      "entries": 26
+    },
+    {
+      "path": "crates",
+      "sha": "78c6712bcb5fd13519c250f71b24410e41b0c56e",
+      "entries": 49
+    },
+    {
+      "path": "crates/heptabao-server",
+      "sha": "4162114750c08242a9187321844a91bef445083f",
+      "entries": 8
+    },
+    {
+      "path": "crates/heptabao-server/src",
+      "sha": "697aa422bae90a60cfd17c4531ca78cb9bb35307",
+      "entries": 790
+    }
+  ],
+  "not_yet_called": true,
+  "no_replay": true
+}

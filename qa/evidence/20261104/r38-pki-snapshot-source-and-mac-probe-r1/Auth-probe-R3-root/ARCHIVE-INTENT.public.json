@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "R38-root-Mac-home-T5-R3-original-entry-failure",
+  "records": [
+    {
+      "name": "root-qualification.json",
+      "blob": "03fb9f788ff6ffd5e538c5ea9c99009eb12e60cb",
+      "bytes": 6806,
+      "sha256": "897696797bca33eb1160ed124876b457986a9dd32191f336362ec857c5b18a3f"
+    },
+    {
+      "name": "root-verifier.js",
+      "blob": "a02e7f9fd5541a31c6bad8010e7e3ce5602b46c9",
+      "bytes": 8793,
+      "sha256": "6bdf6176d212edafa1205e035f4b906b8086b1bdad98dce46a6b05fae1ea5739"
+    },
+    {
+      "name": "original-journal-verifier.unchanged.js",
+      "blob": "3c0ef26c0193c7e39724add83657466d88f560bb",
+      "bytes": 3404,
+      "sha256": "600711669602a25a77f41b713b51409130853ba1918af398aea928c01c5c6e01"
+    }
+  ],
+  "expected_data_tree": "b16f52b2f5fe1c3e9ad901387904562d2697ce9f",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

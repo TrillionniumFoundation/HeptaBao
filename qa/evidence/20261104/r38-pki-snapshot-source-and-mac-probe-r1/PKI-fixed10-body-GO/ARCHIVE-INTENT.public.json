@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "R38-root-PKI-fixed10-report-body-GO",
+  "records": [
+    {
+      "name": "GO.json",
+      "blob": "62481093ff3a3c72829d1352e991b33380601ea8",
+      "bytes": 4011,
+      "sha256": "cdcc5326974060445cc8089e8c0272162dc706c188680f5fed34e18242a87d98"
+    },
+    {
+      "name": "source-review.json",
+      "blob": "54e53c79516a699ba89028acab1fc89ff5787b9a",
+      "bytes": 5465,
+      "sha256": "875c27b750aeb82e1e48119551702cfd438125c45673f398dd6da65c2b062776"
+    },
+    {
+      "name": "source-verifier.js",
+      "blob": "02a36ad044b7dbce541374e745cbf1df9e08993b",
+      "bytes": 7026,
+      "sha256": "97c5fe4be52cd8040b69331bc40ed167eece5a33857ac074f8b810ca7de2f520"
+    },
+    {
+      "name": "info-actual-qualification.json",
+      "blob": "a50905356cf029c30649ad4f45aa4b689062fde2",
+      "bytes": 5178,
+      "sha256": "7606d921e9d21022844c2d44cc589a8c29780c9205ef25bdf4b6fef69e812e10"
+    },
+    {
+      "name": "info-actual-verifier.js",
+      "blob": "1c3c448961158c5b67377ef87f1d30659d3f7c6c",
+      "bytes": 4668,
+      "sha256": "3e919eccf586887f010085c2234d62a534afcf750018ea7bb60431856a31e498"
+    }
+  ],
+  "expected_data_tree": "162732d2d345a783faa59b93bb466763a1b99e1e",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

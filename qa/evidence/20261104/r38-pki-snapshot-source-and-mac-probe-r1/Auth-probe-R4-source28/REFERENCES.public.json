@@ -1,0 +1,127 @@
+{
+  "schema": "heptabao.public-home-t5-probe.r4-source-references.v1",
+  "baseR3Tree": "c680477cae4fc6dd01077b01de6c349e9fea3055",
+  "baseR3RootSource": "74e6780ff67e5ce2f8871c012e5cb71e8af5bf9a",
+  "basePeer": "d4ee22f210c05ee6d34b666892a29dc9aac63a43",
+  "R3ActualTree": "8b74de099687e31d3dfd89ec9e878de142c06962",
+  "R3ActualRootQualification": "03fb9f788ff6ffd5e538c5ea9c99009eb12e60cb",
+  "selfActualTree": "3bb9602e3ecf4648fa2f5f1cddfa6a2dbcb4966d",
+  "before": {
+    "constants": {
+      "blob": "0b3ee15bac56be925dca4647ac0e5201ffc6d8ef",
+      "bytes": 3157,
+      "sha256": "69f55bc24f529cf33e89562a3fc84412808e046916b352e93c9dc65260fe4e7e"
+    },
+    "common": {
+      "blob": "f1c2ecbe3857e8144f48225adbd12b199284f0ec",
+      "bytes": 15107,
+      "sha256": "0f25ec43e70cba94783d3a3171b265f5b0eb809c46346e727793b2829c4bfb43"
+    },
+    "controller": {
+      "blob": "bf69252fe9a2431ccf09740d5e5bed7eb6231248",
+      "bytes": 168464,
+      "sha256": "8cfa410c8fbe2234191b84b70d5d8b04f9aba01e7f4b5ae2c0d76ecfcd3865cb"
+    },
+    "child": {
+      "blob": "2649636d559f401a5068de2b92ed3bf7d6db7d72",
+      "bytes": 36358,
+      "sha256": "d96a769dbfc630237d6481e698704fdcc9fb0a315ae5f9e6c33ab5b976401873"
+    },
+    "request": {
+      "blob": "62be5766699e67a41ab9d6072db8aa8e35c8abbb",
+      "bytes": 170588,
+      "sha256": "af2247dd1a780773aa754f90db1c6a1aa8f6d1965eb1792036177916d347ee17"
+    },
+    "journal": {
+      "blob": "4d5e2545cf1bed8f1951103a543529545026a374",
+      "bytes": 19039,
+      "sha256": "d049e8818317d1a1a319de940bcce360c9a31d9a1ae341b3fa943adef08863ae"
+    },
+    "contract": {
+      "blob": "67cfb1cd22878d7a5b1fb340025d4b3784540ada",
+      "bytes": 16328,
+      "sha256": "cd772b1e990b35a2e7f7756e0b9db77d87f3fb55ac791383c6878c76e4166015"
+    }
+  },
+  "after": {
+    "constants": {
+      "blob": "663602cc45be9806bfc60b46e26a4d10d054f8e5",
+      "bytes": 3308,
+      "sha256": "330c327731a79eeceea0f8b572670358dc41bf43e937a445ce900da69c51862f"
+    },
+    "common": {
+      "blob": "16bc4fc1ea3359d6ac8c496d250b634b8a54a2e4",
+      "bytes": 15120,
+      "sha256": "b3c5663af414ab0d954eae244ef24090fe37b9e320e2003e72bbccf0c65f6039"
+    },
+    "controller": {
+      "blob": "fb453c023c1de1299e1875078ae8720b20a441de",
+      "bytes": 168844,
+      "sha256": "87ddc49599abfd6b09b023287fbeefe1e0c833c1b806cf9c753755f706eaaa6c"
+    },
+    "child": {
+      "blob": "62a75849b5eb5568564a12ee5e0f00cea95f56e5",
+      "bytes": 36522,
+      "sha256": "b4f52562e8e861a30bfd942399ec2229cbb52ffddd06240950b99d746686cd00"
+    },
+    "request": {
+      "blob": "158c70818b4cab3e39f87c31a5075a35e25dab6c",
+      "bytes": 170971,
+      "sha256": "34115f596b8942341d1eb6f89fd86aa2371bc44fba31ca53d1c51e280d1828ee"
+    },
+    "journal": {
+      "blob": "03e72b0bd32b4fe9219b98b0c6d4dab57182bead",
+      "bytes": 19039,
+      "sha256": "9bb9f76d50294f781fb6c793bd522790d6318d1ae65682963268f1d67a73620b"
+    },
+    "contract": {
+      "blob": "9eafd533930c00a0edda564d5f82cd6112e2ce91",
+      "bytes": 19309,
+      "sha256": "5d0b75f1c805bb0dcbf6d7e42225c97f7a815f5c0113079b8017424fb1d831eb"
+    },
+    "constantsDiff": {
+      "blob": "ddd20368f2b6b5ceac8fa57ba5f11921d63fb91c",
+      "bytes": 554,
+      "sha256": "30668c221596e8977ee03509f8dfd903f731d29d913fc1191c5406cd31a78379"
+    },
+    "constantsReverse": {
+      "blob": "e06e25024e6cfab805554a635281682bb6a00fcd",
+      "bytes": 554,
+      "sha256": "56776a66a976055e15fe3e9ab038b42a6e1946fe34dc01b3571f4742e4a1e26d"
+    },
+    "commonDiff": {
+      "blob": "aa6d4d11bd218bdf53eabaaf1a0b17c4d45633e2",
+      "bytes": 465,
+      "sha256": "44197b5a75a88159219fe84f9e480b69ba69b26166ade82351c6866ab35ae540"
+    },
+    "commonReverse": {
+      "blob": "f8ab42fc6bcc15a184d72e9b8daaf09c0984ded5",
+      "bytes": 465,
+      "sha256": "6c429c69058e2e9dd4e1a53c863fe9338fa326ca923b3d3218f5d4481e6e1288"
+    },
+    "journalDiff": {
+      "blob": "2b9528e6e2477c07a17c19ea270be671d658ef5e",
+      "bytes": 1295,
+      "sha256": "cc28bd94b53fd2b042ce3412fa5f2efe4920401887e8253f13b7d7ab3f539b4d"
+    },
+    "journalReverse": {
+      "blob": "7140b444db230882fa24d3174aa5df562e46b468",
+      "bytes": 1295,
+      "sha256": "5f515f684ee16c50366d9f3dc837b3da87361ae325002c3856d0e0c35a503894"
+    }
+  },
+  "selfStdout": {
+    "blob": "4e28d3301fa4409b06efe23bd9834779173aaa71",
+    "bytes": 2453,
+    "sha256": "66b796413137843516dcd2398c8827036a5f312e65353e653b86df2456237d1d"
+  },
+  "selfAuthority": {
+    "blob": "525c34e56bad9a53da506f61b22e9ebbbb7bba32",
+    "bytes": 731,
+    "sha256": "c59553b7e8327a20de0696d184061b05a2628f04439e7048feb7edb4fb5b7b47"
+  },
+  "verifierInterface": "verifyKernelImageR4({before,after,selfRaw,pin:gitBlobMeta,strictApply:strictApplySource,unbase64:unb64,decodeUtf8:utf8Text}); before/after exact logical keys and hashes listed here.",
+  "freshObservationOnly": true,
+  "originalR3IndividualPredicateValuesRemainUnobserved": true,
+  "RuntimeGO": false
+}

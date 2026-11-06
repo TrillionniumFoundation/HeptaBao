@@ -1,0 +1,615 @@
+{
+  "schema": "heptabao.authbus-probe-r3.independent-source-peer.v1",
+  "sourceTree": "c680477cae4fc6dd01077b01de6c349e9fea3055",
+  "checkCount": 150,
+  "allPassed": true,
+  "checks": [
+    {
+      "name": "complete R3 tree",
+      "pass": true
+    },
+    {
+      "name": "whole leaf CONTRACT.r2.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole leaf CONTRACT.r3.json",
+      "pass": true
+    },
+    {
+      "name": "whole leaf MANIFEST.public.json",
+      "pass": true
+    },
+    {
+      "name": "whole leaf R2-manifest.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole leaf R2-review.original.md",
+      "pass": true
+    },
+    {
+      "name": "whole leaf R2-source-checks.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole leaf REFERENCES.public.json",
+      "pass": true
+    },
+    {
+      "name": "whole leaf REVIEW.md",
+      "pass": true
+    },
+    {
+      "name": "whole leaf binding-checks.actual.json",
+      "pass": true
+    },
+    {
+      "name": "whole leaf binding-verifier.js",
+      "pass": true
+    },
+    {
+      "name": "whole leaf controller-core.r1-r3.diff",
+      "pass": true
+    },
+    {
+      "name": "whole leaf controller-core.r2-r3.diff",
+      "pass": true
+    },
+    {
+      "name": "whole leaf controller-core.r2.original.py",
+      "pass": true
+    },
+    {
+      "name": "whole leaf controller-core.r3-r1.diff",
+      "pass": true
+    },
+    {
+      "name": "whole leaf controller-core.r3-r2.diff",
+      "pass": true
+    },
+    {
+      "name": "whole leaf controller-core.r3.py",
+      "pass": true
+    },
+    {
+      "name": "whole leaf controller.r3.py",
+      "pass": true
+    },
+    {
+      "name": "whole leaf fixed-io.r1-r3.diff",
+      "pass": true
+    },
+    {
+      "name": "whole leaf fixed-io.r2-r3.diff",
+      "pass": true
+    },
+    {
+      "name": "whole leaf fixed-io.r2.original.py",
+      "pass": true
+    },
+    {
+      "name": "whole leaf fixed-io.r3-r1.diff",
+      "pass": true
+    },
+    {
+      "name": "whole leaf fixed-io.r3-r2.diff",
+      "pass": true
+    },
+    {
+      "name": "whole leaf fixed-io.r3.py",
+      "pass": true
+    },
+    {
+      "name": "whole leaf journal.r2-r3.diff",
+      "pass": true
+    },
+    {
+      "name": "whole leaf journal.r2.original.js",
+      "pass": true
+    },
+    {
+      "name": "whole leaf journal.r3-r2.diff",
+      "pass": true
+    },
+    {
+      "name": "whole leaf journal.r3.js",
+      "pass": true
+    },
+    {
+      "name": "whole leaf managed-probe.r3.py",
+      "pass": true
+    },
+    {
+      "name": "whole leaf pure-helpers.original.js",
+      "pass": true
+    },
+    {
+      "name": "whole leaf request.r3.json",
+      "pass": true
+    },
+    {
+      "name": "whole leaf strict-diff.helper.js",
+      "pass": true
+    },
+    {
+      "name": "manifest pin binding-checks.actual.json",
+      "pass": true
+    },
+    {
+      "name": "manifest pin binding-verifier.js",
+      "pass": true
+    },
+    {
+      "name": "manifest pin CONTRACT.r2.original.json",
+      "pass": true
+    },
+    {
+      "name": "manifest pin CONTRACT.r3.json",
+      "pass": true
+    },
+    {
+      "name": "manifest pin controller-core.r1-r3.diff",
+      "pass": true
+    },
+    {
+      "name": "manifest pin controller-core.r2-r3.diff",
+      "pass": true
+    },
+    {
+      "name": "manifest pin controller-core.r2.original.py",
+      "pass": true
+    },
+    {
+      "name": "manifest pin controller-core.r3-r1.diff",
+      "pass": true
+    },
+    {
+      "name": "manifest pin controller-core.r3-r2.diff",
+      "pass": true
+    },
+    {
+      "name": "manifest pin controller-core.r3.py",
+      "pass": true
+    },
+    {
+      "name": "manifest pin controller.r3.py",
+      "pass": true
+    },
+    {
+      "name": "manifest pin fixed-io.r1-r3.diff",
+      "pass": true
+    },
+    {
+      "name": "manifest pin fixed-io.r2-r3.diff",
+      "pass": true
+    },
+    {
+      "name": "manifest pin fixed-io.r2.original.py",
+      "pass": true
+    },
+    {
+      "name": "manifest pin fixed-io.r3-r1.diff",
+      "pass": true
+    },
+    {
+      "name": "manifest pin fixed-io.r3-r2.diff",
+      "pass": true
+    },
+    {
+      "name": "manifest pin fixed-io.r3.py",
+      "pass": true
+    },
+    {
+      "name": "manifest pin journal.r2-r3.diff",
+      "pass": true
+    },
+    {
+      "name": "manifest pin journal.r2.original.js",
+      "pass": true
+    },
+    {
+      "name": "manifest pin journal.r3-r2.diff",
+      "pass": true
+    },
+    {
+      "name": "manifest pin journal.r3.js",
+      "pass": true
+    },
+    {
+      "name": "manifest pin managed-probe.r3.py",
+      "pass": true
+    },
+    {
+      "name": "manifest pin pure-helpers.original.js",
+      "pass": true
+    },
+    {
+      "name": "manifest pin R2-manifest.original.json",
+      "pass": true
+    },
+    {
+      "name": "manifest pin R2-review.original.md",
+      "pass": true
+    },
+    {
+      "name": "manifest pin R2-source-checks.original.json",
+      "pass": true
+    },
+    {
+      "name": "manifest pin REFERENCES.public.json",
+      "pass": true
+    },
+    {
+      "name": "manifest pin request.r3.json",
+      "pass": true
+    },
+    {
+      "name": "manifest pin REVIEW.md",
+      "pass": true
+    },
+    {
+      "name": "manifest pin strict-diff.helper.js",
+      "pass": true
+    },
+    {
+      "name": "manifest covers all other leaves",
+      "pass": true
+    },
+    {
+      "name": "R1-R2 FixedIO strict forward",
+      "pass": true
+    },
+    {
+      "name": "R1-R2 FixedIO strict reverse",
+      "pass": true
+    },
+    {
+      "name": "R1-R2 FixedIO hunk count",
+      "pass": true
+    },
+    {
+      "name": "R1-R2 parent strict forward",
+      "pass": true
+    },
+    {
+      "name": "R1-R2 parent strict reverse",
+      "pass": true
+    },
+    {
+      "name": "R1-R2 parent hunk count",
+      "pass": true
+    },
+    {
+      "name": "R2-R3 FixedIO strict forward",
+      "pass": true
+    },
+    {
+      "name": "R2-R3 FixedIO strict reverse",
+      "pass": true
+    },
+    {
+      "name": "R2-R3 FixedIO hunk count",
+      "pass": true
+    },
+    {
+      "name": "R2-R3 parent strict forward",
+      "pass": true
+    },
+    {
+      "name": "R2-R3 parent strict reverse",
+      "pass": true
+    },
+    {
+      "name": "R2-R3 parent hunk count",
+      "pass": true
+    },
+    {
+      "name": "R2-R3 journal strict forward",
+      "pass": true
+    },
+    {
+      "name": "R2-R3 journal strict reverse",
+      "pass": true
+    },
+    {
+      "name": "R2-R3 journal hunk count",
+      "pass": true
+    },
+    {
+      "name": "R1-R3 FixedIO strict forward",
+      "pass": true
+    },
+    {
+      "name": "R1-R3 FixedIO strict reverse",
+      "pass": true
+    },
+    {
+      "name": "R1-R3 FixedIO hunk count",
+      "pass": true
+    },
+    {
+      "name": "R1-R3 parent strict forward",
+      "pass": true
+    },
+    {
+      "name": "R1-R3 parent strict reverse",
+      "pass": true
+    },
+    {
+      "name": "R1-R3 parent hunk count",
+      "pass": true
+    },
+    {
+      "name": "one os.open expression",
+      "pass": true
+    },
+    {
+      "name": "critical before ledger and acquisition",
+      "pass": true
+    },
+    {
+      "name": "only syscall in OSError catch",
+      "pass": true
+    },
+    {
+      "name": "known no-return accounting separated",
+      "pass": true
+    },
+    {
+      "name": "registration completes before pending cleared",
+      "pass": true
+    },
+    {
+      "name": "registration exception explicit unknown",
+      "pass": true
+    },
+    {
+      "name": "no blind close or retry in acquire",
+      "pass": true
+    },
+    {
+      "name": "same64 cap also limits attempts",
+      "pass": true
+    },
+    {
+      "name": "public closure ledger['attempts'] == ledger['knownNoReturnErrors'] + ledger['registered']",
+      "pass": true
+    },
+    {
+      "name": "public closure ledger['registered'] == len(self.rows)",
+      "pass": true
+    },
+    {
+      "name": "public closure ledger['pending'] == 0",
+      "pass": true
+    },
+    {
+      "name": "public closure ledger['registrationUnknown'] is False",
+      "pass": true
+    },
+    {
+      "name": "public closure 'allClosed':accounted and all(r['closed'] for r in self.rows) and not self.close_errors",
+      "pass": true
+    },
+    {
+      "name": "public closure 'openLedger':dict(ledger)",
+      "pass": true
+    },
+    {
+      "name": "complete reverse close loop protected",
+      "pass": true
+    },
+    {
+      "name": "old FixedIO method unchanged close_one",
+      "pass": true
+    },
+    {
+      "name": "old FixedIO method unchanged read",
+      "pass": true
+    },
+    {
+      "name": "old FixedIO method unchanged write",
+      "pass": true
+    },
+    {
+      "name": "old FixedIO method unchanged open_dir",
+      "pass": true
+    },
+    {
+      "name": "old FixedIO method unchanged check_dir",
+      "pass": true
+    },
+    {
+      "name": "old FixedIO method unchanged check_all",
+      "pass": true
+    },
+    {
+      "name": "old FixedIO method unchanged absent",
+      "pass": true
+    },
+    {
+      "name": "old FixedIO method unchanged mkdir",
+      "pass": true
+    },
+    {
+      "name": "old FixedIO method unchanged present_marker",
+      "pass": true
+    },
+    {
+      "name": "old FixedIO method unchanged file_shape",
+      "pass": true
+    },
+    {
+      "name": "old FixedIO method unchanged meta",
+      "pass": true
+    },
+    {
+      "name": "parent child ledger gate 'registrationUnknown'",
+      "pass": true
+    },
+    {
+      "name": "parent child ledger gate ledger['pending'] == 0",
+      "pass": true
+    },
+    {
+      "name": "parent child ledger gate ledger['attempts'] == ledger['knownNoReturnErrors'] + ledger['registered']",
+      "pass": true
+    },
+    {
+      "name": "parent child ledger gate ledger['registered'] == len(value['fdRows']) and value['allClosed'] is True",
+      "pass": true
+    },
+    {
+      "name": "parent child ledger gate 'child_open_ledger_complete'",
+      "pass": true
+    },
+    {
+      "name": "guard flags initialized false",
+      "pass": true
+    },
+    {
+      "name": "guard init armed before __new__",
+      "pass": true
+    },
+    {
+      "name": "guard init complete only after normal return",
+      "pass": true
+    },
+    {
+      "name": "guard true assignments unique",
+      "pass": true
+    },
+    {
+      "name": "volume closure requires complete construction",
+      "pass": true
+    },
+    {
+      "name": "volume qualification requires complete construction",
+      "pass": true
+    },
+    {
+      "name": "construction state publicly projected",
+      "pass": true
+    },
+    {
+      "name": "volume false enters unknown",
+      "pass": true
+    },
+    {
+      "name": "original partial-row guard close unchanged",
+      "pass": true
+    },
+    {
+      "name": "unique replacement 19c9b321dd4c3e9b3e85dc8607bb2d1f3e997f11",
+      "pass": true
+    },
+    {
+      "name": "child exact R2 with common substituted",
+      "pass": true
+    },
+    {
+      "name": "child business/main unchanged",
+      "pass": true
+    },
+    {
+      "name": "decoded child complete exact",
+      "pass": true
+    },
+    {
+      "name": "child bytes and SHA literals exact",
+      "pass": true
+    },
+    {
+      "name": "unique replacement 19c9b321dd4c3e9b3e85dc8607bb2d1f3e997f11",
+      "pass": true
+    },
+    {
+      "name": "unique replacement 1c9ebc874ac92c41cdc9de3bf27cb9e5e55bc7c1",
+      "pass": true
+    },
+    {
+      "name": "unique replacement 83dd262896be1684378ee55cf0c6788e1b7f998f",
+      "pass": true
+    },
+    {
+      "name": "unique replacement f5ececea7269ef2f6ff43e2bb3bca50a8a999010",
+      "pass": true
+    },
+    {
+      "name": "unique replacement 6c86a7d3376d9a15a677de54ee544bfc48959003",
+      "pass": true
+    },
+    {
+      "name": "whole controller exactly R2 three derived literals plus two reviewed sources",
+      "pass": true
+    },
+    {
+      "name": "all original embedded helpers byte identical",
+      "pass": true
+    },
+    {
+      "name": "original anchor literal ANCHOR_BASE64",
+      "pass": true
+    },
+    {
+      "name": "original anchor literal ANCHOR_SHA",
+      "pass": true
+    },
+    {
+      "name": "request stdin is whole controller",
+      "pass": true
+    },
+    {
+      "name": "request exact R3 key",
+      "pass": true
+    },
+    {
+      "name": "all other typed process_start arguments unchanged",
+      "pass": true
+    },
+    {
+      "name": "request outer60 and exact mac scope",
+      "pass": true
+    },
+    {
+      "name": "journal exact request pin",
+      "pass": true
+    },
+    {
+      "name": "journal exact R3 slot",
+      "pass": true
+    },
+    {
+      "name": "journal prefix derives controller SHA",
+      "pass": true
+    },
+    {
+      "name": "original budget literal 'sharedSeconds':45",
+      "pass": true
+    },
+    {
+      "name": "original budget literal 'outerSeconds':60",
+      "pass": true
+    },
+    {
+      "name": "original budget literal 'childAbsoluteWindowSeconds':25",
+      "pass": true
+    },
+    {
+      "name": "original budget literal 'commandAdmissionEndsAtSecond':35",
+      "pass": true
+    },
+    {
+      "name": "original budget literal 'originalDirectHelperStopCaps':{'term':1,'wait':5,'group':3,'ps':4}",
+      "pass": true
+    }
+  ],
+  "scope": "SOURCE-only fixes and exact carrier binding; no candidate execution or new host observations",
+  "originalSourceChecksR1": 73,
+  "originalPeerChecksR1": 120,
+  "originalR2ChecksNotRerun": 58,
+  "authorR3ChecksNotRerun": 36,
+  "runtimeCalls": 0,
+  "pythonOrComponentExecution": false
+}

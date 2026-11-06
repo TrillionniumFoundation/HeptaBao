@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r38-Mac-R4-failure-and-PKI33b-terminal-root",
+  "records": [
+    {
+      "name": "ROOT-MAC-R4-FAILURE-QUALIFICATION.json",
+      "blob": "3b0956905839b1271f5e416bdf321b97492f3300",
+      "bytes": 9807,
+      "sha256": "0f9d53ad1bd285f156ea2eb2855897e2708a8916a286f409f95d2a46f242142f"
+    },
+    {
+      "name": "ROOT-PKI33B-TERMINAL-QUALIFICATION.json",
+      "blob": "0a1dba5b1f12c51489f831eebc653767e2e1e866",
+      "bytes": 5513,
+      "sha256": "c412cdfb99f4508de63835cc7d389de2b49d63b5c4bd27c7f19d9d7129d0ef88"
+    },
+    {
+      "name": "ROOT-ORIGINAL-TERMINAL-VERIFIERS.js",
+      "blob": "6d1998bddc887966608503bdef5aba5294eb5776",
+      "bytes": 14077,
+      "sha256": "00b55968a2d1f9a06cd33be93ba562ccfc15713ca6ab5fe74ed9d385b427a5d3"
+    },
+    {
+      "name": "ORIGINAL-JOURNAL-VERIFIER.js",
+      "blob": "3c0ef26c0193c7e39724add83657466d88f560bb",
+      "bytes": 3404,
+      "sha256": "600711669602a25a77f41b713b51409130853ba1918af398aea928c01c5c6e01"
+    },
+    {
+      "name": "CORRECT-NATIVE-PROCESS-BINDING.js",
+      "blob": "82e81aef13d858c865ea05dd762056553a3d1cc6",
+      "bytes": 659,
+      "sha256": "e98c61fceb6eecdd55e6244ad43939320114809163afee67a6b8657235dae042"
+    }
+  ],
+  "expected_data_tree": "869c540e5b54c94b72cd8df6e3ba46ddc5b7f42e",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

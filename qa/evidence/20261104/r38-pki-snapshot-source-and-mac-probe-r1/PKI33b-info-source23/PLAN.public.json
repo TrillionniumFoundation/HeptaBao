@@ -1,0 +1,101 @@
+{
+  "schema": "heptabao.jwt-pki-finalstage-result-info-source.v1",
+  "status": "SOURCE_ONLY_NO_NATIVE_GO",
+  "existingStage": {
+    "commit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+    "tree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+    "job": "1a1afcbafab-fc05-6bb0",
+    "host": "rog",
+    "slot": "jwt_pki_33b814c7_rog_source_gitfirst_r1",
+    "fullOriginalChain": "fb5c5087ffe2c1b1fa3e62f6145af079eedb251b",
+    "release": {
+      "blob": "901df3540232651c6716b22010efeb99996d4388",
+      "bytes": 4038,
+      "sha256": "00916548af2d0c0e2e984af760e3319d9e8366fb1a9b322ea82456b692671746"
+    },
+    "summaryBytes": 374
+  },
+  "base": {
+    "journal": {
+      "blob": "5251b35f820ade2765d2266616b13d1ef1effc48",
+      "bytes": 23872,
+      "sha256": "32f6775ced13cc9e0c614c40e70dd762c25e76340d13bc3e3cdfddac2b342711"
+    },
+    "originalMetadataGO": {
+      "blob": "6f727e72eccbfb0ed29b14e445b903610452da70",
+      "bytes": 3983,
+      "sha256": "a6de14f3678984839d3f80a955b628b2c04d9e1e08888d8c495e91546609ada4"
+    },
+    "candidateWasAlreadyExecuted": false
+  },
+  "proposal": {
+    "journal": {
+      "blob": "696e07c763ccefaa375e947ed84b2433a1d0f089",
+      "bytes": 23888,
+      "sha256": "c8a3f15c9073ddc34fa247ce4bd2cd1342023bf9136f9235731ee08e571b752d"
+    },
+    "exactRequest": {
+      "blob": "538b045d46c03cd5787a4a80d41595345232ae47",
+      "bytes": 309,
+      "sha256": "ca7c34ce798a1155e6b49a989f5f792c9aaaf2a4db568f70b8ab999d48b341b2"
+    },
+    "scope": "stage_result_file_info_only",
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1/control/stage-result.public.json",
+    "metadataExpected": {
+      "platform": "linux",
+      "permissionMode": 384,
+      "fullMode": 33152,
+      "uid": 1000,
+      "gid": 1000,
+      "links": 1,
+      "minimumBytes": 1,
+      "maximumBytes": 150000,
+      "actualSize": null,
+      "actualSHA256": null,
+      "actualVersion": null,
+      "actualFull9": null
+    },
+    "allowedStarts": 1,
+    "immutablePageBytes": 8192,
+    "nativePayloadLimit": 1048576
+  },
+  "changes": {
+    "literalBindings": 10,
+    "hunks": 3,
+    "wholeOriginalFunctions": 12,
+    "functionInventory": 14,
+    "changedExistingFunctionNames": [
+      "gfAuthorizeStageResultInfoOnly",
+      "gfValidateRequest"
+    ],
+    "allBehaviorOutsideExplicitBindingsUnchanged": true
+  },
+  "sequence": [
+    "Root independently reviews SOURCE and provides separate whole exact metadata GO.",
+    "Attach existing closed slot via authorize_stage_result_info; do not initialize or repeat process_start.",
+    "Prepare exact operation_start file_info request and intent/armed into Git whole, then separate model boundary.",
+    "Invoke once, store complete SDK and whole external archive before isError/native parsing.",
+    "Accept immutable original operation ID; sequential same-ID status and 8192-byte original pages; retain any UNKNOWN and stop new admission.",
+    "Close and whole archive the original payload; validate Linux metadata, whole SHA and decimal version/full9. Only then propose exact body SOURCE from actual pins."
+  ],
+  "scopeLimits": {
+    "binaryReadAuthorized": false,
+    "formatterAuthorized": false,
+    "CargoAuthorized": false,
+    "controlPublicationAuthorized": false,
+    "newProcessAuthorized": false,
+    "newRuntimeCallsSubmitted": 0,
+    "contextResetAllowed": false,
+    "bodyPinsMayNotBeInferredFromSummary": true
+  },
+  "verification": {
+    "verifier": {
+      "blob": "30f8382ad8ce580619a186cbaab83c751de7d36c",
+      "bytes": 5939,
+      "sha256": "c1e2182e1457ca0905a9ded8d3dbde8f5058ddc7a4e724661b271ef1e09caf72"
+    },
+    "checks": 47,
+    "executed": "pure V8 source/data only; candidate not invoked",
+    "productCases": 0
+  }
+}

@@ -1,0 +1,11 @@
+--- a/crates/heptabao-server/src/service_native_ssh_archive_tests.rs
++++ b/crates/heptabao-server/src/service_native_ssh_archive_tests.rs
+@@ -16,6 +16,8 @@
+             Err(format!("actual SSH archive admission status {}", response.status).into())
+         }
+         NativeSnapshotAdmission::Redirect(_) => Err("File snapshot unexpectedly redirected".into()),
++        #[cfg(feature = "native-v6-ha")]
++        NativeSnapshotAdmission::Forward(_) => Err("File snapshot unexpectedly forwarded".into()),
+     }
+ }
+ fn download(f: &mut Fixture) -> TestResult<Zeroizing<Vec<u8>>> {

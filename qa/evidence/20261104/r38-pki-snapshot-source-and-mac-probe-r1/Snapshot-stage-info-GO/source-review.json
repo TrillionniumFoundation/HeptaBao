@@ -1,0 +1,158 @@
+{
+  "schema": "heptabao.root-source-review.snapshot8c95-stage-report-info.v1",
+  "status": "SOURCE_REVIEWED_FOR_SEPARATE_EXACT_INFO_GO",
+  "checks": [
+    {
+      "name": "whole19_119701",
+      "passed": true
+    },
+    {
+      "name": "original_stage_root_qualification_exact",
+      "passed": true
+    },
+    {
+      "name": "existing_journal_base_and_new_source_exact",
+      "passed": true
+    },
+    {
+      "name": "six_hunks_whole_forward_reverse",
+      "passed": true
+    },
+    {
+      "name": "nine_reference_binding_edits",
+      "passed": true
+    },
+    {
+      "name": "unique_reference_binding_0",
+      "passed": true
+    },
+    {
+      "name": "unique_reference_binding_1",
+      "passed": true
+    },
+    {
+      "name": "unique_reference_binding_2",
+      "passed": true
+    },
+    {
+      "name": "unique_reference_binding_3",
+      "passed": true
+    },
+    {
+      "name": "unique_reference_binding_4",
+      "passed": true
+    },
+    {
+      "name": "unique_reference_binding_5",
+      "passed": true
+    },
+    {
+      "name": "unique_reference_binding_6",
+      "passed": true
+    },
+    {
+      "name": "unique_reference_binding_7",
+      "passed": true
+    },
+    {
+      "name": "unique_reference_binding_8",
+      "passed": true
+    },
+    {
+      "name": "whole_reference_logic_with_only_fixed_bindings_and_stricter_sizecap",
+      "passed": true
+    },
+    {
+      "name": "journal_syntax_only_no_invocation",
+      "passed": true
+    },
+    {
+      "name": "exact_single_path_file_info",
+      "passed": true
+    },
+    {
+      "name": "root_qualified_original_stdout_authority_observers",
+      "passed": true
+    },
+    {
+      "name": "closed_original_slot_only_new_GO",
+      "passed": true
+    },
+    {
+      "name": "one_info_before_call_marker_and_exact_pin",
+      "passed": true
+    },
+    {
+      "name": "original_terminal_prepared_and_full383_required",
+      "passed": true
+    },
+    {
+      "name": "one_fixed_metadata_64KiB0600_owner_single_link",
+      "passed": true
+    },
+    {
+      "name": "lossless_actual_version_and_full9_retained",
+      "passed": true
+    },
+    {
+      "name": "new_GO_lineage_original_page_and_payload_caps",
+      "passed": true
+    },
+    {
+      "name": "body_new_START_and_formatter_unadmitted",
+      "passed": true
+    }
+  ],
+  "check_count": 25,
+  "source_packet": {
+    "tree": "d88aae3876d0572665e78c1555b7560b3bb339f5",
+    "files": 19,
+    "bytes": 119701,
+    "merkle": {
+      "root_sha": "d88aae3876d0572665e78c1555b7560b3bb339f5",
+      "trees_verified": 1,
+      "leaf_count": 19
+    },
+    "whole": true
+  },
+  "source": {
+    "blob": "46233bcb53bb26878cdc7ba02b090ebb29f43037",
+    "bytes": 23894,
+    "sha256": "e5ca9c869f506d1d495f34709d04649fad17749c8790c13fd76b0448d4e3b3a5"
+  },
+  "exact_request": {
+    "blob": "e17cbc53589698ea5071ea83e0269d8fe73ebb2f",
+    "bytes": 312,
+    "sha256": "5b59a60e8942e3ed5bb93dcbb04b238d07ad0395ba23daa7625dd03c0da1792a"
+  },
+  "original_job": "1a1afa74868-fc05-6a7e",
+  "slot": "snapshot_8c95_rog_source_gitfirst_r1",
+  "metadata_acceptance": {
+    "host": "rog",
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-8c95fb0a-20261106-r1/control/stage-result.public.json",
+    "size": {
+      "min": 1,
+      "max": 65536
+    },
+    "mode": 384,
+    "uid": 1000,
+    "gid": 1000,
+    "link_count": 1,
+    "metadata_platform": "linux",
+    "sha256": "actual native 64 lower-case hex",
+    "version": "actual native dev:inode:size:mtime_ns:ctime_ns; preserve decimal strings",
+    "full9": "[dev,inode,1000,1000,32768|mode,1,size,mtime_ns,ctime_ns] strings"
+  },
+  "stage_terminal_qualification": {
+    "blob": "13d5ae1324ebe64a2ce7d8882a3d551bc8e8a73e",
+    "bytes": 5949,
+    "sha256": "c2f033d16b298295670c648bc02d4579c2011ea0f91427a166f4ab214bd3f2c3"
+  },
+  "formatter_authorized": false,
+  "body_authorized": false,
+  "compiler_or_product_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

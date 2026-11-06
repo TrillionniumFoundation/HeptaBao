@@ -1,0 +1,312 @@
+{
+  "schema": "heptabao.root-qualification.PKI-fixed10-collector-original-terminal.v1",
+  "status": "PASS_TERMINAL_TRANSPORT_AND_POST_FINALLY_CLOSURE",
+  "evidence_qualified": true,
+  "check_count": 55,
+  "checks": [
+    {
+      "name": "whole64_all335048_bytes",
+      "passed": true
+    },
+    {
+      "name": "exact_root_GO_source_helpers",
+      "passed": true
+    },
+    {
+      "name": "ordered_original_accepted_once_calls",
+      "passed": true
+    },
+    {
+      "name": "collector10_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "collector10_call_pki-lease400-format10-start-r1",
+      "passed": true
+    },
+    {
+      "name": "collector10_armed_tree_pki-lease400-format10-start-r1",
+      "passed": true
+    },
+    {
+      "name": "collector10_call_pki-lease400-format10-authority0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "collector10_armed_tree_pki-lease400-format10-authority0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "collector10_call_pki-lease400-format10-authority0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "collector10_armed_tree_pki-lease400-format10-authority0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "collector10_call_pki-lease400-format10-authority0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "collector10_armed_tree_pki-lease400-format10-authority0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "collector10_call_pki-lease400-format10-streams0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "collector10_armed_tree_pki-lease400-format10-streams0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "collector10_call_pki-lease400-format10-streams0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "collector10_armed_tree_pki-lease400-format10-streams0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "collector10_call_pki-lease400-format10-streams0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "collector10_armed_tree_pki-lease400-format10-streams0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "collector10_call_pki-lease400-format10-streams0-page8192-r1",
+      "passed": true
+    },
+    {
+      "name": "collector10_armed_tree_pki-lease400-format10-streams0-page8192-r1",
+      "passed": true
+    },
+    {
+      "name": "collector10_call_pki-lease400-format10-streams0-page16384-r1",
+      "passed": true
+    },
+    {
+      "name": "collector10_armed_tree_pki-lease400-format10-streams0-page16384-r1",
+      "passed": true
+    },
+    {
+      "name": "collector10_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "collector10_observer_3ebfdff449e99f89163aa16c0e183420cf29b710506c0f3357cf74c2282c22eb",
+      "passed": true
+    },
+    {
+      "name": "collector10_page_3ebfdff449e99f89163aa16c0e183420cf29b710506c0f3357cf74c2282c22eb_0",
+      "passed": true
+    },
+    {
+      "name": "collector10_payload_3ebfdff449e99f89163aa16c0e183420cf29b710506c0f3357cf74c2282c22eb",
+      "passed": true
+    },
+    {
+      "name": "collector10_observer_db6e1476ae45cbada5e78cfafd6860ad22ad0b2f08192396f64b0abe94174dcf",
+      "passed": true
+    },
+    {
+      "name": "collector10_page_db6e1476ae45cbada5e78cfafd6860ad22ad0b2f08192396f64b0abe94174dcf_0",
+      "passed": true
+    },
+    {
+      "name": "collector10_page_db6e1476ae45cbada5e78cfafd6860ad22ad0b2f08192396f64b0abe94174dcf_8192",
+      "passed": true
+    },
+    {
+      "name": "collector10_page_db6e1476ae45cbada5e78cfafd6860ad22ad0b2f08192396f64b0abe94174dcf_16384",
+      "passed": true
+    },
+    {
+      "name": "collector10_payload_db6e1476ae45cbada5e78cfafd6860ad22ad0b2f08192396f64b0abe94174dcf",
+      "passed": true
+    },
+    {
+      "name": "collector10_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "nine_calls_one_start_two_observers_four_pages",
+      "passed": true
+    },
+    {
+      "name": "exact_unique_original_START_binding",
+      "passed": true
+    },
+    {
+      "name": "original_job_observers_only",
+      "passed": true
+    },
+    {
+      "name": "fixed_original_stream_extent",
+      "passed": true
+    },
+    {
+      "name": "authority_is_whole_original_observer_native",
+      "passed": true
+    },
+    {
+      "name": "known_terminal0_full_durable_confirmed",
+      "passed": true
+    },
+    {
+      "name": "original_complete_streams_no_errors_or_truncation",
+      "passed": true
+    },
+    {
+      "name": "full_original_stdout_hex_text_EOF",
+      "passed": true
+    },
+    {
+      "name": "full_original_stderr_hex_text_EOF",
+      "passed": true
+    },
+    {
+      "name": "terminal_schema_exact_source_and_status",
+      "passed": true
+    },
+    {
+      "name": "all18_exact_acquired_once_closed_ledgers",
+      "passed": true
+    },
+    {
+      "name": "exact_owned_FD_kinds",
+      "passed": true
+    },
+    {
+      "name": "handlers_umask_signals_restored_after_finally",
+      "passed": true
+    },
+    {
+      "name": "actual_counters_within_original_caps",
+      "passed": true
+    },
+    {
+      "name": "original_shared_readback_budget_actual",
+      "passed": true
+    },
+    {
+      "name": "six_original_directory_named_held_final_agree",
+      "passed": true
+    },
+    {
+      "name": "three_owned_input_directories_still_private",
+      "passed": true
+    },
+    {
+      "name": "create_only_report_exact_path_and_extent",
+      "passed": true
+    },
+    {
+      "name": "reported_output_full9_private_lossless_version",
+      "passed": true
+    },
+    {
+      "name": "scope10_no_child_network_listing_input_write_product",
+      "passed": true
+    },
+    {
+      "name": "original_lane_and_observers_quiescent",
+      "passed": true
+    },
+    {
+      "name": "release_report_declaration_identical_to_original_terminal",
+      "passed": true
+    },
+    {
+      "name": "no_independent_report_or_source_claim_yet",
+      "passed": true
+    }
+  ],
+  "packet": {
+    "tree": "eae317b18f2d2a86dcb620faff491f329e279426",
+    "files": 64,
+    "bytes": 335048,
+    "merkle": {
+      "root_sha": "eae317b18f2d2a86dcb620faff491f329e279426",
+      "trees_verified": 1,
+      "leaf_count": 64
+    },
+    "whole": true
+  },
+  "original_job": "rog/1a1af917594-fc05-69b4",
+  "authority": {
+    "blob": "1f785781e47d8637ac2249f5f245bdca4435fdcd",
+    "bytes": 731,
+    "sha256": "ce499b2a8443c1d82364d688198fd01172f10a548a01042aba8a8bc1823c92d5"
+  },
+  "stdout": {
+    "blob": "f7555930ff44447253bd6ebd4fa9be899a6952b3",
+    "bytes": 4775,
+    "sha256": "e33445fcf1f52b6c090023679daa34a4354ff1b2f41e5a6bbec9bc5a73f4dc22"
+  },
+  "reported_public_report": {
+    "bytes": 30131,
+    "directory_full9_after": [
+      "66306",
+      "30842947",
+      "1000",
+      "1000",
+      "16832",
+      "2",
+      "4096",
+      "1793946915079275200",
+      "1793946915079275200"
+    ],
+    "eof": true,
+    "full9": [
+      "66306",
+      "30842948",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "30131",
+      "1793946915079275200",
+      "1793946915079275200"
+    ],
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-observe-20261106-r1/observation.public.json",
+    "same_fd_readback": true,
+    "sha256": "f2d35f46f7fec2d9d9ce81d7e3bd8dca21c9c6f44d5f990314cfd4dcb5c4da46",
+    "version": "66306:30842948:30131:1793946915079275200:1793946915079275200"
+  },
+  "actual": {
+    "original_native_calls": 9,
+    "observers": 2,
+    "immutable_pages": 4,
+    "all18_owned_FDs_closed": true,
+    "elapsed_seconds": 0.009818419988732785,
+    "counters": {
+      "fd_acquisition_attempts": 18,
+      "fd_acquisitions": 18,
+      "fsync_calls": 3,
+      "input_read_bytes": 543621,
+      "metadata_calls": 105,
+      "peak_owned_fds": 16,
+      "read_bytes": 573752,
+      "read_calls": 26,
+      "report_read_bytes": 30131,
+      "write_bytes": 30131
+    }
+  },
+  "limitations": [
+    "Original public report bytes and actual10-input diffs have not yet been independently collected by root.",
+    "Reported final held/named directory identities are terminal source observations, not an atomic filesystem snapshot.",
+    "No formatting replay, compiler, component, product or production execution is performed by this collector qualification."
+  ],
+  "independent_report_file_info": false,
+  "independent_report_body": false,
+  "formatted_source_reconstructed": false,
+  "compile_or_product_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

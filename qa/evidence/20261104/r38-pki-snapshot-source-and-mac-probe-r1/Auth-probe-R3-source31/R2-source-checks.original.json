@@ -1,0 +1,286 @@
+{
+  "schema": "heptabao.home-t5-fd-registration-r2.source-review.r1",
+  "passed": true,
+  "checkCount": 58,
+  "checks": [
+    {
+      "name": "common strict forward",
+      "passed": true
+    },
+    {
+      "name": "common strict inverse",
+      "passed": true
+    },
+    {
+      "name": "one exact replacement 95e3e338d798a88916e9b663ab408b773382649a",
+      "passed": true
+    },
+    {
+      "name": "one exact replacement 1f990b3bb97141e19949ebd68e56df4b5a3c18c3",
+      "passed": true
+    },
+    {
+      "name": "one exact replacement 45c508509370882c4334bc0127df6a995740288e",
+      "passed": true
+    },
+    {
+      "name": "only three common methods changed",
+      "passed": true
+    },
+    {
+      "name": "core strict forward",
+      "passed": true
+    },
+    {
+      "name": "core strict inverse",
+      "passed": true
+    },
+    {
+      "name": "one exact replacement c2383f71231b249310750fe319f447c646773181",
+      "passed": true
+    },
+    {
+      "name": "only child IO validator changed",
+      "passed": true
+    },
+    {
+      "name": "one exact replacement 3366b62d3c9599691b41a6addca54694219c28e9",
+      "passed": true
+    },
+    {
+      "name": "one exact replacement ee49f0de0ddb6dae2b0ad90a560728d4b3669e1b",
+      "passed": true
+    },
+    {
+      "name": "managed whole mechanical reconstruction",
+      "passed": true
+    },
+    {
+      "name": "managed actual sequence unchanged",
+      "passed": true
+    },
+    {
+      "name": "one exact replacement 3366b62d3c9599691b41a6addca54694219c28e9",
+      "passed": true
+    },
+    {
+      "name": "one exact replacement 4a1cb1315a0a635c1d3c0c367640c899bf8d6dfc",
+      "passed": true
+    },
+    {
+      "name": "one exact replacement ee49f0de0ddb6dae2b0ad90a560728d4b3669e1b",
+      "passed": true
+    },
+    {
+      "name": "one exact replacement 6ec72143df7d44b207b8c2f6f0465c10ce305226",
+      "passed": true
+    },
+    {
+      "name": "one exact replacement 08f9832f703021b9ef27dd9f107a8396bd82e73c",
+      "passed": true
+    },
+    {
+      "name": "one exact replacement 9d7ad9c2147ddfb0b70a8aa26269b1c71bfc4042",
+      "passed": true
+    },
+    {
+      "name": "controller whole mechanical reconstruction",
+      "passed": true
+    },
+    {
+      "name": "original embedded modules unchanged",
+      "passed": true
+    },
+    {
+      "name": "original T5 anchor unchanged",
+      "passed": true
+    },
+    {
+      "name": "controller main and deadlines unchanged",
+      "passed": true
+    },
+    {
+      "name": "attempt and pending before syscall",
+      "passed": true
+    },
+    {
+      "name": "os error block ends before registration",
+      "passed": true
+    },
+    {
+      "name": "return registration has independent error handling",
+      "passed": true
+    },
+    {
+      "name": "successful transfer ordered",
+      "passed": true
+    },
+    {
+      "name": "open attempt bound does not rise",
+      "passed": true
+    },
+    {
+      "name": "registration failure has no close/retry",
+      "passed": true
+    },
+    {
+      "name": "once-close method byte exact",
+      "passed": true
+    },
+    {
+      "name": "allClosed includes accounting",
+      "passed": true
+    },
+    {
+      "name": "balanced equations and pending hold",
+      "passed": true
+    },
+    {
+      "name": "parent admits exact five-field ledger",
+      "passed": true
+    },
+    {
+      "name": "exact request new source",
+      "passed": true
+    },
+    {
+      "name": "request other parameters unchanged",
+      "passed": true
+    },
+    {
+      "name": "new key only unsubmitted source identity",
+      "passed": true
+    },
+    {
+      "name": "journal strict forward",
+      "passed": true
+    },
+    {
+      "name": "journal strict inverse",
+      "passed": true
+    },
+    {
+      "name": "journal functions byte exact",
+      "passed": true
+    },
+    {
+      "name": "contract roots unchanged",
+      "passed": true
+    },
+    {
+      "name": "contract effects unchanged",
+      "passed": true
+    },
+    {
+      "name": "contract chronology unchanged",
+      "passed": true
+    },
+    {
+      "name": "contract ownership unchanged",
+      "passed": true
+    },
+    {
+      "name": "contract budget unchanged",
+      "passed": true
+    },
+    {
+      "name": "contract publication unchanged",
+      "passed": true
+    },
+    {
+      "name": "controller.r2.py all pins",
+      "passed": true
+    },
+    {
+      "name": "managed-probe.r2.py all pins",
+      "passed": true
+    },
+    {
+      "name": "request.r2.json all pins",
+      "passed": true
+    },
+    {
+      "name": "journal.r2.js all pins",
+      "passed": true
+    },
+    {
+      "name": "ledger algebra zero_attempts",
+      "passed": true
+    },
+    {
+      "name": "ledger algebra syscall_raises_oserror_no_fd_return",
+      "passed": true
+    },
+    {
+      "name": "ledger algebra fd_returned_row_construction_failed",
+      "passed": true
+    },
+    {
+      "name": "ledger algebra fd_returned_append_failed",
+      "passed": true
+    },
+    {
+      "name": "ledger algebra row_appended_counter_failed_known_row_closed",
+      "passed": true
+    },
+    {
+      "name": "ledger algebra pending_decrement_failed_known_row_closed",
+      "passed": true
+    },
+    {
+      "name": "ledger algebra complete_registration_and_known_close",
+      "passed": true
+    },
+    {
+      "name": "ledger algebra complete_registration_but_close_failed",
+      "passed": true
+    }
+  ],
+  "ledgerAlgebra": [
+    {
+      "name": "zero_attempts",
+      "closed": true,
+      "actualExceptionInjected": false
+    },
+    {
+      "name": "syscall_raises_oserror_no_fd_return",
+      "closed": true,
+      "actualExceptionInjected": false
+    },
+    {
+      "name": "fd_returned_row_construction_failed",
+      "closed": false,
+      "actualExceptionInjected": false
+    },
+    {
+      "name": "fd_returned_append_failed",
+      "closed": false,
+      "actualExceptionInjected": false
+    },
+    {
+      "name": "row_appended_counter_failed_known_row_closed",
+      "closed": false,
+      "actualExceptionInjected": false
+    },
+    {
+      "name": "pending_decrement_failed_known_row_closed",
+      "closed": false,
+      "actualExceptionInjected": false
+    },
+    {
+      "name": "complete_registration_and_known_close",
+      "closed": true,
+      "actualExceptionInjected": false
+    },
+    {
+      "name": "complete_registration_but_close_failed",
+      "closed": false,
+      "actualExceptionInjected": false
+    }
+  ],
+  "old73Rerun": false,
+  "peer120Rerun": false,
+  "PythonOrCandidateExecuted": false,
+  "NativeCalls": 0,
+  "qualification": "EXACT_SOURCE_DELTA_AND_ACCOUNTING_ALGEBRA_ONLY"
+}

@@ -1,0 +1,174 @@
+{
+  "schema": "heptabao.root-snapshot24-freeze-tree-intent.v1",
+  "request": {
+    "repository_full_name": "TrillionniumFoundation/HeptaBao",
+    "base_tree_sha": "f412f1524e08a56e23374897d329bfcf6295f4fe",
+    "tree_elements": [
+      {
+        "path": "crates/heptabao-server/src/service_native_controlgroups_271_namespace_ha_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d3b1e12fcbbfdeba55ffa344dec0a1fa476b7992"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_controlgroups_271_namespace_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "758fc2a19179bf0359f790a2b85ab0bb90e78e35"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_file_gc_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "063676cb26c9023e5d27dbffefba694a94422295"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_flat_retirement_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "fff1bd6ba6d249299774ce508d2511e51bd42cde"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_kv2_import_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "23038ffffacd18037700b0b9b1f4ed2d38c769f1"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_kv2_large_ha_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "558d460b067c61d231f56c48320d4de54fa52edd"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_kv2_mount_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0d55e13c52aa785eccb3f9893aada54f5fb626d4"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_kv2_storage_witness_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4bfdfdbf943010b434134bb1cfcaaacee86f3fff"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_namespace_tree_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dced505c3ce880f7cee05cec747d4400aac59d50"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_pki_archive_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0256a72add9fca16d4ec8bbee3c5b4243ff7f1e2"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_remount_v6_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "245516dd1985d1a64fdd0532cbbbc2a209618dd0"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_ssh_archive_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "748af393ffbe89e8697ba15fe1f78b5170e418ec"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_storage_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "101bac012507c04ee3a1c2b6dc15273e18cd9d61"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_transit_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9f94153e8309317194ec66cf5cdb51a16507e4af"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d6359eeb2d31bfc07636bbc2c2809688ebfc3467"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_historical_restore_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1ff6e42dade56eb4431271aae5a9dee90e9cca39"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_restore_borrowed_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "74669ad0f4e3fd26f34d10b53ed29a06ae8a2032"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_snapshot_repair_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d4b85c648162480a0ebd1900624a33d063c11eb7"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_snapshot_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "001413918726abb14faa742f291dde633ddbd036"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_v6_migration_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d755f8800bd1d93c8c2b1b7e113c09f2489e4f0b"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_rate_limit_quota_139_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "60925759e86f1bfad3a9d75ff0d53885da8b9626"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_snapshot_lossless_export_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dfe6f5e80709418b69bb1b33fee48dadb9ed6aa1"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9dcea728cd9afd0ba9f78a65537e7cac6ccadf55"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_snapshot_v6_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2f6c5383d4303a60d15801bd348f3f337fbe144b"
+      }
+    ]
+  },
+  "source_review": {
+    "blob": "bd007cb047410776261834ac6c355469537d4334",
+    "bytes": 20633,
+    "sha256": "2c1780032f60cab058616b858a54ed3d783396ef7da434d129bc2298aab66be4"
+  },
+  "expected_tree": "9c800e97a2527e7f01c3a4b0be594e6762f9581e",
+  "branch": "codex/heptabao-native-snapshot-forward-r4-source-20261106",
+  "parent_commit": "8c95fb0a8b2f61933a09b04986df2bafc9e7095c",
+  "leaves": 3928,
+  "modified": 24,
+  "new": 0,
+  "deleted": 0,
+  "tracked_bytes": 62463643,
+  "index": {
+    "blob": "a36e8c2f97ef062ee804114efb22b4a3a9b08899",
+    "bytes": 453379,
+    "sha256": "80a220f0a5d03d5b9cbe5cdb6a69b2e1c29d794f0abe367a98b5be096996e727"
+  },
+  "mutation_not_yet_called": true,
+  "replay_allowed": false,
+  "source_only": true
+}

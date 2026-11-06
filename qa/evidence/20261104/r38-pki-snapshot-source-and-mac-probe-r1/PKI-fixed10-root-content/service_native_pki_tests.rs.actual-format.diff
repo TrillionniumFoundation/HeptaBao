@@ -1,0 +1,23 @@
+--- a/service_native_pki_tests.rs
++++ b/service_native_pki_tests.rs
+@@ -1181,7 +1181,6 @@
+     f.sentinel()
+ }
+ 
+-
+ #[test]
+ fn native_pki_formal_expired_lease_lookup_matches_openbao_271_400_and_cold() -> TestResult {
+     let mut f = Fixture::new()?;
+@@ -1237,7 +1236,11 @@
+         200,
+     );
+     status(
+-        &f.admin("POST", "sys/leases/revoke", json!({"lease_id":lease,"sync":true}))?,
++        &f.admin(
++            "POST",
++            "sys/leases/revoke",
++            json!({"lease_id":lease,"sync":true}),
++        )?,
+         204,
+     );
+     for cold in [false, true] {

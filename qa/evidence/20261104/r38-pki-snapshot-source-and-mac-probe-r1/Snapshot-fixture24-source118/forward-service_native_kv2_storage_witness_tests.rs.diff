@@ -1,0 +1,11 @@
+--- a/crates/heptabao-server/src/service_native_kv2_storage_witness_tests.rs
++++ b/crates/heptabao-server/src/service_native_kv2_storage_witness_tests.rs
+@@ -251,6 +251,8 @@
+             Err(format!("snapshot admission status={}", response.status).into())
+         }
+         NativeSnapshotAdmission::Redirect(_) => Err("unexpected single-node redirect".into()),
++        #[cfg(feature = "native-v6-ha")]
++        NativeSnapshotAdmission::Forward(_) => Err("unexpected single-node forward".into()),
+     }
+ }
+ fn reopen(files: &Root, key: &str) -> TestResult<Service> {

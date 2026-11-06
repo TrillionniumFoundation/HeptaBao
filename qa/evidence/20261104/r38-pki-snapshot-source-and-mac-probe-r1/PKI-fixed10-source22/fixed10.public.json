@@ -1,0 +1,142 @@
+[
+  {
+    "index": 0,
+    "role": "candidate",
+    "name": "pki.rs",
+    "relative": "candidate/pki.rs",
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/candidate/pki.rs",
+    "bytes": 136672,
+    "sha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba",
+    "cap": 136672,
+    "expected_full9": null,
+    "immutable_blob": "3c6fd86dcd641eb16af64b835d2252163dd1488e"
+  },
+  {
+    "index": 1,
+    "role": "formatted",
+    "name": "pki.rs",
+    "relative": "formatted/pki.rs",
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/formatted/pki.rs",
+    "bytes": 136672,
+    "sha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba",
+    "cap": 262144,
+    "expected_full9": null,
+    "immutable_blob": null
+  },
+  {
+    "index": 2,
+    "role": "stdout",
+    "name": "pki.rs",
+    "relative": "pki.rs.rustfmt.stdout",
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/pki.rs.rustfmt.stdout",
+    "bytes": 136672,
+    "sha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba",
+    "cap": 262144,
+    "expected_full9": null,
+    "immutable_blob": null
+  },
+  {
+    "index": 3,
+    "role": "stderr",
+    "name": "pki.rs",
+    "relative": "pki.rs.rustfmt.stderr",
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/pki.rs.rustfmt.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cap": 65536,
+    "expected_full9": null,
+    "immutable_blob": null
+  },
+  {
+    "index": 4,
+    "role": "candidate",
+    "name": "service_native_pki_tests.rs",
+    "relative": "candidate/service_native_pki_tests.rs",
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/candidate/service_native_pki_tests.rs",
+    "bytes": 42863,
+    "sha256": "3dfea1dccd78187517f3cb9ca04ed036073eb7ed6b7c604815aa745f4402f208",
+    "cap": 42863,
+    "expected_full9": null,
+    "immutable_blob": "352e581f5a901f21ee7c7af4c9bc5b3bed1a1439"
+  },
+  {
+    "index": 5,
+    "role": "formatted",
+    "name": "service_native_pki_tests.rs",
+    "relative": "formatted/service_native_pki_tests.rs",
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/formatted/service_native_pki_tests.rs",
+    "bytes": 42909,
+    "sha256": "6a1fd1fbaf6caa1c206844e8d97414ea231a1cba663ebb704d26cdff42417d56",
+    "cap": 262144,
+    "expected_full9": null,
+    "immutable_blob": null
+  },
+  {
+    "index": 6,
+    "role": "stdout",
+    "name": "service_native_pki_tests.rs",
+    "relative": "service_native_pki_tests.rs.rustfmt.stdout",
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/service_native_pki_tests.rs.rustfmt.stdout",
+    "bytes": 42909,
+    "sha256": "6a1fd1fbaf6caa1c206844e8d97414ea231a1cba663ebb704d26cdff42417d56",
+    "cap": 262144,
+    "expected_full9": null,
+    "immutable_blob": null
+  },
+  {
+    "index": 7,
+    "role": "stderr",
+    "name": "service_native_pki_tests.rs",
+    "relative": "service_native_pki_tests.rs.rustfmt.stderr",
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/service_native_pki_tests.rs.rustfmt.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cap": 65536,
+    "expected_full9": null,
+    "immutable_blob": null
+  },
+  {
+    "index": 8,
+    "role": "config",
+    "name": "rustfmt.toml",
+    "relative": "rustfmt.toml",
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/rustfmt.toml",
+    "bytes": 17,
+    "sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584",
+    "cap": 17,
+    "expected_full9": [
+      "66306",
+      "28071611",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "17",
+      "1793944550719366866",
+      "1793944550719366866"
+    ],
+    "immutable_blob": null
+  },
+  {
+    "index": 9,
+    "role": "receipt",
+    "name": "result.public.json",
+    "relative": "result.public.json",
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/result.public.json",
+    "bytes": 4907,
+    "sha256": "7b2560af593a62c7de4b8ca3a8cb7c2fffaed1408b2f1b356a302a38a7617776",
+    "cap": 65536,
+    "expected_full9": [
+      "66306",
+      "28071628",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "4907",
+      "1793944550782366173",
+      "1793944550782366173"
+    ],
+    "immutable_blob": "6638b8f22581832b5451d8b79e275feccec54959"
+  }
+]

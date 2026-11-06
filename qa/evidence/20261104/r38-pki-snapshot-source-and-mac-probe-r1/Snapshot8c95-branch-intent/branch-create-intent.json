@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.snapshot-forward-source-new-branch-intent.v1",
+  "request": {
+    "repository_full_name": "TrillionniumFoundation/HeptaBao",
+    "branch_name": "codex/heptabao-native-snapshot-forward-r3-source-20261106",
+    "sha": "8c95fb0a8b2f61933a09b04986df2bafc9e7095c"
+  },
+  "method": "github_create_branch",
+  "branch_absence_observed": true,
+  "commit_readback_verified": true,
+  "source_only": true,
+  "unformatted": true,
+  "compiled": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "mutation_not_called": true,
+  "unknown_policy": "Read exact original ref; never issue another creation or update after unknown."
+}

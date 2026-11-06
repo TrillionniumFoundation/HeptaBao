@@ -1,0 +1,140 @@
+--- a/journal.before.js
++++ b/journal.after.js
+@@ -8,6 +8,62 @@
+ const GF_SLOT = "native_pki_lease400_formatter10_collector_gitfirst_r1";
+ const GF_REQUEST = {"blob":"22dd45be52462f7a001abf985abe48c523dc48a4","bytes":33330,"sha256":"d16edddff2f496d84fb41eb50fdf266716b274388beb1031baec8111579e2c0f"};
+ 
++/* One separately approved independent file_info of the actual public collector report.
++ * Original collector state is retained. No binary_read or new process is authorized. */
++const GF_COLLECTOR_REPORT_EXPECTED = {"path":"/home/qian-qi/heptabao-native-pki-lease400-format-observe-20261106-r1/observation.public.json","bytes":30131,"sha256":"f2d35f46f7fec2d9d9ce81d7e3bd8dca21c9c6f44d5f990314cfd4dcb5c4da46","version":"66306:30842948:30131:1793946915079275200:1793946915079275200","full9":["66306","30842948","1000","1000","33152","1","30131","1793946915079275200","1793946915079275200"]};
++const GF_COLLECTOR_REPORT_INFO_REQUEST = {"blob":"da2d04756281187d875950219a8c1e584ea5a029","bytes":291,"sha256":"ef290e736dc818892e12dd00e0a32523b21b3a24b30734fd1aa7fe561cce7e51"};
++const GF_COLLECTOR_REPORT_INFO_PREREQUISITES = [{"id":"3ebfdff449e99f89163aa16c0e183420cf29b710506c0f3357cf74c2282c22eb","tool":"process_status","nativeText":{"blob":"1f785781e47d8637ac2249f5f245bdca4435fdcd","bytes":731,"sha256":"ce499b2a8443c1d82364d688198fd01172f10a548a01042aba8a8bc1823c92d5"}},{"id":"db6e1476ae45cbada5e78cfafd6860ad22ad0b2f08192396f64b0abe94174dcf","tool":"process_read","nativeText":{"blob":"a71bdddadc0fa795f0422d17df988f9fc07e831c","bytes":15321,"sha256":"3d868afe45885e93200dea23aa235e80e074cd443d8cfa77e5422857eacf4203"}}];
++
++function gfAuthorizeCollectorReportInfoOnly({goRaw,goPin,goWholeReadback}) {
++ const s=gfState();
++ gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null
++   && s.activeObserver===null && s.startCalled===true
++   && s.job==="1a1af917594-fc05-69b4" && s.collectorReportInfoGO===undefined
++   && s.collectorReportInfoStarted!==true,"closed_existing_collector_before_info_only_GO");
++ gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin)
++   && goPin.blob!==s.goPin.blob,"separate_whole_info_only_GO");
++ const g=JSON.parse(goRaw);
++ gfNeed(g.authorization==="GO" && g.scope==="collector_report_file_info_only"
++   && g.original_job===s.job && g.maximum_file_info_starts===1
++   && g.binary_read_authorized===false
++   && g.exact_request?.blob===GF_COLLECTOR_REPORT_INFO_REQUEST.blob
++   && g.exact_request?.bytes===GF_COLLECTOR_REPORT_INFO_REQUEST.bytes
++   && g.exact_request?.sha256===GF_COLLECTOR_REPORT_INFO_REQUEST.sha256,
++   "exact_new_root_file_info_scope");
++ for(const need of GF_COLLECTOR_REPORT_INFO_PREREQUISITES) {
++  const prior=s.completedObservers.find(o=>o.id===need.id);
++  const priorRaw=load(GF_SLOT+":closed_native:"+need.id);
++  gfNeed(prior?.completedInactive===true && prior.tool===need.tool
++    && gfMetaEquals(priorRaw,need.nativeText)
++    && prior.nativeText.blob===need.nativeText.blob,"original_collector_closure_pin");
++ }
++ const authority=parseLosslessIntegers(load(GF_SLOT+":closed_native:"+GF_COLLECTOR_REPORT_INFO_PREREQUISITES[0].id));
++ const streams=parseLosslessIntegers(load(GF_SLOT+":closed_native:"+GF_COLLECTOR_REPORT_INFO_PREREQUISITES[1].id));
++ const terminal=parseLosslessIntegers(streams.stdout.text);
++ gfNeed(authority.exit_code===0 && authority.output_complete===true
++   && authority.output_durable===true && authority.terminal_publication_confirmed===true
++   && !authority.timed_out && !authority.cancelled
++   && streams.stdout.eof===true && streams.stderr.eof===true
++   && s.nextStdout===4775 && s.nextStderr===0
++   && terminal.schema==="heptabao.native-pki-formatter10-terminal.v1"
++   && terminal.status==="passed" && terminal.error===null && terminal.within_deadline===true
++   && terminal.all_owned_fds_once_closed===true && terminal.handlers_restored===true
++   && terminal.umask_restored===true && terminal.pending_signal===null
++   && terminal.fd_ledger.length===18
++   && terminal.fd_ledger.every(x=>x.close_attempted===true && x.closed===true && x.close_error===null)
++   && terminal.report.path===GF_COLLECTOR_REPORT_EXPECTED.path
++   && terminal.report.bytes===GF_COLLECTOR_REPORT_EXPECTED.bytes
++   && terminal.report.sha256===GF_COLLECTOR_REPORT_EXPECTED.sha256
++   && terminal.report.version===GF_COLLECTOR_REPORT_EXPECTED.version
++   && JSON.stringify(terminal.report.full9)===JSON.stringify(GF_COLLECTOR_REPORT_EXPECTED.full9)
++   && terminal.report.same_fd_readback===true && terminal.report.eof===true,
++   "collector_zero_full_stdout_and_expected_report");
++ s.collectorReportInfoGO={pin:goPin,raw:goRaw,whole:true};
++ gfSave(s);
++ return {originalJob:s.job,exactRequest:GF_COLLECTOR_REPORT_INFO_REQUEST,
++   maximumFileInfoStarts:1,binaryReadAuthorized:false};
++}
++
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {
+  const actual=gitBlobMeta(raw);
+@@ -49,11 +105,17 @@
+     "bounded_original_observer_key");
+   const op=q.operation,a=op?.arguments;
+   gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"
++    && a && a.host==="rog","same_original_host_only");
++  if(op.tool==="file_info") {
++   gfNeed(s.collectorReportInfoGO?.whole===true && s.collectorReportInfoStarted!==true
++     && gfMetaEquals(raw,GF_COLLECTOR_REPORT_INFO_REQUEST)
++     && Object.keys(a).sort().join(",")==="host,path"
++     && a.path===GF_COLLECTOR_REPORT_EXPECTED.path,"one_exact_collector_report_info");
++  } else if(op.tool==="process_status") {
++   gfNeed(a.job_id===s.job,"same_original_job_only");
+-    && a && a.host==="rog" && a.job_id===s.job,"same_original_job_only");
+-  if(op.tool==="process_status") {
+    gfNeed(Object.keys(a).sort().join(",")==="host,job_id","exact_status_arguments");
+   } else {
++   gfNeed(op.tool==="process_read" && a.job_id===s.job
+-   gfNeed(op.tool==="process_read"
+      && Object.keys(a).sort().join(",")==="host,job_id,limit,stderr_offset,stdout_offset"
+      && a.limit===16384 && a.stdout_offset===s.nextStdout
+      && a.stderr_offset===s.nextStderr,"original_stream_cursors_and_cap");
+@@ -77,7 +139,10 @@
+  gfValidateRequest(s,kind,q,requestRaw);
+  const requestPin=gitBlobMeta(requestRaw);
+  const intent={schema:"heptabao.gitfirst.fixed-native-call-intent.r1",
++  callKey,kind,request:requestPin,
++  rootGo:(kind==="operation_start" && q.operation.tool==="file_info")
++    || s.activeObserver?.tool==="file_info" ? s.collectorReportInfoGO.pin : s.goPin,
++  originalJob:s.job,
+-  callKey,kind,request:requestPin,rootGo:s.goPin,originalJob:s.job,
+   originalOperation:s.activeObserver?.id??null,maximumNativeCalls:1,
+   nativeNotYetCalled:true,lossOfAcknowledgmentNeverGrantsReplay:true,
+   localFirstExplicitlyReplacedByExactRootGO:true};
+@@ -107,6 +172,7 @@
+  gfNeed(gfMetaEquals(c.requestRaw,c.requestPin),"armed_request_unchanged");
+  c.called=true;c.phase="native_call_entered";s.nativeCallInFlight=true;
+  if(c.kind==="process_start")s.startCalled=true;
++ if(c.kind==="operation_start" && q.operation.tool==="file_info")s.collectorReportInfoStarted=true;
+  gfSave(s); // No await or second dispatch between this marker and the one call.
+  let sdk;
+  try {
+@@ -232,7 +298,24 @@
+   gfNeed(p.resultType==="complete" && p.isError===false
+     && p.content?.length===1 && p.content[0].type==="text","original_native_result_success");
+   const nativeRaw=p.content[0].text,v=parseLosslessIntegers(nativeRaw);
++  if(a.tool==="file_info") {
++   const md=v.metadata,parts=typeof v.version==="string"?v.version.split(":"):[];
++   gfNeed(v.path===GF_COLLECTOR_REPORT_EXPECTED.path
++     && v.size===GF_COLLECTOR_REPORT_EXPECTED.bytes
++     && v.sha256===GF_COLLECTOR_REPORT_EXPECTED.sha256
++     && v.version===GF_COLLECTOR_REPORT_EXPECTED.version && v.mode===384
++     && md?.metadata_platform==="linux" && md.mode===384
++     && md.uid===1000 && md.gid===1000 && md.link_count===1
++     && parts.length===5 && parts.every(x=>/^[0-9]+$/.test(x))
++     && parts[2]===String(v.size),"fixed_report_exact_content_metadata_and_version");
++   const full9=[parts[0],parts[1],"1000","1000",String(32768|v.mode),
++     "1",String(v.size),parts[3],parts[4]];
++   gfNeed(JSON.stringify(full9)===JSON.stringify(GF_COLLECTOR_REPORT_EXPECTED.full9),
++     "fixed_report_exact_full9");
++   s.collectorReportInfo={path:v.path,size:v.size,sha256:v.sha256,version:v.version,
++     nativeText:gitBlobMeta(nativeRaw),originalOperation:a.id,full9Strings:full9,
++     regularFileFromNativeFileInfoContract:true,binaryReadAuthorized:false};
++  } else gfNeed(v.job_id===s.job,"original_job_native_result_binding");
+-  gfNeed(v.job_id===s.job,"original_job_native_result_binding");
+   if(a.tool==="process_read") {
+    for(const stream of ["stdout","stderr"]) {
+     const row=v[stream],asked=a.request.operation.arguments[stream+"_offset"];
+@@ -317,6 +400,7 @@
+  try {
+   let value;
+   if(action==="initialize")value=gfInitializeOnlyAfterRootGO(args);
++  else if(action==="authorize_collector_report_info")value=gfAuthorizeCollectorReportInfoOnly(args);
+   else if(action==="prepare")value=await gfPrepareOne(args);
+   else if(action==="invoke")value=await gfInvokePreparedOnce(args.callKey);
+   else if(action==="accept")value=gfAcceptArchivedSDK(args.callKey);

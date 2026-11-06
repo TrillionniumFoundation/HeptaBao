@@ -1,0 +1,245 @@
+{
+  "schema": "heptabao.root-qualification.Mac-public-Python-self-identity-actual.v1",
+  "status": "PASS_FRESH_SELF_IDENTITY_OBSERVATION_AND_ORIGINAL_CLOSURE",
+  "evidence_qualified": true,
+  "checks": [
+    {
+      "name": "whole56_140766",
+      "passed": true
+    },
+    {
+      "name": "exact_GO_and_SOURCE_contract",
+      "passed": true
+    },
+    {
+      "name": "pythonSelf_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "pythonSelf_call_python-self-r1-start",
+      "passed": true
+    },
+    {
+      "name": "pythonSelf_armed_tree_python-self-r1-start",
+      "passed": true
+    },
+    {
+      "name": "pythonSelf_call_python-self-r1-authority-admit",
+      "passed": true
+    },
+    {
+      "name": "pythonSelf_armed_tree_python-self-r1-authority-admit",
+      "passed": true
+    },
+    {
+      "name": "pythonSelf_call_python-self-r1-authority-status-0",
+      "passed": true
+    },
+    {
+      "name": "pythonSelf_armed_tree_python-self-r1-authority-status-0",
+      "passed": true
+    },
+    {
+      "name": "pythonSelf_call_python-self-r1-authority-page-0",
+      "passed": true
+    },
+    {
+      "name": "pythonSelf_armed_tree_python-self-r1-authority-page-0",
+      "passed": true
+    },
+    {
+      "name": "pythonSelf_call_python-self-r1-streams-00-admit",
+      "passed": true
+    },
+    {
+      "name": "pythonSelf_armed_tree_python-self-r1-streams-00-admit",
+      "passed": true
+    },
+    {
+      "name": "pythonSelf_call_python-self-r1-streams-00-status-0",
+      "passed": true
+    },
+    {
+      "name": "pythonSelf_armed_tree_python-self-r1-streams-00-status-0",
+      "passed": true
+    },
+    {
+      "name": "pythonSelf_call_python-self-r1-streams-00-page-0",
+      "passed": true
+    },
+    {
+      "name": "pythonSelf_armed_tree_python-self-r1-streams-00-page-0",
+      "passed": true
+    },
+    {
+      "name": "pythonSelf_call_python-self-r1-streams-00-page-8192",
+      "passed": true
+    },
+    {
+      "name": "pythonSelf_armed_tree_python-self-r1-streams-00-page-8192",
+      "passed": true
+    },
+    {
+      "name": "pythonSelf_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "pythonSelf_observer_d03e32cf7c4c9a87b03945f9eaa6a6ae932cb3b5d612399c30d77ca3febd1a55",
+      "passed": true
+    },
+    {
+      "name": "pythonSelf_page_d03e32cf7c4c9a87b03945f9eaa6a6ae932cb3b5d612399c30d77ca3febd1a55_0",
+      "passed": true
+    },
+    {
+      "name": "pythonSelf_payload_d03e32cf7c4c9a87b03945f9eaa6a6ae932cb3b5d612399c30d77ca3febd1a55",
+      "passed": true
+    },
+    {
+      "name": "pythonSelf_observer_4e8211d9d14124cc7ba6e18a967f023c003391995e5f5f486562f5321bae8227",
+      "passed": true
+    },
+    {
+      "name": "pythonSelf_page_4e8211d9d14124cc7ba6e18a967f023c003391995e5f5f486562f5321bae8227_0",
+      "passed": true
+    },
+    {
+      "name": "pythonSelf_page_4e8211d9d14124cc7ba6e18a967f023c003391995e5f5f486562f5321bae8227_8192",
+      "passed": true
+    },
+    {
+      "name": "pythonSelf_payload_4e8211d9d14124cc7ba6e18a967f023c003391995e5f5f486562f5321bae8227",
+      "passed": true
+    },
+    {
+      "name": "pythonSelf_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "eight_original_calls_one_START_two_observers_three_pages",
+      "passed": true
+    },
+    {
+      "name": "exact_unique_START_typed_stdin_native_binding",
+      "passed": true
+    },
+    {
+      "name": "only_original_job_observers",
+      "passed": true
+    },
+    {
+      "name": "original_authority_exact_and_terminal0_full_durable",
+      "passed": true
+    },
+    {
+      "name": "original2453_stdout_zero_stderr_untruncated",
+      "passed": true
+    },
+    {
+      "name": "whole_original_stdout_hex_text_EOF",
+      "passed": true
+    },
+    {
+      "name": "whole_original_stderr_hex_text_EOF",
+      "passed": true
+    },
+    {
+      "name": "known_complete_current_self_diagnostic",
+      "passed": true
+    },
+    {
+      "name": "two_reads_returned_same_numeric_and_path_identity",
+      "passed": true
+    },
+    {
+      "name": "original_reader_identity_and_sys_launcher_exact",
+      "passed": true
+    },
+    {
+      "name": "actual_numeric_identity_safe_and_current",
+      "passed": true
+    },
+    {
+      "name": "six_predicates_independently_recomputed",
+      "passed": true
+    },
+    {
+      "name": "public_kernel_path_exact_and_within_authorized_prefix",
+      "passed": true
+    },
+    {
+      "name": "no_application_file_child_T5_launchd_credentials_or_old_effect",
+      "passed": true
+    },
+    {
+      "name": "original_deadline_and_signals_closed",
+      "passed": true
+    },
+    {
+      "name": "scope_limitations_no_kernel_content_or_old_R3_qualification",
+      "passed": true
+    },
+    {
+      "name": "released_original_lane_and_observers",
+      "passed": true
+    }
+  ],
+  "check_count": 45,
+  "packet": {
+    "tree": "3bb9602e3ecf4648fa2f5f1cddfa6a2dbcb4966d",
+    "files": 56,
+    "bytes": 140766,
+    "merkle": {
+      "root_sha": "3bb9602e3ecf4648fa2f5f1cddfa6a2dbcb4966d",
+      "trees_verified": 1,
+      "leaf_count": 56
+    },
+    "whole": true
+  },
+  "original_job": "mac/1a1afab06b9-fc05-6aa0",
+  "authority": {
+    "blob": "525c34e56bad9a53da506f61b22e9ebbbb7bba32",
+    "bytes": 731,
+    "sha256": "c59553b7e8327a20de0696d184061b05a2628f04439e7048feb7edb4fb5b7b47"
+  },
+  "stdout": {
+    "blob": "4e28d3301fa4409b06efe23bd9834779173aaa71",
+    "bytes": 2453,
+    "sha256": "66b796413137843516dcd2398c8827036a5f312e65353e653b86df2456237d1d"
+  },
+  "actual": {
+    "native_calls": 8,
+    "observers": 2,
+    "immutable_pages": 3,
+    "own_pid": 40838,
+    "stable_reads": 2,
+    "elapsed_seconds": 0.007981208,
+    "declared_launcher": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "kernel_image_path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+    "sys_executable_equals_launcher": true,
+    "predicates": {
+      "birth_sec_gt_0": true,
+      "birth_usec_lt_1000000": true,
+      "executable_eq_fixed_python": false,
+      "pgid_gt_1": true,
+      "pid_gt_1": true,
+      "uid_eq_501": true
+    },
+    "application_FDs": 0,
+    "application_children": 0
+  },
+  "finding": "This fresh process uses the fixed declared launcher but libproc reports the Python.app kernel image. Only executable_eq_fixed_python is false in both observations; the other five predicates are true.",
+  "limitations": [
+    "This fresh diagnostic cannot retrospectively supply the missing fields of the failed R3 process.",
+    "The observed kernel-image path is not a qualification of that file's identity,ownership,mode or bytes.",
+    "No old launchd cause or closure,credentials,service bootstrap or production behavior is qualified."
+  ],
+  "fresh_self_observation_qualified": true,
+  "old_R3_predicates_reconstructed": false,
+  "kernel_image_file_qualified": false,
+  "AuthBus_credentials_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

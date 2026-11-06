@@ -1,0 +1,15 @@
+--- a/launcher.before.py
++++ b/launcher.prebound.py
+@@ -13,9 +13,9 @@
+ 
+ BINDING_READY = False
+ assert BINDING_READY, 'formatted source and published controls need separate exact admission'
++FINAL_COMMIT = '33b814c7034ec853151b1ff13e7529c83f65ea70'
++FINAL_TREE = 'b7f276f70e0da1a33306564f385ab7bc12fd44f6'
++SOURCE_STAGE_ROOT = Path('/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1')
+-FINAL_COMMIT = None
+-FINAL_TREE = None
+-SOURCE_STAGE_ROOT = None
+ SOURCE_STAGE_SCHEMA = 'heptabao.native-jwt-independent-source-stage.v1'
+ GROUPS_SHA256 = '35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869'
+ OUTER_STARTED = time.monotonic()

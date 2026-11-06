@@ -1,0 +1,123 @@
+--- a/crates/heptabao-server/src/service_snapshot_forward_client.rs
++++ b/crates/heptabao-server/src/service_snapshot_forward_client.rs
+@@ -9,6 +9,7 @@
+     initial_activation: Zeroizing<String>,
+     clock: RequestClock,
+     fingerprint: String,
++    transport_attempted: bool,
+ }
+ 
+ /// Constructed only after complete transport, publication, both native delivery
+@@ -71,6 +72,7 @@
+             Ok(SnapshotForwardPlan {
+                 endpoint: Some(endpoint),
+                 request, metadata, owner, clock, fingerprint: fingerprint.clone(),
++                transport_attempted: false,
+                 initial_activation: Zeroizing::new(self.unseal_nonce.clone()),
+             })
+         })();
+@@ -133,18 +135,31 @@
+         })
+     }
+ 
+-    fn audit_failure(&self, service: &mut Service, mut response: Response) -> CompletedSnapshotForward {
++    fn audit_failure(
++        &self, service: &mut Service, mut response: Response,
++        authenticated: Option<&wire::CompletionData>,
++    ) -> CompletedSnapshotForward {
+         let now = self.clock.admitted_at().duration_since_epoch().as_secs();
+         if service.audit_event("response", &self.fingerprint, now, Some(response.status)).is_err() {
+             erase_json(&mut response.body);
+             service.recovery_required = true;
+             service.ha_activation = None;
+             service.ha_read_cache = None;
+-            response = unavailable();
++            // Never infer a publication or its recovery reference from response JSON.
++            // Only authenticated completion data can retain those exact fields.
++            response = self.audit_veto_response(authenticated);
+         }
+         CompletedSnapshotForward { response, file: None }
+     }
+ 
++    fn audit_veto_response(&self, authenticated: Option<&wire::CompletionData>) -> Response {
++        match authenticated {
++            Some(data) => self.uncertain_completion(data),
++            None if self.transport_attempted => self.uncertain(),
++            None => unavailable(),
++        }
++    }
++
+     fn uncertain(&self) -> Response {
+         Response {
+             status: 503,
+@@ -186,6 +201,9 @@
+             return self.finish_failure(service, unavailable());
+         };
+         let mut original = None;
++        // This irreversible local marker precedes the single transport call.
++        // A failed exchange is never treated as proof that the leader did no work.
++        self.transport_attempted = true;
+         let exchange = endpoint.exchange(
+             &self.metadata, upload, &mut file, limits,
+             |metadata| {
+@@ -234,13 +252,24 @@
+                 result.response_body().ok_or_else(unavailable)?,
+                 self.owner.key(&writer)?,
+             )?;
++            let (reply, data) = completion.into_parts();
+             if file.as_ref().map_or_else(wire::BodyDescriptor::empty, file::SealedSnapshotFile::descriptor)
+-                    != completion.wire.data.downloaded
++                    != data.downloaded
+             {
+-                return Err(unavailable());
++                drop(file);
++                return Ok(self.audit_failure(
++                    &mut writer, self.uncertain_completion(&data), Some(&data),
++                ));
+             }
+-            let (reply, data) = completion.into_parts();
+-            let response = reply.into_response(&self.request.cluster)?;
++            let response = match reply.into_response(&self.request.cluster) {
++                Ok(response) => response,
++                Err(_) => {
++                    drop(file);
++                    return Ok(self.audit_failure(
++                        &mut writer, self.uncertain_completion(&data), Some(&data),
++                    ));
++                }
++            };
+             Ok(self.finish_success(&mut writer, original, data, response, file))
+         })();
+         match completion {
+@@ -259,8 +288,8 @@
+ 
+     fn finish_failure(&self, service: &Arc<Mutex<Service>>, response: Response) -> CompletedSnapshotForward {
+         match service.lock_for_request() {
+-            Ok(mut writer) => self.audit_failure(&mut writer, response),
+-            Err(_) => CompletedSnapshotForward { response: self.uncertain(), file: None },
++            Ok(mut writer) => self.audit_failure(&mut writer, response, None),
++            Err(_) => CompletedSnapshotForward { response: self.audit_veto_response(None), file: None },
+         }
+     }
+ 
+@@ -337,7 +366,7 @@
+             Ok(activation) => activation,
+             Err(_) => {
+                 drop(file);
+-                return self.audit_failure(service, self.uncertain_completion(&data));
++                return self.audit_failure(service, self.uncertain_completion(&data), Some(&data));
+             }
+         };
+         let now = self.clock.admitted_at().duration_since_epoch().as_secs();
+@@ -358,7 +387,10 @@
+             response.response_headers.clear();
+             response.consistency_index = None;
+             drop(file);
+-            let error = failed_delivery(service, &self.fingerprint, now, self.uncertain_completion(&data));
++            let error = failed_delivery(
++                service, &self.fingerprint, now, self.uncertain_completion(&data),
++                || self.uncertain_completion(&data),
++            );
+             return CompletedSnapshotForward { response: error, file: None };
+         }
+         let file = file.map(file::SealedSnapshotFile::into_file);

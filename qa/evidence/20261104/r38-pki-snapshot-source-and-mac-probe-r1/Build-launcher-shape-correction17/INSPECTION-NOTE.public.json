@@ -1,0 +1,7 @@
+{
+  "schema": "heptabao.source-inspection-note.r1",
+  "error": "An initial V8 inspection treated a carrier base64 string as JSON. SyntaxError was returned before any mutation; subsequent inspection used the already held raw groups file and the verifier decoded carrier values explicitly.",
+  "candidate_error": false,
+  "Native": 0,
+  "source_evidence_changed": false
+}

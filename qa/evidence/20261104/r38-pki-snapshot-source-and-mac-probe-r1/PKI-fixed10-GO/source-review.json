@@ -1,0 +1,365 @@
+{
+  "schema": "heptabao.root-source-review.PKI-fixed10-public-collector.v1",
+  "status": "SOURCE_REVIEWED_FOR_EXACT_SINGLE_START",
+  "packet": {
+    "tree": "734f301b73cf19a31b159265a768016704617d91",
+    "files": 22,
+    "bytes": 866829,
+    "merkle": {
+      "root_sha": "734f301b73cf19a31b159265a768016704617d91",
+      "trees_verified": 1,
+      "leaf_count": 22
+    },
+    "whole": true
+  },
+  "checks": [
+    {
+      "name": "whole22_all866829_bytes",
+      "passed": true
+    },
+    {
+      "name": "source_request_journal_pins",
+      "passed": true
+    },
+    {
+      "name": "prior_actual38_source_exact",
+      "passed": true
+    },
+    {
+      "name": "collector_strict_bidirectional_hunks",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_0",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_1",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_2",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_3",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_4",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_5",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_6",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_7",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_8",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_9",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_10",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_11",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_12",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_13",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_14",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_15",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_16",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_17",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_18",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_19",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_20",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_21",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_22",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_23",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_24",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_25",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_26",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_27",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_28",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_29",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_30",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_31",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_32",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_33",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_34",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_35",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_36",
+      "passed": true
+    },
+    {
+      "name": "collector_exact_literal_37",
+      "passed": true
+    },
+    {
+      "name": "collector_all_changes_exact_declared_literals",
+      "passed": true
+    },
+    {
+      "name": "journal_strict_bidirectional_hunks",
+      "passed": true
+    },
+    {
+      "name": "journal_exact_literal_0",
+      "passed": true
+    },
+    {
+      "name": "journal_exact_literal_1",
+      "passed": true
+    },
+    {
+      "name": "journal_exact_literal_2",
+      "passed": true
+    },
+    {
+      "name": "journal_all_changes_exact_declared_literals",
+      "passed": true
+    },
+    {
+      "name": "original_PKI_journal_helpers",
+      "passed": true
+    },
+    {
+      "name": "same23_definitions_exact7_allowed_changes",
+      "passed": true
+    },
+    {
+      "name": "Custody_strict_apply_publication_full_byte_equal",
+      "passed": true
+    },
+    {
+      "name": "root_original_receipt_qualified_bound",
+      "passed": true
+    },
+    {
+      "name": "embedded10_exact_fixed_rows",
+      "passed": true
+    },
+    {
+      "name": "quartet_0_root_candidate_and_actual_receipt",
+      "passed": true
+    },
+    {
+      "name": "candidate_copy_0",
+      "passed": true
+    },
+    {
+      "name": "quartet_1_root_candidate_and_actual_receipt",
+      "passed": true
+    },
+    {
+      "name": "candidate_copy_1",
+      "passed": true
+    },
+    {
+      "name": "config_exact17_full9_from_receipt",
+      "passed": true
+    },
+    {
+      "name": "receipt_exact4907_original_full9",
+      "passed": true
+    },
+    {
+      "name": "543621_actual_input_1424736_caps",
+      "passed": true
+    },
+    {
+      "name": "uncommitted_candidate_provenance_explicit",
+      "passed": true
+    },
+    {
+      "name": "source_carrier_inputs_exact_literal",
+      "passed": true
+    },
+    {
+      "name": "all_original_or_lower_fixed_caps",
+      "passed": true
+    },
+    {
+      "name": "finite_FD_geometry",
+      "passed": true
+    },
+    {
+      "name": "exact_one_Python_request_no_children_or_network",
+      "passed": true
+    }
+  ],
+  "check_count": 65,
+  "source": {
+    "blob": "682e85d037c2b4fdd5c3b6412645a8027cda48d7",
+    "bytes": 30445,
+    "sha256": "592f1f112a4a3a3d48e07f33c8cf2ba493b1c63e4215ffe8ca0ba9fec80cd6f6"
+  },
+  "request": {
+    "blob": "22dd45be52462f7a001abf985abe48c523dc48a4",
+    "bytes": 33330,
+    "sha256": "d16edddff2f496d84fb41eb50fdf266716b274388beb1031baec8111579e2c0f"
+  },
+  "journal": {
+    "blob": "318cc953dde2cf72bd2431cc6a2f536bf07b97cf",
+    "bytes": 19063,
+    "sha256": "4ac9ec88c195ce9d52eb4a9738563cd56a8309f53db60351f1f07408041f3ab6"
+  },
+  "slot": "native_pki_lease400_formatter10_collector_gitfirst_r1",
+  "native_binding": {
+    "sha256": "0fda8cc772c1ace1cf1c91faef8fa77e322cf8f58e33689439cf3c22ffe86454",
+    "native_fingerprint": "1142380243743517921",
+    "stdin_absent_maps_to_null": true
+  },
+  "actual_input_bytes": 543621,
+  "input_files": 10,
+  "resource_budget": {
+    "internalSeconds": 50,
+    "outerSeconds": 60,
+    "readCap": 1424736,
+    "originalJWT38ReadCap": 7906155,
+    "perReadCap": 65536,
+    "readCallCap": 256,
+    "metadataCap": 320,
+    "fdAcquisitions": 18,
+    "peakFDs": 16,
+    "diffBytes": 131072,
+    "reportBytes": 262144,
+    "stdoutBytes": 16384,
+    "reportReadbackIncludedInReadCap": true,
+    "maxActualInputPlusReportReadback": 805765,
+    "clocksReset": false
+  },
+  "unchanged_definitions": 16,
+  "changed_definitions": [
+    "open_inputs",
+    "read_inputs",
+    "validate_receipt",
+    "make_diffs",
+    "recheck_inputs_and_close",
+    "public_input_records",
+    "main"
+  ],
+  "input_root": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1",
+  "output_root": "/home/qian-qi/heptabao-native-pki-lease400-format-observe-20261106-r1",
+  "receipt_qualification": "4ba7ea70dc1d2221dc5ba4f21e46221b4f89ff22",
+  "source_provenance": {
+    "baseCommit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+    "baseTree": "5497775d9d473541e13e1603be8c893a3e27681b",
+    "baseOnly": true,
+    "uncommittedCandidateInputs": true,
+    "candidateSourcePacket": "6e4bf23de8f7fdac6dd9b152232a905bedb87744",
+    "candidates": [
+      {
+        "name": "pki.rs",
+        "repositoryPath": "crates/heptabao-server/src/engines/pki.rs",
+        "inputBlob": "3c6fd86dcd641eb16af64b835d2252163dd1488e",
+        "bytes": 136672,
+        "sha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba"
+      },
+      {
+        "name": "service_native_pki_tests.rs",
+        "repositoryPath": "crates/heptabao-server/src/service_native_pki_tests.rs",
+        "inputBlob": "352e581f5a901f21ee7c7af4c9bc5b3bed1a1439",
+        "bytes": 42863,
+        "sha256": "3dfea1dccd78187517f3cb9ca04ed036073eb7ed6b7c604815aa745f4402f208"
+      }
+    ],
+    "futureParent": "808e45d690f177ecb922e13d1ed19f7877156094",
+    "futureCombinedCommit": null
+  },
+  "read_observations_atomic": false,
+  "Python_compiled": false,
+  "actual_collector_executed": false,
+  "formatted_source_reconstructed": false,
+  "compile_or_product_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

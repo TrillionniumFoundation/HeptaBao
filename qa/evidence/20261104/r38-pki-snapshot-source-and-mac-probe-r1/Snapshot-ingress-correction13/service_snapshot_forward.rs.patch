@@ -1,0 +1,23 @@
+--- a/crates/heptabao-server/src/service_snapshot_forward.rs
++++ b/crates/heptabao-server/src/service_snapshot_forward.rs
+@@ -195,12 +195,18 @@
+     })
+ }
+ 
+-fn failed_delivery(service: &mut Service, fingerprint: &str, now: u64, error: Response) -> Response {
++fn failed_delivery(
++    service: &mut Service, fingerprint: &str, now: u64, mut error: Response,
++    audit_veto: impl FnOnce() -> Response,
++) -> Response {
+     if service.audit_event("native-snapshot-forward-delivery-veto", fingerprint, now, Some(error.status)).is_err() {
++        erase_json(&mut error.body);
+         service.recovery_required = true;
+         service.ha_activation = None;
+         service.ha_read_cache = None;
+-        return unavailable();
++        // The caller supplies a fixed conservative or already authenticated
++        // failure. No field of the discarded response grants root authority.
++        return audit_veto();
+     }
+     error
+ }

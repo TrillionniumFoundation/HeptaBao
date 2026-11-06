@@ -1,0 +1,5 @@
+{
+  "initial": "Error: original12_failed_files_whole_pins_and_lossless_identities",
+  "correction": "The existing lossless JSON helper represents unsafe integers as {$exactInteger:decimalString}, not bare strings. Exact original report/SDK bytes unchanged; corrected type inspection and BigInt comparison now use that preserved decimal string.",
+  "candidate_or_actual_mutated": false
+}

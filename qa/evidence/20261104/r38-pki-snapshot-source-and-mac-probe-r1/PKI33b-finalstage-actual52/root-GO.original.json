@@ -1,0 +1,162 @@
+{
+  "schema": "heptabao.root-GO.PKI33b-independent-final-source-stage.v1",
+  "authorization": "GO",
+  "agent": "/root/ha_validation",
+  "purpose": "One independent exact33b formatted JWT and PKI source checkout and canonical incremental bundle; historical controls remain inert.",
+  "scope": "independent_source_stage_only",
+  "source_packet": "6176bb958dbc9b35d067dd89027525162c5f35ab",
+  "source_review": {
+    "blob": "c0285edac074bd10db0acd62504f61a1b443ff93",
+    "bytes": 6086,
+    "sha256": "b1492d96a73f0aaf648119d460d0f036b6530af59a6f5433e91c88b64fd6900d"
+  },
+  "source": {
+    "blob": "038e14fda7a776eb5909bfaa7152872c2f1d7add",
+    "bytes": 28799,
+    "sha256": "9e82c538579389d6bd7ebc85795d3104dc24053b7df6e014c5bfe972ab3955c4"
+  },
+  "exact_request": {
+    "blob": "1b3da82ecf429adc5d816a2ff2cb78810059ac90",
+    "bytes": 111811,
+    "sha256": "576e7eb3f5f6a20d49e7fdae8939f002153ec69ebb41a891a08c80a8eb75dde4"
+  },
+  "stdin": {
+    "blob": "f9166bc801c5b10e12b77274f485d27d61cd499a",
+    "bytes": 79951,
+    "sha256": "85fd6e473ce1e231f1bcfbd2bcf2bef760e6a4e551040c55ee3274606acebb77",
+    "historical_controls_executed": false
+  },
+  "native_binding": {
+    "sha256": "043dd4147f135f879d2ad30d1d31bec7ee692a940eac9b8a31a892ce6da7e732",
+    "native_fingerprint": "305633534227472263",
+    "typed_stdin": true
+  },
+  "start": {
+    "host": "rog",
+    "executable": "/usr/bin/python3",
+    "args_prefix": [
+      "-I",
+      "-S",
+      "-B",
+      "-c"
+    ],
+    "args_source": {
+      "blob": "038e14fda7a776eb5909bfaa7152872c2f1d7add",
+      "bytes": 28799,
+      "sha256": "9e82c538579389d6bd7ebc85795d3104dc24053b7df6e014c5bfe972ab3955c4"
+    },
+    "self_sha256": "9e82c538579389d6bd7ebc85795d3104dc24053b7df6e014c5bfe972ab3955c4",
+    "carrier_sha256": "85fd6e473ce1e231f1bcfbd2bcf2bef760e6a4e551040c55ee3274606acebb77",
+    "cwd": "/home/qian-qi",
+    "timeout_seconds": 360,
+    "idempotency_key": "heptabao-native-jwt-pki-33b814c7-rog-source-20261106-r1-9e82c538",
+    "maximum_START_count": 1
+  },
+  "canonical": {
+    "commit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+    "tree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+    "sole_parent": "808e45d690f177ecb922e13d1ed19f7877156094",
+    "leaves": 3916,
+    "tracked_bytes": 62297347,
+    "index": {
+      "blob": "274ab44690eb8992c7bb7954757cb81c994b6575",
+      "bytes": 452026,
+      "sha256": "7a2ab1d97a5140120034276c0d21547ffa935867055a0c5af95f7f061f8f3df0"
+    },
+    "source_changed_files": 3
+  },
+  "root_source_freeze": {
+    "blob": "190c74b3c05d6e9c63977104456ff28998f87b98",
+    "bytes": 3614,
+    "sha256": "5478d667d366f24f9adad2d5575d948fb7c7f12f9107f0640cea566f78839cba"
+  },
+  "new_create_only_root": "/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1",
+  "source_checkout": "/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1/source",
+  "new_control_directory": "/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1/control",
+  "old_readonly_source": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source",
+  "old_source_and_failed_observer_fences_required": true,
+  "public_fetch": {
+    "origin": "https://github.com/TrillionniumFoundation/HeptaBao.git",
+    "exact_commit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+    "recursive_submodules": false,
+    "implicit_bootstrap": false
+  },
+  "bundle": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1/control/canonical-native-jwt-pki-33b814c7-from495.bundle",
+    "standalone": false,
+    "onlyPrerequisite": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "actualBytes": null,
+    "actualSha256": null,
+    "actualVersion": null
+  },
+  "helpers": {
+    "native": {
+      "blob": "78f8c3190d0ca1dc3551b3937cacd46e7d7b7536",
+      "bytes": 19052,
+      "sha256": "e076e7c32b26aa15fe7b2b7e66e2b14b4ba3571aa2d8cd3caba1c6ad938a16c0"
+    },
+    "archive": {
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    "pure": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    "do_not_use_legacy_processStartBinding": true
+  },
+  "budgets": {
+    "internalSeconds": 300,
+    "gitSeconds": 90,
+    "cloneSeconds": 180,
+    "outerSeconds": 360,
+    "termSeconds": 5,
+    "killSeconds": 5,
+    "carrierBytes": 262144,
+    "bundleBytes": 4194304,
+    "process_read_bytes": 16384,
+    "immutable_page_bytes": 8192,
+    "original_payload_cap_bytes": 1048576,
+    "maximum_Runtime_lanes": 2,
+    "maximum_native_call_or_future_per_lane": 1
+  },
+  "journal": {
+    "slot": "jwt_pki_33b814c7_rog_source_gitfirst_r1",
+    "call_key_prefix": "jwt-pki-33b814c7-rog-source-",
+    "observer_key_prefix": "heptabao-native-jwt-pki-33b814c7-rog-source-observe-r1-",
+    "invoke_only_through": "gfRun",
+    "initialize_only_once_with_exact_whole_GO": true
+  },
+  "lane_activation": "C may activate one empty Runtime lane only after B original snapshot stage-body observer release, or A R4 original process and all observers release, is confirmed. Root zero Native; global at most2 active lanes and one native call/future per lane.",
+  "sequence": [
+    "Whole exact GO then initialize only the fresh stage slot with root-correct typed-stdin digest/fingerprint.",
+    "Whole exact request,intent,armed externally; cross an independent dispatch boundary and submit the one exact process_start.",
+    "Preserve and externally whole original SDK before parse/isError. UNKNOWN retains original admission,never replays or re-keys.",
+    "Observe only actual original rog job status/streams with original operation IDs,next8192 pages,full immutable SHA/EOF and completed inactive closure.",
+    "Require known exit0/full/durable/confirmed terminal,original whole streams,actual source/tree/index/old fences and direct-child closure within original300/360.",
+    "Stop after original terminal/streams; report metadata/body and build-control publication each require their own concrete exact scope. Source admission does not authorize Cargo."
+  ],
+  "excluded": [
+    "rustfmt,Cargo,rustc,tests,product or historical control execution",
+    "implicit dependency/tool install or alternate root/source/commit",
+    "production services,credentials,providers,J3160,client switching or deletion",
+    "new report file_info/binary_read or automatic bundle transport/import",
+    "retry,rekey,deadline extension or inference that UNKNOWN is closed"
+  ],
+  "qualification": {
+    "historical_controls_executed": false,
+    "candidate_build_qualification": false,
+    "formatter_executed": false,
+    "rust_tests_executed": false,
+    "planned_unique149_profiles166_not_executed": true,
+    "PKI_actual_HTTP12_not_executed": true,
+    "snapshot_branch_not_included": true
+  },
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0,
+  "source_review_checks": 42
+}

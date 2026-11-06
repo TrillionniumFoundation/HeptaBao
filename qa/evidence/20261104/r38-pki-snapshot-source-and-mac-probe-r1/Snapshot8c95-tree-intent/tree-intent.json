@@ -1,0 +1,80 @@
+{
+  "schema": "heptabao.snapshot-forward-unformatted-source-freeze.tree-intent.v1",
+  "scope": "Isolated SOURCE branch only; preserve all product/test qualifications as pending.",
+  "parent_commit": "808e45d690f177ecb922e13d1ed19f7877156094",
+  "parent_tree": "0506d30b02f5a2a2dc7d6364299365ae8d1d7cc7",
+  "source67": "422cc7927f0dd3a57a39c956e52cb5e008e300c0",
+  "correction13": "37c8d452421f9e5325a839e330dde366077822a6",
+  "root_source_review": "4c3713cffed323ca5f0b18de6dff16afc5882dd9",
+  "expected_root_tree": "f412f1524e08a56e23374897d329bfcf6295f4fe",
+  "leaves": 3928,
+  "modified_existing": 11,
+  "added": 12,
+  "changed_paths": [
+    "crates/heptabao-ha-service/src/authenticated_peer_frame.rs",
+    "crates/heptabao-ha-service/src/lib.rs",
+    "crates/heptabao-ha-service/src/native_snapshot_body.rs",
+    "crates/heptabao-ha-service/src/native_snapshot_body_tests.rs",
+    "crates/heptabao-ha-service/src/native_snapshot_peer.rs",
+    "crates/heptabao-ha-service/src/native_snapshot_peer_tests.rs",
+    "crates/heptabao-server/src/auth_forward_actor.rs",
+    "crates/heptabao-server/src/auth_snapshot_forward_actor_tests.rs",
+    "crates/heptabao-server/src/ha.rs",
+    "crates/heptabao-server/src/ha_snapshot_forward.rs",
+    "crates/heptabao-server/src/http.rs",
+    "crates/heptabao-server/src/http_snapshot.rs",
+    "crates/heptabao-server/src/service.rs",
+    "crates/heptabao-server/src/service_forward_delivery.rs",
+    "crates/heptabao-server/src/service_snapshot_forward.rs",
+    "crates/heptabao-server/src/service_snapshot_forward_client.rs",
+    "crates/heptabao-server/src/service_snapshot_forward_file.rs",
+    "crates/heptabao-server/src/service_snapshot_forward_source.rs",
+    "crates/heptabao-server/src/service_snapshot_forward_wire.rs",
+    "crates/heptabao-server/src/service_snapshot_forward_wire_tests.rs",
+    "crates/heptabao-server/src/service_snapshot_transfer.rs",
+    "crates/heptabao-server/src/service_snapshot_v6_ha.rs",
+    "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs"
+  ],
+  "all_other3905_leaves_unchanged": true,
+  "expected_layers": [
+    {
+      "path": "crates/heptabao-ha-service/src",
+      "sha": "0a85a54bce05b7e3f654b388491d96a731887557",
+      "entries": 35
+    },
+    {
+      "path": "crates/heptabao-server/src",
+      "sha": "1c6494ad1c3a33306b14a744135d7231ef71d532",
+      "entries": 790
+    },
+    {
+      "path": "crates/heptabao-ha-service",
+      "sha": "582e206e5bb698f11d6a29d9dac2b51d084aa2e1",
+      "entries": 3
+    },
+    {
+      "path": "crates/heptabao-server",
+      "sha": "b991a2c5e03b64701ff050a2c9569613f1e905cb",
+      "entries": 8
+    },
+    {
+      "path": "crates",
+      "sha": "bb4fab0e02010dd139d898ce0c0d718bcc23cbed",
+      "entries": 49
+    },
+    {
+      "path": "",
+      "sha": "f412f1524e08a56e23374897d329bfcf6295f4fe",
+      "entries": 26
+    }
+  ],
+  "branch": "codex/heptabao-native-snapshot-forward-r3-source-20261106",
+  "unformatted": true,
+  "compiled": false,
+  "components_executed": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "mutation_not_called": true,
+  "unknown_policy": "Reconcile original immutable tree/commit/ref; no blind replay."
+}

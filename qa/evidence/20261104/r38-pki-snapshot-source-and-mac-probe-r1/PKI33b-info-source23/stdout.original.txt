@@ -1,0 +1,1 @@
+{"all_owned_stopped": true, "compiler_started": false, "result_path": "/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1/control/stage-result.public.json", "server_started": false, "source_commit": "33b814c7034ec853151b1ff13e7529c83f65ea70", "source_tree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6", "status": "prepared", "within_new_stage_deadline": true}

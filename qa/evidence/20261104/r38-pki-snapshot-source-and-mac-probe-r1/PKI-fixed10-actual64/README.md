@@ -1,0 +1,5 @@
+# PKI fixed10 collector — original terminal and transport archive
+
+The single exact authorized collector job is rog / 1a1af917594-fc05-69b4. This packet preserves its original START plus two returned read observers: nine calls, four immutable payload pages, full authority and 4,775-byte stdout / empty stderr. Each original SDK was externally whole before interpretation. The terminal records 18 once-closed FDs, 0 children, 0 network calls, no input writes or directory listings, and shared input/report-readback bytes 573752 within 1424736.
+
+The terminal reports a create-only public observation file of 30,131 bytes. Independent file_info and whole body have not been requested. This packet therefore does not qualify the ten formatter outputs or their strict diff reconstruction, compilation, tests, production, or a new source commit. Current Runtime calls and native futures are zero. The original formatter receipt and its two reaped direct children remain separate; no independent process-group-empty claim is made.

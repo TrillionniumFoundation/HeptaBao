@@ -1,0 +1,9 @@
+{
+  "original": {
+    "error": "Error: layer exact crates/heptabao-server/src",
+    "replay": false
+  },
+  "cause": "The rebuilt immediate-entry arrays retain construction insertion order, while Git API returns Git order. All7 Merkle hashes already matched. The corrected comparison checks unique path/mode/type/SHA member sets plus the same canonical Merkle hash using the original cached7 SDKs.",
+  "tree_mutation_replayed": false,
+  "additional_tree_fetch": false
+}

@@ -1,0 +1,20 @@
+--- a/runner.BUILD22.before.py
++++ b/runner.BUILD22-r2.after.py
+@@ -274,7 +274,7 @@
+ # Physical commit is pinned by the reviewed launcher and the clean-tree freeze below.
+ assert isinstance(DIAGNOSTIC_COMMIT, str) and isinstance(DIAGNOSTIC_TREE, str), 'diagnostic source identity unresolved'
+ assert args.commit == DIAGNOSTIC_COMMIT and args.tree == DIAGNOSTIC_TREE
++assert args.groups_sha256 == '35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869'
+-assert args.groups_sha256 == '8651fc3043a14556734d2e1992ac941ffbd812671fa0f3486d8813084e5918ba'
+ assert sha(args.groups) == args.groups_sha256
+ groups = json.loads(Path(args.groups).read_text())
+ EXPECTED_GROUP_SHAPES = [('native-jwt-pki-file17', 'file', 17), ('native-jwt-pki-default17', 'default', 17),
+@@ -301,7 +301,7 @@
+           'groups_sha256': args.groups_sha256, 'controller_sha256': sha(__file__),
+           'production_changed': False, 'started_ns': time.time_ns(),
+           'selected_unique_test_total': 149, 'selected_profile_instance_total': 166,
++          'new_unique_test_total': 17, 'existing_unique_test_total': 132,
+-          'new_unique_test_total': 15, 'existing_unique_test_total': 132,
+           'actual_fixture_backend_for_new_tests': 'FileV6',
+           'distributed_native_jwt_ha_qualified': False,
+           'old_normal61_full34_LAN98plus12_comparison69_rerun': False,

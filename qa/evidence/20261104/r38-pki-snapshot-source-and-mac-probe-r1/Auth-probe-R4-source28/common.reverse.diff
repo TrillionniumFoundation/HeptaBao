@@ -1,0 +1,11 @@
+--- a/fixed-io-common.r4.py
++++ b/fixed-io-common.r3.py
+@@ -32,7 +32,7 @@
+          'process_identity_numbers')
+     need(value['pid'] > 1 and value['pgid'] > 1 and value['uid'] == 501
+          and value['birthSec'] > 0 and value['birthUsec'] < 1000000
++         and value['executable'] == PYTHON, 'process_identity_fixed_python')
+-         and value['executable'] == KERNEL_PYTHON_IMAGE, 'process_identity_fixed_python')
+     return dict(value)
+ 
+ class FixedIO:

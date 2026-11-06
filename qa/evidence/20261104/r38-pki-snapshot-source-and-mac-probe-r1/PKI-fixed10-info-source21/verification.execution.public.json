@@ -1,0 +1,13 @@
+{
+  "runtime": "functions.exec pure V8",
+  "status": "completed",
+  "entry": "verifyCollectorReportInfoSource",
+  "native_calls": 0,
+  "github_calls_during_verification": 0,
+  "python_rust_candidate_execution": false,
+  "result": {
+    "blob": "334d474de7353b98fc1cee8b057ef585e3886c14",
+    "bytes": 3414,
+    "sha256": "17fc8bf186fb0e17403516ca3edd472db2b8fb6c6101235dbbd9132bca4eb63b"
+  }
+}

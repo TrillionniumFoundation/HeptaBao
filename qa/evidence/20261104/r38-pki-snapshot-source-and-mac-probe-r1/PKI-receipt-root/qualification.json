@@ -1,0 +1,296 @@
+{
+  "schema": "heptabao.root-qualification.PKI-formatter-original-receipt-body.v1",
+  "status": "PASS_ORIGINAL_RECEIPT_AND_REPORTED_CHILD_RECORDS",
+  "evidence_qualified": true,
+  "checks": [
+    {
+      "name": "whole26_all351287_bytes",
+      "passed": true
+    },
+    {
+      "name": "exact_GO_prior_metadata_and_transport_qualified",
+      "passed": true
+    },
+    {
+      "name": "PKI_receipt_body_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "PKI_receipt_body_call_pki-lease400-formatter-receipt-body0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI_receipt_body_armed_tree_pki-lease400-formatter-receipt-body0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI_receipt_body_call_pki-lease400-formatter-receipt-body0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI_receipt_body_armed_tree_pki-lease400-formatter-receipt-body0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI_receipt_body_call_pki-lease400-formatter-receipt-body0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI_receipt_body_armed_tree_pki-lease400-formatter-receipt-body0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI_receipt_body_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "PKI_receipt_body_observer_4e26e6c4d8a48966edcb779f0e5c43eda8d3edf08dcdd0319c34cd0fda547ffc",
+      "passed": true
+    },
+    {
+      "name": "PKI_receipt_body_page_4e26e6c4d8a48966edcb779f0e5c43eda8d3edf08dcdd0319c34cd0fda547ffc_0",
+      "passed": true
+    },
+    {
+      "name": "PKI_receipt_body_payload_4e26e6c4d8a48966edcb779f0e5c43eda8d3edf08dcdd0319c34cd0fda547ffc",
+      "passed": true
+    },
+    {
+      "name": "PKI_receipt_body_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "exact_three_calls_one_original_binary_observer_page",
+      "passed": true
+    },
+    {
+      "name": "exact_original_binary_request_and_job",
+      "passed": true
+    },
+    {
+      "name": "binary_original_payload_exact",
+      "passed": true
+    },
+    {
+      "name": "binary_path_version_range_EOF_size_SHA",
+      "passed": true
+    },
+    {
+      "name": "original_metadata_native_and_state_body_exact",
+      "passed": true
+    },
+    {
+      "name": "lane_closed_and_no_replay_other_reads",
+      "passed": true
+    },
+    {
+      "name": "prior_three_observers_preserved",
+      "passed": true
+    },
+    {
+      "name": "receipt_known_scope_base_only",
+      "passed": true
+    },
+    {
+      "name": "original_deadlines_and_elapsed",
+      "passed": true
+    },
+    {
+      "name": "two_distinct_direct_children",
+      "passed": true
+    },
+    {
+      "name": "child_0_exit0_reap_shared_group_original_argv",
+      "passed": true
+    },
+    {
+      "name": "child_1_exit0_reap_shared_group_original_argv",
+      "passed": true
+    },
+    {
+      "name": "tool_full9_before_after_pinned",
+      "passed": true
+    },
+    {
+      "name": "config_full9_before_after_pinned",
+      "passed": true
+    },
+    {
+      "name": "exact_candidate_carrier_and_two_files",
+      "passed": true
+    },
+    {
+      "name": "file_0_root_inputs_and_empty_stderr",
+      "passed": true
+    },
+    {
+      "name": "file_1_root_inputs_and_empty_stderr",
+      "passed": true
+    },
+    {
+      "name": "reported_one_same_one_changed_matches_original_stdout",
+      "passed": true
+    }
+  ],
+  "check_count": 32,
+  "packet": {
+    "tree": "90ca24f4befcb5f91a7cdf36f67ad1c855edd2e8",
+    "files": 26,
+    "bytes": 351287,
+    "merkle": {
+      "root_sha": "90ca24f4befcb5f91a7cdf36f67ad1c855edd2e8",
+      "trees_verified": 1,
+      "leaf_count": 26
+    },
+    "whole": true
+  },
+  "original_job": "rog/1a1af6d62a1-fc05-686a",
+  "original_operation": "4e26e6c4d8a48966edcb779f0e5c43eda8d3edf08dcdd0319c34cd0fda547ffc",
+  "original_calls": 3,
+  "immutable_pages": 1,
+  "receipt": {
+    "blob": "6638b8f22581832b5451d8b79e275feccec54959",
+    "bytes": 4907,
+    "sha256": "7b2560af593a62c7de4b8ca3a8cb7c2fffaed1408b2f1b356a302a38a7617776"
+  },
+  "actual_metadata": {
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/result.public.json",
+    "size": 4907,
+    "sha256": "7b2560af593a62c7de4b8ca3a8cb7c2fffaed1408b2f1b356a302a38a7617776",
+    "version": "66306:28071628:4907:1793944550782366173:1793944550782366173",
+    "nativeText": {
+      "blob": "87e770a58b2d4cbe9d6ab71d8c61d5d3634a9556",
+      "bytes": 466,
+      "sha256": "9bdc226bd5fecc495a4a4b17c4593324f01bd7f95b3e5315052c90cc9a4ac2f1"
+    },
+    "originalOperation": "d20c3dc1bb81c7f2ada4ea0ff79b48a59a03e4d943adf6ec90dd8da584166ff6",
+    "full9Strings": [
+      "66306",
+      "28071628",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "4907",
+      "1793944550782366173",
+      "1793944550782366173"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "children": [
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--config-path",
+        "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/rustfmt.toml",
+        "--edition",
+        "2024",
+        "--emit",
+        "stdout"
+      ],
+      "cwd": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1",
+      "exitCode": 0,
+      "newProcessGroupCreated": false,
+      "pgid": 82826,
+      "pid": 82829,
+      "reaped": true,
+      "stopped": true,
+      "supervisorGroup": 82826,
+      "timeoutSeconds": 10
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--config-path",
+        "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/rustfmt.toml",
+        "--edition",
+        "2024",
+        "--emit",
+        "stdout"
+      ],
+      "cwd": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1",
+      "exitCode": 0,
+      "newProcessGroupCreated": false,
+      "pgid": 82826,
+      "pid": 82831,
+      "reaped": true,
+      "stopped": true,
+      "supervisorGroup": 82826,
+      "timeoutSeconds": 10
+    }
+  ],
+  "tool": {
+    "bytes": 5255144,
+    "identity": [
+      66306,
+      28970682,
+      5255144,
+      {
+        "$exactInteger": "1791677524979153708"
+      },
+      {
+        "$exactInteger": "1791677525080580886"
+      },
+      33261,
+      1000,
+      1000,
+      1
+    ],
+    "path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+    "sha256": "5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877"
+  },
+  "configuration": {
+    "bytes": 17,
+    "identity": [
+      66306,
+      28071611,
+      17,
+      {
+        "$exactInteger": "1793944550719366866"
+      },
+      {
+        "$exactInteger": "1793944550719366866"
+      },
+      33152,
+      1000,
+      1000,
+      1
+    ],
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/rustfmt.toml",
+    "sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584"
+  },
+  "reported_files": [
+    {
+      "afterBytes": 136672,
+      "afterSha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba",
+      "beforeBytes": 136672,
+      "beforeSha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba",
+      "name": "pki.rs",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "afterBytes": 42909,
+      "afterSha256": "6a1fd1fbaf6caa1c206844e8d97414ea231a1cba663ebb704d26cdff42417d56",
+      "beforeBytes": 42863,
+      "beforeSha256": "3dfea1dccd78187517f3cb9ca04ed036073eb7ed6b7c604815aa745f4402f208",
+      "name": "service_native_pki_tests.rs",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "limitations": [
+    "The original complete formatter receipt reports two direct children reaped in one supervisor process group; no independent child group-empty observation is asserted.",
+    "Tool/configuration full9 and whole hashes are the original formatter's before/after records; separate fixed10 file observation remains pending.",
+    "Two formatted output bodies and strict reconstructed final source remain unqualified until fixed10 collection.",
+    "No compile, component, HTTP product or production result is established."
+  ],
+  "ten_outputs_qualified": false,
+  "formatted_source_reconstructed": false,
+  "compile_or_product_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

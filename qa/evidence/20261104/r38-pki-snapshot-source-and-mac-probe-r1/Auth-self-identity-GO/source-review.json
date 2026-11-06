@@ -1,0 +1,177 @@
+{
+  "schema": "heptabao.root-source-review.Mac-public-Python-self-identity.v1",
+  "status": "SOURCE_REVIEWED_PENDING_FREE_RUNTIME_LANE_AND_EXACT_GO",
+  "checks": [
+    {
+      "name": "whole14_89754",
+      "passed": true
+    },
+    {
+      "name": "previous_failed_R3_original_chain_qualified",
+      "passed": true
+    },
+    {
+      "name": "original_failed_stdout_unchanged",
+      "passed": true
+    },
+    {
+      "name": "source_request_journal_pins",
+      "passed": true
+    },
+    {
+      "name": "original_reader_whole_and_exact_extract",
+      "passed": true
+    },
+    {
+      "name": "signals_exact_previous_source_and_embedded_once",
+      "passed": true
+    },
+    {
+      "name": "exact_original_compound_six_predicates_source",
+      "passed": true
+    },
+    {
+      "name": "only_current_PID_two_original_reads_and_no_child_query",
+      "passed": true
+    },
+    {
+      "name": "same_all_seven_fields_and_shape_before_projection",
+      "passed": true
+    },
+    {
+      "name": "strict_public_python_framework_only",
+      "passed": true
+    },
+    {
+      "name": "no_unknown_path_error_or_sys_executable_export",
+      "passed": true
+    },
+    {
+      "name": "no_explicit_file_child_network_or_service_invocation",
+      "passed": true
+    },
+    {
+      "name": "fixed5_shared4_each_no_clock_reset",
+      "passed": true
+    },
+    {
+      "name": "started_returned_read_ledger_survives_signals",
+      "passed": true
+    },
+    {
+      "name": "handler_restore_and_signal_deadline_before_final_success",
+      "passed": true
+    },
+    {
+      "name": "diagnostic_false_predicate_allowed_without_guard_relaxation",
+      "passed": true
+    },
+    {
+      "name": "bounded_ascii_output_and_postflush_deadline_exit",
+      "passed": true
+    },
+    {
+      "name": "unchanged_original_journal_base",
+      "passed": true
+    },
+    {
+      "name": "journal_two_hunks_whole_both_directions",
+      "passed": true
+    },
+    {
+      "name": "all_original_journal_functions_byte_identical",
+      "passed": true
+    },
+    {
+      "name": "journal_syntax_parse_only_no_invocation",
+      "passed": true
+    },
+    {
+      "name": "exact_fixed_launcher_current_user_cwd_stdin",
+      "passed": true
+    },
+    {
+      "name": "scope_no_runtime_and_new_fresh_slot",
+      "passed": true
+    },
+    {
+      "name": "limits_match_executable_source",
+      "passed": true
+    }
+  ],
+  "check_count": 24,
+  "source_packet": {
+    "tree": "312115da1177b9f48c781f1f6bd9ff8789337caa",
+    "files": 14,
+    "bytes": 89754,
+    "merkle": {
+      "root_sha": "312115da1177b9f48c781f1f6bd9ff8789337caa",
+      "trees_verified": 1,
+      "leaf_count": 14
+    },
+    "whole": true
+  },
+  "source": {
+    "blob": "14b74c4007faf72d28dde9043f7d20812973dba4",
+    "bytes": 11243,
+    "sha256": "77b33bcbee6ac6043a52fb2bc108b08dfffe973cbb3d2fead68493a530fd2bb2"
+  },
+  "exact_request": {
+    "blob": "f7294f87be2ce6675fd0125bc482c950c30f2c0e",
+    "bytes": 11843,
+    "sha256": "7ffa77a896493e9238d06be556a41647185198a23f060e660b9434c0ee63ece4"
+  },
+  "journal": {
+    "blob": "83f17e55c507c85d712635386c002b135afc2af3",
+    "bytes": 19042,
+    "sha256": "d96ec873d27c0eeedc7d7dc6b8a16015d9aefe968d09ffd62db8a406d6e0d49b"
+  },
+  "native_binding": {
+    "sha256": "272e96c5a80b3676c8673c7eb28273b6450263334b88b7ef79fb1c3ef4f6547b",
+    "native_fingerprint": "2823359792079910518"
+  },
+  "original_failure_qualification": {
+    "blob": "03fb9f788ff6ffd5e538c5ea9c99009eb12e60cb",
+    "bytes": 6806,
+    "sha256": "897696797bca33eb1160ed124876b457986a9dd32191f336362ec857c5b18a3f"
+  },
+  "scope": {
+    "current_PID_only": true,
+    "original_reader_calls": 2,
+    "field_predicates": 6,
+    "public_path_prefix": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/",
+    "application_FD_acquisitions": 0,
+    "child_processes": 0,
+    "network": 0,
+    "old_label_effects": 0,
+    "new_launchd_effects": 0,
+    "credential_reads": 0
+  },
+  "limits": {
+    "sharedSeconds": 5,
+    "eachReadLateReturnSeconds": 4,
+    "allReadsClippedToOneSharedDeadline": true,
+    "outerSeconds": 60,
+    "stdoutMaximumBytes": 8192,
+    "maximumOriginalReaderCalls": 2,
+    "maximumProcessPidinfoCalls": 4,
+    "maximumProcessPidpathCalls": 2,
+    "sleep": false,
+    "retry": false,
+    "synchronousCallsNotHardPreemptible": true,
+    "lateReturnFails": true,
+    "finalPostFlushExitCheck": true
+  },
+  "limitations": [
+    "The original ProcessReader performs path normalization metadata; interpreter/dynamic-loader descriptors are not enumerated.",
+    "Synchronous libproc calls are not individually preemptible; late returns cannot qualify success.",
+    "This fresh observation cannot retroactively identify the old R3 predicate values or qualify the kernel image file."
+  ],
+  "source_only": true,
+  "Python_executed": false,
+  "AuthBus_credentials_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

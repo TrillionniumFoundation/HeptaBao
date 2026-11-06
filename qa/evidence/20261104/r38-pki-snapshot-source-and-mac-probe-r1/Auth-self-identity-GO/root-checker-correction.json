@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.root-review-checker-provenance-correction.v1",
+  "original_error": {
+    "error": "Error: signals_exact_previous_source_and_embedded_once"
+  },
+  "correction": "Signals442 is copied from the original R3 managed-probe source2649636, not a literal class in the embedding controller. Only the root verifier ancestry lookup was corrected. Candidate source/request/journal unchanged.",
+  "candidate_changed": false,
+  "native_calls": 0
+}

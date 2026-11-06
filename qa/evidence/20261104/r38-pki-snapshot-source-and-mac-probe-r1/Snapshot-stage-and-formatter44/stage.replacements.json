@@ -1,0 +1,82 @@
+[
+  {
+    "before": "\"\"\"Stage the exact unformatted native JWT source independently; no Cargo or product.\"\"\"",
+    "after": "\"\"\"Stage exact unformatted snapshot forwarding source independently; no Cargo or product.\"\"\"",
+    "occurrences": 1
+  },
+  {
+    "before": "ROOT = Path('/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1')",
+    "after": "ROOT = Path('/home/qian-qi/heptabao-native-snapshot-forward-source-8c95fb0a-20261106-r1')",
+    "occurrences": 1
+  },
+  {
+    "before": "COMMIT = 'e3afc157447d35c861f275a761b29da3e42aff8e'",
+    "after": "COMMIT = '8c95fb0a8b2f61933a09b04986df2bafc9e7095c'",
+    "occurrences": 1
+  },
+  {
+    "before": "TREE = '5497775d9d473541e13e1603be8c893a3e27681b'",
+    "after": "TREE = 'f412f1524e08a56e23374897d329bfcf6295f4fe'",
+    "occurrences": 1
+  },
+  {
+    "before": "PARENT = '4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'",
+    "after": "PARENT = '808e45d690f177ecb922e13d1ed19f7877156094'",
+    "occurrences": 1
+  },
+  {
+    "before": "ANCESTRY = (\n",
+    "after": "ANCESTRY = (\n    ('8c95fb0a8b2f61933a09b04986df2bafc9e7095c', '808e45d690f177ecb922e13d1ed19f7877156094'),\n    ('808e45d690f177ecb922e13d1ed19f7877156094', 'e3afc157447d35c861f275a761b29da3e42aff8e'),\n",
+    "occurrences": 1
+  },
+  {
+    "before": "assert len(entries) == 3916 and len({x[0] for x in entries}) == 3916",
+    "after": "assert len(entries) == 3928 and len({x[0] for x in entries}) == 3928",
+    "occurrences": 1
+  },
+  {
+    "before": "'schema': 'heptabao.native-jwt-independent-source-stage.v1'",
+    "after": "'schema': 'heptabao.native-snapshot-forward-independent-source-stage.v1'",
+    "occurrences": 1
+  },
+  {
+    "before": "'stage_purpose': 'unformatted_jwt_source_for_separate_formatter_admission'",
+    "after": "'stage_purpose': 'unformatted_snapshot_forward_source_for_separate_formatter_admission'",
+    "occurrences": 1
+  },
+  {
+    "before": "'canonical_history_count': 3764",
+    "after": "'canonical_history_count': 3766",
+    "occurrences": 1
+  },
+  {
+    "before": "CONTROL / 'stage_source_native_jwt.py'",
+    "after": "CONTROL / 'stage_source_native_snapshot_forward.py'",
+    "occurrences": 1
+  },
+  {
+    "before": "assert len(added) == 12 and set(added) == {row[0] for row in ANCESTRY}",
+    "after": "assert len(added) == 14 and set(added) == {row[0] for row in ANCESTRY}",
+    "occurrences": 1
+  },
+  {
+    "before": "git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3764'",
+    "after": "git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3766'",
+    "occurrences": 1
+  },
+  {
+    "before": "result['full_worktree']['tracked_bytes'] == 62287650",
+    "after": "result['full_worktree']['tracked_bytes'] == 62460068",
+    "occurrences": 1
+  },
+  {
+    "before": "result['full_worktree']['full_leaf_index_sha256'] == 'd545c2109362dc3f74d85ade2e66717d7b1ff9dd630842982f2ae3215e121dea'",
+    "after": "result['full_worktree']['full_leaf_index_sha256'] == '6baa9290fa3ee8f67bc22a77697d38a7ad1c4c776fc769f5f04ee645de204574'",
+    "occurrences": 1
+  },
+  {
+    "before": "CONTROL / 'canonical-native-jwt-e3afc157-from495.bundle'",
+    "after": "CONTROL / 'canonical-native-snapshot-forward-8c95fb0a-from495.bundle'",
+    "occurrences": 1
+  }
+]

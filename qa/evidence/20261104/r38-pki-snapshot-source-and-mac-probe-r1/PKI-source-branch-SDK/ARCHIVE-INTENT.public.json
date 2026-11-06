@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "R38-PKI3-source-branch-original-SDK",
+  "records": [
+    {
+      "name": "original.sdk.json",
+      "blob": "00479c0dd07a52c858201db6e7a3070687bd0b85",
+      "bytes": 203,
+      "sha256": "8452df66a8a93f6122f249229bbd5e73a3e83ea04567739bf1c6f1070a1292c8"
+    }
+  ],
+  "expected_data_tree": "414bd431dfb6f84ded36d1497c9bb4a677a52923",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

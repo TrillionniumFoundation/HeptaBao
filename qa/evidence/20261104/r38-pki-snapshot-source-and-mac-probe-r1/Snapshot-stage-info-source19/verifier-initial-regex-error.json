@@ -1,0 +1,4 @@
+{
+  "name": "SyntaxError",
+  "message": "Invalid regular expression: /^(?:async )?function ([A-Za-z0-9_]+)\\\\(/gm: Unterminated group"
+}

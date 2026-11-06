@@ -1,0 +1,31 @@
+{
+  "schema": "heptabao.public-home-t5-probe.r4-actual-references.v1",
+  "rootGO": {
+    "blob": "806c1e15bf4fbb6d88bfa1443e9b58eb38ed1210",
+    "bytes": 14378,
+    "sha256": "70fed9554a7c01f885b534475bad329aae1dc60bda93639df437f92c3a4837ab"
+  },
+  "sourceTree": "690747178bd9d66eedca0e704719727bd4cd5a3a",
+  "source": {
+    "blob": "fb453c023c1de1299e1875078ae8720b20a441de",
+    "bytes": 168844,
+    "sha256": "87ddc49599abfd6b09b023287fbeefe1e0c833c1b806cf9c753755f706eaaa6c"
+  },
+  "managedChild": {
+    "blob": "62a75849b5eb5568564a12ee5e0f00cea95f56e5",
+    "bytes": 36522,
+    "sha256": "b4f52562e8e861a30bfd942399ec2229cbb52ffddd06240950b99d746686cd00"
+  },
+  "journal": {
+    "blob": "03e72b0bd32b4fe9219b98b0c6d4dab57182bead",
+    "bytes": 19039,
+    "sha256": "9bb9f76d50294f781fb6c793bd522790d6318d1ae65682963268f1d67a73620b"
+  },
+  "previousFailureTree": "8b74de099687e31d3dfd89ec9e878de142c06962",
+  "previousFailureRoot": "03fb9f788ff6ffd5e538c5ea9c99009eb12e60cb",
+  "selfQualificationRoot": "110d8f083a05e5cb478fdb60917d0406b54bc276",
+  "minimalReleaseTree": "66487e7c95b612e13b5eea804b69ba753ae55c83",
+  "originalKey": "heptabao-mac-owned-home-t5-probe-87ddc495-20261106-r4",
+  "noNewHostReadsToConstructPacket": true,
+  "noRuntimeOrSDKTestsAdded": true
+}

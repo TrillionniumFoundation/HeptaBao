@@ -1,0 +1,75 @@
+{
+  "schema": "heptabao.pki10-collector-report-info-lane-release.r1",
+  "scope": "independent_fixed_report_metadata_only",
+  "root_go": {
+    "blob": "b6c22fb82f75beec7fdf8168f5527f65e141993c",
+    "bytes": 4573,
+    "sha256": "3a767372cd99d80747132c0181e07c9bd0139d3b3bb86364f6cba2ae39569afb"
+  },
+  "original_job": "1a1af917594-fc05-69b4",
+  "original_operation": {
+    "id": "97808443f5d922af35c74107721bf17a5b9c65f46a3e3be525318c0aabecbb07",
+    "tool": "file_info",
+    "payload": {
+      "blob": "752bf47428edbe112145551b46ac9b1d13b45af6",
+      "bytes": 598,
+      "sha256": "38682575d3352e00c8f4cd3fdc75e1ada6c9ea979880bad0fa5fadad8e85863a"
+    },
+    "payloadTree": "c7f706fb6f45acda382890fd4f3ff24510ce9e67",
+    "nativeText": {
+      "blob": "31a0dafbdf896a40a7f31c426e3b07de1d31fef8",
+      "bytes": 481,
+      "sha256": "6ef4f65835eb727f86892a9b23f0adc70d475280685a17fbfd2c4a9580b9f438"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "independent_info": {
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-observe-20261106-r1/observation.public.json",
+    "size": 30131,
+    "sha256": "f2d35f46f7fec2d9d9ce81d7e3bd8dca21c9c6f44d5f990314cfd4dcb5c4da46",
+    "version": "66306:30842948:30131:1793946915079275200:1793946915079275200",
+    "nativeText": {
+      "blob": "31a0dafbdf896a40a7f31c426e3b07de1d31fef8",
+      "bytes": 481,
+      "sha256": "6ef4f65835eb727f86892a9b23f0adc70d475280685a17fbfd2c4a9580b9f438"
+    },
+    "originalOperation": "97808443f5d922af35c74107721bf17a5b9c65f46a3e3be525318c0aabecbb07",
+    "full9Strings": [
+      "66306",
+      "30842948",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "30131",
+      "1793946915079275200",
+      "1793946915079275200"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "exact_terminal_report_matches": true,
+  "metadata": {
+    "permission_mode": 384,
+    "regular_full_mode": 33152,
+    "uid": 1000,
+    "gid": 1000,
+    "link_count": 1
+  },
+  "returned_calls": 3,
+  "payload_pages": 1,
+  "pending_native_calls": 0,
+  "pending_native_futures": 0,
+  "report_body_observed": false,
+  "binary_read_submitted": 0,
+  "source_semantics_qualified": false,
+  "following_step": "One fixed body request may be finalized with this actual info; separate root GO is still required.",
+  "collector_terminal_root_qualification": {
+    "blob": "9ab252931ca5d239f8635fbfd97a7b0aa9408f2f",
+    "bytes": 8495,
+    "sha256": "843583f5f76e7bbda5abaa11c1dbc18ae7fc7c0bbef1c6e7e4fd0c9b8b132660",
+    "tree": "2de0d7d8c1d97e278692dd0c69e48ba451e880a8",
+    "scope": "terminal_and_transport_only"
+  }
+}

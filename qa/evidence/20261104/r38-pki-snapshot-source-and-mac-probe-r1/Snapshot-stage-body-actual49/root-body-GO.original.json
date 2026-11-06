@@ -1,0 +1,71 @@
+{
+  "schema": "heptabao.root-GO.snapshot8c95-stage-report-body.v1",
+  "authorization": "GO",
+  "agent": "/root/compatibility_audit",
+  "scope": "stage_result_binary_read_only",
+  "source_packet": "d9a57df11200060445647a8f60f4dc9aa1303106",
+  "source": {
+    "blob": "6135a73fa269e17aecfec9c575e28bda46462751",
+    "bytes": 28285,
+    "sha256": "dfc4c4d96755db97999019c0457c3421106fa6788913f8e33a05ce55ba8d32f0"
+  },
+  "source_review": {
+    "blob": "b17f57c1fde5e19828069733613aa596418ea2ea",
+    "bytes": 4110,
+    "sha256": "56e6ecd7e7ec2afc957815a3afe912ddafb7dfe3d37f570ef793fe1fa371cb67"
+  },
+  "source_review_checks": 34,
+  "exact_request": {
+    "blob": "eaf9a7e50fa46f4c01798bdeda5accbcbf93277b",
+    "bytes": 445,
+    "sha256": "816551bfbc78f5f440203826d2318fe0958eac8a69f0e9a9e750cd320409f3c3"
+  },
+  "original_job": "1a1afa74868-fc05-6a7e",
+  "original_slot": "snapshot_8c95_rog_source_gitfirst_r1",
+  "info_operation": "500bddf3a5ca158179ff8dfb356f711452c68ac220261552fdf63611512681a3",
+  "info_root_qualification": {
+    "blob": "bbc61f1cc7d32b119f07466f67511a342348fe0e",
+    "bytes": 4744,
+    "sha256": "ea9117669c13ff9dc0c13d22eb9f4343751e19c96579cf4df232017e5a794606"
+  },
+  "expected_report": {
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-8c95fb0a-20261106-r1/control/stage-result.public.json",
+    "bytes": 28015,
+    "sha256": "750f5cb413cf08f1a7ba9b126320e4bbd1a9682e308b9076d2f13e54e98157c6",
+    "version": "66306:31235361:28015:1793948357106358650:1793948357106358650",
+    "infoOperation": "500bddf3a5ca158179ff8dfb356f711452c68ac220261552fdf63611512681a3",
+    "infoNative": {
+      "blob": "9b8eea5cac4b35965c5f1d9078d90550d8ed2b94",
+      "bytes": 495,
+      "sha256": "ab251eb0e600d80800b10c9ce23a069f554ab1efe9c48cc90b53a1eb2be6f277"
+    }
+  },
+  "maximum_binary_read_starts": 1,
+  "no_reinitialize": true,
+  "no_process_start": true,
+  "limits": {
+    "fixed_offset": 0,
+    "fixed_limit": 28015,
+    "immutable_page_bytes": 8192,
+    "original_payload_bytes": 1048576,
+    "maximum_Runtime_lanes": 2,
+    "maximum_native_call_or_future_per_lane": 1
+  },
+  "sequence": [
+    "Whole this exact GO and attach original closed stage slot only via authorize_stage_result_body. Never initialize.",
+    "Whole exact request,intent and armed; cross independent dispatch boundary before the single operation_start.",
+    "Whole original SDK before parse/isError; follow only original returned operation ID with original status and contiguous8192 immutable pages,complete SHA/EOF and inactive closure.",
+    "Require exact path,version,size,offset0,next28015,EOF and decoded bytes/SHA. Whole the decoded original report externally before semantic qualification.",
+    "Stop after closing the original observer and releasing this lane. Current23-file formatter remains held; no compiler,product or other path is included."
+  ],
+  "excludes": [
+    "file_info refresh,alternate range or path,listings,new START",
+    "formatter,Cargo,tests,product,production",
+    "replay,rekey,reinitialize,replacement for UNKNOWN"
+  ],
+  "lane_activation": "B may use the second short body-observation lane while A runs the public Mac R4 probe. C/root zero Native until one lane is released.",
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

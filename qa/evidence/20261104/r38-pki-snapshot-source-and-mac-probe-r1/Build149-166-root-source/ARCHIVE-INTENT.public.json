@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "Root-JWT-PKI-build-correction18-r1",
+  "records": [
+    {
+      "name": "review.json",
+      "blob": "ac6ba549205c12ba4169d63a617dedd5fdd41f61",
+      "bytes": 7309,
+      "sha256": "c17c248d2a7a911456db60dc2834cfe419f5f30b24b1c3bc88cdea3d3e12a139"
+    },
+    {
+      "name": "verifier.js",
+      "blob": "58ddf2af0ad1efb65f99c3f3da7ed9b5eb55a74c",
+      "bytes": 6630,
+      "sha256": "305f448e83064298b6910f1b88b7d58244cfe5bac6c3e0df715ce541117c6742"
+    },
+    {
+      "name": "strict-diff-empty-aware.js",
+      "blob": "af8c8db9ee76ccea0bb1dc4df1b0cdb61a8152d3",
+      "bytes": 2273,
+      "sha256": "eee83dbb8f629571ef33063873f55be75dd17aa40796e22e5f9a70ec36ddf7e3"
+    }
+  ],
+  "expected_data_tree": "cb958030483c278ce11a8de11a2afbfd6d3b1dea",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

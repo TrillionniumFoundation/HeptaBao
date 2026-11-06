@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "Snapshot-forward-r3-source-tree-SDK-r1",
+  "records": [
+    {
+      "name": "tree.original.sdk.json",
+      "blob": "213abd077217e496d86dc9467d4845538e26d4a8",
+      "bytes": 195,
+      "sha256": "16f0b2b7f518bee7ca69a6c2438e3bad856b15baa1fce7cc75b7489a8b1842eb"
+    }
+  ],
+  "expected_data_tree": "60a4e22dc30cb4f868e8b1f30afbf529ed57406d",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

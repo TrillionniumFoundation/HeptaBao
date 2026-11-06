@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "R38-PKI3-source-commit-intent",
+  "records": [
+    {
+      "name": "intent.json",
+      "blob": "46592f46822fa268269f5c1e01d5497bed331743",
+      "bytes": 1898,
+      "sha256": "1a0575a9c526682b52e43473c0f6832399cefdcc412d219f91891a901fb1e628"
+    },
+    {
+      "name": "root-layer-comparator-correction.json",
+      "blob": "c1fc8148f929d817707f8002c2d5cb1d252bf559",
+      "bytes": 469,
+      "sha256": "015ef59e3d7897e451dbbdf9138c32852092230ee7aed47a449773e6faf0755f"
+    }
+  ],
+  "expected_data_tree": "a972f64bdad43d8dc13f3d561914f8e2f07877c3",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

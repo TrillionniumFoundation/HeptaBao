@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r38-snapshot24-freeze-commit-intent",
+  "records": [
+    {
+      "name": "COMMIT-INTENT.json",
+      "blob": "d67d0f57b48d30fefc9770378ec08b17a1233abd",
+      "bytes": 1277,
+      "sha256": "dd75fbad8ce6570864c543eef989da5bbdddd751fb71ac8a5550defcaf9d7c75"
+    },
+    {
+      "name": "LAYER-ROOT.original.sdk.json",
+      "blob": "fb787bcdf23d602dc318b0e45e379c021fad5b0e",
+      "bytes": 13931,
+      "sha256": "876e05798c13cb1b463d7f6787f4058307621997cca4a99c2e4196dc02fd78c3"
+    },
+    {
+      "name": "LAYER-crates.original.sdk.json",
+      "blob": "2f4f7aca32c3688c151ea0f899fc56d2477dde7f",
+      "bytes": 25921,
+      "sha256": "d11455aace21a4181540edebacf54546948342a224dd969a55a677406c730c19"
+    },
+    {
+      "name": "LAYER-crates-heptabao-server.original.sdk.json",
+      "blob": "e64803e4841d52665813f72c84e94b9318241f5e",
+      "bytes": 5265,
+      "sha256": "009faa9e5ee59320604ef104e4e1445fa6a1cf0270be896520ba113f9b7e4eed"
+    },
+    {
+      "name": "LAYER-crates-heptabao-server-src.original.sdk.json",
+      "blob": "61fe7344f594f4ff4f9284d5549040f02f090489",
+      "bytes": 433923,
+      "sha256": "c0e95fffd2cbfe9491dcf84ba838a440be8f22cac155bc43a2d6e86eef2c63f9"
+    }
+  ],
+  "expected_data_tree": "a73e9fbdd3f8b0226c2e555767fa93910699423c",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

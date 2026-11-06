@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "Snapshot-forward-r3-source-freeze-proof-r1",
+  "records": [
+    {
+      "name": "source-freeze-proof.json",
+      "blob": "a9cafa556e673ab51db70ddc5d4b7d5747b9f111",
+      "bytes": 2861,
+      "sha256": "d93ce53156983edf3f4d82bf4139e1135b044feeb1ba1da63cd4a39d79276d4e"
+    },
+    {
+      "name": "branch.readback.original.sdk.json",
+      "blob": "ff7dd9936ff4d2504968571e8e5d1d02b523f327",
+      "bytes": 2043,
+      "sha256": "80298dca956c076001d87778591ea373d7f3c3772aec9e079ea25f76ddd11afe"
+    }
+  ],
+  "expected_data_tree": "82f6a94efdd3bce93cfe6cf7bc1bd9a6b0d0c7b7",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

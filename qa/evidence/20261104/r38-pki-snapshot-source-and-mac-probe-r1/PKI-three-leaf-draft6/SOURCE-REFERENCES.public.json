@@ -1,0 +1,37 @@
+{
+  "schema": "heptabao.pki3-source-proposal-evidence.r1",
+  "canonical_source": {
+    "commit": "808e45d690f177ecb922e13d1ed19f7877156094",
+    "tree": "0506d30b02f5a2a2dc7d6364299365ae8d1d7cc7",
+    "whole_tree_audit": {
+      "root_sha": "0506d30b02f5a2a2dc7d6364299365ae8d1d7cc7",
+      "trees_verified": 358,
+      "leaf_count": 3916
+    },
+    "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/0506d30b02f5a2a2dc7d6364299365ae8d1d7cc7?recursive=1",
+    "original_response_utf8_bytes": 1204148,
+    "original_response_sha256": "1c85d6c21ba9c44e9704909bfbd379eeca0da0509bfff6de356f45987db7cac2"
+  },
+  "formatted_reconstruction_packet": "7c3919a1e138ac913b610f6c0a125cdc5ed8f80d",
+  "collector_original_terminal": "eae317b18f2d2a86dcb620faff491f329e279426",
+  "collector_independent_info": "6780aed65014330e82a77a4bbba6fb05572a3a14",
+  "collector_body_original_chain": "9e906a7d8c966213395a410f6ed0a915d47786fe",
+  "root_actual_body_qualification": "5421add900ee34e1019d8d28d8c81559500dcabe",
+  "root_actual_content_qualification": {
+    "blob": "804c07ab40bb0be24776fd6ec110935f1cf064fb",
+    "bytes": 12977,
+    "sha256": "fd197b6c32fc6d2fcfd25cb38b76dfdbb18c0b1a2f760c75a8a771082c82a6eb"
+  },
+  "root_whole10_packet": "6a32d16402d4a7c7bb7c0c1a0479ea3590540091",
+  "acceptance_candidate_source": "6e4bf23de8f7fdac6dd9b152232a905bedb87744",
+  "build_corrected_source18": "b927d7237a59ee51617a21b1d6d11e7d210c6aba",
+  "build_root31": {
+    "blob": "ac6ba549205c12ba4169d63a617dedd5fdd41f61",
+    "bytes": 7309,
+    "sha256": "c17c248d2a7a911456db60dc2834cfe419f5f30b24b1c3bc88cdea3d3e12a139"
+  },
+  "root_creates_commit_only_after_review": true,
+  "C_runtime_calls": 0,
+  "C_commit_mutations": 0,
+  "C_ref_mutations": 0
+}

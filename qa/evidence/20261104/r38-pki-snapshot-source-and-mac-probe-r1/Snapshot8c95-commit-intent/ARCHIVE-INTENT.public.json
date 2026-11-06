@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "Snapshot-forward-r3-source-commit-intent-r1",
+  "records": [
+    {
+      "name": "commit-intent.json",
+      "blob": "43100e75b3919bf530490890ab7a87e1106c1227",
+      "bytes": 1737,
+      "sha256": "627e19d6ad10c9a5ded178b2c9fdf32132dc7b7415ed94439aeae64d731a5731"
+    },
+    {
+      "name": "tree-0.readback.original.sdk.json",
+      "blob": "1048b83fa4a0a7c39d9237b2ac2e375205ba18c3",
+      "bytes": 20409,
+      "sha256": "6717c1afe4bb7b92250f780026642afc5bdb728c8dc0c3c3ec9e7c485ca9262b"
+    },
+    {
+      "name": "tree-1.readback.original.sdk.json",
+      "blob": "0de0db8fd5a48eefec1f01de92c74db1d527a519",
+      "bytes": 433923,
+      "sha256": "d76c6ebb5c3c5ae4ec30f10febd2e4bade4f07a1589e90a33fd3b7d398d11707"
+    },
+    {
+      "name": "tree-2.readback.original.sdk.json",
+      "blob": "593a94eb80007c66b2fdc882e64275b1defba247",
+      "bytes": 2691,
+      "sha256": "dd7605986fba8cb481afe4933eb509df5d338caf45bf163e4c9d40679db713e8"
+    },
+    {
+      "name": "tree-3.readback.original.sdk.json",
+      "blob": "f02c1769d0f59631b7425d9d2a6c95ca7faecde5",
+      "bytes": 5265,
+      "sha256": "7d920c869c6b212bb3e0bb45a8801bb39d4809fe9d936af275089ef574236fdc"
+    },
+    {
+      "name": "tree-4.readback.original.sdk.json",
+      "blob": "8250cd0b582a20cedd9f7f8885aec998b84c9c0c",
+      "bytes": 25921,
+      "sha256": "e077e2c6b37a0e12bc6d297aee513358fb34750cf86ff13808b0a0c057febb30"
+    },
+    {
+      "name": "tree-5.readback.original.sdk.json",
+      "blob": "9dae84d73edd1905254500f0b79b465e26ef7a71",
+      "bytes": 13931,
+      "sha256": "b6499a848afde0516fb955ff95aa515f5b00880f943c5d60cc27a2c8bcaef727"
+    }
+  ],
+  "expected_data_tree": "f0b8421344b13de7c428847077ee88bb69ea337d",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

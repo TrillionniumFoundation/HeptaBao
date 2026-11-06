@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "R38-root-snapshot8c95-stage-report-info-GO",
+  "records": [
+    {
+      "name": "GO.json",
+      "blob": "a5b7c1a5826a407bad723fb737d9e4996b150774",
+      "bytes": 3084,
+      "sha256": "5a756349b47c6b07f0c40b86b397dedf565514a022b80c21431f4d8ddaedcc83"
+    },
+    {
+      "name": "source-review.json",
+      "blob": "dacf6ab3fd53c2081098a55f766804674833ad13",
+      "bytes": 4028,
+      "sha256": "ca0b03aa3610a0ce3667d3a820455d0aa30ee720aff9a73a573f77fe43eca4e7"
+    },
+    {
+      "name": "source-verifier.js",
+      "blob": "eb1df06966e6f490ace6d2e16e247f487b062331",
+      "bytes": 5271,
+      "sha256": "67dc5c7791ba85dc003e5fc26a03aead4616cf533cf0c3615f51e1d802d47f2b"
+    }
+  ],
+  "expected_data_tree": "4999582827ee38419c08188e049a50921ce97719",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

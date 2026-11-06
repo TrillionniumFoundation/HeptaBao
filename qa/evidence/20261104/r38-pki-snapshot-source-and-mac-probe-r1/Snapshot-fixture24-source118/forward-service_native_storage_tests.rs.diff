@@ -1,0 +1,13 @@
+--- a/crates/heptabao-server/src/service_native_storage_tests.rs
++++ b/crates/heptabao-server/src/service_native_storage_tests.rs
+@@ -93,6 +93,10 @@
+         NativeSnapshotAdmission::Redirect(_) => {
+             Err("standalone storage unexpectedly redirected".into())
+         }
++        #[cfg(feature = "native-v6-ha")]
++        NativeSnapshotAdmission::Forward(_) => {
++            Err("standalone storage unexpectedly forwarded".into())
++        }
+     }
+ }
+ 

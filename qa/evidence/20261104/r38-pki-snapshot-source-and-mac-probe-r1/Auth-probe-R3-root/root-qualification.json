@@ -1,0 +1,247 @@
+{
+  "schema": "heptabao.root-qualification.Mac-home-T5-r3-original-entry-failure.v1",
+  "status": "KNOWN_ENTRY_REFUSAL_ORIGINAL_TRANSPORT_AND_LANE_CLOSED",
+  "evidence_qualified": true,
+  "check_count": 46,
+  "checks": [
+    {
+      "name": "whole52_all304020_bytes",
+      "passed": true
+    },
+    {
+      "name": "exact_root_GO_and_prior_source_review",
+      "passed": true
+    },
+    {
+      "name": "homeT5r3_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "homeT5r3_call_home-t5-probe-r3-start",
+      "passed": true
+    },
+    {
+      "name": "homeT5r3_armed_tree_home-t5-probe-r3-start",
+      "passed": true
+    },
+    {
+      "name": "homeT5r3_call_home-t5-r3-authority-admit",
+      "passed": true
+    },
+    {
+      "name": "homeT5r3_armed_tree_home-t5-r3-authority-admit",
+      "passed": true
+    },
+    {
+      "name": "homeT5r3_call_home-t5-r3-authority-status-0",
+      "passed": true
+    },
+    {
+      "name": "homeT5r3_armed_tree_home-t5-r3-authority-status-0",
+      "passed": true
+    },
+    {
+      "name": "homeT5r3_call_home-t5-r3-authority-page-0",
+      "passed": true
+    },
+    {
+      "name": "homeT5r3_armed_tree_home-t5-r3-authority-page-0",
+      "passed": true
+    },
+    {
+      "name": "homeT5r3_call_home-t5-r3-streams-00-admit",
+      "passed": true
+    },
+    {
+      "name": "homeT5r3_armed_tree_home-t5-r3-streams-00-admit",
+      "passed": true
+    },
+    {
+      "name": "homeT5r3_call_home-t5-r3-streams-00-status-0",
+      "passed": true
+    },
+    {
+      "name": "homeT5r3_armed_tree_home-t5-r3-streams-00-status-0",
+      "passed": true
+    },
+    {
+      "name": "homeT5r3_call_home-t5-r3-streams-00-page-0",
+      "passed": true
+    },
+    {
+      "name": "homeT5r3_armed_tree_home-t5-r3-streams-00-page-0",
+      "passed": true
+    },
+    {
+      "name": "homeT5r3_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "homeT5r3_observer_0525de3bf31224fcc649283e261d958b131824aa882b212d78e173eb870c4450",
+      "passed": true
+    },
+    {
+      "name": "homeT5r3_page_0525de3bf31224fcc649283e261d958b131824aa882b212d78e173eb870c4450_0",
+      "passed": true
+    },
+    {
+      "name": "homeT5r3_payload_0525de3bf31224fcc649283e261d958b131824aa882b212d78e173eb870c4450",
+      "passed": true
+    },
+    {
+      "name": "homeT5r3_observer_01d7218ecce80a3551e9f319b3ab33bd189e32e7ef6e2144f4dc90e165321e1e",
+      "passed": true
+    },
+    {
+      "name": "homeT5r3_page_01d7218ecce80a3551e9f319b3ab33bd189e32e7ef6e2144f4dc90e165321e1e_0",
+      "passed": true
+    },
+    {
+      "name": "homeT5r3_payload_01d7218ecce80a3551e9f319b3ab33bd189e32e7ef6e2144f4dc90e165321e1e",
+      "passed": true
+    },
+    {
+      "name": "homeT5r3_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "seven_original_once_calls_two_observers_two_pages",
+      "passed": true
+    },
+    {
+      "name": "exact_unique_original_START_binding",
+      "passed": true
+    },
+    {
+      "name": "original_job_observers_only",
+      "passed": true
+    },
+    {
+      "name": "fixed_original_stream_extent",
+      "passed": true
+    },
+    {
+      "name": "authority_is_original_status_native",
+      "passed": true
+    },
+    {
+      "name": "known_terminal1_failed_full_durable_confirmed",
+      "passed": true
+    },
+    {
+      "name": "original_complete_untruncated_streams",
+      "passed": true
+    },
+    {
+      "name": "full_original_stdout_hex_text_EOF",
+      "passed": true
+    },
+    {
+      "name": "full_original_stderr_hex_text_EOF",
+      "passed": true
+    },
+    {
+      "name": "precise_failed_entry_terminal",
+      "passed": true
+    },
+    {
+      "name": "all_application_fixedIO_counters_zero",
+      "passed": true
+    },
+    {
+      "name": "guard_not_constructed_no_new_app_anchor_FDs",
+      "passed": true
+    },
+    {
+      "name": "no_direct_helper_processes",
+      "passed": true
+    },
+    {
+      "name": "no_new_registration_or_managed_process_claim",
+      "passed": true
+    },
+    {
+      "name": "fixed_intended_paths_recorded_but_not_created",
+      "passed": true
+    },
+    {
+      "name": "original_deadline_no_extension",
+      "passed": true
+    },
+    {
+      "name": "signals_restored_without_error_or_pending_signal",
+      "passed": true
+    },
+    {
+      "name": "no_credentials_product_production_or_old_label_effect",
+      "passed": true
+    },
+    {
+      "name": "interpreter_and_dynamic_loader_FDs_explicitly_unenumerated",
+      "passed": true
+    },
+    {
+      "name": "released_lane_same_original_closed_observers",
+      "passed": true
+    },
+    {
+      "name": "limits_no_old_unknown_or_credentials_claim",
+      "passed": true
+    }
+  ],
+  "packet": {
+    "tree": "8b74de099687e31d3dfd89ec9e878de142c06962",
+    "files": 52,
+    "bytes": 304020,
+    "merkle": {
+      "root_sha": "8b74de099687e31d3dfd89ec9e878de142c06962",
+      "trees_verified": 1,
+      "leaf_count": 52
+    },
+    "whole": true
+  },
+  "original_job": "mac/1a1af996e33-fc05-69fb",
+  "authority": {
+    "blob": "87fcfafefdbdfb4ebd219ed686dbdc1289ed63b5",
+    "bytes": 728,
+    "sha256": "8c94733451c3e5386b7470cdd51c0a98bcb31e88d54ee7261f400ee8dceff848"
+  },
+  "stdout": {
+    "blob": "b69eabd138958c6870a2d03dfe8cb5c1867cc2bc",
+    "bytes": 2030,
+    "sha256": "fde9a1cc9f1773b30c1d1a511273de71d344183d81d26a1e7d64658e76bbd10e"
+  },
+  "actual": {
+    "exit_code": 1,
+    "original_native_calls": 7,
+    "observers": 2,
+    "immutable_pages": 2,
+    "stage": "entry",
+    "error": {
+      "code": "process_identity_fixed_python",
+      "errno": null,
+      "type": "ProbeRefused"
+    },
+    "elapsed_seconds": 0.008563416,
+    "application_FD_attempts": 0,
+    "application_metadata_reads_writes": 0,
+    "directory_attempts": 0,
+    "direct_helpers": 0,
+    "new_registration_attempted": false
+  },
+  "finding": "The exact composite process_identity_fixed_python gate refused at controller entry before application IO, original T5 guard construction or the new launchd registration. Its individual field values were not emitted, so no unique failed predicate is established.",
+  "limitations": [
+    "Evidence qualification preserves a failed probe; environment/T5 access and AuthBus credentials remain unqualified.",
+    "Only this original controller and returned observers are closed. No old service or process lineage closure or old EX_CONFIG78 cause is inferred.",
+    "Interpreter and dynamic-loader internal descriptors are not enumerated.",
+    "No retry or new host action is authorized by this report."
+  ],
+  "environment_probe_succeeded": false,
+  "environment_observation_complete": false,
+  "old_cause_qualified": false,
+  "AuthBus_credentials_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

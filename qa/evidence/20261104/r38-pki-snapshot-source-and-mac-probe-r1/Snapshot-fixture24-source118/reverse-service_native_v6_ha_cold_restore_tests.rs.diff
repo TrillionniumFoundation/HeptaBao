@@ -1,0 +1,13 @@
+--- a/crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs
++++ b/crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs
+@@ -214,10 +214,6 @@
+         NativeSnapshotAdmission::Redirect(_) => {
+             return Err("cold force selected leader redirected".into());
+         }
+-        #[cfg(feature = "native-v6-ha")]
+-        NativeSnapshotAdmission::Forward(_) => {
+-            return Err("cold force selected leader forwarded".into());
+-        }
+     };
+     drop(writer);
+     let (observation, output) = pending.execute_snapshot_transfer(&mut &bytes[..]);

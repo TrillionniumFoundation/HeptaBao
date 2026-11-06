@@ -1,0 +1,116 @@
+{
+  "schema": "heptabao.source-packet.manifest.v1",
+  "entries": [
+    {
+      "path": "CONTRACT.public.json",
+      "blob": "95bc5914dbc29e33c8b79eaea4205243783f4221",
+      "bytes": 2632,
+      "sha256": "5cb0992fa200f581810f8af4b327e47da8c17ba90cf4db8cf4c4e7b827a2057a"
+    },
+    {
+      "path": "EXECUTION-STEPS.READONLY-PROPOSAL.md",
+      "blob": "0efcefb55e0942e4fc404bcc2fb22e4169f261ff",
+      "bytes": 853,
+      "sha256": "d8d19950f9809ff9f33f7628f87087ee7d9c1da48a5a2ae411834eb388671699"
+    },
+    {
+      "path": "journal.after.js",
+      "blob": "46233bcb53bb26878cdc7ba02b090ebb29f43037",
+      "bytes": 23894,
+      "sha256": "e5ca9c869f506d1d495f34709d04649fad17749c8790c13fd76b0448d4e3b3a5"
+    },
+    {
+      "path": "journal.before.js",
+      "blob": "0123c47889d3b64d00774e2d7f29835500d9f88a",
+      "bytes": 19050,
+      "sha256": "f21485c0e6092e8dbbdbb7f98887084fd195adeb9afa4b47aa7e780389df0bbb"
+    },
+    {
+      "path": "journal.forward.diff",
+      "blob": "2fb43a9e084d750cece5776fa0db377f644113b5",
+      "bytes": 7776,
+      "sha256": "5d955bc5a16be96877ddbb456b90d472df5fd58ef45be12fc39cf23619469a3f"
+    },
+    {
+      "path": "journal.reverse.diff",
+      "blob": "e890356fd9da36540df16c1f815b0f49e3494edd",
+      "bytes": 7776,
+      "sha256": "b24713219b9cd412d8ca793ddf206b2d3d35eee0767d51b38a213b09bef7720d"
+    },
+    {
+      "path": "reference-binding.diff",
+      "blob": "ad648e917a65054ee4f8bd8619bc991fe9150ae8",
+      "bytes": 4287,
+      "sha256": "21adaa5e56eef11c64524c283e33098fa9d88b93a9c9e92a353600dca42b3d24"
+    },
+    {
+      "path": "reference-binding.replacements.json",
+      "blob": "51de2a2198c7f741c11d2f1e5a8679487e2a3629",
+      "bytes": 2903,
+      "sha256": "2fd82d5161861aaa34de085a5012787a4525fec82adb6e5fd02f76786f2aef36"
+    },
+    {
+      "path": "reference.original-info-journal.js",
+      "blob": "5251b35f820ade2765d2266616b13d1ef1effc48",
+      "bytes": 23872,
+      "sha256": "32f6775ced13cc9e0c614c40e70dd762c25e76340d13bc3e3cdfddac2b342711"
+    },
+    {
+      "path": "request.REVIEW-ONLY.json",
+      "blob": "e17cbc53589698ea5071ea83e0269d8fe73ebb2f",
+      "bytes": 312,
+      "sha256": "5b59a60e8942e3ed5bb93dcbb04b238d07ad0395ba23daa7625dd03c0da1792a"
+    },
+    {
+      "path": "root-stage-terminal-qualification.original.json",
+      "blob": "13d5ae1324ebe64a2ce7d8882a3d551bc8e8a73e",
+      "bytes": 5949,
+      "sha256": "c2f033d16b298295670c648bc02d4579c2011ea0f91427a166f4ab214bd3f2c3"
+    },
+    {
+      "path": "source-checks.actual.json",
+      "blob": "05988e71325a87660cd8a5b67bf9e8107c8be427",
+      "bytes": 3163,
+      "sha256": "e0b302dd5d98598739fc6af2919a7ca1c276272bfeb5274606d5df42d1dde64c"
+    },
+    {
+      "path": "source-verifier.js",
+      "blob": "cceefd3e0bc82e2fa730e44a9bb3fa01225c1d82",
+      "bytes": 3593,
+      "sha256": "37cd85b4e0d2b8f22f2b82e78bcc9a11a4774c885d09549a3ba28a7db2777ab7"
+    },
+    {
+      "path": "stage-authority.original.json",
+      "blob": "26f56d9f051d7658a68712f734800f6db024ac6c",
+      "bytes": 729,
+      "sha256": "957abc11f02c98c3f5d1507147a72632f3f373fd95615ce5093a1c58c8b488be"
+    },
+    {
+      "path": "stage-owner-release.original.json",
+      "blob": "119e2fcee9fb965e6bb3aa9ceaa97e37d7caa9e9",
+      "bytes": 3592,
+      "sha256": "278ef512c729b0dff13216753a09a3a4f301806ea6c3c8c5c521f25bcaea3c2d"
+    },
+    {
+      "path": "stage-streams.original.json",
+      "blob": "5f506f5fe8e4644053b2c3a9447680f0d44b23d0",
+      "bytes": 1495,
+      "sha256": "3f0576dd0dc86405c15856fa3abc967cac6956ec807b89658824157f9d62ca88"
+    },
+    {
+      "path": "verifier-initial-regex-error-source.js",
+      "blob": "759dc1d6bcf2d5548d3ac43900491f1999f98703",
+      "bytes": 3593,
+      "sha256": "eb595658b4bcf10ff01d87a65e0ab5664f7eeda36db3dfd8ef172fa1a5f1dc4f"
+    },
+    {
+      "path": "verifier-initial-regex-error.json",
+      "blob": "b3196123242718659d212a90c1bb80934b3c0434",
+      "bytes": 138,
+      "sha256": "8d5c993fcd5050d8961981f2a40bfabf863127a5aa155965832caef1403328aa"
+    }
+  ],
+  "count": 18,
+  "bytes": 115607,
+  "RuntimeCalls": 0
+}

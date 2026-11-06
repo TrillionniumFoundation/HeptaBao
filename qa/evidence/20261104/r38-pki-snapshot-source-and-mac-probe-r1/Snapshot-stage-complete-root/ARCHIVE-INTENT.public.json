@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r38-snapshot8c95-complete-stage-root-qualification",
+  "records": [
+    {
+      "name": "ROOT-COMPLETE-STAGE-QUALIFICATION.json",
+      "blob": "eca4bfe44f58cc4cc9d7d337ff0bdac4190bdcc6",
+      "bytes": 8628,
+      "sha256": "13c2a4bbe6af285447fe5c429dfde6e6fa83fdf65191995cf40c4c6971ad194c"
+    },
+    {
+      "name": "ROOT-COMPLETE-STAGE-VERIFIER.js",
+      "blob": "5d3b294e3b16032068f9d48f2112d187aca6d870",
+      "bytes": 10012,
+      "sha256": "29da42939626f6773438da041c766467c7582db9758e56cedb0e4b8f4479a824"
+    },
+    {
+      "name": "ROOT-VERIFIER-FIRST-FAILED.js",
+      "blob": "22fbea8df80d2dab7162dac7341623d72a10916f",
+      "bytes": 9962,
+      "sha256": "38a50cfb9e59a17a768873dd457fb54b03774aa6e2750729c630045580253047"
+    },
+    {
+      "name": "ROOT-VERIFIER-CORRECTION.json",
+      "blob": "e21eb67d34e9bebb0e02882bbcebdadcf26bb919",
+      "bytes": 387,
+      "sha256": "2090d3e602cfbf50d84b24fe62012a7ca7000826a8e860a3e7425e9f8388c27b"
+    },
+    {
+      "name": "ORIGINAL-JOURNAL-VERIFIER.js",
+      "blob": "3c0ef26c0193c7e39724add83657466d88f560bb",
+      "bytes": 3404,
+      "sha256": "600711669602a25a77f41b713b51409130853ba1918af398aea928c01c5c6e01"
+    }
+  ],
+  "expected_data_tree": "8d434f7fde226225103132e4da90df5486e816f4",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

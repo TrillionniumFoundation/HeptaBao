@@ -1,0 +1,79 @@
+--- a/fixed-io.r1.py
++++ b/fixed-io.r3.py
+@@ -41,6 +41,8 @@
+         self.signals = signals
+         self.remaining = remaining
+         self.rows = []
++        self.open_ledger = {'attempts':0, 'knownNoReturnErrors':0, 'registered':0,
++                            'pending':0, 'registrationUnknown':False}
+         self.dirs = {}
+         self.close_errors = []
+         self.counts = {'metadata':0, 'readCalls':0, 'readBytes':0, 'writeCalls':0, 'writeBytes':0}
+@@ -70,16 +72,34 @@
+         return value
+ 
+     def open_fd(self, path, flags, mode=None, *, parent=None, role='file'):
++        need(len(self.rows) < self.max_rows and self.open_ledger['attempts'] < self.max_rows,
++             'fd_ledger_cap')
+-        need(len(self.rows) < self.max_rows, 'fd_ledger_cap')
+         with self.signals.critical():
+             self.remaining()
++            ledger = self.open_ledger
++            ledger['attempts'] += 1
++            ledger['pending'] += 1
++            try:
++                fd = os.open(str(path) if parent is None else path.name, flags,
++                             *(() if mode is None else (mode,)),
++                             **({} if parent is None else {'dir_fd':parent['fd']}))
++            except OSError:
++                # This handler covers the syscall expression only: no FD was returned.
++                ledger['knownNoReturnErrors'] += 1
++                ledger['pending'] -= 1
++                raise
++            try:
++                row = {'fd':fd, 'path':str(path), 'role':role,
++                       'created':bool(flags & os.O_CREAT), 'writeComplete':False,
++                       'closeAttempted':False, 'closed':False}
++                self.rows.append(row)
++                ledger['registered'] += 1
++                ledger['pending'] -= 1
++            except BaseException:
++                # Even a subsequently closed row cannot erase this incomplete transfer.
++                # Do not guess a descriptor, blind-close, or retry registration.
++                ledger['registrationUnknown'] = True
++                raise
+-            fd = os.open(str(path) if parent is None else path.name, flags,
+-                         *(() if mode is None else (mode,)),
+-                         **({} if parent is None else {'dir_fd':parent['fd']}))
+-            row = {'fd':fd, 'path':str(path), 'role':role,
+-                   'created':bool(flags & os.O_CREAT), 'writeComplete':False,
+-                   'closeAttempted':False, 'closed':False}
+-            self.rows.append(row)
+         return row
+ 
+     def close_one(self, row):
+@@ -269,15 +289,21 @@
+             need(self.close_one(row), 'file_close_failed')
+ 
+     def close(self):
++        with self.signals.critical():
++            for row in reversed(self.rows):
++                self.close_one(row)
+-        for row in reversed(self.rows):
+-            self.close_one(row)
+ 
+     def public(self):
++        ledger = self.open_ledger
++        accounted = (ledger['attempts'] == ledger['knownNoReturnErrors'] + ledger['registered']
++            and ledger['registered'] == len(self.rows) and ledger['pending'] == 0
++            and ledger['registrationUnknown'] is False)
+         return {'fdRows':[{'ordinal':i,'path':r['path'],'role':r['role'],
+             'closeAttempted':r['closeAttempted'],'closed':r['closed'],
+             'closeError':r.get('closeError'),'created':r['created'],
+             'writeComplete':r['writeComplete']} for i,r in enumerate(self.rows)],
++            'allClosed':accounted and all(r['closed'] for r in self.rows) and not self.close_errors,
++            'openLedger':dict(ledger),
+-            'allClosed':all(r['closed'] for r in self.rows) and not self.close_errors,
+             'counts':dict(self.counts), 'caps':{'fdRows':self.max_rows,
+             'metadata':self.max_metadata,'readCalls':self.max_reads,'writeCalls':self.max_writes,
+             'readBytes':self.read_cap,'writeBytes':self.write_cap},

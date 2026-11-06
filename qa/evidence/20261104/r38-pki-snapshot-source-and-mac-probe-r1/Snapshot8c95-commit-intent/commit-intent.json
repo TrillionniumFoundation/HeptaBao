@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao.snapshot-forward-source-commit-intent.v1",
+  "request": {
+    "repository_full_name": "TrillionniumFoundation/HeptaBao",
+    "parent_sha": "808e45d690f177ecb922e13d1ed19f7877156094",
+    "tree_sha": "f412f1524e08a56e23374897d329bfcf6295f4fe",
+    "message": "source: integrate native snapshot standby streaming with retained outcome custody\n\nFreeze reviewed 23-file candidate only. Preserve actual restored receipt, original Actor, private binary witnesses and audit failure UNKNOWN. Unformatted and uncompiled; CLI failures and replacement gates remain open."
+  },
+  "tree_verified": [
+    {
+      "path": "crates/heptabao-ha-service/src",
+      "sha": "0a85a54bce05b7e3f654b388491d96a731887557",
+      "entries": 35,
+      "whole": true
+    },
+    {
+      "path": "crates/heptabao-server/src",
+      "sha": "1c6494ad1c3a33306b14a744135d7231ef71d532",
+      "entries": 790,
+      "whole": true
+    },
+    {
+      "path": "crates/heptabao-ha-service",
+      "sha": "582e206e5bb698f11d6a29d9dac2b51d084aa2e1",
+      "entries": 3,
+      "whole": true
+    },
+    {
+      "path": "crates/heptabao-server",
+      "sha": "b991a2c5e03b64701ff050a2c9569613f1e905cb",
+      "entries": 8,
+      "whole": true
+    },
+    {
+      "path": "crates",
+      "sha": "bb4fab0e02010dd139d898ce0c0d718bcc23cbed",
+      "entries": 49,
+      "whole": true
+    },
+    {
+      "path": "",
+      "sha": "f412f1524e08a56e23374897d329bfcf6295f4fe",
+      "entries": 26,
+      "whole": true
+    }
+  ],
+  "source_review": "4c3713cffed323ca5f0b18de6dff16afc5882dd9",
+  "tree_intent": "b5d8557d0e26b2b7c5b57a8fd2cc42b5f47f18ea",
+  "tree_SDK": "8742a7e7a7bfe647ec9696efa94169cfbc8cd8b3",
+  "sole_parent": true,
+  "mutation_not_called": true
+}

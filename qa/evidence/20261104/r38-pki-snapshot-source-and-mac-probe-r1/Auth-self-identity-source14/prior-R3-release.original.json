@@ -1,0 +1,135 @@
+{
+  "schema": "heptabao.public-home-t5-probe.r3-original-lane-release.v1",
+  "status": "KNOWN_EXIT1_PRE_MUTATION_REFUSAL",
+  "job": {
+    "host": "mac",
+    "job_id": "1a1af996e33-fc05-69fb",
+    "key": "heptabao-mac-owned-home-t5-probe-8cfa410c-20261106-r3"
+  },
+  "go": {
+    "blob": "640e6002f976213fb2d57910a850c72ad2eb6c0f",
+    "bytes": 13636,
+    "sha256": "43a8d6b94dacfb9a751c5dbe57f1156979b418cb1c187d72ddac15d67ec5e818"
+  },
+  "exactRequest": {
+    "blob": "62be5766699e67a41ab9d6072db8aa8e35c8abbb",
+    "bytes": 170588,
+    "sha256": "af2247dd1a780773aa754f90db1c6a1aa8f6d1965eb1792036177916d347ee17"
+  },
+  "armedTree": "3a31327192a99aa07657a0698e966776b1df45d5",
+  "originalStartSDK": {
+    "blob": "a2f6eba3431835cd5f4de87db8308069c317e7c4",
+    "bytes": 1420,
+    "sha256": "c69ecf20f04fa92f890ef988d8291e440321cf6ad5b246387d1ecafda2c5455f"
+  },
+  "authority": {
+    "blob": "87fcfafefdbdfb4ebd219ed686dbdc1289ed63b5",
+    "bytes": 728,
+    "sha256": "8c94733451c3e5386b7470cdd51c0a98bcb31e88d54ee7261f400ee8dceff848"
+  },
+  "stdout": {
+    "blob": "b69eabd138958c6870a2d03dfe8cb5c1867cc2bc",
+    "bytes": 2030,
+    "sha256": "fde9a1cc9f1773b30c1d1a511273de71d344183d81d26a1e7d64658e76bbd10e"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "originalReturnedObservers": [
+    {
+      "id": "0525de3bf31224fcc649283e261d958b131824aa882b212d78e173eb870c4450",
+      "tool": "process_status",
+      "payload": {
+        "blob": "46ad4329691991bc83c28f8dce6c6357120af11c",
+        "bytes": 907,
+        "sha256": "be3ca60edb321930c36e74c2f5b31314cbd1fe18f11650b16aea4bec289a3d3b"
+      },
+      "payloadTree": "40b7216f93da880f3a337f7ddd1a83651ba14b43",
+      "nativeText": {
+        "blob": "87fcfafefdbdfb4ebd219ed686dbdc1289ed63b5",
+        "bytes": 728,
+        "sha256": "8c94733451c3e5386b7470cdd51c0a98bcb31e88d54ee7261f400ee8dceff848"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "01d7218ecce80a3551e9f319b3ab33bd189e32e7ef6e2144f4dc90e165321e1e",
+      "tool": "process_read",
+      "payload": {
+        "blob": "38f47dfdf2bf07d2b5dd5696e4d136df3fcee10a",
+        "bytes": 7047,
+        "sha256": "d47f1b8c19b233b70e6fed54585f420cab40e4ec967d350b9323560351085a72"
+      },
+      "payloadTree": "68a3bbaf3e625d57266c99bfd268d311647c4b3a",
+      "nativeText": {
+        "blob": "98d7d25dbd988f91ca43f8de85a85db553b5e4a8",
+        "bytes": 6578,
+        "sha256": "8ebccc12f6b26cb6d6967bb113886293b6b4aeef66c4a2af3fae20a8c60ca952"
+      },
+      "pages": 1,
+      "completedInactive": true
+    }
+  ],
+  "NativeCalls": 7,
+  "pages": 2,
+  "activeNativeCall": false,
+  "activeObserver": null,
+  "pending": null,
+  "currentKnownNativeFutures": 0,
+  "statePaused": false,
+  "noNativeReplay": true,
+  "actual": {
+    "exitCode": 1,
+    "outputComplete": true,
+    "outputDurable": true,
+    "terminalConfirmed": true,
+    "timedOut": false,
+    "error": {
+      "code": "process_identity_fixed_python",
+      "errno": null,
+      "type": "ProbeRefused"
+    },
+    "stage": "entry",
+    "observationComplete": false,
+    "executionSucceeded": false,
+    "outcomeUnknown": false,
+    "elapsedSeconds": 0.008563416,
+    "allDirectHelpersClosed": true,
+    "allReturnedControllerFdsClosed": true,
+    "openLedger": {
+      "attempts": 0,
+      "knownNoReturnErrors": 0,
+      "pending": 0,
+      "registered": 0,
+      "registrationUnknown": false
+    },
+    "ioCounts": {
+      "metadata": 0,
+      "readBytes": 0,
+      "readCalls": 0,
+      "writeBytes": 0,
+      "writeCalls": 0
+    },
+    "directoryAttempts": [],
+    "createdDirectories": [],
+    "volumeGuardInitStarted": false,
+    "volumeGuardInitComplete": false,
+    "directHelperAttempts": 0,
+    "newRegistrationAttempted": false,
+    "signalRestoreErrors": [],
+    "pendingSignalAfterRestore": null,
+    "deadlineMetAfterClosure": true
+  },
+  "limits": {
+    "scope": "Only this original controller and its two original returned observers are closed. No new label was attempted; no old label closure or cause is inferred.",
+    "interpreterAndDynamicLoaderInternalFdsNotEnumerated": true,
+    "oldRegistrationAndLineageUnknownPreserved": true,
+    "oldGit8916UnknownPreserved": true,
+    "oldLog817UnknownPreserved": true,
+    "credentialQualification": false
+  },
+  "sourceOnlyNext": "Inspect exact composite validator and already observed public process identity evidence. No new host read or rerun is included."
+}

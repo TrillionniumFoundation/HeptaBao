@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r38-pki3-source-freeze-proof",
+  "records": [
+    {
+      "name": "ROOT-PKI3-FREEZE-PROOF.json",
+      "blob": "190c74b3c05d6e9c63977104456ff28998f87b98",
+      "bytes": 3614,
+      "sha256": "5478d667d366f24f9adad2d5575d948fb7c7f12f9107f0640cea566f78839cba"
+    },
+    {
+      "name": "BRANCH-READBACK.original.sdk.json",
+      "blob": "b5af6f40867f773f507b1fbe6a936826165c7c60",
+      "bytes": 1891,
+      "sha256": "e90ee4263515de03d22d9fbeb7e183a555d6f6d5955ba9b56d4d1815b9d4a60d"
+    },
+    {
+      "name": "COMMIT-READBACK.original.sdk.json",
+      "blob": "5281fa301d1faf135d3d1e5efd9ff8a73ba52739",
+      "bytes": 4039,
+      "sha256": "03122c2d42b7a32d5d9c46d7c2defa31b7f9c391a09ac4eccc0a7a76f646ac06"
+    }
+  ],
+  "expected_data_tree": "453961929180d1a112db48151737e57e019db4d7",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

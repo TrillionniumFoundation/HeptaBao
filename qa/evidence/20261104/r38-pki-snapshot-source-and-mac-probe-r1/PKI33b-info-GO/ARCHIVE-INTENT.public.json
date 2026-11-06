@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r38-pki33b-stage-report-info-root-GO",
+  "records": [
+    {
+      "name": "ROOT-INFO-SOURCE-REVIEW.json",
+      "blob": "a872d4d67ddac27618e602a24cdc5ca16099abb2",
+      "bytes": 3280,
+      "sha256": "5ae8319519a76dcc72bd49150d75c65d98dedd8d534d0050a4a05d3b2f33bdf4"
+    },
+    {
+      "name": "ROOT-INFO-SOURCE-VERIFIER.js",
+      "blob": "fe6038a1e22e83b9dfc35139f0f8be027d67aeda",
+      "bytes": 4447,
+      "sha256": "cf3a785627141ae73f2586cefb375415041f88ddcb527d7aea0f79bb0538f0ae"
+    },
+    {
+      "name": "ROOT-INFO-GO.json",
+      "blob": "82334cfd8b6a1fd52a8b046ba04d8ff958e9fed6",
+      "bytes": 3203,
+      "sha256": "244effb45729a4018da659cb7c7eb499c930300c1632af60bafbe2f7a2f92472"
+    },
+    {
+      "name": "STRICT-DIFF-HELPER.js",
+      "blob": "af8c8db9ee76ccea0bb1dc4df1b0cdb61a8152d3",
+      "bytes": 2273,
+      "sha256": "eee83dbb8f629571ef33063873f55be75dd17aa40796e22e5f9a70ec36ddf7e3"
+    }
+  ],
+  "expected_data_tree": "46f043d92db70a999e81e3a621c8f755e4a7887c",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

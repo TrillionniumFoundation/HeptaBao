@@ -1,0 +1,171 @@
+{
+  "schema": "heptabao.jwt-pki-build22-correction-checks.r2",
+  "scope": "Pure V8 source and data checks only; no Python module, Rust, compiler or Native execution.",
+  "passed": 41,
+  "checks": [
+    {
+      "name": "groups_original_digest_unchanged",
+      "passed": true
+    },
+    {
+      "name": "runner_exact_groups_admission",
+      "passed": true
+    },
+    {
+      "name": "launcher_exact_groups_admission",
+      "passed": true
+    },
+    {
+      "name": "publisher_exact_groups_pin",
+      "passed": true
+    },
+    {
+      "name": "publisher_pin_native_jwt_build.py",
+      "passed": true
+    },
+    {
+      "name": "carrier_whole_native_jwt_build.py",
+      "passed": true
+    },
+    {
+      "name": "publisher_pin_launch_native_jwt_build.py",
+      "passed": true
+    },
+    {
+      "name": "carrier_whole_launch_native_jwt_build.py",
+      "passed": true
+    },
+    {
+      "name": "publisher_pin_jwt-test-groups.public.json",
+      "passed": true
+    },
+    {
+      "name": "carrier_whole_jwt-test-groups.public.json",
+      "passed": true
+    },
+    {
+      "name": "carrier_exact_three_members",
+      "passed": true
+    },
+    {
+      "name": "carrier_size_within_original_cap",
+      "passed": true
+    },
+    {
+      "name": "four_original_family_caps",
+      "passed": true
+    },
+    {
+      "name": "family_shapes",
+      "passed": true
+    },
+    {
+      "name": "same_new_names_two_profiles",
+      "passed": true
+    },
+    {
+      "name": "149_unique_166_instances",
+      "passed": true
+    },
+    {
+      "name": "132_existing_17_new_disjoint",
+      "passed": true
+    },
+    {
+      "name": "132_plus_17_equals_149",
+      "passed": true
+    },
+    {
+      "name": "132_plus_34_equals_166",
+      "passed": true
+    },
+    {
+      "name": "runner_new_count_17",
+      "passed": true
+    },
+    {
+      "name": "launcher_jwt15_30_separate",
+      "passed": true
+    },
+    {
+      "name": "launcher_pki2_4_separate",
+      "passed": true
+    },
+    {
+      "name": "runner_replacement_forward_0",
+      "passed": true
+    },
+    {
+      "name": "runner_replacement_forward_1",
+      "passed": true
+    },
+    {
+      "name": "runner_exact_whole_forward",
+      "passed": true
+    },
+    {
+      "name": "runner_exact_whole_reverse",
+      "passed": true
+    },
+    {
+      "name": "runner_definitions_byte_equal",
+      "passed": true
+    },
+    {
+      "name": "runner_still_unbound",
+      "passed": true
+    },
+    {
+      "name": "runner_no_old_groups_digest",
+      "passed": true
+    },
+    {
+      "name": "launcher_replacement_forward_0",
+      "passed": true
+    },
+    {
+      "name": "launcher_exact_whole_forward",
+      "passed": true
+    },
+    {
+      "name": "launcher_exact_whole_reverse",
+      "passed": true
+    },
+    {
+      "name": "launcher_definitions_byte_equal",
+      "passed": true
+    },
+    {
+      "name": "launcher_still_unbound",
+      "passed": true
+    },
+    {
+      "name": "launcher_no_old_groups_digest",
+      "passed": true
+    },
+    {
+      "name": "publisher_replacement_forward_0",
+      "passed": true
+    },
+    {
+      "name": "publisher_exact_whole_forward",
+      "passed": true
+    },
+    {
+      "name": "publisher_exact_whole_reverse",
+      "passed": true
+    },
+    {
+      "name": "publisher_definitions_byte_equal",
+      "passed": true
+    },
+    {
+      "name": "publisher_still_unbound",
+      "passed": true
+    },
+    {
+      "name": "publisher_no_old_groups_digest",
+      "passed": true
+    }
+  ]
+}

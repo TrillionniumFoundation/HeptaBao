@@ -1,0 +1,11 @@
+--- a/crates/heptabao-server/src/service_native_namespace_tree_tests.rs
++++ b/crates/heptabao-server/src/service_native_namespace_tree_tests.rs
+@@ -127,6 +127,8 @@
+             Ok((response, None))
+         }
+         NativeSnapshotAdmission::Redirect(_) => Err("formal File snapshot redirected".into()),
++        #[cfg(feature = "native-v6-ha")]
++        NativeSnapshotAdmission::Forward(_) => Err("formal File snapshot forwarded".into()),
+     }
+ }
+ 

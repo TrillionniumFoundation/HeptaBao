@@ -1,0 +1,139 @@
+{
+  "schema": "heptabao.root-source-review.PKI33b-stage-report-file-info.v1",
+  "status": "PASS_ONE_FIXED_REPORT_METADATA_SOURCE",
+  "checks": [
+    {
+      "name": "whole23_110144",
+      "passed": true
+    },
+    {
+      "name": "original_stage_GO_and_root34_exact",
+      "passed": true
+    },
+    {
+      "name": "original_two_observers_summary_release_unchanged",
+      "passed": true
+    },
+    {
+      "name": "prior_reviewed_metadata_journal_exact",
+      "passed": true
+    },
+    {
+      "name": "ten_fixed_binding_changes",
+      "passed": true
+    },
+    {
+      "name": "unique_binding_0",
+      "passed": true
+    },
+    {
+      "name": "unique_binding_1",
+      "passed": true
+    },
+    {
+      "name": "unique_binding_2",
+      "passed": true
+    },
+    {
+      "name": "unique_binding_3",
+      "passed": true
+    },
+    {
+      "name": "unique_binding_4",
+      "passed": true
+    },
+    {
+      "name": "unique_binding_5",
+      "passed": true
+    },
+    {
+      "name": "unique_binding_6",
+      "passed": true
+    },
+    {
+      "name": "unique_binding_7",
+      "passed": true
+    },
+    {
+      "name": "unique_binding_8",
+      "passed": true
+    },
+    {
+      "name": "unique_binding_9",
+      "passed": true
+    },
+    {
+      "name": "entire_journal_only_binding_changes",
+      "passed": true
+    },
+    {
+      "name": "three_hunks_strict_both_directions",
+      "passed": true
+    },
+    {
+      "name": "exact_candidate_and_request_pins",
+      "passed": true
+    },
+    {
+      "name": "one_fixed_file_info_request",
+      "passed": true
+    },
+    {
+      "name": "actual_closed_original_prerequisites",
+      "passed": true
+    },
+    {
+      "name": "attach_original_slot_no_reset_or_new_process",
+      "passed": true
+    },
+    {
+      "name": "original_size_metadata_and_paging_caps",
+      "passed": true
+    },
+    {
+      "name": "no_body_formatter_Cargo_controls_or_CALL",
+      "passed": true
+    },
+    {
+      "name": "source_syntax_parsed_never_invoked",
+      "passed": true
+    }
+  ],
+  "check_count": 24,
+  "source_packet": "a700788e0a3e0de0c29d63d1bfabb7f423c9acf7",
+  "source": {
+    "blob": "696e07c763ccefaa375e947ed84b2433a1d0f089",
+    "bytes": 23888,
+    "sha256": "c8a3f15c9073ddc34fa247ce4bd2cd1342023bf9136f9235731ee08e571b752d"
+  },
+  "exact_request": {
+    "blob": "538b045d46c03cd5787a4a80d41595345232ae47",
+    "bytes": 309,
+    "sha256": "ca7c34ce798a1155e6b49a989f5f792c9aaaf2a4db568f70b8ab999d48b341b2"
+  },
+  "original_job": "1a1afcbafab-fc05-6bb0",
+  "original_slot": "jwt_pki_33b814c7_rog_source_gitfirst_r1",
+  "path": "/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1/control/stage-result.public.json",
+  "actual_stage_terminal_qualification": {
+    "blob": "0a1dba5b1f12c51489f831eebc653767e2e1e866",
+    "bytes": 5513,
+    "sha256": "c412cdfb99f4508de63835cc7d389de2b49d63b5c4bd27c7f19d9d7129d0ef88"
+  },
+  "limits": {
+    "platform": "linux",
+    "permissionMode": 384,
+    "fullMode": 33152,
+    "uid": 1000,
+    "gid": 1000,
+    "links": 1,
+    "minimumBytes": 1,
+    "maximumBytes": 150000,
+    "actualSize": null,
+    "actualSHA256": null,
+    "actualVersion": null,
+    "actualFull9": null
+  },
+  "body_observed": false,
+  "full_stage_qualified": false,
+  "root_Runtime_calls": 0
+}

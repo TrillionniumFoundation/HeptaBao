@@ -1,0 +1,1 @@
+{"all_owned_stopped": true, "compiler_started": false, "result_path": "/home/qian-qi/heptabao-native-snapshot-forward-source-8c95fb0a-20261106-r1/control/stage-result.public.json", "server_started": false, "source_commit": "8c95fb0a8b2f61933a09b04986df2bafc9e7095c", "source_tree": "f412f1524e08a56e23374897d329bfcf6295f4fe", "status": "prepared", "within_new_stage_deadline": true}

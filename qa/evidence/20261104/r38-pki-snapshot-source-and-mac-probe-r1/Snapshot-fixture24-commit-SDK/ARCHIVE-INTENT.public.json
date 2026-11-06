@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r38-snapshot24-freeze-commit-original-SDK",
+  "records": [
+    {
+      "name": "COMMIT.original.sdk.json",
+      "blob": "35dff0aaf67da1405286a078d273bdb55634a870",
+      "bytes": 195,
+      "sha256": "35ef93bc7d298d5913665645c8be50a73b7981a9cecfc13bd096e903174a0f88"
+    }
+  ],
+  "expected_data_tree": "ae2a527aadc8d6721af0d93c07a19fdbd9b01639",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

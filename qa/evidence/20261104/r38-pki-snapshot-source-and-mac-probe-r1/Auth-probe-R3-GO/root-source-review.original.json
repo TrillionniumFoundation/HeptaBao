@@ -1,0 +1,334 @@
+{
+  "schema": "heptabao.root-source-review.public-home-T5-probe-r3.v1",
+  "status": "SOURCE_REVIEWED_PENDING_FINAL_PEER_AND_EXACT_GO",
+  "packet": {
+    "tree": "c680477cae4fc6dd01077b01de6c349e9fea3055",
+    "files": 31,
+    "bytes": 613156,
+    "merkle": {
+      "root_sha": "c680477cae4fc6dd01077b01de6c349e9fea3055",
+      "trees_verified": 1,
+      "leaf_count": 31
+    },
+    "whole": true
+  },
+  "history": {
+    "r1": {
+      "tree": "ba85e7e7e117933598c8e8ff6c6e08427bd6f148",
+      "files": 38,
+      "bytes": 887780,
+      "merkle": {
+        "root_sha": "ba85e7e7e117933598c8e8ff6c6e08427bd6f148",
+        "trees_verified": 1,
+        "leaf_count": 38
+      },
+      "whole": true
+    },
+    "r2": {
+      "tree": "69160ffce238fae7f10c7a5c0b6bf4a40e33bc69",
+      "files": 27,
+      "bytes": 602411,
+      "merkle": {
+        "root_sha": "69160ffce238fae7f10c7a5c0b6bf4a40e33bc69",
+        "trees_verified": 1,
+        "leaf_count": 27
+      },
+      "whole": true
+    }
+  },
+  "checks": [
+    {
+      "name": "whole38_27_31_source_history",
+      "passed": true
+    },
+    {
+      "name": "original_common_core_embedded_once",
+      "passed": true
+    },
+    {
+      "name": "R2_fixed_strict_forward_reverse",
+      "passed": true
+    },
+    {
+      "name": "R2_core_strict_forward_reverse",
+      "passed": true
+    },
+    {
+      "name": "R3_fixed_strict_forward_reverse",
+      "passed": true
+    },
+    {
+      "name": "R3_core_strict_forward_reverse",
+      "passed": true
+    },
+    {
+      "name": "R3_original_R2_copies_exact",
+      "passed": true
+    },
+    {
+      "name": "R2_child_only_common_and_error_allowlist",
+      "passed": true
+    },
+    {
+      "name": "R2_controller_only_common_core_error_allowlist_child_binding",
+      "passed": true
+    },
+    {
+      "name": "R3_child_only_close_loop",
+      "passed": true
+    },
+    {
+      "name": "R3_controller_only_common_core_embedded_child_pins",
+      "passed": true
+    },
+    {
+      "name": "only_two_new_fixed_error_codes",
+      "passed": true
+    },
+    {
+      "name": "final_source_request_journal_exact_contract_pins",
+      "passed": true
+    },
+    {
+      "name": "actual_embedded_child_bytes_SHA",
+      "passed": true
+    },
+    {
+      "name": "four_original_modules",
+      "passed": true
+    },
+    {
+      "name": "original_module_mac_owned_unreaped_r1",
+      "passed": true
+    },
+    {
+      "name": "original_module_mac_owned_commands_r1",
+      "passed": true
+    },
+    {
+      "name": "original_module_mac_t5_volume_guard_r1",
+      "passed": true
+    },
+    {
+      "name": "original_module_mac_native_process_observer_r1",
+      "passed": true
+    },
+    {
+      "name": "scope_preserved_roots",
+      "passed": true
+    },
+    {
+      "name": "scope_preserved_effects",
+      "passed": true
+    },
+    {
+      "name": "scope_preserved_chronology",
+      "passed": true
+    },
+    {
+      "name": "scope_preserved_ownership",
+      "passed": true
+    },
+    {
+      "name": "scope_preserved_budget",
+      "passed": true
+    },
+    {
+      "name": "scope_preserved_publication",
+      "passed": true
+    },
+    {
+      "name": "scope_preserved_priorEvidence",
+      "passed": true
+    },
+    {
+      "name": "immutable_anchors_parser_processreader_signals",
+      "passed": true
+    },
+    {
+      "name": "fd_attempt_pending_before_open",
+      "passed": true
+    },
+    {
+      "name": "complete_ledger_required_for_allClosed",
+      "passed": true
+    },
+    {
+      "name": "entire_close_loop_protected_once_close_not_retried",
+      "passed": true
+    },
+    {
+      "name": "incomplete_HeldT5_construction_cannot_claim_closure",
+      "passed": true
+    },
+    {
+      "name": "child_ledger_and_unknown_gate",
+      "passed": true
+    },
+    {
+      "name": "no_managed_numeric_signal_wait_reap",
+      "passed": true
+    },
+    {
+      "name": "root_guard_only_anchors_no_private_method_use",
+      "passed": true
+    },
+    {
+      "name": "handshake_and_birth_before_T5",
+      "passed": true
+    },
+    {
+      "name": "fixed_45_25_35_60_budget",
+      "passed": true
+    },
+    {
+      "name": "journal_two_hunks_exact_inverse",
+      "passed": true
+    },
+    {
+      "name": "all_journal_function_bodies_same_after_key_prefix",
+      "passed": true
+    },
+    {
+      "name": "journal_exact_request_pin_and_slot",
+      "passed": true
+    },
+    {
+      "name": "exact_typed_stdin_native_request",
+      "passed": true
+    }
+  ],
+  "check_count": 40,
+  "source": {
+    "blob": "bf69252fe9a2431ccf09740d5e5bed7eb6231248",
+    "bytes": 168464,
+    "sha256": "8cfa410c8fbe2234191b84b70d5d8b04f9aba01e7f4b5ae2c0d76ecfcd3865cb"
+  },
+  "managed_probe": {
+    "blob": "2649636d559f401a5068de2b92ed3bf7d6db7d72",
+    "bytes": 36358,
+    "sha256": "d96a769dbfc630237d6481e698704fdcc9fb0a315ae5f9e6c33ab5b976401873"
+  },
+  "request": {
+    "blob": "62be5766699e67a41ab9d6072db8aa8e35c8abbb",
+    "bytes": 170588,
+    "sha256": "af2247dd1a780773aa754f90db1c6a1aa8f6d1965eb1792036177916d347ee17"
+  },
+  "journal": {
+    "blob": "4d5e2545cf1bed8f1951103a543529545026a374",
+    "bytes": 19039,
+    "sha256": "d049e8818317d1a1a319de940bcce360c9a31d9a1ae341b3fa943adef08863ae"
+  },
+  "slot": "owner_launchd_home_t5_probe_gitfirst_r3",
+  "native_binding": {
+    "sha256": "dd65e756723f989178f813a01e75ce889ba517e3bc367e0500d0feb090e3d6cd",
+    "native_fingerprint": "15953411613499824273",
+    "typed_stdin": true
+  },
+  "three_identified_boundaries_addressed": [
+    "FixedIO returned FD registration exception cannot claim allClosed",
+    "entire FixedIO close loop protected from cancellation between rows",
+    "incomplete HeldT5 construction makes aggregate FD closure and outcome UNKNOWN"
+  ],
+  "roots": {
+    "homeControl": "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1",
+    "t5Work": "/Volumes/T5/hepta-vnext-recovery-20261013/launchd-home-t5-context-20261106-r1",
+    "label": "org.heptabao.qa.home-t5-context-20261106-r1",
+    "domain": "gui/501",
+    "oldLabelAllowed": false
+  },
+  "budget": {
+    "parentSharedSeconds": 45,
+    "outerSeconds": 60,
+    "childAbsoluteDeadlineSecond": 25,
+    "childOwnInitialUpperSeconds": 30,
+    "newHelperAdmissionDeadlineSecond": 35,
+    "lastTenSecondsPurpose": "Reserve unchanged direct-helper TERM1/wait5/group3 plus final closure, not extra business time.",
+    "directHelperSeconds": {
+      "diskutil": 30,
+      "launchctl": 10,
+      "exactPidPs": 4
+    },
+    "allCommandsClippedToExistingAbsoluteBound": true,
+    "maximumDirectCommands": 24,
+    "maximumPrintObservations": 18,
+    "maximumHelperReturnedBytes": 1048576,
+    "perHelperOutputBytes": {
+      "diskutil": 262144,
+      "launchctl": 65536,
+      "exactPidPs": 4096
+    },
+    "parent": {
+      "fixedIoFdRows": 64,
+      "originalT5AnchorFds": 3,
+      "newReturnedApplicationRowsTotalMaximum": 67,
+      "maximumConcurrentNewApplicationFds": 22,
+      "metadata": 4096,
+      "readCalls": 256,
+      "readBytes": 262144,
+      "writeCalls": 64,
+      "writeBytes": 131072,
+      "stdoutBytes": 131072
+    },
+    "child": {
+      "fixedIoFdRows": 64,
+      "maximumConcurrentNewApplicationFds": 19,
+      "metadata": 4096,
+      "readCalls": 256,
+      "readBytes": 131072,
+      "writeCalls": 64,
+      "writeBytes": 16384,
+      "terminalStdoutBytes": 32768,
+      "parentStderrReadBytes": 4096
+    },
+    "readinessPolls": 120,
+    "readinessPollSleepMaximumSeconds": 0.1,
+    "childAdmissionPolls": 120,
+    "childAdmissionPollSleepMaximumSeconds": 0.1,
+    "inactivePrintPolls": 10,
+    "sourceScope": "FD and metadata counters cover FixedIO plus separately declared 3 original HeldT5 anchor FDs. Original helper custody uses its unchanged bounded scopes; interpreter/dyld internal FDs are not claimed as enumerated.",
+    "synchronousSyscallsNotIndividuallyPreemptible": true,
+    "lateReturnCannotPass": true,
+    "unknownStopsNoRetry": true,
+    "existingRootFailsNoReplay": true
+  },
+  "ownership": {
+    "directHelpers": {
+      "module": "mac_owned_commands_r1",
+      "custody": "unchanged mac_owned_unreaped_r1 WNOWAIT, true Popen direct parent and retained PID/PGID until original stop/reap",
+      "stopCaps": {
+        "term": 1,
+        "wait": 5,
+        "group": 3,
+        "psMax": 4
+      },
+      "returnedAttemptCountMustEqualLedger": true
+    },
+    "launchdManaged": {
+      "directChildOfController": false,
+      "waitOrReapClaim": false,
+      "readyAuthority": "same exact source+plan+new label and actual live birth; completion marker follows full ready file closure",
+      "admissionAuthority": "same instance from ready and a fresh native identity observation",
+      "shutdownAuthority": "fresh label exact plist/program/argv plus actual same-birth double observation if active; inactive same registration can be removed",
+      "pidDeparture": "two exact -p numeric projections; empty exit1 means absent, otherwise two complete same numeric birth snapshots must prove a different birth. The reused process is never claimed or signalled.",
+      "globalDescendantReapingClaim": false
+    },
+    "oldUnknownsPreserved": [
+      "old mac/1a1ae51309d-fc05-5ef8 registration and lineage",
+      "historical PID11754",
+      "old Git8916 archive mutation UNKNOWN",
+      "old full-log817 failure and unknown object"
+    ]
+  },
+  "limitations": [
+    "Source inspection and exact pure V8 reconstruction only; no Python compile or fault injection has run.",
+    "A future new-probe success cannot identify the old EX_CONFIG cause or establish product/AuthBus credential qualification.",
+    "The launchd-managed process is not a direct child; no controller wait/reap, global descendant closure or numeric PID signal is claimed."
+  ],
+  "Native_calls": 0,
+  "selected_owner_qualified": false,
+  "AuthBus_credential_cases": 0,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false
+}

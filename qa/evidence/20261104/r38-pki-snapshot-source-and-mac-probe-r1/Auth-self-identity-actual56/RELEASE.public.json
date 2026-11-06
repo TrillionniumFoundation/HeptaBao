@@ -1,0 +1,131 @@
+{
+  "schema": "heptabao.public-python-self-identity.original-release.v1",
+  "status": "PASS_FRESH_SELF_OBSERVATION_ONLY",
+  "job": {
+    "host": "mac",
+    "job_id": "1a1afab06b9-fc05-6aa0",
+    "key": "heptabao-mac-public-python-identity-77b33bcb-20261106-r1"
+  },
+  "go": {
+    "blob": "021678a807e5b69de2bc1ef7a867bee4281fccb1",
+    "bytes": 7096,
+    "sha256": "8c674b99ebfae5fd11734777ad3fc8a954ec138ad624a4a77c114ded99e0b7fa"
+  },
+  "request": {
+    "blob": "f7294f87be2ce6675fd0125bc482c950c30f2c0e",
+    "bytes": 11843,
+    "sha256": "7ffa77a896493e9238d06be556a41647185198a23f060e660b9434c0ee63ece4"
+  },
+  "originalStartSDK": {
+    "blob": "dd860b169535896743f45175b6bf719b784dee7f",
+    "bytes": 1422,
+    "sha256": "997873a332a4f2cc7ba387cf9725fa95b9db71f0425359f907abd888a332b310"
+  },
+  "armedTree": "a54572169d3f0a26249d60912f7c6256d8518f64",
+  "authority": {
+    "blob": "525c34e56bad9a53da506f61b22e9ebbbb7bba32",
+    "bytes": 731,
+    "sha256": "c59553b7e8327a20de0696d184061b05a2628f04439e7048feb7edb4fb5b7b47"
+  },
+  "stdout": {
+    "blob": "4e28d3301fa4409b06efe23bd9834779173aaa71",
+    "bytes": 2453,
+    "sha256": "66b796413137843516dcd2398c8827036a5f312e65353e653b86df2456237d1d"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "originalObservers": [
+    {
+      "id": "d03e32cf7c4c9a87b03945f9eaa6a6ae932cb3b5d612399c30d77ca3febd1a55",
+      "tool": "process_status",
+      "payload": {
+        "blob": "3b4d23cb971e8c25494cccbd893c680608e098c3",
+        "bytes": 910,
+        "sha256": "9540f4e20ebe617c8a05b0af85eadae089ada843a371ad83f9d2bdff81916aff"
+      },
+      "payloadTree": "316fecab7f41f49434b6529e46ccf2c2ed9f78e2",
+      "nativeText": {
+        "blob": "525c34e56bad9a53da506f61b22e9ebbbb7bba32",
+        "bytes": 731,
+        "sha256": "c59553b7e8327a20de0696d184061b05a2628f04439e7048feb7edb4fb5b7b47"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "4e8211d9d14124cc7ba6e18a967f023c003391995e5f5f486562f5321bae8227",
+      "tool": "process_read",
+      "payload": {
+        "blob": "db3d0cfc34e5a048bacb39bc5652e6087862151b",
+        "bytes": 8304,
+        "sha256": "7b218dedc34cee45e9573849c3638feb1848b0aad849dfeca82842f6ded1e28a"
+      },
+      "payloadTree": "8077f9ad30749c501c83a5af80effabcd75c9336",
+      "nativeText": {
+        "blob": "e45e76dc67130e55a9572185a461f99adc39d93b",
+        "bytes": 7843,
+        "sha256": "28fccd52e16687ffcdfead12b6e90e10a58dd381929133a49465c176b0200c38"
+      },
+      "pages": 2,
+      "completedInactive": true
+    }
+  ],
+  "NativeCalls": 8,
+  "pages": 3,
+  "activeNativeCall": false,
+  "activeObserver": null,
+  "pending": null,
+  "currentKnownNativeFutures": 0,
+  "paused": false,
+  "actual": {
+    "exitCode": 0,
+    "outputComplete": true,
+    "outputDurable": true,
+    "terminalConfirmed": true,
+    "timedOut": false,
+    "ok": true,
+    "observationComplete": true,
+    "outcomeUnknown": false,
+    "sharedSeconds": 5,
+    "elapsedSeconds": 0.007981208,
+    "identityStable": true,
+    "allSelfReadsReturned": true,
+    "publicPathProjectionComplete": true,
+    "sysExecutableEqualsFixedLauncher": true,
+    "firstPredicates": {
+      "birth_sec_gt_0": true,
+      "birth_usec_lt_1000000": true,
+      "executable_eq_fixed_python": false,
+      "pgid_gt_1": true,
+      "pid_gt_1": true,
+      "uid_eq_501": true
+    },
+    "secondPredicates": {
+      "birth_sec_gt_0": true,
+      "birth_usec_lt_1000000": true,
+      "executable_eq_fixed_python": false,
+      "pgid_gt_1": true,
+      "pid_gt_1": true,
+      "uid_eq_501": true
+    },
+    "actualKernelPath": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+    "declaredLauncher": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "applicationDescriptorsOpened": 0,
+    "applicationChildrenCreated": 0,
+    "signalsRestored": true,
+    "deadlineMetAfterClosure": true
+  },
+  "limitations": {
+    "newProcessOnly": true,
+    "oldR3PredicateValuesNotReconstructed": true,
+    "kernelImageFileIdentityOrContentQualified": false,
+    "oldLaunchdCauseQualified": false,
+    "oldLabelClosureQualified": false,
+    "noWorkerReplay": true,
+    "noValidatorChange": true,
+    "noTargetedT5OrCredentialRead": true
+  }
+}

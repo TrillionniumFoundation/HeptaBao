@@ -1,0 +1,17 @@
+--- a/publisher.BUILD22.before.py
++++ b/publisher.BUILD22-r2.after.py
+@@ -13,11 +13,11 @@
+ PINS = {
+     "native_jwt_build.py": [
+         30322,
++        "4a68d6ee41ec098db7d78c3594df70016ce5096b1dc43da972fa0e405793a9b1"
+-        "6392a732adc6b80144abcd65d8fbcfc1b29d1be205b0ea3d432af16881f832ef"
+     ],
+     "launch_native_jwt_build.py": [
++        38413,
++        "2f24a0877f290092053ca22e974d6a4a500fb182181963ac657e540b1a53227d"
+-        38344,
+-        "bab2215cf042fc8d01055aaf305e37f3189183333421f6a0c0c92e9204c186fa"
+     ],
+     "jwt-test-groups.public.json": [
+         19789,

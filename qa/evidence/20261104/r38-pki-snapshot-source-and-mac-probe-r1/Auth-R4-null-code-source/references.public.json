@@ -1,0 +1,19 @@
+{
+  "source": {
+    "blob": "fb453c023c1de1299e1875078ae8720b20a441de",
+    "bytes": 168844,
+    "sha256": "87ddc49599abfd6b09b023287fbeefe1e0c833c1b806cf9c753755f706eaaa6c"
+  },
+  "actualTree": "3adcec2f471f87e8a5873b7c9394fb3f013502f8",
+  "actualStdout": {
+    "blob": "5e6a6ad62efe78bee580edd50cd7e96f36da68ca",
+    "bytes": 18131,
+    "sha256": "f3b9a879dd2c22774b471723aeb3920116e21a70891fe569344e6c51be3b6257"
+  },
+  "release": {
+    "blob": "42a76fe52bde656bbec881b13461307926f70d0b",
+    "bytes": 5770,
+    "sha256": "3818a8624caa173bac57f7dca80bf25786e6de2637c1f2a81b7608d634e5c388"
+  },
+  "newRuntimeAuthorized": false
+}

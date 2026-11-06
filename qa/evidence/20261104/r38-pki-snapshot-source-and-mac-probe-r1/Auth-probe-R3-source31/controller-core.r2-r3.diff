@@ -1,0 +1,44 @@
+--- a/controller-core.r2.py
++++ b/controller-core.r3.py
+@@ -352,6 +352,8 @@
+     global signals, controller_cleanup_mode, direct_call_attempts
+     io = None
+     guard = None
++    guard_init_started = False
++    guard_init_complete = False
+     commands = None
+     control = None
+     saved = {}
+@@ -381,9 +383,11 @@
+         raw, _ = io.read(Path(PYTHON), expected=PYTHON_ID)
+         need(sha(raw) == PYTHON_SHA, 'controller_actual_regular_python_whole')
+         stage = 't5_anchor'
++        guard_init_started = True
+         guard = HeldT5.__new__(HeldT5)
+         guard.__init__(base64.b64decode(ANCHOR_BASE64,validate=True), ANCHOR_SHA,
+                        remaining, signals.critical)
++        guard_init_complete = True
+         # Use the unchanged guard only for its anchored volume/UUID checks.
+         # All new paths use the explicit FixedIO allowlist, not a changed guard ROOT.
+         with signals.critical():
+@@ -509,14 +513,17 @@
+         result['directHelperAttempts'] = direct_call_attempts
+         result['directHelpersReturnedIntoLedger'] = 0 if commands is None else len(commands.rows)
+         io_closed = io is None or io.public()['allClosed']
++        volume_closed = (not guard_init_started or (guard_init_complete
++            and guard is not None and hasattr(guard,'rows')
++            and all(r['closed'] for r in guard.rows) and not guard.close_errors))
+-        volume_closed = guard is None or (hasattr(guard,'rows')
+-            and all(r['closed'] for r in guard.rows) and not guard.close_errors)
+         registration_closed = control is None or control.registration_closed
+         managed_closed = control is None or 'bootstrap' not in control.attempts or control.process_departed
+         final_ns = time.monotonic_ns()
++        result['volumeGuardInitStarted'] = guard_init_started
++        result['volumeGuardInitComplete'] = guard_init_complete
+         result['allDirectHelpersClosed'] = helpers_closed
+         result['allReturnedControllerFdsClosed'] = io_closed and volume_closed
++        volume_good = (guard_init_complete and guard is not None and hasattr(guard,'rows')
+-        volume_good = (guard is not None and hasattr(guard,'rows')
+             and result.get('volumeGuard',{}).get('volumeUUIDVerified') is True
+             and result.get('volumeGuard',{}).get('lastAnchorCheckPassed') is True)
+         result['finalVolumeAnchorAndUuidVerified'] = volume_good

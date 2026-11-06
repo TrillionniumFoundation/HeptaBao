@@ -1,0 +1,14 @@
+--- a/crates/heptabao-server/src/service_snapshot_transfer.rs
++++ b/crates/heptabao-server/src/service_snapshot_transfer.rs
+@@ -1106,6 +1106,11 @@
+                 501,
+                 "fixture refuses a redirected native upload",
+             )),
++            #[cfg(feature = "native-v6-ha")]
++            NativeSnapshotAdmission::Forward(_) => Err(Response::error(
++                501,
++                "fixture refuses a forwarded native upload",
++            )),
+         }
+     }
+ 

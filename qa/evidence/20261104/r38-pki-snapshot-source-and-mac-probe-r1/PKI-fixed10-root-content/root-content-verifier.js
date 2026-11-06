@@ -1,0 +1,56 @@
+function reconstructPkiFixed10ActualSources(){
+ const whole=load("r38_pki_fixed10_report_actual"),raw=whole.text,v=parseLosslessIntegers(raw),go=load("r38_pki_fixed10_GO"),terminal=load("r38_pki_fixed10_terminal_qualification"),body=load("r38_pki_fixed10_body_actual_qualification"),info=load("r38_pki_fixed10_info_actual_qualification"),receipt=load("r37_pki_formatter_actual_receipt"),receiptQ=load("r37_pki_receipt_body_actual_qualification"),checks=[];
+ const ck=(name,x)=>{checks.push({name,passed:x===true});if(x!==true)throw Error(name);},same=(a,b)=>JSON.stringify(a)===JSON.stringify(b),eq=(s,p)=>{const m=gitBlobMeta(s);return m.blob===p.blob&&m.bytes===p.bytes&&m.sha256===p.sha256;};
+ ck("original_whole_body_and_metadata_chain_qualified",body.value.evidence_qualified===true&&body.value.check_count===30&&info.value.evidence_qualified===true&&eq(raw,body.value.report.body)&&whole.bytes===30131&&gitBlobMeta(raw).sha256===info.value.actual_file_info.sha256);
+ ck("original_collector_terminal_and_formatter_receipt_qualified",terminal.value.evidence_qualified===true&&terminal.value.check_count===55&&receiptQ.value.evidence_qualified===true&&eq(receipt.text,go.value.original_formatter.receipt));
+ ck("exact_report_schema_source_and_only10_inputs",v.schema==="heptabao.native-pki-formatter10-observation.v1"&&v.collector_source_sha256===go.value.source.sha256&&v.input_count===10&&v.input_files.length===10&&v.input_observation_complete===true);
+ ck("source_provenance_candidates_not_base_leaves",v.source_commit===go.value.source_provenance.baseCommit&&v.source_tree===go.value.source_provenance.baseTree&&v.source_identity_is_base_only===true&&v.uncommitted_candidate_inputs===true&&v.candidate_source_packet===go.value.source_provenance.candidateSourcePacket&&v.input_root===go.value.input_root&&v.output_root===go.value.new_report.root);
+ ck("bounded_sequential_no_atomic_snapshot_claim",v.input_observations_are_sequential===true&&same(v.identity_fields,["dev","ino","uid","gid","full_mode","nlink","size","mtime_ns","ctime_ns"])&&v.identity_numbers==="decimal strings");
+ ck("all_input_closure_requires_original_final_terminal",v.all_10_input_fds_once_closed===true&&v.input_fds_closed_before_report_publication===true&&v.output_and_directory_fd_closure_requires_final_stdout_and_authority===true&&terminal.value.actual.all18_owned_FDs_closed===true);
+ ck("no_product_compiler_child_network_listing_input_write",v.cargo_executed===false&&v.product_executed===false&&v.child_count===0&&v.network_calls===0&&v.directory_listings===0&&v.original_input_writes===0);
+ const limits={diff_bytes:131072,fd_acquisitions:18,metadata_calls:320,outer_seconds:60,peak_owned_fds:16,per_read_bytes:65536,read_bytes:1424736,read_calls:256,report_bytes:262144,shared_seconds:50,stdout_bytes:16384};
+ ck("original_all_finite_limits_unchanged",same(v.limits,limits)&&v.original_read_cap===1424736);
+ ck("original_formatter_receipt_and_two_children_exact",v.formatter_receipt.job_id==="1a1af6d62a1-fc05-686a"&&v.formatter_receipt.receipt_blob===receipt.blob&&v.formatter_receipt.receipt_sha256===receipt.sha256&&v.formatter_receipt.direct_children_reaped===2&&v.formatter_receipt.same_supervisor_pgid===true&&v.formatter_receipt.independent_group_empty_observed===false&&v.formatter_receipt.compile_executed===false);
+ ck("formatter_source_and_configuration_exact",v.formatter_source_blob==="4bea36c9c2c80c280429a90d2f22523fd80e95d5"&&v.configuration_utf8==='edition = "2024"\n'&&gitBlobMeta(v.configuration_utf8).bytes===17&&gitBlobMeta(v.configuration_utf8).sha256===go.value.fixed_inputs[8].sha256);
+ const pairs=load("r35_pki_status_candidate_pairs"),candidates={"pki.rs":pairs.find(x=>x.label==="pki"),"service_native_pki_tests.rs":pairs.find(x=>x.label==="tests")},rebuilt={};
+ ck("exact_two_ordered_diff_rows",v.diffs.length===2&&same(v.diffs.map(x=>x.name),["pki.rs","service_native_pki_tests.rs"]));
+ for(const d of v.diffs){
+  const pair=candidates[d.name],before=pair.after,bp=gitBlobMeta(before),dp=gitBlobMeta(d.unified_diff);
+  ck("immutable_candidate_before_"+d.name,bp.blob===d.immutable_candidate_blob&&bp.bytes===d.before_bytes&&bp.sha256===d.before_sha256);
+  ck("actual_diff_extent_SHA_"+d.name,dp.bytes===d.diff_bytes&&dp.sha256===d.diff_sha256&&d.stderr_empty===true&&d.stdout_byte_equal===true&&d.strict_forward_equal===true&&d.strict_reverse_equal===true);
+  let after,hunks;
+  if(d.changed){const fw=strictApply(before,d.unified_diff),bw=strictApply(fw.text,d.unified_diff,true);after=fw.text;hunks=fw.hunks;ck("strict_forward_reverse_"+d.name,bw.text===before&&hunks===2&&bw.hunks===2);}
+  else{after=before;hunks=0;ck("exact_unchanged_empty_diff_"+d.name,d.unified_diff===""&&d.diff_bytes===0);}
+  const ap=gitBlobMeta(after);
+  ck("actual_formatted_reconstructed_complete_"+d.name,ap.bytes===d.after_bytes&&ap.sha256===d.after_sha256&&d.changed===(after!==before));
+  rebuilt[d.name]={name:d.name,path:pair.path,text:after,...ap,changed:d.changed,before:{...bp},diff:{text:d.unified_diff,...dp,hunks}};
+ }
+ ck("known_actual_formatted_blob_identities",rebuilt["pki.rs"].blob==="3c6fd86dcd641eb16af64b835d2252163dd1488e"&&rebuilt["service_native_pki_tests.rs"].blob==="23b2c1344eec6ad1cc659f665df14d6379687a49");
+ ck("two_formatted_test_additions_preserved",rebuilt["service_native_pki_tests.rs"].text.includes("fn native_pki_formal_expired_lease_lookup_matches_openbao_271_400_and_cold()")&&rebuilt["service_native_pki_tests.rs"].text.includes("fn native_pki_formal_revoked_lease_lookup_matches_openbao_271_400_and_cold()"));
+ const contentFor=row=>row.role==="candidate"?candidates[row.name].after:row.role==="formatted"||row.role==="stdout"?rebuilt[row.name].text:row.role==="stderr"?"":row.role==="config"?v.configuration_utf8:row.role==="receipt"?receipt.text:null;
+ ck("ten_distinct_fixed_paths",new Set(v.input_files.map(x=>x.path)).size===10);
+ for(let i=0;i<v.input_files.length;i++){
+  const row=v.input_files[i],expected=go.value.fixed_inputs[i],id=row.before_full9,content=contentFor(row),m=gitBlobMeta(content);
+  ck("input_"+i+"_fixed_manifest_and_role",row.index===i&&row.path===expected.path&&row.role===expected.role&&row.name===expected.name&&row.original_file_cap===expected.cap&&row.immutable_blob===expected.immutable_blob&&same(row.prior_full9,expected.expected_full9));
+  ck("input_"+i+"_all_exact_complete_reconstructed_bytes",row.bytes===expected.bytes&&row.sha256===expected.sha256&&row.bytes===m.bytes&&row.sha256===m.sha256&&row.read_bytes===m.bytes&&row.eof===true);
+  ck("input_"+i+"_lossless_full9_regular_private_single_link",id.length===9&&id.every(x=>typeof x==="string"&&/^[0-9]+$/.test(x))&&id[2]==="1000"&&id[3]==="1000"&&id[4]==="33152"&&id[5]==="1"&&id[6]===String(row.bytes));
+  ck("input_"+i+"_held_named_before_after_exact",same(id,row.named_before_full9)&&same(id,row.read_after.held)&&same(id,row.read_after.named)&&same(id,row.final_after.held)&&same(id,row.final_after.named));
+  ck("input_"+i+"_version_prior_and_once_close",row.version===[id[0],id[1],id[6],id[7],id[8]].join(":")&&(row.prior_full9===null||same(id,row.prior_full9))&&row.once_close_attempted===true&&row.once_close_completed===true&&row.close_error===null);
+  ck("input_"+i+"_bounded_actual_read_calls",row.read_calls===Math.ceil(row.bytes/65536)+1);
+ }
+ ck("directory_sets_exact_six",same(Object.keys(v.directories_before).sort(),["candidate","formatted","home","input","root","user"])&&same(Object.keys(v.directories_after_inputs).sort(),["candidate","formatted","home","input","root","user"]));
+ const final=parseLosslessIntegers(load("r34_packet_PKI-fixed10-collector-full-actual64").raw["stdout.original.json"]).input_namespace_final;
+ for(const k of Object.keys(v.directories_before)){
+  const b=v.directories_before[k],a=v.directories_after_inputs[k],fd=final[k],shared=["root","home","user"].includes(k);
+  ck("directory_"+k+"_lossless_held_named_input_observation",b.full9.length===9&&b.full9.every(x=>typeof x==="string")&&same(a.held,a.named)&&same(b.full9.slice(0,shared?5:9),a.held.slice(0,shared?5:9))&&b.shared_identity_only===shared);
+  ck("directory_"+k+"_post_publication_scope",same(fd.held,fd.named)&&same(a.held.slice(0,shared?5:9),fd.held.slice(0,shared?5:9)));
+  if(!shared)ck("directory_"+k+"_private_owned",a.held[2]==="1000"&&a.held[3]==="1000"&&a.held[4]==="16832");
+ }
+ const c=v.counters_before_publication;
+ ck("prepublication_actual_counters_exact",same(c,{fd_acquisition_attempts:16,fd_acquisitions:16,fsync_calls:0,input_read_bytes:543621,metadata_calls:84,peak_owned_fds:16,read_bytes:543621,read_calls:24,report_read_bytes:0,write_bytes:0}));
+ ck("actual_total_input_read_and_calls_match_rows",v.input_bytes===543621&&v.input_files.reduce((n,x)=>n+x.read_bytes,0)===543621&&v.input_files.reduce((n,x)=>n+x.read_calls,0)===24&&c.input_read_bytes===terminal.value.actual.counters.input_read_bytes);
+ ck("two_source_totals_changes_and_diff_bytes",v.source_bytes===179535&&v.formatted_bytes===179581&&v.source_bytes===v.diffs.reduce((n,x)=>n+x.before_bytes,0)&&v.formatted_bytes===v.diffs.reduce((n,x)=>n+x.after_bytes,0)&&v.changed_files===1&&v.unchanged_files===1&&v.diff_total_bytes===592&&v.diffs.reduce((n,x)=>n+x.diff_bytes,0)===592);
+ ck("elapsed_before_publication_within_original_terminal_time",v.elapsed_seconds_before_publication>0&&v.elapsed_seconds_before_publication<terminal.value.actual.elapsed_seconds&&terminal.value.actual.elapsed_seconds<50);
+ store("r38_pki_formatted_two_reconstructed",rebuilt);
+ return {schema:"heptabao.root-qualification.PKI-fixed10-actual-content-and-source-reconstruction.v1",status:"PASS_WHOLE_REPORT_AND_STRICT_ACTUAL_FORMATTED_SOURCE_RECONSTRUCTION",evidence_qualified:true,checks,check_count:checks.length,original_report:{blob:whole.blob,bytes:whole.bytes,sha256:whole.sha256},original_body_qualification:{blob:body.blob,bytes:body.bytes,sha256:body.sha256},original_terminal_qualification:{blob:terminal.blob,bytes:terminal.bytes,sha256:terminal.sha256},original_info_qualification:{blob:info.blob,bytes:info.bytes,sha256:info.sha256},formatted_files:Object.values(rebuilt).map(x=>({name:x.name,path:x.path,blob:x.blob,bytes:x.bytes,sha256:x.sha256,changed:x.changed,before:x.before,diff:{blob:x.diff.blob,bytes:x.diff.bytes,sha256:x.diff.sha256,hunks:x.diff.hunks}})),actual:{fixed_inputs:10,input_bytes:543621,formatted_bytes:179581,format_changed_files:1,unchanged_files:1,actual_diff_bytes:592,reconstruction_direction_checks:2,all_input_FDs_closed:true,all18_final_FDs_closed:true},limitations:["Ten input observations are sequential, with held/named identity checks; they are not an atomic filesystem snapshot.","Formatter children were directly reaped in the supervisor group; an independently empty process group was not observed.","The report e3af commit/tree describes base ancestry; the two candidate inputs are separately pinned immutable blobs, not e3af leaves.","This qualification proves actual formatted source bytes, not Rust compilation, component tests or HTTP behavior."],formatted_source_reconstructed:true,compile_or_product_qualified:false,PKI_HTTP12_qualified:false,full_replacement:false,production_cutover:false,legacy_cleanup:false,root_Runtime_calls:0};
+}

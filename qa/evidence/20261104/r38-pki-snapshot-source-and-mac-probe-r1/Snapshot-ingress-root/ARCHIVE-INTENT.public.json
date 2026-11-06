@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "Root-snapshot-ingress13-correction-review-r1",
+  "records": [
+    {
+      "name": "review.json",
+      "blob": "4c3713cffed323ca5f0b18de6dff16afc5882dd9",
+      "bytes": 6047,
+      "sha256": "83280c101e4e4ffd35feaba330237075506494bf72bc90be0e0c6eb0e6eee707"
+    },
+    {
+      "name": "verifier.js",
+      "blob": "3e3fb38896ed4acd00dca641754700e6a8f50277",
+      "bytes": 7189,
+      "sha256": "5698c60872d7bb0ecb66b2ff182cf295f6a3e2fff6dbd28a3720f7e1077bb462"
+    }
+  ],
+  "expected_data_tree": "9c9e314ac8bd36cb3ed47a4bfe2ee16a9f2b64fd",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

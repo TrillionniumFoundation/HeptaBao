@@ -1,0 +1,22 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "{\"ref\":\"refs/heads/codex/heptabao-native-snapshot-forward-r3-source-20261106\",\"node_id\":\"REF_kwDOUGncwNoARHJlZnMvaGVhZHMvY29kZXgvaGVwdGFiYW8tbmF0aXZlLXNuYXBzaG90LWZvcndhcmQtcjMtc291cmNlLTIwMjYxMTA2\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/refs/heads/codex/heptabao-native-snapshot-forward-r3-source-20261106\",\"object\":{\"sha\":\"8c95fb0a8b2f61933a09b04986df2bafc9e7095c\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/8c95fb0a8b2f61933a09b04986df2bafc9e7095c\"}}",
+    "title": "heptabao-native-snapshot-forward-r3-source-20261106",
+    "modified_date": null,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/ref/heads/codex/heptabao-native-snapshot-forward-r3-source-20261106",
+    "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/ref/heads/codex/heptabao-native-snapshot-forward-r3-source-20261106",
+    "display_title": "heptabao-native-snapshot-forward-r3-source-20261106",
+    "structuredContent": {
+      "title": "heptabao-native-snapshot-forward-r3-source-20261106",
+      "content": "{\"ref\":\"refs/heads/codex/heptabao-native-snapshot-forward-r3-source-20261106\",\"node_id\":\"REF_kwDOUGncwNoARHJlZnMvaGVhZHMvY29kZXgvaGVwdGFiYW8tbmF0aXZlLXNuYXBzaG90LWZvcndhcmQtcjMtc291cmNlLTIwMjYxMTA2\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/refs/heads/codex/heptabao-native-snapshot-forward-r3-source-20261106\",\"object\":{\"sha\":\"8c95fb0a8b2f61933a09b04986df2bafc9e7095c\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/8c95fb0a8b2f61933a09b04986df2bafc9e7095c\"}}",
+      "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/ref/heads/codex/heptabao-native-snapshot-forward-r3-source-20261106"
+    }
+  },
+  "isError": false
+}

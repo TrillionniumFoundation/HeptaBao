@@ -1,0 +1,245 @@
+{
+  "schema": "heptabao.public-python-self-identity.source-contract.r1",
+  "status": "SOURCE_ONLY_UNSUBMITTED",
+  "runtimeAuthorized": false,
+  "purpose": "Resolve only the six predicates that rejected the new R3 controller at entry. Observe this freshly launched diagnostic process, not the historical process or any launchd job.",
+  "exact": {
+    "source": {
+      "blob": "14b74c4007faf72d28dde9043f7d20812973dba4",
+      "bytes": 11243,
+      "sha256": "77b33bcbee6ac6043a52fb2bc108b08dfffe973cbb3d2fead68493a530fd2bb2"
+    },
+    "request": {
+      "blob": "f7294f87be2ce6675fd0125bc482c950c30f2c0e",
+      "bytes": 11843,
+      "sha256": "7ffa77a896493e9238d06be556a41647185198a23f060e660b9434c0ee63ece4"
+    },
+    "journal": {
+      "blob": "83f17e55c507c85d712635386c002b135afc2af3",
+      "bytes": 19042,
+      "sha256": "d96ec873d27c0eeedc7d7dc6b8a16015d9aefe968d09ffd62db8a406d6e0d49b"
+    },
+    "key": "heptabao-mac-public-python-identity-77b33bcb-20261106-r1",
+    "slot": "owner_public_python_identity_gitfirst_r1",
+    "nativeDigest": null,
+    "nativeFingerprint": null
+  },
+  "priorKnownFailure": {
+    "tree": "8b74de099687e31d3dfd89ec9e878de142c06962",
+    "job": "mac/1a1af996e33-fc05-69fb",
+    "authority": {
+      "blob": "87fcfafefdbdfb4ebd219ed686dbdc1289ed63b5",
+      "bytes": 728,
+      "sha256": "8c94733451c3e5386b7470cdd51c0a98bcb31e88d54ee7261f400ee8dceff848"
+    },
+    "stdout": {
+      "blob": "b69eabd138958c6870a2d03dfe8cb5c1867cc2bc",
+      "bytes": 2030,
+      "sha256": "fde9a1cc9f1773b30c1d1a511273de71d344183d81d26a1e7d64658e76bbd10e"
+    },
+    "rootQualification": "03fb9f788ff6ffd5e538c5ea9c99009eb12e60cb",
+    "code": "process_identity_fixed_python",
+    "stage": "entry",
+    "fieldValuesNotPublished": true,
+    "noReplay": true
+  },
+  "exactSourceLocations": {
+    "controller": {
+      "blob": "bf69252fe9a2431ccf09740d5e5bed7eb6231248",
+      "bytes": 168464,
+      "sha256": "8cfa410c8fbe2234191b84b70d5d8b04f9aba01e7f4b5ae2c0d76ecfcd3865cb"
+    },
+    "lines": {
+      "def validate_process": [
+        69
+      ],
+      "process_identity_shape": [
+        32,
+        70
+      ],
+      "process_identity_numbers": [
+        32,
+        72
+      ],
+      "process_identity_fixed_python": [
+        32,
+        75
+      ],
+      "controller_identity = validate_process": [
+        792
+      ],
+      "controller_exact_platform_python": [
+        32,
+        784
+      ]
+    },
+    "observer": {
+      "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+      "bytes": 13423,
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+    },
+    "observerLines": {
+      "class ProcessReader": [
+        47
+      ],
+      "def read(self, pid)": [
+        62
+      ],
+      "proc_pidinfo(pid, 3, 0": [
+        65,
+        74
+      ],
+      "proc_pidpath(pid, executable": [
+        68
+      ],
+      "process_identity_changed_during_read": [
+        79
+      ],
+      "str(Path(actual_path).resolve())": [
+        83
+      ]
+    }
+  },
+  "reuse": {
+    "readerWhole": {
+      "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+      "bytes": 13423,
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+    },
+    "readerExtract": {
+      "blob": "ec2182b5075246b30ef96c5b6472adeafb6654c8",
+      "bytes": 3302,
+      "sha256": "e37f6ed5569182cc8dd0ec42d1876d566b207ddc14ec57d0891ea31148a72e59"
+    },
+    "signals": {
+      "blob": "fdad3832e53f561125ff9d2bcd5c337f30599dba",
+      "bytes": 442,
+      "sha256": "230888e55c633e20da45562502483a8b368cb0fae0e75eac2fff47870126aba7"
+    },
+    "originalReaderAndSignalsByteExact": true,
+    "perRead": "Original proc_pidinfo → proc_pidpath → proc_pidinfo checks exact full size and stable pid/ppid/pgid/uid/birth, then Path(actual_path).resolve. Two top-level reads therefore perform four such proc_pidinfo calls and two proc_pidpath calls.",
+    "originalResolveMetadata": "The unchanged ProcessReader performs public executable-path normalization metadata. The proposal does not claim zero filesystem metadata or enumerate interpreter/dyld-internal descriptors.",
+    "childListMethodNeverInvoked": true
+  },
+  "inputScope": {
+    "host": "mac",
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-"
+    ],
+    "cwd": "/Users/qianqi",
+    "stdin": "exact embedded source",
+    "pid": "os.getpid() only",
+    "configOrCredentialInput": false,
+    "environmentChanged": false
+  },
+  "observation": {
+    "count": 2,
+    "globalProcessEnumeration": false,
+    "otherPidRead": false,
+    "identityNumericKeys": [
+      "pid",
+      "ppid",
+      "pgid",
+      "uid",
+      "birthSec",
+      "birthUsec"
+    ],
+    "sameIdentityEquality": "Both original complete dictionaries must match, including resolved executable and every numeric field.",
+    "originalPredicateKeys": [
+      "pid_gt_1",
+      "pgid_gt_1",
+      "uid_eq_501",
+      "birth_sec_gt_0",
+      "birth_usec_lt_1000000",
+      "executable_eq_fixed_python"
+    ],
+    "publicPath": {
+      "source": "Only original proc_pidpath of this own current process, normalized by unchanged original ProcessReader.",
+      "prefix": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/",
+      "maximumChars": 512,
+      "ascii": true,
+      "normalized": true,
+      "charset": "[A-Za-z0-9_./@+\\-]",
+      "outsideScope": "Output null and false scope boolean. No unknown path text/hash or guessed alias."
+    },
+    "sysExecutable": "Only exact equality to the fixed public launcher is reported; arbitrary sys.executable is not echoed.",
+    "currentObservationOnly": true,
+    "declaredPathDoesNotQualifyKernelImageFile": true
+  },
+  "effects": {
+    "applicationFileBodyReads": 0,
+    "explicitFileOpenCloseCalls": 0,
+    "applicationChildren": 0,
+    "directoryCreation": 0,
+    "launchd": 0,
+    "T5TargetedReads": 0,
+    "SDK": 0,
+    "privateCapsule": 0,
+    "provider": 0,
+    "network": 0,
+    "production": 0,
+    "oldLabel": 0,
+    "output": "One ASCII JSON stdout record; original Runtime owns its job logs."
+  },
+  "budget": {
+    "sharedSeconds": 5,
+    "eachReadLateReturnSeconds": 4,
+    "allReadsClippedToOneSharedDeadline": true,
+    "outerSeconds": 60,
+    "stdoutMaximumBytes": 8192,
+    "maximumOriginalReaderCalls": 2,
+    "maximumProcessPidinfoCalls": 4,
+    "maximumProcessPidpathCalls": 2,
+    "sleep": false,
+    "retry": false,
+    "synchronousCallsNotHardPreemptible": true,
+    "lateReturnFails": true,
+    "finalPostFlushExitCheck": true
+  },
+  "failureClosure": {
+    "signals": "Original Signals and saved original SIGTERM/SIGINT handlers. Restore results and pending signal are public.",
+    "readLedger": "Start/return counts are recorded around each existing reader call; incomplete read or inconsistent identities is unknown.",
+    "applicationFdScope": "No application descriptor is acquired. Interpreter, imports and dynamic loader descriptors are explicitly not enumerated.",
+    "parentExit0": "Known bounded observation and original terminal closure. All six original predicates need not be true: a false predicate is an observed diagnostic result.",
+    "publicPathOutsideScope": "A known observation may contain false scope/null path; no source-file or executable-path qualification follows.",
+    "noHistoricalInference": "A new observation cannot retroactively supply a field of the old R3 process; it is a specific present control for the same fixed interpreter."
+  },
+  "journal": {
+    "base": {
+      "blob": "4d5e2545cf1bed8f1951103a543529545026a374",
+      "bytes": 19039,
+      "sha256": "d049e8818317d1a1a319de940bcce360c9a31d9a1ae341b3fa943adef08863ae"
+    },
+    "after": {
+      "blob": "83f17e55c507c85d712635386c002b135afc2af3",
+      "bytes": 19042,
+      "sha256": "d96ec873d27c0eeedc7d7dc6b8a16015d9aefe968d09ffd62db8a406d6e0d49b"
+    },
+    "strictHunks": 2,
+    "onlyLiteralChanges": [
+      "GF_SLOT",
+      "GF_REQUEST",
+      "observer key prefix"
+    ],
+    "originalFunctionsUnchanged": true
+  },
+  "priorUnknownsPreserved": [
+    "old launchd label/lineage",
+    "PID11754",
+    "Git8916",
+    "original 817-byte log failure",
+    "R3 process predicate values"
+  ],
+  "futureChangesNotAuthorized": [
+    "R3 rerun",
+    "changing validator",
+    "kernel image file reads",
+    "new probe bootstrap",
+    "old label cleanup",
+    "SDK or credential work"
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.pki3-draft-git-tree-elements.r1",
+  "not_submitted": true,
+  "base_tree": "0506d30b02f5a2a2dc7d6364299365ae8d1d7cc7",
+  "expected_tree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+  "elements": [
+    {
+      "path": "crates/heptabao-server/src/engines/pki.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3c6fd86dcd641eb16af64b835d2252163dd1488e"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_pki_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "23b2c1344eec6ad1cc659f665df14d6379687a49"
+    },
+    {
+      "path": "qa/openbao-acceptance/acceptance.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8ffd4f530426968fa396ceb8cb3299e80f25a9d0"
+    }
+  ],
+  "sole_parent": "808e45d690f177ecb922e13d1ed19f7877156094"
+}

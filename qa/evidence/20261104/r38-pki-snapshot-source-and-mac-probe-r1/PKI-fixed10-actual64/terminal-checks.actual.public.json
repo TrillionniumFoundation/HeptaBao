@@ -1,0 +1,82 @@
+{
+  "passed": true,
+  "count": 19,
+  "checks": [
+    {
+      "name": "same_original_job",
+      "passed": true
+    },
+    {
+      "name": "known_exit_zero_full_durable",
+      "passed": true
+    },
+    {
+      "name": "terminal_passed_after_finally",
+      "passed": true
+    },
+    {
+      "name": "source_exact",
+      "passed": true
+    },
+    {
+      "name": "all_18_once_closed",
+      "passed": true
+    },
+    {
+      "name": "18_acquisitions_peak16",
+      "passed": true
+    },
+    {
+      "name": "10_input_exact_bytes",
+      "passed": true
+    },
+    {
+      "name": "shared_read_budget",
+      "passed": true
+    },
+    {
+      "name": "handlers_umask_signals_closed",
+      "passed": true
+    },
+    {
+      "name": "no_product_or_input_effects",
+      "passed": true
+    },
+    {
+      "name": "report_exact_namespace",
+      "passed": true
+    },
+    {
+      "name": "report_readback_declared",
+      "passed": true
+    },
+    {
+      "name": "report_lossless_full9",
+      "passed": true
+    },
+    {
+      "name": "stream_complete_and_exact",
+      "passed": true
+    },
+    {
+      "name": "two_observers_full_closed",
+      "passed": true
+    },
+    {
+      "name": "nine_original_calls_archived",
+      "passed": true
+    },
+    {
+      "name": "no_pending_native",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-authority0-status0-r1-inactive",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-streams0-status0-r1-inactive",
+      "passed": true
+    }
+  ]
+}

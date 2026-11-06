@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "R38-root-PKI-fixed10-report-info-GO",
+  "records": [
+    {
+      "name": "GO.json",
+      "blob": "b6c22fb82f75beec7fdf8168f5527f65e141993c",
+      "bytes": 4573,
+      "sha256": "3a767372cd99d80747132c0181e07c9bd0139d3b3bb86364f6cba2ae39569afb"
+    },
+    {
+      "name": "source-review.json",
+      "blob": "c05d9e87fa508a8b423e46b2888f1a891f855920",
+      "bytes": 4281,
+      "sha256": "eae1a515c3519cbd17624a9bf07af92ede4fd8348d3a7838b10b21108b02403a"
+    },
+    {
+      "name": "source-verifier.js",
+      "blob": "d5bf7aa7450ce46992ea587880624f86b7d826df",
+      "bytes": 6925,
+      "sha256": "ece0241c8c4a636166356296e2633f59e91d6ab4e2b3b2caca603213b4620334"
+    }
+  ],
+  "expected_data_tree": "ceca3591d41033a74df2c3df309fbf741bfd0ba6",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

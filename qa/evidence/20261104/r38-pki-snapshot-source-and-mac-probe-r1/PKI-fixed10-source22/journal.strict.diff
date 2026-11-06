@@ -1,0 +1,22 @@
+--- a/journal.PKI-formatter.before.js
++++ b/journal.PKI10-collector.after.js
+@@ -5,8 +5,8 @@
+  * Every original SDK is store'd, serialized, Git-created once and whole-read
+  * before isError or native text is inspected.
+  */
++const GF_SLOT = "native_pki_lease400_formatter10_collector_gitfirst_r1";
++const GF_REQUEST = {"blob":"22dd45be52462f7a001abf985abe48c523dc48a4","bytes":33330,"sha256":"d16edddff2f496d84fb41eb50fdf266716b274388beb1031baec8111579e2c0f"};
+-const GF_SLOT = "native_pki_lease400_formatter_gitfirst_r1";
+-const GF_REQUEST = {"blob":"c9805c31d29bdb19f9d51e5826950d92afbc15b0","bytes":204933,"sha256":"1f0a94e2a91e15faa61781a1de9ae4ed4f175ec523a446b80d52c9f993360e1a"};
+ 
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {
+@@ -45,7 +45,7 @@
+   gfNeed(s.job!==null && s.activeObserver===null,"original_job_no_unclosed_observer");
+   gfNeed(Object.keys(q).sort().join(",")==="idempotency_key,operation"
+     && typeof q.idempotency_key==="string" && q.idempotency_key.length<=128
++    && /^heptabao-native-pki-lease400-format10-observe-r1-/.test(q.idempotency_key),
+-    && /^heptabao-native-pki-lease400-formatter-observe-r1-/.test(q.idempotency_key),
+     "bounded_original_observer_key");
+   const op=q.operation,a=op?.arguments;
+   gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"

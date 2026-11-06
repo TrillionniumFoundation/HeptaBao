@@ -1,0 +1,82 @@
+{
+  "schema": "heptabao.pki10-collector-report-body-lane-release.r1",
+  "root_go": {
+    "blob": "62481093ff3a3c72829d1352e991b33380601ea8",
+    "bytes": 4011,
+    "sha256": "cdcc5326974060445cc8089e8c0272162dc706c188680f5fed34e18242a87d98"
+  },
+  "original_job": "1a1af917594-fc05-69b4",
+  "actual_independent_info": {
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-observe-20261106-r1/observation.public.json",
+    "size": 30131,
+    "sha256": "f2d35f46f7fec2d9d9ce81d7e3bd8dca21c9c6f44d5f990314cfd4dcb5c4da46",
+    "version": "66306:30842948:30131:1793946915079275200:1793946915079275200",
+    "nativeText": {
+      "blob": "31a0dafbdf896a40a7f31c426e3b07de1d31fef8",
+      "bytes": 481,
+      "sha256": "6ef4f65835eb727f86892a9b23f0adc70d475280685a17fbfd2c4a9580b9f438"
+    },
+    "originalOperation": "97808443f5d922af35c74107721bf17a5b9c65f46a3e3be525318c0aabecbb07",
+    "full9Strings": [
+      "66306",
+      "30842948",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "30131",
+      "1793946915079275200",
+      "1793946915079275200"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "closed_body_observer": {
+    "id": "bfede395f7e4dae647b24ec3b021afdfeefec32d1606a880867ff34cdb5d2d36",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "e037599cd9f65ef1d9b77e6026eb134bda78c54d",
+      "bytes": 40610,
+      "sha256": "b1ad4bfcd553d0eb99e86d96684de2769b989770209d6abca138ad8366b97c60"
+    },
+    "payloadTree": "bb867a429c22a4d3c7e5b230edb6cc0375043c27",
+    "nativeText": {
+      "blob": "83003af0abd5aec43f3bd6bb046b839893d5fa33",
+      "bytes": 40507,
+      "sha256": "726d2ff6562f5944c7ee5221b16d1a5ece946300ef9db9918014db2cd1cbce49"
+    },
+    "pages": 3,
+    "completedInactive": true
+  },
+  "closed_status": {
+    "blob": "48c0362a391656d4f0212fc5cded83593345012d",
+    "bytes": 802,
+    "sha256": "1248df57b47e19971af58c0d656a47afdc8a209089ada79d91eb5795df7b617f"
+  },
+  "report": {
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-observe-20261106-r1/observation.public.json",
+    "version": "66306:30842948:30131:1793946915079275200:1793946915079275200",
+    "body": {
+      "blob": "4b8a48e1d4cec8c7e68ba0a858dc2da27662d13d",
+      "bytes": 30131,
+      "sha256": "f2d35f46f7fec2d9d9ce81d7e3bd8dca21c9c6f44d5f990314cfd4dcb5c4da46"
+    },
+    "wholeTree": "a27d5003e820c88664ebc1e261f8befe17ee2456",
+    "originalOperations": [
+      "bfede395f7e4dae647b24ec3b021afdfeefec32d1606a880867ff34cdb5d2d36"
+    ],
+    "metadataOperation": "97808443f5d922af35c74107721bf17a5b9c65f46a3e3be525318c0aabecbb07",
+    "semanticQualification": false
+  },
+  "new_read_calls": 5,
+  "new_immutable_pages": 3,
+  "original_binary_starts": 1,
+  "all_collector_read_calls": 17,
+  "all_collector_observers": 4,
+  "all_collector_immutable_pages": 8,
+  "pending_native_calls": 0,
+  "pending_native_futures": 0,
+  "report_content_qualified": false,
+  "compile_test_product_permission": false,
+  "next": "Pure Git reconstruction and full original-chain archive; no new Native scope."
+}

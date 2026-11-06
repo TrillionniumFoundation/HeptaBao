@@ -1,0 +1,177 @@
+{
+  "schema": "heptabao.snapshot8c95.report-info-source-checks.v1",
+  "checks": [
+    {
+      "name": "strict_forward",
+      "pass": true
+    },
+    {
+      "name": "strict_reverse",
+      "pass": true
+    },
+    {
+      "name": "six_hunks",
+      "pass": true
+    },
+    {
+      "name": "unchanged:gfNeed",
+      "pass": true
+    },
+    {
+      "name": "unchanged:gfMetaEquals",
+      "pass": true
+    },
+    {
+      "name": "unchanged:gfState",
+      "pass": true
+    },
+    {
+      "name": "unchanged:gfSave",
+      "pass": true
+    },
+    {
+      "name": "unchanged:gfIntegerText",
+      "pass": true
+    },
+    {
+      "name": "unchanged:gfInitializeOnlyAfterRootGO",
+      "pass": true
+    },
+    {
+      "name": "unchanged:gfAcceptArchivedSDK",
+      "pass": true
+    },
+    {
+      "name": "unchanged:gfReconcileSameGitArchiveReadOnly",
+      "pass": true
+    },
+    {
+      "name": "one_reference_literal:11",
+      "pass": true
+    },
+    {
+      "name": "one_reference_literal:12",
+      "pass": true
+    },
+    {
+      "name": "one_reference_literal:13",
+      "pass": true
+    },
+    {
+      "name": "one_reference_literal:14",
+      "pass": true
+    },
+    {
+      "name": "one_reference_literal:15",
+      "pass": true
+    },
+    {
+      "name": "one_reference_literal:16",
+      "pass": true
+    },
+    {
+      "name": "one_reference_literal:17",
+      "pass": true
+    },
+    {
+      "name": "one_reference_literal:18",
+      "pass": true
+    },
+    {
+      "name": "one_reference_literal:19",
+      "pass": true
+    },
+    {
+      "name": "reference_binding_only",
+      "pass": true
+    },
+    {
+      "name": "request_whole",
+      "pass": true
+    },
+    {
+      "name": "one_file_info_request",
+      "pass": true
+    },
+    {
+      "name": "key_original_prefix",
+      "pass": true
+    },
+    {
+      "name": "existing_slot",
+      "pass": true
+    },
+    {
+      "name": "fixed_64KiB_cap",
+      "pass": true
+    },
+    {
+      "name": "separate_GO",
+      "pass": true
+    },
+    {
+      "name": "actual_job",
+      "pass": true
+    },
+    {
+      "name": "actual_closed_streams",
+      "pass": true
+    },
+    {
+      "name": "source_stage_two_closures",
+      "pass": true
+    },
+    {
+      "name": "once_before_original_call",
+      "pass": true
+    },
+    {
+      "name": "exact_request_gate",
+      "pass": true
+    },
+    {
+      "name": "native_metadata_0600",
+      "pass": true
+    },
+    {
+      "name": "native_metadata_owner_single",
+      "pass": true
+    },
+    {
+      "name": "lossless_full_mode",
+      "pass": true
+    },
+    {
+      "name": "decimal_version_preserved",
+      "pass": true
+    },
+    {
+      "name": "no_binary_read_branch",
+      "pass": true
+    },
+    {
+      "name": "old_page_limit",
+      "pass": true
+    },
+    {
+      "name": "old_payload_limit",
+      "pass": true
+    },
+    {
+      "name": "old_process_read_limit",
+      "pass": true
+    },
+    {
+      "name": "old_SDK_before_parse",
+      "pass": true
+    },
+    {
+      "name": "actual_context_untouched",
+      "pass": true
+    }
+  ],
+  "passed": 42,
+  "RuntimeCalls": 0,
+  "candidateFunctionsExecuted": false,
+  "sourceOnly": true
+}

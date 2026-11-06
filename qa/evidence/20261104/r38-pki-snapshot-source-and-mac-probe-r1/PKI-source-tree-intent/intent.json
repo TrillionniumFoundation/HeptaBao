@@ -1,0 +1,63 @@
+{
+  "schema": "heptabao.root-source-freeze.PKI3-tree-intent.v1",
+  "mutation": "github_create_tree",
+  "maximum_calls": 1,
+  "request": {
+    "repository_full_name": "TrillionniumFoundation/HeptaBao",
+    "base_tree_sha": "0506d30b02f5a2a2dc7d6364299365ae8d1d7cc7",
+    "tree_elements": [
+      {
+        "path": "crates/heptabao-server/src/engines/pki.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3c6fd86dcd641eb16af64b835d2252163dd1488e"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_pki_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "23b2c1344eec6ad1cc659f665df14d6379687a49"
+      },
+      {
+        "path": "qa/openbao-acceptance/acceptance.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8ffd4f530426968fa396ceb8cb3299e80f25a9d0"
+      }
+    ]
+  },
+  "expected_tree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+  "expected_parent": "808e45d690f177ecb922e13d1ed19f7877156094",
+  "base_tree": "0506d30b02f5a2a2dc7d6364299365ae8d1d7cc7",
+  "changed_files": [
+    {
+      "path": "crates/heptabao-server/src/engines/pki.rs",
+      "blob": "3c6fd86dcd641eb16af64b835d2252163dd1488e",
+      "bytes": 136672,
+      "sha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_pki_tests.rs",
+      "blob": "23b2c1344eec6ad1cc659f665df14d6379687a49",
+      "bytes": 42909,
+      "sha256": "6a1fd1fbaf6caa1c206844e8d97414ea231a1cba663ebb704d26cdff42417d56"
+    },
+    {
+      "path": "qa/openbao-acceptance/acceptance.py",
+      "blob": "8ffd4f530426968fa396ceb8cb3299e80f25a9d0",
+      "bytes": 36333,
+      "sha256": "c10e3e009dfd3273a26c2b313f26e616de5a9b28c874dfd191bdffc208a79042"
+    }
+  ],
+  "all_other3913_leaves_unchanged": true,
+  "formatted_content_qualification": "804c07ab40bb0be24776fd6ec110935f1cf064fb",
+  "expected_index": {
+    "blob": "274ab44690eb8992c7bb7954757cb81c994b6575",
+    "bytes": 452026,
+    "sha256": "7a2ab1d97a5140120034276c0d21547ffa935867055a0c5af95f7f061f8f3df0"
+  },
+  "source_only": true,
+  "compiler_qualified": false,
+  "may_have_dispatched_after_checkpoint": true,
+  "missing_ack_is_unknown_no_replay": true
+}

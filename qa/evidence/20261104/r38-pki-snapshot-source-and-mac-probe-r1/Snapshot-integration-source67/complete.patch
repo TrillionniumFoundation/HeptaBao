@@ -1,0 +1,4330 @@
+--- a/crates/heptabao-ha-service/src/lib.rs
++++ b/crates/heptabao-ha-service/src/lib.rs
+@@ -68,6 +68,20 @@
+     AuthenticatedPeerFrame, serve_one_mtls_authenticated_peer_frame,
+ };
+ 
++#[cfg(feature = "native-v6-peer-ingress")]
++pub use authenticated_peer_frame::{
++    AuthenticatedSnapshotPeer, SnapshotPeerRequest, SnapshotPeerResponse,
++    serve_one_mtls_peer_frame_or_snapshot,
++};
++
++#[cfg(feature = "native-v6-peer-ingress")]
++mod native_snapshot_body;
++#[cfg(feature = "native-v6-peer-ingress")]
++pub use native_snapshot_body::{
++    EncodedSnapshotBody, MAX_SNAPSHOT_BODY_BYTES, SNAPSHOT_BODY_CHUNK_BYTES,
++    SnapshotBodyLimits, SnapshotBodyReader, VerifiedSnapshotBody, encode_snapshot_body,
++};
++
+ // Opt-in private V6 ciphertext transport admission. Existing production HA
+ // request dispatch and all V6/HA mutually exclusive writer fences are unchanged.
+ #[cfg(feature = "native-v6-peer-ingress")]
+--- a/crates/heptabao-ha-service/src/authenticated_peer_frame.rs
++++ b/crates/heptabao-ha-service/src/authenticated_peer_frame.rs
+@@ -148,3 +148,12 @@
+         .write(&mut tls, &response)
+         .map_err(|error| forward_transport_frame_error("receiver_frame_write", error))
+ }
++
++#[cfg(feature = "native-v6-peer-ingress")]
++#[path = "native_snapshot_peer.rs"]
++mod snapshot;
++#[cfg(feature = "native-v6-peer-ingress")]
++pub use snapshot::{
++    AuthenticatedSnapshotPeer, SnapshotPeerRequest, SnapshotPeerResponse,
++    serve_one_mtls_peer_frame_or_snapshot,
++};
+--- a/crates/heptabao-server/src/ha.rs
++++ b/crates/heptabao-server/src/ha.rs
+@@ -16,8 +16,12 @@
+ use futures::future::BoxFuture;
+ use heptabao_ha_service::{
+     MutualTlsPeerTransport, NodeId, PinnedClientCertificateMap, RAFT_ALPN_PROTOCOL,
+-    TlsPeerEndpoint, serve_one_mtls_authenticated_peer_frame,
++    TlsPeerEndpoint,
+ };
++#[cfg(not(feature = "native-v6-ha"))]
++use heptabao_ha_service::serve_one_mtls_authenticated_peer_frame;
++#[cfg(feature = "native-v6-ha")]
++use heptabao_ha_service::serve_one_mtls_peer_frame_or_snapshot;
+ use heptabao_raft_runtime::{
+     CommitReceipt, MembershipObservation, ProcessRaftNode, RaftPeerRpc, RaftRpcKind,
+     RemoteNetworkFactory, RemoteRaftError, ReplicatedEnvelope,
+@@ -46,6 +50,12 @@
+     service::OwnerPublicationBinding,
+ };
+ 
++#[cfg(feature = "native-v6-ha")]
++#[path = "ha_snapshot_forward.rs"]
++mod snapshot_forward;
++#[cfg(feature = "native-v6-ha")]
++pub(crate) use snapshot_forward::{SnapshotEndpoint, SnapshotForwardHandler, SnapshotIngress};
++
+ #[path = "ha_record_runtime.rs"]
+ mod records;
+ pub(crate) use records::{CommittedRecordState, RecordPublicationPreflightError};
+@@ -697,6 +707,10 @@
+     forward_timeout: Duration,
+     emit_legacy_peer_v1: bool,
+     forward_handler: Arc<Mutex<Option<ForwardHandler>>>,
++    #[cfg(feature = "native-v6-ha")]
++    snapshot_forward_handler: Arc<Mutex<Option<SnapshotForwardHandler>>>,
++    #[cfg(feature = "native-v6-ha")]
++    snapshot_server_pins: BTreeMap<u64, Vec<[u8; 32]>>,
+     listener: Option<PeerListener>,
+ }
+ 
+@@ -824,6 +838,12 @@
+             .filter(|peer| peer.id != config.node_id)
+             .map(|peer| (peer.node.clone(), peer.endpoint.clone()))
+             .collect::<BTreeMap<_, _>>();
++        #[cfg(feature = "native-v6-ha")]
++        let snapshot_server_pins = parsed_peers.iter().map(|peer| {
++            let pins = std::iter::once(peer.certificate_sha256)
++                .chain(peer.certificate_sha256_next).collect();
++            (peer.id, pins)
++        }).collect();
+         let pinned = parsed_peers
+             .iter()
+             .filter(|peer| peer.id != config.node_id || native_candidate)
+@@ -920,6 +940,9 @@
+         let identities = Arc::new(identities);
+         let ids_by_node = Arc::new(ids_by_node);
+         let forward_handler: Arc<Mutex<Option<ForwardHandler>>> = Arc::new(Mutex::new(None));
++        #[cfg(feature = "native-v6-ha")]
++        let snapshot_forward_handler: Arc<Mutex<Option<SnapshotForwardHandler>>> =
++            Arc::new(Mutex::new(None));
+         let worker_budget = PeerWorkerBudget::for_limit(config.max_inflight);
+         let forward_slots = Arc::new(Semaphore::new(worker_budget.forwarding));
+         #[cfg(feature = "native-v6-ha")]
+@@ -965,6 +988,8 @@
+             let rpc_service = rpc_service.clone();
+             let runtime_handle = runtime.handle().clone();
+             let listener_forward_handler = forward_handler.clone();
++            #[cfg(feature = "native-v6-ha")]
++            let listener_snapshot_forward_handler = snapshot_forward_handler.clone();
+             let forward_slots = forward_slots.clone();
+             let read_slots = read_slots.clone();
+             #[cfg(feature = "native-v6-ha")]
+@@ -987,13 +1012,7 @@
+                         // has the separately configured business-request budget.
+                         #[cfg(feature = "private-ha-forward-diagnostic")]
+                         let mut receiver_kind = None;
+-                        let result = serve_one_mtls_authenticated_peer_frame(
+-                            &listener,
+-                            server_tls.clone(),
+-                            &identities,
+-                            forward_timeout,
+-                            listener_allow_legacy_peer_v1,
+-                            |authenticated| {
++                        let ordinary = |authenticated: heptabao_ha_service::AuthenticatedPeerFrame| {
+                                 #[cfg(feature = "private-ha-forward-diagnostic")]
+                                 { receiver_kind = Some("authenticated_unclassified"); }
+                                 #[cfg(feature = "native-v6-ha")]
+@@ -1200,8 +1219,26 @@
+                                     encode_raft_frame(response)
+                                 }
+                                 .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)
+-                            },
++                            };
++                        #[cfg(feature = "native-v6-ha")]
++                        let result = serve_one_mtls_peer_frame_or_snapshot(
++                            &listener, server_tls.clone(), &identities, forward_timeout,
++                            listener_allow_legacy_peer_v1,
++                            (ordinary, |peer| {
++                                if !native_candidate {
++                                    return Err(heptabao_ha_service::HaError::InvalidCluster);
++                                }
++                                snapshot_forward::dispatch(
++                                    peer, ids, &listener_cluster_id, local_id,
++                                    &forward_slots, &listener_snapshot_forward_handler,
++                                )
++                            }),
+                         );
++                        #[cfg(not(feature = "native-v6-ha"))]
++                        let result = serve_one_mtls_authenticated_peer_frame(
++                            &listener, server_tls.clone(), &identities, forward_timeout,
++                            listener_allow_legacy_peer_v1, ordinary,
++                        );
+                         if result.is_err() {
+                             #[cfg(feature = "private-ha-forward-diagnostic")]
+                             if let (Some(kind), Err(error)) = (receiver_kind, &result) {
+@@ -1293,6 +1330,10 @@
+             forward_timeout,
+             emit_legacy_peer_v1,
+             forward_handler,
++            #[cfg(feature = "native-v6-ha")]
++            snapshot_forward_handler,
++            #[cfg(feature = "native-v6-ha")]
++            snapshot_server_pins,
+             listener: Some(listener_pool),
+         })
+     }
+--- a/crates/heptabao-server/src/http.rs
++++ b/crates/heptabao-server/src/http.rs
+@@ -674,6 +674,21 @@
+         ha.lock()
+             .map_err(|_| "HA process lock is unavailable".to_owned())?
+             .register_forward_handler(handler)?;
++        #[cfg(feature = "native-v6-ha")]
++        if ha.lock()
++            .map_err(|_| "HA process lock is unavailable".to_owned())?
++            .native_v6_enabled()
++        {
++            let weak_service = Arc::downgrade(&service);
++            let snapshot_handler: crate::ha::SnapshotForwardHandler = Arc::new(move |ingress| {
++                let service = weak_service.upgrade()
++                    .ok_or(heptabao_ha_service::HaError::Transport)?;
++                Service::serve_native_snapshot_peer(&service, ingress, forward_timeout)
++            });
++            ha.lock()
++                .map_err(|_| "HA process lock is unavailable".to_owned())?
++                .register_snapshot_forward_handler(snapshot_handler)?;
++        }
+     }
+     let listener = match TcpListener::bind(config.listen) {
+         Ok(value) => value,
+--- a/crates/heptabao-server/src/http_snapshot.rs
++++ b/crates/heptabao-server/src/http_snapshot.rs
+@@ -63,6 +63,8 @@
+     Ui(super::ui::Reply),
+     HttpBadRequest,
+     File(SnapshotFile),
++    #[cfg(feature = "native-v6-ha")]
++    ForwardedFile { file: SnapshotFile, response: Response },
+     #[cfg(feature = "native-v6-storage")]
+     LosslessFile(SnapshotFile),
+     Redirect {
+@@ -94,6 +96,9 @@
+             }
+             Self::Ui(reply) => reply.write(writer, head),
+             Self::File(file) => write_file_response(writer, file, head, namespace),
++            #[cfg(feature = "native-v6-ha")]
++            Self::ForwardedFile { file, response } =>
++                write_forwarded_file_response(writer, file, response, head, namespace),
+             #[cfg(feature = "native-v6-storage")]
+             Self::LosslessFile(file) => write_lossless_file_response(writer, file, head, namespace),
+             Self::Redirect {
+@@ -349,6 +354,37 @@
+     };
+     let execution = match execution {
+         NativeSnapshotAdmission::Execute(execution) => execution,
++        #[cfg(feature = "native-v6-ha")]
++        NativeSnapshotAdmission::Forward(plan) => {
++            let (response, file) = match BodyReader::new(reader, native.body, deadline) {
++                Ok(mut body) => {
++                    let completed = (*plan).execute(service, &mut body);
++                    let (response, file) = completed.into_parts();
++                    // A denial before READY has not consumed the caller's upload.
++                    // Drain only this same original bounded HTTP reader, exactly
++                    // as local admission denials do; never resend it to a peer.
++                    if response.status >= 400 {
++                        let mut buffer = Zeroizing::new([0; 8192]);
++                        while let Ok(count) = body.read(&mut *buffer) {
++                            if count == 0 { break; }
++                        }
++                    }
++                    (response, file)
++                }
++                Err(_) => (*plan).reject_before_exchange(
++                    service, Response::error(400, "invalid snapshot body framing"),
++                ).into_parts(),
++            };
++            return if response.status == 200 {
++                match file {
++                    Some(file) => NativeReply::ForwardedFile { file, response },
++                    None => NativeReply::Json(response),
++                }
++            } else {
++                drop(file);
++                NativeReply::Json(response)
++            };
++        }
+         NativeSnapshotAdmission::Redirect(origin) => {
+             // Do not read/replay the upload, allocate a spool or transport any
+             // archive in the ordinary bounded HA forwarding frame.
+@@ -447,6 +483,39 @@
+     writer.flush()
+ }
+ 
++#[cfg(feature = "native-v6-ha")]
++fn write_forwarded_file_response(
++    writer: &mut impl Write, mut file: SnapshotFile, response: Response,
++    head: bool, namespace: &str,
++) -> io::Result<()> {
++    if response.status != 200 {
++        return Err(io::Error::other("snapshot completion status changed"));
++    }
++    // This file reaches HTTP only after authenticated END/EOF, actual file hash,
++    // original Actor/native-owner gates and the mandatory ingress response audit.
++    // Framing and binary media fields remain transport-owned constants.
++    write!(
++        writer,
++        "HTTP/1.1 200 OK\r\nContent-Type: application/gzip\r\nContent-Disposition: attachment; filename=\"heptabao-native.snap\"\r\nContent-Length: {}\r\n",
++        file.len(),
++    )?;
++    response.response_headers.write(writer)?;
++    if let Some(index) = response.consistency_index.as_ref() {
++        write!(writer, "X-Vault-Index: {}\r\n", index.as_str())?;
++    }
++    write_standard_headers_with_date(writer, namespace, response.response_headers.has_date())?;
++    writer.write_all(b"\r\n")?;
++    if !head {
++        let mut buffer = Zeroizing::new([0; 64 * 1024]);
++        loop {
++            let count = file.read(&mut *buffer)?;
++            if count == 0 { break; }
++            writer.write_all(&buffer[..count])?;
++        }
++    }
++    writer.flush()
++}
++
+ #[cfg(feature = "native-v6-storage")]
+ fn write_lossless_file_response(
+     writer: &mut impl Write,
+--- a/crates/heptabao-server/src/service_snapshot_transfer.rs
++++ b/crates/heptabao-server/src/service_snapshot_transfer.rs
+@@ -73,6 +73,10 @@
+ #[path = "service_snapshot_v6.rs"]
+ mod v6;
+ 
++#[cfg(feature = "native-v6-ha")]
++#[path = "service_snapshot_forward.rs"]
++pub(crate) mod forward;
++
+ // A routing hint is deliberately not an application read/write capability.
+ // Only this module can construct one, from a configured HA peer API origin.
+ #[derive(Clone)]
+@@ -86,6 +90,8 @@
+ pub(crate) enum NativeSnapshotAdmission {
+     Execute(RequestExecution),
+     Redirect(TrustedSnapshotOrigin),
++    #[cfg(feature = "native-v6-ha")]
++    Forward(Box<forward::SnapshotForwardPlan>),
+ }
+ 
+ // One authenticated admission identity and its physically observed seal bytes.
+@@ -404,6 +410,17 @@
+         // the original request; observing a leader never grants authority.
+         match self.configured_standby_destination() {
+             Ok(Some(origin)) => {
++                #[cfg(feature = "native-v6-ha")]
++                if self.native_ha_snapshot_transport_enabled()
++                    && forward::eligible(&request).unwrap_or(false)
++                {
++                    return match self.begin_snapshot_forward(request, deadline) {
++                        Ok(plan) => NativeSnapshotAdmission::Forward(Box::new(plan)),
++                        Err(response) => NativeSnapshotAdmission::Execute(
++                            RequestExecution::Complete(response),
++                        ),
++                    };
++                }
+                 let now = SystemTime::now()
+                     .duration_since(UNIX_EPOCH)
+                     .unwrap_or(Duration::ZERO)
+@@ -442,6 +459,17 @@
+             }
+             Ok(None) => {}
+         }
++        NativeSnapshotAdmission::Execute(
++            self.begin_snapshot_request_before(request, deadline, false),
++        )
++    }
++
++    fn begin_snapshot_request_before(
++        &mut self,
++        request: ServiceRequest<'_>,
++        deadline: Instant,
++        forwarded: bool,
++    ) -> RequestExecution {
+         // Pair wall time and the monotonic anchor before reconciliation, audit,
+         // authentication and finite-use persistence can spend admission time.
+         let started = Instant::now();
+@@ -451,10 +479,10 @@
+         let previous_clock = self.native_snapshot_clock.replace((started, now));
+         let previous = self.native_snapshot_transport;
+         self.native_snapshot_transport = true;
+-        let result = self.begin_request_before(request, deadline, false);
++        let result = self.begin_request_before(request, deadline, forwarded);
+         self.native_snapshot_transport = previous;
+         self.native_snapshot_clock = previous_clock;
+-        NativeSnapshotAdmission::Execute(result)
++        result
+     }
+ 
+     pub(super) fn configured_standby_destination(
+@@ -750,11 +778,25 @@
+     // audit and the final original-Actor/selection check have all completed.
+     pub(super) fn complete_snapshot_transfer(
+         &mut self,
+-        mut plan: SnapshotTransferPlan,
++        plan: SnapshotTransferPlan,
+         result: Result<Observation, Response>,
+         fingerprint: &str,
+         clock: (u64, Option<RequestClock>),
+     ) -> Response {
++        let (response, plan) =
++            self.complete_snapshot_transfer_retained(plan, result, fingerprint, clock);
++        // Ordinary delivery keeps its original drop point and response value.
++        drop(plan);
++        response
++    }
++
++    fn complete_snapshot_transfer_retained(
++        &mut self,
++        mut plan: SnapshotTransferPlan,
++        result: Result<Observation, Response>,
++        fingerprint: &str,
++        clock: (u64, Option<RequestClock>),
++    ) -> (Response, SnapshotTransferPlan) {
+         let response = self.finalize_snapshot_transfer(&mut plan, result);
+         #[cfg(feature = "native-v6-ha")]
+         let mut response = if plan.native_ha_restored.is_some() {
+@@ -807,7 +849,7 @@
+         }
+         #[cfg(feature = "native-v6-storage")]
+         self.retire_native_external_binding(fingerprint, clock.1);
+-        response
++        (response, plan)
+     }
+ 
+     #[cfg(feature = "native-v6-storage")]
+--- a/crates/heptabao-server/src/service.rs
++++ b/crates/heptabao-server/src/service.rs
+@@ -2373,10 +2373,12 @@
+     }
+ 
+     pub(crate) fn begin_forwarded(&mut self, request: ServiceRequest<'_>) -> RequestExecution {
+-        let started = std::time::Instant::now();
+-        let observed = SystemTime::now()
+-            .duration_since(UNIX_EPOCH)
+-            .unwrap_or(Duration::MAX);
++        let (started, observed) = self.native_snapshot_clock.unwrap_or_else(|| {
++            (
++                std::time::Instant::now(),
++                SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or(Duration::MAX),
++            )
++        });
+         let clock = match RequestClock::anchored(observed, started) {
+             Ok(clock) => clock,
+             Err(_) => {
+@@ -2401,7 +2403,7 @@
+             origin_peer,
+             client_certificates,
+         } = request;
+-        self.begin_at_mode_precise(
++        let execution = self.begin_at_mode_precise(
+             RequestDispatch {
+                 method,
+                 path,
+@@ -2416,8 +2418,12 @@
+                 client_certificates,
+             },
+             clock,
+-        )
+-        .with_realtime_remote_jwt()
++        );
++        if self.native_snapshot_clock.is_some() {
++            execution
++        } else {
++            execution.with_realtime_remote_jwt()
++        }
+     }
+ 
+     // Test HTTP ingress keeps its original fixture clock and admission flags.
+--- a/crates/heptabao-server/src/auth_forward_actor.rs
++++ b/crates/heptabao-server/src/auth_forward_actor.rs
+@@ -85,3 +85,53 @@
+         Ok(())
+     }
+ }
++
++#[cfg(feature = "native-v6-ha")]
++impl AuthState {
++    /// Bind the already admitted root Principal. This does not authenticate,
++    /// issue a Principal, consume a use, or read restored credentials.
++    pub(crate) fn snapshot_forward_actor(
++        &self,
++        actor: &Principal,
++        namespace: &str,
++        time: AuthorityTime,
++    ) -> Result<ForwardActorWitness, AuthError> {
++        if !namespace.is_empty() || !actor.is_root() {
++            return Err(denied());
++        }
++        let batch_principal::VerifiedCredential::Service(snapshot) = &actor.credential else {
++            return Err(denied());
++        };
++        let witness = ForwardActorWitness {
++            owner: LeaseOwner::service(&actor.digest).map_err(|_| denied())?,
++            namespace: namespace.to_owned(),
++            accessor: Some(snapshot.accessor.clone()),
++            entity_id: snapshot.entity_id.clone(),
++            origin_peer: actor.origin_peer,
++        };
++        self.validate_snapshot_forward_actor(&witness, time)?;
++        Ok(witness)
++    }
++
++    /// Delivery-only validation against the actual retained original Auth view.
++    /// A finite final use remains a delivery witness, never a new admission.
++    pub(crate) fn validate_snapshot_forward_actor(
++        &self,
++        actor: &ForwardActorWitness,
++        time: AuthorityTime,
++    ) -> Result<(), AuthError> {
++        if !actor.namespace.is_empty() {
++            return Err(denied());
++        }
++        let digest = actor.owner.service_digest().ok_or_else(denied)?;
++        let token = self.active_token_observed(digest, self.token_api_observed_time(time), false)?;
++        if !token.root {
++            return Err(denied());
++        }
++        self.validate_forward_actor(actor, time)
++    }
++}
++
++#[cfg(all(test, feature = "native-v6-ha"))]
++#[path = "auth_snapshot_forward_actor_tests.rs"]
++mod snapshot_tests;
+--- a/crates/heptabao-server/src/service_snapshot_v6_ha.rs
++++ b/crates/heptabao-server/src/service_snapshot_v6_ha.rs
+@@ -307,3 +307,34 @@
+         response
+     }
+ }
++
++impl Service {
++    pub(in crate::service::snapshot_transfer) fn check_snapshot_peer_original_plan(
++        &self, plan: &SnapshotTransferPlan,
++    ) -> Result<(), Response> {
++        self.check_native_ha_snapshot_owner(plan)
++    }
++
++    /// Recheck the actual exported native proof after the original terminal
++    /// clock/audit completion. This does not mint or re-admit a request.
++    pub(in crate::service::snapshot_transfer) fn check_snapshot_peer_download_publication(
++        &mut self, plan: &SnapshotTransferPlan,
++    ) -> Result<(), Response> {
++        let identity = self.current_state_identity()?;
++        self.check_native_ha_snapshot_owner_at(plan, identity)?;
++        let exported = plan.native_ha_source.as_ref().ok_or_else(unavailable)?;
++        if identity == plan.base {
++            exported.check_with(self, Service::check_native_installed)?;
++        } else {
++            let auth = self.state.as_ref().ok_or_else(unavailable)?.auth.clone();
++            let current = self.capture_native_ha_request_proof(&mut || {
++                auth.authorize_request(
++                    &plan.actor, &plan.namespace, &plan.path, "read",
++                    snapshot_observed_time(plan.now, plan.started.elapsed()),
++                ).map_err(|error| Response::error(error.status, &error.message))
++            })?.ok_or_else(unavailable)?;
++            exported.check_snapshot_terminal_successor(self, &current)?;
++        }
++        self.check_native_ha_snapshot_owner_at(plan, identity)
++    }
++}
+--- a/crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs
++++ b/crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs
+@@ -1015,3 +1015,62 @@
+         }
+     }
+ }
++
++impl Service {
++    /// Only the actual restore receipt can attest this transition. The fields
++    /// returned here are data for a separate MAC, never an executable receipt.
++    /// Original Auth is read from that receipt, never from restored State.
++    pub(in crate::service::snapshot_transfer) fn snapshot_peer_historical_publication(
++        &mut self,
++        plan: &SnapshotTransferPlan,
++        expected_original_auth: [u8; 32],
++        original_epoch: u64,
++    ) -> Result<([u8; 32], StateIdentity, StateIdentity, u64), Response> {
++        let restored = plan.native_ha_restored.as_ref().ok_or_else(unavailable)?;
++        let identity = self.current_state_identity()?;
++        self.check_native_ha_historical_delivery(plan, restored, identity)?;
++        if restored.original_auth.forward_owner_projection_digest().map_err(|_| unavailable())?
++                != expected_original_auth
++            || original_epoch.checked_add(1) != Some(restored.restored_epoch)
++        {
++            return Err(unavailable());
++        }
++        actor_original(&restored.original_auth, plan)?;
++        if identity == restored.restored_identity {
++            restored.proof.check_with(self, Service::check_native_installed)?;
++        } else {
++            let current = self.capture_native_ha_request_proof(
++                &mut || actor_original(&restored.original_auth, plan),
++            )?.ok_or_else(unavailable)?;
++            restored.proof.check_snapshot_terminal_successor(self, &current)?;
++        }
++        self.check_native_ha_historical_delivery(plan, restored, identity)?;
++        Ok((restored.operation_digest, restored.original_identity,
++            restored.restored_identity, restored.restored_epoch))
++    }
++}
++
++impl Service {
++    /// This helper is reachable only with the actual retained restore plan
++    /// after its original finalizer. Wire data cannot supply a recovery reference.
++    pub(in crate::service::snapshot_transfer) fn snapshot_peer_historical_publication_veto(
++        &mut self, plan: &SnapshotTransferPlan, fingerprint: &str,
++    ) -> Option<Response> {
++        let operation = plan.native_ha_restored.as_ref()?.operation_digest;
++        let _ = self.audit_event(
++            "native-ha-historical-restore-peer-publication-veto", fingerprint,
++            snapshot_observed_time(plan.now, plan.started.elapsed()), Some(503),
++        );
++        self.recovery_required = true;
++        self.ha_activation = None;
++        self.ha_read_cache = None;
++        Some(Response {
++            status: 503,
++            body: json!({"errors":["historical restore peer delivery requires reconciliation"],
++                "outcome_unknown":true,"recovery_required":true,"retry_allowed":false,
++                "root_attempted":true,
++                "recovery_reference":historical_recovery_reference(operation)}),
++            unwrapped_json: None, response_headers: Default::default(), consistency_index: None,
++        })
++    }
++}
+--- a/crates/heptabao-server/src/service_forward_delivery.rs
++++ b/crates/heptabao-server/src/service_forward_delivery.rs
+@@ -24,7 +24,7 @@
+ impl Service {
+     // Exact current authority graph, with only the independently proven
+     // monotonic Token API observation excluded. Other owners stay exact.
+-    fn forward_owner_projection(&self) -> Result<[u8; 32], Response> {
++    pub(in crate::service) fn forward_owner_projection(&self) -> Result<[u8; 32], Response> {
+         let state = self
+             .state
+             .as_ref()
+--- /dev/null
++++ b/crates/heptabao-ha-service/src/native_snapshot_body.rs
+@@ -0,0 +1,449 @@
++//! Bounded binary snapshot body framing, independent of application authority.
++//!
++//! This module verifies bytes and explicit stream termination only. Its output
++//! cannot authenticate a peer, admit an Actor, authorize storage or prove that a
++//! restore committed. The authenticated transport and native Service owner must
++//! retain their own capabilities and original absolute deadlines.
++//!
++//! A caller wrapping a TLS stream must provide actual deadline-bound I/O and
++//! require authenticated TLS closure. A raw socket EOF is not a substitute for
++//! a successful TLS close-notify. Encoding does not certify remote receipt.
++
++use ring::digest::{Context, SHA256};
++use std::fmt;
++use std::io::{self, Read, Write};
++use std::time::Instant;
++use zeroize::Zeroizing;
++
++/// Maximum payload in one DATA frame; memory never scales with the archive.
++pub const SNAPSHOT_BODY_CHUNK_BYTES: usize = 65_536;
++
++/// Existing native-HA MAX_NATIVE_ARCHIVE, not an increased transport allowance.
++///
++/// The server must still supply its feature-specific MAX_NATIVE_ARCHIVE.
++/// The value equals 2 * (130 MiB + 1 GiB + 4 * 65536 + 4132) + 64 MiB + 1 MiB.
++pub const MAX_SNAPSHOT_BODY_BYTES: u64 = 2_488_803_400;
++
++const MAGIC: &[u8; 8] = b"HBSB0001";
++const DATA: u8 = 1;
++const END: u8 = 2;
++
++/// An explicit per-operation bound, clamped to the existing largest archive.
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++pub struct SnapshotBodyLimits {
++    maximum_bytes: u64,
++}
++
++impl SnapshotBodyLimits {
++    pub fn new(maximum_bytes: u64) -> io::Result<Self> {
++        if maximum_bytes > MAX_SNAPSHOT_BODY_BYTES {
++            return Err(invalid("snapshot body limit exceeds the native archive bound"));
++        }
++        Ok(Self { maximum_bytes })
++    }
++
++    pub fn maximum_bytes(self) -> u64 {
++        self.maximum_bytes
++    }
++
++    fn maximum_frames(self) -> u64 {
++        self.maximum_bytes.div_ceil(SNAPSHOT_BODY_CHUNK_BYTES as u64)
++    }
++}
++
++/// The byte binding emitted by one encoder; this is not delivery authority.
++#[derive(Debug, Eq, PartialEq)]
++pub struct EncodedSnapshotBody {
++    bytes: u64,
++    frames: u32,
++    sha256: [u8; 32],
++}
++
++impl EncodedSnapshotBody {
++    pub fn bytes(&self) -> u64 {
++        self.bytes
++    }
++
++    pub fn frames(&self) -> u32 {
++        self.frames
++    }
++
++    pub fn sha256(&self) -> [u8; 32] {
++        self.sha256
++    }
++}
++
++/// A data-only, non-cloneable result of exact END/hash/count/EOF verification.
++///
++/// Only this decoder constructs the value. It grants no peer, Actor, current
++/// read, replay or publication capability.
++#[derive(Debug, Eq, PartialEq)]
++pub struct VerifiedSnapshotBody {
++    bytes: u64,
++    frames: u32,
++    sha256: [u8; 32],
++}
++
++impl VerifiedSnapshotBody {
++    pub fn bytes(&self) -> u64 {
++        self.bytes
++    }
++
++    pub fn frames(&self) -> u32 {
++        self.frames
++    }
++
++    pub fn sha256(&self) -> [u8; 32] {
++        self.sha256
++    }
++}
++
++fn invalid(message: &'static str) -> io::Error {
++    io::Error::new(io::ErrorKind::InvalidData, message)
++}
++
++fn within(deadline: Instant) -> io::Result<()> {
++    if Instant::now() >= deadline {
++        return Err(io::Error::new(
++            io::ErrorKind::TimedOut,
++            "snapshot body original deadline elapsed",
++        ));
++    }
++    Ok(())
++}
++
++fn read_some(reader: &mut impl Read, output: &mut [u8], deadline: Instant) -> io::Result<usize> {
++    loop {
++        within(deadline)?;
++        let result = reader.read(output);
++        within(deadline)?;
++        match result {
++            Err(error) if error.kind() == io::ErrorKind::Interrupted => continue,
++            Ok(bytes) if bytes > output.len() => {
++                return Err(invalid("snapshot body reader returned an invalid length"));
++            }
++            other => return other,
++        }
++    }
++}
++
++fn read_exact(reader: &mut impl Read, mut output: &mut [u8], deadline: Instant) -> io::Result<()> {
++    while !output.is_empty() {
++        let bytes = read_some(reader, output, deadline)?;
++        if bytes == 0 {
++            return Err(io::Error::new(
++                io::ErrorKind::UnexpectedEof,
++                "snapshot body ended before its explicit terminal record",
++            ));
++        }
++        output = &mut output[bytes..];
++    }
++    Ok(())
++}
++
++fn write_exact(writer: &mut impl Write, mut input: &[u8], deadline: Instant) -> io::Result<()> {
++    while !input.is_empty() {
++        within(deadline)?;
++        let result = writer.write(input);
++        within(deadline)?;
++        let bytes = match result {
++            Err(error) if error.kind() == io::ErrorKind::Interrupted => continue,
++            other => other?,
++        };
++        if bytes == 0 {
++            return Err(io::Error::new(
++                io::ErrorKind::WriteZero,
++                "snapshot body writer made no progress",
++            ));
++        }
++        if bytes > input.len() {
++            return Err(invalid("snapshot body writer returned an invalid length"));
++        }
++        input = &input[bytes..];
++    }
++    Ok(())
++}
++
++fn flush(writer: &mut impl Write, deadline: Instant) -> io::Result<()> {
++    loop {
++        within(deadline)?;
++        let result = writer.flush();
++        within(deadline)?;
++        match result {
++            Err(error) if error.kind() == io::ErrorKind::Interrupted => continue,
++            other => return other,
++        }
++    }
++}
++
++fn hash_value(context: &Context) -> [u8; 32] {
++    let mut value = [0_u8; 32];
++    value.copy_from_slice(context.clone().finish().as_ref());
++    value
++}
++
++/// Encode exactly one body using fixed DATA frames and one END record.
++///
++/// The source is read once. One additional byte is allowed only as a rejecting
++/// EOF probe at the exact byte limit; it is never emitted. The caller must send
++/// authenticated write-side termination after this succeeds. This function
++/// does not close, retry, reconnect or infer a remote application outcome.
++pub fn encode_snapshot_body(
++    source: &mut impl Read,
++    output: &mut impl Write,
++    limits: SnapshotBodyLimits,
++    deadline: Instant,
++) -> io::Result<EncodedSnapshotBody> {
++    within(deadline)?;
++    write_exact(output, MAGIC, deadline)?;
++    let mut buffer = Zeroizing::new(vec![0_u8; SNAPSHOT_BODY_CHUNK_BYTES]);
++    let mut hash = Context::new(&SHA256);
++    let mut total = 0_u64;
++    let mut frames = 0_u32;
++    loop {
++        let mut filled = 0_usize;
++        let mut eof = false;
++        while filled < buffer.len() {
++            let consumed = total
++                .checked_add(filled as u64)
++                .ok_or_else(|| invalid("snapshot body byte count overflow"))?;
++            let remaining = limits
++                .maximum_bytes
++                .checked_sub(consumed)
++                .ok_or_else(|| invalid("snapshot body exceeds its byte limit"))?;
++            if remaining == 0 {
++                let mut tail = [0_u8; 1];
++                if read_some(source, &mut tail, deadline)? != 0 {
++                    return Err(invalid("snapshot body exceeds its byte limit"));
++                }
++                eof = true;
++                break;
++            }
++            let available = remaining.min((buffer.len() - filled) as u64) as usize;
++            let bytes = read_some(source, &mut buffer[filled..filled + available], deadline)?;
++            if bytes == 0 {
++                eof = true;
++                break;
++            }
++            filled += bytes;
++        }
++        if filled != 0 {
++            if u64::from(frames) >= limits.maximum_frames() {
++                return Err(invalid("snapshot body has too many frames"));
++            }
++            let mut header = [0_u8; 9];
++            header[0] = DATA;
++            header[1..5].copy_from_slice(&frames.to_be_bytes());
++            header[5..9].copy_from_slice(&(filled as u32).to_be_bytes());
++            write_exact(output, &header, deadline)?;
++            write_exact(output, &buffer[..filled], deadline)?;
++            hash.update(&buffer[..filled]);
++            total = total
++                .checked_add(filled as u64)
++                .ok_or_else(|| invalid("snapshot body byte count overflow"))?;
++            frames = frames
++                .checked_add(1)
++                .ok_or_else(|| invalid("snapshot body frame count overflow"))?;
++        }
++        if eof {
++            break;
++        }
++    }
++    let sha256 = hash_value(&hash);
++    let mut terminal = [0_u8; 45];
++    terminal[0] = END;
++    terminal[1..5].copy_from_slice(&frames.to_be_bytes());
++    terminal[5..13].copy_from_slice(&total.to_be_bytes());
++    terminal[13..45].copy_from_slice(&sha256);
++    write_exact(output, &terminal, deadline)?;
++    flush(output, deadline)?;
++    within(deadline)?;
++    Ok(EncodedSnapshotBody {
++        bytes: total,
++        frames,
++        sha256,
++    })
++}
++
++/// A one-body reader that returns EOF only after END and underlying EOF agree.
++///
++/// The wrapper must be built only after the separate peer/prelude checks. The
++/// underlying reader must enforce the same absolute I/O deadline and, for TLS,
++/// distinguish authenticated close-notify from unexpected transport EOF.
++pub struct SnapshotBodyReader<R: Read> {
++    input: R,
++    limits: SnapshotBodyLimits,
++    deadline: Instant,
++    buffer: Zeroizing<Vec<u8>>,
++    cursor: usize,
++    available: usize,
++    total: u64,
++    frames: u32,
++    short_frame: bool,
++    failed: bool,
++    hash: Context,
++    verified: Option<VerifiedSnapshotBody>,
++}
++
++impl<R: Read> fmt::Debug for SnapshotBodyReader<R> {
++    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
++        formatter
++            .debug_struct("SnapshotBodyReader")
++            .field("maximum_bytes", &self.limits.maximum_bytes)
++            .field("bytes", &self.total)
++            .field("frames", &self.frames)
++            .field("failed", &self.failed)
++            .field("verified_end", &self.verified.is_some())
++            .finish_non_exhaustive()
++    }
++}
++
++impl<R: Read> SnapshotBodyReader<R> {
++    pub fn new(
++        mut input: R,
++        limits: SnapshotBodyLimits,
++        deadline: Instant,
++    ) -> io::Result<Self> {
++        within(deadline)?;
++        let mut magic = [0_u8; 8];
++        read_exact(&mut input, &mut magic, deadline)?;
++        if &magic != MAGIC {
++            return Err(invalid("snapshot body profile differs"));
++        }
++        Ok(Self {
++            input,
++            limits,
++            deadline,
++            buffer: Zeroizing::new(vec![0_u8; SNAPSHOT_BODY_CHUNK_BYTES]),
++            cursor: 0,
++            available: 0,
++            total: 0,
++            frames: 0,
++            short_frame: false,
++            failed: false,
++            hash: Context::new(&SHA256),
++            verified: None,
++        })
++    }
++
++    fn next_frame(&mut self) -> io::Result<()> {
++        let mut tag = [0_u8; 1];
++        read_exact(&mut self.input, &mut tag, self.deadline)?;
++        match tag[0] {
++            DATA => {
++                if self.short_frame || u64::from(self.frames) >= self.limits.maximum_frames() {
++                    return Err(invalid("snapshot body DATA follows its final chunk"));
++                }
++                let mut fields = [0_u8; 8];
++                read_exact(&mut self.input, &mut fields, self.deadline)?;
++                let sequence = u32::from_be_bytes([fields[0], fields[1], fields[2], fields[3]]);
++                let length = u32::from_be_bytes([fields[4], fields[5], fields[6], fields[7]]);
++                if sequence != self.frames
++                    || length == 0
++                    || u64::from(length) > SNAPSHOT_BODY_CHUNK_BYTES as u64
++                {
++                    return Err(invalid("snapshot body DATA header differs"));
++                }
++                let next_total = self
++                    .total
++                    .checked_add(u64::from(length))
++                    .ok_or_else(|| invalid("snapshot body byte count overflow"))?;
++                if next_total > self.limits.maximum_bytes {
++                    return Err(invalid("snapshot body exceeds its byte limit"));
++                }
++                let length = length as usize;
++                read_exact(&mut self.input, &mut self.buffer[..length], self.deadline)?;
++                self.hash.update(&self.buffer[..length]);
++                self.total = next_total;
++                self.frames = self
++                    .frames
++                    .checked_add(1)
++                    .ok_or_else(|| invalid("snapshot body frame count overflow"))?;
++                self.short_frame = length < SNAPSHOT_BODY_CHUNK_BYTES;
++                self.cursor = 0;
++                self.available = length;
++                Ok(())
++            }
++            END => {
++                let mut fields = [0_u8; 44];
++                read_exact(&mut self.input, &mut fields, self.deadline)?;
++                let frames = u32::from_be_bytes([fields[0], fields[1], fields[2], fields[3]]);
++                let bytes = u64::from_be_bytes([
++                    fields[4], fields[5], fields[6], fields[7],
++                    fields[8], fields[9], fields[10], fields[11],
++                ]);
++                let sha256 = hash_value(&self.hash);
++                if frames != self.frames
++                    || bytes != self.total
++                    || fields[12..44] != sha256
++                {
++                    return Err(invalid("snapshot body terminal binding differs"));
++                }
++                let mut tail = [0_u8; 1];
++                if read_some(&mut self.input, &mut tail, self.deadline)? != 0 {
++                    return Err(invalid("snapshot body has trailing wire bytes"));
++                }
++                within(self.deadline)?;
++                self.verified = Some(VerifiedSnapshotBody {
++                    bytes,
++                    frames,
++                    sha256,
++                });
++                Ok(())
++            }
++            _ => Err(invalid("snapshot body frame tag differs")),
++        }
++    }
++
++    /// Consume the decoder only after the archive consumer has consumed all data.
++    ///
++    /// The one-byte read may validate the terminal record; any remaining archive
++    /// byte is an error, not a request to drain or silently accept more data.
++    pub fn finish(mut self) -> io::Result<VerifiedSnapshotBody> {
++        within(self.deadline)?;
++        let mut tail = [0_u8; 1];
++        if self.read(&mut tail)? != 0 {
++            return Err(invalid("snapshot archive consumer left unread body bytes"));
++        }
++        within(self.deadline)?;
++        self.verified
++            .take()
++            .ok_or_else(|| invalid("snapshot body has no verified terminal record"))
++    }
++}
++
++impl<R: Read> Read for SnapshotBodyReader<R> {
++    fn read(&mut self, output: &mut [u8]) -> io::Result<usize> {
++        if output.is_empty() {
++            return Ok(0);
++        }
++        if self.failed {
++            return Err(invalid("snapshot body reader is failed"));
++        }
++        let result = (|| {
++            within(self.deadline)?;
++            if self.cursor == self.available {
++                if self.verified.is_some() {
++                    return Ok(0);
++                }
++                self.next_frame()?;
++                if self.verified.is_some() {
++                    return Ok(0);
++                }
++            }
++            let bytes = output.len().min(self.available - self.cursor);
++            output[..bytes].copy_from_slice(&self.buffer[self.cursor..self.cursor + bytes]);
++            self.cursor += bytes;
++            within(self.deadline)?;
++            Ok(bytes)
++        })();
++        if result.is_err() {
++            self.failed = true;
++        }
++        result
++    }
++}
++
++#[cfg(test)]
++#[path = "native_snapshot_body_tests.rs"]
++mod tests;
+--- /dev/null
++++ b/crates/heptabao-ha-service/src/native_snapshot_body_tests.rs
+@@ -0,0 +1,226 @@
++use super::*;
++use std::io::Cursor;
++use std::time::Duration;
++
++type TestResult = Result<(), Box<dyn std::error::Error>>;
++
++fn deadline() -> Instant {
++    Instant::now() + Duration::from_secs(2)
++}
++
++fn encoded(input: &[u8], maximum: u64) -> io::Result<(Vec<u8>, EncodedSnapshotBody)> {
++    let mut output = Vec::new();
++    let binding = encode_snapshot_body(
++        &mut Cursor::new(input),
++        &mut output,
++        SnapshotBodyLimits::new(maximum)?,
++        deadline(),
++    )?;
++    Ok((output, binding))
++}
++
++fn invalid_data(result: io::Result<usize>) -> TestResult {
++    let error = result.err().ok_or("unexpected successful stream read")?;
++    assert_eq!(error.kind(), io::ErrorKind::InvalidData);
++    Ok(())
++}
++
++#[test]
++fn snapshot_stream_roundtrip_crosses_ordinary_frame_limit_once() -> TestResult {
++    let data: Vec<u8> = (0..(1024 * 1024 + 19))
++        .map(|index| (index % 251) as u8)
++        .collect();
++    let (wire, sent) = encoded(&data, data.len() as u64)?;
++    let mut reader = SnapshotBodyReader::new(
++        Cursor::new(wire),
++        SnapshotBodyLimits::new(data.len() as u64)?,
++        deadline(),
++    )?;
++    let mut actual = Vec::new();
++    reader.read_to_end(&mut actual)?;
++    let received = reader.finish()?;
++    assert_eq!(actual, data);
++    assert_eq!(received.bytes(), sent.bytes());
++    assert_eq!(received.frames(), 17);
++    assert_eq!(received.sha256(), sent.sha256());
++    Ok(())
++}
++
++#[test]
++fn snapshot_stream_empty_body_requires_explicit_end_and_eof() -> TestResult {
++    let (wire, sent) = encoded(&[], 0)?;
++    assert_eq!(wire.len(), MAGIC.len() + 45);
++    let mut reader =
++        SnapshotBodyReader::new(Cursor::new(wire), SnapshotBodyLimits::new(0)?, deadline())?;
++    let mut byte = [0_u8; 1];
++    assert_eq!(reader.read(&mut byte)?, 0);
++    let received = reader.finish()?;
++    assert_eq!(received.bytes(), 0);
++    assert_eq!(received.frames(), 0);
++    assert_eq!(received.sha256(), sent.sha256());
++    Ok(())
++}
++
++#[test]
++fn snapshot_stream_exact_payload_without_end_is_not_complete() -> TestResult {
++    let (mut wire, _) = encoded(b"exact", 5)?;
++    let end = wire.len().checked_sub(45).ok_or("terminal absent")?;
++    wire.truncate(end);
++    let mut reader =
++        SnapshotBodyReader::new(Cursor::new(wire), SnapshotBodyLimits::new(5)?, deadline())?;
++    let mut actual = [0_u8; 5];
++    reader.read_exact(&mut actual)?;
++    assert_eq!(&actual, b"exact");
++    let error = reader.finish().err().ok_or("missing END was accepted")?;
++    assert_eq!(error.kind(), io::ErrorKind::UnexpectedEof);
++    Ok(())
++}
++
++#[test]
++fn snapshot_stream_end_digest_and_trailing_wire_bytes_are_rejected() -> TestResult {
++    let (valid, _) = encoded(b"body", 4)?;
++    let mut wrong_digest = valid.clone();
++    *wrong_digest.last_mut().ok_or("digest absent")? ^= 1;
++    let mut reader = SnapshotBodyReader::new(
++        Cursor::new(wrong_digest),
++        SnapshotBodyLimits::new(4)?,
++        deadline(),
++    )?;
++    invalid_data(reader.read_to_end(&mut Vec::new()))?;
++
++    let mut trailing = valid;
++    trailing.push(0);
++    let mut reader = SnapshotBodyReader::new(
++        Cursor::new(trailing),
++        SnapshotBodyLimits::new(4)?,
++        deadline(),
++    )?;
++    invalid_data(reader.read_to_end(&mut Vec::new()))?;
++    Ok(())
++}
++
++#[test]
++fn snapshot_stream_declared_oversize_is_rejected_before_payload() -> TestResult {
++    let mut wire = MAGIC.to_vec();
++    wire.push(DATA);
++    wire.extend_from_slice(&0_u32.to_be_bytes());
++    wire.extend_from_slice(&2_u32.to_be_bytes());
++    wire.extend_from_slice(b"ab");
++    let mut input = Cursor::new(wire);
++    {
++        let mut reader =
++            SnapshotBodyReader::new(&mut input, SnapshotBodyLimits::new(1)?, deadline())?;
++        invalid_data(reader.read(&mut [0_u8; 1]))?;
++        invalid_data(reader.read(&mut [0_u8; 1]))?;
++    }
++    assert_eq!(input.position(), 17);
++    assert!(SnapshotBodyLimits::new(MAX_SNAPSHOT_BODY_BYTES + 1).is_err());
++    Ok(())
++}
++
++#[test]
++fn snapshot_stream_short_chunk_cannot_be_followed_by_data() -> TestResult {
++    let mut wire = MAGIC.to_vec();
++    for (sequence, data) in [(0_u32, b"a".as_slice()), (1_u32, b"b".as_slice())] {
++        wire.push(DATA);
++        wire.extend_from_slice(&sequence.to_be_bytes());
++        wire.extend_from_slice(&(data.len() as u32).to_be_bytes());
++        wire.extend_from_slice(data);
++    }
++    let mut reader = SnapshotBodyReader::new(
++        Cursor::new(wire),
++        SnapshotBodyLimits::new(2 * SNAPSHOT_BODY_CHUNK_BYTES as u64)?,
++        deadline(),
++    )?;
++    invalid_data(reader.read_to_end(&mut Vec::new()))?;
++    Ok(())
++}
++
++#[test]
++fn snapshot_stream_consumer_cannot_finish_with_unread_archive_bytes() -> TestResult {
++    let (wire, _) = encoded(b"remaining", 9)?;
++    let mut reader =
++        SnapshotBodyReader::new(Cursor::new(wire), SnapshotBodyLimits::new(9)?, deadline())?;
++    assert_eq!(reader.read(&mut [0_u8; 1])?, 1);
++    let error = reader.finish().err().ok_or("partial consumer was accepted")?;
++    assert_eq!(error.kind(), io::ErrorKind::InvalidData);
++    Ok(())
++}
++
++#[derive(Debug)]
++struct NoAuthenticatedClose {
++    wire: Cursor<Vec<u8>>,
++}
++
++impl Read for NoAuthenticatedClose {
++    fn read(&mut self, output: &mut [u8]) -> io::Result<usize> {
++        if self.wire.position() == self.wire.get_ref().len() as u64 {
++            return Err(io::Error::new(
++                io::ErrorKind::UnexpectedEof,
++                "synthetic TLS close-notify absent",
++            ));
++        }
++        self.wire.read(output)
++    }
++}
++
++#[test]
++fn snapshot_stream_tls_eof_error_after_valid_end_cannot_mint_binding() -> TestResult {
++    let (wire, _) = encoded(b"full", 4)?;
++    let mut reader = SnapshotBodyReader::new(
++        NoAuthenticatedClose { wire: Cursor::new(wire) },
++        SnapshotBodyLimits::new(4)?,
++        deadline(),
++    )?;
++    let mut exact = [0_u8; 4];
++    reader.read_exact(&mut exact)?;
++    assert_eq!(&exact, b"full");
++    let error = reader.finish().err().ok_or("unauthenticated closure was accepted")?;
++    assert_eq!(error.kind(), io::ErrorKind::UnexpectedEof);
++    Ok(())
++}
++
++#[test]
++fn snapshot_stream_original_expired_deadline_precedes_io() -> TestResult {
++    let expired = Instant::now();
++    let mut source = Cursor::new(b"x".as_slice());
++    let mut output = Vec::new();
++    let error = encode_snapshot_body(
++        &mut source,
++        &mut output,
++        SnapshotBodyLimits::new(1)?,
++        expired,
++    )
++    .err()
++    .ok_or("expired encoder was accepted")?;
++    assert_eq!(error.kind(), io::ErrorKind::TimedOut);
++    assert_eq!(source.position(), 0);
++    assert!(output.is_empty());
++
++    let (wire, _) = encoded(b"x", 1)?;
++    let mut input = Cursor::new(wire);
++    let error = SnapshotBodyReader::new(&mut input, SnapshotBodyLimits::new(1)?, expired)
++        .err()
++        .ok_or("expired decoder was accepted")?;
++    assert_eq!(error.kind(), io::ErrorKind::TimedOut);
++    assert_eq!(input.position(), 0);
++    Ok(())
++}
++
++#[test]
++fn snapshot_stream_encoder_checks_one_rejecting_eof_byte_at_exact_cap() -> TestResult {
++    let mut source = Cursor::new(b"four".as_slice());
++    let mut output = Vec::new();
++    let error = encode_snapshot_body(
++        &mut source,
++        &mut output,
++        SnapshotBodyLimits::new(3)?,
++        deadline(),
++    )
++    .err()
++    .ok_or("over-limit source was accepted")?;
++    assert_eq!(error.kind(), io::ErrorKind::InvalidData);
++    assert_eq!(source.position(), 4);
++    assert_eq!(output.as_slice(), MAGIC.as_slice());
++    Ok(())
++}
+--- /dev/null
++++ b/crates/heptabao-ha-service/src/native_snapshot_peer.rs
+@@ -0,0 +1,627 @@
++//! One authenticated snapshot exchange on an existing cluster TLS connection.
++//!
++//! The peer identity and byte stream are real transport facts. They do not
++//! grant end-user Actor, storage, publication or replay authority. The server
++//! callback must supply the separately reviewed native Service lifecycle.
++
++use super::*;
++use crate::native_snapshot_body::{
++    EncodedSnapshotBody, SNAPSHOT_BODY_CHUNK_BYTES, SnapshotBodyLimits, SnapshotBodyReader,
++    VerifiedSnapshotBody, encode_snapshot_body,
++};
++use zeroize::Zeroizing;
++
++const STREAM_PREFIX: &[u8; 4] = b"HBSF";
++const STREAM_VERSION: &[u8; 4] = b"0001";
++const READY: u8 = 1;
++const REJECTED: u8 = 2;
++const COMPLETED: u8 = 3;
++
++type ServerTls = rustls::StreamOwned<rustls::ServerConnection, ForwardDeadlineStream>;
++
++/// Data and independent registry pins for exactly one attempted exchange.
++pub struct SnapshotPeerRequest<'a> {
++    metadata: &'a [u8],
++    server_leaves: &'a [[u8; 32]],
++    upload_limit: SnapshotBodyLimits,
++    response_limit: SnapshotBodyLimits,
++    deadline: Instant,
++}
++
++impl fmt::Debug for SnapshotPeerRequest<'_> {
++    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
++        formatter
++            .debug_struct("SnapshotPeerRequest")
++            .field("metadata_bytes", &self.metadata.len())
++            .field("enrolled_server_pins", &self.server_leaves.len())
++            .field("upload_limit", &self.upload_limit)
++            .field("response_limit", &self.response_limit)
++            .finish_non_exhaustive()
++    }
++}
++
++impl<'a> SnapshotPeerRequest<'a> {
++    pub fn new(
++        metadata: &'a [u8],
++        server_leaves: &'a [[u8; 32]],
++        limits: (SnapshotBodyLimits, SnapshotBodyLimits),
++        deadline: Instant,
++    ) -> Result<Self, HaError> {
++        if metadata.is_empty()
++            || metadata.len() > MAX_PAYLOAD_BYTES
++            || server_leaves.is_empty()
++            || server_leaves.len() > 2
++            || server_leaves.iter().any(|pin| *pin == [0; 32])
++            || (server_leaves.len() == 2 && server_leaves[0] == server_leaves[1])
++        {
++            return Err(HaError::InvalidFrame);
++        }
++        time_left(deadline)?;
++        Ok(Self {
++            metadata,
++            server_leaves,
++            upload_limit: limits.0,
++            response_limit: limits.1,
++            deadline,
++        })
++    }
++}
++
++/// An authenticated transport result, still untrusted as application completion.
++pub struct SnapshotPeerResponse {
++    status: u16,
++    metadata: Zeroizing<Vec<u8>>,
++    request_body: Option<EncodedSnapshotBody>,
++    response_body: Option<VerifiedSnapshotBody>,
++}
++
++impl fmt::Debug for SnapshotPeerResponse {
++    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
++        formatter
++            .debug_struct("SnapshotPeerResponse")
++            .field("status", &self.status)
++            .field("metadata_bytes", &self.metadata.len())
++            .field("request_body", &self.request_body)
++            .field("response_body", &self.response_body)
++            .finish()
++    }
++}
++
++impl SnapshotPeerResponse {
++    pub fn status(&self) -> u16 {
++        self.status
++    }
++
++    pub fn metadata(&self) -> &[u8] {
++        &self.metadata
++    }
++
++    pub fn request_body(&self) -> Option<&EncodedSnapshotBody> {
++        self.request_body.as_ref()
++    }
++
++    pub fn response_body(&self) -> Option<&VerifiedSnapshotBody> {
++        self.response_body.as_ref()
++    }
++}
++
++fn time_left(deadline: Instant) -> Result<Duration, HaError> {
++    forward_remaining(deadline).map_err(|_| HaError::Transport)
++}
++
++fn exact_read(
++    input: &mut impl Read,
++    output: &mut [u8],
++    deadline: Instant,
++) -> Result<(), HaError> {
++    time_left(deadline)?;
++    input.read_exact(output).map_err(|_| HaError::Transport)?;
++    time_left(deadline)?;
++    Ok(())
++}
++
++fn exact_write(
++    output: &mut impl Write,
++    input: &[u8],
++    deadline: Instant,
++) -> Result<(), HaError> {
++    time_left(deadline)?;
++    output.write_all(input).map_err(|_| HaError::Transport)?;
++    time_left(deadline)?;
++    Ok(())
++}
++
++fn flush_before(output: &mut impl Write, deadline: Instant) -> Result<(), HaError> {
++    time_left(deadline)?;
++    output.flush().map_err(|_| HaError::Transport)?;
++    time_left(deadline)?;
++    Ok(())
++}
++
++fn metadata_read(
++    input: &mut impl Read,
++    deadline: Instant,
++) -> Result<Zeroizing<Vec<u8>>, HaError> {
++    let mut length = [0_u8; 4];
++    exact_read(input, &mut length, deadline)?;
++    let length = u32::from_be_bytes(length) as usize;
++    if length == 0 || length > MAX_PAYLOAD_BYTES {
++        return Err(HaError::InvalidFrame);
++    }
++    let mut metadata = Zeroizing::new(vec![0_u8; length]);
++    exact_read(input, &mut metadata, deadline)?;
++    Ok(metadata)
++}
++
++fn metadata_write(
++    output: &mut impl Write,
++    metadata: &[u8],
++    deadline: Instant,
++) -> Result<(), HaError> {
++    if metadata.is_empty() || metadata.len() > MAX_PAYLOAD_BYTES {
++        return Err(HaError::InvalidFrame);
++    }
++    exact_write(output, &(metadata.len() as u32).to_be_bytes(), deadline)?;
++    exact_write(output, metadata, deadline)
++}
++
++fn eof_before(input: &mut impl Read, deadline: Instant) -> Result<(), HaError> {
++    time_left(deadline)?;
++    let mut tail = [0_u8; 1];
++    let bytes = input.read(&mut tail).map_err(|_| HaError::Transport)?;
++    time_left(deadline)?;
++    if bytes != 0 {
++        return Err(HaError::InvalidFrame);
++    }
++    Ok(())
++}
++
++fn status_read(
++    input: &mut impl Read,
++    deadline: Instant,
++) -> Result<(u16, Zeroizing<Vec<u8>>), HaError> {
++    let mut status = [0_u8; 2];
++    exact_read(input, &mut status, deadline)?;
++    Ok((u16::from_be_bytes(status), metadata_read(input, deadline)?))
++}
++
++impl MutualTlsPeerTransport {
++    /// One selected peer, one connect and one body. There is no retry/fallback.
++    ///
++    /// server_leaves must be the selected endpoint's independently enrolled
++    /// registry pins, never values learned from a response. Tokens and metadata
++    /// are sent only after CA/name/strict ALPN and exact selected-leaf checks.
++    pub fn exchange_snapshot_before(
++        &self,
++        peer: &NodeId,
++        request: SnapshotPeerRequest<'_>,
++        upload: &mut impl Read,
++        response_sink: &mut impl Write,
++        admission: impl FnOnce(&[u8]) -> Result<(), HaError>,
++    ) -> Result<SnapshotPeerResponse, HaError> {
++        let deadline = request.deadline.min(Instant::now() + self.timeout);
++        let endpoint = self.peers.get(peer).ok_or(HaError::UnknownPeer)?;
++        let server_name = rustls::pki_types::ServerName::try_from(endpoint.server_name.clone())
++            .map_err(|_| HaError::InvalidCluster)?;
++        let stream = TcpStream::connect_timeout(&endpoint.address, time_left(deadline)?)
++            .map_err(|_| HaError::Transport)?;
++        stream.set_nodelay(true).map_err(|_| HaError::Transport)?;
++        let stream = ForwardDeadlineStream { stream, deadline };
++        let connection = rustls::ClientConnection::new(self.client_config.clone(), server_name)
++            .map_err(|_| HaError::Transport)?;
++        let mut tls = rustls::StreamOwned::new(connection, stream);
++        tls.conn
++            .complete_io(&mut tls.sock)
++            .map_err(|_| HaError::PeerAuthenticationFailed)?;
++        if tls.conn.alpn_protocol() != Some(RAFT_ALPN_PROTOCOL) {
++            return Err(HaError::PeerAuthenticationFailed);
++        }
++        let chain = tls
++            .conn
++            .peer_certificates()
++            .ok_or(HaError::PeerAuthenticationFailed)?;
++        if chain.is_empty() || chain.len() > MAX_PEER_CERT_CHAIN {
++            return Err(HaError::PeerAuthenticationFailed);
++        }
++        chain.iter().try_fold(0_usize, |total, certificate| {
++            if certificate.is_empty() {
++                return Err(HaError::PeerAuthenticationFailed);
++            }
++            total
++                .checked_add(certificate.len())
++                .filter(|bytes| *bytes <= MAX_PEER_CERT_CHAIN_BYTES)
++                .ok_or(HaError::PeerAuthenticationFailed)
++        })?;
++        let leaf = sha256(chain[0].as_ref());
++        if !request.server_leaves.contains(&leaf) {
++            return Err(HaError::PeerAuthenticationFailed);
++        }
++        let remaining = u64::try_from(time_left(deadline)?.as_nanos())
++            .map_err(|_| HaError::Transport)?;
++        exact_write(&mut tls, STREAM_PREFIX, deadline)?;
++        exact_write(&mut tls, STREAM_VERSION, deadline)?;
++        exact_write(&mut tls, &remaining.to_be_bytes(), deadline)?;
++        metadata_write(&mut tls, request.metadata, deadline)?;
++        flush_before(&mut tls, deadline)?;
++
++        let mut decision = [0_u8; 1];
++        exact_read(&mut tls, &mut decision, deadline)?;
++        if decision[0] == REJECTED {
++            let (status, metadata) = status_read(&mut tls, deadline)?;
++            if !(400..=599).contains(&status) {
++                return Err(HaError::InvalidFrame);
++            }
++            eof_before(&mut tls, deadline)?;
++            return Ok(SnapshotPeerResponse {
++                status,
++                metadata,
++                request_body: None,
++                response_body: None,
++            });
++        }
++        if decision[0] != READY {
++            return Err(HaError::InvalidFrame);
++        }
++        // The original Actor's authenticated checkpoint is accepted before any
++        // upload bytes leave this node. This callback may synchronize and retain
++        // local original Auth custody; it must not repeat Actor admission.
++        let ready_metadata = metadata_read(&mut tls, deadline)?;
++        admission(&ready_metadata)?;
++        time_left(deadline)?;
++        let request_body =
++            encode_snapshot_body(upload, &mut tls, request.upload_limit, deadline)
++                .map_err(|_| HaError::Transport)?;
++        // END has no same-direction completion trailer. Actual rustls EOF at
++        // the receiver is authenticated close-notify, not bare TCP shutdown.
++        tls.conn.send_close_notify();
++        flush_before(&mut tls, deadline)?;
++
++        exact_read(&mut tls, &mut decision, deadline)?;
++        let (status, metadata) = status_read(&mut tls, deadline)?;
++        if decision[0] == REJECTED {
++            if !(400..=599).contains(&status) {
++                return Err(HaError::InvalidFrame);
++            }
++            eof_before(&mut tls, deadline)?;
++            return Ok(SnapshotPeerResponse {
++                status,
++                metadata,
++                request_body: Some(request_body),
++                response_body: None,
++            });
++        }
++        if decision[0] != COMPLETED || !matches!(status, 200 | 204) {
++            return Err(HaError::InvalidFrame);
++        }
++        let mut body = SnapshotBodyReader::new(
++            &mut tls,
++            request.response_limit,
++            deadline,
++        )
++        .map_err(|_| HaError::Transport)?;
++        let mut buffer = Zeroizing::new(vec![0_u8; SNAPSHOT_BODY_CHUNK_BYTES]);
++        loop {
++            time_left(deadline)?;
++            let length = body.read(&mut buffer).map_err(|_| HaError::Transport)?;
++            if length == 0 {
++                break;
++            }
++            exact_write(response_sink, &buffer[..length], deadline)?;
++        }
++        let response_body = body.finish().map_err(|_| HaError::Transport)?;
++        flush_before(response_sink, deadline)?;
++        time_left(deadline)?;
++        Ok(SnapshotPeerResponse {
++            status,
++            metadata,
++            request_body: Some(request_body),
++            response_body: Some(response_body),
++        })
++    }
++}
++
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++enum SnapshotPeerPhase {
++    Fresh,
++    ReadingBody,
++    BodyComplete,
++    BodyFailed,
++    FailedIo,
++}
++
++/// Actual peer identity and the sole snapshot connection share one owner.
++///
++/// Only the real mTLS listener below constructs this object. It exposes no raw
++/// socket or TLS mutator. Metadata is still data requiring independent Service
++/// authentication and leader/source/target/cluster/nonce validation.
++pub struct AuthenticatedSnapshotPeer<'a> {
++    tls: &'a mut ServerTls,
++    peer: NodeId,
++    leaf_sha256: [u8; 32],
++    accepted_at: Instant,
++    deadline: Instant,
++    metadata: Zeroizing<Vec<u8>>,
++    phase: SnapshotPeerPhase,
++    terminal_written: &'a mut bool,
++}
++
++impl fmt::Debug for AuthenticatedSnapshotPeer<'_> {
++    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
++        formatter
++            .debug_struct("AuthenticatedSnapshotPeer")
++            .field("peer", &self.peer)
++            .field("metadata_bytes", &self.metadata.len())
++            .field("phase", &self.phase)
++            .finish_non_exhaustive()
++    }
++}
++
++impl AuthenticatedSnapshotPeer<'_> {
++    pub fn peer(&self) -> &NodeId {
++        &self.peer
++    }
++
++    pub fn actual_leaf_sha256(&self) -> [u8; 32] {
++        self.leaf_sha256
++    }
++
++    pub fn accepted_at(&self) -> Instant {
++        self.accepted_at
++    }
++
++    pub fn deadline(&self) -> Instant {
++        self.deadline
++    }
++
++    pub fn metadata(&self) -> &[u8] {
++        &self.metadata
++    }
++
++    /// A receiver may only shorten the original accepted connection's bound.
++    /// Apply its HTTP business timeout before Actor admission or READY.
++    pub fn restrict_deadline(&mut self, original_bound: Instant) -> Result<(), HaError> {
++        if self.phase != SnapshotPeerPhase::Fresh {
++            return Err(HaError::InvalidFrame);
++        }
++        let bound = self.deadline.min(original_bound);
++        time_left(bound)?;
++        self.deadline = bound;
++        self.tls.sock.deadline = bound;
++        Ok(())
++    }
++
++    /// Call only after original native Actor admission; never call twice.
++    ///
++    /// The caller keeps its actual pending native plan. The consumer may parse
++    /// into private staging but must not finalize a restore. Only a successful
++    /// return supplies the exact body END needed for that later finalization.
++    pub fn accept_body<T>(
++        &mut self,
++        limits: SnapshotBodyLimits,
++        ready_metadata: &[u8],
++        consumer: impl FnOnce(&mut dyn Read) -> T,
++    ) -> Result<(T, VerifiedSnapshotBody), HaError> {
++        if self.phase != SnapshotPeerPhase::Fresh
++            || ready_metadata.is_empty()
++            || ready_metadata.len() > MAX_PAYLOAD_BYTES
++        {
++            return Err(HaError::InvalidFrame);
++        }
++        self.phase = SnapshotPeerPhase::FailedIo;
++        exact_write(self.tls, &[READY], self.deadline)?;
++        metadata_write(self.tls, ready_metadata, self.deadline)?;
++        flush_before(self.tls, self.deadline)?;
++        self.phase = SnapshotPeerPhase::ReadingBody;
++        let result = (|| {
++            let mut body = SnapshotBodyReader::new(&mut *self.tls, limits, self.deadline)
++                .map_err(|_| HaError::Transport)?;
++            let parsed = consumer(&mut body);
++            let verified = body.finish().map_err(|_| HaError::Transport)?;
++            time_left(self.deadline)?;
++            Ok((parsed, verified))
++        })();
++        self.phase = if result.is_ok() {
++            SnapshotPeerPhase::BodyComplete
++        } else {
++            SnapshotPeerPhase::BodyFailed
++        };
++        result
++    }
++
++    /// Send a native terminal denial or reconciliation result; never success.
++    ///
++    /// A receiver cannot label a partially written READY/terminal as a fresh
++    /// rejection. The connection is consumed whether the send succeeds or not.
++    pub fn reject(mut self, status: u16, metadata: &[u8]) -> Result<(), HaError> {
++        if !(400..=599).contains(&status)
++            || self.phase == SnapshotPeerPhase::FailedIo
++            || metadata.is_empty()
++            || metadata.len() > MAX_PAYLOAD_BYTES
++        {
++            return Err(HaError::InvalidFrame);
++        }
++        self.phase = SnapshotPeerPhase::FailedIo;
++        exact_write(self.tls, &[REJECTED], self.deadline)?;
++        exact_write(self.tls, &status.to_be_bytes(), self.deadline)?;
++        metadata_write(self.tls, metadata, self.deadline)?;
++        self.tls.conn.send_close_notify();
++        flush_before(self.tls, self.deadline)?;
++        *self.terminal_written = true;
++        Ok(())
++    }
++
++    /// Send only after the actual native plan's final owner/audit completion.
++    ///
++    /// Metadata precedes the body and must already bind the exact held file.
++    /// It is not minted here. Client-side publication and body-witness checks
++    /// remain mandatory before any success HTTP response is released.
++    pub fn complete(
++        mut self,
++        status: u16,
++        metadata: &[u8],
++        source: &mut impl Read,
++        limit: SnapshotBodyLimits,
++    ) -> Result<EncodedSnapshotBody, HaError> {
++        if self.phase != SnapshotPeerPhase::BodyComplete
++            || !matches!(status, 200 | 204)
++            || metadata.is_empty()
++            || metadata.len() > MAX_PAYLOAD_BYTES
++        {
++            return Err(HaError::InvalidFrame);
++        }
++        self.phase = SnapshotPeerPhase::FailedIo;
++        exact_write(self.tls, &[COMPLETED], self.deadline)?;
++        exact_write(self.tls, &status.to_be_bytes(), self.deadline)?;
++        metadata_write(self.tls, metadata, self.deadline)?;
++        let body = encode_snapshot_body(source, self.tls, limit, self.deadline)
++            .map_err(|_| HaError::Transport)?;
++        self.tls.conn.send_close_notify();
++        flush_before(self.tls, self.deadline)?;
++        *self.terminal_written = true;
++        Ok(body)
++    }
++}
++
++/// Actual mTLS admission, with an explicit snapshot branch and unchanged
++/// bounded ordinary-frame callback. New snapshot peers require strict ALPN;
++/// the previous missing-ALPN transition remains confined to the old branch.
++pub fn serve_one_mtls_peer_frame_or_snapshot<F, S>(
++    listener: &TcpListener,
++    server_config: Arc<rustls::ServerConfig>,
++    identities: &PinnedClientCertificateMap,
++    timeout: Duration,
++    allow_missing_raft_alpn: bool,
++    handlers: (F, S),
++) -> Result<(), HaError>
++where
++    F: FnOnce(AuthenticatedPeerFrame) -> Result<Vec<u8>, HaError>,
++    S: FnOnce(AuthenticatedSnapshotPeer<'_>) -> Result<(), HaError>,
++{
++    if timeout.is_zero() || timeout > Duration::from_secs(60) {
++        return Err(HaError::InvalidCluster);
++    }
++    let (stream, accepted_at) = accept_peer_with_origin(listener)?;
++    configure_accepted_peer_stream(&stream, timeout)?;
++    let deadline = accepted_at.checked_add(timeout).ok_or(HaError::Transport)?;
++    #[cfg(any(test, feature = "private-forward-stage-diagnostic"))]
++    let _diagnostic_bound = closure_phase_diagnostic::Scope::original_bound(deadline);
++    let stream = ForwardDeadlineStream { stream, deadline };
++    let connection = rustls::ServerConnection::new(server_config)
++        .map_err(|_| forward_transport_frame_error("receiver_tls_setup", HaError::Transport))?;
++    let mut tls = rustls::StreamOwned::new(connection, stream);
++    observe_closure_phase!(ServerHandshake, tls.conn.complete_io(&mut tls.sock)).map_err(
++        |error| {
++            forward_io_error_as(
++                "receiver_tls_handshake",
++                &error,
++                HaError::PeerAuthenticationFailed,
++            )
++        },
++    )?;
++    let strict = tls.conn.alpn_protocol() == Some(RAFT_ALPN_PROTOCOL);
++    require_raft_alpn(tls.conn.alpn_protocol(), allow_missing_raft_alpn)
++        .map_err(|error| forward_transport_frame_error("receiver_alpn", error))?;
++    let certificates = tls.conn.peer_certificates().ok_or_else(|| {
++        forward_transport_frame_error(
++            "receiver_certificate_absent",
++            HaError::PeerAuthenticationFailed,
++        )
++    })?;
++    let peer = identify_peer_certificate_chain(identities, certificates)
++        .map_err(|error| forward_transport_frame_error("receiver_identity", error))?;
++    let leaf_sha256 = sha256(
++        certificates
++            .first()
++            .ok_or(HaError::PeerAuthenticationFailed)?
++            .as_ref(),
++    );
++    let mut prefix = [0_u8; 4];
++    exact_read(&mut tls, &mut prefix, deadline)
++        .map_err(|error| forward_transport_frame_error("receiver_frame_read", error))?;
++    if &prefix == STREAM_PREFIX {
++        if !strict {
++            return Err(HaError::PeerAuthenticationFailed);
++        }
++        let mut version = [0_u8; 4];
++        exact_read(&mut tls, &mut version, deadline)?;
++        if &version != STREAM_VERSION {
++            return Err(HaError::InvalidFrame);
++        }
++        let mut remaining = [0_u8; 8];
++        exact_read(&mut tls, &mut remaining, deadline)?;
++        let remaining = Duration::from_nanos(u64::from_be_bytes(remaining)).min(timeout);
++        if remaining.is_zero() {
++            return Err(HaError::Transport);
++        }
++        let deadline = accepted_at
++            .checked_add(remaining)
++            .ok_or(HaError::Transport)?
++            .min(deadline);
++        time_left(deadline)?;
++        tls.sock.deadline = deadline;
++        let metadata = metadata_read(&mut tls, deadline)?;
++        let mut terminal_written = false;
++        handlers.1(AuthenticatedSnapshotPeer {
++            tls: &mut tls,
++            peer,
++            leaf_sha256,
++            accepted_at,
++            deadline,
++            metadata,
++            phase: SnapshotPeerPhase::Fresh,
++            terminal_written: &mut terminal_written,
++        })?;
++        time_left(deadline)?;
++        if !terminal_written {
++            return Err(HaError::InvalidFrame);
++        }
++        return Ok(());
++    }
++
++    // The four bytes just inspected are the original old frame length. Feeding
++    // them back through a bounded in-memory prefix does not reread the socket.
++    let payload = {
++        let mut prefixed = io::Cursor::new(prefix).chain(&mut tls);
++        native_kv2_write_request::read_authenticated_request(
++            &mut prefixed,
++            strict.then_some(RAFT_ALPN_PROTOCOL),
++        )
++        .map_err(|error| forward_transport_frame_error("receiver_frame_read", error))?
++    };
++    let response_profile = ResponseFrameProfile::for_request(&payload)?;
++    let coalesced_root_reply = strict
++        && response_profile == ResponseFrameProfile::Legacy
++        && is_native_v6_root_pull_frame(&payload);
++    response_profile.require_alpn(tls.conn.alpn_protocol())?;
++    if Instant::now() >= deadline {
++        return Err(forward_transport_frame_error(
++            "receiver_deadline_before_handler",
++            HaError::Transport,
++        ));
++    }
++    let response = Zeroizing::new(
++        handlers.0(AuthenticatedPeerFrame {
++            payload,
++            peer,
++            leaf_sha256,
++            accepted_at,
++            deadline,
++            strict_raft_alpn: strict,
++        })
++        .map_err(|error| forward_transport_frame_error("receiver_handler_result", error))?,
++    );
++    if coalesced_root_reply {
++        return write_coalesced_bounded_frame(
++            &mut rustls::Stream::new(&mut tls.conn, &mut tls.sock),
++            &response,
++        )
++        .map_err(|error| forward_transport_frame_error("receiver_frame_write", error));
++    }
++    response_profile
++        .write(&mut tls, &response)
++        .map_err(|error| forward_transport_frame_error("receiver_frame_write", error))
++}
++
++#[cfg(test)]
++#[path = "native_snapshot_peer_tests.rs"]
++mod tests;
+--- /dev/null
++++ b/crates/heptabao-ha-service/src/native_snapshot_peer_tests.rs
+@@ -0,0 +1,621 @@
++//! Actual rustls/TCP component sources, separate from native Service qualification.
++//! These use the existing disposable OpenSSL fixture style and existing eight
++//! second transport bound. No product process, repository or external peer is used.
++
++#![cfg(unix)]
++
++use super::*;
++use rustls::pki_types::{CertificateDer, PrivateKeyDer};
++use rustls::{ClientConfig, RootCertStore, ServerConfig};
++use std::fs::{self, File};
++use std::io::BufReader;
++use std::os::unix::fs::{DirBuilderExt, PermissionsExt};
++use std::path::Path;
++use std::process::{Command, Stdio};
++use std::sync::atomic::{AtomicBool, AtomicU64, AtomicUsize, Ordering};
++use std::thread;
++
++type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
++static SEQUENCE: AtomicU64 = AtomicU64::new(0);
++
++struct Root(std::path::PathBuf);
++impl Root {
++    fn new() -> io::Result<Self> {
++        let path = std::env::temp_dir().join(format!(
++            "hb-native-snapshot-stream-tls-{}-{}",
++            std::process::id(),
++            SEQUENCE.fetch_add(1, Ordering::Relaxed)
++        ));
++        let mut builder = fs::DirBuilder::new();
++        builder.mode(0o700).create(&path)?;
++        Ok(Self(path))
++    }
++}
++impl Drop for Root {
++    fn drop(&mut self) {
++        let _ = fs::remove_dir_all(&self.0);
++    }
++}
++
++fn openssl(path: &Path, args: &[&str]) -> TestResult {
++    if !Command::new("openssl")
++        .current_dir(path)
++        .args(args)
++        .stdin(Stdio::null())
++        .stdout(Stdio::null())
++        .stderr(Stdio::null())
++        .status()?
++        .success()
++    {
++        return Err("disposable snapshot TLS generation failed".into());
++    }
++    Ok(())
++}
++fn certificates(path: &Path) -> TestResult<Vec<CertificateDer<'static>>> {
++    Ok(
++        rustls_pemfile::certs(&mut BufReader::new(File::open(path)?))
++            .collect::<Result<Vec<_>, _>>()?,
++    )
++}
++fn private_key(path: &Path) -> TestResult<PrivateKeyDer<'static>> {
++    rustls_pemfile::private_key(&mut BufReader::new(File::open(path)?))?
++        .ok_or_else(|| "disposable TLS key missing".into())
++}
++struct TlsFixture {
++    client: Arc<ClientConfig>,
++    server: Arc<ServerConfig>,
++    client_pin: [u8; 32],
++    server_pin: [u8; 32],
++}
++fn tls_fixture(path: &Path) -> TestResult<TlsFixture> {
++    openssl(
++        path,
++        &[
++            "req",
++            "-x509",
++            "-newkey",
++            "rsa:2048",
++            "-nodes",
++            "-days",
++            "2",
++            "-keyout",
++            "ca.key",
++            "-out",
++            "ca.crt",
++            "-subj",
++            "/CN=NativeIndexFixtureCA",
++            "-addext",
++            "basicConstraints=critical,CA:TRUE",
++            "-addext",
++            "keyUsage=critical,keyCertSign,cRLSign",
++        ],
++    )?;
++    for name in ["client", "server"] {
++        openssl(
++            path,
++            &[
++                "req",
++                "-new",
++                "-newkey",
++                "rsa:2048",
++                "-nodes",
++                "-keyout",
++                &format!("{name}.key"),
++                "-out",
++                &format!("{name}.csr"),
++                "-subj",
++                &format!("/CN={name}"),
++            ],
++        )?;
++        fs::set_permissions(
++            path.join(format!("{name}.key")),
++            fs::Permissions::from_mode(0o600),
++        )?;
++        fs::write(
++            path.join(format!("{name}.ext")),
++            "basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature,keyEncipherment\nextendedKeyUsage=clientAuth,serverAuth\nsubjectAltName=DNS:localhost,IP:127.0.0.1\n",
++        )?;
++        openssl(
++            path,
++            &[
++                "x509",
++                "-req",
++                "-in",
++                &format!("{name}.csr"),
++                "-CA",
++                "ca.crt",
++                "-CAkey",
++                "ca.key",
++                "-CAcreateserial",
++                "-out",
++                &format!("{name}.crt"),
++                "-days",
++                "2",
++                "-sha256",
++                "-extfile",
++                &format!("{name}.ext"),
++            ],
++        )?;
++    }
++    fs::set_permissions(path.join("ca.key"), fs::Permissions::from_mode(0o600))?;
++    let mut roots = RootCertStore::empty();
++    roots.add(certificates(&path.join("ca.crt"))?.first().ok_or("CA chain empty")?.clone())?;
++    let provider = Arc::new(rustls::crypto::ring::default_provider());
++    let client_chain = certificates(&path.join("client.crt"))?;
++    let client_pin = sha256(client_chain.first().ok_or("client chain empty")?.as_ref());
++    let mut client = ClientConfig::builder_with_provider(provider.clone())
++        .with_safe_default_protocol_versions()?
++        .with_root_certificates(roots.clone())
++        .with_client_auth_cert(client_chain, private_key(&path.join("client.key"))?)?;
++    client.alpn_protocols = vec![RAFT_ALPN_PROTOCOL.to_vec()];
++    let server_chain = certificates(&path.join("server.crt"))?;
++    let server_pin = sha256(server_chain.first().ok_or("server chain empty")?.as_ref());
++    let mut server = ServerConfig::builder_with_provider(provider.clone())
++        .with_safe_default_protocol_versions()?
++        .with_client_cert_verifier(
++            rustls::server::WebPkiClientVerifier::builder_with_provider(
++                Arc::new(roots),
++                provider,
++            )
++            .build()?,
++        )
++        .with_single_cert(
++            server_chain,
++            private_key(&path.join("server.key"))?,
++        )?;
++    server.alpn_protocols = vec![RAFT_ALPN_PROTOCOL.to_vec()];
++    Ok(TlsFixture {
++        client: Arc::new(client),
++        server: Arc::new(server),
++        client_pin,
++        server_pin,
++    })
++}
++
++
++const TEST_TIMEOUT: Duration = Duration::from_secs(8);
++
++fn serve_snapshot_once<F>(
++    listener: TcpListener,
++    server: Arc<ServerConfig>,
++    identities: PinnedClientCertificateMap,
++    client_done: Arc<AtomicBool>,
++    handler: F,
++) -> (Result<(), HaError>, TcpListener)
++where
++    F: FnOnce(AuthenticatedSnapshotPeer<'_>) -> Result<(), HaError>,
++{
++    let until = Instant::now() + TEST_TIMEOUT;
++    let mut handler = Some(handler);
++    loop {
++        let result = serve_one_mtls_peer_frame_or_snapshot(
++            &listener,
++            server.clone(),
++            &identities,
++            TEST_TIMEOUT,
++            false,
++            (
++                |_| Err(HaError::InvalidFrame),
++                |peer| handler.take().ok_or(HaError::InvalidFrame)?(peer),
++            ),
++        );
++        if handler.is_none()
++            || result != Err(HaError::Transport)
++            || client_done.load(Ordering::SeqCst)
++            || Instant::now() >= until
++        {
++            return (result, listener);
++        }
++        thread::sleep(Duration::from_millis(1));
++    }
++}
++
++fn identity_map(fixture: &TlsFixture) -> TestResult<PinnedClientCertificateMap> {
++    Ok(PinnedClientCertificateMap::new(BTreeMap::from([(
++        fixture.client_pin,
++        NodeId::parse("snapshot-client")?,
++    )]))?)
++}
++
++fn selected_transport(
++    fixture: &TlsFixture,
++    listener: &TcpListener,
++) -> TestResult<(MutualTlsPeerTransport, NodeId)> {
++    let peer = NodeId::parse("snapshot-leader")?;
++    let transport = MutualTlsPeerTransport::new(
++        BTreeMap::from([(
++            peer.clone(),
++            TlsPeerEndpoint::new(listener.local_addr()?, "localhost")?,
++        )]),
++        fixture.client.clone(),
++        TEST_TIMEOUT,
++    )?;
++    Ok((transport, peer))
++}
++
++#[test]
++fn snapshot_peer_actual_mtls_upload_close_notify_allows_opposite_download() -> TestResult {
++    let root = Root::new()?;
++    let fixture = tls_fixture(&root.0)?;
++    let listener = TcpListener::bind("127.0.0.1:0")?;
++    listener.set_nonblocking(true)?;
++    let identities = identity_map(&fixture)?;
++    let (transport, target) = selected_transport(&fixture, &listener)?;
++    let source = vec![0x31_u8; 1024 * 1024 + 19];
++    let response = vec![0x52_u8; 1024 * 1024 + 37];
++    let expected_source = source.clone();
++    let expected_response = response.clone();
++    let pins = [fixture.server_pin];
++    let limits = SnapshotBodyLimits::new(2 * 1024 * 1024)?;
++    let request = SnapshotPeerRequest::new(
++        b"public synthetic request metadata",
++        &pins,
++        (limits, limits),
++        Instant::now() + TEST_TIMEOUT,
++    )?;
++    let done = Arc::new(AtomicBool::new(false));
++    let server_done = done.clone();
++    let calls = Arc::new(AtomicUsize::new(0));
++    let server_calls = calls.clone();
++    let server = fixture.server.clone();
++    let worker = thread::spawn(move || {
++        serve_snapshot_once(listener, server, identities, server_done, |mut peer| {
++            server_calls.fetch_add(1, Ordering::SeqCst);
++            if peer.peer().as_str() != "snapshot-client"
++                || peer.metadata() != b"public synthetic request metadata"
++            {
++                return Err(HaError::InvalidFrame);
++            }
++            let (parsed, verified) = peer.accept_body(limits, b"original admission checkpoint", |reader| {
++                let mut bytes = Vec::new();
++                reader.read_to_end(&mut bytes).map(|_| bytes)
++            })?;
++            let parsed = parsed.map_err(|_| HaError::Transport)?;
++            if parsed != expected_source
++                || verified.bytes() != parsed.len() as u64
++                || verified.sha256() != sha256(&parsed)
++                || verified.frames() != 17
++            {
++                return Err(HaError::InvalidFrame);
++            }
++            // accept_body could return only after actual rustls close-notify.
++            // This opposite-direction application write must still succeed.
++            let mut response = io::Cursor::new(expected_response);
++            let encoded = peer.complete(
++                200,
++                b"public synthetic completion metadata",
++                &mut response,
++                limits,
++            )?;
++            if encoded.bytes() != response.get_ref().len() as u64
++                || encoded.sha256() != sha256(response.get_ref())
++            {
++                return Err(HaError::InvalidFrame);
++            }
++            Ok(())
++        })
++    });
++    let mut received = Vec::new();
++    let result = transport.exchange_snapshot_before(
++        &target,
++        request,
++        &mut io::Cursor::new(&source),
++        &mut received,
++        |metadata| {
++            (metadata == b"original admission checkpoint")
++                .then_some(())
++                .ok_or(HaError::InvalidFrame)
++        },
++    );
++    done.store(true, Ordering::SeqCst);
++    let (served, listener) = worker.join().map_err(|_| "snapshot receiver panic")?;
++    assert_eq!(served, Ok(()));
++    let result = result?;
++    assert_eq!(result.status(), 200);
++    assert_eq!(result.metadata(), b"public synthetic completion metadata");
++    assert_eq!(result.request_body().ok_or("request END missing")?.sha256(), sha256(&source));
++    assert_eq!(result.response_body().ok_or("response END missing")?.sha256(), sha256(&response));
++    assert_eq!(received, response);
++    assert_eq!(calls.load(Ordering::SeqCst), 1);
++    assert!(listener.accept().is_err_and(|error| error.kind() == io::ErrorKind::WouldBlock));
++    Ok(())
++}
++
++#[test]
++fn snapshot_peer_actual_mtls_bare_tcp_eof_cannot_finalize_upload() -> TestResult {
++    let root = Root::new()?;
++    let fixture = tls_fixture(&root.0)?;
++    let listener = TcpListener::bind("127.0.0.1:0")?;
++    listener.set_nonblocking(true)?;
++    let address = listener.local_addr()?;
++    let identities = identity_map(&fixture)?;
++    let done = Arc::new(AtomicBool::new(false));
++    let server_done = done.clone();
++    let calls = Arc::new(AtomicUsize::new(0));
++    let server_calls = calls.clone();
++    let finalized = Arc::new(AtomicUsize::new(0));
++    let server_finalized = finalized.clone();
++    let server = fixture.server.clone();
++    let limits = SnapshotBodyLimits::new(1024)?;
++    let worker = thread::spawn(move || {
++        serve_snapshot_once(listener, server, identities, server_done, |mut peer| {
++            server_calls.fetch_add(1, Ordering::SeqCst);
++            let (parsed, _) = peer.accept_body(limits, b"original admission checkpoint", |reader| {
++                io::copy(reader, &mut io::sink())
++            })?;
++            parsed.map_err(|_| HaError::Transport)?;
++            server_finalized.fetch_add(1, Ordering::SeqCst);
++            peer.complete(204, b"completion", &mut io::empty(), limits)?;
++            Ok(())
++        })
++    });
++    let result = (|| -> TestResult {
++        let deadline = Instant::now() + TEST_TIMEOUT;
++        let stream = TcpStream::connect_timeout(&address, TEST_TIMEOUT)?;
++        let connection = rustls::ClientConnection::new(
++            fixture.client.clone(),
++            rustls::pki_types::ServerName::try_from("localhost")?,
++        )?;
++        let mut tls = rustls::StreamOwned::new(
++            connection,
++            ForwardDeadlineStream { stream, deadline },
++        );
++        tls.conn.complete_io(&mut tls.sock)?;
++        assert_eq!(tls.conn.alpn_protocol(), Some(RAFT_ALPN_PROTOCOL));
++        exact_write(&mut tls, STREAM_PREFIX, deadline)?;
++        exact_write(&mut tls, STREAM_VERSION, deadline)?;
++        exact_write(&mut tls, &8_000_000_000_u64.to_be_bytes(), deadline)?;
++        metadata_write(&mut tls, b"public synthetic request", deadline)?;
++        flush_before(&mut tls, deadline)?;
++        let mut decision = [0_u8; 1];
++        exact_read(&mut tls, &mut decision, deadline)?;
++        assert_eq!(decision, [READY]);
++        assert_eq!(metadata_read(&mut tls, deadline)?.as_slice(), b"original admission checkpoint");
++        encode_snapshot_body(&mut io::Cursor::new(b"archive"), &mut tls, limits, deadline)?;
++        tls.sock.stream.shutdown(std::net::Shutdown::Write)?;
++        // Deliberately omit close-notify. The server must not treat the valid
++        // END frame plus TCP FIN as authenticated upload completion.
++        Ok(())
++    })();
++    done.store(true, Ordering::SeqCst);
++    let (served, listener) = worker.join().map_err(|_| "snapshot receiver panic")?;
++    result?;
++    assert_eq!(served, Err(HaError::Transport));
++    assert_eq!(calls.load(Ordering::SeqCst), 1);
++    assert_eq!(finalized.load(Ordering::SeqCst), 0);
++    assert!(listener.accept().is_err_and(|error| error.kind() == io::ErrorKind::WouldBlock));
++    Ok(())
++}
++
++#[test]
++fn snapshot_peer_actual_mtls_wrong_selected_leaf_never_admits_body() -> TestResult {
++    let root = Root::new()?;
++    let fixture = tls_fixture(&root.0)?;
++    let listener = TcpListener::bind("127.0.0.1:0")?;
++    listener.set_nonblocking(true)?;
++    let identities = identity_map(&fixture)?;
++    let (transport, target) = selected_transport(&fixture, &listener)?;
++    let mut wrong = fixture.server_pin;
++    wrong[0] ^= 1;
++    let pins = [wrong];
++    let limits = SnapshotBodyLimits::new(1024)?;
++    let request = SnapshotPeerRequest::new(
++        b"synthetic token metadata must not reach handler",
++        &pins,
++        (limits, limits),
++        Instant::now() + TEST_TIMEOUT,
++    )?;
++    let done = Arc::new(AtomicBool::new(false));
++    let server_done = done.clone();
++    let calls = Arc::new(AtomicUsize::new(0));
++    let server_calls = calls.clone();
++    let server = fixture.server.clone();
++    let worker = thread::spawn(move || {
++        serve_snapshot_once(listener, server, identities, server_done, |peer| {
++            server_calls.fetch_add(1, Ordering::SeqCst);
++            peer.reject(403, b"must not reach handler")
++        })
++    });
++    let mut source = io::Cursor::new(b"never sent");
++    let mut sink = Vec::new();
++    let result = transport.exchange_snapshot_before(&target, request, &mut source, &mut sink, |_| {
++        Err(HaError::InvalidFrame)
++    });
++    done.store(true, Ordering::SeqCst);
++    let (served, listener) = worker.join().map_err(|_| "snapshot receiver panic")?;
++    assert!(matches!(result, Err(HaError::PeerAuthenticationFailed)));
++    assert_eq!(served, Err(HaError::Transport));
++    assert_eq!(source.position(), 0);
++    assert!(sink.is_empty());
++    assert_eq!(calls.load(Ordering::SeqCst), 0);
++    assert!(listener.accept().is_err_and(|error| error.kind() == io::ErrorKind::WouldBlock));
++    Ok(())
++}
++
++#[test]
++fn snapshot_peer_actual_mtls_terminal_rejection_consumes_no_upload() -> TestResult {
++    let root = Root::new()?;
++    let fixture = tls_fixture(&root.0)?;
++    let listener = TcpListener::bind("127.0.0.1:0")?;
++    listener.set_nonblocking(true)?;
++    let identities = identity_map(&fixture)?;
++    let (transport, target) = selected_transport(&fixture, &listener)?;
++    let pins = [fixture.server_pin];
++    let limits = SnapshotBodyLimits::new(1024)?;
++    let request = SnapshotPeerRequest::new(
++        b"public synthetic request",
++        &pins,
++        (limits, limits),
++        Instant::now() + TEST_TIMEOUT,
++    )?;
++    let done = Arc::new(AtomicBool::new(false));
++    let server_done = done.clone();
++    let calls = Arc::new(AtomicUsize::new(0));
++    let server_calls = calls.clone();
++    let server = fixture.server.clone();
++    let worker = thread::spawn(move || {
++        serve_snapshot_once(listener, server, identities, server_done, |peer| {
++            server_calls.fetch_add(1, Ordering::SeqCst);
++            peer.reject(403, b"native denial metadata")
++        })
++    });
++    let mut upload = io::Cursor::new(b"never uploaded");
++    let mut response = Vec::new();
++    let result = transport.exchange_snapshot_before(&target, request, &mut upload, &mut response, |_| {
++        Err(HaError::InvalidFrame)
++    });
++    done.store(true, Ordering::SeqCst);
++    let (served, listener) = worker.join().map_err(|_| "snapshot receiver panic")?;
++    assert_eq!(served, Ok(()));
++    let result = result?;
++    assert_eq!(result.status(), 403);
++    assert_eq!(result.metadata(), b"native denial metadata");
++    assert!(result.request_body().is_none());
++    assert!(result.response_body().is_none());
++    assert_eq!(upload.position(), 0);
++    assert!(response.is_empty());
++    assert_eq!(calls.load(Ordering::SeqCst), 1);
++    assert!(listener.accept().is_err_and(|error| error.kind() == io::ErrorKind::WouldBlock));
++    Ok(())
++}
++
++#[test]
++fn snapshot_peer_original_frame_still_uses_only_old_callback() -> TestResult {
++    let root = Root::new()?;
++    let fixture = tls_fixture(&root.0)?;
++    let listener = TcpListener::bind("127.0.0.1:0")?;
++    listener.set_nonblocking(true)?;
++    let identities = identity_map(&fixture)?;
++    let (transport, target) = selected_transport(&fixture, &listener)?;
++    let done = Arc::new(AtomicBool::new(false));
++    let server_done = done.clone();
++    let old_calls = Arc::new(AtomicUsize::new(0));
++    let server_calls = old_calls.clone();
++    let new_calls = Arc::new(AtomicUsize::new(0));
++    let snapshot_calls = new_calls.clone();
++    let server = fixture.server.clone();
++    let worker = thread::spawn(move || {
++        let until = Instant::now() + TEST_TIMEOUT;
++        loop {
++            let result = serve_one_mtls_peer_frame_or_snapshot(
++                &listener,
++                server.clone(),
++                &identities,
++                TEST_TIMEOUT,
++                false,
++                (
++                    |frame| {
++                        server_calls.fetch_add(1, Ordering::SeqCst);
++                        if frame.payload() != b"legacy request" {
++                            return Err(HaError::InvalidFrame);
++                        }
++                        Ok(b"legacy response".to_vec())
++                    },
++                    |_| {
++                        snapshot_calls.fetch_add(1, Ordering::SeqCst);
++                        Err(HaError::InvalidFrame)
++                    },
++                ),
++            );
++            if result != Err(HaError::Transport)
++                || server_calls.load(Ordering::SeqCst) != 0
++                || server_done.load(Ordering::SeqCst)
++                || Instant::now() >= until
++            {
++                return (result, listener);
++            }
++            thread::sleep(Duration::from_millis(1));
++        }
++    });
++    let result = transport.exchange_before(
++        &target,
++        b"legacy request",
++        Instant::now() + TEST_TIMEOUT,
++    );
++    done.store(true, Ordering::SeqCst);
++    let (served, listener) = worker.join().map_err(|_| "legacy receiver panic")?;
++    assert_eq!(served, Ok(()));
++    assert_eq!(result?, b"legacy response");
++    assert_eq!(old_calls.load(Ordering::SeqCst), 1);
++    assert_eq!(new_calls.load(Ordering::SeqCst), 0);
++    assert!(listener.accept().is_err_and(|error| error.kind() == io::ErrorKind::WouldBlock));
++    Ok(())
++}
++
++#[test]
++fn snapshot_peer_expired_deadline_refuses_before_connect() -> TestResult {
++    let pins = [[7_u8; 32]];
++    let limits = SnapshotBodyLimits::new(0)?;
++    let result = SnapshotPeerRequest::new(b"request", &pins, (limits, limits), Instant::now());
++    assert!(matches!(result, Err(HaError::Transport)));
++    Ok(())
++}
++
++#[test]
++fn snapshot_peer_ready_veto_reads_no_upload_and_cannot_extend_deadline() -> TestResult {
++    let root = Root::new()?;
++    let fixture = tls_fixture(&root.0)?;
++    let listener = TcpListener::bind("127.0.0.1:0")?;
++    listener.set_nonblocking(true)?;
++    let identities = identity_map(&fixture)?;
++    let (transport, target) = selected_transport(&fixture, &listener)?;
++    let pins = [fixture.server_pin];
++    let limits = SnapshotBodyLimits::new(1024)?;
++    let request = SnapshotPeerRequest::new(
++        b"public synthetic request", &pins, (limits, limits), Instant::now() + TEST_TIMEOUT,
++    )?;
++    let done = Arc::new(AtomicBool::new(false));
++    let server_done = done.clone();
++    let calls = Arc::new(AtomicUsize::new(0));
++    let server_calls = calls.clone();
++    let consumer_calls = Arc::new(AtomicUsize::new(0));
++    let consumed = consumer_calls.clone();
++    let completed = Arc::new(AtomicUsize::new(0));
++    let published = completed.clone();
++    let server = fixture.server.clone();
++    let worker = thread::spawn(move || {
++        serve_snapshot_once(listener, server, identities, server_done, |mut peer| {
++            server_calls.fetch_add(1, Ordering::SeqCst);
++            let original = peer.deadline();
++            let shorter = peer.accepted_at() + TEST_TIMEOUT / 2;
++            peer.restrict_deadline(shorter)?;
++            let fixed = peer.deadline();
++            peer.restrict_deadline(peer.accepted_at() + TEST_TIMEOUT)?;
++            if fixed > shorter || fixed > original || peer.deadline() != fixed {
++                return Err(HaError::InvalidFrame);
++            }
++            let (parsed, _) = peer.accept_body(limits, b"rejected original owner", |reader| {
++                consumed.fetch_add(1, Ordering::SeqCst);
++                io::copy(reader, &mut io::sink())
++            })?;
++            parsed.map_err(|_| HaError::Transport)?;
++            published.fetch_add(1, Ordering::SeqCst);
++            peer.complete(204, b"not permitted", &mut io::empty(), limits)?;
++            Ok(())
++        })
++    });
++    let mut upload = io::Cursor::new(b"never read by transport");
++    let mut received = Vec::new();
++    let admission_calls = AtomicUsize::new(0);
++    let result = transport.exchange_snapshot_before(
++        &target, request, &mut upload, &mut received, |metadata| {
++            admission_calls.fetch_add(1, Ordering::SeqCst);
++            if metadata != b"rejected original owner" {
++                return Err(HaError::InvalidFrame);
++            }
++            Err(HaError::PeerAuthenticationFailed)
++        },
++    );
++    done.store(true, Ordering::SeqCst);
++    let (served, listener) = worker.join().map_err(|_| "ready veto receiver panic")?;
++    assert_eq!(result.err(), Some(HaError::PeerAuthenticationFailed));
++    assert_eq!(served, Err(HaError::Transport));
++    assert_eq!(admission_calls.load(Ordering::SeqCst), 1);
++    assert_eq!(calls.load(Ordering::SeqCst), 1);
++    assert_eq!(consumer_calls.load(Ordering::SeqCst), 0);
++    assert_eq!(completed.load(Ordering::SeqCst), 0);
++    assert_eq!(upload.position(), 0);
++    assert!(received.is_empty());
++    assert!(listener.accept().is_err_and(|error| error.kind() == io::ErrorKind::WouldBlock));
++    Ok(())
++}
+--- /dev/null
++++ b/crates/heptabao-server/src/ha_snapshot_forward.rs
+@@ -0,0 +1,165 @@
++//! One selected native snapshot peer; no HA control guard crosses network I/O.
++//! Listener custody still uses the existing forwarding semaphore and workers.
++use super::*;
++use heptabao_ha_service::{
++    AuthenticatedSnapshotPeer, SnapshotBodyLimits, SnapshotPeerRequest, SnapshotPeerResponse,
++};
++
++pub(crate) type SnapshotForwardHandler =
++    Arc<dyn for<'a> Fn(SnapshotIngress<'a>) -> Result<(), heptabao_ha_service::HaError> + Send + Sync>;
++
++/// Only the real listener's enrolled NodeId mapping constructs this owner.
++pub(crate) struct SnapshotIngress<'a> {
++    peer: AuthenticatedSnapshotPeer<'a>,
++    cluster: String,
++    source: u64,
++    target: u64,
++}
++impl<'a> SnapshotIngress<'a> {
++    pub(crate) fn cluster(&self) -> &str { &self.cluster }
++    pub(crate) fn source(&self) -> u64 { self.source }
++    pub(crate) fn target(&self) -> u64 { self.target }
++    pub(crate) fn into_peer(self) -> AuthenticatedSnapshotPeer<'a> { self.peer }
++}
++
++pub(super) fn dispatch<'a>(
++    peer: AuthenticatedSnapshotPeer<'a>,
++    ids: &BTreeMap<NodeId, u64>,
++    cluster: &str,
++    local: u64,
++    slots: &Arc<Semaphore>,
++    handler: &Arc<Mutex<Option<SnapshotForwardHandler>>>,
++) -> Result<(), heptabao_ha_service::HaError> {
++    let source = *ids.get(peer.peer()).ok_or(heptabao_ha_service::HaError::UnknownPeer)?;
++    if source == local || cluster.is_empty() {
++        return Err(heptabao_ha_service::HaError::PeerAuthenticationFailed);
++    }
++    // No new thread or detached task. The original peer worker and capacity
++    // permit live until the complete body/response and callback have returned.
++    let _permit = slots.clone().try_acquire_owned()
++        .map_err(|_| heptabao_ha_service::HaError::WriterBusy)?;
++    let callback = handler.lock()
++        .map_err(|_| heptabao_ha_service::HaError::Transport)?
++        .clone().ok_or(heptabao_ha_service::HaError::NotLeader)?;
++    callback(SnapshotIngress {
++        peer,
++        cluster: cluster.to_owned(),
++        source,
++        target: local,
++    })
++}
++
++/// A routing/data capability, never an Actor or native completion proof.
++/// Its owned clone of the TLS configuration permits I/O after the HaProcess
++/// mutex has been released. A new leader observation cannot retarget it.
++pub(crate) struct SnapshotEndpoint {
++    transport: MutualTlsPeerTransport,
++    node: NodeId,
++    pins: Vec<[u8; 32]>,
++    cluster: String,
++    source: u64,
++    target: u64,
++    deadline: Instant,
++}
++impl SnapshotEndpoint {
++    pub(crate) fn cluster(&self) -> &str { &self.cluster }
++    pub(crate) fn source(&self) -> u64 { self.source }
++    pub(crate) fn target(&self) -> u64 { self.target }
++    pub(crate) fn deadline(&self) -> Instant { self.deadline }
++
++    pub(crate) fn exchange(
++        self,
++        metadata: &[u8],
++        upload: &mut impl Read,
++        response: &mut crate::snapshot_file::SnapshotFile,
++        limits: (SnapshotBodyLimits, SnapshotBodyLimits),
++        admission: impl FnOnce(&[u8]) -> Result<(), heptabao_ha_service::HaError>,
++    ) -> Result<SnapshotPeerResponse, heptabao_ha_service::HaError> {
++        let request = SnapshotPeerRequest::new(metadata, &self.pins, limits, self.deadline)?;
++        self.transport.exchange_snapshot_before(
++            &self.node, request, upload, response, admission,
++        )
++    }
++}
++
++impl HaProcess {
++    pub(crate) fn register_snapshot_forward_handler(
++        &mut self,
++        handler: SnapshotForwardHandler,
++    ) -> Result<(), String> {
++        if !self.native_v6_enabled() {
++            return Err("snapshot peer handler requires native HA".into());
++        }
++        let mut slot = self.snapshot_forward_handler.lock()
++            .map_err(|_| "snapshot peer registry unavailable".to_owned())?;
++        if slot.is_some() {
++            return Err("snapshot peer handler already registered".into());
++        }
++        *slot = Some(handler);
++        Ok(())
++    }
++
++    pub(crate) fn snapshot_endpoint_before(
++        &self,
++        original_deadline: Instant,
++    ) -> Result<SnapshotEndpoint, String> {
++        if !self.native_v6_enabled() || self.emit_legacy_peer_v1 {
++            return Err("native snapshot peer profile unavailable".into());
++        }
++        let status = self.leader_status()?;
++        let source = status.local_id;
++        let target = status.leader.ok_or("native snapshot leader unavailable")?;
++        if source == target {
++            return Err("snapshot forwarding target is local".into());
++        }
++        let deadline = original_deadline.min(Instant::now() + self.forward_timeout);
++        if Instant::now() >= deadline {
++            return Err("snapshot forwarding deadline elapsed".into());
++        }
++        let node = self.peers.get(&target).ok_or("snapshot leader not enrolled")?.clone();
++        let pins = self.snapshot_server_pins.get(&target)
++            .ok_or("snapshot leader leaf pin unavailable")?.clone();
++        Ok(SnapshotEndpoint {
++            transport: self.forward_transport.clone(),
++            node,
++            pins,
++            cluster: self.cluster_id.clone(),
++            source,
++            target,
++            deadline,
++        })
++    }
++
++    /// This is the same committed-prefix relationship as ordinary completion,
++    /// without importing its JSON/ack-only/retained-KV receipt type.
++    pub(crate) fn wait_snapshot_prefix(
++        &self,
++        cluster: &str,
++        source: u64,
++        target: u64,
++        prefix: &heptabao_raft_runtime::CommittedApplicationPrefix,
++        deadline: Instant,
++    ) -> Result<(), String> {
++        if cluster != self.cluster_id
++            || target != self.local_id()?
++            || source == target
++            || !self.enrolled(source)
++            || !prefix.valid()
++        {
++            return Err("native snapshot completed owner differs".into());
++        }
++        loop {
++            if Instant::now() >= deadline {
++                return Err("native snapshot original deadline elapsed".into());
++            }
++            let seen = self.leader_status()?;
++            if seen.committed_index.is_some_and(|index| index >= prefix.index())
++                && seen.applied_index.is_some_and(|index| index >= prefix.index())
++            {
++                return Ok(());
++            }
++            thread::sleep(Duration::from_millis(5)
++                .min(deadline.saturating_duration_since(Instant::now())));
++        }
++    }
++}
+--- /dev/null
++++ b/crates/heptabao-server/src/service_snapshot_forward.rs
+@@ -0,0 +1,206 @@
++//! Native snapshot forwarding owns its original request, original Auth view,
++//! private files and the one authenticated peer exchange through final audit.
++//! No ordinary JSON completion or retained-KV exception authorizes this path.
++use super::*;
++use heptabao_ha_service::{
++    SnapshotBodyLimits, SnapshotPeerResponse, VerifiedSnapshotBody,
++};
++use heptabao_raft_runtime::{ApplicationReadWitness, CommittedApplicationPrefix};
++use std::io;
++
++#[path = "service_snapshot_forward_wire.rs"]
++mod wire;
++#[path = "service_snapshot_forward_file.rs"]
++mod file;
++#[path = "service_snapshot_forward_client.rs"]
++mod client;
++#[path = "service_snapshot_forward_source.rs"]
++mod source;
++
++pub(crate) use client::SnapshotForwardPlan;
++
++pub(super) fn unavailable() -> Response {
++    Response::error(503, "native snapshot forwarding requires reconciliation")
++}
++fn live(deadline: Instant) -> Result<(), Response> {
++    if Instant::now() >= deadline
++        || crate::request_deadline::current().is_some_and(|bound| Instant::now() >= bound)
++    {
++        return Err(unavailable());
++    }
++    Ok(())
++}
++
++/// Selection is data-only and happens before original Actor admission.
++/// Explicit no-forward, query operations, repair and non-native profiles keep
++/// the original local redirect path; they cannot enter the binary protocol.
++pub(super) fn eligible(request: &ServiceRequest<'_>) -> Result<bool, Response> {
++    let operation = matches!(
++        (request.method, request.path),
++        ("GET" | "HEAD", "sys/storage/raft/snapshot")
++            | ("POST" | "PUT", "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force")
++    );
++    let logical = crate::request_metadata::current(
++        request.method, request.path, request.namespace, &request.body,
++    ).map_err(|_| unavailable())?;
++    Ok(operation
++        && request.namespace.is_empty()
++        && request.body.as_object().is_some_and(serde_json::Map::is_empty)
++        && request.wrap_ttl_seconds.is_none_or(|ttl| ttl == 0)
++        && logical.as_ref().is_none_or(|data| !data.no_request_forwarding()))
++}
++
++/// Actual local filesystem and Service owner. Epoch installation may only be
++/// performed by the existing native synchronizer; it cannot replace these pins.
++struct LocalOwner {
++    ha: Arc<Mutex<HaProcess>>,
++    lease: Arc<SnapshotLease>,
++    barrier: [u8; 32],
++    seal_identity: [u8; 32],
++    seal_metadata: SealMetadata,
++    seal_bytes: Zeroizing<Vec<u8>>,
++    deadline: Instant,
++}
++impl LocalOwner {
++    fn capture(service: &mut Service, deadline: Instant) -> Result<Self, Response> {
++        live(deadline)?;
++        if !service.native_ha_snapshot_transport_enabled() {
++            return Err(unavailable());
++        }
++        let ha = service.ha.as_ref().ok_or_else(unavailable)?.clone();
++        let spool = match service.snapshot_spool.as_ref() {
++            Some(spool) => Arc::clone(spool),
++            None => {
++                let spool = SnapshotSpool::open(&service.data_dir).map_err(|_| unavailable())?;
++                service.snapshot_spool = Some(Arc::clone(&spool));
++                spool
++            }
++        };
++        let lease = spool.lease().map_err(|error| {
++            if error.kind() == io::ErrorKind::WouldBlock {
++                Response::error(429, "snapshot transfer is already active")
++            } else {
++                unavailable()
++            }
++        })?;
++        let (seal_identity, seal_metadata, seal_bytes) =
++            service.current_snapshot_seal_identity_and_raw(&lease, deadline)?;
++        let barrier = wire::digest(service.barrier_key.as_ref().ok_or_else(unavailable)?.as_slice());
++        let result = Self { ha, lease, barrier, seal_identity, seal_metadata, seal_bytes, deadline };
++        result.check(service)?;
++        Ok(result)
++    }
++
++    fn check(&self, service: &Service) -> Result<(), Response> {
++        live(self.deadline)?;
++        if service.ha.as_ref().is_none_or(|ha| !Arc::ptr_eq(ha, &self.ha))
++            || service.state.is_none()
++            || service.native_root.is_none()
++            || service.record_root.is_some()
++            || service.postgres_durable.is_some()
++            || service.durable_profile.is_some()
++            || service.openbao_wrapper_owner.is_some()
++            || service.native_candidate_profile.is_some()
++            || service.recovery_required
++            || service.audit_failed
++            || service.durable.as_ref().is_none_or(|store| store.recovery_required())
++            || service.barrier_key.as_ref().is_none_or(|key| wire::digest(key.as_slice()) != self.barrier)
++        {
++            return Err(unavailable());
++        }
++        let bytes = self.lease.read_seal_metadata(self.deadline).map_err(|_| unavailable())?;
++        if Service::snapshot_seal_identity_checked_against_admission(
++            &bytes, &self.seal_bytes, &self.seal_metadata, service.seal.as_ref(), self.seal_identity,
++        )? != self.seal_identity {
++            return Err(unavailable());
++        }
++        live(self.deadline)
++    }
++
++    fn key<'a>(&self, service: &'a Service) -> Result<&'a [u8], Response> {
++        self.check(service)?;
++        Ok(service.barrier_key.as_ref().ok_or_else(unavailable)?.as_slice())
++    }
++}
++
++fn authority_time(clock: RequestClock) -> Result<AuthorityTime, Response> {
++    clock.observed_at().map(AuthorityTime::Precise).map_err(|_| unavailable())
++}
++
++fn original_actor(
++    auth: &AuthState, actor: &crate::auth::ForwardActorWitness,
++    clock: RequestClock, deadline: Instant,
++) -> Result<(), Response> {
++    live(deadline)?;
++    auth.validate_snapshot_forward_actor(actor, authority_time(clock)?)
++        .map_err(|error| Response::error(error.status, &error.message))?;
++    live(deadline)
++}
++
++fn source_key(service: &Service) -> Result<&[u8], Response> {
++    if service.recovery_required || service.audit_failed || !service.ha_activation_permitted()
++        || service.durable.as_ref().is_none_or(|store| store.recovery_required())
++    {
++        return Err(unavailable());
++    }
++    Ok(service.barrier_key.as_ref().ok_or_else(unavailable)?.as_slice())
++}
++
++/// Actual ReadIndex, typed full local materialization and prefix are distinct.
++/// This helper obtains both from this Service, preserving the original Actor
++/// and deadline around every blocking/native read.
++fn fresh_native(
++    service: &mut Service,
++    ha: &Arc<Mutex<HaProcess>>,
++    auth: &AuthState,
++    actor: &crate::auth::ForwardActorWitness,
++    clock: RequestClock,
++    deadline: Instant,
++) -> Result<(StateIdentity, ApplicationReadWitness), Response> {
++    original_actor(auth, actor, clock, deadline)?;
++    let proof = service.capture_native_ha_request_proof(
++        &mut || original_actor(auth, actor, clock, deadline),
++    )?.ok_or_else(unavailable)?;
++    proof.check_with(service, Service::check_native_installed)?;
++    original_actor(auth, actor, clock, deadline)?;
++    let identity = service.current_state_identity()?;
++    let (observed, witness) = ha.lock_for_request().map_err(|_| unavailable())?
++        .application_identity_witness_for_local_root(identity).map_err(|_| unavailable())?;
++    if observed != identity || proof.identity() != identity {
++        return Err(unavailable());
++    }
++    original_actor(auth, actor, clock, deadline)?;
++    Ok((identity, witness))
++}
++
++fn sync_prefix(
++    service: &mut Service, owner: &LocalOwner, admission: &wire::AdmissionData,
++    prefix: &CommittedApplicationPrefix,
++) -> Result<(), Response> {
++    owner.check(service)?;
++    owner.ha.lock_for_request().map_err(|_| unavailable())?
++        .wait_snapshot_prefix(
++            &admission.cluster, admission.leader, admission.ingress, prefix, owner.deadline,
++        ).map_err(|_| unavailable())?;
++    let progress = service.sync_from_ha_with_anchor_progress(false)?;
++    service.continue_forward_local_sync(progress, owner.deadline)?;
++    owner.check(service)
++}
++
++fn floor_covers(service: &Service, data: &wire::CompletionData) -> bool {
++    service.state.as_ref().is_some_and(|state| {
++        matches!((state.auth.terminal_token_clock_floor(), data.floor),
++            (Some(current), Some(original)) if current >= original)
++            || state.auth.terminal_token_clock_floor().is_none() && data.floor.is_none()
++    })
++}
++
++fn failed_delivery(service: &mut Service, fingerprint: &str, now: u64, error: Response) -> Response {
++    if service.audit_event("native-snapshot-forward-delivery-veto", fingerprint, now, Some(error.status)).is_err() {
++        service.recovery_required = true;
++        service.ha_activation = None;
++        service.ha_read_cache = None;
++        return unavailable();
++    }
++    error
++}
+--- /dev/null
++++ b/crates/heptabao-server/src/service_snapshot_forward_wire.rs
+@@ -0,0 +1,384 @@
++//! Snapshot-only application bindings. No ordinary JSON completion is accepted.
++use super::*;
++use serde::{Deserialize, Serialize};
++use heptabao_ha_service::{EncodedSnapshotBody, VerifiedSnapshotBody};
++use heptabao_raft_runtime::CommittedApplicationPrefix;
++
++pub(super) const MAX_METADATA: usize = 1024 * 1024;
++
++#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
++#[serde(rename_all = "kebab-case")]
++pub(super) enum Operation { Download, HistoricalRestore }
++
++#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
++#[serde(rename_all = "kebab-case")]
++pub(super) enum BodyRole { Empty, NativeArchive }
++
++#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct BodyDescriptor {
++    pub(super) role: BodyRole,
++    pub(super) bytes: u64,
++    pub(super) frames: u32,
++    pub(super) sha256: [u8; 32],
++}
++impl BodyDescriptor {
++    pub(super) fn empty() -> Self {
++        Self { role: BodyRole::Empty, bytes: 0, frames: 0, sha256: digest(&[]) }
++    }
++    pub(super) fn valid(&self) -> bool {
++        self.bytes <= MAX_NATIVE_ARCHIVE
++            && self.frames as u64 == self.bytes.div_ceil(65_536)
++            && match self.role {
++                BodyRole::Empty => *self == Self::empty(),
++                BodyRole::NativeArchive => self.bytes != 0 && self.sha256 != [0; 32],
++            }
++    }
++    pub(super) fn from_verified(
++        witness: &VerifiedSnapshotBody, role: BodyRole,
++    ) -> Result<Self, Response> {
++        let result = Self { role, bytes: witness.bytes(), frames: witness.frames(), sha256: witness.sha256() };
++        result.valid().then_some(result).ok_or_else(unavailable)
++    }
++    pub(super) fn from_encoded(
++        witness: &EncodedSnapshotBody, role: BodyRole,
++    ) -> Result<Self, Response> {
++        let result = Self { role, bytes: witness.bytes(), frames: witness.frames(), sha256: witness.sha256() };
++        result.valid().then_some(result).ok_or_else(unavailable)
++    }
++}
++
++#[derive(Serialize, Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct RequestWire {
++    pub(super) version: u8,
++    pub(super) cluster: String,
++    pub(super) ingress: u64,
++    pub(super) leader: u64,
++    pub(super) hop: u8,
++    pub(super) nonce: [u8; 32],
++    pub(super) method: String,
++    pub(super) path: String,
++    pub(super) namespace: String,
++    pub(super) token: String,
++    pub(super) wrap_ttl_seconds: Option<u64>,
++    pub(super) origin_peer: Option<std::net::IpAddr>,
++    pub(super) client_certificates: Option<Vec<Vec<u8>>>,
++}
++impl Drop for RequestWire {
++    fn drop(&mut self) {
++        use zeroize::Zeroize;
++        self.token.zeroize();
++        if let Some(certificates) = self.client_certificates.as_mut() {
++            certificates.iter_mut().for_each(Vec::zeroize);
++        }
++    }
++}
++impl RequestWire {
++    pub(super) fn operation(&self) -> Result<Operation, Response> {
++        if self.version != 1 || self.hop != 1
++            || self.cluster.is_empty() || self.cluster.len() > 128
++            || self.ingress == 0 || self.leader == 0 || self.ingress == self.leader
++            || self.nonce == [0; 32] || !self.namespace.is_empty()
++            || self.token.len() > 16 * 1024
++            || self.wrap_ttl_seconds.is_some_and(|ttl| ttl != 0)
++        {
++            return Err(unavailable());
++        }
++        if let Some(chain) = &self.client_certificates
++            && (chain.is_empty() || chain.len() > 8
++                || chain.iter().any(|certificate|
++                    certificate.is_empty() || certificate.len() > 64 * 1024))
++        {
++            return Err(unavailable());
++        }
++        match (self.method.as_str(), self.path.as_str()) {
++            ("GET" | "HEAD", "sys/storage/raft/snapshot") => Ok(Operation::Download),
++            ("POST" | "PUT", "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force") =>
++                Ok(Operation::HistoricalRestore),
++            _ => Err(unavailable()),
++        }
++    }
++}
++
++#[derive(Serialize, Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct AdmissionData {
++    pub(super) cluster: String,
++    pub(super) ingress: u64,
++    pub(super) leader: u64,
++    pub(super) nonce: [u8; 32],
++    pub(super) metadata_sha256: [u8; 32],
++    pub(super) operation: Operation,
++    pub(super) original_identity: StateIdentity,
++    pub(super) original_epoch: u64,
++    pub(super) original_auth: [u8; 32],
++    pub(super) source_activation: [u8; 32],
++    pub(super) seal_identity: [u8; 32],
++    pub(super) prefix: CommittedApplicationPrefix,
++    pub(super) actor: crate::auth::ForwardActorWitness,
++}
++#[derive(Serialize, Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct AdmissionWire {
++    pub(super) data: AdmissionData,
++    mac: [u8; 32],
++}
++impl AdmissionWire {
++    pub(super) fn seal(data: AdmissionData, barrier: &[u8]) -> Result<Self, Response> {
++        let bytes = encode(&("native-snapshot-ready-v1", &data))?;
++        let mac = sign(barrier, &bytes);
++        Ok(Self { data, mac })
++    }
++    pub(super) fn verify(
++        &self, request: &RequestWire, metadata: &[u8], barrier: &[u8],
++    ) -> Result<(), Response> {
++        let data = &self.data;
++        if data.cluster != request.cluster || data.ingress != request.ingress
++            || data.leader != request.leader || data.nonce != request.nonce
++            || data.metadata_sha256 != digest(metadata) || data.operation != request.operation()?
++            || !matches!(data.original_identity, StateIdentity::RecordsV6(digest) if digest != [0; 32])
++            || data.original_auth == [0; 32] || data.source_activation == [0; 32]
++            || data.seal_identity == [0; 32] || !data.prefix.valid()
++        {
++            return Err(unavailable());
++        }
++        let bytes = encode(&("native-snapshot-ready-v1", data))?;
++        verify(barrier, &bytes, &self.mac)
++    }
++}
++
++#[derive(Serialize, Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct ReplyData {
++    pub(super) status: u16,
++    #[serde(deserialize_with = "heptabao_domain::json::deserialize")]
++    pub(super) body: Value,
++    pub(super) headers: crate::service::ResponseHeaders,
++    pub(super) consistency_index: Option<u64>,
++}
++impl Drop for ReplyData {
++    fn drop(&mut self) { erase_json(&mut self.body); }
++}
++impl ReplyData {
++    pub(super) fn from_response(mut response: Response, cluster: &str) -> Result<Self, Response> {
++        if response.unwrapped_json.is_some() || response.response_headers.has_local_redirect() {
++            return Err(unavailable());
++        }
++        let consistency_index = match response.consistency_index.as_ref() {
++            Some(index) => Some(index.raft_index_for_cluster(cluster).ok_or_else(unavailable)?),
++            None => None,
++        };
++        // The owned response is consumed. Header custody is never cloned and a
++        // local redirect cannot be serialized into this binary publication.
++        Ok(Self {
++            status: response.status,
++            body: std::mem::replace(&mut response.body, Value::Null),
++            headers: std::mem::take(&mut response.response_headers),
++            consistency_index,
++        })
++    }
++    pub(super) fn into_response(mut self, cluster: &str) -> Result<Response, Response> {
++        let consistency_index = match self.consistency_index {
++            Some(index) => Some(crate::http::consistency::IndexValue::for_raft(cluster, index)
++                .wire().ok_or_else(unavailable)?),
++            None => None,
++        };
++        Ok(Response {
++            status: self.status,
++            body: std::mem::replace(&mut self.body, Value::Null),
++            response_headers: std::mem::take(&mut self.headers),
++            consistency_index,
++            unwrapped_json: None,
++        })
++    }
++}
++
++#[derive(Eq, PartialEq, Serialize, Deserialize)]
++#[serde(tag = "kind", rename_all = "kebab-case", deny_unknown_fields)]
++pub(super) enum TerminalKind {
++    Download { exported_identity: StateIdentity },
++    HistoricalRestore {
++        operation: [u8; 32],
++        original_identity: StateIdentity,
++        original_epoch: u64,
++        restored_identity: StateIdentity,
++        restored_epoch: u64,
++    },
++}
++
++#[derive(Serialize, Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct CompletionData {
++    pub(super) admission_sha256: [u8; 32],
++    pub(super) request_digest: [u8; 32],
++    pub(super) response_digest: [u8; 32],
++    pub(super) uploaded: BodyDescriptor,
++    pub(super) downloaded: BodyDescriptor,
++    pub(super) terminal: TerminalKind,
++    pub(super) terminal_identity: StateIdentity,
++    pub(super) terminal_epoch: u64,
++    pub(super) source_activation: [u8; 32],
++    pub(super) original_auth: [u8; 32],
++    pub(super) owner_projection: [u8; 32],
++    pub(super) prefix: CommittedApplicationPrefix,
++    pub(super) floor: Option<crate::auth::Timestamp>,
++    pub(super) precise: bool,
++    pub(super) audit_sequence: u64,
++    pub(super) audit_mac: [u8; 32],
++}
++#[derive(Serialize, Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct CompletionWire {
++    pub(super) reply: ReplyData,
++    pub(super) data: CompletionData,
++    mac: [u8; 32],
++}
++
++/// Only MAC authentication plus actual request/response byte witnesses creates
++/// this affine data capability. It still requires the native delivery gates.
++pub(super) struct AuthenticatedCompletion {
++    pub(super) wire: CompletionWire,
++}
++impl CompletionWire {
++    pub(super) fn seal(
++        reply: ReplyData, data: CompletionData, barrier: &[u8],
++    ) -> Result<Self, Response> {
++        let bytes = encode(&("native-snapshot-completion-v1", &reply, &data))?;
++        let mac = sign(barrier, &bytes);
++        Ok(Self { reply, data, mac })
++    }
++
++    pub(super) fn authenticate(
++        self,
++        admission: &AdmissionWire,
++        admission_bytes: &[u8],
++        encoded_upload: &EncodedSnapshotBody,
++        verified_download: &VerifiedSnapshotBody,
++        barrier: &[u8],
++    ) -> Result<AuthenticatedCompletion, Response> {
++        let original = &admission.data;
++        let upload_role = match original.operation {
++            Operation::Download => BodyRole::Empty,
++            Operation::HistoricalRestore => BodyRole::NativeArchive,
++        };
++        let download_role = match original.operation {
++            Operation::Download => BodyRole::NativeArchive,
++            Operation::HistoricalRestore => BodyRole::Empty,
++        };
++        let uploaded = BodyDescriptor::from_encoded(encoded_upload, upload_role)?;
++        let downloaded = BodyDescriptor::from_verified(verified_download, download_role)?;
++        let data = &self.data;
++        if data.admission_sha256 != digest(admission_bytes)
++            || data.request_digest != request_digest(original.metadata_sha256, uploaded)?
++            || data.response_digest != response_digest(&self.reply, downloaded)?
++            || data.uploaded != uploaded || data.downloaded != downloaded
++            || !data.prefix.valid() || data.prefix.index() < original.prefix.index()
++            || data.terminal_identity.digest() == [0; 32]
++            || data.original_auth != original.original_auth
++            || data.owner_projection == [0; 32] || data.audit_sequence == 0
++            || data.audit_mac == [0; 32] || data.source_activation == [0; 32]
++            || (data.precise && data.floor.is_none())
++        {
++            return Err(unavailable());
++        }
++        match (&data.terminal, original.operation) {
++            (TerminalKind::Download { exported_identity }, Operation::Download)
++                if *exported_identity == original.original_identity
++                    && data.terminal_epoch == original.original_epoch
++                    && data.source_activation == original.source_activation
++                    && self.reply.status == 200 => {}
++            (TerminalKind::HistoricalRestore { operation, original_identity, original_epoch,
++                restored_identity, restored_epoch }, Operation::HistoricalRestore)
++                if *operation != [0; 32] && *original_identity == original.original_identity
++                    && *original_epoch == original.original_epoch
++                    && original.original_epoch.checked_add(1) == Some(*restored_epoch)
++                    && data.terminal_epoch == *restored_epoch
++                    && restored_identity.digest() != [0; 32]
++                    && data.source_activation != original.source_activation
++                    && matches!(self.reply.status, 200 | 204) => {}
++            _ => return Err(unavailable()),
++        }
++        let bytes = encode(&("native-snapshot-completion-v1", &self.reply, data))?;
++        verify(barrier, &bytes, &self.mac)?;
++        Ok(AuthenticatedCompletion { wire: self })
++    }
++}
++
++#[derive(Serialize, Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct RejectionWire {
++    pub(super) nonce: [u8; 32],
++    pub(super) metadata_sha256: [u8; 32],
++    pub(super) reply: ReplyData,
++}
++
++pub(super) fn digest(bytes: &[u8]) -> [u8; 32] {
++    crate::ha_forward_completion::digest(bytes)
++}
++pub(super) fn encode<T: Serialize>(value: &T) -> Result<Zeroizing<Vec<u8>>, Response> {
++    crate::secret_serde::to_vec(value, MAX_METADATA).map_err(|_| unavailable())
++}
++pub(super) fn decode<'de, T: Deserialize<'de>>(bytes: &'de [u8]) -> Result<T, Response> {
++    if bytes.is_empty() || bytes.len() > MAX_METADATA { return Err(unavailable()); }
++    serde_json::from_slice(bytes).map_err(|_| unavailable())
++}
++pub(super) fn request_digest(
++    metadata_sha256: [u8; 32], body: BodyDescriptor,
++) -> Result<[u8; 32], Response> {
++    let bytes = encode(&("native-snapshot-request-body-v1", metadata_sha256, body))?;
++    Ok(digest(&bytes))
++}
++pub(super) fn response_digest(
++    response: &ReplyData, body: BodyDescriptor,
++) -> Result<[u8; 32], Response> {
++    let bytes = encode(&("native-snapshot-response-body-v1", response, body))?;
++    Ok(digest(&bytes))
++}
++fn key(barrier: &[u8]) -> ring::hmac::Key {
++    let original = ring::hmac::Key::new(ring::hmac::HMAC_SHA256, barrier);
++    let derived = ring::hmac::sign(&original, b"HeptaBao/native-snapshot-publication/v1");
++    ring::hmac::Key::new(ring::hmac::HMAC_SHA256, derived.as_ref())
++}
++fn sign(barrier: &[u8], bytes: &[u8]) -> [u8; 32] {
++    let mut mac = [0_u8; 32];
++    mac.copy_from_slice(ring::hmac::sign(&key(barrier), bytes).as_ref());
++    mac
++}
++fn verify(barrier: &[u8], bytes: &[u8], mac: &[u8; 32]) -> Result<(), Response> {
++    ring::hmac::verify(&key(barrier), bytes, mac).map_err(|_| unavailable())
++}
++
++/// Same field order and values as ReplyData, without cloning a response owner.
++#[derive(Serialize)]
++struct BorrowedReply<'a> {
++    status: u16,
++    body: &'a Value,
++    headers: &'a crate::service::ResponseHeaders,
++    consistency_index: Option<u64>,
++}
++pub(super) fn observed_response_digest(
++    response: &Response, cluster: &str, body: BodyDescriptor,
++) -> Result<[u8; 32], Response> {
++    if response.unwrapped_json.is_some() || response.response_headers.has_local_redirect() {
++        return Err(unavailable());
++    }
++    let consistency_index = match response.consistency_index.as_ref() {
++        Some(index) => Some(index.raft_index_for_cluster(cluster).ok_or_else(unavailable)?),
++        None => None,
++    };
++    let response = BorrowedReply { status: response.status, body: &response.body,
++        headers: &response.response_headers, consistency_index };
++    let bytes = encode(&("native-snapshot-response-body-v1", response, body))?;
++    Ok(digest(&bytes))
++}
++
++impl AuthenticatedCompletion {
++    pub(super) fn into_parts(self) -> (ReplyData, CompletionData) {
++        (self.wire.reply, self.wire.data)
++    }
++}
++
++#[cfg(test)]
++#[path = "service_snapshot_forward_wire_tests.rs"]
++mod tests;
+--- /dev/null
++++ b/crates/heptabao-server/src/service_snapshot_forward_file.rs
+@@ -0,0 +1,45 @@
++//! A sealed descriptor and its actual private unlinked file have one owner.
++use super::*;
++use wire::{BodyDescriptor, BodyRole};
++
++pub(super) struct SealedSnapshotFile {
++    file: SnapshotFile,
++    descriptor: BodyDescriptor,
++}
++impl SealedSnapshotFile {
++    pub(super) fn seal(mut file: SnapshotFile) -> Result<Self, Response> {
++        if file.len() == 0 || file.len() > MAX_NATIVE_ARCHIVE { return Err(unavailable()); }
++        file.rewind_checked().map_err(|_| unavailable())?;
++        let expected = file.len();
++        let mut seen = 0_u64;
++        let mut hash = ring::digest::Context::new(&ring::digest::SHA256);
++        let mut buffer = Zeroizing::new(vec![0_u8; 65_536]);
++        loop {
++            let count = file.read(&mut buffer).map_err(|_| unavailable())?;
++            seen = seen.checked_add(count as u64).filter(|seen| *seen <= expected)
++                .ok_or_else(unavailable)?;
++            hash.update(&buffer[..count]);
++            if count == 0 { break; }
++        }
++        if seen != expected { return Err(unavailable()); }
++        let mut sha256 = [0_u8; 32];
++        sha256.copy_from_slice(hash.finish().as_ref());
++        let descriptor = BodyDescriptor {
++            role: BodyRole::NativeArchive,
++            bytes: seen,
++            frames: u32::try_from(seen.div_ceil(65_536)).map_err(|_| unavailable())?,
++            sha256,
++        };
++        if !descriptor.valid() { return Err(unavailable()); }
++        file.rewind_checked().map_err(|_| unavailable())?;
++        Ok(Self { file, descriptor })
++    }
++    pub(super) fn descriptor(&self) -> BodyDescriptor { self.descriptor }
++    pub(super) fn into_file(self) -> SnapshotFile { self.file }
++}
++
++impl Read for SealedSnapshotFile {
++    fn read(&mut self, output: &mut [u8]) -> io::Result<usize> {
++        self.file.read(output)
++    }
++}
+--- /dev/null
++++ b/crates/heptabao-server/src/service_snapshot_forward_client.rs
+@@ -0,0 +1,380 @@
++//! The ingress owns one selected peer and stages all binary response bytes.
++use super::*;
++
++pub(crate) struct SnapshotForwardPlan {
++    endpoint: Option<crate::ha::SnapshotEndpoint>,
++    request: wire::RequestWire,
++    metadata: Zeroizing<Vec<u8>>,
++    owner: LocalOwner,
++    initial_activation: Zeroizing<String>,
++    clock: RequestClock,
++    fingerprint: String,
++}
++
++/// Constructed only after complete transport, publication, both native delivery
++/// gates and the mandatory ingress audit. HTTP cannot construct this capability.
++pub(crate) struct CompletedSnapshotForward {
++    response: Response,
++    file: Option<SnapshotFile>,
++}
++impl CompletedSnapshotForward {
++    pub(crate) fn into_parts(self) -> (Response, Option<SnapshotFile>) {
++        (self.response, self.file)
++    }
++}
++
++struct OriginalCheckpoint {
++    admission: wire::AdmissionWire,
++    bytes: Zeroizing<Vec<u8>>,
++    auth: CowOwner<AuthState>,
++}
++
++impl Service {
++    pub(in crate::service::snapshot_transfer) fn begin_snapshot_forward(
++        &mut self, mut request: ServiceRequest<'_>, original_deadline: Instant,
++    ) -> Result<SnapshotForwardPlan, Response> {
++        if !eligible(&request)? || !self.native_ha_snapshot_transport_enabled() {
++            erase_json(&mut request.body);
++            return Err(unavailable());
++        }
++        let started = Instant::now();
++        let wall = SystemTime::now().duration_since(UNIX_EPOCH).map_err(|_| unavailable())?;
++        let clock = RequestClock::anchored(wall, started).map_err(|_| unavailable())?;
++        let fingerprint = self.request_fingerprint(
++            request.method, request.path, request.namespace, request.token,
++        );
++        self.audit_event("request", &fingerprint, wall.as_secs(), None)
++            .map_err(|_| unavailable())?;
++        let admitted: Result<SnapshotForwardPlan, Response> = (|| {
++            let endpoint = self.ha.as_ref().ok_or_else(unavailable)?
++                .lock_for_request().map_err(|_| unavailable())?
++                .snapshot_endpoint_before(original_deadline).map_err(|_| unavailable())?;
++            let owner = LocalOwner::capture(self, endpoint.deadline())?;
++            erase_json(&mut request.body);
++            let request = wire::RequestWire {
++                version: 1,
++                cluster: endpoint.cluster().to_owned(),
++                ingress: endpoint.source(),
++                leader: endpoint.target(),
++                hop: 1,
++                nonce: crate::crypto::random::<32>().map_err(|_| unavailable())?,
++                method: request.method.to_owned(),
++                path: request.path.to_owned(),
++                namespace: request.namespace.to_owned(),
++                token: request.token.to_owned(),
++                wrap_ttl_seconds: request.wrap_ttl_seconds,
++                origin_peer: request.origin_peer,
++                client_certificates: request.client_certificates.take(),
++            };
++            request.operation()?;
++            let metadata = wire::encode(&request)?;
++            Ok(SnapshotForwardPlan {
++                endpoint: Some(endpoint),
++                request, metadata, owner, clock, fingerprint: fingerprint.clone(),
++                initial_activation: Zeroizing::new(self.unseal_nonce.clone()),
++            })
++        })();
++        match admitted {
++            Ok(plan) => Ok(plan),
++            Err(mut response) => {
++                if self.audit_event(
++                    "response", &fingerprint, wall.as_secs(), Some(response.status),
++                ).is_err() {
++                    erase_json(&mut response.body);
++                    self.recovery_required = true;
++                    self.ha_activation = None;
++                    self.ha_read_cache = None;
++                    response = unavailable();
++                }
++                Err(response)
++            }
++        }
++    }
++}
++
++impl SnapshotForwardPlan {
++    fn accept_ready(
++        &self, service: &mut Service, bytes: &[u8],
++    ) -> Result<OriginalCheckpoint, Response> {
++        self.owner.check(service)?;
++        if service.unseal_nonce != *self.initial_activation {
++            return Err(unavailable());
++        }
++        let admission: wire::AdmissionWire = wire::decode(bytes)?;
++        admission.verify(&self.request, &self.metadata, self.owner.key(service)?)?;
++        if admission.data.seal_identity != self.owner.seal_identity {
++            return Err(unavailable());
++        }
++        // Only native authenticated catch-up can install this source checkpoint.
++        // We hold its actual Auth COW before transmitting any archive byte.
++        sync_prefix(service, &self.owner, &admission.data, &admission.data.prefix)?;
++        let auth = service.state.as_ref().ok_or_else(unavailable)?.auth.clone();
++        if auth.forward_owner_projection_digest().map_err(|_| unavailable())?
++                != admission.data.original_auth
++            || service.current_state_identity()? != admission.data.original_identity
++            || service.state.as_ref().ok_or_else(unavailable)?.replay_epoch
++                != admission.data.original_epoch
++        {
++            return Err(unavailable());
++        }
++        let (identity, witness) = fresh_native(
++            service, &self.owner.ha, &auth, &admission.data.actor,
++            self.clock, self.owner.deadline,
++        )?;
++        if identity != admission.data.original_identity
++            || !witness.covers_completed_prefix(&admission.data.prefix)
++        {
++            return Err(unavailable());
++        }
++        self.owner.check(service)?;
++        original_actor(&auth, &admission.data.actor, self.clock, self.owner.deadline)?;
++        Ok(OriginalCheckpoint {
++            admission, bytes: Zeroizing::new(bytes.to_vec()), auth,
++        })
++    }
++
++    fn audit_failure(&self, service: &mut Service, mut response: Response) -> CompletedSnapshotForward {
++        let now = self.clock.admitted_at().duration_since_epoch().as_secs();
++        if service.audit_event("response", &self.fingerprint, now, Some(response.status)).is_err() {
++            erase_json(&mut response.body);
++            service.recovery_required = true;
++            service.ha_activation = None;
++            service.ha_read_cache = None;
++            response = unavailable();
++        }
++        CompletedSnapshotForward { response, file: None }
++    }
++
++    fn uncertain(&self) -> Response {
++        Response {
++            status: 503,
++            body: json!({"errors":["native snapshot forwarding outcome requires reconciliation"],
++                "outcome_unknown":true,"retry_allowed":false}),
++            unwrapped_json: None, response_headers: Default::default(), consistency_index: None,
++        }
++    }
++
++    /// Same original HTTP BodyReader, consumed at most once. No remote result
++    /// can request replay, leader chase, a new deadline or an HTTP redirect.
++    pub(crate) fn execute(
++        mut self, service: &Arc<Mutex<Service>>, upload: &mut impl Read,
++    ) -> CompletedSnapshotForward {
++        let _scope = crate::request_deadline::RequestDeadlineScope::enter(self.owner.deadline);
++        let operation = match self.request.operation() {
++            Ok(operation) => operation,
++            Err(error) => return self.finish_failure(service, error),
++        };
++        let upload_limit = match operation {
++            wire::Operation::Download => 0,
++            wire::Operation::HistoricalRestore => MAX_NATIVE_ARCHIVE,
++        };
++        let response_limit = match operation {
++            wire::Operation::Download => MAX_NATIVE_ARCHIVE,
++            wire::Operation::HistoricalRestore => 0,
++        };
++        let limits = match (
++            SnapshotBodyLimits::new(upload_limit), SnapshotBodyLimits::new(response_limit),
++        ) {
++            (Ok(upload), Ok(response)) => (upload, response),
++            _ => return self.finish_failure(service, unavailable()),
++        };
++        let mut file = match self.owner.lease.file(response_limit, self.owner.deadline) {
++            Ok(file) => file,
++            Err(_) => return self.finish_failure(service, unavailable()),
++        };
++        let Some(endpoint) = self.endpoint.take() else {
++            return self.finish_failure(service, unavailable());
++        };
++        let mut original = None;
++        let exchange = endpoint.exchange(
++            &self.metadata, upload, &mut file, limits,
++            |metadata| {
++                let mut writer = service.lock_for_request()
++                    .map_err(|_| heptabao_ha_service::HaError::Transport)?;
++                let checkpoint = self.accept_ready(&mut writer, metadata)
++                    .map_err(|_| heptabao_ha_service::HaError::PeerAuthenticationFailed)?;
++                original = Some(checkpoint);
++                Ok(())
++            },
++        );
++        let result = match exchange {
++            Ok(result) => result,
++            Err(_) => return self.finish_failure(service, self.uncertain()),
++        };
++        if result.status() >= 400 {
++            return self.finish_rejection(service, result);
++        }
++        let Some(original) = original else {
++            return self.finish_failure(service, self.uncertain());
++        };
++        // Hash/seal only the held private file, outside the Service writer.
++        let file = match operation {
++            wire::Operation::Download => match file::SealedSnapshotFile::seal(file) {
++                Ok(sealed) => Some(sealed),
++                Err(_) => return self.finish_failure(service, self.uncertain()),
++            },
++            wire::Operation::HistoricalRestore => {
++                if file.len() != 0 {
++                    return self.finish_failure(service, self.uncertain());
++                }
++                drop(file);
++                None
++            }
++        };
++        let completion: Result<CompletedSnapshotForward, Response> = (|| {
++            let mut writer = service.lock_for_request().map_err(|_| unavailable())?;
++            self.owner.check(&writer)?;
++            let wire: wire::CompletionWire = wire::decode(result.metadata())?;
++            if wire.reply.status != result.status() {
++                return Err(unavailable());
++            }
++            let completion = wire.authenticate(
++                &original.admission, &original.bytes,
++                result.request_body().ok_or_else(unavailable)?,
++                result.response_body().ok_or_else(unavailable)?,
++                self.owner.key(&writer)?,
++            )?;
++            if file.as_ref().map_or_else(wire::BodyDescriptor::empty, file::SealedSnapshotFile::descriptor)
++                    != completion.wire.data.downloaded
++            {
++                return Err(unavailable());
++            }
++            let (reply, data) = completion.into_parts();
++            let response = reply.into_response(&self.request.cluster)?;
++            Ok(self.finish_success(&mut writer, original, data, response, file))
++        })();
++        match completion {
++            Ok(reply) => reply,
++            Err(_) => self.finish_failure(service, self.uncertain()),
++        }
++    }
++
++    /// HTTP framing failed before the endpoint could be consumed. This records
++    /// the terminal admission error and drops the original owner without I/O.
++    pub(crate) fn reject_before_exchange(
++        self, service: &Arc<Mutex<Service>>, response: Response,
++    ) -> CompletedSnapshotForward {
++        self.finish_failure(service, response)
++    }
++
++    fn finish_failure(&self, service: &Arc<Mutex<Service>>, response: Response) -> CompletedSnapshotForward {
++        match service.lock_for_request() {
++            Ok(mut writer) => self.audit_failure(&mut writer, response),
++            Err(_) => CompletedSnapshotForward { response: self.uncertain(), file: None },
++        }
++    }
++
++    fn finish_rejection(
++        &self, service: &Arc<Mutex<Service>>, result: SnapshotPeerResponse,
++    ) -> CompletedSnapshotForward {
++        let response = (|| {
++            let rejection: wire::RejectionWire = wire::decode(result.metadata())?;
++            if rejection.nonce != self.request.nonce
++                || rejection.metadata_sha256 != wire::digest(&self.metadata)
++                || rejection.reply.status != result.status()
++                || !(400..=599).contains(&result.status())
++            {
++                return Err(unavailable());
++            }
++            rejection.reply.into_response(&self.request.cluster)
++        })().unwrap_or_else(|_| self.uncertain());
++        self.finish_failure(service, response)
++    }
++
++    fn delivery_check(
++        &self, service: &mut Service, original: &OriginalCheckpoint,
++        data: &wire::CompletionData, response: &Response, activation: &str,
++    ) -> Result<(), Response> {
++        if wire::observed_response_digest(response, &self.request.cluster, data.downloaded)?
++                != data.response_digest
++        {
++            return Err(unavailable());
++        }
++        self.owner.check(service)?;
++        sync_prefix(service, &self.owner, &original.admission.data, &data.prefix)?;
++        let (_, witness) = fresh_native(
++            service, &self.owner.ha, &original.auth, &original.admission.data.actor,
++            self.clock, self.owner.deadline,
++        )?;
++        let state = service.state.as_ref().ok_or_else(unavailable)?;
++        if service.unseal_nonce != activation
++            || state.cluster_id != self.request.cluster
++            || state.replay_epoch != data.terminal_epoch
++            || !witness.covers_completed_prefix(&data.prefix)
++            || service.forward_owner_projection()? != data.owner_projection
++            || !floor_covers(service, data)
++        {
++            return Err(unavailable());
++        }
++        // Historical restore retains the original Auth owner. Download also
++        // requires the current owner, so a concurrent revocation is a veto.
++        if original.admission.data.operation == wire::Operation::Download {
++            original_actor(&state.auth, &original.admission.data.actor,
++                self.clock, self.owner.deadline)?;
++        }
++        original_actor(&original.auth, &original.admission.data.actor,
++            self.clock, self.owner.deadline)?;
++        self.owner.check(service)
++    }
++
++    fn finish_success(
++        &self,
++        service: &mut Service,
++        original: OriginalCheckpoint,
++        data: wire::CompletionData,
++        mut response: Response,
++        file: Option<file::SealedSnapshotFile>,
++    ) -> CompletedSnapshotForward {
++        let checked = (|| {
++            // Only actual authenticated catch-up can create the final capsule.
++            // An original Auth view never becomes the newly restored Auth owner.
++            sync_prefix(service, &self.owner, &original.admission.data, &data.prefix)?;
++            let activation = Zeroizing::new(service.unseal_nonce.clone());
++            self.delivery_check(service, &original, &data, &response, &activation)?;
++            Ok::<_, Response>(activation)
++        })();
++        let activation = match checked {
++            Ok(activation) => activation,
++            Err(_) => {
++                drop(file);
++                return self.audit_failure(service, self.uncertain_completion(&data));
++            }
++        };
++        let now = self.clock.admitted_at().duration_since_epoch().as_secs();
++        // The source committed the original terminal clock floor. Ingress
++        // validates it and performs its mandatory audit, without another use.
++        if service.audit_event("response", &self.fingerprint, now, Some(response.status)).is_err() {
++            erase_json(&mut response.body);
++            drop(file);
++            service.recovery_required = true;
++            service.ha_activation = None;
++            service.ha_read_cache = None;
++            return CompletedSnapshotForward {
++                response: self.uncertain_completion(&data), file: None,
++            };
++        }
++        if self.delivery_check(service, &original, &data, &response, &activation).is_err() {
++            erase_json(&mut response.body);
++            response.response_headers.clear();
++            response.consistency_index = None;
++            drop(file);
++            let error = failed_delivery(service, &self.fingerprint, now, self.uncertain_completion(&data));
++            return CompletedSnapshotForward { response: error, file: None };
++        }
++        let file = file.map(file::SealedSnapshotFile::into_file);
++        CompletedSnapshotForward { response, file }
++    }
++
++    fn uncertain_completion(&self, data: &wire::CompletionData) -> Response {
++        let mut response = self.uncertain();
++        if let wire::TerminalKind::HistoricalRestore { operation, .. } = &data.terminal
++            && let Some(body) = response.body.as_object_mut()
++        {
++            body.insert("root_attempted".into(), Value::Bool(true));
++            body.insert("recovery_reference".into(), Value::String(
++                format!("native-v6-restore-{}", hex(operation)),
++            ));
++        }
++        response
++    }
++}
+--- /dev/null
++++ b/crates/heptabao-server/src/service_snapshot_forward_source.rs
+@@ -0,0 +1,333 @@
++//! Source-side original native plan, original Actor and binary publication.
++use super::*;
++
++struct AdmittedSource {
++    ready: wire::AdmissionWire,
++    ready_bytes: Zeroizing<Vec<u8>>,
++    auth: CowOwner<AuthState>,
++    clock: RequestClock,
++}
++
++fn native_error(_: Response) -> heptabao_ha_service::HaError {
++    heptabao_ha_service::HaError::Transport
++}
++
++fn reject(
++    peer: heptabao_ha_service::AuthenticatedSnapshotPeer<'_>,
++    request: &wire::RequestWire,
++    metadata: &[u8],
++    response: Response,
++) -> Result<(), heptabao_ha_service::HaError> {
++    let response = if (400..=599).contains(&response.status) { response } else { unavailable() };
++    let status = response.status;
++    let reply = wire::ReplyData::from_response(response, &request.cluster).map_err(native_error)?;
++    let bytes = wire::encode(&wire::RejectionWire {
++        nonce: request.nonce, metadata_sha256: wire::digest(metadata), reply,
++    }).map_err(native_error)?;
++    peer.reject(status, &bytes)
++}
++
++impl Service {
++    pub(crate) fn serve_native_snapshot_peer(
++        service: &Arc<Mutex<Service>>, ingress: crate::ha::SnapshotIngress<'_>,
++        request_timeout: Duration,
++    ) -> Result<(), heptabao_ha_service::HaError> {
++        let cluster = ingress.cluster().to_owned();
++        let source = ingress.source();
++        let target = ingress.target();
++        let mut peer = ingress.into_peer();
++        let business_bound = peer.accepted_at().checked_add(request_timeout)
++            .ok_or(heptabao_ha_service::HaError::Transport)?;
++        peer.restrict_deadline(business_bound)?;
++        let deadline = peer.deadline();
++        let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
++        let metadata = Zeroizing::new(peer.metadata().to_vec());
++        let mut request: wire::RequestWire = wire::decode(&metadata).map_err(native_error)?;
++        let operation = request.operation().map_err(native_error)?;
++        if request.cluster != cluster || request.ingress != source || request.leader != target {
++            return Err(heptabao_ha_service::HaError::PeerAuthenticationFailed);
++        }
++        let execution = {
++            let mut writer = service.lock_for_request()
++                .map_err(|_| heptabao_ha_service::HaError::Transport)?;
++            if !writer.native_ha_snapshot_transport_enabled()
++                || writer.state.as_ref().is_none_or(|state| state.cluster_id != cluster)
++                || writer.ha.as_ref().is_none_or(|ha| !ha.lock_for_request().is_ok_and(|process|
++                    process.native_v6_enabled() && process.local_id().ok() == Some(target)
++                        && process.enrolled(source) && process.is_leader().unwrap_or(false)))
++            {
++                drop(writer);
++                return reject(peer, &request, &metadata, unavailable());
++            }
++            // This is the only Actor admission. Native snapshot clocks remain
++            // original, and forwarded=true prevents any routing loop.
++            writer.begin_snapshot_request_before(ServiceRequest {
++                method: &request.method, path: &request.path, namespace: &request.namespace,
++                token: &request.token, body: json!({}),
++                wrap_ttl_seconds: request.wrap_ttl_seconds, origin_peer: request.origin_peer,
++                client_certificates: request.client_certificates.take(),
++            }, deadline, true)
++        };
++        let mut pending = match execution {
++            RequestExecution::Complete(response) => return reject(peer, &request, &metadata, response),
++            RequestExecution::External(pending) => pending,
++        };
++        let admitted = {
++            let mut writer = service.lock_for_request()
++                .map_err(|_| heptabao_ha_service::HaError::Transport)?;
++            writer.snapshot_peer_admission(&pending, &request, &metadata, operation)
++        };
++        let admitted = match admitted {
++            Ok(admitted) => admitted,
++            Err(error) => {
++                let response = service.lock_for_request()
++                    .map_err(|_| heptabao_ha_service::HaError::Transport)?
++                    .finish_external_request(*pending, ExternalEffectResult::SnapshotTransfer(Err(error)));
++                return reject(peer, &request, &metadata, response);
++            }
++        };
++        let limits = SnapshotBodyLimits::new(match operation {
++            wire::Operation::Download => 0,
++            wire::Operation::HistoricalRestore => MAX_NATIVE_ARCHIVE,
++        }).map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;
++        let received = peer.accept_body(limits, &admitted.ready_bytes, |mut body| {
++            pending.execute_snapshot_transfer(&mut body)
++        });
++        let (result, file, verified) = match received {
++            Ok(((result, file), verified)) => (result, file, Some(verified)),
++            Err(_) => (ExternalEffectResult::SnapshotTransfer(Err(
++                Response::error(400, "incomplete authenticated snapshot body"),
++            )), None, None),
++        };
++        // BodyComplete only proves the binary reader. An inner native parser
++        // error must still take the original failure finalizer, never complete.
++        if !matches!(&result, ExternalEffectResult::SnapshotTransfer(Ok(_))) {
++            drop(file);
++            let response = service.lock_for_request()
++                .map_err(|_| heptabao_ha_service::HaError::Transport)?
++                .finish_external_request(*pending, result);
++            return reject(peer, &request, &metadata, response);
++        }
++        let prepared_file = match (operation, file) {
++            (wire::Operation::Download, Some(file)) => file::SealedSnapshotFile::seal(file).map(Some),
++            (wire::Operation::HistoricalRestore, None) => Ok(None),
++            _ => Err(unavailable()),
++        };
++        let mut file = match prepared_file {
++            Ok(file) => file,
++            Err(error) => {
++                let response = service.lock_for_request()
++                    .map_err(|_| heptabao_ha_service::HaError::Transport)?
++                    .finish_external_request(*pending, ExternalEffectResult::SnapshotTransfer(Err(error)));
++                return reject(peer, &request, &metadata, response);
++            }
++        };
++        let verified = verified.ok_or(heptabao_ha_service::HaError::InvalidFrame)?;
++        let downloaded = file.as_ref().map_or_else(wire::BodyDescriptor::empty, file::SealedSnapshotFile::descriptor);
++        let completion = service.lock_for_request()
++            .map_err(|_| heptabao_ha_service::HaError::Transport)?
++            .finish_snapshot_peer_request(*pending, result, &admitted, &verified, downloaded);
++        let (status, completion) = match completion {
++            Ok(value) => value,
++            Err(response) => {
++                drop(file);
++                return reject(peer, &request, &metadata, response);
++            }
++        };
++        let limit = SnapshotBodyLimits::new(downloaded.bytes)
++            .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;
++        let encoded = match file.as_mut() {
++            Some(file) => peer.complete(status, &completion, file, limit)?,
++            None => peer.complete(status, &completion, &mut io::empty(), limit)?,
++        };
++        if wire::BodyDescriptor::from_encoded(&encoded, downloaded.role).map_err(native_error)?
++                != downloaded
++        {
++            return Err(heptabao_ha_service::HaError::InvalidFrame);
++        }
++        Ok(())
++    }
++
++    fn snapshot_peer_admission(
++        &mut self, pending: &PendingExternalRequest, request: &wire::RequestWire,
++        metadata: &[u8], operation: wire::Operation,
++    ) -> Result<AdmittedSource, Response> {
++        let ExternalEffectPlan::SnapshotTransfer(plan) = &pending.effect else {
++            return Err(unavailable());
++        };
++        if plan.path != request.path || plan.namespace != request.namespace
++            || plan.is_download != (operation == wire::Operation::Download)
++            || plan.native_ha_pending_restore.is_some() || plan.native_ha_repair.is_some()
++        {
++            return Err(unavailable());
++        }
++        self.check_snapshot_peer_original_plan(plan)?;
++        let clock = pending.token_clock.ok_or_else(unavailable)?;
++        let state = self.state.as_ref().ok_or_else(unavailable)?;
++        let auth = state.auth.clone();
++        let epoch = state.replay_epoch;
++        let actor = auth.snapshot_forward_actor(&plan.actor, &plan.namespace, authority_time(clock)?)
++            .map_err(|error| Response::error(error.status, &error.message))?;
++        let (identity, witness) = fresh_native(
++            self, plan.ha.as_ref().ok_or_else(unavailable)?, &auth, &actor, clock, plan.deadline,
++        )?;
++        if identity != plan.base { return Err(unavailable()); }
++        self.check_snapshot_peer_original_plan(plan)?;
++        let data = wire::AdmissionData {
++            cluster: request.cluster.clone(), ingress: request.ingress, leader: request.leader,
++            nonce: request.nonce, metadata_sha256: wire::digest(metadata), operation,
++            original_identity: plan.base, original_epoch: epoch,
++            original_auth: auth.forward_owner_projection_digest().map_err(|_| unavailable())?,
++            source_activation: wire::digest(plan.activation.as_bytes()),
++            seal_identity: plan.seal_identity, prefix: witness.completed_prefix(), actor,
++        };
++        let ready = wire::AdmissionWire::seal(data, source_key(self)?)?;
++        let ready_bytes = wire::encode(&ready)?;
++        Ok(AdmittedSource { ready, ready_bytes, auth, clock })
++    }
++
++    fn finish_snapshot_peer_request(
++        &mut self,
++        mut pending: PendingExternalRequest,
++        result: ExternalEffectResult,
++        admitted: &AdmittedSource,
++        uploaded: &VerifiedSnapshotBody,
++        downloaded: wire::BodyDescriptor,
++    ) -> Result<(u16, Zeroizing<Vec<u8>>), Response> {
++        let headers = pending.quota_response_headers.take();
++        let fingerprint = pending.fingerprint.clone();
++        let clock = (pending.now, pending.token_clock);
++        let _raw_reply_ingress =
++            crate::auth::IngressReplyScope::restore(pending.raw_reply_ingress.clone());
++        let (plan, result) = match (pending.effect, result) {
++            (ExternalEffectPlan::SnapshotTransfer(plan),
++                ExternalEffectResult::SnapshotTransfer(result)) => (*plan, result),
++            _ => return Err(unavailable()),
++        };
++        let _deadline = crate::request_deadline::RequestDeadlineScope::enter(plan.deadline);
++        // The entire original finalizer, historical/clock receipt and mandatory
++        // audit execute before this actual affine plan returns to this caller.
++        let (response, plan) =
++            self.complete_snapshot_transfer_retained(plan, result, &fingerprint, clock);
++        let original_succeeded = matches!(response.status, 200 | 204);
++        let response = self.finish_rate_limit_quota_headers(
++            headers, response, Some((&fingerprint, clock.0)),
++        );
++        if !matches!(response.status, 200 | 204) {
++            if original_succeeded
++                && let Some(response) =
++                    self.snapshot_peer_historical_publication_veto(&plan, &fingerprint)
++            {
++                return Err(response);
++            }
++            return Err(response);
++        }
++        let publication: Result<(u16, Zeroizing<Vec<u8>>), Response> = (|| {
++            let original = &admitted.ready.data;
++            original_actor(&admitted.auth, &original.actor, admitted.clock, plan.deadline)?;
++            if plan.base != original.original_identity || plan.seal_identity != original.seal_identity
++                || wire::digest(plan.activation.as_bytes()) != original.source_activation
++            {
++                return Err(unavailable());
++            }
++            let terminal = self.snapshot_peer_terminal(
++                &plan, original, response.status, downloaded,
++            )?;
++            let upload_role = match original.operation {
++                wire::Operation::Download => wire::BodyRole::Empty,
++                wire::Operation::HistoricalRestore => wire::BodyRole::NativeArchive,
++            };
++            let uploaded = wire::BodyDescriptor::from_verified(uploaded, upload_role)?;
++            let (identity, witness) = fresh_native(
++                self, plan.ha.as_ref().ok_or_else(unavailable)?, &admitted.auth, &original.actor,
++                admitted.clock, plan.deadline,
++            )?;
++            original_actor(&admitted.auth, &original.actor, admitted.clock, plan.deadline)?;
++            if !witness.covers_completed_prefix(&original.prefix) || !downloaded.valid() {
++                return Err(unavailable());
++            }
++            let status = response.status;
++            let reply = wire::ReplyData::from_response(response, &original.cluster)?;
++            let state = self.state.as_ref().ok_or_else(unavailable)?;
++            let data = wire::CompletionData {
++                admission_sha256: wire::digest(&admitted.ready_bytes),
++                request_digest: wire::request_digest(original.metadata_sha256, uploaded)?,
++                response_digest: wire::response_digest(&reply, downloaded)?,
++                uploaded, downloaded, terminal, terminal_identity: identity,
++                terminal_epoch: state.replay_epoch,
++                source_activation: wire::digest(self.unseal_nonce.as_bytes()),
++                original_auth: original.original_auth,
++                owner_projection: self.forward_owner_projection()?,
++                prefix: witness.completed_prefix(), floor: state.auth.terminal_token_clock_floor(),
++                precise: state.has_token_api_precision_state(),
++                audit_sequence: self.audit_sequence, audit_mac: self.audit_previous,
++            };
++            // Keep the actual plan, physical seal and historical receipt through
++            // the final publication gate. The extra ReadIndex may observe only an
++            // identical terminal owner; it cannot silently replace the signed data.
++            if self.snapshot_peer_terminal(&plan, original, status, downloaded)? != data.terminal
++                || self.current_state_identity()? != data.terminal_identity
++                || self.state.as_ref().is_none_or(|state| state.replay_epoch != data.terminal_epoch
++                    || state.auth.terminal_token_clock_floor() != data.floor
++                    || state.has_token_api_precision_state() != data.precise)
++                || wire::digest(self.unseal_nonce.as_bytes()) != data.source_activation
++                || self.forward_owner_projection()? != data.owner_projection
++                || self.audit_sequence != data.audit_sequence || self.audit_previous != data.audit_mac
++            {
++                return Err(unavailable());
++            }
++            original_actor(&admitted.auth, &original.actor, admitted.clock, plan.deadline)?;
++            live(plan.deadline)?;
++            let completion = wire::CompletionWire::seal(reply, data, source_key(self)?)?;
++            let bytes = wire::encode(&completion)?;
++            Ok((status, bytes))
++        })();
++        match publication {
++            Ok(value) => {
++                // Retire the same actual plan only after its last gates and MAC.
++                drop(plan);
++                Ok(value)
++            }
++            Err(error) => {
++                // A committed historical restore is not a normal rejection.
++                // The real receipt, never decoded wire fields, supplies its
++                // operation/recovery reference and fences further local work.
++                if let Some(response) =
++                    self.snapshot_peer_historical_publication_veto(&plan, &fingerprint)
++                {
++                    Err(response)
++                } else {
++                    Err(failed_delivery(self, &fingerprint, clock.0, error))
++                }
++            }
++        }
++    }
++
++    fn snapshot_peer_terminal(
++        &mut self, plan: &SnapshotTransferPlan, original: &wire::AdmissionData,
++        status: u16, downloaded: wire::BodyDescriptor,
++    ) -> Result<wire::TerminalKind, Response> {
++        match original.operation {
++            wire::Operation::Download => {
++                if status != 200 || downloaded.role != wire::BodyRole::NativeArchive {
++                    return Err(unavailable());
++                }
++                self.check_snapshot_peer_download_publication(plan)?;
++                Ok(wire::TerminalKind::Download { exported_identity: plan.base })
++            }
++            wire::Operation::HistoricalRestore => {
++                if !matches!(status, 200 | 204) || downloaded != wire::BodyDescriptor::empty() {
++                    return Err(unavailable());
++                }
++                let (operation, original_identity, restored_identity, restored_epoch) =
++                    self.snapshot_peer_historical_publication(
++                        plan, original.original_auth, original.original_epoch,
++                    )?;
++                Ok(wire::TerminalKind::HistoricalRestore {
++                    operation, original_identity, original_epoch: original.original_epoch,
++                    restored_identity, restored_epoch,
++                })
++            }
++        }
++    }
++}
+--- /dev/null
++++ b/crates/heptabao-server/src/service_snapshot_forward_wire_tests.rs
+@@ -0,0 +1,213 @@
++//! Application MAC/byte-witness components. A deserialized prefix below is only
++//! authenticated test data, never an ApplicationReadWitness or Service delivery.
++use super::*;
++use heptabao_ha_service::{SnapshotBodyReader, encode_snapshot_body};
++use std::io::Cursor;
++use std::time::Duration;
++
++type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
++
++fn gate<T>(value: Result<T, Response>) -> TestResult<T> {
++    value.map_err(|_| "snapshot test closed gate".into())
++}
++fn body(bytes: &[u8]) -> TestResult<(EncodedSnapshotBody, VerifiedSnapshotBody)> {
++    let until = Instant::now() + Duration::from_secs(2);
++    let limits = SnapshotBodyLimits::new(bytes.len() as u64)?;
++    let mut wire = Vec::new();
++    let encoded = encode_snapshot_body(&mut Cursor::new(bytes), &mut wire, limits, until)?;
++    let mut reader = SnapshotBodyReader::new(Cursor::new(wire), limits, until)?;
++    let mut received = Vec::new();
++    reader.read_to_end(&mut received)?;
++    let verified = reader.finish()?;
++    assert_eq!(received, bytes);
++    Ok((encoded, verified))
++}
++fn prefix(index: u64) -> TestResult<CommittedApplicationPrefix> {
++    Ok(serde_json::from_value(json!({"term": 1, "node": 2, "index": index}))?)
++}
++fn request() -> RequestWire {
++    RequestWire {
++        version: 1, cluster: "snapshot-component".to_owned(), ingress: 1, leader: 2, hop: 1,
++        nonce: [1; 32], method: "GET".to_owned(),
++        path: "sys/storage/raft/snapshot".to_owned(), namespace: String::new(),
++        token: String::new(), wrap_ttl_seconds: None, origin_peer: None,
++        client_certificates: None,
++    }
++}
++
++struct Fixture {
++    request: RequestWire,
++    admission: AdmissionWire,
++    ready: Zeroizing<Vec<u8>>,
++    completion: Zeroizing<Vec<u8>>,
++    upload: EncodedSnapshotBody,
++    download: VerifiedSnapshotBody,
++    key: [u8; 32],
++}
++impl Fixture {
++    fn new(restore: bool) -> TestResult<Self> {
++        let mut request = request();
++        if restore {
++            request.method = "POST".to_owned();
++            request.path = "sys/storage/raft/snapshot-force".to_owned();
++        }
++        let (auth, token) = AuthState::bootstrap(100).map_err(|_| "bootstrap")?;
++        let actor = auth.authenticate_read_only(&token, 100)
++            .map_err(|_| "actual root Actor")?.ok_or("root Actor missing")?;
++        request.token = token;
++        let actor = auth.snapshot_forward_actor(&actor, "", AuthorityTime::Coarse(100))
++            .map_err(|_| "actual root witness")?;
++        let metadata = gate(encode(&request))?;
++        let key = [12; 32];
++        let admission = gate(AdmissionWire::seal(AdmissionData {
++            cluster: request.cluster.clone(), ingress: request.ingress, leader: request.leader,
++            nonce: request.nonce, metadata_sha256: digest(&metadata),
++            operation: gate(request.operation())?,
++            original_identity: StateIdentity::RecordsV6([4; 32]), original_epoch: 7,
++            original_auth: auth.forward_owner_projection_digest().map_err(|_| "auth projection")?,
++            source_activation: [5; 32], seal_identity: [6; 32], prefix: prefix(9)?, actor,
++        }, &key))?;
++        gate(admission.verify(&request, &metadata, &key))?;
++        let ready = gate(encode(&admission))?;
++        let archive = vec![0x31; 65_539];
++        let (upload, actual_upload) = body(if restore { &archive } else { &[] })?;
++        let (actual_download, download) = body(if restore { &[] } else { &archive })?;
++        let uploaded = gate(BodyDescriptor::from_verified(
++            &actual_upload, if restore { BodyRole::NativeArchive } else { BodyRole::Empty },
++        ))?;
++        let downloaded = gate(BodyDescriptor::from_encoded(
++            &actual_download, if restore { BodyRole::Empty } else { BodyRole::NativeArchive },
++        ))?;
++        let reply = gate(ReplyData::from_response(
++            Response::ok(if restore { json!({"data": {"restored": true}}) } else { Value::Null }),
++            &request.cluster,
++        ))?;
++        let data = CompletionData {
++            admission_sha256: digest(&ready),
++            request_digest: gate(request_digest(admission.data.metadata_sha256, uploaded))?,
++            response_digest: gate(response_digest(&reply, downloaded))?,
++            uploaded, downloaded,
++            terminal: if restore {
++                TerminalKind::HistoricalRestore {
++                    operation: [10; 32], original_identity: admission.data.original_identity,
++                    original_epoch: 7, restored_identity: StateIdentity::RecordsV6([11; 32]),
++                    restored_epoch: 8,
++                }
++            } else {
++                TerminalKind::Download { exported_identity: admission.data.original_identity }
++            },
++            terminal_identity: StateIdentity::RecordsV6(if restore { [11; 32] } else { [4; 32] }),
++            terminal_epoch: if restore { 8 } else { 7 },
++            source_activation: if restore { [13; 32] } else { [5; 32] },
++            original_auth: admission.data.original_auth, owner_projection: [7; 32],
++            prefix: prefix(11)?, floor: None, precise: false, audit_sequence: 2, audit_mac: [8; 32],
++        };
++        let completion = gate(encode(&gate(CompletionWire::seal(reply, data, &key))?))?;
++        Ok(Self { request, admission, ready, completion, upload, download, key })
++    }
++    fn parsed(&self) -> TestResult<CompletionWire> {
++        gate(decode(&self.completion))
++    }
++    fn accepts(&self, value: CompletionWire) -> bool {
++        value.authenticate(
++            &self.admission, &self.ready, &self.upload, &self.download, &self.key,
++        ).is_ok()
++    }
++}
++
++#[test]
++fn snapshot_publication_actual_byte_witnesses_bind_save_and_restore() -> TestResult {
++    for restore in [false, true] {
++        let fixture = Fixture::new(restore)?;
++        assert!(fixture.accepts(fixture.parsed()?));
++        let mut wrong_key = fixture.key;
++        wrong_key[0] ^= 1;
++        assert!(fixture.parsed()?.authenticate(
++            &fixture.admission, &fixture.ready, &fixture.upload, &fixture.download, &wrong_key,
++        ).is_err());
++    }
++    Ok(())
++}
++
++#[test]
++fn snapshot_publication_valid_mac_cannot_substitute_a_binary_body() -> TestResult {
++    for restore in [false, true] {
++        let fixture = Fixture::new(restore)?;
++        let mut wire = fixture.parsed()?;
++        if restore {
++            wire.data.uploaded.sha256[0] ^= 1;
++            wire.data.request_digest = gate(request_digest(
++                fixture.admission.data.metadata_sha256, wire.data.uploaded,
++            ))?;
++        } else {
++            wire.data.downloaded.sha256[0] ^= 1;
++            wire.data.response_digest = gate(response_digest(&wire.reply, wire.data.downloaded))?;
++        }
++        // Even a correctly MACed descriptor cannot replace the independent,
++        // actually encoded upload or actually verified response stream.
++        let substituted = gate(CompletionWire::seal(wire.reply, wire.data, &fixture.key))?;
++        assert!(!fixture.accepts(substituted));
++    }
++    Ok(())
++}
++
++#[test]
++fn snapshot_publication_metadata_and_original_owner_mutations_are_rejected() -> TestResult {
++    let fixture = Fixture::new(false)?;
++    for field in ["audit", "owner", "status", "ready", "response", "index", "headers"] {
++        let mut wire = fixture.parsed()?;
++        match field {
++            "audit" => wire.data.audit_sequence += 1,
++            "owner" => wire.data.owner_projection[0] ^= 1,
++            "status" => wire.reply.status = 204,
++            "ready" => wire.data.admission_sha256[0] ^= 1,
++            "response" => wire.reply.body = json!({"changed": true}),
++            "index" => wire.reply.consistency_index = Some(22),
++            "headers" => wire.reply.headers = serde_json::from_value(
++                json!({"X-Test-Snapshot": ["changed"]}),
++            )?,
++            _ => return Err("closed test mutation".into()),
++        }
++        assert!(!fixture.accepts(wire), "mutation {field}");
++    }
++    let restore = Fixture::new(true)?;
++    for field in ["epoch", "activation", "original_auth", "reference"] {
++        let mut wire = restore.parsed()?;
++        match field {
++            "epoch" => wire.data.terminal_epoch = 7,
++            "activation" => wire.data.source_activation = restore.admission.data.source_activation,
++            "original_auth" => wire.data.original_auth[0] ^= 1,
++            "reference" => {
++                let TerminalKind::HistoricalRestore { operation, .. } = &mut wire.data.terminal
++                    else { return Err("restore kind".into()); };
++                *operation = [0; 32];
++            }
++            _ => return Err("closed restore mutation".into()),
++        }
++        let substituted = gate(CompletionWire::seal(wire.reply, wire.data, &restore.key))?;
++        assert!(!restore.accepts(substituted), "restore mutation {field}");
++    }
++    Ok(())
++}
++
++#[test]
++fn snapshot_ready_rejects_retarget_replay_and_non_snapshot_routes() -> TestResult {
++    let fixture = Fixture::new(false)?;
++    for field in ["nonce", "leader", "token", "method", "path", "namespace", "hop", "wrap"] {
++        let mut changed: RequestWire = gate(decode(&gate(encode(&fixture.request))?))?;
++        match field {
++            "nonce" => changed.nonce[0] ^= 1,
++            "leader" => changed.leader = 3,
++            "token" => changed.token.push('x'),
++            "method" => changed.method = "POST".to_owned(),
++            "path" => changed.path = "sys/storage/raft/snapshot-repair".to_owned(),
++            "namespace" => changed.namespace = "child".to_owned(),
++            "hop" => changed.hop = 2,
++            "wrap" => changed.wrap_ttl_seconds = Some(1),
++            _ => return Err("closed request mutation".into()),
++        }
++        let metadata = gate(encode(&changed))?;
++        assert!(fixture.admission.verify(&changed, &metadata, &fixture.key).is_err(), "{field}");
++    }
++    Ok(())
++}
+--- /dev/null
++++ b/crates/heptabao-server/src/auth_snapshot_forward_actor_tests.rs
+@@ -0,0 +1,39 @@
++//! These are actual Auth/Principal components, not Service publication receipts.
++use super::*;
++type TestResult = Result<(), Box<dyn std::error::Error>>;
++
++#[test]
++fn snapshot_actor_final_use_remains_delivery_only_without_second_admission() -> TestResult {
++    let (mut auth, raw) = AuthState::bootstrap(100).map_err(|_| "bootstrap")?;
++    let id = hash(&raw);
++    auth.tokens.get_mut(&id).ok_or("root token")?.uses_remaining = Some(1);
++    let actor = auth.authenticate(&raw, 100).map_err(|_| "one actual admission")?;
++    assert_eq!(auth.tokens.get(&id).ok_or("admitted token")?.uses_remaining, Some(0));
++    let witness = auth.snapshot_forward_actor(&actor, "", AuthorityTime::Coarse(100))
++        .map_err(|_| "original Actor witness")?;
++    let before = auth.forward_owner_projection_digest().map_err(|_| "owner before")?;
++    for now in [100, 101] {
++        auth.validate_snapshot_forward_actor(&witness, AuthorityTime::Coarse(now))
++            .map_err(|_| "original delivery")?;
++    }
++    assert_eq!(before, auth.forward_owner_projection_digest().map_err(|_| "owner after")?);
++    assert_eq!(auth.tokens.get(&id).ok_or("delivered token")?.uses_remaining, Some(0));
++    assert!(auth.authenticate(&raw, 101).is_err());
++    Ok(())
++}
++
++#[test]
++fn snapshot_actor_original_auth_is_distinct_from_a_new_restored_owner() -> TestResult {
++    let (auth, raw) = AuthState::bootstrap(100).map_err(|_| "original bootstrap")?;
++    let actor = auth.authenticate_read_only(&raw, 100)
++        .map_err(|_| "original Actor")?.ok_or("root Actor")?;
++    let mut witness = auth.snapshot_forward_actor(&actor, "", AuthorityTime::Coarse(100))
++        .map_err(|_| "original witness")?;
++    let (restored, _) = AuthState::bootstrap(100).map_err(|_| "separate owner")?;
++    assert!(restored.validate_snapshot_forward_actor(&witness, AuthorityTime::Coarse(100)).is_err());
++    auth.validate_snapshot_forward_actor(&witness, AuthorityTime::Coarse(100))
++        .map_err(|_| "retained original Auth")?;
++    witness.namespace = "child".to_owned();
++    assert!(auth.validate_snapshot_forward_actor(&witness, AuthorityTime::Coarse(100)).is_err());
++    Ok(())
++}

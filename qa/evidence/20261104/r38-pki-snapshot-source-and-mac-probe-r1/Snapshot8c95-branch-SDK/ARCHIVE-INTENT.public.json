@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "Snapshot-forward-r3-source-branch-SDK-r1",
+  "records": [
+    {
+      "name": "branch.original.sdk.json",
+      "blob": "60ee38fd679fe5a1a7edb8e3befa208c06fe96a0",
+      "bytes": 215,
+      "sha256": "578a4cae70eddb5b3c95be530b2c23428e524696f3756c78861b5193377fdc8b"
+    }
+  ],
+  "expected_data_tree": "aa818fc72284d7660aec8d184c3f70b99b879b77",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

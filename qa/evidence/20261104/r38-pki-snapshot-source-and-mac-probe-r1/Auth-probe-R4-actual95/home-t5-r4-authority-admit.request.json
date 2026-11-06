@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-mac-owned-home-t5-probe-87ddc495-authority-r4",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1afc5dbd9-fc05-6b85"
+    }
+  }
+}

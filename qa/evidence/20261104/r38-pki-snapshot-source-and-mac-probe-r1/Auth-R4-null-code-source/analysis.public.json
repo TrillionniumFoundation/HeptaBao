@@ -1,0 +1,131 @@
+{
+  "schema": "heptabao.r4-pure-parser-null-code-source-analysis.v1",
+  "source": {
+    "blob": "fb453c023c1de1299e1875078ae8720b20a441de",
+    "bytes": 168844,
+    "sha256": "87ddc49599abfd6b09b023287fbeefe1e0c833c1b806cf9c753755f706eaaa6c"
+  },
+  "parser": {
+    "blob": "67eebb1703023041fe375a6313bb5f1506c5c0b5",
+    "bytes": 2030,
+    "sha256": "05f299eec7acd68c5f0bf7ba401d8bf8847d1fcb6adf16f2612a6fef2598b5ed"
+  },
+  "builder": {
+    "blob": "8ba3005075c8c2359d571eac2a3b80b24836bfa5",
+    "bytes": 2281,
+    "sha256": "4ecbb49022f4a56f6fcfef824ee5fe848dc8d32d27efba6268630b72aa14b170"
+  },
+  "errorProjectionLines": [
+    59,
+    68
+  ],
+  "parserLines": [
+    364,
+    401
+  ],
+  "queryLines": [
+    492,
+    508
+  ],
+  "bindReadyLines": [
+    531,
+    558
+  ],
+  "cleanupInitialQueryLine": 639,
+  "missingFromPublishedAllowlist": [
+    {
+      "code": "bounded_launchctl_print",
+      "globalLine": 365,
+      "inPublicErrorCodes": false
+    },
+    {
+      "code": "exact_launchctl_target",
+      "globalLine": 367,
+      "inPublicErrorCodes": false
+    },
+    {
+      "code": "plain_fixed_launchctl_argument",
+      "globalLine": 376,
+      "inPublicErrorCodes": false
+    },
+    {
+      "code": "bounded_launchctl_arguments",
+      "globalLine": 378,
+      "inPublicErrorCodes": false
+    },
+    {
+      "code": "one_launchctl_arguments_block",
+      "globalLine": 381,
+      "inPublicErrorCodes": false
+    },
+    {
+      "code": "unique_launchctl_field",
+      "globalLine": 386,
+      "inPublicErrorCodes": false
+    },
+    {
+      "code": "balanced_launchctl_print",
+      "globalLine": 388,
+      "inPublicErrorCodes": false
+    },
+    {
+      "code": "one_complete_launchctl_record",
+      "globalLine": 390,
+      "inPublicErrorCodes": false
+    },
+    {
+      "code": "complete_launchctl_arguments",
+      "globalLine": 391,
+      "inPublicErrorCodes": false
+    },
+    {
+      "code": "typed_launchctl_integer",
+      "globalLine": 397,
+      "inPublicErrorCodes": false
+    },
+    {
+      "code": "actual_launchctl_pid",
+      "globalLine": 399,
+      "inPublicErrorCodes": false
+    }
+  ],
+  "existingResult": {
+    "stage": "home_ready",
+    "error": {
+      "code": null,
+      "errno": null,
+      "type": "ProbeRefused"
+    },
+    "cleanupError": {
+      "code": null,
+      "errno": null,
+      "type": "ProbeRefused"
+    },
+    "lastState": null,
+    "identity": null,
+    "printed": [
+      {
+        "label": "probe-print-01",
+        "exitCode": 0,
+        "stdoutBytes": 2276,
+        "stdoutSha256": "cf4058a9e244a5bc5e07d3434b25dadf5c70786b5a442609a0b8fdbb75681e71",
+        "stderrBytes": 0,
+        "completeBeforeDeadline": true,
+        "outcomeUnknown": false
+      },
+      {
+        "label": "probe-print-02",
+        "exitCode": 0,
+        "stdoutBytes": 2276,
+        "stdoutSha256": "cf4058a9e244a5bc5e07d3434b25dadf5c70786b5a442609a0b8fdbb75681e71",
+        "stderrBytes": 0,
+        "completeBeforeDeadline": true,
+        "outcomeUnknown": false
+      }
+    ]
+  },
+  "finding": "buildProbe parts omits parse_print and missing_service when collecting PUBLIC_ERROR_CODES. All eleven parse_print literal need codes are therefore suppressed to null by error_projection. Parent query surrounding refusal codes are in the allowlist; original print raw bytes are not retained, so the exact parser predicate/field/value cannot be recovered.",
+  "nativeCalls": 0,
+  "candidateModified": false,
+  "originalFailurePreserved": true
+}

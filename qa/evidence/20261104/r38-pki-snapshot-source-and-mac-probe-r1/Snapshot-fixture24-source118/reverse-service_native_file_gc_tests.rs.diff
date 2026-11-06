@@ -1,0 +1,11 @@
+--- a/crates/heptabao-server/src/service_native_file_gc_tests.rs
++++ b/crates/heptabao-server/src/service_native_file_gc_tests.rs
+@@ -217,8 +217,6 @@
+             Ok((response, None))
+         }
+         NativeSnapshotAdmission::Redirect(_) => Err("standalone snapshot redirected".into()),
+-        #[cfg(feature = "native-v6-ha")]
+-        NativeSnapshotAdmission::Forward(_) => Err("standalone snapshot forwarded".into()),
+     }
+ }
+ fn download(service: &mut Service, token: &str) -> TestResult<Zeroizing<Vec<u8>>> {

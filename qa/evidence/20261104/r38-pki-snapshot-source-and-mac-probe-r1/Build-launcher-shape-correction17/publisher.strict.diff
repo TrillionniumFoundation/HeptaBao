@@ -1,0 +1,13 @@
+--- a/publisher.before.py
++++ b/publisher.after.py
+@@ -16,8 +16,8 @@
+         "4a68d6ee41ec098db7d78c3594df70016ce5096b1dc43da972fa0e405793a9b1"
+     ],
+     "launch_native_jwt_build.py": [
++        38421,
++        "004f9ea61b85a76b73c4be930fe7be5fbcca809c20c70db07e820bd931002c0f"
+-        38413,
+-        "2f24a0877f290092053ca22e974d6a4a500fb182181963ac657e540b1a53227d"
+     ],
+     "jwt-test-groups.public.json": [
+         19789,

@@ -1,0 +1,8 @@
+--- a/constants.r4.py
++++ b/constants.r3.py
+@@ -1,5 +1,4 @@
+ PYTHON = '/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14'
+-KERNEL_PYTHON_IMAGE = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+ PYTHON_SHA = 'cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13'
+ PYTHON_ID = ('16777233','587518380','501','80','33261','1','34640','1793798038915516382','1793798038915695047')
+ HOME_PARENT = Path('/Users/qianqi')

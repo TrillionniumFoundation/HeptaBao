@@ -1,0 +1,6 @@
+{
+  "schema": "heptabao.offline-typed-binding-first-error.r1",
+  "error": "actualbase_binding_positive",
+  "cause": "Initial local derivation used null for absent env; it did not reproduce the known actual base binding. No request was submitted and candidate source/request remained unchanged. Recover exact typed helper before final binding.",
+  "Native": 0
+}

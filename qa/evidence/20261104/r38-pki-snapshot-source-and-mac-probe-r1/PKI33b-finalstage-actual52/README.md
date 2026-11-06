@@ -1,0 +1,5 @@
+# 33b814c7 independent final source stage: original terminal archive
+
+The one original rog job 1a1afcbafab-fc05-6bb0 has known exit0/full/durable/confirmed authority and complete 374 B stdout/0 B stderr. Seven exact Native calls, two returned read observers and two immutable payload pages are closed. Every request, original intent/armed, SDK and parsed original native text is retained; no call is reconstructed from a later result. The original process_start key was used once. All SDKs were externally whole before interpretation. There were no Runtime or Git errors in this original chain.
+
+The terminal stdout states prepared, all_owned_stopped and within_new_stage_deadline for source commit33b814c7034ec853151b1ff13e7529c83f65ea70/treeb7f276f70e0da1a33306564f385ab7bc12fd44f6. This archive closes transport and that summary. The full fixed control/stage-result.public.json is not independently observed yet, so canonical full-worktree, old-source fences and per-child details remain subject to separate fixed metadata/body admission. No Cargo, formatter, product or test action is authorized by this archive. Planned149unique/166profile counts were not executed.

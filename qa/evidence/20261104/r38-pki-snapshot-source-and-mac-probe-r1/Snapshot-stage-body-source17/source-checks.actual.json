@@ -1,0 +1,176 @@
+{
+  "schema": "heptabao.snapshot8c95.stage-body-source-checks.v1",
+  "checks": [
+    {
+      "name": "strict_forward",
+      "pass": true
+    },
+    {
+      "name": "strict_reverse",
+      "pass": true
+    },
+    {
+      "name": "six_hunks",
+      "pass": true
+    },
+    {
+      "name": "unchanged:gfNeed",
+      "pass": true
+    },
+    {
+      "name": "unchanged:gfMetaEquals",
+      "pass": true
+    },
+    {
+      "name": "unchanged:gfState",
+      "pass": true
+    },
+    {
+      "name": "unchanged:gfSave",
+      "pass": true
+    },
+    {
+      "name": "unchanged:gfIntegerText",
+      "pass": true
+    },
+    {
+      "name": "unchanged:gfInitializeOnlyAfterRootGO",
+      "pass": true
+    },
+    {
+      "name": "unchanged:gfAcceptArchivedSDK",
+      "pass": true
+    },
+    {
+      "name": "unchanged:gfReconcileSameGitArchiveReadOnly",
+      "pass": true
+    },
+    {
+      "name": "reference_literal_count:11",
+      "pass": true
+    },
+    {
+      "name": "reference_literal_count:12",
+      "pass": true
+    },
+    {
+      "name": "reference_literal_count:13",
+      "pass": true
+    },
+    {
+      "name": "reference_literal_count:14",
+      "pass": true
+    },
+    {
+      "name": "reference_literal_count:15",
+      "pass": true
+    },
+    {
+      "name": "reference_literal_count:16",
+      "pass": true
+    },
+    {
+      "name": "reference_literal_count:17",
+      "pass": true
+    },
+    {
+      "name": "reference_literal_count:18",
+      "pass": true
+    },
+    {
+      "name": "reference_literal_count:19",
+      "pass": true
+    },
+    {
+      "name": "reference_literal_count:20",
+      "pass": true
+    },
+    {
+      "name": "reference_literal_count:21",
+      "pass": true
+    },
+    {
+      "name": "reference_literal_count:22",
+      "pass": true
+    },
+    {
+      "name": "reference_bindings_exact",
+      "pass": true
+    },
+    {
+      "name": "request_pin",
+      "pass": true
+    },
+    {
+      "name": "binary_only",
+      "pass": true
+    },
+    {
+      "name": "actual_range",
+      "pass": true
+    },
+    {
+      "name": "actual_metadata_full_binding",
+      "pass": true
+    },
+    {
+      "name": "actual_closed_metadata",
+      "pass": true
+    },
+    {
+      "name": "existing_context_not_reset",
+      "pass": true
+    },
+    {
+      "name": "separate_body_GO",
+      "pass": true
+    },
+    {
+      "name": "no_start_reset",
+      "pass": true
+    },
+    {
+      "name": "one_fixed_request",
+      "pass": true
+    },
+    {
+      "name": "once_before_call",
+      "pass": true
+    },
+    {
+      "name": "original_body_path_version",
+      "pass": true
+    },
+    {
+      "name": "actual_full_EOF",
+      "pass": true
+    },
+    {
+      "name": "independent_chunk_SHA",
+      "pass": true
+    },
+    {
+      "name": "decoded_whole_SHA",
+      "pass": true
+    },
+    {
+      "name": "old8192pages",
+      "pass": true
+    },
+    {
+      "name": "old1MiBpayload",
+      "pass": true
+    },
+    {
+      "name": "old16384stream",
+      "pass": true
+    },
+    {
+      "name": "no_semantic_promotion",
+      "pass": true
+    }
+  ],
+  "passed": 42,
+  "RuntimeCalls": 0,
+  "candidateFunctionsExecuted": false
+}

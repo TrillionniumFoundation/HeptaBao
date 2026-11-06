@@ -1,0 +1,159 @@
+{
+  "schema": "heptabao.public-home-t5-probe.r4-source-binding-checks.v1",
+  "passed": true,
+  "checkCount": 37,
+  "checks": [
+    {
+      "name": "exact_fresh_actual_self_stdout",
+      "passed": true
+    },
+    {
+      "name": "fresh_self_complete_and_stable",
+      "passed": true
+    },
+    {
+      "name": "actual_only_old_executable_equality_false",
+      "passed": true
+    },
+    {
+      "name": "one_actual_kernel_constant",
+      "passed": true
+    },
+    {
+      "name": "constants_only_added_observed_literal",
+      "passed": true
+    },
+    {
+      "name": "common_only_final_executable_operand",
+      "passed": true
+    },
+    {
+      "name": "constants_forward_strict",
+      "passed": true
+    },
+    {
+      "name": "constants_reverse_strict",
+      "passed": true
+    },
+    {
+      "name": "common_forward_strict",
+      "passed": true
+    },
+    {
+      "name": "common_reverse_strict",
+      "passed": true
+    },
+    {
+      "name": "base_controller_exact",
+      "passed": true
+    },
+    {
+      "name": "base_child_exact",
+      "passed": true
+    },
+    {
+      "name": "child_only_constants_common",
+      "passed": true
+    },
+    {
+      "name": "controller_only_constants_common_derived_child",
+      "passed": true
+    },
+    {
+      "name": "embedded_child_exact_whole",
+      "passed": true
+    },
+    {
+      "name": "embedded_child_exact_size_sha",
+      "passed": true
+    },
+    {
+      "name": "preserved_MODULES =",
+      "passed": true
+    },
+    {
+      "name": "preserved_ANCHOR_BASE64 =",
+      "passed": true
+    },
+    {
+      "name": "preserved_ANCHOR_SHA =",
+      "passed": true
+    },
+    {
+      "name": "request_only_stdin_key",
+      "passed": true
+    },
+    {
+      "name": "request_stdin_whole",
+      "passed": true
+    },
+    {
+      "name": "request_new_source_key",
+      "passed": true
+    },
+    {
+      "name": "journal_forward_strict",
+      "passed": true
+    },
+    {
+      "name": "journal_reverse_strict",
+      "passed": true
+    },
+    {
+      "name": "journal_functions_unchanged",
+      "passed": true
+    },
+    {
+      "name": "unchanged_contract_roots",
+      "passed": true
+    },
+    {
+      "name": "unchanged_contract_effects",
+      "passed": true
+    },
+    {
+      "name": "unchanged_contract_chronology",
+      "passed": true
+    },
+    {
+      "name": "unchanged_contract_ownership",
+      "passed": true
+    },
+    {
+      "name": "unchanged_contract_budget",
+      "passed": true
+    },
+    {
+      "name": "unchanged_contract_publication",
+      "passed": true
+    },
+    {
+      "name": "unchanged_contract_priorEvidence",
+      "passed": true
+    },
+    {
+      "name": "unchanged_contract_validation",
+      "passed": true
+    },
+    {
+      "name": "unchanged_contract_closureConstructionCorrection",
+      "passed": true
+    },
+    {
+      "name": "contract_modules_preserved",
+      "passed": true
+    },
+    {
+      "name": "all_new_exact_pins",
+      "passed": true
+    },
+    {
+      "name": "kernel_file_not_qualified_or_read",
+      "passed": true
+    }
+  ],
+  "PythonExecution": false,
+  "NativeCalls": 0,
+  "oldR3NotReplayed": true,
+  "sourceAndExistingPublicDataOnly": true
+}

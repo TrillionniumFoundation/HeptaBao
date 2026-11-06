@@ -1,0 +1,209 @@
+# Original fb453c023c1de1299e1875078ae8720b20a441de lines 42-77
+42: class ProbeRefused(RuntimeError):
+43:     pass
+44: 
+45: def need(value, code):
+46:     if not value:
+47:         raise ProbeRefused(code)
+48: 
+49: def sha(raw):
+50:     return hashlib.sha256(raw).hexdigest()
+51: 
+52: def encoded(value):
+53:     return (json.dumps(value, sort_keys=True, separators=(',', ':')) + '\n').encode('ascii')
+54: 
+55: def identity(info):
+56:     return tuple(str(x) for x in (info.st_dev, info.st_ino, info.st_uid, info.st_gid,
+57:         info.st_mode, info.st_nlink, info.st_size, info.st_mtime_ns, info.st_ctime_ns))
+58: 
+59: def error_projection(error):
+60:     allowed = PUBLIC_ERROR_TYPES
+61:     name = type(error).__name__
+62:     code = str(error) if name in ('ProbeRefused','VolumeRefused','CommandRefused',
+63:                                  'Refusal','ObservationRefused') else None
+64:     if code not in PUBLIC_ERROR_CODES:
+65:         code = None
+66:     number = getattr(error, 'errno', None)
+67:     return {'type': name if name in allowed else 'OtherException',
+68:             'code': code, 'errno': number if type(number) is int and 0 <= number <= 4096 else None}
+69: 
+70: def validate_process(value):
+71:     need(isinstance(value, dict) and set(value) == set(IDENTITY_KEYS), 'process_identity_shape')
+72:     need(all(type(value[k]) is int and 0 <= value[k] < 2**63 for k in IDENTITY_KEYS[:-1]),
+73:          'process_identity_numbers')
+74:     need(value['pid'] > 1 and value['pgid'] > 1 and value['uid'] == 501
+75:          and value['birthSec'] > 0 and value['birthUsec'] < 1000000
+76:          and value['executable'] == KERNEL_PYTHON_IMAGE, 'process_identity_fixed_python')
+77:     return dict(value)
+
+# Original fb453c023c1de1299e1875078ae8720b20a441de lines 364-411
+364: def parse_print(raw,target):
+365:     need(isinstance(raw,bytes) and len(raw)<=262144,'bounded_launchctl_print')
+366:     lines=raw.decode('utf-8','strict').splitlines()
+367:     need(1<=len(lines)<=4096 and lines[0].strip()==target+' = {','exact_launchctl_target')
+368:     fields={};arguments=[];depth=1;in_arguments=False;arguments_seen=False
+369:     allowed=('path','program','pid','state','runs','last exit code','last terminating signal')
+370:     for line in lines[1:]:
+371:         text=line.strip()
+372:         if in_arguments:
+373:             if text=='}':
+374:                 in_arguments=False;depth-=1;continue
+375:             need(depth==2 and text and '{' not in text and '}' not in text
+376:                  and len(text)<=16384,'plain_fixed_launchctl_argument')
+377:             arguments.append(text)
+378:             need(len(arguments)<=32,'bounded_launchctl_arguments')
+379:             continue
+380:         if depth==1 and text=='arguments = {':
+381:             need(not arguments_seen,'one_launchctl_arguments_block')
+382:             arguments_seen=True;in_arguments=True;depth+=1;continue
+383:         if depth==1 and ' = ' in text and not text.endswith('{'):
+384:             name,value=text.split(' = ',1)
+385:             if name in allowed:
+386:                 need(name not in fields,'unique_launchctl_field');fields[name]=value
+387:         depth+=text.count('{')-text.count('}')
+388:         need(depth>=0,'balanced_launchctl_print')
+389:         if depth==0:
+390:             need(text=='}' and line==lines[-1],'one_complete_launchctl_record')
+391:     need(depth==0 and not in_arguments and arguments_seen,'complete_launchctl_arguments')
+392:     for name in ('pid','runs','last exit code'):
+393:         if name in fields:
+394:             typed_value=fields[name]
+395:             if name=='last exit code' and typed_value=='78: EX_CONFIG':
+396:                 typed_value='78'
+397:             need(re.fullmatch(r'-?[0-9]{1,10}',typed_value) is not None,'typed_launchctl_integer')
+398:             fields[name]=int(typed_value)
+399:     need('pid' not in fields or fields['pid']>1,'actual_launchctl_pid')
+400:     fields['arguments']=arguments
+401:     return fields
+402: 
+403: def missing_service(code, out, err):
+404:     if code not in (3, 113) or out:
+405:         return False
+406:     try:
+407:         lines = err.decode('utf-8', 'strict').strip().splitlines()
+408:     except UnicodeError:
+409:         return False
+410:     exact = 'Could not find service "' + LABEL + '" in domain for user gui: 501'
+411:     return lines == [exact] or lines == ['Bad request.', exact]
+
+# Original fb453c023c1de1299e1875078ae8720b20a441de lines 492-508
+492:     def query(self, *, cleanup=False, expect_binding=True):
+493:         need(self.prints < 18, 'finite_print_observations')
+494:         number = self.prints
+495:         self.prints += 1
+496:         row, out, err = self.call('probe-print-%02d' % number,
+497:             ['/bin/launchctl','print',TARGET], cleanup=cleanup)
+498:         if missing_service(row['exitCode'], out, err):
+499:             return None
+500:         need(row['exitCode'] == 0 and not err, 'known_probe_print')
+501:         value = parse_print(out, TARGET)
+502:         if expect_binding:
+503:             need(value.get('path') == str(PLIST) and value.get('program') == PYTHON
+504:                  and value['arguments'] == self.argv and value.get('runs') in (0,1),
+505:                  'exact_fresh_probe_registration')
+506:         need(value.get('state') in ('running','not running'), 'fixed_known_probe_state')
+507:         self.last_state = {k:value.get(k) for k in ('pid','state','runs','last exit code')}
+508:         return value
+
+# Original fb453c023c1de1299e1875078ae8720b20a441de lines 531-558
+531:     def bind_ready(self):
+532:         marker = self.io.present_marker(READY_MARK)
+533:         if marker is None:
+534:             return False
+535:         raw, _ = self.io.read(READY)
+536:         need(self.io.present_marker(READY_MARK) == marker, 'ready_marker_stable')
+537:         value = json.loads(raw)
+538:         need(set(value) == {'schema','generation','planSha256','sourceSha256','identity',
+539:             'homeObject','initialChildren','t5AccessAttempted'}, 'exact_ready_keys')
+540:         need(value['schema'] == 'heptabao.public-launchd-home-t5-ready.r1'
+541:              and value['generation'] == self.plan['generation']
+542:              and value['planSha256'] == self.pins[str(PLAN)]['sha256']
+543:              and value['sourceSha256'] == CHILD_SHA
+544:              and value['homeObject'] == self.plan['homeObject']
+545:              and value['initialChildren'] == [] and value['t5AccessAttempted'] is False,
+546:              'ready_exact_public_bindings')
+547:         actual = validate_process(value['identity'])
+548:         state = self.query()
+549:         need(state is not None and state.get('pid') == actual['pid']
+550:              and state.get('runs') == 1 and state.get('state') == 'running',
+551:              'ready_same_launchd_pid')
+552:         need(self.reader.read(actual['pid']) == actual
+553:              and actual['pid'] != self.plan['controllerIdentity']['pid']
+554:              and actual['ppid'] != self.plan['controllerIdentity']['pid']
+555:              and self.reader.children(actual['pid']) == [], 'ready_actual_same_birth')
+556:         self.identity, self.ready, self.ready_raw = actual, value, raw
+557:         self.report['actualReadyIdentity'] = dict(actual)
+558:         return True
+
+# Original fb453c023c1de1299e1875078ae8720b20a441de lines 630-671
+630:     def cleanup_once(self):
+631:         if self.cleanup_attempted:
+632:             return
+633:         self.cleanup_attempted = True
+634:         if 'bootstrap' not in self.attempts:
+635:             self.registration_closed = True
+636:             return
+637:         need(not self.unknown, 'no_cleanup_dispatch_after_helper_unknown')
+638:         self.check_inputs()
+639:         state = self.query(cleanup=True)
+640:         need(state is not None, 'no_unexplained_registration_disappearance')
+641:         pid = state.get('pid')
+642:         if pid is not None:
+643:             if self.identity is None:
+644:                 # No guess that an unobserved Python process is our probe.
+645:                 # Its original absolute 25s deadline is allowed to elapse; no new budget.
+646:                 while time.monotonic_ns() < CHILD_UNTIL_NS:
+647:                     remaining(cleanup=True)
+648:                     time.sleep(max(0,min(0.25, (CHILD_UNTIL_NS-time.monotonic_ns())/1000000000)))
+649:                 state = self.query(cleanup=True)
+650:                 need(state is not None and state.get('pid') is None,
+651:                      'unobserved_active_managed_probe_no_bootout')
+652:             else:
+653:                 need(pid == self.identity['pid'] and self.reader.read(pid) == self.identity,
+654:                      'cleanup_first_actual_same_birth')
+655:                 again = self.query(cleanup=True)
+656:                 need(again is not None, 'cleanup_registration_still_present')
+657:                 if again.get('pid') is not None:
+658:                     need(again['pid'] == pid and self.reader.read(pid) == self.identity,
+659:                          'cleanup_second_actual_same_birth')
+660:                 state = again
+661:         if state.get('pid') is None:
+662:             need(state.get('runs') in (0,1) and state.get('state') == 'not running',
+663:                  'cleanup_exact_inactive_registration')
+664:         self.dispatch('bootout', cleanup=True)
+665:         need(self.query(cleanup=True) is None, 'fresh_registration_absent_after_bootout')
+666:         self.registration_closed = True
+667:         if self.identity is not None:
+668:             self.pid_disposition(1)
+669:             need(self.query(cleanup=True) is None, 'label_still_absent_before_second_pid_check')
+670:             self.pid_disposition(2)
+671:             self.process_departed = True
+
+# Original fb453c023c1de1299e1875078ae8720b20a441de lines 859-884
+859:         result['exactProgramArguments'] = argv
+860:         result['programArgumentsCount'] = len(argv)
+861:         result['publicPlanSha256'] = sha(plan_raw)
+862:         stage = 'bootstrap_new_probe'
+863:         guard.check()
+864:         control.dispatch('bootstrap')
+865:         stage = 'home_ready'
+866:         control.wait_ready()
+867:         stage = 'same_birth_admission'
+868:         control.admit()
+869:         stage = 'await_managed_exit'
+870:         control.wait_inactive()
+871:     except BaseException as error:
+872:         result['error'] = error_projection(error)
+873:     finally:
+874:         controller_cleanup_mode = True
+875:         result['lastControllerStage'] = stage
+876:         if control is not None:
+877:             try:
+878:                 with signals.critical():
+879:                     control.cleanup_once()
+880:             except BaseException as error:
+881:                 result['cleanupError'] = error_projection(error)
+882:             result['managedProbe'] = control.public()
+883:             if control.registration_closed and control.process_departed and control.identity is not None:
+884:                 try:
+

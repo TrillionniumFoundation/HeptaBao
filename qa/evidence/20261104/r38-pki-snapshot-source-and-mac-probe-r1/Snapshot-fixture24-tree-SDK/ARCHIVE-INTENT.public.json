@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r38-snapshot24-freeze-tree-original-SDK",
+  "records": [
+    {
+      "name": "TREE.original.sdk.json",
+      "blob": "fff3c5a44f64e8cf5b7b51029c369038a8f6f466",
+      "bytes": 195,
+      "sha256": "e5e338c5345cfe976b12cb12ddccc72d0a10efb3dda4fe5f6b9174ac932f6bf7"
+    }
+  ],
+  "expected_data_tree": "242f3b1eefd979aebf7eee663421873742e09b42",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

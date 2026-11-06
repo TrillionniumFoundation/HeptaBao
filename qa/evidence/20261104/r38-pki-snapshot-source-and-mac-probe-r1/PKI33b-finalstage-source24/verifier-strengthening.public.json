@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.source-verifier-strengthening.v1",
+  "initialChecks": 65,
+  "finalChecks": 66,
+  "reason": "Replace both-sides-presence equality with mandatory exact budget literal presence and add preserved wait5. Initial check had used a nonexistent stage_remaining(90) literal; full definition-byte and exhaustive-literal-change proofs already held. No candidate/request or Runtime changed.",
+  "initialSource": {
+    "blob": "a1a85badcc9fb716a8fe5395b39ea5f31a1a780a",
+    "bytes": 5823,
+    "sha256": "fd03946f0e0a9adec314b316c188ae7eecda8c16800dfa764ebd55d61b47f50e"
+  },
+  "initialResult": {
+    "blob": "5adb0a140a1e5f163f57759e6729d3ae40d4139f",
+    "bytes": 6818,
+    "sha256": "a76c387b632212027c09629a80f55fe2d6b23256b77926953c7d72aed0a62464"
+  }
+}

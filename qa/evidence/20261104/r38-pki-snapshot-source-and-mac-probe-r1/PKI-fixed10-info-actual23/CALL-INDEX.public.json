@@ -1,0 +1,86 @@
+[
+  {
+    "callKey": "pki-lease400-format10-report-info-start-r1",
+    "kind": "operation_start",
+    "request": {
+      "blob": "da2d04756281187d875950219a8c1e584ea5a029",
+      "bytes": 291,
+      "sha256": "ef290e736dc818892e12dd00e0a32523b21b3a24b30734fd1aa7fe561cce7e51"
+    },
+    "sdk": {
+      "blob": "e2f2c72b823042a01e7ab294ae4a3e0de57f4304",
+      "bytes": 704,
+      "sha256": "a42a024866f8a28e6cb59b5d6b26de032a5fc92039f6b72e11d50a21bc3baaad"
+    },
+    "native": {
+      "blob": "f33864b689506fdc20cadc199358d1261dc76eb1",
+      "bytes": 543,
+      "sha256": "a58cecb128d906c60c6d7103b1f88140f5978e9c2d150426343d97bcb91d27da"
+    },
+    "armedTree": "31538c7a1c99f23ccc3a86ec0169b4dec31ccb2b",
+    "sdkArchiveTree": "a6b0b1ae42d6da89f979ab669d068371154dffe2",
+    "files": {
+      "request": "01.pki-lease400-format10-report-info-start-r1.request.json",
+      "intent": "01.pki-lease400-format10-report-info-start-r1.intent.json",
+      "armed": "01.pki-lease400-format10-report-info-start-r1.armed.json",
+      "sdk": "01.pki-lease400-format10-report-info-start-r1.sdk.original.json",
+      "native": "01.pki-lease400-format10-report-info-start-r1.native.original.json"
+    }
+  },
+  {
+    "callKey": "pki-lease400-format10-report-info-status0-r1",
+    "kind": "operation_status",
+    "request": {
+      "blob": "48816c83554c72a449a19e1a96e6b06345130c3b",
+      "bytes": 89,
+      "sha256": "7c9cd9b6076814c3af22d0e5b485438f77f0d53f080f712d5b15bcbdf8cb80db"
+    },
+    "sdk": {
+      "blob": "3649cb6b03d9bbb09e969049e34d624555dee7d0",
+      "bytes": 975,
+      "sha256": "a1532dfdef9e059fdb6d3cf77c5d2082e4af681f40562b294a5032d5ff03b8cb"
+    },
+    "native": {
+      "blob": "64ba19ad1960800c5ec49afb0e9e85e8cb6f9130",
+      "bytes": 800,
+      "sha256": "482219a7e946a50e40e40610c4d339f2232e5ec826bd03fd5e436b79fde0c985"
+    },
+    "armedTree": "b67c9ac45afe239cafb1ba124cfa07516e3e2f93",
+    "sdkArchiveTree": "f943b98fcb6ad86b4dd4e484c54b1d28a93974cf",
+    "files": {
+      "request": "02.pki-lease400-format10-report-info-status0-r1.request.json",
+      "intent": "02.pki-lease400-format10-report-info-status0-r1.intent.json",
+      "armed": "02.pki-lease400-format10-report-info-status0-r1.armed.json",
+      "sdk": "02.pki-lease400-format10-report-info-status0-r1.sdk.original.json",
+      "native": "02.pki-lease400-format10-report-info-status0-r1.native.original.json"
+    }
+  },
+  {
+    "callKey": "pki-lease400-format10-report-info-page0-r1",
+    "kind": "operation_result",
+    "request": {
+      "blob": "633ed1b0d4a203ac601738872e2819a749adf390",
+      "bytes": 121,
+      "sha256": "af014d9f1a120b1ed2b405d1187f1e5df41c7bc3aff3b86e563be8444f94fc6e"
+    },
+    "sdk": {
+      "blob": "33ca969188fcaa22ae20dd9316330a6fec3d396a",
+      "bytes": 1652,
+      "sha256": "607ee5ee3c9041c5701096e6c95704e769e7b40ab0a87caaf72a3d401de4d2d5"
+    },
+    "native": {
+      "blob": "c052fb65e479b98b1d36d0575936f96b1290424d",
+      "bytes": 1481,
+      "sha256": "f05e9a0259d53520db7b4ddb3befc324c16dd63d63f90560ab8366c607840690"
+    },
+    "armedTree": "ab09718387c3f25713226cde891c0a866121dc96",
+    "sdkArchiveTree": "237dc6fbc56075793a0feed112903d53b16a7a4f",
+    "files": {
+      "request": "03.pki-lease400-format10-report-info-page0-r1.request.json",
+      "intent": "03.pki-lease400-format10-report-info-page0-r1.intent.json",
+      "armed": "03.pki-lease400-format10-report-info-page0-r1.armed.json",
+      "sdk": "03.pki-lease400-format10-report-info-page0-r1.sdk.original.json",
+      "native": "03.pki-lease400-format10-report-info-page0-r1.native.original.json"
+    }
+  }
+]

@@ -1,0 +1,10 @@
+{
+  "status": "LOCAL_ARGUMENT_CHECK_REJECTION",
+  "error": "fixed_archive_key",
+  "cause": "Called object-argument helper with two positional arguments; no repository call was reached.",
+  "originalCallShape": "archive(key, texts)",
+  "correctedCallShape": "archive({key, repository, texts})",
+  "gitCreateSubmitted": false,
+  "nativeCalls": 0,
+  "candidateBytesChanged": false
+}

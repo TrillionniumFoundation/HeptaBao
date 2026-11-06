@@ -1,0 +1,107 @@
+--- a/crates/heptabao-server/src/service_snapshot_transfer.rs
++++ b/crates/heptabao-server/src/service_snapshot_transfer.rs
+@@ -73,6 +73,10 @@
+ #[path = "service_snapshot_v6.rs"]
+ mod v6;
+ 
++#[cfg(feature = "native-v6-ha")]
++#[path = "service_snapshot_forward.rs"]
++pub(crate) mod forward;
++
+ // A routing hint is deliberately not an application read/write capability.
+ // Only this module can construct one, from a configured HA peer API origin.
+ #[derive(Clone)]
+@@ -86,6 +90,8 @@
+ pub(crate) enum NativeSnapshotAdmission {
+     Execute(RequestExecution),
+     Redirect(TrustedSnapshotOrigin),
++    #[cfg(feature = "native-v6-ha")]
++    Forward(Box<forward::SnapshotForwardPlan>),
+ }
+ 
+ // One authenticated admission identity and its physically observed seal bytes.
+@@ -404,6 +410,17 @@
+         // the original request; observing a leader never grants authority.
+         match self.configured_standby_destination() {
+             Ok(Some(origin)) => {
++                #[cfg(feature = "native-v6-ha")]
++                if self.native_ha_snapshot_transport_enabled()
++                    && forward::eligible(&request).unwrap_or(false)
++                {
++                    return match self.begin_snapshot_forward(request, deadline) {
++                        Ok(plan) => NativeSnapshotAdmission::Forward(Box::new(plan)),
++                        Err(response) => NativeSnapshotAdmission::Execute(
++                            RequestExecution::Complete(response),
++                        ),
++                    };
++                }
+                 let now = SystemTime::now()
+                     .duration_since(UNIX_EPOCH)
+                     .unwrap_or(Duration::ZERO)
+@@ -442,6 +459,17 @@
+             }
+             Ok(None) => {}
+         }
++        NativeSnapshotAdmission::Execute(
++            self.begin_snapshot_request_before(request, deadline, false),
++        )
++    }
++
++    fn begin_snapshot_request_before(
++        &mut self,
++        request: ServiceRequest<'_>,
++        deadline: Instant,
++        forwarded: bool,
++    ) -> RequestExecution {
+         // Pair wall time and the monotonic anchor before reconciliation, audit,
+         // authentication and finite-use persistence can spend admission time.
+         let started = Instant::now();
+@@ -451,10 +479,10 @@
+         let previous_clock = self.native_snapshot_clock.replace((started, now));
+         let previous = self.native_snapshot_transport;
+         self.native_snapshot_transport = true;
+-        let result = self.begin_request_before(request, deadline, false);
++        let result = self.begin_request_before(request, deadline, forwarded);
+         self.native_snapshot_transport = previous;
+         self.native_snapshot_clock = previous_clock;
+-        NativeSnapshotAdmission::Execute(result)
++        result
+     }
+ 
+     pub(super) fn configured_standby_destination(
+@@ -750,11 +778,25 @@
+     // audit and the final original-Actor/selection check have all completed.
+     pub(super) fn complete_snapshot_transfer(
+         &mut self,
+-        mut plan: SnapshotTransferPlan,
++        plan: SnapshotTransferPlan,
+         result: Result<Observation, Response>,
+         fingerprint: &str,
+         clock: (u64, Option<RequestClock>),
+     ) -> Response {
++        let (response, plan) =
++            self.complete_snapshot_transfer_retained(plan, result, fingerprint, clock);
++        // Ordinary delivery keeps its original drop point and response value.
++        drop(plan);
++        response
++    }
++
++    fn complete_snapshot_transfer_retained(
++        &mut self,
++        mut plan: SnapshotTransferPlan,
++        result: Result<Observation, Response>,
++        fingerprint: &str,
++        clock: (u64, Option<RequestClock>),
++    ) -> (Response, SnapshotTransferPlan) {
+         let response = self.finalize_snapshot_transfer(&mut plan, result);
+         #[cfg(feature = "native-v6-ha")]
+         let mut response = if plan.native_ha_restored.is_some() {
+@@ -807,7 +849,7 @@
+         }
+         #[cfg(feature = "native-v6-storage")]
+         self.retire_native_external_binding(fingerprint, clock.1);
+-        response
++        (response, plan)
+     }
+ 
+     #[cfg(feature = "native-v6-storage")]

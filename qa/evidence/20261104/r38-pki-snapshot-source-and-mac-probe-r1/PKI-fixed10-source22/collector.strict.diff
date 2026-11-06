@@ -1,0 +1,216 @@
+--- a/collector.JWT38.before.py
++++ b/collector.PKI10.after.py
+@@ -1,36 +1,39 @@
+ """Fixed public formatter-output collector. SOURCE proposal; separate root GO required.
++Reads exactly 10 public files, then writes one new observation report. No child/network.
+-Reads exactly 38 public files, then writes one new observation report. No child/network.
+ The report proves input observations; final stdout plus authoritative exit proves cleanup.
+ """
+ import difflib,hashlib,json,os,re,signal,stat,sys,time
+ 
+ START=time.monotonic()
+ LIMIT=50.0
++INPUT_ROOT="/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1"
++OUTPUT_NAME="heptabao-native-pki-lease400-format-observe-20261106-r1"
+-INPUT_ROOT="/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1"
+-OUTPUT_NAME="heptabao-native-jwt-e3afc157-format-observe-20261106-r1"
+ OUTPUT_ROOT="/home/qian-qi/"+OUTPUT_NAME
+ REPORT_NAME="observation.public.json"
+ SOURCE_COMMIT="e3afc157447d35c861f275a761b29da3e42aff8e"
+ SOURCE_TREE="5497775d9d473541e13e1603be8c893a3e27681b"
++FORMATTER_JOB="1a1af6d62a1-fc05-686a"
++FORMATTER_SOURCE_BLOB="4bea36c9c2c80c280429a90d2f22523fd80e95d5"
++RECEIPT_BLOB="6638b8f22581832b5451d8b79e275feccec54959"
++CANDIDATE_SOURCE_PACKET="6e4bf23de8f7fdac6dd9b152232a905bedb87744"
++INPUT_CARRIER_SHA256="b04208ff4a3787e229b8cd7a86316ef6b0d90fdb941ebd5ef166b14cb06e1489"
++INPUT_ORIGINAL_AND_CANDIDATE_PINS=json.loads("{\"pki.rs\":[\"c7f86b2eccaa4756dbffc1ed30c6f6e00f2f3874c35b76d46705e64cb87302e9\",\"3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba\"],\"service_native_pki_tests.rs\":[\"b5dbe7c3b75182f44213495e764c4ebfa6760b9c915219720cee0b711cc8931b\",\"3dfea1dccd78187517f3cb9ca04ed036073eb7ed6b7c604815aa745f4402f208\"]}")
++READ_CAP=1424736
+-FORMATTER_JOB="1a1af017fae-fc05-64f1"
+-FORMATTER_SOURCE_BLOB="1266e75033bee0962b0d77d3c35ee19ec53086db"
+-RECEIPT_BLOB="58827993343d76b96fc92b0bae47432710ffbedd"
+-READ_CAP=7906155
+ READ_CHUNK=65536
+ READ_CALL_CAP=256
+ META_CAP=320
++FD_CAP=18
++PEAK_FD_CAP=16
++DIFF_CAP=131072
++REPORT_CAP=262144
+-FD_CAP=46
+-PEAK_FD_CAP=44
+-DIFF_CAP=786432
+-REPORT_CAP=1048576
+ STDOUT_CAP=16384
+ CONFIG_BYTES=b'edition = "2024"\n'
++ROWS=json.loads("[{\"index\":0,\"role\":\"candidate\",\"name\":\"pki.rs\",\"relative\":\"candidate/pki.rs\",\"path\":\"/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/candidate/pki.rs\",\"bytes\":136672,\"sha256\":\"3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba\",\"cap\":136672,\"expected_full9\":null,\"immutable_blob\":\"3c6fd86dcd641eb16af64b835d2252163dd1488e\"},{\"index\":1,\"role\":\"formatted\",\"name\":\"pki.rs\",\"relative\":\"formatted/pki.rs\",\"path\":\"/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/formatted/pki.rs\",\"bytes\":136672,\"sha256\":\"3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba\",\"cap\":262144,\"expected_full9\":null,\"immutable_blob\":null},{\"index\":2,\"role\":\"stdout\",\"name\":\"pki.rs\",\"relative\":\"pki.rs.rustfmt.stdout\",\"path\":\"/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/pki.rs.rustfmt.stdout\",\"bytes\":136672,\"sha256\":\"3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba\",\"cap\":262144,\"expected_full9\":null,\"immutable_blob\":null},{\"index\":3,\"role\":\"stderr\",\"name\":\"pki.rs\",\"relative\":\"pki.rs.rustfmt.stderr\",\"path\":\"/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/pki.rs.rustfmt.stderr\",\"bytes\":0,\"sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"cap\":65536,\"expected_full9\":null,\"immutable_blob\":null},{\"index\":4,\"role\":\"candidate\",\"name\":\"service_native_pki_tests.rs\",\"relative\":\"candidate/service_native_pki_tests.rs\",\"path\":\"/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/candidate/service_native_pki_tests.rs\",\"bytes\":42863,\"sha256\":\"3dfea1dccd78187517f3cb9ca04ed036073eb7ed6b7c604815aa745f4402f208\",\"cap\":42863,\"expected_full9\":null,\"immutable_blob\":\"352e581f5a901f21ee7c7af4c9bc5b3bed1a1439\"},{\"index\":5,\"role\":\"formatted\",\"name\":\"service_native_pki_tests.rs\",\"relative\":\"formatted/service_native_pki_tests.rs\",\"path\":\"/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/formatted/service_native_pki_tests.rs\",\"bytes\":42909,\"sha256\":\"6a1fd1fbaf6caa1c206844e8d97414ea231a1cba663ebb704d26cdff42417d56\",\"cap\":262144,\"expected_full9\":null,\"immutable_blob\":null},{\"index\":6,\"role\":\"stdout\",\"name\":\"service_native_pki_tests.rs\",\"relative\":\"service_native_pki_tests.rs.rustfmt.stdout\",\"path\":\"/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/service_native_pki_tests.rs.rustfmt.stdout\",\"bytes\":42909,\"sha256\":\"6a1fd1fbaf6caa1c206844e8d97414ea231a1cba663ebb704d26cdff42417d56\",\"cap\":262144,\"expected_full9\":null,\"immutable_blob\":null},{\"index\":7,\"role\":\"stderr\",\"name\":\"service_native_pki_tests.rs\",\"relative\":\"service_native_pki_tests.rs.rustfmt.stderr\",\"path\":\"/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/service_native_pki_tests.rs.rustfmt.stderr\",\"bytes\":0,\"sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"cap\":65536,\"expected_full9\":null,\"immutable_blob\":null},{\"index\":8,\"role\":\"config\",\"name\":\"rustfmt.toml\",\"relative\":\"rustfmt.toml\",\"path\":\"/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/rustfmt.toml\",\"bytes\":17,\"sha256\":\"f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584\",\"cap\":17,\"expected_full9\":[\"66306\",\"28071611\",\"1000\",\"1000\",\"33152\",\"1\",\"17\",\"1793944550719366866\",\"1793944550719366866\"],\"immutable_blob\":null},{\"index\":9,\"role\":\"receipt\",\"name\":\"result.public.json\",\"relative\":\"result.public.json\",\"path\":\"/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/result.public.json\",\"bytes\":4907,\"sha256\":\"7b2560af593a62c7de4b8ca3a8cb7c2fffaed1408b2f1b356a302a38a7617776\",\"cap\":65536,\"expected_full9\":[\"66306\",\"28071628\",\"1000\",\"1000\",\"33152\",\"1\",\"4907\",\"1793944550782366173\",\"1793944550782366173\"],\"immutable_blob\":\"6638b8f22581832b5451d8b79e275feccec54959\"}]")
+-ROWS=json.loads("[{\"index\":0,\"role\":\"candidate\",\"name\":\"auth.rs\",\"relative\":\"candidate/auth.rs\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/candidate/auth.rs\",\"bytes\":397709,\"sha256\":\"6fe0c3a8af3af126be3217143c85519e9b6d9abf7fcbc33f08e6b553ba5a7c97\",\"cap\":397709,\"expected_full9\":null,\"canonical_blob\":\"19646b7848e5588d72f5514400d607696549611d\"},{\"index\":1,\"role\":\"formatted\",\"name\":\"auth.rs\",\"relative\":\"formatted/auth.rs\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/formatted/auth.rs\",\"bytes\":398266,\"sha256\":\"9f366e631019e55aca61717a324bf13c1995797ed088b5b9d8b80c4a11914f7f\",\"cap\":524288,\"expected_full9\":null,\"canonical_blob\":null},{\"index\":2,\"role\":\"stdout\",\"name\":\"auth.rs\",\"relative\":\"auth.rs.rustfmt.stdout\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/auth.rs.rustfmt.stdout\",\"bytes\":398266,\"sha256\":\"9f366e631019e55aca61717a324bf13c1995797ed088b5b9d8b80c4a11914f7f\",\"cap\":524288,\"expected_full9\":null,\"canonical_blob\":null},{\"index\":3,\"role\":\"stderr\",\"name\":\"auth.rs\",\"relative\":\"auth.rs.rustfmt.stderr\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/auth.rs.rustfmt.stderr\",\"bytes\":0,\"sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"cap\":65536,\"expected_full9\":null,\"canonical_blob\":null},{\"index\":4,\"role\":\"candidate\",\"name\":\"auth_native_jwt.rs\",\"relative\":\"candidate/auth_native_jwt.rs\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/candidate/auth_native_jwt.rs\",\"bytes\":17391,\"sha256\":\"d28cc6af7a1ef30fecb704ac9d3917a2c54ad8d6f8ac1cb77e6f75eca9de5042\",\"cap\":17391,\"expected_full9\":null,\"canonical_blob\":\"2e76f906edefb92406328459fd6c5711dfa7ad2b\"},{\"index\":5,\"role\":\"formatted\",\"name\":\"auth_native_jwt.rs\",\"relative\":\"formatted/auth_native_jwt.rs\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/formatted/auth_native_jwt.rs\",\"bytes\":18771,\"sha256\":\"ca4325e8c853816855a332b85e1ae87fe24ccecdea375c3422cd25451fc49641\",\"cap\":262144,\"expected_full9\":null,\"canonical_blob\":null},{\"index\":6,\"role\":\"stdout\",\"name\":\"auth_native_jwt.rs\",\"relative\":\"auth_native_jwt.rs.rustfmt.stdout\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/auth_native_jwt.rs.rustfmt.stdout\",\"bytes\":18771,\"sha256\":\"ca4325e8c853816855a332b85e1ae87fe24ccecdea375c3422cd25451fc49641\",\"cap\":262144,\"expected_full9\":null,\"canonical_blob\":null},{\"index\":7,\"role\":\"stderr\",\"name\":\"auth_native_jwt.rs\",\"relative\":\"auth_native_jwt.rs.rustfmt.stderr\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/auth_native_jwt.rs.rustfmt.stderr\",\"bytes\":0,\"sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"cap\":65536,\"expected_full9\":null,\"canonical_blob\":null},{\"index\":8,\"role\":\"candidate\",\"name\":\"auth_native_v6_routes.rs\",\"relative\":\"candidate/auth_native_v6_routes.rs\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/candidate/auth_native_v6_routes.rs\",\"bytes\":21959,\"sha256\":\"9114c08a472dfde56837f6bbccf565e471ee2b5286980efb906c3121c71d1761\",\"cap\":21959,\"expected_full9\":null,\"canonical_blob\":\"6bb16ad15f43d0ca908438b4fb26d44d625f476b\"},{\"index\":9,\"role\":\"formatted\",\"name\":\"auth_native_v6_routes.rs\",\"relative\":\"formatted/auth_native_v6_routes.rs\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/formatted/auth_native_v6_routes.rs\",\"bytes\":21959,\"sha256\":\"9114c08a472dfde56837f6bbccf565e471ee2b5286980efb906c3121c71d1761\",\"cap\":262144,\"expected_full9\":null,\"canonical_blob\":null},{\"index\":10,\"role\":\"stdout\",\"name\":\"auth_native_v6_routes.rs\",\"relative\":\"auth_native_v6_routes.rs.rustfmt.stdout\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/auth_native_v6_routes.rs.rustfmt.stdout\",\"bytes\":21959,\"sha256\":\"9114c08a472dfde56837f6bbccf565e471ee2b5286980efb906c3121c71d1761\",\"cap\":262144,\"expected_full9\":null,\"canonical_blob\":null},{\"index\":11,\"role\":\"stderr\",\"name\":\"auth_native_v6_routes.rs\",\"relative\":\"auth_native_v6_routes.rs.rustfmt.stderr\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/auth_native_v6_routes.rs.rustfmt.stderr\",\"bytes\":0,\"sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"cap\":65536,\"expected_full9\":null,\"canonical_blob\":null},{\"index\":12,\"role\":\"candidate\",\"name\":\"federated_auth.rs\",\"relative\":\"candidate/federated_auth.rs\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/candidate/federated_auth.rs\",\"bytes\":56677,\"sha256\":\"8ac92cf16e18ceccb479322103228142fea413f6ce7ecbcfd9e908ed07bd1cdb\",\"cap\":56677,\"expected_full9\":null,\"canonical_blob\":\"21c48f7d50d30076d1aae82d51ce2b782a9739dc\"},{\"index\":13,\"role\":\"formatted\",\"name\":\"federated_auth.rs\",\"relative\":\"formatted/federated_auth.rs\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/formatted/federated_auth.rs\",\"bytes\":56677,\"sha256\":\"8ac92cf16e18ceccb479322103228142fea413f6ce7ecbcfd9e908ed07bd1cdb\",\"cap\":262144,\"expected_full9\":null,\"canonical_blob\":null},{\"index\":14,\"role\":\"stdout\",\"name\":\"federated_auth.rs\",\"relative\":\"federated_auth.rs.rustfmt.stdout\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/federated_auth.rs.rustfmt.stdout\",\"bytes\":56677,\"sha256\":\"8ac92cf16e18ceccb479322103228142fea413f6ce7ecbcfd9e908ed07bd1cdb\",\"cap\":262144,\"expected_full9\":null,\"canonical_blob\":null},{\"index\":15,\"role\":\"stderr\",\"name\":\"federated_auth.rs\",\"relative\":\"federated_auth.rs.rustfmt.stderr\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/federated_auth.rs.rustfmt.stderr\",\"bytes\":0,\"sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"cap\":65536,\"expected_full9\":null,\"canonical_blob\":null},{\"index\":16,\"role\":\"candidate\",\"name\":\"federated_native_jwt.rs\",\"relative\":\"candidate/federated_native_jwt.rs\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/candidate/federated_native_jwt.rs\",\"bytes\":7709,\"sha256\":\"255ec883fbb055fdfaea3d8f771fb723a4bb5b524d87f846dcc197dd5e46e92e\",\"cap\":7709,\"expected_full9\":null,\"canonical_blob\":\"0b4f4b18be19951e6744e1202f2fb1561351add2\"},{\"index\":17,\"role\":\"formatted\",\"name\":\"federated_native_jwt.rs\",\"relative\":\"formatted/federated_native_jwt.rs\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/formatted/federated_native_jwt.rs\",\"bytes\":7772,\"sha256\":\"beed7767f9d0784fc023af725e38b4390fe9df7a68c5639e087f6f493dfe9547\",\"cap\":262144,\"expected_full9\":null,\"canonical_blob\":null},{\"index\":18,\"role\":\"stdout\",\"name\":\"federated_native_jwt.rs\",\"relative\":\"federated_native_jwt.rs.rustfmt.stdout\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/federated_native_jwt.rs.rustfmt.stdout\",\"bytes\":7772,\"sha256\":\"beed7767f9d0784fc023af725e38b4390fe9df7a68c5639e087f6f493dfe9547\",\"cap\":262144,\"expected_full9\":null,\"canonical_blob\":null},{\"index\":19,\"role\":\"stderr\",\"name\":\"federated_native_jwt.rs\",\"relative\":\"federated_native_jwt.rs.rustfmt.stderr\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/federated_native_jwt.rs.rustfmt.stderr\",\"bytes\":0,\"sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"cap\":65536,\"expected_full9\":null,\"canonical_blob\":null},{\"index\":20,\"role\":\"candidate\",\"name\":\"service.rs\",\"relative\":\"candidate/service.rs\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/candidate/service.rs\",\"bytes\":519054,\"sha256\":\"5953adcb817a2210cc2b5266ec145632e7a263d39b7c61b2811e4c9d1ece289a\",\"cap\":519054,\"expected_full9\":null,\"canonical_blob\":\"c75adfe47637c5b2b559e515a754521e93238445\"},{\"index\":21,\"role\":\"formatted\",\"name\":\"service.rs\",\"relative\":\"formatted/service.rs\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/formatted/service.rs\",\"bytes\":519132,\"sha256\":\"6df7278a7b90363fe25a563e10e29db35f47868a2d1d1ea225c91c1b9b6add7d\",\"cap\":655360,\"expected_full9\":null,\"canonical_blob\":null},{\"index\":22,\"role\":\"stdout\",\"name\":\"service.rs\",\"relative\":\"service.rs.rustfmt.stdout\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/service.rs.rustfmt.stdout\",\"bytes\":519132,\"sha256\":\"6df7278a7b90363fe25a563e10e29db35f47868a2d1d1ea225c91c1b9b6add7d\",\"cap\":655360,\"expected_full9\":null,\"canonical_blob\":null},{\"index\":23,\"role\":\"stderr\",\"name\":\"service.rs\",\"relative\":\"service.rs.rustfmt.stderr\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/service.rs.rustfmt.stderr\",\"bytes\":0,\"sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"cap\":65536,\"expected_full9\":null,\"canonical_blob\":null},{\"index\":24,\"role\":\"candidate\",\"name\":\"service_native_auth.rs\",\"relative\":\"candidate/service_native_auth.rs\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/candidate/service_native_auth.rs\",\"bytes\":142316,\"sha256\":\"877d158852e1e47dea0f65e3207592db1226fd92ba50d51f698f2f31d657c1a2\",\"cap\":142316,\"expected_full9\":null,\"canonical_blob\":\"c4b356de7c082b396e7e26024f567fb5337a55bb\"},{\"index\":25,\"role\":\"formatted\",\"name\":\"service_native_auth.rs\",\"relative\":\"formatted/service_native_auth.rs\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/formatted/service_native_auth.rs\",\"bytes\":143153,\"sha256\":\"42a3080d030e6bc22318bf574e47209666f47aa7f336d91fef2c81f0c6b7e165\",\"cap\":262144,\"expected_full9\":null,\"canonical_blob\":null},{\"index\":26,\"role\":\"stdout\",\"name\":\"service_native_auth.rs\",\"relative\":\"service_native_auth.rs.rustfmt.stdout\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/service_native_auth.rs.rustfmt.stdout\",\"bytes\":143153,\"sha256\":\"42a3080d030e6bc22318bf574e47209666f47aa7f336d91fef2c81f0c6b7e165\",\"cap\":262144,\"expected_full9\":null,\"canonical_blob\":null},{\"index\":27,\"role\":\"stderr\",\"name\":\"service_native_auth.rs\",\"relative\":\"service_native_auth.rs.rustfmt.stderr\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/service_native_auth.rs.rustfmt.stderr\",\"bytes\":0,\"sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"cap\":65536,\"expected_full9\":null,\"canonical_blob\":null},{\"index\":28,\"role\":\"candidate\",\"name\":\"service_native_jwt_tests.rs\",\"relative\":\"candidate/service_native_jwt_tests.rs\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/candidate/service_native_jwt_tests.rs\",\"bytes\":33059,\"sha256\":\"f7ca5c2c6e67717287887d31d5d8d40459f5ed6fb40524e5d026c95ee07fa48b\",\"cap\":33059,\"expected_full9\":null,\"canonical_blob\":\"89f3ce081c94e08446a15b11fdc76a1d724ab09e\"},{\"index\":29,\"role\":\"formatted\",\"name\":\"service_native_jwt_tests.rs\",\"relative\":\"formatted/service_native_jwt_tests.rs\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/formatted/service_native_jwt_tests.rs\",\"bytes\":37377,\"sha256\":\"d16659cdb309644e8cf2ee2dcc6384671f034f49325152573f9d384076ab6feb\",\"cap\":262144,\"expected_full9\":null,\"canonical_blob\":null},{\"index\":30,\"role\":\"stdout\",\"name\":\"service_native_jwt_tests.rs\",\"relative\":\"service_native_jwt_tests.rs.rustfmt.stdout\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/service_native_jwt_tests.rs.rustfmt.stdout\",\"bytes\":37377,\"sha256\":\"d16659cdb309644e8cf2ee2dcc6384671f034f49325152573f9d384076ab6feb\",\"cap\":262144,\"expected_full9\":null,\"canonical_blob\":null},{\"index\":31,\"role\":\"stderr\",\"name\":\"service_native_jwt_tests.rs\",\"relative\":\"service_native_jwt_tests.rs.rustfmt.stderr\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/service_native_jwt_tests.rs.rustfmt.stderr\",\"bytes\":0,\"sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"cap\":65536,\"expected_full9\":null,\"canonical_blob\":null},{\"index\":32,\"role\":\"candidate\",\"name\":\"service_native_userpass_tests.rs\",\"relative\":\"candidate/service_native_userpass_tests.rs\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/candidate/service_native_userpass_tests.rs\",\"bytes\":25592,\"sha256\":\"750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea\",\"cap\":25592,\"expected_full9\":null,\"canonical_blob\":\"0aafabbd9af4d381808f73efd2cba76e6eef3558\"},{\"index\":33,\"role\":\"formatted\",\"name\":\"service_native_userpass_tests.rs\",\"relative\":\"formatted/service_native_userpass_tests.rs\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/formatted/service_native_userpass_tests.rs\",\"bytes\":25592,\"sha256\":\"750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea\",\"cap\":262144,\"expected_full9\":null,\"canonical_blob\":null},{\"index\":34,\"role\":\"stdout\",\"name\":\"service_native_userpass_tests.rs\",\"relative\":\"service_native_userpass_tests.rs.rustfmt.stdout\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/service_native_userpass_tests.rs.rustfmt.stdout\",\"bytes\":25592,\"sha256\":\"750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea\",\"cap\":262144,\"expected_full9\":null,\"canonical_blob\":null},{\"index\":35,\"role\":\"stderr\",\"name\":\"service_native_userpass_tests.rs\",\"relative\":\"service_native_userpass_tests.rs.rustfmt.stderr\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/service_native_userpass_tests.rs.rustfmt.stderr\",\"bytes\":0,\"sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"cap\":65536,\"expected_full9\":null,\"canonical_blob\":null},{\"index\":36,\"role\":\"config\",\"name\":\"rustfmt.toml\",\"relative\":\"rustfmt.toml\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/rustfmt.toml\",\"bytes\":17,\"sha256\":\"f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584\",\"cap\":17,\"expected_full9\":[\"66306\",\"30539974\",\"1000\",\"1000\",\"33152\",\"1\",\"17\",\"1793937480154146135\",\"1793937480154146135\"],\"canonical_blob\":null},{\"index\":37,\"role\":\"receipt\",\"name\":\"result.public.json\",\"relative\":\"result.public.json\",\"path\":\"/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/result.public.json\",\"bytes\":22202,\"sha256\":\"60776056ee93fa1fdb557233626ee392385bfe69c8335cd9bc8d236fb0974874\",\"cap\":65536,\"expected_full9\":[\"66306\",\"30541013\",\"1000\",\"1000\",\"33152\",\"1\",\"22202\",\"1793937480615144693\",\"1793937480615144693\"],\"canonical_blob\":\"58827993343d76b96fc92b0bae47432710ffbedd\"}]")
+ DIRECTORY_SPECS=(
+  ("root",None,"/",0,0,None,True),
+  ("home","root","home",0,0,None,True),
+  ("user","home","qian-qi",1000,1000,None,True),
++ ("input","user","heptabao-native-pki-lease400-format-20261106-r1",1000,1000,0o700,False),
+- ("input","user","heptabao-native-jwt-e3afc157-format-20261106-r1",1000,1000,0o700,False),
+  ("candidate","input","candidate",1000,1000,0o700,False),
+  ("formatted","input","formatted",1000,1000,0o700,False),
+ )
+@@ -252,9 +255,9 @@
+  return c.directories["input"]["entry"]["fd"],relative
+ 
+ def open_inputs(c):
++ must(len(ROWS)==10 and [r["index"] for r in ROWS]==list(range(10)),"fixed_rows")
++ must(len({r["path"] for r in ROWS})==10,"unique_fixed_paths")
++ must(sum(r["cap"] for r in ROWS)==READ_CAP and sum(r["bytes"] for r in ROWS)==543621,
+- must(len(ROWS)==38 and [r["index"] for r in ROWS]==list(range(38)),"fixed_rows")
+- must(len({r["path"] for r in ROWS})==38,"unique_fixed_paths")
+- must(sum(r["cap"] for r in ROWS)==READ_CAP and sum(r["bytes"] for r in ROWS)==3701083,
+       "original_fixed_read_caps")
+  for row in ROWS:
+   must(row["path"]==INPUT_ROOT+"/"+row["relative"] and ".." not in row["relative"].split("/"),
+@@ -310,7 +313,7 @@
+   must(sha(value)==row["sha256"],"input_whole_sha256")
+   data[row["relative"]]=value
+   c.check()
++ must(len(data)==10 and c.input_read_bytes==543621,"whole_input_accounting")
+- must(len(data)==38 and c.input_read_bytes==3701083,"whole_input_accounting")
+  return data
+ 
+ def lf_lines(text):
+@@ -377,37 +380,44 @@
+ 
+ def validate_receipt(data):
+  receipt=json.loads(data["result.public.json"].decode("utf-8"))
++ must(receipt["schema"]=="heptabao.native-pki-lease-status-input-rustfmt.v1"
+- must(receipt["schema"]=="heptabao.native-jwt-input-rustfmt.v1"
+       and receipt["sourceCommit"]==SOURCE_COMMIT and receipt["sourceTree"]==SOURCE_TREE,
+       "formatter_receipt_source")
+  must(receipt["status"]=="passed" and receipt["allOwnedStopped"] is True
++      and receipt["withinDeadline"] is True,
+-      and receipt["withinDeadline"] is True and receipt["allFixedSourceInputsUnchanged"] is True,
+       "formatter_receipt_known_terminal")
++ must(receipt["sourceIdentityIsBaseOnly"] is True
++      and receipt["uncommittedCandidateInputs"] is True
++      and receipt["inputCarrierSha256"]==INPUT_CARRIER_SHA256
++      and receipt["inputOriginalAndCandidatePins"]==INPUT_ORIGINAL_AND_CANDIDATE_PINS,
++      "formatter_exact_supplied_candidate_provenance")
+  must(receipt["compileExecuted"] is False and receipt["productExecuted"] is False
+       and receipt["productionChanged"] is False,"formatter_receipt_scope")
+  must(receipt["internalSeconds"]==50 and receipt["newRemoteSupervisorSeconds"]==60,
+       "formatter_receipt_deadlines")
++ must(len(receipt["children"])==2 and all(
+- must(len(receipt["children"])==9 and all(
+       x["exitCode"]==0 and x["reaped"] is True and x["stopped"] is True
+       and x["newProcessGroupCreated"] is False and x["pgid"]==x["supervisorGroup"]
+       for x in receipt["children"]),"formatter_direct_children")
+  expected=[]
++ for i in range(2):
+- for i in range(9):
+   a,b,o,e=ROWS[4*i:4*i+4]
+   expected.append({"name":a["name"],"beforeSha256":a["sha256"],"beforeBytes":a["bytes"],
+                    "afterSha256":b["sha256"],"afterBytes":b["bytes"],
+                    "stderrBytes":e["bytes"],"stderrSha256":e["sha256"]})
+  must(receipt["files"]==expected,"formatter_receipt_exact_files")
+  return {"source_commit":SOURCE_COMMIT,"source_tree":SOURCE_TREE,"job_id":FORMATTER_JOB,
++         "source_identity_is_base_only":True,"uncommitted_candidate_inputs":True,
++         "candidate_source_packet":CANDIDATE_SOURCE_PACKET,
+          "receipt_blob":RECEIPT_BLOB,"receipt_sha256":sha(data["result.public.json"]),
++         "direct_children_reaped":2,"same_supervisor_pgid":True,
+-         "direct_children_reaped":9,"same_supervisor_pgid":True,
+          "independent_group_empty_observed":False,"compile_executed":False}
+ 
+ def make_diffs(c,data):
+  result=[]
+  total=0
+  changed=0
++ for i in range(2):
+- for i in range(9):
+   a,b,o,e=ROWS[4*i:4*i+4]
+   c.check()
+   must([x["role"] for x in (a,b,o,e)]==["candidate","formatted","stdout","stderr"]
+@@ -434,13 +444,13 @@
+   is_changed=before!=after
+   must(bool(patch)==is_changed,"strict_diff_changed_flag")
+   changed+=is_changed
++  result.append({"name":a["name"],"immutable_candidate_blob":a["immutable_blob"],
+-  result.append({"name":a["name"],"canonical_candidate_blob":a["canonical_blob"],
+       "before_bytes":len(before),"before_sha256":sha(before),
+       "after_bytes":len(after),"after_sha256":sha(after),
+       "stdout_byte_equal":True,"stderr_empty":True,"changed":is_changed,
+       "unified_diff":patch,"diff_bytes":patch_bytes,"diff_sha256":sha(patch.encode("utf-8")),
+       "strict_forward_equal":True,"strict_reverse_equal":True})
++ must(changed==1 and len(result)-changed==1,"formatter_changed_count")
+- must(changed==6 and len(result)-changed==3,"formatter_changed_count")
+  must(data["rustfmt.toml"]==CONFIG_BYTES,"fixed_configuration_bytes")
+  return result,total
+ 
+@@ -450,7 +460,7 @@
+  directory_after={label:directory_pair(c,r) for label,r in c.directories.items()}
+  for record in reversed(c.files):
+   c.close_once(record["entry"])
++ must(len(c.files)==10 and all(r["entry"]["closed"] and r["entry"]["close_error"] is None
+- must(len(c.files)==38 and all(r["entry"]["closed"] and r["entry"]["close_error"] is None
+                                for r in c.files),"input_once_close")
+  c.check()
+  return directory_after
+@@ -459,7 +469,7 @@
+  return [{"index":r["row"]["index"],"role":r["row"]["role"],"name":r["row"]["name"],
+           "path":r["row"]["path"],"bytes":r["row"]["bytes"],"sha256":r["row"]["sha256"],
+           "original_file_cap":r["row"]["cap"],"prior_full9":r["row"]["expected_full9"],
++          "immutable_blob":r["row"]["immutable_blob"],"before_full9":r["before"],
+-          "canonical_blob":r["row"]["canonical_blob"],"before_full9":r["before"],
+           "named_before_full9":r["named_before"],"read_after":r["read_after"],
+           "final_after":r["final_after"],"version":version(r["before"]),
+           "eof":r["eof"],"read_calls":r["read_calls"],"read_bytes":r["read_bytes"],
+@@ -540,24 +550,26 @@
+   diffs,diff_bytes=make_diffs(c,data)
+   c.phase="recheck_and_close_inputs"
+   directory_after=recheck_inputs_and_close(c)
++  report={"schema":"heptabao.native-pki-formatter10-observation.v1",
+-  report={"schema":"heptabao.native-jwt-formatter38-observation.v1",
+     "input_observation_complete":True,"collector_source_sha256":self_sha,
+     "source_commit":SOURCE_COMMIT,"source_tree":SOURCE_TREE,
++    "source_identity_is_base_only":True,"uncommitted_candidate_inputs":True,
++    "candidate_source_packet":CANDIDATE_SOURCE_PACKET,
+     "formatter_source_blob":FORMATTER_SOURCE_BLOB,"formatter_receipt":receipt,
+     "input_root":INPUT_ROOT,"output_root":OUTPUT_ROOT,
+     "identity_fields":IDENTITY_FIELDS,"identity_numbers":"decimal strings",
++    "input_count":10,"input_bytes":543621,"original_read_cap":READ_CAP,
+-    "input_count":38,"input_bytes":3701083,"original_read_cap":READ_CAP,
+     "input_files":public_input_records(c),
+     "directories_before":{k:{"full9":r["before"],"shared_identity_only":r["shared"]}
+                            for k,r in c.directories.items()},
+     "directories_after_inputs":directory_after,
+     "diffs":diffs,"diff_total_bytes":diff_bytes,
++    "source_bytes":179535,"formatted_bytes":179581,"changed_files":1,"unchanged_files":1,
+-    "source_bytes":1221466,"formatted_bytes":1228699,"changed_files":6,"unchanged_files":3,
+     "configuration_utf8":CONFIG_BYTES.decode("utf-8"),
++    "reconstruction":{"candidates":"two exact immutable PKI candidate blobs supplied in candidate_source_packet; not base-tree leaves",
+-    "reconstruction":{"candidates":"nine exact canonical e3af blobs",
+        "formatted":"strict bidirectional unified diffs against those candidate bytes",
+        "stdout":"byte equal to corresponding actual formatted file",
++       "stderr":"two empty byte strings",
+-       "stderr":"nine empty byte strings",
+        "config":"configuration_utf8 encoded as UTF-8",
+        "receipt":"exact already archived receipt blob "+RECEIPT_BLOB},
+     "counters_before_publication":c.counters(),
+@@ -565,7 +577,7 @@
+        "per_read_bytes":READ_CHUNK,"read_calls":READ_CALL_CAP,"metadata_calls":META_CAP,
+        "fd_acquisitions":FD_CAP,"peak_owned_fds":PEAK_FD_CAP,"diff_bytes":DIFF_CAP,
+        "report_bytes":REPORT_CAP,"stdout_bytes":STDOUT_CAP},
++    "all_10_input_fds_once_closed":True,
+-    "all_38_input_fds_once_closed":True,
+     "input_observations_are_sequential":True,
+     "input_fds_closed_before_report_publication":True,
+     "output_and_directory_fd_closure_requires_final_stdout_and_authority":True,
+@@ -585,9 +597,9 @@
+  handlers_restored=all(not x["installed"] or x["restored"] for x in c.handlers) and not c.handler_restore_errors
+  success=(success and error is None and c.pending_signal is None and elapsed<LIMIT
+           and all_closed and handlers_restored and c.umask_restored
++          and len(c.ledger)==18 and all(x["fd"] is not None for x in c.ledger)
++          and c.report_pin is not None and c.input_read_bytes==543621)
++ summary={"schema":"heptabao.native-pki-formatter10-terminal.v1",
+-          and len(c.ledger)==46 and all(x["fd"] is not None for x in c.ledger)
+-          and c.report_pin is not None and c.input_read_bytes==3701083)
+- summary={"schema":"heptabao.native-jwt-formatter38-terminal.v1",
+    "status":"passed" if success else "failed","error":error,
+    "collector_source_sha256":self_sha,"input_count":len(c.files),
+    "report":c.report_pin,"output_root_created":c.output_created,"report_created":c.report_created,

@@ -1,0 +1,13 @@
+{
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-observe-20261106-r1/observation.public.json",
+      "offset": 0,
+      "limit": 30131,
+      "expected_version": "66306:30842948:30131:1793946915079275200:1793946915079275200"
+    }
+  },
+  "idempotency_key": "heptabao-native-pki-lease400-format10-observe-r1-report-body0"
+}

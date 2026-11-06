@@ -1,0 +1,205 @@
+{
+  "schema": "heptabao.jwt-pki-finalstage-info-source-checks.v1",
+  "pass": true,
+  "checks": 47,
+  "rows": [
+    {
+      "check": "exact_successful_info_baseline",
+      "pass": true
+    },
+    {
+      "check": "exact_after_source_pin",
+      "pass": true
+    },
+    {
+      "check": "ten_explicit_literal_bindings",
+      "pass": true
+    },
+    {
+      "check": "once_literal:jwt_e3af_rog_source_gitfirst_r1",
+      "pass": true
+    },
+    {
+      "check": "once_literal:c1429991e9c597d1639f02a68f791043e6c8b9e5",
+      "pass": true
+    },
+    {
+      "check": "once_literal:111605",
+      "pass": true
+    },
+    {
+      "check": "once_literal:aebf043cfcb5d60611dd67f3ed93c0caee8098091a70c8b6",
+      "pass": true
+    },
+    {
+      "check": "once_literal:heptabao-native-jwt-e3afc157-rog-source-observe-",
+      "pass": true
+    },
+    {
+      "check": "once_literal:/home/qian-qi/heptabao-native-jwt-source-e3afc15",
+      "pass": true
+    },
+    {
+      "check": "once_literal:{\"blob\":\"dbd4063ee0bcadab95c7649ef189e91a99c2402",
+      "pass": true
+    },
+    {
+      "check": "once_literal:[{\"id\":\"a515896bf0bb7d3653cc9093f51818ee2c34f76b",
+      "pass": true
+    },
+    {
+      "check": "once_literal:s.job===\"1a1aed43ac9-fc05-62ec\"",
+      "pass": true
+    },
+    {
+      "check": "once_literal:s.nextStdout===370",
+      "pass": true
+    },
+    {
+      "check": "all_other_bytes_identical",
+      "pass": true
+    },
+    {
+      "check": "inverse_whole_original",
+      "pass": true
+    },
+    {
+      "check": "strict_three_hunk_bidirectional",
+      "pass": true
+    },
+    {
+      "check": "complete_same_order_function_inventory",
+      "pass": true
+    },
+    {
+      "check": "only_existing_literal_guard_functions_changed",
+      "pass": true
+    },
+    {
+      "check": "whole_function:gfNeed",
+      "pass": true
+    },
+    {
+      "check": "whole_function:gfMetaEquals",
+      "pass": true
+    },
+    {
+      "check": "whole_function:gfState",
+      "pass": true
+    },
+    {
+      "check": "whole_function:gfSave",
+      "pass": true
+    },
+    {
+      "check": "whole_function:gfIntegerText",
+      "pass": true
+    },
+    {
+      "check": "whole_function:gfInitializeOnlyAfterRootGO",
+      "pass": true
+    },
+    {
+      "check": "whole_function:gfPrepareOne",
+      "pass": true
+    },
+    {
+      "check": "whole_function:gfInvokePreparedOnce",
+      "pass": true
+    },
+    {
+      "check": "whole_function:gfAcceptArchivedSDK",
+      "pass": true
+    },
+    {
+      "check": "whole_function:gfCloseOriginalObserver",
+      "pass": true
+    },
+    {
+      "check": "whole_function:gfReconcileSameGitArchiveReadOnly",
+      "pass": true
+    },
+    {
+      "check": "whole_function:gfRun",
+      "pass": true
+    },
+    {
+      "check": "exact_old_request_pin",
+      "pass": true
+    },
+    {
+      "check": "request_only_path_and_key",
+      "pass": true
+    },
+    {
+      "check": "single_public_file_info_no_other_arguments",
+      "pass": true
+    },
+    {
+      "check": "whole_exact_request_pin",
+      "pass": true
+    },
+    {
+      "check": "bounded_key_and_owned_path",
+      "pass": true
+    },
+    {
+      "check": "actual_original_closed_status:0",
+      "pass": true
+    },
+    {
+      "check": "exact_original_native:0",
+      "pass": true
+    },
+    {
+      "check": "actual_original_closed_status:1",
+      "pass": true
+    },
+    {
+      "check": "exact_original_native:1",
+      "pass": true
+    },
+    {
+      "check": "known_original_zero_full_durable_authority",
+      "pass": true
+    },
+    {
+      "check": "original_complete_stream_extents",
+      "pass": true
+    },
+    {
+      "check": "original_whole_stdout_stderr",
+      "pass": true
+    },
+    {
+      "check": "source_summary_without_compilation",
+      "pass": true
+    },
+    {
+      "check": "original_metadata_budget_and_lossless_full9",
+      "pass": true
+    },
+    {
+      "check": "separate_once_info_GO_and_no_body_admission",
+      "pass": true
+    },
+    {
+      "check": "original_SDK_and_whole_payload_before_parse_paths_exact",
+      "pass": true
+    },
+    {
+      "check": "SOURCE_only_attach_existing_context",
+      "pass": true
+    }
+  ],
+  "hunks": 3,
+  "literalBindings": 10,
+  "functions": 14,
+  "unchangedFunctions": 12,
+  "changedFunctions": [
+    "gfAuthorizeStageResultInfoOnly",
+    "gfValidateRequest"
+  ],
+  "NativeCalls": 0,
+  "candidateExecuted": false
+}

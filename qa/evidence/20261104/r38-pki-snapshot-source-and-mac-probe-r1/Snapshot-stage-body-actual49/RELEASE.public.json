@@ -1,0 +1,93 @@
+{
+  "schema": "heptabao.snapshot8c95-stage-report-body-owner-release.v1",
+  "owner": "/root/compatibility_audit",
+  "host": "rog",
+  "originalJob": "1a1afa74868-fc05-6a7e",
+  "slot": "snapshot_8c95_rog_source_gitfirst_r1",
+  "rootGO": "04b08af80d7fa198a95762e6fdbfdd65406df266",
+  "report": {
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-8c95fb0a-20261106-r1/control/stage-result.public.json",
+    "version": "66306:31235361:28015:1793948357106358650:1793948357106358650",
+    "body": {
+      "blob": "6b514b3472e9aafb920c77f99198ccda10a9d25c",
+      "bytes": 28015,
+      "sha256": "750f5cb413cf08f1a7ba9b126320e4bbd1a9682e308b9076d2f13e54e98157c6"
+    },
+    "originalOperation": "e997ee50bcd916ec47d15426485e5d53c66b8b7d8e0c759dd3b316fa95dac719",
+    "metadataOperation": "500bddf3a5ca158179ff8dfb356f711452c68ac220261552fdf63611512681a3",
+    "originalPayload": {
+      "blob": "a95fc75963c87c9a47f652b06393df6cc96c56f7",
+      "bytes": 37804,
+      "sha256": "a67345a693b4ad5056e78afa3c3012e27ff7251480303eeb2d9f04e27c0ab0d7"
+    },
+    "semanticQualification": false
+  },
+  "observer": {
+    "id": "e997ee50bcd916ec47d15426485e5d53c66b8b7d8e0c759dd3b316fa95dac719",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "a95fc75963c87c9a47f652b06393df6cc96c56f7",
+      "bytes": 37804,
+      "sha256": "a67345a693b4ad5056e78afa3c3012e27ff7251480303eeb2d9f04e27c0ab0d7"
+    },
+    "payloadTree": "7148c45c7c46d57ee661a08d8ed6837330a8c78b",
+    "nativeText": {
+      "blob": "9b7ddfb72af77d9a5bb5f2267874124387fcc6f4",
+      "bytes": 37701,
+      "sha256": "2cc3156ca0e6ab7b0c0b1c59d13f2c61902da7520ad4d51d1efd55d2ed7249ef"
+    },
+    "pages": 5,
+    "completedInactive": true
+  },
+  "statusNative": {
+    "blob": "7c6d0bd5c38e26e460a7f43b83a830617d8a1d34",
+    "bytes": 802,
+    "sha256": "afc23df3214263482799b728a096087ffe4956a0381be6e2c2232365b265f7c8"
+  },
+  "bodyObserverNativeCalls": 7,
+  "bodyObserverImmutablePages": 5,
+  "wholeDecodedReportExpected": {
+    "blob": "6b514b3472e9aafb920c77f99198ccda10a9d25c",
+    "bytes": 28015,
+    "sha256": "750f5cb413cf08f1a7ba9b126320e4bbd1a9682e308b9076d2f13e54e98157c6"
+  },
+  "allOriginalObservers": [
+    {
+      "id": "f7460c09894a68fe7622de01561bbd14f4c5a65b7cb24789538a4dd0a3f2e845",
+      "tool": "process_status",
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "1e40beb579745ca0e6774933faadb7ad74ea296cf7422bd5a40270bfb60a50f4",
+      "tool": "process_read",
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "500bddf3a5ca158179ff8dfb356f711452c68ac220261552fdf63611512681a3",
+      "tool": "file_info",
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "e997ee50bcd916ec47d15426485e5d53c66b8b7d8e0c759dd3b316fa95dac719",
+      "tool": "binary_read",
+      "pages": 5,
+      "completedInactive": true
+    }
+  ],
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "ownedNativeFutureActive": false,
+  "allOriginalNativeFuturesClosed": true,
+  "originalStageJobTerminalRootQualification": "13d5ae1324ebe64a2ce7d8882a3d551bc8e8a73e",
+  "newProcessStarts": 0,
+  "formatterCalls": 0,
+  "cargoCalls": 0,
+  "productCalls": 0,
+  "semanticQualification": false,
+  "laneReleased": true,
+  "nextWork": "Only pure Git source/regression work unless root gives another exact GO."
+}

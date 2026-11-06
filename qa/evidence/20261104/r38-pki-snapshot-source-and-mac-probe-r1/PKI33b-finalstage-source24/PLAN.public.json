@@ -1,0 +1,99 @@
+{
+  "schema": "heptabao.native-jwt-pki-finalstage.source-proposal.r1",
+  "status": "SOURCE_ONLY_EXACT_NOT_SUBMITTED",
+  "source": {
+    "blob": "038e14fda7a776eb5909bfaa7152872c2f1d7add",
+    "bytes": 28799,
+    "sha256": "9e82c538579389d6bd7ebc85795d3104dc24053b7df6e014c5bfe972ab3955c4"
+  },
+  "request": {
+    "blob": "1b3da82ecf429adc5d816a2ff2cb78810059ac90",
+    "bytes": 111811,
+    "sha256": "576e7eb3f5f6a20d49e7fdae8939f002153ec69ebb41a891a08c80a8eb75dde4"
+  },
+  "carrier": {
+    "blob": "f9166bc801c5b10e12b77274f485d27d61cd499a",
+    "bytes": 79951,
+    "sha256": "85fd6e473ce1e231f1bcfbd2bcf2bef760e6a4e551040c55ee3274606acebb77"
+  },
+  "journal": {
+    "blob": "78f8c3190d0ca1dc3551b3937cacd46e7d7b7536",
+    "bytes": 19052,
+    "sha256": "e076e7c32b26aa15fe7b2b7e66e2b14b4ba3571aa2d8cd3caba1c6ad938a16c0"
+  },
+  "slot": "jwt_pki_33b814c7_rog_source_gitfirst_r1",
+  "callKeyPrefix": "jwt-pki-33b814c7-rog-source-",
+  "observerKeyPrefix": "heptabao-native-jwt-pki-33b814c7-rog-source-observe-r1-",
+  "canonical": {
+    "commit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+    "tree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+    "parent": "808e45d690f177ecb922e13d1ed19f7877156094",
+    "leaves": 3916,
+    "merkleTrees": 358,
+    "trackedBytes": 62297347,
+    "index": {
+      "bytes": 452026,
+      "sha256": "7a2ab1d97a5140120034276c0d21547ffa935867055a0c5af95f7f061f8f3df0"
+    },
+    "newCommitsFrom495": 14,
+    "historyCount": 3766,
+    "proof": {
+      "blob": "190c74b3c05d6e9c63977104456ff28998f87b98",
+      "whole": true
+    }
+  },
+  "root": "/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1",
+  "sourcePath": "/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1/source",
+  "resultPath": "/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1/control/stage-result.public.json",
+  "base": {
+    "source": "40cdd07ec0e87656c2ea2e65c13a0734ffde6c51",
+    "request": "c1429991e9c597d1639f02a68f791043e6c8b9e5",
+    "journal": "4a2e8391563bbeee6b2cfb7e3f0605c19e46baf2",
+    "sourceStageQualification": "fa0a83fb172bb5a04a95ed8ab65de2e3dd724c13"
+  },
+  "changes": {
+    "source": 13,
+    "sourceHunks": 4,
+    "sourceDefinitions20AllWholeUnchanged": true,
+    "journalLiterals": 5,
+    "journalHunks": 2,
+    "historicalCarrierWholeUnchanged": true
+  },
+  "budgets": {
+    "stage": 300,
+    "git": 90,
+    "clone": 180,
+    "outer": 360,
+    "stdin": 262144,
+    "cleanupTerm": 5,
+    "cleanupKill": 5,
+    "processRead": 16384,
+    "immutablePages": 8192,
+    "payloadCap": 1048576,
+    "oneCallPerLane": true
+  },
+  "nativeBinding": {
+    "sha256": "043dd4147f135f879d2ad30d1d31bec7ee692a940eac9b8a31a892ce6da7e732",
+    "native_fingerprint": "305633534227472263",
+    "typed_bytes": 111718
+  },
+  "historicalControls": {
+    "compileOnly": true,
+    "neverExecute": true,
+    "old44_7_9_1_notNewTestQualification": true
+  },
+  "buildAfterStage": {
+    "correctedSource17": "1146ab7dacb15e8748700c3c081b51e6f835ecdc",
+    "unique": 149,
+    "profileInstances": 166,
+    "stageWholeBody": null,
+    "stageAuthority": null,
+    "buildControlPublication": null,
+    "RuntimeGO": false
+  },
+  "authorChecks": 66,
+  "Runtime": 0,
+  "Cargo": 0,
+  "productTests": 0,
+  "gitCommitOrRefMutations": 0
+}

@@ -1,0 +1,22 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "{\"sha\":\"8c95fb0a8b2f61933a09b04986df2bafc9e7095c\",\"node_id\":\"C_kwDOUGncwNoAKDhjOTVmYjBhOGIyZjYxOTMzYTA5YjA0OTg2ZGYyYmFmYzllNzA5NWM\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/8c95fb0a8b2f61933a09b04986df2bafc9e7095c\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/8c95fb0a8b2f61933a09b04986df2bafc9e7095c\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-06T06:36:57Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-06T06:36:57Z\"},\"tree\":{\"sha\":\"f412f1524e08a56e23374897d329bfcf6295f4fe\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/f412f1524e08a56e23374897d329bfcf6295f4fe\"},\"message\":\"source: integrate native snapshot standby streaming with retained outcome custody\\n\\nFreeze reviewed 23-file candidate only. Preserve actual restored receipt, original Actor, private binary witnesses and audit failure UNKNOWN. Unformatted and uncompiled; CLI failures and replacement gates remain open.\",\"parents\":[{\"sha\":\"808e45d690f177ecb922e13d1ed19f7877156094\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/808e45d690f177ecb922e13d1ed19f7877156094\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/808e45d690f177ecb922e13d1ed19f7877156094\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+    "title": "8c95fb0a8b2f61933a09b04986df2bafc9e7095c",
+    "modified_date": null,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/8c95fb0a8b2f61933a09b04986df2bafc9e7095c",
+    "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/8c95fb0a8b2f61933a09b04986df2bafc9e7095c",
+    "display_title": "8c95fb0a8b2f61933a09b04986df2bafc9e7095c",
+    "structuredContent": {
+      "title": "8c95fb0a8b2f61933a09b04986df2bafc9e7095c",
+      "content": "{\"sha\":\"8c95fb0a8b2f61933a09b04986df2bafc9e7095c\",\"node_id\":\"C_kwDOUGncwNoAKDhjOTVmYjBhOGIyZjYxOTMzYTA5YjA0OTg2ZGYyYmFmYzllNzA5NWM\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/8c95fb0a8b2f61933a09b04986df2bafc9e7095c\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/8c95fb0a8b2f61933a09b04986df2bafc9e7095c\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-06T06:36:57Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-06T06:36:57Z\"},\"tree\":{\"sha\":\"f412f1524e08a56e23374897d329bfcf6295f4fe\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/f412f1524e08a56e23374897d329bfcf6295f4fe\"},\"message\":\"source: integrate native snapshot standby streaming with retained outcome custody\\n\\nFreeze reviewed 23-file candidate only. Preserve actual restored receipt, original Actor, private binary witnesses and audit failure UNKNOWN. Unformatted and uncompiled; CLI failures and replacement gates remain open.\",\"parents\":[{\"sha\":\"808e45d690f177ecb922e13d1ed19f7877156094\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/808e45d690f177ecb922e13d1ed19f7877156094\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/808e45d690f177ecb922e13d1ed19f7877156094\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+      "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/8c95fb0a8b2f61933a09b04986df2bafc9e7095c"
+    }
+  },
+  "isError": false
+}

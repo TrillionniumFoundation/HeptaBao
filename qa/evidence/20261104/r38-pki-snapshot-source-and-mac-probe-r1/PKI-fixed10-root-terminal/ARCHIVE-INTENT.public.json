@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "R38-root-PKI-fixed10-terminal",
+  "records": [
+    {
+      "name": "root-qualification.json",
+      "blob": "9ab252931ca5d239f8635fbfd97a7b0aa9408f2f",
+      "bytes": 8495,
+      "sha256": "843583f5f76e7bbda5abaa11c1dbc18ae7fc7c0bbef1c6e7e4fd0c9b8b132660"
+    },
+    {
+      "name": "root-verifier.js",
+      "blob": "aec8c0fd890577838ee4442214dea62310ecd934",
+      "bytes": 9426,
+      "sha256": "ef4e8b45383584f29a733819ea32c82f720334ea6350234c87b248ca4027f827"
+    },
+    {
+      "name": "original-journal-verifier.unchanged.js",
+      "blob": "3c0ef26c0193c7e39724add83657466d88f560bb",
+      "bytes": 3404,
+      "sha256": "600711669602a25a77f41b713b51409130853ba1918af398aea928c01c5c6e01"
+    }
+  ],
+  "expected_data_tree": "2ac60fd589412f4c85f3e7fe9cfa02744f749082",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

@@ -1,0 +1,739 @@
+{
+  "schema": "heptabao.root-source-review.snapshot24-exhaustive-refusal-arms.v1",
+  "status": "PASS_24_MINIMAL_TEST_FIXTURE_ARMS",
+  "checks": [
+    {
+      "name": "whole118_3734641",
+      "passed": true
+    },
+    {
+      "name": "original_full_tree_matches_root_frozen3928",
+      "passed": true
+    },
+    {
+      "name": "exact8c95_parent_and_source_only",
+      "passed": true
+    },
+    {
+      "name": "canonical906_inventory_and_reported_whole",
+      "passed": true
+    },
+    {
+      "name": "exact33hit151reported_inventory",
+      "passed": true
+    },
+    {
+      "name": "24_unique_existing_leaves",
+      "passed": true
+    },
+    {
+      "name": "pins_service_native_controlgroups_271_namespace_ha_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "strict_one_hunk_service_native_controlgroups_271_namespace_ha_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "only_one_guarded_rejection_insert_service_native_controlgroups_271_namespace_ha_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "no_removal_or_test_change_service_native_controlgroups_271_namespace_ha_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "pins_service_native_controlgroups_271_namespace_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "strict_one_hunk_service_native_controlgroups_271_namespace_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "only_one_guarded_rejection_insert_service_native_controlgroups_271_namespace_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "no_removal_or_test_change_service_native_controlgroups_271_namespace_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "pins_service_native_file_gc_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "strict_one_hunk_service_native_file_gc_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "only_one_guarded_rejection_insert_service_native_file_gc_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "no_removal_or_test_change_service_native_file_gc_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "pins_service_native_flat_retirement_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "strict_one_hunk_service_native_flat_retirement_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "only_one_guarded_rejection_insert_service_native_flat_retirement_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "no_removal_or_test_change_service_native_flat_retirement_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "pins_service_native_kv2_import_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "strict_one_hunk_service_native_kv2_import_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "only_one_guarded_rejection_insert_service_native_kv2_import_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "no_removal_or_test_change_service_native_kv2_import_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "pins_service_native_kv2_large_ha_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "strict_one_hunk_service_native_kv2_large_ha_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "only_one_guarded_rejection_insert_service_native_kv2_large_ha_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "no_removal_or_test_change_service_native_kv2_large_ha_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "pins_service_native_kv2_mount_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "strict_one_hunk_service_native_kv2_mount_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "only_one_guarded_rejection_insert_service_native_kv2_mount_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "no_removal_or_test_change_service_native_kv2_mount_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "pins_service_native_kv2_storage_witness_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "strict_one_hunk_service_native_kv2_storage_witness_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "only_one_guarded_rejection_insert_service_native_kv2_storage_witness_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "no_removal_or_test_change_service_native_kv2_storage_witness_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "pins_service_native_namespace_tree_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "strict_one_hunk_service_native_namespace_tree_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "only_one_guarded_rejection_insert_service_native_namespace_tree_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "no_removal_or_test_change_service_native_namespace_tree_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "pins_service_native_pki_archive_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "strict_one_hunk_service_native_pki_archive_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "only_one_guarded_rejection_insert_service_native_pki_archive_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "no_removal_or_test_change_service_native_pki_archive_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "pins_service_native_remount_v6_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "strict_one_hunk_service_native_remount_v6_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "only_one_guarded_rejection_insert_service_native_remount_v6_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "no_removal_or_test_change_service_native_remount_v6_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "pins_service_native_ssh_archive_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "strict_one_hunk_service_native_ssh_archive_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "only_one_guarded_rejection_insert_service_native_ssh_archive_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "no_removal_or_test_change_service_native_ssh_archive_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "pins_service_native_storage_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "strict_one_hunk_service_native_storage_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "only_one_guarded_rejection_insert_service_native_storage_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "no_removal_or_test_change_service_native_storage_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "pins_service_native_transit_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "strict_one_hunk_service_native_transit_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "only_one_guarded_rejection_insert_service_native_transit_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "no_removal_or_test_change_service_native_transit_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "pins_service_native_v6_ha_cold_restore_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "strict_one_hunk_service_native_v6_ha_cold_restore_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "only_one_guarded_rejection_insert_service_native_v6_ha_cold_restore_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "no_removal_or_test_change_service_native_v6_ha_cold_restore_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "pins_service_native_v6_ha_historical_restore_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "strict_one_hunk_service_native_v6_ha_historical_restore_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "only_one_guarded_rejection_insert_service_native_v6_ha_historical_restore_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "no_removal_or_test_change_service_native_v6_ha_historical_restore_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "pins_service_native_v6_ha_restore_borrowed_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "strict_one_hunk_service_native_v6_ha_restore_borrowed_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "only_one_guarded_rejection_insert_service_native_v6_ha_restore_borrowed_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "no_removal_or_test_change_service_native_v6_ha_restore_borrowed_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "pins_service_native_v6_ha_snapshot_repair_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "strict_one_hunk_service_native_v6_ha_snapshot_repair_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "only_one_guarded_rejection_insert_service_native_v6_ha_snapshot_repair_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "no_removal_or_test_change_service_native_v6_ha_snapshot_repair_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "pins_service_native_v6_ha_snapshot_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "strict_one_hunk_service_native_v6_ha_snapshot_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "only_one_guarded_rejection_insert_service_native_v6_ha_snapshot_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "no_removal_or_test_change_service_native_v6_ha_snapshot_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "pins_service_native_v6_migration_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "strict_one_hunk_service_native_v6_migration_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "only_one_guarded_rejection_insert_service_native_v6_migration_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "no_removal_or_test_change_service_native_v6_migration_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "pins_service_rate_limit_quota_139_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "strict_one_hunk_service_rate_limit_quota_139_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "only_one_guarded_rejection_insert_service_rate_limit_quota_139_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "no_removal_or_test_change_service_rate_limit_quota_139_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "pins_service_snapshot_lossless_export_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "strict_one_hunk_service_snapshot_lossless_export_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "only_one_guarded_rejection_insert_service_snapshot_lossless_export_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "no_removal_or_test_change_service_snapshot_lossless_export_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "pins_service_snapshot_transfer.rs",
+      "passed": true
+    },
+    {
+      "name": "strict_one_hunk_service_snapshot_transfer.rs",
+      "passed": true
+    },
+    {
+      "name": "only_one_guarded_rejection_insert_service_snapshot_transfer.rs",
+      "passed": true
+    },
+    {
+      "name": "no_removal_or_test_change_service_snapshot_transfer.rs",
+      "passed": true
+    },
+    {
+      "name": "pins_service_snapshot_v6_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "strict_one_hunk_service_snapshot_v6_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "only_one_guarded_rejection_insert_service_snapshot_v6_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "no_removal_or_test_change_service_snapshot_v6_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "24hunks65addedlines_zero_newtests",
+      "passed": true
+    },
+    {
+      "name": "23test_files_one_cfg_fixture",
+      "passed": true
+    },
+    {
+      "name": "fixture_was_test_linux_only",
+      "passed": true
+    },
+    {
+      "name": "enum_crate_private_forward_same_cfg",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_http_snapshot.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_http_snapshot.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_local_unseal_single_capture_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_local_unseal_single_capture_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_native_controlgroups_271_namespace_ha_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_native_controlgroups_271_namespace_ha_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_native_controlgroups_271_namespace_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_native_controlgroups_271_namespace_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_native_empty_snapshot_floor_ha_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_native_empty_snapshot_floor_ha_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_native_empty_snapshot_floor_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_native_empty_snapshot_floor_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_native_file_gc_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_native_file_gc_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_native_flat_retirement_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_native_flat_retirement_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_native_kv2_import_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_native_kv2_import_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_native_kv2_large_ha_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_native_kv2_large_ha_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_native_kv2_mount_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_native_kv2_mount_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_native_kv2_storage_witness_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_native_kv2_storage_witness_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_native_namespace_tree_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_native_namespace_tree_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_native_pki_archive_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_native_pki_archive_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_native_remount_v6_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_native_remount_v6_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_native_seed_import_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_native_seed_import_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_native_ssh_archive_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_native_ssh_archive_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_native_storage_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_native_storage_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_native_transit_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_native_transit_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_native_v6_ha_cold_restore_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_native_v6_ha_cold_restore_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_native_v6_ha_historical_restore_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_native_v6_ha_historical_restore_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_native_v6_ha_restore_borrowed_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_native_v6_ha_restore_borrowed_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_native_v6_ha_snapshot_repair_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_native_v6_ha_snapshot_repair_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_native_v6_ha_snapshot_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_native_v6_ha_snapshot_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_native_v6_migration_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_native_v6_migration_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_rate_limit_quota_139_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_rate_limit_quota_139_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_recovery_keys.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_recovery_keys.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_snapshot_lossless_export_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_snapshot_lossless_export_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_snapshot_redirect_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_snapshot_redirect_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_snapshot_transfer.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_snapshot_transfer.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_snapshot_typed_root_identity_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_snapshot_typed_root_identity_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_hit_lines_service_snapshot_v6_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_disposition_membership_service_snapshot_v6_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "canonical_order_matches_prior_index",
+      "passed": true
+    }
+  ],
+  "check_count": 173,
+  "source_packet": "c453529c0b43e6f7478e4d2a4899383d2d097dcd",
+  "parent_commit": "8c95fb0a8b2f61933a09b04986df2bafc9e7095c",
+  "parent_tree": "f412f1524e08a56e23374897d329bfcf6295f4fe",
+  "changed_leaves": 24,
+  "added_lines": 65,
+  "removed_lines": 0,
+  "added_bytes": 3575,
+  "new_tests": 0,
+  "product_HTTP_callback_changed": false,
+  "expected_tree": "9c800e97a2527e7f01c3a4b0be594e6762f9581e",
+  "leaves": 3928,
+  "tracked_bytes": 62463643,
+  "index": {
+    "blob": "a36e8c2f97ef062ee804114efb22b4a3a9b08899",
+    "bytes": 453379,
+    "sha256": "80a220f0a5d03d5b9cbe5cdb6a69b2e1c29d794f0abe367a98b5be096996e727"
+  },
+  "root_independently_recomputed": {
+    "canonical906_inventory_metadata": true,
+    "whole33_hit_sources_and151_lines": true,
+    "all24_strict_forward_reverse_and_exact_insertion": true
+  },
+  "author_finite_scan": {
+    "rust_leaves": 906,
+    "bytes": 20918237,
+    "unread_by_root_nonhit_source_bodies": 873,
+    "scope": "Defining crate server/src only; not global Rust semantics."
+  },
+  "limits": {
+    "formatted": false,
+    "compiled": false,
+    "component_tests_executed": false,
+    "real_Service_audit_failure_gates_executed": false,
+    "old_CLI_B04_B05_failure_unchanged": true,
+    "PKI33b_not_included": true,
+    "full_replacement": false,
+    "production_cutover": false,
+    "legacy_cleanup": false
+  },
+  "root_Runtime_calls": 0
+}

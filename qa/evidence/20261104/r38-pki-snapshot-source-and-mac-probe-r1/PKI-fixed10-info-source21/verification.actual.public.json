@@ -1,0 +1,169 @@
+{
+  "schema": "heptabao.collector-report-info-source-verification.v1",
+  "status": "passed",
+  "checks": [
+    {
+      "name": "replacement_unique_0",
+      "pass": true
+    },
+    {
+      "name": "replacement_unique_1",
+      "pass": true
+    },
+    {
+      "name": "replacement_unique_2",
+      "pass": true
+    },
+    {
+      "name": "replacement_unique_3",
+      "pass": true
+    },
+    {
+      "name": "replacement_unique_4",
+      "pass": true
+    },
+    {
+      "name": "replacement_unique_5",
+      "pass": true
+    },
+    {
+      "name": "replacement_unique_6",
+      "pass": true
+    },
+    {
+      "name": "whole_forward_reconstruction",
+      "pass": true
+    },
+    {
+      "name": "inverse_unique_0",
+      "pass": true
+    },
+    {
+      "name": "inverse_unique_1",
+      "pass": true
+    },
+    {
+      "name": "inverse_unique_2",
+      "pass": true
+    },
+    {
+      "name": "inverse_unique_3",
+      "pass": true
+    },
+    {
+      "name": "inverse_unique_4",
+      "pass": true
+    },
+    {
+      "name": "inverse_unique_5",
+      "pass": true
+    },
+    {
+      "name": "inverse_unique_6",
+      "pass": true
+    },
+    {
+      "name": "whole_inverse_reconstruction",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition_gfNeed",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition_gfMetaEquals",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition_gfState",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition_gfSave",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition_gfIntegerText",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition_gfInitializeOnlyAfterRootGO",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition_gfAcceptArchivedSDK",
+      "pass": true
+    },
+    {
+      "name": "unchanged_definition_gfReconcileSameGitArchiveReadOnly",
+      "pass": true
+    },
+    {
+      "name": "actual_closed_state_accepts_only_info",
+      "pass": true
+    },
+    {
+      "name": "one_exact_info_request_allowed",
+      "pass": true
+    },
+    {
+      "name": "second_authorization_refused",
+      "pass": true
+    },
+    {
+      "name": "unclosed_observer_refused",
+      "pass": true
+    },
+    {
+      "name": "paused_history_refused",
+      "pass": true
+    },
+    {
+      "name": "body_permission_in_info_GO_refused",
+      "pass": true
+    },
+    {
+      "name": "unapproved_info_refused",
+      "pass": true
+    },
+    {
+      "name": "different_path_refused",
+      "pass": true
+    },
+    {
+      "name": "binary_read_refused",
+      "pass": true
+    },
+    {
+      "name": "already_started_info_refused",
+      "pass": true
+    },
+    {
+      "name": "old_8192_pages_unchanged",
+      "pass": true
+    },
+    {
+      "name": "no_body_dispatch_branch",
+      "pass": true
+    },
+    {
+      "name": "linux_full_mode_and_single_link_guard",
+      "pass": true
+    }
+  ],
+  "checks_count": 37,
+  "native_calls": 0,
+  "github_calls": 0,
+  "candidate_python_executed": false,
+  "exact_request": {
+    "blob": "da2d04756281187d875950219a8c1e584ea5a029",
+    "bytes": 291,
+    "sha256": "ef290e736dc818892e12dd00e0a32523b21b3a24b30734fd1aa7fe561cce7e51"
+  },
+  "source": {
+    "blob": "ad4e06490a7a041e7dacdf282db4bcade736fe6d",
+    "bytes": 25316,
+    "sha256": "cf3df54daa121359853dcaf56d82c0a63ffd7cd70850025de90ae062239e4d75"
+  },
+  "synthetic_go_not_authorization": true
+}

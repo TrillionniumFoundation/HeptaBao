@@ -1,0 +1,1158 @@
+[
+  {
+    "path": "crates/heptabao-server/src/http_snapshot.rs",
+    "blob": "c3740f0a2e55281b72a05f1b6c8e527618f3d65a",
+    "bytes": 38272,
+    "sha256": "c97b724772726f15464abb39539136e3630afa9ffd7aba1e0210396aaee09bc1",
+    "hits": [
+      {
+        "line": 4,
+        "text": "use crate::service::{NativeSnapshotAdmission, TrustedSnapshotOrigin};"
+      },
+      {
+        "line": 352,
+        "text": "        Ok(mut writer) => writer.begin_native_snapshot_before(request, deadline),"
+      },
+      {
+        "line": 356,
+        "text": "        NativeSnapshotAdmission::Execute(execution) => execution,"
+      },
+      {
+        "line": 358,
+        "text": "        NativeSnapshotAdmission::Forward(plan) => {"
+      },
+      {
+        "line": 388,
+        "text": "        NativeSnapshotAdmission::Redirect(origin) => {"
+      }
+    ],
+    "disposition": {
+      "kind": "production_handles_forward",
+      "lines": [
+        350,
+        394
+      ],
+      "excerpt": "    let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);\n    let execution = match lock_until(service, deadline) {\n        Ok(mut writer) => writer.begin_native_snapshot_before(request, deadline),\n        Err(_) => return NativeReply::Json(Response::error(503, \"snapshot admission unavailable\")),\n    };\n    let execution = match execution {\n        NativeSnapshotAdmission::Execute(execution) => execution,\n        #[cfg(feature = \"native-v6-ha\")]\n        NativeSnapshotAdmission::Forward(plan) => {\n            let (response, file) = match BodyReader::new(reader, native.body, deadline) {\n                Ok(mut body) => {\n                    let completed = (*plan).execute(service, &mut body);\n                    let (response, file) = completed.into_parts();\n                    // A denial before READY has not consumed the caller's upload.\n                    // Drain only this same original bounded HTTP reader, exactly\n                    // as local admission denials do; never resend it to a peer.\n                    if response.status >= 400 {\n                        let mut buffer = Zeroizing::new([0; 8192]);\n                        while let Ok(count) = body.read(&mut *buffer) {\n                            if count == 0 { break; }\n                        }\n                    }\n                    (response, file)\n                }\n                Err(_) => (*plan).reject_before_exchange(\n                    service, Response::error(400, \"invalid snapshot body framing\"),\n                ).into_parts(),\n            };\n            return if response.status == 200 {\n                match file {\n                    Some(file) => NativeReply::ForwardedFile { file, response },\n                    None => NativeReply::Json(response),\n                }\n            } else {\n                drop(file);\n                NativeReply::Json(response)\n            };\n        }\n        NativeSnapshotAdmission::Redirect(origin) => {\n            // Do not read/replay the upload, allocate a spool or transport any\n            // archive in the ordinary bounded HA forwarding frame.\n            return NativeReply::Redirect {\n                origin,\n                target: RedirectTarget::Native(native.target),\n                headers: Default::default(),"
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service.rs",
+    "blob": "c952232a835a4f6437e310790ba42b8509b79dcb",
+    "bytes": 519343,
+    "sha256": "c6fcb7631d424c16b5f86530570172b61f2b090d71384516d267ffaf7ee1dc89",
+    "hits": [
+      {
+        "line": 405,
+        "text": "pub(crate) use snapshot_transfer::{NativeSnapshotAdmission, TrustedSnapshotOrigin};"
+      }
+    ],
+    "disposition": {
+      "kind": "reexport_only",
+      "lines": [
+        400,
+        408
+      ],
+      "excerpt": "#[cfg(any(target_os = \"linux\", target_os = \"macos\"))]\n#[path = \"service_sdk_wrapping.rs\"]\nmod sdk_wrapping;\n#[cfg(any(target_os = \"linux\", target_os = \"macos\"))]\npub use sdk_backend::SdkBackendConfig;\npub(crate) use snapshot_transfer::{NativeSnapshotAdmission, TrustedSnapshotOrigin};\n#[path = \"service_openapi.rs\"]\nmod openapi;\n#[path = \"service_owner_store.rs\"]"
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_local_unseal_single_capture_tests.rs",
+    "blob": "0e34ae667a3ad9dc5e9c6e87ba122b13ba7fd35f",
+    "bytes": 37620,
+    "sha256": "0ec3841504736797297a5bf82a9af85366a2791c235d9cb4752150a7cc48a7f2",
+    "hits": [
+      {
+        "line": 1007,
+        "text": "    match service.begin_native_snapshot_before("
+      },
+      {
+        "line": 1011,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::External(plan)) => Ok(plan),"
+      }
+    ],
+    "disposition": {
+      "kind": "wildcard_error",
+      "lines": [
+        1007,
+        1014
+      ],
+      "excerpt": "    match service.begin_native_snapshot_before(\n        ServiceRequest::new(method, \"sys/storage/raft/snapshot\", \"\", token, json!({})),\n        Instant::now() + Duration::from_secs(15),\n    ) {\n        NativeSnapshotAdmission::Execute(RequestExecution::External(plan)) => Ok(plan),\n        _ => Err(\"actual native snapshot plan required\".into()),\n    }\n}"
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_controlgroups_271_namespace_ha_tests.rs",
+    "blob": "d644f9788632be327e74e0cea2af6bdf1de66e20",
+    "bytes": 15905,
+    "sha256": "cd6b816820ba3c0c1582beb9b4372f714c5ab99d0f781969c089db7702c3fe93",
+    "hits": [
+      {
+        "line": 179,
+        "text": "    let admission = writer.begin_native_snapshot_before("
+      },
+      {
+        "line": 190,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::External(plan)) => plan,"
+      },
+      {
+        "line": 191,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {"
+      },
+      {
+        "line": 194,
+        "text": "        NativeSnapshotAdmission::Redirect(_) => {"
+      }
+    ],
+    "disposition": {
+      "kind": "insert_explicit_forward_rejection",
+      "after": {
+        "blob": "d3b1e12fcbbfdeba55ffa344dec0a1fa476b7992",
+        "bytes": 16080,
+        "sha256": "02cc09feba880d80bfc9372b0f86260518e260d52bbc3fa7c7e5fe17b80967a2"
+      },
+      "additionalMatches": "Original wildcard / let-else / matches! expressions elsewhere in this file are unchanged; only the single enumerated exhaustive arm is extended."
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_controlgroups_271_namespace_tests.rs",
+    "blob": "a25a840f0ef6680321a704fab203fa080467d74c",
+    "bytes": 15863,
+    "sha256": "a7731b47769e18291ba04b367ce64e3b76b871e272c067f6cce41d21a5ce4198",
+    "hits": [
+      {
+        "line": 119,
+        "text": "    match f.service.begin_native_snapshot_before("
+      },
+      {
+        "line": 123,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::External(plan)) => Ok(plan),"
+      },
+      {
+        "line": 124,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {"
+      },
+      {
+        "line": 127,
+        "text": "        NativeSnapshotAdmission::Redirect(_) => Err(\"File snapshot unexpectedly redirected\".into()),"
+      }
+    ],
+    "disposition": {
+      "kind": "insert_explicit_forward_rejection",
+      "after": {
+        "blob": "758fc2a19179bf0359f790a2b85ab0bb90e78e35",
+        "bytes": 16003,
+        "sha256": "3a9581e97497703fd5f8ace778b53ccf91fe2e0da1a93c9a31bf8fbb2bf73ce6"
+      },
+      "additionalMatches": "Original wildcard / let-else / matches! expressions elsewhere in this file are unchanged; only the single enumerated exhaustive arm is extended."
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_empty_snapshot_floor_ha_tests.rs",
+    "blob": "71b672b46b234a266c2390e766d9f1744379c919",
+    "bytes": 9268,
+    "sha256": "16d19708b17ba40bbd8aedc3f31f5bd78e93cdf86821fa73a72289e826d20120",
+    "hits": [
+      {
+        "line": 20,
+        "text": "    let admission = writer.begin_native_snapshot_before("
+      },
+      {
+        "line": 30,
+        "text": "    let NativeSnapshotAdmission::Execute(RequestExecution::External(mut plan)) = admission else {"
+      }
+    ],
+    "disposition": {
+      "kind": "let_else_error",
+      "lines": [
+        20,
+        38
+      ],
+      "excerpt": "    let admission = writer.begin_native_snapshot_before(\n        ServiceRequest::new(\n            method,\n            \"sys/storage/raft/snapshot\",\n            \"\",\n            pipeline.admin(),\n            json!({}),\n        ),\n        until,\n    );\n    let NativeSnapshotAdmission::Execute(RequestExecution::External(mut plan)) = admission else {\n        return Err(\"empty HA snapshot actual external admission\".into());\n    };\n    // Production HTTP releases the Service writer for actual streamed I/O,\n    // then reacquires that same owner under the same original deadline.\n    drop(writer);\n    let (result, output) = plan.execute_snapshot_transfer(&mut &input[..]);\n    let mut writer =\n        lock_until(service, until).map_err(|_| \"empty HA snapshot original completion lock\")?;"
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_empty_snapshot_floor_tests.rs",
+    "blob": "3c41b49e593255dea13d5c81fcd527e96c9fcb6d",
+    "bytes": 8793,
+    "sha256": "38903d17d257da09fbac135662ac13082c4357e31b57934321fe9f223bca8995",
+    "hits": [
+      {
+        "line": 99,
+        "text": "    let admission = service.begin_native_snapshot_before("
+      },
+      {
+        "line": 103,
+        "text": "    let NativeSnapshotAdmission::Execute(RequestExecution::External(mut pending)) = admission"
+      }
+    ],
+    "disposition": {
+      "kind": "let_else_error",
+      "lines": [
+        99,
+        111
+      ],
+      "excerpt": "    let admission = service.begin_native_snapshot_before(\n        ServiceRequest::new(\"POST\", \"sys/storage/raft/snapshot\", \"\", &token, json!({})),\n        std::time::Instant::now() + Duration::from_secs(15),\n    );\n    let NativeSnapshotAdmission::Execute(RequestExecution::External(mut pending)) = admission\n    else {\n        return Err(\"actual empty snapshot negative admission\".into());\n    };\n    let (mut observed, output) = pending.execute_snapshot_transfer(&mut archive.as_slice());\n    assert!(output.is_none());\n    let ExternalEffectResult::SnapshotTransfer(Ok(\n        crate::service::snapshot_transfer::Observation::Upload(ref mut imported),\n    )) = observed"
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_file_gc_tests.rs",
+    "blob": "5d250b3680aa85dc6063e8468bb84fc433817bf3",
+    "bytes": 13141,
+    "sha256": "90a321cda1b75f1f1c9237163cb06bbd18634fb5560bda909f2e09dfd21dffc9",
+    "hits": [
+      {
+        "line": 211,
+        "text": "    match service.begin_native_snapshot_before(request, Instant::now() + Duration::from_secs(15)) {"
+      },
+      {
+        "line": 212,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::External(mut pending)) => {"
+      },
+      {
+        "line": 216,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {"
+      },
+      {
+        "line": 219,
+        "text": "        NativeSnapshotAdmission::Redirect(_) => Err(\"standalone snapshot redirected\".into()),"
+      }
+    ],
+    "disposition": {
+      "kind": "insert_explicit_forward_rejection",
+      "after": {
+        "blob": "063676cb26c9023e5d27dbffefba694a94422295",
+        "bytes": 13274,
+        "sha256": "018091c1d8da3ef996825cadba3508c46a843628e52d2f32e29517fe22b0631c"
+      },
+      "additionalMatches": "Original wildcard / let-else / matches! expressions elsewhere in this file are unchanged; only the single enumerated exhaustive arm is extended."
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_flat_retirement_tests.rs",
+    "blob": "b5d2787ddefa9a36f0621fb67bb49b600d135a77",
+    "bytes": 40317,
+    "sha256": "0bb9a97cca491fc1e143932433615dc54e3170c2a80696af82dd9a1048d8f367",
+    "hits": [
+      {
+        "line": 287,
+        "text": "    let admission = service.begin_native_snapshot_before("
+      },
+      {
+        "line": 292,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::External(mut pending)) => {"
+      },
+      {
+        "line": 307,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {"
+      },
+      {
+        "line": 310,
+        "text": "        NativeSnapshotAdmission::Redirect(_) => Err(\"configured File cannot redirect\".into()),"
+      }
+    ],
+    "disposition": {
+      "kind": "insert_explicit_forward_rejection",
+      "after": {
+        "blob": "fff1bd6ba6d249299774ce508d2511e51bd42cde",
+        "bytes": 40451,
+        "sha256": "d27e317371371497ca30b31c176a08cf30a05163e07658149d5361cf61943d56"
+      },
+      "additionalMatches": "Original wildcard / let-else / matches! expressions elsewhere in this file are unchanged; only the single enumerated exhaustive arm is extended."
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_kv2_import_tests.rs",
+    "blob": "2f5372924f8ac7aef133f897e1fafe859aa4ad60",
+    "bytes": 34057,
+    "sha256": "6f5803231f89409efe49a945bce37a4553d0176348f9d947d608f120960a3498",
+    "hits": [
+      {
+        "line": 826,
+        "text": "    match service.begin_native_snapshot_before("
+      },
+      {
+        "line": 830,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::External(plan)) => Ok(plan),"
+      },
+      {
+        "line": 831,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {"
+      },
+      {
+        "line": 834,
+        "text": "        NativeSnapshotAdmission::Redirect(_) => Err(\"unexpected isolated redirect\".into()),"
+      }
+    ],
+    "disposition": {
+      "kind": "insert_explicit_forward_rejection",
+      "after": {
+        "blob": "23038ffffacd18037700b0b9b1f4ed2d38c769f1",
+        "bytes": 34188,
+        "sha256": "9f8842428f00eba24477bc163259ca0a48df3e676b07676eed31310284f10bcb"
+      },
+      "additionalMatches": "Original wildcard / let-else / matches! expressions elsewhere in this file are unchanged; only the single enumerated exhaustive arm is extended."
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_kv2_large_ha_tests.rs",
+    "blob": "de9e04185f634918825636d9d42dd018e8d9f723",
+    "bytes": 41120,
+    "sha256": "a70c683365f241efb2ed0f7178d5f2de8c62856e47dea5a2c70f0b46c06fce4c",
+    "hits": [
+      {
+        "line": 299,
+        "text": "    let mut pending = match writer.begin_native_snapshot_before(request, until) {"
+      },
+      {
+        "line": 300,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::External(pending)) => pending,"
+      },
+      {
+        "line": 301,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {"
+      },
+      {
+        "line": 305,
+        "text": "        NativeSnapshotAdmission::Redirect(_) => {"
+      }
+    ],
+    "disposition": {
+      "kind": "insert_explicit_forward_rejection",
+      "after": {
+        "blob": "558d460b067c61d231f56c48320d4de54fa52edd",
+        "bytes": 41292,
+        "sha256": "8c15a718354afb9e180024fa90dd219cdba9d4369d72746364cd039d9f5e4097"
+      },
+      "additionalMatches": "Original wildcard / let-else / matches! expressions elsewhere in this file are unchanged; only the single enumerated exhaustive arm is extended."
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_kv2_mount_tests.rs",
+    "blob": "7af690e48a46293adb63a65cea4cb10ccbcd1812",
+    "bytes": 26847,
+    "sha256": "3202825cef69680ac3c16fbb384fac301328612c9cd2a142e1f60f2ecd417888",
+    "hits": [
+      {
+        "line": 367,
+        "text": "    match service.begin_native_snapshot_before("
+      },
+      {
+        "line": 371,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::External(plan)) => Ok(plan),"
+      },
+      {
+        "line": 372,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => Err(format!("
+      },
+      {
+        "line": 377,
+        "text": "        NativeSnapshotAdmission::Redirect(_) => Err(\"unexpected single-node redirect\".into()),"
+      }
+    ],
+    "disposition": {
+      "kind": "insert_explicit_forward_rejection",
+      "after": {
+        "blob": "0d55e13c52aa785eccb3f9893aada54f5fb626d4",
+        "bytes": 26981,
+        "sha256": "9980cd10348eee2c4bf894e090f2f41383bbe0d1de13578b5e83f1497ab07472"
+      },
+      "additionalMatches": "Original wildcard / let-else / matches! expressions elsewhere in this file are unchanged; only the single enumerated exhaustive arm is extended."
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_kv2_storage_witness_tests.rs",
+    "blob": "0db27da2dd2a5c994ee980fd15b497fcc998aa5d",
+    "bytes": 23587,
+    "sha256": "3427455ec8faa114a55a8e93fb2b0c2156ff3344e1d90d81994988396dfc88c0",
+    "hits": [
+      {
+        "line": 245,
+        "text": "    match service.begin_native_snapshot_before("
+      },
+      {
+        "line": 249,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::External(plan)) => Ok(plan),"
+      },
+      {
+        "line": 250,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {"
+      },
+      {
+        "line": 253,
+        "text": "        NativeSnapshotAdmission::Redirect(_) => Err(\"unexpected single-node redirect\".into()),"
+      }
+    ],
+    "disposition": {
+      "kind": "insert_explicit_forward_rejection",
+      "after": {
+        "blob": "4bfdfdbf943010b434134bb1cfcaaacee86f3fff",
+        "bytes": 23721,
+        "sha256": "3d39c810a3c0655f6aadc8ab620f71c88b9f325d4e78c2fdd6a1b562634406f0"
+      },
+      "additionalMatches": "Original wildcard / let-else / matches! expressions elsewhere in this file are unchanged; only the single enumerated exhaustive arm is extended."
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_namespace_tree_tests.rs",
+    "blob": "d533aeec0d078e8ed3c513c81c41870a15cd16c5",
+    "bytes": 32570,
+    "sha256": "f55b817be16c3f0858c9517c37948d326141d3db6f1e94a0c1fb7c248105d5a8",
+    "hits": [
+      {
+        "line": 106,
+        "text": "    match service.begin_native_snapshot_before("
+      },
+      {
+        "line": 110,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::External(mut pending)) => {"
+      },
+      {
+        "line": 126,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {"
+      },
+      {
+        "line": 129,
+        "text": "        NativeSnapshotAdmission::Redirect(_) => Err(\"formal File snapshot redirected\".into()),"
+      }
+    ],
+    "disposition": {
+      "kind": "insert_explicit_forward_rejection",
+      "after": {
+        "blob": "dced505c3ce880f7cee05cec747d4400aac59d50",
+        "bytes": 32704,
+        "sha256": "6117d5e314f10ce1df0b10c84159222cb37b3a90edef9fa7580d1b01ccbf81c7"
+      },
+      "additionalMatches": "Original wildcard / let-else / matches! expressions elsewhere in this file are unchanged; only the single enumerated exhaustive arm is extended."
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_pki_archive_tests.rs",
+    "blob": "a509159de804ef6f83f26980a35290f496316373",
+    "bytes": 13212,
+    "sha256": "ae12c40896fe3c3624375b592edccf05755d796cb61b7b95d053334e32f2a4b4",
+    "hits": [
+      {
+        "line": 5,
+        "text": "use crate::service::snapshot_transfer::NativeSnapshotAdmission;"
+      },
+      {
+        "line": 46,
+        "text": "    match f.service.begin_native_snapshot_before("
+      },
+      {
+        "line": 50,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::External(pending)) => Ok(*pending),"
+      },
+      {
+        "line": 51,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => Err(format!("
+      },
+      {
+        "line": 56,
+        "text": "        NativeSnapshotAdmission::Redirect(_) => Err(\"File snapshot unexpectedly redirected\".into()),"
+      }
+    ],
+    "disposition": {
+      "kind": "insert_explicit_forward_rejection",
+      "after": {
+        "blob": "0256a72add9fca16d4ec8bbee3c5b4243ff7f1e2",
+        "bytes": 13352,
+        "sha256": "e5666d96cc2bf4e32b13821cb2786da5f2f192b8fe418c945cdb1ba2ab613231"
+      },
+      "additionalMatches": "Original wildcard / let-else / matches! expressions elsewhere in this file are unchanged; only the single enumerated exhaustive arm is extended."
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_remount_v6_tests.rs",
+    "blob": "44b7930a61b8f31436c265234f24812df379c0f3",
+    "bytes": 25782,
+    "sha256": "1e8b72e33dd4b0b5e137168f1a3a3ec36c5b15765bc753d30b7088e57d1f1e6f",
+    "hits": [
+      {
+        "line": 391,
+        "text": "    match service.begin_native_snapshot_before(request, Instant::now() + Duration::from_secs(15)) {"
+      },
+      {
+        "line": 392,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::External(mut pending)) => {"
+      },
+      {
+        "line": 396,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {"
+      },
+      {
+        "line": 399,
+        "text": "        NativeSnapshotAdmission::Redirect(_) => Err(\"standalone snapshot redirected\".into()),"
+      }
+    ],
+    "disposition": {
+      "kind": "insert_explicit_forward_rejection",
+      "after": {
+        "blob": "245516dd1985d1a64fdd0532cbbbc2a209618dd0",
+        "bytes": 25915,
+        "sha256": "96aef7794bcdfba3ab6cc544c608ffd26b48ffafed0fcba6563943c310a9f74a"
+      },
+      "additionalMatches": "Original wildcard / let-else / matches! expressions elsewhere in this file are unchanged; only the single enumerated exhaustive arm is extended."
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_seed_import_tests.rs",
+    "blob": "f1808b7d06c00fff6a425f963dbffbbf923390a3",
+    "bytes": 21762,
+    "sha256": "2f30bb6974e5d64ab85c1bc782cefc4a8e482f974361f3fda2b1dcdc25d54eb7",
+    "hits": [
+      {
+        "line": 3,
+        "text": "use crate::service::NativeSnapshotAdmission;"
+      },
+      {
+        "line": 167,
+        "text": "    match service.begin_native_snapshot_before("
+      },
+      {
+        "line": 171,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::External(pending)) => Ok(pending),"
+      }
+    ],
+    "disposition": {
+      "kind": "wildcard_error",
+      "lines": [
+        167,
+        174
+      ],
+      "excerpt": "    match service.begin_native_snapshot_before(\n        ServiceRequest::new(method, \"sys/storage/raft/snapshot\", \"\", token, json!({})),\n        Instant::now() + Duration::from_secs(30),\n    ) {\n        NativeSnapshotAdmission::Execute(RequestExecution::External(pending)) => Ok(pending),\n        _ => Err(\"snapshot admission failed\".into()),\n    }\n}"
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_ssh_archive_tests.rs",
+    "blob": "fca8c213da5d752a77ac2bdca28bd88548d2ff5c",
+    "bytes": 8140,
+    "sha256": "beea55ceb21643f144f7a664c3366d9957c95338fe4a7c3c33c3aac2dc361371",
+    "hits": [
+      {
+        "line": 5,
+        "text": "use crate::service::snapshot_transfer::NativeSnapshotAdmission;"
+      },
+      {
+        "line": 10,
+        "text": "    match f.service.begin_native_snapshot_before("
+      },
+      {
+        "line": 14,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::External(pending)) => Ok(*pending),"
+      },
+      {
+        "line": 15,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {"
+      },
+      {
+        "line": 18,
+        "text": "        NativeSnapshotAdmission::Redirect(_) => Err(\"File snapshot unexpectedly redirected\".into()),"
+      }
+    ],
+    "disposition": {
+      "kind": "insert_explicit_forward_rejection",
+      "after": {
+        "blob": "748af393ffbe89e8697ba15fe1f78b5170e418ec",
+        "bytes": 8280,
+        "sha256": "5d70e8c205b6ac5dd8f59d36e8a11d27d5483ce68a9a2240b1bfbd67b1c9dbc8"
+      },
+      "additionalMatches": "Original wildcard / let-else / matches! expressions elsewhere in this file are unchanged; only the single enumerated exhaustive arm is extended."
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_storage_tests.rs",
+    "blob": "a93030cf3b5f4a881ad32f148e1b9afc02a07e0b",
+    "bytes": 25047,
+    "sha256": "51e436b705f720fac56fab6cc9a047a99567b3f2f172bc842c030de355d842a0",
+    "hits": [
+      {
+        "line": 85,
+        "text": "    match service.begin_native_snapshot_before(request, deadline) {"
+      },
+      {
+        "line": 86,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::External(mut pending)) => {"
+      },
+      {
+        "line": 90,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {"
+      },
+      {
+        "line": 93,
+        "text": "        NativeSnapshotAdmission::Redirect(_) => {"
+      }
+    ],
+    "disposition": {
+      "kind": "insert_explicit_forward_rejection",
+      "after": {
+        "blob": "101bac012507c04ee3a1c2b6dc15273e18cd9d61",
+        "bytes": 25215,
+        "sha256": "9e27624cbcc31c32a739b708e134ec8022ced307d681051e26854eb167730d7e"
+      },
+      "additionalMatches": "Original wildcard / let-else / matches! expressions elsewhere in this file are unchanged; only the single enumerated exhaustive arm is extended."
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_transit_tests.rs",
+    "blob": "7c1d2120a51d62505b7a3e0ff0aaaae2d101d204",
+    "bytes": 27371,
+    "sha256": "f1f6beca7cbf01ba2f1411646ec9a744d58e85e42937311d5d264780e0573299",
+    "hits": [
+      {
+        "line": 715,
+        "text": "    match service.begin_native_snapshot_before("
+      },
+      {
+        "line": 719,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::External(plan)) => Ok(plan),"
+      },
+      {
+        "line": 720,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {"
+      },
+      {
+        "line": 723,
+        "text": "        NativeSnapshotAdmission::Redirect(_) => Err(\"unexpected local snapshot redirect\".into()),"
+      }
+    ],
+    "disposition": {
+      "kind": "insert_explicit_forward_rejection",
+      "after": {
+        "blob": "9f94153e8309317194ec66cf5cdb51a16507e4af",
+        "bytes": 27508,
+        "sha256": "cd6cfe5785f95cb8f2cd50f156f3c790fcdb9c4787a1acd5bee9a22100d2b4ed"
+      },
+      "additionalMatches": "Original wildcard / let-else / matches! expressions elsewhere in this file are unchanged; only the single enumerated exhaustive arm is extended."
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs",
+    "blob": "e6fc168b8813dfe046fadb446bdc880ffa2d8984",
+    "bytes": 33157,
+    "sha256": "8ed048c97e624d81ce3ff2478e776b461c81013173821d20ea3faf795e5345bd",
+    "hits": [
+      {
+        "line": 200,
+        "text": "    let mut pending = match writer.begin_native_snapshot_before("
+      },
+      {
+        "line": 210,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::External(pending)) => pending,"
+      },
+      {
+        "line": 211,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {"
+      },
+      {
+        "line": 214,
+        "text": "        NativeSnapshotAdmission::Redirect(_) => {"
+      }
+    ],
+    "disposition": {
+      "kind": "insert_explicit_forward_rejection",
+      "after": {
+        "blob": "d6359eeb2d31bfc07636bbc2c2809688ebfc3467",
+        "bytes": 33328,
+        "sha256": "bbbd43e5fd049b193da9fc092bc6feec314263f62dc7859b35e2b018afbbeff4"
+      },
+      "additionalMatches": "Original wildcard / let-else / matches! expressions elsewhere in this file are unchanged; only the single enumerated exhaustive arm is extended."
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_v6_ha_historical_restore_tests.rs",
+    "blob": "6c9d8e5b205340ae54bde2600b09771b7325536e",
+    "bytes": 52901,
+    "sha256": "a0f79c19eaccba34651510f7286dbb478fcab162182e89409e857547296d144a",
+    "hits": [
+      {
+        "line": 24,
+        "text": "    match service.begin_native_snapshot_before("
+      },
+      {
+        "line": 28,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::External(pending)) => Ok(pending),"
+      },
+      {
+        "line": 29,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {"
+      },
+      {
+        "line": 33,
+        "text": "        NativeSnapshotAdmission::Redirect(_) => {"
+      },
+      {
+        "line": 1057,
+        "text": "        match writer.begin_native_snapshot_before("
+      },
+      {
+        "line": 1067,
+        "text": "            NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {"
+      },
+      {
+        "line": 1274,
+        "text": "        match writer.begin_native_snapshot_before("
+      },
+      {
+        "line": 1278,
+        "text": "            NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {"
+      },
+      {
+        "line": 1371,
+        "text": "    match writer.begin_native_snapshot_before("
+      },
+      {
+        "line": 1381,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {"
+      }
+    ],
+    "disposition": {
+      "kind": "insert_explicit_forward_rejection",
+      "after": {
+        "blob": "1ff6e42dade56eb4431271aae5a9dee90e9cca39",
+        "bytes": 53072,
+        "sha256": "2ea71a8fc8a009f4505792dee58165ecacbfa677e7b339f0f25a43be257a26b5"
+      },
+      "additionalMatches": "Original wildcard / let-else / matches! expressions elsewhere in this file are unchanged; only the single enumerated exhaustive arm is extended."
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_v6_ha_restore_borrowed_tests.rs",
+    "blob": "4de9450047a084ddcfb164b54a4ff661db787d2d",
+    "bytes": 21090,
+    "sha256": "e698a994b8d99726b7bf375cc827ebd88724a91bb2b00d6b84db6facb93289c9",
+    "hits": [
+      {
+        "line": 66,
+        "text": "    match service.begin_native_snapshot_before("
+      },
+      {
+        "line": 70,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::External(pending)) => Ok(pending),"
+      },
+      {
+        "line": 71,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {"
+      },
+      {
+        "line": 75,
+        "text": "        NativeSnapshotAdmission::Redirect(_) => Err(\"selected leader redirected restore\".into()),"
+      },
+      {
+        "line": 412,
+        "text": "        match writer.begin_native_snapshot_before("
+      },
+      {
+        "line": 416,
+        "text": "            NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {"
+      }
+    ],
+    "disposition": {
+      "kind": "insert_explicit_forward_rejection",
+      "after": {
+        "blob": "74669ad0f4e3fd26f34d10b53ed29a06ae8a2032",
+        "bytes": 21227,
+        "sha256": "39d87fbdaa26716890b2bb9c4d12577224400bdd1c9611a073c616fd78847e97"
+      },
+      "additionalMatches": "Original wildcard / let-else / matches! expressions elsewhere in this file are unchanged; only the single enumerated exhaustive arm is extended."
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_v6_ha_snapshot_repair_tests.rs",
+    "blob": "26897662a968abfc839fea5774c5b2405e8b63e9",
+    "bytes": 23398,
+    "sha256": "162d02f64aa177eaccc8e9751a404827ee58dee2ea038fd46d17687b8f4fd538",
+    "hits": [
+      {
+        "line": 51,
+        "text": "    match service.begin_native_snapshot_before("
+      },
+      {
+        "line": 55,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::External(pending)) => Ok(pending),"
+      },
+      {
+        "line": 56,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {"
+      },
+      {
+        "line": 60,
+        "text": "        NativeSnapshotAdmission::Redirect(_) => Err(\"repair leader unexpectedly redirected\".into()),"
+      },
+      {
+        "line": 333,
+        "text": "        let denied = writer.begin_native_snapshot_before("
+      },
+      {
+        "line": 338,
+        "text": "            matches!(denied, NativeSnapshotAdmission::Execute(RequestExecution::Complete(ref response))"
+      }
+    ],
+    "disposition": {
+      "kind": "insert_explicit_forward_rejection",
+      "after": {
+        "blob": "d4b85c648162480a0ebd1900624a33d063c11eb7",
+        "bytes": 23538,
+        "sha256": "0cbc4d8e5855cd6726d6673b860ae514c9042f3788f8016e0fcb9403c0445814"
+      },
+      "additionalMatches": "Original wildcard / let-else / matches! expressions elsewhere in this file are unchanged; only the single enumerated exhaustive arm is extended."
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_v6_ha_snapshot_tests.rs",
+    "blob": "2a4fbc6bf26ee49aef0dc7eca081116f91a67aa5",
+    "bytes": 12698,
+    "sha256": "0f65f9268096a6c5e7781a3c43266aeedd22bb7b3cf7369a8ab57f5371d8573c",
+    "hits": [
+      {
+        "line": 16,
+        "text": "    match service.begin_native_snapshot_before("
+      },
+      {
+        "line": 20,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::External(pending)) => Ok(pending),"
+      },
+      {
+        "line": 21,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {"
+      },
+      {
+        "line": 25,
+        "text": "        NativeSnapshotAdmission::Redirect(_) => Err(\"selected leader redirected snapshot\".into()),"
+      },
+      {
+        "line": 62,
+        "text": "    let denied = writer.begin_native_snapshot_before("
+      },
+      {
+        "line": 68,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::Complete(ref response))"
+      }
+    ],
+    "disposition": {
+      "kind": "insert_explicit_forward_rejection",
+      "after": {
+        "blob": "001413918726abb14faa742f291dde633ddbd036",
+        "bytes": 12836,
+        "sha256": "a7999ef4dc72fbc3b776ad9e86d6fd19ccabfba7cdfc839b6d91dab4a988e404"
+      },
+      "additionalMatches": "Original wildcard / let-else / matches! expressions elsewhere in this file are unchanged; only the single enumerated exhaustive arm is extended."
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_v6_migration_tests.rs",
+    "blob": "cf2f577f948220a7d03db6ee94432856be2ab215",
+    "bytes": 19591,
+    "sha256": "1a8f445ca9f101de429c3050af49bc2c0f89389b3c7016e589bc8c9270f0653b",
+    "hits": [
+      {
+        "line": 258,
+        "text": "    let admitted = service.begin_native_snapshot_before("
+      },
+      {
+        "line": 263,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::External(plan)) => Ok(plan),"
+      },
+      {
+        "line": 264,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {"
+      },
+      {
+        "line": 279,
+        "text": "        NativeSnapshotAdmission::Redirect(_) => {"
+      }
+    ],
+    "disposition": {
+      "kind": "insert_explicit_forward_rejection",
+      "after": {
+        "blob": "d755f8800bd1d93c8c2b1b7e113c09f2489e4f0b",
+        "bytes": 19758,
+        "sha256": "291c2e023eb4213f15cc7214ae5ca988db6af63744cc8bc06c0e51bfba276b32"
+      },
+      "additionalMatches": "Original wildcard / let-else / matches! expressions elsewhere in this file are unchanged; only the single enumerated exhaustive arm is extended."
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_rate_limit_quota_139_tests.rs",
+    "blob": "de14459404def21c3954b06c6c3913b9fb4b2dbf",
+    "bytes": 40427,
+    "sha256": "18bea53206969c8086ae0623a88912e4a120a927057a43468164e0c5f888a07f",
+    "hits": [
+      {
+        "line": 182,
+        "text": "    let admission = service.begin_native_snapshot_before("
+      },
+      {
+        "line": 187,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::External(mut pending)) => {"
+      },
+      {
+        "line": 201,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {"
+      },
+      {
+        "line": 204,
+        "text": "        NativeSnapshotAdmission::Redirect(_) => Err(\"File fixture cannot redirect\".into()),"
+      }
+    ],
+    "disposition": {
+      "kind": "insert_explicit_forward_rejection",
+      "after": {
+        "blob": "60925759e86f1bfad3a9d75ff0d53885da8b9626",
+        "bytes": 40558,
+        "sha256": "b80ea54e67134fdcba6b329e4d8f283c40461256d6e9657f61178f93479fd685"
+      },
+      "additionalMatches": "Original wildcard / let-else / matches! expressions elsewhere in this file are unchanged; only the single enumerated exhaustive arm is extended."
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_recovery_keys.rs",
+    "blob": "d0b33f09f4897582c3c6966f72396c07ce3a6d34",
+    "bytes": 162286,
+    "sha256": "49b5902bef73d133b25de026794e322e3e72e1d295380687481ca62c77d22a0c",
+    "hits": [
+      {
+        "line": 3592,
+        "text": "            .begin_native_snapshot_before(req, Instant::now() + Duration::from_secs(30))"
+      },
+      {
+        "line": 3594,
+        "text": "            snapshot_transfer::NativeSnapshotAdmission::Execute(RequestExecution::External(v)) => {"
+      },
+      {
+        "line": 3597,
+        "text": "            snapshot_transfer::NativeSnapshotAdmission::Execute(RequestExecution::Complete(r)) => {"
+      }
+    ],
+    "disposition": {
+      "kind": "wildcard_panic",
+      "lines": [
+        3584,
+        3603
+      ],
+      "excerpt": "    fn native_race(name: &str, isolate_floor: bool) {\n        let mut c = start(name);\n        let (nonce, share) = pending_final(&mut c);\n        let req = ServiceRequest::new(\"GET\", \"sys/storage/raft/snapshot\", \"\", &c.token, json!({}));\n        let mut pending = match c\n            .service\n            .as_mut()\n            .expect(\"live fixture\")\n            .begin_native_snapshot_before(req, Instant::now() + Duration::from_secs(30))\n        {\n            snapshot_transfer::NativeSnapshotAdmission::Execute(RequestExecution::External(v)) => {\n                *v\n            }\n            snapshot_transfer::NativeSnapshotAdmission::Execute(RequestExecution::Complete(r)) => {\n                response(&c.root, \"native-export-admission-failed\", &r);\n                panic!(\"UNQUALIFIED: genuine native export admission failed\")\n            }\n            _ => panic!(\"UNQUALIFIED: genuine native export admission failed\"),\n        };\n        let (observed, file) = pending.execute_snapshot_transfer(&mut std::io::empty());"
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_snapshot_lossless_export_tests.rs",
+    "blob": "815cc88c81df0721e7016bf04a733a9ee7da8c96",
+    "bytes": 13326,
+    "sha256": "9589c8d8e157a411515ee38389f4d2a17bfc35668f0defd88aca248be35c2bc7",
+    "hits": [
+      {
+        "line": 122,
+        "text": "    match service.begin_native_snapshot_before(request, deadline) {"
+      },
+      {
+        "line": 123,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {"
+      },
+      {
+        "line": 126,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::External(mut pending)) => {"
+      },
+      {
+        "line": 140,
+        "text": "        NativeSnapshotAdmission::Redirect(_) => Err(\"standalone export redirected\".into()),"
+      },
+      {
+        "line": 304,
+        "text": "    let NativeSnapshotAdmission::Execute(RequestExecution::External(mut pending)) ="
+      },
+      {
+        "line": 305,
+        "text": "        service.begin_native_snapshot_before(request, deadline)"
+      }
+    ],
+    "disposition": {
+      "kind": "insert_explicit_forward_rejection",
+      "after": {
+        "blob": "dfe6f5e80709418b69bb1b33fee48dadb9ed6aa1",
+        "bytes": 13457,
+        "sha256": "9f222edca204bd1b325d1d520ee927338d587d14f5df95fd085017f9943d5072"
+      },
+      "additionalMatches": "Original wildcard / let-else / matches! expressions elsewhere in this file are unchanged; only the single enumerated exhaustive arm is extended."
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_snapshot_redirect_tests.rs",
+    "blob": "cf2e8fc89233e157e76201161e31926924181037",
+    "bytes": 6576,
+    "sha256": "2b1debf847e5d9af2849aef99f4c26d157e9493d25343603f987c380dabfe83c",
+    "hits": [
+      {
+        "line": 13,
+        "text": ") -> NativeSnapshotAdmission {"
+      },
+      {
+        "line": 14,
+        "text": "    service.begin_native_snapshot_before("
+      },
+      {
+        "line": 33,
+        "text": "fn failure(admission: NativeSnapshotAdmission) -> Result<Response, Box<dyn std::error::Error>> {"
+      },
+      {
+        "line": 35,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => Ok(response),"
+      },
+      {
+        "line": 72,
+        "text": "                NativeSnapshotAdmission::Redirect(origin) => {"
+      },
+      {
+        "line": 124,
+        "text": "        NativeSnapshotAdmission::Redirect(origin) => {"
+      }
+    ],
+    "disposition": {
+      "kind": "wildcard_error_or_panic",
+      "lines": [
+        1,
+        150
+      ],
+      "excerpt": "//! Real Raft observations route requests; they never admit application effects.\nuse super::*;\nuse crate::ha::snapshot_test_support::Cluster;\nuse crate::service::tests::{Root, bootstrap, call};\n\ntype TestResult = Result<(), Box<dyn std::error::Error>>;\n\nfn admit(\n    service: &mut Service,\n    method: &str,\n    token: &str,\n    deadline: Instant,\n) -> NativeSnapshotAdmission {\n    service.begin_native_snapshot_before(\n        ServiceRequest {\n            method,\n            path: if method == \"PUT\" {\n                \"sys/storage/raft/snapshot-force\"\n            } else {\n                \"sys/storage/raft/snapshot\"\n            },\n            namespace: \"\",\n            token,\n            body: json!({}),\n            wrap_ttl_seconds: None,\n            origin_peer: None,\n            client_certificates: None,\n        },\n        deadline,\n    )\n}\n\nfn failure(admission: NativeSnapshotAdmission) -> Result<Response, Box<dyn std::error::Error>> {\n    match admission {\n        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => Ok(response),\n        _ => Err(\"unexpected native admission\".into()),\n    }\n}\n\n#[test]\nfn native_redirect_uses_configured_current_leader_without_consuming_uses_or_staging() -> TestResult\n{\n    let root = Root::new();\n    let mut service = root.service()?;\n    let (_, token) = bootstrap(&mut service)?;\n    let issued = call(\n        &mut service,\n        \"POST\",\n        \"auth/token/create\",\n        &token,\n        json!({\"policies\":[\"default\"],\"num_uses\":2,\"ttl\":600}),\n    );\n    assert_eq!(issued.status, 200);\n    let limited = issued.body[\"auth\"][\"client_token\"]\n        .as_str()\n        .ok_or(\"token\")?\n        .to_owned();\n    let cluster_id = service.state.as_ref().ok_or(\"state\")?.cluster_id.clone();\n    let cluster = Cluster::new(&root.path.join(\"raft\"), &cluster_id)?;\n    service.ha = Some(Arc::clone(&cluster.processes[1]));\n    let before = service.current_state_identity().map_err(|_| \"state\")?;\n    let generation = service.durable.as_ref().ok_or(\"durable\")?.generation();\n    let deadline = || Instant::now() + Duration::from_secs(5);\n    assert_eq!(\n        failure(admit(&mut service, \"GET\", \"\", deadline()))?.status,\n        503\n    );\n    cluster.configure_api_address(1, \"https://leader.example:8200/\")?;\n    for method in [\"GET\", \"HEAD\", \"POST\", \"PUT\"] {\n        for credential in [\"\", \"invalid\", limited.as_str()] {\n            match admit(&mut service, method, credential, deadline()) {\n                NativeSnapshotAdmission::Redirect(origin) => {\n                    assert_eq!(origin.as_str(), \"https://leader.example:8200\")\n                }\n                _ => return Err(\"standby must redirect native request\".into()),\n            }\n        }\n    }\n    assert!(service.snapshot_spool.is_none());\n    assert!(service.pending_snapshot_transfer.is_none());\n    assert_eq!(\n        service.durable.as_ref().ok_or(\"durable\")?.generation(),\n        generation\n    );\n    assert_eq!(\n        service.current_state_identity().map_err(|_| \"state\")?,\n        before\n    );\n    assert!(crate::request_deadline::current().is_none());\n    // The ordinary JSON route first synchronizes the active quota/mount\n    // registry. This fixture has no committed application envelope, so that\n    // admission must fail before a forwarding attempt can be authorized.\n    let json = call(\n        &mut service,\n        \"GET\",\n        \"sys/storage/raft/snapshot\",\n        &token,\n        json!({}),\n    );\n    assert_eq!(json.status, 503);\n    assert_eq!(\n        json.body[\"errors\"][0],\n        \"HA committed application state is absent\"\n    );\n    assert!(service.snapshot_spool.is_none());\n    assert!(service.pending_snapshot_transfer.is_none());\n    service.ha = None;\n    assert_eq!(\n        call(\n            &mut service,\n            \"POST\",\n            \"auth/token/lookup\",\n            &token,\n            json!({\"token\":limited})\n        )\n        .body[\"data\"][\"num_uses\"],\n        2\n    );\n    // A leadership change changes only the routing hint, never application authority.\n    let successor = cluster.processes[0].lock().map_err(|_| \"HA\")?.step_down()?;\n    cluster.configure_api_address(successor, \"https://successor.example\")?;\n    service.ha = Some(Arc::clone(&cluster.processes[0]));\n    match admit(&mut service, \"GET\", \"\", deadline()) {\n        NativeSnapshotAdmission::Redirect(origin) => {\n            assert_eq!(origin.as_str(), \"https://successor.example:443\")\n        }\n        _ => return Err(\"successor routing\".into()),\n    }\n    // Sealing does not reveal an origin or stage an archive, even if Raft still runs.\n    service.ha = None;\n    assert_eq!(\n        call(&mut service, \"PUT\", \"sys/seal\", &token, json!({})).status,\n        204\n    );\n    service.ha = Some(Arc::clone(&cluster.processes[0]));\n    assert_eq!(\n        failure(admit(&mut service, \"GET\", \"\", deadline()))?.status,\n        503\n    );\n    Ok(())\n}\n\n#[test]\nfn native_redirect_unknown_leader_and_expired_original_scope_fail_without_effect() -> TestResult {\n    let root = Root::new();\n    let mut service = root.service()?;\n    let (_, token) = bootstrap(&mut service)?;\n    let cluster_id = service.state.as_ref().ok_or(\"state\")?.cluster_id.clone();\n    let cluster = Cluster::uninitialized(&root.path.join(\"raft\"), &cluster_id)?;\n    cluster.configure_api_address(1, \"https://configured.example\")?;"
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+    "blob": "50867f6ced7c34594e668a519df9c796fa333b0f",
+    "bytes": 52229,
+    "sha256": "3925de0802e77fc331b6e02a96155040a4bbe580cac0fc5619b135875ffecfd5",
+    "hits": [
+      {
+        "line": 90,
+        "text": "pub(crate) enum NativeSnapshotAdmission {"
+      },
+      {
+        "line": 380,
+        "text": "    pub(crate) fn begin_native_snapshot_before("
+      },
+      {
+        "line": 384,
+        "text": "    ) -> NativeSnapshotAdmission {"
+      },
+      {
+        "line": 388,
+        "text": "            return NativeSnapshotAdmission::Execute(RequestExecution::Complete(Response::error("
+      },
+      {
+        "line": 403,
+        "text": "            return NativeSnapshotAdmission::Execute(RequestExecution::Complete(Response::error("
+      },
+      {
+        "line": 418,
+        "text": "                        Ok(plan) => NativeSnapshotAdmission::Forward(Box::new(plan)),"
+      },
+      {
+        "line": 419,
+        "text": "                        Err(response) => NativeSnapshotAdmission::Execute("
+      },
+      {
+        "line": 439,
+        "text": "                    return NativeSnapshotAdmission::Execute(RequestExecution::Complete("
+      },
+      {
+        "line": 450,
+        "text": "                    return NativeSnapshotAdmission::Execute(RequestExecution::Complete("
+      },
+      {
+        "line": 454,
+        "text": "                return NativeSnapshotAdmission::Redirect(origin);"
+      },
+      {
+        "line": 458,
+        "text": "                return NativeSnapshotAdmission::Execute(RequestExecution::Complete(response));"
+      },
+      {
+        "line": 462,
+        "text": "        NativeSnapshotAdmission::Execute("
+      },
+      {
+        "line": 1102,
+        "text": "        match self.begin_native_snapshot_before(request, deadline) {"
+      },
+      {
+        "line": 1103,
+        "text": "            NativeSnapshotAdmission::Execute(RequestExecution::External(pending)) => Ok(*pending),"
+      },
+      {
+        "line": 1104,
+        "text": "            NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => Err(response),"
+      },
+      {
+        "line": 1105,
+        "text": "            NativeSnapshotAdmission::Redirect(_) => Err(Response::error("
+      }
+    ],
+    "disposition": {
+      "kind": "insert_explicit_forward_rejection",
+      "after": {
+        "blob": "9dcea728cd9afd0ba9f78a65537e7cac6ccadf55",
+        "bytes": 52444,
+        "sha256": "fb6440b75feddef609a5ddf54de163f3ec4ad5ddb9d607c19586cfb000a0d223"
+      },
+      "additionalMatches": "Original wildcard / let-else / matches! expressions elsewhere in this file are unchanged; only the single enumerated exhaustive arm is extended."
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_snapshot_typed_root_identity_tests.rs",
+    "blob": "f15f3935785919f42d8046f57da1b587f452bd7e",
+    "bytes": 13661,
+    "sha256": "555ddafde9d0b587bd34ff21913fcaeea57412cf3d90b6b242e0f6e49438a0da",
+    "hits": [
+      {
+        "line": 9,
+        "text": "    match service.begin_native_snapshot_before(request, Instant::now() + Duration::from_secs(15)) {"
+      },
+      {
+        "line": 10,
+        "text": "        NativeSnapshotAdmission::Execute(RequestExecution::External(pending)) => Ok(pending),"
+      }
+    ],
+    "disposition": {
+      "kind": "wildcard_error",
+      "lines": [
+        1,
+        17
+      ],
+      "excerpt": "//! Data equivalence never replaces the original live export/physical owners.\nuse super::*;\nuse crate::state_record_root_v6::{NativeRootContentIdentity, OwnerDomain, RecordStateRootV6};\nuse crate::state_records::{ObjectId, ObjectKind};\nuse std::fs;\n\nfn staged(service: &mut Service, token: &str) -> TestResult<Box<PendingExternalRequest>> {\n    let request = ServiceRequest::new(\"GET\", PATH, \"\", token, json!({\"mount\":\"secret\"}));\n    match service.begin_native_snapshot_before(request, Instant::now() + Duration::from_secs(15)) {\n        NativeSnapshotAdmission::Execute(RequestExecution::External(pending)) => Ok(pending),\n        _ => Err(\"typed root test must reach actual lossless staging\".into()),\n    }\n}\nfn plan(pending: &PendingExternalRequest) -> TestResult<&SnapshotTransferPlan> {\n    match &pending.effect {\n        ExternalEffectPlan::SnapshotTransfer(plan) => Ok(plan),\n        _ => Err(\"actual snapshot plan required\".into()),"
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_snapshot_v6_tests.rs",
+    "blob": "28d00dcb4193d725c9d9cb9a36f6e52518be0404",
+    "bytes": 17819,
+    "sha256": "5a10c1c4d46e38d8f49a029445408ecda5b12fc2754ea8af5d8389f4511fcc32",
+    "hits": [
+      {
+        "line": 50,
+        "text": "    match service.begin_native_snapshot_before("
+      },
+      {
+        "line": 54,
+        "text": "        NativeSnapshotAdmission::Execute(value) => Ok(value),"
+      },
+      {
+        "line": 55,
+        "text": "        NativeSnapshotAdmission::Redirect(_) => {"
+      },
+      {
+        "line": 318,
+        "text": "    let result = service.begin_native_snapshot_before("
+      },
+      {
+        "line": 323,
+        "text": "        matches!(result,NativeSnapshotAdmission::Execute(RequestExecution::Complete(ref r)) if r.status==503 && r.body.get(\"data\").is_none())"
+      }
+    ],
+    "disposition": {
+      "kind": "insert_explicit_forward_rejection",
+      "after": {
+        "blob": "2f6c5383d4303a60d15801bd348f3f337fbe144b",
+        "bytes": 17988,
+        "sha256": "293a7c730a279633b32054bde007be59275370a8c2b6d56f0e5d07ba4b07d769"
+      },
+      "additionalMatches": "Original wildcard / let-else / matches! expressions elsewhere in this file are unchanged; only the single enumerated exhaustive arm is extended."
+    }
+  }
+]

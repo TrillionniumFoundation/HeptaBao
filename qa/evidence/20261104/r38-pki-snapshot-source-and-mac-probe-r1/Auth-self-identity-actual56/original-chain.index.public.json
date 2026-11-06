@@ -1,0 +1,466 @@
+{
+  "schema": "heptabao.public-python-self-identity.original-chain.v1",
+  "job": "1a1afab06b9-fc05-6aa0",
+  "calls": [
+    {
+      "key": "python-self-r1-start",
+      "kind": "process_start",
+      "request": {
+        "blob": "f7294f87be2ce6675fd0125bc482c950c30f2c0e",
+        "bytes": 11843,
+        "sha256": "7ffa77a896493e9238d06be556a41647185198a23f060e660b9434c0ee63ece4"
+      },
+      "armed": {
+        "tree": "a54572169d3f0a26249d60912f7c6256d8518f64",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "f8e90f65afb2ef1b427ea5c6e734dc7a0bef25e4",
+            "bytes": 828,
+            "sha256": "37b856763a6d537476048f98ecd5d941d68bfbb3c98ff1acf021863423f46b27",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "1055cd778dd135a6f0661788e714988b80a47005",
+            "bytes": 691,
+            "sha256": "61ac3bd1591d46eb38c201f10a47fd97ba196184a048bf1ad696297397cebee0",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "f7294f87be2ce6675fd0125bc482c950c30f2c0e",
+            "bytes": 11843,
+            "sha256": "7ffa77a896493e9238d06be556a41647185198a23f060e660b9434c0ee63ece4",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 13362,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "originalSDK": {
+        "blob": "dd860b169535896743f45175b6bf719b784dee7f",
+        "bytes": 1422,
+        "sha256": "997873a332a4f2cc7ba387cf9725fa95b9db71f0425359f907abd888a332b310"
+      },
+      "originalSDKTree": "0f1b9e953d10bc0504837913c32554f9af5695d5",
+      "native": {
+        "blob": "20d7e13255212d222d4fbf3f0dc4a1e0444b61bc",
+        "bytes": 1174,
+        "sha256": "d8780ce996f099da2671a992aff93dc08748c62035e68ce044bf1c2a150bff7d"
+      },
+      "phase": "accepted",
+      "called": true
+    },
+    {
+      "key": "python-self-r1-authority-admit",
+      "kind": "operation_start",
+      "request": {
+        "blob": "22655581d8138be26d6113210d11cd6e12023237",
+        "bytes": 232,
+        "sha256": "61d646c640e529b8b7fa3f302ab61e2a1739710e1725dd97aef5dbffb8d6455a"
+      },
+      "armed": {
+        "tree": "94f51e2b2202b8319676f8e314062d06ebbd1979",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "cac68764564457da213cbe459413868017d26321",
+            "bytes": 857,
+            "sha256": "1e3d7fd82e4c38173dca160af02842467aab21021073e01c728b239c15d49690",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "defac7040a596d76ac5837588c39e0a0dfdb49de",
+            "bytes": 720,
+            "sha256": "7c5ed2b9f0b1cf8a3714ed0f6a1d0432db96d98405222852d5bd002e76c4edb8",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "22655581d8138be26d6113210d11cd6e12023237",
+            "bytes": 232,
+            "sha256": "61d646c640e529b8b7fa3f302ab61e2a1739710e1725dd97aef5dbffb8d6455a",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1809,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "originalSDK": {
+        "blob": "fb11ce64d403f3d619734a5fccded10ee975ba6e",
+        "bytes": 709,
+        "sha256": "9816308869c0f5bb9d4cbe43de243c7e733f3f9a2f034353d43213646c0dcaa4"
+      },
+      "originalSDKTree": "47b94cba864befea0c45cd7da912760f39bac095",
+      "native": {
+        "blob": "135f18bcd343b02f4928f5420e757b4af569de24",
+        "bytes": 548,
+        "sha256": "db4931c6389b40869b5899be8eba9f4cc474fc781720497a6720cef2b63b0799"
+      },
+      "phase": "accepted",
+      "called": true
+    },
+    {
+      "key": "python-self-r1-authority-status-0",
+      "kind": "operation_status",
+      "request": {
+        "blob": "27c7092e8f1cbfd7534f298873148a0842867895",
+        "bytes": 89,
+        "sha256": "d6323e5852eda7c651ad1c557665adb5c87085c41925242b0461cf810adb32d6"
+      },
+      "armed": {
+        "tree": "0c8408e95546ae676b0d5e5c8b57956e5f8ec200",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "5d5f4ca590595b6a259e84e58ac863bb0b6f1985",
+            "bytes": 922,
+            "sha256": "728b3bd92a7a4c9a55d519e0b744caaf483225b23678ff8bfd85b88438efea88",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "bb1642163231d3b78128214772eb7337ba0d7176",
+            "bytes": 785,
+            "sha256": "4c378d799ad54b0f8040e0d6e61355dcd8fbf344b6e7bd42a5f3f6f510d5d62c",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "27c7092e8f1cbfd7534f298873148a0842867895",
+            "bytes": 89,
+            "sha256": "d6323e5852eda7c651ad1c557665adb5c87085c41925242b0461cf810adb32d6",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1796,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "originalSDK": {
+        "blob": "9db336c49ac2e2b8c967a593ae49bab9cd632f1a",
+        "bytes": 980,
+        "sha256": "5ed3c53afbc6855dbca76afb56ebaf0a27b05dfca0430c2cf4946e86337f86f5"
+      },
+      "originalSDKTree": "852ddb44d9b7c47491ad35f7ba8f9014d22ad44d",
+      "native": {
+        "blob": "04c4a749812345e210f62ff43101520ce7f2819f",
+        "bytes": 805,
+        "sha256": "76e914da4287520b687a50dca45dfcafb600c5751b1df5cf63c6aa0330a23d52"
+      },
+      "phase": "accepted",
+      "called": true
+    },
+    {
+      "key": "python-self-r1-authority-page-0",
+      "kind": "operation_result",
+      "request": {
+        "blob": "e9d5ae81860484756e3d7b378504128733f2a7e7",
+        "bytes": 121,
+        "sha256": "400c47e98c982178aca14dbac65dd2cd2532527f24ff188c8403956d9f404d07"
+      },
+      "armed": {
+        "tree": "0143c16cd89c6ae68a32ca9060a637cd379226c0",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "d2147140ccc4133721e1c1f00609177ec0debc11",
+            "bytes": 921,
+            "sha256": "f0e65390956929924d3d32111415e8451ce201e622509cf4b5f6e19c39f0b040",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "b10c87e17ec7a07bf3cde64d3ce3955e513a5b5b",
+            "bytes": 784,
+            "sha256": "17ef56be42d0607ed2225a1f88b2551d64c2bbdce7141711de05f009c80a2f2e",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "e9d5ae81860484756e3d7b378504128733f2a7e7",
+            "bytes": 121,
+            "sha256": "400c47e98c982178aca14dbac65dd2cd2532527f24ff188c8403956d9f404d07",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1826,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "originalSDK": {
+        "blob": "0b0b90f6556bbac042e855213734d08cf9f07b81",
+        "bytes": 2068,
+        "sha256": "f6309d40b38f82ea37d14300c7c1e73cfcc08b539e9b0cd78b7650cd0404364c"
+      },
+      "originalSDKTree": "ade8d2eafdb99c20b2647d8b7fdf771adc4358d8",
+      "native": {
+        "blob": "f2e9b3a3c2d3e1fc9aa28d5d8159558aa2f78684",
+        "bytes": 1897,
+        "sha256": "ff394bdfae035ff0aecf93e3274fc2119d60574acddf9e3f120529f4d4e9e021"
+      },
+      "phase": "accepted",
+      "called": true
+    },
+    {
+      "key": "python-self-r1-streams-00-admit",
+      "kind": "operation_start",
+      "request": {
+        "blob": "dff978502044e7a840bdc4aa25bb3ac33f28323c",
+        "bytes": 305,
+        "sha256": "8fa1cc0864e1d13c4d4fa47af4317264121bef2b1d6b21cb3b55614cbd93d8a5"
+      },
+      "armed": {
+        "tree": "c025186fd8b5288f19b7ef9951b329d8386fe91c",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "57b09e1c7ba307c1e89cd062f5eda5c92aba9b61",
+            "bytes": 858,
+            "sha256": "cdc8b8ff7ae77bf04e3ff758799847ada48ab41946b8bd0e86bfaa5908dbbd77",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "7b5b1b3cb09cf6381ae932ab7910e12f2be3ed15",
+            "bytes": 721,
+            "sha256": "c62f59febf76020c18f9d901c70704cea500d30d85b35815f1902cc63a58676c",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "dff978502044e7a840bdc4aa25bb3ac33f28323c",
+            "bytes": 305,
+            "sha256": "8fa1cc0864e1d13c4d4fa47af4317264121bef2b1d6b21cb3b55614cbd93d8a5",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1884,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "originalSDK": {
+        "blob": "16127373c6b02a62c8dbbbe46e93702cd272ae26",
+        "bytes": 707,
+        "sha256": "81b41c350f0cd707245f9d019072c07cd90165d7d4c44a26f4a3c6e6785042aa"
+      },
+      "originalSDKTree": "f2ad53c6baad7eb6b5e3d63a1833c06952f10e14",
+      "native": {
+        "blob": "0eae87ff1798330e5344b0e21b59f79e51f3b96b",
+        "bytes": 546,
+        "sha256": "cad9e6edfb204e92a627bd18a12cde78e63805180fdba48edcdd9aff5a5e6e80"
+      },
+      "phase": "accepted",
+      "called": true
+    },
+    {
+      "key": "python-self-r1-streams-00-status-0",
+      "kind": "operation_status",
+      "request": {
+        "blob": "ef2a9c83203357dfc31268fde6d63ad6390a0296",
+        "bytes": 89,
+        "sha256": "d722b65dea9a0509b8f03d6ae37270f993bfed7fe4562b98638fb9592a839f8e"
+      },
+      "armed": {
+        "tree": "a864c98a15037936e4da5ad862c8e859d53658bf",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "c30e5335149ed9f57afca4b1fa8cf424e2e0cf77",
+            "bytes": 923,
+            "sha256": "adf8b108da8d2cd4bd6dfa6a2a8b31c4f501e6ebdfb0672e80ce40a664b0647b",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "552979d8df340399f0e41af60bedc743e53d36f5",
+            "bytes": 786,
+            "sha256": "83408b2330092aad4ca20d1dff8a5e76ed6bd0e31be390ce85e79599b6b51ebe",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "ef2a9c83203357dfc31268fde6d63ad6390a0296",
+            "bytes": 89,
+            "sha256": "d722b65dea9a0509b8f03d6ae37270f993bfed7fe4562b98638fb9592a839f8e",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1798,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "originalSDK": {
+        "blob": "30d3c9f9d639cb72f1c555a57e9c24be645c752c",
+        "bytes": 978,
+        "sha256": "2c2d9499e355036e14b080b25f38ea9de913425e3278f7c91ca900f665c3a666"
+      },
+      "originalSDKTree": "5ba2a288ea47167f9d3d16838e25b82f58fe38f2",
+      "native": {
+        "blob": "2b897e2eff9678647c55f3c4c1433434160e98d0",
+        "bytes": 803,
+        "sha256": "a3450893297e39a310cac01a0c2350bc0bdb4f289199f24da74447a0e3a0d709"
+      },
+      "phase": "accepted",
+      "called": true
+    },
+    {
+      "key": "python-self-r1-streams-00-page-0",
+      "kind": "operation_result",
+      "request": {
+        "blob": "1281806832dcf6c4a2cc49e908d76be74668ef52",
+        "bytes": 121,
+        "sha256": "4cbce6074ac5d3c9ed8476dcfe21ca5c233b723ba0530203c746b5711aa29ecb"
+      },
+      "armed": {
+        "tree": "21251fdd1daec46e708baa88aef22712fe0f6485",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "d69a4b86c98c25ed322dd7f19db10a9d7500751a",
+            "bytes": 922,
+            "sha256": "ceb8abbd3ecb02159082f62bc749c07f20f7f74d4dd6e36645a30a7940399685",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "dd83f37c60f4495eacdf48feb98a03d302bca997",
+            "bytes": 785,
+            "sha256": "15a2e0544e29f2d634c1d5bcb99e5f4d7e9908d70754558057890e8c0eed7d02",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "1281806832dcf6c4a2cc49e908d76be74668ef52",
+            "bytes": 121,
+            "sha256": "4cbce6074ac5d3c9ed8476dcfe21ca5c233b723ba0530203c746b5711aa29ecb",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1828,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "originalSDK": {
+        "blob": "8fd8efb6ea9256ee46da0b386b4ae66457df98a7",
+        "bytes": 11779,
+        "sha256": "09d5c2da88648679e6454d3bc775ee02756557af29676d8e59205ad5f0d9fad9"
+      },
+      "originalSDKTree": "8c88a38e4de44047db4bbc464d46b74dda9e8492",
+      "native": {
+        "blob": "9d4a948e463d05438f8c710cdb619b2b208e9af2",
+        "bytes": 11608,
+        "sha256": "4a1c538f00a432477793c843df9df7ed6b03770d5dce4aab00221d02a2d40e51"
+      },
+      "phase": "accepted",
+      "called": true
+    },
+    {
+      "key": "python-self-r1-streams-00-page-8192",
+      "kind": "operation_result",
+      "request": {
+        "blob": "38b41a50806bec82d37010c82d408e85167c536b",
+        "bytes": 124,
+        "sha256": "d265a671d231f3001e220300032b253b46dc176cf6f352ac1e434707c271d0ac"
+      },
+      "armed": {
+        "tree": "46eda03bc5172ebe9614ef74a9fad579b8d94788",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "8841760e42f3f33fd6854ab30bcf57a6dec6c028",
+            "bytes": 925,
+            "sha256": "2cd2a67bd6977282f14c6092f9f6a77066b07574aa003c30c51e31823ad3c992",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "c3513e239328d41ee3e76c479630fa9bc77f9cf4",
+            "bytes": 788,
+            "sha256": "7feb4df22f15964c321fd2b2f5c306f844183fd551c2ad84268bef35a0342d2b",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "38b41a50806bec82d37010c82d408e85167c536b",
+            "bytes": 124,
+            "sha256": "d265a671d231f3001e220300032b253b46dc176cf6f352ac1e434707c271d0ac",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1837,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "originalSDK": {
+        "blob": "a04e48ac5173ba8b5aac444ec09354f38721c7e2",
+        "bytes": 1009,
+        "sha256": "98e7ab04f21f360c09856de2ebd15303e77f2bb1ab95d0506c09d8fe5b8a9dd4"
+      },
+      "originalSDKTree": "551c19725ab8a277896364b40ee42b2674919050",
+      "native": {
+        "blob": "7da6bfa7e9add396d83e00913c39c4a5b64c5a29",
+        "bytes": 838,
+        "sha256": "a6515e6d058dcd5974aa24a96e03f4501258d9393412a6595f4d1f44c9dce60d"
+      },
+      "phase": "accepted",
+      "called": true
+    }
+  ],
+  "observers": [
+    {
+      "id": "d03e32cf7c4c9a87b03945f9eaa6a6ae932cb3b5d612399c30d77ca3febd1a55",
+      "tool": "process_status",
+      "payload": {
+        "blob": "3b4d23cb971e8c25494cccbd893c680608e098c3",
+        "bytes": 910,
+        "sha256": "9540f4e20ebe617c8a05b0af85eadae089ada843a371ad83f9d2bdff81916aff"
+      },
+      "payloadTree": "316fecab7f41f49434b6529e46ccf2c2ed9f78e2",
+      "nativeText": {
+        "blob": "525c34e56bad9a53da506f61b22e9ebbbb7bba32",
+        "bytes": 731,
+        "sha256": "c59553b7e8327a20de0696d184061b05a2628f04439e7048feb7edb4fb5b7b47"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "4e8211d9d14124cc7ba6e18a967f023c003391995e5f5f486562f5321bae8227",
+      "tool": "process_read",
+      "payload": {
+        "blob": "db3d0cfc34e5a048bacb39bc5652e6087862151b",
+        "bytes": 8304,
+        "sha256": "7b218dedc34cee45e9573849c3638feb1848b0aad849dfeca82842f6ded1e28a"
+      },
+      "payloadTree": "8077f9ad30749c501c83a5af80effabcd75c9336",
+      "nativeText": {
+        "blob": "e45e76dc67130e55a9572185a461f99adc39d93b",
+        "bytes": 7843,
+        "sha256": "28fccd52e16687ffcdfead12b6e90e10a58dd381929133a49465c176b0200c38"
+      },
+      "pages": 2,
+      "completedInactive": true
+    }
+  ]
+}

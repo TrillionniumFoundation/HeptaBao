@@ -1,0 +1,98 @@
+{
+  "schema": "heptabao.root-GO.PKI-fixed10-report-one-range-body.v1",
+  "authorization": "GO",
+  "agent": "/root/ha_validation",
+  "scope": "collector_report_binary_read_ranges_only",
+  "source_packet": "82b08a17f8a261afb1bb4195b68bce8b489f11ca",
+  "source": {
+    "blob": "6683583ad51c779bb92b34f2bdcb3ea206d94cdf",
+    "bytes": 32473,
+    "sha256": "858136fecd0ebb798977f7960dda8267ba2baf40f7f37cbec409080afb989e9f"
+  },
+  "source_review": {
+    "blob": "54e53c79516a699ba89028acab1fc89ff5787b9a",
+    "bytes": 5465,
+    "sha256": "875c27b750aeb82e1e48119551702cfd438125c45673f398dd6da65c2b062776"
+  },
+  "original_job": "1a1af917594-fc05-69b4",
+  "original_slot": "native_pki_lease400_formatter10_collector_gitfirst_r1",
+  "info_operation": "97808443f5d922af35c74107721bf17a5b9c65f46a3e3be525318c0aabecbb07",
+  "info_qualification": {
+    "blob": "a50905356cf029c30649ad4f45aa4b689062fde2",
+    "bytes": 5178,
+    "sha256": "7606d921e9d21022844c2d44cc589a8c29780c9205ef25bdf4b6fef69e812e10"
+  },
+  "info_native": {
+    "blob": "31a0dafbdf896a40a7f31c426e3b07de1d31fef8",
+    "bytes": 481,
+    "sha256": "6ef4f65835eb727f86892a9b23f0adc70d475280685a17fbfd2c4a9580b9f438"
+  },
+  "maximum_binary_read_starts": 1,
+  "immutable_body_page_bytes": 16384,
+  "fixed_report": {
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-observe-20261106-r1/observation.public.json",
+    "bytes": 30131,
+    "sha256": "f2d35f46f7fec2d9d9ce81d7e3bd8dca21c9c6f44d5f990314cfd4dcb5c4da46",
+    "version": "66306:30842948:30131:1793946915079275200:1793946915079275200",
+    "full9": [
+      "66306",
+      "30842948",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "30131",
+      "1793946915079275200",
+      "1793946915079275200"
+    ]
+  },
+  "exact_requests": [
+    {
+      "blob": "2425ced7f4789632651b30e5b2c95b10a15e51de",
+      "bytes": 425,
+      "sha256": "9024255e19ba7d8b210147b584c5f2e8a039da384c1843f06bc2fa60fe577fd8"
+    }
+  ],
+  "exact_ranges": [
+    {
+      "offset": 0,
+      "limit": 30131,
+      "request": {
+        "blob": "2425ced7f4789632651b30e5b2c95b10a15e51de",
+        "bytes": 425,
+        "sha256": "9024255e19ba7d8b210147b584c5f2e8a039da384c1843f06bc2fa60fe577fd8"
+      }
+    }
+  ],
+  "no_reinitialize": true,
+  "no_process_start": true,
+  "limits": {
+    "binary_request_maximum": 30131,
+    "total_body_bytes": 30131,
+    "original_status_and_info_page_bytes": 8192,
+    "maximum_original_payload_bytes": 1048576,
+    "maximum_Runtime_lanes": 2,
+    "maximum_native_call_or_future_per_lane": 1
+  },
+  "lane_activation": "C may use one observation lane while B uses its separately authorized snapshot stage. A/root0 Runtime until one lane releases.",
+  "sequence": [
+    "Whole exact GO and attach only existing closed collector/info context using reviewed6683583 journal. Never initialize or START another process.",
+    "Authorize exact one body request, preserve exact request/intent/armed externally whole, cross independent dispatch boundary, then call once.",
+    "Externally whole original SDK before isError/parse; never replay,rekey or replace UNKNOWN.",
+    "Use only returned original operation ID,status,next16384 immutable pages; full original payload SHA and EOF,completed inactive future.",
+    "Require exact binary path/version/size/offset0/next30131/EOF and original chunk SHA; independently reconstruct30131 full bytes/SHA and preserve identical whole report.",
+    "Release lane after original observer closure; semantic diff reconstruction and commit freeze remain root review work."
+  ],
+  "excludes": [
+    "new file_info,other paths,ranges,listing or binary extent",
+    "formatter or collector replay,Cargo,tests,product,credentials,client switch,deletion",
+    "timeout extension,automatic retry,alternate key"
+  ],
+  "report_body_observed": false,
+  "formatted_source_reconstructed": false,
+  "compile_or_product_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

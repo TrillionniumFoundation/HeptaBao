@@ -1,0 +1,57 @@
+{
+  "schema": "heptabao.public-home-t5-probe.r3-existing-result-checks.v1",
+  "passed": true,
+  "checkCount": 12,
+  "checks": [
+    {
+      "name": "seven_single_called_originals",
+      "passed": true
+    },
+    {
+      "name": "two_closed_observers",
+      "passed": true
+    },
+    {
+      "name": "two_original_immutable_pages",
+      "passed": true
+    },
+    {
+      "name": "no_pending_call_future",
+      "passed": true
+    },
+    {
+      "name": "exact_stdout_eof",
+      "passed": true
+    },
+    {
+      "name": "exact_empty_stderr_eof",
+      "passed": true
+    },
+    {
+      "name": "known_authority_failure",
+      "passed": true
+    },
+    {
+      "name": "output_complete_durable_confirmed",
+      "passed": true
+    },
+    {
+      "name": "failure_code_and_stage",
+      "passed": true
+    },
+    {
+      "name": "no_new_registration_attempt",
+      "passed": true
+    },
+    {
+      "name": "no_registered_fixed_FDs",
+      "passed": true
+    },
+    {
+      "name": "not_observation_or_execution_success",
+      "passed": true
+    }
+  ],
+  "noNewRuntime": true,
+  "sourceOrProductTests": false
+}

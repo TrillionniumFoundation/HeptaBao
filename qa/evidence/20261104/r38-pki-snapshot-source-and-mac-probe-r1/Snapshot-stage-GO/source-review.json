@@ -1,0 +1,355 @@
+{
+  "schema": "heptabao.root-source-review.snapshot8c95-independent-stage-only.v1",
+  "status": "SOURCE_REVIEWED_FOR_SEPARATE_STAGE_ONLY_GO",
+  "checks": [
+    {
+      "name": "whole44_3719301",
+      "passed": true
+    },
+    {
+      "name": "previous_root_GO_and_freeze_exact",
+      "passed": true
+    },
+    {
+      "name": "previous_reviewed_stage_and_three_helpers_exact",
+      "passed": true
+    },
+    {
+      "name": "canonical_and_parent_Merkle",
+      "passed": true
+    },
+    {
+      "name": "all_canonical_leaves_match_root_frozen_expected_tree",
+      "passed": true
+    },
+    {
+      "name": "canonical_commit_and_parent_chain",
+      "passed": true
+    },
+    {
+      "name": "whole_index453379_and_tracked62460068",
+      "passed": true
+    },
+    {
+      "name": "23_delta_11_modified12_new3905_unchanged_no_deletion",
+      "passed": true
+    },
+    {
+      "name": "fixed23_all_source_pins_and_no_extra_path",
+      "passed": true
+    },
+    {
+      "name": "exact16_stage_literals",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_unique_0",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_unique_1",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_unique_2",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_unique_3",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_unique_4",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_unique_5",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_unique_6",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_unique_7",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_unique_8",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_unique_9",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_unique_10",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_unique_11",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_unique_12",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_unique_13",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_unique_14",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_unique_15",
+      "passed": true
+    },
+    {
+      "name": "whole_stage_literal_reconstruction",
+      "passed": true
+    },
+    {
+      "name": "stage_seven_hunks_forward_reverse",
+      "passed": true
+    },
+    {
+      "name": "same20_stage_definitions",
+      "passed": true
+    },
+    {
+      "name": "stage_definition_on_signal",
+      "passed": true
+    },
+    {
+      "name": "stage_definition_digest",
+      "passed": true
+    },
+    {
+      "name": "stage_definition_blob",
+      "passed": true
+    },
+    {
+      "name": "stage_definition_identity",
+      "passed": true
+    },
+    {
+      "name": "stage_definition_stable_read",
+      "passed": true
+    },
+    {
+      "name": "stage_definition_fsync_dir",
+      "passed": true
+    },
+    {
+      "name": "stage_definition_create",
+      "passed": true
+    },
+    {
+      "name": "stage_definition_public",
+      "passed": true
+    },
+    {
+      "name": "stage_definition_group_members",
+      "passed": true
+    },
+    {
+      "name": "stage_definition_stop_owned",
+      "passed": true
+    },
+    {
+      "name": "stage_definition_owned",
+      "passed": true
+    },
+    {
+      "name": "stage_definition_git",
+      "passed": true
+    },
+    {
+      "name": "stage_definition_stage_remaining",
+      "passed": true
+    },
+    {
+      "name": "stage_definition_owned",
+      "passed": true
+    },
+    {
+      "name": "stage_definition_freeze",
+      "passed": true
+    },
+    {
+      "name": "stage_definition_preserve_failed_observer",
+      "passed": true
+    },
+    {
+      "name": "stage_definition_walk_error",
+      "passed": true
+    },
+    {
+      "name": "stage_definition_independent_git",
+      "passed": true
+    },
+    {
+      "name": "stage_definition_verify_full_worktree",
+      "passed": true
+    },
+    {
+      "name": "stage_definition_canonical_bundle_header",
+      "passed": true
+    },
+    {
+      "name": "only_three_journal_literals",
+      "passed": true
+    },
+    {
+      "name": "journal_literal_unique_0",
+      "passed": true
+    },
+    {
+      "name": "journal_literal_unique_1",
+      "passed": true
+    },
+    {
+      "name": "journal_literal_unique_2",
+      "passed": true
+    },
+    {
+      "name": "journal_only_fixed_slot_request_prefix_changed",
+      "passed": true
+    },
+    {
+      "name": "journal_syntax_only_no_invocation",
+      "passed": true
+    },
+    {
+      "name": "exact_request_and_native_source_pins",
+      "passed": true
+    },
+    {
+      "name": "original_historical_carrier_inert_complete_unchanged",
+      "passed": true
+    },
+    {
+      "name": "fixed_python_host_cwd_and360_outer",
+      "passed": true
+    },
+    {
+      "name": "independent_correct_typed_stdin_native_binding",
+      "passed": true
+    },
+    {
+      "name": "fixed_commit_tree_parent_fresh_root",
+      "passed": true
+    },
+    {
+      "name": "original_ancestry_only_two_fixed_prefix_additions",
+      "passed": true
+    },
+    {
+      "name": "old_scope_paths_and_495_prerequisite_not_replaced",
+      "passed": true
+    },
+    {
+      "name": "unchanged_finite_stage_and_child_budget",
+      "passed": true
+    },
+    {
+      "name": "fetch_exact_commit_no_extra_bootstrap",
+      "passed": true
+    },
+    {
+      "name": "compile_only_controls_no_execution",
+      "passed": true
+    },
+    {
+      "name": "old_fences_and_full_worktree_qualify_new_actual_only",
+      "passed": true
+    },
+    {
+      "name": "future_formatter_and_report_body_not_admitted",
+      "passed": true
+    },
+    {
+      "name": "old_CLI_failure_and_independent_build_denominators_preserved",
+      "passed": true
+    }
+  ],
+  "check_count": 68,
+  "source_packet": {
+    "tree": "e75ac52e5ab19454c144ad830ce6017b58083c0b",
+    "files": 44,
+    "bytes": 3719301,
+    "merkle": {
+      "root_sha": "e75ac52e5ab19454c144ad830ce6017b58083c0b",
+      "trees_verified": 1,
+      "leaf_count": 44
+    },
+    "whole": true
+  },
+  "source": {
+    "blob": "75593a6bf87243491247aecf007b1f029d33d59b",
+    "bytes": 28857,
+    "sha256": "6d38079e9d0e41fd1a705647786bdbc5cde8a374d0477482fe3a355e10f668d9"
+  },
+  "exact_request": {
+    "blob": "5f908e91a5cd38e8e3cfab448ec38d45e97b6310",
+    "bytes": 111878,
+    "sha256": "b3a2bb5d470ba645b275d289aabb188d9b6c542fd2a48ee3df5881f192a686bf"
+  },
+  "native_binding": {
+    "sha256": "041f9b79429e5825a1f8f5efae84a1bb0534316e76ffb344f0fbdb001cedc6b5",
+    "native_fingerprint": "297127045540763685"
+  },
+  "journal": {
+    "blob": "0123c47889d3b64d00774e2d7f29835500d9f88a",
+    "bytes": 19050,
+    "sha256": "f21485c0e6092e8dbbdbb7f98887084fd195adeb9afa4b47aa7e780389df0bbb"
+  },
+  "base_source": {
+    "blob": "40cdd07ec0e87656c2ea2e65c13a0734ffde6c51",
+    "bytes": 28599,
+    "sha256": "f896b4fc83d957505019259dc79c9ab9bd6e01fb7b40e7c54db442b8b48c7ab7"
+  },
+  "root_source_freeze": {
+    "blob": "a9cafa556e673ab51db70ddc5d4b7d5747b9f111",
+    "bytes": 2861,
+    "sha256": "d93ce53156983edf3f4d82bf4139e1135b044feeb1ba1da63cd4a39d79276d4e"
+  },
+  "canonical": {
+    "commit": "8c95fb0a8b2f61933a09b04986df2bafc9e7095c",
+    "tree": "f412f1524e08a56e23374897d329bfcf6295f4fe",
+    "sole_parent": "808e45d690f177ecb922e13d1ed19f7877156094",
+    "merkle": {
+      "root_sha": "f412f1524e08a56e23374897d329bfcf6295f4fe",
+      "trees_verified": 358,
+      "leaf_count": 3928
+    },
+    "leaves": 3928,
+    "tracked_bytes": 62460068,
+    "index": {
+      "blob": "50b826f20fea45f537ca433e6035865b62f8a9d2",
+      "bytes": 453379,
+      "sha256": "6baa9290fa3ee8f67bc22a77697d38a7ad1c4c776fc769f5f04ee645de204574"
+    },
+    "source_changed_files": 23
+  },
+  "limits": {
+    "internalSeconds": 300,
+    "gitSeconds": 90,
+    "cloneSeconds": 180,
+    "outerSeconds": 360,
+    "termSeconds": 5,
+    "killSeconds": 5,
+    "carrierBytes": 262144,
+    "bundleBytes": 4194304
+  },
+  "historical_controls_executed": false,
+  "formatter_reviewed_for_execution": false,
+  "formatter_executed": false,
+  "compiler_or_product_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

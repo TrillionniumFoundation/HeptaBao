@@ -1,0 +1,71 @@
+[
+  {
+    "callKey": "snapshot-8c95-rog-source-report-info-admit",
+    "kind": "operation_start",
+    "request": {
+      "blob": "e17cbc53589698ea5071ea83e0269d8fe73ebb2f",
+      "bytes": 312,
+      "sha256": "5b59a60e8942e3ed5bb93dcbb04b238d07ad0395ba23daa7625dd03c0da1792a"
+    },
+    "armed": "30fa6458ff8253dbb5b2c08560fe81ba366f60e7",
+    "SDK": {
+      "blob": "25eb09624185aae6dea3bc6fc8da6c175d0ea0ba",
+      "bytes": 704,
+      "sha256": "a022e3fc120a9e24d14acfe3ac35bb90416382ea31df3b3e675ea09ed61727a1"
+    },
+    "sdkTree": "801c332009e8c9a2c0bc7cb3cfeef62088c47210",
+    "native": {
+      "blob": "ace767af4c6d5915a86dbf8c334ef2d69dd62fc4",
+      "bytes": 543,
+      "sha256": "06279252287788ef21fa97555b86865f80332919e146ed6b134d9e23c7668ef9"
+    },
+    "phase": "accepted",
+    "called": true
+  },
+  {
+    "callKey": "snapshot-8c95-rog-source-report-info-status0",
+    "kind": "operation_status",
+    "request": {
+      "blob": "c98966d828b693784e4b6b0ed7306dbe1c1bcf0a",
+      "bytes": 89,
+      "sha256": "a5ed23694b0f0950182fe2f0273dd7072e06328962593ef5c4a82ef1d591b520"
+    },
+    "armed": "606a1e31c2e2d35486a855fbb41b6d5129dbfd8f",
+    "SDK": {
+      "blob": "09325908fb15bf0ea340c49cd0d928aff9339dd8",
+      "bytes": 975,
+      "sha256": "b28a17767a4eb94bc28f339ff0e38be2b28708b45ddede9354e01f943b45c3e6"
+    },
+    "sdkTree": "bcb3a7b3913f28df958438c1ea15f6934bec2874",
+    "native": {
+      "blob": "b131c2cda8ee3ac247cea7e833e4b8ceb77d70f1",
+      "bytes": 800,
+      "sha256": "97a3aa6db2282f4bf1c86350e211c81526486722288033e1b14adbdcb64ee106"
+    },
+    "phase": "accepted",
+    "called": true
+  },
+  {
+    "callKey": "snapshot-8c95-rog-source-report-info-page0",
+    "kind": "operation_result",
+    "request": {
+      "blob": "779ce2a32e89427fabed92c927a521287b45a3db",
+      "bytes": 121,
+      "sha256": "2f779ce960817c0dd00a5a2cfeff0aaf3c7043939bc748a8207a1a394296a16c"
+    },
+    "armed": "dc2545cb30dbbd9699fd2f7cb949d13fd7a66477",
+    "SDK": {
+      "blob": "41e0380068bb8bedbe176639188bef758014c7a3",
+      "bytes": 1668,
+      "sha256": "07accda9477e5af148f34ba6f2c786695376ca8d4f5371542e376392c39725bf"
+    },
+    "sdkTree": "d03c45f468dcf3f7fbbb1701472c135988b8e7e8",
+    "native": {
+      "blob": "3b6689a7740332dea0060ac3a7e0ad7044bd35f8",
+      "bytes": 1497,
+      "sha256": "c064f23e7e0bb884fbfcfb8e82a1618ef78a7577000251c8eb95d2acb657917a"
+    },
+    "phase": "accepted",
+    "called": true
+  }
+]

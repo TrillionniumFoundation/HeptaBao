@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.r4-existing-public-results-only.v1",
+  "passed": true,
+  "checkCount": 18,
+  "checks": {
+    "calls16": true,
+    "uniqueStart": true,
+    "observers3": true,
+    "pages9": true,
+    "allCallsAccepted": true,
+    "allObserversClosed": true,
+    "slotClosed": true,
+    "stdout18131": true,
+    "stderrEmpty": true,
+    "authorityKnown1": true,
+    "managedUnknownPreserved": true,
+    "deadlineMet": true,
+    "helpers5Closed": true,
+    "fdLedger33": true,
+    "noManagedSignal": true,
+    "noManagedBootout": true,
+    "noPrivateOrProduct": true,
+    "oldLabelUntouched": true
+  },
+  "scope": "Only already-returned public strings and closed journal metadata; no candidate execution, new host query, product case or proof of managed closure."
+}

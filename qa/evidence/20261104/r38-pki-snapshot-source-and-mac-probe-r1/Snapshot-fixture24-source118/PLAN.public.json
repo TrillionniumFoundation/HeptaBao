@@ -1,0 +1,72 @@
+{
+  "schema": "heptabao.native-snapshot-forward-exhaustive-refusal-source.v1",
+  "status": "SOURCE_ONLY_REVIEW_PENDING",
+  "parentCommit": "8c95fb0a8b2f61933a09b04986df2bafc9e7095c",
+  "parentTree": "f412f1524e08a56e23374897d329bfcf6295f4fe",
+  "parentCommitModified": false,
+  "newCommit": null,
+  "scope": {
+    "serverRustDirectory": "crates/heptabao-server/src/",
+    "canonicalLeavesScanned": 906,
+    "sourceBytes": 20918237,
+    "allWholeGitObjectsVerified": true,
+    "lexicalTerms": [
+      "NativeSnapshotAdmission",
+      "begin_native_snapshot_before"
+    ],
+    "hitFiles": 33,
+    "hitLines": 151,
+    "scopeNotClaimed": "No general proof of compilation, all Rust semantics, or repository-wide behavior. Enum is crate-private; this scan covers every Rust leaf of its defining server crate source directory."
+  },
+  "change": {
+    "leaves": 24,
+    "hunks": 24,
+    "insertedLines": 65,
+    "removedLines": 0,
+    "testFiles": 23,
+    "existingCfgTestLinuxFixture": 1,
+    "action": "For each old exhaustive local/selected-leader helper, explicitly reject Forward with the same feature guard as the enum variant. Drop the unexecuted plan; never send/execute it.",
+    "oldBytesRetainedByExactInverse": true,
+    "newTests": 0,
+    "oldAssertionsChanged": false,
+    "deadlinesChanged": false,
+    "productionHTTPCallbackChanged": false
+  },
+  "nonmodifiedMatches": {
+    "files": 9,
+    "kinds": [
+      "production_handles_forward",
+      "reexport_only",
+      "wildcard_error",
+      "wildcard_panic",
+      "wildcard_error_or_panic",
+      "let_else_error"
+    ],
+    "otherMatchesWithinChangedFiles": "Existing wildcard, let-else and matches! patterns retain exact bytes."
+  },
+  "evidence": {
+    "all33HitFilesWholeInPacket": true,
+    "inventory906": "906-canonical-source-index.public.json",
+    "canonicalTree": "canonical-tree.original.json",
+    "patchMap": "24-leaf-patch-map.public.json",
+    "checks": 203,
+    "checkerFirstFailurePreserved": "checker-first-failure.original.json",
+    "firstFailureCause": "Only eight preexisting diff-key aliases used suffix naming. Source and diff bytes unchanged; fixed local map names then same verifier passed."
+  },
+  "source44": "e75ac52e5ab19454c144ad830ce6017b58083c0b",
+  "rootFreezeProof": "a9cafa556e673ab51db70ddc5d4b7d5747b9f111",
+  "execution": {
+    "runtimeCalls": 0,
+    "rustCompile": false,
+    "formatter": false,
+    "cargo": false,
+    "testsExecuted": 0,
+    "source44Or8c95Mutated": false,
+    "C149Unique166ProfilesChanged": false,
+    "snapshot23ComponentsChanged": false,
+    "serviceAuditRegressionsIncluded": false,
+    "oldCLIB04B05FailurePreserved": true,
+    "oldUnknownPreserved": true
+  },
+  "next": "Root reviews the separate source successor and chooses the new commit/formatter scope; the frozen 8c95 checkout and old formatter request are not edited or executed."
+}

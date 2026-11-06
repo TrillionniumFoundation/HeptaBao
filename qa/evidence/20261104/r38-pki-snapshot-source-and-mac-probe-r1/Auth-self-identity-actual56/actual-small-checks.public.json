@@ -1,0 +1,62 @@
+{
+  "schema": "heptabao.public-python-self-identity.existing-result-checks.v1",
+  "passed": true,
+  "checkCount": 13,
+  "checks": [
+    {
+      "name": "eight_original_single_calls",
+      "passed": true
+    },
+    {
+      "name": "two_original_observers_closed",
+      "passed": true
+    },
+    {
+      "name": "three_original_immutable_pages",
+      "passed": true
+    },
+    {
+      "name": "zero_pending_native",
+      "passed": true
+    },
+    {
+      "name": "known_zero_authority",
+      "passed": true
+    },
+    {
+      "name": "whole_expected_stdout_and_empty_stderr",
+      "passed": true
+    },
+    {
+      "name": "diagnostic_complete_not_unknown",
+      "passed": true
+    },
+    {
+      "name": "two_same_self_reads",
+      "passed": true
+    },
+    {
+      "name": "only_kernel_launcher_predicate_false",
+      "passed": true
+    },
+    {
+      "name": "sys_executable_bound",
+      "passed": true
+    },
+    {
+      "name": "path_projection_complete",
+      "passed": true
+    },
+    {
+      "name": "signals_and_deadline_closed",
+      "passed": true
+    },
+    {
+      "name": "no_application_effects_reported",
+      "passed": true
+    }
+  ],
+  "noNewRuntime": true,
+  "noKernelFileQualification": true,
+  "noHistoricalR3FieldReconstruction": true
+}

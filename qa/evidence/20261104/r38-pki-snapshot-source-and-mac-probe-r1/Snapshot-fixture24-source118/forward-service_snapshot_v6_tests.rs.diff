@@ -1,0 +1,13 @@
+--- a/crates/heptabao-server/src/service_snapshot_v6_tests.rs
++++ b/crates/heptabao-server/src/service_snapshot_v6_tests.rs
+@@ -55,6 +55,10 @@
+         NativeSnapshotAdmission::Redirect(_) => {
+             Err("single-node fixture unexpectedly redirected".into())
+         }
++        #[cfg(feature = "native-v6-ha")]
++        NativeSnapshotAdmission::Forward(_) => {
++            Err("single-node fixture unexpectedly forwarded".into())
++        }
+     }
+ }
+ fn pending(

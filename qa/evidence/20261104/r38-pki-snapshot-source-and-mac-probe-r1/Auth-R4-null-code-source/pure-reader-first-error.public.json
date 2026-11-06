@@ -1,0 +1,10 @@
+{
+  "schema": "heptabao.pure-source-reader-selector-error.v1",
+  "stage": "PUBLIC_ERROR_CODES_literal_selection",
+  "errorType": "SyntaxError",
+  "message": "Unexpected token 'r', \"frozenset([\"... is not valid JSON",
+  "cause": "First pure reader passed the Python frozenset(...) wrapper to JSON.parse instead of selecting its bracketed JSON literal.",
+  "runtimeCalls": 0,
+  "candidateChanged": false,
+  "correction": "Select exactly /^PUBLIC_ERROR_CODES = frozenset\\((\\[.*\\])\\)$/ before JSON.parse; no candidate modification."
+}

@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r38-auth-self-identity-root-actual-qualification",
+  "records": [
+    {
+      "name": "ROOT-SELF-IDENTITY-QUALIFICATION.json",
+      "blob": "110d8f083a05e5cb478fdb60917d0406b54bc276",
+      "bytes": 7098,
+      "sha256": "8a704cbf874786513d042861378ee02f056fff29091d083f5ec7309b2442b1d7"
+    },
+    {
+      "name": "ROOT-SELF-IDENTITY-VERIFIER.js",
+      "blob": "aae4ba93528fd756d217cb85dccb93f36a3a109b",
+      "bytes": 8471,
+      "sha256": "a8709d356054a51a4fea18d784cb392b93568a37b52061d13b109214299e9cbc"
+    },
+    {
+      "name": "ORIGINAL-JOURNAL-VERIFIER.js",
+      "blob": "3c0ef26c0193c7e39724add83657466d88f560bb",
+      "bytes": 3404,
+      "sha256": "600711669602a25a77f41b713b51409130853ba1918af398aea928c01c5c6e01"
+    },
+    {
+      "name": "NATIVE-PROCESS-BINDING.js",
+      "blob": "82e81aef13d858c865ea05dd762056553a3d1cc6",
+      "bytes": 659,
+      "sha256": "e98c61fceb6eecdd55e6244ad43939320114809163afee67a6b8657235dae042"
+    }
+  ],
+  "expected_data_tree": "5a7a5704180fe23cd3ef786824dbb7034540ceb6",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

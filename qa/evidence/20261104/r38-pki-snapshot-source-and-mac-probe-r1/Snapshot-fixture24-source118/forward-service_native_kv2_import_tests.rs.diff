@@ -1,0 +1,11 @@
+--- a/crates/heptabao-server/src/service_native_kv2_import_tests.rs
++++ b/crates/heptabao-server/src/service_native_kv2_import_tests.rs
+@@ -832,6 +832,8 @@
+             Err(format!("snapshot admission status={}", response.status).into())
+         }
+         NativeSnapshotAdmission::Redirect(_) => Err("unexpected isolated redirect".into()),
++        #[cfg(feature = "native-v6-ha")]
++        NativeSnapshotAdmission::Forward(_) => Err("unexpected isolated forward".into()),
+     }
+ }
+ 

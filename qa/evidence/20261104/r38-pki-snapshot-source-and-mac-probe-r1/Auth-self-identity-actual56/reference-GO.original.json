@@ -1,0 +1,180 @@
+{
+  "schema": "heptabao.root-GO.Mac-public-Python-self-identity.v1",
+  "authorization": "GO",
+  "agent": "/root/authbus_migration",
+  "scope": "one_current_process_identity_projection_only",
+  "source_packet": "312115da1177b9f48c781f1f6bd9ff8789337caa",
+  "source_review": {
+    "blob": "26ba40b55548b5bc1aa6450d5fa6cb720a3852d8",
+    "bytes": 5009,
+    "sha256": "a7f5101a1262a53746b04aed7080a5176c75edd87048232fdb03c260bb1d4ff3"
+  },
+  "source": {
+    "blob": "14b74c4007faf72d28dde9043f7d20812973dba4",
+    "bytes": 11243,
+    "sha256": "77b33bcbee6ac6043a52fb2bc108b08dfffe973cbb3d2fead68493a530fd2bb2"
+  },
+  "exact_request": {
+    "blob": "f7294f87be2ce6675fd0125bc482c950c30f2c0e",
+    "bytes": 11843,
+    "sha256": "7ffa77a896493e9238d06be556a41647185198a23f060e660b9434c0ee63ece4"
+  },
+  "native_binding": {
+    "sha256": "272e96c5a80b3676c8673c7eb28273b6450263334b88b7ef79fb1c3ef4f6547b",
+    "native_fingerprint": "2823359792079910518"
+  },
+  "helpers": {
+    "native": {
+      "blob": "83f17e55c507c85d712635386c002b135afc2af3",
+      "bytes": 19042,
+      "sha256": "d96ec873d27c0eeedc7d7dc6b8a16015d9aefe968d09ffd62db8a406d6e0d49b"
+    },
+    "archive": {
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    "pure": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    }
+  },
+  "slot": "owner_public_python_identity_gitfirst_r1",
+  "start": {
+    "host": "mac",
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-"
+    ],
+    "cwd": "/Users/qianqi",
+    "stdin_source": {
+      "blob": "14b74c4007faf72d28dde9043f7d20812973dba4",
+      "bytes": 11243,
+      "sha256": "77b33bcbee6ac6043a52fb2bc108b08dfffe973cbb3d2fead68493a530fd2bb2"
+    },
+    "timeout_seconds": 60,
+    "idempotency_key": "heptabao-mac-public-python-identity-77b33bcb-20261106-r1",
+    "maximum_START_count": 1
+  },
+  "observations": {
+    "count": 2,
+    "globalProcessEnumeration": false,
+    "otherPidRead": false,
+    "identityNumericKeys": [
+      "pid",
+      "ppid",
+      "pgid",
+      "uid",
+      "birthSec",
+      "birthUsec"
+    ],
+    "sameIdentityEquality": "Both original complete dictionaries must match, including resolved executable and every numeric field.",
+    "originalPredicateKeys": [
+      "pid_gt_1",
+      "pgid_gt_1",
+      "uid_eq_501",
+      "birth_sec_gt_0",
+      "birth_usec_lt_1000000",
+      "executable_eq_fixed_python"
+    ],
+    "publicPath": {
+      "source": "Only original proc_pidpath of this own current process, normalized by unchanged original ProcessReader.",
+      "prefix": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/",
+      "maximumChars": 512,
+      "ascii": true,
+      "normalized": true,
+      "charset": "[A-Za-z0-9_./@+\\-]",
+      "outsideScope": "Output null and false scope boolean. No unknown path text/hash or guessed alias."
+    },
+    "sysExecutable": "Only exact equality to the fixed public launcher is reported; arbitrary sys.executable is not echoed.",
+    "currentObservationOnly": true,
+    "declaredPathDoesNotQualifyKernelImageFile": true
+  },
+  "effects": {
+    "applicationFileBodyReads": 0,
+    "explicitFileOpenCloseCalls": 0,
+    "applicationChildren": 0,
+    "directoryCreation": 0,
+    "launchd": 0,
+    "T5TargetedReads": 0,
+    "SDK": 0,
+    "privateCapsule": 0,
+    "provider": 0,
+    "network": 0,
+    "production": 0,
+    "oldLabel": 0,
+    "output": "One ASCII JSON stdout record; original Runtime owns its job logs."
+  },
+  "budget": {
+    "sharedSeconds": 5,
+    "eachReadLateReturnSeconds": 4,
+    "allReadsClippedToOneSharedDeadline": true,
+    "outerSeconds": 60,
+    "stdoutMaximumBytes": 8192,
+    "maximumOriginalReaderCalls": 2,
+    "maximumProcessPidinfoCalls": 4,
+    "maximumProcessPidpathCalls": 2,
+    "sleep": false,
+    "retry": false,
+    "synchronousCallsNotHardPreemptible": true,
+    "lateReturnFails": true,
+    "finalPostFlushExitCheck": true
+  },
+  "limits": {
+    "maximum_Runtime_lanes": 2,
+    "maximum_native_call_or_future_per_lane": 1,
+    "process_read_bytes": 16384,
+    "immutable_page_bytes": 8192,
+    "original_payload_cap": 1048576,
+    "stdout_bytes": 8192
+  },
+  "prior_failure_qualification": {
+    "blob": "03fb9f788ff6ffd5e538c5ea9c99009eb12e60cb",
+    "bytes": 6806,
+    "sha256": "897696797bca33eb1160ed124876b457986a9dd32191f336362ec857c5b18a3f"
+  },
+  "lane_activation": {
+    "A": "may activate this one short diagnostic lane now",
+    "B": "released original stage;0calls/futures/processes,awaiting new exact scope",
+    "C": "at most one separately authorized PKI body observation lane",
+    "root": "0Runtime",
+    "B_release_packet": "c45c9bd45a3af46de6a1594e446f0af751e247a8",
+    "B_release": {
+      "blob": "119e2fcee9fb965e6bb3aa9ceaa97e37d7caa9e9",
+      "bytes": 3592,
+      "sha256": "278ef512c729b0dff13216753a09a3a4f301806ea6c3c8c5c521f25bcaea3c2d"
+    }
+  },
+  "sequence": [
+    "Whole this GO then initialize only the fresh self-identity slot with root-correct typed-stdin digest/fingerprint.",
+    "Whole exact request,intent,armed before an independent dispatch boundary; issue exactly one original mac process_start.",
+    "Preserve complete original SDK externally whole before parse/isError; unknown cannot be re-keyed,replayed or replaced.",
+    "Use only returned original job and observer IDs,next8192 immutable pages,whole payload SHA/EOF and completed inactive closure.",
+    "Require known terminal/full/durable/confirmed plus complete bounded stdout/stderr; evaluate diagnostic observation independently from the six predicate values.",
+    "Stop after original controller and observers close. Do not read kernel executable file or change any validator without separately concrete source review."
+  ],
+  "qualification_limits": [
+    "The original ProcessReader performs path normalization metadata; interpreter/dynamic-loader descriptors are not enumerated.",
+    "Synchronous libproc calls are not individually preemptible; late returns cannot qualify success.",
+    "This fresh observation cannot retroactively identify the old R3 predicate values or qualify the kernel image file."
+  ],
+  "excludes": [
+    "originalR3 replay or new launchd bootstrap",
+    "old service,label,capsule,SDK,credentials,T5 target access",
+    "kernel executable file bodies or metadata qualification",
+    "other PIDs,global process enumeration,childList invocation",
+    "network,child processes,application file descriptors or writes",
+    "automatic retry,rekey,deadline reset,source guard relaxation"
+  ],
+  "original_R3_predicate_values_not_reconstructed": true,
+  "old_startup_cause_qualified": false,
+  "AuthBus_credentials_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

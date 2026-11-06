@@ -1,0 +1,10 @@
+--- a/launcher.BUILD22.before.py
++++ b/launcher.BUILD22-r2.after.py
+@@ -593,6 +593,7 @@
+                   each_listing_cap_seconds=30, each_runtime_group_cap_seconds=600,
+                   unique_test_count=149, profile_instance_test_count=166,
+                   new_jwt_test_names=15, new_jwt_profile_instances=30,
++                  new_pki_test_names=2, new_pki_profile_instances=4,
+                   existing_auth_identity_test_names=132, compile_profiles=['file', 'default'],
+                   default_features_do_not_qualify_distributed_jwt_ha=True,
+                   compile_gate_shared_cap_seconds=3600, compile_deadline_reset=False,

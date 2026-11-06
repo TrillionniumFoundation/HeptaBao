@@ -1,0 +1,13 @@
+--- a/crates/heptabao-server/src/service_native_v6_ha_historical_restore_tests.rs
++++ b/crates/heptabao-server/src/service_native_v6_ha_historical_restore_tests.rs
+@@ -33,6 +33,10 @@
+         NativeSnapshotAdmission::Redirect(_) => {
+             Err("selected historical restore leader redirected".into())
+         }
++        #[cfg(feature = "native-v6-ha")]
++        NativeSnapshotAdmission::Forward(_) => {
++            Err("selected historical restore leader forwarded".into())
++        }
+     }
+ }
+ fn activate(pipeline: &Pipeline, leader: usize) -> TestResult<StateIdentity> {

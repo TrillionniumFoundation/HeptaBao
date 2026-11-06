@@ -1,0 +1,352 @@
+{
+  "schema": "heptabao.native-jwt-pki.finalstage-source-checks.r1",
+  "status": "PASS_SOURCE_ONLY",
+  "checks": 66,
+  "results": [
+    {
+      "name": "actual_commit",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "sole_parent",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "actual_tree",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "canonical_size_index_count",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_source_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_source_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_source_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_source_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_source_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_source_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_source_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_source_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_source_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_source_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_source_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_source_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_source_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "all_source_changes_accounted",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "inverse_single_source_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "inverse_single_source_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "inverse_single_source_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "inverse_single_source_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "inverse_single_source_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "inverse_single_source_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "inverse_single_source_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "inverse_single_source_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "inverse_single_source_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "inverse_single_source_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "inverse_single_source_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "inverse_single_source_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "inverse_single_source_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "inverse_source_whole",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "all20defs_whole",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "source_strict_forward",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "source_strict_reverse",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_journal_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_journal_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_journal_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_journal_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_journal_literal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "journal_all_changes_accounted",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "journal_strict_forward",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "journal_strict_reverse",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "old_runtime_host_preserved",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "all_other_request_fields",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "source_self_SHA",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "carrier_whole_unchanged",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "request_pin_exact",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "fresh_key_bound_to_source",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "original_schema_for_existing_launcher",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "new_root_create_only",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "history_count3766",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "ancestry14",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "chain_contiguous",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "old495_anchor_same",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "budget_literal:STAGE_SECONDS = 300.0",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "budget_literal:str(OLD), str(SOURCE)], 180)",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "budget_literal:def owned(label, argv, limit=90, cwd=None):",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "budget_literal:assert len(carrier) <= 262144",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "budget_literal:process.wait(timeout=5)",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "historical_controls_never_executed",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "positive_base_binding",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "new_typed_binding",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "journal_request_binding",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "journal_host_ROG_both",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "journal_no_new_kinds",
+      "pass": true,
+      "detail": null
+    }
+  ],
+  "all_original_20_source_functions_byte_identical": true,
+  "source_hunks": 4,
+  "journal_hunks": 2,
+  "commit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+  "tree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+  "sole_parent": "808e45d690f177ecb922e13d1ed19f7877156094",
+  "binding": {
+    "sha256": "043dd4147f135f879d2ad30d1d31bec7ee692a940eac9b8a31a892ce6da7e732",
+    "native_fingerprint": "305633534227472263",
+    "typed_bytes": 111718
+  },
+  "Native": 0,
+  "Cargo": 0,
+  "productTests": 0,
+  "stage_actual_qualification": false
+}

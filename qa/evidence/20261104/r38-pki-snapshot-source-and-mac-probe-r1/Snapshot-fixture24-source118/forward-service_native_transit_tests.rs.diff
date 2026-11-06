@@ -1,0 +1,11 @@
+--- a/crates/heptabao-server/src/service_native_transit_tests.rs
++++ b/crates/heptabao-server/src/service_native_transit_tests.rs
+@@ -721,6 +721,8 @@
+             Err(format!("Transit snapshot admission status={}", response.status).into())
+         }
+         NativeSnapshotAdmission::Redirect(_) => Err("unexpected local snapshot redirect".into()),
++        #[cfg(feature = "native-v6-ha")]
++        NativeSnapshotAdmission::Forward(_) => Err("unexpected local snapshot forward".into()),
+     }
+ }
+ #[test]

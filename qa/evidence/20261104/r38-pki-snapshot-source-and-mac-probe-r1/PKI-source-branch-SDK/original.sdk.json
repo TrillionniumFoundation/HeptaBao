@@ -1,0 +1,12 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "branch": "codex/heptabao-native-jwt-pki-source-20261106"
+  },
+  "isError": false
+}

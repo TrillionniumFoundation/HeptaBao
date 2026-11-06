@@ -1,0 +1,674 @@
+{
+  "schema": "heptabao.pki-formatter10-collector-source-checks.r1",
+  "scope": "Pure V8 source/data/strict-diff verification. No Python compilation, collector execution, Native read or product test.",
+  "passed": 164,
+  "checks": [
+    {
+      "name": "reference_collector_pin",
+      "passed": true
+    },
+    {
+      "name": "diff_base_final_lf_1",
+      "passed": true
+    },
+    {
+      "name": "diff_final_lf_2",
+      "passed": true
+    },
+    {
+      "name": "diff_headers_3",
+      "passed": true
+    },
+    {
+      "name": "hunk_header_4",
+      "passed": true
+    },
+    {
+      "name": "hunk_order_5",
+      "passed": true
+    },
+    {
+      "name": "hunk_output_offset_6",
+      "passed": true
+    },
+    {
+      "name": "hunk_counts_7",
+      "passed": true
+    },
+    {
+      "name": "hunk_header_8",
+      "passed": true
+    },
+    {
+      "name": "hunk_order_9",
+      "passed": true
+    },
+    {
+      "name": "hunk_output_offset_10",
+      "passed": true
+    },
+    {
+      "name": "hunk_counts_11",
+      "passed": true
+    },
+    {
+      "name": "hunk_header_12",
+      "passed": true
+    },
+    {
+      "name": "hunk_order_13",
+      "passed": true
+    },
+    {
+      "name": "hunk_output_offset_14",
+      "passed": true
+    },
+    {
+      "name": "hunk_counts_15",
+      "passed": true
+    },
+    {
+      "name": "hunk_header_16",
+      "passed": true
+    },
+    {
+      "name": "hunk_order_17",
+      "passed": true
+    },
+    {
+      "name": "hunk_output_offset_18",
+      "passed": true
+    },
+    {
+      "name": "hunk_counts_19",
+      "passed": true
+    },
+    {
+      "name": "hunk_header_20",
+      "passed": true
+    },
+    {
+      "name": "hunk_order_21",
+      "passed": true
+    },
+    {
+      "name": "hunk_output_offset_22",
+      "passed": true
+    },
+    {
+      "name": "hunk_counts_23",
+      "passed": true
+    },
+    {
+      "name": "hunk_header_24",
+      "passed": true
+    },
+    {
+      "name": "hunk_order_25",
+      "passed": true
+    },
+    {
+      "name": "hunk_output_offset_26",
+      "passed": true
+    },
+    {
+      "name": "hunk_counts_27",
+      "passed": true
+    },
+    {
+      "name": "hunk_header_28",
+      "passed": true
+    },
+    {
+      "name": "hunk_order_29",
+      "passed": true
+    },
+    {
+      "name": "hunk_output_offset_30",
+      "passed": true
+    },
+    {
+      "name": "hunk_counts_31",
+      "passed": true
+    },
+    {
+      "name": "hunk_header_32",
+      "passed": true
+    },
+    {
+      "name": "hunk_order_33",
+      "passed": true
+    },
+    {
+      "name": "hunk_output_offset_34",
+      "passed": true
+    },
+    {
+      "name": "hunk_counts_35",
+      "passed": true
+    },
+    {
+      "name": "hunk_header_36",
+      "passed": true
+    },
+    {
+      "name": "hunk_order_37",
+      "passed": true
+    },
+    {
+      "name": "hunk_output_offset_38",
+      "passed": true
+    },
+    {
+      "name": "hunk_counts_39",
+      "passed": true
+    },
+    {
+      "name": "hunk_header_40",
+      "passed": true
+    },
+    {
+      "name": "hunk_order_41",
+      "passed": true
+    },
+    {
+      "name": "hunk_output_offset_42",
+      "passed": true
+    },
+    {
+      "name": "hunk_counts_43",
+      "passed": true
+    },
+    {
+      "name": "strict_forward_source",
+      "passed": true
+    },
+    {
+      "name": "diff_base_final_lf_45",
+      "passed": true
+    },
+    {
+      "name": "diff_final_lf_46",
+      "passed": true
+    },
+    {
+      "name": "diff_headers_47",
+      "passed": true
+    },
+    {
+      "name": "hunk_header_48",
+      "passed": true
+    },
+    {
+      "name": "hunk_order_49",
+      "passed": true
+    },
+    {
+      "name": "hunk_output_offset_50",
+      "passed": true
+    },
+    {
+      "name": "hunk_counts_51",
+      "passed": true
+    },
+    {
+      "name": "hunk_header_52",
+      "passed": true
+    },
+    {
+      "name": "hunk_order_53",
+      "passed": true
+    },
+    {
+      "name": "hunk_output_offset_54",
+      "passed": true
+    },
+    {
+      "name": "hunk_counts_55",
+      "passed": true
+    },
+    {
+      "name": "hunk_header_56",
+      "passed": true
+    },
+    {
+      "name": "hunk_order_57",
+      "passed": true
+    },
+    {
+      "name": "hunk_output_offset_58",
+      "passed": true
+    },
+    {
+      "name": "hunk_counts_59",
+      "passed": true
+    },
+    {
+      "name": "hunk_header_60",
+      "passed": true
+    },
+    {
+      "name": "hunk_order_61",
+      "passed": true
+    },
+    {
+      "name": "hunk_output_offset_62",
+      "passed": true
+    },
+    {
+      "name": "hunk_counts_63",
+      "passed": true
+    },
+    {
+      "name": "hunk_header_64",
+      "passed": true
+    },
+    {
+      "name": "hunk_order_65",
+      "passed": true
+    },
+    {
+      "name": "hunk_output_offset_66",
+      "passed": true
+    },
+    {
+      "name": "hunk_counts_67",
+      "passed": true
+    },
+    {
+      "name": "hunk_header_68",
+      "passed": true
+    },
+    {
+      "name": "hunk_order_69",
+      "passed": true
+    },
+    {
+      "name": "hunk_output_offset_70",
+      "passed": true
+    },
+    {
+      "name": "hunk_counts_71",
+      "passed": true
+    },
+    {
+      "name": "hunk_header_72",
+      "passed": true
+    },
+    {
+      "name": "hunk_order_73",
+      "passed": true
+    },
+    {
+      "name": "hunk_output_offset_74",
+      "passed": true
+    },
+    {
+      "name": "hunk_counts_75",
+      "passed": true
+    },
+    {
+      "name": "hunk_header_76",
+      "passed": true
+    },
+    {
+      "name": "hunk_order_77",
+      "passed": true
+    },
+    {
+      "name": "hunk_output_offset_78",
+      "passed": true
+    },
+    {
+      "name": "hunk_counts_79",
+      "passed": true
+    },
+    {
+      "name": "hunk_header_80",
+      "passed": true
+    },
+    {
+      "name": "hunk_order_81",
+      "passed": true
+    },
+    {
+      "name": "hunk_output_offset_82",
+      "passed": true
+    },
+    {
+      "name": "hunk_counts_83",
+      "passed": true
+    },
+    {
+      "name": "hunk_header_84",
+      "passed": true
+    },
+    {
+      "name": "hunk_order_85",
+      "passed": true
+    },
+    {
+      "name": "hunk_output_offset_86",
+      "passed": true
+    },
+    {
+      "name": "hunk_counts_87",
+      "passed": true
+    },
+    {
+      "name": "strict_reverse_source",
+      "passed": true
+    },
+    {
+      "name": "diff_base_final_lf_89",
+      "passed": true
+    },
+    {
+      "name": "diff_final_lf_90",
+      "passed": true
+    },
+    {
+      "name": "diff_headers_91",
+      "passed": true
+    },
+    {
+      "name": "hunk_header_92",
+      "passed": true
+    },
+    {
+      "name": "hunk_order_93",
+      "passed": true
+    },
+    {
+      "name": "hunk_output_offset_94",
+      "passed": true
+    },
+    {
+      "name": "hunk_counts_95",
+      "passed": true
+    },
+    {
+      "name": "hunk_header_96",
+      "passed": true
+    },
+    {
+      "name": "hunk_order_97",
+      "passed": true
+    },
+    {
+      "name": "hunk_output_offset_98",
+      "passed": true
+    },
+    {
+      "name": "hunk_counts_99",
+      "passed": true
+    },
+    {
+      "name": "strict_forward_journal",
+      "passed": true
+    },
+    {
+      "name": "diff_base_final_lf_101",
+      "passed": true
+    },
+    {
+      "name": "diff_final_lf_102",
+      "passed": true
+    },
+    {
+      "name": "diff_headers_103",
+      "passed": true
+    },
+    {
+      "name": "hunk_header_104",
+      "passed": true
+    },
+    {
+      "name": "hunk_order_105",
+      "passed": true
+    },
+    {
+      "name": "hunk_output_offset_106",
+      "passed": true
+    },
+    {
+      "name": "hunk_counts_107",
+      "passed": true
+    },
+    {
+      "name": "hunk_header_108",
+      "passed": true
+    },
+    {
+      "name": "hunk_order_109",
+      "passed": true
+    },
+    {
+      "name": "hunk_output_offset_110",
+      "passed": true
+    },
+    {
+      "name": "hunk_counts_111",
+      "passed": true
+    },
+    {
+      "name": "strict_reverse_journal",
+      "passed": true
+    },
+    {
+      "name": "literal_forward_exact",
+      "passed": true
+    },
+    {
+      "name": "literal_reverse_exact",
+      "passed": true
+    },
+    {
+      "name": "journal_only_three_literals",
+      "passed": true
+    },
+    {
+      "name": "same_top_level_definition_names",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_Refused",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_must",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_sha",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_identity",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_version",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_require_invocation",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_Custody",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_named_stat",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_directory_pair",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_open_directories",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_file_parent",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_input_pair",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_read_exact",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_lf_lines",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_strict_apply",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_publish_report",
+      "passed": true
+    },
+    {
+      "name": "entire_custody_class_byte_equal",
+      "passed": true
+    },
+    {
+      "name": "exact_original_invocation_shape",
+      "passed": true
+    },
+    {
+      "name": "inline_source_and_tail_sha",
+      "passed": true
+    },
+    {
+      "name": "stable_new_collector_key",
+      "passed": true
+    },
+    {
+      "name": "journal_exact_request_pin",
+      "passed": true
+    },
+    {
+      "name": "fresh_collector_slot",
+      "passed": true
+    },
+    {
+      "name": "embedded_ten_rows_exact",
+      "passed": true
+    },
+    {
+      "name": "ten_unique_fixed_paths",
+      "passed": true
+    },
+    {
+      "name": "original_fixed_file_roles",
+      "passed": true
+    },
+    {
+      "name": "input_bytes_543621",
+      "passed": true
+    },
+    {
+      "name": "shared_read_cap_1424736",
+      "passed": true
+    },
+    {
+      "name": "report_readback_inside_cap",
+      "passed": true
+    },
+    {
+      "name": "fd_acquisition_peak_counts",
+      "passed": true
+    },
+    {
+      "name": "all_caps_not_increased",
+      "passed": true
+    },
+    {
+      "name": "receipt_pin",
+      "passed": true
+    },
+    {
+      "name": "candidate_blob_0",
+      "passed": true
+    },
+    {
+      "name": "formatted_stdout_binding_0",
+      "passed": true
+    },
+    {
+      "name": "empty_stderr_0",
+      "passed": true
+    },
+    {
+      "name": "candidate_blob_1",
+      "passed": true
+    },
+    {
+      "name": "formatted_stdout_binding_1",
+      "passed": true
+    },
+    {
+      "name": "empty_stderr_1",
+      "passed": true
+    },
+    {
+      "name": "one_changed_one_unchanged_receipt",
+      "passed": true
+    },
+    {
+      "name": "full9_unobserved_eight_kept_null",
+      "passed": true
+    },
+    {
+      "name": "config_lossless_full9",
+      "passed": true
+    },
+    {
+      "name": "receipt_lossless_full9",
+      "passed": true
+    },
+    {
+      "name": "exact_receipt_content_row",
+      "passed": true
+    },
+    {
+      "name": "source_base_only_truth",
+      "passed": true
+    },
+    {
+      "name": "candidate_provenance_not_canonical",
+      "passed": true
+    },
+    {
+      "name": "no_checkout_guard_misrepresented",
+      "passed": true
+    },
+    {
+      "name": "input_custody_guard_preserved",
+      "passed": true
+    },
+    {
+      "name": "final_all_closed_and_original_deadline",
+      "passed": true
+    }
+  ],
+  "definition_count": 23,
+  "unchanged_definition_count": 16,
+  "changed_definitions": [
+    "open_inputs",
+    "read_inputs",
+    "validate_receipt",
+    "make_diffs",
+    "recheck_inputs_and_close",
+    "public_input_records",
+    "main"
+  ]
+}

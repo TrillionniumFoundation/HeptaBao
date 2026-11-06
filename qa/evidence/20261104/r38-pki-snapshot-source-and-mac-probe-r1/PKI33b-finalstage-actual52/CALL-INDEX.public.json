@@ -1,0 +1,219 @@
+[
+  {
+    "ordinal": 1,
+    "callKey": "jwt-pki-33b814c7-rog-source-start",
+    "kind": "process_start",
+    "phase": "accepted",
+    "called": true,
+    "request": {
+      "blob": "1b3da82ecf429adc5d816a2ff2cb78810059ac90",
+      "bytes": 111811,
+      "sha256": "576e7eb3f5f6a20d49e7fdae8939f002153ec69ebb41a891a08c80a8eb75dde4"
+    },
+    "sdk": {
+      "blob": "c2a23ca4a5aafee9a94ebb8facd7b13de0e07693",
+      "bytes": 31526,
+      "sha256": "6a29166ebcf5f9aa904b1a8dd5bb43cd4b1fb301304044ddfdd7e4667f743743"
+    },
+    "native": {
+      "blob": "96e9fbeeb875da7319589a19e6df6f2f6550d659",
+      "bytes": 30628,
+      "sha256": "19ba559f2c068983d9fcb975a5ec49d24171552d3e63456413c6c3dbdbc39d80"
+    },
+    "armedTree": "910dd4e74c1218244cc356cb8c9235581844eb0d",
+    "sdkArchiveTree": "831e9517ed01b7a5201becf6ea163856345f7d37",
+    "files": {
+      "request": "01.jwt-pki-33b814c7-rog-source-start.request.json",
+      "intent": "01.jwt-pki-33b814c7-rog-source-start.intent.json",
+      "armed": "01.jwt-pki-33b814c7-rog-source-start.armed.json",
+      "sdk": "01.jwt-pki-33b814c7-rog-source-start.sdk.original.json",
+      "native": "01.jwt-pki-33b814c7-rog-source-start.native.original.json"
+    }
+  },
+  {
+    "ordinal": 2,
+    "callKey": "jwt-pki-33b814c7-rog-source-authority0-start",
+    "kind": "operation_start",
+    "phase": "accepted",
+    "called": true,
+    "request": {
+      "blob": "58c4c7a828774b7bda8f6aadb94405b5c7227750",
+      "bytes": 231,
+      "sha256": "ac2b1a12dddf7f392ba6fd8e50fe07f7021fb31e57f5b5da01612bb495de0dca"
+    },
+    "sdk": {
+      "blob": "d5bae54a9e8583222c0bdae0ca9bf3ec9fe0ed27",
+      "bytes": 709,
+      "sha256": "5db41ffb45412209209862eaa3dda62c37b30d04d0ac44bad0dfd70de7515c34"
+    },
+    "native": {
+      "blob": "7a35314db831b6904acbd792b60baf10b54b1416",
+      "bytes": 548,
+      "sha256": "22a0204bed3bc56527a3bee524218f2a4dc8c851ef75953ef900db959ab8221c"
+    },
+    "armedTree": "a5cc30126f6716730536bb46ef12e8ba6aa9635a",
+    "sdkArchiveTree": "962f0b9e9796a83c428d4167040495a9ecf11f90",
+    "files": {
+      "request": "02.jwt-pki-33b814c7-rog-source-authority0-start.request.json",
+      "intent": "02.jwt-pki-33b814c7-rog-source-authority0-start.intent.json",
+      "armed": "02.jwt-pki-33b814c7-rog-source-authority0-start.armed.json",
+      "sdk": "02.jwt-pki-33b814c7-rog-source-authority0-start.sdk.original.json",
+      "native": "02.jwt-pki-33b814c7-rog-source-authority0-start.native.original.json"
+    }
+  },
+  {
+    "ordinal": 3,
+    "callKey": "jwt-pki-33b814c7-rog-source-authority0-status0",
+    "kind": "operation_status",
+    "phase": "accepted",
+    "called": true,
+    "request": {
+      "blob": "1771fe85b801112417cddd69eeb5821fbb668fe1",
+      "bytes": 89,
+      "sha256": "be34a12965682bba07524129d38fb5212676439ecdfebffaf354c1caf3903f3c"
+    },
+    "sdk": {
+      "blob": "282917e90cd7b05d8e891027784a23d16f538b81",
+      "bytes": 980,
+      "sha256": "dbb29cc681e16f8e28bfeb545a585b1f3539598423dca7d57e5cddccf0100cfc"
+    },
+    "native": {
+      "blob": "ebeb3cd170d1d82d49d142feb6e9618e65f36e4a",
+      "bytes": 805,
+      "sha256": "0995d956f7436da32cfbbcd567870fc13fbec636380b3869779bd8f02dc70e0a"
+    },
+    "armedTree": "f0c1bdd531375249f03fb7beeb9f827ce3da272e",
+    "sdkArchiveTree": "77442c9e10143e072c147a3982a9912063aba430",
+    "files": {
+      "request": "03.jwt-pki-33b814c7-rog-source-authority0-status0.request.json",
+      "intent": "03.jwt-pki-33b814c7-rog-source-authority0-status0.intent.json",
+      "armed": "03.jwt-pki-33b814c7-rog-source-authority0-status0.armed.json",
+      "sdk": "03.jwt-pki-33b814c7-rog-source-authority0-status0.sdk.original.json",
+      "native": "03.jwt-pki-33b814c7-rog-source-authority0-status0.native.original.json"
+    }
+  },
+  {
+    "ordinal": 4,
+    "callKey": "jwt-pki-33b814c7-rog-source-authority0-page0",
+    "kind": "operation_result",
+    "phase": "accepted",
+    "called": true,
+    "request": {
+      "blob": "76cf362570a8dd98f762d1b6ba2df4514a2f1beb",
+      "bytes": 121,
+      "sha256": "87370cf5c59a636c0b6127ac092d093938af2491ad84e25085aa692c4108a120"
+    },
+    "sdk": {
+      "blob": "621747cc4d3ad3dd2163809a949a1dbdae00d408",
+      "bytes": 2064,
+      "sha256": "a5de1cff966782517e9b18afe812ec33dde85b6b26503e1ca49e8eeaa16bda2c"
+    },
+    "native": {
+      "blob": "ea7ea9e866f1f4c942d7d1d7afe9ebd1d17e3b5d",
+      "bytes": 1893,
+      "sha256": "bb2a6c9d0275834c4e91c6511a0c538dbb524b6c1cb9648ef75123a8c1089a48"
+    },
+    "armedTree": "19171a03380a6b3bc8fcafc29674d97ac8f6d9a9",
+    "sdkArchiveTree": "f326ec666844bbaee6af8d6f5d21fbb9010232ba",
+    "files": {
+      "request": "04.jwt-pki-33b814c7-rog-source-authority0-page0.request.json",
+      "intent": "04.jwt-pki-33b814c7-rog-source-authority0-page0.intent.json",
+      "armed": "04.jwt-pki-33b814c7-rog-source-authority0-page0.armed.json",
+      "sdk": "04.jwt-pki-33b814c7-rog-source-authority0-page0.sdk.original.json",
+      "native": "04.jwt-pki-33b814c7-rog-source-authority0-page0.native.original.json"
+    }
+  },
+  {
+    "ordinal": 5,
+    "callKey": "jwt-pki-33b814c7-rog-source-streams0-start",
+    "kind": "operation_start",
+    "phase": "accepted",
+    "called": true,
+    "request": {
+      "blob": "e73764014825116b92c0ee79f28c79f03c17cd10",
+      "bytes": 301,
+      "sha256": "14b61e0047ee34f8b0eb8fcb6ed7cb1d9d5c804faf56e076fcd4bfc9c9dcc329"
+    },
+    "sdk": {
+      "blob": "a657b9e4ff49f4190deb333e25da0fb9dc702d80",
+      "bytes": 707,
+      "sha256": "2115f611e4867d430dae183f713ae789039ef89277b8d8b46e933b60d9fcec57"
+    },
+    "native": {
+      "blob": "000abefafefddad10a9b93f143baebdfd4c8a2dc",
+      "bytes": 546,
+      "sha256": "79d463afa813ba99b3e5e49130879a2ea18b60e421b00833db6ee727993ab334"
+    },
+    "armedTree": "7506ec7a0258865fb7291277d7848d36d01a21a3",
+    "sdkArchiveTree": "31affb7ac6431be785c1092297fb42a951f9a0a5",
+    "files": {
+      "request": "05.jwt-pki-33b814c7-rog-source-streams0-start.request.json",
+      "intent": "05.jwt-pki-33b814c7-rog-source-streams0-start.intent.json",
+      "armed": "05.jwt-pki-33b814c7-rog-source-streams0-start.armed.json",
+      "sdk": "05.jwt-pki-33b814c7-rog-source-streams0-start.sdk.original.json",
+      "native": "05.jwt-pki-33b814c7-rog-source-streams0-start.native.original.json"
+    }
+  },
+  {
+    "ordinal": 6,
+    "callKey": "jwt-pki-33b814c7-rog-source-streams0-status0",
+    "kind": "operation_status",
+    "phase": "accepted",
+    "called": true,
+    "request": {
+      "blob": "5dfd3a63b8e5e37cb67192088b1a24d9b32f3cfd",
+      "bytes": 89,
+      "sha256": "494c821d6d0480997c01ab14f8f2d5e51775d275979a2406256bb5f0c36231d2"
+    },
+    "sdk": {
+      "blob": "360c74e77510e779a657cff1e8eb17f5d6a5bb5c",
+      "bytes": 978,
+      "sha256": "523eff7e3f6e0ed0cb817d969d3d2f4e26bdb6e28696d9713f4c52f487af658c"
+    },
+    "native": {
+      "blob": "9e25c6164de9606d6a6b76af6145c35d65e39991",
+      "bytes": 803,
+      "sha256": "b4fc86c77844e3c12b0b70518ab90ccd586adaff082cfed046743e850ac1cc39"
+    },
+    "armedTree": "6b161620e999ac5976c332611d6c1701aa7a2de1",
+    "sdkArchiveTree": "6490d656791b59aa13979b1e31fd8b3f0319ca65",
+    "files": {
+      "request": "06.jwt-pki-33b814c7-rog-source-streams0-status0.request.json",
+      "intent": "06.jwt-pki-33b814c7-rog-source-streams0-status0.intent.json",
+      "armed": "06.jwt-pki-33b814c7-rog-source-streams0-status0.armed.json",
+      "sdk": "06.jwt-pki-33b814c7-rog-source-streams0-status0.sdk.original.json",
+      "native": "06.jwt-pki-33b814c7-rog-source-streams0-status0.native.original.json"
+    }
+  },
+  {
+    "ordinal": 7,
+    "callKey": "jwt-pki-33b814c7-rog-source-streams0-page0",
+    "kind": "operation_result",
+    "phase": "accepted",
+    "called": true,
+    "request": {
+      "blob": "9f62dae9a98f4bd82de6ee289da4ef35b5fc7f9a",
+      "bytes": 121,
+      "sha256": "194d14f1b396e9438f91aba0de25fb3ca7261ac302d3d9eace0f55743ea1b55b"
+    },
+    "sdk": {
+      "blob": "0ff023abba66c93ebd385c9d0c754fb504029e4a",
+      "bytes": 3066,
+      "sha256": "0bf288d3efa9f352425f355dbb35f84851aedd75b62e2bbd1e7676b73bef553e"
+    },
+    "native": {
+      "blob": "de5798329cee8555f583711bc5613d16ca65d3b1",
+      "bytes": 2895,
+      "sha256": "1278e4ef8b84f098a396a3f4082ff6627b16f0531d40990ae361fd4e49b42735"
+    },
+    "armedTree": "19ddf3df60ab0a067e404d5a068ae85a5c0eede1",
+    "sdkArchiveTree": "fe149d6d75a39393f15c207ab5e1c47916ff28bc",
+    "files": {
+      "request": "07.jwt-pki-33b814c7-rog-source-streams0-page0.request.json",
+      "intent": "07.jwt-pki-33b814c7-rog-source-streams0-page0.intent.json",
+      "armed": "07.jwt-pki-33b814c7-rog-source-streams0-page0.armed.json",
+      "sdk": "07.jwt-pki-33b814c7-rog-source-streams0-page0.sdk.original.json",
+      "native": "07.jwt-pki-33b814c7-rog-source-streams0-page0.native.original.json"
+    }
+  }
+]

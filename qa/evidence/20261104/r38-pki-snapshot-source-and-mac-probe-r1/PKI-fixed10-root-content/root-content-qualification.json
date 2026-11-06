@@ -1,0 +1,500 @@
+{
+  "schema": "heptabao.root-qualification.PKI-fixed10-actual-content-and-source-reconstruction.v1",
+  "status": "PASS_WHOLE_REPORT_AND_STRICT_ACTUAL_FORMATTED_SOURCE_RECONSTRUCTION",
+  "evidence_qualified": true,
+  "checks": [
+    {
+      "name": "original_whole_body_and_metadata_chain_qualified",
+      "passed": true
+    },
+    {
+      "name": "original_collector_terminal_and_formatter_receipt_qualified",
+      "passed": true
+    },
+    {
+      "name": "exact_report_schema_source_and_only10_inputs",
+      "passed": true
+    },
+    {
+      "name": "source_provenance_candidates_not_base_leaves",
+      "passed": true
+    },
+    {
+      "name": "bounded_sequential_no_atomic_snapshot_claim",
+      "passed": true
+    },
+    {
+      "name": "all_input_closure_requires_original_final_terminal",
+      "passed": true
+    },
+    {
+      "name": "no_product_compiler_child_network_listing_input_write",
+      "passed": true
+    },
+    {
+      "name": "original_all_finite_limits_unchanged",
+      "passed": true
+    },
+    {
+      "name": "original_formatter_receipt_and_two_children_exact",
+      "passed": true
+    },
+    {
+      "name": "formatter_source_and_configuration_exact",
+      "passed": true
+    },
+    {
+      "name": "exact_two_ordered_diff_rows",
+      "passed": true
+    },
+    {
+      "name": "immutable_candidate_before_pki.rs",
+      "passed": true
+    },
+    {
+      "name": "actual_diff_extent_SHA_pki.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_unchanged_empty_diff_pki.rs",
+      "passed": true
+    },
+    {
+      "name": "actual_formatted_reconstructed_complete_pki.rs",
+      "passed": true
+    },
+    {
+      "name": "immutable_candidate_before_service_native_pki_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "actual_diff_extent_SHA_service_native_pki_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "strict_forward_reverse_service_native_pki_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "actual_formatted_reconstructed_complete_service_native_pki_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "known_actual_formatted_blob_identities",
+      "passed": true
+    },
+    {
+      "name": "two_formatted_test_additions_preserved",
+      "passed": true
+    },
+    {
+      "name": "ten_distinct_fixed_paths",
+      "passed": true
+    },
+    {
+      "name": "input_0_fixed_manifest_and_role",
+      "passed": true
+    },
+    {
+      "name": "input_0_all_exact_complete_reconstructed_bytes",
+      "passed": true
+    },
+    {
+      "name": "input_0_lossless_full9_regular_private_single_link",
+      "passed": true
+    },
+    {
+      "name": "input_0_held_named_before_after_exact",
+      "passed": true
+    },
+    {
+      "name": "input_0_version_prior_and_once_close",
+      "passed": true
+    },
+    {
+      "name": "input_0_bounded_actual_read_calls",
+      "passed": true
+    },
+    {
+      "name": "input_1_fixed_manifest_and_role",
+      "passed": true
+    },
+    {
+      "name": "input_1_all_exact_complete_reconstructed_bytes",
+      "passed": true
+    },
+    {
+      "name": "input_1_lossless_full9_regular_private_single_link",
+      "passed": true
+    },
+    {
+      "name": "input_1_held_named_before_after_exact",
+      "passed": true
+    },
+    {
+      "name": "input_1_version_prior_and_once_close",
+      "passed": true
+    },
+    {
+      "name": "input_1_bounded_actual_read_calls",
+      "passed": true
+    },
+    {
+      "name": "input_2_fixed_manifest_and_role",
+      "passed": true
+    },
+    {
+      "name": "input_2_all_exact_complete_reconstructed_bytes",
+      "passed": true
+    },
+    {
+      "name": "input_2_lossless_full9_regular_private_single_link",
+      "passed": true
+    },
+    {
+      "name": "input_2_held_named_before_after_exact",
+      "passed": true
+    },
+    {
+      "name": "input_2_version_prior_and_once_close",
+      "passed": true
+    },
+    {
+      "name": "input_2_bounded_actual_read_calls",
+      "passed": true
+    },
+    {
+      "name": "input_3_fixed_manifest_and_role",
+      "passed": true
+    },
+    {
+      "name": "input_3_all_exact_complete_reconstructed_bytes",
+      "passed": true
+    },
+    {
+      "name": "input_3_lossless_full9_regular_private_single_link",
+      "passed": true
+    },
+    {
+      "name": "input_3_held_named_before_after_exact",
+      "passed": true
+    },
+    {
+      "name": "input_3_version_prior_and_once_close",
+      "passed": true
+    },
+    {
+      "name": "input_3_bounded_actual_read_calls",
+      "passed": true
+    },
+    {
+      "name": "input_4_fixed_manifest_and_role",
+      "passed": true
+    },
+    {
+      "name": "input_4_all_exact_complete_reconstructed_bytes",
+      "passed": true
+    },
+    {
+      "name": "input_4_lossless_full9_regular_private_single_link",
+      "passed": true
+    },
+    {
+      "name": "input_4_held_named_before_after_exact",
+      "passed": true
+    },
+    {
+      "name": "input_4_version_prior_and_once_close",
+      "passed": true
+    },
+    {
+      "name": "input_4_bounded_actual_read_calls",
+      "passed": true
+    },
+    {
+      "name": "input_5_fixed_manifest_and_role",
+      "passed": true
+    },
+    {
+      "name": "input_5_all_exact_complete_reconstructed_bytes",
+      "passed": true
+    },
+    {
+      "name": "input_5_lossless_full9_regular_private_single_link",
+      "passed": true
+    },
+    {
+      "name": "input_5_held_named_before_after_exact",
+      "passed": true
+    },
+    {
+      "name": "input_5_version_prior_and_once_close",
+      "passed": true
+    },
+    {
+      "name": "input_5_bounded_actual_read_calls",
+      "passed": true
+    },
+    {
+      "name": "input_6_fixed_manifest_and_role",
+      "passed": true
+    },
+    {
+      "name": "input_6_all_exact_complete_reconstructed_bytes",
+      "passed": true
+    },
+    {
+      "name": "input_6_lossless_full9_regular_private_single_link",
+      "passed": true
+    },
+    {
+      "name": "input_6_held_named_before_after_exact",
+      "passed": true
+    },
+    {
+      "name": "input_6_version_prior_and_once_close",
+      "passed": true
+    },
+    {
+      "name": "input_6_bounded_actual_read_calls",
+      "passed": true
+    },
+    {
+      "name": "input_7_fixed_manifest_and_role",
+      "passed": true
+    },
+    {
+      "name": "input_7_all_exact_complete_reconstructed_bytes",
+      "passed": true
+    },
+    {
+      "name": "input_7_lossless_full9_regular_private_single_link",
+      "passed": true
+    },
+    {
+      "name": "input_7_held_named_before_after_exact",
+      "passed": true
+    },
+    {
+      "name": "input_7_version_prior_and_once_close",
+      "passed": true
+    },
+    {
+      "name": "input_7_bounded_actual_read_calls",
+      "passed": true
+    },
+    {
+      "name": "input_8_fixed_manifest_and_role",
+      "passed": true
+    },
+    {
+      "name": "input_8_all_exact_complete_reconstructed_bytes",
+      "passed": true
+    },
+    {
+      "name": "input_8_lossless_full9_regular_private_single_link",
+      "passed": true
+    },
+    {
+      "name": "input_8_held_named_before_after_exact",
+      "passed": true
+    },
+    {
+      "name": "input_8_version_prior_and_once_close",
+      "passed": true
+    },
+    {
+      "name": "input_8_bounded_actual_read_calls",
+      "passed": true
+    },
+    {
+      "name": "input_9_fixed_manifest_and_role",
+      "passed": true
+    },
+    {
+      "name": "input_9_all_exact_complete_reconstructed_bytes",
+      "passed": true
+    },
+    {
+      "name": "input_9_lossless_full9_regular_private_single_link",
+      "passed": true
+    },
+    {
+      "name": "input_9_held_named_before_after_exact",
+      "passed": true
+    },
+    {
+      "name": "input_9_version_prior_and_once_close",
+      "passed": true
+    },
+    {
+      "name": "input_9_bounded_actual_read_calls",
+      "passed": true
+    },
+    {
+      "name": "directory_sets_exact_six",
+      "passed": true
+    },
+    {
+      "name": "directory_candidate_lossless_held_named_input_observation",
+      "passed": true
+    },
+    {
+      "name": "directory_candidate_post_publication_scope",
+      "passed": true
+    },
+    {
+      "name": "directory_candidate_private_owned",
+      "passed": true
+    },
+    {
+      "name": "directory_formatted_lossless_held_named_input_observation",
+      "passed": true
+    },
+    {
+      "name": "directory_formatted_post_publication_scope",
+      "passed": true
+    },
+    {
+      "name": "directory_formatted_private_owned",
+      "passed": true
+    },
+    {
+      "name": "directory_home_lossless_held_named_input_observation",
+      "passed": true
+    },
+    {
+      "name": "directory_home_post_publication_scope",
+      "passed": true
+    },
+    {
+      "name": "directory_input_lossless_held_named_input_observation",
+      "passed": true
+    },
+    {
+      "name": "directory_input_post_publication_scope",
+      "passed": true
+    },
+    {
+      "name": "directory_input_private_owned",
+      "passed": true
+    },
+    {
+      "name": "directory_root_lossless_held_named_input_observation",
+      "passed": true
+    },
+    {
+      "name": "directory_root_post_publication_scope",
+      "passed": true
+    },
+    {
+      "name": "directory_user_lossless_held_named_input_observation",
+      "passed": true
+    },
+    {
+      "name": "directory_user_post_publication_scope",
+      "passed": true
+    },
+    {
+      "name": "prepublication_actual_counters_exact",
+      "passed": true
+    },
+    {
+      "name": "actual_total_input_read_and_calls_match_rows",
+      "passed": true
+    },
+    {
+      "name": "two_source_totals_changes_and_diff_bytes",
+      "passed": true
+    },
+    {
+      "name": "elapsed_before_publication_within_original_terminal_time",
+      "passed": true
+    }
+  ],
+  "check_count": 102,
+  "original_report": {
+    "blob": "4b8a48e1d4cec8c7e68ba0a858dc2da27662d13d",
+    "bytes": 30131,
+    "sha256": "f2d35f46f7fec2d9d9ce81d7e3bd8dca21c9c6f44d5f990314cfd4dcb5c4da46"
+  },
+  "original_body_qualification": {
+    "blob": "5421add900ee34e1019d8d28d8c81559500dcabe",
+    "bytes": 5631,
+    "sha256": "ffe5e427628412e6ba00627e50db90846be79c8c2fcbc842568e5fc08d6b9d81"
+  },
+  "original_terminal_qualification": {
+    "blob": "9ab252931ca5d239f8635fbfd97a7b0aa9408f2f",
+    "bytes": 8495,
+    "sha256": "843583f5f76e7bbda5abaa11c1dbc18ae7fc7c0bbef1c6e7e4fd0c9b8b132660"
+  },
+  "original_info_qualification": {
+    "blob": "a50905356cf029c30649ad4f45aa4b689062fde2",
+    "bytes": 5178,
+    "sha256": "7606d921e9d21022844c2d44cc589a8c29780c9205ef25bdf4b6fef69e812e10"
+  },
+  "formatted_files": [
+    {
+      "name": "pki.rs",
+      "path": "crates/heptabao-server/src/engines/pki.rs",
+      "blob": "3c6fd86dcd641eb16af64b835d2252163dd1488e",
+      "bytes": 136672,
+      "sha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba",
+      "changed": false,
+      "before": {
+        "blob": "3c6fd86dcd641eb16af64b835d2252163dd1488e",
+        "bytes": 136672,
+        "sha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba"
+      },
+      "diff": {
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "hunks": 0
+      }
+    },
+    {
+      "name": "service_native_pki_tests.rs",
+      "path": "crates/heptabao-server/src/service_native_pki_tests.rs",
+      "blob": "23b2c1344eec6ad1cc659f665df14d6379687a49",
+      "bytes": 42909,
+      "sha256": "6a1fd1fbaf6caa1c206844e8d97414ea231a1cba663ebb704d26cdff42417d56",
+      "changed": true,
+      "before": {
+        "blob": "352e581f5a901f21ee7c7af4c9bc5b3bed1a1439",
+        "bytes": 42863,
+        "sha256": "3dfea1dccd78187517f3cb9ca04ed036073eb7ed6b7c604815aa745f4402f208"
+      },
+      "diff": {
+        "blob": "cc7938d777d8bdd3364e22a3ef8af71b35885d58",
+        "bytes": 592,
+        "sha256": "20d07e64ee043d498a01c0fb25a1e3618ce4a9f8a5a0dcb0f27700c3c24a7f10",
+        "hunks": 2
+      }
+    }
+  ],
+  "actual": {
+    "fixed_inputs": 10,
+    "input_bytes": 543621,
+    "formatted_bytes": 179581,
+    "format_changed_files": 1,
+    "unchanged_files": 1,
+    "actual_diff_bytes": 592,
+    "reconstruction_direction_checks": 2,
+    "all_input_FDs_closed": true,
+    "all18_final_FDs_closed": true
+  },
+  "limitations": [
+    "Ten input observations are sequential, with held/named identity checks; they are not an atomic filesystem snapshot.",
+    "Formatter children were directly reaped in the supervisor group; an independently empty process group was not observed.",
+    "The report e3af commit/tree describes base ancestry; the two candidate inputs are separately pinned immutable blobs, not e3af leaves.",
+    "This qualification proves actual formatted source bytes, not Rust compilation, component tests or HTTP behavior."
+  ],
+  "formatted_source_reconstructed": true,
+  "compile_or_product_qualified": false,
+  "PKI_HTTP12_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

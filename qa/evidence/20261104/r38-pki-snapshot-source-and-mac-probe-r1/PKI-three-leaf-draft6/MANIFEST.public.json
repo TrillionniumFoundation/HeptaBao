@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.exact-public-packet-manifest.r1",
+  "files": [
+    {
+      "path": "GIT-TREE-ELEMENTS.DRAFT-ONLY.public.json",
+      "blob": "6e248032b4aa2b924703c2d86b5ec44e3f210af0",
+      "bytes": 816,
+      "sha256": "67c27dbe78b50591b2e77a9eb7481ccfbc4a30874b9937e81feed17b282e5855"
+    },
+    {
+      "path": "MERKLE7.public.json",
+      "blob": "ea9569c3ad4f9518e226d6de76e54050c11a16f7",
+      "bytes": 351278,
+      "sha256": "a0b29a4abf77bfafc1d75f830346dbc624c082c0827f6ab05de4ae66c5502570"
+    },
+    {
+      "path": "PROPOSAL.public.json",
+      "blob": "d29ab867c9278407462b58df6e3993a159da175c",
+      "bytes": 4359,
+      "sha256": "1bbd75eacde069172d396472c4a8147aaa5552171bb18b46bf6350787e506c14"
+    },
+    {
+      "path": "README.md",
+      "blob": "ebc81184d33d78dde3fad2a0b718a8a8c4a6fda4",
+      "bytes": 1062,
+      "sha256": "09fc669452c5ef22d11cb39f05cff53fa1d152a4f42562c6c28c84e08ef0e736"
+    },
+    {
+      "path": "SOURCE-REFERENCES.public.json",
+      "blob": "212745526d975aa33bf3c4ba8d6f33957e63bfa5",
+      "bytes": 1755,
+      "sha256": "5e9af1d2de7708aba131225b36897e073e72d18c76fd6203e70dff1c4066f550"
+    }
+  ]
+}

@@ -1,0 +1,830 @@
+{
+  "schema": "heptabao.native-snapshot-forward-exhaustive-source-checks.v1",
+  "passed": true,
+  "checks": [
+    {
+      "name": "canonical exact tree, untruncated",
+      "passed": true
+    },
+    {
+      "name": "finite inventory equals all canonical server Rust leaves",
+      "passed": true
+    },
+    {
+      "name": "906 leaves and exact 20918237 UTF8 bytes",
+      "passed": true
+    },
+    {
+      "name": "all 906 whole Git objects verified",
+      "passed": true
+    },
+    {
+      "name": "all 151 lexical references recorded exactly",
+      "passed": true
+    },
+    {
+      "name": "exact 24 unique affected leaves",
+      "passed": true
+    },
+    {
+      "name": "service_native_controlgroups_271_namespace_ha_tests.rs: before canonical member",
+      "passed": true
+    },
+    {
+      "name": "service_native_controlgroups_271_namespace_ha_tests.rs: all four whole pins",
+      "passed": true
+    },
+    {
+      "name": "service_native_controlgroups_271_namespace_ha_tests.rs: exact one unique insertion",
+      "passed": true
+    },
+    {
+      "name": "service_native_controlgroups_271_namespace_ha_tests.rs: forward strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_controlgroups_271_namespace_ha_tests.rs: reverse strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_controlgroups_271_namespace_ha_tests.rs: exactly one hunk",
+      "passed": true
+    },
+    {
+      "name": "service_native_controlgroups_271_namespace_ha_tests.rs: native feature gated and explicit refusal",
+      "passed": true
+    },
+    {
+      "name": "service_native_controlgroups_271_namespace_ha_tests.rs: test declarations unchanged",
+      "passed": true
+    },
+    {
+      "name": "service_native_controlgroups_271_namespace_tests.rs: before canonical member",
+      "passed": true
+    },
+    {
+      "name": "service_native_controlgroups_271_namespace_tests.rs: all four whole pins",
+      "passed": true
+    },
+    {
+      "name": "service_native_controlgroups_271_namespace_tests.rs: exact one unique insertion",
+      "passed": true
+    },
+    {
+      "name": "service_native_controlgroups_271_namespace_tests.rs: forward strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_controlgroups_271_namespace_tests.rs: reverse strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_controlgroups_271_namespace_tests.rs: exactly one hunk",
+      "passed": true
+    },
+    {
+      "name": "service_native_controlgroups_271_namespace_tests.rs: native feature gated and explicit refusal",
+      "passed": true
+    },
+    {
+      "name": "service_native_controlgroups_271_namespace_tests.rs: test declarations unchanged",
+      "passed": true
+    },
+    {
+      "name": "service_native_file_gc_tests.rs: before canonical member",
+      "passed": true
+    },
+    {
+      "name": "service_native_file_gc_tests.rs: all four whole pins",
+      "passed": true
+    },
+    {
+      "name": "service_native_file_gc_tests.rs: exact one unique insertion",
+      "passed": true
+    },
+    {
+      "name": "service_native_file_gc_tests.rs: forward strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_file_gc_tests.rs: reverse strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_file_gc_tests.rs: exactly one hunk",
+      "passed": true
+    },
+    {
+      "name": "service_native_file_gc_tests.rs: native feature gated and explicit refusal",
+      "passed": true
+    },
+    {
+      "name": "service_native_file_gc_tests.rs: test declarations unchanged",
+      "passed": true
+    },
+    {
+      "name": "service_native_flat_retirement_tests.rs: before canonical member",
+      "passed": true
+    },
+    {
+      "name": "service_native_flat_retirement_tests.rs: all four whole pins",
+      "passed": true
+    },
+    {
+      "name": "service_native_flat_retirement_tests.rs: exact one unique insertion",
+      "passed": true
+    },
+    {
+      "name": "service_native_flat_retirement_tests.rs: forward strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_flat_retirement_tests.rs: reverse strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_flat_retirement_tests.rs: exactly one hunk",
+      "passed": true
+    },
+    {
+      "name": "service_native_flat_retirement_tests.rs: native feature gated and explicit refusal",
+      "passed": true
+    },
+    {
+      "name": "service_native_flat_retirement_tests.rs: test declarations unchanged",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_import_tests.rs: before canonical member",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_import_tests.rs: all four whole pins",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_import_tests.rs: exact one unique insertion",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_import_tests.rs: forward strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_import_tests.rs: reverse strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_import_tests.rs: exactly one hunk",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_import_tests.rs: native feature gated and explicit refusal",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_import_tests.rs: test declarations unchanged",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_large_ha_tests.rs: before canonical member",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_large_ha_tests.rs: all four whole pins",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_large_ha_tests.rs: exact one unique insertion",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_large_ha_tests.rs: forward strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_large_ha_tests.rs: reverse strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_large_ha_tests.rs: exactly one hunk",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_large_ha_tests.rs: native feature gated and explicit refusal",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_large_ha_tests.rs: test declarations unchanged",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_mount_tests.rs: before canonical member",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_mount_tests.rs: all four whole pins",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_mount_tests.rs: exact one unique insertion",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_mount_tests.rs: forward strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_mount_tests.rs: reverse strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_mount_tests.rs: exactly one hunk",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_mount_tests.rs: native feature gated and explicit refusal",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_mount_tests.rs: test declarations unchanged",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_storage_witness_tests.rs: before canonical member",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_storage_witness_tests.rs: all four whole pins",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_storage_witness_tests.rs: exact one unique insertion",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_storage_witness_tests.rs: forward strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_storage_witness_tests.rs: reverse strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_storage_witness_tests.rs: exactly one hunk",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_storage_witness_tests.rs: native feature gated and explicit refusal",
+      "passed": true
+    },
+    {
+      "name": "service_native_kv2_storage_witness_tests.rs: test declarations unchanged",
+      "passed": true
+    },
+    {
+      "name": "service_native_namespace_tree_tests.rs: before canonical member",
+      "passed": true
+    },
+    {
+      "name": "service_native_namespace_tree_tests.rs: all four whole pins",
+      "passed": true
+    },
+    {
+      "name": "service_native_namespace_tree_tests.rs: exact one unique insertion",
+      "passed": true
+    },
+    {
+      "name": "service_native_namespace_tree_tests.rs: forward strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_namespace_tree_tests.rs: reverse strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_namespace_tree_tests.rs: exactly one hunk",
+      "passed": true
+    },
+    {
+      "name": "service_native_namespace_tree_tests.rs: native feature gated and explicit refusal",
+      "passed": true
+    },
+    {
+      "name": "service_native_namespace_tree_tests.rs: test declarations unchanged",
+      "passed": true
+    },
+    {
+      "name": "service_native_pki_archive_tests.rs: before canonical member",
+      "passed": true
+    },
+    {
+      "name": "service_native_pki_archive_tests.rs: all four whole pins",
+      "passed": true
+    },
+    {
+      "name": "service_native_pki_archive_tests.rs: exact one unique insertion",
+      "passed": true
+    },
+    {
+      "name": "service_native_pki_archive_tests.rs: forward strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_pki_archive_tests.rs: reverse strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_pki_archive_tests.rs: exactly one hunk",
+      "passed": true
+    },
+    {
+      "name": "service_native_pki_archive_tests.rs: native feature gated and explicit refusal",
+      "passed": true
+    },
+    {
+      "name": "service_native_pki_archive_tests.rs: test declarations unchanged",
+      "passed": true
+    },
+    {
+      "name": "service_native_remount_v6_tests.rs: before canonical member",
+      "passed": true
+    },
+    {
+      "name": "service_native_remount_v6_tests.rs: all four whole pins",
+      "passed": true
+    },
+    {
+      "name": "service_native_remount_v6_tests.rs: exact one unique insertion",
+      "passed": true
+    },
+    {
+      "name": "service_native_remount_v6_tests.rs: forward strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_remount_v6_tests.rs: reverse strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_remount_v6_tests.rs: exactly one hunk",
+      "passed": true
+    },
+    {
+      "name": "service_native_remount_v6_tests.rs: native feature gated and explicit refusal",
+      "passed": true
+    },
+    {
+      "name": "service_native_remount_v6_tests.rs: test declarations unchanged",
+      "passed": true
+    },
+    {
+      "name": "service_native_ssh_archive_tests.rs: before canonical member",
+      "passed": true
+    },
+    {
+      "name": "service_native_ssh_archive_tests.rs: all four whole pins",
+      "passed": true
+    },
+    {
+      "name": "service_native_ssh_archive_tests.rs: exact one unique insertion",
+      "passed": true
+    },
+    {
+      "name": "service_native_ssh_archive_tests.rs: forward strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_ssh_archive_tests.rs: reverse strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_ssh_archive_tests.rs: exactly one hunk",
+      "passed": true
+    },
+    {
+      "name": "service_native_ssh_archive_tests.rs: native feature gated and explicit refusal",
+      "passed": true
+    },
+    {
+      "name": "service_native_ssh_archive_tests.rs: test declarations unchanged",
+      "passed": true
+    },
+    {
+      "name": "service_native_storage_tests.rs: before canonical member",
+      "passed": true
+    },
+    {
+      "name": "service_native_storage_tests.rs: all four whole pins",
+      "passed": true
+    },
+    {
+      "name": "service_native_storage_tests.rs: exact one unique insertion",
+      "passed": true
+    },
+    {
+      "name": "service_native_storage_tests.rs: forward strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_storage_tests.rs: reverse strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_storage_tests.rs: exactly one hunk",
+      "passed": true
+    },
+    {
+      "name": "service_native_storage_tests.rs: native feature gated and explicit refusal",
+      "passed": true
+    },
+    {
+      "name": "service_native_storage_tests.rs: test declarations unchanged",
+      "passed": true
+    },
+    {
+      "name": "service_native_transit_tests.rs: before canonical member",
+      "passed": true
+    },
+    {
+      "name": "service_native_transit_tests.rs: all four whole pins",
+      "passed": true
+    },
+    {
+      "name": "service_native_transit_tests.rs: exact one unique insertion",
+      "passed": true
+    },
+    {
+      "name": "service_native_transit_tests.rs: forward strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_transit_tests.rs: reverse strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_transit_tests.rs: exactly one hunk",
+      "passed": true
+    },
+    {
+      "name": "service_native_transit_tests.rs: native feature gated and explicit refusal",
+      "passed": true
+    },
+    {
+      "name": "service_native_transit_tests.rs: test declarations unchanged",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_cold_restore_tests.rs: before canonical member",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_cold_restore_tests.rs: all four whole pins",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_cold_restore_tests.rs: exact one unique insertion",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_cold_restore_tests.rs: forward strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_cold_restore_tests.rs: reverse strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_cold_restore_tests.rs: exactly one hunk",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_cold_restore_tests.rs: native feature gated and explicit refusal",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_cold_restore_tests.rs: test declarations unchanged",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_historical_restore_tests.rs: before canonical member",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_historical_restore_tests.rs: all four whole pins",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_historical_restore_tests.rs: exact one unique insertion",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_historical_restore_tests.rs: forward strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_historical_restore_tests.rs: reverse strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_historical_restore_tests.rs: exactly one hunk",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_historical_restore_tests.rs: native feature gated and explicit refusal",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_historical_restore_tests.rs: test declarations unchanged",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_restore_borrowed_tests.rs: before canonical member",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_restore_borrowed_tests.rs: all four whole pins",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_restore_borrowed_tests.rs: exact one unique insertion",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_restore_borrowed_tests.rs: forward strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_restore_borrowed_tests.rs: reverse strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_restore_borrowed_tests.rs: exactly one hunk",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_restore_borrowed_tests.rs: native feature gated and explicit refusal",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_restore_borrowed_tests.rs: test declarations unchanged",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_snapshot_repair_tests.rs: before canonical member",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_snapshot_repair_tests.rs: all four whole pins",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_snapshot_repair_tests.rs: exact one unique insertion",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_snapshot_repair_tests.rs: forward strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_snapshot_repair_tests.rs: reverse strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_snapshot_repair_tests.rs: exactly one hunk",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_snapshot_repair_tests.rs: native feature gated and explicit refusal",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_snapshot_repair_tests.rs: test declarations unchanged",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_snapshot_tests.rs: before canonical member",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_snapshot_tests.rs: all four whole pins",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_snapshot_tests.rs: exact one unique insertion",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_snapshot_tests.rs: forward strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_snapshot_tests.rs: reverse strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_snapshot_tests.rs: exactly one hunk",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_snapshot_tests.rs: native feature gated and explicit refusal",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_ha_snapshot_tests.rs: test declarations unchanged",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_migration_tests.rs: before canonical member",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_migration_tests.rs: all four whole pins",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_migration_tests.rs: exact one unique insertion",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_migration_tests.rs: forward strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_migration_tests.rs: reverse strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_migration_tests.rs: exactly one hunk",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_migration_tests.rs: native feature gated and explicit refusal",
+      "passed": true
+    },
+    {
+      "name": "service_native_v6_migration_tests.rs: test declarations unchanged",
+      "passed": true
+    },
+    {
+      "name": "service_rate_limit_quota_139_tests.rs: before canonical member",
+      "passed": true
+    },
+    {
+      "name": "service_rate_limit_quota_139_tests.rs: all four whole pins",
+      "passed": true
+    },
+    {
+      "name": "service_rate_limit_quota_139_tests.rs: exact one unique insertion",
+      "passed": true
+    },
+    {
+      "name": "service_rate_limit_quota_139_tests.rs: forward strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_rate_limit_quota_139_tests.rs: reverse strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_rate_limit_quota_139_tests.rs: exactly one hunk",
+      "passed": true
+    },
+    {
+      "name": "service_rate_limit_quota_139_tests.rs: native feature gated and explicit refusal",
+      "passed": true
+    },
+    {
+      "name": "service_rate_limit_quota_139_tests.rs: test declarations unchanged",
+      "passed": true
+    },
+    {
+      "name": "service_snapshot_lossless_export_tests.rs: before canonical member",
+      "passed": true
+    },
+    {
+      "name": "service_snapshot_lossless_export_tests.rs: all four whole pins",
+      "passed": true
+    },
+    {
+      "name": "service_snapshot_lossless_export_tests.rs: exact one unique insertion",
+      "passed": true
+    },
+    {
+      "name": "service_snapshot_lossless_export_tests.rs: forward strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_snapshot_lossless_export_tests.rs: reverse strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_snapshot_lossless_export_tests.rs: exactly one hunk",
+      "passed": true
+    },
+    {
+      "name": "service_snapshot_lossless_export_tests.rs: native feature gated and explicit refusal",
+      "passed": true
+    },
+    {
+      "name": "service_snapshot_lossless_export_tests.rs: test declarations unchanged",
+      "passed": true
+    },
+    {
+      "name": "service_snapshot_transfer.rs: before canonical member",
+      "passed": true
+    },
+    {
+      "name": "service_snapshot_transfer.rs: all four whole pins",
+      "passed": true
+    },
+    {
+      "name": "service_snapshot_transfer.rs: exact one unique insertion",
+      "passed": true
+    },
+    {
+      "name": "service_snapshot_transfer.rs: forward strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_snapshot_transfer.rs: reverse strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_snapshot_transfer.rs: exactly one hunk",
+      "passed": true
+    },
+    {
+      "name": "service_snapshot_transfer.rs: native feature gated and explicit refusal",
+      "passed": true
+    },
+    {
+      "name": "service_snapshot_transfer.rs: test declarations unchanged",
+      "passed": true
+    },
+    {
+      "name": "service_snapshot_v6_tests.rs: before canonical member",
+      "passed": true
+    },
+    {
+      "name": "service_snapshot_v6_tests.rs: all four whole pins",
+      "passed": true
+    },
+    {
+      "name": "service_snapshot_v6_tests.rs: exact one unique insertion",
+      "passed": true
+    },
+    {
+      "name": "service_snapshot_v6_tests.rs: forward strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_snapshot_v6_tests.rs: reverse strict whole",
+      "passed": true
+    },
+    {
+      "name": "service_snapshot_v6_tests.rs: exactly one hunk",
+      "passed": true
+    },
+    {
+      "name": "service_snapshot_v6_tests.rs: native feature gated and explicit refusal",
+      "passed": true
+    },
+    {
+      "name": "service_snapshot_v6_tests.rs: test declarations unchanged",
+      "passed": true
+    },
+    {
+      "name": "24 hunks / 65 inserted lines",
+      "passed": true
+    },
+    {
+      "name": "all nonmodified lexical files classified",
+      "passed": true
+    },
+    {
+      "name": "only non-test filename insertion remains within original cfg-test Linux impl",
+      "passed": true
+    },
+    {
+      "name": "actual old HTTP forward handler whole unchanged",
+      "passed": true
+    },
+    {
+      "name": "source only, original frozen tree and budgets not modified",
+      "passed": true
+    }
+  ],
+  "checksPassed": 203,
+  "inventoryLeaves": 906,
+  "inventoryBytes": 20918237,
+  "hitFiles": 33,
+  "hitLines": 151,
+  "changedLeaves": 24,
+  "hunks": 24,
+  "addedLines": 65,
+  "rustCompile": false,
+  "runtimeCalls": 0,
+  "testExecutions": 0,
+  "completeCompilerQualification": false
+}

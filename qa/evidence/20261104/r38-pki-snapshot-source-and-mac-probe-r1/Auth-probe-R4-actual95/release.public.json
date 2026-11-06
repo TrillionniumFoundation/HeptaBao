@@ -1,0 +1,173 @@
+{
+  "schema": "heptabao.public-home-t5-probe.r4-original-observers-release.v1",
+  "rootGO": {
+    "blob": "806c1e15bf4fbb6d88bfa1443e9b58eb38ed1210",
+    "bytes": 14378,
+    "sha256": "70fed9554a7c01f885b534475bad329aae1dc60bda93639df437f92c3a4837ab"
+  },
+  "sourceTree": "690747178bd9d66eedca0e704719727bd4cd5a3a",
+  "request": {
+    "blob": "158c70818b4cab3e39f87c31a5075a35e25dab6c",
+    "bytes": 170971,
+    "sha256": "34115f596b8942341d1eb6f89fd86aa2371bc44fba31ca53d1c51e280d1828ee"
+  },
+  "originalJob": {
+    "host": "mac",
+    "id": "1a1afc5dbd9-fc05-6b85"
+  },
+  "uniqueStart": true,
+  "startACK": {
+    "blob": "6f4fae3a0b6c37557fdd4d587c6b77e9c0bd7483",
+    "bytes": 1419,
+    "sha256": "75244e19304bea8ecc4f302178151964b8a40c6e8bbc6a4bcd25e07dcc888fef"
+  },
+  "authority": {
+    "blob": "e550fd98a40b72b0387624a58665a7b268a1475e",
+    "bytes": 730,
+    "sha256": "c47dfdbd8298319f044eb1142d81f6c2066cbd294e46adde25e0da785523449c"
+  },
+  "stdout": {
+    "blob": "5e6a6ad62efe78bee580edd50cd7e96f36da68ca",
+    "bytes": 18131,
+    "sha256": "f3b9a879dd2c22774b471723aeb3920116e21a70891fe569344e6c51be3b6257"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "terminal": {
+    "exitCode": 1,
+    "state": "failed",
+    "outputComplete": true,
+    "outputDurable": true,
+    "terminalPublicationConfirmed": true,
+    "timedOut": false
+  },
+  "originalNativeCallCount": 16,
+  "originalObservers": [
+    {
+      "id": "3fe1272d8dbdfc9a33e1e80af64077a8fec283df1e3b42b82492f81992bfb128",
+      "tool": "process_status",
+      "payload": {
+        "blob": "62fe57eb69c19ee58b9b7f33073d7baea331218a",
+        "bytes": 909,
+        "sha256": "ab77dc06d9282178d299c2a82e4122cb2a4e6920a77e01fcd74a8c469b9a1724"
+      },
+      "payloadTree": "78dcc319d9c15835fc06dbb9ac252396ea997ca2",
+      "nativeText": {
+        "blob": "e550fd98a40b72b0387624a58665a7b268a1475e",
+        "bytes": 730,
+        "sha256": "c47dfdbd8298319f044eb1142d81f6c2066cbd294e46adde25e0da785523449c"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "498b7e20effc398d409897af7642accee50566d7735e90b65c29965329056681",
+      "tool": "process_read",
+      "payload": {
+        "blob": "c944033787d4a916a35aa1051443664710385600",
+        "bytes": 54457,
+        "sha256": "3670abfae1877367e8c6d290ebcc2d00ca1ae5787e5850792f0264954b7672ce"
+      },
+      "payloadTree": "211dd47cbcf12f08e3e018d56ce3e84ff1c53d18",
+      "nativeText": {
+        "blob": "19a81ed3567ec7a8e5055d9941fb8acf30ae8dfb",
+        "bytes": 51091,
+        "sha256": "f5d9e4dd924108bb96f5fb874e80d5d3af84c212d3e5e6b5c3323cd38d294b3a"
+      },
+      "pages": 7,
+      "completedInactive": true
+    },
+    {
+      "id": "fed72cb95a21d15b41fb3b8c4f2e95153ccbdeb0ea52d62013ed76e027ff2f43",
+      "tool": "process_read",
+      "payload": {
+        "blob": "107a56af4888bc437d2d6093caa3e5b15b3c52ae",
+        "bytes": 6291,
+        "sha256": "12e61814932ba40837cfa8925601b420251add06d19d59a703b5459458647945"
+      },
+      "payloadTree": "c45fc834b4339e26786adffaa60d23cbc3bc07f3",
+      "nativeText": {
+        "blob": "5cfe28609f63b9b0e431bd88d6ba6b543b3d2e95",
+        "bytes": 5764,
+        "sha256": "58ba7eac960471d450dbb3540e288958933c49bc4c7e85d3790ab47372d14e82"
+      },
+      "pages": 1,
+      "completedInactive": true
+    }
+  ],
+  "immutablePageCount": 9,
+  "allOriginalCallsAcceptedAndSDKWhole": true,
+  "allReturnedObserversCompletedInactive": true,
+  "nativeCallInFlight": false,
+  "pendingCall": null,
+  "activeObserver": null,
+  "paused": false,
+  "nativeObservationLaneReleased": true,
+  "observationComplete": false,
+  "executionSucceeded": false,
+  "outcomeUnknown": true,
+  "actualStage": "home_ready",
+  "error": {
+    "code": null,
+    "errno": null,
+    "type": "ProbeRefused"
+  },
+  "cleanupError": {
+    "code": null,
+    "errno": null,
+    "type": "ProbeRefused"
+  },
+  "elapsedSeconds": 0.615739375,
+  "deadlineMetAfterClosure": true,
+  "applicationResources": {
+    "allDirectHelpersClosed": true,
+    "directHelperAttempts": 5,
+    "directHelpersReturnedIntoLedger": 5,
+    "allReturnedControllerFdsClosed": true,
+    "fixedIoOpenLedger": {
+      "attempts": 33,
+      "knownNoReturnErrors": 0,
+      "pending": 0,
+      "registered": 33,
+      "registrationUnknown": false
+    },
+    "fixedIoRows": 33,
+    "volumeGuardRows": 3,
+    "volumeGuardInitComplete": true
+  },
+  "managedScope": {
+    "newRegistrationAttempted": true,
+    "newRegistrationClosed": false,
+    "managedClosureSatisfiedForThisAttempt": false,
+    "bootstrap": {
+      "attempted": true,
+      "exitCode": 0,
+      "knownZero": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0
+    },
+    "bootoutAttempted": false,
+    "actualReadyIdentity": null,
+    "sameBirthHandshake": false,
+    "managedProbeProcessDepartureObserved": false,
+    "controlOutcomeUnknown": false
+  },
+  "newCreatedDirectories": [
+    "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/launchd-home-t5-context-20261106-r1"
+  ],
+  "limits": {
+    "newRootStillCreateOnly": true,
+    "noRetryOrReplay": true,
+    "newNativeReadForThisRelease": false
+  },
+  "interpretation": "Original controller and all returned read observers are known terminal and closed. New managed launchd registration/process closure is NOT established; outcomeUnknown remains true. Lane release is only the Runtime observation lane, not managed-service closure or probe success.",
+  "oldUnknownsUnchanged": true,
+  "oldWorkerOrLabelTouched": false,
+  "productServerOrConsumerStarted": false,
+  "sdkOrCredentialRead": false,
+  "nextAuthBusRunAuthorized": false
+}

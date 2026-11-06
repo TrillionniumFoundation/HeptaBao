@@ -1,0 +1,114 @@
+{
+  "schema": "heptabao.root-GO.PKI-fixed10-report-file-info.v1",
+  "authorization": "GO",
+  "agent": "/root/ha_validation",
+  "scope": "collector_report_file_info_only",
+  "source_packet": "a6397c26fb596767f27c230cf732c64d8e57bf85",
+  "source": {
+    "blob": "ad4e06490a7a041e7dacdf282db4bcade736fe6d",
+    "bytes": 25316,
+    "sha256": "cf3df54daa121359853dcaf56d82c0a63ffd7cd70850025de90ae062239e4d75"
+  },
+  "source_review": {
+    "blob": "c05d9e87fa508a8b423e46b2888f1a891f855920",
+    "bytes": 4281,
+    "sha256": "eae1a515c3519cbd17624a9bf07af92ede4fd8348d3a7838b10b21108b02403a"
+  },
+  "exact_request": {
+    "blob": "da2d04756281187d875950219a8c1e584ea5a029",
+    "bytes": 291,
+    "sha256": "ef290e736dc818892e12dd00e0a32523b21b3a24b30734fd1aa7fe561cce7e51"
+  },
+  "original_job": "1a1af917594-fc05-69b4",
+  "original_slot": "native_pki_lease400_formatter10_collector_gitfirst_r1",
+  "original_terminal_qualification": {
+    "blob": "9ab252931ca5d239f8635fbfd97a7b0aa9408f2f",
+    "bytes": 8495,
+    "sha256": "843583f5f76e7bbda5abaa11c1dbc18ae7fc7c0bbef1c6e7e4fd0c9b8b132660"
+  },
+  "original_actual_packet": "eae317b18f2d2a86dcb620faff491f329e279426",
+  "maximum_file_info_starts": 1,
+  "binary_read_authorized": false,
+  "expected_report": {
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-observe-20261106-r1/observation.public.json",
+    "bytes": 30131,
+    "sha256": "f2d35f46f7fec2d9d9ce81d7e3bd8dca21c9c6f44d5f990314cfd4dcb5c4da46",
+    "version": "66306:30842948:30131:1793946915079275200:1793946915079275200",
+    "full9": [
+      "66306",
+      "30842948",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "30131",
+      "1793946915079275200",
+      "1793946915079275200"
+    ]
+  },
+  "prerequisite_original_observers": [
+    {
+      "id": "3ebfdff449e99f89163aa16c0e183420cf29b710506c0f3357cf74c2282c22eb",
+      "tool": "process_status",
+      "payload": {
+        "blob": "efde6be79587654b0620709961961f77c39c07ac",
+        "bytes": 910,
+        "sha256": "f19e7c7270ad7bf24c26d12652ad864ad3c5ca4463614480314803ab18f06a87"
+      },
+      "payloadTree": "e4619f2cec6f018e8906faf89950b6db677b6a4b",
+      "nativeText": {
+        "blob": "1f785781e47d8637ac2249f5f245bdca4435fdcd",
+        "bytes": 731,
+        "sha256": "ce499b2a8443c1d82364d688198fd01172f10a548a01042aba8a8bc1823c92d5"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "db6e1476ae45cbada5e78cfafd6860ad22ad0b2f08192396f64b0abe94174dcf",
+      "tool": "process_read",
+      "payload": {
+        "blob": "4ffcdd5ff37281a53a41536ab03aad9e847da277",
+        "bytes": 16806,
+        "sha256": "fd3996ae8dde2b54b3912a3ddf874aca9a2826820e96663cac6420259283669f"
+      },
+      "payloadTree": "c62110f575d62865137e44519e82a9a5076c088a",
+      "nativeText": {
+        "blob": "a71bdddadc0fa795f0422d17df988f9fc07e831c",
+        "bytes": 15321,
+        "sha256": "3d868afe45885e93200dea23aa235e80e074cd443d8cfa77e5422857eacf4203"
+      },
+      "pages": 3,
+      "completedInactive": true
+    }
+  ],
+  "no_reinitialize": true,
+  "no_process_start": true,
+  "limits": {
+    "immutable_page_bytes": 8192,
+    "maximum_immutable_payload_bytes": 1048576,
+    "maximum_native_call_or_future_per_lane": 1,
+    "maximum_Runtime_lanes": 2
+  },
+  "sequence": [
+    "Whole this exact GO and attach only the original closed collector slot using the reviewed journal; no initialization or process START.",
+    "Authorize only the exact file_info request. Preserve exact request, intent and armed externally whole; return across dispatch boundary; submit once.",
+    "Preserve and externally whole the original SDK before parse/isError; retain UNKNOWN without replay or a new key.",
+    "Close only the returned original observer using its original ID and contiguous next8192 immutable pages, full payload SHA/EOF and completed inactive status.",
+    "Require exact path,30131 bytes,SHA,version and lossless full9 matching the root-qualified original terminal.",
+    "Stop at independent metadata. Actual report body requires a separately frozen SOURCE and exact root GO."
+  ],
+  "excludes": [
+    "binary_read or report body",
+    "process start or replay",
+    "other paths,listing,product,Cargo,credential reads or writes",
+    "automatic retry,alternate key,ambiguous observer replacement"
+  ],
+  "root_Runtime_calls": 0,
+  "report_body_independently_observed": false,
+  "formatted_source_reconstructed": false,
+  "compile_or_product_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false
+}

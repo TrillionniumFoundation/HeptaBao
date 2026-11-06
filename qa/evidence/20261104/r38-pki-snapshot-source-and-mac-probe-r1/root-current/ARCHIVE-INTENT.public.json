@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r38-checkpoint-root-current",
+  "records": [
+    {
+      "name": "README.md",
+      "blob": "4bf7ab669e7731cd92c48a750c9688568cbf37e7",
+      "bytes": 4989,
+      "sha256": "3480a088089b7123f36d8fc12f61aa5ceccfe9426e9ba766442728d5c2b09f67"
+    },
+    {
+      "name": "STATE.public.json",
+      "blob": "4a35f7abc6cc981dcff873c1c991557ea2d7d8a6",
+      "bytes": 13230,
+      "sha256": "fc0a652195147f7eab6712353b62bb8018e38efe136cd51350a575e6328a5c7f"
+    },
+    {
+      "name": "MOUNTS.public.json",
+      "blob": "2a77eeb3eda702ebcda6245b6b27bcd98f23651e",
+      "bytes": 330912,
+      "sha256": "9315efd2ec45239c64191dc592ac9eb8567060536d826e383051d35749c026f6"
+    },
+    {
+      "name": "R4-PARSER-SOURCE-NOTE.json",
+      "blob": "71fc3c76455183b5e6728205cba591da5e5022bf",
+      "bytes": 2168,
+      "sha256": "cb140f39bfc9e0b4ce810f53b7d1e823a2cc8d2e88fd568f22ab4d2f59e968bd"
+    }
+  ],
+  "expected_data_tree": "7bca5ca416e61b73d034744ae78ef1b763748ab0",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

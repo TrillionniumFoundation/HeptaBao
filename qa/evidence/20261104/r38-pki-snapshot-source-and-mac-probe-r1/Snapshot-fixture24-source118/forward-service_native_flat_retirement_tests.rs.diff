@@ -1,0 +1,11 @@
+--- a/crates/heptabao-server/src/service_native_flat_retirement_tests.rs
++++ b/crates/heptabao-server/src/service_native_flat_retirement_tests.rs
+@@ -308,6 +308,8 @@
+             Ok((response, None))
+         }
+         NativeSnapshotAdmission::Redirect(_) => Err("configured File cannot redirect".into()),
++        #[cfg(feature = "native-v6-ha")]
++        NativeSnapshotAdmission::Forward(_) => Err("configured File cannot forward".into()),
+     }
+ }
+ 

@@ -1,0 +1,1294 @@
+{
+  "schema": "heptabao.independent.public-home-t5-r4-source-peer.r1",
+  "status": "PASS_NARROW_SOURCE_ONLY",
+  "checks": 252,
+  "results": [
+    {
+      "name": "whole:CONTRACT.r3.original.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "whole:CONTRACT.r4.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "whole:MANIFEST.public.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "whole:R3.manifest.original.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "whole:REFERENCES.public.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "whole:REVIEW.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "whole:binding-checks.actual.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "whole:binding-verifier.js",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "whole:common.forward.diff",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "whole:common.r3.original.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "whole:common.r4.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "whole:common.reverse.diff",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "whole:constants.forward.diff",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "whole:constants.r3.original.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "whole:constants.r4.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "whole:constants.reverse.diff",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "whole:controller.r4.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "whole:journal.forward.diff",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "whole:journal.r3.original.js",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "whole:journal.r4.js",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "whole:journal.reverse.diff",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "whole:managed-probe.r4.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "whole:pure-helpers.original.js",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "whole:request.r4.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "whole:self.authority.original.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "whole:self.release.original.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "whole:self.stdout.original.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "whole:strict-diff.helper.js",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_terminal_LF",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_header",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_hunk_header",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_order",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_new_offset",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_counts",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_whole:constants",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_terminal_LF",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_header",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_hunk_header",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_order",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_new_offset",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_counts",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_whole:constants",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_terminal_LF",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_header",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_hunk_header",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_order",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_new_offset",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_counts",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_whole:common",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_terminal_LF",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_header",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_hunk_header",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_order",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_new_offset",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_counts",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_whole:common",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_terminal_LF",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_header",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_hunk_header",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_order",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_new_offset",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_counts",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_hunk_header",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_order",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_new_offset",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_counts",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_whole:journal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_terminal_LF",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_header",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_hunk_header",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_order",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_new_offset",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_counts",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_hunk_header",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_order",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_new_offset",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_sign",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_original_line",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_counts",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "strict_whole:journal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_replacement:KERNEL_PYTHON_IMAGE = \"/opt/homebrew/Cellar/python@3",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "sole_constant_added",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "kernel_image_fresh_exact",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_replacement:== KERNEL_PYTHON_IMAGE",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "common_single_operand",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_replacement:PYTHON = '/opt/homebrew/Cellar/python@3.14/3.14.3_1/",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_replacement:class ProbeRefused(RuntimeError):\n    pass\n\ndef need",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "child_whole_rebuilt_R3",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_replacement:PYTHON = '/opt/homebrew/Cellar/python@3.14/3.14.3_1/",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_replacement:class ProbeRefused(RuntimeError):\n    pass\n\ndef need",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "embedded_child_whole",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_replacement:IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwoiIiJJbmRlcGVuZGVudCBw",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_replacement:CHILD_BYTES = 36522",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_replacement:CHILD_SHA = 'b4f52562e8e861a30bfd942399ec2229cbb52ff",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "controller_whole_rebuilt_R3",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "parent_core_original_full_pin",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "after_pin:constants",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "after_pin:common",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "after_pin:controller",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "after_pin:child",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "after_pin:request",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "after_pin:journal",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "absence_home_work_before_mkdir",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "absence_label_before_mkdir",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "fixed_file_identity_not_replaced",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "launchd_original_python_9argv",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "original_system_executable",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "fixed_close_all_critical",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "kernel_occurrences_only_constant_operand",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "deadline:PARENT_UNTIL_NS = PARENT_START_NS + 45000000000",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "deadline:CHILD_UNTIL_NS = PARENT_START_NS + 25000000000",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "deadline:HELPER_ADMISSION_END_NS = PARENT_START_NS + 35000000000",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "exact_native_envelope",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "source_bound_key",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_replacement:owner_launchd_home_t5_probe_gitfirst_r4",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_replacement:158c70818b4cab3e39f87c31a5075a35e25dab6c",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_replacement:170971",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_replacement:34115f596b8942341d1eb6f89fd86aa2371bc44fba31ca53d1c5",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "one_replacement:heptabao-mac-owned-home-t5-probe-87ddc495-",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "journal_only_bindings",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "budgets_whole_same",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "roots_whole_same",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "contract_request_bind",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "freshself_reader_original",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "fresh_exact_kernel_path",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "fresh_five_numeric_predicates",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "fresh_original_eq_false",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "fresh_exact_kernel_path",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "fresh_five_numeric_predicates",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "fresh_original_eq_false",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "fresh_same_numeric",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "fresh_launcher_separate",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "fresh_kernel_file_not_qualified",
+      "pass": true,
+      "detail": null
+    }
+  ],
+  "tree": "690747178bd9d66eedca0e704719727bd4cd5a3a",
+  "sourceChanges": {
+    "constantsHunks": 1,
+    "commonHunks": 1,
+    "journalHunks": 2
+  },
+  "reconstructedOriginals": {
+    "controller": {
+      "blob": "bf69252fe9a2431ccf09740d5e5bed7eb6231248",
+      "bytes": 168464,
+      "sha256": "8cfa410c8fbe2234191b84b70d5d8b04f9aba01e7f4b5ae2c0d76ecfcd3865cb"
+    },
+    "child": {
+      "blob": "2649636d559f401a5068de2b92ed3bf7d6db7d72",
+      "bytes": 36358,
+      "sha256": "d96a769dbfc630237d6481e698704fdcc9fb0a315ae5f9e6c33ab5b976401873"
+    },
+    "parentCore": {
+      "blob": "8ee0b29ea750d1b752b8ab26e27914a377dc61dd",
+      "bytes": 31586,
+      "sha256": "473fbf2898fe10a0b8ffc199807639000a7d0f2b2e4569eb9d367d01a692716e"
+    }
+  },
+  "NativeCalls": 0,
+  "PythonExecutions": 0,
+  "authorVerifierExecuted": false,
+  "scope": "Exact R4 delta and binding; no runtime, old R3 cause, kernel-file identity, managed launch success, credentials or product qualification."
+}

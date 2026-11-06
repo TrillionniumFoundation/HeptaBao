@@ -1,0 +1,10 @@
+[
+  {
+    "before": "const GF_COLLECTOR_REPORT_BODY_BOUND = false;",
+    "after": "const GF_COLLECTOR_REPORT_BODY_BOUND = true;"
+  },
+  {
+    "before": "\"infoOperation\":null,\"infoNative\":null",
+    "after": "\"infoOperation\":\"97808443f5d922af35c74107721bf17a5b9c65f46a3e3be525318c0aabecbb07\",\"infoNative\":{\"blob\":\"31a0dafbdf896a40a7f31c426e3b07de1d31fef8\",\"bytes\":481,\"sha256\":\"6ef4f65835eb727f86892a9b23f0adc70d475280685a17fbfd2c4a9580b9f438\"}"
+  }
+]

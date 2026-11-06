@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r38-snapshot24-freeze-branch-original-SDK",
+  "records": [
+    {
+      "name": "BRANCH.original.sdk.json",
+      "blob": "81cf892d4b2ff7b9765db5dbb21b1dd3849a9628",
+      "bytes": 215,
+      "sha256": "c55826108e70f23d8b9c4aa2c244a111a23b1c5cfd93773c75e30665b4a15ddd"
+    }
+  ],
+  "expected_data_tree": "51d310011e569a1ba42cfc5a9e577ea2f6b535da",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

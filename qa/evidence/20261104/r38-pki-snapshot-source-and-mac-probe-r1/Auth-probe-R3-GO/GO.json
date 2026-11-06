@@ -1,0 +1,261 @@
+{
+  "schema": "heptabao.root-GO.Mac-new-public-home-T5-context-probe-r3.v1",
+  "authorization": "GO",
+  "agent": "/root/authbus_migration",
+  "purpose": "One independent public launchd environment observation through actual home-ready, same-birth admission and explicit T5 sentinel access; collect original terminal and closure evidence.",
+  "source_packet": "c680477cae4fc6dd01077b01de6c349e9fea3055",
+  "source_review": {
+    "blob": "74e6780ff67e5ce2f8871c012e5cb71e8af5bf9a",
+    "bytes": 9887,
+    "sha256": "c97506323043b2eca609b6dc202cee921461f3f924a7e3bc4ac5f059e427edd0"
+  },
+  "source_review_checks": 40,
+  "independent_peer": {
+    "packet": "71b5639b23fcb5b666a8e86048f23b91127c530a",
+    "report": {
+      "blob": "d4ee22f210c05ee6d34b666892a29dc9aac63a43",
+      "bytes": 5726,
+      "sha256": "193b2dd21f50071e51c12abda78a7c14472e5121fc84bfc4e66cec70f88456ad"
+    },
+    "result": {
+      "blob": "52b35c9406738849b25803f8198df18ba02cc720",
+      "bytes": 13538,
+      "sha256": "d46432664da0c02fa58b48150924e2d0bf998f120aafe18a62ba4d2fe69ccce7"
+    },
+    "source_checks": 150,
+    "no_remaining_source_blocker_in_three_reviewed_boundaries": true
+  },
+  "source": {
+    "blob": "bf69252fe9a2431ccf09740d5e5bed7eb6231248",
+    "bytes": 168464,
+    "sha256": "8cfa410c8fbe2234191b84b70d5d8b04f9aba01e7f4b5ae2c0d76ecfcd3865cb"
+  },
+  "managed_probe": {
+    "blob": "2649636d559f401a5068de2b92ed3bf7d6db7d72",
+    "bytes": 36358,
+    "sha256": "d96a769dbfc630237d6481e698704fdcc9fb0a315ae5f9e6c33ab5b976401873"
+  },
+  "exact_request": {
+    "blob": "62be5766699e67a41ab9d6072db8aa8e35c8abbb",
+    "bytes": 170588,
+    "sha256": "af2247dd1a780773aa754f90db1c6a1aa8f6d1965eb1792036177916d347ee17"
+  },
+  "native_binding": {
+    "sha256": "dd65e756723f989178f813a01e75ce889ba517e3bc367e0500d0feb090e3d6cd",
+    "native_fingerprint": "15953411613499824273",
+    "typed_stdin": true
+  },
+  "helpers": {
+    "native": {
+      "blob": "4d5e2545cf1bed8f1951103a543529545026a374",
+      "bytes": 19039,
+      "sha256": "d049e8818317d1a1a319de940bcce360c9a31d9a1ae341b3fa943adef08863ae"
+    },
+    "archive": {
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    "pure": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    }
+  },
+  "slot": "owner_launchd_home_t5_probe_gitfirst_r3",
+  "start": {
+    "host": "mac",
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-"
+    ],
+    "cwd": "/Users/qianqi",
+    "stdin_source": {
+      "blob": "bf69252fe9a2431ccf09740d5e5bed7eb6231248",
+      "bytes": 168464,
+      "sha256": "8cfa410c8fbe2234191b84b70d5d8b04f9aba01e7f4b5ae2c0d76ecfcd3865cb"
+    },
+    "timeout_seconds": 60,
+    "idempotency_key": "heptabao-mac-owned-home-t5-probe-8cfa410c-20261106-r3",
+    "maximum_START_count": 1
+  },
+  "roots": {
+    "homeControl": "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1",
+    "t5Work": "/Volumes/T5/hepta-vnext-recovery-20261013/launchd-home-t5-context-20261106-r1",
+    "label": "org.heptabao.qa.home-t5-context-20261106-r1",
+    "domain": "gui/501",
+    "oldLabelAllowed": false
+  },
+  "declared_effects": {
+    "existingReads": [
+      "exact observed regular Python through held no-follow ancestor chain",
+      "fixed root/T5/home ancestor metadata",
+      "fixed original helper commands and fixed libproc projections"
+    ],
+    "newDirectories": 2,
+    "creation": "one mkdir each; both roots and the exact label must be absent before any mkdir; no replacement, fallback name or removal of artifacts",
+    "homeFiles": [
+      "probe.public.py",
+      "plan.public.json",
+      "probe.plist",
+      "probe.stdout.public",
+      "probe.stderr.public",
+      "ready.public.json",
+      "ready.complete",
+      "admission.public.json",
+      "admission.complete"
+    ],
+    "t5Files": [
+      "sentinel.public.txt"
+    ],
+    "fileCreation": "O_CREAT|O_EXCL|O_NOFOLLOW 0600, held parent, full9 around every whole file read and completed creation; no append or truncation by application code",
+    "launchd": "one bootstrap of the fresh exact plist and at most one bootout of that fresh target, both recorded before call; bootout is a real service mutation scoped only to this new QA label",
+    "managedStdout": "launchd uses precreated 0600 home stdout/stderr; controller reads whole only after label removal and two original-PID absence/different-birth observations; unknown stderr text/hash not exported",
+    "networkCalls": false,
+    "SDK": false,
+    "credentialOrPrivateCapsuleRead": false,
+    "productServer": false,
+    "consumer": false,
+    "provider": false,
+    "oldRegistrationMutation": false,
+    "productionChange": false
+  },
+  "ownership": {
+    "directHelpers": {
+      "module": "mac_owned_commands_r1",
+      "custody": "unchanged mac_owned_unreaped_r1 WNOWAIT, true Popen direct parent and retained PID/PGID until original stop/reap",
+      "stopCaps": {
+        "term": 1,
+        "wait": 5,
+        "group": 3,
+        "psMax": 4
+      },
+      "returnedAttemptCountMustEqualLedger": true
+    },
+    "launchdManaged": {
+      "directChildOfController": false,
+      "waitOrReapClaim": false,
+      "readyAuthority": "same exact source+plan+new label and actual live birth; completion marker follows full ready file closure",
+      "admissionAuthority": "same instance from ready and a fresh native identity observation",
+      "shutdownAuthority": "fresh label exact plist/program/argv plus actual same-birth double observation if active; inactive same registration can be removed",
+      "pidDeparture": "two exact -p numeric projections; empty exit1 means absent, otherwise two complete same numeric birth snapshots must prove a different birth. The reused process is never claimed or signalled.",
+      "globalDescendantReapingClaim": false
+    },
+    "oldUnknownsPreserved": [
+      "old mac/1a1ae51309d-fc05-5ef8 registration and lineage",
+      "historical PID11754",
+      "old Git8916 archive mutation UNKNOWN",
+      "old full-log817 failure and unknown object"
+    ]
+  },
+  "chronology": [
+    "Parent pins regular Python full9/whole, holds original T5 anchors, obtains original owned diskutil UUID and requires exact fresh-label absence.",
+    "Parent creates both fresh directories and exact public sentinel; T5 work directory full9 freezes after this sole append. Parent writes new child source/public plan/plist/empty stdio with create-only held I/O.",
+    "New launchd job starts observed regular Python -I -S -B with WorkingDirectory=home control; no T5 working directory is assigned to launchd.",
+    "Child checks current home, exact public plan/whole own source/whole regular Python and actual ProcessReader self birth. It creates complete ready JSON, fsyncs/closes it, then separately creates a zero-byte completion marker.",
+    "Parent binds ready to exact label path/program/all nine argv, actual ProcessReader same birth and no current child list, then repeats identity before publishing exact admission JSON and its completion marker.",
+    "Only after matching that admission and its own same-birth identity does child open the fixed T5 ancestor chain, explicitly chdir to new work and read the single sentinel. Stage and bounded errno identify a failure without exposing dynamic messages.",
+    "Child closes its complete application FD ledger and restores handlers before one bounded public terminal stdout record; it never spawns or reaps a child.",
+    "Parent observes known inactivity, or on failure uses two actual same-birth observations before any bootout of an active, already bound probe. An active unbound probe is never signalled/booted out: only its existing absolute deadline may elapse, then known no-PID is required.",
+    "After the once-only bootout, exact missing-label grammar and two PID absent/different-birth projections must close the managed-process scope. No numeric signal and no wait/reap is used for the launchd process.",
+    "Parent validates only the closed public terminal schema and fixed path/count/error allowlists, closes guard/FDs and handlers, samples the original deadline and publishes its final report."
+  ],
+  "budget": {
+    "parentSharedSeconds": 45,
+    "outerSeconds": 60,
+    "childAbsoluteDeadlineSecond": 25,
+    "childOwnInitialUpperSeconds": 30,
+    "newHelperAdmissionDeadlineSecond": 35,
+    "lastTenSecondsPurpose": "Reserve unchanged direct-helper TERM1/wait5/group3 plus final closure, not extra business time.",
+    "directHelperSeconds": {
+      "diskutil": 30,
+      "launchctl": 10,
+      "exactPidPs": 4
+    },
+    "allCommandsClippedToExistingAbsoluteBound": true,
+    "maximumDirectCommands": 24,
+    "maximumPrintObservations": 18,
+    "maximumHelperReturnedBytes": 1048576,
+    "perHelperOutputBytes": {
+      "diskutil": 262144,
+      "launchctl": 65536,
+      "exactPidPs": 4096
+    },
+    "parent": {
+      "fixedIoFdRows": 64,
+      "originalT5AnchorFds": 3,
+      "newReturnedApplicationRowsTotalMaximum": 67,
+      "maximumConcurrentNewApplicationFds": 22,
+      "metadata": 4096,
+      "readCalls": 256,
+      "readBytes": 262144,
+      "writeCalls": 64,
+      "writeBytes": 131072,
+      "stdoutBytes": 131072
+    },
+    "child": {
+      "fixedIoFdRows": 64,
+      "maximumConcurrentNewApplicationFds": 19,
+      "metadata": 4096,
+      "readCalls": 256,
+      "readBytes": 131072,
+      "writeCalls": 64,
+      "writeBytes": 16384,
+      "terminalStdoutBytes": 32768,
+      "parentStderrReadBytes": 4096
+    },
+    "readinessPolls": 120,
+    "readinessPollSleepMaximumSeconds": 0.1,
+    "childAdmissionPolls": 120,
+    "childAdmissionPollSleepMaximumSeconds": 0.1,
+    "inactivePrintPolls": 10,
+    "sourceScope": "FD and metadata counters cover FixedIO plus separately declared 3 original HeldT5 anchor FDs. Original helper custody uses its unchanged bounded scopes; interpreter/dyld internal FDs are not claimed as enumerated.",
+    "synchronousSyscallsNotIndividuallyPreemptible": true,
+    "lateReturnCannotPass": true,
+    "unknownStopsNoRetry": true,
+    "existingRootFailsNoReplay": true
+  },
+  "limits": {
+    "maximum_Runtime_lanes": 2,
+    "maximum_native_call_or_future_per_lane": 1,
+    "process_read_bytes": 16384,
+    "immutable_page_bytes": 8192,
+    "original_payload_cap": 1048576,
+    "parent_stdout_bytes": 131072,
+    "managed_child_stdout_bytes": 32768
+  },
+  "corrected_failures": [
+    "Returned FD registration cannot qualify closure unless the exact attempt/pending/registered ledger balances without unknown.",
+    "The entire FixedIO reverse close loop is in the existing critical section; original once-close and pending signal semantics remain.",
+    "A started but incomplete HeldT5 construction cannot claim aggregate controller FD closure or final volume qualification."
+  ],
+  "lane_activation": "A may activate its empty lane now. C is separately limited to its existing PKI original collector observations. B/root issue no Runtime calls. Maximum2 lanes globally.",
+  "sequence": [
+    "Whole this exact GO and fresh R3 journal/helper/request pins. Do not initialize or revive R1/R2 or any old worker context.",
+    "Whole the exact request, intent and armed; cross an independent dispatch boundary; submit exactly one mac process_start with this typed stdin/key.",
+    "Externally whole the full original SDK before parse/isError. Any lost ACK or dispatch ambiguity remains UNKNOWN; no re-key, restart, replacement root or replay.",
+    "Use only the returned original mac job and original operation IDs. Preserve all status/stream SDKs and contiguous8192 immutable pages with whole hashes, EOF and completed inactive observer closure.",
+    "Evaluate parent observationComplete separately from executionSucceeded; actual child same-birth, T5 sentinel and all required process/FD/label/handler/deadline checks are needed for a positive environment result.",
+    "Stop after the original authority and complete stdout/stderr are externally preserved and the lane has no pending observer/future. New business/credential actions require a separate concretely bound plan."
+  ],
+  "execution_scope_limitations": [
+    "The one new label bootstrap and at most one bootout are real QA service mutations scoped only to the stated fresh label; user-authorized validation, no production migration.",
+    "The launchd probe is not a direct child of this controller: no controller wait/reap, numeric managed PID/PGID signal or global descendant closure claim.",
+    "A known failed T5 stage may be a complete diagnostic observation, but is not successful T5 access.",
+    "The original EX_CONFIG78 cause, old worker registration/lineage, PID11754, Git8916 UNKNOWN and private capsule remain unqualified and untouched.",
+    "Original shared45/child25/helper-admission35/outer60 and all finite caps remain fixed. Late returns, incomplete ownership or unknown cleanup cannot pass.",
+    "No read of credentials/private capsule, J3160 dependency, product/SDK/provider/consumer launch, client switch, old-label cleanup or deletion is included."
+  ],
+  "source_only_prior_checks_not_runtime": true,
+  "old_failure_rewritten": false,
+  "old_cause_qualified": false,
+  "selected_owner_qualified": false,
+  "AuthBus_credentials_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

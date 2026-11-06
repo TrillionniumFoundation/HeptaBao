@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-native-jwt-pki-33b814c7-rog-source-observe-r1-authority0",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "rog",
+      "job_id": "1a1afcbafab-fc05-6bb0"
+    }
+  }
+}

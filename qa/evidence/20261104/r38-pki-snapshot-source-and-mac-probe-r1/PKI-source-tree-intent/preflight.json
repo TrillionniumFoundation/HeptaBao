@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.root-PKI3-freeze-preflight.v1",
+  "parent": "808e45d690f177ecb922e13d1ed19f7877156094",
+  "base_tree": "0506d30b02f5a2a2dc7d6364299365ae8d1d7cc7",
+  "expected_tree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+  "leaves": 3916,
+  "unchanged": 3913,
+  "modified": 3,
+  "index": {
+    "blob": "274ab44690eb8992c7bb7954757cb81c994b6575",
+    "bytes": 452026,
+    "sha256": "7a2ab1d97a5140120034276c0d21547ffa935867055a0c5af95f7f061f8f3df0"
+  },
+  "tracked_bytes": 62297347,
+  "formatted_content_qualification": "804c07ab40bb0be24776fd6ec110935f1cf064fb",
+  "draft_tree": "2268a8e714bdec077116b8675773506a0ede68b2",
+  "branch": "codex/heptabao-native-jwt-pki-source-20261106",
+  "source_only": true
+}

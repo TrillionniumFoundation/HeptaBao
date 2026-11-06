@@ -1,0 +1,13 @@
+--- a/crates/heptabao-server/src/service_native_v6_migration_tests.rs
++++ b/crates/heptabao-server/src/service_native_v6_migration_tests.rs
+@@ -279,6 +279,10 @@
+         NativeSnapshotAdmission::Redirect(_) => {
+             Err("isolated snapshot unexpectedly redirected".into())
+         }
++        #[cfg(feature = "native-v6-ha")]
++        NativeSnapshotAdmission::Forward(_) => {
++            Err("isolated snapshot unexpectedly forwarded".into())
++        }
+     }
+ }
+ 

@@ -1,0 +1,172 @@
+{
+  "schema": "heptabao.root-source-review.PKI-fixed10-report-info.v1",
+  "status": "SOURCE_REVIEWED_FOR_SEPARATE_EXACT_INFO_GO",
+  "checks": [
+    {
+      "name": "whole_source21_222133",
+      "passed": true
+    },
+    {
+      "name": "previous_original_terminal_qualified",
+      "passed": true
+    },
+    {
+      "name": "old_journal_and_helpers_exact_unchanged",
+      "passed": true
+    },
+    {
+      "name": "plan_source_and_exact_pins",
+      "passed": true
+    },
+    {
+      "name": "six_hunks_bidirectional_whole",
+      "passed": true
+    },
+    {
+      "name": "seven_literal_edits",
+      "passed": true
+    },
+    {
+      "name": "unique_literal_0",
+      "passed": true
+    },
+    {
+      "name": "unique_literal_1",
+      "passed": true
+    },
+    {
+      "name": "unique_literal_2",
+      "passed": true
+    },
+    {
+      "name": "unique_literal_3",
+      "passed": true
+    },
+    {
+      "name": "unique_literal_4",
+      "passed": true
+    },
+    {
+      "name": "unique_literal_5",
+      "passed": true
+    },
+    {
+      "name": "unique_literal_6",
+      "passed": true
+    },
+    {
+      "name": "literal_reconstruction_whole",
+      "passed": true
+    },
+    {
+      "name": "approved_reference_exact_blob",
+      "passed": true
+    },
+    {
+      "name": "whole_approved_reference_logic_identical_after_fixed_binding_normalization",
+      "passed": true
+    },
+    {
+      "name": "javascript_syntax_parse_only_no_candidate_function_invoked",
+      "passed": true
+    },
+    {
+      "name": "only_actual_report_path_size_hash_version_full9",
+      "passed": true
+    },
+    {
+      "name": "exact_one_fixed_file_info_request",
+      "passed": true
+    },
+    {
+      "name": "prerequisites_exact_original_two_closed_observers",
+      "passed": true
+    },
+    {
+      "name": "original_authority_stream_stdout_bytes_unchanged",
+      "passed": true
+    },
+    {
+      "name": "attach_original_slot_no_initialization_or_process_replay",
+      "passed": true
+    },
+    {
+      "name": "one_info_and_original_page_caps",
+      "passed": true
+    },
+    {
+      "name": "separate_whole_GO_original_closure_guard",
+      "passed": true
+    },
+    {
+      "name": "call_armed_once_marker_and_new_GO_lineage",
+      "passed": true
+    },
+    {
+      "name": "metadata_exact_linux_0600_uid_gid_single_link_lossless_full9",
+      "passed": true
+    },
+    {
+      "name": "proposal_body_not_enabled_or_submitted",
+      "passed": true
+    }
+  ],
+  "check_count": 27,
+  "source_packet": {
+    "tree": "a6397c26fb596767f27c230cf732c64d8e57bf85",
+    "files": 21,
+    "bytes": 222133,
+    "merkle": {
+      "root_sha": "a6397c26fb596767f27c230cf732c64d8e57bf85",
+      "trees_verified": 1,
+      "leaf_count": 21
+    },
+    "whole": true
+  },
+  "source": {
+    "blob": "ad4e06490a7a041e7dacdf282db4bcade736fe6d",
+    "bytes": 25316,
+    "sha256": "cf3df54daa121359853dcaf56d82c0a63ffd7cd70850025de90ae062239e4d75"
+  },
+  "exact_request": {
+    "blob": "da2d04756281187d875950219a8c1e584ea5a029",
+    "bytes": 291,
+    "sha256": "ef290e736dc818892e12dd00e0a32523b21b3a24b30734fd1aa7fe561cce7e51"
+  },
+  "original_terminal_qualification": {
+    "blob": "9ab252931ca5d239f8635fbfd97a7b0aa9408f2f",
+    "bytes": 8495,
+    "sha256": "843583f5f76e7bbda5abaa11c1dbc18ae7fc7c0bbef1c6e7e4fd0c9b8b132660"
+  },
+  "original_job": "1a1af917594-fc05-69b4",
+  "report_expected": {
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-observe-20261106-r1/observation.public.json",
+    "bytes": 30131,
+    "sha256": "f2d35f46f7fec2d9d9ce81d7e3bd8dca21c9c6f44d5f990314cfd4dcb5c4da46",
+    "version": "66306:30842948:30131:1793946915079275200:1793946915079275200",
+    "full9": [
+      "66306",
+      "30842948",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "30131",
+      "1793946915079275200",
+      "1793946915079275200"
+    ]
+  },
+  "review": {
+    "whole_reference_logic_identical_after_only_fixed_binding_changes": true,
+    "seven_literal_edits_six_hunks": true,
+    "source_guards_reviewed": true,
+    "candidate_function_invoked": false,
+    "native_calls": 0
+  },
+  "body_authorized": false,
+  "compile_or_product_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

@@ -1,0 +1,123 @@
+{
+  "schema": "heptabao.snapshot8c95-stage-body-final-state.v1",
+  "job": "1a1afa74868-fc05-6a7e",
+  "slot": "snapshot_8c95_rog_source_gitfirst_r1",
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "paused": false,
+  "stageResultInfo": {
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-8c95fb0a-20261106-r1/control/stage-result.public.json",
+    "size": 28015,
+    "sha256": "750f5cb413cf08f1a7ba9b126320e4bbd1a9682e308b9076d2f13e54e98157c6",
+    "version": "66306:31235361:28015:1793948357106358650:1793948357106358650",
+    "nativeText": {
+      "blob": "9b8eea5cac4b35965c5f1d9078d90550d8ed2b94",
+      "bytes": 495,
+      "sha256": "ab251eb0e600d80800b10c9ce23a069f554ab1efe9c48cc90b53a1eb2be6f277"
+    },
+    "originalOperation": "500bddf3a5ca158179ff8dfb356f711452c68ac220261552fdf63611512681a3",
+    "full9Strings": [
+      "66306",
+      "31235361",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "28015",
+      "1793948357106358650",
+      "1793948357106358650"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "stageResultBody": {
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-8c95fb0a-20261106-r1/control/stage-result.public.json",
+    "version": "66306:31235361:28015:1793948357106358650:1793948357106358650",
+    "body": {
+      "blob": "6b514b3472e9aafb920c77f99198ccda10a9d25c",
+      "bytes": 28015,
+      "sha256": "750f5cb413cf08f1a7ba9b126320e4bbd1a9682e308b9076d2f13e54e98157c6"
+    },
+    "originalOperation": "e997ee50bcd916ec47d15426485e5d53c66b8b7d8e0c759dd3b316fa95dac719",
+    "metadataOperation": "500bddf3a5ca158179ff8dfb356f711452c68ac220261552fdf63611512681a3",
+    "originalPayload": {
+      "blob": "a95fc75963c87c9a47f652b06393df6cc96c56f7",
+      "bytes": 37804,
+      "sha256": "a67345a693b4ad5056e78afa3c3012e27ff7251480303eeb2d9f04e27c0ab0d7"
+    },
+    "semanticQualification": false
+  },
+  "completedObservers": [
+    {
+      "id": "f7460c09894a68fe7622de01561bbd14f4c5a65b7cb24789538a4dd0a3f2e845",
+      "tool": "process_status",
+      "payload": {
+        "blob": "99ce4797b17b29ddc0a7e8ee6763687e70c7f1fc",
+        "bytes": 908,
+        "sha256": "0907623b4687b02c37174660f92a1e2c82c62f65f138612a3eb379c10188e692"
+      },
+      "payloadTree": "34ce58e3f340696ea129739991e3e6b0b145bd4a",
+      "nativeText": {
+        "blob": "26f56d9f051d7658a68712f734800f6db024ac6c",
+        "bytes": 729,
+        "sha256": "957abc11f02c98c3f5d1507147a72632f3f373fd95615ce5093a1c58c8b488be"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "1e40beb579745ca0e6774933faadb7ad74ea296cf7422bd5a40270bfb60a50f4",
+      "tool": "process_read",
+      "payload": {
+        "blob": "f7c9e6cce688316905bc425becf530901ad11d23",
+        "bytes": 1684,
+        "sha256": "d854e723f35b1d5ff3d346de7af548ab3bc2b67f10cd58731c0b4c6731bfe13c"
+      },
+      "payloadTree": "9d5a69f814b5601c40992a296e24ddd66ee6027d",
+      "nativeText": {
+        "blob": "5f506f5fe8e4644053b2c3a9447680f0d44b23d0",
+        "bytes": 1495,
+        "sha256": "3f0576dd0dc86405c15856fa3abc967cac6956ec807b89658824157f9d62ca88"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "500bddf3a5ca158179ff8dfb356f711452c68ac220261552fdf63611512681a3",
+      "tool": "file_info",
+      "payload": {
+        "blob": "6c5b389e72331acda520b6ae5eaacd8f338c8136",
+        "bytes": 612,
+        "sha256": "bd38efb3f89bd66bc1b9cb0678a5e8451852e6b7477ec0740a2e64e5e93c36b7"
+      },
+      "payloadTree": "b7e1a32f28753f89033ca4b6e5f9dc985298c8ef",
+      "nativeText": {
+        "blob": "9b8eea5cac4b35965c5f1d9078d90550d8ed2b94",
+        "bytes": 495,
+        "sha256": "ab251eb0e600d80800b10c9ce23a069f554ab1efe9c48cc90b53a1eb2be6f277"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "e997ee50bcd916ec47d15426485e5d53c66b8b7d8e0c759dd3b316fa95dac719",
+      "tool": "binary_read",
+      "payload": {
+        "blob": "a95fc75963c87c9a47f652b06393df6cc96c56f7",
+        "bytes": 37804,
+        "sha256": "a67345a693b4ad5056e78afa3c3012e27ff7251480303eeb2d9f04e27c0ab0d7"
+      },
+      "payloadTree": "7148c45c7c46d57ee661a08d8ed6837330a8c78b",
+      "nativeText": {
+        "blob": "9b7ddfb72af77d9a5bb5f2267874124387fcc6f4",
+        "bytes": 37701,
+        "sha256": "2cc3156ca0e6ab7b0c0b1c59d13f2c61902da7520ad4d51d1efd55d2ed7249ef"
+      },
+      "pages": 5,
+      "completedInactive": true
+    }
+  ],
+  "totalNativeCalls": 17,
+  "totalOriginalObservers": 4
+}

@@ -1,0 +1,212 @@
+{
+  "schema": "heptabao.root-source-review.Mac-public-home-T5-probe-R4.v1",
+  "status": "PASS_MINIMAL_SOURCE_AND_BINDINGS",
+  "checks": [
+    {
+      "name": "whole_SOURCE28_exact",
+      "passed": true
+    },
+    {
+      "name": "whole_original_R3_SOURCE31",
+      "passed": true
+    },
+    {
+      "name": "constants_strict_both_directions",
+      "passed": true
+    },
+    {
+      "name": "constants_explicit_reverse_diff",
+      "passed": true
+    },
+    {
+      "name": "common_strict_both_directions",
+      "passed": true
+    },
+    {
+      "name": "common_explicit_reverse_diff",
+      "passed": true
+    },
+    {
+      "name": "journal_strict_both_directions",
+      "passed": true
+    },
+    {
+      "name": "journal_explicit_reverse_diff",
+      "passed": true
+    },
+    {
+      "name": "one_exact_kernel_constant",
+      "passed": true
+    },
+    {
+      "name": "only_executable_rhs_changed",
+      "passed": true
+    },
+    {
+      "name": "child_whole_inverse_original",
+      "passed": true
+    },
+    {
+      "name": "original_common_matches_prior_review",
+      "passed": true
+    },
+    {
+      "name": "embedded_child_exact",
+      "passed": true
+    },
+    {
+      "name": "whole_controller_inverse_original",
+      "passed": true
+    },
+    {
+      "name": "whole_original_parent_core_unchanged",
+      "passed": true
+    },
+    {
+      "name": "kernel_occurrences_only_constant_and_operand",
+      "passed": true
+    },
+    {
+      "name": "exact_after_pin_constants",
+      "passed": true
+    },
+    {
+      "name": "exact_after_pin_common",
+      "passed": true
+    },
+    {
+      "name": "exact_after_pin_controller",
+      "passed": true
+    },
+    {
+      "name": "exact_after_pin_child",
+      "passed": true
+    },
+    {
+      "name": "exact_after_pin_request",
+      "passed": true
+    },
+    {
+      "name": "exact_after_pin_journal",
+      "passed": true
+    },
+    {
+      "name": "exact_after_pin_contract",
+      "passed": true
+    },
+    {
+      "name": "request_changes_only_stdin_and_key",
+      "passed": true
+    },
+    {
+      "name": "typed_STDIN_envelope",
+      "passed": true
+    },
+    {
+      "name": "original_journal_all_bytes_restored",
+      "passed": true
+    },
+    {
+      "name": "original_contract_exact_prior",
+      "passed": true
+    },
+    {
+      "name": "contract_unchanged_roots",
+      "passed": true
+    },
+    {
+      "name": "contract_unchanged_effects",
+      "passed": true
+    },
+    {
+      "name": "contract_unchanged_chronology",
+      "passed": true
+    },
+    {
+      "name": "contract_unchanged_ownership",
+      "passed": true
+    },
+    {
+      "name": "contract_unchanged_budget",
+      "passed": true
+    },
+    {
+      "name": "contract_unchanged_closureConstructionCorrection",
+      "passed": true
+    },
+    {
+      "name": "fresh_qualified_self_reference",
+      "passed": true
+    },
+    {
+      "name": "fresh_two_actual_paths_match_literal",
+      "passed": true
+    },
+    {
+      "name": "fresh_all_five_numeric_predicates_true",
+      "passed": true
+    },
+    {
+      "name": "fresh_both_absence_before_mkdir",
+      "passed": true
+    },
+    {
+      "name": "fixed_launcher_whole_identity_and_PYTHON_argv_preserved",
+      "passed": true
+    },
+    {
+      "name": "sys_executable_original_launcher",
+      "passed": true
+    },
+    {
+      "name": "unchanged_absolute_45_25_35",
+      "passed": true
+    },
+    {
+      "name": "whole_independent_peer6",
+      "passed": true
+    }
+  ],
+  "check_count": 41,
+  "source_packet": "690747178bd9d66eedca0e704719727bd4cd5a3a",
+  "original_R3_packet": "c680477cae4fc6dd01077b01de6c349e9fea3055",
+  "self_actual_qualification": "110d8f083a05e5cb478fdb60917d0406b54bc276",
+  "independent_peer": "8e6a89181cdbaacd58c7dce06af7a89ed4843e56",
+  "source": {
+    "blob": "fb453c023c1de1299e1875078ae8720b20a441de",
+    "bytes": 168844,
+    "sha256": "87ddc49599abfd6b09b023287fbeefe1e0c833c1b806cf9c753755f706eaaa6c"
+  },
+  "child": {
+    "blob": "62a75849b5eb5568564a12ee5e0f00cea95f56e5",
+    "bytes": 36522,
+    "sha256": "b4f52562e8e861a30bfd942399ec2229cbb52ffddd06240950b99d746686cd00"
+  },
+  "request": {
+    "blob": "158c70818b4cab3e39f87c31a5075a35e25dab6c",
+    "bytes": 170971,
+    "sha256": "34115f596b8942341d1eb6f89fd86aa2371bc44fba31ca53d1c51e280d1828ee"
+  },
+  "journal": {
+    "blob": "03e72b0bd32b4fe9219b98b0c6d4dab57182bead",
+    "bytes": 19039,
+    "sha256": "9bb9f76d50294f781fb6c793bd522790d6318d1ae65682963268f1d67a73620b"
+  },
+  "native_binding": {
+    "sha256": "3edc51cd9770f676bd4452689402378c8594eb7ba1e95992d806929be56d0eea",
+    "native_fingerprint": "4529585268678784630",
+    "typed_stdin": true
+  },
+  "source_delta": "One exact kernel image constant and one executable comparison right operand; entire controller, managed child and journal independently reconstruct their original reviewed R3 bytes after reversing only documented binding changes.",
+  "scope": {
+    "kernel_image_path_observed": true,
+    "kernel_image_file_qualified": false,
+    "original_R3_missing_fields_reconstructed": false,
+    "runtime_qualified": false,
+    "AuthBus_credentials_qualified": false,
+    "full_replacement": false,
+    "production_cutover": false,
+    "legacy_cleanup": false
+  },
+  "root_Runtime_calls": 0
+}

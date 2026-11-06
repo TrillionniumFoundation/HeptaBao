@@ -1,0 +1,144 @@
+{
+  "repository_full_name": "TrillionniumFoundation/HeptaBao",
+  "base_tree_sha": "0506d30b02f5a2a2dc7d6364299365ae8d1d7cc7",
+  "tree_elements": [
+    {
+      "path": "crates/heptabao-ha-service/src/authenticated_peer_frame.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8edc95536e36540a0cf160cb904e4844a80f98fc"
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/lib.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "504b1b18757bdd4bf013e7ee27029c0cc9044d37"
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/native_snapshot_body.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bbf14e2500ffbfe36a0ef24ca0e19240e88d319e"
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/native_snapshot_body_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fbaa67b64fd10377039096f04072868efdf88542"
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/native_snapshot_peer.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2aae6e8a7f5bc459e19240fec8c622bdf115b8e2"
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/native_snapshot_peer_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e4d16a8baabe02fa172232792850f291c5cdd1d5"
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_forward_actor.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "84d925badf31803b76d0f008bb7605d2c5c15d88"
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_snapshot_forward_actor_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "468a6808a7b910fe5c3489f9afeaa21fa8354d13"
+    },
+    {
+      "path": "crates/heptabao-server/src/ha.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "19a28bccef243c221a89841209245527252a9b21"
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_snapshot_forward.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fdc4ddc517cb7919375e05ae18ba7ae87267c8f0"
+    },
+    {
+      "path": "crates/heptabao-server/src/http.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2f3843615e5432b311eeb438c238d9222434310d"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c3740f0a2e55281b72a05f1b6c8e527618f3d65a"
+    },
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c952232a835a4f6437e310790ba42b8509b79dcb"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_forward_delivery.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e5e2b67dc88ed2a67ee266a1bbdd8b777c42f36c"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4edbdf52aee39919065db9dc0d8924fd346c5306"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_client.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ccefc2b6e836f407f285245fa1f595230d828ab0"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_file.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cc96349fe49fa0ffa067971f2cbda21839804410"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_source.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b4a0645164c6ba5cb0c3489e058f65c89136796b"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_wire.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e7d14fb4237c4e2638068c91f7cb421fdc3e9f85"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_wire_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7dd45fb0219ea92ad7debb45f534977875ebef9a"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "50867f6ced7c34594e668a519df9c796fa333b0f"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4c111e446031fda7ac88f673298ddfa6322ecc83"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "100938ae027cc78c3037187b074856b473f9b174"
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "schema": "heptabao.root-GO.snapshot8c95-stage-report-file-info.v1",
+  "authorization": "GO",
+  "agent": "/root/compatibility_audit",
+  "scope": "stage_result_file_info_only",
+  "source_packet": "d88aae3876d0572665e78c1555b7560b3bb339f5",
+  "source": {
+    "blob": "46233bcb53bb26878cdc7ba02b090ebb29f43037",
+    "bytes": 23894,
+    "sha256": "e5ca9c869f506d1d495f34709d04649fad17749c8790c13fd76b0448d4e3b3a5"
+  },
+  "source_review": {
+    "blob": "dacf6ab3fd53c2081098a55f766804674833ad13",
+    "bytes": 4028,
+    "sha256": "ca0b03aa3610a0ce3667d3a820455d0aa30ee720aff9a73a573f77fe43eca4e7"
+  },
+  "exact_request": {
+    "blob": "e17cbc53589698ea5071ea83e0269d8fe73ebb2f",
+    "bytes": 312,
+    "sha256": "5b59a60e8942e3ed5bb93dcbb04b238d07ad0395ba23daa7625dd03c0da1792a"
+  },
+  "original_job": "1a1afa74868-fc05-6a7e",
+  "original_slot": "snapshot_8c95_rog_source_gitfirst_r1",
+  "original_stage_terminal_qualification": {
+    "blob": "13d5ae1324ebe64a2ce7d8882a3d551bc8e8a73e",
+    "bytes": 5949,
+    "sha256": "c2f033d16b298295670c648bc02d4579c2011ea0f91427a166f4ab214bd3f2c3"
+  },
+  "maximum_file_info_starts": 1,
+  "binary_read_authorized": false,
+  "metadata_acceptance": {
+    "host": "rog",
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-8c95fb0a-20261106-r1/control/stage-result.public.json",
+    "size": {
+      "min": 1,
+      "max": 65536
+    },
+    "mode": 384,
+    "uid": 1000,
+    "gid": 1000,
+    "link_count": 1,
+    "metadata_platform": "linux",
+    "sha256": "actual native 64 lower-case hex",
+    "version": "actual native dev:inode:size:mtime_ns:ctime_ns; preserve decimal strings",
+    "full9": "[dev,inode,1000,1000,32768|mode,1,size,mtime_ns,ctime_ns] strings"
+  },
+  "no_reinitialize": true,
+  "no_process_start": true,
+  "limits": {
+    "immutable_page_bytes": 8192,
+    "original_payload_bytes": 1048576,
+    "maximum_Runtime_lanes": 2,
+    "maximum_native_call_or_future_per_lane": 1
+  },
+  "sequence": [
+    "Whole exact GO; attach original closed stage slot through authorize_stage_result_info only,never initialize.",
+    "Whole exact request,intent,armed and return across independent dispatch boundary before one operation_start.",
+    "Whole original SDK before parse/isError; only original returned operation status and contiguous8192 immutable pages,full SHA/EOF and completed inactive closure.",
+    "Require fixed public report size1..65536,0600 Linux1000:1000/single link; preserve actual SHA/version/full9 as lossless strings.",
+    "Stop after metadata. Body requires separately bound SOURCE and exact GO; current23-file formatter is not authorized."
+  ],
+  "excludes": [
+    "binary_read or detailed report body",
+    "other paths,listing,START,formatter,Cargo,tests,product",
+    "source44 or frozen8c95 modification",
+    "retry,rekey,UNKNOWN replacement"
+  ],
+  "lane_activation": "B may use one short metadata lane. A current self original process/observers are released; C0Runtime. Global max2.",
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

@@ -1,0 +1,215 @@
+{
+  "schema": "heptabao.native-snapshot-forward-source-mechanical-checks.v1",
+  "executed": "pure V8 only; no Rust compiler or candidate test functions",
+  "base": {
+    "commit": "808e45d690f177ecb922e13d1ed19f7877156094",
+    "tree": "0506d30b02f5a2a2dc7d6364299365ae8d1d7cc7"
+  },
+  "modified": 11,
+  "added": 12,
+  "files": [
+    {
+      "path": "crates/heptabao-ha-service/src/lib.rs",
+      "base_exact": true,
+      "strict_apply": true,
+      "strict_reverse": true
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/authenticated_peer_frame.rs",
+      "base_exact": true,
+      "strict_apply": true,
+      "strict_reverse": true
+    },
+    {
+      "path": "crates/heptabao-server/src/ha.rs",
+      "base_exact": true,
+      "strict_apply": true,
+      "strict_reverse": true
+    },
+    {
+      "path": "crates/heptabao-server/src/http.rs",
+      "base_exact": true,
+      "strict_apply": true,
+      "strict_reverse": true
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot.rs",
+      "base_exact": true,
+      "strict_apply": true,
+      "strict_reverse": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "base_exact": true,
+      "strict_apply": true,
+      "strict_reverse": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "base_exact": true,
+      "strict_apply": true,
+      "strict_reverse": true
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_forward_actor.rs",
+      "base_exact": true,
+      "strict_apply": true,
+      "strict_reverse": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha.rs",
+      "base_exact": true,
+      "strict_apply": true,
+      "strict_reverse": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+      "base_exact": true,
+      "strict_apply": true,
+      "strict_reverse": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_forward_delivery.rs",
+      "base_exact": true,
+      "strict_apply": true,
+      "strict_reverse": true
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/native_snapshot_body.rs",
+      "base_exact": "absent-in-current-directories",
+      "strict_apply": true,
+      "strict_reverse": true
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/native_snapshot_body_tests.rs",
+      "base_exact": "absent-in-current-directories",
+      "strict_apply": true,
+      "strict_reverse": true
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/native_snapshot_peer.rs",
+      "base_exact": "absent-in-current-directories",
+      "strict_apply": true,
+      "strict_reverse": true
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/native_snapshot_peer_tests.rs",
+      "base_exact": "absent-in-current-directories",
+      "strict_apply": true,
+      "strict_reverse": true
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_snapshot_forward.rs",
+      "base_exact": "absent-in-current-directories",
+      "strict_apply": true,
+      "strict_reverse": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward.rs",
+      "base_exact": "absent-in-current-directories",
+      "strict_apply": true,
+      "strict_reverse": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_wire.rs",
+      "base_exact": "absent-in-current-directories",
+      "strict_apply": true,
+      "strict_reverse": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_file.rs",
+      "base_exact": "absent-in-current-directories",
+      "strict_apply": true,
+      "strict_reverse": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_client.rs",
+      "base_exact": "absent-in-current-directories",
+      "strict_apply": true,
+      "strict_reverse": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_source.rs",
+      "base_exact": "absent-in-current-directories",
+      "strict_apply": true,
+      "strict_reverse": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_wire_tests.rs",
+      "base_exact": "absent-in-current-directories",
+      "strict_apply": true,
+      "strict_reverse": true
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_snapshot_forward_actor_tests.rs",
+      "base_exact": "absent-in-current-directories",
+      "strict_apply": true,
+      "strict_reverse": true
+    }
+  ],
+  "hunks": 42,
+  "current_jwt_service_function_only": {
+    "base": "671bb42fa71e7a29b78b7e48355c9024c1ec7d73",
+    "before": "    pub(crate) fn begin_forwarded(&mut self, request: ServiceRequest<'_>) -> RequestExecution {\n        let started = std::time::Instant::now();\n        let observed = SystemTime::now()\n            .duration_since(UNIX_EPOCH)\n            .unwrap_or(Duration::MAX);\n        let clock = match RequestClock::anchored(observed, started) {\n            Ok(clock) => clock,\n            Err(_) => {\n                return RequestExecution::Complete(Response::error(\n                    503,\n                    \"trusted token clock is unavailable\",\n                ));\n            }\n        };\n        let now = observed.as_secs();\n        let _publication_clock = external_pki::PublicationClockScope::enter(\n            clock.admitted_at().duration_since_epoch(),\n            started,\n        );\n        let ServiceRequest {\n            method,\n            path,\n            namespace,\n            token,\n            body,\n            wrap_ttl_seconds,\n            origin_peer,\n            client_certificates,\n        } = request;\n        self.begin_at_mode_precise(\n            RequestDispatch {\n                method,\n                path,\n                namespace,\n                token,\n                body,\n                now,\n                allow_forward: false,\n                enforce_namespace: true,\n                wrap_ttl_seconds,\n                origin_peer,\n                client_certificates,\n            },\n            clock,\n        )\n        .with_realtime_remote_jwt()\n    }\n",
+    "after": "    pub(crate) fn begin_forwarded(&mut self, request: ServiceRequest<'_>) -> RequestExecution {\n        let (started, observed) = self.native_snapshot_clock.unwrap_or_else(|| {\n            (\n                std::time::Instant::now(),\n                SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or(Duration::MAX),\n            )\n        });\n        let clock = match RequestClock::anchored(observed, started) {\n            Ok(clock) => clock,\n            Err(_) => {\n                return RequestExecution::Complete(Response::error(\n                    503,\n                    \"trusted token clock is unavailable\",\n                ));\n            }\n        };\n        let now = observed.as_secs();\n        let _publication_clock = external_pki::PublicationClockScope::enter(\n            clock.admitted_at().duration_since_epoch(),\n            started,\n        );\n        let ServiceRequest {\n            method,\n            path,\n            namespace,\n            token,\n            body,\n            wrap_ttl_seconds,\n            origin_peer,\n            client_certificates,\n        } = request;\n        let execution = self.begin_at_mode_precise(\n            RequestDispatch {\n                method,\n                path,\n                namespace,\n                token,\n                body,\n                now,\n                allow_forward: false,\n                enforce_namespace: true,\n                wrap_ttl_seconds,\n                origin_peer,\n                client_certificates,\n            },\n            clock,\n        );\n        if self.native_snapshot_clock.is_some() {\n            execution\n        } else {\n            execution.with_realtime_remote_jwt()\n        }\n    }\n",
+    "result": {
+      "blob": "c952232a835a4f6437e310790ba42b8509b79dcb",
+      "bytes": 519343,
+      "sha256": "c6fcb7631d424c16b5f86530570172b61f2b090d71384516d267ffaf7ee1dc89"
+    },
+    "all_other_bytes_unchanged": true
+  },
+  "test_functions": [
+    {
+      "path": "crates/heptabao-ha-service/src/native_snapshot_body_tests.rs",
+      "count": 10,
+      "names": [
+        "snapshot_stream_roundtrip_crosses_ordinary_frame_limit_once",
+        "snapshot_stream_empty_body_requires_explicit_end_and_eof",
+        "snapshot_stream_exact_payload_without_end_is_not_complete",
+        "snapshot_stream_end_digest_and_trailing_wire_bytes_are_rejected",
+        "snapshot_stream_declared_oversize_is_rejected_before_payload",
+        "snapshot_stream_short_chunk_cannot_be_followed_by_data",
+        "snapshot_stream_consumer_cannot_finish_with_unread_archive_bytes",
+        "snapshot_stream_tls_eof_error_after_valid_end_cannot_mint_binding",
+        "snapshot_stream_original_expired_deadline_precedes_io",
+        "snapshot_stream_encoder_checks_one_rejecting_eof_byte_at_exact_cap"
+      ]
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/native_snapshot_peer_tests.rs",
+      "count": 7,
+      "names": [
+        "snapshot_peer_actual_mtls_upload_close_notify_allows_opposite_download",
+        "snapshot_peer_actual_mtls_bare_tcp_eof_cannot_finalize_upload",
+        "snapshot_peer_actual_mtls_wrong_selected_leaf_never_admits_body",
+        "snapshot_peer_actual_mtls_terminal_rejection_consumes_no_upload",
+        "snapshot_peer_original_frame_still_uses_only_old_callback",
+        "snapshot_peer_expired_deadline_refuses_before_connect",
+        "snapshot_peer_ready_veto_reads_no_upload_and_cannot_extend_deadline"
+      ]
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_wire_tests.rs",
+      "count": 4,
+      "names": [
+        "snapshot_publication_actual_byte_witnesses_bind_save_and_restore",
+        "snapshot_publication_valid_mac_cannot_substitute_a_binary_body",
+        "snapshot_publication_metadata_and_original_owner_mutations_are_rejected",
+        "snapshot_ready_rejects_retarget_replay_and_non_snapshot_routes"
+      ]
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_snapshot_forward_actor_tests.rs",
+      "count": 2,
+      "names": [
+        "snapshot_actor_final_use_remains_delivery_only_without_second_admission",
+        "snapshot_actor_original_auth_is_distinct_from_a_new_restored_owner"
+      ]
+    }
+  ],
+  "runtime_calls": 0,
+  "format_executed": false,
+  "compile_executed": false,
+  "tests_executed": false
+}

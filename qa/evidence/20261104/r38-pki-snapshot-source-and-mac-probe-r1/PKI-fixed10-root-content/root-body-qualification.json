@@ -1,0 +1,190 @@
+{
+  "schema": "heptabao.root-qualification.PKI-fixed10-report-body-original-transport.v1",
+  "status": "PASS_ORIGINAL_WHOLE_REPORT_BODY_TRANSPORT",
+  "evidence_qualified": true,
+  "checks": [
+    {
+      "name": "whole34_291003",
+      "passed": true
+    },
+    {
+      "name": "exact_GO_and_executed_body_journal",
+      "passed": true
+    },
+    {
+      "name": "independent_metadata_original_unchanged",
+      "passed": true
+    },
+    {
+      "name": "pki10body_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "pki10body_call_pki-lease400-format10-report-body0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "pki10body_armed_tree_pki-lease400-format10-report-body0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "pki10body_call_pki-lease400-format10-report-body0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "pki10body_armed_tree_pki-lease400-format10-report-body0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "pki10body_call_pki-lease400-format10-report-body0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "pki10body_armed_tree_pki-lease400-format10-report-body0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "pki10body_call_pki-lease400-format10-report-body0-page16384-r1",
+      "passed": true
+    },
+    {
+      "name": "pki10body_armed_tree_pki-lease400-format10-report-body0-page16384-r1",
+      "passed": true
+    },
+    {
+      "name": "pki10body_call_pki-lease400-format10-report-body0-page32768-r1",
+      "passed": true
+    },
+    {
+      "name": "pki10body_armed_tree_pki-lease400-format10-report-body0-page32768-r1",
+      "passed": true
+    },
+    {
+      "name": "pki10body_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "pki10body_observer_bfede395f7e4dae647b24ec3b021afdfeefec32d1606a880867ff34cdb5d2d36",
+      "passed": true
+    },
+    {
+      "name": "pki10body_page_bfede395f7e4dae647b24ec3b021afdfeefec32d1606a880867ff34cdb5d2d36_0",
+      "passed": true
+    },
+    {
+      "name": "pki10body_page_bfede395f7e4dae647b24ec3b021afdfeefec32d1606a880867ff34cdb5d2d36_16384",
+      "passed": true
+    },
+    {
+      "name": "pki10body_page_bfede395f7e4dae647b24ec3b021afdfeefec32d1606a880867ff34cdb5d2d36_32768",
+      "passed": true
+    },
+    {
+      "name": "pki10body_payload_bfede395f7e4dae647b24ec3b021afdfeefec32d1606a880867ff34cdb5d2d36",
+      "passed": true
+    },
+    {
+      "name": "pki10body_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "one_binary_one_status_three_pages_no_START",
+      "passed": true
+    },
+    {
+      "name": "exact_one_version_pinned_request",
+      "passed": true
+    },
+    {
+      "name": "original_binary_native_and_payload_pins",
+      "passed": true
+    },
+    {
+      "name": "exact_path_version_size_offset_whole_EOF",
+      "passed": true
+    },
+    {
+      "name": "whole_original_chunk_and_report_SHA_UTF8",
+      "passed": true
+    },
+    {
+      "name": "same_report_and_metadata_lineage",
+      "passed": true
+    },
+    {
+      "name": "closed_original_status_and_no_pending_lane",
+      "passed": true
+    },
+    {
+      "name": "collector_info_body_counts_accounted",
+      "passed": true
+    },
+    {
+      "name": "agent_has_not_claimed_semantics_or_product",
+      "passed": true
+    }
+  ],
+  "check_count": 30,
+  "packet": {
+    "tree": "9e906a7d8c966213395a410f6ed0a915d47786fe",
+    "files": 34,
+    "bytes": 291003,
+    "merkle": {
+      "root_sha": "9e906a7d8c966213395a410f6ed0a915d47786fe",
+      "trees_verified": 1,
+      "leaf_count": 34
+    },
+    "whole": true
+  },
+  "original_job": "rog/1a1af917594-fc05-69b4",
+  "original_operation": {
+    "id": "bfede395f7e4dae647b24ec3b021afdfeefec32d1606a880867ff34cdb5d2d36",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "e037599cd9f65ef1d9b77e6026eb134bda78c54d",
+      "bytes": 40610,
+      "sha256": "b1ad4bfcd553d0eb99e86d96684de2769b989770209d6abca138ad8366b97c60"
+    },
+    "payloadTree": "bb867a429c22a4d3c7e5b230edb6cc0375043c27",
+    "nativeText": {
+      "blob": "83003af0abd5aec43f3bd6bb046b839893d5fa33",
+      "bytes": 40507,
+      "sha256": "726d2ff6562f5944c7ee5221b16d1a5ece946300ef9db9918014db2cd1cbce49"
+    },
+    "pages": 3,
+    "completedInactive": true
+  },
+  "report": {
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-observe-20261106-r1/observation.public.json",
+    "version": "66306:30842948:30131:1793946915079275200:1793946915079275200",
+    "body": {
+      "blob": "4b8a48e1d4cec8c7e68ba0a858dc2da27662d13d",
+      "bytes": 30131,
+      "sha256": "f2d35f46f7fec2d9d9ce81d7e3bd8dca21c9c6f44d5f990314cfd4dcb5c4da46"
+    },
+    "wholeTree": "a27d5003e820c88664ebc1e261f8befe17ee2456",
+    "originalOperations": [
+      "bfede395f7e4dae647b24ec3b021afdfeefec32d1606a880867ff34cdb5d2d36"
+    ],
+    "metadataOperation": "97808443f5d922af35c74107721bf17a5b9c65f46a3e3be525318c0aabecbb07",
+    "semanticQualification": false
+  },
+  "actual": {
+    "native_calls": 5,
+    "observers": 1,
+    "immutable_pages": 3,
+    "whole_payload_bytes": 40610,
+    "whole_report_bytes": 30131,
+    "total_collector_calls": 17,
+    "total_observers": 4,
+    "total_pages": 8
+  },
+  "normalization": "CALL-INDEX omits phase; common-verifier acceptance is a root semantic label derived from original successful SDK and completed inactive observer, not an externally recorded phase.",
+  "report_body_observed": true,
+  "formatted_source_reconstructed": false,
+  "compile_or_product_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

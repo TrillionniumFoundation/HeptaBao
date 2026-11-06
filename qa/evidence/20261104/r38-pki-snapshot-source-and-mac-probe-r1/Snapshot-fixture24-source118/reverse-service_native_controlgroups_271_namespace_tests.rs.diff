@@ -1,0 +1,11 @@
+--- a/crates/heptabao-server/src/service_native_controlgroups_271_namespace_tests.rs
++++ b/crates/heptabao-server/src/service_native_controlgroups_271_namespace_tests.rs
+@@ -125,8 +125,6 @@
+             Err(format!("actual child snapshot admission status={}", response.status).into())
+         }
+         NativeSnapshotAdmission::Redirect(_) => Err("File snapshot unexpectedly redirected".into()),
+-        #[cfg(feature = "native-v6-ha")]
+-        NativeSnapshotAdmission::Forward(_) => Err("File snapshot unexpectedly forwarded".into()),
+     }
+ }
+ 

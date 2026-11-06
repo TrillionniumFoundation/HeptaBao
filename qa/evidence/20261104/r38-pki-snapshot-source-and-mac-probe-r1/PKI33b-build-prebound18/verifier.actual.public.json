@@ -1,0 +1,238 @@
+{
+  "schema": "heptabao.native-jwt-pki-33b814-prebinding-checks.r1",
+  "status": "PASS_SOURCE_PREBOUND_RUNTIME_BLOCKED",
+  "checks": 50,
+  "results": [
+    {
+      "name": "single:runner",
+      "pass": true
+    },
+    {
+      "name": "single:runner",
+      "pass": true
+    },
+    {
+      "name": "whole_literal_changes:runner",
+      "pass": true
+    },
+    {
+      "name": "inverse_single:runner",
+      "pass": true
+    },
+    {
+      "name": "inverse_single:runner",
+      "pass": true
+    },
+    {
+      "name": "whole_inverse:runner",
+      "pass": true
+    },
+    {
+      "name": "strict_forward:runner",
+      "pass": true
+    },
+    {
+      "name": "strict_reverse:runner",
+      "pass": true
+    },
+    {
+      "name": "one_hunk:runner",
+      "pass": true
+    },
+    {
+      "name": "all_defs_same:runner",
+      "pass": true
+    },
+    {
+      "name": "still_fail_closed:runner",
+      "pass": true
+    },
+    {
+      "name": "single:launcher",
+      "pass": true
+    },
+    {
+      "name": "single:launcher",
+      "pass": true
+    },
+    {
+      "name": "single:launcher",
+      "pass": true
+    },
+    {
+      "name": "whole_literal_changes:launcher",
+      "pass": true
+    },
+    {
+      "name": "inverse_single:launcher",
+      "pass": true
+    },
+    {
+      "name": "inverse_single:launcher",
+      "pass": true
+    },
+    {
+      "name": "inverse_single:launcher",
+      "pass": true
+    },
+    {
+      "name": "whole_inverse:launcher",
+      "pass": true
+    },
+    {
+      "name": "strict_forward:launcher",
+      "pass": true
+    },
+    {
+      "name": "strict_reverse:launcher",
+      "pass": true
+    },
+    {
+      "name": "one_hunk:launcher",
+      "pass": true
+    },
+    {
+      "name": "all_defs_same:launcher",
+      "pass": true
+    },
+    {
+      "name": "still_fail_closed:launcher",
+      "pass": true
+    },
+    {
+      "name": "single:publisher",
+      "pass": true
+    },
+    {
+      "name": "single:publisher",
+      "pass": true
+    },
+    {
+      "name": "whole_literal_changes:publisher",
+      "pass": true
+    },
+    {
+      "name": "inverse_single:publisher",
+      "pass": true
+    },
+    {
+      "name": "inverse_single:publisher",
+      "pass": true
+    },
+    {
+      "name": "whole_inverse:publisher",
+      "pass": true
+    },
+    {
+      "name": "strict_forward:publisher",
+      "pass": true
+    },
+    {
+      "name": "strict_reverse:publisher",
+      "pass": true
+    },
+    {
+      "name": "one_hunk:publisher",
+      "pass": true
+    },
+    {
+      "name": "all_defs_same:publisher",
+      "pass": true
+    },
+    {
+      "name": "still_fail_closed:publisher",
+      "pass": true
+    },
+    {
+      "name": "payload_whole:native_jwt_build.py",
+      "pass": true
+    },
+    {
+      "name": "publisher_pins:native_jwt_build.py",
+      "pass": true
+    },
+    {
+      "name": "payload_whole:launch_native_jwt_build.py",
+      "pass": true
+    },
+    {
+      "name": "publisher_pins:launch_native_jwt_build.py",
+      "pass": true
+    },
+    {
+      "name": "payload_whole:jwt-test-groups.public.json",
+      "pass": true
+    },
+    {
+      "name": "publisher_pins:jwt-test-groups.public.json",
+      "pass": true
+    },
+    {
+      "name": "groups_whole_same",
+      "pass": true
+    },
+    {
+      "name": "149unique",
+      "pass": true
+    },
+    {
+      "name": "166instances",
+      "pass": true
+    },
+    {
+      "name": "caps600",
+      "pass": true
+    },
+    {
+      "name": "same_commit_both",
+      "pass": true
+    },
+    {
+      "name": "same_tree_both",
+      "pass": true
+    },
+    {
+      "name": "source_root",
+      "pass": true
+    },
+    {
+      "name": "request_and_actual_slots_null",
+      "pass": true
+    },
+    {
+      "name": "payload262144",
+      "pass": true
+    }
+  ],
+  "components": {
+    "runner": {
+      "blob": "5d0e1456e090404ab48e8684551ed19b61dd88cf",
+      "bytes": 30398,
+      "sha256": "9750305c0c64c90e688d8a80c6cee933cf472070bfffbecc7e3e6fcf17e1587a"
+    },
+    "launcher": {
+      "blob": "6ffca443ea8ba24f52ac1b115ef28a6f191fd0e7",
+      "bytes": 38566,
+      "sha256": "7501ac044320dc6215a363e8feeb7f8f56b159c2a6e4504773485370dc3b5113"
+    },
+    "publisher": {
+      "blob": "7cd29794df32fcd9492e2ea9b1c676426f54eeb0",
+      "bytes": 5183,
+      "sha256": "59e164d82c180fb3f529653f2138d3e712412d3a45287f50242663a33659566f"
+    }
+  },
+  "knownSource": {
+    "commit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+    "tree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+    "sourceRoot": "/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1"
+  },
+  "remaining": {
+    "sourceStage": null,
+    "controlsPublication": null,
+    "buildRequest": null
+  },
+  "all25FunctionsUnchanged": true,
+  "Native": 0,
+  "Cargo": 0,
+  "productTests": 0
+}

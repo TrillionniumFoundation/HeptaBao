@@ -1,0 +1,36 @@
+{
+  "runner": [
+    [
+      "DIAGNOSTIC_COMMIT = None",
+      "DIAGNOSTIC_COMMIT = '33b814c7034ec853151b1ff13e7529c83f65ea70'"
+    ],
+    [
+      "DIAGNOSTIC_TREE = None",
+      "DIAGNOSTIC_TREE = 'b7f276f70e0da1a33306564f385ab7bc12fd44f6'"
+    ]
+  ],
+  "launcher": [
+    [
+      "FINAL_COMMIT = None",
+      "FINAL_COMMIT = '33b814c7034ec853151b1ff13e7529c83f65ea70'"
+    ],
+    [
+      "FINAL_TREE = None",
+      "FINAL_TREE = 'b7f276f70e0da1a33306564f385ab7bc12fd44f6'"
+    ],
+    [
+      "SOURCE_STAGE_ROOT = None",
+      "SOURCE_STAGE_ROOT = Path('/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1')"
+    ]
+  ],
+  "publisher": [
+    [
+      "        30322,\n        \"4a68d6ee41ec098db7d78c3594df70016ce5096b1dc43da972fa0e405793a9b1\"",
+      "        30398,\n        \"9750305c0c64c90e688d8a80c6cee933cf472070bfffbecc7e3e6fcf17e1587a\""
+    ],
+    [
+      "        38421,\n        \"004f9ea61b85a76b73c4be930fe7be5fbcca809c20c70db07e820bd931002c0f\"",
+      "        38566,\n        \"7501ac044320dc6215a363e8feeb7f8f56b159c2a6e4504773485370dc3b5113\""
+    ]
+  ]
+}

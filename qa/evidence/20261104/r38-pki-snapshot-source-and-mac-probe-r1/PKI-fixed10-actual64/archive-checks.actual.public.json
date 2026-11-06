@@ -1,0 +1,188 @@
+{
+  "schema": "heptabao.fixed10-original-archive-checks.r1",
+  "passed": true,
+  "count": 45,
+  "checks": [
+    {
+      "name": "pki-lease400-format10-start-r1:arm_whole",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-start-r1:request_exact",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-start-r1:sdk_exact",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-start-r1:native_exact",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-authority0-start-r1:arm_whole",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-authority0-start-r1:request_exact",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-authority0-start-r1:sdk_exact",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-authority0-start-r1:native_exact",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-authority0-status0-r1:arm_whole",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-authority0-status0-r1:request_exact",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-authority0-status0-r1:sdk_exact",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-authority0-status0-r1:native_exact",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-authority0-page0-r1:arm_whole",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-authority0-page0-r1:request_exact",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-authority0-page0-r1:sdk_exact",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-authority0-page0-r1:native_exact",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-streams0-start-r1:arm_whole",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-streams0-start-r1:request_exact",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-streams0-start-r1:sdk_exact",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-streams0-start-r1:native_exact",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-streams0-status0-r1:arm_whole",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-streams0-status0-r1:request_exact",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-streams0-status0-r1:sdk_exact",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-streams0-status0-r1:native_exact",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-streams0-page0-r1:arm_whole",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-streams0-page0-r1:request_exact",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-streams0-page0-r1:sdk_exact",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-streams0-page0-r1:native_exact",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-streams0-page8192-r1:arm_whole",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-streams0-page8192-r1:request_exact",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-streams0-page8192-r1:sdk_exact",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-streams0-page8192-r1:native_exact",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-streams0-page16384-r1:arm_whole",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-streams0-page16384-r1:request_exact",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-streams0-page16384-r1:sdk_exact",
+      "passed": true
+    },
+    {
+      "name": "pki-lease400-format10-streams0-page16384-r1:native_exact",
+      "passed": true
+    },
+    {
+      "name": "3ebfdff449e99f89163aa16c0e183420cf29b710506c0f3357cf74c2282c22eb:whole_payload",
+      "passed": true
+    },
+    {
+      "name": "3ebfdff449e99f89163aa16c0e183420cf29b710506c0f3357cf74c2282c22eb:native_exact",
+      "passed": true
+    },
+    {
+      "name": "3ebfdff449e99f89163aa16c0e183420cf29b710506c0f3357cf74c2282c22eb:inactive",
+      "passed": true
+    },
+    {
+      "name": "db6e1476ae45cbada5e78cfafd6860ad22ad0b2f08192396f64b0abe94174dcf:whole_payload",
+      "passed": true
+    },
+    {
+      "name": "db6e1476ae45cbada5e78cfafd6860ad22ad0b2f08192396f64b0abe94174dcf:native_exact",
+      "passed": true
+    },
+    {
+      "name": "db6e1476ae45cbada5e78cfafd6860ad22ad0b2f08192396f64b0abe94174dcf:inactive",
+      "passed": true
+    },
+    {
+      "name": "nine_calls",
+      "passed": true
+    },
+    {
+      "name": "two_observers_four_pages",
+      "passed": true
+    },
+    {
+      "name": "no_pending_native",
+      "passed": true
+    }
+  ],
+  "scope": "Pure original-cache checks only; no candidate/Python/Cargo execution; not an independent root review"
+}

@@ -1,0 +1,197 @@
+{
+  "schema": "heptabao.native-snapshot-forward-ingress-audit-source.r3",
+  "status": "SOURCE_ONLY_NO_FORMAT_COMPILE_OR_RUNTIME",
+  "supersedes_only_three_leaves_of": "422cc7927f0dd3a57a39c956e52cb5e008e300c0",
+  "root_blocker_review": "d873378c48f691f121b82e1a6a5af52c45ca5904",
+  "base_commit": "808e45d690f177ecb922e13d1ed19f7877156094",
+  "entries": [
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_client.rs",
+      "before": {
+        "blob": "647c3f7a40a87219103747a6552f274dd15f617f",
+        "bytes": 16882,
+        "sha256": "e09c16d751e734a29355ecc880627943f1dd1e07118eff33db4f7143eac030dd"
+      },
+      "after": {
+        "blob": "ccefc2b6e836f407f285245fa1f595230d828ab0",
+        "bytes": 18255,
+        "sha256": "786eb9ec00fc1d8d82e78793da18c9b9b33b02609c80153b0fd960de4b75dc17"
+      },
+      "diff": {
+        "blob": "6f3be07d877196013850e30b980e4c45f42ea727",
+        "bytes": 5460,
+        "sha256": "27c93b09f28221122eb24e6491cda72969127bd06fb06307c9ddc357c242d011"
+      },
+      "hunks": 8
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward.rs",
+      "before": {
+        "blob": "6fde5c7b32deedada9169197f44f66b1a1c3a53b",
+        "bytes": 8553,
+        "sha256": "e8916196786cacc3e1e36dba6382457d8dbff3984e48b9beff527d66fd8de0d5"
+      },
+      "after": {
+        "blob": "4edbdf52aee39919065db9dc0d8924fd346c5306",
+        "bytes": 8798,
+        "sha256": "70cfadda87cad016af530310c525c94e04b6e2e3df5353cc2762bc91d08570bd"
+      },
+      "diff": {
+        "blob": "be3751028c4a8b836ca26d33fd864612abba94d4",
+        "bytes": 936,
+        "sha256": "eb5360c09ae881d0b63204f06d2c252395efd428ea2616c2023b64aa96cd1f0a"
+      },
+      "hunks": 1
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_source.rs",
+      "before": {
+        "blob": "512d0fab58ccb0065e9611e9c55b12632c319cf7",
+        "bytes": 17302,
+        "sha256": "31672215f0418e6e871886a698e6da385951864e59b43640a8f099ebd917f76f"
+      },
+      "after": {
+        "blob": "b4a0645164c6ba5cb0c3489e058f65c89136796b",
+        "bytes": 17315,
+        "sha256": "86b55dde688720321fce0c2fdfc59a18a6a185911d9725d6f9b4afb8e71b2062"
+      },
+      "diff": {
+        "blob": "e63ccd721704de7684e8ededbd034be0332d0bba",
+        "bytes": 450,
+        "sha256": "5fe5f49a5d4776260ed95f769d7e6ffe98dce696b482df08684829098f1813ab"
+      },
+      "hunks": 1
+    }
+  ],
+  "unchanged_product_files": 20,
+  "unchanged_test_functions": 23,
+  "all_budget_transport_callback_actor_and_historical_source_authority_guards_unchanged": true,
+  "audit_exit_map": [
+    {
+      "path": "begin_snapshot_forward request/response audit",
+      "remote_attempt": false,
+      "result": "original unavailable; unchanged"
+    },
+    {
+      "path": "HTTP framing or plan preflight, audit/lock failure",
+      "remote_attempt": false,
+      "result": "unavailable, no invented root fields"
+    },
+    {
+      "path": "exchange error or unauthenticated response/byte failure, audit/lock failure",
+      "remote_attempt": true,
+      "result": "outcome_unknown true, retry_allowed false; no JSON-derived root authority"
+    },
+    {
+      "path": "known peer rejection then ingress response audit failure",
+      "remote_attempt": true,
+      "result": "discard its JSON and reconstruct conservative UNKNOWN, no promoted root reference"
+    },
+    {
+      "path": "MAC+actual byte authentication succeeded; private file descriptor or reply conversion failure",
+      "authenticated_completion": true,
+      "result": "same authenticated historical operation reference survives subsequent audit failure"
+    },
+    {
+      "path": "first native delivery gate failed then response audit failed",
+      "authenticated_completion": true,
+      "result": "same authenticated UNKNOWN/reference preserved"
+    },
+    {
+      "path": "mandatory success audit failed",
+      "authenticated_completion": true,
+      "result": "existing typed UNKNOWN/reference retained; unchanged"
+    },
+    {
+      "path": "second native delivery gate failed then veto audit failed",
+      "authenticated_completion": true,
+      "result": "veto callback reconstructs same authenticated UNKNOWN/reference after dropping original response"
+    },
+    {
+      "path": "source historical publication then audit/gate/metadata failure",
+      "actual_private_restore_receipt": true,
+      "result": "existing historical_publication_veto preserved; does not decode wire authority"
+    },
+    {
+      "path": "source publication failure without historical receipt",
+      "actual_private_restore_receipt": false,
+      "result": "original ordinary unavailable fallback preserved via explicit callback"
+    }
+  ],
+  "mechanical_checks": [
+    {
+      "id": "only_source_callback_argument_changed",
+      "ok": true
+    },
+    {
+      "id": "attempt_flag_one_false",
+      "ok": true
+    },
+    {
+      "id": "attempt_flag_one_assignment_true",
+      "ok": true
+    },
+    {
+      "id": "actual_attempt_precedes_unique_exchange",
+      "ok": true
+    },
+    {
+      "id": "audit_success_keeps_original_error",
+      "ok": true
+    },
+    {
+      "id": "generic_attempt_fallback_unknown",
+      "ok": true
+    },
+    {
+      "id": "pre_attempt_fallback_does_not_invent_root_attempt",
+      "ok": true
+    },
+    {
+      "id": "authenticated_completion_reconstructs_unknown",
+      "ok": true
+    },
+    {
+      "id": "no_response_json_authority_extraction",
+      "ok": true
+    },
+    {
+      "id": "unknown_still_no_retry",
+      "ok": true
+    },
+    {
+      "id": "root_reference_only_terminal_kind",
+      "ok": true
+    },
+    {
+      "id": "first_native_gate_supplies_auth_data",
+      "ok": true
+    },
+    {
+      "id": "post_auth_descriptor_error_supplies_auth_data",
+      "ok": true
+    },
+    {
+      "id": "post_auth_response_conversion_preserves_auth",
+      "ok": true
+    },
+    {
+      "id": "second_native_gate_reconstructs_from_auth_data",
+      "ok": true
+    },
+    {
+      "id": "common_drops_untrusted_error_before_fallback",
+      "ok": true
+    },
+    {
+      "id": "common_keeps_actual_fence",
+      "ok": true
+    },
+    {
+      "id": "ordinary_callbacks_and_budget_files_unchanged",
+      "ok": true
+    }
+  ],
+  "actual_tests_run": 0,
+  "runtime_calls": 0
+}

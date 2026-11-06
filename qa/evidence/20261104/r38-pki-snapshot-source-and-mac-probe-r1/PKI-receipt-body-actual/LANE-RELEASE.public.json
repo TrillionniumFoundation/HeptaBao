@@ -1,0 +1,68 @@
+{
+  "schema": "heptabao.pki-formatter-receipt-body-actual-release.r1",
+  "job": "1a1af6d62a1-fc05-686a",
+  "scope": "original_single_version_bound_receipt_body_only",
+  "original_calls": 3,
+  "immutable_pages": 1,
+  "observer": {
+    "id": "4e26e6c4d8a48966edcb779f0e5c43eda8d3edf08dcdd0319c34cd0fda547ffc",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "0c4974e8b663d293e1313622f21649680daad13f",
+      "bytes": 6962,
+      "sha256": "eab4b62fe25a764d37554c9074a94f21b7f828ad2e988ff4a3f31dbf7373b871"
+    },
+    "payloadTree": "b43f60485c3c8e13671e0b64170f566e8aff45e6",
+    "nativeText": {
+      "blob": "7e5d54c0e60382e8f799d7f8b3dcc0afd5a3d5c4",
+      "bytes": 6859,
+      "sha256": "b54b74c9fe2b7dd8f9eb976b6144e9d0d9068561895b93cf8c98106932be1c60"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "body": {
+    "blob": "6638b8f22581832b5451d8b79e275feccec54959",
+    "bytes": 4907,
+    "sha256": "7b2560af593a62c7de4b8ca3a8cb7c2fffaed1408b2f1b356a302a38a7617776"
+  },
+  "metadata": {
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/result.public.json",
+    "size": 4907,
+    "sha256": "7b2560af593a62c7de4b8ca3a8cb7c2fffaed1408b2f1b356a302a38a7617776",
+    "version": "66306:28071628:4907:1793944550782366173:1793944550782366173",
+    "nativeText": {
+      "blob": "87e770a58b2d4cbe9d6ab71d8c61d5d3634a9556",
+      "bytes": 466,
+      "sha256": "9bdc226bd5fecc495a4a4b17c4593324f01bd7f95b3e5315052c90cc9a4ac2f1"
+    },
+    "originalOperation": "d20c3dc1bb81c7f2ada4ea0ff79b48a59a03e4d943adf6ec90dd8da584166ff6",
+    "full9Strings": [
+      "66306",
+      "28071628",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "4907",
+      "1793944550782366173",
+      "1793944550782366173"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "source_packet": "07e1789c9a50329cb181f6a96f22f6284a3b4629",
+  "root_go": {
+    "blob": "5ee655df4eee26c5e966f5d8aaa15944a578d33b",
+    "bytes": 4299,
+    "sha256": "ab8d41c58532042fbb587ff36add14313b830afdcc374145d7ff78062c3c69b5"
+  },
+  "runtime_calls_in_flight": 0,
+  "native_futures_active": 0,
+  "pending": null,
+  "active_observer": null,
+  "other_output_observations": 0,
+  "formatter_replays": 0,
+  "compile_or_tests": 0,
+  "remaining": "Ten fixed output observations and strict source reconstruction require separate SOURCE and exact GO."
+}

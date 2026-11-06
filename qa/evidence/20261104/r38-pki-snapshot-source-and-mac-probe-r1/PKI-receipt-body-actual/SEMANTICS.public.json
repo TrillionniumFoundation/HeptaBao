@@ -1,0 +1,119 @@
+{
+  "schema": "heptabao.pki-formatter-receipt-content-checks.r1",
+  "checks": [
+    {
+      "name": "exact_original_body",
+      "passed": true
+    },
+    {
+      "name": "body_base64_exact",
+      "passed": true
+    },
+    {
+      "name": "metadata_content_match",
+      "passed": true
+    },
+    {
+      "name": "native_version_path_range_eof",
+      "passed": true
+    },
+    {
+      "name": "one_closed_observer",
+      "passed": true
+    },
+    {
+      "name": "receipt_schema",
+      "passed": true
+    },
+    {
+      "name": "known_receipt_success",
+      "passed": true
+    },
+    {
+      "name": "scope_no_product_or_compile",
+      "passed": true
+    },
+    {
+      "name": "uncommitted_inputs_base_only",
+      "passed": true
+    },
+    {
+      "name": "source_base_identity",
+      "passed": true
+    },
+    {
+      "name": "original_deadlines",
+      "passed": true
+    },
+    {
+      "name": "two_direct_children_reaped",
+      "passed": true
+    },
+    {
+      "name": "shared_supervisor_not_independent_groups",
+      "passed": true
+    },
+    {
+      "name": "child_fixed_argv",
+      "passed": true
+    },
+    {
+      "name": "tool_before_after_exact",
+      "passed": true
+    },
+    {
+      "name": "config_before_after_exact",
+      "passed": true
+    },
+    {
+      "name": "edition_and_repository_config",
+      "passed": true
+    },
+    {
+      "name": "file_names_and_stderr",
+      "passed": true
+    },
+    {
+      "name": "fixed_candidate_and_actual_sizes",
+      "passed": true
+    },
+    {
+      "name": "one_changed_one_unchanged",
+      "passed": true
+    },
+    {
+      "name": "input_carrier_exact",
+      "passed": true
+    },
+    {
+      "name": "call_0_accepted_whole",
+      "passed": true
+    },
+    {
+      "name": "call_0_immutable_sdk_pin",
+      "passed": true
+    },
+    {
+      "name": "call_1_accepted_whole",
+      "passed": true
+    },
+    {
+      "name": "call_1_immutable_sdk_pin",
+      "passed": true
+    },
+    {
+      "name": "call_2_accepted_whole",
+      "passed": true
+    },
+    {
+      "name": "call_2_immutable_sdk_pin",
+      "passed": true
+    }
+  ],
+  "scope": "Already archived receipt and original read chain only; output file contents are not independently qualified.",
+  "direct_children": 2,
+  "independent_group_empty_observed": false,
+  "pki_source_unchanged": true,
+  "pki_test_formatted_bytes": 42909,
+  "fixed_output_count_pending": 10
+}

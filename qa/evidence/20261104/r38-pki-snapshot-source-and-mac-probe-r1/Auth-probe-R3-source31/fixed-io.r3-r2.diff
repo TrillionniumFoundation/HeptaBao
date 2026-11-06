@@ -1,0 +1,14 @@
+--- a/fixed-io.r3.py
++++ b/fixed-io.r2.py
+@@ -289,9 +289,8 @@
+             need(self.close_one(row), 'file_close_failed')
+ 
+     def close(self):
++        for row in reversed(self.rows):
++            self.close_one(row)
+-        with self.signals.critical():
+-            for row in reversed(self.rows):
+-                self.close_one(row)
+ 
+     def public(self):
+         ledger = self.open_ledger
