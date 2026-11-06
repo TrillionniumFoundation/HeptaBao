@@ -1,0 +1,102 @@
+{"event": "launch_admission", "admitted": true, "compiler_count": 0, "other_canonical_campaigns": 0, "production_changed": false}
+{"event": "step_started", "step": "00-source-head", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-source-head", "exit_code": 0, "timed_out": false, "seconds": 0.046371}
+{"event": "step_started", "step": "01-preserved-format-diff", "budget_seconds": 30}
+{"event": "step_finished", "step": "01-preserved-format-diff", "exit_code": 0, "timed_out": false, "seconds": 0.175469}
+{"event": "step_started", "step": "02-untracked", "budget_seconds": 30}
+{"event": "step_finished", "step": "02-untracked", "exit_code": 0, "timed_out": false, "seconds": 0.05817}
+{"event": "step_started", "step": "03-bundle-verify", "budget_seconds": 30}
+{"event": "step_finished", "step": "03-bundle-verify", "exit_code": 0, "timed_out": false, "seconds": 0.043331}
+{"event": "step_started", "step": "04-fetch", "budget_seconds": 30}
+{"event": "step_finished", "step": "04-fetch", "exit_code": 0, "timed_out": false, "seconds": 0.048715}
+{"event": "step_started", "step": "05-canonical-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "05-canonical-tree", "exit_code": 0, "timed_out": false, "seconds": 0.046893}
+{"event": "step_started", "step": "06-canonical-parent", "budget_seconds": 30}
+{"event": "step_finished", "step": "06-canonical-parent", "exit_code": 0, "timed_out": false, "seconds": 0.049177}
+{"event": "step_started", "step": "07-stage-exact-format", "budget_seconds": 30}
+{"event": "step_finished", "step": "07-stage-exact-format", "exit_code": 0, "timed_out": false, "seconds": 0.213003}
+{"event": "step_started", "step": "08-format-working-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "08-format-working-tree", "exit_code": 0, "timed_out": false, "seconds": 0.047565}
+{"event": "step_started", "step": "09-checkout-canonical", "budget_seconds": 30}
+{"event": "step_finished", "step": "09-checkout-canonical", "exit_code": 0, "timed_out": false, "seconds": 0.050027}
+{"event": "step_started", "step": "10-clean-source", "budget_seconds": 30}
+{"event": "step_finished", "step": "10-clean-source", "exit_code": 0, "timed_out": false, "seconds": 0.045723}
+{"event": "step_started", "step": "11-fsck", "budget_seconds": 60}
+{"event": "step_finished", "step": "11-fsck", "exit_code": 0, "timed_out": false, "seconds": 1.361488}
+{"event": "step_started", "step": "12-format-check", "budget_seconds": 60}
+{"event": "step_finished", "step": "12-format-check", "exit_code": 0, "timed_out": false, "seconds": 5.970427}
+{"event": "step_started", "step": "13-normal-release-build", "budget_seconds": 1800}
+{"event": "step_finished", "step": "13-normal-release-build", "exit_code": 0, "timed_out": false, "seconds": 1122.493437}
+{"event": "step_started", "step": "14-server-libtest-build", "budget_seconds": 3600}
+{"event": "step_finished", "step": "14-server-libtest-build", "exit_code": 0, "timed_out": false, "seconds": 1452.304829}
+{"event": "step_started", "step": "15-peer-libtest-build", "budget_seconds": 3600}
+{"event": "step_finished", "step": "15-peer-libtest-build", "exit_code": 0, "timed_out": false, "seconds": 220.379856}
+{"event": "step_started", "step": "heptabao-server-list", "budget_seconds": 30}
+{"event": "step_finished", "step": "heptabao-server-list", "exit_code": 0, "timed_out": false, "seconds": 0.071713}
+{"event": "step_started", "step": "heptabao-ha-service-list", "budget_seconds": 30}
+{"event": "step_finished", "step": "heptabao-ha-service-list", "exit_code": 0, "timed_out": false, "seconds": 0.079392}
+{"event": "step_started", "step": "test-00-ssh25-00", "budget_seconds": 599.997}
+{"event": "step_finished", "step": "test-00-ssh25-00", "exit_code": 0, "timed_out": false, "seconds": 47.821377}
+{"event": "step_started", "step": "test-01-mount1-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-01-mount1-00", "exit_code": 0, "timed_out": false, "seconds": 0.378452}
+{"event": "step_started", "step": "test-02-redirect5-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-02-redirect5-00", "exit_code": 0, "timed_out": false, "seconds": 0.190626}
+{"event": "step_started", "step": "test-03-actor2-00", "budget_seconds": 599.997}
+{"event": "step_finished", "step": "test-03-actor2-00", "exit_code": 0, "timed_out": false, "seconds": 10.209009}
+{"event": "step_started", "step": "test-04-ordinary5-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-04-ordinary5-00", "exit_code": 0, "timed_out": false, "seconds": 0.095944}
+{"event": "step_started", "step": "test-05-no_forward6-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-05-no_forward6-00", "exit_code": 0, "timed_out": false, "seconds": 9.452604}
+{"event": "step_started", "step": "test-06-legacy-ingress7-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-00", "exit_code": 0, "timed_out": false, "seconds": 0.128398}
+{"event": "step_started", "step": "test-06-legacy-ingress7-01", "budget_seconds": 599.862}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-01", "exit_code": 0, "timed_out": false, "seconds": 0.136111}
+{"event": "step_started", "step": "test-06-legacy-ingress7-02", "budget_seconds": 599.717}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-02", "exit_code": 0, "timed_out": false, "seconds": 0.129889}
+{"event": "step_started", "step": "test-06-legacy-ingress7-03", "budget_seconds": 599.577}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-03", "exit_code": 0, "timed_out": false, "seconds": 0.0636}
+{"event": "step_started", "step": "test-06-legacy-ingress7-04", "budget_seconds": 599.507}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-04", "exit_code": 0, "timed_out": false, "seconds": 0.059786}
+{"event": "step_started", "step": "test-06-legacy-ingress7-05", "budget_seconds": 599.439}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-05", "exit_code": 0, "timed_out": false, "seconds": 0.062897}
+{"event": "step_started", "step": "test-06-legacy-ingress7-06", "budget_seconds": 599.369}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-06", "exit_code": 0, "timed_out": false, "seconds": 0.067725}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-00", "budget_seconds": 599.997}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-00", "exit_code": 0, "timed_out": false, "seconds": 0.058298}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-01", "budget_seconds": 599.93}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-01", "exit_code": 0, "timed_out": false, "seconds": 0.061824}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-02", "budget_seconds": 599.86}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-02", "exit_code": 0, "timed_out": false, "seconds": 0.783204}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-03", "budget_seconds": 599.064}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-03", "exit_code": 0, "timed_out": false, "seconds": 0.064906}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-04", "budget_seconds": 598.99}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-04", "exit_code": 0, "timed_out": false, "seconds": 0.069874}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-05", "budget_seconds": 598.91}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-05", "exit_code": 0, "timed_out": false, "seconds": 0.078175}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-06", "budget_seconds": 598.816}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-06", "exit_code": 0, "timed_out": false, "seconds": 0.088318}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-07", "budget_seconds": 598.708}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-07", "exit_code": 0, "timed_out": false, "seconds": 0.070696}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-08", "budget_seconds": 598.627}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-08", "exit_code": 0, "timed_out": false, "seconds": 0.06597}
+{"event": "step_started", "step": "test-08-legacy-same-root1-00", "budget_seconds": 599.997}
+{"event": "step_finished", "step": "test-08-legacy-same-root1-00", "exit_code": 0, "timed_out": false, "seconds": 1.028118}
+{"event": "step_started", "step": "test-09-snapshot-body10-00", "budget_seconds": 599.997}
+{"event": "step_finished", "step": "test-09-snapshot-body10-00", "exit_code": 0, "timed_out": false, "seconds": 0.060082}
+{"event": "step_started", "step": "test-10-snapshot-peer7-00", "budget_seconds": 599.996}
+{"event": "step_finished", "step": "test-10-snapshot-peer7-00", "exit_code": 0, "timed_out": false, "seconds": 1.080413}
+{"event": "step_started", "step": "test-11-snapshot-actor2-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-11-snapshot-actor2-00", "exit_code": 0, "timed_out": false, "seconds": 0.059138}
+{"event": "step_started", "step": "test-12-snapshot-wire4-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-12-snapshot-wire4-00", "exit_code": 0, "timed_out": false, "seconds": 0.061664}
+{"event": "step_started", "step": "test-13-snapshot-audit4-00", "budget_seconds": 599.997}
+{"event": "step_finished", "step": "test-13-snapshot-audit4-00", "exit_code": 0, "timed_out": false, "seconds": 16.205848}
+{"event": "step_started", "step": "test-14-native-jwt15-00", "budget_seconds": 599.997}
+{"event": "step_finished", "step": "test-14-native-jwt15-00", "exit_code": 0, "timed_out": false, "seconds": 10.955397}
+{"event": "step_started", "step": "test-15-tls-close4-00", "budget_seconds": 599.997}
+{"event": "step_finished", "step": "test-15-tls-close4-00", "exit_code": 0, "timed_out": false, "seconds": 0.891291}
+{"event": "step_started", "step": "99-final-source-head", "budget_seconds": 30}
+{"event": "step_finished", "step": "99-final-source-head", "exit_code": 0, "timed_out": false, "seconds": 0.08027}
+{"event": "step_started", "step": "99-final-source-clean", "budget_seconds": 30}
+{"event": "step_finished", "step": "99-final-source-clean", "exit_code": 0, "timed_out": false, "seconds": 0.113198}
+{"event": "terminal", "status": "passed", "failure": null, "executed_passed_cases": 107, "result": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/result.public.json"}

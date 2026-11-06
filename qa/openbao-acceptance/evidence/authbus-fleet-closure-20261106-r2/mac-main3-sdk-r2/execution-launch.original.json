@@ -1,0 +1,37 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "import hashlib,json,os,stat,sys,time,types,unittest\nfrom pathlib import Path\nQA=Path(\"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r2/qa\")\npath=QA/'main3_sdk_controller.py'\ndef identity(s):return tuple(str(getattr(s,k)) for k in ('st_dev','st_ino','st_uid','st_gid','st_mode','st_nlink','st_size','st_mtime_ns','st_ctime_ns'))\nfd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK|os.O_CLOEXEC)\ntry:\n before=os.fstat(fd)\n assert stat.S_ISREG(before.st_mode) and before.st_uid==501 and before.st_nlink==1 and stat.S_IMODE(before.st_mode)==0o600\n raw=os.read(fd,1048576)\n assert len(raw)==33429 and hashlib.sha256(raw).hexdigest()==\"907da95534f5d065ffb9ed2df2b3f6be126d995d963e9d9da51db7a0f29657ce\"\n assert os.read(fd,1)==b'' and identity(before)==identity(os.fstat(fd))==identity(path.lstat())\nfinally:os.close(fd)\nmodule=types.ModuleType('main3_sdk_controller');module.__file__=str(path)\nsys.modules[module.__name__]=module\nexec(compile(raw,str(path),'exec'),module.__dict__)\nplan,pin=module.load_inputs()\nassert pin==\"78b36f778f479c0ca2e603618d4e103a4e2a29dd8f29a6e3788dff1e62272803\"\nEXPECTED_ASSETS={\"qa/main3_sdk_cycle_r2.mjs\":{\"bytes\":31439,\"sha256\":\"7d4f7a1090fc0931ec5fa8f1ca1e48c5402b09997590e27ce8aa0b56ad08f36d\"},\"qa/main3_sdk_wire_r2.mjs\":{\"bytes\":12400,\"sha256\":\"2b06342e30703611729788a522ba764ae30adfe1e47c4f4673b7aa8f647170e2\"},\"qa/main3_auth_rows_cas_r1.mjs\":{\"bytes\":3040,\"sha256\":\"8502f9fa33d2a20076a30f09f02bad612da3ba6e71125f336d72629175092123\"},\"qa/main3_authbus_cache_cas_r1.mjs\":{\"bytes\":6983,\"sha256\":\"7c198034ccc1010bea05d21d116e00e5c19bd3008052c01ebf9e73c224eb278d\"},\"qa/main3_sdk_seed_r1.mjs\":{\"bytes\":7715,\"sha256\":\"f1ed65e478eca61d7d5db9a3a0242f7db155a693ca2920aa5645e23e5b6cca00\"},\"plugin/index.js\":{\"bytes\":54455,\"sha256\":\"b19b6a9e7c1d57ccef8d67994ed3421891788ac30a82ff6bad2eef2ef7e30f9b\"},\"plugin/package.json\":{\"bytes\":980,\"sha256\":\"e9a39d1880a285e76b5b09fb69c9614cfbecff0e1021eb29ce214a6340fd7334\"},\"plugin/order-policy.js\":{\"bytes\":7376,\"sha256\":\"16bddaa7d18600f9f09dac7b5fb4999a141c86aab1fb15d3e9d6abc24e1cf301\"},\"plugin/runtime-refresh-policy.js\":{\"bytes\":956,\"sha256\":\"8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547\"},\"plugin/codex-client-recycler.js\":{\"bytes\":2120,\"sha256\":\"d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d\"},\"plugin/provider-error-classifier.js\":{\"bytes\":4670,\"sha256\":\"3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77\"},\"plugin/bad-refresh-quarantine.js\":{\"bytes\":5438,\"sha256\":\"916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286\"},\"plugin/lease-assignments.js\":{\"bytes\":6932,\"sha256\":\"24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7\"}}\nassert plan['assetPins']==EXPECTED_ASSETS\ndef verify_assets():\n for relative,p in EXPECTED_ASSETS.items():\n  data=module.stable_read(QA.parent/relative,2097152)\n  assert len(data)==p['bytes'] and hashlib.sha256(data).hexdigest()==p['sha256']\nverify_assets()\nsys.path.insert(0,str(QA))\nsys.argv=[str(path),'--mode','run']\nraise SystemExit(module.main())\n"
+    ],
+    "created_unix_ms": 1793994237513,
+    "cwd": null,
+    "env_keys": [],
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1b263a649-fc05-7dda",
+    "idempotency_key": "heptabao-mac-authbus-main3-sdk-two-generation-20261106-r2",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b263a649-fc05-7dda",
+    "request_digest": "81b69dcf8013baf64c9159e59d3e41bdd4444d85c58ab206293c0723bf26f7ff",
+    "request_fingerprint": 9346831591186610934,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b263a649-fc05-7dda"
+  },
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 54047,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1b263a649-fc05-7dda"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

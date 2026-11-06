@@ -1,0 +1,49 @@
+{
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "-"
+  ],
+  "capture_argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-S",
+    "-B",
+    "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/native-static-abi-producer-r1/x230_native_abi_capture.py",
+    "--manifest",
+    "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/native-static-abi-producer-r1/manifest.public.json",
+    "--manifest-sha256",
+    "411145f88dc7f825a0fba802fe85255f609ebb297946195b35f6eb2be76ce1f5"
+  ],
+  "cwd": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1",
+  "executable": "/usr/bin/python3",
+  "host": "pocket4",
+  "idempotency_key": "pocket4-current4b-producer-static-abi-capture-20261106-r1",
+  "manifest_sha256": "411145f88dc7f825a0fba802fe85255f609ebb297946195b35f6eb2be76ce1f5",
+  "output_root": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/native-static-abi-producer-r1",
+  "source_pins": [
+    {
+      "bytes": 22881,
+      "name": "x230_native_abi_capture.py",
+      "sha256": "3f49130cc7dbf5c1a9bde8e0a83d26a7280d41eb59b03fb9c5f48a0dc7a1cd63"
+    },
+    {
+      "bytes": 14323,
+      "name": "x230_native_abi_admission.py",
+      "sha256": "1b6594238cfaf26a2411ec422a858f9958626c98e2d5dece8464f24ee8ed73b4"
+    },
+    {
+      "bytes": 729,
+      "name": "projection.terminal.exact-tool-text.json",
+      "sha256": "fa639c83f44a98ededc81a7a3deddb6a6c63a1db153972b573d6135990899d8f"
+    },
+    {
+      "bytes": 2011,
+      "name": "manifest.public.json",
+      "sha256": "411145f88dc7f825a0fba802fe85255f609ebb297946195b35f6eb2be76ce1f5"
+    }
+  ],
+  "stdin_sha256": "e228b0afaa00188fb8a855f04dcf7368b068dc865059b9e2660552cc423919e9",
+  "timeout_seconds": 90
+}

@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-S\",\n      \"-B\",\n      \"-\"\n    ],\n    \"created_unix_ms\": 1793995509352,\n    \"cwd\": \"/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1\",\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"pocket4\",\n    \"id\": \"1a1b2770e68-fc05-7e1e\",\n    \"idempotency_key\": \"pocket4-current4b-producer-static-abi-capture-20261106-r1\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/alex/.local/state/hepta-runtime-mac-worker/jobs/1a1b2770e68-fc05-7e1e\",\n    \"request_digest\": \"09c13a88d777cceee9f74f3e22d674146d32cf71868d828aa566083b935468e0\",\n    \"request_fingerprint\": 702907376251423982,\n    \"ssh_target\": \"hepta-pocket4\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b2770e68-fc05-7e1e\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1b2770e68-fc05-7e1e\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

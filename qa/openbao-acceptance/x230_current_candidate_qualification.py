@@ -271,6 +271,29 @@ def load_abi_guards(dr):
     return modules["x230_native_abi_capture"], modules["x230_native_abi_admission"], pins
 
 
+def canonical_static_compatibility(value):
+    """Preserve every requirement row while ignoring discovery-only row order."""
+    need(type(value) is dict and type(value.get("requirements")) is list,
+         "static_compatibility_requirements_shape")
+    rows, identities = value["requirements"], set()
+    for row in rows:
+        need(type(row) is dict and set(row) == {"origin", "provider", "required_versions"}
+             and all(type(row[key]) is str and row[key] for key in ("origin", "provider"))
+             and type(row["required_versions"]) is list and row["required_versions"]
+             and all(type(version) is str and version for version in row["required_versions"]),
+             "static_compatibility_requirement_row_shape")
+        versions = row["required_versions"]
+        need(versions == sorted(versions) and len(versions) == len(set(versions)),
+             "static_compatibility_requirement_versions_exact")
+        identity = (row["origin"], row["provider"])
+        need(identity not in identities, "static_compatibility_requirement_rows_unique")
+        identities.add(identity)
+    # JSON sorts provider object keys, whereas the original collector discovers
+    # recursive providers incrementally. Requirement row order carries no ABI
+    # meaning; all rows, versions and other compatibility fields remain exact.
+    return dict(value, requirements=sorted(rows, key=lambda row: (row["origin"], row["provider"])))
+
+
 def validate_static_admission(value, terminal, job, receipt, capture, parser):
     capture["require_terminal"](terminal, job)
     need(value.get("schema") == "heptabao.current-native-static-abi-capture.v1"
@@ -294,7 +317,9 @@ def validate_static_admission(value, terminal, job, receipt, capture, parser):
     comparison = parser["verify_compatibility"](value["artifacts"], value["providers"],
         expected_artifact_pins=expected, interpreter_path="/lib64/ld-linux-x86-64.so.2",
         interpreter_resolved_path=value["interpreter_pin"]["path"])
-    need(comparison == value.get("compatibility"), "original_static_compatibility_recomputed")
+    need(canonical_static_compatibility(comparison)
+         == canonical_static_compatibility(value.get("compatibility")),
+         "original_static_compatibility_recomputed")
     aliases = value.get("provider_alias_bindings", {})
     candidates = {path for paths in value.get("provider_lookup_candidates", {}).values() for path in paths}
     need(set(value.get("provider_lookup_candidates", {})) == set(value["providers"])

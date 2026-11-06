@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1b275d6b4-fc05-7e18\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b226279746573223a20333939322c20226e61746976655f616269223a20227838365f36342d756e6b6e6f776e2d6c696e75782d676e75222c20226f7574707574223a20222f686f6d652f616c65782f686570746162616f2d6b76322d68612d636f6e76657267656e63652d34626465392d617574686275732d32303236313130362d72312f6e61746976652d6275696c642d70726f6a656374696f6e2d72312f6e61746976652d6275696c642e7075626c69632e6a736f6e222c2022706879736963616c5f68615f7175616c6966696564223a2066616c73652c2022736861323536223a202232353236336161333431643535323535373064613063393530666635313965643830383131306663333031633633666162376231363131303135623766613865222c2022737461747573223a202261637475616c5f636f6d706c657465645f6e6f726d616c3130375f70726f6a6563746564227d0a\",\n    \"eof\": true,\n    \"next_offset\": 348,\n    \"offset\": 0,\n    \"size\": 348,\n    \"text\": \"{\\\"bytes\\\": 3992, \\\"native_abi\\\": \\\"x86_64-unknown-linux-gnu\\\", \\\"output\\\": \\\"/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/native-build-projection-r1/native-build.public.json\\\", \\\"physical_ha_qualified\\\": false, \\\"sha256\\\": \\\"25263aa341d5525570da0c950ff519ed808110fc301c63fab7b1611015b7fa8e\\\", \\\"status\\\": \\\"actual_completed_normal107_projected\\\"}\\n\"\n  }\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

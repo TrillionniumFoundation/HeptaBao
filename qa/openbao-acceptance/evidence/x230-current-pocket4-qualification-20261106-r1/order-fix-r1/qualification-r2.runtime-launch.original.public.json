@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-S\",\n      \"-B\",\n      \"-\"\n    ],\n    \"created_unix_ms\": 1793997208798,\n    \"cwd\": \"/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1\",\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"x230\",\n    \"id\": \"1a1b290fcde-fc05-7eaa\",\n    \"idempotency_key\": \"x230-current-pocket4-4bde9-full31-api69-20261106-r2\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qian/.local/state/hepta-runtime-mac-worker/jobs/1a1b290fcde-fc05-7eaa\",\n    \"request_digest\": \"4cbb0b73930982c14d1da6286f884a377461347f3949bbc7d754618d5a62ffaa\",\n    \"request_fingerprint\": 5529025558543434433,\n    \"ssh_target\": \"x230-ts\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b290fcde-fc05-7eaa\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1b290fcde-fc05-7eaa\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

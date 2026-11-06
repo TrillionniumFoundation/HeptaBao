@@ -1,0 +1,54 @@
+{
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "-"
+  ],
+  "capture_argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-S",
+    "-B",
+    "/home/qian/heptabao-current-4bde9-static-abi-20261106-r1/current-pocket4-capture-r1/x230_native_abi_capture.py",
+    "--manifest",
+    "/home/qian/heptabao-current-4bde9-static-abi-20261106-r1/current-pocket4-capture-r1/manifest.public.json",
+    "--manifest-sha256",
+    "49a4fc7b83a7f33bb1af0d56ab68d33493b39dcb1b7edb8d0327b2f7a666e39b"
+  ],
+  "cwd": "/home/qian/heptabao-current-4bde9-static-abi-20261106-r1",
+  "executable": "/usr/bin/python3",
+  "host": "x230",
+  "idempotency_key": "x230-current-pocket4-4bde9-receiver-static-abi-capture-20261106-r1",
+  "manifest_sha256": "49a4fc7b83a7f33bb1af0d56ab68d33493b39dcb1b7edb8d0327b2f7a666e39b",
+  "output_root": "/home/qian/heptabao-current-4bde9-static-abi-20261106-r1/current-pocket4-capture-r1",
+  "source_pins": [
+    {
+      "bytes": 22881,
+      "name": "x230_native_abi_capture.py",
+      "sha256": "3f49130cc7dbf5c1a9bde8e0a83d26a7280d41eb59b03fb9c5f48a0dc7a1cd63"
+    },
+    {
+      "bytes": 14323,
+      "name": "x230_native_abi_admission.py",
+      "sha256": "1b6594238cfaf26a2411ec422a858f9958626c98e2d5dece8464f24ee8ed73b4"
+    },
+    {
+      "bytes": 37794,
+      "name": "producer-abi.result.original.public.json",
+      "sha256": "d19c0efdebc27940a56ddef6c5ced9ff68bcc23465c2730d07d396fc915d1b4f"
+    },
+    {
+      "bytes": 729,
+      "name": "producer-abi.terminal.exact-tool-text.json",
+      "sha256": "0f71a30b723ec5a58882d95bfbe88395553c97f4cd038058bdbc10cdf32e6051"
+    },
+    {
+      "bytes": 2136,
+      "name": "manifest.public.json",
+      "sha256": "49a4fc7b83a7f33bb1af0d56ab68d33493b39dcb1b7edb8d0327b2f7a666e39b"
+    }
+  ],
+  "stdin_sha256": "f45155c215039ec942f9e63d73d92cf0225f8d63d26ca604561d4938b193db39",
+  "timeout_seconds": 90
+}

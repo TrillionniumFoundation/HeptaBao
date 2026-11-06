@@ -9,7 +9,7 @@ The actual SDK attempt **failed**. This directory preserves that result; it does
 - The inline capture's original child exited 0, its three inner children closed, and four exact full9 source observations passed. The controller read real expired credential inputs privately; those values and their digests are absent from this archive.
 - Normal canonical 4bde9 service ownership was established. The seed command PID 38400 then exited from signal 6; both retained private output files were independently verified empty.
 - No business HTTP request or actual SDK worker was dispatched. The SDK phase has no successful business denominator.
-- Original cleanup retired service PID 38306, then booted out the exact QA label. Every original helper outcome and wait/stream/group closure was known.
+- Original cleanup retired service PID 38306, then booted out the exact QA label. All 40 original helper outcomes and wait/stream/group closures were known.
 - Independent job `1a1b242d5e9-fc05-7d39` succeeded 0. In two rounds, exact gui/501 queries returned 113, libproc returned ESRCH for original PID 38306, and no related PID/group/direct-child row was present among 706 process metadata rows.
 - The previous qualification job `1a1b23d619a-fc05-7d1a` passed 173 Python guards, 15 synthetic actual TLS cases, and seven original-plugin pure-function cases. These preliminary counts do not replace the failed actual SDK run.
 
@@ -38,4 +38,4 @@ The inline capture helper in this already executed source still used the earlier
 
 ## Archive status and scope
 
-This checkpoint contains the original runtime launch/terminal/full stdout, independent retirement, the critical seed/final journal rows, and the complete synthetic diagnostic receipts. Remaining journal and full source-readback originals are listed in the immutable map for a later incremental archive. All private credential files and streams remain on the Mac. Provider validity, production client rollback, actual gateway restart, and production traffic cutover remain unqualified.
+This completed runtime-and-diagnosis archive contains the original runtime launch/terminal/full stdout and read pages, independent retirement, all 22 controller journals, all three public launchd events recorded in the original manager inventory, both public inline-capture receipts, five complete staged source-readback batches, and every original crash/four-factor diagnostic receipt. All 22 journal byte counts and SHA-256 values match the original execution inventory. The older partial-checkpoint README is retained separately as README.partial-checkpoint.md. archive-verification.public.json is a recomputation from originals, not a new campaign. All private credential files and streams remain on the Mac. Provider validity, production client rollback, actual gateway restart, and production traffic cutover remain unqualified.

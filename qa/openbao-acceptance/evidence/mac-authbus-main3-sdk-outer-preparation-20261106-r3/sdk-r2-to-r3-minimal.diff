@@ -1,0 +1,134 @@
+--- frozen-sdk-r2/build_main3_sdk_outer_r2.py
++++ new-sdk-r3/build_main3_sdk_outer_r3.py
+@@ -6,14 +6,14 @@
+ import ast,base64,difflib,hashlib,json
+ from pathlib import Path
+ 
+-WORK=Path('/workspace/scratch/c9fe536787d9/main3-sdk-outer-r2-work')
++WORK=Path('/workspace/scratch/c9fe536787d9/main3-sdk-outer-r3-work')
+ API=Path('/workspace/scratch/c9fe536787d9/main3-authbus-work')
+ NODE_WORK=Path('/workspace/scratch/c9fe536787d9/main3-sdk-root-work')
+-OUT=WORK/'source-sdk-r2'
+-ROOT='/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r2'
++OUT=WORK/'source-sdk-r3'
++ROOT='/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r3'
+ SDK='/opt/homebrew/lib/node_modules/openclaw'
+ OLD_CAPTURE='/Users/qianqi/heptabao-authbus-main3-api-inline-capsule-20261106-r5'
+-NEW_CAPTURE='/Users/qianqi/heptabao-authbus-main3-sdk-inline-capsule-20261106-r2'
++NEW_CAPTURE='/Users/qianqi/heptabao-authbus-main3-sdk-inline-capsule-20261106-r3'
+ def sha(raw):return hashlib.sha256(raw).hexdigest()
+ def once(text,before,after):
+     assert text.count(before)==1,(before[:100],text.count(before));return text.replace(before,after)
+@@ -24,17 +24,17 @@
+     lines[node.lineno-1:node.end_lineno]=[name+'='+repr(value)+'\n'];return ''.join(lines)
+ def revise(text):
+     for old,new in [
+-      ('mac-authbus-main3-api-preparation-20261106-r5','mac-authbus-main3-sdk-preparation-20261106-r2'),
+-      ('mac-authbus-main3-api-journal-20261106-r5','mac-authbus-main3-sdk-journal-20261106-r2'),
+-      ('mac-authbus-main3-api-20261106-r5','mac-authbus-main3-sdk-20261106-r2'),
+-      ('main3-api-inline-capture-20261106-r5','main3-sdk-inline-capture-20261106-r2'),
++      ('mac-authbus-main3-api-preparation-20261106-r5','mac-authbus-main3-sdk-preparation-20261106-r3'),
++      ('mac-authbus-main3-api-journal-20261106-r5','mac-authbus-main3-sdk-journal-20261106-r3'),
++      ('mac-authbus-main3-api-20261106-r5','mac-authbus-main3-sdk-20261106-r3'),
++      ('main3-api-inline-capture-20261106-r5','main3-sdk-inline-capture-20261106-r3'),
+       (OLD_CAPTURE,NEW_CAPTURE),
+-      ('heptabao.mac-main3-api-preparation-terminal.r5','heptabao.mac-main3-sdk-preparation-terminal.r2'),
+-      ('heptabao.mac-main3-api-preparation.r5','heptabao.mac-main3-sdk-preparation.r2'),
+-      ('heptabao.mac-main3-api-journal.r5','heptabao.mac-main3-sdk-journal.r2'),
+-      ('heptabao.mac-main3-current-api-qualification.r5','heptabao.mac-main3-current-sdk-qualification.r2'),
+-      ('heptabao.current-sdk-selected-capsule-inline-owned-observation.r5','heptabao.current-sdk-selected-capsule-inline-owned-observation.sdk-r2'),
+-      ('heptabao.current-sdk-selected-capsule-readonly.r5','heptabao.current-sdk-selected-capsule-readonly.sdk-r2'),
++      ('heptabao.mac-main3-api-preparation-terminal.r5','heptabao.mac-main3-sdk-preparation-terminal.r3'),
++      ('heptabao.mac-main3-api-preparation.r5','heptabao.mac-main3-sdk-preparation.r3'),
++      ('heptabao.mac-main3-api-journal.r5','heptabao.mac-main3-sdk-journal.r3'),
++      ('heptabao.mac-main3-current-api-qualification.r5','heptabao.mac-main3-current-sdk-qualification.r3'),
++      ('heptabao.current-sdk-selected-capsule-inline-owned-observation.r5','heptabao.current-sdk-selected-capsule-inline-owned-observation.sdk-r3'),
++      ('heptabao.current-sdk-selected-capsule-readonly.r5','heptabao.current-sdk-selected-capsule-readonly.sdk-r3'),
+     ]:text=text.replace(old,new)
+     return text
+ 
+@@ -61,7 +61,7 @@
+   'CAPTURE_REGISTRY_SHA':sha(payload['registryChild'].encode()),'CAPTURE_PAYLOAD_SHA':sha(payload_raw)}
+ helper=sources['main3_inline_capture.py']
+ for name,value in capture_pins.items():helper=assignment(helper,name,value)
+-helper=assignment(helper,'OPERATION_KEY','heptabao-mac-authbus-main3-sdk-inline-capture-20261106-r2')
++helper=assignment(helper,'OPERATION_KEY','heptabao-mac-authbus-main3-sdk-inline-capture-20261106-r3')
+ sources['main3_inline_capture.py']=helper
+ 
+ assets={}
+@@ -155,11 +155,11 @@
+ for name,text in sources.items():ast.parse(text);(OUT/name).write_text(text)
+ for name,text in assets.items():
+     target=WORK/'assets'/name;target.parent.mkdir(parents=True,exist_ok=True);target.write_text(text)
+-(WORK/'prepare_main3_sdk_r2.bound.py').write_text(preparer)
++(WORK/'prepare_main3_sdk_r3.bound.py').write_text(preparer)
+ bundle={'sources':sources,'assets':assets,'preparerSource':preparer}
+ raw=json.dumps(bundle,separators=(',',':')).encode();assert len(raw)<=1048576
+-(WORK/'staging-sdk-r2.public.json').write_bytes(raw)
+-result={'schema':'heptabao.mac-main3-sdk-outer-preparation.r2','status':'prepared-not-executed',
++(WORK/'staging-sdk-r3.public.json').write_bytes(raw)
++result={'schema':'heptabao.mac-main3-sdk-outer-preparation.r3','status':'prepared-not-executed',
+   'sourcePins':source_pins,'assetPins':asset_pins,'capturePins':capture_pins,
+   'preparer':{'bytes':len(preparer.encode()),'sha256':sha(preparer.encode())},
+   'staging':{'bytes':len(raw),'sha256':sha(raw)},'canonicalProductCommit':manifest['canonicalCommit'],
+@@ -168,14 +168,19 @@
+   'nodeWorkerSourcesUnchanged':False,'nodeWireSourceUnchanged':True,
+   'nodeWorkerOriginalPins':original_worker_pins,'nodeWorkerRootOnlyChanges':scope_only_changes,
+   'installedPluginSourcesUnchanged':True,
+-  'inlineCaptureOperationKey':'heptabao-mac-authbus-main3-sdk-inline-capture-20261106-r2',
+-  'sandboxChange':'only actual-qualified literal directory read chain; no extra subpath, write, network, cwd or environment grant',
+-  'sandboxAuthorityJob':'1a1b254ed7d-fc05-7d90','originalFailedSdkJob':'1a1b23ee0d9-fc05-7d25',
++  'inlineCaptureOperationKey':'heptabao-mac-authbus-main3-sdk-inline-capture-20261106-r3',
++  'sandboxChange':'one actual-qualified SBPL tcp localhost port; kernel local-address scope and original exact IPv4/CA/leaf wire fence are distinct',
++  'kernelIpv4OnlyDestinationClaimed':False,'kernelLocalLanDeniedClaimed':False,
++  'wireEndpointAndTrustCodeUnchanged':True,'localAddressScopeObserved':True,
++  'directoryLiteralAuthorityJob':'1a1b254ed7d-fc05-7d90',
++  'sandboxAuthorityJob':'1a1b27ad919-fc05-7e36',
++  'sandboxAuthorityResultSha256':'9f389465f8df39807c6718a93bf34d1384838e35f76d07bccb60c4008da4ab43',
++  'priorFailedScopeProbeJob':'1a1b271da51-fc05-7e0a','originalFailedSdkJob':'1a1b263a649-fc05-7dda',
+   'productionChanged':False,'providerCalled':False,'productionRollbackQualified':False,
+   'actualMacSdkQualified':False,'privateDigestOutputOnly':True}
+-(WORK/'manifest-sdk-r2.public.json').write_text(json.dumps(result,indent=2)+'\n')
++(WORK/'manifest-sdk-r3.public.json').write_text(json.dumps(result,indent=2)+'\n')
+ diff=''.join(''.join(difflib.unified_diff(base['sources'].get(name,'').splitlines(True),text.splitlines(True),
+-  fromfile='retained-api-r5/'+name,tofile='new-sdk-r2/'+name))
++  fromfile='retained-api-r5/'+name,tofile='new-sdk-r3/'+name))
+   for name,text in sources.items() if not name.startswith('main3_capture_payload_'))
+-(WORK/'sdk-r2.derivation.diff').write_text(diff)
+-print(json.dumps({'sources':len(sources),'assets':len(assets),'bundleBytes':len(raw),'manifest':str(WORK/'manifest-sdk-r2.public.json')}))
++(WORK/'sdk-r3.derivation.diff').write_text(diff)
++print(json.dumps({'sources':len(sources),'assets':len(assets),'bundleBytes':len(raw),'manifest':str(WORK/'manifest-sdk-r3.public.json')}))
+--- frozen-sdk-r2/main3_sdk_phase.py
++++ new-sdk-r3/main3_sdk_phase.py
+@@ -14,7 +14,7 @@
+ from main3_source_authority import SDK_SOURCE_PINS
+ from main3_sdk_public_pins import ASSET_PINS,SDK_EXTRA_PINS,NODE_SHA,MOUNT_SHA
+ 
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r2')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r3')
+ STATE=ROOT/'state';SDK=Path('/opt/homebrew/lib/node_modules/openclaw')
+ NODE='/opt/homebrew/Cellar/node/25.9.0_1/bin/node'
+ AGENTS=('main','trnm','hepta-ui','hepta','hepta-backend')
+@@ -60,7 +60,10 @@
+                       '(allow file-write* (subpath '+json.dumps(str(ROOT/phase))+'))']
+         for item in (ROOT/'server/tls/server.crt',ROOT/'server/private/sdk-role-id',ROOT/'server/private/sdk-secret-id'):
+             lines.append('(allow file-read* (literal '+json.dumps(str(item))+'))')
+-        lines.append('(allow network-outbound (remote ip '+json.dumps('127.0.0.1:'+str(port))+'))')
++        # Actual SBPL allows one port across this machine's local addresses.
++        # The original wire separately pins IPv4 127.0.0.1, CA and leaf identity.
++        # This is not a claim of a kernel-only IPv4 destination restriction.
++        lines.append('(allow network-outbound (remote tcp '+json.dumps('localhost:'+str(port))+'))')
+     for item in ('/dev/null','/dev/urandom','/dev/random'):
+         lines.append('(allow file-read* (literal '+json.dumps(item)+'))')
+     lines.append('(allow file-write* (literal "/dev/null"))')
+--- frozen-sdk-r2/main3_sdk_seed_r1.mjs
++++ new-sdk-r3/main3_sdk_seed_r1.mjs
+@@ -8,7 +8,7 @@
+ import net from 'node:net';
+ import {fileURLToPath} from 'node:url';
+ 
+-const ROOT='/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r2';
++const ROOT='/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r3';
+ const INDEX_SHA='b19b6a9e7c1d57ccef8d67994ed3421891788ac30a82ff6bad2eef2ef7e30f9b';
+ const hash=raw=>crypto.createHash('sha256').update(raw).digest('hex');
+ const need=(value,code)=>{if(!value)throw Object.assign(new Error(code),{safeCode:code});};

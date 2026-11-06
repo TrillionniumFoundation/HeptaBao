@@ -1,0 +1,26 @@
+{
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "-"
+  ],
+  "cwd": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1",
+  "executable": "/usr/bin/python3",
+  "host": "x230",
+  "idempotency_key": "x230-current-pocket4-4bde9-independent-source-preparation-20261106-r1",
+  "source_pins": [
+    {
+      "bytes": 28442,
+      "name": "owned_process.py",
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0"
+    },
+    {
+      "bytes": 10203,
+      "name": "prepare_current_source_x230.py",
+      "sha256": "8d2b66c6e00e92f1e4407e054fc51549ee8c288fbf5e7311d98f2c5827ce71fa"
+    }
+  ],
+  "stdin_sha256": "fa6e5250c0316e14bd6db0316c2db0f32ef4037076c45458aebb36edf2d28f9c",
+  "timeout_seconds": 330
+}

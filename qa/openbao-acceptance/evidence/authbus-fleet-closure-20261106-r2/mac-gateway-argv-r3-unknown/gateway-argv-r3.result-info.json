@@ -1,0 +1,13 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "remote helper on hepta-mac-local failed with 1\nstdout:\n\nstderr:\nFileNotFoundError: [Errno 2] No such file or directory: 'heptabao-authbus-current-gateway-argv-20261106-r3'"
+    }
+  ],
+  "structuredContent": {
+    "error_code": "INVALID_ARGUMENT"
+  },
+  "isError": true
+}
+

@@ -1,0 +1,20 @@
+{
+  "actual_new_qualification_passed": false,
+  "api_comparison_case_count": 69,
+  "controller_sha256": "abb8adee9483696df7e38369dbb0436cd578721d4b6bde18a06dd0218ee1e0d0",
+  "fixture_source_receipt_unchanged": true,
+  "full34_check_count": 31,
+  "http_seconds": 15,
+  "local_tests_passed": 36,
+  "mac_runtime_window_pending": true,
+  "migration_seconds": 360,
+  "new_control_root": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/control-r2",
+  "new_output_root": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/qualification-r2",
+  "outer_watchdog_seconds": 1800,
+  "previous_admitted": false,
+  "previous_job_id": "1a1b287b00e-fc05-7e71",
+  "previous_product_executions": 0,
+  "previous_terminal": "failed",
+  "schema": "heptabao.x230-order-only-qualification-successor-preparation.v1",
+  "status": "prepared_not_dispatched"
+}
