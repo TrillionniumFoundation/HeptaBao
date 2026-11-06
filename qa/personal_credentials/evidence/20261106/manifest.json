@@ -94,9 +94,57 @@
       "transformation": "none; byte-identical original public receipt"
     },
     {
+      "file": "browser-worker64.public.json",
+      "sha256": "6882ce5229e94a9e604151585bf0eb0aaee23ac68cdc36250446b6b1adcf2900",
+      "bytes": 928,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "github-ci-e6d7871-build.public.json",
+      "sha256": "bb5bb7c2b31e3df77bc5d1bc97226c053ba29b5e4d37b691eebc2919ea8dadb4",
+      "bytes": 1846,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "github-ci-e6d7871-native-backpressure.public.json",
+      "sha256": "3ce6329b05c047c46254c490e00f5e25c33bbe52899abc704419f75da098cd8b",
+      "bytes": 1926,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "github-ci-e6d7871-result.public.json",
+      "sha256": "94d66a19def9efb595a6aa18ed3ac65c32f7d63b807ba210cb5e335bc022fee9",
+      "bytes": 1913,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
       "file": "native-backpressure-fixed.public.json",
       "sha256": "7b3ccd812f2446b081e9cf91589ab259ee0c32c427c63e078feeda6a2416dbde",
       "bytes": 1922,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "passkey-rp-http-21-r2.public.json",
+      "sha256": "4f87ee4f680132de137d01147b7135d9009038e6f4800b3455d0a8eff0dfcce8",
+      "bytes": 2390,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "passkey-rp-remote-openssl-68-r2.public.json",
+      "sha256": "299aa6283a43461f450bda9edc724a2aa67f4a0850f585888f474b4542a80f98",
+      "bytes": 4770,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "passkey-rp-selftest-cryptography.public.json",
+      "sha256": "d44c4ce3254acb9e811b51717661df1ae6dcd42c0abff872b00c21de28a2c8f7",
+      "bytes": 4719,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "passkey-rp-selftest-openssl.public.json",
+      "sha256": "874917df971de3b3d1e632fb9b65e9ee9db487ee21d8fd1ae43b363ec7cf3831",
+      "bytes": 4768,
       "transformation": "none; byte-identical original public receipt"
     },
     {

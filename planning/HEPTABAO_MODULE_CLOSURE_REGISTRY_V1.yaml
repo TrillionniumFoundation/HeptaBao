@@ -7,6 +7,27 @@ required_sections:
 - Acceptance evidence
 - Known gaps and evolution
 modules:
+- crate: heptabao-credential-broker
+  dossier: docs/module-closure/heptabao-credential-broker.md
+  guide: docs/modules/heptabao-credential-broker.md
+  source: crates/heptabao-credential-broker/src
+  test_anchor: null
+  test_anchor_path: null
+  state: IMPLEMENTED_REVIEW_REQUIRED
+- crate: heptabao-personal-edge
+  dossier: docs/module-closure/heptabao-personal-edge.md
+  guide: docs/modules/heptabao-personal-edge.md
+  source: crates/heptabao-personal-edge/src
+  test_anchor: exact_https_origin_only
+  test_anchor_path: crates/heptabao-personal-edge/src/lib.rs
+  state: IMPLEMENTED_REVIEW_REQUIRED
+- crate: heptabao-personal-vault
+  dossier: docs/module-closure/heptabao-personal-vault.md
+  guide: docs/modules/heptabao-personal-vault.md
+  source: crates/heptabao-personal-vault/src
+  test_anchor: readback_fault_after_publication_is_unknown_and_not_replayed
+  test_anchor_path: crates/heptabao-personal-vault/src/filesystem.rs
+  state: IMPLEMENTED_REVIEW_REQUIRED
 - crate: heptabao-darwin-vnode-events
   dossier: docs/module-closure/heptabao-darwin-vnode-events.md
   guide: docs/modules/heptabao-darwin-vnode-events.md

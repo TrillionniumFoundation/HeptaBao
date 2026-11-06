@@ -4,7 +4,7 @@ Status: `V2.1 / RUNNABLE SINGLE-NODE CANDIDATE UNDER REVIEW`
 
 Plan ID: `HEPTABAO-PLAN-2026-09-07-V2.1`
 
-This is the current technical entry point for all 49 workspace packages (**49 packages**). It records repository implementation truth but grants no compatibility, qualification, production, migration or release authority.
+This is the current technical entry point for all 52 workspace packages (**52 packages**). It records repository implementation truth but grants no compatibility, qualification, production, migration or release authority.
 
 The root `README.md` remains intentionally empty, preserving the public-homepage
 change on main. Engineering navigation, package counts, exact state-format
@@ -38,7 +38,7 @@ The exact Git commit and tree outrank generated status prose.
 - `docs/architecture/HEPTABAO_CURRENT_STATE_FORMAT.md` — the current discriminator, legacy read admission, commit promotion and rollback boundaries.
 
 - `docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md` — actual runtime dependency closure and internal state owners.
-- `docs/modules/CURRENT_RUNTIME_MAP.md` — all 49 packages mapped to runtime integration, routes and named source tests.
+- `docs/modules/CURRENT_RUNTIME_MAP.md` — all 52 packages mapped to runtime integration, routes and named source tests.
 
 The following retained increment/target documents describe their own historical or library scope:
 
@@ -57,7 +57,7 @@ Current source authority is the exact Git commit/tree exercised by CI. `planning
 Read `docs/modules/CURRENT_SOURCE_BINDING.md` before using inherited V1.4.7
 source tables; those tables are historical, not current API inventories.
 
-- `docs/modules/README.md` — complete index for all 49 workspace packages.
+- `docs/modules/README.md` — complete index for all 52 workspace packages.
 - `docs/modules/MODULE_DOCUMENTATION_STANDARD_V3.md` — current semantic standard.
 - `planning/HEPTABAO_MODULE_CLOSURE_REGISTRY_V1.yaml` and `docs/module-closure/` —
   one source-bound design, boundary, failure-semantics and acceptance dossier
@@ -66,6 +66,32 @@ source tables; those tables are historical, not current API inventories.
 - `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md` — shared engineering contracts.
 
 Every package has exactly one guide. The validators check package, lockfile, source, guide, matrix and test surfaces as one set, reject API sections made solely of historical generated tables, and check the runtime dependency map and current critical API signatures. This is a drift guard, not automatic proof that all prose is semantically complete.
+
+## Personal credentials and edge candidates
+
+- `docs/modules/heptabao-credential-broker.md` — synthetic numeric-loopback API
+  operations and Git SSHSIG signing with exact-request grants and durable
+  unknown-result handling. Task/run labels remain trusted-owner assertions;
+  same-UID isolation and attested HeptaRuntime task identity are not implemented.
+- `docs/modules/heptabao-personal-vault.md` — offline encrypted login, note and API
+  entries, password/TOTP generation, explicit exchange and backup/recovery.
+- `docs/modules/heptabao-personal-edge.md` — Chromium native messaging with page,
+  popup, focus and lease checks, plus a separate opaque-snapshot CAS store that
+  rejects conflicting updates and retains committed historical versions.
+
+These three packages are separately executed clients/tools. They bring the
+workspace to 52 packages while leaving the server runtime dependency closure at
+12 packages; they do not add server HTTP routes. The sync CLI does not provide
+remote transport authorization, and the Rust crate tests do not qualify Android
+Autofill, Passkey providers or additional browsers. Independent security review,
+upgrade/rollback and long-term production operation remain separate gates.
+
+`qa/personal_credentials/P0_STATUS.md` records the selected server verification
+scope. `qa/personal_credentials/evidence/20261106/manifest.json` indexes retained
+public synthetic receipts, including failures, with their own source, binary,
+harness and environment bindings. Worker mocks, native processes, a real browser
+and physical devices are distinct evidence scopes. Neither those receipts nor
+public CI results automatically qualify a later candidate or grant P5 authority.
 
 ## Runnable single-node increment
 
@@ -270,8 +296,8 @@ The V1.4.6 authoritative recovery closure and V1.4.5 security invariant closure 
 - `docs/engines/HEPTABAO_SSH_OTP.md`: online OTP issuance/verification and scoped registered lease lifecycle.
 - `clients/python/README.md`: installable real HTTPS SDK and explicit private-output CLI.
 
-These extend the existing source owner without changing the 47 Cargo-package
-count. The fixed compatibility corpus remains separate from selected new official
+These extend the existing source owner without adding Cargo packages; the current
+workspace count is recorded above. The fixed compatibility corpus remains separate from selected new official
 binary profiles. Source/test presence and local fixture execution do not establish
 full compatibility, multi-platform/host safety, independent acceptance or release.
 
