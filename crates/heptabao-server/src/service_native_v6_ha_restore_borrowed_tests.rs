@@ -73,6 +73,8 @@ fn pending_restore(
             Err(format!("historical admission HTTP {}", response.status).into())
         }
         NativeSnapshotAdmission::Redirect(_) => Err("selected leader redirected restore".into()),
+        #[cfg(feature = "native-v6-ha")]
+        NativeSnapshotAdmission::Forward(_) => Err("selected leader forwarded restore".into()),
     }
 }
 

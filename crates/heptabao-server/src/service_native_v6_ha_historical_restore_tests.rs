@@ -33,6 +33,10 @@ fn admit_with_query(
         NativeSnapshotAdmission::Redirect(_) => {
             Err("selected historical restore leader redirected".into())
         }
+        #[cfg(feature = "native-v6-ha")]
+        NativeSnapshotAdmission::Forward(_) => {
+            Err("selected historical restore leader forwarded".into())
+        }
     }
 }
 fn activate(pipeline: &Pipeline, leader: usize) -> TestResult<StateIdentity> {

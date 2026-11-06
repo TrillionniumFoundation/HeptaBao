@@ -375,6 +375,8 @@ fn snapshot(
         )
         .into()),
         NativeSnapshotAdmission::Redirect(_) => Err("unexpected single-node redirect".into()),
+        #[cfg(feature = "native-v6-ha")]
+        NativeSnapshotAdmission::Forward(_) => Err("unexpected single-node forward".into()),
     }
 }
 

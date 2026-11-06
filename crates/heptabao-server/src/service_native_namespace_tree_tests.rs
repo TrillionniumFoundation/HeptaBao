@@ -127,6 +127,8 @@ fn snapshot(
             Ok((response, None))
         }
         NativeSnapshotAdmission::Redirect(_) => Err("formal File snapshot redirected".into()),
+        #[cfg(feature = "native-v6-ha")]
+        NativeSnapshotAdmission::Forward(_) => Err("formal File snapshot forwarded".into()),
     }
 }
 

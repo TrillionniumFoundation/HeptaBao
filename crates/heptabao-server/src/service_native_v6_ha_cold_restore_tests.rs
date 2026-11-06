@@ -214,6 +214,10 @@ fn force_restore(pipeline: &Pipeline, leader: usize, bytes: &[u8]) -> TestResult
         NativeSnapshotAdmission::Redirect(_) => {
             return Err("cold force selected leader redirected".into());
         }
+        #[cfg(feature = "native-v6-ha")]
+        NativeSnapshotAdmission::Forward(_) => {
+            return Err("cold force selected leader forwarded".into());
+        }
     };
     drop(writer);
     let (observation, output) = pending.execute_snapshot_transfer(&mut &bytes[..]);

@@ -217,6 +217,8 @@ fn transfer(
             Ok((response, None))
         }
         NativeSnapshotAdmission::Redirect(_) => Err("standalone snapshot redirected".into()),
+        #[cfg(feature = "native-v6-ha")]
+        NativeSnapshotAdmission::Forward(_) => Err("standalone snapshot forwarded".into()),
     }
 }
 fn download(service: &mut Service, token: &str) -> TestResult<Zeroizing<Vec<u8>>> {

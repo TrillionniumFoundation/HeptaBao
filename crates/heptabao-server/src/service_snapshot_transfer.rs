@@ -1106,6 +1106,11 @@ impl Service {
                 501,
                 "fixture refuses a redirected native upload",
             )),
+            #[cfg(feature = "native-v6-ha")]
+            NativeSnapshotAdmission::Forward(_) => Err(Response::error(
+                501,
+                "fixture refuses a forwarded native upload",
+            )),
         }
     }
 

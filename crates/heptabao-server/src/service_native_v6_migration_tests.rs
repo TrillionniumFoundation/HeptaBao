@@ -279,6 +279,10 @@ fn snapshot_request(
         NativeSnapshotAdmission::Redirect(_) => {
             Err("isolated snapshot unexpectedly redirected".into())
         }
+        #[cfg(feature = "native-v6-ha")]
+        NativeSnapshotAdmission::Forward(_) => {
+            Err("isolated snapshot unexpectedly forwarded".into())
+        }
     }
 }
 

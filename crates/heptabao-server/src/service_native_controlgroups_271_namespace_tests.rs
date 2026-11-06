@@ -125,6 +125,8 @@ fn pending_snapshot(
             Err(format!("actual child snapshot admission status={}", response.status).into())
         }
         NativeSnapshotAdmission::Redirect(_) => Err("File snapshot unexpectedly redirected".into()),
+        #[cfg(feature = "native-v6-ha")]
+        NativeSnapshotAdmission::Forward(_) => Err("File snapshot unexpectedly forwarded".into()),
     }
 }
 
