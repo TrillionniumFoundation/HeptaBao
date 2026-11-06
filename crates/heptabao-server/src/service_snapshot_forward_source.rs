@@ -58,8 +58,7 @@ impl Service {
             return Err(heptabao_ha_service::HaError::PeerAuthenticationFailed);
         }
         let execution = {
-            let mut writer = service
-                .lock_for_request()
+            let mut writer = crate::request_deadline::lock_until(service.as_ref(), deadline)
                 .map_err(|_| heptabao_ha_service::HaError::Transport)?;
             if !writer.native_ha_snapshot_transport_enabled()
                 || writer
@@ -102,16 +101,14 @@ impl Service {
             RequestExecution::External(pending) => pending,
         };
         let admitted = {
-            let mut writer = service
-                .lock_for_request()
+            let mut writer = crate::request_deadline::lock_until(service.as_ref(), deadline)
                 .map_err(|_| heptabao_ha_service::HaError::Transport)?;
             writer.snapshot_peer_admission(&pending, &request, &metadata, operation)
         };
         let admitted = match admitted {
             Ok(admitted) => admitted,
             Err(error) => {
-                let response = service
-                    .lock_for_request()
+                let response = crate::request_deadline::lock_until(service.as_ref(), deadline)
                     .map_err(|_| heptabao_ha_service::HaError::Transport)?
                     .finish_external_request(
                         *pending,
@@ -143,8 +140,7 @@ impl Service {
         // error must still take the original failure finalizer, never complete.
         if !matches!(&result, ExternalEffectResult::SnapshotTransfer(Ok(_))) {
             drop(file);
-            let response = service
-                .lock_for_request()
+            let response = crate::request_deadline::lock_until(service.as_ref(), deadline)
                 .map_err(|_| heptabao_ha_service::HaError::Transport)?
                 .finish_external_request(*pending, result);
             return reject(peer, &request, &metadata, response);
@@ -159,8 +155,7 @@ impl Service {
         let mut file = match prepared_file {
             Ok(file) => file,
             Err(error) => {
-                let response = service
-                    .lock_for_request()
+                let response = crate::request_deadline::lock_until(service.as_ref(), deadline)
                     .map_err(|_| heptabao_ha_service::HaError::Transport)?
                     .finish_external_request(
                         *pending,
@@ -174,8 +169,7 @@ impl Service {
             wire::BodyDescriptor::empty,
             file::SealedSnapshotFile::descriptor,
         );
-        let completion = service
-            .lock_for_request()
+        let completion = crate::request_deadline::lock_until(service.as_ref(), deadline)
             .map_err(|_| heptabao_ha_service::HaError::Transport)?
             .finish_snapshot_peer_request(*pending, result, &admitted, &verified, downloaded);
         let (status, completion) = match completion {

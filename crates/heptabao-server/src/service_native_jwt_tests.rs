@@ -424,18 +424,13 @@ fn native_jwt_local_service_token_identity_renewal_and_cold_reopen() -> TestResu
 }
 
 #[test]
-fn native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta() -> TestResult {
+fn native_jwt_rejects_remote_and_bad_signature_without_candidate_delta() -> TestResult {
     let mut f = Fixture::new()?;
     for (path, body) in [
         (
             CONFIG,
             json!({"issuer":"https://native-jwt.example","audiences":["native"],
         "jwks_url":"https://remote-issuer.invalid/keys"}),
-        ),
-        (ROLE, json!({"token_type":"batch"})),
-        (
-            "sys/auth/native-jwt/tune",
-            json!({"token_type":"default_batch"}),
         ),
     ] {
         let before = f.snapshot()?;
@@ -1361,5 +1356,284 @@ fn native_jwt_root_role_configuration_is_stored_but_never_issued_or_retroactivel
     status(&looked, 200);
     assert_eq!(looked.body["data"]["policies"], json!(["default", "native-jwt"]));
     erase_json(&mut looked.body);
+    Ok(())
+}
+
+
+// Native JWT batch coverage. Every credential below comes through the real
+// local signature verifier, Identity finalizer, File V6 writer and audit path.
+fn native_jwt_service_row_count(f: &Fixture) -> TestResult<usize> {
+    let state = f.service.state.as_ref().ok_or("native state")?;
+    let bytes = owner_store::serialize_owner(&state.auth).map_err(|_| "Auth projection")?;
+    let mut auth: Value = serde_json::from_slice(&bytes)?;
+    let count = auth["tokens"].as_object().ok_or("service token map")?.len();
+    erase_json(&mut auth);
+    Ok(count)
+}
+
+fn native_jwt_batch_snapshot(f: &Fixture) -> TestResult<Zeroizing<Vec<u8>>> {
+    let state = f.service.state.as_ref().ok_or("native state")?;
+    let bytes = owner_store::serialize_owner(&state.auth).map_err(|_| "Auth projection")?;
+    let mut auth: Value = serde_json::from_slice(&bytes)?;
+    let base: Value = serde_json::from_slice(f.snapshot()?.as_slice())?;
+    let namespace_bytes = owner_store::serialize_owner(&state.namespaces)
+        .map_err(|_| "Namespace projection")?;
+    let namespaces: Value = serde_json::from_slice(&namespace_bytes)?;
+    let mut projection = json!({
+        "auth_and_identity": base,
+        "batch_authority": auth["batch_authority"].take(),
+        "namespace_batch_registry": auth["namespace_batch_registry"].take(),
+        "namespaces": namespaces
+    });
+    let result = Zeroizing::new(serde_json::to_vec(&projection)?);
+    erase_json(&mut projection);
+    erase_json(&mut auth);
+    Ok(result)
+}
+
+fn native_jwt_batch_login(
+    f: &mut Fixture,
+    assertion: &str,
+) -> TestResult<(Zeroizing<String>, String)> {
+    let mut response =
+        f.actor("", "POST", LOGIN, json!({"role":"client","jwt":assertion}))?;
+    status(&response, 200);
+    assert_eq!(response.body["auth"]["token_type"], "batch");
+    assert_eq!(response.body["auth"]["renewable"], false);
+    assert_eq!(response.body["auth"]["accessor"], "");
+    assert_eq!(response.body["auth"]["metadata"]["role"], "client");
+    let entity = text(&response, "/auth/entity_id")?;
+    let token = secret(&mut response, "/auth/client_token")?;
+    assert!(token.starts_with("hvb."));
+    Ok((token, entity))
+}
+
+#[test]
+fn native_jwt_batch_type_matrix_keeps_identity_and_stateless_grants_across_cold_reopen()
+-> TestResult {
+    for mount_type in ["default-service", "default-batch", "service", "batch"] {
+        for role_type in ["default", "service", "batch"] {
+            let mut f = Fixture::new()?;
+            status(
+                &f.admin("POST", "sys/auth/native-jwt/tune",
+                    json!({"token_type":mount_type}))?,
+                204,
+            );
+            status(&f.admin("POST", ROLE, json!({"token_type":role_type}))?, 204);
+            let batch = mount_type == "batch"
+                || mount_type == "default-service" && role_type == "batch"
+                || mount_type == "default-batch" && role_type != "service";
+            let rows = native_jwt_service_row_count(&f)?;
+            let assertion = f.assertion(f.now + 60);
+            let (first, first_entity) = if batch {
+                native_jwt_batch_login(&mut f, &assertion)?
+            } else {
+                f.login(&assertion)?
+            };
+            let (second, second_entity) = if batch {
+                native_jwt_batch_login(&mut f, &assertion)?
+            } else {
+                f.login(&assertion)?
+            };
+            assert!(first.as_str() != second.as_str());
+            assert_eq!(first_entity, second_entity);
+            assert_eq!(native_jwt_service_row_count(&f)?, rows + 2 * usize::from(!batch));
+            let mut f = f.restart()?;
+            assert_eq!(native_jwt_service_row_count(&f)?, rows + 2 * usize::from(!batch));
+            for token in [&first, &second] {
+                status(&f.actor(token, "GET", "jwt-kv/data/value", json!({}))?, 200);
+                let mut lookup = f.actor(token, "GET", "auth/token/lookup-self", json!({}))?;
+                status(&lookup, 200);
+                assert_eq!(lookup.body["data"]["entity_id"], first_entity);
+                assert_eq!(lookup.body["data"]["path"], LOGIN);
+                erase_json(&mut lookup.body);
+                if batch {
+                    let renewal = f.actor(token, "POST", "auth/token/renew-self", json!({}))?;
+                    status(&renewal, 400);
+                    no_credential(&renewal);
+                }
+            }
+            f.now += 301;
+            for token in [&first, &second] {
+                let expired = f.actor(token, "GET", "jwt-kv/data/value", json!({}))?;
+                status(&expired, 403);
+                no_credential(&expired);
+            }
+        }
+    }
+    Ok(())
+}
+
+#[test]
+fn native_jwt_batch_bad_signature_and_expiry_before_publication_keep_old_issuance_state()
+-> TestResult {
+    let mut f = Fixture::new()?;
+    status(&f.admin("POST", ROLE, json!({"token_type":"batch"}))?, 204);
+    let assertion = f.assertion(f.now + 60);
+    let mut segments = assertion.split('.').map(str::to_owned).collect::<Vec<_>>();
+    segments[2] = URL_SAFE_NO_PAD.encode([0; 64]);
+    let bad = Zeroizing::new(segments.join("."));
+    let before = native_jwt_batch_snapshot(&f)?;
+    let response = f.actor("", "POST", LOGIN, json!({"role":"client","jwt":bad.as_str()}))?;
+    status(&response, 400);
+    no_credential(&response);
+    assert!(before.as_slice() == native_jwt_batch_snapshot(&f)?.as_slice());
+
+    let assertion = f.assertion(f.now + 2);
+    let pause = PublicationPause::once(Duration::from_millis(2100));
+    let response = f.actor("", "POST", LOGIN,
+        json!({"role":"client","jwt":assertion.as_str()}))?;
+    assert!(pause.0.load(Ordering::Acquire));
+    drop(pause);
+    status(&response, 503);
+    no_credential(&response);
+    assert!(before.as_slice() == native_jwt_batch_snapshot(&f)?.as_slice());
+    assert!(f.service.pending_native_auth_delivery.is_none());
+    assert!(!f.service.recovery_required);
+    let mut f = f.restart()?;
+    assert!(before.as_slice() == native_jwt_batch_snapshot(&f)?.as_slice());
+    let fresh = f.assertion(f.now + 60);
+    let (token, _) = native_jwt_batch_login(&mut f, &fresh)?;
+    status(&f.actor(&token, "GET", "jwt-kv/data/value", json!({}))?, 200);
+    Ok(())
+}
+
+#[test]
+fn native_jwt_batch_identity_disable_veto_and_reenable_use_the_real_entity()
+-> TestResult {
+    let mut f = Fixture::new()?;
+    status(&f.admin("POST", ROLE, json!({"token_type":"batch"}))?, 204);
+    let assertion = f.assertion(f.now + 60);
+    let (token, entity) = native_jwt_batch_login(&mut f, &assertion)?;
+    let route = format!("identity/entity/id/{entity}");
+    status(&f.admin("PATCH", &route, json!({"disabled":true}))?, 204);
+    let before = native_jwt_batch_snapshot(&f)?;
+    let response = f.actor("", "POST", LOGIN,
+        json!({"role":"client","jwt":assertion.as_str()}))?;
+    status(&response, 403);
+    no_credential(&response);
+    assert!(before.as_slice() == native_jwt_batch_snapshot(&f)?.as_slice());
+    status(&f.actor(&token, "GET", "jwt-kv/data/value", json!({}))?, 403);
+    status(&f.admin("PATCH", &route, json!({"disabled":false}))?, 204);
+    let (_, again) = native_jwt_batch_login(&mut f, &assertion)?;
+    assert_eq!(again, entity);
+    let mut f = f.restart()?;
+    status(&f.actor(&token, "GET", "jwt-kv/data/value", json!({}))?, 200);
+    Ok(())
+}
+
+#[test]
+fn native_jwt_batch_forced_mount_retains_domain_ttl_and_discards_service_use_limits()
+-> TestResult {
+    for (limits, maximum_ttl) in [
+        (json!({"token_period":30}), 30),
+        (json!({"token_num_uses":2}), 300),
+    ] {
+        let mut f = Fixture::new()?;
+        status(&f.admin("POST", ROLE, limits)?, 204);
+        status(&f.admin("POST", "sys/auth/native-jwt/tune",
+            json!({"token_type":"batch"}))?, 204);
+        let assertion = f.assertion(f.now + 60);
+        let mut response = f.actor("", "POST", LOGIN,
+            json!({"role":"client","jwt":assertion.as_str()}))?;
+        status(&response, 200);
+        assert_eq!(response.body["auth"]["token_type"], "batch");
+        assert_eq!(response.body["auth"]["renewable"], false);
+        let ttl = response.body["auth"]["lease_duration"].as_u64().ok_or("batch TTL")?;
+        assert!(ttl > 0 && ttl <= maximum_ttl);
+        let token = secret(&mut response, "/auth/client_token")?;
+        let mut f = f.restart()?;
+        for _ in 0..4 {
+            status(&f.actor(&token, "GET", "jwt-kv/data/value", json!({}))?, 200);
+        }
+        let renewal = f.actor(&token, "POST", "auth/token/renew-self", json!({}))?;
+        status(&renewal, 400);
+        no_credential(&renewal);
+    }
+    Ok(())
+}
+
+#[test]
+fn native_jwt_batch_no_default_policy_and_root_rejection_survive_cold_reopen()
+-> TestResult {
+    for no_default in [false, true] {
+        let mut f = Fixture::new()?;
+        status(&f.admin("POST", ROLE, json!({
+            "token_type":"batch","token_policies":[],
+            "token_no_default_policy":no_default
+        }))?, 204);
+        let expected = if no_default { json!([]) } else { json!(["default"]) };
+        let rows = native_jwt_service_row_count(&f)?;
+        let assertion = f.assertion(f.now + 60);
+        let mut response = f.actor("", "POST", LOGIN,
+            json!({"role":"client","jwt":assertion.as_str()}))?;
+        status(&response, 200);
+        assert_eq!(response.body["auth"]["token_type"], "batch");
+        assert_eq!(response.body["auth"]["policies"], expected);
+        assert_eq!(response.body["auth"]["token_policies"], expected);
+        let token = secret(&mut response, "/auth/client_token")?;
+        let mut f = f.restart()?;
+        assert_eq!(native_jwt_service_row_count(&f)?, rows);
+        let mut lookup = f.admin("POST", "auth/token/lookup", json!({"token":token.as_str()}))?;
+        status(&lookup, 200);
+        assert_eq!(lookup.body["data"]["policies"], expected);
+        erase_json(&mut lookup.body);
+        status(&f.admin("POST", ROLE, json!({"token_policies":["root"]}))?, 204);
+        let before = native_jwt_batch_snapshot(&f)?;
+        let assertion = f.assertion(f.now + 60);
+        let denied = f.actor("", "POST", LOGIN,
+            json!({"role":"client","jwt":assertion.as_str()}))?;
+        status(&denied, 400);
+        no_credential(&denied);
+        assert!(before.as_slice() == native_jwt_batch_snapshot(&f)?.as_slice());
+        assert_eq!(native_jwt_service_row_count(&f)?, rows);
+    }
+    Ok(())
+}
+
+#[test]
+fn native_jwt_batch_post_commit_audit_response_and_assertion_guards_keep_the_committed_root()
+-> TestResult {
+    for fault in ["audit", "response", "assertion"] {
+        let mut f = Fixture::new()?;
+        status(&f.admin("POST", ROLE, json!({"token_type":"batch"}))?, 204);
+        let expires = f.now + if fault == "assertion" { 2 } else { 60 };
+        let assertion = f.assertion(expires);
+        let (response, clock, _) = f.begin_login(&assertion, Duration::from_secs(15))?;
+        status(&response, 200);
+        assert_eq!(response.body["auth"]["token_type"], "batch");
+        let committed = native_jwt_batch_snapshot(&f)?;
+        if fault == "audit" {
+            f.service.audit_capacity = f.service.audit.metadata()?.len();
+        }
+        let mut response = f.service.audit_completed_response_with_receipt(
+            "native-jwt-batch-original-delivery", f.now, Some(clock), response,
+            || {
+                if fault == "assertion" {
+                    std::thread::sleep(Duration::from_millis(2100));
+                }
+            },
+        );
+        if fault == "audit" {
+            status(&response, 503);
+            assert!(f.service.recovery_required);
+        } else {
+            status(&response, 200);
+            if fault == "response" {
+                response.body["auth"]["metadata"]["role"] = json!("another-role");
+            }
+        }
+        let response = f.service.complete_native_auth_delivery(
+            true, response, "native-jwt-batch-original-delivery",
+        );
+        status(&response, 503);
+        no_credential(&response);
+        assert!(committed.as_slice() == native_jwt_batch_snapshot(&f)?.as_slice());
+        assert!(f.service.pending_native_auth_delivery.is_none());
+        if fault != "audit" {
+            let f = f.restart()?;
+            assert!(committed.as_slice() == native_jwt_batch_snapshot(&f)?.as_slice());
+        }
+    }
     Ok(())
 }
