@@ -51,7 +51,7 @@ impl<'a> SnapshotPeerRequest<'a> {
             || metadata.len() > MAX_PAYLOAD_BYTES
             || server_leaves.is_empty()
             || server_leaves.len() > 2
-            || server_leaves.iter().any(|pin| *pin == [0; 32])
+            || server_leaves.contains(&[0; 32])
             || (server_leaves.len() == 2 && server_leaves[0] == server_leaves[1])
         {
             return Err(HaError::InvalidFrame);
