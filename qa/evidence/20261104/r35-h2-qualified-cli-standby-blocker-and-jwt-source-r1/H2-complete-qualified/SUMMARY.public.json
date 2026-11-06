@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.native-h2-gate.actual-complete-evidence-aggregate.r1",
+  "scope": "One already completed original H2 business job and its exact original public evidence; aggregation is Git only.",
+  "host": "desktop",
+  "job_id": "1a1ae76aacd-fc05-5fb4",
+  "start_attempts": 1,
+  "business_replays": 0,
+  "current_Runtime_calls": 0,
+  "current_native_futures": 0,
+  "lane_released": true,
+  "reported_result": {
+    "blob": "a84e9c899cf23f03a3ebb76d9ce5206ceb2b908c",
+    "bytes": 465570,
+    "sha256": "6b51bc97ea77b2574eab86ddee638c69818773d54211c25bcb8a018c02ca107e"
+  },
+  "root_qualification": {
+    "blob": "98643e27c05bf7ba738f741e298dc8b3cabc15ae",
+    "checks": 121,
+    "passed": 121,
+    "scope": [
+      "H01",
+      "H02",
+      "H03"
+    ],
+    "claimed_full_replacement": false
+  },
+  "original_observers": 11,
+  "original_immutable_pages": 46,
+  "original_read_calls": 68,
+  "result_ranges": 8,
+  "owned_cleanup_records": 114,
+  "observer_original_files": 305,
+  "observer_original_bytes": 3190436,
+  "observer_original_Merkle": 101,
+  "product_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "product_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "instrument_build_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "instrument_build_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "body_cap_bytes": 8388608,
+  "not_34MiB_qualification": true,
+  "not_raw_OpenBao_archive_qualification": true,
+  "not_official_CLI_or_restore_qualification": true,
+  "dynamic_checks_not_a_test_denominator": true,
+  "historical_release_pending_semantic_review": "The unchanged original release predates ROOT-H2-qualification and retains its original pending field. The later root review is separately attached.",
+  "old_Git_create": {
+    "tree": "57bf417be264a07210b8d3a601c7d84354cbf801",
+    "outcome": "UNKNOWN",
+    "not_repeated": true,
+    "does_not_mean_Native_UNKNOWN": true
+  },
+  "explicit_continuation": {
+    "original_578b_page16384_Native_calls_before_continuation": 0,
+    "authorized_unique_Native_call": 1,
+    "original_body0_not_replayed": true,
+    "old_Git_UNKNOWN_not_cleared": true
+  },
+  "local_executor_failure_preserved": true,
+  "observer_SDK_archival_protocol_and_amendments_attached": true,
+  "assembly_validation": "Original blobs and observer packets were previously whole verified; this assembly rechecks all referenced subtree identities/Merkle and then exact final whole tree membership. It does not rerun prior product or author checks."
+}

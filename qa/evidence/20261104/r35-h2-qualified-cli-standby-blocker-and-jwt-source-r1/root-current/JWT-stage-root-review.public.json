@@ -1,0 +1,89 @@
+{
+  "schema": "heptabao.root-native-jwt-rog-source-stage-review.v1",
+  "as_of_UTC": "2026-11-06 03:08:00 UTC",
+  "source_packet": {
+    "tree": "3ca17dba3a401f552af627569d91e14f4344a4db",
+    "files": 8,
+    "bytes": 233587,
+    "merkle": {
+      "root_sha": "3ca17dba3a401f552af627569d91e14f4344a4db",
+      "trees_verified": 6,
+      "leaf_count": 8
+    },
+    "whole": true
+  },
+  "journal_packet": {
+    "tree": "ae9d43535685a4952159747e8bc24703d49b504f",
+    "files": 13,
+    "bytes": 186238,
+    "merkle": {
+      "root_sha": "ae9d43535685a4952159747e8bc24703d49b504f",
+      "trees_verified": 1,
+      "leaf_count": 13
+    },
+    "whole": true
+  },
+  "independent_peer": {
+    "blob": "b81980684cc9d28e427df9cd8f58eb92f61a46a8",
+    "bytes": 5127,
+    "sha256": "c5504a1b54720e8cce8502401d8be3233e5fb75fd206f152977b638117384993",
+    "selected_checks": 81
+  },
+  "checks": [
+    {
+      "name": "stage_strict_six_hunk_forward_reverse",
+      "passed": true
+    },
+    {
+      "name": "journal_strict_three_hunk_forward_reverse",
+      "passed": true
+    },
+    {
+      "name": "exact_request_between_two_packets",
+      "passed": true
+    },
+    {
+      "name": "exact_host_executable_cwd_timeout",
+      "passed": true
+    },
+    {
+      "name": "exact_stager_argument",
+      "passed": true
+    },
+    {
+      "name": "exact_original_control_stdin",
+      "passed": true
+    },
+    {
+      "name": "unchanged_archive_and_pure_helpers",
+      "passed": true
+    },
+    {
+      "name": "unique_native_key",
+      "passed": true
+    },
+    {
+      "name": "journal_JS_syntax_only_no_invocation",
+      "passed": true
+    }
+  ],
+  "source_diff_hunks": 6,
+  "journal_diff_hunks": 3,
+  "journal_literal_replacements": 5,
+  "canonical_stdin_field": "stdin",
+  "native_binding": {
+    "sha256": "cf25a0596615538ba565454b443a661e50cb1daa6b80181e85c580d33e0b3f6b",
+    "native_fingerprint": "14926512845814584203",
+    "canonical_stdin_field": "stdin",
+    "canonical_meta": {
+      "blob": "5fb0917258ebc9a8c957dd70a8a4776aa3451ca4",
+      "bytes": 111516,
+      "sha256": "cf25a0596615538ba565454b443a661e50cb1daa6b80181e85c580d33e0b3f6b"
+    }
+  },
+  "source_controls_compile_only": true,
+  "qualified_product_execution": false,
+  "root_Runtime_calls": 0,
+  "executor_filesystem_used": false,
+  "limits": "Source review only: no Python, formatter, Rust compiler, product or tests were run by root. Actual create-only target, source provenance, fences and owned-child closure remain runtime requirements."
+}

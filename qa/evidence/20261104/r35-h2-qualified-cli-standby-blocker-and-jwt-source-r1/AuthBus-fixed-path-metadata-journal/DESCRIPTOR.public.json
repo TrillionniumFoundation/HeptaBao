@@ -1,0 +1,66 @@
+{
+  "schema": "heptabao.launchd-fixed-path-metadata-gitfirst.source-descriptor.r1",
+  "sourceOnly": true,
+  "runtimeAuthorized": false,
+  "slot": "owner_launchd_path_metadata_gitfirst_r1",
+  "nativeHelper": {
+    "blob": "7155415142bbb38846bcf51748fde86307a5ddaf",
+    "bytes": 19046,
+    "sha256": "b213ba7bfacd158ce105ac29be7a909926b921d712d3f5d241eb7d8dfdf06c91"
+  },
+  "baseHelper": {
+    "blob": "c61872aff6529e34ca89121d5c09702f8d56792c",
+    "bytes": 19027,
+    "sha256": "1aa2e506fd68673b182339194f47b091ec4c2c6b810498d69e2e0dec0970503c"
+  },
+  "archiveHelper": {
+    "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+    "bytes": 5957,
+    "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+  },
+  "pureHelper": {
+    "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+    "bytes": 6685,
+    "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+  },
+  "exactRequest": {
+    "blob": "843965aae4fc29a5d840a1c84c51184dc32ae7ef",
+    "bytes": 14343,
+    "sha256": "76500b2218e329bc76bb8a29bfa485101e4954756f752d0d34cc38869fbc80f0"
+  },
+  "diagnosticSource": {
+    "blob": "01ae2abc5df2fac1b2606455a0233665068df79c",
+    "bytes": 13507,
+    "sha256": "bb9f9e1c6e7b0cb6365cf9647510e533562593dc3714aca468784b22b6699899"
+  },
+  "observerPrefix": "heptabao-mac-owned-launchd-path-metadata-bb9f9e1c-",
+  "literalChangesOnly": [
+    {
+      "before": "const GF_SLOT = \"owner_launchd_gitfirst_r1\";",
+      "after": "const GF_SLOT = \"owner_launchd_path_metadata_gitfirst_r1\";"
+    },
+    {
+      "before": "const GF_REQUEST = {blob:\"d14f62155b86924edd5632673d2e73832f7b0af5\",\n bytes:76816,sha256:\"ab9afbcbbdc150acd11ad9451e35e2785f8fe086d4a371c3a63d4cf0f2a087b4\"};",
+      "after": "const GF_REQUEST = {blob:\"843965aae4fc29a5d840a1c84c51184dc32ae7ef\",\n bytes:14343,sha256:\"76500b2218e329bc76bb8a29bfa485101e4954756f752d0d34cc38869fbc80f0\"};"
+    },
+    {
+      "before": "/^heptabao-mac-owned-launchd-readonly-e573407b-/",
+      "after": "/^heptabao-mac-owned-launchd-path-metadata-bb9f9e1c-/"
+    }
+  ],
+  "hunks": 2,
+  "unchangedAllFunctionBodies": true,
+  "maxOneNativeCallAtATime": true,
+  "originalOperationPageBytes": 8192,
+  "originalProcessReadLimit": 16384,
+  "originalPayloadMaxBytes": 1048576,
+  "workflow": [
+    "Whole exact future root GO and fixed request; initialize only a fresh absent slot.",
+    "gfRun prepare exact START external intent+armed whole; model boundary.",
+    "gfRun invoke exactly once; original SDK Git whole before isError/native interpretation; gfRun accept only then.",
+    "After actual job binding, prepare/invoke/accept original process_status/read observers one at a time, same-ID status and consecutive8192 immutable pages; close original payload whole.",
+    "Any transport or archive error returns normally with pending/paused original state. No retry, replay, new key, automatic unpause, or creating an old expected tree."
+  ],
+  "sourcePacket": "d361caf1f759deaad5b9a85ad9e04369dd0f1248",
+  "notes": "No Native function, initialization or archive action is performed by loading this SOURCE packet. No past context or outcome is changed."
+}

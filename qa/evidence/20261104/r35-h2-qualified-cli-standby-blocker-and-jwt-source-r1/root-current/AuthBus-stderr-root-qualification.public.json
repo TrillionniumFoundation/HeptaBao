@@ -1,0 +1,319 @@
+{
+  "schema": "heptabao.root-authbus-second-readonly-diagnostic-actual-qualification.v1",
+  "packet": {
+    "tree": "718f6d3074cedd52ae8c461830ad4d70729a1ff9",
+    "files": 83,
+    "bytes": 658848,
+    "merkle": {
+      "root_sha": "718f6d3074cedd52ae8c461830ad4d70729a1ff9",
+      "trees_verified": 1,
+      "leaf_count": 83
+    },
+    "whole": true
+  },
+  "actual_job": "mac/1a1aed868b6-fc05-6321",
+  "passed": true,
+  "check_count": 69,
+  "checks": [
+    {
+      "name": "whole_original83",
+      "passed": true
+    },
+    {
+      "name": "ten_original_calls",
+      "passed": true
+    },
+    {
+      "name": "pins_launchd-stderr-start-r1",
+      "passed": true
+    },
+    {
+      "name": "one_armed_launchd-stderr-start-r1",
+      "passed": true
+    },
+    {
+      "name": "SDK_native_launchd-stderr-start-r1",
+      "passed": true
+    },
+    {
+      "name": "pins_launchd-stderr-authority-01-start",
+      "passed": true
+    },
+    {
+      "name": "one_armed_launchd-stderr-authority-01-start",
+      "passed": true
+    },
+    {
+      "name": "SDK_native_launchd-stderr-authority-01-start",
+      "passed": true
+    },
+    {
+      "name": "pins_launchd-stderr-authority-01-status-0",
+      "passed": true
+    },
+    {
+      "name": "one_armed_launchd-stderr-authority-01-status-0",
+      "passed": true
+    },
+    {
+      "name": "SDK_native_launchd-stderr-authority-01-status-0",
+      "passed": true
+    },
+    {
+      "name": "pins_launchd-stderr-authority-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "one_armed_launchd-stderr-authority-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "SDK_native_launchd-stderr-authority-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "pins_launchd-stderr-streams-01-start",
+      "passed": true
+    },
+    {
+      "name": "one_armed_launchd-stderr-streams-01-start",
+      "passed": true
+    },
+    {
+      "name": "SDK_native_launchd-stderr-streams-01-start",
+      "passed": true
+    },
+    {
+      "name": "pins_launchd-stderr-recovered-streams-01-status-0",
+      "passed": true
+    },
+    {
+      "name": "one_armed_launchd-stderr-recovered-streams-01-status-0",
+      "passed": true
+    },
+    {
+      "name": "SDK_native_launchd-stderr-recovered-streams-01-status-0",
+      "passed": true
+    },
+    {
+      "name": "pins_launchd-stderr-recovered-streams-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "one_armed_launchd-stderr-recovered-streams-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "SDK_native_launchd-stderr-recovered-streams-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "pins_launchd-stderr-recovered-streams-01-page-008192",
+      "passed": true
+    },
+    {
+      "name": "one_armed_launchd-stderr-recovered-streams-01-page-008192",
+      "passed": true
+    },
+    {
+      "name": "SDK_native_launchd-stderr-recovered-streams-01-page-008192",
+      "passed": true
+    },
+    {
+      "name": "pins_launchd-stderr-recovered-streams-01-page-016384",
+      "passed": true
+    },
+    {
+      "name": "one_armed_launchd-stderr-recovered-streams-01-page-016384",
+      "passed": true
+    },
+    {
+      "name": "SDK_native_launchd-stderr-recovered-streams-01-page-016384",
+      "passed": true
+    },
+    {
+      "name": "pins_launchd-stderr-recovered-streams-01-page-024576",
+      "passed": true
+    },
+    {
+      "name": "one_armed_launchd-stderr-recovered-streams-01-page-024576",
+      "passed": true
+    },
+    {
+      "name": "SDK_native_launchd-stderr-recovered-streams-01-page-024576",
+      "passed": true
+    },
+    {
+      "name": "one_start_two_observers_five_pages",
+      "passed": true
+    },
+    {
+      "name": "original_exact_START",
+      "passed": true
+    },
+    {
+      "name": "terminal_exit0_full_durable",
+      "passed": true
+    },
+    {
+      "name": "two_closed_original_observers",
+      "passed": true
+    },
+    {
+      "name": "one_original_admission_process_status",
+      "passed": true
+    },
+    {
+      "name": "original_contiguous_pages_authority",
+      "passed": true
+    },
+    {
+      "name": "whole_payload_native_authority",
+      "passed": true
+    },
+    {
+      "name": "actual_inactive_authority",
+      "passed": true
+    },
+    {
+      "name": "one_original_admission_process_read",
+      "passed": true
+    },
+    {
+      "name": "original_contiguous_pages_streams",
+      "passed": true
+    },
+    {
+      "name": "whole_payload_native_streams",
+      "passed": true
+    },
+    {
+      "name": "actual_inactive_streams",
+      "passed": true
+    },
+    {
+      "name": "stream_text_hex_EOF_stdout",
+      "passed": true
+    },
+    {
+      "name": "authority_stream_stdout",
+      "passed": true
+    },
+    {
+      "name": "stream_text_hex_EOF_stderr",
+      "passed": true
+    },
+    {
+      "name": "authority_stream_stderr",
+      "passed": true
+    },
+    {
+      "name": "only_known_two_warnings",
+      "passed": true
+    },
+    {
+      "name": "actual_diagnostic_complete_deadline",
+      "passed": true
+    },
+    {
+      "name": "eleven_new_FDs_closed",
+      "passed": true
+    },
+    {
+      "name": "two_helpers_fully_reaped",
+      "passed": true
+    },
+    {
+      "name": "exact_two_helper_argv",
+      "passed": true
+    },
+    {
+      "name": "held_volume_guard_closed",
+      "passed": true
+    },
+    {
+      "name": "original_plist_exact",
+      "passed": true
+    },
+    {
+      "name": "same_original_print",
+      "passed": true
+    },
+    {
+      "name": "actual_78_failure_literal",
+      "passed": true
+    },
+    {
+      "name": "not_running_one_run_no_pid",
+      "passed": true
+    },
+    {
+      "name": "exact_two_allowed_read_paths",
+      "passed": true
+    },
+    {
+      "name": "public_plist_stable_whole3984",
+      "passed": true
+    },
+    {
+      "name": "stderr_actual_stable_empty",
+      "passed": true
+    },
+    {
+      "name": "cause_not_invented",
+      "passed": true
+    },
+    {
+      "name": "unchanged_finite_budgets",
+      "passed": true
+    },
+    {
+      "name": "original_unknown_nonclosure_preserved",
+      "passed": true
+    },
+    {
+      "name": "no_old_service_mutation_or_private_export",
+      "passed": true
+    },
+    {
+      "name": "old_snapshot_unchanged_still_paused",
+      "passed": true
+    },
+    {
+      "name": "returned_SDK_not_repeated",
+      "passed": true
+    },
+    {
+      "name": "exact_separate_recovery_adoption",
+      "passed": true
+    },
+    {
+      "name": "final_new_context_closed_old_UNKNOWN_kept",
+      "passed": true
+    }
+  ],
+  "findings": {
+    "original_stderr_size": 0,
+    "original_stderr_stable": true,
+    "first_LF_present": false,
+    "startup_cause_qualified": false,
+    "last_exit_code": 78,
+    "last_exit_symbol": "EX_CONFIG",
+    "state": "not running",
+    "runs": 1,
+    "pid_present": false,
+    "new_descriptors_closed": 11,
+    "new_helpers_reaped": 2,
+    "elapsed_seconds": 0.28906512493267655,
+    "original_registration_closed": false,
+    "historical_lineage_unknown_preserved": true,
+    "original_Git_create_unknown_preserved": true,
+    "original_returned_ACK_adopted_without_Native_replay": true,
+    "AppRole_TLS_KV_Policy_renew_revoke_qualified": false
+  },
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0,
+  "as_of_UTC": "2026-11-06 03:41:51 UTC"
+}

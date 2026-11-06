@@ -1,0 +1,160 @@
+{
+  "schema": "heptabao.native-jwt.source-stage.partial.archive-checks.v1",
+  "checks": [
+    {
+      "name": "unique_completed_stage_boundary",
+      "pass": true
+    },
+    {
+      "name": "seven_unique_original_calls",
+      "pass": true
+    },
+    {
+      "name": "jwt-e3af-rog-source-start-r1_arm_whole",
+      "pass": true
+    },
+    {
+      "name": "jwt-e3af-rog-source-start-r1_SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "jwt-e3af-rog-source-start-r1_native_exact",
+      "pass": true
+    },
+    {
+      "name": "jwt-e3af-rog-source-authority0-start-r1_arm_whole",
+      "pass": true
+    },
+    {
+      "name": "jwt-e3af-rog-source-authority0-start-r1_SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "jwt-e3af-rog-source-authority0-start-r1_native_exact",
+      "pass": true
+    },
+    {
+      "name": "jwt-e3af-rog-source-authority0-status0-r1_arm_whole",
+      "pass": true
+    },
+    {
+      "name": "jwt-e3af-rog-source-authority0-status0-r1_SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "jwt-e3af-rog-source-authority0-status0-r1_native_exact",
+      "pass": true
+    },
+    {
+      "name": "jwt-e3af-rog-source-authority0-page0-r1_arm_whole",
+      "pass": true
+    },
+    {
+      "name": "jwt-e3af-rog-source-authority0-page0-r1_SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "jwt-e3af-rog-source-authority0-page0-r1_native_exact",
+      "pass": true
+    },
+    {
+      "name": "jwt-e3af-rog-source-streams0-start-r1_arm_whole",
+      "pass": true
+    },
+    {
+      "name": "jwt-e3af-rog-source-streams0-start-r1_SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "jwt-e3af-rog-source-streams0-start-r1_native_exact",
+      "pass": true
+    },
+    {
+      "name": "jwt-e3af-rog-source-streams0-status0-r1_arm_whole",
+      "pass": true
+    },
+    {
+      "name": "jwt-e3af-rog-source-streams0-status0-r1_SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "jwt-e3af-rog-source-streams0-status0-r1_native_exact",
+      "pass": true
+    },
+    {
+      "name": "jwt-e3af-rog-source-streams0-page0-r1_arm_whole",
+      "pass": true
+    },
+    {
+      "name": "jwt-e3af-rog-source-streams0-page0-r1_SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "jwt-e3af-rog-source-streams0-page0-r1_native_exact",
+      "pass": true
+    },
+    {
+      "name": "original_call_shape",
+      "pass": true
+    },
+    {
+      "name": "process_status_whole_payload",
+      "pass": true
+    },
+    {
+      "name": "process_status_SDK_inner_binding",
+      "pass": true
+    },
+    {
+      "name": "process_status_one_closed_status",
+      "pass": true
+    },
+    {
+      "name": "process_status_one_full_page",
+      "pass": true
+    },
+    {
+      "name": "process_status_page_bytes",
+      "pass": true
+    },
+    {
+      "name": "process_read_whole_payload",
+      "pass": true
+    },
+    {
+      "name": "process_read_SDK_inner_binding",
+      "pass": true
+    },
+    {
+      "name": "process_read_one_closed_status",
+      "pass": true
+    },
+    {
+      "name": "process_read_one_full_page",
+      "pass": true
+    },
+    {
+      "name": "process_read_page_bytes",
+      "pass": true
+    },
+    {
+      "name": "authority_success",
+      "pass": true
+    },
+    {
+      "name": "stdout_lossless_full",
+      "pass": true
+    },
+    {
+      "name": "stderr_lossless_full",
+      "pass": true
+    },
+    {
+      "name": "summary_success_only",
+      "pass": true
+    }
+  ],
+  "passed": 38,
+  "RuntimeCallsByChecker": 0,
+  "fullStageQualification": false
+}

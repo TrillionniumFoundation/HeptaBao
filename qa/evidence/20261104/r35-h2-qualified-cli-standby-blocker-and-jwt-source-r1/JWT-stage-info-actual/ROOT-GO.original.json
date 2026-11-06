@@ -1,0 +1,103 @@
+{
+  "schema": "heptabao.root-GO.JWT-stage-result-fixed-file-info.v1",
+  "authorization": "GO",
+  "scope": "stage_result_file_info_only",
+  "as_of_UTC": "2026-11-06 03:27:13 UTC",
+  "agent": "/root/ha_validation",
+  "original_job": "1a1aed43ac9-fc05-62ec",
+  "maximum_file_info_starts": 1,
+  "binary_read_authorized": false,
+  "exact_request": {
+    "blob": "dbd4063ee0bcadab95c7649ef189e91a99c2402c",
+    "bytes": 301,
+    "sha256": "d3f8d7f67f9677287ff3d2d449446935b33b2d6ecbe3e4afaa1c5cb5a542e8df"
+  },
+  "source_review": {
+    "blob": "0775606cba40d2a6325f2d422a53aeefdc469f25",
+    "bytes": 3049,
+    "sha256": "5fb69c5adbd3850e3f46d16dcd82dc5a359530ba8302148527b89694d2600c3a"
+  },
+  "source_packet": "8436afae1c19e217c6586dd6171703d73c22506b",
+  "candidate": {
+    "blob": "5251b35f820ade2765d2266616b13d1ef1effc48",
+    "bytes": 23872,
+    "sha256": "32f6775ced13cc9e0c614c40e70dd762c25e76340d13bc3e3cdfddac2b342711"
+  },
+  "archive_helper": {
+    "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+    "bytes": 5957,
+    "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+  },
+  "pure_helper": {
+    "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+    "bytes": 6685,
+    "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+  },
+  "existing_context": "jwt_e3af_rog_source_gitfirst_r1",
+  "initialize_again": false,
+  "prerequisites": {
+    "original_transport_packet": "50d59c2855d912d216f774ffeff5542f273a9af6",
+    "root_transport_review": "af19eb9cba2ddf8bc072a8b0d3f9816443cc5c44",
+    "original_authority": "9e366a2a26a5c01b0d60e00554ed4c1257505f63",
+    "original_streams": "382d75800043c8ef7bdec3fa41246e7c36830a79",
+    "original_two_observers_closed": true,
+    "expected_stream_cursors": {
+      "stdout": 370,
+      "stderr": 0
+    }
+  },
+  "path": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/control/stage-result.public.json",
+  "host": "rog",
+  "idempotency_key": "heptabao-native-jwt-e3afc157-rog-source-observe-r1-stage-result-info0",
+  "tool": "file_info",
+  "metadata_admission": {
+    "platform": "linux",
+    "permissionMode": 384,
+    "uid": 1000,
+    "gid": 1000,
+    "linkCount": 1,
+    "sizeMinimum": 1,
+    "sizeMaximum": 150000,
+    "sizeAndSHAAndVersionCurrently": null,
+    "regularFile": "Native file_info contract rejects symlinks and special files; derived full mode is 32768 | permission mode, never a second permission addition."
+  },
+  "sequence": [
+    "Whole this exact GO; gfRun authorize_stage_result_info on existing closed context",
+    "Prepare exact request/intent/armed with this separate GO; external all whole",
+    "Separate model boundary; one original operation_start only",
+    "Original SDK external whole before accept",
+    "Only actual original operation status and next8192 immutable pages, complete original payload SHA/EOF and inactive close"
+  ],
+  "future_body": {
+    "authorized": false,
+    "requires_actual_metadata_version_size_SHA_then_exact_separate_request": true
+  },
+  "journal": {
+    "max_native_call_and_future_per_lane": 1,
+    "max_Runtime_lanes": 2,
+    "payload_max_bytes": 1048576,
+    "page_bytes": 8192,
+    "unknown": "Retain original returned SDK, expected Git objects and current state; stop; exact read-only reconciliation only; no create or Native replay, no automatic unpause"
+  },
+  "lane_disposition": {
+    "A": "Original AuthBus stderr streams observer recovery",
+    "B": "CLI terminal exit1,3 original observers closed;0Runtime pending separate report-info scope",
+    "C": "Use freed lane for this one fixed file_info observer",
+    "root": "0Runtime"
+  },
+  "excluded": [
+    "binary_read",
+    "new process_start",
+    "formatter",
+    "Cargo or product",
+    "old source modification",
+    "directory scan",
+    "new host/path",
+    "deadline change"
+  ],
+  "full_stage_qualification": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

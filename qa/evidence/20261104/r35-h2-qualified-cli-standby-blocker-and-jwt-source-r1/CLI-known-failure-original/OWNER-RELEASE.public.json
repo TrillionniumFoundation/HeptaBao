@@ -1,0 +1,151 @@
+{
+  "schema": "heptabao.official271-phaseb.live-current-terminal-owner-release.r1",
+  "original_GO": {
+    "blob": "1329443a0dbc7becc5ecf77eb96252dbb853046c",
+    "bytes": 7420,
+    "sha256": "4ccae256d594ff3954f575bdd7fd52a6225d18799ab9368ce86e031174b0742a"
+  },
+  "request": "2c0692832bfe24fe8b728589900896ae64152852",
+  "job_id": "1a1aee01612-fc05-639b",
+  "host": "desktop",
+  "START_count": 1,
+  "business_replays": 0,
+  "known_terminal": {
+    "at_unix_ms": 1793935422536,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a1aee01612-fc05-639b",
+    "launch_nonce": "d37a813770d4c7e4fe04caabf6253a15",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 466,
+        "stored": 466
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "terminal_payload": {
+    "blob": "f6c79d8167e078b06723cc961a674dd43361f1fe",
+    "bytes": 905,
+    "sha256": "14fcb8db95c1c9abb597e8dbff101716c9e0fe0aed65f6e761a081789ed5601f"
+  },
+  "stdout": {
+    "blob": "5ed333ccb163399c6711cb391a303e77feeeb654",
+    "bytes": 466,
+    "sha256": "5e52fa18b4e9972b7df6b19bb0a1334c1284ca505731a35383e12d1b5f0fc57b"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "reported_summary": {
+    "all_owned_stopped": true,
+    "case_qualifications": {
+      "B01": true,
+      "B02": true,
+      "B03": true,
+      "B04": false,
+      "B05": false
+    },
+    "full_replacement_qualification": false,
+    "literal_scan_hits": 0,
+    "outcome_unknown": false,
+    "result": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r4/result.public.json",
+    "result_sha256": "d5c691d23b513a2a63916792bbe21178e2b34799e6adbd20ddf88cdf6147bc48",
+    "status": "completed_with_compatibility_failures"
+  },
+  "reported_case_flags_not_yet_independently_qualified": true,
+  "whole_report_pending": true,
+  "observers": [
+    {
+      "id": "787dfa07d5b654af517708d8cd379656a27b5bfbcab79676828579b14a695e96",
+      "tool": "process_status",
+      "payload": {
+        "blob": "ed95c8ffdbba679d1b1f423eb45642120249bb56",
+        "bytes": 618,
+        "sha256": "ac1d734a3da2e101e1acce6e3887f4701f1b66536ec560356ccbeab87412fa33"
+      },
+      "payloadTree": "48eb2f637188e031ce4334819767b808cdc97113",
+      "nativeText": {
+        "blob": "467fd79e61ea78f061c03205981093dd4e144c63",
+        "bytes": 471,
+        "sha256": "7b750aa7a2feb25f7f6087c79f0acb5139980a0d408ccb16cda9b0a27b582e9f"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "71998bdb33b089536cad2972e63a7f197abaab2bb06df31af74793f11ab4fb0e",
+      "tool": "process_read",
+      "payload": {
+        "blob": "dea16a1a4716fb15b0451f985a4c1070963363d3",
+        "bytes": 1957,
+        "sha256": "64cbaf78360c082a400f7468a0aa6da1ebdf78211e80983b605a90ed38cfce2c"
+      },
+      "payloadTree": "bd5a6ad9a038f4cba60b2975dad61fdf56cfa025",
+      "nativeText": {
+        "blob": "237c61db23fa69ad97a9f5a6cca160c75448c582",
+        "bytes": 1752,
+        "sha256": "cbef431cf103de9c2a534751b124f1c00552dc75cf99d072d55e82d98f01f9ee"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "b80260778857dbbe605ad2a69e9796f5b6afa6bbb5307861e1768cde447fb252",
+      "tool": "process_status",
+      "payload": {
+        "blob": "f6c79d8167e078b06723cc961a674dd43361f1fe",
+        "bytes": 905,
+        "sha256": "14fcb8db95c1c9abb597e8dbff101716c9e0fe0aed65f6e761a081789ed5601f"
+      },
+      "payloadTree": "47e87e20124df9d6e123bce312007dfcd94d5da1",
+      "nativeText": {
+        "blob": "c764a0ee9dcfa882ed222e2d1e1a867a644b2ede",
+        "bytes": 726,
+        "sha256": "756c3ab8be9518f299fda3b43276c0e94658fab125ba6a1bd743b940f2d2d75b"
+      },
+      "pages": 1,
+      "completedInactive": true
+    }
+  ],
+  "observer_count": 3,
+  "immutable_pages": 3,
+  "original_native_calls": 10,
+  "all_call_records_accepted": true,
+  "all_observers_completed_inactive": true,
+  "runtime_call_inflight": false,
+  "pending_call": null,
+  "active_observer": null,
+  "current_native_futures": 0,
+  "controller_ownership": "stdout reports all_owned_stopped=true; individual PID/start/FD closure still requires complete result",
+  "lane_B_original_business_and_current_observation_chain_closed": true,
+  "further_file_observations_require_new_root_GO": true,
+  "no_case_replay": true,
+  "old_B01_UNKNOWN_preserved": true,
+  "old_Git57bf_UNKNOWN_preserved": true
+}

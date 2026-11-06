@@ -1,0 +1,94 @@
+{
+  "schema": "heptabao.native-jwt.stage-result-file-info.SOURCE.v1",
+  "authorization": "SOURCE_ONLY",
+  "originalStage": {
+    "job": "1a1aed43ac9-fc05-62ec",
+    "host": "rog",
+    "GO": "92ffd3b9237746902816675e3718376662185ca7",
+    "actualPartialTree": "50d59c2855d912d216f774ffeff5542f273a9af6"
+  },
+  "previousJournal": {
+    "blob": "4a2e8391563bbeee6b2cfb7e3f0605c19e46baf2",
+    "bytes": 19040,
+    "sha256": "b57139647032715c177ecc368de86256662ee93f08d59fc59fa4b6e802962570"
+  },
+  "candidate": {
+    "blob": "5251b35f820ade2765d2266616b13d1ef1effc48",
+    "bytes": 23872,
+    "sha256": "32f6775ced13cc9e0c614c40e70dd762c25e76340d13bc3e3cdfddac2b342711"
+  },
+  "exactFileInfo": {
+    "blob": "dbd4063ee0bcadab95c7649ef189e91a99c2402c",
+    "bytes": 301,
+    "sha256": "d3f8d7f67f9677287ff3d2d449446935b33b2d6ecbe3e4afaa1c5cb5a542e8df"
+  },
+  "fixedPath": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/control/stage-result.public.json",
+  "allowedNewNativeAdmissions": 1,
+  "allowedTool": "file_info",
+  "binaryReadAuthorized": false,
+  "requiresSeparateRootGO": {
+    "authorization": "GO",
+    "scope": "stage_result_file_info_only",
+    "original_job": "1a1aed43ac9-fc05-62ec",
+    "maximum_file_info_starts": 1,
+    "binary_read_authorized": false,
+    "exact_request": {
+      "blob": "dbd4063ee0bcadab95c7649ef189e91a99c2402c",
+      "bytes": 301,
+      "sha256": "d3f8d7f67f9677287ff3d2d449446935b33b2d6ecbe3e4afaa1c5cb5a542e8df"
+    }
+  },
+  "sameExistingSlot": "jwt_e3af_rog_source_gitfirst_r1",
+  "initializeAgain": false,
+  "expectedMetadata": {
+    "platform": "linux",
+    "permissionMode": 384,
+    "uid": 1000,
+    "gid": 1000,
+    "linkCount": 1,
+    "sizeMinimum": 1,
+    "sizeMaximum": 150000,
+    "sizeAndSHAAndVersionCurrently": null,
+    "regularFile": "Native file_info contract rejects symlinks and special files; derived full mode is 32768 | permission mode, never a second permission addition."
+  },
+  "wholeSHAComputationIsNotBodyTransportBudget": true,
+  "losslessFull9Order": [
+    "dev",
+    "ino",
+    "uid",
+    "gid",
+    "full_mode",
+    "nlink",
+    "size",
+    "mtime_ns",
+    "ctime_ns"
+  ],
+  "futureBody": {
+    "authorized": false,
+    "expectedVersion": null,
+    "exactSHA": null,
+    "exactBytes": null,
+    "maximumChunk": 65536,
+    "maximumWholeBytes": 150000,
+    "scope": "Only a separately reviewed literal binding after this original info returns closed/full and passes its exact path and metadata admission."
+  },
+  "capSource": {
+    "blob": "7b42cf15a40c4c16b5f473714baf7abea88bef1f",
+    "exactLine": "stage_raw, stage_pin = read_bound(CONTROL / 'stage-result.public.json', args.stage_sha256, 150000)",
+    "meaning": "The inherited stage-result consumer whole-size cap, applied only after actual metadata; not an invented Native file_info parameter."
+  },
+  "unchanged": [
+    "Original source request and source bytes",
+    "Original root GO and current call map",
+    "Original operator host rog",
+    "Existing original job process_status/process_read binding",
+    "SDK-before-isError-before-native parse",
+    "8192 immutable page size and 1048576 original payload envelope cap",
+    "16384 process streams",
+    "Single original operation status/result handling",
+    "No auto retry or unpause",
+    "Git failure retained and normal gfRun return",
+    "No new process, child, formatter, build or product"
+  ],
+  "actualScope": "Only the old two observer native results are current evidence. The proposed file_info has not been submitted."
+}

@@ -1,0 +1,175 @@
+{
+  "schema": "heptabao.r35-new-actual-evidence-checkpoint.v1",
+  "as_of_UTC": "2026-11-06 03:49:20 UTC",
+  "previous_validation_commit": "ca5d2a042d869ae17a61f77cdfead82b26b68344",
+  "previous_validation_tree": "f08208705b4c608d4b76ecb9a3aa09e941e7404c",
+  "prefix": "qa/evidence/20261104/r35-h2-qualified-cli-standby-blocker-and-jwt-source-r1",
+  "product_baseline": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "qualified_prior_scopes": {
+      "Mac_normal": 61,
+      "ROG_normal": 61,
+      "Mac_KV2_full34": 31,
+      "X230_KV2_full34": 31,
+      "real_Mac_ROG_Pocket4_HA": 98,
+      "independent_cold_restart": 12,
+      "X230_comparison": {
+        "profiles": 69,
+        "numeric_status_exact": 67,
+        "normalized_PKI_cases": 2
+      }
+    },
+    "no_qualification_transfer_to_unbuilt_JWT_candidate": true
+  },
+  "H2": {
+    "job": "desktop/1a1ae76aacd-fc05-5fb4",
+    "start_count": 1,
+    "exit_code": 0,
+    "full_durable": true,
+    "root_actual_checks": 121,
+    "root_qualification": "98643e27c05bf7ba738f741e298dc8b3cabc15ae",
+    "full_report": {
+      "blob": "a84e9c899cf23f03a3ebb76d9ce5206ceb2b908c",
+      "bytes": 465570,
+      "sha256": "6b51bc97ea77b2574eab86ddee638c69818773d54211c25bcb8a018c02ca107e"
+    },
+    "qualified_scenarios": [
+      "H01 HTTP1 control native archive",
+      "H02 actual TLS+ALPNh2 one upstream stream KV2v2 read",
+      "H03 actual TLS+ALPNh2 one upstream stream native archive download"
+    ],
+    "original_observers": 11,
+    "original_pages": 46,
+    "original_read_calls": 68,
+    "actual_owned_cleanup_records": 114,
+    "aggregate_tree": "9be9e1e28ba3bcec85d3d60087e38a43393baa05",
+    "aggregate_files": 399,
+    "limits": [
+      "One physical host and3process nodes",
+      "Not34MiB H2",
+      "Not officialCLI/restore qualification",
+      "Not rawOpenBao archive interchange",
+      "Not new realLAN/powercut qualification"
+    ],
+    "old_Git_UNKNOWN": "57bf417be264a07210b8d3a601c7d84354cbf801 preserved; only previously unreached native page continued once"
+  },
+  "CLI": {
+    "job": "desktop/1a1aee01612-fc05-639b",
+    "start_count": 1,
+    "exit_code": 1,
+    "state": "failed",
+    "full_durable": true,
+    "stdout_bytes": 466,
+    "stderr_bytes": 0,
+    "original_summary": "completed_with_compatibility_failures",
+    "producer_reported_cases": {
+      "B01": true,
+      "B02": true,
+      "B03": true,
+      "B04": false,
+      "B05": false
+    },
+    "root_case_semantics_from_full_report": false,
+    "result_metadata": {
+      "bytes": 848065,
+      "sha256": "d5c691d23b513a2a63916792bbe21178e2b34799e6adbd20ddf88cdf6147bc48",
+      "version": "2050:7910322:848065:1793935422335117221:1793935422335117221"
+    },
+    "result_info_original_closed": true,
+    "body13_source": "f8f655b805864650b773f4287cac7e592928d6a9",
+    "body13_exact_GO": "fd1ac2aa4967c12ae430a56acbdcea70cef1d8ae",
+    "body13_dispatch_lane_activation_pending": true,
+    "no_CLI_replay_or_product_fix_yet": true
+  },
+  "AuthBus": {
+    "original_job": "mac/1a1ae51309d-fc05-5ef8",
+    "original_exit": 1,
+    "original_business_operations": 0,
+    "known_parser_failure": "last exit code literal78: EX_CONFIG rejected by original integer parser",
+    "first_diagnostic_root_checks": 64,
+    "second_diagnostic_root_checks": 69,
+    "second_diagnostic_job": "mac/1a1aed868b6-fc05-6321",
+    "second_diagnostic_qualified": true,
+    "actual_stderr_file_size": 0,
+    "actual_stderr_first_LF": false,
+    "startup_cause_qualified": false,
+    "current_label_observed": {
+      "state": "not running",
+      "runs": 1,
+      "pid_present": false,
+      "last_exit_code": 78,
+      "symbol": "EX_CONFIG"
+    },
+    "new_second_diagnostic_FDs_closed": 11,
+    "new_second_diagnostic_helpers_closed": 2,
+    "old_registration_qualified": false,
+    "historical_lineage_unknown_preserved": true,
+    "old_Git_UNKNOWN": "8916feb2a335fcf5fd7d47b55d39dd57b8465ab5 preserved",
+    "recovered_original_ACK_no_native_replay": true,
+    "parser_fix_SOURCE_only": true,
+    "same_label_cleanup_SOURCE_only": true,
+    "metadata_readonly_GO": "23346a3a59028fc9f88aa5d25d616af638e7426e",
+    "metadata_actual_job_owner_report": "mac/1a1aef60ea2-fc05-648b;original observations in progress; no actual result qualified in this snapshot",
+    "AppRole_TLS_KV_Policy_renew_revoke_qualified": false,
+    "J3160_contacted_by_new_diagnostics": false
+  },
+  "JWT": {
+    "candidate_commit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+    "candidate_tree": "5497775d9d473541e13e1603be8c893a3e27681b",
+    "source_stage_job": "rog/1a1aed43ac9-fc05-62ec",
+    "source_stage_exit": 0,
+    "source_stage_transport_root_checks": 16,
+    "source_stage_summary_status": "prepared",
+    "source_stage_full_semantics_qualified": false,
+    "actual_stage_report_metadata": {
+      "bytes": 27581,
+      "sha256": "0bf4e76a64ded7fa9ff5af683252cbe6e19f055766fb9004345bbc2c265c4666",
+      "version": "66306:28749310:27581:1793934521373633707:1793934521373633707"
+    },
+    "stage_body_exact_GO": "b41a5d920caccaaad2ceb878fc4b04b9b6ae98ed",
+    "stage_body_original_observation_in_progress": true,
+    "formatter_SOURCE_root_checks": 17,
+    "formatter_journal_root_checks": 12,
+    "formatter_runs": 0,
+    "compile_runs": 0,
+    "product_test_runs": 0,
+    "planned_regression_scope": {
+      "new_unique": 15,
+      "existing_adjacent_unique": 132,
+      "total_unique": 147,
+      "total_profile_instances": 162,
+      "default_feature_run_does_not_prove_distributed_HA": true
+    },
+    "official_ACL_oracle_SOURCE_only": true,
+    "old_4e808_tests_not_borrowed": true
+  },
+  "remaining_implementation_and_migration_gates": [
+    "CLI standby save and restore exact cause and repair",
+    "AuthBus actual trusted owner credential chain and five current consumers",
+    "Native JWT actual compilation/test plus precise official role ACL create/update/delete semantics",
+    "Other native auth/provider routes including OIDC/Kubernetes/MFA and SDK owners",
+    "Database/RabbitMQ/Kubernetes secret external effects",
+    "ACME/EAB/externalKMS/HSM PKI and Transit integration",
+    "Rekey/root generation/rotation and runtime plugin mutation",
+    "Protected namespace/nondefault Raft administration",
+    "Two exact PKI expired/revoked status oracles",
+    "Current per-client credential read/write, restart, rollback and traffic cutover",
+    "All current backup-path migration evidence before legacy cleanup"
+  ],
+  "full_OpenBao_2_7_1_replacement": false,
+  "production_cutover": false,
+  "all_current_clients_and_backup_paths_migrated": false,
+  "legacy_cleanup": false,
+  "PR159_merged": false,
+  "root_Runtime_calls": 0,
+  "max_Runtime_lanes": 2,
+  "local_executor_available": false,
+  "old_local_gaps_and_UNKNOWNs_retained": true,
+  "publication": {
+    "add_one_evidence_subtree": true,
+    "prior_documents_indexes_source_unchanged": true,
+    "no_deletions": true
+  },
+  "task_continues": true
+}

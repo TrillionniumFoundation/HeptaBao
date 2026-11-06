@@ -1,0 +1,17 @@
+[
+  {
+    "before": "const GF_SLOT = \"jwt_e3af_rog_source_gitfirst_r1\";",
+    "after": "const GF_SLOT = \"jwt_e3af_rog_formatter_gitfirst_r1\";",
+    "why": "Independent future context; no reset of original stage journal"
+  },
+  {
+    "before": "const GF_REQUEST = {blob:\"c1429991e9c597d1639f02a68f791043e6c8b9e5\",\n bytes:111605,sha256:\"aebf043cfcb5d60611dd67f3ed93c0caee8098091a70c8b61c8306de05fc5b65\"};",
+    "after": "const GF_REQUEST = {blob:\"0ec62f939a62a2a23c73e33d25f1043957aeeb58\",\n bytes:12372,sha256:\"1ad41c45534f842fdd7010ab184db3f46460f87f8ead786efc142461b709bc91\"};",
+    "why": "Exact root-reviewed formatter request, no reserialization"
+  },
+  {
+    "before": "/^heptabao-native-jwt-e3afc157-rog-source-observe-r1-/",
+    "after": "/^heptabao-native-jwt-e3afc157-formatter-observe-r1-/",
+    "why": "Closed observation namespace for only its actual returned job"
+  }
+]

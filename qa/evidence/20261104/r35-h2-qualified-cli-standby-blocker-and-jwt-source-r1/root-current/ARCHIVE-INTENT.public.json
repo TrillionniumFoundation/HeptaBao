@@ -1,0 +1,190 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r35-root-current-freeze-r1",
+  "records": [
+    {
+      "name": "STATE.public.json",
+      "blob": "8b8c2e72a73aae2b7ee97e0806549e8cc7a26189",
+      "bytes": 7008,
+      "sha256": "995da6146cf5b45bd047eb896f5b4e7743cfe6624eb6351af888178e1f59a49c"
+    },
+    {
+      "name": "README.md",
+      "blob": "a58c797ea63aea573cdf7ca4d75d828cd8df5c11",
+      "bytes": 4022,
+      "sha256": "5c3b08b56b27b79f56beb21c08467bf0d7e18cb673e412b346755291725493e0"
+    },
+    {
+      "name": "MOUNTS.public.json",
+      "blob": "b1839437f88ecb3223a86b9d2eb2014f9c8b05ba",
+      "bytes": 9333,
+      "sha256": "aa130d78e15fe67975dd728c37c9820fd99cabecd5906470fdabcfcecad94df7"
+    },
+    {
+      "name": "H2-root-qualification.public.json",
+      "blob": "98643e27c05bf7ba738f741e298dc8b3cabc15ae",
+      "bytes": 11900,
+      "sha256": "59a4c9c5a911d2f4dd95cbe97081b0265b6e4f6c3fb39646b102233fa20ea30d"
+    },
+    {
+      "name": "AuthBus-first-root-qualification.public.json",
+      "blob": "6d43de476399c545c6bdafecabbc825f68fc58e9",
+      "bytes": 6830,
+      "sha256": "a761b8bfd9b75d87ab063862bab9a556c5107a48f8601d54f73626aef51d2150"
+    },
+    {
+      "name": "AuthBus-stderr-root-qualification.public.json",
+      "blob": "e5c48087bc082133efb89d8961a406a2607f4e83",
+      "bytes": 7370,
+      "sha256": "8c0e0738b4957604b5cb4064de09a9fd34bcaf2c7933a996d253d20bb3ee4ba2"
+    },
+    {
+      "name": "AuthBus-stderr-exact-GO.public.json",
+      "blob": "68f522f44282880297b3c4fefa5249bad9ac9877",
+      "bytes": 7766,
+      "sha256": "2cd7d89cfe2bcb9168b388fd2178f415d37bd86575f620214cca0a9b3764aa4b"
+    },
+    {
+      "name": "AuthBus-ACK-recovery-exact-GO.public.json",
+      "blob": "3ca9212b02e7151183f33c8b1efb7626aa892626",
+      "bytes": 5261,
+      "sha256": "845c0b1b59d83f09a501f7cae67ffe870c272629b91ec932f03b7c4b4f91adf8"
+    },
+    {
+      "name": "AuthBus-metadata-root-review.public.json",
+      "blob": "f12fc50ed339f06abfdc639975a00357cb3be43c",
+      "bytes": 2848,
+      "sha256": "55db391072e3e9b028e5f3f4a0889cfd958afb73de522dd7ad52b6523b01e09b"
+    },
+    {
+      "name": "AuthBus-metadata-exact-GO.public.json",
+      "blob": "23346a3a59028fc9f88aa5d25d616af638e7426e",
+      "bytes": 7681,
+      "sha256": "e05e15be4eee817137ac0e2f16e3cdbece0a49f54f4bc77152dae6f3877e5df5"
+    },
+    {
+      "name": "CLI-live-root-review.public.json",
+      "blob": "31ea930bb8ce26f334e25f33228691da9507b95f",
+      "bytes": 1783,
+      "sha256": "caf0c403da46cd778853b503a08ab7091a70072b2b0495a210c6010ba3cb8736"
+    },
+    {
+      "name": "CLI-live-exact-GO.public.json",
+      "blob": "1329443a0dbc7becc5ecf77eb96252dbb853046c",
+      "bytes": 7420,
+      "sha256": "4ccae256d594ff3954f575bdd7fd52a6225d18799ab9368ce86e031174b0742a"
+    },
+    {
+      "name": "CLI-info-root-review.public.json",
+      "blob": "6b143deac9052d04f8ae6d20f460b7229d0dc51d",
+      "bytes": 2047,
+      "sha256": "c15d5bbb32c95ce71ca3ae361ad0c8412e5a35687fc3ffc5576944f239865a4e"
+    },
+    {
+      "name": "CLI-info-exact-GO.public.json",
+      "blob": "6075739c804fa764ba6f7b2da8bfca637ec72df2",
+      "bytes": 4057,
+      "sha256": "0b80d39a77aff13ae9b7295563e894948460118c12609a0eb288b05880986894"
+    },
+    {
+      "name": "CLI-body13-root-review.public.json",
+      "blob": "3daa9d7d43503f08eeb791a1fda20f4ad0b28f3a",
+      "bytes": 5482,
+      "sha256": "d74ace8962b83cc861e6d53bf47584a64b1ae08cd6869b72d9f084b0b3275d72"
+    },
+    {
+      "name": "CLI-body13-exact-GO.public.json",
+      "blob": "fd1ac2aa4967c12ae430a56acbdcea70cef1d8ae",
+      "bytes": 5465,
+      "sha256": "cb154dc7ec3321bb942eed7edfd22d3616df42f824c825db40d410e6649fc254"
+    },
+    {
+      "name": "JWT-stage-root-review.public.json",
+      "blob": "479dd9c9157e70898b9fae971da6d0a6f5629084",
+      "bytes": 2509,
+      "sha256": "ef5b4beca023fb84978eecb1a96e65d7c531bcc0b29f68b2e9ea9351bd51fe4d"
+    },
+    {
+      "name": "JWT-stage-exact-GO.public.json",
+      "blob": "92ffd3b9237746902816675e3718376662185ca7",
+      "bytes": 5622,
+      "sha256": "0915133650da5794a4f268c3abdf9ec52bd199066403c3e02af5acb01e973642"
+    },
+    {
+      "name": "JWT-stage-transport-root-review.public.json",
+      "blob": "af19eb9cba2ddf8bc072a8b0d3f9816443cc5c44",
+      "bytes": 2458,
+      "sha256": "0ac322b16935353fbbc0a47757463de356bd6d4301686c211c955f70ac26028d"
+    },
+    {
+      "name": "JWT-info-root-review.public.json",
+      "blob": "0775606cba40d2a6325f2d422a53aeefdc469f25",
+      "bytes": 3049,
+      "sha256": "5fb69c5adbd3850e3f46d16dcd82dc5a359530ba8302148527b89694d2600c3a"
+    },
+    {
+      "name": "JWT-info-root-review-earlier-error.public.json",
+      "blob": "d7c670da7630f9b8797c323dc99cf9c271da9d3d",
+      "bytes": 2547,
+      "sha256": "e39dcf913ab3cf78e510e2c6168c1ccfe97b92257b9a0641da30f844983be3d7"
+    },
+    {
+      "name": "JWT-info-exact-GO.public.json",
+      "blob": "6f727e72eccbfb0ed29b14e445b903610452da70",
+      "bytes": 3983,
+      "sha256": "a6de14f3678984839d3f80a955b628b2c04d9e1e08888d8c495e91546609ada4"
+    },
+    {
+      "name": "JWT-body-root-review.public.json",
+      "blob": "5f3ac01079a2da6a42f2d8407b3a200cedf19b60",
+      "bytes": 5072,
+      "sha256": "ca0fdc77598c78562c02255e80274524ac5884153048d235be610e2b328a6949"
+    },
+    {
+      "name": "JWT-body-exact-GO.public.json",
+      "blob": "b41a5d920caccaaad2ceb878fc4b04b9b6ae98ed",
+      "bytes": 3145,
+      "sha256": "d0549103ded52dfb171b1e666a9b005ffca7f3716451a72b7308466421adbb94"
+    },
+    {
+      "name": "JWT-formatter-root-review.public.json",
+      "blob": "3deb8494ddd4476b84e4ff0f122f93a554a57479",
+      "bytes": 2953,
+      "sha256": "deba903bcf6de0ad8a3de233c06920461b3b872940c7d69e171175c3b2c56d16"
+    },
+    {
+      "name": "JWT-formatter-journal-root-review.public.json",
+      "blob": "97aa99918b5e0eb8d54132e6c5bf939ae9187370",
+      "bytes": 1513,
+      "sha256": "63a07b4fb2baa72181aa8ee4d4894cffaabd39225fe9565cc491c0b175b11280"
+    },
+    {
+      "name": "H2-root-verifier.js",
+      "blob": "72489f20cfb40f7263f55cf21b682df2e412fc95",
+      "bytes": 17600,
+      "sha256": "37d02183dfeab846e5f290bd8c508fdbccf9cb20c130e89c38bc0040335ede53"
+    },
+    {
+      "name": "AuthBus-stderr-root-verifier.js",
+      "blob": "39b68fa65d0567736bfc937b3172583d21689fd9",
+      "bytes": 12150,
+      "sha256": "eb4e5cfdccf4a8f02005ebaaa2f4fa2a418265f0679f4856551e115fa5aa8eb4"
+    },
+    {
+      "name": "CLI-body13-root-verifier.js",
+      "blob": "47453d3e37816ff91f87c92a0b4fa087ffb60348",
+      "bytes": 7824,
+      "sha256": "51291646f2100a5b8ff54cee7ccd37f084282f1977f983ed95ac361762b5ce61"
+    },
+    {
+      "name": "JWT-body-root-verifier.js",
+      "blob": "7503dba8e8f9d2778e14272e639e498acf7e1322",
+      "bytes": 9465,
+      "sha256": "27835db34618d1487622f455be6e5f26a0078c2a0fbe704bd3af459a3ef11a16"
+    }
+  ],
+  "expected_data_tree": "9108d951a5c1e3d5e46ee8e86bc69bb65ed2db2b",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

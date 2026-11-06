@@ -1,0 +1,104 @@
+{
+  "schema": "heptabao.root-GO.CLI-known-failure-fixed-file-info.v1",
+  "authorization": "GO",
+  "scope": "cli_result_file_info_only",
+  "as_of_UTC": "2026-11-06 03:33:45 UTC",
+  "agent": "/root/compatibility_audit",
+  "original_job": "1a1aee01612-fc05-639b",
+  "maximum_file_info_starts": 1,
+  "binary_read_authorized": false,
+  "exact_request": {
+    "blob": "39c26a97e1a1d27d4cea64c810232e47bc956c1f",
+    "bytes": 299,
+    "sha256": "f8ece50b14f479740b930ca708655e21e2d179b2d3a4b3c1f163000e7dabe651"
+  },
+  "source_review": {
+    "blob": "6b143deac9052d04f8ae6d20f460b7229d0dc51d",
+    "bytes": 2047,
+    "sha256": "c15d5bbb32c95ce71ca3ae361ad0c8412e5a35687fc3ffc5576944f239865a4e"
+  },
+  "source_packet": "34f0175b4e95d45a20c1f8e53ba107a192c8551d",
+  "candidate": {
+    "blob": "f0819073ffb9ee7e1a39135a3b6f41782e4aafdb",
+    "bytes": 24174,
+    "sha256": "b979ccb2bf61ae3795231b154e6d11f2573b4e5f603289185b9bcb4e482a57e1"
+  },
+  "archive_helper": {
+    "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+    "bytes": 5957,
+    "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+  },
+  "pure_helper": {
+    "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+    "bytes": 6685,
+    "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+  },
+  "existing_context": "official271_phaseb_live_gitfirst_r1",
+  "initialize_again": false,
+  "prerequisites": {
+    "terminal_core": "32e2f8b06c3db1cdf3ca66fc25cc2a20a7313159",
+    "original_authority": "c764a0ee9dcfa882ed222e2d1e1a867a644b2ede",
+    "original_streams": "237c61db23fa69ad97a9f5a6cca160c75448c582",
+    "original_three_observers_closed": true,
+    "actual_exit_code": 1,
+    "actual_status": "completed_with_compatibility_failures",
+    "expected_stream_cursors": {
+      "stdout": 466,
+      "stderr": 0
+    }
+  },
+  "host": "desktop",
+  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r4/result.public.json",
+  "expected_sha256": "d5c691d23b513a2a63916792bbe21178e2b34799e6adbd20ddf88cdf6147bc48",
+  "idempotency_key": "heptabao-official271-phaseb-readonly-r4-result-info0",
+  "tool": "file_info",
+  "metadata_admission": {
+    "mode": 384,
+    "uid": 1000,
+    "gid": 1000,
+    "link_count": 1,
+    "platform": "linux",
+    "size_min": 1,
+    "size_max": 4194304,
+    "exact_version_and_size_from_this_original_result": true,
+    "full9_decimal_strings": true,
+    "cap_semantics": "New finite observation acceptance cap for this fixed original public report; not a live report writer cap or a changed business deadline"
+  },
+  "sequence": [
+    "Whole exact new GO before gfRun authorize_cli_result_info; use existing context without initialize",
+    "Prepare exact299-byte request/intent/armed with this GO; external tree and every blob whole",
+    "Separate model boundary; one operation_start then immutable original SDK external whole before accept",
+    "Only actual returned original op status and8192 immutable pages; full original payload SHA/EOF and inactive close before release"
+  ],
+  "future_body": {
+    "authorized": false,
+    "requires_actual_version_size_SHA_and_exact_separate_requests": true
+  },
+  "journal": {
+    "max_native_call_and_future_per_lane": 1,
+    "max_Runtime_lanes": 2,
+    "page_bytes": 8192,
+    "payload_max_bytes": 1048576,
+    "unknown": "Retain and stop; exact read-only Git reconciliation only; no create or Native replay or automatic unpause"
+  },
+  "lane_disposition": {
+    "A": "AuthBus original observers all closed;0Runtime SOURCE-only",
+    "B": "One CLI fixedreport info observation",
+    "C": "JWT stage info closed;body SOURCE then separate GO",
+    "root": "0Runtime"
+  },
+  "excluded": [
+    "binary_read",
+    "new process_start or CLI replay",
+    "new path or directory scan",
+    "product repair/mutation",
+    "deadline changes",
+    "production cutover",
+    "legacy deletion"
+  ],
+  "full_report_qualification": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

@@ -1,0 +1,50 @@
+{
+  "schema": "heptabao.native-jwt.rog-source-gitfirst.SOURCE.v1",
+  "ready": false,
+  "Runtime_GO": false,
+  "base": {
+    "blob": "c61872aff6529e34ca89121d5c09702f8d56792c",
+    "bytes": 19027,
+    "sha256": "1aa2e506fd68673b182339194f47b091ec4c2c6b810498d69e2e0dec0970503c"
+  },
+  "candidate": {
+    "blob": "4a2e8391563bbeee6b2cfb7e3f0605c19e46baf2",
+    "bytes": 19040,
+    "sha256": "b57139647032715c177ecc368de86256662ee93f08d59fc59fa4b6e802962570"
+  },
+  "hunks": 3,
+  "replacements": 5,
+  "slot": "jwt_e3af_rog_source_gitfirst_r1",
+  "host": "rog",
+  "request": {
+    "blob": "c1429991e9c597d1639f02a68f791043e6c8b9e5",
+    "bytes": 111605,
+    "sha256": "aebf043cfcb5d60611dd67f3ed93c0caee8098091a70c8b61c8306de05fc5b65"
+  },
+  "observer_key_prefix": "heptabao-native-jwt-e3afc157-rog-source-observe-r1-",
+  "all_other_bytes_unchanged": true,
+  "archive": {
+    "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+    "bytes": 5957,
+    "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+  },
+  "pure": {
+    "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+    "bytes": 6685,
+    "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+  },
+  "root_go": null,
+  "root_typed_digest": null,
+  "root_native_fingerprint": null,
+  "actual_job": null,
+  "call_key_prefix": "jwt-e3af-rog-source-",
+  "maximum_native_futures": 1,
+  "stream_limit": 16384,
+  "immutable_page_limit": 8192,
+  "process_start_limit": 1,
+  "new_file_observers_allowed": false,
+  "local_journal_available": false,
+  "all_functions_invoked_only_via_gfRun": true,
+  "SDK_external_before_interpretation": true,
+  "unknown_does_not_authorize_replay": true
+}

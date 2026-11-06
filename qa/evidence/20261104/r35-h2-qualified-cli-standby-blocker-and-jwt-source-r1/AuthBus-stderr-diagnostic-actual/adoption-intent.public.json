@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.gitfirst.existing-ack-adopt-intent.r1",
+  "request": {
+    "blob": "2a953c2e2e33702821ec2ec9babfc61483d4eb5d",
+    "bytes": 1400,
+    "sha256": "95de77ea7e5aac4811c61cecc89180393f0cf1ad7a908b30db2c3e6372fa8213"
+  },
+  "rootRecoveryGo": {
+    "blob": "3ca9212b02e7151183f33c8b1efb7626aa892626",
+    "bytes": 5261,
+    "sha256": "845c0b1b59d83f09a501f7cae67ffe870c272629b91ec932f03b7c4b4f91adf8"
+  },
+  "oldSnapshot": {
+    "blob": "631c2623b3c77e711a7863d68f78c39f291bfa60",
+    "bytes": 101825,
+    "sha256": "bd6409799ffa5e63cca395d6a0282b792d145c7ff8847689369f46e0483a4e61"
+  },
+  "proposedNewContext": {
+    "blob": "16b2a13bb64006c8101c3dd7848840fa084be062",
+    "bytes": 112454,
+    "sha256": "a774c17c3bfd21ef025117637ffcd59bb2d1e43b8bc27908d49aa4a031ee8fc7"
+  },
+  "originalSDK": {
+    "blob": "61d992ba86d54d1da4eab9f7cf72032dfa0c00b0",
+    "bytes": 707,
+    "sha256": "30d7c108604c034a2dd1ab9b9192bde812720acba86159541b3b0e43c0157ab5"
+  },
+  "recoveryTree": "ce1665160b3651418941a63e2bdb61ca2d91f2c4",
+  "originalOperation": "0f5488f96e9ce749d19f452156dfd8e5204804babcb1ec92a9763564d2a212cc",
+  "nativeCalls": 0,
+  "oldContextUnchanged": true,
+  "oldGitCreateOutcome": "UNKNOWN"
+}

@@ -1,0 +1,32 @@
+{
+  "schema": "heptabao.native-jwt.source-stage.strict-v1",
+  "replacements": 16,
+  "hunks": 6,
+  "strict_reverse_equals_before": true,
+  "before": {
+    "blob": "5eb1fd375fb7d7bb4f1b2dadb715fa6eecedf494",
+    "bytes": 28324,
+    "sha256": "3971051a80a776723a4f2b5db701c91876c4c6ff00ba536d781dd46002c812f4"
+  },
+  "after": {
+    "blob": "40cdd07ec0e87656c2ea2e65c13a0734ffde6c51",
+    "bytes": 28599,
+    "sha256": "f896b4fc83d957505019259dc79c9ab9bd6e01fb7b40e7c54db442b8b48c7ab7"
+  },
+  "request": {
+    "blob": "c1429991e9c597d1639f02a68f791043e6c8b9e5",
+    "bytes": 111605,
+    "sha256": "aebf043cfcb5d60611dd67f3ed93c0caee8098091a70c8b61c8306de05fc5b65"
+  },
+  "carrier": {
+    "blob": "f9166bc801c5b10e12b77274f485d27d61cd499a",
+    "bytes": 79951,
+    "sha256": "85fd6e473ce1e231f1bcfbd2bcf2bef760e6a4e551040c55ee3274606acebb77"
+  },
+  "original_timeout_seconds": 360,
+  "new_timeout_seconds": 360,
+  "Runtime_calls": 0,
+  "candidate_module_executed": false,
+  "Python_compile": false,
+  "Git_refs_changed": 0
+}

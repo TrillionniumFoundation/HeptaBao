@@ -1,0 +1,95 @@
+{
+  "schema": "heptabao.official271-phaseb.gitfirst-cli-source-proposal.r1",
+  "source_only": true,
+  "runtime_dispatch_authorized": false,
+  "runtime_calls_in_preparation": 0,
+  "cli_context_initialized": false,
+  "cli_start_submitted": false,
+  "new_root_exact_GO_required": true,
+  "baseline": {
+    "tree": "eba526f5688393d4f61760c4bbc581bc10b705cd",
+    "native": "c61872aff6529e34ca89121d5c09702f8d56792c",
+    "archive": "b093fdbf655511f7db94be2d95555606141bbb42",
+    "pure": "b6890e8b7217c546bec073dcb04988fc37652721"
+  },
+  "candidate": {
+    "blob": "a7f0226de91fe4bf1a17847a6d28cce566a164e4",
+    "bytes": 19038,
+    "sha256": "28ba5debf79380e9acc8bcc3ca6bc1bfcb88bbe67982531d237d490f048080e5"
+  },
+  "request": {
+    "blob": "2c0692832bfe24fe8b728589900896ae64152852",
+    "bytes": 746,
+    "sha256": "11951f04874e55849a27d6abe812118124055245adfd8dd6321779a3b10886da"
+  },
+  "typed_binding": {
+    "sha256": "f670cf418c6ae40943b7f0224e09f0bd556ceb3b5975c377ad0e524a317f5cd7",
+    "native_fingerprint": "17757921211157505033",
+    "calculator": "82e81aef13d858c865ea05dd762056553a3d1cc6"
+  },
+  "data_changes": {
+    "replacement_sites": 5,
+    "literal_tokens": 7,
+    "native_diff_hunks": 3,
+    "steps_diff_hunks": 1,
+    "functions": 13,
+    "functions_whole_unchanged": 11,
+    "functions_with_only_bound_literal_changes": [
+      "gfValidateRequest",
+      "gfAcceptArchivedSDK"
+    ],
+    "isolated_state_slot": "official271_phaseb_live_gitfirst_r1",
+    "observer_key_prefix": "heptabao-official271-phaseb-readonly-r4-",
+    "start_call_key": "cli-phaseb-live-r4-start"
+  },
+  "scope": {
+    "host": "desktop",
+    "native_start": "Only the exact unchanged 746-byte CLI request, after a separate root GO.",
+    "readonly_observers": "Only original returned job process_status/process_read; one active observer and one native call. No additional host, file path, file_info, or binary_read scope.",
+    "process_read_limit_per_stream": 16384,
+    "operation_result_page_limit": 8192,
+    "maximum_original_payload_bytes": 1048576,
+    "original_cli_timeout_seconds": 3000,
+    "request_date_and_key_preserved": "20261105-r4 despite current date",
+    "controller_binding_prepare_and_argv": "Unchanged exact request; current binding SHA 7ef3458f4a54b74336941229307c0ffb6778e581c18b27518dc03a8fe6107eea and actual prepare SHA 8d9809f9da2493cb7f9d1ae8855ff31dab8464cc3919ea7fcd02163087cac615.",
+    "future_public_result_reads": "Not implemented or granted by this minimal generic journal adaptation; require separately reviewed exact scope."
+  },
+  "archival_contract": {
+    "external_arm_completed_before_native": true,
+    "unique_native_statement": true,
+    "original_SDK_immutable_store_before_Git": true,
+    "Git_whole_completed_before_isError_or_parse": true,
+    "each_observer_whole_closed_before_next": true,
+    "all_native_steps_through_gfRun": true,
+    "any_ok_false_stops_new_admission": true,
+    "unknown_Git_mutation_readonly_exact_reconciliation_only": true,
+    "no_Git_create_retry": true,
+    "no_Native_replay": true,
+    "local_exec_apply_patch_fsync_calls": 0,
+    "archive_and_pure_byte_unchanged": true,
+    "mac_controller_tool_namespace": "Unchanged connector tool name; host argument is explicitly desktop."
+  },
+  "correct_calculator": {
+    "old_pure_file_retained": true,
+    "old_processStartBinding_with_stdin_text_must_not_be_called": true,
+    "correct_expression": "eval(pure_source + '\\n;(' + exact_82e81aef_source + ')')",
+    "correct_actual_stdin_field": "stdin",
+    "raw_request_rehashed_before_binding": true,
+    "root_initial_SHA_transcription_corrected": "Actual whole request has ...dd632...; old message ...dd532... was not used."
+  },
+  "validation": {
+    "checks": 50,
+    "passed": 50,
+    "strict_forward_inverse_whole": true,
+    "V8_compile_only": true,
+    "candidate_functions_invoked": 0,
+    "old_components_or_business_not_rerun": true
+  },
+  "prior_evidence_limits": {
+    "H2_root_review": "98643e27c05bf7ba738f741e298dc8b3cabc15ae",
+    "H2_qualification_separate_from_CLI": true,
+    "old_B01_UNKNOWN_preserved": true,
+    "old_Git_create_UNKNOWN_preserved": "57bf417be264a07210b8d3a601c7d84354cbf801",
+    "fullreplacement_qualification": false
+  }
+}

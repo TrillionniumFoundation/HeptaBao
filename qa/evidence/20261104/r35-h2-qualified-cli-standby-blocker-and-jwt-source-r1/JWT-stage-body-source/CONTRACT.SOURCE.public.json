@@ -1,0 +1,84 @@
+{
+  "schema": "heptabao.native-jwt.stage-result-body.SOURCE.v1",
+  "authorization": "SOURCE_ONLY",
+  "priorInfoActualPacket": "a2bc6e96254bb0c8213be33d07cb1f6d4d9e2b28",
+  "before": {
+    "blob": "5251b35f820ade2765d2266616b13d1ef1effc48",
+    "bytes": 23872,
+    "sha256": "32f6775ced13cc9e0c614c40e70dd762c25e76340d13bc3e3cdfddac2b342711"
+  },
+  "candidate": {
+    "blob": "703a403a43fbd8ce8db9d0e30c21b77d13982900",
+    "bytes": 28250,
+    "sha256": "ac12e9659a0f1aeb182fd0a211a7621d8ce3f7730aa44060b27eacad1645acd3"
+  },
+  "exactRequest": {
+    "blob": "53891d75942f028f9511f61724474fc58d3343e6",
+    "bytes": 434,
+    "sha256": "dbe7886be6f77f2c69b0070593e56c24b26f011b3761eb6a7154038070078193"
+  },
+  "actualBinding": {
+    "path": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/control/stage-result.public.json",
+    "bytes": 27581,
+    "sha256": "0bf4e76a64ded7fa9ff5af683252cbe6e19f055766fb9004345bbc2c265c4666",
+    "version": "66306:28749310:27581:1793934521373633707:1793934521373633707",
+    "infoOperation": "2d07d9698ca3b85a8adde0aad7acb28f9fa514e0d23d17346ae03c074a582394",
+    "infoNative": {
+      "blob": "730a1f4b8e2389082c2fd3ef595624953022ed83",
+      "bytes": 482,
+      "sha256": "e8232bba16919229ade7d06866a74991507b9db5e11948d5bbdd2894750e3804"
+    }
+  },
+  "metadataWhole": true,
+  "currentBodyObserved": false,
+  "requiredNewRootGO": {
+    "authorization": "GO",
+    "scope": "stage_result_binary_read_only",
+    "original_job": "1a1aed43ac9-fc05-62ec",
+    "info_operation": "2d07d9698ca3b85a8adde0aad7acb28f9fa514e0d23d17346ae03c074a582394",
+    "maximum_binary_read_starts": 1,
+    "exact_request": {
+      "blob": "53891d75942f028f9511f61724474fc58d3343e6",
+      "bytes": 434,
+      "sha256": "dbe7886be6f77f2c69b0070593e56c24b26f011b3761eb6a7154038070078193"
+    }
+  },
+  "sameSlot": "jwt_e3af_rog_source_gitfirst_r1",
+  "initializeAgain": false,
+  "newNativeAdmissions": 1,
+  "host": "rog",
+  "tool": "binary_read",
+  "range": {
+    "offset": 0,
+    "limit": 27581,
+    "expected_version": "66306:28749310:27581:1793934521373633707:1793934521373633707",
+    "totalBytes": 27581,
+    "perReadMaximum": 65536,
+    "unchangedReportAdmissionMaximum": 150000
+  },
+  "payloadEnvelopeMaximum": 1048576,
+  "immutablePageBytes": 8192,
+  "workflow": [
+    "Whole separate GO and unchanged original closed info native",
+    "authorize_stage_result_body through gfRun on current slot",
+    "Exact request/intent/armed external-whole completes independently",
+    "One original operation_start on a separate model boundary",
+    "Original SDK whole before isError/accept",
+    "Only returned same ID status and next8192 immutable pages",
+    "Whole original payload SHA and EOF before parsing exact binary metadata",
+    "Whole decoded27581 bytes and chunk_SHA/fullSHA equal independent info",
+    "Preserve original body text; no semantic source/build qualification inferred"
+  ],
+  "unchanged": [
+    "Original source START and metadata operations",
+    "Prior info-only capability and once flag",
+    "Original process status/read routes",
+    "Native dispatch method and single-call marker ordering",
+    "SDK archival and error-return behavior",
+    "Original immutable page handler and metadata fields",
+    "No automatic Git or Native retry",
+    "No formatter/build/Rust test authorization"
+  ],
+  "failureRule": "Any unknown/error preserves original objects and stops. No retry, key change, body0 reissue, metadata refresh or source process replay.",
+  "positivePureFixture": "Historical old stage-result response f81d8e92c4437e00fbbdc650862a2c67bb153dac, used only to exercise the selected exact decode branch with fixture expectations. Not current body evidence."
+}

@@ -1,0 +1,116 @@
+{
+  "schema": "heptabao.cleanup-source-mechanical-proof.r1",
+  "strictForwardWhole": {
+    "blob": "623509e56235e6837665f53b11f3efa3987639b2",
+    "bytes": 80385,
+    "sha256": "ae579e77a20045f181e579e2aade1ebaf1b3e3c70e7fdb7c0d2a64b5acfd8b5c"
+  },
+  "strictInverseWhole": {
+    "blob": "9858ace064c11d4bc679b64ed35910015bc834e3",
+    "bytes": 75721,
+    "sha256": "e573407b3e092216694f0cbf4a8a526809dc64822b570bf29dd29585c025c233"
+  },
+  "hunks": 8,
+  "unchangedDefinitions": [
+    {
+      "name": "remaining",
+      "equal": true
+    },
+    {
+      "name": "identity",
+      "equal": true
+    },
+    {
+      "name": "public_error",
+      "equal": true
+    },
+    {
+      "name": "load_helpers",
+      "equal": true
+    },
+    {
+      "name": "bounded_read",
+      "equal": true
+    },
+    {
+      "name": "fixed_read",
+      "equal": true
+    },
+    {
+      "name": "exact_plist",
+      "equal": true
+    },
+    {
+      "name": "structure_fields",
+      "equal": true
+    },
+    {
+      "name": "missing_service",
+      "equal": true
+    },
+    {
+      "name": "numeric_projection",
+      "equal": true
+    },
+    {
+      "name": "fresh_print_projection",
+      "equal": true
+    },
+    {
+      "name": "fixed_identity",
+      "equal": true
+    },
+    {
+      "name": "finite_seconds",
+      "equal": true
+    },
+    {
+      "name": "ready_projection",
+      "equal": true
+    },
+    {
+      "name": "wrapper_projection",
+      "equal": true
+    }
+  ],
+  "unchangedConstants": [
+    {
+      "name": "MODULES",
+      "equal": true
+    },
+    {
+      "name": "ANCHOR_BASE64",
+      "equal": true
+    },
+    {
+      "name": "ANCHOR_SHA",
+      "equal": true
+    },
+    {
+      "name": "EXPECTED_ARGV",
+      "equal": true
+    },
+    {
+      "name": "PLAN_SHA",
+      "equal": true
+    },
+    {
+      "name": "PLIST_SHA",
+      "equal": true
+    },
+    {
+      "name": "ORIGINAL_PRINT_SHA",
+      "equal": true
+    },
+    {
+      "name": "TARGET",
+      "equal": true
+    },
+    {
+      "name": "PYTHON",
+      "equal": true
+    }
+  ],
+  "exactRequestStdin": true,
+  "scope": "Pure V8 text comparison; no Python module/selected-function/host execution."
+}

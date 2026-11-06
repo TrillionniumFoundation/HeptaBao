@@ -1,0 +1,123 @@
+{
+  "schema": "heptabao.root-AuthBus-fixed-path-metadata-source-review.v1",
+  "as_of_UTC": "2026-11-06 03:44:32 UTC",
+  "source_packet": {
+    "tree": "d361caf1f759deaad5b9a85ad9e04369dd0f1248",
+    "files": 16,
+    "bytes": 247301,
+    "merkle": {
+      "root_sha": "d361caf1f759deaad5b9a85ad9e04369dd0f1248",
+      "trees_verified": 1,
+      "leaf_count": 16
+    },
+    "whole": true
+  },
+  "journal_packet": {
+    "tree": "17fba4e4d6e0183a2e4fd9d982bc6327c8b88e25",
+    "files": 9,
+    "bytes": 71736,
+    "merkle": {
+      "root_sha": "17fba4e4d6e0183a2e4fd9d982bc6327c8b88e25",
+      "trees_verified": 1,
+      "leaf_count": 9
+    },
+    "whole": true
+  },
+  "checks": [
+    {
+      "name": "whole_source16_journal9",
+      "passed": true
+    },
+    {
+      "name": "exact_source_and_request",
+      "passed": true
+    },
+    {
+      "name": "original_source_and_actual_pins",
+      "passed": true
+    },
+    {
+      "name": "six_exact_paths_and_source_config",
+      "passed": true
+    },
+    {
+      "name": "complete_closed18_parent_paths",
+      "passed": true
+    },
+    {
+      "name": "original_anchor_objects_no_new_volume_claim",
+      "passed": true
+    },
+    {
+      "name": "regular_previous_full9_exact",
+      "passed": true
+    },
+    {
+      "name": "exact_regular_mac_START",
+      "passed": true
+    },
+    {
+      "name": "no_file_body_children_network_mutation",
+      "passed": true
+    },
+    {
+      "name": "closed_alias_resolution_no_target_open",
+      "passed": true
+    },
+    {
+      "name": "FD_rows_registered_before_open",
+      "passed": true
+    },
+    {
+      "name": "signals_record_only_and_restore",
+      "passed": true
+    },
+    {
+      "name": "metadata_full9_final_fences",
+      "passed": true
+    },
+    {
+      "name": "finite_5second_22FD_115stats23access2links",
+      "passed": true
+    },
+    {
+      "name": "postclosure_deadline_and_late_stdout_fail",
+      "passed": true
+    },
+    {
+      "name": "no_false_cause_or_content_qualification",
+      "passed": true
+    },
+    {
+      "name": "original_three_second_UTC_window",
+      "passed": true
+    },
+    {
+      "name": "strict_journal_two_hunks_forward_reverse",
+      "passed": true
+    },
+    {
+      "name": "journal_unchanged_except_three_literals",
+      "passed": true
+    },
+    {
+      "name": "same_archive_pure_helpers",
+      "passed": true
+    },
+    {
+      "name": "journal_JS_parse_only_no_Python_execution",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "native_binding": {
+    "sha256": "17dcdc9709e625d48eefed87e6a77518aa47414db2181480e3f2b725454c53c0",
+    "native_fingerprint": "1719491699012937172",
+    "typed_stdin_field": "stdin"
+  },
+  "observed_actual_metadata": false,
+  "Python_compiled_or_executed": false,
+  "log_query_authorized": false,
+  "cleanup_authorized": false,
+  "root_Runtime_calls": 0
+}

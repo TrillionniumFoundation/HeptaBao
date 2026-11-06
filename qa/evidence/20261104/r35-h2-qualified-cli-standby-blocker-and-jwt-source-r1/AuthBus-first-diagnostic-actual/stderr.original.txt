@@ -1,0 +1,2 @@
+<stdin>:574: SyntaxWarning: 'return' in a 'finally' block
+<stdin>:579: SyntaxWarning: 'return' in a 'finally' block

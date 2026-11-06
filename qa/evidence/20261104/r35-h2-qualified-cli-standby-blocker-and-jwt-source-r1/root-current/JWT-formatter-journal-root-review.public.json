@@ -1,0 +1,71 @@
+{
+  "schema": "heptabao.root-JWT-formatter-journal-source-review.v1",
+  "packet": {
+    "tree": "0a081ed538570a1d5a83d2117a20c5f1e17f8907",
+    "files": 15,
+    "bytes": 134636,
+    "merkle": {
+      "root_sha": "0a081ed538570a1d5a83d2117a20c5f1e17f8907",
+      "trees_verified": 1,
+      "leaf_count": 15
+    },
+    "whole": true
+  },
+  "as_of_UTC": "2026-11-06 03:43:05 UTC",
+  "checks": [
+    {
+      "name": "whole15_and_strict_two_hunks",
+      "passed": true
+    },
+    {
+      "name": "prior_new_exact_pins",
+      "passed": true
+    },
+    {
+      "name": "one_literal_undefined",
+      "passed": true
+    },
+    {
+      "name": "one_literal_undefined",
+      "passed": true
+    },
+    {
+      "name": "one_literal_undefined",
+      "passed": true
+    },
+    {
+      "name": "only_three_literal_changes",
+      "passed": true
+    },
+    {
+      "name": "same_archive_pure",
+      "passed": true
+    },
+    {
+      "name": "correct_typed_stdin_binding",
+      "passed": true
+    },
+    {
+      "name": "exact_ROG_and_new_slot",
+      "passed": true
+    },
+    {
+      "name": "old_journal_pages_and_futures_unchanged",
+      "passed": true
+    },
+    {
+      "name": "no_file_read_or_build_capability",
+      "passed": true
+    },
+    {
+      "name": "JS_parse_only",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "source_root_review": "3deb8494ddd4476b84e4ff0f122f93a554a57479",
+  "full_stage_report_still_required": true,
+  "formatter_run": false,
+  "Native_GO": false,
+  "root_Runtime_calls": 0
+}

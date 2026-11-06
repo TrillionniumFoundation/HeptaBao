@@ -1,0 +1,176 @@
+{
+  "schema": "heptabao.root-GO.official271-cli-native-phaseB-Git-first.v1",
+  "authorization": "GO",
+  "as_of_UTC": "2026-11-06 03:20:03 UTC",
+  "agent": "/root/compatibility_audit",
+  "purpose": "One exact official2.7.1 CLI save/restore and two cold regressions against the already prepared isolated native fixture",
+  "source_review": {
+    "blob": "31ea930bb8ce26f334e25f33228691da9507b95f",
+    "bytes": 1783,
+    "sha256": "caf0c403da46cd778853b503a08ab7091a70072b2b0495a210c6010ba3cb8736"
+  },
+  "journal_packet": "298ba8859eb98c72aa5c7feac283b8aca473c7cf",
+  "helpers": {
+    "native": {
+      "blob": "a7f0226de91fe4bf1a17847a6d28cce566a164e4",
+      "bytes": 19038,
+      "sha256": "28ba5debf79380e9acc8bcc3ca6bc1bfcb88bbe67982531d237d490f048080e5"
+    },
+    "archive": {
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    "pure": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    "steps": {
+      "blob": "eb2f4c97a99b9fbf3d6fdd6b6e624030ce4b1744",
+      "bytes": 1825,
+      "sha256": "9d0e20afde7592e800aa5516079008fce1e6844f0e8ea2012c85198480984d26"
+    },
+    "correct_binding_helper": {
+      "blob": "82e81aef13d858c865ea05dd762056553a3d1cc6",
+      "bytes": 659,
+      "sha256": "e98c61fceb6eecdd55e6244ad43939320114809163afee67a6b8657235dae042"
+    },
+    "legacy_stdin_text_helper_must_not_be_used": true
+  },
+  "exact_request": {
+    "blob": "2c0692832bfe24fe8b728589900896ae64152852",
+    "bytes": 746,
+    "sha256": "11951f04874e55849a27d6abe812118124055245adfd8dd6321779a3b10886da"
+  },
+  "native_binding": {
+    "sha256": "f670cf418c6ae40943b7f0224e09f0bd556ceb3b5975c377ad0e524a317f5cd7",
+    "native_fingerprint": "17757921211157505033",
+    "typed_stdin_field": "stdin"
+  },
+  "start": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3.12",
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 3000,
+    "idempotency_key": "heptabao-official271-phaseb-4e808-live-10816-20261105-r4",
+    "maximum_START_count": 1,
+    "exact_argv_from_request": "2c0692832bfe24fe8b728589900896ae64152852"
+  },
+  "inputs": {
+    "controller": {
+      "blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+      "bytes": 61210,
+      "sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c"
+    },
+    "binding": {
+      "blob": "ba3181396f849c4863a2b3f5a0387271362362c0",
+      "bytes": 6944,
+      "sha256": "7ef3458f4a54b74336941229307c0ffb6778e581c18b27518dc03a8fe6107eea"
+    },
+    "prepare": {
+      "blob": "7863a78e16ae4477dde87deca23e47c9a26208e2",
+      "bytes": 25893,
+      "sha256": "8d9809f9da2493cb7f9d1ae8855ff31dab8464cc3919ea7fcd02163087cac615",
+      "version": "2050:7874356:25893:1793924058330002412:1793924058330002412"
+    },
+    "prepare_root_qualification": "f40fb6a88aff1d91ff59f9bca6495ae4b7d4e045",
+    "H2_root_qualification": "98643e27c05bf7ba738f741e298dc8b3cabc15ae",
+    "candidate_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "candidate_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "server": {
+      "bytes": 110219600,
+      "mode": 320,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/artifacts/heptabao-server",
+      "sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+      "uid": 1000
+    },
+    "official_2_7_1_CLI": {
+      "bytes": 181760103,
+      "mode": 320,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-oracle-control-r1/artifacts/bao",
+      "sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+      "uid": 1000
+    }
+  },
+  "layout": {
+    "control": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4",
+    "prepare": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/prepare-r1",
+    "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-validation-source-r1",
+    "work": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r4"
+  },
+  "budgets": {
+    "action_seconds": 300,
+    "cleanup_kill_seconds": 5,
+    "cleanup_term_seconds": 5,
+    "cli_seconds": 15,
+    "election_seconds": 60,
+    "forward_timeout_ms": 8000,
+    "http_seconds": 15,
+    "peer_timeout_ms": 1500,
+    "readiness_seconds": 45,
+    "stable_leader_seconds": 2.2,
+    "final_evidence_seconds": 300,
+    "outer_seconds": 3000,
+    "process_read_bytes_per_stream": 16384,
+    "immutable_page_bytes": 8192,
+    "original_payload_cap_bytes": 1048576,
+    "maximum_Runtime_lanes": 2,
+    "maximum_call_and_future_per_lane": 1
+  },
+  "cases": {
+    "B01": "Save archive A on actual leader using official CLI",
+    "B02": "Mutate isolated state, restore archive A, verify actual state and cold restart",
+    "B03": "Save archive B",
+    "B04": "Save archive through actual standby",
+    "B05": "Mutate isolated state, restore B through actual standby, verify actual state and cold restart"
+  },
+  "journal": {
+    "slot": "official271_phaseb_live_gitfirst_r1",
+    "start_call_key": "cli-phaseb-live-r4-start",
+    "observer_key_prefix": "heptabao-official271-phaseb-readonly-r4-",
+    "invoke_only_through": "gfRun",
+    "initialize_once_with_exact_whole_GO": true,
+    "prepare_exact_request_intent_armed_external_all_whole": true,
+    "separate_model_boundary_before_unique_invoke": true,
+    "full_original_SDK_immutable_external_whole_before_interpretation": true,
+    "all_errors_return_normally_and_preserve_history": true,
+    "after_ACK": "Only actual returned desktop job process_status/process_read and same original operation status/next8192 pages; full payload SHA/EOF and inactive closure before next observer",
+    "Git_unknown": "Preserve and stop; exact read-only reconciliation only; no create replay or automatic unpause",
+    "Native_unknown": "Preserve and stop; no changed key, repeated start or substitute job",
+    "file_info_and_binary_read": false
+  },
+  "qualification": {
+    "requires_original_authority_full_durable_exit0": true,
+    "requires_all_five_actual_cases_not_exit_only": true,
+    "requires_exact_2_cold_original_keys_no_reseed": true,
+    "requires_TLS_actual_state_audit_and_input_fences": true,
+    "requires_actual_owned_PID_start_terminal_reap_and_group_empty": true,
+    "requires_whole_actual_report_before_case_qualification": true,
+    "not_raw_OpenBao_state_archive_portability": true
+  },
+  "lane_disposition": {
+    "A": "Only original AuthBus streams observer recovery",
+    "B": "This one CLI live and original job observations",
+    "C": "0Runtime source-only until another lane released",
+    "root": "0Runtime"
+  },
+  "preserved_failures": {
+    "old_B01_UNKNOWN": true,
+    "old_Git57bf_UNKNOWN": true,
+    "old_AuthBus_Git8916_UNKNOWN": true
+  },
+  "excluded": [
+    "provider or J3160 calls",
+    "production cutover",
+    "old service or binary deletion",
+    "JWT candidate build or test",
+    "new file observations without exact separate scope",
+    "deadline widening",
+    "case replay"
+  ],
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

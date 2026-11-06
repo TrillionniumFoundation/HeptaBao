@@ -1,0 +1,199 @@
+{
+  "schema": "heptabao.root-JWT-stage-actual-info-and-exact-body-source-review.v1",
+  "as_of_UTC": "2026-11-06 03:40:46 UTC",
+  "source_packet": {
+    "tree": "c89eb8011a27382823b40a81934ef8124a1ca188",
+    "files": 16,
+    "bytes": 219738,
+    "merkle": {
+      "root_sha": "c89eb8011a27382823b40a81934ef8124a1ca188",
+      "trees_verified": 1,
+      "leaf_count": 16
+    },
+    "whole": true
+  },
+  "actual_info_packet": {
+    "tree": "a2bc6e96254bb0c8213be33d07cb1f6d4d9e2b28",
+    "files": 24,
+    "bytes": 203877,
+    "merkle": {
+      "root_sha": "a2bc6e96254bb0c8213be33d07cb1f6d4d9e2b28",
+      "trees_verified": 1,
+      "leaf_count": 24
+    },
+    "whole": true
+  },
+  "checks": [
+    {
+      "name": "source_and_actual_packets_whole",
+      "passed": true
+    },
+    {
+      "name": "six_strict_hunks_forward_reverse",
+      "passed": true
+    },
+    {
+      "name": "pinned_prior_candidate_request",
+      "passed": true
+    },
+    {
+      "name": "unchanged_archive_pure",
+      "passed": true
+    },
+    {
+      "name": "actual_start-r1_request_intent_arm",
+      "passed": true
+    },
+    {
+      "name": "actual_start-r1_SDK_native",
+      "passed": true
+    },
+    {
+      "name": "actual_status0-r1_request_intent_arm",
+      "passed": true
+    },
+    {
+      "name": "actual_status0-r1_SDK_native",
+      "passed": true
+    },
+    {
+      "name": "actual_page0-r1_request_intent_arm",
+      "passed": true
+    },
+    {
+      "name": "actual_page0-r1_SDK_native",
+      "passed": true
+    },
+    {
+      "name": "single_exact_original_info_no_reuse",
+      "passed": true
+    },
+    {
+      "name": "original_info_inactive_complete",
+      "passed": true
+    },
+    {
+      "name": "one_original_page_exact_599_SHA_EOF",
+      "passed": true
+    },
+    {
+      "name": "original_info_payload_native_binding",
+      "passed": true
+    },
+    {
+      "name": "exact_current_metadata_and_owner_mode",
+      "passed": true
+    },
+    {
+      "name": "lossless_version_and_full9",
+      "passed": true
+    },
+    {
+      "name": "only_exact_body_request",
+      "passed": true
+    },
+    {
+      "name": "single_replacement_one exact body capability after actual metadata",
+      "passed": true
+    },
+    {
+      "name": "single_replacement_closed exact version-bound binary_read route",
+      "passed": true
+    },
+    {
+      "name": "single_replacement_bind all body original-call intents to separate body GO",
+      "passed": true
+    },
+    {
+      "name": "single_replacement_one body invocation marker before native call",
+      "passed": true
+    },
+    {
+      "name": "single_replacement_exact original chunk/UTF8/whole SHA; preserve raw report before later semantics",
+      "passed": true
+    },
+    {
+      "name": "single_replacement_explicit body authorization through normal-return gfRun only",
+      "passed": true
+    },
+    {
+      "name": "all_and_only_six_replacements",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_gfNeed",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_gfMetaEquals",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_gfState",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_gfSave",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_gfIntegerText",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_gfInitializeOnlyAfterRootGO",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_gfAuthorizeStageResultInfoOnly",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_gfAcceptArchivedSDK",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_gfReconcileSameGitArchiveReadOnly",
+      "passed": true
+    },
+    {
+      "name": "separate_GO_closed_info_and_once_marker",
+      "passed": true
+    },
+    {
+      "name": "unchanged_pages_and_limits",
+      "passed": true
+    },
+    {
+      "name": "body_verification_before_semantics",
+      "passed": true
+    },
+    {
+      "name": "JS_parse_only_no_invocation",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "prior_root_checker_error": {
+    "message": "Error: unchanged_definition_gfAuthorizeStageResultInfoOnly",
+    "no_Native": true
+  },
+  "correction": "First root function selector included following added declarations; corrected to function closing brace. Candidate and all Native inputs unchanged; no Native call occurred.",
+  "actual_info": {
+    "operation": "2d07d9698ca3b85a8adde0aad7acb28f9fa514e0d23d17346ae03c074a582394",
+    "path": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/control/stage-result.public.json",
+    "bytes": 27581,
+    "sha256": "0bf4e76a64ded7fa9ff5af683252cbe6e19f055766fb9004345bbc2c265c4666",
+    "version": "66306:28749310:27581:1793934521373633707:1793934521373633707",
+    "closed": true
+  },
+  "qualification": {
+    "metadata": true,
+    "current_stage_report_body": false,
+    "source_stage_semantics": false,
+    "formatter": false,
+    "build": false,
+    "product_tests": false
+  },
+  "root_Runtime_calls": 0
+}

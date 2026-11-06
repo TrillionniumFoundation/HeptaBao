@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao.h2-live.explicit-armed-page-recovery.v1",
+  "recovery_tree": "811692431bf219ea0a217a95c43eaab871e75562",
+  "new_root_GO": {
+    "blob": "6f5209101dcdc9d29f8d5b3cd6d57d32319dedff",
+    "bytes": 4325,
+    "sha256": "156b2cbe5dc3bdc78c1ad6fec62cb21ab606526dd587fad2e63ab028049c0ed5"
+  },
+  "original_block": {
+    "expected_tree": "57bf417be264a07210b8d3a601c7d84354cbf801",
+    "entries": [
+      {
+        "path": "original.txt",
+        "blob": "d59acffc65587115620facf74cac6ff355da271c",
+        "bytes": 108137,
+        "sha256": "678a63894f84ac58a3b7b914461ce6b62a74c8c73b0e5d982954edd743e57829"
+      }
+    ],
+    "error": "Error: Git_create_unconfirmed",
+    "only_exact_read_reconcile": true
+  },
+  "original_block_sha256": "7505abc72cc2f10c45b0846d95547fd874471e0884b392d489adc06a3aef1db3",
+  "old_create_outcome": "UNKNOWN",
+  "old_checkpoint_content": "d59acffc65587115620facf74cac6ff355da271c",
+  "original_pending_request": {
+    "name": "h2-live-result-body-065536-page-016384-request",
+    "blob": "31b413cc3cf3c6878ecb9f0891fa162e3e37f3f6",
+    "bytes": 126,
+    "sha256": "89eae41a5f0c8b771357c0719cb8a126637955d61f61174762dfbae8467307f9",
+    "archive_tree": "60c0e061ca2e208e486ed1a96c121c167d4629a6",
+    "external_whole": true
+  },
+  "original_pending_intent": {
+    "name": "h2-live-result-body-065536-page-016384-intent",
+    "blob": "448a82490b0b370b9d845cc7e8b17f3e7728ad99",
+    "bytes": 964,
+    "sha256": "654c1c8cb764ab045d208a76f56b9dec10903dfb280d92d7722a41c595f0d06d",
+    "archive_tree": "2d3b2ce6e6932a1e813bf6f549cd841154eb9a2f",
+    "external_whole": true
+  },
+  "Native_tool_statement_attempts": 1,
+  "submitted_flag_not_reset": true,
+  "ls_lp_not_reentered": true,
+  "new_continuation_intent": {
+    "name": "h2-live-original-page-016384-explicit-continuation-intent",
+    "blob": "8f679a41ec3c13bc0254d7bd9c6214bf6441fa6f",
+    "bytes": 2115,
+    "sha256": "223806d1e7f6ddaac486f9d068b3237b7c9c21605e96bf4003100bc474d5879d",
+    "archive_tree": "1e50da712242ed23dfa6b2839259a696ccc0cbb2",
+    "external_whole": true
+  }
+}

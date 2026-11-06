@@ -1,0 +1,435 @@
+{
+  "schema": "heptabao.native-jwt.format-nine.source-checks.v1",
+  "passed": true,
+  "checks": 106,
+  "results": [
+    {
+      "name": "replacement before unique 0",
+      "passed": true
+    },
+    {
+      "name": "replacement before unique 1",
+      "passed": true
+    },
+    {
+      "name": "replacement before unique 2",
+      "passed": true
+    },
+    {
+      "name": "replacement before unique 3",
+      "passed": true
+    },
+    {
+      "name": "replacement before unique 4",
+      "passed": true
+    },
+    {
+      "name": "replacement before unique 5",
+      "passed": true
+    },
+    {
+      "name": "replacement before unique 6",
+      "passed": true
+    },
+    {
+      "name": "replacement before unique 7",
+      "passed": true
+    },
+    {
+      "name": "replacement before unique 8",
+      "passed": true
+    },
+    {
+      "name": "replacement before unique 9",
+      "passed": true
+    },
+    {
+      "name": "replacement before unique 10",
+      "passed": true
+    },
+    {
+      "name": "replacement before unique 11",
+      "passed": true
+    },
+    {
+      "name": "replacement before unique 12",
+      "passed": true
+    },
+    {
+      "name": "replacement before unique 13",
+      "passed": true
+    },
+    {
+      "name": "ordered exact replacement reconstructs candidate",
+      "passed": true
+    },
+    {
+      "name": "ordered inverse reconstructs original whole",
+      "passed": true
+    },
+    {
+      "name": "strict diff forward whole",
+      "passed": true
+    },
+    {
+      "name": "strict diff reverse whole",
+      "passed": true
+    },
+    {
+      "name": "exact five hunks",
+      "passed": true
+    },
+    {
+      "name": "ordered five original definitions",
+      "passed": true
+    },
+    {
+      "name": "whole function unchanged remain",
+      "passed": true
+    },
+    {
+      "name": "whole function unchanged sha",
+      "passed": true
+    },
+    {
+      "name": "whole function unchanged write_new",
+      "passed": true
+    },
+    {
+      "name": "whole function unchanged sync_dir",
+      "passed": true
+    },
+    {
+      "name": "read_pin only expected size admission",
+      "passed": true
+    },
+    {
+      "name": "actual Popen/communicate/kill/reap block whole unchanged",
+      "passed": true
+    },
+    {
+      "name": "original tool/config/children/deadline/stdio final tail whole unchanged",
+      "passed": true
+    },
+    {
+      "name": "request exact source",
+      "passed": true
+    },
+    {
+      "name": "request isolated Python argv original shape",
+      "passed": true
+    },
+    {
+      "name": "request unchanged host",
+      "passed": true
+    },
+    {
+      "name": "request unchanged executable",
+      "passed": true
+    },
+    {
+      "name": "request unchanged cwd",
+      "passed": true
+    },
+    {
+      "name": "request unchanged timeout_seconds",
+      "passed": true
+    },
+    {
+      "name": "request only original top fields",
+      "passed": true
+    },
+    {
+      "name": "request original supervisor sixty",
+      "passed": true
+    },
+    {
+      "name": "manifest exact stdin",
+      "passed": true
+    },
+    {
+      "name": "stdin within original 262144 and Native 1MiB",
+      "passed": true
+    },
+    {
+      "name": "ordered exact nine manifest names",
+      "passed": true
+    },
+    {
+      "name": "only nine fixed input/output names",
+      "passed": true
+    },
+    {
+      "name": "source literal pin auth.rs",
+      "passed": true
+    },
+    {
+      "name": "stdin source literal pin auth.rs",
+      "passed": true
+    },
+    {
+      "name": "canonical exact source leaf auth.rs",
+      "passed": true
+    },
+    {
+      "name": "source first line compatible with existing output guard auth.rs",
+      "passed": true
+    },
+    {
+      "name": "fixed output cap auth.rs",
+      "passed": true
+    },
+    {
+      "name": "source literal pin auth_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "stdin source literal pin auth_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "canonical exact source leaf auth_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "source first line compatible with existing output guard auth_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "fixed output cap auth_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "source literal pin auth_native_v6_routes.rs",
+      "passed": true
+    },
+    {
+      "name": "stdin source literal pin auth_native_v6_routes.rs",
+      "passed": true
+    },
+    {
+      "name": "canonical exact source leaf auth_native_v6_routes.rs",
+      "passed": true
+    },
+    {
+      "name": "source first line compatible with existing output guard auth_native_v6_routes.rs",
+      "passed": true
+    },
+    {
+      "name": "fixed output cap auth_native_v6_routes.rs",
+      "passed": true
+    },
+    {
+      "name": "source literal pin federated_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "stdin source literal pin federated_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "canonical exact source leaf federated_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "source first line compatible with existing output guard federated_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "fixed output cap federated_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "source literal pin federated_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "stdin source literal pin federated_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "canonical exact source leaf federated_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "source first line compatible with existing output guard federated_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "fixed output cap federated_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "source literal pin service.rs",
+      "passed": true
+    },
+    {
+      "name": "stdin source literal pin service.rs",
+      "passed": true
+    },
+    {
+      "name": "canonical exact source leaf service.rs",
+      "passed": true
+    },
+    {
+      "name": "source first line compatible with existing output guard service.rs",
+      "passed": true
+    },
+    {
+      "name": "fixed output cap service.rs",
+      "passed": true
+    },
+    {
+      "name": "source literal pin service_native_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "stdin source literal pin service_native_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "canonical exact source leaf service_native_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "source first line compatible with existing output guard service_native_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "fixed output cap service_native_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "source literal pin service_native_jwt_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "stdin source literal pin service_native_jwt_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "canonical exact source leaf service_native_jwt_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "source first line compatible with existing output guard service_native_jwt_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "fixed output cap service_native_jwt_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "source literal pin service_native_userpass_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "stdin source literal pin service_native_userpass_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "canonical exact source leaf service_native_userpass_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "source first line compatible with existing output guard service_native_userpass_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "fixed output cap service_native_userpass_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "source sum 1221466",
+      "passed": true
+    },
+    {
+      "name": "output cap sum 3014656",
+      "passed": true
+    },
+    {
+      "name": "three readonly source admission checks precede fresh root creation",
+      "passed": true
+    },
+    {
+      "name": "finally source all full pin equality",
+      "passed": true
+    },
+    {
+      "name": "same absolute fifty-second clock",
+      "passed": true
+    },
+    {
+      "name": "original per child clipped ten",
+      "passed": true
+    },
+    {
+      "name": "original cleanup clipped five",
+      "passed": true
+    },
+    {
+      "name": "tool pinned original exact binary",
+      "passed": true
+    },
+    {
+      "name": "owned explicit config pinned",
+      "passed": true
+    },
+    {
+      "name": "full canonical inventory no ambient rustfmt config",
+      "passed": true
+    },
+    {
+      "name": "fresh root no exist_ok",
+      "passed": true
+    },
+    {
+      "name": "fixed source path",
+      "passed": true
+    },
+    {
+      "name": "no source write target",
+      "passed": true
+    },
+    {
+      "name": "original no detached group",
+      "passed": true
+    },
+    {
+      "name": "original all Owned stopped and deadline exit",
+      "passed": true
+    },
+    {
+      "name": "no Cargo or product subprocess",
+      "passed": true
+    },
+    {
+      "name": "original once close remains for all original FD helpers",
+      "passed": true
+    },
+    {
+      "name": "exact 38 outputs",
+      "passed": true
+    },
+    {
+      "name": "all output paths fresh root",
+      "passed": true
+    },
+    {
+      "name": "all actual output identities unknown",
+      "passed": true
+    },
+    {
+      "name": "success observation arithmetic explicit",
+      "passed": true
+    },
+    {
+      "name": "source no actual stage or formatter",
+      "passed": true
+    }
+  ],
+  "execution": "pure V8 only; lexical/whole-byte/diff/metadata checks, not Python AST or formatter",
+  "Runtime": 0,
+  "Python": 0,
+  "Rust": 0
+}

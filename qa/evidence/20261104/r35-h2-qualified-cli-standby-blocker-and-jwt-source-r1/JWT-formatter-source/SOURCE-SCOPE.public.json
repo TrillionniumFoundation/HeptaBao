@@ -1,0 +1,68 @@
+{
+  "schema": "heptabao.native-jwt.format-nine.SOURCE.v1",
+  "source_stage_request": {
+    "blob": "c1429991e9c597d1639f02a68f791043e6c8b9e5",
+    "bytes": 111605,
+    "sha256": "aebf043cfcb5d60611dd67f3ed93c0caee8098091a70c8b61c8306de05fc5b65"
+  },
+  "source_commit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+  "source_tree": "5497775d9d473541e13e1603be8c893a3e27681b",
+  "root": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1",
+  "source": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/source/crates/heptabao-server/src",
+  "original": {
+    "blob": "81211c8129b8d219672f88e5d7a2f9a0e7c3dea2",
+    "bytes": 7587,
+    "sha256": "c3b33a6a69a973d3c3e15e25054692593cc075a239e55dc0c3f2a7fb16f0f695"
+  },
+  "candidate": {
+    "blob": "1266e75033bee0962b0d77d3c35ee19ec53086db",
+    "bytes": 10532,
+    "sha256": "f12b91c2bffd7d466b0f9912fbdd6f62360ce66a008757a7c2ee9c02ab4d21c3"
+  },
+  "request": {
+    "blob": "0ec62f939a62a2a23c73e33d25f1043957aeeb58",
+    "bytes": 12372,
+    "sha256": "1ad41c45534f842fdd7010ab184db3f46460f87f8ead786efc142461b709bc91"
+  },
+  "input_manifest": {
+    "blob": "78c52454968a69636287eeab88ce328a77bff534",
+    "bytes": 1211,
+    "sha256": "24a0808820c0f3596011eddd20e48190ab2ba63edecf30e230a0802e2d702c5c"
+  },
+  "source_input_bytes": 1221466,
+  "per_file_output_caps": {
+    "auth.rs": 524288,
+    "auth_native_jwt.rs": 262144,
+    "auth_native_v6_routes.rs": 262144,
+    "federated_auth.rs": 262144,
+    "federated_native_jwt.rs": 262144,
+    "service.rs": 655360,
+    "service_native_auth.rs": 262144,
+    "service_native_jwt_tests.rs": 262144,
+    "service_native_userpass_tests.rs": 262144
+  },
+  "total_per_file_output_caps": 3014656,
+  "original_stdin_cap": 262144,
+  "process_start_stdin_cap": 1048576,
+  "original_internal_seconds": 50,
+  "original_child_seconds": 10,
+  "original_outer_seconds": 60,
+  "source_inputs_observed": false,
+  "stage_actual_closed": false,
+  "formatter_started": false,
+  "Runtime_GO": false,
+  "source_replacements": 14,
+  "hunks": 5,
+  "stderr_max_bytes_per_file": 65536,
+  "success_output_file_count": 38,
+  "success_observation_admission_budget_bytes": 7906155,
+  "receipt_metadata_max_bytes": 65536,
+  "budget_semantics": "Fixed successful-output observation admission only. Receipt size cap is a read-plan refusal, not a runtime-enforced receipt length. Original stdout write precedes shape bound; failed artifacts may exceed successful-read bounds and do not authorize a broader read.",
+  "source_stage_actual_prerequisite": "Exact source-stage c1429991 authority/streams/full index/source identities/owned closure separately accepted before formatter dispatch; no source-stage actual exists in this proposal.",
+  "formatted_successor_required_if_bytes_change": true,
+  "typed_binding": {
+    "sha256": "97b92b61a47d93f1a7a871d7ae2ce3bb08e3c26a67c2302947a464704a654839",
+    "native_fingerprint_decimal": "10932817268790105073",
+    "canonical_bytes": 12307
+  }
+}

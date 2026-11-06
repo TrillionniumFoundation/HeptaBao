@@ -1,0 +1,32 @@
+[
+  {
+    "before": "\nfunction gfNeed(value, code)",
+    "after": "\n/* One exact whole-report chunk after independently closed actual metadata.\n * Only this 27581-byte range is admitted; no body/listing fallback exists.\n */\nconst GF_STAGE_BODY_REQUEST = {\"blob\":\"53891d75942f028f9511f61724474fc58d3343e6\",\"bytes\":434,\"sha256\":\"dbe7886be6f77f2c69b0070593e56c24b26f011b3761eb6a7154038070078193\"};\nconst GF_STAGE_BODY_EXPECTED = {\"path\":\"/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/control/stage-result.public.json\",\"bytes\":27581,\"sha256\":\"0bf4e76a64ded7fa9ff5af683252cbe6e19f055766fb9004345bbc2c265c4666\",\"version\":\"66306:28749310:27581:1793934521373633707:1793934521373633707\",\"infoOperation\":\"2d07d9698ca3b85a8adde0aad7acb28f9fa514e0d23d17346ae03c074a582394\",\"infoNative\":{\"blob\":\"730a1f4b8e2389082c2fd3ef595624953022ed83\",\"bytes\":482,\"sha256\":\"e8232bba16919229ade7d06866a74991507b9db5e11948d5bbdd2894750e3804\"}};\n\nfunction gfAuthorizeStageResultBodyOnly({goRaw,goPin,goWholeReadback}) {\n const s=gfState(),need=GF_STAGE_BODY_EXPECTED,info=s.stageResultInfo;\n gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null\n   && s.activeObserver===null && s.job===\"1a1aed43ac9-fc05-62ec\"\n   && s.stageResultInfoGO?.whole===true && s.stageResultInfoStarted===true\n   && s.stageResultBodyGO===undefined && s.stageResultBodyStarted!==true,\n   \"closed_info_before_one_exact_body_GO\");\n gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin)\n   && goPin.blob!==s.goPin.blob && goPin.blob!==s.stageResultInfoGO.pin.blob,\n   \"separate_whole_body_only_GO\");\n const g=JSON.parse(goRaw);\n gfNeed(g.authorization===\"GO\" && g.scope===\"stage_result_binary_read_only\"\n   && g.original_job===s.job && g.info_operation===need.infoOperation\n   && g.maximum_binary_read_starts===1\n   && g.exact_request?.blob===GF_STAGE_BODY_REQUEST.blob\n   && g.exact_request?.bytes===GF_STAGE_BODY_REQUEST.bytes\n   && g.exact_request?.sha256===GF_STAGE_BODY_REQUEST.sha256,\n   \"exact_new_root_body_scope\");\n const prior=s.completedObservers.find(o=>o.id===need.infoOperation);\n gfNeed(prior?.completedInactive===true && prior.tool===\"file_info\"\n   && prior.nativeText.blob===need.infoNative.blob\n   && gfMetaEquals(load(GF_SLOT+\":closed_native:\"+need.infoOperation),need.infoNative)\n   && info?.path===need.path && info.size===need.bytes && info.sha256===need.sha256\n   && info.version===need.version && info.originalOperation===need.infoOperation\n   && need.bytes>0 && need.bytes<=65536 && need.bytes<=GF_STAGE_RESULT_MAX_BYTES,\n   \"whole_current_info_identity_and_single_chunk\");\n s.stageResultBodyGO={pin:goPin,raw:goRaw,whole:true};\n gfSave(s);\n return {originalJob:s.job,infoOperation:need.infoOperation,\n   exactRequest:GF_STAGE_BODY_REQUEST,maximumBinaryReadStarts:1,wholeBytes:need.bytes};\n}\n\nfunction gfNeed(value, code)",
+    "label": "one exact body capability after actual metadata"
+  },
+  {
+    "before": "  if(op.tool===\"file_info\") {\n   gfNeed(s.stageResultInfoGO?.whole===true",
+    "after": "  if(op.tool===\"binary_read\") {\n   gfNeed(s.stageResultBodyGO?.whole===true && s.stageResultBodyStarted!==true\n     && gfMetaEquals(raw,GF_STAGE_BODY_REQUEST)\n     && Object.keys(a).sort().join(\",\")===\"expected_version,host,limit,offset,path\"\n     && a.path===GF_STAGE_BODY_EXPECTED.path && a.offset===0\n     && a.limit===GF_STAGE_BODY_EXPECTED.bytes && a.limit<=65536\n     && a.expected_version===GF_STAGE_BODY_EXPECTED.version,\n     \"one_exact_version_bound_whole_report_chunk\");\n  } else if(op.tool===\"file_info\") {\n   gfNeed(s.stageResultInfoGO?.whole===true",
+    "label": "closed exact version-bound binary_read route"
+  },
+  {
+    "before": "  rootGo:(kind===\"operation_start\" && q.operation.tool===\"file_info\")\n    || s.activeObserver?.tool===\"file_info\" ? s.stageResultInfoGO.pin : s.goPin,",
+    "after": "  rootGo:((kind===\"operation_start\" && q.operation.tool===\"binary_read\")\n    || s.activeObserver?.tool===\"binary_read\") ? s.stageResultBodyGO.pin\n    : ((kind===\"operation_start\" && q.operation.tool===\"file_info\")\n      || s.activeObserver?.tool===\"file_info\") ? s.stageResultInfoGO.pin : s.goPin,",
+    "label": "bind all body original-call intents to separate body GO"
+  },
+  {
+    "before": " if(c.kind===\"operation_start\" && q.operation.tool===\"file_info\")s.stageResultInfoStarted=true;\n gfSave(s);",
+    "after": " if(c.kind===\"operation_start\" && q.operation.tool===\"file_info\")s.stageResultInfoStarted=true;\n if(c.kind===\"operation_start\" && q.operation.tool===\"binary_read\")s.stageResultBodyStarted=true;\n gfSave(s);",
+    "label": "one body invocation marker before native call"
+  },
+  {
+    "before": "  if(a.tool===\"file_info\") {\n   const md=v.metadata,parts=typeof v.version===\"string\"?v.version.split(\":\"):[];",
+    "after": "  if(a.tool===\"binary_read\") {\n   const need=GF_STAGE_BODY_EXPECTED;\n   gfNeed(v.path===need.path && v.version===need.version && v.size===need.bytes\n     && v.offset===0 && v.next_offset===need.bytes && v.eof===true\n     && typeof v.data_base64===\"string\" && v.chunk_sha256===need.sha256,\n     \"whole_report_original_binary_extent\");\n   const bodyBytes=unb64(v.data_base64),bodyRaw=utf8Text(bodyBytes),bodyPin=gitBlobMeta(bodyRaw);\n   gfNeed(bodyBytes.length===need.bytes && bodyPin.bytes===need.bytes\n     && bodyPin.sha256===need.sha256,\"whole_report_actual_bytes_SHA\");\n   store(GF_SLOT+\":stage_result_body_original\",bodyRaw);\n   s.stageResultBody={path:need.path,version:need.version,body:bodyPin,\n     originalOperation:a.id,metadataOperation:need.infoOperation,\n     originalPayload:pin,semanticQualification:false};\n  } else if(a.tool===\"file_info\") {\n   const md=v.metadata,parts=typeof v.version===\"string\"?v.version.split(\":\"):[];",
+    "label": "exact original chunk/UTF8/whole SHA; preserve raw report before later semantics"
+  },
+  {
+    "before": "  else if(action===\"authorize_stage_result_info\")value=gfAuthorizeStageResultInfoOnly(args);\n  else if(action===\"prepare\")",
+    "after": "  else if(action===\"authorize_stage_result_info\")value=gfAuthorizeStageResultInfoOnly(args);\n  else if(action===\"authorize_stage_result_body\")value=gfAuthorizeStageResultBodyOnly(args);\n  else if(action===\"prepare\")",
+    "label": "explicit body authorization through normal-return gfRun only"
+  }
+]

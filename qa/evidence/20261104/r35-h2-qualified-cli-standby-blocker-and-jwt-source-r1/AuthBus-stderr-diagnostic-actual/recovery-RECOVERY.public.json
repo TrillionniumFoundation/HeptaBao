@@ -1,0 +1,49 @@
+{
+  "schema": "heptabao.original-native-ack-new-evidence-tree-recovery.r1",
+  "authorization": "Parent /root message after original archive failure: exact one different evidence tree; no Native parse/retry/unpause.",
+  "originalCallKey": "launchd-stderr-streams-01-start",
+  "kind": "operation_start",
+  "request": {
+    "blob": "d403a16747d74a245a82b0f3d124a32ac6a47ef0",
+    "bytes": 303,
+    "sha256": "3e34779996b01244a840ba49bf297fa9da6de8338f9df06f48133544ef2f44a1"
+  },
+  "originalExternalArmedTree": "7ef99da6bdd5668546a5079c5285bf35418baa83",
+  "originalNativeCallReturned": true,
+  "originalNativeSDK": {
+    "blob": "61d992ba86d54d1da4eab9f7cf72032dfa0c00b0",
+    "bytes": 707,
+    "sha256": "30d7c108604c034a2dd1ab9b9192bde812720acba86159541b3b0e43c0157ab5"
+  },
+  "originalNativeSDKInterpreted": false,
+  "oldCreateExpectedTree": "8916feb2a335fcf5fd7d47b55d39dd57b8465ab5",
+  "oldCreateOutcome": "UNKNOWN; RemoteProtocolError followed by one exact tree GET422 and one exact blob GET404 do not prove original mutation never occurred.",
+  "newPacketMustDifferFromOldTree": true,
+  "noOldCreateReplay": true,
+  "noNativeCallRepeated": true,
+  "paused": true,
+  "pending": "launchd-stderr-streams-01-start",
+  "nativeCallInFlight": false,
+  "activeObserver": null,
+  "unknownOriginalNativeFuturePendingAckAcceptance": true,
+  "rootMustAuthorizeExistingAckAcceptanceAndOriginalObserverReconciliation": true,
+  "diagnosticAuthority": {
+    "job": "1a1aed868b6-fc05-6321",
+    "exitCode": 0,
+    "full": true,
+    "durable": true,
+    "originalPayload": {
+      "blob": "b86a71d02a2e4313bc333b33dd1523534a9e3df2",
+      "bytes": 914,
+      "sha256": "058106754a79a6b1007c199a4d3beb6a5748a0b3bd41bf234227611031526e51"
+    }
+  },
+  "sourceAndJobStateUnchanged": true,
+  "recoveryReadOnlyObservationSDKs": [
+    "expected-tree.readonly.original.sdk.json",
+    "expected-sdk-blob.readonly.original.sdk.json"
+  ],
+  "errorSDKs": [
+    "git-create.original-error.sdk.json"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "root_sha": "5497775d9d473541e13e1603be8c893a3e27681b",
+  "trees_verified": 358,
+  "leaf_count": 3916,
+  "bytes": 62287650,
+  "index": {
+    "blob": "3b251267c75dfbc32c5d0a870c040a2b32c20755",
+    "bytes": 452026,
+    "sha256": "d545c2109362dc3f74d85ade2e66717d7b1ff9dd630842982f2ae3215e121dea"
+  },
+  "formatter_configs": []
+}

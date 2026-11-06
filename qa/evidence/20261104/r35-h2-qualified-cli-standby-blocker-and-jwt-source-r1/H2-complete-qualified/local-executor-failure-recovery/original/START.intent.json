@@ -1,0 +1,56 @@
+{
+  "schema": "heptabao.h2-live.external-execution-intent.v1",
+  "owner": "/root/compatibility_audit",
+  "lane": "B",
+  "GO": {
+    "blob": "39616822031623661e3db7d5153f9dcb19525842",
+    "bytes": 10177,
+    "sha256": "797d031779441fd8d10563b62200a848c80facd2965dd7b5b0e817163a3b7684"
+  },
+  "request": {
+    "blob": "32fc562b787488e539df6e57301ec9a7f6a53005",
+    "bytes": 711,
+    "sha256": "05220ced4192d3d2ee10208a86eb902b8d9e55f768acb17066c10e2e6eee94c4"
+  },
+  "exact_request": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3.12",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/qa/native_h2_gate_r1.py",
+      "--binding",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/binding.private.json",
+      "--binding-sha256",
+      "b241c6fc78bbe77ea69fc3b8a707b1747324a81f1da1ade3d9bb15c5cea5b7d8",
+      "--run",
+      "--prepare-result-sha256",
+      "bb5bdec75ad7081910b4ccb39492964e42a0a144f57f3d3ef1a97b0df05613d4"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "idempotency_key": "heptabao-native-h2-gate-live-4e808-20261105-r2",
+    "timeout_seconds": 2400
+  },
+  "native_request_digest": "be5236ae3c4a5eb211e844375d6bba4d768ba21e5e596335bd38a9b53844d05b",
+  "native_fingerprint_decimal": "13714083937260297906",
+  "predecessor_release": {
+    "name": "h2-prepare-owner-release",
+    "blob": "3dbf730683887b88b27263513ca61ecca0646e51",
+    "bytes": 36962,
+    "sha256": "72025c9cc4abbff2f5c4c6868e72694c39aa8f4a9732e5951db7381919e0c64f"
+  },
+  "actual_prepare_sha256": "bb5bdec75ad7081910b4ccb39492964e42a0a144f57f3d3ef1a97b0df05613d4",
+  "maximum_business_starts": 1,
+  "phase": "intent-only-not-submitted",
+  "Runtime_submitted": false,
+  "live_source_and_original_budgets_unchanged": true,
+  "local_durability_helper": {
+    "name": "h2-live-local-durability-helper.js",
+    "blob": "e2cea974645461961d3481e4ae3f0a3bf4e90a12",
+    "bytes": 3999,
+    "sha256": "38ebefd65c9a0aa912ce31f191dd52c98aac6434096e707b227176995db86fef"
+  },
+  "read_policy": "Only the original returned job and frozen GO fixed public result; each observer local fsync then complete Git batch before next observer.",
+  "no_business_replay": true
+}

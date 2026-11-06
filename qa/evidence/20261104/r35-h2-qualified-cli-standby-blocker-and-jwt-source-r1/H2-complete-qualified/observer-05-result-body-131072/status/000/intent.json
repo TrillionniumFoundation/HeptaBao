@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.h2-live.original-readonly-intent.v1",
+  "GO": {
+    "blob": "39616822031623661e3db7d5153f9dcb19525842",
+    "bytes": 10177,
+    "sha256": "797d031779441fd8d10563b62200a848c80facd2965dd7b5b0e817163a3b7684"
+  },
+  "job_id": "1a1ae76aacd-fc05-5fb4",
+  "label": "result-body-131072-status0",
+  "tool": "operation_status",
+  "request": {
+    "name": "h2-live-result-body-131072-status0-request",
+    "blob": "e5a0a5d68f19fce10b285d8f8a3fcc213e453075",
+    "bytes": 89,
+    "sha256": "ed2d2902822046d1301c5e4e809abfe74c1717666e16524eb434c74eb4c20ebb",
+    "archive_tree": "86d578be3093d72756cc66fb3edd7dbef741f8df",
+    "external_whole": true
+  },
+  "Runtime_submitted": false,
+  "one_future": true,
+  "original_SDK_external_before_parse": true,
+  "Git_first_protocol_GO": {
+    "blob": "778d79c6702a0aa7933aaec598e548349eb31a73",
+    "bytes": 6592,
+    "sha256": "f8564f6759b9cd7da416aa0d0558e6138e96bbde4a05a7ce9179454f5fbdba3e"
+  }
+}

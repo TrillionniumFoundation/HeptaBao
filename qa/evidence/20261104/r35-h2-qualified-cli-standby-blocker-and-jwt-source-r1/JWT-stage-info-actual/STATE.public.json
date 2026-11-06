@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.native-jwt.stage-result-info.actual.v1",
+  "originalSourceStage": "1a1aed43ac9-fc05-62ec",
+  "previousWholePacket": "50d59c2855d912d216f774ffeff5542f273a9af6",
+  "sourceProposal": "8436afae1c19e217c6586dd6171703d73c22506b",
+  "originalInfoOperation": "2d07d9698ca3b85a8adde0aad7acb28f9fa514e0d23d17346ae03c074a582394",
+  "originalCalls": 3,
+  "immutablePages": 1,
+  "wholePayload": {
+    "blob": "b5475bcb00c09b919d01a3008c68f8b3e6d17df8",
+    "bytes": 599,
+    "sha256": "b7e626a7c3c69e824860cdcf22fac002d9694c28ae5d95e7a09d69cfc55baf4d"
+  },
+  "returnedObserverClosed": true,
+  "RuntimeCallsInFlight": 0,
+  "nativeFuturesActive": 0,
+  "bodyObserved": false,
+  "bodyCalls": 0,
+  "bodyPermission": false,
+  "candidateFormatterRun": false,
+  "fullSourceQualification": false,
+  "next": "A separate exact single offset0/limit27581/expected_version body request and journal scope may now be reviewed."
+}

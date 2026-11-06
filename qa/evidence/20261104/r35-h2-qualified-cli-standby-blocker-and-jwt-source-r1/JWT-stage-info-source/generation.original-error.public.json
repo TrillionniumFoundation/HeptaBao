@@ -1,0 +1,7 @@
+{
+  "name": "TypeError",
+  "message": "diff.match is not a function",
+  "phase": "pure source generation after source stores, before any Git or Runtime",
+  "nativeCalls": 0,
+  "gitMutations": 0
+}

@@ -1,0 +1,238 @@
+{
+  "schema": "heptabao.root-CLI-actual-info-and-body13-source-review.v1",
+  "source_packet": {
+    "tree": "f8f655b805864650b773f4287cac7e592928d6a9",
+    "files": 28,
+    "bytes": 184410,
+    "merkle": {
+      "root_sha": "f8f655b805864650b773f4287cac7e592928d6a9",
+      "trees_verified": 1,
+      "leaf_count": 28
+    },
+    "whole": true
+  },
+  "actual_info_packet": {
+    "tree": "cb046a3da9c962abac8019114333cedbb02f5741",
+    "files": 20,
+    "bytes": 71262,
+    "merkle": {
+      "root_sha": "cb046a3da9c962abac8019114333cedbb02f5741",
+      "trees_verified": 1,
+      "leaf_count": 20
+    },
+    "whole": true
+  },
+  "checks": [
+    {
+      "name": "whole_source28_and_info20",
+      "passed": true
+    },
+    {
+      "name": "eight_exact_strict_hunks",
+      "passed": true
+    },
+    {
+      "name": "original_reviewed_info_source",
+      "passed": true
+    },
+    {
+      "name": "unchanged_pure_archive",
+      "passed": true
+    },
+    {
+      "name": "actual_info_admit_pins",
+      "passed": true
+    },
+    {
+      "name": "actual_info_admit_arm_and_original",
+      "passed": true
+    },
+    {
+      "name": "actual_info_status0_pins",
+      "passed": true
+    },
+    {
+      "name": "actual_info_status0_arm_and_original",
+      "passed": true
+    },
+    {
+      "name": "actual_info_page0_pins",
+      "passed": true
+    },
+    {
+      "name": "actual_info_page0_arm_and_original",
+      "passed": true
+    },
+    {
+      "name": "one_file_info_original_admission",
+      "passed": true
+    },
+    {
+      "name": "info_completed_inactive",
+      "passed": true
+    },
+    {
+      "name": "info_original610_page_SHA_EOF",
+      "passed": true
+    },
+    {
+      "name": "original_metadata_payload_exact",
+      "passed": true
+    },
+    {
+      "name": "fixed_actual_metadata_owner_and_version",
+      "passed": true
+    },
+    {
+      "name": "failed_exit1_not_requalified",
+      "passed": true
+    },
+    {
+      "name": "exact_bounded_range_0",
+      "passed": true
+    },
+    {
+      "name": "exact_bounded_range_1",
+      "passed": true
+    },
+    {
+      "name": "exact_bounded_range_2",
+      "passed": true
+    },
+    {
+      "name": "exact_bounded_range_3",
+      "passed": true
+    },
+    {
+      "name": "exact_bounded_range_4",
+      "passed": true
+    },
+    {
+      "name": "exact_bounded_range_5",
+      "passed": true
+    },
+    {
+      "name": "exact_bounded_range_6",
+      "passed": true
+    },
+    {
+      "name": "exact_bounded_range_7",
+      "passed": true
+    },
+    {
+      "name": "exact_bounded_range_8",
+      "passed": true
+    },
+    {
+      "name": "exact_bounded_range_9",
+      "passed": true
+    },
+    {
+      "name": "exact_bounded_range_10",
+      "passed": true
+    },
+    {
+      "name": "exact_bounded_range_11",
+      "passed": true
+    },
+    {
+      "name": "exact_bounded_range_12",
+      "passed": true
+    },
+    {
+      "name": "thirteen_ranges_whole_geometry",
+      "passed": true
+    },
+    {
+      "name": "old_definition_unchanged_gfAuthorizeCliResultInfoOnly",
+      "passed": true
+    },
+    {
+      "name": "old_definition_unchanged_gfInitializeOnlyAfterRootGO",
+      "passed": true
+    },
+    {
+      "name": "old_definition_unchanged_gfIntegerText",
+      "passed": true
+    },
+    {
+      "name": "old_definition_unchanged_gfMetaEquals",
+      "passed": true
+    },
+    {
+      "name": "old_definition_unchanged_gfNeed",
+      "passed": true
+    },
+    {
+      "name": "old_definition_unchanged_gfReconcileSameGitArchiveReadOnly",
+      "passed": true
+    },
+    {
+      "name": "old_definition_unchanged_gfSave",
+      "passed": true
+    },
+    {
+      "name": "old_definition_unchanged_gfState",
+      "passed": true
+    },
+    {
+      "name": "separate_exact_GO_scope_and_closed_metadata",
+      "passed": true
+    },
+    {
+      "name": "single_next_range_no_replay",
+      "passed": true
+    },
+    {
+      "name": "only_new_binary_pages_16384",
+      "passed": true
+    },
+    {
+      "name": "current_actual_tool_contract",
+      "passed": true
+    },
+    {
+      "name": "each_chunk_SHA_before_join",
+      "passed": true
+    },
+    {
+      "name": "whole_final_SHA_UTF8_archive_before_semantics",
+      "passed": true
+    },
+    {
+      "name": "JS_parse_only_no_Native",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "actual_report": {
+    "packet": "cb046a3da9c962abac8019114333cedbb02f5741",
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r4/result.public.json",
+    "bytes": 848065,
+    "sha256": "d5c691d23b513a2a63916792bbe21178e2b34799e6adbd20ddf88cdf6147bc48",
+    "version": "2050:7910322:848065:1793935422335117221:1793935422335117221",
+    "infoOperation": "d460640d0f261bea9c17630eb911980d8dccaef5499b059d917bb02ac9f8e456",
+    "infoNative": {
+      "blob": "542ef29f4f09bb8c82ec204a42fa54a37d0bd051",
+      "bytes": 493,
+      "sha256": "1477c8d895cbd5dee3bec86efd5b09658ef73a51ae9f7153d7dd4cf217b5c457"
+    },
+    "full9Strings": [
+      "2050",
+      "7910322",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "848065",
+      "1793935422335117221",
+      "1793935422335117221"
+    ]
+  },
+  "original_exit_code": 1,
+  "full_report_reviewed": false,
+  "case_qualifications_from_full_report": false,
+  "page_width_change": "Only these new binary_read original observers:16384; prior8192 routes unchanged; existing1MiB payload cap unchanged",
+  "root_Runtime_calls": 0,
+  "as_of_UTC": "2026-11-06 03:47:17 UTC"
+}

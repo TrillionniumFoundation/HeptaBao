@@ -1,0 +1,386 @@
+{
+  "schema": "heptabao.mac-owned-launchd-readonly-actual-release.r1",
+  "kind": "diagnostic_owned_resources_only_not_original_service_closure",
+  "host": "mac",
+  "job_id": "1a1aebc1cb1-fc05-61c9",
+  "exactRequest": {
+    "blob": "d14f62155b86924edd5632673d2e73832f7b0af5",
+    "bytes": 76816,
+    "sha256": "ab9afbcbbdc150acd11ad9451e35e2785f8fe086d4a371c3a63d4cf0f2a087b4"
+  },
+  "rootGo": {
+    "blob": "53284b6ec0fe0f583cdcadddf8e31f9713ecb6b7",
+    "bytes": 7960,
+    "sha256": "25a3cdc0ad3924dfea7b2690ead0eb9799f96dfc1f5ab4fe873664f53fc10e67"
+  },
+  "source": {
+    "blob": "9858ace064c11d4bc679b64ed35910015bc834e3",
+    "bytes": 75721,
+    "sha256": "e573407b3e092216694f0cbf4a8a526809dc64822b570bf29dd29585c025c233"
+  },
+  "authority": {
+    "at_unix_ms": 1793932932481,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1aebc1cb1-fc05-61c9",
+    "launch_nonce": "154f2233e3b49bb1f82a2bb348e573d4",
+    "log_bytes": {
+      "stderr": {
+        "seen": 116,
+        "stored": 116
+      },
+      "stdout": {
+        "seen": 8553,
+        "stored": 8553
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "stdout": {
+    "blob": "2463d01351d9e74e3e8cc95a281274a2fbf721b0",
+    "bytes": 8553,
+    "sha256": "bf675b0b8b0672121cdac440990b2055d78b44e05463c1b5b82c40e8cec55e77"
+  },
+  "stderr": {
+    "blob": "85ffd1f4d7a7db9937d873288901b15729d8c352",
+    "bytes": 116,
+    "sha256": "1a529a7d5fba0ac9a26d49082fe6527aefcbbe93fd1939efeb0a67cd4e642aa4"
+  },
+  "stdoutAndStderrHexTextWholeMatched": true,
+  "stdoutEof": true,
+  "stderrEof": true,
+  "observations": [
+    {
+      "id": "d20af1733effcfcae1a9546b05fcd8c82f7965f5410a5a85f3fdd934ae65c03b",
+      "tool": "process_status",
+      "payload": {
+        "blob": "9c30761c492eb59705b461bb08cf7abb174308bd",
+        "bytes": 914,
+        "sha256": "adacfd84f3f2f55578d85e154b31cc69e69b01efeb543f7ce0b22a7fabeb59be"
+      },
+      "payloadTree": "8e62911e6157b9169f9a6e75b78336c1fd8be4a8",
+      "nativeText": {
+        "blob": "4479c470a57d2efb7d482a2c9de0c82d730f4fac",
+        "bytes": 735,
+        "sha256": "66f84f984d027df4fd13a9f3543adbaaceb02a52daf7f6fd31fbeacbc44e564f"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "e15a2f2fa1ba2282d74d265b6c7458b8c3cf72ed1a0f5b0145d30ceef2545620",
+      "tool": "process_read",
+      "payload": {
+        "blob": "d22c38ff1e54d0add0e026b42b6f17ab0e54720e",
+        "bytes": 29096,
+        "sha256": "46eb4664c864f24bbef481eae322ad7df47db0f8093af098e87f8d394eda0c64"
+      },
+      "payloadTree": "96e9b66fb0e9d670c45b63bfb01397d54ce8b3c3",
+      "nativeText": {
+        "blob": "b9eb04ec85d3470daac676da71708f6cac0a9acc",
+        "bytes": 27209,
+        "sha256": "ac943638385dd43cc4c8939d072f28666389258b83a5baf8f80c13070a425c2a"
+      },
+      "pages": 4,
+      "completedInactive": true
+    }
+  ],
+  "observers": 2,
+  "pages": 5,
+  "nativeCallInFlight": false,
+  "pending": null,
+  "activeObserver": null,
+  "paused": false,
+  "nextStdout": 8553,
+  "nextStderr": 116,
+  "allOriginalOperationsClosedInactive": true,
+  "diagnosticOk": true,
+  "diagnosticOutcomeUnknown": false,
+  "diagnosticElapsedSeconds": 0.23735575005412102,
+  "diagnosticDeadlineMetAfterClosure": true,
+  "allNewOwnedApplicationDescriptorsClosed": true,
+  "newDescriptorCount": 17,
+  "allNewOwnedHelperCommandsClosed": true,
+  "newHelperCount": 2,
+  "newHelperIdentities": [
+    {
+      "label": "readonly-owned-t5-volume",
+      "pid": 63238,
+      "exitCode": 0,
+      "outcomeUnknown": false,
+      "streamsClosed": true,
+      "directChildReaped": true,
+      "allGroupRowsEmptyAfterReap": true,
+      "signals": [],
+      "postReapSignalSent": false
+    },
+    {
+      "label": "readonly-original-launchd-print",
+      "pid": 63250,
+      "exitCode": 0,
+      "outcomeUnknown": false,
+      "streamsClosed": true,
+      "directChildReaped": true,
+      "allGroupRowsEmptyAfterReap": true,
+      "signals": [],
+      "postReapSignalSent": false
+    }
+  ],
+  "volumeGuard": {
+    "allDescriptorsClosed": true,
+    "anchors": [
+      {
+        "identity": [
+          "16777233",
+          "2",
+          "0",
+          "0",
+          "16877",
+          "22",
+          "704",
+          "1786589515000000000",
+          "1786589515000000000"
+        ],
+        "path": "/"
+      },
+      {
+        "identity": [
+          "16777233",
+          "18336",
+          "0",
+          "0",
+          "16877",
+          "5",
+          "160",
+          "1793100597756515591",
+          "1793100597756515591"
+        ],
+        "path": "/Volumes"
+      },
+      {
+        "identity": [
+          "16777244",
+          "2",
+          "0",
+          "0",
+          "16893",
+          "12",
+          "384",
+          "1793152973144260495",
+          "1793152973144260495"
+        ],
+        "path": "/Volumes/T5"
+      }
+    ],
+    "closeErrors": [],
+    "expectedVolumeDevice": "16777244",
+    "lastAnchorCheckPassed": true,
+    "schema": "heptabao.held-t5-volume-state.r1",
+    "volumeUUIDVerified": true
+  },
+  "freshLaunchctl": {
+    "argumentsCount": 17,
+    "exitCode": 0,
+    "freshObservation": true,
+    "numericFields": {
+      "last exit code": {
+        "bytes": 13,
+        "integerValue": null,
+        "kind": "other_noninteger",
+        "present": true,
+        "sha256": "865ce32135321d0a9b70cc68893f4164c8d08e00f1802b4e15375e1959b933a7"
+      },
+      "pid": {
+        "present": false
+      },
+      "runs": {
+        "bytes": 1,
+        "kind": "original_integer_grammar",
+        "present": true,
+        "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+        "value": 1
+      }
+    },
+    "originalManagerParserAccepted": false,
+    "originalManagerParserError": {
+      "code": "typed_launchctl_integer",
+      "publicFrames": [
+        {
+          "line": 330,
+          "source": "diagnostic"
+        },
+        {
+          "line": 253,
+          "source": "diagnostic"
+        },
+        {
+          "line": 44,
+          "source": "diagnostic"
+        }
+      ],
+      "type": "DiagnosticRefused"
+    },
+    "originalRawPrintRecovered": false,
+    "registrationMatchesOriginalPlist": true,
+    "sameWholeShaAsOriginalTwoPrints": true,
+    "serviceClosureQualified": false,
+    "serviceMissingAtThisQuery": false,
+    "state": "not running",
+    "stateBytes": 11,
+    "stateSha256": "415ed7340303958fdfb6b017b1ce2a6f41844fb84340161329a305092319521d",
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutBytes": 4198,
+    "stdoutSha256": "588b9781cf64a432ab5ef8378de462bc7b3b4cce64f618257c89fa82e6018ae5",
+    "structureAccepted": true
+  },
+  "originalPlist": {
+    "allKeysValuesAndOriginalArgumentsExact": true,
+    "keepAlive": false,
+    "originalPythonAliasUnchanged": true,
+    "sha256": "b40bef763f9073aa70ff27fd76d694df3c1a777795f6015596ad125aa4926fc1"
+  },
+  "readObservations": [
+    {
+      "afterIdentity": [
+        "16777244",
+        "72671221",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "3984",
+        "1793925920564440143",
+        "1793925920564448185"
+      ],
+      "beforeIdentity": [
+        "16777244",
+        "72671221",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "3984",
+        "1793925920564440143",
+        "1793925920564448185"
+      ],
+      "bytes": 3984,
+      "closeAttempted": true,
+      "closed": true,
+      "kind": "fixed_whole_public_record",
+      "namedAfterIdentity": [
+        "16777244",
+        "72671221",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "3984",
+        "1793925920564440143",
+        "1793925920564448185"
+      ],
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.plist",
+      "present": true,
+      "sha256": "b40bef763f9073aa70ff27fd76d694df3c1a777795f6015596ad125aa4926fc1",
+      "stable": true
+    },
+    {
+      "absentAtTwoHeldParentChecks": true,
+      "closed": true,
+      "kind": "fixed_whole_public_record",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.ready.public.json",
+      "present": false,
+      "stable": false
+    },
+    {
+      "absentAtTwoHeldParentChecks": true,
+      "closed": true,
+      "kind": "fixed_whole_public_record",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.exec-ready.public.json",
+      "present": false,
+      "stable": false
+    },
+    {
+      "afterIdentity": [
+        "16777244",
+        "72671222",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "0",
+        "1793925920564923156",
+        "1793925920564948657"
+      ],
+      "beforeIdentity": [
+        "16777244",
+        "72671222",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "0",
+        "1793925920564923156",
+        "1793925920564948657"
+      ],
+      "closeAttempted": true,
+      "closed": true,
+      "fileMayAppend": true,
+      "firstLfPresent": false,
+      "kind": "first_lf_public_projection_from_private_log",
+      "namedAfterIdentity": [
+        "16777244",
+        "72671222",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "0",
+        "1793925920564923156",
+        "1793925920564948657"
+      ],
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.stdout.private",
+      "prefixBytes": 0,
+      "prefixSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "present": true,
+      "repeatedPrefixExact": true,
+      "stable": true,
+      "trailingBytesRead": false,
+      "wholePrivateLogRead": false
+    }
+  ],
+  "ready": null,
+  "execReady": null,
+  "wrapperTerminalPrefix": null,
+  "originalOutcomeUnknownPreserved": true,
+  "actualServerExitQualified": false,
+  "registrationClosureQualified": false,
+  "oldServerSignalAttempted": false,
+  "sameOriginalLabelMutationAttempted": false,
+  "newFixtureStarted": false,
+  "privatePlanOrCapsuleRead": false,
+  "wholePrivateLogRead": false,
+  "sdkOrProviderExecuted": false,
+  "stderrClassification": "two Python SyntaxWarning records about return in finally; full original stderr preserved",
+  "originalSpecificFieldClaim": "Fresh actual last exit code is noninteger, 13 bytes and fixed SHA256; no raw value exported. Whole print SHA equals original two recorded prints. Original raw bytes are not recovered.",
+  "permissions": "No bootout, old signal, worker replay, parser change, SDK execution, new file read or new Runtime job granted by this release."
+}

@@ -1,0 +1,28 @@
+--- steps.before.source.js
++++ steps.cli.source.js
+@@ -4,19 +4,19 @@
+ //
+ // const result = await api.gfRun("initialize", {
+ //   goRaw: EXACT_ROOT_GO_RAW, goPin: EXACT_ROOT_GO_PIN, goWholeReadback: true,
+-//   digest: "27412a077919b5f988477d9a0fcd4bdd7e5d049f21d2c1367ff35bd56f0d67ec",
+-//   fingerprint: "2828588252550247929"
++//   digest: "f670cf418c6ae40943b7f0224e09f0bd556ceb3b5975c377ad0e524a317f5cd7",
++//   fingerprint: "17757921211157505033"
+ // });
+ // text({ok:result.ok, action:result.action, failure:result.failure});
+ //
+ // await api.gfRun("prepare", {
+-//   callKey:"launchd-diag-start-r1",kind:"process_start",
+-//   requestRaw: WHOLE_d14f62155b86924edd5632673d2e73832f7b0af5
++//   callKey:"cli-phaseb-live-r4-start",kind:"process_start",
++//   requestRaw: WHOLE_2c0692832bfe24fe8b728589900896ae64152852
+ // });
+ // After its whole external armed tree and a model boundary:
+-// await api.gfRun("invoke",{callKey:"launchd-diag-start-r1"});
++// await api.gfRun("invoke",{callKey:"cli-phaseb-live-r4-start"});
+ // After full original SDK Git whole:
+-// await api.gfRun("accept",{callKey:"launchd-diag-start-r1"});
++// await api.gfRun("accept",{callKey:"cli-phaseb-live-r4-start"});
+ //
+ // Only actual returned job/operation IDs and stream cursors may derive later
+ // process_status/process_read/status/page exact requests.

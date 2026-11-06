@@ -1,0 +1,134 @@
+{
+  "schema": "heptabao.cleanup-source-local-verifier-correction.r1",
+  "originalError": {
+    "name": "Error",
+    "message": "unexpected_prior_function_delta"
+  },
+  "originalComparisons": [
+    {
+      "name": "remaining",
+      "equal": true
+    },
+    {
+      "name": "identity",
+      "equal": true
+    },
+    {
+      "name": "public_error",
+      "equal": true
+    },
+    {
+      "name": "load_helpers",
+      "equal": true
+    },
+    {
+      "name": "bounded_read",
+      "equal": true
+    },
+    {
+      "name": "fixed_read",
+      "equal": true
+    },
+    {
+      "name": "exact_plist",
+      "equal": true
+    },
+    {
+      "name": "structure_fields",
+      "equal": true
+    },
+    {
+      "name": "missing_service",
+      "equal": true
+    },
+    {
+      "name": "numeric_projection",
+      "equal": true
+    },
+    {
+      "name": "fresh_print_projection",
+      "equal": true
+    },
+    {
+      "name": "fixed_identity",
+      "equal": true
+    },
+    {
+      "name": "finite_seconds",
+      "equal": true
+    },
+    {
+      "name": "ready_projection",
+      "equal": true
+    },
+    {
+      "name": "wrapper_projection",
+      "equal": false
+    }
+  ],
+  "reason": "Text extractor included the new next function's @contextmanager decorator in previous wrapper_projection. Candidate bytes were not changed; new extractor stops at next top-level decorator as well as def.",
+  "correctedComparisons": [
+    {
+      "name": "remaining",
+      "equal": true
+    },
+    {
+      "name": "identity",
+      "equal": true
+    },
+    {
+      "name": "public_error",
+      "equal": true
+    },
+    {
+      "name": "load_helpers",
+      "equal": true
+    },
+    {
+      "name": "bounded_read",
+      "equal": true
+    },
+    {
+      "name": "fixed_read",
+      "equal": true
+    },
+    {
+      "name": "exact_plist",
+      "equal": true
+    },
+    {
+      "name": "structure_fields",
+      "equal": true
+    },
+    {
+      "name": "missing_service",
+      "equal": true
+    },
+    {
+      "name": "numeric_projection",
+      "equal": true
+    },
+    {
+      "name": "fresh_print_projection",
+      "equal": true
+    },
+    {
+      "name": "fixed_identity",
+      "equal": true
+    },
+    {
+      "name": "finite_seconds",
+      "equal": true
+    },
+    {
+      "name": "ready_projection",
+      "equal": true
+    },
+    {
+      "name": "wrapper_projection",
+      "equal": true
+    }
+  ],
+  "candidateUnchanged": true,
+  "noRuntime": true
+}

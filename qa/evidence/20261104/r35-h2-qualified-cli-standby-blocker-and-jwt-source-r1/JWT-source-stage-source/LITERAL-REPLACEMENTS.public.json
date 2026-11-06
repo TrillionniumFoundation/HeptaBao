@@ -1,0 +1,79 @@
+{
+  "schema": "heptabao.native-jwt.source-stage.literal-replacements.v1",
+  "before": {
+    "blob": "5eb1fd375fb7d7bb4f1b2dadb715fa6eecedf494",
+    "bytes": 28324,
+    "sha256": "3971051a80a776723a4f2b5db701c91876c4c6ff00ba536d781dd46002c812f4"
+  },
+  "after": {
+    "blob": "40cdd07ec0e87656c2ea2e65c13a0734ffde6c51",
+    "bytes": 28599,
+    "sha256": "f896b4fc83d957505019259dc79c9ab9bd6e01fb7b40e7c54db442b8b48c7ab7"
+  },
+  "replacements": [
+    [
+      "\"\"\"Create one independent exact same-root publication ROG checkout; no Cargo or product.\"\"\"",
+      "\"\"\"Stage the exact unformatted native JWT source independently; no Cargo or product.\"\"\""
+    ],
+    [
+      "ROOT = Path('/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2')",
+      "ROOT = Path('/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1')"
+    ],
+    [
+      "COMMIT = '4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'",
+      "COMMIT = 'e3afc157447d35c861f275a761b29da3e42aff8e'"
+    ],
+    [
+      "TREE = 'eba5e650bd080b8ad41ea52a2bc68867f541d255'",
+      "TREE = '5497775d9d473541e13e1603be8c893a3e27681b'"
+    ],
+    [
+      "PARENT = '1c66541993662f92cf717154e33717abedb2ea74'",
+      "PARENT = '4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'"
+    ],
+    [
+      "ANCESTRY = (\n",
+      "ANCESTRY = (\n    ('e3afc157447d35c861f275a761b29da3e42aff8e', '4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'),\n"
+    ],
+    [
+      "assert len(entries) == 3914 and len({x[0] for x in entries}) == 3914",
+      "assert len(entries) == 3916 and len({x[0] for x in entries}) == 3916"
+    ],
+    [
+      "result = {'schema': 'heptabao.same-root-publication-independent-source-stage.v1', 'status': 'failed',",
+      "result = {'schema': 'heptabao.native-jwt-independent-source-stage.v1', 'status': 'failed',"
+    ],
+    [
+      "          'source_ref': 'refs/heads/codex/heptabao-retained-a-regression-eba5e650-20261105-r1',",
+      "          'source_ref': None, 'source_fetch_argument': COMMIT,\n          'stage_purpose': 'unformatted_jwt_source_for_separate_formatter_admission',\n          'historical_controls_executed': False, 'candidate_build_qualification': False,\n          'formatter_executed': False, 'rust_tests_executed': False,"
+    ],
+    [
+      "          'canonical_history_count': 3763, 'actual_build_qualification': False,",
+      "          'canonical_history_count': 3764, 'actual_build_qualification': False,"
+    ],
+    [
+      "create(CONTROL / 'stage_source_same_root_publication.py', self_source.encode())",
+      "create(CONTROL / 'stage_source_native_jwt.py', self_source.encode())"
+    ],
+    [
+      "assert len(added) == 11 and set(added) == {row[0] for row in ANCESTRY}",
+      "assert len(added) == 12 and set(added) == {row[0] for row in ANCESTRY}"
+    ],
+    [
+      "assert git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3763'",
+      "assert git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3764'"
+    ],
+    [
+      "assert result['full_worktree']['tracked_bytes'] == 62227757",
+      "assert result['full_worktree']['tracked_bytes'] == 62287650"
+    ],
+    [
+      "assert result['full_worktree']['full_leaf_index_sha256'] == '4bdd85122123e7c8ddfe7e82220688ba23fecd263bb245cfdfc176d08226e092'",
+      "assert result['full_worktree']['full_leaf_index_sha256'] == 'd545c2109362dc3f74d85ade2e66717d7b1ff9dd630842982f2ae3215e121dea'"
+    ],
+    [
+      "canonical_path = CONTROL / 'canonical-same-root-publication-from495.bundle'",
+      "canonical_path = CONTROL / 'canonical-native-jwt-e3afc157-from495.bundle'"
+    ]
+  ]
+}

@@ -1,0 +1,4 @@
+{
+  "reason": "Stored exact-definition extractor is an arrow function, not a declaration. Eval it directly. Historical stdout uses owner_launchd_diag_stdout_raw. No candidate/runtime bytes changed.",
+  "nativeCalls": 0
+}

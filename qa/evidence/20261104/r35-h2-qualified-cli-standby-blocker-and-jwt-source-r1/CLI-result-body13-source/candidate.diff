@@ -1,0 +1,285 @@
+--- a/native_gitfirst.info-only.js
++++ b/native_gitfirst.body-ranges.js
+@@ -60,6 +60,168 @@
+    maximumFileInfoStarts:1,binaryReadAuthorized:false};
+ }
+ 
++/* Exactly thirteen sequential ranges of the one observed failed-CLI report.
++ * Only new binary_read observers use 16384-byte immutable pages.
++ * Prior 8192-byte observers and all business calls remain unchanged.
++ */
++const GF_CLI_BODY_EXPECTED = {"path":"/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r4/result.public.json","bytes":848065,"sha256":"d5c691d23b513a2a63916792bbe21178e2b34799e6adbd20ddf88cdf6147bc48","version":"2050:7910322:848065:1793935422335117221:1793935422335117221","infoOperation":"d460640d0f261bea9c17630eb911980d8dccaef5499b059d917bb02ac9f8e456","infoNative":{"blob":"542ef29f4f09bb8c82ec204a42fa54a37d0bd051","bytes":493,"sha256":"1477c8d895cbd5dee3bec86efd5b09658ef73a51ae9f7153d7dd4cf217b5c457"}};
++const GF_CLI_BODY_RANGES = [
++  {
++    "offset": 0,
++    "limit": 65536,
++    "request": {
++      "blob": "de991f70d3e36b072a2ef8b6ba8618561c19345b",
++      "bytes": 431,
++      "sha256": "dd6361d9c71ec00a8a8f73853f6ddb8fda71b957ceee53c7da614d036b7a1ddb"
++    }
++  },
++  {
++    "offset": 65536,
++    "limit": 65536,
++    "request": {
++      "blob": "96b42838e27e808c469b006a0d27a0423041a4f4",
++      "bytes": 435,
++      "sha256": "eb32b71b60b1db7f7a417e0329607801c3e1a12dbfdbd52f8421ca08a2f0e5c7"
++    }
++  },
++  {
++    "offset": 131072,
++    "limit": 65536,
++    "request": {
++      "blob": "944e6fafc756f77a8d2e58968ef2466a4b425ac7",
++      "bytes": 436,
++      "sha256": "261d89591ddffea380f94145fb8f9ce8cf38bb608452346f838c8c438147b492"
++    }
++  },
++  {
++    "offset": 196608,
++    "limit": 65536,
++    "request": {
++      "blob": "4f4672a9e97565a6441cc880a75464f041782503",
++      "bytes": 436,
++      "sha256": "4fdf7d22a2de2cf15c3e9dd77273dd197756df3e870d0da35edb04dfa45d0f21"
++    }
++  },
++  {
++    "offset": 262144,
++    "limit": 65536,
++    "request": {
++      "blob": "15d5ce9229cd5fb18d85b622c19ae5609d790fde",
++      "bytes": 436,
++      "sha256": "7f62427936ad398dc013bd62b18a3de2f887a31c70b724e2394484fc55ce6fe3"
++    }
++  },
++  {
++    "offset": 327680,
++    "limit": 65536,
++    "request": {
++      "blob": "089bfcc1b60101feed027fc7595b4ae881ccd2de",
++      "bytes": 436,
++      "sha256": "dd105ddf299f8d92685c43625360f8a9a1dc9fa5c44c1f35686901f5086104ea"
++    }
++  },
++  {
++    "offset": 393216,
++    "limit": 65536,
++    "request": {
++      "blob": "a9c63d43b53a57d4dce3462b5b7324087befad17",
++      "bytes": 436,
++      "sha256": "d140519283cdb758d9c2f24aa47c17d1f8e083a08dc266cea2ea04ea2438784a"
++    }
++  },
++  {
++    "offset": 458752,
++    "limit": 65536,
++    "request": {
++      "blob": "34e4859329666862b92a0430d80ceadef4d15de5",
++      "bytes": 436,
++      "sha256": "854de160c87b3c9ef0942bf200c76ed5beec196e60a8c4f639474078578d6f3d"
++    }
++  },
++  {
++    "offset": 524288,
++    "limit": 65536,
++    "request": {
++      "blob": "16ec952c6d3e839b2586a9dc2b2ef96792441f05",
++      "bytes": 436,
++      "sha256": "c859ba91d7fd32db2a1ba57e7a1a0310dcfcf2a399b7ffdac4898c998ae02b32"
++    }
++  },
++  {
++    "offset": 589824,
++    "limit": 65536,
++    "request": {
++      "blob": "d6f57b88121e16dd0967f7f8c01afaa977b13cb4",
++      "bytes": 436,
++      "sha256": "66902ac202169e18cd102b0205e05c72c61b48e70b5a6597ba7e72bfa9ed356e"
++    }
++  },
++  {
++    "offset": 655360,
++    "limit": 65536,
++    "request": {
++      "blob": "a63dbfdddf5fa7a72f857c286e096456661b255d",
++      "bytes": 437,
++      "sha256": "f2bdacb29ddb32a8aaea5aa619c74386e40b43570a081ae5a64bc6393ff059b0"
++    }
++  },
++  {
++    "offset": 720896,
++    "limit": 65536,
++    "request": {
++      "blob": "a5714c96ccc076fbbe2f9b4207a244cf9e4e0465",
++      "bytes": 437,
++      "sha256": "342263b295b146a66e1202769cf636174fe433cb03c7905f2d70f16ad3f1dd17"
++    }
++  },
++  {
++    "offset": 786432,
++    "limit": 61633,
++    "request": {
++      "blob": "dfc8dfb0a049fe7f70350edc3a7ae1da6675d4e9",
++      "bytes": 437,
++      "sha256": "4ffe37365405065e8a51433623abec4acc594f8701daada00ac127d24931e5f7"
++    }
++  }
++];
++const GF_CLI_BODY_PAGE_BYTES = 16384;
++
++function gfAuthorizeCliResultBodyOnly({goRaw,goPin,goWholeReadback}) {
++ const s=gfState(),need=GF_CLI_BODY_EXPECTED,info=s.cliResultInfo;
++ gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null
++   && s.activeObserver===null && s.job==="1a1aee01612-fc05-639b"
++   && s.cliResultInfoGO?.whole===true && s.cliResultInfoStarted===true
++   && s.cliResultBodyGO===undefined && s.cliResultBodyStarted===undefined
++   && s.cliResultBodyRanges===undefined,"closed_current_info_before_exact_body_GO");
++ gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin)
++   && goPin.blob!==s.goPin.blob && goPin.blob!==s.cliResultInfoGO.pin.blob,
++   "separate_whole_CLI_body_GO");
++ const g=JSON.parse(goRaw);
++ gfNeed(g.authorization==="GO" && g.scope==="cli_result_binary_read_ranges_only"
++   && g.original_job===s.job && g.info_operation===need.infoOperation
++   && g.maximum_binary_read_starts===13 && g.immutable_body_page_bytes===GF_CLI_BODY_PAGE_BYTES
++   && g.fixed_report?.path===need.path && g.fixed_report?.bytes===need.bytes
++   && g.fixed_report?.sha256===need.sha256 && g.fixed_report?.version===need.version
++   && Array.isArray(g.exact_requests) && g.exact_requests.length===GF_CLI_BODY_RANGES.length
++   && GF_CLI_BODY_RANGES.every((x,i)=>g.exact_requests[i]?.blob===x.request.blob
++     && g.exact_requests[i]?.bytes===x.request.bytes
++     && g.exact_requests[i]?.sha256===x.request.sha256),"exact_new_root_thirteen_range_scope");
++ const prior=s.completedObservers.find(o=>o.id===need.infoOperation);
++ gfNeed(prior?.completedInactive===true && prior.tool==="file_info"
++   && prior.nativeText.blob===need.infoNative.blob
++   && gfMetaEquals(load(GF_SLOT+":closed_native:"+need.infoOperation),need.infoNative)
++   && info?.path===need.path && info.size===need.bytes && info.sha256===need.sha256
++   && info.version===need.version && info.originalOperation===need.infoOperation
++   && need.bytes>0 && need.bytes<=GF_CLI_RESULT_MAX_BYTES,
++   "whole_current_info_exact_identity");
++ s.cliResultBodyGO={pin:goPin,raw:goRaw,whole:true};
++ s.cliResultBodyStarted=0;s.cliResultBodyRanges=[];
++ gfSave(s);
++ return {originalJob:s.job,infoOperation:need.infoOperation,
++   exactRequests:GF_CLI_BODY_RANGES,maximumBinaryReadStarts:13,
++   bodyPageBytes:GF_CLI_BODY_PAGE_BYTES,wholeBytes:need.bytes};
++}
++
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {
+  const actual=gitBlobMeta(raw);
+@@ -102,7 +264,16 @@
+   const op=q.operation,a=op?.arguments;
+   gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"
+     && a && a.host==="desktop","same_original_host_only");
++  if(op.tool==="binary_read") {
++   const index=s.cliResultBodyRanges?.length,range=GF_CLI_BODY_RANGES[index];
++   gfNeed(s.cliResultBodyGO?.whole===true && range
++     && s.cliResultBodyStarted===index && gfMetaEquals(raw,range.request)
++     && Object.keys(a).sort().join(",")==="expected_version,host,limit,offset,path"
++     && a.path===GF_CLI_BODY_EXPECTED.path && a.offset===range.offset
++     && a.limit===range.limit && a.limit>0 && a.limit<=65536
++     && a.expected_version===GF_CLI_BODY_EXPECTED.version,
++     "one_exact_next_version_bound_CLI_body_range");
++  } else if(op.tool==="file_info") {
+-  if(op.tool==="file_info") {
+    gfNeed(s.cliResultInfoGO?.whole===true && s.cliResultInfoStarted!==true
+      && gfMetaEquals(raw,GF_CLI_INFO_REQUEST)
+      && Object.keys(a).sort().join(",")==="host,path"
+@@ -123,7 +294,8 @@
+  } else if(kind==="operation_result") {
+   gfNeed(s.activeObserver?.futureClosed===true
+    && Object.keys(q).sort().join(",")==="limit,offset,operation_id"
++   && q.operation_id===s.activeObserver.id
++   && q.limit===(s.activeObserver.tool==="binary_read"?GF_CLI_BODY_PAGE_BYTES:8192)
+-   && q.operation_id===s.activeObserver.id && q.limit===8192
+    && q.offset===s.activeObserver.nextPageOffset && !s.activeObserver.eof,
+    "same_closed_original_operation_next_page");
+  } else throw new Error("closed_native_tool_set");
+@@ -136,8 +308,10 @@
+  const requestPin=gitBlobMeta(requestRaw);
+  const intent={schema:"heptabao.gitfirst.fixed-native-call-intent.r1",
+   callKey,kind,request:requestPin,
++  rootGo:((kind==="operation_start" && q.operation.tool==="binary_read")
++    || s.activeObserver?.tool==="binary_read") ? s.cliResultBodyGO.pin
++    : ((kind==="operation_start" && q.operation.tool==="file_info")
++      || s.activeObserver?.tool==="file_info") ? s.cliResultInfoGO.pin : s.goPin,
+-  rootGo:(kind==="operation_start" && q.operation.tool==="file_info")
+-    || s.activeObserver?.tool==="file_info" ? s.cliResultInfoGO.pin : s.goPin,
+   originalJob:s.job,
+   originalOperation:s.activeObserver?.id??null,maximumNativeCalls:1,
+   nativeNotYetCalled:true,lossOfAcknowledgmentNeverGrantsReplay:true,
+@@ -169,6 +343,7 @@
+  c.called=true;c.phase="native_call_entered";s.nativeCallInFlight=true;
+  if(c.kind==="process_start")s.startCalled=true;
+  if(c.kind==="operation_start" && q.operation.tool==="file_info")s.cliResultInfoStarted=true;
++ if(c.kind==="operation_start" && q.operation.tool==="binary_read")s.cliResultBodyStarted++;
+  gfSave(s); // No await or second dispatch between this marker and the one call.
+  let sdk;
+  try {
+@@ -252,7 +427,8 @@
+     && Number.isSafeInteger(v.total_bytes) && v.total_bytes>=0 && v.total_bytes<=1048576
+     && /^[a-f0-9]{64}$/.test(v.result_sha256),"exact_original_immutable_payload");
+    const b=unb64(v.data_base64);
++   gfNeed(b.length<=(a.tool==="binary_read"?GF_CLI_BODY_PAGE_BYTES:8192)
++     && v.next_offset===q.offset+b.length
+-   gfNeed(b.length<=8192 && v.next_offset===q.offset+b.length
+      && v.next_offset<=v.total_bytes && v.eof===(v.next_offset===v.total_bytes)
+      && (b.length>0||v.eof),"exact_original_page_extent");
+    gfNeed(a.total===null || (a.total===v.total_bytes && a.digest===v.result_sha256),
+@@ -294,7 +470,45 @@
+   gfNeed(p.resultType==="complete" && p.isError===false
+     && p.content?.length===1 && p.content[0].type==="text","original_native_result_success");
+   const nativeRaw=p.content[0].text,v=parseLosslessIntegers(nativeRaw);
++  if(a.tool==="binary_read") {
++   const need=GF_CLI_BODY_EXPECTED,index=s.cliResultBodyRanges.length,
++     range=GF_CLI_BODY_RANGES[index],asked=a.request.operation.arguments;
++   gfNeed(range && s.cliResultBodyStarted===index+1
++     && asked.offset===range.offset && asked.limit===range.limit
++     && v.path===need.path && v.version===need.version && v.size===need.bytes
++     && v.offset===range.offset && v.next_offset===range.offset+range.limit
++     && v.eof===(v.next_offset===need.bytes)
++     && typeof v.data_base64==="string" && /^[a-f0-9]{64}$/.test(v.chunk_sha256),
++     "exact_CLI_body_original_range_extent");
++   const bodyBytes=unb64(v.data_base64);
++   gfNeed(bodyBytes.length===range.limit
++     && sha256Latin1(byteString(bodyBytes))===v.chunk_sha256,
++     "CLI_body_actual_chunk_bytes_SHA");
++   const row={offset:range.offset,limit:range.limit,next:v.next_offset,
++     chunkSHA256:v.chunk_sha256,base64:v.data_base64,originalOperation:a.id,
++     originalPayload:pin,originalPayloadTree:archive.tree};
++   if(index+1===GF_CLI_BODY_RANGES.length) {
++    const ranges=s.cliResultBodyRanges.concat([row]);
++    let complete=[],at=0;
++    for(const part of ranges) {
++     gfNeed(part.offset===at,"CLI_body_whole_continuity");
++     complete=complete.concat(unb64(part.base64));at=part.next;
++    }
++    gfNeed(at===need.bytes && complete.length===need.bytes
++      && sha256Latin1(byteString(complete))===need.sha256,"CLI_body_whole_exact_SHA");
++    const wholeRaw=utf8Text(complete),wholePin=gitBlobMeta(wholeRaw);
++    gfNeed(wholePin.bytes===need.bytes && wholePin.sha256===need.sha256,
++      "CLI_report_whole_UTF8_roundtrip");
++    store(GF_SLOT+":cli_result_body_original",wholeRaw);
++    const wholeArchive=await archiveFlatPublicTextsOnce({
++     key:"cli-phaseb-r4-public-report-whole",repository:"TrillionniumFoundation/HeptaBao",
++     texts:{"result.public.json":wholeRaw}});
++    s.cliResultBody={path:need.path,version:need.version,body:wholePin,
++      wholeTree:wholeArchive.tree,originalOperations:ranges.map(x=>x.originalOperation),
++      metadataOperation:need.infoOperation,semanticQualification:false};
++   }
++   s.cliResultBodyRanges.push(row);
++  } else if(a.tool==="file_info") {
+-  if(a.tool==="file_info") {
+    const md=v.metadata,parts=typeof v.version==="string"?v.version.split(":"):[];
+    gfNeed(v.path===GF_CLI_RESULT_PATH && Number.isSafeInteger(v.size)
+      && v.size>0 && v.size<=GF_CLI_RESULT_MAX_BYTES
+@@ -395,6 +609,7 @@
+   let value;
+   if(action==="initialize")value=gfInitializeOnlyAfterRootGO(args);
+   else if(action==="authorize_cli_result_info")value=gfAuthorizeCliResultInfoOnly(args);
++  else if(action==="authorize_cli_result_body")value=gfAuthorizeCliResultBodyOnly(args);
+   else if(action==="prepare")value=await gfPrepareOne(args);
+   else if(action==="invoke")value=await gfInvokePreparedOnce(args.callKey);
+   else if(action==="accept")value=gfAcceptArchivedSDK(args.callKey);

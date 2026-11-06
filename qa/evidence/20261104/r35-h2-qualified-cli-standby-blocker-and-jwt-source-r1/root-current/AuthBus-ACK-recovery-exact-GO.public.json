@@ -1,0 +1,133 @@
+{
+  "schema": "heptabao.root-GO.existing-AuthBus-stderr-ACK-recovery.v1",
+  "authorization": "GO",
+  "as_of_UTC": "2026-11-06 03:26:02 UTC",
+  "agent": "/root/authbus_migration",
+  "purpose": "Adopt the already-returned original streams ACK into a separate cache context, then close only that existing original observer; preserve old Git mutation UNKNOWN and old paused context",
+  "exact_adopt_request": {
+    "blob": "2a953c2e2e33702821ec2ec9babfc61483d4eb5d",
+    "bytes": 1400,
+    "sha256": "95de77ea7e5aac4811c61cecc89180393f0cf1ad7a908b30db2c3e6372fa8213"
+  },
+  "source_review": {
+    "blob": "c16aa300b10e56ce7a19cc625efeec953588bd25",
+    "bytes": 2276,
+    "sha256": "cb804f146e1a974c9e929b494cc350490862741c18ff9efcc3b20f61f7576d07"
+  },
+  "source_packet": "649d5e78974fff0b6067735318b3aa0dc3b328c0",
+  "entry": {
+    "blob": "85696f52f43a8ce4972c2fb25abf5fe90be2924e",
+    "bytes": 10353,
+    "sha256": "29f8be8a0e6c12ccf3b9de201dbac33c16a463d7e7d25aefafbf3f0b5ae52700"
+  },
+  "native_helper": {
+    "blob": "17fc63aeb719a6feef8d6aa47793df0875038460",
+    "bytes": 19036,
+    "sha256": "a00bd4700a9aad72ce58ed6259bf75f19f7f7799d433b89f490fea0d1fa7698b"
+  },
+  "archive_helper": {
+    "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+    "bytes": 5957,
+    "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+  },
+  "pure_helper": {
+    "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+    "bytes": 6685,
+    "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+  },
+  "recovery_packet": {
+    "tree": "ce1665160b3651418941a63e2bdb61ca2d91f2c4",
+    "files": 11,
+    "bytes": 111451,
+    "merkle": {
+      "root_sha": "ce1665160b3651418941a63e2bdb61ca2d91f2c4",
+      "trees_verified": 1,
+      "leaf_count": 11
+    },
+    "whole": true
+  },
+  "old_snapshot": {
+    "blob": "631c2623b3c77e711a7863d68f78c39f291bfa60",
+    "bytes": 101825,
+    "sha256": "bd6409799ffa5e63cca395d6a0282b792d145c7ff8847689369f46e0483a4e61"
+  },
+  "original_SDK": {
+    "blob": "61d992ba86d54d1da4eab9f7cf72032dfa0c00b0",
+    "bytes": 707,
+    "sha256": "30d7c108604c034a2dd1ab9b9192bde812720acba86159541b3b0e43c0157ab5"
+  },
+  "original_request": {
+    "blob": "d403a16747d74a245a82b0f3d124a32ac6a47ef0",
+    "bytes": 303,
+    "sha256": "3e34779996b01244a840ba49bf297fa9da6de8338f9df06f48133544ef2f44a1"
+  },
+  "original_armed_tree": "7ef99da6bdd5668546a5079c5285bf35418baa83",
+  "old_Git_expected_tree": "8916feb2a335fcf5fd7d47b55d39dd57b8465ab5",
+  "old_Git_create_outcome": "UNKNOWN",
+  "old_slot": "owner_launchd_stderr_gitfirst_r1",
+  "new_slot": "owner_launchd_stderr_ack_recovery_r1",
+  "original_job": "1a1aed868b6-fc05-6321",
+  "original_operation": "0f5488f96e9ce749d19f452156dfd8e5204804babcb1ec92a9763564d2a212cc",
+  "maximum_adoptions": 1,
+  "Native_calls_in_adoption": 0,
+  "old_context_must_remain_byte_exact_and_paused": true,
+  "adoption_rules": [
+    "Whole this exact GO plus11-file recovery packet before entry",
+    "Only exact fixed1400-byte entry request",
+    "No inner ACK parse or Native in entry",
+    "One fresh adoption archive with request/intent/armed/proposed-new-context/GO must be externally whole before new context creation",
+    "After a separate model boundary, unchanged gfRun accept only launchd-stderr-streams-01-start; validate returned operation equals fixed original0f5488 ID",
+    "Any failure returns normally, preserve all SDKs and stop; no replay or automatic adoption retry"
+  ],
+  "allowed_next_native": {
+    "operation_status": {
+      "operation_id": "0f5488f96e9ce749d19f452156dfd8e5204804babcb1ec92a9763564d2a212cc"
+    },
+    "operation_result": {
+      "operation_id": "0f5488f96e9ce749d19f452156dfd8e5204804babcb1ec92a9763564d2a212cc",
+      "first_offset": 0,
+      "limit": 8192,
+      "next_offsets": "Only exact next page from original immutable payload",
+      "payload_max_bytes": 1048576
+    },
+    "closed_observer_required": true,
+    "new_operation_start": false,
+    "new_process_start": false
+  },
+  "actual_stream_admission": {
+    "host": "mac",
+    "job_id": "1a1aed868b6-fc05-6321",
+    "stdout_offset": 0,
+    "stderr_offset": 0,
+    "limit": 16384,
+    "already_dispatched": true,
+    "do_not_redispatch": true
+  },
+  "required_release": {
+    "authority": "Original actual exit0/full/durable still must remain linked",
+    "streams": "Whole original stdout8094 and stderr116, text/hex/EOF and authority extents",
+    "diagnostic": "Review actual private stderr closed projection only after original payload whole; unknown prefix not printed or hashed",
+    "old_registration_and_historical_lineage": "Remain unqualified; no bootout or cleanup admitted"
+  },
+  "maximum_Runtime_lanes": 2,
+  "lane_context": {
+    "A": "Only existing0f5488 observer",
+    "B": "Original officialCLI live job observations",
+    "C": "0Runtime SOURCE until A closes"
+  },
+  "excluded": [
+    "repeat original process_start",
+    "repeat original streams operation_start",
+    "fresh process_read",
+    "bootout",
+    "old PID signals",
+    "parser installation",
+    "new fixture",
+    "product mutation",
+    "private credential export"
+  ],
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

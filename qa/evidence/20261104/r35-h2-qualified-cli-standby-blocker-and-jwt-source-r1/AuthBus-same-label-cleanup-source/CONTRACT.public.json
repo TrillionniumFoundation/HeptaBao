@@ -1,0 +1,111 @@
+{
+  "schema": "heptabao.mac-owned-launchd-single-label-cleanup.source-contract.r1",
+  "status": "SOURCE_ONLY_NO_NATIVE_GO",
+  "candidate": {
+    "blob": "623509e56235e6837665f53b11f3efa3987639b2",
+    "bytes": 80385,
+    "sha256": "ae579e77a20045f181e579e2aade1ebaf1b3e3c70e7fdb7c0d2a64b5acfd8b5c"
+  },
+  "request": {
+    "blob": "3cda9e15418651d6da7fd0bad30dbef3bf0d574a",
+    "bytes": 81576,
+    "sha256": "acb0804bc2cea1686367ecc478093d55ab8d0153c536c907b4728d4d7658a486"
+  },
+  "base": {
+    "blob": "9858ace064c11d4bc679b64ed35910015bc834e3",
+    "bytes": 75721,
+    "sha256": "e573407b3e092216694f0cbf4a8a526809dc64822b570bf29dd29585c025c233"
+  },
+  "target": "gui/501/org.heptabao.qa.mac-authbus-4e808-owner-r1.server",
+  "originalFailedJob": "1a1ae51309d-fc05-5ef8",
+  "effect": "At most one bootout of this already-observed owned label; no bootstrap/restart, no explicit old PID/group signal.",
+  "admission": {
+    "publicPlist": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.plist",
+    "full9": [
+      "16777244",
+      "72671221",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "3984",
+      "1793925920564440143",
+      "1793925920564448185"
+    ],
+    "sha256": "b40bef763f9073aa70ff27fd76d694df3c1a777795f6015596ad125aa4926fc1",
+    "twoPrints": "Known exit0/empty stderr/exact4198B original SHA; exact path/program/17argv/no PID/runs1/not running/last exit78.",
+    "heldPlist": "One leaf FD plus three held parents: full9 fd/name and whole bytes four times across the only mutation."
+  },
+  "commands": [
+    [
+      "/usr/sbin/diskutil",
+      "info",
+      "-plist",
+      "/Volumes/T5"
+    ],
+    [
+      "/bin/launchctl",
+      "print",
+      "gui/501/org.heptabao.qa.mac-authbus-4e808-owner-r1.server"
+    ],
+    [
+      "/bin/launchctl",
+      "print",
+      "gui/501/org.heptabao.qa.mac-authbus-4e808-owner-r1.server"
+    ],
+    [
+      "/bin/launchctl",
+      "bootout",
+      "gui/501/org.heptabao.qa.mac-authbus-4e808-owner-r1.server"
+    ],
+    [
+      "/bin/launchctl",
+      "print",
+      "gui/501/org.heptabao.qa.mac-authbus-4e808-owner-r1.server"
+    ]
+  ],
+  "budgets": {
+    "sharedSeconds": 45,
+    "outerSeconds": 60,
+    "diskutilSeconds": 30,
+    "eachOtherHelperSeconds": 10,
+    "commandCount": 5,
+    "helperCleanup": {
+      "term": 1,
+      "wait": 5,
+      "group": 3,
+      "psMax": 4
+    },
+    "heldLeafReads": 4,
+    "readSyscalls": 8,
+    "maxReturnedFileBytes": 262148,
+    "maxLeafFileBytes": 65536,
+    "actualPlistBytes": 3984,
+    "descriptorRowsAndPeak": 7,
+    "outputBytes": 131072
+  },
+  "success": "Known zero/empty bootout then original missing_service exact grammar. All new helper/FD/handler closure and final45s checks, plus actual authority exit0/full raw stdout.",
+  "failure": "Before-effect absence/drift is refusal; attempted effect without complete closure is UNKNOWN, never retry.",
+  "qualificationBoundary": {
+    "newRegistrationRemoval": "Only this current exact label removal if later actually passed; unobserved now.",
+    "historicalOriginalLineage": "UNKNOWN stays unqualified.",
+    "originalWorker": "failed and never replayed/overwritten.",
+    "namespaceCustody": "Sequential observations are not atomic namespace custody.",
+    "notOldManagerAbort": "Standalone candidate does not call original manager.abort_cleanup_once or qualify its original private-plan/lineage gate.",
+    "parser": "Only exact last exit code 78: EX_CONFIG converts to78; it remains failure and pid/runs grammar is unchanged."
+  },
+  "exclusions": [
+    "private plan/capsule/config/log body or metadata",
+    "SDK/provider/client",
+    "file writes/deletes/chmod/TCC changes",
+    "new root/fixture",
+    "bootstrap/restart/KeepAlive",
+    "old PID/group signal",
+    "retry or relaxed arguments"
+  ],
+  "references": {
+    "firstActual": "f2c48c69163bee807f853ea22fe0f498b798b052",
+    "secondActual": "718f6d3074cedd52ae8c461830ad4d70729a1ff9",
+    "parserSource": "eea5073e6436a9279236fdb6b5c8cf51e6b23f19"
+  }
+}

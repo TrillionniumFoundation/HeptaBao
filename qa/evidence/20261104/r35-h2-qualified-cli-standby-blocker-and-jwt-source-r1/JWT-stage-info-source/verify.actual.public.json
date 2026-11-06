@@ -1,0 +1,263 @@
+{
+  "schema": "heptabao.native-jwt.stage-result-info.selected-checks.v1",
+  "checks": [
+    {
+      "name": "one_new_definition",
+      "pass": true
+    },
+    {
+      "name": "whole_definition_gfNeed",
+      "pass": true
+    },
+    {
+      "name": "whole_definition_gfMetaEquals",
+      "pass": true
+    },
+    {
+      "name": "whole_definition_gfState",
+      "pass": true
+    },
+    {
+      "name": "whole_definition_gfSave",
+      "pass": true
+    },
+    {
+      "name": "whole_definition_gfIntegerText",
+      "pass": true
+    },
+    {
+      "name": "whole_definition_gfInitializeOnlyAfterRootGO",
+      "pass": true
+    },
+    {
+      "name": "whole_definition_gfAcceptArchivedSDK",
+      "pass": true
+    },
+    {
+      "name": "whole_definition_gfReconcileSameGitArchiveReadOnly",
+      "pass": true
+    },
+    {
+      "name": "replace_once_one fixed info capability and exact current closure",
+      "pass": true
+    },
+    {
+      "name": "replace_once_exact file_info route; preserve status job binding",
+      "pass": true
+    },
+    {
+      "name": "replace_once_preserve process_read exact job binding",
+      "pass": true
+    },
+    {
+      "name": "replace_once_archive info authorization for admission/status/pages",
+      "pass": true
+    },
+    {
+      "name": "replace_once_once marker before sole original Native call",
+      "pass": true
+    },
+    {
+      "name": "replace_once_full actual metadata admission; lossless derived full9; no body authority",
+      "pass": true
+    },
+    {
+      "name": "replace_once_only explicit new capability through caught normal-return entry",
+      "pass": true
+    },
+    {
+      "name": "forward_whole",
+      "pass": true
+    },
+    {
+      "name": "reverse_once_only explicit new capability through caught normal-return entry",
+      "pass": true
+    },
+    {
+      "name": "reverse_once_full actual metadata admission; lossless derived full9; no body authority",
+      "pass": true
+    },
+    {
+      "name": "reverse_once_once marker before sole original Native call",
+      "pass": true
+    },
+    {
+      "name": "reverse_once_archive info authorization for admission/status/pages",
+      "pass": true
+    },
+    {
+      "name": "reverse_once_preserve process_read exact job binding",
+      "pass": true
+    },
+    {
+      "name": "reverse_once_exact file_info route; preserve status job binding",
+      "pass": true
+    },
+    {
+      "name": "reverse_once_one fixed info capability and exact current closure",
+      "pass": true
+    },
+    {
+      "name": "reverse_whole",
+      "pass": true
+    },
+    {
+      "name": "strict_six_hunk_apply",
+      "pass": true
+    },
+    {
+      "name": "no_info_before_new_GO",
+      "pass": true
+    },
+    {
+      "name": "separate_info_GO_accepts_and_preserves_job",
+      "pass": true
+    },
+    {
+      "name": "one_exact_info_accepts",
+      "pass": true
+    },
+    {
+      "name": "no_repeat_capability",
+      "pass": true
+    },
+    {
+      "name": "no_repeat_info_admission",
+      "pass": true
+    },
+    {
+      "name": "old_start_GO_cannot_add_file_info",
+      "pass": true
+    },
+    {
+      "name": "unread_GO_refuses",
+      "pass": true
+    },
+    {
+      "name": "unclosed_future_refuses_capability",
+      "pass": true
+    },
+    {
+      "name": "different_job_refuses_capability",
+      "pass": true
+    },
+    {
+      "name": "unclosed_prior_authority_refuses",
+      "pass": true
+    },
+    {
+      "name": "GO_scope_cannot_authorize_body",
+      "pass": true
+    },
+    {
+      "name": "wrong_path",
+      "pass": true
+    },
+    {
+      "name": "wrong_host",
+      "pass": true
+    },
+    {
+      "name": "different_key",
+      "pass": true
+    },
+    {
+      "name": "body_tool",
+      "pass": true
+    },
+    {
+      "name": "extra_argument",
+      "pass": true
+    },
+    {
+      "name": "extra_top_field",
+      "pass": true
+    },
+    {
+      "name": "original_status_route_preserved",
+      "pass": true
+    },
+    {
+      "name": "old_status_other_job_still_refuses",
+      "pass": true
+    },
+    {
+      "name": "original_read_route_preserved",
+      "pass": true
+    },
+    {
+      "name": "old_read_other_job_still_refuses",
+      "pass": true
+    },
+    {
+      "name": "selected_metadata_block_exact",
+      "pass": true
+    },
+    {
+      "name": "Linux_full_mode_33152",
+      "pass": true
+    },
+    {
+      "name": "nanoseconds_remain_literal_strings",
+      "pass": true
+    },
+    {
+      "name": "metadata_does_not_grant_body",
+      "pass": true
+    },
+    {
+      "name": "metadata_wrong_path",
+      "pass": true
+    },
+    {
+      "name": "metadata_wrong_mode",
+      "pass": true
+    },
+    {
+      "name": "metadata_uid",
+      "pass": true
+    },
+    {
+      "name": "metadata_links",
+      "pass": true
+    },
+    {
+      "name": "metadata_platform",
+      "pass": true
+    },
+    {
+      "name": "metadata_zero",
+      "pass": true
+    },
+    {
+      "name": "metadata_cap",
+      "pass": true
+    },
+    {
+      "name": "metadata_hash",
+      "pass": true
+    },
+    {
+      "name": "metadata_version_size",
+      "pass": true
+    },
+    {
+      "name": "same_original_Native_dispatch_whole",
+      "pass": true
+    },
+    {
+      "name": "external_SDK_accept_method_whole",
+      "pass": true
+    },
+    {
+      "name": "no_binary_read_dispatch",
+      "pass": true
+    }
+  ],
+  "passed": 63,
+  "executed": "Only selected pure authorization/request/metadata branches with fake state; synthetic authorization is not an actual root GO.",
+  "originalStateMutated": false,
+  "RuntimeCalls": 0,
+  "GitMutations": 0,
+  "fullModuleExecuted": false
+}

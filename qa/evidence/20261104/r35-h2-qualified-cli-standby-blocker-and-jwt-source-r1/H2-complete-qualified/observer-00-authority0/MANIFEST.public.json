@@ -1,0 +1,122 @@
+{
+  "schema": "heptabao.h2-live.one-original-observer.v1",
+  "GO": {
+    "blob": "39616822031623661e3db7d5153f9dcb19525842",
+    "bytes": 10177,
+    "sha256": "797d031779441fd8d10563b62200a848c80facd2965dd7b5b0e817163a3b7684"
+  },
+  "job_id": "1a1ae76aacd-fc05-5fb4",
+  "name": "authority0",
+  "operation_id": "4218afd82d601005c26661ebc52ef5f9b82083a9dde768161ad91c5f90e1dd88",
+  "tool": "process_status",
+  "arguments": {
+    "host": "desktop",
+    "job_id": "1a1ae76aacd-fc05-5fb4"
+  },
+  "native_handler_closed": true,
+  "payload_isError": false,
+  "closed": true,
+  "pages": 1,
+  "payload_sha256": "594c651071c204f8e222ac68c323992398f8339e10c3b8554d86902536d095f9",
+  "payload_bytes": 908,
+  "entries": [
+    {
+      "path": "admission/request.json",
+      "blob": "2aeeb9f8dde00778295c8a49f0960ac9c75788bc",
+      "bytes": 223,
+      "sha256": "4cdf52087f4215cf8f74c72219946fc2d8e0c5f152887954372a0ca180fc266b",
+      "local_json": "/workspace/scratch/f86faac821c4/r32_recovery/h2-live-authority0-admission-request.json"
+    },
+    {
+      "path": "admission/intent.json",
+      "blob": "5ecffa2637512d8898c97d219e8b46b5cc70662d",
+      "bytes": 757,
+      "sha256": "253620af6b2ae11c97a99c1932c00e1a73641c78b2844b0f4acd449b0a9ce7ba",
+      "local_json": "/workspace/scratch/f86faac821c4/r32_recovery/h2-live-authority0-admission-intent.json"
+    },
+    {
+      "path": "admission/original.sdk.json",
+      "blob": "8872276f68da194f77aa96e5403b5bec86734580",
+      "bytes": 709,
+      "sha256": "3bb8194c2a9abd1186e71da9244e4cac21f9e08ca589688c420bde081c49316d",
+      "local_json": "/workspace/scratch/f86faac821c4/r32_recovery/h2-live-authority0-admission-original-SDK.json"
+    },
+    {
+      "path": "admission/original.native.json",
+      "blob": "4cb3a62b6de3b6a89de0f057db0851b87d5116c5",
+      "bytes": 548,
+      "sha256": "e0b3fc5fc5719ec3280f48b1d1ca6de4c80e7277564aeedc88eca6ac52cbe04e",
+      "local_json": "/workspace/scratch/f86faac821c4/r32_recovery/h2-live-authority0-admission-original-native.json"
+    },
+    {
+      "path": "status/000/request.json",
+      "blob": "c95354f5c42a46a04e49dda782e0b0b139216ddb",
+      "bytes": 89,
+      "sha256": "d1115bffa2e3263c31832eb643bf98563e5622573729c0dd10f453b53ae0fa45",
+      "local_json": "/workspace/scratch/f86faac821c4/r32_recovery/h2-live-authority0-status0-request.json"
+    },
+    {
+      "path": "status/000/intent.json",
+      "blob": "14f550b3b7437417cbc8a7d1e3de4dc0e4e20337",
+      "bytes": 751,
+      "sha256": "3c1cbda63991da9b99c3a2303b462b11de1c473eb0eef9ccce5982133fe6324b",
+      "local_json": "/workspace/scratch/f86faac821c4/r32_recovery/h2-live-authority0-status0-intent.json"
+    },
+    {
+      "path": "status/000/original.sdk.json",
+      "blob": "24d9621bf6a64db36560078e85356f1e3e873896",
+      "bytes": 980,
+      "sha256": "57ac485bdf4f9529ee877501ad204fe9413d4b911aed104342d4ae9e935cb450",
+      "local_json": "/workspace/scratch/f86faac821c4/r32_recovery/h2-live-authority0-status0-original-SDK.json"
+    },
+    {
+      "path": "status/000/original.native.json",
+      "blob": "f818da2c7bea2c61c23a46efeb8dee90777a5271",
+      "bytes": 805,
+      "sha256": "ae39464d9305e58387af9d481562b79336a8a1b6f5a2fd0b218d08250c1ac238",
+      "local_json": "/workspace/scratch/f86faac821c4/r32_recovery/h2-live-authority0-status0-original-native.json"
+    },
+    {
+      "path": "pages/000000/request.json",
+      "blob": "37b2b23d480cb29dcb4d599b0578f0cb57d2462a",
+      "bytes": 121,
+      "sha256": "4a124ae7294a3a53db784c7901482c63b715374794e107163c7b7604090aa816",
+      "local_json": "/workspace/scratch/f86faac821c4/r32_recovery/h2-live-authority0-page-000000-request.json"
+    },
+    {
+      "path": "pages/000000/intent.json",
+      "blob": "049edafd1f66b56d2ddb38a359895dcab3e2b643",
+      "bytes": 764,
+      "sha256": "842cdfec61980b5c27d55c3c1c1f7be939164cc358fa1857c2ae4783f8452e74",
+      "local_json": "/workspace/scratch/f86faac821c4/r32_recovery/h2-live-authority0-page-000000-intent.json"
+    },
+    {
+      "path": "pages/000000/original.sdk.json",
+      "blob": "9597a8347d3658aad057ee55835ec73eb88ef39c",
+      "bytes": 2064,
+      "sha256": "30cfa03d1d60bb9c1043b23b1c3c52b5787b666da9115a78f0ea2011e243f77d",
+      "local_json": "/workspace/scratch/f86faac821c4/r32_recovery/h2-live-authority0-page-000000-original-SDK.json"
+    },
+    {
+      "path": "pages/000000/original.native.json",
+      "blob": "a8799b47432793d130082209f10e1f7eca15f4f1",
+      "bytes": 1893,
+      "sha256": "7970a1f81e7ebf18b2eb543b5d8e14d4b187e774cb3532c22a9e0b519cc83260",
+      "local_json": "/workspace/scratch/f86faac821c4/r32_recovery/h2-live-authority0-page-000000-original-native.json"
+    },
+    {
+      "path": "payload.original.sdk.json",
+      "blob": "1bd0ae72179ef3e969b349d2f7a49ed24f7cf017",
+      "bytes": 908,
+      "sha256": "594c651071c204f8e222ac68c323992398f8339e10c3b8554d86902536d095f9",
+      "local_json": "/workspace/scratch/f86faac821c4/r32_recovery/h2-live-authority0-payload-original.json"
+    },
+    {
+      "path": "payload.original.native.json",
+      "blob": "ba0805c8ed309dcf70dc73c630a2091372bab9e7",
+      "bytes": 729,
+      "sha256": "0431c9388e7e917e29c9c5187fc6371bc72c891ce8617197d14126052ef4b4de",
+      "local_json": "/workspace/scratch/f86faac821c4/r32_recovery/h2-live-authority0-native-original.json"
+    }
+  ]
+}

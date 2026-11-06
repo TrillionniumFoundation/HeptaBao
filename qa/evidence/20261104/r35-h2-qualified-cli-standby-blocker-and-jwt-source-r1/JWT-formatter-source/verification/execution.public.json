@@ -1,0 +1,19 @@
+{
+  "engine": "functions pure V8",
+  "passed": true,
+  "checks": 106,
+  "verifier": {
+    "blob": "aa28479f7f39f052eafa219146c56360e71e8ade",
+    "bytes": 8508,
+    "sha256": "0673a0171aa3e0723f786310a19523b780aff8688e6676ff669d65d84ee7a6ea"
+  },
+  "result": {
+    "blob": "2e0cea4023e23d37ed561c09b189315e3bd6aafd",
+    "bytes": 9921,
+    "sha256": "fa0be1ee5eebca03fcc4eb35cafb40b4a9bafa8d4474e729fbfc6cad5287513c"
+  },
+  "Python_execution": 0,
+  "Rust_execution": 0,
+  "Runtime": 0,
+  "independently_rerun_source_module": false
+}

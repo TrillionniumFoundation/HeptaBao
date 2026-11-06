@@ -1,0 +1,66 @@
+{
+  "schema": "heptabao.native-jwt.formatter-gitfirst.SOURCE.v1",
+  "authorization": "SOURCE_ONLY",
+  "formatterSourcePacket": "a97c73a2c260e727154d0f3e877005fcb6876985",
+  "formatterRootSourceReview": "3deb8494ddd4476b84e4ff0f122f93a554a57479",
+  "exactRequest": {
+    "blob": "0ec62f939a62a2a23c73e33d25f1043957aeeb58",
+    "bytes": 12372,
+    "sha256": "1ad41c45534f842fdd7010ab184db3f46460f87f8ead786efc142461b709bc91"
+  },
+  "source": {
+    "blob": "1266e75033bee0962b0d77d3c35ee19ec53086db",
+    "bytes": 10532,
+    "sha256": "f12b91c2bffd7d466b0f9912fbdd6f62360ce66a008757a7c2ee9c02ab4d21c3"
+  },
+  "originalJournal": {
+    "blob": "4a2e8391563bbeee6b2cfb7e3f0605c19e46baf2",
+    "bytes": 19040,
+    "sha256": "b57139647032715c177ecc368de86256662ee93f08d59fc59fa4b6e802962570"
+  },
+  "candidate": {
+    "blob": "044ad2b54eac035d156b404c2f56196964cfe33f",
+    "bytes": 19041,
+    "sha256": "8f46725a5b48779a141ce153557a4db0798bcc85426b9f2d88ad31b160e98e8d"
+  },
+  "replacementCount": 3,
+  "strictDiffHunks": 2,
+  "definitionsTotal": 13,
+  "definitionsWhole": 12,
+  "remainingDefinitionOnly": "gfValidateRequest observer-key regular-expression literal",
+  "host": "rog",
+  "slot": "jwt_e3af_rog_formatter_gitfirst_r1",
+  "observerKeyPrefix": "heptabao-native-jwt-e3afc157-formatter-observe-r1-",
+  "callKeyPrefix": "jwt-e3af-rog-formatter-",
+  "exactKey": "heptabao-native-jwt-e3afc157-format-20261106-r1-f12b91c2",
+  "correctBinding": {
+    "digest": "97b92b61a47d93f1a7a871d7ae2ce3bb08e3c26a67c2302947a464704a654839",
+    "fingerprintDecimal": "10932817268790105073",
+    "source": "Correct typed stdin field; root independently checked in formatter SOURCE review.",
+    "doNotUseOldPureProcessStartBinding": true
+  },
+  "rootGOStillRequired": true,
+  "sourceStageFullReportStillRequired": true,
+  "currentRuntimeCalls": 0,
+  "budgets": {
+    "formatterSharedSeconds": 50,
+    "eachChildSeconds": 10,
+    "outerSeconds": 60,
+    "stdinMaximumBytes": 262144,
+    "processStreamBytes": 16384,
+    "immutablePageBytes": 8192,
+    "originalPayloadBytes": 1048576,
+    "callAndNativeFutureMaximum": 1
+  },
+  "postSTARTOnly": [
+    "Actual returned rog job process_status",
+    "Actual returned rog job process_read with exact next offsets",
+    "Same original observer operation_status",
+    "Closed original immutable result pages"
+  ],
+  "targetFileInfoAuthorized": false,
+  "targetBinaryReadAuthorized": false,
+  "buildOrTestsAuthorized": false,
+  "failContract": "No second native/Git mutation, no automatic unpause, original SDK store/external-whole before isError/native parse, gfRun catches and returns normally.",
+  "reusedHistoricalSourceStageContext": false
+}

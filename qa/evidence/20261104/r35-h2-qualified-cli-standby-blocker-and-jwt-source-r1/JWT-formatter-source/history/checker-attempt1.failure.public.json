@@ -1,0 +1,6 @@
+{
+  "error": "check failed: ordered five original definitions",
+  "reason": "Verifier incorrectly required a newline immediately after def header; original sha is a one-line function.",
+  "candidate_unchanged": true,
+  "Runtime": 0
+}

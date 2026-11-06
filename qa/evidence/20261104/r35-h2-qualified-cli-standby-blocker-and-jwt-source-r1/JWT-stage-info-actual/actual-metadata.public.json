@@ -1,0 +1,25 @@
+{
+  "path": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1/control/stage-result.public.json",
+  "size": 27581,
+  "sha256": "0bf4e76a64ded7fa9ff5af683252cbe6e19f055766fb9004345bbc2c265c4666",
+  "version": "66306:28749310:27581:1793934521373633707:1793934521373633707",
+  "nativeText": {
+    "blob": "730a1f4b8e2389082c2fd3ef595624953022ed83",
+    "bytes": 482,
+    "sha256": "e8232bba16919229ade7d06866a74991507b9db5e11948d5bbdd2894750e3804"
+  },
+  "originalOperation": "2d07d9698ca3b85a8adde0aad7acb28f9fa514e0d23d17346ae03c074a582394",
+  "full9Strings": [
+    "66306",
+    "28749310",
+    "1000",
+    "1000",
+    "33152",
+    "1",
+    "27581",
+    "1793934521373633707",
+    "1793934521373633707"
+  ],
+  "regularFileFromNativeFileInfoContract": true,
+  "binaryReadAuthorized": false
+}

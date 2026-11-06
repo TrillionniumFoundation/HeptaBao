@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.root-H2-original-first-range-recovery-check.v1",
+  "qualified_original_range": true,
+  "checks": {
+    "original_range": true,
+    "whole_file_identity": true,
+    "chunk_bytes": true,
+    "chunk_sha256": true
+  },
+  "original_native": {
+    "blob": "402c5c221b7d26afbf95c08656c0a86362e3ffee",
+    "bytes": 87717,
+    "sha256": "c8bbcab41341310f342af3576d852707d5a1722c22bebe0e181348749d358bb0"
+  },
+  "metadata": {
+    "blob": "a6cd5b8b680504180763085574676fa6febfe592",
+    "bytes": 482,
+    "sha256": "3ddd7c3ae88b2597519936742db7c5c4e840be607439df8ca983eeca44945203"
+  },
+  "next_original_offset": 65536,
+  "remaining_bytes": 400034,
+  "remaining_ranges": 7,
+  "stale_local_next_offset_zero_must_not_replay": true,
+  "root_Runtime_calls": 0,
+  "whole_H2_body_qualified": false
+}

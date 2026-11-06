@@ -1,0 +1,117 @@
+{
+  "schema": "heptabao.h2-live.one-original-observer.v1",
+  "GO": {
+    "blob": "39616822031623661e3db7d5153f9dcb19525842",
+    "bytes": 10177,
+    "sha256": "797d031779441fd8d10563b62200a848c80facd2965dd7b5b0e817163a3b7684"
+  },
+  "job_id": "1a1ae76aacd-fc05-5fb4",
+  "name": "result-body-458752",
+  "operation_id": "4a2c76119e38a379401d99770f8290d8b83bba8e827c1f99b91e6c32fac81552",
+  "tool": "binary_read",
+  "arguments": {
+    "host": "desktop",
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-live-r2/result.public.json",
+    "offset": 458752,
+    "limit": 6818,
+    "expected_version": "2050:7876768:465570:1793928419424368582:1793928419424368582"
+  },
+  "native_handler_closed": true,
+  "payload_isError": false,
+  "closed": true,
+  "pages": 1,
+  "page_width": 16384,
+  "page_width_amendment": {
+    "blob": "508c2fa2d6f662b7494438283f8d62be1ceba51d",
+    "bytes": 2299,
+    "sha256": "c005704b6ca4e30fb51c7d6f440ceef0ba7dad44331a3ca400def6c8129ca285"
+  },
+  "payload_sha256": "cc8630558fb5b9fdbd05334cb0826c4ac421f1de69ba66825e72709aa702f07b",
+  "payload_bytes": 9533,
+  "entries": [
+    {
+      "path": "admission/request.json",
+      "blob": "b20329116b397801a1834f2348d582fc92d15a93",
+      "bytes": 439,
+      "sha256": "574ba5639b6055626148fd39b88a76c0f8928ff1bd16bb41780f415b6dea57f8"
+    },
+    {
+      "path": "admission/intent.json",
+      "blob": "1feebb23c5a6c6ff30cdc59762842a407293cd71",
+      "bytes": 959,
+      "sha256": "360a8f2ccac21a73f77430903b303cc60ea639fa7eb2e086c6223c1f9993f00d"
+    },
+    {
+      "path": "admission/original.sdk.json",
+      "blob": "d5eab8debcb9d6ae9a3b8101ae3bb3d46c38ae55",
+      "bytes": 706,
+      "sha256": "486233e04cf9af9ac779442187c56b0d7685927002b817aaf53499d9ab365d03"
+    },
+    {
+      "path": "admission/original.native.json",
+      "blob": "168df1e064443e19fc82d547e73e79a6ee7ddf13",
+      "bytes": 545,
+      "sha256": "82b63a2d7dea00ba56ffd42c13afeda53e5ba3b0fd32df8f1acfe3ceedb49b3a"
+    },
+    {
+      "path": "status/000/request.json",
+      "blob": "00bf4817b1047cc6b8baa6c4c2df0ba211c84950",
+      "bytes": 89,
+      "sha256": "207192a9a96975855b6076dc76fec7378e93bf5b5c517eb7fac6a6ebbcd4dd44"
+    },
+    {
+      "path": "status/000/intent.json",
+      "blob": "22a7c058cf43b9b2cdb6d9314fa5074cdcee61c1",
+      "bytes": 955,
+      "sha256": "0b587eccbaabb426b3da8664ca15d59f2df5923cacf43b1c2c501e3acc806328"
+    },
+    {
+      "path": "status/000/original.sdk.json",
+      "blob": "016fa1640b463937e71c0b52ebb80fae486a9d4d",
+      "bytes": 977,
+      "sha256": "00c07a812dff82f4041d4a0a98f76becec336970bf36f0f48100f12ddc388d58"
+    },
+    {
+      "path": "status/000/original.native.json",
+      "blob": "875934d515822470143a3911eea2ce382377630c",
+      "bytes": 802,
+      "sha256": "90b8f53f6867d688cd698979b81a3d3ed2d3bd2afd4f358486c7e66f3ef39e16"
+    },
+    {
+      "path": "pages/000000/request.json",
+      "blob": "61326340b48769ae590eee33e0d7097e7b394dd3",
+      "bytes": 122,
+      "sha256": "f766d08e568ef73ca5f7b0d98ef048260952683a001ef7cdf98a6de8a8205726"
+    },
+    {
+      "path": "pages/000000/intent.json",
+      "blob": "df698d703ba735a989e56b3ae32c39c0526faa8d",
+      "bytes": 964,
+      "sha256": "c061589d08f1980a1f7ef8ab4517378967ee4adff6ffc8d5859b52afdfea97f7"
+    },
+    {
+      "path": "pages/000000/original.sdk.json",
+      "blob": "4ea063ea9e3e55c3850549626f5d9768ca7cd5d1",
+      "bytes": 13566,
+      "sha256": "cbe582fea41cdf4dc07e6c39e3f342a54bcb08ca6ee9c05c2da0ce0a0c8f93c3"
+    },
+    {
+      "path": "pages/000000/original.native.json",
+      "blob": "c8c343d721b5bc2c5fa43169ae45b94889cfe141",
+      "bytes": 13395,
+      "sha256": "6bacd850f97a7284fb420da5aec48fb4ab2c997c2fc965b389ef360c9df4d690"
+    },
+    {
+      "path": "payload.original.sdk.json",
+      "blob": "86ab9e48ced26d44c3b58740e7dc1fa1ccf05e2d",
+      "bytes": 9533,
+      "sha256": "cc8630558fb5b9fdbd05334cb0826c4ac421f1de69ba66825e72709aa702f07b"
+    },
+    {
+      "path": "payload.original.native.json",
+      "blob": "f5be0c0905274993da3d2371b5aa498bf46f4be7",
+      "bytes": 9430,
+      "sha256": "1920d05d1bfe67b3976254f7a1a4b68bda3dadbb9b8330ecc0fe5af31749517d"
+    }
+  ]
+}

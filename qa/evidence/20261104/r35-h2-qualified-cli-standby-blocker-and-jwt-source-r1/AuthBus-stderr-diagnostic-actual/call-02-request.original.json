@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-mac-owned-launchd-stderr-ed6fd965-authority-01-20261106-r1",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1aed868b6-fc05-6321"
+    }
+  }
+}

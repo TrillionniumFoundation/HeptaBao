@@ -1,0 +1,20 @@
+--- a/mac_current_launchd_owner_r3.py
++++ b/mac_current_launchd_owner_ex_config_r4.py
+@@ -71,12 +71,15 @@
+         if depth==0:
+             need(text=='}' and line==lines[-1],'one_complete_launchctl_record')
+     need(depth==0 and not in_arguments and arguments_seen,'complete_launchctl_arguments')
+     for name in ('pid','runs','last exit code'):
+         if name in fields:
+-            need(re.fullmatch(r'-?[0-9]{1,10}',fields[name]) is not None,'typed_launchctl_integer')
+-            fields[name]=int(fields[name])
++            typed_value=fields[name]
++            if name=='last exit code' and typed_value=='78: EX_CONFIG':
++                typed_value='78'
++            need(re.fullmatch(r'-?[0-9]{1,10}',typed_value) is not None,'typed_launchctl_integer')
++            fields[name]=int(typed_value)
+     need('pid' not in fields or fields['pid']>1,'actual_launchctl_pid')
+     fields['arguments']=arguments
+     return fields
+ 
+ def missing_service(code,out,err,label):

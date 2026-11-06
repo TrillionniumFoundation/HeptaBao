@@ -1,0 +1,56 @@
+{
+  "ok": true,
+  "action": "adopt_existing_returned_ack",
+  "oldSlot": "owner_launchd_stderr_gitfirst_r1",
+  "newSlot": "owner_launchd_stderr_ack_recovery_r1",
+  "archive": {
+    "tree": "f3017221df9f6f09e1a23427b85a8c298ec471a6",
+    "entries": [
+      {
+        "path": "armed.public.json",
+        "blob": "8906642f54c3523437e27844f854e14705472bb9",
+        "bytes": 1318,
+        "sha256": "e3a1a69ff90c77d70f896e8410c0feff1789164975b1a66fea471b2237761bed",
+        "whole": true
+      },
+      {
+        "path": "intent.public.json",
+        "blob": "67e45401f025b5f7a95d15a1a61c3e322354c799",
+        "bytes": 1214,
+        "sha256": "11346e268c3f11c9afed1c88b4ad65d777796b9004bb8336f6c93896b635b5e7",
+        "whole": true
+      },
+      {
+        "path": "proposed-new-context.public.json",
+        "blob": "16b2a13bb64006c8101c3dd7848840fa084be062",
+        "bytes": 112454,
+        "sha256": "a774c17c3bfd21ef025117637ffcd59bb2d1e43b8bc27908d49aa4a031ee8fc7",
+        "whole": true
+      },
+      {
+        "path": "request.original.json",
+        "blob": "2a953c2e2e33702821ec2ec9babfc61483d4eb5d",
+        "bytes": 1400,
+        "sha256": "95de77ea7e5aac4811c61cecc89180393f0cf1ad7a908b30db2c3e6372fa8213",
+        "whole": true
+      },
+      {
+        "path": "root-recovery-go.original.json",
+        "blob": "3ca9212b02e7151183f33c8b1efb7626aa892626",
+        "bytes": 5261,
+        "sha256": "845c0b1b59d83f09a501f7cae67ffe870c272629b91ec932f03b7c4b4f91adf8",
+        "whole": true
+      }
+    ],
+    "count": 5,
+    "bytes": 121647,
+    "whole": true,
+    "localDurableJournal": false,
+    "runtimeAuthorized": false
+  },
+  "ackAccepted": false,
+  "nativeCalled": false,
+  "oldContextStillPaused": true,
+  "oldGitCreateOutcome": "UNKNOWN",
+  "permittedNext": "unchanged gfRun accept this existing ACK at a separate model boundary"
+}

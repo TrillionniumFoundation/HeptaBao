@@ -1,0 +1,270 @@
+{
+  "schema": "heptabao.cli-public-report-fixed-info-source-proposal.r1",
+  "source_only": true,
+  "Runtime_calls": 0,
+  "metadata_submitted": false,
+  "binary_read_authorized": false,
+  "process_start_authorized": false,
+  "before": "a7f0226de91fe4bf1a17847a6d28cce566a164e4",
+  "after": {
+    "blob": "f0819073ffb9ee7e1a39135a3b6f41782e4aafdb",
+    "bytes": 24174,
+    "sha256": "b979ccb2bf61ae3795231b154e6d11f2573b4e5f603289185b9bcb4e482a57e1"
+  },
+  "reference_shape": "5251b35f820ade2765d2266616b13d1ef1effc48",
+  "reference_shape_role": "Only separately authorized single file_info / one-shot marker / same SDK journal shape; no C host/job/path/cap/prepared qualification inherited.",
+  "diff_hunks": 6,
+  "old_definitions": 13,
+  "old_whole_unchanged": 8,
+  "new_authorizer": "gfAuthorizeCliResultInfoOnly",
+  "entry_action": "authorize_cli_result_info",
+  "existing_slot": "official271_phaseb_live_gitfirst_r1",
+  "no_initialize_or_context_reset": true,
+  "exact_request": {
+    "blob": "39c26a97e1a1d27d4cea64c810232e47bc956c1f",
+    "bytes": 299,
+    "sha256": "f8ece50b14f479740b930ca708655e21e2d179b2d3a4b3c1f163000e7dabe651"
+  },
+  "new_root_GO_fields_required": {
+    "authorization": "GO",
+    "scope": "cli_result_file_info_only",
+    "original_job": "1a1aee01612-fc05-639b",
+    "maximum_file_info_starts": 1,
+    "binary_read_authorized": false,
+    "exact_request": {
+      "blob": "39c26a97e1a1d27d4cea64c810232e47bc956c1f",
+      "bytes": 299,
+      "sha256": "f8ece50b14f479740b930ca708655e21e2d179b2d3a4b3c1f163000e7dabe651"
+    }
+  },
+  "original_GO_not_sufficient": "1329443a0dbc7becc5ecf77eb96252dbb853046c",
+  "prior_terminal_core": {
+    "tree": "32e2f8b06c3db1cdf3ca66fc25cc2a20a7313159",
+    "release": "7a0103e5a7a7aa33629e65b88d46594ccbd60217",
+    "observers": 3,
+    "immutable_pages": 3,
+    "current_active": 0,
+    "current_future": 0
+  },
+  "fixed_inputs": {
+    "host": "desktop",
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r4/result.public.json",
+    "sha256": "d5c691d23b513a2a63916792bbe21178e2b34799e6adbd20ddf88cdf6147bc48",
+    "permission_mode": 384,
+    "full_mode": 33152,
+    "uid": 1000,
+    "gid": 1000,
+    "nlink": 1,
+    "actual_size": null,
+    "actual_version": null,
+    "actual_full9": null
+  },
+  "new_observation_cap": {
+    "file_size_max_bytes": 4194304,
+    "meaning": "New metadata acceptance cap for this proposed bounded archival read; not an asserted existing live report writer cap.",
+    "exceeds_cap": "Stop without body admission; do not increase cap or substitute path."
+  },
+  "controller_source": {
+    "blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+    "bytes": 61210,
+    "sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c",
+    "live_report_write_line": 979,
+    "prepare_read_cap_line": 1060,
+    "prepare_read_cap_bytes": 4194304,
+    "live_report_explicit_size_limit_found": false
+  },
+  "unchanged_limits": {
+    "business_seconds": 3000,
+    "action_seconds": 300,
+    "HTTP_and_CLI_seconds": 15,
+    "process_read_bytes_per_stream": 16384,
+    "immutable_page_bytes": 8192,
+    "original_payload_cap": 1048576
+  },
+  "evidence_scope": {
+    "reported_B01_B02_B03": true,
+    "reported_B04_B05": false,
+    "known_exit": 1,
+    "full_output": true,
+    "durable": true,
+    "outcome_unknown": false,
+    "report_business_semantics_not_independently_qualified": true,
+    "producer_all_owned_stopped_not_full_PID_proof": true
+  },
+  "protocol": {
+    "whole_new_GO_before_authorize": true,
+    "closed_exact_original_authority_and_streams_required": true,
+    "exact_info_request_only": true,
+    "once_marker_before_unique_native_statement": true,
+    "no_new_marker_reset": true,
+    "SDK_external_whole_before_isError": true,
+    "full_original_payload_before_metadata_parse": true,
+    "version_ns_decimal_strings": true,
+    "new_info_operation_unique": true,
+    "no_native_or_create_retry": true,
+    "any_unknown_stops": true,
+    "body_no_code_branch": true
+  },
+  "preserved": {
+    "old_B01_UNKNOWN": true,
+    "old_Git57bf_UNKNOWN": true,
+    "original_current_exit1": true
+  },
+  "checks": {
+    "schema": "heptabao.cli-single-result-info.source-checks.r1",
+    "checks": 36,
+    "passed": 36,
+    "rows": [
+      {
+        "label": "strict_six_hunks_forward",
+        "pass": true
+      },
+      {
+        "label": "strict_six_hunks_reverse",
+        "pass": true
+      },
+      {
+        "label": "one_new_authorize_function",
+        "pass": true
+      },
+      {
+        "label": "preserved_or_scoped_gfNeed",
+        "pass": true
+      },
+      {
+        "label": "preserved_or_scoped_gfMetaEquals",
+        "pass": true
+      },
+      {
+        "label": "preserved_or_scoped_gfState",
+        "pass": true
+      },
+      {
+        "label": "preserved_or_scoped_gfSave",
+        "pass": true
+      },
+      {
+        "label": "preserved_or_scoped_gfIntegerText",
+        "pass": true
+      },
+      {
+        "label": "preserved_or_scoped_gfInitializeOnlyAfterRootGO",
+        "pass": true
+      },
+      {
+        "label": "preserved_or_scoped_gfValidateRequest",
+        "pass": true
+      },
+      {
+        "label": "preserved_or_scoped_gfPrepareOne",
+        "pass": true
+      },
+      {
+        "label": "preserved_or_scoped_gfInvokePreparedOnce",
+        "pass": true
+      },
+      {
+        "label": "preserved_or_scoped_gfAcceptArchivedSDK",
+        "pass": true
+      },
+      {
+        "label": "preserved_or_scoped_gfCloseOriginalObserver",
+        "pass": true
+      },
+      {
+        "label": "preserved_or_scoped_gfReconcileSameGitArchiveReadOnly",
+        "pass": true
+      },
+      {
+        "label": "preserved_or_scoped_gfRun",
+        "pass": true
+      },
+      {
+        "label": "invoke_only_once_marker_added",
+        "pass": true
+      },
+      {
+        "label": "once_marker_before_only_dispatch",
+        "pass": true
+      },
+      {
+        "label": "separate_GO_required",
+        "pass": true
+      },
+      {
+        "label": "once_info_gate",
+        "pass": true
+      },
+      {
+        "label": "no_binary_scope",
+        "pass": true
+      },
+      {
+        "label": "exact_original_job",
+        "pass": true
+      },
+      {
+        "label": "known_failure_not_success_precondition",
+        "pass": true
+      },
+      {
+        "label": "terminal_summary_closure",
+        "pass": true
+      },
+      {
+        "label": "exact_report_sha_predicate",
+        "pass": true
+      },
+      {
+        "label": "4MiB_new_metadata_cap",
+        "pass": true
+      },
+      {
+        "label": "fixed_user_mode_single_link",
+        "pass": true
+      },
+      {
+        "label": "lossless_full9",
+        "pass": true
+      },
+      {
+        "label": "no_original_context_reset",
+        "pass": true
+      },
+      {
+        "label": "original_caps",
+        "pass": true
+      },
+      {
+        "label": "only_file_info_request",
+        "pass": true
+      },
+      {
+        "label": "exact_report_path_from_stdout",
+        "pass": true
+      },
+      {
+        "label": "exact_request_pin_in_source",
+        "pass": true
+      },
+      {
+        "label": "actual_authority1_raw_whole",
+        "pass": true
+      },
+      {
+        "label": "actual_streams0_raw_whole",
+        "pass": true
+      },
+      {
+        "label": "selected_syntax_compile_only",
+        "pass": true
+      }
+    ],
+    "old_definitions": 13,
+    "new_definitions": 14,
+    "unchanged_old_definitions": 8,
+    "strict_hunks": 6,
+    "Runtime_calls": 0,
+    "candidate_functions_invoked": 0
+  }
+}

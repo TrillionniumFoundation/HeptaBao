@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.h2-live.original-readonly-intent.v1",
+  "GO": {
+    "blob": "39616822031623661e3db7d5153f9dcb19525842",
+    "bytes": 10177,
+    "sha256": "797d031779441fd8d10563b62200a848c80facd2965dd7b5b0e817163a3b7684"
+  },
+  "job_id": "1a1ae76aacd-fc05-5fb4",
+  "label": "result-info-admission",
+  "tool": "operation_start",
+  "request": {
+    "name": "h2-live-result-info-admission-request",
+    "blob": "9e7ae5694ce315715f06dcf7b3a1e52518f5a5a6",
+    "bytes": 289,
+    "sha256": "93e7858ecc0cd68923f764133808370c13df84ab699f8ede31ebd6edf5745b3f",
+    "local_json": "/workspace/scratch/f86faac821c4/r32_recovery/h2-live-result-info-admission-request.json"
+  },
+  "Runtime_submitted": false,
+  "one_future": true,
+  "archive_after_observer": true
+}

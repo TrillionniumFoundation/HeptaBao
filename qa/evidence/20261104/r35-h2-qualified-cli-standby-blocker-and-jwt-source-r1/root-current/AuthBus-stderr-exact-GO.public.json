@@ -1,0 +1,191 @@
+{
+  "schema": "heptabao.root-GO.Mac-original-label-stderr-readonly-diagnostic-Git-first.v1",
+  "authorization": "GO",
+  "as_of_UTC": "2026-11-06 03:11:32 UTC",
+  "agent": "/root/authbus_migration",
+  "purpose": "One exact original-owned stderr first-record diagnostic for a closed known Python startup error projection; no service mutation or failure reclassification",
+  "source_packet": "ccc2bdacd154ee8c0bd3505386a35e1f28a04b72",
+  "source_review": {
+    "blob": "e449169c22a1bf292fbcac7106011ba9204737b7",
+    "bytes": 4259,
+    "sha256": "9fb736aeb37b990843c5b65ccc77426d25d70a9e2e518bae9f42eae26ac58690"
+  },
+  "journal_packet": "4ef8832eddf3d4bd613fbd96943c34b47935cdbb",
+  "journal_review": {
+    "path": "REVIEW.public.json",
+    "blob": "5219c6e64b95120338ca6bd72340c45a1e46ceaf",
+    "bytes": 1686,
+    "sha256": "e4ffb1da5595ba730fe9b3734dd9d4185555bc56d87ced079b32f5845eb51f58"
+  },
+  "helpers": {
+    "archive": {
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    "native": {
+      "blob": "17056bdf3f9b6a4df530f09a6361760e31fd5432",
+      "bytes": 19032,
+      "sha256": "7e16bcc040bd78c38d0f37eea57cab1f47c9d0da16afada41b8fbb20a59efdb1"
+    },
+    "pure": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    "steps": {
+      "path": "steps.source.js",
+      "blob": "6f027fec280a9e50e4a605d8d7fd4fb9fcaec157",
+      "bytes": 1811,
+      "sha256": "e0165c9d198c44bd1c526b5556fdd2042777248df15672716e09de017b9dfa4b"
+    }
+  },
+  "exact_request": {
+    "blob": "53f77e0acfd68e58f6085cf2e84f6b5c4aad8c1d",
+    "bytes": 78946,
+    "sha256": "4d7947e19a869e9608bbd5db0c1729d55129ae4c35d694f751db95cbeffc1734"
+  },
+  "source": {
+    "blob": "02631eb9e1f91369d670e0ff43ce1b5c2f2867eb",
+    "bytes": 77807,
+    "sha256": "ed6fd965b4029c8ee797d6caede0c6d658cd0797d4413d657df2004dd45ebeb8"
+  },
+  "native_binding": {
+    "sha256": "699c9fcaa47b628ce77f460696b8b6c51f22bd3d6781a99e688ac455865de5c5",
+    "native_fingerprint": "7610133163041055372",
+    "typed_stdin_field": "stdin"
+  },
+  "start": {
+    "host": "mac",
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-"
+    ],
+    "cwd": "/Users/qianqi",
+    "timeout_seconds": 60,
+    "idempotency_key": "heptabao-mac-owned-launchd-stderr-ed6fd965-20261106-r1",
+    "maximum_START_count": 1
+  },
+  "original_binding": {
+    "job": "mac/1a1ae51309d-fc05-5ef8",
+    "label": "org.heptabao.qa.mac-authbus-4e808-owner-r1.server",
+    "target": "gui/501/org.heptabao.qa.mac-authbus-4e808-owner-r1.server",
+    "plist_sha256": "b40bef763f9073aa70ff27fd76d694df3c1a777795f6015596ad125aa4926fc1",
+    "plan_sha256": "5b94c4b970dec5e3550b66b22700b9fff507f08062fc2a860c0399ed38802aab",
+    "original_failure_and_registration_UNKNOWN_preserved": true,
+    "prior_readonly_actual_job": "mac/1a1aebc1cb1-fc05-61c9",
+    "observed_last_exit_literal": "78: EX_CONFIG",
+    "observed_last_exit_sha256": "865ce32135321d0a9b70cc68893f4164c8d08e00f1802b4e15375e1959b933a7"
+  },
+  "allowed_readset": [
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.plist",
+      "kind": "whole_public_plist",
+      "maximum": 65536,
+      "expectedSha256": "b40bef763f9073aa70ff27fd76d694df3c1a777795f6015596ad125aa4926fc1"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.stderr.private",
+      "kind": "NEW private-file first-LF projection",
+      "maximumFirstPass": 8192,
+      "maximumRepeat": 8192,
+      "totalFileMetadataBound": 2097152,
+      "optional": true,
+      "unknownLineTextAndHashNeverPublished": true
+    }
+  ],
+  "allowed_helpers": [
+    {
+      "argv": [
+        "/usr/sbin/diskutil",
+        "info",
+        "-plist",
+        "/Volumes/T5"
+      ],
+      "seconds": 30,
+      "absolute45Clipped": true,
+      "outputPerStream": 262144
+    },
+    {
+      "argv": [
+        "/bin/launchctl",
+        "print",
+        "gui/501/org.heptabao.qa.mac-authbus-4e808-owner-r1.server"
+      ],
+      "seconds": 10,
+      "absolute45Clipped": true,
+      "outputPerStream": 262144
+    }
+  ],
+  "read_scope": {
+    "private_log_path": "Only exact server-initial.stderr.private first LF≤8192 bytes and identical-prefix pread; fixed startup-form enum/errno/known-path booleans; unknown text and hash never exported.",
+    "original_parse_print_unchanged": true,
+    "old_server_signal_or_label_mutation": false,
+    "private_plan_config_capsule_read": false,
+    "directory_enumeration": false,
+    "alias_following": false,
+    "ready_exec_ready_stdout_read": false
+  },
+  "budgets": {
+    "diagnostic_seconds": 45,
+    "outer_seconds": 60,
+    "body_returned_bytes": 81921,
+    "read_syscalls": 8195,
+    "max_T5_descriptor_rows": 11,
+    "peak_T5_descriptors": 7,
+    "output_bytes": 131072,
+    "process_read_limit": 16384,
+    "new_observer_page_bytes": 8192,
+    "original_payload_cap": 1048576,
+    "max_Runtime_lanes": 2,
+    "one_call_and_one_future_per_lane": true
+  },
+  "journal": {
+    "invoke_only_through": "gfRun",
+    "initialize_only_once_with_this_whole_GO_and_root_digest": true,
+    "prepare_exact_request_intent_armed_external_tree_and_all_blobs_whole": true,
+    "separate_model_boundary_before_invoke": true,
+    "full_returned_SDK_retained_then_external_whole_before_any_interpretation": true,
+    "errors_return_normally_with_immutable_history": true,
+    "original_job_after_ACK": "Only this actual returned job_id for process_status/process_read; never infer or substitute another job",
+    "original_operations": "Only the active original operation_id for status and exact next 8192-byte immutable pages; complete payload SHA/EOF and no active future before next observer",
+    "Git_unknown": "Preserve original SDK/expected tree/blob and stop; exact read-only reconciliation only. No create replay, Native replay or automatic unpause.",
+    "Native_unknown": "Preserve original SDK/exception and armed binding; stop. Never change key or rerun start.",
+    "local_executor_required": false,
+    "slot": "owner_launchd_stderr_gitfirst_r1",
+    "call_key_prefix": "launchd-stderr-",
+    "observer_key_prefix": "heptabao-mac-owned-launchd-stderr-ed6fd965-"
+  },
+  "qualification": {
+    "requires_authority_exit0_complete_durable_stdout": true,
+    "requires_actual_new_helper_and_descriptor_closure": true,
+    "requires_final_45_second_deadline_after_closure": true,
+    "does_not_grant_old_registration_or_lineage_closure": true,
+    "does_not_grant_AppRole_TLS_KV_Policy_renew_revoke_or_provider_qualification": true,
+    "specific_launchd_startup_cause_requires_actual_known_projection": true,
+    "no_unknown_private_prefix_export": true,
+    "does_not_install_parser_candidate": true
+  },
+  "excluded": [
+    "bootout",
+    "old PID or PGID signals",
+    "restart or re-run original worker",
+    "new fixture or production change",
+    "provider/J3160 calls",
+    "private credential export",
+    "deadline or parser weakening",
+    "CLI or build work"
+  ],
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0,
+  "runtime_lane_disposition": {
+    "other_active_lane": "/root/ha_validation exact ROG source-stage original observers",
+    "compatibility_audit": "11 original H2 observers closed;0Runtime; no new Native",
+    "agent": "/root/authbus_migration may use freed lane after exact whole GO"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.h2-live.original-readonly-intent.v1",
+  "GO": {
+    "blob": "39616822031623661e3db7d5153f9dcb19525842",
+    "bytes": 10177,
+    "sha256": "797d031779441fd8d10563b62200a848c80facd2965dd7b5b0e817163a3b7684"
+  },
+  "job_id": "1a1ae76aacd-fc05-5fb4",
+  "label": "result-body-327680-page-016384",
+  "tool": "operation_result",
+  "request": {
+    "name": "h2-live-result-body-327680-page-016384-request",
+    "blob": "e9e53010ca218bf277f52c3675ebf508cee83ca1",
+    "bytes": 126,
+    "sha256": "6a8953af1928fec5e6c0cb0d7d11278face0d0e687df4ec9ba8bfd6ea0ab9e5c",
+    "archive_tree": "e2237c7e35dc5e789d37dddc97e571122acdc182",
+    "external_whole": true
+  },
+  "Runtime_submitted": false,
+  "one_future": true,
+  "original_SDK_external_before_parse": true,
+  "Git_first_protocol_GO": {
+    "blob": "778d79c6702a0aa7933aaec598e548349eb31a73",
+    "bytes": 6592,
+    "sha256": "f8564f6759b9cd7da416aa0d0558e6138e96bbde4a05a7ce9179454f5fbdba3e"
+  }
+}

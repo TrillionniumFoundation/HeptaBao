@@ -1,0 +1,46 @@
+{
+  "checks": [
+    {
+      "name": "original17argv",
+      "passed": true
+    },
+    {
+      "name": "source_request_exact",
+      "passed": true
+    },
+    {
+      "name": "parent_closure_no_guess",
+      "passed": true
+    },
+    {
+      "name": "window_contains_both",
+      "passed": true
+    },
+    {
+      "name": "bootstrap_known",
+      "passed": true
+    },
+    {
+      "name": "filebody_calls_absent",
+      "passed": true
+    },
+    {
+      "name": "child_network_modules_absent",
+      "passed": true
+    },
+    {
+      "name": "returned_metadata_budget",
+      "passed": true
+    },
+    {
+      "name": "unknown_link_never_exported",
+      "passed": true
+    },
+    {
+      "name": "all_diagnostics_source_only",
+      "passed": true
+    }
+  ],
+  "noRuntime": true,
+  "noPythonExecution": true
+}

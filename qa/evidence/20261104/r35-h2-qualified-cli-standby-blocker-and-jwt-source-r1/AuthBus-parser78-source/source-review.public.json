@@ -1,0 +1,121 @@
+{
+  "schema": "heptabao.launchd-exconfig-parser-minimal-source.r1",
+  "before": {
+    "blob": "96fe347f2edbda1718b2fd683041b88be8f41e30",
+    "bytes": 35736,
+    "sha256": "4989b58248f7951f825c021402bef611708b8613291d3282761c8c97d0b4adf6"
+  },
+  "after": {
+    "blob": "4dc248f23b8c2646cca1d9de7455f7d135db749d",
+    "bytes": 35876,
+    "sha256": "592e218b2a7d63f977e9d01bbc09a89cf84bae798e8d5ac937b9adecc4ace411"
+  },
+  "strictSingleHunk": true,
+  "hunks": 1,
+  "change": "Only exact last exit code literal 78: EX_CONFIG maps to integer 78; pid/runs and all other forms retain original fullmatch rejection.",
+  "unchangedPrefixBytes": 3750,
+  "unchangedSuffixBytes": 31767,
+  "originalRuntimeBudgetsUnchanged": true,
+  "originalReadyExitZeroGraphCleanupPredicatesUnchanged": true,
+  "plannedCurrentStateResult": "Parsing now exposes numeric failure 78. _ready still rejects no PID with runs=1 and absent ready; actual_launchd_phase_exit_zero remains false. No successful phase or cleanup is claimed.",
+  "pureChecks": {
+    "runtime": "V8 pure selected ASCII expression model; not Python module execution, AST compilation or installed launchctl qualification",
+    "count": 8,
+    "allPassed": true,
+    "cases": [
+      {
+        "name": "actual_symbolic_failure",
+        "field": "last exit code",
+        "value": "78: EX_CONFIG",
+        "old": false,
+        "new": 78,
+        "actualOld": false,
+        "actualNew": 78
+      },
+      {
+        "name": "symbolic_pid_rejected",
+        "field": "pid",
+        "value": "78: EX_CONFIG",
+        "old": false,
+        "new": false,
+        "actualOld": false,
+        "actualNew": false
+      },
+      {
+        "name": "symbolic_runs_rejected",
+        "field": "runs",
+        "value": "78: EX_CONFIG",
+        "old": false,
+        "new": false,
+        "actualOld": false,
+        "actualNew": false
+      },
+      {
+        "name": "mismatched_numeric_rejected",
+        "field": "last exit code",
+        "value": "0: EX_CONFIG",
+        "old": false,
+        "new": false,
+        "actualOld": false,
+        "actualNew": false
+      },
+      {
+        "name": "mismatched_symbol_rejected",
+        "field": "last exit code",
+        "value": "78: EX_OK",
+        "old": false,
+        "new": false,
+        "actualOld": false,
+        "actualNew": false
+      },
+      {
+        "name": "trailing_text_rejected",
+        "field": "last exit code",
+        "value": "78: EX_CONFIGx",
+        "old": false,
+        "new": false,
+        "actualOld": false,
+        "actualNew": false
+      },
+      {
+        "name": "original_zero_unchanged",
+        "field": "last exit code",
+        "value": "0",
+        "old": 0,
+        "new": 0,
+        "actualOld": 0,
+        "actualNew": 0
+      },
+      {
+        "name": "original_failure_unchanged",
+        "field": "last exit code",
+        "value": "78",
+        "old": 78,
+        "new": 78,
+        "actualOld": 78,
+        "actualNew": 78
+      }
+    ]
+  },
+  "literalComparison": {
+    "schema": "heptabao.launchd-fixed-public-literal-offline-comparison.r1",
+    "actualProjection": {
+      "bytes": 13,
+      "sha256": "865ce32135321d0a9b70cc68893f4164c8d08e00f1802b4e15375e1959b933a7",
+      "kind": "other_noninteger"
+    },
+    "publicLiteral": "78: EX_CONFIG",
+    "derivedPin": {
+      "blob": "33c59f0126e7e83d54cbf5da08031eae25c9be8b",
+      "bytes": 13,
+      "sha256": "865ce32135321d0a9b70cc68893f4164c8d08e00f1802b4e15375e1959b933a7"
+    },
+    "exactBytesAndHashMatch": true,
+    "noRuntime": true,
+    "source": "Single public launchd status literal compared offline against already-observed bounded projection; no new host read, no original raw print recovery.",
+    "scope": "A hash match identifies this candidate literal under the SHA256 collision assumption. It does not qualify service exit/closure or explain why launchd reported this code."
+  },
+  "runtimeAuthorized": false,
+  "hostChanged": false,
+  "originalUnknownPreserved": true
+}

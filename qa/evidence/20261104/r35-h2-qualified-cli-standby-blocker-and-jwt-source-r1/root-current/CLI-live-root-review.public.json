@@ -1,0 +1,73 @@
+{
+  "schema": "heptabao.root-official271-cli-Git-first-source-review.v1",
+  "as_of_UTC": "2026-11-06 03:20:03 UTC",
+  "packet": {
+    "tree": "298ba8859eb98c72aa5c7feac283b8aca473c7cf",
+    "files": 18,
+    "bytes": 86397,
+    "merkle": {
+      "root_sha": "298ba8859eb98c72aa5c7feac283b8aca473c7cf",
+      "trees_verified": 1,
+      "leaf_count": 18
+    },
+    "whole": true
+  },
+  "checks": [
+    {
+      "name": "native_strict_forward_reverse",
+      "passed": true
+    },
+    {
+      "name": "steps_strict_forward_reverse",
+      "passed": true
+    },
+    {
+      "name": "exact_request_unchanged",
+      "passed": true
+    },
+    {
+      "name": "correct_typed_binding",
+      "passed": true
+    },
+    {
+      "name": "unchanged_archive_and_pure",
+      "passed": true
+    },
+    {
+      "name": "host_executable_timeout_exact",
+      "passed": true
+    },
+    {
+      "name": "original_binding_argument",
+      "passed": true
+    },
+    {
+      "name": "actual_prepare_SHA_argument",
+      "passed": true
+    },
+    {
+      "name": "H2_actual_root_qualification_passed",
+      "passed": true
+    },
+    {
+      "name": "same_product_and_official_binaries",
+      "passed": true
+    },
+    {
+      "name": "JS_syntax_only_no_functions_invoked",
+      "passed": true
+    }
+  ],
+  "native_hunks": 3,
+  "steps_hunks": 1,
+  "correct_binding": {
+    "sha256": "f670cf418c6ae40943b7f0224e09f0bd556ceb3b5975c377ad0e524a317f5cd7",
+    "native_fingerprint": "17757921211157505033",
+    "stdin_field": "stdin"
+  },
+  "prior_prepare": "f40fb6a88aff1d91ff59f9bca6495ae4b7d4e045",
+  "H2_qualification": "98643e27c05bf7ba738f741e298dc8b3cabc15ae",
+  "controller_unchanged": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+  "root_Runtime_calls": 0,
+  "CLI_live_executed_by_this_review": false
+}

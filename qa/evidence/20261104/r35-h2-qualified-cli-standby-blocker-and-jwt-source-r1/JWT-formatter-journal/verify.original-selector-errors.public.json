@@ -1,0 +1,14 @@
+[
+  {
+    "message": "three_hunks",
+    "reason": "The two adjacent top-level binding replacements merge into one diff hunk; actual minimal diff is 2 hunks. No candidate/Runtime/Git mutation occurred.",
+    "RuntimeCalls": 0,
+    "GitMutations": 0
+  },
+  {
+    "message": "two_host_bindings_same_rog",
+    "reason": "Checker omitted the original v.job?.host optional chaining token; source remains unchanged.",
+    "RuntimeCalls": 0,
+    "GitMutations": 0
+  }
+]

@@ -1,0 +1,147 @@
+{
+  "schema": "heptabao.native-jwt.formatter-journal.source-checks.v1",
+  "checks": [
+    {
+      "name": "one_before_Independent future context; no reset of original stage journal",
+      "pass": true
+    },
+    {
+      "name": "one_before_Exact root-reviewed formatter request, no reserialization",
+      "pass": true
+    },
+    {
+      "name": "one_before_Closed observation namespace for only its actual returned job",
+      "pass": true
+    },
+    {
+      "name": "forward_whole",
+      "pass": true
+    },
+    {
+      "name": "one_after_Closed observation namespace for only its actual returned job",
+      "pass": true
+    },
+    {
+      "name": "one_after_Exact root-reviewed formatter request, no reserialization",
+      "pass": true
+    },
+    {
+      "name": "one_after_Independent future context; no reset of original stage journal",
+      "pass": true
+    },
+    {
+      "name": "reverse_whole",
+      "pass": true
+    },
+    {
+      "name": "exact_formatter_request",
+      "pass": true
+    },
+    {
+      "name": "operator_host_rog",
+      "pass": true
+    },
+    {
+      "name": "outer60",
+      "pass": true
+    },
+    {
+      "name": "request_key",
+      "pass": true
+    },
+    {
+      "name": "inline_isolated_flags",
+      "pass": true
+    },
+    {
+      "name": "candidate_exact",
+      "pass": true
+    },
+    {
+      "name": "two_actual_diff_hunks",
+      "pass": true
+    },
+    {
+      "name": "same_13_defs",
+      "pass": true
+    },
+    {
+      "name": "def_gfNeed",
+      "pass": true
+    },
+    {
+      "name": "def_gfMetaEquals",
+      "pass": true
+    },
+    {
+      "name": "def_gfState",
+      "pass": true
+    },
+    {
+      "name": "def_gfSave",
+      "pass": true
+    },
+    {
+      "name": "def_gfIntegerText",
+      "pass": true
+    },
+    {
+      "name": "def_gfInitializeOnlyAfterRootGO",
+      "pass": true
+    },
+    {
+      "name": "def_gfValidateRequest",
+      "pass": true
+    },
+    {
+      "name": "def_gfPrepareOne",
+      "pass": true
+    },
+    {
+      "name": "def_gfInvokePreparedOnce",
+      "pass": true
+    },
+    {
+      "name": "def_gfAcceptArchivedSDK",
+      "pass": true
+    },
+    {
+      "name": "def_gfCloseOriginalObserver",
+      "pass": true
+    },
+    {
+      "name": "def_gfReconcileSameGitArchiveReadOnly",
+      "pass": true
+    },
+    {
+      "name": "def_gfRun",
+      "pass": true
+    },
+    {
+      "name": "two_host_bindings_same_rog",
+      "pass": true
+    },
+    {
+      "name": "no_file_or_body_new_branch",
+      "pass": true
+    },
+    {
+      "name": "stream16384_retained",
+      "pass": true
+    },
+    {
+      "name": "page8192_retained",
+      "pass": true
+    },
+    {
+      "name": "old_binding_function_never_called",
+      "pass": true
+    }
+  ],
+  "passed": 34,
+  "RuntimeCalls": 0,
+  "GitMutations": 0,
+  "helperFunctionsExecuted": false,
+  "formatterExecuted": false,
+  "sourceOnly": true
+}

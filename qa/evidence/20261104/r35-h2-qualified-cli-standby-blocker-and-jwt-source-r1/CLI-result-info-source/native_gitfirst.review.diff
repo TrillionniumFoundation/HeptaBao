@@ -1,0 +1,133 @@
+--- native_gitfirst.before.js
++++ native_gitfirst.cli-info-only.js
+@@ -9,6 +9,57 @@
+ const GF_REQUEST = {blob:"2c0692832bfe24fe8b728589900896ae64152852",
+  bytes:746,sha256:"11951f04874e55849a27d6abe812118124055245adfd8dd6321779a3b10886da"};
+ 
++/* One separately approved observation of this known failed CLI public report.
++ * This does not authorize binary_read or any new process. Existing state is kept.
++ * 4194304 is this proposed metadata archival cap, not a live-writer limit.
++ */
++const GF_CLI_RESULT_PATH = "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r4/result.public.json";
++const GF_CLI_RESULT_MAX_BYTES = 4194304;
++const GF_CLI_RESULT_SHA256 = "d5c691d23b513a2a63916792bbe21178e2b34799e6adbd20ddf88cdf6147bc48";
++const GF_CLI_INFO_REQUEST = {"blob":"39c26a97e1a1d27d4cea64c810232e47bc956c1f","bytes":299,"sha256":"f8ece50b14f479740b930ca708655e21e2d179b2d3a4b3c1f163000e7dabe651"};
++const GF_CLI_INFO_PREREQUISITES = [{"id":"b80260778857dbbe605ad2a69e9796f5b6afa6bbb5307861e1768cde447fb252","tool":"process_status","nativeText":{"blob":"c764a0ee9dcfa882ed222e2d1e1a867a644b2ede","bytes":726,"sha256":"756c3ab8be9518f299fda3b43276c0e94658fab125ba6a1bd743b940f2d2d75b"}},{"id":"71998bdb33b089536cad2972e63a7f197abaab2bb06df31af74793f11ab4fb0e","tool":"process_read","nativeText":{"blob":"237c61db23fa69ad97a9f5a6cca160c75448c582","bytes":1752,"sha256":"cbef431cf103de9c2a534751b124f1c00552dc75cf99d072d55e82d98f01f9ee"}}];
++
++function gfAuthorizeCliResultInfoOnly({goRaw,goPin,goWholeReadback}) {
++ const s=gfState();
++ gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null
++   && s.activeObserver===null && s.startCalled===true
++   && s.job==="1a1aee01612-fc05-639b" && s.cliResultInfoGO===undefined
++   && s.cliResultInfoStarted!==true,"closed_existing_cli_before_info_only_GO");
++ gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin)
++   && goPin.blob!==s.goPin.blob,"separate_whole_info_only_GO");
++ const g=JSON.parse(goRaw);
++ gfNeed(g.authorization==="GO" && g.scope==="cli_result_file_info_only"
++   && g.original_job===s.job && g.maximum_file_info_starts===1
++   && g.binary_read_authorized===false
++   && g.exact_request?.blob===GF_CLI_INFO_REQUEST.blob
++   && g.exact_request?.bytes===GF_CLI_INFO_REQUEST.bytes
++   && g.exact_request?.sha256===GF_CLI_INFO_REQUEST.sha256,
++   "exact_new_root_file_info_scope");
++ for(const need of GF_CLI_INFO_PREREQUISITES) {
++  const prior=s.completedObservers.find(o=>o.id===need.id);
++  const priorRaw=load(GF_SLOT+":closed_native:"+need.id);
++  gfNeed(prior?.completedInactive===true && prior.tool===need.tool
++    && gfMetaEquals(priorRaw,need.nativeText)
++    && prior.nativeText.blob===need.nativeText.blob,"original_cli_closure_pin");
++ }
++ const authority=parseLosslessIntegers(load(GF_SLOT+":closed_native:"+GF_CLI_INFO_PREREQUISITES[0].id));
++ const streams=parseLosslessIntegers(load(GF_SLOT+":closed_native:"+GF_CLI_INFO_PREREQUISITES[1].id));
++ const terminal=JSON.parse(streams.stdout.text);
++ gfNeed(authority.exit_code===1 && authority.state==="failed" && authority.output_complete===true
++   && authority.output_durable===true && authority.terminal_publication_confirmed===true
++   && !authority.timed_out && !authority.cancelled
++   && streams.stdout.eof===true && streams.stderr.eof===true
++   && s.nextStdout===466 && s.nextStderr===0
++   && terminal.all_owned_stopped===true && terminal.outcome_unknown===false
++   && terminal.status==="completed_with_compatibility_failures"
++   && terminal.literal_scan_hits===0 && terminal.result===GF_CLI_RESULT_PATH
++   && terminal.result_sha256===GF_CLI_RESULT_SHA256,"known_cli_terminal_and_full_summary");
++ s.cliResultInfoGO={pin:goPin,raw:goRaw,whole:true};
++ gfSave(s);
++ return {originalJob:s.job,exactRequest:GF_CLI_INFO_REQUEST,
++   maximumFileInfoStarts:1,binaryReadAuthorized:false};
++}
++
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {
+  const actual=gitBlobMeta(raw);
+@@ -50,11 +101,17 @@
+     "bounded_original_observer_key");
+   const op=q.operation,a=op?.arguments;
+   gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"
+-    && a && a.host==="desktop" && a.job_id===s.job,"same_original_job_only");
+-  if(op.tool==="process_status") {
++    && a && a.host==="desktop","same_original_host_only");
++  if(op.tool==="file_info") {
++   gfNeed(s.cliResultInfoGO?.whole===true && s.cliResultInfoStarted!==true
++     && gfMetaEquals(raw,GF_CLI_INFO_REQUEST)
++     && Object.keys(a).sort().join(",")==="host,path"
++     && a.path===GF_CLI_RESULT_PATH,"one_exact_owned_cli_result_info");
++  } else if(op.tool==="process_status") {
++   gfNeed(a.job_id===s.job,"same_original_job_only");
+    gfNeed(Object.keys(a).sort().join(",")==="host,job_id","exact_status_arguments");
+   } else {
+-   gfNeed(op.tool==="process_read"
++   gfNeed(op.tool==="process_read" && a.job_id===s.job
+      && Object.keys(a).sort().join(",")==="host,job_id,limit,stderr_offset,stdout_offset"
+      && a.limit===16384 && a.stdout_offset===s.nextStdout
+      && a.stderr_offset===s.nextStderr,"original_stream_cursors_and_cap");
+@@ -78,7 +135,10 @@
+  gfValidateRequest(s,kind,q,requestRaw);
+  const requestPin=gitBlobMeta(requestRaw);
+  const intent={schema:"heptabao.gitfirst.fixed-native-call-intent.r1",
+-  callKey,kind,request:requestPin,rootGo:s.goPin,originalJob:s.job,
++  callKey,kind,request:requestPin,
++  rootGo:(kind==="operation_start" && q.operation.tool==="file_info")
++    || s.activeObserver?.tool==="file_info" ? s.cliResultInfoGO.pin : s.goPin,
++  originalJob:s.job,
+   originalOperation:s.activeObserver?.id??null,maximumNativeCalls:1,
+   nativeNotYetCalled:true,lossOfAcknowledgmentNeverGrantsReplay:true,
+   localFirstExplicitlyReplacedByExactRootGO:true};
+@@ -108,6 +168,7 @@
+  gfNeed(gfMetaEquals(c.requestRaw,c.requestPin),"armed_request_unchanged");
+  c.called=true;c.phase="native_call_entered";s.nativeCallInFlight=true;
+  if(c.kind==="process_start")s.startCalled=true;
++ if(c.kind==="operation_start" && q.operation.tool==="file_info")s.cliResultInfoStarted=true;
+  gfSave(s); // No await or second dispatch between this marker and the one call.
+  let sdk;
+  try {
+@@ -233,7 +294,22 @@
+   gfNeed(p.resultType==="complete" && p.isError===false
+     && p.content?.length===1 && p.content[0].type==="text","original_native_result_success");
+   const nativeRaw=p.content[0].text,v=parseLosslessIntegers(nativeRaw);
+-  gfNeed(v.job_id===s.job,"original_job_native_result_binding");
++  if(a.tool==="file_info") {
++   const md=v.metadata,parts=typeof v.version==="string"?v.version.split(":"):[];
++   gfNeed(v.path===GF_CLI_RESULT_PATH && Number.isSafeInteger(v.size)
++     && v.size>0 && v.size<=GF_CLI_RESULT_MAX_BYTES
++     && v.sha256===GF_CLI_RESULT_SHA256 && v.mode===384
++     && md?.metadata_platform==="linux" && md.mode===384
++     && md.uid===1000 && md.gid===1000 && md.link_count===1
++     && parts.length===5 && parts.every(x=>/^[0-9]+$/.test(x))
++     && parts[2]===String(v.size),"fixed_report_content_metadata_and_version");
++   s.cliResultInfo={path:v.path,size:v.size,sha256:v.sha256,version:v.version,
++     nativeText:gitBlobMeta(nativeRaw),originalOperation:a.id,
++     full9Strings:[parts[0],parts[1],"1000","1000",String(32768|v.mode),
++       "1",String(v.size),parts[3],parts[4]],
++     regularFileFromNativeFileInfoContract:true,
++     binaryReadAuthorized:false};
++  } else gfNeed(v.job_id===s.job,"original_job_native_result_binding");
+   if(a.tool==="process_read") {
+    for(const stream of ["stdout","stderr"]) {
+     const row=v[stream],asked=a.request.operation.arguments[stream+"_offset"];
+@@ -318,6 +394,7 @@
+  try {
+   let value;
+   if(action==="initialize")value=gfInitializeOnlyAfterRootGO(args);
++  else if(action==="authorize_cli_result_info")value=gfAuthorizeCliResultInfoOnly(args);
+   else if(action==="prepare")value=await gfPrepareOne(args);
+   else if(action==="invoke")value=await gfInvokePreparedOnce(args.callKey);
+   else if(action==="accept")value=gfAcceptArchivedSDK(args.callKey);

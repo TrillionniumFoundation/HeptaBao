@@ -1,0 +1,18 @@
+{
+  "schema": "heptabao.launchd-fixed-public-literal-offline-comparison.r1",
+  "actualProjection": {
+    "bytes": 13,
+    "sha256": "865ce32135321d0a9b70cc68893f4164c8d08e00f1802b4e15375e1959b933a7",
+    "kind": "other_noninteger"
+  },
+  "publicLiteral": "78: EX_CONFIG",
+  "derivedPin": {
+    "blob": "33c59f0126e7e83d54cbf5da08031eae25c9be8b",
+    "bytes": 13,
+    "sha256": "865ce32135321d0a9b70cc68893f4164c8d08e00f1802b4e15375e1959b933a7"
+  },
+  "exactBytesAndHashMatch": true,
+  "noRuntime": true,
+  "source": "Single public launchd status literal compared offline against already-observed bounded projection; no new host read, no original raw print recovery.",
+  "scope": "A hash match identifies this candidate literal under the SHA256 collision assumption. It does not qualify service exit/closure or explain why launchd reported this code."
+}

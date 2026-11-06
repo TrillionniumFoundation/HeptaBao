@@ -1,0 +1,41 @@
+{
+  "schema": "heptabao.original-owned-bootstrap-time-window.source.r1",
+  "originalJob": "1a1ae51309d-fc05-5ef8",
+  "ack": {
+    "blob": "5d76fca8fcedb3abc4765ad9c9f3c5a4678280e2",
+    "bytes": 6200,
+    "sha256": "eb1da610a70177b87161fda4c37fd80d984b135d5715d04128eaa00fa48b5b86"
+  },
+  "authority": {
+    "blob": "0e29e80053b2ad291101f53c8ffcc24f485680ac",
+    "bytes": 732,
+    "sha256": "f402631c37f87c2e8928f321682a0a8d03d9efcb0d005eb0151c48b6c2429df6"
+  },
+  "stdout": {
+    "blob": "99f88a10ed877dcf23aaafc56fd3e69c31a5a2d1",
+    "bytes": 132132,
+    "sha256": "feae46e33bc62427b8317780cf38ca73acd80124b1ad157caa20cbb0f3677748"
+  },
+  "jobCreatedUnixMs": 1793925918877,
+  "terminalPublicationUnixMs": 1793925920735,
+  "rawJobWindowMilliseconds": 1858,
+  "conservativeRoundedStartUnixMs": 1793925918000,
+  "conservativeRoundedEndUnixMs": 1793925921000,
+  "utcStart": "2026-11-06T00:45:18.000Z",
+  "utcEnd": "2026-11-06T00:45:21.000Z",
+  "maximumWindowMilliseconds": 3000,
+  "bootstrapIntentFileMtimeNs": "1793925920565520047",
+  "bootstrapCommand": {
+    "argv": [
+      "/bin/launchctl",
+      "bootstrap",
+      "gui/501",
+      "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.plist"
+    ],
+    "pid": 82492,
+    "commandDeadlineMonotonic": 2811777.446800166,
+    "elapsedSeconds": 0.04866733402013779,
+    "exitCode": 0
+  },
+  "qualification": "Conservative wall-clock envelope from same original job ACK creation and terminal publication, supported by bootstrap-intent record; not an exact wall-clock timestamp for posix_spawn. No timezone inferred from ps lstart and no guessed monotonic-to-epoch conversion."
+}

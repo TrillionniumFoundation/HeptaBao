@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.root-isolated-JWT-source-branch-proof.v1",
+  "branch": "codex/heptabao-native-jwt-r2-source-20261106",
+  "commit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+  "tree": "5497775d9d473541e13e1603be8c893a3e27681b",
+  "sole_parent": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "intent": "25d07c6b7f214c10a8827e30b40dfa9bc003c986",
+  "original_create_SDK": "01e61263633bb0f0dbb07f63246c6be23e4ae705",
+  "original_ref_read": {
+    "blob": "594c965a5129293d4080f8dfda17ea2e4daab06d",
+    "bytes": 1879,
+    "sha256": "f9de44356d95863953ef223d4722b1a3afc7c727ef4a1c12e9c76db407c51aae"
+  },
+  "root_created_isolated_source_ref_only": true,
+  "agent_C_ref_changes": 0,
+  "PR159_changed": false,
+  "validation_branch_changed": false,
+  "production_branch_changed": false,
+  "formatter_compile_test_runs": 0,
+  "source_qualified": false,
+  "root_Runtime_calls": 0
+}

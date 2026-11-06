@@ -1,0 +1,137 @@
+{
+  "schema": "heptabao.root-GO.native-jwt-rog-source-stage-Git-first.v1",
+  "authorization": "GO",
+  "as_of_UTC": "2026-11-06 03:08:00 UTC",
+  "agent": "/root/ha_validation",
+  "purpose": "One isolated exact source checkout and inert historical-control validation for candidate native JWT R2; no formatter, build or test admission",
+  "source_review": {
+    "blob": "479dd9c9157e70898b9fae971da6d0a6f5629084",
+    "bytes": 2509,
+    "sha256": "ef5b4beca023fb84978eecb1a96e65d7c531bcc0b29f68b2e9ea9351bd51fe4d"
+  },
+  "source_packet": "3ca17dba3a401f552af627569d91e14f4344a4db",
+  "journal_packet": "ae9d43535685a4952159747e8bc24703d49b504f",
+  "exact_request": {
+    "blob": "c1429991e9c597d1639f02a68f791043e6c8b9e5",
+    "bytes": 111605,
+    "sha256": "aebf043cfcb5d60611dd67f3ed93c0caee8098091a70c8b61c8306de05fc5b65"
+  },
+  "source": {
+    "blob": "40cdd07ec0e87656c2ea2e65c13a0734ffde6c51",
+    "bytes": 28599,
+    "sha256": "f896b4fc83d957505019259dc79c9ab9bd6e01fb7b40e7c54db442b8b48c7ab7"
+  },
+  "stdin": {
+    "blob": "f9166bc801c5b10e12b77274f485d27d61cd499a",
+    "bytes": 79951,
+    "sha256": "85fd6e473ce1e231f1bcfbd2bcf2bef760e6a4e551040c55ee3274606acebb77",
+    "historical_controls_executed": false
+  },
+  "native_binding": {
+    "sha256": "cf25a0596615538ba565454b443a661e50cb1daa6b80181e85c580d33e0b3f6b",
+    "native_fingerprint": "14926512845814584203",
+    "typed_stdin_field": "stdin"
+  },
+  "start": {
+    "host": "rog",
+    "executable": "/usr/bin/python3",
+    "cwd": "/home/qian-qi",
+    "timeout_seconds": 360,
+    "idempotency_key": "heptabao-native-jwt-e3afc157-rog-source-20261106-r1-f896b4fc",
+    "exact_args_and_stdin_from_request": "c1429991e9c597d1639f02a68f791043e6c8b9e5",
+    "maximum_START_count": 1
+  },
+  "source_checkout": {
+    "create_only_root": "/home/qian-qi/heptabao-native-jwt-source-e3afc157-20261106-r1",
+    "commit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+    "tree": "5497775d9d473541e13e1603be8c893a3e27681b",
+    "sole_parent": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "leaves": 3916,
+    "tracked_bytes": 62287650,
+    "full_leaf_index_sha256": "d545c2109362dc3f74d85ade2e66717d7b1ff9dd630842982f2ae3215e121dea",
+    "source_anchor_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "fetch_exact_commit": true,
+    "detached_clean_head": true,
+    "independent_no_hardlinks_or_alternates": true,
+    "strict_fsck_required": true,
+    "bundle_incremental_not_standalone": true
+  },
+  "helpers": {
+    "native": {
+      "blob": "4a2e8391563bbeee6b2cfb7e3f0605c19e46baf2",
+      "bytes": 19040,
+      "sha256": "b57139647032715c177ecc368de86256662ee93f08d59fc59fa4b6e802962570"
+    },
+    "archive": {
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    "pure": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    "steps": {
+      "blob": "e3057c20d36153cb1540dd76bb0d2777375507fc",
+      "bytes": 1466,
+      "sha256": "aff810e7cbcd62594957654fcc117f6e2be12eac623166f1c9c86032437c158b"
+    },
+    "do_not_use_legacy_processStartBinding": true
+  },
+  "budgets": {
+    "stage_seconds": 300,
+    "git_command_seconds": 90,
+    "clone_seconds": 180,
+    "outer_seconds": 360,
+    "carrier_cap_bytes": 262144,
+    "term_seconds": 5,
+    "kill_seconds": 5,
+    "process_read_bytes": 16384,
+    "immutable_page_bytes": 8192,
+    "original_payload_cap_bytes": 1048576,
+    "maximum_Runtime_lanes": 2,
+    "maximum_call_and_future_per_lane": 1
+  },
+  "journal": {
+    "slot": "jwt_e3af_rog_source_gitfirst_r1",
+    "call_key_prefix": "jwt-e3af-rog-source-",
+    "observer_key_prefix": "heptabao-native-jwt-e3afc157-rog-source-observe-r1-",
+    "invoke_only_through": "gfRun",
+    "initialize_only_once_with_exact_whole_GO": true,
+    "prepare_request_intent_armed_external_tree_all_blobs_whole": true,
+    "model_boundary_before_invoke": true,
+    "original_SDK_immutable_external_whole_before_interpretation": true,
+    "errors_return_normally_and_history_preserved": true,
+    "after_start": "Only actual returned rog job for original process_status/process_read; one active observer, exact next 8192-byte immutable pages, full payload SHA and EOF before close or another observer",
+    "Git_unknown": "Stop and preserve original/expected objects; exact read-only reconciliation only; never replay create or automatically unpause",
+    "Native_unknown": "Stop and preserve armed record and original SDK; never reissue START, change key, substitute host or infer a new job",
+    "local_executor_required": false
+  },
+  "qualification": {
+    "requires_authority_exit0_complete_durable": true,
+    "requires_whole_stdout_stderr_and_actual_report": true,
+    "requires_source_root_leaf_index_and_old_fences": true,
+    "requires_actual_owned_child_closure_and_final_deadline": true,
+    "historical_controls_executed": false,
+    "candidate_build_qualification": false,
+    "formatter_executed": false,
+    "rust_tests_executed": false,
+    "actual_build_qualification": false
+  },
+  "excluded": [
+    "formatter invocation",
+    "Cargo or rustc invocation",
+    "historical launcher execution",
+    "product start or business requests",
+    "production service or configuration changes",
+    "provider or J3160 access",
+    "deadline changes",
+    "old artifact deletion",
+    "CLI live gate"
+  ],
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

@@ -1,0 +1,11 @@
+{
+  "auth.rs": "//! Durable authentication and a deliberately bounded, fail-closed ACL dialect.",
+  "auth_native_jwt.rs": "//! Root, local-key JWT operation custody for the native V6 transaction.",
+  "auth_native_v6_routes.rs": "//! Select only in-process Auth owners for the native V6 writer.",
+  "federated_auth.rs": "#![forbid(unsafe_code)]",
+  "federated_native_jwt.rs": "//! OpenBao native JWT login accepts reusable bearer assertions. Keep its",
+  "service.rs": "use crate::auth::Timestamp;",
+  "service_native_auth.rs": "//! AuthBus operations use the existing Auth dispatcher and V6 root transaction.",
+  "service_native_jwt_tests.rs": "//! Real configured File V6, one JWT verifier, native publication and delivery.",
+  "service_native_userpass_tests.rs": "//! Normal configured File V6 and actual Auth operations. No fixture activation,"
+}

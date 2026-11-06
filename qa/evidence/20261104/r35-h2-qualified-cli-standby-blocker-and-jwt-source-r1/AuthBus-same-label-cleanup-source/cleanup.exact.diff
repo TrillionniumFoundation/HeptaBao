@@ -1,0 +1,285 @@
+--- a/a/original-readonly-diagnostic.py
++++ b/b/proposed-same-label-cleanup.py
+@@ -1,12 +1,13 @@
+ #!/usr/bin/env python3
++"""SOURCE ONLY: one exact already-observed owned launchd label removal.
++A separate exact root GO is required. No bootstrap, restart, SDK or private input read.
++Only the original public plist is read; the original label must have no PID in two
++strict observations before one bootout. Historical lineage UNKNOWN remains unchanged.
+-"""PROPOSAL ONLY: one fixed owned launchd registration, read-only diagnostic.
+-No old-label signals, bootout, restart, SDK, provider, private plan or capsule read.
+-The private stdout path is read only through its first LF, projected by allowlist.
+-A successful diagnostic is not service closure, business success, or cleanup GO.
+ """
+ from __future__ import annotations
+ import base64, hashlib, json, math, os, plistlib, re, signal, stat, sys, time, types
+ from pathlib import Path
++from contextlib import contextmanager
+ 
+ ROOT = Path("/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1")
+ LABEL = 'org.heptabao.qa.mac-authbus-4e808-owner-r1.server'
+@@ -24,11 +25,12 @@
+ READY = ROOT / 'launchd/server-initial.ready.public.json'
+ EXEC_READY = ROOT / 'launchd/server-initial.exec-ready.public.json'
+ STDOUT_PREFIX = ROOT / 'launchd/server-initial.stdout.private'
++FIXED_READS = {str(PLIST): 65536}
++MAX_RETURNED_BODY_BYTES = 262148
++MAX_READ_SYSCALLS = 8
++MAX_OWNED_FILE_ROWS = 7
++PLIST_IDENTITY = ('16777244', '72671221', '501', '20', '33152', '1', '3984',
++                  '1793925920564440143', '1793925920564448185')
+-FIXED_READS = {str(PLIST): 65536, str(READY): 8192,
+-               str(EXEC_READY): 65536, str(STDOUT_PREFIX): 65536}
+-MAX_RETURNED_BODY_BYTES = 270340
+-MAX_READ_SYSCALLS = 65560
+-MAX_OWNED_FILE_ROWS = 19
+ OUTPUT_MAXIMUM = 131072
+ START = time.monotonic()
+ UNTIL = START + 45.0
+@@ -250,13 +252,15 @@
+     need(depth==0 and not in_arguments and arguments_seen,'complete_launchctl_arguments')
+     for name in ('pid','runs','last exit code'):
+         if name in fields:
++            typed_value=fields[name]
++            if name=='last exit code' and typed_value=='78: EX_CONFIG':
++                typed_value='78'
++            need(re.fullmatch(r'-?[0-9]{1,10}',typed_value) is not None,'typed_launchctl_integer')
++            fields[name]=int(typed_value)
+-            need(re.fullmatch(r'-?[0-9]{1,10}',fields[name]) is not None,'typed_launchctl_integer')
+-            fields[name]=int(fields[name])
+     need('pid' not in fields or fields['pid']>1,'actual_launchctl_pid')
+     fields['arguments']=arguments
+     return fields
+ 
+-
+ def structure_fields(raw,target):
+     need(isinstance(raw,bytes) and len(raw)<=262144,'bounded_launchctl_print')
+     lines=raw.decode('utf-8','strict').splitlines()
+@@ -453,6 +457,67 @@
+         result['volumeClosure']['closeErrorCount'] = len(volume['closeErrors'])
+     return result
+ 
++@contextmanager
++def held_cleanup_plist(guard, public):
++    row = {'fd': None, 'close_attempted': False, 'closed': False, 'anchor': False}
++    with guard.parent(PLIST) as (parent, name):
++        named = os.stat(name, dir_fd=parent, follow_symlinks=False)
++        need(identity(named) == PLIST_IDENTITY, 'cleanup_original_plist_named_full9')
++        try:
++            with signals.critical():
++                remaining()
++                row['fd'] = os.open(name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK,
++                                    dir_fd=parent)
++                public['created'] = True
++                guard.rows.append(row)
++                public['registered'] = True
++            need(len(guard.rows) <= MAX_OWNED_FILE_ROWS, 'cleanup_fixed_fd_bound')
++            need(identity(os.fstat(row['fd'])) == PLIST_IDENTITY,
++                 'cleanup_original_plist_fd_full9')
++            yield row['fd'], parent, name
++        finally:
++            if row['fd'] is not None:
++                try:
++                    guard._close_row(row)
++                finally:
++                    public['closeAttempted'] = row['close_attempted']
++                    public['closed'] = row['closed']
++
++def recheck_cleanup_plist(guard, fd, parent, name, result):
++    remaining()
++    before = os.fstat(fd)
++    named = os.stat(name, dir_fd=parent, follow_symlinks=False)
++    need(identity(before) == identity(named) == PLIST_IDENTITY,
++         'cleanup_original_plist_before_whole')
++    raw = bytearray()
++    while True:
++        block = bounded_read(fd, min(65536, 65537 - len(raw)), len(raw))
++        if not block:
++            break
++        raw.extend(block)
++        need(len(raw) <= 65536, 'cleanup_original_plist_whole_cap')
++    need(identity(os.fstat(fd)) == identity(
++         os.stat(name, dir_fd=parent, follow_symlinks=False)) == PLIST_IDENTITY,
++         'cleanup_original_plist_after_whole')
++    need(len(raw) == int(PLIST_IDENTITY[6]), 'cleanup_original_plist_exact_size')
++    result['originalPlist'] = exact_plist(bytes(raw))
++    guard.check()
++    result['plistWholeChecks'] += 1
++    result['plistFull9AndWholeUnchanged'] = True
++
++def require_inactive_original_registration(row, out, err):
++    need(row['exitCode'] == 0 and not err and sha(out) == ORIGINAL_PRINT_SHA,
++         'cleanup_original_print_known_and_same_whole')
++    fields = parse_print(out, TARGET)
++    need(fields.get('path') == str(PLIST) and fields.get('program') == EXPECTED_ARGV[0]
++         and fields['arguments'] == EXPECTED_ARGV, 'cleanup_exact_original_registration')
++    need('pid' not in fields and fields.get('runs') == 1
++         and fields.get('state') == 'not running' and fields.get('last exit code') == 78,
++         'cleanup_same_inactive_failure_no_pid')
++    return {'sameWholePrintSha256': ORIGINAL_PRINT_SHA, 'exactOriginalPlistAndArguments': True,
++            'argumentsCount': len(fields['arguments']), 'pidPresent': False, 'runs': 1,
++            'state': 'not running', 'lastExitCode': 78, 'lastExitCodeIsSuccess': False}
++
+ def main():
+     global signals
+     guard = None
+@@ -460,17 +525,41 @@
+     guard_attempted = False
+     installed = False
+     original_handlers = {}
++    work_complete = False
++    fixed_commands = {
++        'cleanup-t5-volume': ['/usr/sbin/diskutil', 'info', '-plist', '/Volumes/T5'],
++        'cleanup-first-original-print': ['/bin/launchctl', 'print', TARGET],
++        'cleanup-second-original-print': ['/bin/launchctl', 'print', TARGET],
++        'cleanup-once-original-bootout': ['/bin/launchctl', 'bootout', TARGET],
++        'cleanup-confirm-original-label-absent': ['/bin/launchctl', 'print', TARGET]}
++    attempted_commands = set()
++    leaf = {'created': False, 'registered': False, 'closeAttempted': False, 'closed': False}
++    result = {'schema': 'heptabao.mac-owned-launchd-single-label-cleanup.r1',
++        'ok': False, 'outcomeUnknown': False, 'originalJob': '1a1ae51309d-fc05-5ef8',
++        'originalOutcomeUnknownPreserved': True, 'historicalLineageClosureQualified': False,
++        'actualServerExitQualified': False, 'registrationClosureQualified': False,
++        'target': TARGET, 'newCleanupSeconds': 45, 'outerSeconds': 60,
++        'bootoutAttempted': False, 'bootoutKnownExitZero': False,
++        'registrationRemovalObserved': False, 'explicitOriginalPidOrGroupSignalAttempted': False,
++        'launchdBootoutIsTheOnlyOriginalLabelMutation': True,
++        'privatePlanOrCapsuleRead': False, 'privateLogRead': False,
+-    result = {'schema': 'heptabao.mac-owned-launchd-readonly-diagnostic.r1',
+-        'ok': False, 'outcomeUnknown': False, 'freshObservation': True,
+-        'originalJob': '1a1ae51309d-fc05-5ef8', 'originalOutcomeUnknownPreserved': True,
+-        'originalManagerCode': 'typed_launchctl_integer', 'originalSpecificFieldUnknown': True,
+-        'target': TARGET, 'newDiagnosticSeconds': 45, 'outerSeconds': 60,
+-        'sameOriginalLabelMutationAttempted': False, 'oldServerSignalAttempted': False,
+-        'privatePlanOrCapsuleRead': False, 'wholePrivateLogRead': False,
+         'sdkOrProviderExecuted': False, 'newFixtureStarted': False,
++        'sequentialChecksAreNotAtomicNamespaceCustody': True,
++        'plistWholeChecks': 0, 'plistFull9AndWholeUnchanged': False,
++        'heldOriginalPlistDescriptor': leaf, 'newApplicationDescriptorLedger': []}
++    def call(label):
++        need(label in fixed_commands and label not in attempted_commands
++             and len(attempted_commands) < 5, 'once_closed_cleanup_command_set')
++        with signals.critical():
++            remaining()
++            attempted_commands.add(label)
++        limit = 30.0 if label == 'cleanup-t5-volume' else 10.0
++        row, out, err = commands.run(label, fixed_commands[label],
++            until=min(UNTIL, time.monotonic() + limit), maximum=262144)
++        need(not row['outcomeUnknown'] and row['completeBeforeDeadline'],
++             'cleanup_helper_known_before_original_deadline')
++        remaining()
++        return row, out, err
+-        'registrationClosureQualified': False, 'actualServerExitQualified': False,
+-        'newApplicationDescriptorLedger': [], 'readObservations': file_rows}
+-    work_complete = False
+     try:
+         need(sys.platform == 'darwin' and os.getuid() == 501 and os.geteuid() == 501,
+              'exact_mac_uid')
+@@ -486,38 +575,38 @@
+         guard_attempted = True
+         guard.__init__(base64.b64decode(ANCHOR_BASE64, validate=True), ANCHOR_SHA,
+                        remaining, signals.critical)
++        row, out, err = call('cleanup-t5-volume')
++        need(row['exitCode'] == 0 and not err, 'cleanup_exact_t5_probe')
+-        row, out, err = commands.run('readonly-owned-t5-volume',
+-            ['/usr/sbin/diskutil', 'info', '-plist', '/Volumes/T5'],
+-            until=min(UNTIL, time.monotonic() + 30.0), maximum=262144)
+-        need(row['exitCode'] == 0 and not row['outcomeUnknown']
+-             and row['completeBeforeDeadline'] and not err, 'actual_t5_command_complete')
+         guard.accept_diskutil(out)
++        with held_cleanup_plist(guard, leaf) as (fd, parent, name):
++            recheck_cleanup_plist(guard, fd, parent, name, result)
++            row, out, err = call('cleanup-first-original-print')
++            result['firstRegistration'] = require_inactive_original_registration(row, out, err)
++            recheck_cleanup_plist(guard, fd, parent, name, result)
++            row, out, err = call('cleanup-second-original-print')
++            result['secondRegistration'] = require_inactive_original_registration(row, out, err)
++            recheck_cleanup_plist(guard, fd, parent, name, result)
++            with signals.critical():
++                remaining()
++                need(not result['bootoutAttempted'], 'one_original_label_bootout')
++                result['bootoutAttempted'] = True
++            row, out, err = call('cleanup-once-original-bootout')
++            need(row['exitCode'] == 0 and not out and not err, 'cleanup_known_zero_empty_bootout')
++            result['bootoutKnownExitZero'] = True
++            row, out, err = call('cleanup-confirm-original-label-absent')
++            need(missing_service(row['exitCode'], out, err),
++                 'cleanup_exact_original_label_missing_after_bootout')
++            result['registrationRemovalObserved'] = True
++            result['absenceObservation'] = {'exitCode': row['exitCode'],
++                'stdoutBytes': len(out), 'stdoutSha256': sha(out),
++                'stderrBytes': len(err), 'stderrSha256': sha(err), 'missingGrammarExact': True}
++            recheck_cleanup_plist(guard, fd, parent, name, result)
+-        raw, _ = fixed_read(guard, PLIST)
+-        result['originalPlist'] = exact_plist(raw)
+-        row, out, err = commands.run('readonly-original-launchd-print',
+-            ['/bin/launchctl', 'print', TARGET],
+-            until=min(UNTIL, time.monotonic() + 10.0), maximum=262144)
+-        need(not row['outcomeUnknown'] and row['completeBeforeDeadline'],
+-             'fresh_print_helper_complete')
+-        result['freshLaunchctl'] = fresh_print_projection(row, out, err)
+-        need(result['freshLaunchctl'].get('serviceMissingAtThisQuery') is True
+-             or result['freshLaunchctl'].get('registrationMatchesOriginalPlist') is True,
+-             'fresh_label_missing_or_exact_original_registration')
+-        raw, observed = fixed_read(guard, READY, optional=True)
+-        result['ready'] = None if raw is None else ready_projection(raw)
+-        raw, observed = fixed_read(guard, EXEC_READY, optional=True)
+-        result['execReady'] = None if raw is None else wrapper_projection(raw, terminal=False)
+-        raw, observed = fixed_read(guard, STDOUT_PREFIX, optional=True, prefix=True)
+-        result['wrapperTerminalPrefix'] = (None if raw is None
+-                                          else wrapper_projection(raw, terminal=True))
+-        result['firstRecordMayBeAbsentOrIncomplete'] = raw is None
+         remaining()
+         guard.check()
+         work_complete = True
+     except BaseException as error:
+         result['error'] = public_error(error)
+     finally:
+-        # Only new diagnostic resources are closed; no old label/process cleanup.
+         if guard is not None and hasattr(guard, 'rows'):
+             try:
+                 if signals is None:
+@@ -546,27 +635,30 @@
+                     restore_errors.append(public_error(error))
+         result['signalRestoreErrors'] = restore_errors
+         result['pendingSignalAfterRestore'] = None if signals is None else signals.pending
++        descriptors_closed = ((not guard_attempted or
+-        descriptors_closed = (not guard_attempted or
+             (guard is not None and hasattr(guard, 'rows')
+              and all(row.get('closed') is True for row in guard.rows)
+              and not getattr(guard, 'close_errors', [])))
++            and (not leaf['created'] or leaf['closed']))
+         helper_state = result.get('newHelperCommands')
+         helpers_closed = commands is None or (helper_state['allOwnedCommandsStopped']
+                                               and helper_state['unknownCommandCount'] == 0)
+         volume = result.get('volumeGuard', {})
+         volume_good = volume.get('lastAnchorCheckPassed') is True and volume.get('volumeUUIDVerified') is True
++        final_clock = time.monotonic()
+-        final_clock = time.monotonic()  # Single completion sample after resources/handlers.
+         result['elapsedSeconds'] = final_clock - START
+         result['deadlineMetAfterClosure'] = final_clock < UNTIL
+         result['allNewOwnedApplicationDescriptorsClosed'] = descriptors_closed
+         result['allNewOwnedHelperCommandsClosed'] = helpers_closed
+         result['budget'] = dict(budget)
+         result['outcomeUnknown'] = bool(not descriptors_closed or not helpers_closed
++            or restore_errors or (signals is not None and signals.pending is not None)
++            or (result['bootoutAttempted'] and not work_complete))
+-            or restore_errors or (signals is not None and signals.pending is not None))
+         result['ok'] = bool(work_complete and descriptors_closed and helpers_closed
+             and volume_good and not result['outcomeUnknown'] and final_clock < UNTIL
++            and result['plistWholeChecks'] == 4 and 'error' not in result
++            and 'guardCloseError' not in result and 'volumeReportError' not in result)
++        result['registrationClosureQualified'] = result['ok']
+-            and 'error' not in result and 'guardCloseError' not in result
+-            and 'volumeReportError' not in result)
+         result['authoritativeExitZeroAndCompleteFinalStdoutRequired'] = True
+         encoded = (json.dumps(result, sort_keys=True, separators=(',', ':'), allow_nan=False)
+                    + '\n').encode()
+@@ -574,7 +666,6 @@
+             return 1
+         sys.stdout.buffer.write(encoded)
+         sys.stdout.buffer.flush()
+-        # Late output/return cannot turn an over-deadline diagnostic into success.
+         if time.monotonic() >= UNTIL or (signals is not None and signals.pending is not None):
+             return 1
+     return 0 if result['ok'] else 1

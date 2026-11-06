@@ -1,0 +1,66 @@
+{
+  "schema": "heptabao.public-evidence-recovery-flat-manifest.r1",
+  "entries": [
+    {
+      "path": "native-ack.original.sdk.json",
+      "blob": "61d992ba86d54d1da4eab9f7cf72032dfa0c00b0",
+      "bytes": 707,
+      "sha256": "30d7c108604c034a2dd1ab9b9192bde812720acba86159541b3b0e43c0157ab5"
+    },
+    {
+      "path": "git-create.original-error.sdk.json",
+      "blob": "ddc8b45cb9056b09ca3a6bc0e94ea3aff95211f2",
+      "bytes": 304,
+      "sha256": "5710b903750ccc9853075a23278fc1cbcc7468c124b9087e9d09c592e5d2bede"
+    },
+    {
+      "path": "expected-tree.readonly.original.sdk.json",
+      "blob": "738250ce2f4ed06b398bcc6884a32c31e5c7b288",
+      "bytes": 786,
+      "sha256": "38e2155511441400086c4eeea86ff4ba61623c5050c5b38231936dfeefa047ea"
+    },
+    {
+      "path": "expected-sdk-blob.readonly.original.sdk.json",
+      "blob": "e29c207758d4c774a30e93068d840967f2b7cd6b",
+      "bytes": 617,
+      "sha256": "d62f54fee07e365fca37f4a79662e88646d97a91452d72b5f37746e03fac29c0"
+    },
+    {
+      "path": "request.original.json",
+      "blob": "d403a16747d74a245a82b0f3d124a32ac6a47ef0",
+      "bytes": 303,
+      "sha256": "3e34779996b01244a840ba49bf297fa9da6de8338f9df06f48133544ef2f44a1"
+    },
+    {
+      "path": "intent.original.json",
+      "blob": "c96b1a74295b8aa6945d087453af578254957737",
+      "bytes": 721,
+      "sha256": "7b52e02ed300218f7a5fa39e897391bb40bf38fdbad0b474978613a601236d2b"
+    },
+    {
+      "path": "armed.original.json",
+      "blob": "c71a321e88e6f90e65fed039fedd6f60e0f53db9",
+      "bytes": 858,
+      "sha256": "cc8d2a59abef1e0b45b955cd26efbf91f17160ab12ec069838d12f09d806b284"
+    },
+    {
+      "path": "paused-state.original.json",
+      "blob": "631c2623b3c77e711a7863d68f78c39f291bfa60",
+      "bytes": 101825,
+      "sha256": "bd6409799ffa5e63cca395d6a0282b792d145c7ff8847689369f46e0483a4e61"
+    },
+    {
+      "path": "prior-create-exact-request.original.json",
+      "blob": "58b3108aabe5e790ae4e75be76d2ba2cb0d8286f",
+      "bytes": 1010,
+      "sha256": "fb21bd18044fe8d228bae4de85e58440c3c2f05103647ee653ca2b8e9b9734cb"
+    },
+    {
+      "path": "RECOVERY.public.json",
+      "blob": "b80bf2f34923c21c63755ca19c4305e9011f69cb",
+      "bytes": 1979,
+      "sha256": "970ac38a69a8ee5e1949d48b8a81585ce2fcd9a65d45e27b8cc9f7e401838381"
+    }
+  ],
+  "bytesExcludingManifest": 109110
+}

@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-mac-owned-launchd-readonly-e573407b-authority-01-20261106-r1",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1aebc1cb1-fc05-61c9"
+    }
+  }
+}

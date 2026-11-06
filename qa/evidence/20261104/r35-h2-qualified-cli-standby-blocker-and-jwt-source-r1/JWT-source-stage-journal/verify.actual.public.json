@@ -1,0 +1,233 @@
+{
+  "schema": "heptabao.native-jwt.gitfirst-stage-source-checks.v1",
+  "passed": true,
+  "checks": 56,
+  "results": [
+    {
+      "name": "replacement unique const GF_SLOT = \"owner_launchd_gitfirst_r1\";",
+      "passed": true
+    },
+    {
+      "name": "replacement unique const GF_REQUEST = {blob:\"d14f62155b86924edd5",
+      "passed": true
+    },
+    {
+      "name": "replacement unique /^heptabao-mac-owned-launchd-readonly-e573407",
+      "passed": true
+    },
+    {
+      "name": "replacement unique a && a.host===\"mac\" && a.job_id===s.job",
+      "passed": true
+    },
+    {
+      "name": "replacement unique v.job?.host===\"mac\" && v.job.execution_mode==",
+      "passed": true
+    },
+    {
+      "name": "five replacements",
+      "passed": true
+    },
+    {
+      "name": "candidate entire forward exact",
+      "passed": true
+    },
+    {
+      "name": "inverse unique v.job?.host===\"rog\" && v.job.execution_mode==",
+      "passed": true
+    },
+    {
+      "name": "inverse unique a && a.host===\"rog\" && a.job_id===s.job",
+      "passed": true
+    },
+    {
+      "name": "inverse unique /^heptabao-native-jwt-e3afc157-rog-source-obs",
+      "passed": true
+    },
+    {
+      "name": "inverse unique const GF_REQUEST = {blob:\"c1429991e9c597d1639",
+      "passed": true
+    },
+    {
+      "name": "inverse unique const GF_SLOT = \"jwt_e3af_rog_source_gitfirst",
+      "passed": true
+    },
+    {
+      "name": "entire inverse original",
+      "passed": true
+    },
+    {
+      "name": "base terminal LF",
+      "passed": true
+    },
+    {
+      "name": "base terminal LF",
+      "passed": true
+    },
+    {
+      "name": "strict three hunks",
+      "passed": true
+    },
+    {
+      "name": "strict diff forward",
+      "passed": true
+    },
+    {
+      "name": "strict diff reverse",
+      "passed": true
+    },
+    {
+      "name": "ordered thirteen definitions",
+      "passed": true
+    },
+    {
+      "name": "whole definition gfNeed",
+      "passed": true
+    },
+    {
+      "name": "whole definition gfMetaEquals",
+      "passed": true
+    },
+    {
+      "name": "whole definition gfState",
+      "passed": true
+    },
+    {
+      "name": "whole definition gfSave",
+      "passed": true
+    },
+    {
+      "name": "whole definition gfIntegerText",
+      "passed": true
+    },
+    {
+      "name": "whole definition gfInitializeOnlyAfterRootGO",
+      "passed": true
+    },
+    {
+      "name": "whole definition gfPrepareOne",
+      "passed": true
+    },
+    {
+      "name": "whole definition gfInvokePreparedOnce",
+      "passed": true
+    },
+    {
+      "name": "whole definition gfCloseOriginalObserver",
+      "passed": true
+    },
+    {
+      "name": "whole definition gfReconcileSameGitArchiveReadOnly",
+      "passed": true
+    },
+    {
+      "name": "whole definition gfRun",
+      "passed": true
+    },
+    {
+      "name": "archive original whole pin",
+      "passed": true
+    },
+    {
+      "name": "pure original whole pin",
+      "passed": true
+    },
+    {
+      "name": "exact stage request whole",
+      "passed": true
+    },
+    {
+      "name": "original rog retained",
+      "passed": true
+    },
+    {
+      "name": "unchanged 360 outer",
+      "passed": true
+    },
+    {
+      "name": "exact inline stager",
+      "passed": true
+    },
+    {
+      "name": "unique GF slot",
+      "passed": true
+    },
+    {
+      "name": "observer host rog exact",
+      "passed": true
+    },
+    {
+      "name": "ACK host rog exact",
+      "passed": true
+    },
+    {
+      "name": "new observer prefix",
+      "passed": true
+    },
+    {
+      "name": "only original closed native tool set",
+      "passed": true
+    },
+    {
+      "name": "original page cap 8192",
+      "passed": true
+    },
+    {
+      "name": "original streams cap 16384",
+      "passed": true
+    },
+    {
+      "name": "single original future",
+      "passed": true
+    },
+    {
+      "name": "closed before result",
+      "passed": true
+    },
+    {
+      "name": "SDK first statement before parse",
+      "passed": true
+    },
+    {
+      "name": "SDK whole before isError",
+      "passed": true
+    },
+    {
+      "name": "invoke once marker no await gap",
+      "passed": true
+    },
+    {
+      "name": "Git UNKNOWN blocks",
+      "passed": true
+    },
+    {
+      "name": "new normal-return gfRun whole",
+      "passed": true
+    },
+    {
+      "name": "old wrong process binding unused",
+      "passed": true
+    },
+    {
+      "name": "no init without separately reviewed root GO",
+      "passed": true
+    },
+    {
+      "name": "no automatic retry of transport",
+      "passed": true
+    },
+    {
+      "name": "SDK immutable history retained",
+      "passed": true
+    },
+    {
+      "name": "one Git create admission",
+      "passed": true
+    },
+    {
+      "name": "allsettled batch evidence before aggregate error",
+      "passed": true
+    }
+  ],
+  "scope": "pure V8 source and identity checks only; no GF or Native function invoked",
+  "Runtime": 0
+}

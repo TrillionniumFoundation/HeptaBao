@@ -1,0 +1,87 @@
+{
+  "schema": "heptabao.mac-owned-launchd-fixed-path-metadata.source-contract.r1",
+  "status": "SOURCE_ONLY_NO_NATIVE_GO",
+  "source": {
+    "blob": "01ae2abc5df2fac1b2606455a0233665068df79c",
+    "bytes": 13507,
+    "sha256": "bb9f9e1c6e7b0cb6365cf9647510e533562593dc3714aca468784b22b6699899"
+  },
+  "request": {
+    "blob": "843965aae4fc29a5d840a1c84c51184dc32ae7ef",
+    "bytes": 14343,
+    "sha256": "76500b2218e329bc76bb8a29bfa485101e4954756f752d0d34cc38869fbc80f0"
+  },
+  "key": "heptabao-mac-owned-launchd-path-metadata-bb9f9e1c-20261106-r1",
+  "closedPublicPaths": {
+    "alias": "/opt/homebrew/bin/python3",
+    "regular": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "wrapper": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_server_owner_r1.py",
+    "workingDirectory": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1",
+    "stdout": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.stdout.private",
+    "stderr": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.stderr.private"
+  },
+  "completeDirectoryClosure": [
+    "/",
+    "/opt",
+    "/Volumes",
+    "/opt/homebrew",
+    "/Volumes/T5",
+    "/opt/homebrew/bin",
+    "/opt/homebrew/Cellar",
+    "/Volumes/T5/hepta-vnext-recovery-20261013",
+    "/opt/homebrew/Cellar/python@3.14",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1",
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa",
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks",
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework",
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions",
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14",
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin"
+  ],
+  "regularExpectedFull9": [
+    "16777233",
+    "587518380",
+    "501",
+    "80",
+    "33261",
+    "1",
+    "34640",
+    "1793798038915516382",
+    "1793798038915695047"
+  ],
+  "operations": {
+    "fixedDirectoryAndLeafReadOnlyOpen": "18 exact directories+4 regular leaves, O_RDONLY|NOFOLLOW|NONBLOCK; directories also O_DIRECTORY. No file read/pread/hash.",
+    "alias": "Only exact original alias named lstat twice, up to two readlink calls, two fixed-path follow-stat calls, one access probe. Kernel may resolve its chain; no application traversal/open/admission of returned target paths.",
+    "privateStdio": "Only fixed leaf metadata/fstat and W_OK observation; zero contents, no write/open-write.",
+    "permissions": "Current observer's UID/group mode bits and effective-ID os.access if supported; absence of support is reported and never replaced with guessed launchd/TCC evidence.",
+    "finalBinding": "Full9 at named/FD open and final checks; exact five-field original T5 anchor object identities, no fresh diskutil/UUID claim."
+  },
+  "caps": {
+    "sharedSeconds": 5,
+    "outerSeconds": 60,
+    "maxMetadataCalls": 256,
+    "expectedSuccessMetadataCalls": 115,
+    "maxAccessCalls": 24,
+    "expectedAccessCalls": 23,
+    "maxReadlinkCalls": 2,
+    "maxLinkBytesPerCall": 4096,
+    "maxLinkBytesAggregate": 8192,
+    "maxApplicationFdRowsAndPeak": 22,
+    "stdoutMaxBytes": 65536,
+    "fileBodyBytes": 0,
+    "applicationChildren": 0,
+    "networkCalls": 0,
+    "serviceMutations": 0
+  },
+  "closure": "Pre-register each empty row before open; installed handlers record pending and never throw across returned-FD assignment. Every returned FD has one close attempt. Restore original handlers, check pending and final deadline, then flush and reject late/signal. Only actual exit0 plus complete post-closure output qualifies observation.",
+  "failureProjection": "Only fixed stage and ordinal, fixed Refused code, exception type, bounded errno. No dynamic filename/message/link text or unknown link hash.",
+  "explicitLimits": [
+    "Synchronous filesystem syscalls are not hard-preemptible; late return fails.",
+    "Metadata does not prove current file contents or loaded code bytes.",
+    "Observed access is not launchd or TCC permission proof.",
+    "Existing registration/lineage UNKNOWN stays unchanged.",
+    "Full9 drift or unexpected errors stop this operation; no fallback path, retries, dir scan, chmod, TCC change, process start or SDK."
+  ]
+}

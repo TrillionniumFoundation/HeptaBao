@@ -1,0 +1,13 @@
+{
+  "strictForward": true,
+  "strictInverse": true,
+  "wholeAfter": {
+    "blob": "7155415142bbb38846bcf51748fde86307a5ddaf",
+    "bytes": 19046,
+    "sha256": "b213ba7bfacd158ce105ac29be7a909926b921d712d3f5d241eb7d8dfdf06c91"
+  },
+  "hunks": 2,
+  "onlyThreeLiteralReplacements": true,
+  "jsSyntaxParsedNoFunctionExecuted": true,
+  "noPythonOrNativeExecution": true
+}

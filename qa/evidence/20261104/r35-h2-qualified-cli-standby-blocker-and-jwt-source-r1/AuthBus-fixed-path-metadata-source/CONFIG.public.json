@@ -1,0 +1,90 @@
+{
+  "schema": "heptabao.original-owned-launchd-fixed-config.source.r1",
+  "manager": {
+    "blob": "96fe347f2edbda1718b2fd683041b88be8f41e30",
+    "bytes": 35736,
+    "sha256": "4989b58248f7951f825c021402bef611708b8613291d3282761c8c97d0b4adf6"
+  },
+  "wrapper": {
+    "blob": "44bf4989f10bad1d6322b182b630769bf93a09c3",
+    "bytes": 13394,
+    "sha256": "fb38bd7ce30e9a0b62539d459939b2ec20d96f84fd08d57199aa095fd3fc5ef6"
+  },
+  "originalActualStdout": {
+    "blob": "99f88a10ed877dcf23aaafc56fd3e69c31a5a2d1",
+    "bytes": 132132,
+    "sha256": "feae46e33bc62427b8317780cf38ca73acd80124b1ad157caa20cbb0f3677748"
+  },
+  "programKeyPresent": false,
+  "programArguments": [
+    "/opt/homebrew/bin/python3",
+    "-I",
+    "-S",
+    "-B",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_server_owner_r1.py",
+    "--plan",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.private.json",
+    "--plan-sha256",
+    "5b94c4b970dec5e3550b66b22700b9fff507f08062fc2a860c0399ed38802aab",
+    "--public-volume-anchor-base64",
+    "ewogICJzY2hlbWEiOiAiaGVwdGFiYW8ubWFjLWN1cnJlbnQtdDUtcHVibGljLWFuY2hvci5yMSIsCiAgInNvdXJjZV9pbnZlbnRvcnlfc2hhMjU2IjogIjAwMWQ5ZDMzODRmMWI4YzAwZmEzY2JhOGFmN2YzMDIwYmVkYzU0ZjI2Njc4NjExYWIzY2QzYTUyNGNlMjM5MDIiLAogICJ2b2x1bWVVVUlEIjogIkZCODA0RDFCLTI0Q0ItNEQ2RS1BRUE3LUE5RTE4MDgwNzc1OCIsCiAgImV4cGVjdGVkVm9sdW1lRGV2aWNlIjogIjE2Nzc3MjQ0IiwKICAiYW5jaG9ycyI6IFsKICAgIHsKICAgICAgInBhdGgiOiAiLyIsCiAgICAgICJpZGVudGl0eSI6IFsKICAgICAgICAiMTY3NzcyMzMiLAogICAgICAgICIyIiwKICAgICAgICAiMCIsCiAgICAgICAgIjAiLAogICAgICAgICIxNjg3NyIsCiAgICAgICAgIjIyIiwKICAgICAgICAiNzA0IiwKICAgICAgICAiMTc4NjU4OTUxNTAwMDAwMDAwMCIsCiAgICAgICAgIjE3ODY1ODk1MTUwMDAwMDAwMDAiCiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJwYXRoIjogIi9Wb2x1bWVzIiwKICAgICAgImlkZW50aXR5IjogWwogICAgICAgICIxNjc3NzIzMyIsCiAgICAgICAgIjE4MzM2IiwKICAgICAgICAiMCIsCiAgICAgICAgIjAiLAogICAgICAgICIxNjg3NyIsCiAgICAgICAgIjUiLAogICAgICAgICIxNjAiLAogICAgICAgICIxNzkzMTAwNTk3NzU2NTE1NTkxIiwKICAgICAgICAiMTc5MzEwMDU5Nzc1NjUxNTU5MSIKICAgICAgXQogICAgfSwKICAgIHsKICAgICAgInBhdGgiOiAiL1ZvbHVtZXMvVDUiLAogICAgICAiaWRlbnRpdHkiOiBbCiAgICAgICAgIjE2Nzc3MjQ0IiwKICAgICAgICAiMiIsCiAgICAgICAgIjAiLAogICAgICAgICIwIiwKICAgICAgICAiMTY4OTMiLAogICAgICAgICIxMiIsCiAgICAgICAgIjM4NCIsCiAgICAgICAgIjE3OTMxNTI5NzMxNDQyNjA0OTUiLAogICAgICAgICIxNzkzMTUyOTczMTQ0MjYwNDk1IgogICAgICBdCiAgICB9CiAgXQp9Cg==",
+    "--public-volume-anchor-sha256",
+    "dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8",
+    "--public-source-pins-base64",
+    "eyJtYWNfbmF0aXZlX3Byb2Nlc3Nfb2JzZXJ2ZXJfcjEucHkiOiJjYzBmYTk5MTdkMDVjNmRjMmMyOTU1OTRmOTgwYzFmNzdkMDg5YzExOTZlNjI3OWExNGYyZmRhZjJkNzdhZTliIiwibWFjX293bmVkX2NvbW1hbmRzX3IxLnB5IjoiZWI2NzZlNmRlZGI2ZDU5NGQ5NDRlOTIxNzM4Y2Y5YjM4NGYyYTk4YTM3ZWUyYmQxZmE1NDMzYjg0OGEzNjg2NyIsIm1hY19vd25lZF91bnJlYXBlZF9yMS5weSI6ImExNDNiYTMzNDE1OTkzMWQ1MzBiNDlhNTVjMjQ0NzFmNTZmYTFiNjJmMWUxMDEyZTEyYzc1ZTIxZjNjMjJiMWQiLCJtYWNfdDVfdm9sdW1lX2d1YXJkX3IxLnB5IjoiNTVhMDA3YWU5MjVjNmNhYjZlZTIyOGVjNTE1NGNmZjc5YmFhNmMyYmMzOGZiNjU4NjhmZDE5MmRmYzI5ZDI4OCJ9Cg==",
+    "--public-source-pins-sha256",
+    "4835222c55cd4375040665e9157d123a5431648dcce3d3761c834a23be8581f5"
+  ],
+  "workingDirectory": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1",
+  "standardOutPath": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.stdout.private",
+  "standardErrorPath": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.stderr.private",
+  "environmentVariables": {
+    "PATH": "/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+    "LANG": "C",
+    "LC_ALL": "C"
+  },
+  "plistOptions": {
+    "RunAtLoad": true,
+    "KeepAlive": false,
+    "AbandonProcessGroup": false,
+    "ProcessType": "Background",
+    "ExitTimeOut": 10,
+    "Umask": 63
+  },
+  "currentDiagnosticInterpreter": {
+    "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "previousWholeInfo": {
+      "blob": "aa9a0a5b4a421c6e55dd4a303e52b0ca59bb056c",
+      "bytes": 488,
+      "sha256": "a67bad0d0dc2ea5866f9abcbb05fefba11a6dcba203206aa0fdc8d319ca6853d"
+    },
+    "full9": [
+      "16777233",
+      "587518380",
+      "501",
+      "80",
+      "33261",
+      "1",
+      "34640",
+      "1793798038915516382",
+      "1793798038915695047"
+    ],
+    "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+  },
+  "exactDifference": "Original launchd argv[0] is /opt/homebrew/bin/python3 while original worker process_start and these metadata diagnostics use the observed regular Cellar path. This is not proof of alias failure or a launchd cause.",
+  "wrapperStartupOrder": [
+    "top-level stdlib imports and fixed constants",
+    "BINDING_READY and argparse required arguments",
+    "install own signal handlers and create public report",
+    "inside try validate owner/source pins/whole public modules",
+    "heldT5, original private plan/config and binary checks",
+    "actual self identity then public ready record",
+    "wait for exact manager admission",
+    "exec-ready report then public stdout before exec"
+  ],
+  "evidenceLimits": [
+    "Missing ready/stdout and current empty stderr do not prove wrapper execution or absence of execution.",
+    "Literal78 stays a failed launchctl last-exit observation; it does not establish TCC, missing cwd, permissions or an interpreter cause.",
+    "No product/source/guard/configuration is changed by this candidate."
+  ]
+}

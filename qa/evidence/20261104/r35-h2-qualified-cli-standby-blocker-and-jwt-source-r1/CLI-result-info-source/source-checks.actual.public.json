@@ -1,0 +1,157 @@
+{
+  "schema": "heptabao.cli-single-result-info.source-checks.r1",
+  "checks": 36,
+  "passed": 36,
+  "rows": [
+    {
+      "label": "strict_six_hunks_forward",
+      "pass": true
+    },
+    {
+      "label": "strict_six_hunks_reverse",
+      "pass": true
+    },
+    {
+      "label": "one_new_authorize_function",
+      "pass": true
+    },
+    {
+      "label": "preserved_or_scoped_gfNeed",
+      "pass": true
+    },
+    {
+      "label": "preserved_or_scoped_gfMetaEquals",
+      "pass": true
+    },
+    {
+      "label": "preserved_or_scoped_gfState",
+      "pass": true
+    },
+    {
+      "label": "preserved_or_scoped_gfSave",
+      "pass": true
+    },
+    {
+      "label": "preserved_or_scoped_gfIntegerText",
+      "pass": true
+    },
+    {
+      "label": "preserved_or_scoped_gfInitializeOnlyAfterRootGO",
+      "pass": true
+    },
+    {
+      "label": "preserved_or_scoped_gfValidateRequest",
+      "pass": true
+    },
+    {
+      "label": "preserved_or_scoped_gfPrepareOne",
+      "pass": true
+    },
+    {
+      "label": "preserved_or_scoped_gfInvokePreparedOnce",
+      "pass": true
+    },
+    {
+      "label": "preserved_or_scoped_gfAcceptArchivedSDK",
+      "pass": true
+    },
+    {
+      "label": "preserved_or_scoped_gfCloseOriginalObserver",
+      "pass": true
+    },
+    {
+      "label": "preserved_or_scoped_gfReconcileSameGitArchiveReadOnly",
+      "pass": true
+    },
+    {
+      "label": "preserved_or_scoped_gfRun",
+      "pass": true
+    },
+    {
+      "label": "invoke_only_once_marker_added",
+      "pass": true
+    },
+    {
+      "label": "once_marker_before_only_dispatch",
+      "pass": true
+    },
+    {
+      "label": "separate_GO_required",
+      "pass": true
+    },
+    {
+      "label": "once_info_gate",
+      "pass": true
+    },
+    {
+      "label": "no_binary_scope",
+      "pass": true
+    },
+    {
+      "label": "exact_original_job",
+      "pass": true
+    },
+    {
+      "label": "known_failure_not_success_precondition",
+      "pass": true
+    },
+    {
+      "label": "terminal_summary_closure",
+      "pass": true
+    },
+    {
+      "label": "exact_report_sha_predicate",
+      "pass": true
+    },
+    {
+      "label": "4MiB_new_metadata_cap",
+      "pass": true
+    },
+    {
+      "label": "fixed_user_mode_single_link",
+      "pass": true
+    },
+    {
+      "label": "lossless_full9",
+      "pass": true
+    },
+    {
+      "label": "no_original_context_reset",
+      "pass": true
+    },
+    {
+      "label": "original_caps",
+      "pass": true
+    },
+    {
+      "label": "only_file_info_request",
+      "pass": true
+    },
+    {
+      "label": "exact_report_path_from_stdout",
+      "pass": true
+    },
+    {
+      "label": "exact_request_pin_in_source",
+      "pass": true
+    },
+    {
+      "label": "actual_authority1_raw_whole",
+      "pass": true
+    },
+    {
+      "label": "actual_streams0_raw_whole",
+      "pass": true
+    },
+    {
+      "label": "selected_syntax_compile_only",
+      "pass": true
+    }
+  ],
+  "old_definitions": 13,
+  "new_definitions": 14,
+  "unchanged_old_definitions": 8,
+  "strict_hunks": 6,
+  "Runtime_calls": 0,
+  "candidate_functions_invoked": 0
+}

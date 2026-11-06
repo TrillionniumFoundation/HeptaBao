@@ -1,0 +1,206 @@
+{
+  "schema": "heptabao.root-native-h2-live-GO.v1",
+  "decision": "GO_ONE_ORIGINAL_H2_LIVE_AND_FIXED_PUBLIC_RESULT",
+  "owner": "/root/compatibility_audit",
+  "lane": "B",
+  "actualPredecessorQualification": {
+    "blob": "5aebec1a485dc62d5b0251c4c9e2f6e3963a58f0",
+    "bytes": 10151,
+    "sha256": "08591684a14287d6b6904680ba09418a348bb1f4387c57bf3619ab485429b1d0"
+  },
+  "prepareOwnerRelease": {
+    "blob": "3dbf730683887b88b27263513ca61ecca0646e51",
+    "bytes": 36962,
+    "sha256": "72025c9cc4abbff2f5c4c6868e72694c39aa8f4a9732e5951db7381919e0c64f"
+  },
+  "prepareCompletePacket": {
+    "schema": "heptabao.native-h2-prepare.complete-packet.v1",
+    "tree": "d3eaa7be5a25c0f4c1d504116705b4a059aae35b",
+    "files": 113,
+    "bytes": 798041,
+    "merkle": {
+      "root_sha": "d3eaa7be5a25c0f4c1d504116705b4a059aae35b",
+      "trees_verified": 37,
+      "leaf_count": 113
+    },
+    "manifest": {
+      "name": "h2-prepare-complete-manifest",
+      "blob": "2c1f94a68bbccf754a2fb432682cd39617aed3fa",
+      "bytes": 30493,
+      "sha256": "907b627541081d702af6493ee264b54bab1977c6601bcd531c4db3199d112810"
+    },
+    "index": {
+      "name": "h2-prepare-complete-files-index",
+      "blob": "66bd721ea8615f1710e66502f4d7a0f966624ef4",
+      "bytes": 29940,
+      "sha256": "c4cc4da547455521858883a7718d6baae9fdaf7668d5c925ab1e447212df1558"
+    },
+    "owner_release": {
+      "name": "h2-prepare-owner-release",
+      "blob": "3dbf730683887b88b27263513ca61ecca0646e51",
+      "bytes": 36962,
+      "sha256": "72025c9cc4abbff2f5c4c6868e72694c39aa8f4a9732e5951db7381919e0c64f"
+    },
+    "actual_result": {
+      "name": "h2-prepare-result-whole-original",
+      "blob": "fd687152d3c89bf4ef8284748ef23082e494f45e",
+      "bytes": 52937,
+      "sha256": "bb5bdec75ad7081910b4ccb39492964e42a0a144f57f3d3ef1a97b0df05613d4"
+    },
+    "original_observers": 4,
+    "original_pages": 12,
+    "original_readonly_calls": 20,
+    "current_scope_processes_active": 0,
+    "Runtime_calls_inflight": 0,
+    "owned_native_futures_active": 0,
+    "H2_live_authorized": false,
+    "CLI_live_authorized": false
+  },
+  "sourceQualification": {
+    "root_review_blob": "e63b44f9cc58c88a3b8e2883144585dad1a073ec",
+    "controller": {
+      "blob": "6687ce5d76ae38ec9f079c876f50d86b04f40448",
+      "bytes": 62344,
+      "sha256": "703e5ecfc9b88ce4d8cdaf81342597a12a7b42c92af583b54d87f4f8a37bcf13"
+    },
+    "binder": {
+      "blob": "9b3a605a2ac2f47729678bdb696d89b0c9b06b9a",
+      "bytes": 41350,
+      "sha256": "6bbaa72dcb899d359f14c6e442c824c46a8c52aa74aa0d6be8b1820596c34cf4"
+    },
+    "templates": {
+      "blob": "2eabf1e692ca5f64b2bf553af78f02204c3516f5",
+      "bytes": 1858,
+      "sha256": "8df14e936412fa559cfec18fb70c2ccbde5bd6950f5956122c7692faba737387"
+    },
+    "binding": {
+      "blob": "a11ae732392792888fcf705e3a0ea21c8779f67e",
+      "bytes": 10230,
+      "sha256": "b241c6fc78bbe77ea69fc3b8a707b1747324a81f1da1ade3d9bb15c5cea5b7d8"
+    },
+    "actual_prepare": {
+      "blob": "fd687152d3c89bf4ef8284748ef23082e494f45e",
+      "bytes": 52937,
+      "sha256": "bb5bdec75ad7081910b4ccb39492964e42a0a144f57f3d3ef1a97b0df05613d4"
+    }
+  },
+  "exactProcessStart": {
+    "blob": "32fc562b787488e539df6e57301ec9a7f6a53005",
+    "bytes": 711,
+    "sha256": "05220ced4192d3d2ee10208a86eb902b8d9e55f768acb17066c10e2e6eee94c4"
+  },
+  "nativeBinding": {
+    "sha256": "be5236ae3c4a5eb211e844375d6bba4d768ba21e5e596335bd38a9b53844d05b",
+    "native_fingerprint": "13714083937260297906"
+  },
+  "idempotency_key": "heptabao-native-h2-gate-live-4e808-20261105-r2",
+  "host": "desktop",
+  "maximumBusinessStarts": 1,
+  "exactRequestRule": "Use the frozen complete JSON request exactly. Only original template args[7] actual binding and args[10] actual prepare-result SHA were substituted; key, executable, flags, source, paths and timeout are unchanged.",
+  "workRoot": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-live-r2",
+  "controlRoot": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2",
+  "originalBudgets": {
+    "action_seconds": 300,
+    "cleanup_kill_seconds": 5,
+    "cleanup_term_seconds": 5,
+    "election_seconds": 60,
+    "forward_timeout_ms": 8000,
+    "h2_client_seconds": 15,
+    "http_seconds": 15,
+    "peer_timeout_ms": 1500,
+    "readiness_seconds": 45,
+    "stable_leader_seconds": 2.2,
+    "process_timeout_seconds": 2400,
+    "final_readonly_cleanup_seconds": 300,
+    "H2_snapshot_body_limit_bytes": 8388608
+  },
+  "preservedScope": {
+    "cases": [
+      "H01_normal_H1_leader_archive_control",
+      "H02_actual_TLS_ALPN_h2_KV2_version2",
+      "H03_actual_h2_leader_native_archive"
+    ],
+    "physical_hosts": 1,
+    "process_nodes": 3,
+    "original_QA_files": 5,
+    "old_fences": 6,
+    "product_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "product_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "product_tests_separate": 61,
+    "instrument_components_separate": 6,
+    "all_original_assertions_cleanup_and_deadlines_preserved": true,
+    "no_restore_upload_or_cold_restore_added": true,
+    "no_official_CLI_added": true
+  },
+  "admission": "Persist exact whole request and an independent external Git START intent before the single process_start. Immediately preserve complete original ACK SDK before parsing, verify exact native digest/fingerprint and original returned job; archive ACK and binding before the first observer. Any missing ACK/error/UNKNOWN stops new admissions; no business replay, alternate key or replacement job.",
+  "observations": {
+    "originalReturnedJobOnly": true,
+    "oneNativeCallAndOneFuturePerLane": true,
+    "maximumRuntimeLanes": 2,
+    "otherLane": "A collecting original Mac AuthBus full-worker failure and later separately scoped repair",
+    "rootRuntimeCalls": 0,
+    "processReadPerStreamBytes": 16384,
+    "immutablePageBytes": 8192,
+    "wholeStdoutMaximumBytes": 2097152,
+    "wholeStderrMaximumBytes": 2097152,
+    "complete_original_streams_and_authority_required": true,
+    "no_business_replay": true
+  },
+  "fixedPublicResultRead": {
+    "authorized": true,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-live-r2/result.public.json",
+    "gate": "After the one original job has a definitive durable full terminal authority and complete stdout/stderr, and stdout identifies exactly this fixed path and a 64-hex SHA256 with literal_scan_hits=0, read this public file once. A definitive product failure or product outcome_unknown still permits this fixed evidence read; it does not permit another business run. Native tool/RPC uncertainty or a withheld public-evidence pointer stops new read admissions.",
+    "file_info": {
+      "host": "desktop",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-live-r2/result.public.json",
+      "maximum_admissions": 1,
+      "idempotency_key": "heptabao-native-h2-live-result-info-4e808-20261105-r2",
+      "expected_metadata": {
+        "uid": 1000,
+        "gid": 1000,
+        "mode": 384,
+        "link_count": 1,
+        "metadata_platform": "linux"
+      },
+      "maximum_bytes": 4194304,
+      "required_sha256": "Exactly the original terminal stdout result_sha256; never a guessed hash."
+    },
+    "binary_read": {
+      "host": "desktop",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-live-r2/result.public.json",
+      "offsets": "Contiguous from zero to actual file_info size, each original offset admitted once.",
+      "limit": "min(65536, actual size - offset)",
+      "expected_version": "Exactly the original file_info version, unchanged on every range.",
+      "idempotency_key_template": "heptabao-native-h2-live-result-body-4e808-20261105-r2-offset-{decimal_offset}",
+      "maximum_total_bytes": 4194304,
+      "required_checks": [
+        "exact path/version",
+        "decoded bytes and chunk SHA256",
+        "returned next offset",
+        "EOF only at exact actual size",
+        "whole size and SHA256 equal original stdout and file_info"
+      ],
+      "no_other_paths": true
+    }
+  },
+  "archivalProtocol": {
+    "appliesOnlyToThisNewWorkerScope": true,
+    "exactOriginalSDKBeforeAnyParsing": "Immediately write and fsync every complete original SDK representation to its local durable journal, preserving embedded native raw text losslessly. A local persistence failure stops admissions. Then inspect isError and parse losslessly.",
+    "sameObserverPages": "Continue only the already returned original operation_id and exact immutable offsets, one call at a time. Do not replay the native read. Each completed observer's original request/ACK/status/pages/payload/native copies are archived as one Git content-tree batch with full SHA/byte readbacks before admitting the next observer.",
+    "error": "On any native tool/RPC/error/missing ACK/UNKNOWN, stop new native admissions, retain and archive all already received original bytes, and reconcile only already returned original observers. Git archival repair may recover identical bytes only and never triggers a native retry.",
+    "STARTIntentAndACKStillExternalBeforeObservation": true,
+    "notPerPageGitCreateBlobRequired": true
+  },
+  "localFsyncYieldRule": "A local exec session_id with no exit code is an ongoing fsync, not failure. Persist and poll that same local session to natural terminal; do not re-execute the original write or remote request. Only true nonzero/transport errors stop admissions pending original recovery.",
+  "postRun": "Deliver original authority, whole stdout/stderr, exact public result/metadata/version, all original observer closure, reached cases, actual body complete/EOS/audit outcomes, cleanup and original deadline. Then root independently qualifies. CLI live awaits a distinct GO.",
+  "qualificationBoundary": {
+    "prepare_is_not_H2_pass": true,
+    "root_has_not_executed_H2_live": true,
+    "this_scope_is_not_34MiB_validation": true,
+    "native_archive_only": true,
+    "official_OpenBao_state_archive_format_interoperability": false
+  },
+  "productionCutoverAuthorized": false,
+  "legacyCleanupAuthorized": false,
+  "fullReplacement": false
+}

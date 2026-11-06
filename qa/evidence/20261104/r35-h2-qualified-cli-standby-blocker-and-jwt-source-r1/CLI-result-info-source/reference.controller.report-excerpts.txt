@@ -1,0 +1,85 @@
+            incomplete_http = sorted(set(range(1, self.seq + 1)) -
+                                     {item["sequence"] for item in self.observations})
+            incomplete_cli = sorted(set(self.cli_intents) -
+                                    {item["case"] for item in self.cli_cases})
+            unknown = (self.outcome_unknown or bool(incomplete_http) or bool(incomplete_cli)
+                       or self.cli_inflight is not None or self.operation_inflight is not None
+                       or any(item.get("outcome_unknown") for item in self.cli_cases)
+                       or any(item.get("outcome_unknown") for item in self.observations)
+                       or not clean)
+            case_map = {item["case"]: item for item in self.cli_cases}
+            qualifications = {
+                "B01": bool(case_map.get("B01", {}).get("archive_save_qualified")),
+                "B02": bool(case_map.get("B02", {}).get("restore_readback", {}).get("native_restore_qualified")),
+                "B03": bool(case_map.get("B03", {}).get("archive_save_qualified")),
+                "B04": bool(case_map.get("B04", {}).get("archive_save_qualified")),
+                "B05": bool(case_map.get("B05", {}).get("restore_readback", {}).get("native_restore_qualified")),
+            }
+            complete = (len(self.cli_cases) == 5 and self.cli_intents == [item[0] for item in CASES]
+                        and len(self.cold_results) == 2 and not unknown and not final_errors and failure is None)
+            passed = complete and all(qualifications.values()) and all(item["passed"] for item in self.checks)
+            status = "passed" if passed else "completed_with_compatibility_failures" if complete else "failed"
+            report = {
+                "schema": SCHEMA, "status": status, "failure_code": failure,
+                "final_errors": final_errors, "candidate_commit": bm.COMMIT, "candidate_tree": bm.TREE,
+                "input_binding_sha256": binding.sha256, "prepared": prepared,
+                "verified_inputs_before": self.verified, "verified_inputs_after": after,
+                "actions": self.actions, "cli_cases": self.cli_cases, "case_qualifications": qualifications,
+                "cold_results": self.cold_results, "checks": self.checks,
+                "checks_total": len(self.checks), "checks_passed": sum(item["passed"] for item in self.checks),
+                "checks_are_dynamic_invariants_not_full_replacement_denominator": True,
+                "http_intents": self.seq, "http_outcomes": len(self.observations),
+                "incomplete_http_intents": incomplete_http, "incomplete_cli_intents": incomplete_cli,
+                "outcome_unknown": bool(unknown), "all_owned_stopped": bool(clean),
+                "owned_cleanup": cleanup, "child_provenance": self.owner.child_provenance,
+                "child_exec_visibility": self.owner.child_exec_visibility,
+                "final_all_node_audit_observation": self.audit_postmortem,
+                "reference_startup_scope": self.reference_startup_scope,
+                "normal_default_features": True, "fixture_feature_startup": False,
+                "production_changed": False, "provider_requests": 0, "j3160_requests": 0,
+                "physical_hosts": 1, "process_nodes": 3, "native_archive_only": True,
+                "official_openbao_state_archive_interoperability_claimed": False,
+                "cli_exit_zero_is_not_restore_success": True,
+                "audit_is_not_client_response_framing_proof": True,
+                "controller_request_or_restore_replays": 0,
+                "full_replacement_qualification": False,
+                "original_r2_source_or_qualification_inherited": False,
+                "terminal_unix_ns": time.time_ns(),
+            }
+            try:
+                encoded = (json.dumps(report, sort_keys=True, indent=2) + "\n").encode()
+                variants = evidence.secret_variants(self.secret_values)
+                require(not any(value in encoded for value in variants), "fixture_secret_in_final_report")
+                write_new(self.root / "result.public.json", encoded)
+                public_files = sorted(self.root.rglob("*.public.json"))
+                # Enumeration is confined to this newly created owned fixture.
+                scan = evidence.public_literal_scan(public_files, self.secret_values, final_until)
+                write_json(self.root / "public-literal-scan.public.json", scan)
+                print(json.dumps({
+                    "status": status, "result": str(self.root / "result.public.json"),
+                    "result_sha256": sha(encoded), "case_qualifications": qualifications,
+                    "outcome_unknown": bool(unknown), "all_owned_stopped": bool(clean),
+                    "literal_scan_hits": 0, "full_replacement_qualification": False,
+                }, sort_keys=True), flush=True)
+            except BaseException as error:
+                # Do not print the rejected public bytes or any raw exception.
+                print(json.dumps({"status": "public_evidence_withheld", "error_type": type(error).__name__,
+                                  "outcome_unknown": bool(unknown), "all_owned_stopped": bool(clean)},
+                                 sort_keys=True), flush=True)
+                return 1
+            return 0 if passed else 1
+    return PhaseB()
+
+
+def prepare(binding, bm, evidence, cli) -> int:
+    binding.fresh_path(binding.prepare)
+    binding.fresh_path(binding.work)
+        require(args.prepare_result_sha256 is None, "prepare_has_no_prior_result")
+        return prepare(binding, bm, evidence, cli)
+    require(args.prepare_result_sha256 is not None, "reviewed_prepare_result_required")
+    until = time.monotonic_ns() + 300_000_000_000
+    raw, _ = bm.read_file(binding.prepare / "result.public.json", 4 * 1024 * 1024, until)
+    require(sha(raw) == args.prepare_result_sha256, "exact_prior_prepare_result")
+    prepared = bm.parse(raw)
+    require(prepared["schema"] == "heptabao.official271-native-cli-phaseb-r3.prepare.v1"
+            and prepared["status"] == "passed" and prepared["all_owned_stopped"] is True

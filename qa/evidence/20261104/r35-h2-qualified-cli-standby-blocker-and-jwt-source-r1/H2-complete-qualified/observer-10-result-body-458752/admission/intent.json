@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.h2-live.original-readonly-intent.v1",
+  "GO": {
+    "blob": "39616822031623661e3db7d5153f9dcb19525842",
+    "bytes": 10177,
+    "sha256": "797d031779441fd8d10563b62200a848c80facd2965dd7b5b0e817163a3b7684"
+  },
+  "job_id": "1a1ae76aacd-fc05-5fb4",
+  "label": "result-body-458752-admission",
+  "tool": "operation_start",
+  "request": {
+    "name": "h2-live-result-body-458752-admission-request",
+    "blob": "b20329116b397801a1834f2348d582fc92d15a93",
+    "bytes": 439,
+    "sha256": "574ba5639b6055626148fd39b88a76c0f8928ff1bd16bb41780f415b6dea57f8",
+    "archive_tree": "0223ca9391691a8b6cd1660a1a8b6efd1f49d764",
+    "external_whole": true
+  },
+  "Runtime_submitted": false,
+  "one_future": true,
+  "original_SDK_external_before_parse": true,
+  "Git_first_protocol_GO": {
+    "blob": "778d79c6702a0aa7933aaec598e548349eb31a73",
+    "bytes": 6592,
+    "sha256": "f8564f6759b9cd7da416aa0d0558e6138e96bbde4a05a7ce9179454f5fbdba3e"
+  }
+}

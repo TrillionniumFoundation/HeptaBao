@@ -1,0 +1,227 @@
+{
+  "schema": "heptabao.official271-phaseb.gitfirst-literal-source-checks.r1",
+  "scope": "offline source and exact binding only",
+  "runtime_calls": 0,
+  "candidate_functions_invoked": 0,
+  "definition_count": 13,
+  "unchanged_definitions": 11,
+  "checks": 50,
+  "passed": 50,
+  "rows": [
+    {
+      "label": "isolated_state_slot_unique_before",
+      "pass": true
+    },
+    {
+      "label": "only_start_request_pin_unique_before",
+      "pass": true
+    },
+    {
+      "label": "cli_readonly_observer_prefix_unique_before",
+      "pass": true
+    },
+    {
+      "label": "same_job_observer_host_unique_before",
+      "pass": true
+    },
+    {
+      "label": "unique_start_ack_host_unique_before",
+      "pass": true
+    },
+    {
+      "label": "only_five_named_replacements",
+      "pass": true
+    },
+    {
+      "label": "unique_start_ack_host_unique_after",
+      "pass": true
+    },
+    {
+      "label": "same_job_observer_host_unique_after",
+      "pass": true
+    },
+    {
+      "label": "cli_readonly_observer_prefix_unique_after",
+      "pass": true
+    },
+    {
+      "label": "only_start_request_pin_unique_after",
+      "pass": true
+    },
+    {
+      "label": "isolated_state_slot_unique_after",
+      "pass": true
+    },
+    {
+      "label": "inverse_complete_original_19027",
+      "pass": true
+    },
+    {
+      "label": "three_strict_forward_hunks",
+      "pass": true
+    },
+    {
+      "label": "three_strict_reverse_hunks",
+      "pass": true
+    },
+    {
+      "label": "one_strict_steps_forward_hunk",
+      "pass": true
+    },
+    {
+      "label": "one_strict_steps_reverse_hunk",
+      "pass": true
+    },
+    {
+      "label": "same_function_names_order",
+      "pass": true
+    },
+    {
+      "label": "function_exact_gfNeed",
+      "pass": true
+    },
+    {
+      "label": "function_exact_gfMetaEquals",
+      "pass": true
+    },
+    {
+      "label": "function_exact_gfState",
+      "pass": true
+    },
+    {
+      "label": "function_exact_gfSave",
+      "pass": true
+    },
+    {
+      "label": "function_exact_gfIntegerText",
+      "pass": true
+    },
+    {
+      "label": "function_exact_gfInitializeOnlyAfterRootGO",
+      "pass": true
+    },
+    {
+      "label": "function_exact_gfValidateRequest",
+      "pass": true
+    },
+    {
+      "label": "function_exact_gfPrepareOne",
+      "pass": true
+    },
+    {
+      "label": "function_exact_gfInvokePreparedOnce",
+      "pass": true
+    },
+    {
+      "label": "function_exact_gfAcceptArchivedSDK",
+      "pass": true
+    },
+    {
+      "label": "function_exact_gfCloseOriginalObserver",
+      "pass": true
+    },
+    {
+      "label": "function_exact_gfReconcileSameGitArchiveReadOnly",
+      "pass": true
+    },
+    {
+      "label": "function_exact_gfRun",
+      "pass": true
+    },
+    {
+      "label": "only_two_host_prefix_function_edits",
+      "pass": true
+    },
+    {
+      "label": "identical_tool_call_statements",
+      "pass": true
+    },
+    {
+      "label": "no_local_executor_or_fallback",
+      "pass": true
+    },
+    {
+      "label": "exact_746_request",
+      "pass": true
+    },
+    {
+      "label": "original_desktop_python",
+      "pass": true
+    },
+    {
+      "label": "original_timeout_3000",
+      "pass": true
+    },
+    {
+      "label": "original_r4_key",
+      "pass": true
+    },
+    {
+      "label": "fixed_binding_sha",
+      "pass": true
+    },
+    {
+      "label": "actual_prepare_sha",
+      "pass": true
+    },
+    {
+      "label": "typed_digest_correct_stdin",
+      "pass": true
+    },
+    {
+      "label": "lossless_fingerprint",
+      "pass": true
+    },
+    {
+      "label": "canonical_stdin_null",
+      "pass": true
+    },
+    {
+      "label": "unchanged_pure_helpers.js",
+      "pass": true
+    },
+    {
+      "label": "unchanged_git_archive_once.js",
+      "pass": true
+    },
+    {
+      "label": "unchanged_process_start_binding_correct.js",
+      "pass": true
+    },
+    {
+      "label": "original_8192_page_cap",
+      "pass": true
+    },
+    {
+      "label": "original_16384_stream_cap",
+      "pass": true
+    },
+    {
+      "label": "original_1MiB_payload_cap",
+      "pass": true
+    },
+    {
+      "label": "no_file_observers_added",
+      "pass": true
+    },
+    {
+      "label": "V8_compile_only",
+      "pass": true
+    }
+  ],
+  "candidate": {
+    "blob": "a7f0226de91fe4bf1a17847a6d28cce566a164e4",
+    "bytes": 19038,
+    "sha256": "28ba5debf79380e9acc8bcc3ca6bc1bfcb88bbe67982531d237d490f048080e5"
+  },
+  "request": {
+    "blob": "2c0692832bfe24fe8b728589900896ae64152852",
+    "bytes": 746,
+    "sha256": "11951f04874e55849a27d6abe812118124055245adfd8dd6321779a3b10886da"
+  },
+  "binding": {
+    "canonical": "{\"args\":[\"-I\",\"-S\",\"-B\",\"/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/qa/phaseb_controller_r3.py\",\"--binding\",\"/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/binding.private.json\",\"--binding-sha256\",\"7ef3458f4a54b74336941229307c0ffb6778e581c18b27518dc03a8fe6107eea\",\"--run\",\"--prepare-result-sha256\",\"8d9809f9da2493cb7f9d1ae8855ff31dab8464cc3919ea7fcd02163087cac615\"],\"cpu_quota_percent\":null,\"cwd\":\"/home/qian-qi/heptabao-ha-closure-20261103-r1\",\"env\":{},\"executable\":\"/usr/bin/python3.12\",\"host\":\"desktop\",\"memory_max_bytes\":null,\"nice\":null,\"stdin\":null,\"timeout_seconds\":3000}",
+    "sha256": "f670cf418c6ae40943b7f0224e09f0bd556ceb3b5975c377ad0e524a317f5cd7",
+    "native_fingerprint": "17757921211157505033"
+  }
+}

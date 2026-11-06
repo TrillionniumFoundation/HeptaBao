@@ -1,0 +1,8 @@
+{
+  "scope": "pure V8 construction",
+  "error": "ReferenceError: structuredClone is not defined at exec_main.mjs:2:12",
+  "before_any_metadata_store": true,
+  "Runtime": 0,
+  "Git_mutations": 0,
+  "correction": "Use JSON roundtrip for this JSON-only metadata object."
+}

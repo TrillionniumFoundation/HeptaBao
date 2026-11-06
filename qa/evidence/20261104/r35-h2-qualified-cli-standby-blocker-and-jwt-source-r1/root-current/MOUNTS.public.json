@@ -1,0 +1,326 @@
+{
+  "schema": "heptabao.r35.whole-packet-mounts.v1",
+  "as_of_UTC": "2026-11-06 03:49:20 UTC",
+  "mounts": [
+    {
+      "name": "H2-complete-qualified",
+      "sha": "9be9e1e28ba3bcec85d3d60087e38a43393baa05",
+      "audit": {
+        "tree": "9be9e1e28ba3bcec85d3d60087e38a43393baa05",
+        "files": 399,
+        "bytes": 4793054,
+        "merkle": {
+          "root_sha": "9be9e1e28ba3bcec85d3d60087e38a43393baa05",
+          "trees_verified": 127,
+          "leaf_count": 399
+        },
+        "whole": true
+      },
+      "label": "H2-final-aggregate"
+    },
+    {
+      "name": "AuthBus-first-diagnostic-actual",
+      "sha": "f2c48c69163bee807f853ea22fe0f498b798b052",
+      "audit": {
+        "tree": "f2c48c69163bee807f853ea22fe0f498b798b052",
+        "files": 66,
+        "bytes": 416031,
+        "merkle": {
+          "root_sha": "f2c48c69163bee807f853ea22fe0f498b798b052",
+          "trees_verified": 1,
+          "leaf_count": 66
+        },
+        "whole": true
+      },
+      "label": "auth-diagnostic-full"
+    },
+    {
+      "name": "AuthBus-parser78-source",
+      "sha": "eea5073e6436a9279236fdb6b5c8cf51e6b23f19",
+      "audit": {
+        "tree": "eea5073e6436a9279236fdb6b5c8cf51e6b23f19",
+        "files": 5,
+        "bytes": 77423,
+        "merkle": {
+          "root_sha": "eea5073e6436a9279236fdb6b5c8cf51e6b23f19",
+          "trees_verified": 1,
+          "leaf_count": 5
+        },
+        "whole": true
+      },
+      "label": "auth-parser78"
+    },
+    {
+      "name": "AuthBus-stderr-diagnostic-actual",
+      "sha": "718f6d3074cedd52ae8c461830ad4d70729a1ff9",
+      "audit": {
+        "tree": "718f6d3074cedd52ae8c461830ad4d70729a1ff9",
+        "files": 83,
+        "bytes": 658848,
+        "merkle": {
+          "root_sha": "718f6d3074cedd52ae8c461830ad4d70729a1ff9",
+          "trees_verified": 1,
+          "leaf_count": 83
+        },
+        "whole": true
+      },
+      "label": "Auth-stderr-full-original-chain"
+    },
+    {
+      "name": "AuthBus-fixed-path-metadata-source",
+      "sha": "d361caf1f759deaad5b9a85ad9e04369dd0f1248",
+      "audit": {
+        "tree": "d361caf1f759deaad5b9a85ad9e04369dd0f1248",
+        "files": 16,
+        "bytes": 247301,
+        "merkle": {
+          "root_sha": "d361caf1f759deaad5b9a85ad9e04369dd0f1248",
+          "trees_verified": 1,
+          "leaf_count": 16
+        },
+        "whole": true
+      },
+      "label": "Auth-path-metadata-source"
+    },
+    {
+      "name": "AuthBus-fixed-path-metadata-journal",
+      "sha": "17fba4e4d6e0183a2e4fd9d982bc6327c8b88e25",
+      "audit": {
+        "tree": "17fba4e4d6e0183a2e4fd9d982bc6327c8b88e25",
+        "files": 9,
+        "bytes": 71736,
+        "merkle": {
+          "root_sha": "17fba4e4d6e0183a2e4fd9d982bc6327c8b88e25",
+          "trees_verified": 1,
+          "leaf_count": 9
+        },
+        "whole": true
+      },
+      "label": "Auth-path-metadata-journal"
+    },
+    {
+      "name": "AuthBus-same-label-cleanup-source",
+      "sha": "725b9e33e974bc43ff9a04591ce222a9b994fb86",
+      "audit": {
+        "tree": "725b9e33e974bc43ff9a04591ce222a9b994fb86",
+        "files": 13,
+        "bytes": 282417,
+        "merkle": {
+          "root_sha": "725b9e33e974bc43ff9a04591ce222a9b994fb86",
+          "trees_verified": 1,
+          "leaf_count": 13
+        },
+        "whole": true
+      },
+      "label": "Auth-same-label-cleanup-source"
+    },
+    {
+      "name": "CLI-known-failure-original",
+      "sha": "32e2f8b06c3db1cdf3ca66fc25cc2a20a7313159",
+      "audit": {
+        "tree": "32e2f8b06c3db1cdf3ca66fc25cc2a20a7313159",
+        "files": 11,
+        "bytes": 73977,
+        "merkle": {
+          "root_sha": "32e2f8b06c3db1cdf3ca66fc25cc2a20a7313159",
+          "trees_verified": 1,
+          "leaf_count": 11
+        },
+        "whole": true
+      },
+      "label": "CLI-live-minimal-actual"
+    },
+    {
+      "name": "CLI-live-journal-source",
+      "sha": "298ba8859eb98c72aa5c7feac283b8aca473c7cf",
+      "audit": {
+        "tree": "298ba8859eb98c72aa5c7feac283b8aca473c7cf",
+        "files": 18,
+        "bytes": 86397,
+        "merkle": {
+          "root_sha": "298ba8859eb98c72aa5c7feac283b8aca473c7cf",
+          "trees_verified": 1,
+          "leaf_count": 18
+        },
+        "whole": true
+      },
+      "label": "CLI-gitfirst-source"
+    },
+    {
+      "name": "CLI-result-info-source",
+      "sha": "34f0175b4e95d45a20c1f8e53ba107a192c8551d",
+      "audit": {
+        "tree": "34f0175b4e95d45a20c1f8e53ba107a192c8551d",
+        "files": 17,
+        "bytes": 126594,
+        "merkle": {
+          "root_sha": "34f0175b4e95d45a20c1f8e53ba107a192c8551d",
+          "trees_verified": 1,
+          "leaf_count": 17
+        },
+        "whole": true
+      },
+      "label": "CLI-fileinfo-source"
+    },
+    {
+      "name": "CLI-result-info-actual",
+      "sha": "cb046a3da9c962abac8019114333cedbb02f5741",
+      "audit": {
+        "tree": "cb046a3da9c962abac8019114333cedbb02f5741",
+        "files": 20,
+        "bytes": 71262,
+        "merkle": {
+          "root_sha": "cb046a3da9c962abac8019114333cedbb02f5741",
+          "trees_verified": 1,
+          "leaf_count": 20
+        },
+        "whole": true
+      },
+      "label": "CLI-fileinfo-actual"
+    },
+    {
+      "name": "CLI-result-body13-source",
+      "sha": "f8f655b805864650b773f4287cac7e592928d6a9",
+      "audit": {
+        "tree": "f8f655b805864650b773f4287cac7e592928d6a9",
+        "files": 28,
+        "bytes": 184410,
+        "merkle": {
+          "root_sha": "f8f655b805864650b773f4287cac7e592928d6a9",
+          "trees_verified": 1,
+          "leaf_count": 28
+        },
+        "whole": true
+      },
+      "label": "CLI-body13-source"
+    },
+    {
+      "name": "JWT-source-stage-source",
+      "sha": "3ca17dba3a401f552af627569d91e14f4344a4db",
+      "audit": {
+        "tree": "3ca17dba3a401f552af627569d91e14f4344a4db",
+        "files": 8,
+        "bytes": 233587,
+        "merkle": {
+          "root_sha": "3ca17dba3a401f552af627569d91e14f4344a4db",
+          "trees_verified": 6,
+          "leaf_count": 8
+        },
+        "whole": true
+      },
+      "label": "JWT-stage-source"
+    },
+    {
+      "name": "JWT-source-stage-journal",
+      "sha": "ae9d43535685a4952159747e8bc24703d49b504f",
+      "audit": {
+        "tree": "ae9d43535685a4952159747e8bc24703d49b504f",
+        "files": 13,
+        "bytes": 186238,
+        "merkle": {
+          "root_sha": "ae9d43535685a4952159747e8bc24703d49b504f",
+          "trees_verified": 1,
+          "leaf_count": 13
+        },
+        "whole": true
+      },
+      "label": "JWT-stage-journal"
+    },
+    {
+      "name": "JWT-source-stage-original",
+      "sha": "50d59c2855d912d216f774ffeff5542f273a9af6",
+      "audit": {
+        "tree": "50d59c2855d912d216f774ffeff5542f273a9af6",
+        "files": 52,
+        "bytes": 432491,
+        "merkle": {
+          "root_sha": "50d59c2855d912d216f774ffeff5542f273a9af6",
+          "trees_verified": 1,
+          "leaf_count": 52
+        },
+        "whole": true
+      },
+      "label": "JWT-stage-minimal-actual"
+    },
+    {
+      "name": "JWT-stage-info-source",
+      "sha": "8436afae1c19e217c6586dd6171703d73c22506b",
+      "audit": {
+        "tree": "8436afae1c19e217c6586dd6171703d73c22506b",
+        "files": 18,
+        "bytes": 170443,
+        "merkle": {
+          "root_sha": "8436afae1c19e217c6586dd6171703d73c22506b",
+          "trees_verified": 1,
+          "leaf_count": 18
+        },
+        "whole": true
+      },
+      "label": "JWT-stage-fileinfo-source"
+    },
+    {
+      "name": "JWT-stage-info-actual",
+      "sha": "a2bc6e96254bb0c8213be33d07cb1f6d4d9e2b28",
+      "audit": {
+        "tree": "a2bc6e96254bb0c8213be33d07cb1f6d4d9e2b28",
+        "files": 24,
+        "bytes": 203877,
+        "merkle": {
+          "root_sha": "a2bc6e96254bb0c8213be33d07cb1f6d4d9e2b28",
+          "trees_verified": 1,
+          "leaf_count": 24
+        },
+        "whole": true
+      },
+      "label": "JWT-stage-fileinfo-actual"
+    },
+    {
+      "name": "JWT-stage-body-source",
+      "sha": "c89eb8011a27382823b40a81934ef8124a1ca188",
+      "audit": {
+        "tree": "c89eb8011a27382823b40a81934ef8124a1ca188",
+        "files": 16,
+        "bytes": 219738,
+        "merkle": {
+          "root_sha": "c89eb8011a27382823b40a81934ef8124a1ca188",
+          "trees_verified": 1,
+          "leaf_count": 16
+        },
+        "whole": true
+      },
+      "label": "JWT-stage-body-source"
+    },
+    {
+      "name": "JWT-formatter-source",
+      "sha": "a97c73a2c260e727154d0f3e877005fcb6876985",
+      "audit": {
+        "tree": "a97c73a2c260e727154d0f3e877005fcb6876985",
+        "files": 27,
+        "bytes": 333906,
+        "merkle": {
+          "root_sha": "a97c73a2c260e727154d0f3e877005fcb6876985",
+          "trees_verified": 10,
+          "leaf_count": 27
+        },
+        "whole": true
+      },
+      "label": "jwt-formatter"
+    },
+    {
+      "name": "JWT-formatter-journal",
+      "sha": "0a081ed538570a1d5a83d2117a20c5f1e17f8907",
+      "audit": {
+        "tree": "0a081ed538570a1d5a83d2117a20c5f1e17f8907",
+        "files": 15,
+        "bytes": 134636,
+        "merkle": {
+          "root_sha": "0a081ed538570a1d5a83d2117a20c5f1e17f8907",
+          "trees_verified": 1,
+          "leaf_count": 15
+        },
+        "whole": true
+      },
+      "label": "JWT-formatter-journal"
+    }
+  ]
+}

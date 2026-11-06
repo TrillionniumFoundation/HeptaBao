@@ -1,0 +1,294 @@
+{
+  "schema": "heptabao.root-authbus-readonly-diagnostic-qualification.v1",
+  "packet": {
+    "tree": "f2c48c69163bee807f853ea22fe0f498b798b052",
+    "files": 66,
+    "bytes": 416031,
+    "merkle": {
+      "root_sha": "f2c48c69163bee807f853ea22fe0f498b798b052",
+      "trees_verified": 1,
+      "leaf_count": 66
+    },
+    "whole": true
+  },
+  "actual_job": "mac/1a1aebc1cb1-fc05-61c9",
+  "passed": true,
+  "check_count": 64,
+  "checks": [
+    {
+      "name": "whole_66_original_leaves",
+      "passed": true
+    },
+    {
+      "name": "exact_root_go",
+      "passed": true
+    },
+    {
+      "name": "exact_source_and_start",
+      "passed": true
+    },
+    {
+      "name": "ten_original_calls_and_five_pages",
+      "passed": true
+    },
+    {
+      "name": "all_original_calls_accepted_without_retry",
+      "passed": true
+    },
+    {
+      "name": "whole_request_SDK_native_launchd-diag-start-r1",
+      "passed": true
+    },
+    {
+      "name": "armed_exact_one_launchd-diag-start-r1",
+      "passed": true
+    },
+    {
+      "name": "SDK_native_original_exact_launchd-diag-start-r1",
+      "passed": true
+    },
+    {
+      "name": "whole_request_SDK_native_diag-authority-01-start",
+      "passed": true
+    },
+    {
+      "name": "armed_exact_one_diag-authority-01-start",
+      "passed": true
+    },
+    {
+      "name": "SDK_native_original_exact_diag-authority-01-start",
+      "passed": true
+    },
+    {
+      "name": "whole_request_SDK_native_diag-authority-01-status-0",
+      "passed": true
+    },
+    {
+      "name": "armed_exact_one_diag-authority-01-status-0",
+      "passed": true
+    },
+    {
+      "name": "SDK_native_original_exact_diag-authority-01-status-0",
+      "passed": true
+    },
+    {
+      "name": "whole_request_SDK_native_diag-authority-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "armed_exact_one_diag-authority-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "SDK_native_original_exact_diag-authority-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "whole_request_SDK_native_diag-streams-01-start",
+      "passed": true
+    },
+    {
+      "name": "armed_exact_one_diag-streams-01-start",
+      "passed": true
+    },
+    {
+      "name": "SDK_native_original_exact_diag-streams-01-start",
+      "passed": true
+    },
+    {
+      "name": "whole_request_SDK_native_diag-streams-01-status-0",
+      "passed": true
+    },
+    {
+      "name": "armed_exact_one_diag-streams-01-status-0",
+      "passed": true
+    },
+    {
+      "name": "SDK_native_original_exact_diag-streams-01-status-0",
+      "passed": true
+    },
+    {
+      "name": "whole_request_SDK_native_diag-streams-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "armed_exact_one_diag-streams-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "SDK_native_original_exact_diag-streams-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "whole_request_SDK_native_diag-streams-01-page-008192",
+      "passed": true
+    },
+    {
+      "name": "armed_exact_one_diag-streams-01-page-008192",
+      "passed": true
+    },
+    {
+      "name": "SDK_native_original_exact_diag-streams-01-page-008192",
+      "passed": true
+    },
+    {
+      "name": "whole_request_SDK_native_diag-streams-01-page-016384",
+      "passed": true
+    },
+    {
+      "name": "armed_exact_one_diag-streams-01-page-016384",
+      "passed": true
+    },
+    {
+      "name": "SDK_native_original_exact_diag-streams-01-page-016384",
+      "passed": true
+    },
+    {
+      "name": "whole_request_SDK_native_diag-streams-01-page-024576",
+      "passed": true
+    },
+    {
+      "name": "armed_exact_one_diag-streams-01-page-024576",
+      "passed": true
+    },
+    {
+      "name": "SDK_native_original_exact_diag-streams-01-page-024576",
+      "passed": true
+    },
+    {
+      "name": "closed_kind_counts",
+      "passed": true
+    },
+    {
+      "name": "actual_START_binding",
+      "passed": true
+    },
+    {
+      "name": "authority_complete_durable_exit0",
+      "passed": true
+    },
+    {
+      "name": "two_original_observers_closed",
+      "passed": true
+    },
+    {
+      "name": "contiguous_immutable_pages_process_status",
+      "passed": true
+    },
+    {
+      "name": "whole_original_payload_process_status",
+      "passed": true
+    },
+    {
+      "name": "actual_observer_inactive_process_status",
+      "passed": true
+    },
+    {
+      "name": "contiguous_immutable_pages_process_read",
+      "passed": true
+    },
+    {
+      "name": "whole_original_payload_process_read",
+      "passed": true
+    },
+    {
+      "name": "actual_observer_inactive_process_read",
+      "passed": true
+    },
+    {
+      "name": "whole_stream_stdout",
+      "passed": true
+    },
+    {
+      "name": "authority_stream_stdout",
+      "passed": true
+    },
+    {
+      "name": "whole_stream_stderr",
+      "passed": true
+    },
+    {
+      "name": "authority_stream_stderr",
+      "passed": true
+    },
+    {
+      "name": "only_two_exact_warnings",
+      "passed": true
+    },
+    {
+      "name": "diagnostic_actual_complete",
+      "passed": true
+    },
+    {
+      "name": "17_new_owned_descriptors_closed",
+      "passed": true
+    },
+    {
+      "name": "two_new_helpers_reaped",
+      "passed": true
+    },
+    {
+      "name": "exact_two_allowed_commands",
+      "passed": true
+    },
+    {
+      "name": "held_T5_guard_closed",
+      "passed": true
+    },
+    {
+      "name": "original_plist_identity",
+      "passed": true
+    },
+    {
+      "name": "fresh_original_print_matches",
+      "passed": true
+    },
+    {
+      "name": "actual_last_exit_literal_hash_and_length",
+      "passed": true
+    },
+    {
+      "name": "not_running_one_run_no_pid",
+      "passed": true
+    },
+    {
+      "name": "ready_exec_absent_twice",
+      "passed": true
+    },
+    {
+      "name": "stdout_stable_empty_prefix_only",
+      "passed": true
+    },
+    {
+      "name": "read_budgets",
+      "passed": true
+    },
+    {
+      "name": "original_unknown_and_nonclosure_preserved",
+      "passed": true
+    },
+    {
+      "name": "no_mutation_provider_private_or_fixture",
+      "passed": true
+    }
+  ],
+  "findings": {
+    "fresh_print_same_as_original": true,
+    "observed_field": "last exit code",
+    "matched_public_literal": "78: EX_CONFIG",
+    "literal_match": {
+      "bytes": 13,
+      "sha256": "865ce32135321d0a9b70cc68893f4164c8d08e00f1802b4e15375e1959b933a7"
+    },
+    "exit_code_78_is_failure": true,
+    "specific_launchd_startup_cause_known": false,
+    "diagnostic_resources_closed": true,
+    "original_registration_closed": false,
+    "historical_lineage_unknown_preserved": true,
+    "AppRole_TLS_KV_Policy_renew_revoke_qualified": false
+  },
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

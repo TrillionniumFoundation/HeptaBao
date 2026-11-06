@@ -1,0 +1,54 @@
+{
+  "schema": "heptabao.h2-live.original-ACK-binding.v1",
+  "GO": {
+    "blob": "39616822031623661e3db7d5153f9dcb19525842",
+    "bytes": 10177,
+    "sha256": "797d031779441fd8d10563b62200a848c80facd2965dd7b5b0e817163a3b7684"
+  },
+  "request": {
+    "blob": "32fc562b787488e539df6e57301ec9a7f6a53005",
+    "bytes": 711,
+    "sha256": "05220ced4192d3d2ee10208a86eb902b8d9e55f768acb17066c10e2e6eee94c4"
+  },
+  "execution_intent": {
+    "name": "h2-live-external-execution-intent",
+    "blob": "d407c77c028aee3d718b2b8168085d3775adbaba",
+    "bytes": 2296,
+    "sha256": "327db79a76c5101954f588072914c1f4ba6656ddda3960a8eab055643d13af57"
+  },
+  "SDK": {
+    "name": "h2-live-start-original-SDK",
+    "blob": "7387f5a46e230ecd60252b0a8818213fd8ea37c1",
+    "bytes": 1758,
+    "sha256": "5f4def1129872867e275b6df91e3d93b373534abf670e73d321ff52edcf5471a"
+  },
+  "native": {
+    "name": "h2-live-start-original-native",
+    "blob": "82b5159b7256c39462c5b8acb9834f971d16734b",
+    "bytes": 1494,
+    "sha256": "7a8a378ecdcc6ca042865984efac03444f054fd7a423a10033fa5ab9423a1800"
+  },
+  "job_id": "1a1ae76aacd-fc05-5fb4",
+  "checks": {
+    "original_single_start": true,
+    "SDK_preserved": true,
+    "job_id": true,
+    "host": true,
+    "executable": true,
+    "args": true,
+    "cwd": true,
+    "key": true,
+    "digest": true,
+    "fingerprint": true,
+    "launch": true,
+    "unit": true,
+    "no_reuse": true,
+    "no_pending": true,
+    "audit": true,
+    "remote_directory": true
+  },
+  "native_digest": "be5236ae3c4a5eb211e844375d6bba4d768ba21e5e596335bd38a9b53844d05b",
+  "native_fingerprint_decimal": "13714083937260297906",
+  "business_starts": 1,
+  "Runtime_replayed": false
+}

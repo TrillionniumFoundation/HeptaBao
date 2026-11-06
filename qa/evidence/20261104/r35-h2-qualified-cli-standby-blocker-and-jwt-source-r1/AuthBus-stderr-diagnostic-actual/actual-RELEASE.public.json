@@ -1,0 +1,206 @@
+{
+  "schema": "heptabao.mac-owned-launchd-stderr-actual-release.r1",
+  "job": "1a1aed868b6-fc05-6321",
+  "originalDiagnosticRequest": {
+    "blob": "53f77e0acfd68e58f6085cf2e84f6b5c4aad8c1d",
+    "bytes": 78946,
+    "sha256": "4d7947e19a869e9608bbd5db0c1729d55129ae4c35d694f751db95cbeffc1734"
+  },
+  "originalGO": "68f522f44282880297b3c4fefa5249bad9ac9877",
+  "recoveryGO": {
+    "blob": "3ca9212b02e7151183f33c8b1efb7626aa892626",
+    "bytes": 5261,
+    "sha256": "845c0b1b59d83f09a501f7cae67ffe870c272629b91ec932f03b7c4b4f91adf8"
+  },
+  "adoptionArchive": "f3017221df9f6f09e1a23427b85a8c298ec471a6",
+  "originalJobAuthority": {
+    "blob": "b50d878735d72355b73f8a88a9795104aade6291",
+    "bytes": 735,
+    "sha256": "f10f53c8faf7cc685f37a2b4f6ebd36dcc1eddd733c8468048ffb907630a1e5b"
+  },
+  "stdout": {
+    "blob": "f26e6d805660ecc57b080d69cb87412e403acebc",
+    "bytes": 8094,
+    "sha256": "7b1b38588bd354dc85124cd94b613747ff202dfe16a66e38601371641ac02711"
+  },
+  "stderr": {
+    "blob": "c567bfe8bdc1fb13a86834eb127a85bce41bb9f4",
+    "bytes": 116,
+    "sha256": "5b46235ea2d15c9e8d9df3d066a965f4e513171198fb645b5b321e8013fb5875"
+  },
+  "streamsNative": {
+    "blob": "b0dcc361718104864d6bf91e0e06689754bda30e",
+    "bytes": 25780,
+    "sha256": "e9aef9f1a82f034f36be3596676c9d188d79dbb2d69622e0fb852f79fae3a5dd"
+  },
+  "originalObservers": [
+    {
+      "id": "55d0815aeb94e8f9030d98f8f996226056d3d90168325bf39e56b5f498ab9bca",
+      "tool": "process_status",
+      "payload": {
+        "blob": "b86a71d02a2e4313bc333b33dd1523534a9e3df2",
+        "bytes": 914,
+        "sha256": "058106754a79a6b1007c199a4d3beb6a5748a0b3bd41bf234227611031526e51"
+      },
+      "payloadTree": "2fdf2b05ae31036ffcbdd420b232c780c485a369",
+      "nativeText": {
+        "blob": "b50d878735d72355b73f8a88a9795104aade6291",
+        "bytes": 735,
+        "sha256": "f10f53c8faf7cc685f37a2b4f6ebd36dcc1eddd733c8468048ffb907630a1e5b"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "0f5488f96e9ce749d19f452156dfd8e5204804babcb1ec92a9763564d2a212cc",
+      "tool": "process_read",
+      "payload": {
+        "blob": "af22d397cfb86fa63e2b07cd87376228f2233ecd",
+        "bytes": 27563,
+        "sha256": "aab1089b4889a619ff8dd2685fb046862abd26e68d1cc58783b98feecf9b2033"
+      },
+      "payloadTree": "eef8468c496255387695677985fbb854318a3f89",
+      "nativeText": {
+        "blob": "b0dcc361718104864d6bf91e0e06689754bda30e",
+        "bytes": 25780,
+        "sha256": "e9aef9f1a82f034f36be3596676c9d188d79dbb2d69622e0fb852f79fae3a5dd"
+      },
+      "pages": 4,
+      "completedInactive": true
+    }
+  ],
+  "originalObserverCount": 2,
+  "originalImmutablePageCount": 5,
+  "activeRuntimeCalls": 0,
+  "activeNativeFutures": 0,
+  "laneAReleased": true,
+  "actual": {
+    "diagnosticKnownPass": true,
+    "elapsedSeconds": 0.28906512493267655,
+    "newFD11Closed": true,
+    "newHelper2Closed": true,
+    "readSyscalls": 3,
+    "returnedBytes": 3984,
+    "originalPrivateStderrSize": 0,
+    "originalPrivateStderrPrefixBytes": 0,
+    "startupCauseQualified": false,
+    "observedLastExitCode": 78,
+    "observedLastExitSymbol": "EX_CONFIG",
+    "observedState": "not running",
+    "observedPid": false,
+    "observedRuns": 1
+  },
+  "limits": {
+    "diagnosticSeconds": 45,
+    "outerSeconds": 60,
+    "readSyscalls": 8195,
+    "returnedBytes": 81921,
+    "descriptorRows": 11,
+    "processReadLimit": 16384,
+    "immutablePageLimit": 8192
+  },
+  "historical": {
+    "originalWorker": "1a1ae51309d-fc05-5ef8",
+    "oldWorkerOutcomeUnknownPreserved": true,
+    "oldLabelRegistrationClosureQualified": false,
+    "actualServerExitQualified": false,
+    "oldGitCreateExpectedTree": "8916feb2a335fcf5fd7d47b55d39dd57b8465ab5",
+    "oldGitCreateOutcome": "UNKNOWN",
+    "oldPausedSlot": "owner_launchd_stderr_gitfirst_r1",
+    "oldSnapshot": {
+      "blob": "631c2623b3c77e711a7863d68f78c39f291bfa60",
+      "bytes": 101825,
+      "sha256": "bd6409799ffa5e63cca395d6a0282b792d145c7ff8847689369f46e0483a4e61"
+    },
+    "oldContextByteExactAndStillPaused": true,
+    "originalProcessStartNotRepeated": true,
+    "originalStreamsOperationStartNotRepeated": true
+  },
+  "checks": [
+    {
+      "name": "job_exact",
+      "passed": true
+    },
+    {
+      "name": "authority_complete",
+      "passed": true
+    },
+    {
+      "name": "stdout_extent",
+      "passed": true
+    },
+    {
+      "name": "stdout_hex",
+      "passed": true
+    },
+    {
+      "name": "stdout_authority_extent",
+      "passed": true
+    },
+    {
+      "name": "stderr_extent",
+      "passed": true
+    },
+    {
+      "name": "stderr_hex",
+      "passed": true
+    },
+    {
+      "name": "stderr_authority_extent",
+      "passed": true
+    },
+    {
+      "name": "post_finally_ok",
+      "passed": true
+    },
+    {
+      "name": "no_pending_signal",
+      "passed": true
+    },
+    {
+      "name": "fd11_closed",
+      "passed": true
+    },
+    {
+      "name": "helper2_closed",
+      "passed": true
+    },
+    {
+      "name": "volume_closed",
+      "passed": true
+    },
+    {
+      "name": "same_original_print",
+      "passed": true
+    },
+    {
+      "name": "same_failure",
+      "passed": true
+    },
+    {
+      "name": "stderr_empty_not_cause",
+      "passed": true
+    },
+    {
+      "name": "historical_not_requalified",
+      "passed": true
+    },
+    {
+      "name": "no_unrelated_effects",
+      "passed": true
+    },
+    {
+      "name": "two_originals_closed",
+      "passed": true
+    },
+    {
+      "name": "no_inflight",
+      "passed": true
+    },
+    {
+      "name": "old_snapshot_unchanged",
+      "passed": true
+    }
+  ],
+  "qualification": "Only this readonly diagnostic and both original read observers are closed; no cleanup, restart, parser install, selected-owner, credential or production qualification."
+}

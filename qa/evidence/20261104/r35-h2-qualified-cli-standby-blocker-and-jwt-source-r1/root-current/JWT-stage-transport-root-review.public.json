@@ -1,0 +1,99 @@
+{
+  "schema": "heptabao.root-native-jwt-stage-original-transport-review.v1",
+  "as_of_UTC": "2026-11-06 03:21:13 UTC",
+  "packet": {
+    "tree": "50d59c2855d912d216f774ffeff5542f273a9af6",
+    "files": 52,
+    "bytes": 432491,
+    "merkle": {
+      "root_sha": "50d59c2855d912d216f774ffeff5542f273a9af6",
+      "trees_verified": 1,
+      "leaf_count": 52
+    },
+    "whole": true
+  },
+  "checks": [
+    {
+      "name": "whole52_original_packet",
+      "passed": true
+    },
+    {
+      "name": "original_ack_exact_unique_job",
+      "passed": true
+    },
+    {
+      "name": "seven_original_SDK_native_exact",
+      "passed": true
+    },
+    {
+      "name": "exact_armed_jwt-e3af-rog-source-authority0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "exact_armed_jwt-e3af-rog-source-authority0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "exact_armed_jwt-e3af-rog-source-authority0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "exact_armed_jwt-e3af-rog-source-start-r1",
+      "passed": true
+    },
+    {
+      "name": "exact_armed_jwt-e3af-rog-source-streams0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "exact_armed_jwt-e3af-rog-source-streams0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "exact_armed_jwt-e3af-rog-source-streams0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "authority_full_durable_exit0",
+      "passed": true
+    },
+    {
+      "name": "exact_whole_stdout",
+      "passed": true
+    },
+    {
+      "name": "exact_whole_stderr",
+      "passed": true
+    },
+    {
+      "name": "original_closed_page_authority0",
+      "passed": true
+    },
+    {
+      "name": "original_closed_page_streams0",
+      "passed": true
+    },
+    {
+      "name": "summary_prepared_source_identity_not_build",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "job": "rog/1a1aed43ac9-fc05-62ec",
+  "authority_pin": {
+    "blob": "9e366a2a26a5c01b0d60e00554ed4c1257505f63",
+    "bytes": 729,
+    "sha256": "3b1b09ef84c21a2f8dbe751955248da6c780fddfdc938156e0f453a74d0d27fd"
+  },
+  "stdout_pin": {
+    "blob": "20ab611f3c096630aa1a6993505b4ad9aa217ad0",
+    "bytes": 370,
+    "sha256": "5f2fdfba792a2f4dae8d358a5afbf2818f323e4097afb7c5c065bcb448ac3f03"
+  },
+  "reported_status": "prepared",
+  "full_stage_report_read": false,
+  "full_source_stage_qualification": false,
+  "formatter_qualification": false,
+  "Rust_compile_qualification": false,
+  "root_Runtime_calls": 0
+}

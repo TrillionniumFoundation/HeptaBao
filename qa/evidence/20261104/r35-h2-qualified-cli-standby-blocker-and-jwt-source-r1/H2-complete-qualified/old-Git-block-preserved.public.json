@@ -1,0 +1,13 @@
+{
+  "expected_tree": "57bf417be264a07210b8d3a601c7d84354cbf801",
+  "entries": [
+    {
+      "path": "original.txt",
+      "blob": "d59acffc65587115620facf74cac6ff355da271c",
+      "bytes": 108137,
+      "sha256": "678a63894f84ac58a3b7b914461ce6b62a74c8c73b0e5d982954edd743e57829"
+    }
+  ],
+  "error": "Error: Git_create_unconfirmed",
+  "only_exact_read_reconcile": true
+}

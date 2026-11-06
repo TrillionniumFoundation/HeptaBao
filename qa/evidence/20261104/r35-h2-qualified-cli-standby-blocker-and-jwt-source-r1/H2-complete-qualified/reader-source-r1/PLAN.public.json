@@ -1,0 +1,143 @@
+{
+  "schema": "heptabao.h2-live.remaining-public-result.Git-first-source-proposal.v1",
+  "status": "SOURCE_ONLY_NEW_ROOT_GO_REQUIRED",
+  "Native_calls": 0,
+  "executor_calls": 0,
+  "original_job": "desktop/1a1ae76aacd-fc05-5fb4",
+  "original_live_GO": "39616822031623661e3db7d5153f9dcb19525842",
+  "original_page_width_amendment": "508c2fa2d6f662b7494438283f8d62be1ceba51d",
+  "fixed_result": {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-live-r2/result.public.json",
+    "size": 465570,
+    "sha256": "6b51bc97ea77b2574eab86ddee638c69818773d54211c25bcb8a018c02ca107e",
+    "version": "2050:7876768:465570:1793928419424368582:1793928419424368582"
+  },
+  "existing_closed_boundary": {
+    "observers": 4,
+    "original_body0_native": "402c5c221b7d26afbf95c08656c0a86362e3ffee",
+    "body0_bytes": 65536,
+    "body0_sha256": "fafa2adac55a13e8683928148f2f4f06508abcef7f1360ef41b1326a577359a6",
+    "no_body0_replay": true,
+    "recovery_tree": "88e46a69416f448d034b007370e343c04d4a7081",
+    "root_body0_review": "fbfad06b11bf1ed16551f6a8d7f190ad46924dc9",
+    "old_local_checkpoint_offset": 0,
+    "correct_rederived_next_offset": 65536
+  },
+  "exact_remaining_requests": [
+    {
+      "offset": 65536,
+      "limit": 65536,
+      "blob": "97fa10f7aa705b265fe0bfa6b1f5a01b7d30c3b4",
+      "bytes": 438,
+      "sha256": "08e2c3baa4e3bae7a65a6e1a2acf83f785764b4084b631fa7eb43d62228737c5"
+    },
+    {
+      "offset": 131072,
+      "limit": 65536,
+      "blob": "e45ec9bc5421e6c6ef1a91e5bba2cf5d8ac22a0f",
+      "bytes": 440,
+      "sha256": "86f2111c36f8d38f9d81817787b3c61bfafe36b19b7ff103506547cf4a9dccdc"
+    },
+    {
+      "offset": 196608,
+      "limit": 65536,
+      "blob": "3dbb58645a1ccf4bc4573373b0aa9e170ab39c4f",
+      "bytes": 440,
+      "sha256": "b09def7abee32c9a014bd25f74b90747aa4d493e7ea883d9ac9d6001ac4c6b41"
+    },
+    {
+      "offset": 262144,
+      "limit": 65536,
+      "blob": "2780c676c0d0fbb9ec30dfe1d8ebff149a09c763",
+      "bytes": 440,
+      "sha256": "08a5c6fe858ec479bd379330507c20d2ce714bed1122c5b82cfaeb42ad89f6b1"
+    },
+    {
+      "offset": 327680,
+      "limit": 65536,
+      "blob": "e7bc24ca34853e1b47ca7cdc035a64a64f3bcdbf",
+      "bytes": 440,
+      "sha256": "7811cb921a12e67f10d2bc28aaca6018abc8b2dd7c21754e720ef62eb6d60bca"
+    },
+    {
+      "offset": 393216,
+      "limit": 65536,
+      "blob": "32e1d307aee89492fe94faf73eb410d10b446a54",
+      "bytes": 440,
+      "sha256": "4a185faba57b528d343fc29471640b53467a3311c7961ef39c696dad940de802"
+    },
+    {
+      "offset": 458752,
+      "limit": 6818,
+      "blob": "b20329116b397801a1834f2348d582fc92d15a93",
+      "bytes": 439,
+      "sha256": "574ba5639b6055626148fd39b88a76c0f8928ff1bd16bb41780f415b6dea57f8"
+    }
+  ],
+  "remaining_bytes": 400034,
+  "remaining_ranges": 7,
+  "archive_order": [
+    "Every action is invoked through hgRun; caught errors are committed to retained V8 state rather than thrown out of the exec cell.",
+    "Before a Native call, its exact request, intent and armed checkpoint are external Git content trees with whole readback.",
+    "After that one Native call returns, preserve JSON.stringify(SDK,null,2)+newline and its hash in retained store before any SDK isError/content/JSON interpretation.",
+    "Publish those exact original SDK bytes in one precomputed Git content tree, then read the exact blob and tree back whole. Only then inspect isError and parse its original text content.",
+    "Status and payload pages remain attached to the same original operation_id; no Native read is submitted twice.",
+    "At observer closure, combine every original request/intent/SDK/native/payload and manifest into one exact batch tree and verify all whole blobs and Merkle structure before the next range."
+  ],
+  "Git_unknown_rule": "Before each create, the exact expected tree/blob IDs are computed and announced. A failed, missing or ambiguous create/readback freezes all actions except exact expected-tree/blob read-only reconciliation. No repeated create_tree, fallback create, fresh Native call or automatic continuation is allowed.",
+  "Native_unknown_rule": "Preserve the original SDK/error externally, halt subsequent actions, and do not replay the business or Native request.",
+  "local_failure_scope": "g2:239 naturally failed in checkpoint apply_patch before hlSync or next lp. No local command retry and no inference that the failed write completed.",
+  "helpers": {
+    "durability": {
+      "blob": "d504200624456ac43e1970afbdf5e43b259dc7f9",
+      "bytes": 9024,
+      "sha256": "247833482f2a00d6a5c9a2b46afe0333d9038a3e5575d09dcd9932f12694bd44"
+    },
+    "observer": {
+      "blob": "f3f5721bb20ff5cd227f7d3f28f878fd6e8f1d1a",
+      "bytes": 16074,
+      "sha256": "f9ae6770375a8f45c04c8b6cf76a8d36bc4c5e0336495855bf4d8d48929f1d8a"
+    },
+    "pure": {
+      "blob": "25eb67a1def4c90ed8a6b1308ca2494228587c1c",
+      "bytes": 6684,
+      "sha256": "54047677f4bbcd0d6565b89a58a8b14c483c7988309b7ea010b6408765f60e45"
+    },
+    "unused_pure_function": "processStartBinding is inherited from the prior pure bundle but is never called for authorization."
+  },
+  "invocation_contract": {
+    "install_source_only": "Store the exact reviewed pure source as h2_live_git_first_pure_source; evaluate the reviewed two helper files without invoking any action until the new root GO.",
+    "bootstrap": "hgRun('bootstrap', exact_new_root_GO_pin). Only Git reads and a new Git checkpoint; it rederives body0->65536 and does not call Native.",
+    "prepare": "hgRun('prepare', {label,tool,request}) for one exact listed binary_read admission or a same-ID status/page request.",
+    "submit": "Only a subsequent hgRun('submit') submits the one already externalized pending request.",
+    "handlers": "hgRun('status'), hgRun('page'), hgRun('finish'), hgRun('accept-range') advance already returned original data.",
+    "archive_reconcile": "hgRun('reconcile-Git', exact_expected_tree); this does not repeat create or Native and does not resume anything automatically.",
+    "returned_sdk_resume": "After its exact archive is confirmed, hgRun('resume-returned') may continue parsing the retained raw SDK; it contains no Native tool call.",
+    "failed_checkpoint_resume": "Inspect the retained shadow/expected checkpoint after exact Git reconciliation. Do not blindly reapply status/page/range handlers; no automatic repetition is supplied."
+  },
+  "unchanged": {
+    "job": true,
+    "original_product_source": true,
+    "business_key": true,
+    "business_deadline2400": true,
+    "H01_H02_H03": true,
+    "H2_8MiB": true,
+    "QA5_fences6": true,
+    "full_result_cap4MiB": true,
+    "native_binary_read_cap65536": true,
+    "new_immutable_page_cap16384": true,
+    "original_status_and_page_functions_whole": true
+  },
+  "explicit_exclusions": [
+    "process_start",
+    "process_status admission",
+    "process_read admission",
+    "file_info admission",
+    "any other path",
+    "offset0 again",
+    "CLI live",
+    "product qualification from flags alone",
+    "local exec/apply_patch/fsync"
+  ],
+  "final_whole_contract": "After the seven ranges are individually archived, reassemble with the existing original body0, require exact 465570 bytes and 6b51bc97... whole SHA, preserve the whole original public report before its semantic review. This SOURCE does not assert H01-H03 from stdout flags."
+}

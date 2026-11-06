@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.gitfirst.existing-native-ack-adopt-request.r1",
+  "action": "adopt_existing_native_ack_once",
+  "oldSlot": "owner_launchd_stderr_gitfirst_r1",
+  "newSlot": "owner_launchd_stderr_ack_recovery_r1",
+  "callKey": "launchd-stderr-streams-01-start",
+  "originalJob": "1a1aed868b6-fc05-6321",
+  "originalOperation": "0f5488f96e9ce749d19f452156dfd8e5204804babcb1ec92a9763564d2a212cc",
+  "oldPausedState": {
+    "blob": "631c2623b3c77e711a7863d68f78c39f291bfa60",
+    "bytes": 101825,
+    "sha256": "bd6409799ffa5e63cca395d6a0282b792d145c7ff8847689369f46e0483a4e61"
+  },
+  "originalNativeSDK": {
+    "blob": "61d992ba86d54d1da4eab9f7cf72032dfa0c00b0",
+    "bytes": 707,
+    "sha256": "30d7c108604c034a2dd1ab9b9192bde812720acba86159541b3b0e43c0157ab5"
+  },
+  "oldGitExpectedTree": "8916feb2a335fcf5fd7d47b55d39dd57b8465ab5",
+  "recoveryTree": "ce1665160b3651418941a63e2bdb61ca2d91f2c4",
+  "recoveryFiles": 11,
+  "recoveryBytes": 111451,
+  "oldCreateOutcomePreserved": "UNKNOWN",
+  "nativeCallsDuringAdopt": 0,
+  "maximumAdoptions": 1,
+  "oldContextMutationAllowed": false,
+  "originalUnboundReadFutureClosure": "NOT_YET_OBSERVED; activeObserver=null is not proof of no future",
+  "permittedNextActions": "After adoption and separate model boundary, unchanged gfRun accept only the existing SDK; then only its original operation status/8192 result pages/close under root recovery GO."
+}

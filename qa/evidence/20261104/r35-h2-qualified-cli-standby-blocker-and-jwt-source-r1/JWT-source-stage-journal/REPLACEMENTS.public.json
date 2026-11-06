@@ -1,0 +1,22 @@
+[
+  [
+    "const GF_SLOT = \"owner_launchd_gitfirst_r1\";",
+    "const GF_SLOT = \"jwt_e3af_rog_source_gitfirst_r1\";"
+  ],
+  [
+    "const GF_REQUEST = {blob:\"d14f62155b86924edd5632673d2e73832f7b0af5\",\n bytes:76816,sha256:\"ab9afbcbbdc150acd11ad9451e35e2785f8fe086d4a371c3a63d4cf0f2a087b4\"};",
+    "const GF_REQUEST = {blob:\"c1429991e9c597d1639f02a68f791043e6c8b9e5\",\n bytes:111605,sha256:\"aebf043cfcb5d60611dd67f3ed93c0caee8098091a70c8b61c8306de05fc5b65\"};"
+  ],
+  [
+    "/^heptabao-mac-owned-launchd-readonly-e573407b-/",
+    "/^heptabao-native-jwt-e3afc157-rog-source-observe-r1-/"
+  ],
+  [
+    "a && a.host===\"mac\" && a.job_id===s.job",
+    "a && a.host===\"rog\" && a.job_id===s.job"
+  ],
+  [
+    "v.job?.host===\"mac\" && v.job.execution_mode===\"operator\"",
+    "v.job?.host===\"rog\" && v.job.execution_mode===\"operator\""
+  ]
+]

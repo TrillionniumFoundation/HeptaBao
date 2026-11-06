@@ -1,0 +1,93 @@
+{
+  "schema": "heptabao.root-CLI-known-failure-fixed-report-info-source-review.v1",
+  "as_of_UTC": "2026-11-06 03:33:45 UTC",
+  "packet": {
+    "tree": "34f0175b4e95d45a20c1f8e53ba107a192c8551d",
+    "files": 17,
+    "bytes": 126594,
+    "merkle": {
+      "root_sha": "34f0175b4e95d45a20c1f8e53ba107a192c8551d",
+      "trees_verified": 1,
+      "leaf_count": 17
+    },
+    "whole": true
+  },
+  "checks": [
+    {
+      "name": "strict_six_hunk_forward_reverse",
+      "passed": true
+    },
+    {
+      "name": "exact_prior_journal_and_helpers",
+      "passed": true
+    },
+    {
+      "name": "actual_exit1_full_durable_preserved",
+      "passed": true
+    },
+    {
+      "name": "actual_streams_and_summary_exact",
+      "passed": true
+    },
+    {
+      "name": "only_fixed_info_request",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_prerequisites",
+      "passed": true
+    },
+    {
+      "name": "separate_info_only_GO",
+      "passed": true
+    },
+    {
+      "name": "closed_original_context_and_once_only",
+      "passed": true
+    },
+    {
+      "name": "once_marker_before_native_dispatch",
+      "passed": true
+    },
+    {
+      "name": "known_failed_run_not_success_reclassified",
+      "passed": true
+    },
+    {
+      "name": "actual_hash_and_4MiB_metadata_admission_only",
+      "passed": true
+    },
+    {
+      "name": "fixed_owner_mode_lossless_version",
+      "passed": true
+    },
+    {
+      "name": "no_binary_branch_or_context_reset",
+      "passed": true
+    },
+    {
+      "name": "JS_parse_only_no_invocation",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "original_terminal": {
+    "job": "1a1aee01612-fc05-639b",
+    "state": "failed",
+    "exit_code": 1,
+    "complete": true,
+    "durable": true,
+    "stdout": 466,
+    "stderr": 0
+  },
+  "producer_reported_cases": {
+    "B01": true,
+    "B02": true,
+    "B03": true,
+    "B04": false,
+    "B05": false
+  },
+  "full_report_case_semantics_reviewed": false,
+  "metadata_cap_is_new_observation_admission_only": true,
+  "root_Runtime_calls": 0
+}
