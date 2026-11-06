@@ -1,0 +1,32 @@
+{
+  "schema": "heptabao.mac-authbus-source-dependencies.v1",
+  "purpose": "Explicit prerequisites for the source-bound Mac QA library; not a standalone portable module.",
+  "qualifiedLibrary": {
+    "path": "qa/openbao-acceptance/authbus_current_auth_wal.py",
+    "blob": "6bfab93a6e058474ce62068dd785df2f98e4d7e9",
+    "sha256": "ad443869e259da06de2be71131e5d1854680477d1cf77248e05a3c1704160f8c"
+  },
+  "dependencies": [
+    {
+      "module": "mac_guarded_current_capture_r3",
+      "sourcePath": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/qa/mac_guarded_current_capture_r3.py",
+      "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+      "bytes": 23578,
+      "retention": "Exact bytes remain in the Mac private source record; includes an unrelated raw client-config hash and must not be exported unredacted."
+    },
+    {
+      "module": "mac_registry_readonly_wal_r1",
+      "sourcePath": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/qa/mac_registry_readonly_wal_r1.py",
+      "sha256": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed",
+      "bytes": 31776,
+      "retention": "Exact Mac source and an unchanged copy in qualification-r2/qa; code has no import-time I/O and imports the first dependency."
+    }
+  ],
+  "staging": "qualification-r2 runner reads each exact public-code path with O_RDONLY|O_NOFOLLOW, verifies complete bytes, identity and source SHA, stages identical bytes in its new private QA root, and imports from that explicit directory.",
+  "qualifiedStagingRoot": "/Users/qianqi/heptabao-authbus-auth-wal-qualification-20261106-r2/qa",
+  "noPackageInstallationOrPermissionOverride": true,
+  "status": "qualified_on_exact_Mac_dependencies_only",
+  "standaloneRepositoryImportQualified": false,
+  "libraryQualifiedOnPubliclySanitizedDependencies": false,
+  "publicRedactionRule": "A sanitized code excerpt is review-only until separately source-bound and qualified; it must not be substituted under an original hash."
+}

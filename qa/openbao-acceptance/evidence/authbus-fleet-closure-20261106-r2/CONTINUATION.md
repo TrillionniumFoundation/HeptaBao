@@ -1,28 +1,45 @@
 # Actual continuation checkpoint — 2026-11-06
 
-The current full-replacement gate is **not qualified**. No production traffic was switched and no legacy Bao service, binary, data or backup was deleted.
+The current full-replacement gate remains **not qualified**. Product source is unified with canonical candidate `4bde9aee03fcd27c59e13607e529b1cee594b249` (tree `f08493a23f8ea0637073651231865ea9607b790e`). The only tracked product-file difference from the prior 6d456 checkpoint was the JWT test fixture; this checkpoint takes the canonical test bytes. Files outside `qa/` and `docs/` match canonical 4bde9. This merge retains both histories.
 
-## JWT fixture repair and actual Mac diagnosis
+No production traffic was switched. No legacy production Bao service, binary, data or backup was deleted. The retired Mac R2 registration below was an explicitly owned failed QA wrapper.
 
-Only `native_jwt_role_operations_keep_the_existing_legacy_acl_contract` changes in the Rust test file. The role retains `default` and `native-jwt`; the old fixture's `no_default_policy=true` removes default, including an explicitly requested default. A local setup within this one test grants the full retained policy set without making the actor root. Independent missing-default, missing-native-policy and missing-sudo denials remain 403 with unchanged Auth/Identity state and no credential publication. Positive update/delete still require 204. All 15 test names and all file bytes outside the changed function are unchanged.
+## Actual Mac normal build and all 107 cases
 
-The [source and live proof](../native-jwt-default-policy-20261106-r1/source-and-live-proof.public.json) binds the final test blob and the actual Mac TLS/native_v6_file diagnosis. Its original normal-release 09c14 binary passed 49/49 API checks; pinned Rust formatter and check succeeded on a new copy. The runtime terminal is succeeded/exit 0, complete and durable, with no timeout. All seven original child handles were retired, no direct children remained, and input identities/hashes were unchanged.
+The [retained canonical receipt](mac-4bde9-canonical/result.public.json) and [original terminal](mac-4bde9-canonical/runtime-terminal.original.json) bind actual job `1a1b116ba98-fc05-75a6`: succeeded/exit 0, complete and durable output, no timeout or cancellation. All **107/107** required cases passed: 90 server and 17 HA-service cases, zero failed/ignored/unexecuted. The original controller reports 1002.514604 seconds, normal release features, matching source/artifact pins, and all original processes retired.
 
-This diagnoses the existing binary and validates formatting. The changed Rust test and complete successor 107-case selection still require a new build and execution. Original failed campaigns remain failed: Mac 09c14 executed 103 cases, with 102 passed, one JWT failure, and four TLS cases unexecuted. ROG r8 also ended at the native-jwt15 group; its original result is retained on ROG and is being reconciled separately.
+The exact build receipt is 181226 bytes, SHA-256 `90753d3b4f9b966c43d3e29919239f8d9aa879616c821a3d9ce0b6aa854054d6`; the selection is 46133 bytes, SHA-256 `7da0b1e3efe257b66d31d50af7c1327a4d320c512c1c8f82df30020898c66595`. The separate progress file has different bytes and is not substituted for the result. [The offline verifier](mac-4bde9-canonical/verify_evidence.py) checks retained bytes, original terminal, exact enumeration/group results and source bindings; it does not claim a new remote binary rehash.
 
-## X230 admission checks
+The prior 6d456 fixture's actual 49-case API diagnosis and formatter proof remain historical evidence. That alternative product campaign was **not dispatched** on Mac or ROG. Its source-only staging is retained separately. The old Mac 09c14 and ROG r8 campaigns remain failed (102 passed, one failed, four not executed); no result is relabeled by this merge.
 
-The [X230 result](../x230-current-candidate-20261106-r1/admission-tests.result.public.json) records a new reconstruction with 24/24 actual admission-only tests, succeeded/exit 0 and complete durable output. It rejects the exact real failed Mac receipt both in its parser and before fixture launch. Positive-parser receipts are explicitly fictional unit fixtures. No candidate or oracle binary was launched, and neither full34 nor comparison69 was executed by these admission tests. The prior disconnected workspace's 22-test observation is not transferred to this new source version.
+## Actual Mac full34 / DR25 failure and QA correction
 
-## Reconciliation of the old Mac QA wrapper
+The canonical owner's actual job `1a1b137be71-fc05-76fa` is **failed/exit 1**, complete/durable, with no timeout. It ran for 50.712132 seconds. The original baseline recorded 21 passing case entries but did not complete all 31. DR25 recorded four passing obligations and one failed archive-binding obligation; recovery into a fresh directory was not reached. Its final process-custody receipt reports all 277 original children retired with no cleanup failures.
 
-[Read-only evidence](mac-r2-recovery/readonly-result.public.json) binds the original bootstrap-only ledger, fixed QA plist and full arguments to the current libproc birth identity. The old business operation did not record an admitted wrapper/exec identity, and its outcome remains failed/unknown.
+The [original wrapper result](mac-dr25-4bde9-failed/result.public.json), original terminal/stdout and [read-only failure projection](mac-dr25-4bde9-failed/failure-projection.stdout.original) preserve this failure. Both real CLI and HTTP archives passed outer checks and had equal seal identity, generation 4, and encoded `state_bytes=9009418`. The QA predicate incorrectly required that encoded transport length to be at least the logical history size, 35651584 bytes.
 
-The separately reviewed cleanup-only r1 job `1a1b11278be-fc05-7587` ended with known exit 1 at `typed_process_metadata`, before journal creation and before any TERM, KILL or bootout. The exact original terminal/output and source are retained here. This is a new failed cleanup attempt, not an old business replay or a successful cleanup. A newly observed process-state literal is being diagnosed before any further recovery action.
+The source transport emits each registered immutable object once; repeated chunks can share objects. This checkpoint corrects only QA: it requires the actual full34 logical capacity and original API/raw/cold-history observations, and identical CLI/HTTP source metadata including generation, encoded size and seal identity. It retains all original 31 baseline and 25 DR obligations, authenticating real restore, negative controls, cold reopen, deadlines and custody. Three added semantic regressions reject missing/small/unobserved history and different source metadata. The complete controller guard file passed 34 local unit tests; those fixtures do not qualify an actual restore. A new, separately bound actual Mac attempt is still required.
 
-## Remaining execution gates
+## Current AuthBus source and read-only WAL qualification
 
-- Complete successor source/build/artifact binding and all 107 original cases on Mac and ROG.
-- Current-candidate X230 full34 plus the bounded official OpenBao 2.7.1 comparison, followed by the separately required fresh-directory DR and physical HA evidence.
-- Current independent trusted AuthBus credentials and actual AppRole/TLS/KV/policy/renewal/revocation, then each registered client’s credential I/O, restart and rollback.
-- Only after those client and registered backup/restore paths are migrated may legacy cleanup be released. The accepted finite inventory scope is unchanged.
+The [current configuration observation](../mac-authbus-current-source-20261106-r1/current-config.result.public.json) is an actual successful Mac run. Five agent paths agree; 70 profiles are registered (69 OAuth), and AuthBus is still enabled with the retained J3160 endpoint. No provider was called, no credential database was read by this configuration-only observation, and no raw profile IDs, credential values or client-configuration digest were exported. A private 0600 allowlist remains on the Mac. Registrations are not active-consumer counts.
+
+The source-bound launchd parser now preserves `(never exited)` as unknown and handles the observed unrelated `UID=-2` process row without weakening related PID/PPID/PGID/UID ownership. The second parser qualification passed 18/18 actual Mac checks, using the real source AST without executing the manager.
+
+The first Auth WAL qualification passed 10/10 actual Mac cases. The enhanced [second qualification](../mac-authbus-auth-wal-20261106-r2/result.public.json) passed 18/18 with complete durable output and all original children retired. Nonempty WAL uses the qualified named read-only transaction; only stable empty/missing WAL may use the held-file immutable route. Registered/missing/unregistered profiles remain distinct; explicit missing selections refuse rather than fall back. File replacement, WAL creation, concurrent commits and unauthorized SQL remain rejection cases.
+
+`authbus_current_auth_wal.py` is **not a standalone portable repository import**. Its exact staged Mac dependencies and source bindings are specified in [source-dependencies.public.json](../mac-authbus-auth-wal-20261106-r2/source-dependencies.public.json). The qualified runner pins those original files before staging/importing them. An unredacted remote dependency contains an unrelated client-config hash and is deliberately not published as a substitute artifact. Original r1 library/reader bytes are retained with r1 evidence; r2 supplies the current library.
+
+Actual current credential-generation capture, SDK inheritance, active consumer binding and AppRole/TLS/KV/policy/renewal/revocation remain a separate ongoing qualification. Historical frozen credentials do not establish current active-source coverage.
+
+## Old Mac R2 QA wrapper cleanup is independently closed
+
+The [complete recovery record](mac-r2-recovery/README.md) preserves all failures and original outcomes. r1 failed before any signal. r2 sent one known successful TERM, then failed at a later process observation; it did not send KILL or bootout. r3 was a separately reviewed KILL-only recovery with a new absolute 60-second budget and its own full 20-second observation. It sent one KILL and one bootout, no new TERM.
+
+r3 job `1a1b134587a-fc05-76e5` succeeded/exit 0 with complete durable output. Eight create-only journal files were independently read back. Independent job `1a1b13ae3a0-fc05-771f` checked two complete rounds: the exact GUI label was absent, original PID 32527 had ESRCH, and its PID/group/parent relations were empty. The system-domain-only service observation is explicitly not used as GUI-domain proof. Original failed business evidence/data are unchanged; recovery closure does not qualify AuthBus business.
+
+## Linux and remaining execution gates
+
+The X230 admission controller's actual 24/24 guard tests remain admission-only evidence. The exact current-candidate Linux normal build and complete 107 selection are still required; competing ROG compiler owners are preserved and the original no-compiler preflight is unchanged. 6d456 preparation was archived as source-only, not a successful campaign.
+
+Still required: current-candidate X230 full34 and the bounded official OpenBao 2.7.1 comparison; a complete fresh-directory DR25 run; physical multi-host HA evidence; current independent AuthBus source and real credential lifecycle; each registered client's credential I/O, restart and rollback; then production cutover. Legacy cleanup becomes eligible only after every registered client and backup/restore path has migrated. The accepted finite inventory is retained; new actual active configuration evidence may refine its existing client bindings.

@@ -1,0 +1,32 @@
+{
+  "schema": "heptabao.mac-authbus-r2-recovery-closure-verification.r1",
+  "ok": true,
+  "recoveryJob": "1a1b134587a-fc05-76e5",
+  "independentAbsenceJob": "1a1b13ae3a0-fc05-771f",
+  "sourceSha256": "a54a12b1b7efd12c16f6720b6fe6a63fd197016b675068fb4d95da8ea891fde9",
+  "stdoutBytes": 31194,
+  "losslessHexAndTextAndOffsetsVerified": true,
+  "runtimeCompleteDurableExitZero": true,
+  "newIndependentBudgetSeconds": 60,
+  "newObservationGraceElapsedSeconds": 20.053712790831923,
+  "actualElapsedSeconds": 20.214106917381287,
+  "r3MutationCounts": {
+    "term": 0,
+    "kill": 1,
+    "bootout": 1
+  },
+  "priorR2TermCount": 1,
+  "priorR1R2FailuresPreserved": true,
+  "productOrAuthBusBusinessQualificationClaimed": false,
+  "journalFilesReadBack": 8,
+  "allMutationIntentsMatchReadBack": true,
+  "candidateResultMatchesStdoutExceptPostCloseFields": true,
+  "finalJournalSha256": "fa8acbaee7287281b9dae9021bcf3e603eaae80ab6f3594713b1f1ffedd3126e",
+  "actualRetirementSignal": "Killed: 9",
+  "independentGuiAbsenceRounds": 2,
+  "independentOriginalPidEsrchRounds": 2,
+  "independentRelatedRowsEach": [],
+  "genericSystemDomainServiceStatusNotUsedForGuiProof": true,
+  "privateCredentialDataOrDigestsPublished": false,
+  "hostileEscapedDescendantContainmentClaimed": false
+}

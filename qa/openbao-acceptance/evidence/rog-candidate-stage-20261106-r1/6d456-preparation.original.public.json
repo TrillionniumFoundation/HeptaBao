@@ -1,0 +1,127 @@
+{
+  "automatic_retry": false,
+  "base_source": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source-09c14-r8",
+  "base_source_after": {
+    "clean": true,
+    "commit": "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+    "test_file_sha256": "d36bd868975958093c50218ad1e06b20a58b5156a37cd58718dfdc1654c1f156",
+    "tree": "dfb0df97a2c74b1c0154f45342f3debb0ce438ab"
+  },
+  "base_source_before": {
+    "clean": true,
+    "commit": "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+    "test_file_sha256": "d36bd868975958093c50218ad1e06b20a58b5156a37cd58718dfdc1654c1f156",
+    "tree": "dfb0df97a2c74b1c0154f45342f3debb0ce438ab"
+  },
+  "bundle_sha256": "a4215353a3db4a2a8fea4611d732c384df81543498d7fb17fb1bbd4bbe1ca35c",
+  "changed_test_sha256": "02272a5a0ec5fec7799cd7650e1626c4a3bc5de34c264cffbd8c587936785e88",
+  "elapsed_seconds": 2.355815,
+  "finished_at_unix": 1793973469.468948,
+  "formal_107_qualified": false,
+  "full_replacement_qualified": false,
+  "no_hardlinks": true,
+  "old_failed_receipt_preserved": true,
+  "old_source_09_preserved": true,
+  "original_r8_pins": {
+    "controller.py": "56b4696cc252d50d3ddeb9edad90465654e011045d2e3d9feba5919d42247c7f",
+    "result.public.json": "9cf27fbf78f3f976fb6397a693b1fa18ec3965bbea84d58cb0f8773aa4f2a5ff",
+    "test-selection.public.json": "d7f6d0971e7a6b3e0096e50a1e3d607bff851ce2295563ad068b80adf2294bfd"
+  },
+  "preparation_script_sha256": "d71733e202dbfc53ab6f240ee74e73ba3b487246b270bdcffe2b4879ec703eee",
+  "product_changed": [
+    "crates/heptabao-server/src/service_native_jwt_tests.rs"
+  ],
+  "production_changed": false,
+  "rust_build_executed": false,
+  "schema": "heptabao.rog-canonical-source-preparation.v1",
+  "source": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source-6d456-r9",
+  "source_at_exact_published_commit": true,
+  "source_clean": true,
+  "source_commit": "6d4562e75d72bcd71d13addb72174440a87e8041",
+  "source_parent": "552f0142176e7999b3641ae0888da1ac5e310866",
+  "source_tree": "ad2a5d2bd8c54c25d32917f391015b47b83990f0",
+  "status": "passed",
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "clone",
+        "--no-hardlinks",
+        "--no-local",
+        "--no-checkout",
+        "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source-09c14-r8",
+        "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source-6d456-r9"
+      ],
+      "exit_code": 0,
+      "label": "prepare-clone09",
+      "original_cap_seconds": 180,
+      "seconds": 0.718476,
+      "stderr_sha256": "ff01b48213a72bcf8845ddddb4042f3eb42200e29a50c47534988cbf83f9ab86",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source-6d456-r9",
+        "bundle",
+        "verify",
+        "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r9/candidate.bundle"
+      ],
+      "exit_code": 0,
+      "label": "prepare-bundle-verify",
+      "original_cap_seconds": 30,
+      "seconds": 0.005638,
+      "stderr_sha256": "786c690e76ad5586dee4848856fc2139da65b6e9a31e6c446f9985b4a2430e4c",
+      "stdout_sha256": "d6531d6dcfacf482d7f37414da88656019e26af482b4a06e43e8d14b1ef28b40"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source-6d456-r9",
+        "fetch",
+        "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r9/candidate.bundle",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "label": "prepare-fetch",
+      "original_cap_seconds": 30,
+      "seconds": 0.032525,
+      "stderr_sha256": "86f93f61d104dee712ee16b4111c7cfc6846fe70a1f62a885df234dc42e494f0",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source-6d456-r9",
+        "checkout",
+        "--detach",
+        "6d4562e75d72bcd71d13addb72174440a87e8041"
+      ],
+      "exit_code": 0,
+      "label": "prepare-checkout",
+      "original_cap_seconds": 30,
+      "seconds": 0.221089,
+      "stderr_sha256": "9eb22839a26ba735d8bc5f8732276fb33343dc51e07963f76883e67400b174a2",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source-6d456-r9",
+        "fsck",
+        "--full",
+        "--strict"
+      ],
+      "exit_code": 0,
+      "label": "prepare-fsck",
+      "original_cap_seconds": 60,
+      "seconds": 1.277235,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

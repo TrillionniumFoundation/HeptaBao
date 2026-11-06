@@ -1,0 +1,190 @@
+{"event": "launch-pins-verified", "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249", "expected_tests": 107, "outer_seconds": 8280, "controller_sha256": "76ab52614563287bdfe41cb9738c6992ae9360b3e34463c3b788701132a42d7c"}
+{"event": "step_started", "step": "00-t5-volume", "budget_seconds": 10}
+{"event": "step_finished", "step": "00-t5-volume", "exit_code": 0, "timed_out": false, "seconds": 0.167537}
+{"event": "step_started", "step": "00-clone-source-head", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-clone-source-head", "exit_code": 0, "timed_out": false, "seconds": 0.057622}
+{"event": "step_started", "step": "00-clone-source-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-clone-source-tree", "exit_code": 0, "timed_out": false, "seconds": 0.033129}
+{"event": "step_started", "step": "00-clone-source-clean", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-clone-source-clean", "exit_code": 0, "timed_out": false, "seconds": 0.150859}
+{"event": "step_started", "step": "00-old-source-head", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-old-source-head", "exit_code": 0, "timed_out": false, "seconds": 0.021262}
+{"event": "step_started", "step": "00-old-source-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-old-source-tree", "exit_code": 0, "timed_out": false, "seconds": 0.033192}
+{"event": "step_started", "step": "00-old-source-clean", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-old-source-clean", "exit_code": 0, "timed_out": false, "seconds": 0.054408}
+{"event": "step_started", "step": "00-preserved-2b-source-head", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-preserved-2b-source-head", "exit_code": 0, "timed_out": false, "seconds": 0.021181}
+{"event": "step_started", "step": "00-preserved-2b-source-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-preserved-2b-source-tree", "exit_code": 0, "timed_out": false, "seconds": 0.033564}
+{"event": "step_started", "step": "00-preserved-2b-source-clean", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-preserved-2b-source-clean", "exit_code": 0, "timed_out": false, "seconds": 1.176941}
+{"event": "step_started", "step": "00-preserved-f301-source-head", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-preserved-f301-source-head", "exit_code": 0, "timed_out": false, "seconds": 0.021257}
+{"event": "step_started", "step": "00-preserved-f301-source-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-preserved-f301-source-tree", "exit_code": 0, "timed_out": false, "seconds": 0.033642}
+{"event": "step_started", "step": "00-preserved-f301-source-clean", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-preserved-f301-source-clean", "exit_code": 0, "timed_out": false, "seconds": 1.222257}
+{"event": "step_started", "step": "00-preserved-868-source-head", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-preserved-868-source-head", "exit_code": 0, "timed_out": false, "seconds": 0.021771}
+{"event": "step_started", "step": "00-preserved-868-source-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-preserved-868-source-tree", "exit_code": 0, "timed_out": false, "seconds": 0.033268}
+{"event": "step_started", "step": "00-preserved-868-source-clean", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-preserved-868-source-clean", "exit_code": 0, "timed_out": false, "seconds": 1.203387}
+{"event": "step_started", "step": "01-preflight-process-metadata", "budget_seconds": 10}
+{"event": "step_finished", "step": "01-preflight-process-metadata", "exit_code": 0, "timed_out": false, "seconds": 0.033601}
+{"event": "step_started", "step": "01-preflight-ram-total", "budget_seconds": 10}
+{"event": "step_finished", "step": "01-preflight-ram-total", "exit_code": 0, "timed_out": false, "seconds": 0.016331}
+{"event": "step_started", "step": "01-preflight-vm-stat", "budget_seconds": 10}
+{"event": "step_finished", "step": "01-preflight-vm-stat", "exit_code": 0, "timed_out": false, "seconds": 0.011165}
+{"event": "step_started", "step": "01-preflight-cargo-lock", "budget_seconds": 10}
+{"event": "step_finished", "step": "01-preflight-cargo-lock", "exit_code": 1, "timed_out": false, "seconds": 0.162301}
+{"event": "step_started", "step": "01-cache-admission-holders-under-lock", "budget_seconds": 15}
+{"event": "step_finished", "step": "01-cache-admission-holders-under-lock", "exit_code": 0, "timed_out": false, "seconds": 0.057845}
+{"event": "step_started", "step": "02-independent-source-clone", "budget_seconds": 120}
+{"event": "step_finished", "step": "02-independent-source-clone", "exit_code": 0, "timed_out": false, "seconds": 0.213213}
+{"event": "step_started", "step": "03-bundle-verify", "budget_seconds": 30}
+{"event": "step_finished", "step": "03-bundle-verify", "exit_code": 0, "timed_out": false, "seconds": 0.033689}
+{"event": "step_started", "step": "04-fetch-local-bundle", "budget_seconds": 60}
+{"event": "step_finished", "step": "04-fetch-local-bundle", "exit_code": 0, "timed_out": false, "seconds": 0.053206}
+{"event": "step_started", "step": "05-canonical-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "05-canonical-tree", "exit_code": 0, "timed_out": false, "seconds": 0.021186}
+{"event": "step_started", "step": "06-canonical-parent", "budget_seconds": 30}
+{"event": "step_finished", "step": "06-canonical-parent", "exit_code": 0, "timed_out": false, "seconds": 0.020893}
+{"event": "step_started", "step": "07-original-ancestor", "budget_seconds": 30}
+{"event": "step_finished", "step": "07-original-ancestor", "exit_code": 0, "timed_out": false, "seconds": 0.02113}
+{"event": "step_started", "step": "07-clone-ancestor", "budget_seconds": 30}
+{"event": "step_finished", "step": "07-clone-ancestor", "exit_code": 0, "timed_out": false, "seconds": 0.020926}
+{"event": "step_started", "step": "07-preserved-2b-ancestor", "budget_seconds": 30}
+{"event": "step_finished", "step": "07-preserved-2b-ancestor", "exit_code": 0, "timed_out": false, "seconds": 0.02079}
+{"event": "step_started", "step": "07-preserved-f301-ancestor", "budget_seconds": 30}
+{"event": "step_finished", "step": "07-preserved-f301-ancestor", "exit_code": 0, "timed_out": false, "seconds": 0.020979}
+{"event": "step_started", "step": "07-preserved-868-ancestor", "budget_seconds": 30}
+{"event": "step_finished", "step": "07-preserved-868-ancestor", "exit_code": 0, "timed_out": false, "seconds": 0.021218}
+{"event": "step_started", "step": "08-checkout-canonical", "budget_seconds": 60}
+{"event": "step_finished", "step": "08-checkout-canonical", "exit_code": 0, "timed_out": false, "seconds": 0.392023}
+{"event": "step_started", "step": "09-clean-source", "budget_seconds": 30}
+{"event": "step_finished", "step": "09-clean-source", "exit_code": 0, "timed_out": false, "seconds": 0.157547}
+{"event": "step_started", "step": "10-full-repository", "budget_seconds": 30}
+{"event": "step_finished", "step": "10-full-repository", "exit_code": 0, "timed_out": false, "seconds": 0.021395}
+{"event": "step_started", "step": "11-fsck", "budget_seconds": 60}
+{"event": "step_finished", "step": "11-fsck", "exit_code": 0, "timed_out": false, "seconds": 1.23}
+{"event": "step_started", "step": "12-format-check", "budget_seconds": 60}
+{"event": "step_finished", "step": "12-format-check", "exit_code": 0, "timed_out": false, "seconds": 4.047495}
+{"event": "step_started", "step": "12-precompile-cache-admission-holders-under-lock", "budget_seconds": 15}
+{"event": "step_finished", "step": "12-precompile-cache-admission-holders-under-lock", "exit_code": 0, "timed_out": false, "seconds": 0.094653}
+{"event": "step_started", "step": "13-normal-release-build", "budget_seconds": 1800}
+{"event": "step_finished", "step": "13-normal-release-build", "exit_code": 0, "timed_out": false, "seconds": 270.858511}
+{"event": "step_started", "step": "14-server-libtest-build", "budget_seconds": 1800}
+{"event": "step_finished", "step": "14-server-libtest-build", "exit_code": 0, "timed_out": false, "seconds": 462.827882}
+{"event": "step_started", "step": "15-peer-libtest-build", "budget_seconds": 1800}
+{"event": "step_finished", "step": "15-peer-libtest-build", "exit_code": 0, "timed_out": false, "seconds": 45.020917}
+{"event": "step_started", "step": "heptabao-server-list", "budget_seconds": 30}
+{"event": "step_finished", "step": "heptabao-server-list", "exit_code": 0, "timed_out": false, "seconds": 3.373408}
+{"event": "step_started", "step": "heptabao-ha-service-list", "budget_seconds": 30}
+{"event": "step_finished", "step": "heptabao-ha-service-list", "exit_code": 0, "timed_out": false, "seconds": 0.860827}
+{"event": "step_started", "step": "test-00-ssh25-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-00-ssh25-00", "exit_code": 0, "timed_out": false, "seconds": 69.617208}
+{"event": "step_started", "step": "test-01-mount1-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-01-mount1-00", "exit_code": 0, "timed_out": false, "seconds": 1.829277}
+{"event": "step_started", "step": "test-02-redirect5-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-02-redirect5-00", "exit_code": 0, "timed_out": false, "seconds": 2.131056}
+{"event": "step_started", "step": "test-03-actor2-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-03-actor2-00", "exit_code": 0, "timed_out": false, "seconds": 11.093765}
+{"event": "step_started", "step": "test-04-ordinary5-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-04-ordinary5-00", "exit_code": 0, "timed_out": false, "seconds": 0.064187}
+{"event": "step_started", "step": "test-05-no_forward6-00", "budget_seconds": 599.999}
+{"event": "step_finished", "step": "test-05-no_forward6-00", "exit_code": 0, "timed_out": false, "seconds": 18.267438}
+{"event": "step_started", "step": "test-06-legacy-ingress7-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-00", "exit_code": 0, "timed_out": false, "seconds": 1.761809}
+{"event": "step_started", "step": "test-06-legacy-ingress7-01", "budget_seconds": 598.229}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-01", "exit_code": 0, "timed_out": false, "seconds": 1.763816}
+{"event": "step_started", "step": "test-06-legacy-ingress7-02", "budget_seconds": 596.46}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-02", "exit_code": 0, "timed_out": false, "seconds": 1.755133}
+{"event": "step_started", "step": "test-06-legacy-ingress7-03", "budget_seconds": 594.7}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-03", "exit_code": 0, "timed_out": false, "seconds": 0.023027}
+{"event": "step_started", "step": "test-06-legacy-ingress7-04", "budget_seconds": 594.672}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-04", "exit_code": 0, "timed_out": false, "seconds": 0.015473}
+{"event": "step_started", "step": "test-06-legacy-ingress7-05", "budget_seconds": 594.652}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-05", "exit_code": 0, "timed_out": false, "seconds": 0.01542}
+{"event": "step_started", "step": "test-06-legacy-ingress7-06", "budget_seconds": 594.632}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-06", "exit_code": 0, "timed_out": false, "seconds": 0.015541}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-00", "budget_seconds": 599.999}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-00", "exit_code": 0, "timed_out": false, "seconds": 0.016022}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-01", "budget_seconds": 599.978}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-01", "exit_code": 0, "timed_out": false, "seconds": 0.016171}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-02", "budget_seconds": 599.956}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-02", "exit_code": 0, "timed_out": false, "seconds": 9.105652}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-03", "budget_seconds": 590.846}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-03", "exit_code": 0, "timed_out": false, "seconds": 0.016186}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-04", "budget_seconds": 590.825}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-04", "exit_code": 0, "timed_out": false, "seconds": 0.01594}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-05", "budget_seconds": 590.804}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-05", "exit_code": 0, "timed_out": false, "seconds": 0.015714}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-06", "budget_seconds": 590.783}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-06", "exit_code": 0, "timed_out": false, "seconds": 0.015884}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-07", "budget_seconds": 590.762}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-07", "exit_code": 0, "timed_out": false, "seconds": 0.016426}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-08", "budget_seconds": 590.74}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-08", "exit_code": 0, "timed_out": false, "seconds": 0.016331}
+{"event": "step_started", "step": "test-08-legacy-same-root1-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-08-legacy-same-root1-00", "exit_code": 0, "timed_out": false, "seconds": 18.101885}
+{"event": "step_started", "step": "test-09-snapshot-body10-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-09-snapshot-body10-00", "exit_code": 0, "timed_out": false, "seconds": 0.021457}
+{"event": "step_started", "step": "test-10-snapshot-peer7-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-10-snapshot-peer7-00", "exit_code": 0, "timed_out": false, "seconds": 0.688199}
+{"event": "step_started", "step": "test-11-snapshot-actor2-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-11-snapshot-actor2-00", "exit_code": 0, "timed_out": false, "seconds": 0.022644}
+{"event": "step_started", "step": "test-12-snapshot-wire4-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-12-snapshot-wire4-00", "exit_code": 0, "timed_out": false, "seconds": 0.022791}
+{"event": "step_started", "step": "test-13-snapshot-audit4-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-13-snapshot-audit4-00", "exit_code": 0, "timed_out": false, "seconds": 35.732191}
+{"event": "step_started", "step": "test-14-native-jwt15-00", "budget_seconds": 599.997}
+{"event": "step_finished", "step": "test-14-native-jwt15-00", "exit_code": 0, "timed_out": false, "seconds": 24.600206}
+{"event": "step_started", "step": "test-15-tls-close4-00", "budget_seconds": 599.997}
+{"event": "step_finished", "step": "test-15-tls-close4-00", "exit_code": 0, "timed_out": false, "seconds": 0.063477}
+{"event": "step_started", "step": "99-final-source-head", "budget_seconds": 30}
+{"event": "step_finished", "step": "99-final-source-head", "exit_code": 0, "timed_out": false, "seconds": 0.033602}
+{"event": "step_started", "step": "99-final-source-clean", "budget_seconds": 30}
+{"event": "step_finished", "step": "99-final-source-clean", "exit_code": 0, "timed_out": false, "seconds": 0.218333}
+{"event": "step_started", "step": "99-final-source-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "99-final-source-tree", "exit_code": 0, "timed_out": false, "seconds": 0.021978}
+{"event": "step_started", "step": "98-clone-final-head", "budget_seconds": 30}
+{"event": "step_finished", "step": "98-clone-final-head", "exit_code": 0, "timed_out": false, "seconds": 0.024892}
+{"event": "step_started", "step": "98-clone-final-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "98-clone-final-tree", "exit_code": 0, "timed_out": false, "seconds": 0.033668}
+{"event": "step_started", "step": "98-clone-final-clean", "budget_seconds": 30}
+{"event": "step_finished", "step": "98-clone-final-clean", "exit_code": 0, "timed_out": false, "seconds": 0.162232}
+{"event": "step_started", "step": "98-old-final-head", "budget_seconds": 30}
+{"event": "step_finished", "step": "98-old-final-head", "exit_code": 0, "timed_out": false, "seconds": 0.034022}
+{"event": "step_started", "step": "98-old-final-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "98-old-final-tree", "exit_code": 0, "timed_out": false, "seconds": 0.021637}
+{"event": "step_started", "step": "98-old-final-clean", "budget_seconds": 30}
+{"event": "step_finished", "step": "98-old-final-clean", "exit_code": 0, "timed_out": false, "seconds": 0.102683}
+{"event": "step_started", "step": "98-preserved-2b-final-head", "budget_seconds": 30}
+{"event": "step_finished", "step": "98-preserved-2b-final-head", "exit_code": 0, "timed_out": false, "seconds": 0.021619}
+{"event": "step_started", "step": "98-preserved-2b-final-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "98-preserved-2b-final-tree", "exit_code": 0, "timed_out": false, "seconds": 0.033669}
+{"event": "step_started", "step": "98-preserved-2b-final-clean", "budget_seconds": 30}
+{"event": "step_finished", "step": "98-preserved-2b-final-clean", "exit_code": 0, "timed_out": false, "seconds": 0.942258}
+{"event": "step_started", "step": "98-preserved-f301-final-head", "budget_seconds": 30}
+{"event": "step_finished", "step": "98-preserved-f301-final-head", "exit_code": 0, "timed_out": false, "seconds": 0.034449}
+{"event": "step_started", "step": "98-preserved-f301-final-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "98-preserved-f301-final-tree", "exit_code": 0, "timed_out": false, "seconds": 0.021236}
+{"event": "step_started", "step": "98-preserved-f301-final-clean", "budget_seconds": 30}
+{"event": "step_finished", "step": "98-preserved-f301-final-clean", "exit_code": 0, "timed_out": false, "seconds": 0.933364}
+{"event": "step_started", "step": "98-preserved-868-final-head", "budget_seconds": 30}
+{"event": "step_finished", "step": "98-preserved-868-final-head", "exit_code": 0, "timed_out": false, "seconds": 0.034629}
+{"event": "step_started", "step": "98-preserved-868-final-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "98-preserved-868-final-tree", "exit_code": 0, "timed_out": false, "seconds": 0.03376}
+{"event": "step_started", "step": "98-preserved-868-final-clean", "budget_seconds": 30}
+{"event": "step_finished", "step": "98-preserved-868-final-clean", "exit_code": 0, "timed_out": false, "seconds": 0.907989}
+{"event": "step_started", "step": "98-postflight-process-metadata", "budget_seconds": 10}
+{"event": "step_finished", "step": "98-postflight-process-metadata", "exit_code": 0, "timed_out": false, "seconds": 0.034324}
+{"event": "step_started", "step": "98-postflight-ram-total", "budget_seconds": 10}
+{"event": "step_finished", "step": "98-postflight-ram-total", "exit_code": 0, "timed_out": false, "seconds": 0.015694}
+{"event": "step_started", "step": "98-postflight-vm-stat", "budget_seconds": 10}
+{"event": "step_finished", "step": "98-postflight-vm-stat", "exit_code": 0, "timed_out": false, "seconds": 0.012768}
+{"event": "step_started", "step": "98-postflight-cargo-lock", "budget_seconds": 10}
+{"event": "step_finished", "step": "98-postflight-cargo-lock", "exit_code": 1, "timed_out": false, "seconds": 0.102156}
+{"event": "terminal", "status": "passed", "failure": null, "executed_passed_cases": 107, "result": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-4bde9-r1/result.public.json"}

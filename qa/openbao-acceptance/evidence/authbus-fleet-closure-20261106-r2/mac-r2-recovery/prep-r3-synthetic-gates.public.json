@@ -1,0 +1,192 @@
+{
+  "actualReadOnlyPreflight": {
+    "actualMac": true,
+    "helperCommandReceipts": [
+      {
+        "attempted": true,
+        "complete": true,
+        "exitCode": 0,
+        "index": 0,
+        "label": "launchctl-print",
+        "outcomeUnknown": false,
+        "stderrBytes": 0,
+        "stdoutBytes": 4489
+      },
+      {
+        "attempted": true,
+        "complete": true,
+        "exitCode": 0,
+        "index": 1,
+        "label": "ps-fixed-metadata",
+        "outcomeUnknown": false,
+        "stderrBytes": 0,
+        "stdoutBytes": 20822
+      },
+      {
+        "attempted": true,
+        "complete": true,
+        "exitCode": 0,
+        "index": 2,
+        "label": "launchctl-print",
+        "outcomeUnknown": false,
+        "stderrBytes": 0,
+        "stdoutBytes": 4489
+      },
+      {
+        "attempted": true,
+        "complete": true,
+        "exitCode": 0,
+        "index": 3,
+        "label": "ps-fixed-metadata",
+        "outcomeUnknown": false,
+        "stderrBytes": 0,
+        "stdoutBytes": 20822
+      }
+    ],
+    "initialObservation": {
+      "allRegisteredArgumentsExact": true,
+      "directChildPids": [],
+      "index": 2,
+      "processIdentity": {
+        "birthSec": 1793969379,
+        "birthUsec": 298893,
+        "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+        "pgid": 32527,
+        "pid": 32527,
+        "ppid": 1,
+        "uid": 501
+      },
+      "relatedProcessRows": [
+        {
+          "pgid": 32527,
+          "pid": 32527,
+          "ppid": 1,
+          "stat": "S",
+          "uid": 501
+        }
+      ],
+      "state": "live"
+    },
+    "journalWritesInMemoryOnly": true,
+    "ok": true,
+    "priorKnownTerm": {
+      "bootoutDispatchCount": 0,
+      "commandReceiptSha256": "16233386892496308f62f7faf0cf38d094cee47f02fe7a97f52cca59ec38a725",
+      "complete": true,
+      "exitCode": 0,
+      "jobId": "1a1b11e72f9-fc05-75ee",
+      "killDispatchCount": 0,
+      "oldBudgetRenewed": false,
+      "oldOperationRemainsFailed": true,
+      "termDispatchCount": 1,
+      "termIntentSha256": "2718f9b2b28513753e3e6c80a8d7abef23a3597a44a12cee052538e52392b0bb"
+    },
+    "realQaServiceActions": 0,
+    "sourceSha256": "a54a12b1b7efd12c16f6720b6fe6a63fd197016b675068fb4d95da8ea891fde9"
+  },
+  "cases": [
+    {
+      "name": "new-full-twenty-second-observation-before-single-kill",
+      "passed": true
+    },
+    {
+      "name": "already-retired-known-term-needs-only-bootout",
+      "passed": true
+    },
+    {
+      "name": "term-has-no-callable-dispatch-branch",
+      "passed": true
+    },
+    {
+      "name": "prior-term-does-not-substitute-new-twenty-second-observation",
+      "passed": true
+    },
+    {
+      "name": "new-kill-requires-pinned-prior-known-term",
+      "passed": true
+    },
+    {
+      "name": "kill-cannot-repeat",
+      "passed": true
+    },
+    {
+      "name": "unknown-kill-stops-repeat-and-bootout-even-if-process-gone",
+      "passed": true
+    },
+    {
+      "name": "known-nonzero-kill-stops-bootout",
+      "passed": true
+    },
+    {
+      "name": "identity-change-after-fsynced-intent-stops-dispatch",
+      "passed": true
+    },
+    {
+      "name": "expired-total-budget-blocks-dispatch",
+      "passed": true
+    },
+    {
+      "name": "insufficient-new-budget-cannot-shorten-grace",
+      "passed": true
+    },
+    {
+      "name": "missing-post-kill-signal-never-implies-success",
+      "passed": true
+    },
+    {
+      "name": "known-post-kill-terminal-9",
+      "passed": true
+    },
+    {
+      "name": "known-post-kill-terminal-SIGKILL",
+      "passed": true
+    },
+    {
+      "name": "known-post-kill-terminal-Killed: 9",
+      "passed": true
+    },
+    {
+      "name": "known-post-kill-terminal-9 (Killed: 9)",
+      "passed": true
+    },
+    {
+      "name": "unrelated-uid-stat-are-not-identity-gates",
+      "passed": true
+    },
+    {
+      "name": "all-related-uids-remain-exact-501-with-offending-row",
+      "passed": true
+    },
+    {
+      "name": "all-selector-columns-remain-strict-with-offending-row",
+      "passed": true
+    },
+    {
+      "name": "unrelated-malformed-selector-still-fails-closed",
+      "passed": true
+    },
+    {
+      "name": "unknown-related-stat-refused-and-preserved",
+      "passed": true
+    },
+    {
+      "name": "related-record-still-requires-complete-five-columns",
+      "passed": true
+    },
+    {
+      "name": "never-exited-null-cannot-qualify-prior-retirement",
+      "passed": true
+    },
+    {
+      "name": "actual-private-journal-fsync-create-only-no-reuse",
+      "passed": true
+    }
+  ],
+  "failCount": 0,
+  "passCount": 24,
+  "realQaServiceActions": 0,
+  "schema": "heptabao.mac-authbus-r2-recovery-synthetic-gates.r3",
+  "skipCount": 0,
+  "sourceSha256": "a54a12b1b7efd12c16f6720b6fe6a63fd197016b675068fb4d95da8ea891fde9",
+  "syntheticOnly": true
+}

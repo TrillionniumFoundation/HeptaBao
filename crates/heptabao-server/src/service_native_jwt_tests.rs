@@ -54,6 +54,7 @@ pub(super) fn before_actual_jwt_publication() {
     }
 }
 
+#[track_caller]
 fn status(response: &Response, expected: u16) {
     assert_eq!(
         response.status,
@@ -275,14 +276,22 @@ impl Fixture {
         self.token_with_policies(&[policy])
     }
     fn token_with_policies(&mut self, policies: &[&str]) -> TestResult<Zeroizing<String>> {
+        self.token_with_policy_options(policies, true)
+    }
+    fn token_with_policy_options(
+        &mut self,
+        policies: &[&str],
+        no_default_policy: bool,
+    ) -> TestResult<Zeroizing<String>> {
         let mut response = self.admin(
             "POST",
             "auth/token/create",
             json!({
-                "policies":policies,"no_default_policy":true,"ttl":"600s"
+                "policies":policies,"no_default_policy":no_default_policy,"ttl":"600s"
             }),
         )?;
         status(&response, 200);
+        assert_eq!(response.body["auth"]["token_policies"], json!(policies));
         secret(&mut response, "/auth/client_token")
     }
     fn restart(mut self) -> TestResult<Self> {
@@ -498,46 +507,53 @@ fn native_jwt_role_operations_keep_the_existing_legacy_acl_contract() -> TestRes
     let role = f.admin("GET", ROLE, json!({}))?;
     status(&role, 200);
     assert_eq!(
+        role.body["data"]["policies"],
+        json!(["default", "native-jwt"])
+    );
+    assert_eq!(
         role.body["data"]["token_policies"],
         json!(["default", "native-jwt"])
     );
-    // The existing JWT role retains default as well as native-jwt. The general
-    // fixture helper sets no_default_policy=true, which removes even an
-    // explicitly requested default policy, so keep this setup local to the test.
-    let (assignment_denied, manager, no_sudo) = {
-        let mut with_default = |policies: &[&str]| -> TestResult<Zeroizing<String>> {
-            let mut response = f.admin(
-                "POST",
-                "auth/token/create",
-                json!({"policies":policies,"no_default_policy":false,"ttl":"600s"}),
-            )?;
-            status(&response, 200);
-            let mut expected = policies.to_vec();
-            expected.push("default");
-            expected.sort_unstable();
-            assert_eq!(response.body["auth"]["policies"], json!(expected));
-            secret(&mut response, "/auth/client_token")
-        };
+    let assignment_denied = f.token("jwt-role-manager")?;
+    // Preserve the prior actor as a negative control: no_default_policy=true
+    // removes default even if it were explicitly requested in the policy list.
+    let missing_default = f.token_with_policies(&["jwt-role-manager", "native-jwt"])?;
+    let manager =
+        f.token_with_policy_options(&["default", "jwt-role-manager", "native-jwt"], false)?;
+    let no_sudo =
+        f.token_with_policy_options(&["default", "jwt-role-no-sudo", "native-jwt"], false)?;
+    for (actor, expected) in [
+        (&missing_default, json!(["jwt-role-manager", "native-jwt"])),
         (
-            with_default(&["jwt-role-manager"])?,
-            with_default(&["jwt-role-manager", "native-jwt"])?,
-            with_default(&["jwt-role-no-sudo", "native-jwt"])?,
-        )
-    };
-    let default_assignment_denied = f.token_with_policies(&["jwt-role-manager", "native-jwt"])?;
+            &manager,
+            json!(["default", "jwt-role-manager", "native-jwt"]),
+        ),
+        (
+            &no_sudo,
+            json!(["default", "jwt-role-no-sudo", "native-jwt"]),
+        ),
+    ] {
+        let lookup = f.actor(actor, "GET", "auth/token/lookup-self", json!({}))?;
+        status(&lookup, 200);
+        assert_eq!(lookup.body["data"]["policies"], expected);
+    }
     let listed = f.actor(&manager, "GET", "auth/native-jwt/role", json!({}))?;
     status(&listed, 200);
     assert_eq!(listed.body["data"]["keys"], json!(["client"]));
-    // Even with sudo, separately missing either retained policy must deny the
-    // update without publishing any Auth/Identity delta or credential.
-    for actor in [&assignment_denied, &default_assignment_denied] {
-        let before = f.snapshot()?;
-        let denied = f.actor(actor, "POST", ROLE, json!({"token_ttl":301}))?;
-        status(&denied, 403);
-        no_credential(&denied);
-        assert!(before.as_slice() == f.snapshot()?.as_slice());
-        assert!(f.service.pending_native_auth_delivery.is_none());
-    }
+    // Updating a role retains its existing token policies. Even with sudo,
+    // the actor must be allowed to assign that unchanged policy set.
+    let before = f.snapshot()?;
+    let denied = f.actor(&assignment_denied, "POST", ROLE, json!({"token_ttl":301}))?;
+    status(&denied, 403);
+    no_credential(&denied);
+    assert!(before.as_slice() == f.snapshot()?.as_slice());
+    assert!(f.service.pending_native_auth_delivery.is_none());
+    let before = f.snapshot()?;
+    let denied = f.actor(&missing_default, "POST", ROLE, json!({"token_ttl":301}))?;
+    status(&denied, 403);
+    no_credential(&denied);
+    assert!(before.as_slice() == f.snapshot()?.as_slice());
+    assert!(f.service.pending_native_auth_delivery.is_none());
     let before = f.snapshot()?;
     let denied = f.actor(&no_sudo, "POST", ROLE, json!({"token_ttl":301}))?;
     status(&denied, 403);

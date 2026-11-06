@@ -52,6 +52,19 @@ def full34_report():
             "source_api_wire_observations": list(range(19))}
 
 
+def full34_before_snapshot_fixture():
+    """Fictional observations for the logical/encoded-size regression only."""
+    report = full34_report()
+    report.update(status="running", full34_qualified=False, retained_live_versions=17,
+                  live_payload_bytes=34 * dr.MIB, capacity_after_import={
+                      "state_storage_format": "heptabao-state-records-v6",
+                      "native_kv2_reader_format": 2,
+                      "native_kv2_logical_payload_bytes": 34 * dr.MIB + 4096})
+    stop = dr.full.CHECKS.index("snapshot_download") + 1
+    report["checks"] = report["checks"][:stop]
+    return report
+
+
 def build_fixture():
     """Fictional parser inputs; these are never an admitted product build."""
     server, seed = {"sha256": "b" * 64, "bytes": 100}, {"sha256": "c" * 64, "bytes": 90}
@@ -203,6 +216,52 @@ class ControllerGuards(unittest.TestCase):
             fixture_archive(other, format_name=format_name)
             with self.assertRaisesRegex(dr.Failure, "archive_v6_contract"):
                 dr.inspect_v6_archive(other)
+
+    def test_archive_logical_history_does_not_require_duplicate_object_bytes(self):
+        archive = self.root / "shared-object-fixture.snap"
+        fixture_archive(archive)
+        observed = dr.inspect_v6_archive(archive)
+        self.assertLess(observed["metadata"]["state_bytes"], 34 * dr.MIB)
+        result = dr.validate_archive_history_binding(
+            observed, copy.deepcopy(observed), full34_before_snapshot_fixture())
+        self.assertFalse(result["encoded_size_used_as_logical_volume"])
+        self.assertTrue(result["full31_and_dr25_still_required"])
+        self.assertEqual(result["expected_live_payload_bytes"], 34 * dr.MIB)
+        self.assertFalse(dr.full34_complete(full34_before_snapshot_fixture()))
+
+    def test_archive_binding_refuses_missing_small_or_unobserved_logical_history(self):
+        archive = self.root / "archive.snap"
+        fixture_archive(archive)
+        observed = dr.inspect_v6_archive(archive)
+        baseline = full34_before_snapshot_fixture()
+        variants = []
+        for key, value in (("profile", "native-small"), ("retained_live_versions", 16),
+                           ("live_payload_bytes", 33 * dr.MIB)):
+            changed = copy.deepcopy(baseline); changed[key] = value; variants.append(changed)
+        for key, value in (("native_kv2_logical_payload_bytes", 34 * dr.MIB - 1),
+                           ("native_kv2_logical_payload_bytes", "35651584"),
+                           ("state_storage_format", "legacy"), ("native_kv2_reader_format", 1)):
+            changed = copy.deepcopy(baseline)
+            changed["capacity_after_import"][key] = value; variants.append(changed)
+        changed = copy.deepcopy(baseline); changed.pop("capacity_after_import"); variants.append(changed)
+        changed = copy.deepcopy(baseline); changed["checks"].pop(); variants.append(changed)
+        changed = copy.deepcopy(baseline)
+        changed["checks"].append(copy.deepcopy(changed["checks"][-1])); variants.append(changed)
+        changed = copy.deepcopy(baseline); changed["checks"][-1]["passed"] = False; variants.append(changed)
+        for changed in variants:
+            with self.assertRaises(dr.Failure):
+                dr.validate_archive_history_binding(observed, observed, changed)
+
+    def test_archive_binding_refuses_a_different_source_generation_seal_or_length(self):
+        archive = self.root / "archive.snap"
+        fixture_archive(archive)
+        observed = dr.inspect_v6_archive(archive)
+        for key, value in (("generation", 6), ("state_bytes", 100),
+                           ("seal_identity", {"format": "heptabao-seal-metadata-digest-v1",
+                                               "sha256": "b" * 64})):
+            changed = copy.deepcopy(observed); changed["metadata"][key] = value
+            with self.assertRaisesRegex(dr.Failure, "archive_source_metadata_changed"):
+                dr.validate_archive_history_binding(changed, observed, full34_before_snapshot_fixture())
 
     def test_archive_rejects_truncation_trailing_members_and_changed_state(self):
         archive = self.root / "archive.snap"
