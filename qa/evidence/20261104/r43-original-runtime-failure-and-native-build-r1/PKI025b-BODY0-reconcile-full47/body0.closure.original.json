@@ -1,0 +1,32 @@
+{
+  "offset": 0,
+  "limit": 30397,
+  "next": 30397,
+  "chunkSHA256": "d76b3d392c20bf4a7bbb7e8d8ea69abdfe3bb11f71a35075ba26ab948e778a50",
+  "operationId": "ae1e362b109464c47c26d6ce6adff749986185dc9f480bb520a41e2c2646a1d3",
+  "originalPayload": {
+    "blob": "1a86ff7153f233c720591e39fae76bb67c169f99",
+    "bytes": 40951,
+    "sha256": "cd4101a1cfded87fbab3e3f01f0dfee670fc40e1e7d65ecd279089272db6bae5"
+  },
+  "payloadTree": "1097e795028acb90294299574c1378ed684eaa87",
+  "nativeText": {
+    "blob": "02f2eb382a5e43bb34568ddcdbf5a36563d0991e",
+    "bytes": 40848,
+    "sha256": "efb823390516a68fd2d102d075639fe0ee4abfffbe0d493f0be5a5d4f693695b"
+  },
+  "metadataOperation": "e0b3516213ca2ce013bfc0288d2f641511f811b71f8ed4e08db682938e13860a",
+  "sourceFileVersion": "66306:33212340:30397:1793965550402189411:1793965550403278461",
+  "sourceFileHashFromPriorMetadata": "d76b3d392c20bf4a7bbb7e8d8ea69abdfe3bb11f71a35075ba26ab948e778a50",
+  "completeFileBody": true,
+  "oldAttemptOutcome": "UNKNOWN",
+  "reconciliationAdmission": {
+    "operationId": "ae1e362b109464c47c26d6ce6adff749986185dc9f480bb520a41e2c2646a1d3",
+    "reused": true,
+    "classification": "existing_binding_returned",
+    "originalAttemptOutcome": "UNKNOWN",
+    "lookupOnly": false,
+    "nativeCompletionProven": false,
+    "bodyDeliveryProven": false
+  }
+}

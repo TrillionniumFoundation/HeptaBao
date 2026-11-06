@@ -1,0 +1,149 @@
+{
+  "schema": "heptabao.auth-current-server-public-path-source-note.v1",
+  "scope": "Pure SOURCE reading of the two already frozen current files; no new Runtime, no actual-state qualification, no proposed source change.",
+  "sources": {
+    "manager": {
+      "blob": "03c8f2e6472a2b52dad789c28bacc28022c87dc0",
+      "bytes": 58452,
+      "sha256": "8feb3f9db05fa59986409c6c1306b48213102c7deaae6035219afa959add5ae4"
+    },
+    "server_wrapper": {
+      "blob": "031d410286a2aa4ed26c6512af3ee57be17ce687",
+      "bytes": 14052,
+      "sha256": "34aa6a9799419573dfc8cf6b63f479162b3e9e316dc391d54c5f0c0c54cdedb1"
+    },
+    "source_tree": "9204bd66dad2f266dd56cece33f455c5ffea9e2d"
+  },
+  "generation": "server-initial",
+  "paths": {
+    "home_control": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2",
+    "business_root": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2",
+    "wrapper": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2/mac_current_server_owner_r1.py",
+    "stdout_private_container": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2/server-initial.stdout.private",
+    "stderr_private_container": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2/server-initial.stderr.private",
+    "plist": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2/server-initial.plist",
+    "ready_public": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/launchd/server-initial.ready.public.json",
+    "exec_ready_public": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/launchd/server-initial.exec-ready.public.json",
+    "admitted_private_excluded": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/launchd/server-initial.admitted.private.json",
+    "private_plan_excluded": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/launchd/server-initial.private.json",
+    "server_terminal_separate_result_file": null
+  },
+  "first_lf_contract": {
+    "source_location": "manager HomeControl.prefix and _server_stdout_prefix",
+    "allowed_names": [
+      "server-initial.stdout.private",
+      "server-cold-new-process.stdout.private"
+    ],
+    "requires_existing_owned_stdio_entry": true,
+    "initial_size_range": [
+      1,
+      2097152
+    ],
+    "maximum_prefix_read_bytes": 65536,
+    "first_lf_required_within_read": true,
+    "repeated_same_fd_prefix_bytes_equal": true,
+    "nofollow_nonblock_cloexec": true,
+    "held_and_named_first_six_identity_equal": true,
+    "full_stdout_or_stderr_export_authorized_by_this_note": false,
+    "close_attempt_once_and_known_closed_required": true,
+    "nondecreasing_size_and_stable_prefix_guard": true,
+    "does_not_prove_unchanged_unread_tail": true
+  },
+  "records": {
+    "ready": {
+      "schema": "heptabao.mac-server-wrapper-ready.r1",
+      "explicit_fields": [
+        "schema",
+        "generation",
+        "planSha256",
+        "wrapperIdentity",
+        "wrapperStartMonotonic",
+        "originalWrapperDeadlineMonotonic"
+      ],
+      "qualification": "Ready is written before manager admission. Presence alone is not startup or successful server exec."
+    },
+    "exec_ready": {
+      "schema": "heptabao.mac-owned-launchd-server-wrapper.r1",
+      "qualification": "Pre-finally candidate. Its bytes are bound by the terminal first-LF candidateReceiptSha256. This file alone does not contain completed final descriptor closure."
+    },
+    "terminal_first_lf": {
+      "schema": "heptabao.mac-owned-launchd-server-wrapper.r1",
+      "initial_boolean_fields": [
+        "ok",
+        "execObservedByWrapper",
+        "managerMustObserveSamePidBirthAndServerExecutable",
+        "outcomeUnknown",
+        "productionCurrentPrivateInputsOpened",
+        "ownedPrivateInputReadAttempted",
+        "ownedPrivateInputReadCompleted",
+        "productionChanged",
+        "providerRequestSent",
+        "j3160Contacted"
+      ],
+      "later_boolean_fields": [
+        "ownedBusinessWorkingDirectoryHeldT5",
+        "preparedExecCandidate",
+        "readyToExec"
+      ],
+      "initial_numeric_fields": [
+        "newWrapperSeconds"
+      ],
+      "final_numeric_fields": [
+        "elapsedSeconds"
+      ],
+      "success_path_fields": [
+        "generation",
+        "wrapperIdentity",
+        "binaryPath",
+        "binarySha256",
+        "binaryBytes",
+        "binaryIdentity",
+        "configSha256",
+        "sourcePins",
+        "commands"
+      ],
+      "final_optional_fields": [
+        "volumeGuardClosed",
+        "candidateReceiptSha256",
+        "errorType",
+        "errorCode"
+      ],
+      "generation_may_be_absent_on_early_failure": true,
+      "execObservedByWrapper_remains_false": true,
+      "printed_only_after_wrapper_finally": true,
+      "qualification": "Manager additionally requires same PID/birth actual server executable, typed completion, pinned binary, helper and volume closure; neither first-LF nor candidate alone proves exec."
+    },
+    "possible_second_line": {
+      "schema": "heptabao.mac-owned-server-exec-failure.r1",
+      "emitted_on_os_execve_exception": true,
+      "fields": [
+        "schema",
+        "generation",
+        "ok",
+        "execFailureType",
+        "outcomeUnknown"
+      ],
+      "excluded_from_existing_first_lf_reader": true
+    }
+  },
+  "privacy_and_projection": {
+    "existing_wrapper_does_not_define_closed_error_type_allowlist": true,
+    "errorType": "type(error).__name__ is not a declared closed enum",
+    "errorCode": "str(error) only for Refused; this note does not authorize forwarding it verbatim",
+    "diagnostic_must_define_explicit_typed_projection": true,
+    "arbitrary_json_strings_raw_hashes_stdout_tail_stderr_private_plan_and_admission_not_authorized": true,
+    "fields_listed_above_are_a_source_inventory_not_a_blanket_public_output_allowlist": true
+  },
+  "ordering": [
+    "The manager calls _query before attempting the ready file on each _ready iteration.",
+    "Typed launchctl parse failure therefore does not establish ready-file absence.",
+    "The wrapper waits for the exact private admission before producing exec-ready or entering the successful exec path.",
+    "The wrapper closes helpers and volume state, then prints the first LF record, then attempts exec.",
+    "The manager must observe the same PID/birth transition to the pinned server before accepting exec-ready plus first LF."
+  ],
+  "limitations": [
+    "No read of the actual failed runtime report was required for this source-only note.",
+    "The exact rejected launchctl field and actual wrapper progress remain unestablished by this note.",
+    "No consumer generation, old r1 root, managed signal, bootout, cleanup or new probe is authorized."
+  ]
+}

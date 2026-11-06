@@ -1,0 +1,1104 @@
+{
+  "schema": "heptabao.root.mac-authbus-original-failed-runtime-qualification.r43",
+  "pass": true,
+  "check_count": 265,
+  "checks": [
+    {
+      "name": "whole453_with8_Merkle_trees",
+      "pass": true
+    },
+    {
+      "name": "all452_manifest_files_whole_exact",
+      "pass": true
+    },
+    {
+      "name": "minimal16_exact_original_members",
+      "pass": true
+    },
+    {
+      "name": "author1252_independently_reproduced",
+      "pass": true
+    },
+    {
+      "name": "original_GO_exact",
+      "pass": true
+    },
+    {
+      "name": "original_journal_exact",
+      "pass": true
+    },
+    {
+      "name": "original_request_exact",
+      "pass": true
+    },
+    {
+      "name": "original_typed_binding_rederived",
+      "pass": true
+    },
+    {
+      "name": "81_unique_original_call_rows",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-start:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-start:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-start:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-status-01-admit:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-status-01-admit:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-status-01-admit:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-status-01-state-01:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-status-01-state-01:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-status-01-state-01:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-status-01-page-00000:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-status-01-page-00000:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-status-01-page-00000:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-01-admit:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-01-admit:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-01-admit:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-01-state-01:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-01-state-01:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-01-state-01:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-01-page-00000:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-01-page-00000:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-01-page-00000:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-01-page-08192:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-01-page-08192:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-01-page-08192:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-01-page-16384:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-01-page-16384:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-01-page-16384:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-01-page-24576:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-01-page-24576:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-01-page-24576:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-01-page-32768:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-01-page-32768:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-01-page-32768:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-01-page-40960:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-01-page-40960:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-01-page-40960:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-01-page-49152:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-01-page-49152:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-01-page-49152:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-02-admit:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-02-admit:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-02-admit:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-02-state-01:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-02-state-01:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-02-state-01:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-02-page-00000:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-02-page-00000:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-02-page-00000:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-02-page-08192:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-02-page-08192:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-02-page-08192:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-02-page-16384:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-02-page-16384:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-02-page-16384:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-02-page-24576:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-02-page-24576:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-02-page-24576:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-02-page-32768:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-02-page-32768:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-02-page-32768:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-02-page-40960:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-02-page-40960:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-02-page-40960:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-02-page-49152:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-02-page-49152:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-02-page-49152:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-03-admit:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-03-admit:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-03-admit:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-03-state-01:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-03-state-01:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-03-state-01:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-03-page-00000:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-03-page-00000:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-03-page-00000:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-03-page-08192:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-03-page-08192:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-03-page-08192:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-03-page-16384:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-03-page-16384:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-03-page-16384:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-03-page-24576:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-03-page-24576:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-03-page-24576:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-03-page-32768:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-03-page-32768:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-03-page-32768:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-03-page-40960:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-03-page-40960:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-03-page-40960:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-03-page-49152:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-03-page-49152:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-03-page-49152:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-04-admit:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-04-admit:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-04-admit:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-04-state-01:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-04-state-01:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-04-state-01:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-04-page-00000:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-04-page-00000:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-04-page-00000:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-04-page-08192:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-04-page-08192:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-04-page-08192:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-04-page-16384:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-04-page-16384:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-04-page-16384:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-04-page-24576:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-04-page-24576:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-04-page-24576:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-04-page-32768:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-04-page-32768:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-04-page-32768:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-04-page-40960:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-04-page-40960:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-04-page-40960:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-04-page-49152:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-04-page-49152:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-04-page-49152:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-05-admit:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-05-admit:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-05-admit:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-05-state-01:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-05-state-01:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-05-state-01:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-05-page-00000:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-05-page-00000:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-05-page-00000:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-05-page-08192:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-05-page-08192:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-05-page-08192:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-05-page-16384:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-05-page-16384:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-05-page-16384:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-05-page-24576:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-05-page-24576:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-05-page-24576:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-05-page-32768:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-05-page-32768:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-05-page-32768:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-05-page-40960:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-05-page-40960:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-05-page-40960:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-05-page-49152:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-05-page-49152:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-05-page-49152:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-06-admit:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-06-admit:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-06-admit:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-06-state-01:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-06-state-01:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-06-state-01:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-06-page-00000:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-06-page-00000:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-06-page-00000:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-06-page-08192:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-06-page-08192:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-06-page-08192:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-06-page-16384:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-06-page-16384:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-06-page-16384:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-06-page-24576:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-06-page-24576:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-06-page-24576:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-06-page-32768:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-06-page-32768:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-06-page-32768:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-06-page-40960:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-06-page-40960:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-06-page-40960:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-06-page-49152:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-06-page-49152:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-06-page-49152:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-07-admit:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-07-admit:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-07-admit:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-07-state-01:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-07-state-01:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-07-state-01:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-07-page-00000:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-07-page-00000:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-07-page-00000:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-07-page-08192:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-07-page-08192:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-07-page-08192:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-07-page-16384:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-07-page-16384:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-07-page-16384:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-07-page-24576:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-07-page-24576:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-07-page-24576:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-07-page-32768:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-07-page-32768:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-07-page-32768:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-07-page-40960:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-07-page-40960:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-07-page-40960:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-07-page-49152:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-07-page-49152:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-07-page-49152:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-08-admit:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-08-admit:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-08-admit:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-08-state-01:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-08-state-01:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-08-state-01:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-08-page-00000:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-08-page-00000:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-08-page-00000:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-08-page-08192:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-08-page-08192:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-08-page-08192:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-08-page-16384:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-08-page-16384:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-08-page-16384:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-08-page-24576:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-08-page-24576:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-08-page-24576:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-08-page-32768:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-08-page-32768:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-08-page-32768:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-08-page-40960:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-08-page-40960:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-08-page-40960:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-08-page-49152:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-08-page-49152:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-08-page-49152:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-09-admit:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-09-admit:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-09-admit:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-09-state-01:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-09-state-01:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-09-state-01:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-09-page-00000:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-09-page-00000:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-09-page-00000:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-09-page-08192:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-09-page-08192:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-09-page-08192:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-09-page-16384:original3_leaf_arm_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-09-page-16384:one_leaf_original_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "home-launch-r2-runtime-streams-09-page-16384:same_exact_GO_binding",
+      "pass": true
+    },
+    {
+      "name": "10_original_payload_Merkle_trees",
+      "pass": true
+    },
+    {
+      "name": "original_observation_lane_closed",
+      "pass": true
+    },
+    {
+      "name": "authority_failed_exit1_full_durable",
+      "pass": true
+    },
+    {
+      "name": "complete_public_output_exact",
+      "pass": true
+    },
+    {
+      "name": "known_failure_preserved",
+      "pass": true
+    },
+    {
+      "name": "managed_registration_and_lineage_still_UNKNOWN",
+      "pass": true
+    },
+    {
+      "name": "original_bootstrap_returned_zero_but_no_exec_identity",
+      "pass": true
+    },
+    {
+      "name": "zero_business_phases_and_no_controlHTTP_claim",
+      "pass": true
+    },
+    {
+      "name": "before_capture_closed_but_not_a_credential_cycle",
+      "pass": true
+    },
+    {
+      "name": "all11_direct_helper_commands_closed",
+      "pass": true
+    },
+    {
+      "name": "owned_descriptors_closed",
+      "pass": true
+    },
+    {
+      "name": "original_deadline_preserved",
+      "pass": true
+    },
+    {
+      "name": "production_and_J3160_remained_unaffected_by_controller",
+      "pass": true
+    }
+  ],
+  "packet": "4a3bafecbc966aed7c6b14538c1403a1076598dd",
+  "original_job": "mac/1a1b0e85206-fc05-73e1",
+  "original_call_count": 81,
+  "original_observer_count": 10,
+  "immutable_pages": 60,
+  "author_checks_reproduced": 1252,
+  "authority": {
+    "blob": "da3a5557ac8b536673404d7ad3e3fa6ea39921c2",
+    "bytes": 732,
+    "sha256": "c016f0392366b7b6b328f4be0dfd48915d061bbb9c78081cfb41b5339d732b8d"
+  },
+  "stdout": {
+    "blob": "3d43fbce75a887e337dbe9500e86447727714cf6",
+    "bytes": 136193,
+    "sha256": "5dfef2c34195c7b24c8f54c23904291fb2017858a5ce9ec60f646a724d4634d5"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "actual_result": "FAILED_BEFORE_BUSINESS_PHASES",
+  "failure": {
+    "type": "ManagerRefused",
+    "code": "typed_launchctl_integer",
+    "elapsed_seconds": 1.498569583054632
+  },
+  "observation_lane_released": true,
+  "managed_scope_qualified_closed": false,
+  "managed_registration_and_lineage": "UNKNOWN",
+  "offending_launchctl_field_or_value": "not retained; must observe original object through narrow read-only projection before parser change",
+  "new_credential_cycles": 0,
+  "product_success": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

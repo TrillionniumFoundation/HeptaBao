@@ -1,0 +1,14 @@
+[
+  {
+    "error": "input_original254_is_root_qualified_inventory",
+    "stage": "Pure root check compared full objects before checking their projection schemas.",
+    "NativeCalls": 0,
+    "GitMutations": 0
+  },
+  {
+    "error": "input_original254_lossless_ordered_projection",
+    "stage": "Pure root check found descriptive group-label differences after removing contiguous ordinals; identity/profile/name order already exact, mapping requires explicit inspection.",
+    "NativeCalls": 0,
+    "GitMutations": 0
+  }
+]

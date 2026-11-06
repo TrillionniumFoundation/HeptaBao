@@ -1,0 +1,26 @@
+{
+  "authorization": "SOURCE_ONLY_NOT_AUTHORIZED",
+  "scope": "snapshot_formatted23_info10_page0_retrieval_recovery",
+  "slot": "snapshot_2379_formatted23_readonly_gitfirst_r1",
+  "original_operation": "37a07e380c8f74019d9b6c20c86cfa339d409e3b6d01b42b3a4230cb767777dc",
+  "failed_call_key": "sf23-r1-f10-info-p0",
+  "recovery_call_key": "sf23-r1-f10-info-p0-recovery1",
+  "request": {
+    "blob": "916332b53c58b018404b00324cb5aa1588975b52",
+    "bytes": 121,
+    "sha256": "17f7fcfad72f016c11d8d7b0be379eb4f2043b20b9c33cc4698bb78d74173edd"
+  },
+  "failed_sdk": {
+    "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+    "bytes": 248,
+    "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+  },
+  "maximum_recovery_page_calls": 1,
+  "page_bytes": 8192,
+  "native_payload_cap": 1048576,
+  "operation_start_authorized": false,
+  "operation_status_authorized": false,
+  "failed_call_preserved": true,
+  "continue_original_table_only_after_info_closed": true,
+  "original_go": "25ea12c4406a12ba5ce263b10a2723f73276d74b"
+}

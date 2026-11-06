@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.PKI025b-original-build-running-snapshot.v1",
+  "originalJob": "1a1b10cad9b-fc05-7560",
+  "originalRequest": {
+    "blob": "dab29b2b82ae23e24c5f78865553c140e9bab5de",
+    "bytes": 859,
+    "sha256": "bd5ffba6dce783ee4af25654a246a144ed8edc1c86111ad62460125d9100da53"
+  },
+  "originalGo": {
+    "blob": "b6a6c6ec377b907073d5ea9aad936d4b4c4e2518",
+    "bytes": 12799,
+    "sha256": "46d0166cbb080fbf679ae877dc1399487564dd05bb7caa430617da1d9ef0daae"
+  },
+  "processStartCount": 1,
+  "observations": 3,
+  "originalCalls": 10,
+  "observerPages": 3,
+  "originalObservationState": "running",
+  "terminal": null,
+  "normalReleaseResult": null,
+  "actualTestsStarted": null,
+  "actualTestsPassed": null,
+  "declaredUnique": 149,
+  "declaredProfileInstances": 166,
+  "observationalCallsInFlight": 0,
+  "observationalFuturesActive": 0,
+  "originalBuildMayBeRunning": true,
+  "CargoWindowHeldBy": "/root/ha_validation",
+  "targetReleased": false,
+  "noNewProbeOrRestart": true,
+  "lastOriginalAuthority": {
+    "id": "e7583a14c97010c7255ce74bebc762464d3f4a92dd58c50b57a0b2f9a360c119",
+    "tool": "process_status",
+    "payload": {
+      "blob": "49469140e2953c9b5382d0dbceb940cd511599d7",
+      "bytes": 618,
+      "sha256": "985d2e3c392882610f87cb5015c52e8550edbcc923952de7ef3449dc3a66a63c"
+    },
+    "payloadTree": "56545e5eeae504043f66b8f7c61ede88f26ed906",
+    "nativeText": {
+      "blob": "fffdd8e1c215d02546a9570666f70e7d2d7f3397",
+      "bytes": 471,
+      "sha256": "7e0abedd8f64e3aef8919518ba5272891bb2b74f4de124cc9266203d0df4dd6f"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "callerWallSnapshot": "2026-11-06T13:43:06.421Z",
+  "limits": {
+    "note": "These numeric observation counts are new explicit limits of this GO. The original33b GO did not specify total status/read counts; the original worker/compile/test/cleanup deadlines and per-read/page limits stay unchanged.",
+    "maximumProcessStatusObservers": 256,
+    "maximumProcessReadObservers": 129,
+    "maximumOperationStatusCallsPerObserver": 8,
+    "maximumImmutableResultPagesPerObserver": 128,
+    "immutableResultPageBytes": 8192,
+    "maximumSerializedPayloadBytes": 1048576,
+    "streamBytesPerRead": 16384,
+    "maximumObservedBytesPerStream": 2097152,
+    "onlyReturnedOriginalJob": true,
+    "onlyProcessStatusAndProcessRead": true,
+    "contiguousOriginalStreamOffsets": true,
+    "completeEachObserverBeforeNext": true,
+    "noAutomaticRetry": true
+  }
+}

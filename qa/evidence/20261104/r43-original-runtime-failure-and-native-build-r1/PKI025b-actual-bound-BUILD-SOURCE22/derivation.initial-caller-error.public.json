@@ -1,0 +1,15 @@
+{
+  "before": {
+    "error": "Error: exact_original_generic_journal",
+    "Native": 0,
+    "sourceModified": false
+  },
+  "cause": "Caller supplied cached object instead of exact generic journal text; frozen binder rejected before output. Recovered original510a exact text from Git and reran unchanged pure binder.",
+  "exactGenericJournal": {
+    "blob": "510a46984f60f31458cdcb95dc7f36b9b83454ce",
+    "bytes": 19060,
+    "sha256": "6160378d180d4327bff2ba876e1ecdfb391389d1fe502ccbb7a3d73d52540d7f"
+  },
+  "Native": 0,
+  "sourceModified": false
+}

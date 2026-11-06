@@ -1,0 +1,1915 @@
+[
+  {
+    "ordinal": 1,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::jwt_tests::native_jwt_local_service_token_identity_renewal_and_cold_reopen",
+    "profiles": [
+      "file",
+      "default"
+    ]
+  },
+  {
+    "ordinal": 2,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::jwt_tests::native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta",
+    "profiles": [
+      "file",
+      "default"
+    ]
+  },
+  {
+    "ordinal": 3,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::jwt_tests::native_jwt_role_operations_keep_the_existing_legacy_acl_contract",
+    "profiles": [
+      "file",
+      "default"
+    ]
+  },
+  {
+    "ordinal": 4,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::jwt_tests::native_jwt_identity_failure_does_not_export_witness_or_token_and_next_login_is_fresh",
+    "profiles": [
+      "file",
+      "default"
+    ]
+  },
+  {
+    "ordinal": 5,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::jwt_tests::native_jwt_original_assertion_expiry_before_publication_keeps_auth_identity_atomic",
+    "profiles": [
+      "file",
+      "default"
+    ]
+  },
+  {
+    "ordinal": 6,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::jwt_tests::native_jwt_native_owner_capacity_veto_after_authentication_keeps_the_old_root",
+    "profiles": [
+      "file",
+      "default"
+    ]
+  },
+  {
+    "ordinal": 7,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::jwt_tests::native_jwt_original_assertion_expiry_after_commit_withholds_reply_without_rollback",
+    "profiles": [
+      "file",
+      "default"
+    ]
+  },
+  {
+    "ordinal": 8,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::jwt_tests::native_jwt_post_commit_audit_failure_keeps_whole_root_and_recovery_required",
+    "profiles": [
+      "file",
+      "default"
+    ]
+  },
+  {
+    "ordinal": 9,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::jwt_tests::native_jwt_post_audit_response_and_original_deadline_cannot_be_rebound",
+    "profiles": [
+      "file",
+      "default"
+    ]
+  },
+  {
+    "ordinal": 10,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::jwt_tests::native_jwt_post_audit_revocation_cannot_replace_the_original_publication_proof",
+    "profiles": [
+      "file",
+      "default"
+    ]
+  },
+  {
+    "ordinal": 11,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::jwt_tests::native_jwt_token_api_service_descendants_keep_own_renewal_and_parent_revocation",
+    "profiles": [
+      "file",
+      "default"
+    ]
+  },
+  {
+    "ordinal": 12,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::jwt_tests::native_jwt_token_api_batch_owner_preserves_real_parent_binding_across_cold_reopen",
+    "profiles": [
+      "file",
+      "default"
+    ]
+  },
+  {
+    "ordinal": 13,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::jwt_tests::native_jwt_token_api_revoke_orphan_keeps_own_issuer_but_mount_retirement_still_revokes",
+    "profiles": [
+      "file",
+      "default"
+    ]
+  },
+  {
+    "ordinal": 14,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::jwt_tests::native_jwt_and_userpass_token_api_targets_keep_real_owner_and_renewal_in_both_directions",
+    "profiles": [
+      "file",
+      "default"
+    ]
+  },
+  {
+    "ordinal": 15,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::jwt_tests::native_jwt_token_api_profile_rejects_mount_label_without_real_issuer_or_parent_graph",
+    "profiles": [
+      "file",
+      "default"
+    ]
+  },
+  {
+    "ordinal": 16,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::pki_tests::native_pki_formal_expired_lease_lookup_matches_openbao_271_400_and_cold",
+    "profiles": [
+      "file",
+      "default"
+    ]
+  },
+  {
+    "ordinal": 17,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::pki_tests::native_pki_formal_revoked_lease_lookup_matches_openbao_271_400_and_cold",
+    "profiles": [
+      "file",
+      "default"
+    ]
+  },
+  {
+    "ordinal": 18,
+    "crate": "heptabao-server",
+    "name": "auth::jwt_batch_tests::jwt_batch_null_empty_and_partial_updates_follow_generic_types_and_rejections_are_atomic",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 19,
+    "crate": "heptabao-server",
+    "name": "auth::jwt_batch_tests::jwt_batch_type_matrix_seals_after_identity_without_service_rows_and_allows_assertion_reuse",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 20,
+    "crate": "heptabao-server",
+    "name": "auth::jwt_batch_tests::jwt_display_name_removes_one_trailing_hyphen_and_keeps_the_full_bounded_subject",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 21,
+    "crate": "heptabao-server",
+    "name": "auth::jwt_batch_tests::jwt_legacy_absent_type_read_preserves_bytes_and_typed_state_requires_live_jwt_mount",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 22,
+    "crate": "heptabao-server",
+    "name": "auth::jwt_batch_tests::jwt_mount_forced_batch_calculates_ttl_before_discarding_service_period_and_uses",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 23,
+    "crate": "heptabao-server",
+    "name": "auth::jwt_batch_tests::jwt_rejected_role_creation_reads_as_empty_not_found_without_mutation",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 24,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_bound_claims_tests::jwt_bound_legacy_role_bytes_stay_exact_and_new_state_marker_survives_empty_bounds",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 25,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_bound_claims_tests::jwt_bound_login_uses_verified_original_claims_and_reopens_the_same_predicate",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 26,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_bound_claims_tests::jwt_bound_role_partial_updates_follow_observed_map_and_mode_semantics",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 27,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_bound_claims_tests::native_token_renewal_does_not_reapply_new_claim_rules",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 28,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_bound_claims_tests::remote_login_uses_common_bound_rules_and_fences_inflight_role_changes",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 29,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_config_and_role_readback_preserve_openbao_aliases",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 30,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_configuration_rejects_bad_keys_namespace_and_privilege_escalation",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 31,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_es256_login_uses_real_p256_signature_and_rejects_algorithm_confusion",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 32,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_jwks_config_accepts_public_ed25519_and_drives_login",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 33,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_jwks_rejects_private_symmetric_duplicate_and_mixed_key_material_without_mutation",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 34,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_login_composes_pinned_signature_policy_and_reusable_bearer_tokens",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 35,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_login_denies_invalid_trust_claims_headers_and_roles_without_mutation",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 36,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_login_tests::explicit_legacy_limits_remain_enforced_and_role_clock_takes_precedence",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 37,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_login_tests::jwt_role_leeway_readback_updates_and_signed_duration_types_are_bounded",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 38,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_login_tests::legacy_config_clock_grace_does_not_extend_expiry_without_explicit_role_override",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 39,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_login_tests::native_config_defaults_allow_optional_dates_reuse_and_unbounded_assertion_lifetime",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 40,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_renewal_tests::jwt_all_renewal_routes_require_the_live_role_without_rechecking_the_assertion",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 41,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_renewal_tests::jwt_current_role_and_mount_maxima_count_from_issue_time_and_can_increase",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 42,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_renewal_tests::jwt_legacy_positive_role_limits_survive_read_partial_update_and_reopen",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 43,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_renewal_tests::jwt_native_role_invalid_durations_are_atomic_and_persisted_limits_are_checked",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 44,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_renewal_tests::jwt_native_role_null_preserves_each_duration_but_zero_resets_it",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 45,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_renewal_tests::jwt_native_role_zero_defaults_issue_and_renew_using_current_mount_limits",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 46,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_renewal_tests::jwt_native_role_zero_max_tracks_mount_but_explicit_cap_stays_at_issue",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 47,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_renewal_tests::jwt_period_and_explicit_maximum_keep_distinct_lifetime_semantics",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 48,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_renewal_tests::jwt_provenance_validation_rejects_impossible_issuer_shapes",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 49,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_renewal_tests::jwt_role_api_issues_periodic_tokens_with_a_fixed_explicit_maximum",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 50,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_renewal_tests::jwt_token_api_descendants_do_not_inherit_role_and_ambiguous_legacy_orphans_fail_closed",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 51,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_renewal_tests::jwt_zero_service_ttl_does_not_relax_the_legacy_assertion_lifetime_limit",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 52,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_service_persists_tokens_and_allows_assertion_reuse_across_reopen",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 53,
+    "crate": "heptabao-server",
+    "name": "auth::tests::jwt_successful_native_login_retires_legacy_replay_without_rejecting_reuse",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 54,
+    "crate": "heptabao-server",
+    "name": "federated_auth::bound_claims::tests::every_bound_claim_is_required_and_empty_configuration_has_no_extra_predicate",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 55,
+    "crate": "heptabao-server",
+    "name": "federated_auth::bound_claims::tests::exact_claim_alternatives_preserve_types_and_scalar_number_coercion",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 56,
+    "crate": "heptabao-server",
+    "name": "federated_auth::bound_claims::tests::glob_has_only_star_and_checks_typed_alternatives_in_order",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 57,
+    "crate": "heptabao-server",
+    "name": "federated_auth::bound_claims::tests::pointers_follow_pinned_pointerstructure_escaping_and_base_zero_indices",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 58,
+    "crate": "heptabao-server",
+    "name": "federated_auth::native_jwt::tests::explicit_maximum_requires_real_signed_dates_and_cannot_use_synthetic_times",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 59,
+    "crate": "heptabao-server",
+    "name": "federated_auth::native_jwt::tests::native_leeways_apply_to_missing_times_and_clock_skew_to_all_times",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 60,
+    "crate": "heptabao-server",
+    "name": "federated_auth::native_jwt::tests::native_numeric_dates_optional_claims_and_default_synthesis_match_openbao",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 61,
+    "crate": "heptabao-server",
+    "name": "federated_auth::native_jwt::tests::native_reuse_does_not_relax_the_separate_strict_proof_contract",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 62,
+    "crate": "heptabao-server",
+    "name": "service::jwt_pem_tests::jwt_pem_authenticated_snapshot_prepare_and_final_commit_reject_active_retired_downgrade",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 63,
+    "crate": "heptabao-server",
+    "name": "service::jwt_pem_tests::jwt_pem_invalid_private_weak_wrong_curve_and_source_mix_leave_config_intact",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 64,
+    "crate": "heptabao-server",
+    "name": "service::jwt_pem_tests::jwt_pem_maintained_rsa_ec_ed_signatures_use_only_same_algorithm_keys",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 65,
+    "crate": "heptabao-server",
+    "name": "service::jwt_pem_tests::jwt_pem_namespace_reopen_renew_and_sticky_retirement_keep_existing_authority",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 66,
+    "crate": "heptabao-server",
+    "name": "service::jwt_pem_tests::jwt_pem_rs256_accepts_unbound_kid_only_in_pem_source_and_keeps_selected_alias",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 67,
+    "crate": "heptabao-server",
+    "name": "service::jwt_pem_tests::jwt_pem_source_replacement_vetoes_pending_remote_completion",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 68,
+    "crate": "heptabao-server",
+    "name": "service::jwt_pem_tests::jwt_pem_state_requires69_and_revalidates_public_key_binding_without_changing_legacy_bytes",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 69,
+    "crate": "heptabao-server",
+    "name": "service::jwt_renewal_tests::jwt_renewal_role_check_echo_and_wrapper_survive_restart",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 70,
+    "crate": "heptabao-server",
+    "name": "service::jwt_renewal_tests::jwt_schema_eighteen_fences_new_issuer_semantics_and_admits_real_legacy_records",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 71,
+    "crate": "heptabao-server",
+    "name": "service::jwt_renewal_tests::native_jwt_schema_nineteen_distinguishes_old_limits_new_defaults_and_leeways",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 72,
+    "crate": "heptabao-server",
+    "name": "service::jwt_user_claim_tests::jwt_user_claim_create_requires_selector_existing_updates_preserve_selector",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 73,
+    "crate": "heptabao-server",
+    "name": "service::jwt_user_claim_tests::jwt_user_claim_missing_nonstring_and_wrong_signature_publish_nothing",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 74,
+    "crate": "heptabao-server",
+    "name": "service::jwt_user_claim_tests::jwt_user_claim_mount_namespace_isolation_and_disabled_entity",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 75,
+    "crate": "heptabao-server",
+    "name": "service::jwt_user_claim_tests::jwt_user_claim_remote_entity_disable_vetoes_captured_completion",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 76,
+    "crate": "heptabao-server",
+    "name": "service::jwt_user_claim_tests::jwt_user_claim_remote_role_edit_vetoes_captured_completion",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 77,
+    "crate": "heptabao-server",
+    "name": "service::jwt_user_claim_tests::jwt_user_claim_reopen_role_edit_and_renewal_retain_issued_entity",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 78,
+    "crate": "heptabao-server",
+    "name": "service::jwt_user_claim_tests::jwt_user_claim_role_validation_preserves_previous_selector_and_subject_binding",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 79,
+    "crate": "heptabao-server",
+    "name": "service::jwt_user_claim_tests::jwt_user_claim_rs256_custom_alias_and_default_sub_are_distinct",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 80,
+    "crate": "heptabao-server",
+    "name": "service::jwt_user_claim_tests::jwt_user_claim_schema68_is_conditional_sticky_and_snapshot_protected",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 81,
+    "crate": "heptabao-server",
+    "name": "auth::batch_issuance_tests::batch_all_twelve_mount_user_combinations_seal_only_after_identity_without_backing_tokens",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 82,
+    "crate": "heptabao-server",
+    "name": "auth::batch_issuance_tests::batch_authority_is_precreated_and_legacy_absence_is_preserved_until_explicit_publication",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 83,
+    "crate": "heptabao-server",
+    "name": "auth::batch_issuance_tests::batch_token_api_child_has_parent_and_cidrs_but_orphan_has_neither_and_no_backing_row",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 84,
+    "crate": "heptabao-server",
+    "name": "auth::batch_issuance_tests::batch_user_rejects_period_or_uses_atomically_but_forced_mount_discards_service_only_fields",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 85,
+    "crate": "heptabao-server",
+    "name": "auth::batch_issuance_tests::batch_userpass_mfa_consumes_one_shared_counter_before_grant",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 86,
+    "crate": "heptabao-server",
+    "name": "auth::batch_issuance_tests::pending_batch_requires_identity_and_keeps_old_archive_key_authority_without_token_map",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 87,
+    "crate": "heptabao-server",
+    "name": "auth::batch_principal_tests::batch_acl_denial_precedes_kind_errors_and_provider_renewal_is_never_prepared",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 88,
+    "crate": "heptabao-server",
+    "name": "auth::batch_principal_tests::batch_actor_can_use_a_service_wrapper_without_ever_becoming_that_wrapper",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 89,
+    "crate": "heptabao-server",
+    "name": "auth::batch_principal_tests::batch_authentication_is_read_only_and_requires_the_real_peer_without_service_backing",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 90,
+    "crate": "heptabao-server",
+    "name": "auth::batch_principal_tests::batch_authority_and_credentials_reopen_without_migrating_legacy_or_creating_tokens",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 91,
+    "crate": "heptabao-server",
+    "name": "auth::batch_principal_tests::batch_cubbyhole_existence_checks_precede_write_acl_but_other_operations_keep_acl",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 92,
+    "crate": "heptabao-server",
+    "name": "auth::batch_principal_tests::batch_entity_requires_request_identity_projection_and_uses_current_acl_documents",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 93,
+    "crate": "heptabao-server",
+    "name": "auth::batch_principal_tests::batch_revoke_orphan_and_empty_accessor_keep_token_api_authorization_order",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 94,
+    "crate": "heptabao-server",
+    "name": "auth::batch_principal_tests::batch_target_lookup_and_capabilities_do_not_apply_target_cidrs_to_administrator",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 95,
+    "crate": "heptabao-server",
+    "name": "auth::batch_principal_tests::existing_batch_principal_and_lease_projection_recheck_parent_ancestors_and_authority",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 96,
+    "crate": "heptabao-server",
+    "name": "auth::batch_principal_tests::typed_principal_keeps_the_service_final_use_capability_without_reopening_admission",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 97,
+    "crate": "heptabao-server",
+    "name": "auth::tests::accessors_allow_revocation_without_revealing_token",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 98,
+    "crate": "heptabao-server",
+    "name": "auth::tests::affine_request_principal_uses_live_subject_and_parent_time",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 99,
+    "crate": "heptabao-server",
+    "name": "auth::tests::disabling_auth_mount_revokes_its_tokens_and_children_and_erases_credentials",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 100,
+    "crate": "heptabao-server",
+    "name": "auth::tests::periodic_and_finite_tokens_renew_without_exceeding_explicit_maximum",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 101,
+    "crate": "heptabao-server",
+    "name": "auth::tests::token_creation_cannot_escalate_policies_or_skip_parent_without_sudo",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 102,
+    "crate": "heptabao-server",
+    "name": "auth::tests::token_lookup_reports_standard_expiry_for_all_selectors_and_after_renewal",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 103,
+    "crate": "heptabao-server",
+    "name": "auth::tests::token_parent_expiry_revoke_cascade_and_orphan_survival",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 104,
+    "crate": "heptabao-server",
+    "name": "auth::tests::token_revoke_orphan_tests::revoke_orphan_missing_target_is_invalid_request_without_damaging_live_children",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 105,
+    "crate": "heptabao-server",
+    "name": "auth::tests::token_revoke_orphan_tests::revoke_orphan_requires_sudo_before_target_resolution_without_mutating_edges",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 106,
+    "crate": "heptabao-server",
+    "name": "auth::tests::token_revoke_orphan_tests::revoke_orphan_severs_only_direct_children_and_survives_serialization",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 107,
+    "crate": "heptabao-server",
+    "name": "auth::tests::transaction_clone_failure_does_not_consume_source_state",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 108,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::identity_tests::native_identity_actual_audit_keeps_exact_response_custody",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 109,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::identity_tests::native_identity_delegated_acl_and_finite_actor_keep_original_authority",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 110,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::identity_tests::native_identity_formal_crud_lookup_list_and_cold_reopen_preserve_kv",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 111,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::identity_tests::native_identity_keeps_foreign_actor_wrapping_and_unowned_paths_closed",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 112,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::identity_tests::native_identity_live_group_membership_controls_cg_after_cold_restart",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 113,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::identity_tests::native_identity_owner_cannot_drop_kv_graph_or_flip_native_format",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 114,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::tests::native_approle142_local_policy_kv_cas_renew_revoke_and_cold_reopen",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 115,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::tests::native_authbus_approle_policy_kv_cas_renew_revoke_and_cold_reopen",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 116,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::tests::native_cert_auth_uses_verified_tls_peer_and_survives_cold_reopen",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 117,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::tests::native_token_lookup_keeps_real_control_group_admission_before_dispatch",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 118,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::tests::native_token_target_expired_after_real_audit_withholds_lookup_and_accessor_reply",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 119,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_approle_failed_cidr_consumes_only_authenticated_sid_and_stays_cold",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 120,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_approle_file_first_issuance_sid_once_paired_catalog_and_cold",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 121,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_approle_file_original_sid_clock_expires_after_actual_audit",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 122,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_approle_file_post_audit_sid_destroy_vetoes_and_cannot_resurrect",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 123,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_file_actual_audit_body_and_error_status_tampering_cannot_release",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 124,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_file_actual_post_audit_policy_and_parent_revoke_veto_old_grant",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 125,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_token_api_file_inert_precise_grant_is_issued_once_and_never_authenticated",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 126,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_token_api_file_parent_revocation_survives_cold_without_backing",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 127,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_token_api_file_restricted_actor_rejected_and_last_use_consumed_once",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 128,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_token_api_file_role_suffix_and_orphan_keep_actual_claims",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 129,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_token_api_file_userpass_service_actor_keeps_independent_issuer",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 130,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_actual_audit_cannot_replace_the_original_deadline",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 131,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_actual_audited_status_tampering_erases_the_credential",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 132,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_actual_post_audit_catalog_commit_vetoes_original_delivery",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 133,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_actual_v5_promotion_does_not_reseal_or_reissue",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 134,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_catalog_before_and_after_issuance_moves_in_one_native_root",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 135,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_file_cold_keeps_exact_grant_without_service_backing",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 136,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_response_wrapper_cannot_hide_approle_issuer",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 137,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_response_wrapper_cannot_hide_token_api_issuer",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 138,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_response_wrapper_keeps_userpass_enrollment_closed",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 139,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::batch_tests::native_userpass_batch_wrong_password_and_independent_token_api_owner_publish_only_real_grants",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 140,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::native_userpass_actual_audit_cannot_refresh_the_original_request_deadline",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 141,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::native_userpass_actual_audit_response_status_and_error_tampering_are_vetoed",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 142,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::native_userpass_actual_post_audit_revocation_vetoes_the_original_credential_reply",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 143,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::native_userpass_formal_acl_retains_admin_sudo_and_account_scope",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 144,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::native_userpass_formal_failed_login_lockout_is_durable_across_cold_open",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 145,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::native_userpass_formal_file_login_renew_cold_provenance_and_revoke",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 146,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::native_userpass_formal_finite_token_delivery_does_not_consume_an_extra_use",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 147,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::native_userpass_formal_mount_retirement_revokes_parent_child_and_keeps_floor",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 148,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::native_userpass_formal_source_promotion_keeps_real_preexisting_credentials",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 149,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::userpass_tests::native_userpass_selector_keeps_other_providers_and_wrapped_login_closed",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 150,
+    "crate": "heptabao-ha-service",
+    "name": "native_snapshot_body::tests::snapshot_stream_roundtrip_crosses_ordinary_frame_limit_once",
+    "profiles": [
+      "ha-native-v6-peer-ingress"
+    ]
+  },
+  {
+    "ordinal": 151,
+    "crate": "heptabao-ha-service",
+    "name": "native_snapshot_body::tests::snapshot_stream_empty_body_requires_explicit_end_and_eof",
+    "profiles": [
+      "ha-native-v6-peer-ingress"
+    ]
+  },
+  {
+    "ordinal": 152,
+    "crate": "heptabao-ha-service",
+    "name": "native_snapshot_body::tests::snapshot_stream_exact_payload_without_end_is_not_complete",
+    "profiles": [
+      "ha-native-v6-peer-ingress"
+    ]
+  },
+  {
+    "ordinal": 153,
+    "crate": "heptabao-ha-service",
+    "name": "native_snapshot_body::tests::snapshot_stream_end_digest_and_trailing_wire_bytes_are_rejected",
+    "profiles": [
+      "ha-native-v6-peer-ingress"
+    ]
+  },
+  {
+    "ordinal": 154,
+    "crate": "heptabao-ha-service",
+    "name": "native_snapshot_body::tests::snapshot_stream_declared_oversize_is_rejected_before_payload",
+    "profiles": [
+      "ha-native-v6-peer-ingress"
+    ]
+  },
+  {
+    "ordinal": 155,
+    "crate": "heptabao-ha-service",
+    "name": "native_snapshot_body::tests::snapshot_stream_short_chunk_cannot_be_followed_by_data",
+    "profiles": [
+      "ha-native-v6-peer-ingress"
+    ]
+  },
+  {
+    "ordinal": 156,
+    "crate": "heptabao-ha-service",
+    "name": "native_snapshot_body::tests::snapshot_stream_consumer_cannot_finish_with_unread_archive_bytes",
+    "profiles": [
+      "ha-native-v6-peer-ingress"
+    ]
+  },
+  {
+    "ordinal": 157,
+    "crate": "heptabao-ha-service",
+    "name": "native_snapshot_body::tests::snapshot_stream_tls_eof_error_after_valid_end_cannot_mint_binding",
+    "profiles": [
+      "ha-native-v6-peer-ingress"
+    ]
+  },
+  {
+    "ordinal": 158,
+    "crate": "heptabao-ha-service",
+    "name": "native_snapshot_body::tests::snapshot_stream_original_expired_deadline_precedes_io",
+    "profiles": [
+      "ha-native-v6-peer-ingress"
+    ]
+  },
+  {
+    "ordinal": 159,
+    "crate": "heptabao-ha-service",
+    "name": "native_snapshot_body::tests::snapshot_stream_encoder_checks_one_rejecting_eof_byte_at_exact_cap",
+    "profiles": [
+      "ha-native-v6-peer-ingress"
+    ]
+  },
+  {
+    "ordinal": 160,
+    "crate": "heptabao-ha-service",
+    "name": "authenticated_peer_frame::snapshot::tests::snapshot_peer_actual_mtls_upload_close_notify_allows_opposite_download",
+    "profiles": [
+      "ha-native-v6-peer-ingress"
+    ]
+  },
+  {
+    "ordinal": 161,
+    "crate": "heptabao-ha-service",
+    "name": "authenticated_peer_frame::snapshot::tests::snapshot_peer_actual_mtls_bare_tcp_eof_cannot_finalize_upload",
+    "profiles": [
+      "ha-native-v6-peer-ingress"
+    ]
+  },
+  {
+    "ordinal": 162,
+    "crate": "heptabao-ha-service",
+    "name": "authenticated_peer_frame::snapshot::tests::snapshot_peer_actual_mtls_wrong_selected_leaf_never_admits_body",
+    "profiles": [
+      "ha-native-v6-peer-ingress"
+    ]
+  },
+  {
+    "ordinal": 163,
+    "crate": "heptabao-ha-service",
+    "name": "authenticated_peer_frame::snapshot::tests::snapshot_peer_actual_mtls_terminal_rejection_consumes_no_upload",
+    "profiles": [
+      "ha-native-v6-peer-ingress"
+    ]
+  },
+  {
+    "ordinal": 164,
+    "crate": "heptabao-ha-service",
+    "name": "authenticated_peer_frame::snapshot::tests::snapshot_peer_original_frame_still_uses_only_old_callback",
+    "profiles": [
+      "ha-native-v6-peer-ingress"
+    ]
+  },
+  {
+    "ordinal": 165,
+    "crate": "heptabao-ha-service",
+    "name": "authenticated_peer_frame::snapshot::tests::snapshot_peer_expired_deadline_refuses_before_connect",
+    "profiles": [
+      "ha-native-v6-peer-ingress"
+    ]
+  },
+  {
+    "ordinal": 166,
+    "crate": "heptabao-ha-service",
+    "name": "authenticated_peer_frame::snapshot::tests::snapshot_peer_ready_veto_reads_no_upload_and_cannot_extend_deadline",
+    "profiles": [
+      "ha-native-v6-peer-ingress"
+    ]
+  },
+  {
+    "ordinal": 167,
+    "crate": "heptabao-server",
+    "name": "auth::forward_actor::snapshot_tests::snapshot_actor_final_use_remains_delivery_only_without_second_admission",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 168,
+    "crate": "heptabao-server",
+    "name": "auth::forward_actor::snapshot_tests::snapshot_actor_original_auth_is_distinct_from_a_new_restored_owner",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 169,
+    "crate": "heptabao-server",
+    "name": "service::snapshot_transfer::forward::wire::tests::snapshot_publication_actual_byte_witnesses_bind_save_and_restore",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 170,
+    "crate": "heptabao-server",
+    "name": "service::snapshot_transfer::forward::wire::tests::snapshot_publication_valid_mac_cannot_substitute_a_binary_body",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 171,
+    "crate": "heptabao-server",
+    "name": "service::snapshot_transfer::forward::wire::tests::snapshot_publication_metadata_and_original_owner_mutations_are_rejected",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 172,
+    "crate": "heptabao-server",
+    "name": "service::snapshot_transfer::forward::wire::tests::snapshot_ready_rejects_retarget_replay_and_non_snapshot_routes",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 173,
+    "crate": "heptabao-server",
+    "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_source_publication_audit_veto_keeps_real_restore_after_cold_reopen",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 174,
+    "crate": "heptabao-server",
+    "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_first_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 175,
+    "crate": "heptabao-server",
+    "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_second_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 176,
+    "crate": "heptabao-server",
+    "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_unverified_attempt_audit_failure_cannot_mint_root_authority",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 177,
+    "crate": "heptabao-server",
+    "name": "ha_forward::native_ssh_tests::native_ssh_reply_profile_does_not_upgrade_ordinary_suffix_or_shrink_large_json",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 178,
+    "crate": "heptabao-server",
+    "name": "ha_forward::native_ssh_tests::native_ssh_reply_profile_refuses_missing_ingress_nonce_or_wrong_root_get",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 179,
+    "crate": "heptabao-server",
+    "name": "ha_forward::native_ssh_tests::native_ssh_reply_profile_rejects_wire_downgrade_and_missing_or_unknown_metadata",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 180,
+    "crate": "heptabao-server",
+    "name": "ha_forward::native_ssh_tests::native_ssh_reply_profile_retains_original_ingress_nonce_and_custom_route",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 181,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::ssh_tests::archive::native_ssh_actual_archive_restore_preserves_otp_consumption_ca_and_observed_issuer_floor",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 182,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::ssh_tests::native_ssh_actual_audit_cannot_refresh_original_deadline_or_repeat_signature",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 183,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::ssh_tests::native_ssh_actual_audit_io_failure_never_returns_the_signed_private_reply",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 184,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::ssh_tests::native_ssh_actual_audited_otp_retains_original_precise_issuer_expiry",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 185,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::ssh_tests::native_ssh_actual_audited_reply_cannot_follow_recreated_mount_incarnation",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 186,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::ssh_tests::native_ssh_after_actual_audit_actor_revocation_never_delivers_otp",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 187,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::ssh_tests::native_ssh_after_actual_audit_changed_status_does_not_bypass_or_resign",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 188,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::ssh_tests::native_ssh_and_pki_original_idle_retire_both_without_touching_ca_or_kv",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 189,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::ssh_tests::native_ssh_child_and_response_wrap_ownership_remain_explicitly_closed",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 190,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::ssh_tests::native_ssh_consumed_verify_rechecks_original_issuer_after_actual_audit",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 191,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::ssh_tests::native_ssh_formal_acl_nonrenewable_revoke_and_segment_prefix",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 192,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::ssh_tests::native_ssh_formal_batch_expiry_is_clipped_persistent_and_not_revivable",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 193,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::ssh_tests::native_ssh_formal_ca_real_signature_cold_typed_public_transport",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 194,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::ssh_tests::native_ssh_formal_disabled_login_identity_stays_retired_after_reenable_and_cold",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 195,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::ssh_tests::native_ssh_formal_otp_promotion_cold_verify_and_replay",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 196,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::ssh_tests::native_ssh_formal_registry_tune_retire_and_recreate_preserves_other_graphs",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 197,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::ssh_tests::native_ssh_public_reply_cannot_lose_affine_transport_after_audit",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 198,
+    "crate": "heptabao-server",
+    "name": "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_actual_ca_signature_and_raw_public_cold_readindex",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 199,
+    "crate": "heptabao-server",
+    "name": "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_custom_public_reply_transport_keeps_kv_json",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 200,
+    "crate": "heptabao-server",
+    "name": "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_forwarded_otp_election_cold_consume_and_replay",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 201,
+    "crate": "heptabao-server",
+    "name": "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_lost_quorum_cannot_issue_sign_or_disclose_public_key",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 202,
+    "crate": "heptabao-server",
+    "name": "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 203,
+    "crate": "heptabao-server",
+    "name": "http::snapshot::redirect_tests::native_http_redirect_complete_head_preserves_short_writes_and_transport_errors",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 204,
+    "crate": "heptabao-server",
+    "name": "http::snapshot::redirect_tests::native_http_redirect_has_exact_safe_location_and_no_upload_read_or_response_body",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 205,
+    "crate": "heptabao-server",
+    "name": "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_first_record_is_complete_with_unread_upload",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 206,
+    "crate": "heptabao-server",
+    "name": "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_flush_retains_original_deadline_failure",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 207,
+    "crate": "heptabao-server",
+    "name": "http::snapshot::redirect_tests::native_redirect_target_keeps_existing_query_validation_and_rejects_header_injection",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 208,
+    "crate": "heptabao-server",
+    "name": "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_keeps_shorter_original_scope_after_actual_aead",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 209,
+    "crate": "heptabao-server",
+    "name": "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_rechecks_original_actor_after_actual_aead",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 210,
+    "crate": "heptabao-server",
+    "name": "http::response_coalescing_tests::ordinary_http_complete_small_prefix_keeps_body_and_bounded_metadata",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 211,
+    "crate": "heptabao-server",
+    "name": "http::response_coalescing_tests::ordinary_http_original_head_no_body_chunked_and_large_raw_framing_remain",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 212,
+    "crate": "heptabao-server",
+    "name": "http::response_coalescing_tests::ordinary_http_prefix_keeps_partial_writes_and_original_io_failures",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 213,
+    "crate": "heptabao-server",
+    "name": "http::response_coalescing_tests::ordinary_http_tcp_tls_first_record_contains_full_small_response_with_unread_upload",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 214,
+    "crate": "heptabao-server",
+    "name": "http::response_coalescing_tests::ordinary_http_tcp_tls_response_preserves_original_expired_deadline",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 215,
+    "crate": "heptabao-server",
+    "name": "http::no_forward_tests::no_forward271_binding_and_wire_metadata_cannot_replay_original_ingress",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 216,
+    "crate": "heptabao-server",
+    "name": "http::no_forward_tests::no_forward271_header_uses_first_value_and_preserves_original_target",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 217,
+    "crate": "heptabao-server",
+    "name": "service::legacy_immutable_kv::tests::no_forward271_keeps_actual_legacy_local_readindex_get",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 218,
+    "crate": "heptabao-server",
+    "name": "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_keeps_local_routes_and_does_not_consume_actor",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 219,
+    "crate": "heptabao-server",
+    "name": "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_original_deadline_and_real_response_audit_withhold_location",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 220,
+    "crate": "heptabao-server",
+    "name": "service::request_redirect_tests::no_forward271_capsule_keeps_origin_codec_audit_and_original_deadline",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 221,
+    "crate": "heptabao-server",
+    "name": "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 222,
+    "crate": "heptabao-server",
+    "name": "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_rejects_actual_new_request_nonce_or_selected_root",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 223,
+    "crate": "heptabao-server",
+    "name": "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_actual_failed_repair_closes_reselection_before_any_result",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 224,
+    "crate": "heptabao-server",
+    "name": "ha::native_v6_runtime::request_timing_tests::native_request_timing_failure_has_only_bounded_static_metadata",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 225,
+    "crate": "heptabao-server",
+    "name": "ha::native_v6_runtime::request_timing_tests::native_request_timing_sixty_four_buckets_preserve_existing_aggregates",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 226,
+    "crate": "heptabao-server",
+    "name": "ha::native_v6_runtime::request_timing_tests::native_request_timing_observes_deadlines_but_preserves_once_only_results",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 227,
+    "crate": "heptabao-server",
+    "name": "ha::native_v6_runtime::request_timing_tests::native_request_timing_phase_advance_is_distinct_from_operation_success",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 228,
+    "crate": "heptabao-server",
+    "name": "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_once_and_owned_result_identity",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 229,
+    "crate": "heptabao-server",
+    "name": "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_nested_source_and_inner_results",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 230,
+    "crate": "heptabao-server",
+    "name": "service::native_v6_ha_install::tests::native_ha_install_batches_actual_readindex_cold_missing_and_corrupt_file",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 231,
+    "crate": "heptabao-server",
+    "name": "http::h2_transport::sync_worker_tests::h2_sync_worker_is_unentered_and_retains_outer_context",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 232,
+    "crate": "heptabao-server",
+    "name": "http::h2_transport::sync_worker_tests::h2_sync_worker_expired_deadline_never_calls_work",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 233,
+    "crate": "heptabao-server",
+    "name": "http::h2_transport::sync_worker_tests::h2_sync_worker_preserves_inner_result",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 234,
+    "crate": "heptabao-server",
+    "name": "http::h2_transport::sync_worker_tests::h2_sync_worker_joins_panicked_work_and_drops_capture",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 235,
+    "crate": "heptabao-server",
+    "name": "http::h2_transport::sync_worker_tests::h2_sync_worker_does_not_authorize_nested_runtime_context",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 236,
+    "crate": "heptabao-server",
+    "name": "http::h2_transport::sync_worker_tests::h2_sync_worker_cancelled_waiter_retains_blocking_capacity",
+    "profiles": [
+      "default"
+    ]
+  },
+  {
+    "ordinal": 237,
+    "crate": "heptabao-server",
+    "name": "service::native_v6_ha_install::tests::same_root_republication_tests::native_ha_same_root_republication_advances_warm_and_cold_cursors",
+    "profiles": [
+      "default"
+    ]
+  }
+]

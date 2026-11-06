@@ -1,0 +1,90 @@
+{
+  "schema": "heptabao.root.combined237-fresh-stage-interface-qualification.r43",
+  "pass": true,
+  "checks": 17,
+  "results": [
+    {
+      "name": "whole_interface11",
+      "pass": true
+    },
+    {
+      "name": "manifest_every_whole_file_exact",
+      "pass": true
+    },
+    {
+      "name": "author46_independently_reproduced",
+      "pass": true
+    },
+    {
+      "name": "reference_GO_pin",
+      "pass": true
+    },
+    {
+      "name": "reference_qualification_pin",
+      "pass": true
+    },
+    {
+      "name": "original2379_qualification_kept_as_original",
+      "pass": true
+    },
+    {
+      "name": "reference_journal_unchanged",
+      "pass": true
+    },
+    {
+      "name": "launcher_whole_matches_root_SOURCE26",
+      "pass": true
+    },
+    {
+      "name": "schema_purpose_only_planned_semantic_adaptations",
+      "pass": true
+    },
+    {
+      "name": "all_new_identity_and_authority_bindings_unresolved",
+      "pass": true
+    },
+    {
+      "name": "all12_consumer_fields_explicit",
+      "pass": true
+    },
+    {
+      "name": "all_original_time_and_size_limits_preserved",
+      "pass": true
+    },
+    {
+      "name": "original495_and_failed12_fences_remain",
+      "pass": true
+    },
+    {
+      "name": "only_original_incremental_bundle_prerequisite",
+      "pass": true
+    },
+    {
+      "name": "historical4_controls_not_new_groups",
+      "pass": true
+    },
+    {
+      "name": "launcher_remaining462_not_cap_extension",
+      "pass": true
+    },
+    {
+      "name": "no_authority_for_native_or_product",
+      "pass": true
+    }
+  ],
+  "packet": "2c399616f1f1faf03dd4e43ba68b0f99c549b777",
+  "interface": {
+    "blob": "6cb86876f738b08c59f071e2b45be7930b2d6b8f",
+    "bytes": 13549,
+    "sha256": "7f8c44d650d0a564d5c68c96c0f2576f589fb95f27f90b0cfd962d1368705fed"
+  },
+  "author_checks": 46,
+  "qualification": "unbound SOURCE interface only; no new stage or candidate runtime",
+  "pending": "all actual formatted23 bodies, final combined tree/commit/index/ancestry, literal-bound source/request/journal and actual new stage",
+  "Native_authorized": false,
+  "combined_build_submitted": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

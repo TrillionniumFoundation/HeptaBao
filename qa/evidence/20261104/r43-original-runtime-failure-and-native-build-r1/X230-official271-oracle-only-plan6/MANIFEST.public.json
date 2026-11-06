@@ -1,0 +1,35 @@
+{
+  "files": [
+    {
+      "path": "PLAN.public.json",
+      "blob": "0eb5dcd76148d5ae71a19ac28e0ccf9bfdddbe5f",
+      "bytes": 7333,
+      "sha256": "807d399627bd7a7224cc684f20685c53e4efb0ae88db4fc7e3d32984dbdf05ea"
+    },
+    {
+      "path": "historical-X230-inputs.original.json",
+      "blob": "bb7c6f688d2c78269210bfbec48450d7e3d6710f",
+      "bytes": 4634,
+      "sha256": "587a54be9432b7858d976e1e953104a972cff70f0b4c7764c2126c11eb3d7312"
+    },
+    {
+      "path": "root-X230-reference.original.json",
+      "blob": "7d6c498def2f453190569a135965d9867a741081",
+      "bytes": 3760,
+      "sha256": "ab58c3308e69e7e14f45af3a394bfe31a43c32ae2ad45a1f72c0da6a5e8d61f9"
+    },
+    {
+      "path": "bao.historical-native.original.json",
+      "blob": "3fe97192ce568d3f502472d9bde3827f6cc1027b",
+      "bytes": 448,
+      "sha256": "d7ba1693438aa0088e684945b6024089778e23d53fa5f8da40c473b9e718f810"
+    },
+    {
+      "path": "archive.historical-native.original.json",
+      "blob": "4d184134d27daa5a66fb899607340f0a10d48211",
+      "bytes": 484,
+      "sha256": "d4ce4b27d08040daa758fbed4ec55d9e781a117e58da2c81827086a5217c4022"
+    }
+  ],
+  "Native": 0
+}

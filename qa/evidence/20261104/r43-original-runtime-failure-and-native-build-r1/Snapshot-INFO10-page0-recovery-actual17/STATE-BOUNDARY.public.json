@@ -1,0 +1,160 @@
+{
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "paused": false,
+  "infoStarted": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  ],
+  "bodyStarted": [
+    [
+      true,
+      true
+    ],
+    [
+      true
+    ],
+    [
+      true
+    ],
+    [
+      true
+    ],
+    [
+      true
+    ],
+    [
+      true
+    ],
+    [
+      true
+    ],
+    [
+      true,
+      true,
+      true
+    ],
+    [
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      false
+    ],
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    [
+      false
+    ],
+    [
+      false
+    ],
+    [
+      false
+    ],
+    [
+      false
+    ],
+    [
+      false
+    ],
+    [
+      false
+    ],
+    [
+      false
+    ],
+    [
+      false
+    ],
+    [
+      false
+    ],
+    [
+      false
+    ],
+    [
+      false
+    ]
+  ],
+  "info10Page0Recovery": {
+    "phase": "armed_whole",
+    "goRaw": "{\n  \"authorization\": \"GO\",\n  \"scope\": \"snapshot_formatted23_info10_page0_retrieval_recovery\",\n  \"slot\": \"snapshot_2379_formatted23_readonly_gitfirst_r1\",\n  \"original_operation\": \"37a07e380c8f74019d9b6c20c86cfa339d409e3b6d01b42b3a4230cb767777dc\",\n  \"failed_call_key\": \"sf23-r1-f10-info-p0\",\n  \"recovery_call_key\": \"sf23-r1-f10-info-p0-recovery1\",\n  \"request\": {\n    \"blob\": \"916332b53c58b018404b00324cb5aa1588975b52\",\n    \"bytes\": 121,\n    \"sha256\": \"17f7fcfad72f016c11d8d7b0be379eb4f2043b20b9c33cc4698bb78d74173edd\"\n  },\n  \"failed_sdk\": {\n    \"blob\": \"923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011\",\n    \"bytes\": 248,\n    \"sha256\": \"cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173\"\n  },\n  \"maximum_recovery_page_calls\": 1,\n  \"page_bytes\": 8192,\n  \"native_payload_cap\": 1048576,\n  \"operation_start_authorized\": false,\n  \"operation_status_authorized\": false,\n  \"failed_call_preserved\": true,\n  \"continue_original_table_only_after_info_closed\": true,\n  \"original_go\": \"25ea12c4406a12ba5ce263b10a2723f73276d74b\",\n  \"schema\": \"heptabao.root-exact-GO.snapshot-info10-immutable-page0-recovery.r1\",\n  \"sourcePacket\": {\n    \"tree\": \"e75127cf63a2ce32b19aeb6cf75c33e1ac0db78e\",\n    \"files\": 21,\n    \"bytes\": 259666,\n    \"merkle\": {\n      \"root_sha\": \"e75127cf63a2ce32b19aeb6cf75c33e1ac0db78e\",\n      \"trees_verified\": 1,\n      \"leaf_count\": 21\n    },\n    \"whole\": true\n  },\n  \"sourceJournal\": {\n    \"blob\": \"a154e8b3e4bbce818471dd10fe434e4ded570c8b\",\n    \"bytes\": 79062,\n    \"sha256\": \"8ad44f98b72e37ae7037451eada7cf9c5616609ec5123f7bc8cef3b4fcf4f9d9\"\n  },\n  \"rootSourceReview\": {\n    \"blob\": \"36da6a59db1ebba0a5704477b6db51bc214ef6c5\",\n    \"bytes\": 1905,\n    \"sha256\": \"139edc7946f3efc4b344fd66a2f078a376b174fad2a1de922efbd5ddc10d2b13\"\n  },\n  \"rootSourceChecks\": 12,\n  \"authorChecksReproduced\": 36,\n  \"actualBoundary\": {\n    \"blob\": \"4d4272b3ccab6523e3004f9d95623b15606fa8a6\",\n    \"bytes\": 2575,\n    \"sha256\": \"e3d331c8327a884e2ec7701b4286a921da1e256691a8ebe986c52b2d0a101eb0\"\n  },\n  \"allocation\": {\n    \"line\": \"B\",\n    \"granted\": true,\n    \"maximumNativeCallsInFlight\": 1,\n    \"newNativeFuturesAuthorized\": 0,\n    \"globalMaximumNativeLanes\": 2,\n    \"otherLane\": \"C original body0 UNKNOWN retained\",\n    \"A\": 0,\n    \"rootNativeCalls\": 0\n  },\n  \"execution\": \"Only one separately armed operation_result call for the exact known original ID, offset0, limit8192. Whole original SDK before interpretation. Successful single-page EOF must reconstruct the original immutable payload, close the original observer and pass existing metadata gates.\",\n  \"preservation\": \"Keep the failed original call, called flag, SDK, original GO and all errors unchanged. This is a separate retrieval attempt and never recovery of the missing original transport reply.\",\n  \"afterRecoveredInfo\": \"Stop immediately after INFO closure, publish a minimal original result and lane-release record, and leave file10 BODY and file11 INFO unsubmitted. Existing fixed23 table authorization remains but its Native lane pauses for Mac runtime.\",\n  \"afterFailure\": \"Preserve the new error and pause; no second retrieval, Native admission or original state reset under this GO.\",\n  \"normalBuildAuthorized\": false,\n  \"fullReplacement\": false,\n  \"productionCutover\": false,\n  \"legacyCleanup\": false\n}\n",
+    "goPin": {
+      "blob": "d5b3035c956e70c5d2ecdb697f0961d592011b86",
+      "bytes": 3263,
+      "sha256": "f420b012de3dba1c77b3ad36930c53f8e4e6b62de40172170484f433859daf4d"
+    },
+    "before": {
+      "pending": "sf23-r1-f10-info-p0",
+      "paused": true,
+      "failedCall": {
+        "blob": "2b64176574dbb70da660cb4ec8eee657b1969eae",
+        "bytes": 2065,
+        "sha256": "1d91200c87b3f9ae88631471212dae416cf697d341d0436ed7b8ea1db9ebc84b"
+      },
+      "admissionsCalled": 27,
+      "bodyBytes": 574522,
+      "pageCalled": 1,
+      "completedObservers": 26,
+      "wholeFiles": 10
+    },
+    "oldKey": "sf23-r1-f10-info-p0",
+    "callKey": "sf23-r1-f10-info-p0-recovery1",
+    "oldFailureUnchanged": true,
+    "request": {
+      "blob": "916332b53c58b018404b00324cb5aa1588975b52",
+      "bytes": 121,
+      "sha256": "17f7fcfad72f016c11d8d7b0be379eb4f2043b20b9c33cc4698bb78d74173edd"
+    }
+  },
+  "oldFailure": {
+    "schema": "heptabao.gitfirst.outer-caught-failure.r1",
+    "action": "accept",
+    "name": "Error",
+    "message": "native_tool_error_preserved_stop",
+    "automaticRetry": false,
+    "newAdmissionAllowed": false,
+    "returnedNormally": true
+  },
+  "oldFailedCallUnchanged": {
+    "blob": "2b64176574dbb70da660cb4ec8eee657b1969eae",
+    "bytes": 2065,
+    "sha256": "1d91200c87b3f9ae88631471212dae416cf697d341d0436ed7b8ea1db9ebc84b"
+  }
+}

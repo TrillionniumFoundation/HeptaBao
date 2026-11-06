@@ -1,0 +1,115 @@
+--- a/reconciliation.original.js
++++ b/reconciliation.025b.js
+@@ -5,17 +5,15 @@
+  * No business START, metadata refresh, second body range, key or path change.
+  * Original SDK is Git-whole before isError/parse; unknown stops this new context.
+  */
++const GF_SLOT = "jwt_pki_025b05a3_controls_body0_admission_reconcile_r1";
++const GF_ORIGINAL_SLOT = "jwt_pki_025b05a3_build_controls_inert_gitfirst_r2";
++const GF_ORIGINAL_CALL = "jwt-pki-025b05a3-controls-r2-published-body0-admit";
++const GF_REQUEST = {"blob":"b9e3c37da6a88ed78fe36893d8bf373e5213fdff","bytes":417,"sha256":"ba148cdadb1d9e0cb1147107cbe5be442c1b15873b4a1f8aec23ece70faba8be"};
+-const GF_SLOT = "snapshot_2379_formatter_body0_admission_reconcile_r1";
+-const GF_ORIGINAL_SLOT = "snapshot_2379_rog_formatter_gitfirst_r1";
+-const GF_ORIGINAL_CALL = "snapshot-2379-formatter-body0-admit";
+-const GF_REQUEST = {blob:"06f7a3eccf5de1c877b552cab886d14086d0c51c",
+- bytes:432,sha256:"35921fca79a714035d0033a003d481862326e4a8dc6409f5017bbc4fb37ea992"};
+ const GF_OLD_SDK = {blob:"f181c1e93e7b64c402b332fd29b23d0141762082",
+  bytes:247,sha256:"20bc68d840783af5cc8e791289d5ac77c6941d45f79768c397c95e629784e3fa"};
++const GF_OLD_UNKNOWN = {"blob":"05d4be11937d3beca1fe0baa9f99df0fa761cb1b","bytes":2322,"sha256":"ff1276bf4f1fa41b64120a84b7e4688ca009992ad0f56d26202536aefa731d46"};
++const GF_OLD_UNKNOWN_TREE = "4169bee13a26dafcce26cf156e490d03c9c91d1a";
++const GF_BODY_EXPECTED = {"path":"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/native_jwt_build.py","bytes":30397,"sha256":"d76b3d392c20bf4a7bbb7e8d8ea69abdfe3bb11f71a35075ba26ab948e778a50","version":"66306:33212340:30397:1793965550402189411:1793965550403278461","infoOperation":"e0b3516213ca2ce013bfc0288d2f641511f811b71f8ed4e08db682938e13860a","infoNative":{"blob":"9cfffd12c038026416fcae6370c78cff0c17dd46","bytes":466,"sha256":"81fbf8bffb465a57091b6ca15842f92ac5f9536b3ede652ea7a94c4ec193f6d4"}};
+-const GF_OLD_UNKNOWN = {blob:"b174296c1b46c119356df90d5c68b6ca5bc4c19c",
+- bytes:1629,sha256:"8e94eed174a2e88206fb6e27685df93d404eba8512cdb052e6528690656e6f3c"};
+-const GF_OLD_UNKNOWN_TREE = "29b6302cc3cb329566b6f66c0441c0899b0cc811";
+-const GF_BODY_EXPECTED = {"path":"/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/result.public.json","bytes":118925,"sha256":"5755903ce5696b6745d7af2b27a69a30e0d001697eeb85282df75eb25cea40d8","version":"66306:31236133:118925:1793956739343592677:1793956739343592677","infoOperation":"6040da16c66f2a7b6f2f4a3939721c0e78afddf8f9070d76c77a0ffe49e82cff","infoNative":{"blob":"45d1709e3bbbf74caee996369a1eefdfbf855a31","bytes":483,"sha256":"8430d3a4b0c79f274222678fd30f8f0cec8f7f546602c6a1a1a2a8c749c5a4c2"}};
+ const GF_PAGE_BYTES = 16384;
+ 
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+@@ -27,8 +25,9 @@
+  const old=load(GF_ORIGINAL_SLOT),call=old?.calls?.[GF_ORIGINAL_CALL];
+  gfNeed(old?.paused===true && old.nativeCallInFlight===false
+    && old.pending===GF_ORIGINAL_CALL && old.activeObserver===null
++   && old.job==="1a1b0ade81d-fc05-7220"
++   && old.publishedBodyStarted?.length===4 && old.publishedBodyStarted[0]===true
++   && old.publishedBodyStarted.slice(1).every(x=>x===false) && old.publishedBodies?.length===0
+-   && old.job==="1a1b02771c2-fc05-6e9f"
+-   && old.formatResultBodyStarted===1 && old.formatResultBodyRanges?.length===0
+    && call?.called===true && call.phase==="native_interpretation_refused"
+    && call.sdkArchive?.whole===true && gfMetaEquals(call.requestRaw,GF_REQUEST)
+    && call.sdkPin?.blob===GF_OLD_SDK.blob
+@@ -40,7 +39,7 @@
+    "original_BODY1_still_unsubmitted");
+  return {slot:GF_ORIGINAL_SLOT,job:old.job,paused:old.paused,pending:old.pending,
+    called:call.called,phase:call.phase,request:call.requestPin,sdk:call.sdkPin,
++   started:old.publishedBodyStarted,ranges:old.publishedBodies.length,
+-   started:old.formatResultBodyStarted,ranges:old.formatResultBodyRanges.length,
+    activeObserver:old.activeObserver,nativeCallInFlight:old.nativeCallInFlight,
+    oldUnknown:GF_OLD_UNKNOWN,oldUnknownTree:GF_OLD_UNKNOWN_TREE};
+ }
+@@ -65,7 +64,7 @@
+    && gfMetaEquals(oldUnknownRaw,GF_OLD_UNKNOWN),"exact_whole_new_GO_and_old_UNKNOWN");
+  const g=JSON.parse(goRaw),old=JSON.parse(oldUnknownRaw),view=gfOriginalUnknownView();
+  gfNeed(g.authorization==="GO"
++   && g.scope==="controls_body0_exact_admission_reconciliation"
+-   && g.scope==="format_body0_exact_admission_reconciliation"
+    && g.slot===GF_SLOT && g.original_slot===GF_ORIGINAL_SLOT
+    && g.lookup_only===false && g.may_create_first_admission===true
+    && g.maximum_operation_start_calls===1 && g.process_start_authorized===false
+@@ -77,10 +76,10 @@
+    && g.exact_request?.bytes===GF_REQUEST.bytes
+    && g.exact_request?.sha256===GF_REQUEST.sha256,
+    "separate_root_one_exact_admission_reconciliation_scope");
++ gfNeed(old.slot===GF_ORIGINAL_SLOT && old.callKey===GF_ORIGINAL_CALL
++   && old.status==="UNKNOWN_BODY_ADMISSION_STOPPED" && old.bodyStartedOnce===true
++   && old.bodyOperationID===null && old.admissions1to3Submitted===false
++   && old.request.blob===GF_REQUEST.blob && old.originalSDK.blob===GF_OLD_SDK.blob,
+- gfNeed(old.originalSlot===GF_ORIGINAL_SLOT && old.uniqueCallKey===GF_ORIGINAL_CALL
+-   && old.readonlyAdmissionOutcome==="UNKNOWN" && old.paused===true
+-   && old.observedOperationId===null && old.secondBodySubmitted===false
+-   && old.uniqueRequest.blob===GF_REQUEST.blob && old.originalSDK.blob===GF_OLD_SDK.blob,
+    "whole_original_failure_evidence_exact");
+  store(GF_SLOT,{rootGoWhole:true,goRaw,goPin,job:view.job,
+    originalUnknownView:JSON.stringify(view),originalUnknownRaw:oldUnknownRaw,
+@@ -99,12 +98,12 @@
+     && s.completedObservers.length===0 && s.reconciledRange===null
+     && gfMetaEquals(raw,GF_REQUEST)
+     && Object.keys(q).sort().join(",")==="idempotency_key,operation"
++    && q.idempotency_key==="heptabao-native-jwt-pki-025b05a3-controls-observe-r2-published-body0"
+-    && q.idempotency_key==="heptabao-native-snapshot-2379d02b-formatter-observe-r1-result-body0"
+     && Object.keys(q.operation).sort().join(",")==="arguments,tool"
+     && q.operation.tool==="binary_read"
+     && a && Object.keys(a).sort().join(",")==="expected_version,host,limit,offset,path"
+     && a.host==="rog" && a.path===GF_BODY_EXPECTED.path && a.offset===0
++    && a.limit===30397 && a.expected_version===GF_BODY_EXPECTED.version,
+-    && a.limit===65536 && a.expected_version===GF_BODY_EXPECTED.version,
+     "one_exact_original_key_typed_BODY0_admission_reconciliation");
+  } else if(kind==="operation_status") {
+   gfNeed(s.activeObserver && !s.activeObserver.futureClosed
+@@ -284,21 +283,21 @@
+     && p.content?.length===1 && p.content[0].type==="text","original_native_result_success");
+   const nativeRaw=p.content[0].text,v=parseLosslessIntegers(nativeRaw),need=GF_BODY_EXPECTED;
+   gfNeed(a.tool==="binary_read" && a.request.operation.arguments.offset===0
++    && a.request.operation.arguments.limit===30397
+-    && a.request.operation.arguments.limit===65536
+     && v.path===need.path && v.version===need.version && v.size===need.bytes
++    && v.offset===0 && v.next_offset===30397 && v.eof===true
++    && typeof v.data_base64==="string" && v.chunk_sha256===need.sha256,
+-    && v.offset===0 && v.next_offset===65536 && v.eof===false
+-    && typeof v.data_base64==="string" && /^[a-f0-9]{64}$/.test(v.chunk_sha256),
+     "exact_reconciled_BODY0_extent_no_BODY1");
+   const bodyBytes=unb64(v.data_base64);
++  gfNeed(bodyBytes.length===30397
+-  gfNeed(bodyBytes.length===65536
+     && sha256Latin1(byteString(bodyBytes))===v.chunk_sha256,
+     "reconciled_BODY0_actual_bytes_SHA");
+   const nativePin=gitBlobMeta(nativeRaw);
++  const row={offset:0,limit:30397,next:30397,chunkSHA256:v.chunk_sha256,
+-  const row={offset:0,limit:65536,next:65536,chunkSHA256:v.chunk_sha256,
+     base64:v.data_base64,operationId:a.id,originalPayload:pin,payloadTree:archive.tree,
+     nativeText:nativePin,metadataOperation:need.infoOperation,
+     sourceFileVersion:need.version,sourceFileHashFromPriorMetadata:need.sha256,
++    completeFileBody:true,oldAttemptOutcome:"UNKNOWN",
+-    completeFileBody:false,oldAttemptOutcome:"UNKNOWN",
+     reconciliationAdmission:s.reconciliationAdmission};
+   const closedArchive=await archiveFlatPublicTextsOnce({
+    key:"gfrc-"+a.id,repository:"TrillionniumFoundation/HeptaBao",

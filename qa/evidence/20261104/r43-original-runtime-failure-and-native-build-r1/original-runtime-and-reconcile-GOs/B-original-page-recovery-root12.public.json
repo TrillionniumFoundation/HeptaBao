@@ -1,0 +1,110 @@
+{
+  "schema": "heptabao.root-actual-qualification.snapshot-info10-page-recovery.r1",
+  "pass": true,
+  "checks": 12,
+  "rows": [
+    {
+      "id": "whole_actual17",
+      "pass": true
+    },
+    {
+      "id": "same_exact_recovery_GO",
+      "pass": true
+    },
+    {
+      "id": "original_request_and_failed_sdk_preserved",
+      "pass": true
+    },
+    {
+      "id": "same_original_closed_status",
+      "pass": true
+    },
+    {
+      "id": "whole_success_SDK_native_exact",
+      "pass": true
+    },
+    {
+      "id": "same_original_immutable_single_page",
+      "pass": true
+    },
+    {
+      "id": "actual_payload_whole_SHA",
+      "pass": true
+    },
+    {
+      "id": "payload_native_file_info_exact",
+      "pass": true
+    },
+    {
+      "id": "actual_metadata_expected_file",
+      "pass": true
+    },
+    {
+      "id": "separate_exact_recovery_arm",
+      "pass": true
+    },
+    {
+      "id": "no_current_call_or_future",
+      "pass": true
+    },
+    {
+      "id": "file10_body_file11_info_unsubmitted",
+      "pass": true
+    }
+  ],
+  "packet": {
+    "tree": "b82c813a4af52bc713fbb587aed062fca5e1a1a5",
+    "files": 17,
+    "bytes": 29167,
+    "merkle": {
+      "root_sha": "b82c813a4af52bc713fbb587aed062fca5e1a1a5",
+      "trees_verified": 1,
+      "leaf_count": 17
+    },
+    "whole": true
+  },
+  "originalErrorPacket": {
+    "tree": "d3c0538a542a856595ec6b4c0d1fe6eb748b59dc",
+    "files": 20,
+    "bytes": 53164,
+    "merkle": {
+      "root_sha": "d3c0538a542a856595ec6b4c0d1fe6eb748b59dc",
+      "trees_verified": 1,
+      "leaf_count": 20
+    },
+    "whole": true
+  },
+  "GO": {
+    "blob": "d5b3035c956e70c5d2ecdb697f0961d592011b86",
+    "bytes": 3263,
+    "sha256": "f420b012de3dba1c77b3ad36930c53f8e4e6b62de40172170484f433859daf4d"
+  },
+  "release": {
+    "blob": "3faec1b373cef9d1afdb223996b7fb0b450c5923",
+    "bytes": 3436,
+    "sha256": "a3fe8743e5d7ee05a374fdfffb1e9311e64054a333e90b99dd5c7ed163ccb498"
+  },
+  "recoverySDK": {
+    "blob": "870ef89cc5ce29990502793b71250d90a20f52ca",
+    "bytes": 1660,
+    "sha256": "eec5465ab43adf483d419422d9fe99760477cdf3e3e53dfb211487befa3a3bc1"
+  },
+  "payload": {
+    "blob": "ffd76d8c9b973c47efd8d88d7c28906357a3e38b",
+    "bytes": 606,
+    "sha256": "516f24af6feef2f1f7ce6765381c9710dd5dc8ff9a04f7317f5abc014eebf463"
+  },
+  "nativeInfo": {
+    "blob": "23e68569a45a3f0778d28b5e2d78147f1320e20a",
+    "bytes": 489,
+    "sha256": "4e4709f27d137852da8088b138aad927bf950a06677be3bab9f2333142e19424"
+  },
+  "originalOperation": "37a07e380c8f74019d9b6c20c86cfa339d409e3b6d01b42b3a4230cb767777dc",
+  "onlyAdditionalNativeCall": "operation_result",
+  "oldFailedSDKPreserved": true,
+  "newNativeAdmissions": 0,
+  "newNativeFutures": 0,
+  "originalObserverNowWholeClosed": true,
+  "laneBReleased": true,
+  "semanticQualification": false
+}

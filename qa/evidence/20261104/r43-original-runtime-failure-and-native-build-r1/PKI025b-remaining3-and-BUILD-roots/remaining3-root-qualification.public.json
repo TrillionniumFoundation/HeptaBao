@@ -1,0 +1,231 @@
+{
+  "schema": "heptabao.root.025b-controls-remaining3-full-actual-qualification.v1",
+  "pass": true,
+  "packet": "9e868a7c2fc3a122b6d548ef029e1daa928af3b7",
+  "authorChecks": 221,
+  "rootChecks": [
+    {
+      "name": "remaining3_actual_unique_calls",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_call_jwt-pki-025b-remaining3-r1-body1-admit",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_armed_tree_jwt-pki-025b-remaining3-r1-body1-admit",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_call_jwt-pki-025b-remaining3-r1-body1-status0",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_armed_tree_jwt-pki-025b-remaining3-r1-body1-status0",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_call_jwt-pki-025b-remaining3-r1-body1-page0",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_armed_tree_jwt-pki-025b-remaining3-r1-body1-page0",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_call_jwt-pki-025b-remaining3-r1-body1-page1",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_armed_tree_jwt-pki-025b-remaining3-r1-body1-page1",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_call_jwt-pki-025b-remaining3-r1-body1-page2",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_armed_tree_jwt-pki-025b-remaining3-r1-body1-page2",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_call_jwt-pki-025b-remaining3-r1-body1-page3",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_armed_tree_jwt-pki-025b-remaining3-r1-body1-page3",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_call_jwt-pki-025b-remaining3-r1-body2-admit",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_armed_tree_jwt-pki-025b-remaining3-r1-body2-admit",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_call_jwt-pki-025b-remaining3-r1-body2-status0",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_armed_tree_jwt-pki-025b-remaining3-r1-body2-status0",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_call_jwt-pki-025b-remaining3-r1-body2-page0",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_armed_tree_jwt-pki-025b-remaining3-r1-body2-page0",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_call_jwt-pki-025b-remaining3-r1-body2-page1",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_armed_tree_jwt-pki-025b-remaining3-r1-body2-page1",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_call_jwt-pki-025b-remaining3-r1-body3-admit",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_armed_tree_jwt-pki-025b-remaining3-r1-body3-admit",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_call_jwt-pki-025b-remaining3-r1-body3-status0",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_armed_tree_jwt-pki-025b-remaining3-r1-body3-status0",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_call_jwt-pki-025b-remaining3-r1-body3-page0",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_armed_tree_jwt-pki-025b-remaining3-r1-body3-page0",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_observer_unique",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_observer_dcbd7b2fa7b28dece420f857fa5996c6e6d2387b0880b40f450a8a8b3515fb4b",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_page_dcbd7b2fa7b28dece420f857fa5996c6e6d2387b0880b40f450a8a8b3515fb4b_0",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_page_dcbd7b2fa7b28dece420f857fa5996c6e6d2387b0880b40f450a8a8b3515fb4b_16384",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_page_dcbd7b2fa7b28dece420f857fa5996c6e6d2387b0880b40f450a8a8b3515fb4b_32768",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_page_dcbd7b2fa7b28dece420f857fa5996c6e6d2387b0880b40f450a8a8b3515fb4b_49152",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_payload_dcbd7b2fa7b28dece420f857fa5996c6e6d2387b0880b40f450a8a8b3515fb4b",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_observer_46a8b38d1bbe7b0b61475df7c57c83607409f5537015c78ff09915b72d430b5c",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_page_46a8b38d1bbe7b0b61475df7c57c83607409f5537015c78ff09915b72d430b5c_0",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_page_46a8b38d1bbe7b0b61475df7c57c83607409f5537015c78ff09915b72d430b5c_16384",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_payload_46a8b38d1bbe7b0b61475df7c57c83607409f5537015c78ff09915b72d430b5c",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_observer_0cb42359a3dc483e557e997bca71a89af7f6154d3f44a1a5ee803fb327efaafb",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_page_0cb42359a3dc483e557e997bca71a89af7f6154d3f44a1a5ee803fb327efaafb_0",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_payload_0cb42359a3dc483e557e997bca71a89af7f6154d3f44a1a5ee803fb327efaafb",
+      "ok": true
+    },
+    {
+      "name": "remaining3_actual_all_observer_calls_accounted",
+      "ok": true
+    },
+    {
+      "name": "old_original_context_exact",
+      "ok": true
+    },
+    {
+      "name": "old_reconciliation_context_exact",
+      "ok": true
+    },
+    {
+      "name": "prior_body0_whole_exact",
+      "ok": true
+    },
+    {
+      "name": "prior_body0_root_qualification_exact",
+      "ok": true
+    },
+    {
+      "name": "four_original_INFOs_same_qualified",
+      "ok": true
+    },
+    {
+      "name": "metadata_native0_whole_same_source29",
+      "ok": true
+    },
+    {
+      "name": "metadata_native1_whole_same_source29",
+      "ok": true
+    },
+    {
+      "name": "metadata_native2_whole_same_source29",
+      "ok": true
+    },
+    {
+      "name": "metadata_native3_whole_same_source29",
+      "ok": true
+    },
+    {
+      "name": "minimum_release_exact_preserved",
+      "ok": true
+    }
+  ],
+  "actualCalls": 13,
+  "newObservers": 3,
+  "immutablePages": 7,
+  "bodyBytes": 60208,
+  "payloadBytes": 81560,
+  "body0InheritedActual": true,
+  "originalBody0UnknownPreserved": true,
+  "metadataRootQualification": {
+    "blob": "61acf274f17beaadf75396e5f0dfdfe236a132f7",
+    "bytes": 14546,
+    "sha256": "25366808cbb781c89828e469572c58d554243019f721130ec8de5a3066d26aec"
+  },
+  "currentCallOrFuture": 0,
+  "BUILDSubmitted": false,
+  "productTestsExecuted": 0
+}

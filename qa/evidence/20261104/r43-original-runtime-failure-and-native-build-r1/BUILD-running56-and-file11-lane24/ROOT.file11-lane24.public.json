@@ -1,0 +1,130 @@
+{
+  "schema": "heptabao.root.snapshot-file11-boundary-lane-qualification.r43",
+  "pass": true,
+  "checks": 24,
+  "results": [
+    {
+      "name": "whole_release24_and_service_body",
+      "pass": true
+    },
+    {
+      "name": "whole_service519619_exact",
+      "pass": true
+    },
+    {
+      "name": "only_original_file11_scope",
+      "pass": true
+    },
+    {
+      "name": "12whole_37closed_total",
+      "pass": true
+    },
+    {
+      "name": "B0_explicit_boundary_hold",
+      "pass": true
+    },
+    {
+      "name": "original_status00:SDK_and_native_whole",
+      "pass": true
+    },
+    {
+      "name": "original_status00:completed_inactive",
+      "pass": true
+    },
+    {
+      "name": "original_status01:SDK_and_native_whole",
+      "pass": true
+    },
+    {
+      "name": "original_status01:completed_inactive",
+      "pass": true
+    },
+    {
+      "name": "original_status02:SDK_and_native_whole",
+      "pass": true
+    },
+    {
+      "name": "original_status02:completed_inactive",
+      "pass": true
+    },
+    {
+      "name": "original_status03:SDK_and_native_whole",
+      "pass": true
+    },
+    {
+      "name": "original_status03:completed_inactive",
+      "pass": true
+    },
+    {
+      "name": "original_status04:SDK_and_native_whole",
+      "pass": true
+    },
+    {
+      "name": "original_status04:completed_inactive",
+      "pass": true
+    },
+    {
+      "name": "original_status05:SDK_and_native_whole",
+      "pass": true
+    },
+    {
+      "name": "original_status05:completed_inactive",
+      "pass": true
+    },
+    {
+      "name": "original_status06:SDK_and_native_whole",
+      "pass": true
+    },
+    {
+      "name": "original_status06:completed_inactive",
+      "pass": true
+    },
+    {
+      "name": "original_status07:SDK_and_native_whole",
+      "pass": true
+    },
+    {
+      "name": "original_status07:completed_inactive",
+      "pass": true
+    },
+    {
+      "name": "original_status08:SDK_and_native_whole",
+      "pass": true
+    },
+    {
+      "name": "original_status08:completed_inactive",
+      "pass": true
+    },
+    {
+      "name": "historical_errors_and_scope_preserved",
+      "pass": true
+    }
+  ],
+  "packet": "79d73f5ea422f0a10cda25af29472b4dd0752475",
+  "body": {
+    "blob": "6574a4d522a62feb328fea61d19df575ce7f2550",
+    "bytes": 519619,
+    "sha256": "4ad6ea76e43a14a073843400b12f516175d46ed103610a6f7202b82a09d7c919"
+  },
+  "release": {
+    "blob": "caf7923b910dd5a6b93834a9c8cbb60f328a2c57",
+    "bytes": 20089,
+    "sha256": "c7441271fae072386473d93ecd5c21b691c52f9795424f57debb78599bf32a86"
+  },
+  "B_lane_released": true,
+  "allocation_after_release": {
+    "A": 0,
+    "B": 0,
+    "C": 1,
+    "root": 0
+  },
+  "reserved_next_lane": "A only after separate exact original-instance diagnostic SOURCE/GO",
+  "remaining_formatted_files": 11,
+  "whole_194_call_chain_independently_qualified": false,
+  "combined_candidate_frozen": false,
+  "product_tests_passed": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

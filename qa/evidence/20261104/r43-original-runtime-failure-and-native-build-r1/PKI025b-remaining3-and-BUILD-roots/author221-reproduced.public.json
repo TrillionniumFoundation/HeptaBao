@@ -1,0 +1,901 @@
+{
+  "schema": "heptabao.remaining-three-actual-original-chain-check.v1",
+  "pass": true,
+  "checks": [
+    {
+      "label": "exact_GO_scope",
+      "pass": true
+    },
+    {
+      "label": "exact_GO_whole_pin",
+      "pass": true
+    },
+    {
+      "label": "exact_journal_pin",
+      "pass": true
+    },
+    {
+      "label": "current_context_closed",
+      "pass": true
+    },
+    {
+      "label": "13_original_calls",
+      "pass": true
+    },
+    {
+      "label": "3_admissions_3_status_7_pages",
+      "pass": true
+    },
+    {
+      "label": "3_new_1_inherited",
+      "pass": true
+    },
+    {
+      "label": "historical_context_whole_unchanged_0",
+      "pass": true
+    },
+    {
+      "label": "historical_context_whole_unchanged_1",
+      "pass": true
+    },
+    {
+      "label": "original_lost_ACK_state_retained",
+      "pass": true
+    },
+    {
+      "label": "predecessor_context_closed",
+      "pass": true
+    },
+    {
+      "label": "predecessor_root_qualification_exact",
+      "pass": true
+    },
+    {
+      "label": "body0_is_inherited_no_repeat",
+      "pass": true
+    },
+    {
+      "label": "accepted_and_whole_1",
+      "pass": true
+    },
+    {
+      "label": "exact_typed_request_1",
+      "pass": true
+    },
+    {
+      "label": "intent_arm_bind_1",
+      "pass": true
+    },
+    {
+      "label": "one_call_original_arm_1",
+      "pass": true
+    },
+    {
+      "label": "three_arm_files_exact_1",
+      "pass": true
+    },
+    {
+      "label": "SDK_native_whole_pin_1",
+      "pass": true
+    },
+    {
+      "label": "SDK_isError_false",
+      "pass": true
+    },
+    {
+      "label": "SDK_single_original_text",
+      "pass": true
+    },
+    {
+      "label": "SDK_original_native_text_1",
+      "pass": true
+    },
+    {
+      "label": "accepted_and_whole_2",
+      "pass": true
+    },
+    {
+      "label": "exact_typed_request_2",
+      "pass": true
+    },
+    {
+      "label": "intent_arm_bind_2",
+      "pass": true
+    },
+    {
+      "label": "one_call_original_arm_2",
+      "pass": true
+    },
+    {
+      "label": "three_arm_files_exact_2",
+      "pass": true
+    },
+    {
+      "label": "SDK_native_whole_pin_2",
+      "pass": true
+    },
+    {
+      "label": "SDK_isError_false",
+      "pass": true
+    },
+    {
+      "label": "SDK_single_original_text",
+      "pass": true
+    },
+    {
+      "label": "SDK_original_native_text_2",
+      "pass": true
+    },
+    {
+      "label": "observer_ID_present_2",
+      "pass": true
+    },
+    {
+      "label": "accepted_and_whole_3",
+      "pass": true
+    },
+    {
+      "label": "exact_typed_request_3",
+      "pass": true
+    },
+    {
+      "label": "intent_arm_bind_3",
+      "pass": true
+    },
+    {
+      "label": "one_call_original_arm_3",
+      "pass": true
+    },
+    {
+      "label": "three_arm_files_exact_3",
+      "pass": true
+    },
+    {
+      "label": "SDK_native_whole_pin_3",
+      "pass": true
+    },
+    {
+      "label": "SDK_isError_false",
+      "pass": true
+    },
+    {
+      "label": "SDK_single_original_text",
+      "pass": true
+    },
+    {
+      "label": "SDK_original_native_text_3",
+      "pass": true
+    },
+    {
+      "label": "observer_ID_present_3",
+      "pass": true
+    },
+    {
+      "label": "accepted_and_whole_4",
+      "pass": true
+    },
+    {
+      "label": "exact_typed_request_4",
+      "pass": true
+    },
+    {
+      "label": "intent_arm_bind_4",
+      "pass": true
+    },
+    {
+      "label": "one_call_original_arm_4",
+      "pass": true
+    },
+    {
+      "label": "three_arm_files_exact_4",
+      "pass": true
+    },
+    {
+      "label": "SDK_native_whole_pin_4",
+      "pass": true
+    },
+    {
+      "label": "SDK_isError_false",
+      "pass": true
+    },
+    {
+      "label": "SDK_single_original_text",
+      "pass": true
+    },
+    {
+      "label": "SDK_original_native_text_4",
+      "pass": true
+    },
+    {
+      "label": "observer_ID_present_4",
+      "pass": true
+    },
+    {
+      "label": "accepted_and_whole_5",
+      "pass": true
+    },
+    {
+      "label": "exact_typed_request_5",
+      "pass": true
+    },
+    {
+      "label": "intent_arm_bind_5",
+      "pass": true
+    },
+    {
+      "label": "one_call_original_arm_5",
+      "pass": true
+    },
+    {
+      "label": "three_arm_files_exact_5",
+      "pass": true
+    },
+    {
+      "label": "SDK_native_whole_pin_5",
+      "pass": true
+    },
+    {
+      "label": "SDK_isError_false",
+      "pass": true
+    },
+    {
+      "label": "SDK_single_original_text",
+      "pass": true
+    },
+    {
+      "label": "SDK_original_native_text_5",
+      "pass": true
+    },
+    {
+      "label": "observer_ID_present_5",
+      "pass": true
+    },
+    {
+      "label": "accepted_and_whole_6",
+      "pass": true
+    },
+    {
+      "label": "exact_typed_request_6",
+      "pass": true
+    },
+    {
+      "label": "intent_arm_bind_6",
+      "pass": true
+    },
+    {
+      "label": "one_call_original_arm_6",
+      "pass": true
+    },
+    {
+      "label": "three_arm_files_exact_6",
+      "pass": true
+    },
+    {
+      "label": "SDK_native_whole_pin_6",
+      "pass": true
+    },
+    {
+      "label": "SDK_isError_false",
+      "pass": true
+    },
+    {
+      "label": "SDK_single_original_text",
+      "pass": true
+    },
+    {
+      "label": "SDK_original_native_text_6",
+      "pass": true
+    },
+    {
+      "label": "observer_ID_present_6",
+      "pass": true
+    },
+    {
+      "label": "accepted_and_whole_7",
+      "pass": true
+    },
+    {
+      "label": "exact_typed_request_7",
+      "pass": true
+    },
+    {
+      "label": "intent_arm_bind_7",
+      "pass": true
+    },
+    {
+      "label": "one_call_original_arm_7",
+      "pass": true
+    },
+    {
+      "label": "three_arm_files_exact_7",
+      "pass": true
+    },
+    {
+      "label": "SDK_native_whole_pin_7",
+      "pass": true
+    },
+    {
+      "label": "SDK_isError_false",
+      "pass": true
+    },
+    {
+      "label": "SDK_single_original_text",
+      "pass": true
+    },
+    {
+      "label": "SDK_original_native_text_7",
+      "pass": true
+    },
+    {
+      "label": "accepted_and_whole_8",
+      "pass": true
+    },
+    {
+      "label": "exact_typed_request_8",
+      "pass": true
+    },
+    {
+      "label": "intent_arm_bind_8",
+      "pass": true
+    },
+    {
+      "label": "one_call_original_arm_8",
+      "pass": true
+    },
+    {
+      "label": "three_arm_files_exact_8",
+      "pass": true
+    },
+    {
+      "label": "SDK_native_whole_pin_8",
+      "pass": true
+    },
+    {
+      "label": "SDK_isError_false",
+      "pass": true
+    },
+    {
+      "label": "SDK_single_original_text",
+      "pass": true
+    },
+    {
+      "label": "SDK_original_native_text_8",
+      "pass": true
+    },
+    {
+      "label": "observer_ID_present_8",
+      "pass": true
+    },
+    {
+      "label": "accepted_and_whole_9",
+      "pass": true
+    },
+    {
+      "label": "exact_typed_request_9",
+      "pass": true
+    },
+    {
+      "label": "intent_arm_bind_9",
+      "pass": true
+    },
+    {
+      "label": "one_call_original_arm_9",
+      "pass": true
+    },
+    {
+      "label": "three_arm_files_exact_9",
+      "pass": true
+    },
+    {
+      "label": "SDK_native_whole_pin_9",
+      "pass": true
+    },
+    {
+      "label": "SDK_isError_false",
+      "pass": true
+    },
+    {
+      "label": "SDK_single_original_text",
+      "pass": true
+    },
+    {
+      "label": "SDK_original_native_text_9",
+      "pass": true
+    },
+    {
+      "label": "observer_ID_present_9",
+      "pass": true
+    },
+    {
+      "label": "accepted_and_whole_10",
+      "pass": true
+    },
+    {
+      "label": "exact_typed_request_10",
+      "pass": true
+    },
+    {
+      "label": "intent_arm_bind_10",
+      "pass": true
+    },
+    {
+      "label": "one_call_original_arm_10",
+      "pass": true
+    },
+    {
+      "label": "three_arm_files_exact_10",
+      "pass": true
+    },
+    {
+      "label": "SDK_native_whole_pin_10",
+      "pass": true
+    },
+    {
+      "label": "SDK_isError_false",
+      "pass": true
+    },
+    {
+      "label": "SDK_single_original_text",
+      "pass": true
+    },
+    {
+      "label": "SDK_original_native_text_10",
+      "pass": true
+    },
+    {
+      "label": "observer_ID_present_10",
+      "pass": true
+    },
+    {
+      "label": "accepted_and_whole_11",
+      "pass": true
+    },
+    {
+      "label": "exact_typed_request_11",
+      "pass": true
+    },
+    {
+      "label": "intent_arm_bind_11",
+      "pass": true
+    },
+    {
+      "label": "one_call_original_arm_11",
+      "pass": true
+    },
+    {
+      "label": "three_arm_files_exact_11",
+      "pass": true
+    },
+    {
+      "label": "SDK_native_whole_pin_11",
+      "pass": true
+    },
+    {
+      "label": "SDK_isError_false",
+      "pass": true
+    },
+    {
+      "label": "SDK_single_original_text",
+      "pass": true
+    },
+    {
+      "label": "SDK_original_native_text_11",
+      "pass": true
+    },
+    {
+      "label": "accepted_and_whole_12",
+      "pass": true
+    },
+    {
+      "label": "exact_typed_request_12",
+      "pass": true
+    },
+    {
+      "label": "intent_arm_bind_12",
+      "pass": true
+    },
+    {
+      "label": "one_call_original_arm_12",
+      "pass": true
+    },
+    {
+      "label": "three_arm_files_exact_12",
+      "pass": true
+    },
+    {
+      "label": "SDK_native_whole_pin_12",
+      "pass": true
+    },
+    {
+      "label": "SDK_isError_false",
+      "pass": true
+    },
+    {
+      "label": "SDK_single_original_text",
+      "pass": true
+    },
+    {
+      "label": "SDK_original_native_text_12",
+      "pass": true
+    },
+    {
+      "label": "observer_ID_present_12",
+      "pass": true
+    },
+    {
+      "label": "accepted_and_whole_13",
+      "pass": true
+    },
+    {
+      "label": "exact_typed_request_13",
+      "pass": true
+    },
+    {
+      "label": "intent_arm_bind_13",
+      "pass": true
+    },
+    {
+      "label": "one_call_original_arm_13",
+      "pass": true
+    },
+    {
+      "label": "three_arm_files_exact_13",
+      "pass": true
+    },
+    {
+      "label": "SDK_native_whole_pin_13",
+      "pass": true
+    },
+    {
+      "label": "SDK_isError_false",
+      "pass": true
+    },
+    {
+      "label": "SDK_single_original_text",
+      "pass": true
+    },
+    {
+      "label": "SDK_original_native_text_13",
+      "pass": true
+    },
+    {
+      "label": "observer_ID_present_13",
+      "pass": true
+    },
+    {
+      "label": "body_original_request_1",
+      "pass": true
+    },
+    {
+      "label": "GO_exact_body_request_1",
+      "pass": true
+    },
+    {
+      "label": "actual_admission_1",
+      "pass": true
+    },
+    {
+      "label": "native_closed_1",
+      "pass": true
+    },
+    {
+      "label": "contiguous_original_page_1_0",
+      "pass": true
+    },
+    {
+      "label": "immutable_original_payload_1_0",
+      "pass": true
+    },
+    {
+      "label": "page_range_EOF_1_0",
+      "pass": true
+    },
+    {
+      "label": "page_whole_identity_1_0",
+      "pass": true
+    },
+    {
+      "label": "contiguous_original_page_1_1",
+      "pass": true
+    },
+    {
+      "label": "immutable_original_payload_1_1",
+      "pass": true
+    },
+    {
+      "label": "page_range_EOF_1_1",
+      "pass": true
+    },
+    {
+      "label": "page_whole_identity_1_1",
+      "pass": true
+    },
+    {
+      "label": "contiguous_original_page_1_2",
+      "pass": true
+    },
+    {
+      "label": "immutable_original_payload_1_2",
+      "pass": true
+    },
+    {
+      "label": "page_range_EOF_1_2",
+      "pass": true
+    },
+    {
+      "label": "page_whole_identity_1_2",
+      "pass": true
+    },
+    {
+      "label": "contiguous_original_page_1_3",
+      "pass": true
+    },
+    {
+      "label": "immutable_original_payload_1_3",
+      "pass": true
+    },
+    {
+      "label": "page_range_EOF_1_3",
+      "pass": true
+    },
+    {
+      "label": "page_whole_identity_1_3",
+      "pass": true
+    },
+    {
+      "label": "whole_payload_rebuilt_1",
+      "pass": true
+    },
+    {
+      "label": "SDK_isError_false",
+      "pass": true
+    },
+    {
+      "label": "SDK_single_original_text",
+      "pass": true
+    },
+    {
+      "label": "original_payload_native_1",
+      "pass": true
+    },
+    {
+      "label": "original_closure_1",
+      "pass": true
+    },
+    {
+      "label": "actual_full_body_1",
+      "pass": true
+    },
+    {
+      "label": "actual_body_version_SHA_EOF_1",
+      "pass": true
+    },
+    {
+      "label": "independent_INFO_to_body_1",
+      "pass": true
+    },
+    {
+      "label": "body_original_request_2",
+      "pass": true
+    },
+    {
+      "label": "GO_exact_body_request_2",
+      "pass": true
+    },
+    {
+      "label": "actual_admission_2",
+      "pass": true
+    },
+    {
+      "label": "native_closed_2",
+      "pass": true
+    },
+    {
+      "label": "contiguous_original_page_2_0",
+      "pass": true
+    },
+    {
+      "label": "immutable_original_payload_2_0",
+      "pass": true
+    },
+    {
+      "label": "page_range_EOF_2_0",
+      "pass": true
+    },
+    {
+      "label": "page_whole_identity_2_0",
+      "pass": true
+    },
+    {
+      "label": "contiguous_original_page_2_1",
+      "pass": true
+    },
+    {
+      "label": "immutable_original_payload_2_1",
+      "pass": true
+    },
+    {
+      "label": "page_range_EOF_2_1",
+      "pass": true
+    },
+    {
+      "label": "page_whole_identity_2_1",
+      "pass": true
+    },
+    {
+      "label": "whole_payload_rebuilt_2",
+      "pass": true
+    },
+    {
+      "label": "SDK_isError_false",
+      "pass": true
+    },
+    {
+      "label": "SDK_single_original_text",
+      "pass": true
+    },
+    {
+      "label": "original_payload_native_2",
+      "pass": true
+    },
+    {
+      "label": "original_closure_2",
+      "pass": true
+    },
+    {
+      "label": "actual_full_body_2",
+      "pass": true
+    },
+    {
+      "label": "actual_body_version_SHA_EOF_2",
+      "pass": true
+    },
+    {
+      "label": "independent_INFO_to_body_2",
+      "pass": true
+    },
+    {
+      "label": "body_original_request_3",
+      "pass": true
+    },
+    {
+      "label": "GO_exact_body_request_3",
+      "pass": true
+    },
+    {
+      "label": "actual_admission_3",
+      "pass": true
+    },
+    {
+      "label": "native_closed_3",
+      "pass": true
+    },
+    {
+      "label": "contiguous_original_page_3_0",
+      "pass": true
+    },
+    {
+      "label": "immutable_original_payload_3_0",
+      "pass": true
+    },
+    {
+      "label": "page_range_EOF_3_0",
+      "pass": true
+    },
+    {
+      "label": "page_whole_identity_3_0",
+      "pass": true
+    },
+    {
+      "label": "whole_payload_rebuilt_3",
+      "pass": true
+    },
+    {
+      "label": "SDK_isError_false",
+      "pass": true
+    },
+    {
+      "label": "SDK_single_original_text",
+      "pass": true
+    },
+    {
+      "label": "original_payload_native_3",
+      "pass": true
+    },
+    {
+      "label": "original_closure_3",
+      "pass": true
+    },
+    {
+      "label": "actual_full_body_3",
+      "pass": true
+    },
+    {
+      "label": "actual_body_version_SHA_EOF_3",
+      "pass": true
+    },
+    {
+      "label": "independent_INFO_to_body_3",
+      "pass": true
+    },
+    {
+      "label": "exact_remaining_totals",
+      "pass": true
+    },
+    {
+      "label": "actual_INFO_fixed_0",
+      "pass": true
+    },
+    {
+      "label": "actual_INFO_safe_metadata_0",
+      "pass": true
+    },
+    {
+      "label": "actual_INFO_lossless_full9_0",
+      "pass": true
+    },
+    {
+      "label": "actual_INFO_fixed_1",
+      "pass": true
+    },
+    {
+      "label": "actual_INFO_safe_metadata_1",
+      "pass": true
+    },
+    {
+      "label": "actual_INFO_lossless_full9_1",
+      "pass": true
+    },
+    {
+      "label": "actual_INFO_fixed_2",
+      "pass": true
+    },
+    {
+      "label": "actual_INFO_safe_metadata_2",
+      "pass": true
+    },
+    {
+      "label": "actual_INFO_lossless_full9_2",
+      "pass": true
+    },
+    {
+      "label": "actual_INFO_fixed_3",
+      "pass": true
+    },
+    {
+      "label": "actual_INFO_safe_metadata_3",
+      "pass": true
+    },
+    {
+      "label": "actual_INFO_lossless_full9_3",
+      "pass": true
+    },
+    {
+      "label": "actual_receipt",
+      "pass": true
+    },
+    {
+      "label": "receipt_independent_full9_lossless",
+      "pass": true
+    },
+    {
+      "label": "original_149_166_not_executed",
+      "pass": true
+    },
+    {
+      "label": "release_consistent",
+      "pass": true
+    }
+  ],
+  "count": 221,
+  "originalCalls": 13,
+  "newObservers": 3,
+  "inheritedBody0Observers": 1,
+  "pages": 7,
+  "bodyBytes": 60208,
+  "payloadBytes": 81560,
+  "originalLostACKRetained": true,
+  "historicalContextsUnchanged": true,
+  "Runtime": 0,
+  "productCasesExecuted": 0
+}

@@ -1,0 +1,77 @@
+{
+  "kind": "operation_result",
+  "requestRaw": "{\n  \"operation_id\": \"37a07e380c8f74019d9b6c20c86cfa339d409e3b6d01b42b3a4230cb767777dc\",\n  \"offset\": 0,\n  \"limit\": 8192\n}\n",
+  "requestPin": {
+    "blob": "916332b53c58b018404b00324cb5aa1588975b52",
+    "bytes": 121,
+    "sha256": "17f7fcfad72f016c11d8d7b0be379eb4f2043b20b9c33cc4698bb78d74173edd"
+  },
+  "phase": "accepted",
+  "called": true,
+  "recoveryOfDelivery": "sf23-r1-f10-info-p0",
+  "armed": {
+    "tree": "f8e7d259a405cd5318011350959a96f8006b5a1f",
+    "entries": [
+      {
+        "path": "armed.json",
+        "blob": "ceee8f50f5f93fd94c961692992330d702fb42d4",
+        "bytes": 1970,
+        "sha256": "1b4c18de7c734ccb6033677525713cd305f672bd687edffec18cec6d53afc57c",
+        "whole": true
+      },
+      {
+        "path": "intent.json",
+        "blob": "5c9bfb6a94b658c5a59af572f8c6b30c4db237ac",
+        "bytes": 1896,
+        "sha256": "9eddead4a43c221b83b180c01122d47b04254ee58fa22e52de713d538d3f9c2b",
+        "whole": true
+      },
+      {
+        "path": "original-failed-call.json",
+        "blob": "2b64176574dbb70da660cb4ec8eee657b1969eae",
+        "bytes": 2065,
+        "sha256": "1d91200c87b3f9ae88631471212dae416cf697d341d0436ed7b8ea1db9ebc84b",
+        "whole": true
+      },
+      {
+        "path": "request.json",
+        "blob": "916332b53c58b018404b00324cb5aa1588975b52",
+        "bytes": 121,
+        "sha256": "17f7fcfad72f016c11d8d7b0be379eb4f2043b20b9c33cc4698bb78d74173edd",
+        "whole": true
+      }
+    ],
+    "count": 4,
+    "bytes": 6052,
+    "whole": true,
+    "localDurableJournal": false,
+    "runtimeAuthorized": false
+  },
+  "sdkPin": {
+    "blob": "870ef89cc5ce29990502793b71250d90a20f52ca",
+    "bytes": 1660,
+    "sha256": "eec5465ab43adf483d419422d9fe99760477cdf3e3e53dfb211487befa3a3bc1"
+  },
+  "sdkArchive": {
+    "tree": "41fc3ffc43ebbb63249e9743b512ffb078ca4127",
+    "entries": [
+      {
+        "path": "original.sdk.json",
+        "blob": "870ef89cc5ce29990502793b71250d90a20f52ca",
+        "bytes": 1660,
+        "sha256": "eec5465ab43adf483d419422d9fe99760477cdf3e3e53dfb211487befa3a3bc1",
+        "whole": true
+      }
+    ],
+    "count": 1,
+    "bytes": 1660,
+    "whole": true,
+    "localDurableJournal": false,
+    "runtimeAuthorized": false
+  },
+  "nativePin": {
+    "blob": "475f6159e9bd85d33b99a9438de515f995b83bb0",
+    "bytes": 1489,
+    "sha256": "448f7c82fa02962c42e0b9d6a59f7908fc70a0ea5c3579921908fe4e3263c13b"
+  }
+}

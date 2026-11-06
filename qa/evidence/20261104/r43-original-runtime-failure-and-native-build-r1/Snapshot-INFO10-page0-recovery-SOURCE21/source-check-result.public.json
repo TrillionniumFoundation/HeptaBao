@@ -1,0 +1,154 @@
+{
+  "schema": "heptabao.closed-info-page-recovery.pure-source-check.r1",
+  "pass": true,
+  "checks": [
+    {
+      "name": "forward_3_hunks_whole",
+      "ok": true
+    },
+    {
+      "name": "reverse_3_hunks_whole",
+      "ok": true
+    },
+    {
+      "name": "only_one_new_definition",
+      "ok": true
+    },
+    {
+      "name": "old_definition_gfNeed",
+      "ok": true
+    },
+    {
+      "name": "old_definition_gfMetaEquals",
+      "ok": true
+    },
+    {
+      "name": "old_definition_gfState",
+      "ok": true
+    },
+    {
+      "name": "old_definition_gfSave",
+      "ok": true
+    },
+    {
+      "name": "old_definition_gfIntegerText",
+      "ok": true
+    },
+    {
+      "name": "old_definition_gfInitializeOnlyAfterRootGO",
+      "ok": true
+    },
+    {
+      "name": "old_definition_gfNextFixedRequest",
+      "ok": true
+    },
+    {
+      "name": "old_definition_gfVerifyOutputInfo",
+      "ok": true
+    },
+    {
+      "name": "old_definition_gfVerifyOutputChunk",
+      "ok": true
+    },
+    {
+      "name": "old_definition_gfVerifyWholeOutput",
+      "ok": true
+    },
+    {
+      "name": "old_definition_gfValidateRequest",
+      "ok": true
+    },
+    {
+      "name": "old_definition_gfPrepareOne",
+      "ok": true
+    },
+    {
+      "name": "old_definition_gfInvokePreparedOnce",
+      "ok": true
+    },
+    {
+      "name": "old_definition_gfCloseOriginalObserver",
+      "ok": true
+    },
+    {
+      "name": "old_definition_gfReconcileSameGitArchiveReadOnly",
+      "ok": true
+    },
+    {
+      "name": "prepare_original_unchanged",
+      "ok": true
+    },
+    {
+      "name": "native_and_git_dispatch_set_unchanged",
+      "ok": true
+    },
+    {
+      "name": "new_entry_has_no_native_call",
+      "ok": true
+    },
+    {
+      "name": "actual_subset_preflight_arm_only",
+      "ok": true
+    },
+    {
+      "name": "no_native_invoked",
+      "ok": true
+    },
+    {
+      "name": "old_failed_call_exact_preserved",
+      "ok": true
+    },
+    {
+      "name": "only_new_pending_after_whole_arm",
+      "ok": true
+    },
+    {
+      "name": "original_native_counts_not_reset",
+      "ok": true
+    },
+    {
+      "name": "replay_prepare_refused_no_second_archive",
+      "ok": true
+    },
+    {
+      "name": "reject_wrong_operation",
+      "ok": true
+    },
+    {
+      "name": "reject_wrong_request_pin",
+      "ok": true
+    },
+    {
+      "name": "reject_old_called_false",
+      "ok": true
+    },
+    {
+      "name": "reject_future_not_closed",
+      "ok": true
+    },
+    {
+      "name": "reject_different_next_page",
+      "ok": true
+    },
+    {
+      "name": "reject_body_already_started",
+      "ok": true
+    },
+    {
+      "name": "reject_status_raw_drift",
+      "ok": true
+    },
+    {
+      "name": "reject_failed_sdk_drift",
+      "ok": true
+    },
+    {
+      "name": "recovery_specific_complete_page_guard",
+      "ok": true
+    }
+  ],
+  "nativeCalls": 0,
+  "realGitCalls": 0,
+  "realArchiveExecuted": false,
+  "scope": "strict source and isolated fake archive only; not actual retrieval or authorization"
+}

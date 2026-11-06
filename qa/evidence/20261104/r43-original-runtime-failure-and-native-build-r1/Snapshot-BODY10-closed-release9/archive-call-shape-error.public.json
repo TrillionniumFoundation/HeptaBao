@@ -1,0 +1,8 @@
+{
+  "error": "fixed_archive_key",
+  "actualOrder": "texts,key",
+  "expectedOrder": "single object {key,repository,texts}",
+  "noGitCreateCalled": true,
+  "noNativeCalled": true,
+  "correctedWithoutPriorMutation": true
+}

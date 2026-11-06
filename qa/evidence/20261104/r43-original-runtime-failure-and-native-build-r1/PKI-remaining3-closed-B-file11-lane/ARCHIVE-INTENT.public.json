@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r43-C-remaining3-closed-B-file11-lane-resume-r1",
+  "records": [
+    {
+      "name": "lane-disposition.public.json",
+      "blob": "41bc07b495b2440996ea7f4fd156a27b5bcc8a35",
+      "bytes": 1823,
+      "sha256": "f72097f18e98fd6e2a97f53cd6ff414f28af9f7bedbc64b37b7c0ae410883d51"
+    }
+  ],
+  "expected_data_tree": "7fbfd8e6411c7e8be5106f33910dd45eec147d1e",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

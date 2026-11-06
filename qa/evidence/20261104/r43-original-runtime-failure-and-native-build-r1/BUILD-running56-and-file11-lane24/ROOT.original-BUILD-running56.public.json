@@ -1,0 +1,264 @@
+{
+  "schema": "heptabao.root.PKI025b-original-BUILD-running-qualification.r43",
+  "pass": true,
+  "checks": 56,
+  "results": [
+    {
+      "name": "whole_running65",
+      "pass": true
+    },
+    {
+      "name": "exact_previous_start_ACK",
+      "pass": true
+    },
+    {
+      "name": "exact_original_GO_and_journal",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_unique_calls",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_call_jwt-pki-025b-build149-r2-start",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_armed_tree_jwt-pki-025b-build149-r2-start",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_call_jwt-pki-025b-build149-r2-authority0-admit",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_armed_tree_jwt-pki-025b-build149-r2-authority0-admit",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_call_jwt-pki-025b-build149-r2-authority0-status0",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_armed_tree_jwt-pki-025b-build149-r2-authority0-status0",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_call_jwt-pki-025b-build149-r2-authority0-page0",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_armed_tree_jwt-pki-025b-build149-r2-authority0-page0",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_call_jwt-pki-025b-build149-r2-authority1-admit",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_armed_tree_jwt-pki-025b-build149-r2-authority1-admit",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_call_jwt-pki-025b-build149-r2-authority1-status0",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_armed_tree_jwt-pki-025b-build149-r2-authority1-status0",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_call_jwt-pki-025b-build149-r2-authority1-page0",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_armed_tree_jwt-pki-025b-build149-r2-authority1-page0",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_call_jwt-pki-025b-build149-r2-authority2-admit",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_armed_tree_jwt-pki-025b-build149-r2-authority2-admit",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_call_jwt-pki-025b-build149-r2-authority2-status0",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_armed_tree_jwt-pki-025b-build149-r2-authority2-status0",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_call_jwt-pki-025b-build149-r2-authority2-page0",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_armed_tree_jwt-pki-025b-build149-r2-authority2-page0",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_observer_unique",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_observer_c1e56ee48f719b62322b7eaf1027e0e0eb65ab3c6afa72365fff0b52a4e68db1",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_page_c1e56ee48f719b62322b7eaf1027e0e0eb65ab3c6afa72365fff0b52a4e68db1_0",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_payload_c1e56ee48f719b62322b7eaf1027e0e0eb65ab3c6afa72365fff0b52a4e68db1",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_observer_d10a3e53bd59eeab49353289af1869821717c4a3be84886e9888a933d58518b8",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_page_d10a3e53bd59eeab49353289af1869821717c4a3be84886e9888a933d58518b8_0",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_payload_d10a3e53bd59eeab49353289af1869821717c4a3be84886e9888a933d58518b8",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_observer_e7583a14c97010c7255ce74bebc762464d3f4a92dd58c50b57a0b2f9a360c119",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_page_e7583a14c97010c7255ce74bebc762464d3f4a92dd58c50b57a0b2f9a360c119_0",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_payload_e7583a14c97010c7255ce74bebc762464d3f4a92dd58c50b57a0b2f9a360c119",
+      "pass": true
+    },
+    {
+      "name": "original_BUILD_running_all_observer_calls_accounted",
+      "pass": true
+    },
+    {
+      "name": "exact_10calls_3closed_observers",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-start:SDK_one_leaf_Merkle",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-admit:SDK_one_leaf_Merkle",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-status0:SDK_one_leaf_Merkle",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority0-page0:SDK_one_leaf_Merkle",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-admit:SDK_one_leaf_Merkle",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-status0:SDK_one_leaf_Merkle",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority1-page0:SDK_one_leaf_Merkle",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-admit:SDK_one_leaf_Merkle",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-status0:SDK_one_leaf_Merkle",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-build149-r2-authority2-page0:SDK_one_leaf_Merkle",
+      "pass": true
+    },
+    {
+      "name": "authority0:original_job_running_only",
+      "pass": true
+    },
+    {
+      "name": "authority0:original_payload_Merkle",
+      "pass": true
+    },
+    {
+      "name": "authority1:original_job_running_only",
+      "pass": true
+    },
+    {
+      "name": "authority1:original_payload_Merkle",
+      "pass": true
+    },
+    {
+      "name": "authority2:original_job_running_only",
+      "pass": true
+    },
+    {
+      "name": "authority2:original_payload_Merkle",
+      "pass": true
+    },
+    {
+      "name": "all_queries_exact_original_job",
+      "pass": true
+    },
+    {
+      "name": "no_observation_future_at_snapshot",
+      "pass": true
+    },
+    {
+      "name": "build_and_target_still_active",
+      "pass": true
+    },
+    {
+      "name": "declared_denominators_not_results",
+      "pass": true
+    }
+  ],
+  "packet": "c16bf600e321d8a210daa873f3cf501c4894c38c",
+  "original_job": "rog/1a1b10cad9b-fc05-7560",
+  "original_calls": 10,
+  "original_observers": 3,
+  "original_pages": 3,
+  "last_authority": {
+    "id": "e7583a14c97010c7255ce74bebc762464d3f4a92dd58c50b57a0b2f9a360c119",
+    "tool": "process_status",
+    "payload": {
+      "blob": "49469140e2953c9b5382d0dbceb940cd511599d7",
+      "bytes": 618,
+      "sha256": "985d2e3c392882610f87cb5015c52e8550edbcc923952de7ef3449dc3a66a63c"
+    },
+    "payloadTree": "56545e5eeae504043f66b8f7c61ede88f26ed906",
+    "nativeText": {
+      "blob": "fffdd8e1c215d02546a9570666f70e7d2d7f3397",
+      "bytes": 471,
+      "sha256": "7e0abedd8f64e3aef8919518ba5272891bb2b74f4de124cc9266203d0df4dd6f"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "caller_snapshot": "2026-11-06T13:43:06.421Z",
+  "actual_state": "running",
+  "actual_tests_started": null,
+  "actual_tests_passed": null,
+  "normal_release": null,
+  "target_window_held": true,
+  "product_pass": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

@@ -1,0 +1,195 @@
+{
+  "schema": "heptabao.root-exact-GO.actual-home-bound-five-agent-runtime.r1",
+  "decision": "GO_ONE_EXACT_ORIGINAL_COMPLETE_WORKER",
+  "userAuthorization": "Continue the requested HeptaBao trusted-credential, restart and rollback validation without J3160.",
+  "owner": "/root/authbus_migration",
+  "lane": "A",
+  "priorWorkerGO": {
+    "blob": "fe53245e77d33c5bea2cff96def394ffaaf3f31e",
+    "bytes": 5726,
+    "sha256": "ece3d40ef86811b91078d5d8dfbb367ce7337d3075685df4f838ff06d91c8685"
+  },
+  "actualInertQualification": {
+    "blob": "00900615411da59bc3d0997bb579a007f832822a",
+    "bytes": 14593,
+    "sha256": "abc4baffb90712b8af7e6f9a43aab7fb15f4dc5f8d2b24b5e46431457085b214"
+  },
+  "actualReadbackQualification": {
+    "blob": "866acf24015da851652481fb46ae7add95284489",
+    "bytes": 16511,
+    "sha256": "7b7b6bab1898eaed9cfa7b2e1a92d3d384b08ce61daad22855b17ea18b6b1c3e"
+  },
+  "actualReadbackChecks": 128,
+  "actualReadbackPacket": {
+    "tree": "01728b1ee0d44a1b4cf2458502ef70a796cf99df",
+    "files": 212,
+    "bytes": 1435332,
+    "merkle": {
+      "root_sha": "01728b1ee0d44a1b4cf2458502ef70a796cf99df",
+      "trees_verified": 5,
+      "leaf_count": 212
+    },
+    "whole": true
+  },
+  "sourcePacket": {
+    "tree": "fd1b2c30bb1fb390e562b55c727513e9d2c1c44d",
+    "files": 20,
+    "bytes": 169319,
+    "merkle": {
+      "root_sha": "fd1b2c30bb1fb390e562b55c727513e9d2c1c44d",
+      "trees_verified": 1,
+      "leaf_count": 20
+    },
+    "whole": true
+  },
+  "sourceQualification": {
+    "blob": "dd3af30370ce7f30406f1a16c60741f91f723a69",
+    "bytes": 3906,
+    "sha256": "f476f20c6026f0c90375c6f9c200f23e064fb596a15c1e178ef952ff0ec953d4"
+  },
+  "sourceChecks": 23,
+  "exactProcessStart": {
+    "blob": "0b9abcf80bc8bd27ced95abfb66bee3ebf837b32",
+    "bytes": 8207,
+    "sha256": "a4fc7391b4b280b97ba06a0e71fd4951b1e282d3e5d89ae42c7519ad6505bbea"
+  },
+  "nativeBinding": {
+    "sha256": "75273532b25e4d9f8cccc838b6c924ae0e4d3c1bdb40c3c98ca64a22454e05fb",
+    "native_fingerprint": "8441774518386445727",
+    "canonicalBytes": 8076
+  },
+  "host": "mac",
+  "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+  "idempotency_key": "heptabao-mac-current-five-agent-home-launch-c67d6fe6-20261106-r2",
+  "maximumBusinessStarts": 1,
+  "exactRequestRule": "Dispatch only the whole 8207-byte actual-bound exact request; no argv, path, environment, stdin, timeout, key, candidate, source, or HOME identity edits.",
+  "newRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2",
+  "homeRoot": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2",
+  "actualHomeBinding": {
+    "blob": "d968e0ade288f62cd8294dd9b097e3c50f96cdd0",
+    "bytes": 2029,
+    "sha256": "521e45f51f5b780b4951a0b6c84ec3c8bba2899159f29115951c05c1e9da3cf7"
+  },
+  "journal": {
+    "blob": "7c17ea14858c4801b205d8c91aa250b250558b9b",
+    "bytes": 19052,
+    "sha256": "2e501ef98b5d2c29acfccbd21128f18da2a8bfa49e59429f52591986c384f6f9"
+  },
+  "slot": "owner_authbus_current_home_runtime_gitfirst_r2",
+  "observerKeyPrefix": "heptabao-mac-current-home-launch-runtime-c67d6fe6-",
+  "originalBudgets": {
+    "outer": 900,
+    "manager": 600,
+    "managerFailureCleanup": 60,
+    "phase": 120,
+    "native": [
+      15,
+      8,
+      3
+    ],
+    "http": 10,
+    "capture": 45,
+    "listenerReady": 30,
+    "tlsCommand": 30,
+    "supervisor": 1080,
+    "publicReportBytes": 2097152
+  },
+  "preservedScope": {
+    "candidateCommit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "agents": [
+      "main",
+      "trnm",
+      "hepta-ui",
+      "hepta",
+      "hepta-backend"
+    ],
+    "model": "openai/gpt-5.6-sol",
+    "sourceFiles": 22,
+    "proofDocumentsUsedAtRuntime": 7,
+    "fullConfigurationAndActualRegistryOwnerAssertions": true,
+    "originalLoaderAndSelectorOnce": true,
+    "realCurrentCredentialCaptureStaysPrivate": true,
+    "originalFourPhaseGenerations": [
+      "initial",
+      "cold-new-process",
+      "initial-inverse",
+      "cold-new-process-inverse"
+    ],
+    "originalTenNativeLineages": true,
+    "originalAppRoleTLSKVPolicyRenewRevokeChecks": true,
+    "originalRoleTTLSeconds": 180,
+    "originalRoleMaximumTTLSeconds": 600,
+    "renewPOSTBody": {},
+    "noNewSleepRetryOrRoleMutation": true,
+    "J3160": false,
+    "productionServiceOrTrafficChange": false,
+    "oldAssetsDeleted": false
+  },
+  "admission": "Once-only exact external START arm before Native; whole original admission SDK before interpretation. Confirm native typed binding and original returned job. Missing ACK, dispatch UNKNOWN or an original error stops new admissions and is never a grant to replay.",
+  "observations": {
+    "originalReturnedJobOnly": true,
+    "oneNativeCallAndOneFuturePerLane": true,
+    "maximumRuntimeLanes": 2,
+    "rootNativeCalls": 0,
+    "maximumProcessStatusObservers": 64,
+    "maximumStatusCallsPerObserver": 8,
+    "processReadPerStreamBytes": 16384,
+    "immutablePageBytes": 8192,
+    "maximumImmutablePayloadBytes": 1048576,
+    "wholeStdoutMaximumBytes": 2097152,
+    "wholeStderrObservationMaximumBytes": 2097152,
+    "maximumProcessReadObservers": 129,
+    "streamPolicy": "After original terminal authority, use its actual exact byte counts and original contiguous cursors; at most 128 nonempty 16KiB ranges per stream plus one terminal EOF observation. Do not predict bytes or prequalify empty stderr.",
+    "statusPolicy": "Finite observations of the original job only. The new observation count bounds do not extend the original worker900/controller1080 deadlines. Avoid tight status polling; no change to business scripts or retry behavior."
+  },
+  "archivalProtocol": {
+    "executorFilesystemUnavailable": true,
+    "exactSourceReviewedGitFirstJournal": true,
+    "wholeExternalIntentBeforeCall": true,
+    "wholeOriginalSDKBeforeParsing": true,
+    "wholeImmutablePayloadBeforeNativeInterpretation": true,
+    "originalSDKsPagesPayloadsAndNativeTextsAllPreserved": true,
+    "unknownStopsNewAdmissions": true,
+    "noAlternateAdmissionKeyOrNewBusinessJob": true
+  },
+  "qualificationBoundary": "Require authoritative succeeded/exit0/full/durable/terminal-publication-confirmed, exact complete post-finally public stdout, original deadline after all closure, all owned registrations/lineages/helpers/descriptors/sockets stopped, expected current-source and ten-lineage/five-agent/two-renewal/four-phase assertions, and empty stderr. Pre-finally result.public.json alone is not qualification. No actual worker result, current whole-database backup, production manager or fleet migration is prequalified.",
+  "postRun": "After original terminal and all original observations close, send the minimal complete public report/authority/owner release first. Do not start inventory, production cutover, cleanup, or a replacement worker under this GO.",
+  "readThenExecAtomicityClaim": false,
+  "qualificationsTransferToCombinedCandidate": false,
+  "productionCutoverAuthorized": false,
+  "legacyCleanupAuthorized": false,
+  "allClientsAndBackupsMigrated": false,
+  "fullReplacement": false,
+  "allocation": {
+    "line": "A",
+    "granted": true,
+    "maximumNativeCallsInFlight": 1,
+    "maximumOwnedFutures": 1,
+    "globalMaximumNativeLanes": 2,
+    "rootNativeCalls": 0,
+    "B": 0,
+    "C": "One retained original body0 UNKNOWN binding; separately exact same-key reconciliation only",
+    "BRelease": {
+      "blob": "3faec1b373cef9d1afdb223996b7fb0b450c5923",
+      "bytes": 3436,
+      "sha256": "a3fe8743e5d7ee05a374fdfffb1e9311e64054a333e90b99dd5c7ed163ccb498"
+    },
+    "BActualRecovery": {
+      "blob": "ba35240411a23d656aaa3b65372288c7f1bfc0a9",
+      "bytes": 2800,
+      "sha256": "e02a2d82c3b897cc3a89ec23e589b30ad36ab676e1690763032a8256934e9fa6"
+    },
+    "BActualRecoveryPacket": {
+      "tree": "b82c813a4af52bc713fbb587aed062fca5e1a1a5",
+      "files": 17,
+      "bytes": 29167,
+      "merkle": {
+        "root_sha": "b82c813a4af52bc713fbb587aed062fca5e1a1a5",
+        "trees_verified": 1,
+        "leaf_count": 17
+      },
+      "whole": true
+    },
+    "activation": "Granted now after one successful authenticated original immutable page retrieval, complete original INFO closure and exact 0call/0future release. A runtime slot must still be absent."
+  }
+}

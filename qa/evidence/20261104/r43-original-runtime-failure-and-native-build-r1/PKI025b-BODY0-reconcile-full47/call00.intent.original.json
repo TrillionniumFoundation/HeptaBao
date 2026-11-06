@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.gitfirst.fixed-native-call-intent.r1",
+  "callKey": "jwt-pki-025b-body0-reconcile-r1-admit",
+  "kind": "operation_start",
+  "request": {
+    "blob": "b9e3c37da6a88ed78fe36893d8bf373e5213fdff",
+    "bytes": 417,
+    "sha256": "ba148cdadb1d9e0cb1147107cbe5be442c1b15873b4a1f8aec23ece70faba8be"
+  },
+  "rootGo": {
+    "blob": "3c906e2aaeff7d708183e9dc4a94c0739e0a7c89",
+    "bytes": 4246,
+    "sha256": "7f984fe961b0126c83a4a04d6b584bd659071fa23d019634276140d8444aec36"
+  },
+  "oldUnknown": {
+    "blob": "05d4be11937d3beca1fe0baa9f99df0fa761cb1b",
+    "bytes": 2322,
+    "sha256": "ff1276bf4f1fa41b64120a84b7e4688ca009992ad0f56d26202536aefa731d46"
+  },
+  "originalErrorSDK": {
+    "blob": "f181c1e93e7b64c402b332fd29b23d0141762082",
+    "bytes": 247,
+    "sha256": "20bc68d840783af5cc8e791289d5ac77c6941d45f79768c397c95e629784e3fa"
+  },
+  "lookupOnly": false,
+  "mayCreateFirstAdmission": true,
+  "oldAttemptRemainsUNKNOWN": true,
+  "oldContextWillNotBeChanged": true,
+  "originalJob": "1a1b0ade81d-fc05-7220",
+  "originalOperation": null,
+  "maximumNativeCalls": 1,
+  "nativeNotYetCalled": true,
+  "lossOfAcknowledgmentNeverGrantsReplay": true,
+  "localFirstExplicitlyReplacedByExactRootGO": true
+}

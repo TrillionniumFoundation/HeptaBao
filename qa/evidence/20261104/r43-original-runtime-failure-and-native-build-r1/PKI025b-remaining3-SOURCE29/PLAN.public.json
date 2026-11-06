@@ -1,0 +1,230 @@
+{
+  "schema": "heptabao.025b.controls.remaining3-source.v1",
+  "authorization": "SOURCE_ONLY_NOT_GO",
+  "candidate": {
+    "blob": "54d5a34812a42362900256bb85de60c3efac2563",
+    "bytes": 40045,
+    "sha256": "f881fb1d29d340b4cf00145497ce9ce83d7e0be87b15a514afc73cdf3c2d4cee"
+  },
+  "base": {
+    "blob": "97cd6f0f4dbe616295114bd47d21483d8d60e309",
+    "bytes": 35548,
+    "sha256": "498212d35bf4f7fadb3540e51c0fb5b84b510b49938cf1c74e166a3e147999a7"
+  },
+  "basePacket": "e8412710d414a5dac4e53c1f33b8dd4dade2cb35",
+  "strictDiff": {
+    "blob": "f4bd6c1eb970d9061756e4201e82dfc40274bbd5",
+    "bytes": 14805,
+    "sha256": "bbd8961a50657fad67b38df71c978b6a7cf0a9515889ccce52be5c880a62a0a8"
+  },
+  "replacementGroups": 6,
+  "strictHunks": 5,
+  "referenceIndependentContinuation": {
+    "source": "0d24dad24762e7a96432bb5c590a0ba8d2a232dd",
+    "tree": "458c494e2a9270ac6787af4d7ece85b99ca3a2a1",
+    "GO": "4b8d8c27046034fb0540b99511ff7735ba1385fe",
+    "use": "Independent-context ownership pattern only; no reuse of its same-file two-range join."
+  },
+  "originalUnknownPacket": "4169bee13a26dafcce26cf156e490d03c9c91d1a",
+  "body0CompletePacket": "7cd77449f1bc77ee1807733049f4f193b1c5abc5",
+  "body0Release": {
+    "blob": "32bab91d6334f54df8aa9486d2be009b49ec271a",
+    "bytes": 4447,
+    "sha256": "3a8e2fdc6ac0fceea29f1bd1dcb1b3f4d3c41653240af1f403d55af15d10c552"
+  },
+  "body0Inherited": {
+    "operation": "ae1e362b109464c47c26d6ce6adff749986185dc9f480bb520a41e2c2646a1d3",
+    "native": {
+      "blob": "02f2eb382a5e43bb34568ddcdbf5a36563d0991e",
+      "bytes": 40848,
+      "sha256": "efb823390516a68fd2d102d075639fe0ee4abfffbe0d493f0be5a5d4f693695b"
+    },
+    "payload": {
+      "blob": "1a86ff7153f233c720591e39fae76bb67c169f99",
+      "bytes": 40951,
+      "sha256": "cd4101a1cfded87fbab3e3f01f0dfee670fc40e1e7d65ecd279089272db6bae5"
+    },
+    "body": {
+      "blob": "f8b36c8adccb493dfc6aa507856150ce8a6a764d",
+      "bytes": 30397,
+      "sha256": "d76b3d392c20bf4a7bbb7e8d8ea69abdfe3bb11f71a35075ba26ab948e778a50"
+    },
+    "release": {
+      "blob": "32bab91d6334f54df8aa9486d2be009b49ec271a",
+      "bytes": 4447,
+      "sha256": "3a8e2fdc6ac0fceea29f1bd1dcb1b3f4d3c41653240af1f403d55af15d10c552"
+    },
+    "oldUnknown": {
+      "blob": "05d4be11937d3beca1fe0baa9f99df0fa761cb1b",
+      "bytes": 2322,
+      "sha256": "ff1276bf4f1fa41b64120a84b7e4688ca009992ad0f56d26202536aefa731d46"
+    }
+  },
+  "historicalContexts": [
+    {
+      "slot": "jwt_pki_025b05a3_build_controls_inert_gitfirst_r2",
+      "state": {
+        "blob": "f809c4e2d2b28691637987aaf9f9c3ed90a56f09",
+        "bytes": 208774,
+        "sha256": "3d5f4023093b05d517dbd81066c0956bbd091f52fb8d8d1a8464157642719f51"
+      }
+    },
+    {
+      "slot": "jwt_pki_025b05a3_controls_body0_admission_reconcile_r1",
+      "state": {
+        "blob": "ad0b092cd60ac7a6f44bf9bbc59fbefbb3bb9011",
+        "bytes": 64363,
+        "sha256": "b10df5f4835fac61bab18af21d232982e73f553b534863640d0a9cd6fad1d138"
+      }
+    }
+  ],
+  "slot": "jwt_pki_025b05a3_controls_remaining_bodies_r1",
+  "exactOriginalRequests": [
+    {
+      "blob": "cbb19d88d1c320f5d64f2f0c6538b25c4b8fd24c",
+      "bytes": 424,
+      "sha256": "084b9b2538c9c1b2d8ec4701a27a9d03c435c499fb89208bfd35e42c80e89601"
+    },
+    {
+      "blob": "29839c6f79c2776a342285f460a81b51c9e95df8",
+      "bytes": 425,
+      "sha256": "62f4c3fc9db8fed091de7085146949c215d87e005b879ddd89c88039dc8d32b7"
+    },
+    {
+      "blob": "91f3b78e35f484c0aed8064b6d6e872ddf3d7a1c",
+      "bytes": 426,
+      "sha256": "dc6dc5728f3102ffcf8c19d56290e73dbd1e62e9833b071945562ded604f2e3d"
+    }
+  ],
+  "expectedFiles": [
+    {
+      "index": 1,
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/launch_native_jwt_build.py",
+      "bytes": 38565,
+      "sha256": "efec176c08804a91adfd0160cdc092fad879d64ff594debe2fffe8008488d00c",
+      "version": "66306:33212341:38565:1793965550403677310:1793965550405279309",
+      "full9Strings": [
+        "66306",
+        "33212341",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "38565",
+        "1793965550403677310",
+        "1793965550405279309"
+      ],
+      "infoOperation": "e8c754906784dc95c7d6f9f9db323c75f28d346c125b3b374a50b517ab950f87",
+      "infoNative": {
+        "blob": "e916c0d81a20c8b9f32a8ed1bca44130bfa9aa75",
+        "bytes": 473,
+        "sha256": "b41f5f37602cdddced67aec0cac077825fc54b284dd6705b23d71d8f83c7a74f"
+      }
+    },
+    {
+      "index": 2,
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/jwt-test-groups.public.json",
+      "bytes": 19789,
+      "sha256": "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869",
+      "version": "66306:33212342:19789:1793965550406347359:1793965550407346912",
+      "full9Strings": [
+        "66306",
+        "33212342",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "19789",
+        "1793965550406347359",
+        "1793965550407346912"
+      ],
+      "infoOperation": "1b398fc015b5d944a3e80c2b4eb0fadd0d343fcf29e265cdedb600c77ae316ad",
+      "infoNative": {
+        "blob": "b34732e457d26b837f6d1b12cfac20da20c73008",
+        "bytes": 474,
+        "sha256": "23290cbbc6f64b88bf6c783667a918e0fb9743f6ad8f671635647cf626e116dc"
+      }
+    },
+    {
+      "index": 3,
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/inert-stage.result.public.json",
+      "bytes": 1854,
+      "sha256": "30cd7315341a685f3bf0b95b3938dd12e717d880ded7161d462f14e75c0eac61",
+      "version": "66306:33212343:1854:1793965550408095444:1793965550409072774",
+      "full9Strings": [
+        "66306",
+        "33212343",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "1854",
+        "1793965550408095444",
+        "1793965550409072774"
+      ],
+      "infoOperation": "9f565be95050449328b40b589e82270d644f88dc95a192de202c8de1f7e57a5a",
+      "infoNative": {
+        "blob": "0e412fc445cebf2eef7ae5dfd76139fd04fe78ae",
+        "bytes": 475,
+        "sha256": "57458e39109c9ee5bff5bde9e5952e5d300b121f418da69a4e764e477afa1247"
+      }
+    }
+  ],
+  "remainingBodyBytes": 60208,
+  "completeFourBodyBytes": 90605,
+  "initialBody0Bytes": 30397,
+  "actualRootQualificationPinSuppliedOnlyByNewWholeRootGO": null,
+  "modifications": [
+    "Only the fresh slot and immutable prerequisite constants change outside functions.",
+    "Replace the existing initializer with closed actual body0/four original metadata inheritance. No original context is stored or reset.",
+    "Every subsequent state access compares both entire historical contexts to their pinned JSON bytes.",
+    "Narrow the existing validator to original body1, body2, body3 in order; at most 3 starts, 8 statuses and 64 pages per returned ID.",
+    "Remove process_start/file_info invocation paths and remove old info/body authorization actions.",
+    "The entire existing SDK acceptance, per-file body closure, full payload archive and finally/error preservation remain byte-identical."
+  ],
+  "inheritance": {
+    "publishedBodies0": "A data row projected solely from actual completed body0 native bytes. Marked inherited with its real original operation and source context.",
+    "completedObservers": "Starts empty for the new context. The real prior body0 observer is separately retained in inheritedClosedObservers; no calls are fabricated.",
+    "metadata": "Deep copy of the four genuine old publishedInfos after full native pin/full9/version checks; no new file_info.",
+    "oldHistoricalAttempt": "UNKNOWN retained; original paused 208774-byte state and new closed 64363-byte reconciliation state remain byte-identical."
+  },
+  "sequence": "Separate whole root GO, fresh initialize, original body1 arm/one invoke/status/pages/whole body; then same original body2, then body3. Each Native invoke has a distinct model boundary after whole arm. No automatic loops start a Native call.",
+  "postScope": "Archive all three actual bodies and original chains; combine them with actual body0 for the unchanged original 4322-byte BUILD binder. BUILD requires its separate exact GO.",
+  "prohibitions": [
+    "No original context writes/reset/unpause",
+    "No body0 re-read",
+    "No new metadata",
+    "No key/path/version/range changes",
+    "No process_start/Cargo/worker",
+    "No new fixture or controller layer",
+    "No automatic retry"
+  ],
+  "caps": {
+    "binaryRangeMax": 65536,
+    "bodyResultPage": 16384,
+    "perObserverPayloadMax": 1048576,
+    "newStarts": 3,
+    "perIDStatusMax": 8,
+    "perIDPagesMax": 64,
+    "oneNativeCallOrFutureAtATime": true
+  },
+  "qualification": {
+    "remainingBodyReadsSubmitted": 0,
+    "buildSubmitted": false,
+    "newContextInitialized": false,
+    "productTestCases": 0
+  },
+  "body0RootEvidenceArchive": "ef7f4f011eb70b4183c298f3ac6a81a475a2f869",
+  "sourceValidation": {
+    "checks": 74,
+    "privateMemoryGuardCases": 37,
+    "NativeCalls": 0,
+    "productCases": 0,
+    "realContextInitialized": false,
+    "selectedPrivateFunctions": [
+      "gfInitializeOnlyAfterRootGO",
+      "gfState",
+      "gfValidateRequest"
+    ]
+  }
+}

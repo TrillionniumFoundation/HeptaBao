@@ -1,0 +1,393 @@
+{
+  "schema": "heptabao.combined237-unbound-source-verification.v1",
+  "pass": true,
+  "checks": 85,
+  "failures": [],
+  "results": [
+    {
+      "name": "runner_before_pin",
+      "pass": true
+    },
+    {
+      "name": "runner_after_pin",
+      "pass": true
+    },
+    {
+      "name": "runner_ordered_exact_replacements",
+      "pass": true
+    },
+    {
+      "name": "runner_reverse_exact_replacements",
+      "pass": true
+    },
+    {
+      "name": "runner_strict_forward_whole",
+      "pass": true
+    },
+    {
+      "name": "runner_strict_reverse_whole",
+      "pass": true
+    },
+    {
+      "name": "runner_fixed40000_source_limit",
+      "pass": true,
+      "detail": 31885
+    },
+    {
+      "name": "runner_ready_false",
+      "pass": true
+    },
+    {
+      "name": "runner_same_function_names",
+      "pass": true,
+      "detail": [
+        "signal_received",
+        "sha",
+        "preserve_prior_df026",
+        "write",
+        "git",
+        "freeze",
+        "group_members",
+        "terminate_owned",
+        "bounded_remaining",
+        "owned"
+      ]
+    },
+    {
+      "name": "runner_definition_whole_signal_received",
+      "pass": true
+    },
+    {
+      "name": "runner_definition_whole_sha",
+      "pass": true
+    },
+    {
+      "name": "runner_definition_whole_preserve_prior_df026",
+      "pass": true
+    },
+    {
+      "name": "runner_definition_whole_write",
+      "pass": true
+    },
+    {
+      "name": "runner_definition_whole_git",
+      "pass": true
+    },
+    {
+      "name": "runner_definition_whole_freeze",
+      "pass": true
+    },
+    {
+      "name": "runner_definition_whole_group_members",
+      "pass": true
+    },
+    {
+      "name": "runner_definition_whole_terminate_owned",
+      "pass": true
+    },
+    {
+      "name": "runner_definition_whole_bounded_remaining",
+      "pass": true
+    },
+    {
+      "name": "runner_definition_whole_owned",
+      "pass": true
+    },
+    {
+      "name": "launcher_before_pin",
+      "pass": true
+    },
+    {
+      "name": "launcher_after_pin",
+      "pass": true
+    },
+    {
+      "name": "launcher_ordered_exact_replacements",
+      "pass": true
+    },
+    {
+      "name": "launcher_reverse_exact_replacements",
+      "pass": true
+    },
+    {
+      "name": "launcher_strict_forward_whole",
+      "pass": true
+    },
+    {
+      "name": "launcher_strict_reverse_whole",
+      "pass": true
+    },
+    {
+      "name": "launcher_fixed40000_source_limit",
+      "pass": true,
+      "detail": 39538
+    },
+    {
+      "name": "launcher_ready_false",
+      "pass": true
+    },
+    {
+      "name": "launcher_same_function_names",
+      "pass": true,
+      "detail": [
+        "identity",
+        "read_bound",
+        "freeze",
+        "public",
+        "preserve_r9",
+        "preserve_r10",
+        "preserve_successful_observer",
+        "preserve_failed_observer",
+        "preserve_current_early_failure",
+        "holders"
+      ]
+    },
+    {
+      "name": "launcher_definition_whole_identity",
+      "pass": true
+    },
+    {
+      "name": "launcher_definition_whole_read_bound",
+      "pass": true
+    },
+    {
+      "name": "launcher_definition_whole_freeze",
+      "pass": true
+    },
+    {
+      "name": "launcher_definition_whole_public",
+      "pass": true
+    },
+    {
+      "name": "launcher_definition_whole_preserve_r9",
+      "pass": true
+    },
+    {
+      "name": "launcher_definition_whole_preserve_r10",
+      "pass": true
+    },
+    {
+      "name": "launcher_definition_whole_preserve_successful_observer",
+      "pass": true
+    },
+    {
+      "name": "launcher_definition_whole_preserve_failed_observer",
+      "pass": true
+    },
+    {
+      "name": "launcher_definition_whole_preserve_current_early_failure",
+      "pass": true
+    },
+    {
+      "name": "launcher_definition_whole_holders",
+      "pass": true
+    },
+    {
+      "name": "runner_combined_identity_null",
+      "pass": true
+    },
+    {
+      "name": "launcher_combined_identity_and_stage_null",
+      "pass": true
+    },
+    {
+      "name": "launcher_control_root_null",
+      "pass": true
+    },
+    {
+      "name": "groups_whole_pin",
+      "pass": true
+    },
+    {
+      "name": "groups_exact32163",
+      "pass": true
+    },
+    {
+      "name": "groups_original_first_four",
+      "pass": true
+    },
+    {
+      "name": "groups18",
+      "pass": true
+    },
+    {
+      "name": "groups_labels_unique",
+      "pass": true
+    },
+    {
+      "name": "every_family_shared600",
+      "pass": true
+    },
+    {
+      "name": "only_original_group_fields",
+      "pass": true
+    },
+    {
+      "name": "all254_entries_exact_frozen_inventory_order",
+      "pass": true
+    },
+    {
+      "name": "entries254",
+      "pass": true
+    },
+    {
+      "name": "unique237_by_crate_and_name",
+      "pass": true
+    },
+    {
+      "name": "baseline166_entries",
+      "pass": true
+    },
+    {
+      "name": "snapshot27_entries",
+      "pass": true
+    },
+    {
+      "name": "normal61_all_exact_original_order",
+      "pass": true
+    },
+    {
+      "name": "profiles_exact",
+      "pass": true,
+      "detail": {
+        "heptabao-server/file": 17,
+        "heptabao-server/default": 220,
+        "heptabao-ha-service/ha-native-v6-peer-ingress": 17
+      }
+    },
+    {
+      "name": "original17_dual_profile_names",
+      "pass": true
+    },
+    {
+      "name": "both_pin_groups_sha",
+      "pass": true
+    },
+    {
+      "name": "launcher_only_groups_cap_change",
+      "pass": true
+    },
+    {
+      "name": "generic_read_bound_whole",
+      "pass": true
+    },
+    {
+      "name": "runner_release_block_whole",
+      "pass": true
+    },
+    {
+      "name": "ordinary_compile_gate_whole",
+      "pass": true
+    },
+    {
+      "name": "shared_compile_deadline_same_once",
+      "pass": true
+    },
+    {
+      "name": "ordinary_and_libtests_same_compile_deadline",
+      "pass": true
+    },
+    {
+      "name": "outer12000_both",
+      "pass": true
+    },
+    {
+      "name": "samePID_outer_origin_whole",
+      "pass": true
+    },
+    {
+      "name": "original_file_profile_exact",
+      "pass": true
+    },
+    {
+      "name": "original_default_profile_exact",
+      "pass": true
+    },
+    {
+      "name": "one_new_HA_profile_exact",
+      "pass": true
+    },
+    {
+      "name": "HA_feature_exact_canonical_source",
+      "pass": true
+    },
+    {
+      "name": "separate_retained_binaries",
+      "pass": true
+    },
+    {
+      "name": "target_and_profile_exact_guards",
+      "pass": true
+    },
+    {
+      "name": "retained_copy_original_sha_full_sequence",
+      "pass": true
+    },
+    {
+      "name": "all_families_share_original_outer_clip",
+      "pass": true
+    },
+    {
+      "name": "exact_list_run_loop_whole",
+      "pass": true
+    },
+    {
+      "name": "final_all18_pass_required",
+      "pass": true
+    },
+    {
+      "name": "final_actual237_254",
+      "pass": true
+    },
+    {
+      "name": "runner_failure_cleanup_receipt_suffix_whole",
+      "pass": true
+    },
+    {
+      "name": "launcher_samePID_argv_whole",
+      "pass": true
+    },
+    {
+      "name": "launcher_old_fences_and_lock_probe_whole",
+      "pass": true
+    },
+    {
+      "name": "launcher_finally_and_close_whole",
+      "pass": true
+    },
+    {
+      "name": "lock_closed_before_exec_fact_retained",
+      "pass": true
+    },
+    {
+      "name": "no_new_control_definition",
+      "pass": true
+    },
+    {
+      "name": "source_plan_no_runtime_request",
+      "pass": true
+    },
+    {
+      "name": "old149_166_not_declared_current_qualification",
+      "pass": true
+    },
+    {
+      "name": "required_future_actual_list",
+      "pass": true
+    }
+  ],
+  "profiles": {
+    "heptabao-server/file": 17,
+    "heptabao-server/default": 220,
+    "heptabao-ha-service/ha-native-v6-peer-ingress": 17
+  },
+  "unique": 237,
+  "profile_entries": 254,
+  "groups": 18,
+  "original_runtime_functions_executed": false,
+  "Python_compile_executed": false,
+  "Native_calls": 0,
+  "Cargo_calls": 0,
+  "runtime_tests_executed": 0,
+  "actual_list_observed": false
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.root-native-lane-allocation.r1",
+  "A": 1,
+  "B": 0,
+  "C": 1,
+  "globalMaximum": 2,
+  "rootNativeCalls": 0,
+  "AuthExactGO": {
+    "blob": "6e4ab624a8594d9e0ba19d1b980dea3a78dac90f",
+    "bytes": 8308,
+    "sha256": "b5ed59063f9b06b96e4f64503015761735f1cc7d503db85c18ff7d27d9cb8f8d"
+  },
+  "PKIExactConditionalGO": {
+    "blob": "3c906e2aaeff7d708183e9dc4a94c0739e0a7c89",
+    "bytes": 4246,
+    "sha256": "7f984fe961b0126c83a4a04d6b584bd659071fa23d019634276140d8444aec36"
+  },
+  "BRelease": {
+    "blob": "3faec1b373cef9d1afdb223996b7fb0b450c5923",
+    "bytes": 3436,
+    "sha256": "a3fe8743e5d7ee05a374fdfffb1e9311e64054a333e90b99dd5c7ed163ccb498"
+  },
+  "BActualRecovery": {
+    "blob": "ba35240411a23d656aaa3b65372288c7f1bfc0a9",
+    "bytes": 2800,
+    "sha256": "e02a2d82c3b897cc3a89ec23e589b30ad36ab676e1690763032a8256934e9fa6"
+  }
+}

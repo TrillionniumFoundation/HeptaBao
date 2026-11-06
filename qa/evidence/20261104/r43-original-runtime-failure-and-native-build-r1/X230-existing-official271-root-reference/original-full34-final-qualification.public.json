@@ -1,0 +1,118 @@
+{
+  "schema": "heptabao.current4e808-X230-full34.complete-runtime-contract-qualification.r33.v1",
+  "status": "PASS_ORIGINAL31_FORMAL_FULL34_RUNTIME_CONTRACT_WITH_BOUNDED_HISTORICAL_ARCHIVE_GAP",
+  "root_integration_checks": 17,
+  "checks": [
+    "adopt_root177_original_semantics",
+    "original31_real_cases_only",
+    "current_source_and_binary",
+    "formal34_full_history_cold_restore_scope",
+    "owned_product_cleanup_and_immutability",
+    "root81_new_terminal_observers",
+    "adopt_prior_independent156_exact_launch_partial_bytes",
+    "independent679_actual_result_all_pass",
+    "peer_exact_whole_verifier",
+    "peer_exact_whole_result",
+    "peer_exact_whole_executor",
+    "peer_original_executor_binds_result",
+    "complete_summary107_original_chains",
+    "same_90926_summary",
+    "all_original_summary_observers_closed",
+    "bounded_original39_gap_honestly_retained",
+    "no_duplicate_product_or_author_checker"
+  ],
+  "job": "x230/1a1ad5ffad0-fc05-599a",
+  "product_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "product_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "binary_sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+  "original_product_cases_passed": 31,
+  "original_product_cases_total": 31,
+  "original_product_cases": [
+    "official_271_pins_and_live_identity",
+    "two_distinct_owned_processes",
+    "source_api_oracle_captured",
+    "source_retained_deleted_destroyed_seeded",
+    "source_metadata_cas_seeded",
+    "source_cold_restart_exact",
+    "target_pristine_before_import",
+    "source_export_once",
+    "source_raw_history_exact",
+    "exported_soft_deleted_payload_preserved",
+    "source_unchanged_after_export",
+    "target_import_once",
+    "target_active_native_v6",
+    "target_full_history_exact",
+    "target_storage_full_history_exact",
+    "target_cold_restart_exact",
+    "target_storage_cold_history_exact",
+    "snapshot_download",
+    "post_snapshot_mutation_once",
+    "snapshot_restore_once",
+    "restored_cold_history_exact",
+    "restored_storage_history_exact",
+    "soft_deleted_payload_undelete_exact",
+    "destroyed_payload_remains_absent",
+    "data_cas_denied_without_effect",
+    "metadata_cas_denied_without_effect",
+    "metadata_cas_success_counter_exact",
+    "source_unchanged_after_target_mutations",
+    "source_and_binary_unchanged",
+    "owned_processes_stopped",
+    "report_excludes_runtime_credentials"
+  ],
+  "elapsed_seconds": 144.321,
+  "logical_payload_bytes": 35651584,
+  "native_history_versions": 19,
+  "native_storage_stages": 3,
+  "native_history_witnesses": 57,
+  "evidence": {
+    "semantic_root177": {
+      "blob": "899f083f702b43a1e5a698bee81bb5c69a435547",
+      "bytes": 14620,
+      "sha256": "cef755cc24738cd8ff657d0e221e3aa80cab1fbaf3ed938348ef40f658128efd"
+    },
+    "independent_base156": {
+      "blob": "390a10b882789b03c3a559cdfdfafb0f4573d107",
+      "bytes": 2204,
+      "sha256": "92d6c43d02fb19b2a29437aa7f631ec9a1ebe5e08ebff041594d3973b5653c00"
+    },
+    "independent_summary679": {
+      "blob": "75b1a363c89a5c4a5e0837e855a029600780fc44",
+      "bytes": 6002,
+      "sha256": "15e54c46d099db31e4fc54b7f2878e00f88323c78ac5b6aaca574926692965a1"
+    },
+    "peer_result": {
+      "blob": "f231911b13d608d7dbff42a33afb63a78f305713",
+      "bytes": 73578,
+      "sha256": "9c9b7f95cdb80a215a0ca55257b24c8892ca00799758f6058d254e094b0f82b4"
+    },
+    "peer_source": {
+      "blob": "f0fbb287a382b3aa5ec321f42005a96a67a2d7d0",
+      "bytes": 12352,
+      "sha256": "6938e82b85d3f87e2a415f9e53151db1af7532ad3ec6683c787466c70034a9c6"
+    },
+    "peer_executor": {
+      "blob": "65d0df79d21266bc0402ce9857535fd22655cec9",
+      "bytes": 836,
+      "sha256": "131f1085c484237e84fe28d51f7f17501d56db12c6b6c7681cddbe2a78551dc3"
+    },
+    "root_current_two81": {
+      "blob": "de4403da241063a115eba2c018503b6e3d3578bb",
+      "bytes": 5424,
+      "sha256": "e5246abb02cfd4de14489d990d5ea0a92ff623063f149ed3aa75fca2d5c2c1ac"
+    }
+  },
+  "formal_migration_cold_restart_snapshot_restore_contract_qualified": true,
+  "source_binary_and_owned_cleanup_qualified": true,
+  "original_historical_archive_complete": false,
+  "historical_unlocated_leaves": 39,
+  "gap_blob": "febdec346fa99b7eef463f660639c6dd8cd3a664",
+  "gap_statement": "39 original observation-framework index leaves remain temporarily unlocated. Original payload/native bytes survive; two new readonly observations corroborate the same original terminal job and exact complete logs. New observations are not represented as recovered historical records.",
+  "root_or_peer_proof_predicates_are_not_product_case_counts": true,
+  "comparison69_executed": false,
+  "multi_host_HA_qualified_by_this_document": false,
+  "client_real_credentials_qualified": false,
+  "full_openbao_compatibility": false,
+  "production_cutover": false,
+  "cleanup_old_assets": false
+}

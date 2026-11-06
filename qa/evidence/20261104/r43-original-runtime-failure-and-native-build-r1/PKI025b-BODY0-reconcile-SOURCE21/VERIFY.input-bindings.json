@@ -1,0 +1,30 @@
+{
+  "schema": "heptabao.025b.controls.body0-reconciliation-source-check-inputs.v1",
+  "before": "reconciliation.original.js",
+  "after": "reconciliation.025b.js",
+  "diff": "reconciliation.strict.diff",
+  "replacements": "replacements.public.json",
+  "requestRaw": "request.original.json",
+  "unknownRaw": "UNKNOWN.original.json",
+  "sdkRaw": "admission.original.sdk.json",
+  "intentRaw": "intent.original.json",
+  "armedRaw": "armed.original.json",
+  "infoRaw": "info0.native.original.json",
+  "plan": "PLAN.public.json",
+  "goShape": "ROOT-GO-SHAPE.UNAUTHORIZED.json",
+  "pure": "pure.original.js",
+  "archive": "archive.original.js",
+  "currentOldState": {
+    "tree": "4169bee13a26dafcce26cf156e490d03c9c91d1a",
+    "path": "STATE.original.json",
+    "blob": "f809c4e2d2b28691637987aaf9f9c3ed90a56f09",
+    "bytes": 208774,
+    "sha256": "3d5f4023093b05d517dbd81066c0956bbd091f52fb8d8d1a8464157642719f51",
+    "parseAsJSON": true
+  },
+  "initializedNewContext": false,
+  "verifier": "VERIFY.source.js",
+  "diffHelper": "strict-diff.original.js",
+  "entrypoint": "new Function(pure + strictDiffHelper + verifier + ';return verifyReconciliationSource')()(resolvedInput)",
+  "originalCurrentStateByteEquivalentToPinnedState": true
+}

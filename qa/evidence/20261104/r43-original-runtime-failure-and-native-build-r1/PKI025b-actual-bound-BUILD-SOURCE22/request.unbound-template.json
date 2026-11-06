@@ -1,0 +1,88 @@
+{
+  "schema": "heptabao.jwt-pki025b-build-request-unbound-template.v1",
+  "ready": false,
+  "Native": 0,
+  "requestShape": {
+    "host": "rog",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/launch_native_jwt_build.py",
+      "--host",
+      "rog",
+      "--commit",
+      "025b05a340de841b8161c1120344e86eae30eb97",
+      "--tree",
+      "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+      "--stage-sha256",
+      "0a0b29dd3616b48b7f0ef5c04c1ffe53ebe752f6c2876671474da5a4eeab2eaf",
+      "--runner-sha256",
+      "d76b3d392c20bf4a7bbb7e8d8ea69abdfe3bb11f71a35075ba26ab948e778a50",
+      "--groups-sha256",
+      "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869",
+      "--controls-sha256",
+      null
+    ],
+    "cwd": "/home/qian-qi",
+    "timeout_seconds": 12000,
+    "idempotency_key": "heptabao-native-jwt-pki-025b05a3-build149-r2-efec176c"
+  },
+  "unresolved": {
+    "actual_controls_receipt_sha256": null,
+    "actual_controls_receipt_blob": null,
+    "independent_four_file_qualification": null,
+    "exact_request_blob": null,
+    "exact_request_sha256": null,
+    "typed_digest": null,
+    "native_fingerprint": null,
+    "build_GO": null
+  },
+  "admission": {
+    "sourceQualifiedRoot": {
+      "blob": "6779c65882fc265ae6c4c0ba055b2f42132e59d8",
+      "bytes": 5974,
+      "sha256": "c3410ce8dc065f88258c9ac2960c0a098725721a0c316406c5207a21785ffcf7"
+    },
+    "sourceReport": {
+      "blob": "3455e904127e4e85c79bc5b84c939873c57dea17",
+      "bytes": 28125,
+      "sha256": "0a0b29dd3616b48b7f0ef5c04c1ffe53ebe752f6c2876671474da5a4eeab2eaf"
+    },
+    "launcher": {
+      "blob": "419a805247448d46180890fb9cdd69c2832d4811",
+      "bytes": 38565,
+      "sha256": "efec176c08804a91adfd0160cdc092fad879d64ff594debe2fffe8008488d00c"
+    },
+    "runner": {
+      "blob": "f8b36c8adccb493dfc6aa507856150ce8a6a764d",
+      "bytes": 30397,
+      "sha256": "d76b3d392c20bf4a7bbb7e8d8ea69abdfe3bb11f71a35075ba26ab948e778a50"
+    },
+    "groups": {
+      "blob": "5d563b1c7a1b7070395f6d8a03b512ddb019fae0",
+      "bytes": 19789,
+      "sha256": "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869"
+    },
+    "samePidLauncherExec": true,
+    "originalBudgets": {
+      "release": 1800,
+      "compileShared": 3600,
+      "compileCommands": 3,
+      "listingMax": 30,
+      "familyShared": 600,
+      "families": 4,
+      "outer": 12000,
+      "cleanupTerm": 5,
+      "cleanupKill": 5,
+      "deadlineReset": false,
+      "publisherOuter": 60,
+      "publisherStdin": 262144,
+      "publisherPayloadActual": 118531
+    },
+    "selectedUnique": 149,
+    "profileInstances": 166
+  },
+  "note": "SOURCE-only shape. The source report is actual/qualified; runner and launcher pins are expected immutable content, not destination identities. One final receipt argv remains null. Only original four independent actual bodies/full9 and a separate exact Root BUILD GO can admit execution. Prior33b failed attempt and paused observer remain unchanged."
+}

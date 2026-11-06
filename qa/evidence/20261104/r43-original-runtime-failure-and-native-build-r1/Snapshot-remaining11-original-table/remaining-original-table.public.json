@@ -1,0 +1,365 @@
+[
+  {
+    "index": 12,
+    "reportIndex": 14,
+    "name": "service_snapshot_forward.rs",
+    "canonicalPath": "crates/heptabao-server/src/service_snapshot_forward.rs",
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_forward.rs",
+    "bytes": 9837,
+    "sha256": "db3bef7b2108468f5ce6a2a720cf16eebc5815d83e0e269469137ee6836f42eb",
+    "source": {
+      "blob": "622770cca42dbbc1bd7c82dbd2fc0178180cfa42",
+      "bytes": 8891,
+      "sha256": "6db3cd4b9c8d115779b59282aef59755556099491f517985e453c1bd5b41586b"
+    },
+    "infoRaw": "{\n  \"idempotency_key\": \"heptabao-snapshot2379-format23-observe-20261106-r1-info12\",\n  \"operation\": {\n    \"tool\": \"file_info\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_forward.rs\"\n    }\n  }\n}\n",
+    "info": {
+      "blob": "9de7c490fd5b81c483a9570bc2212e918ffb42df",
+      "bytes": 307,
+      "sha256": "d081dbc5a9923002265f816939a45e4f59abfb3f9b2d29fb32d62b30df737057"
+    },
+    "ranges": [
+      {
+        "index": 0,
+        "offset": 0,
+        "limit": 9837,
+        "templateRaw": "{\n  \"idempotency_key\": \"heptabao-snapshot2379-format23-observe-20261106-r1-body12-00\",\n  \"operation\": {\n    \"tool\": \"binary_read\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_forward.rs\",\n      \"offset\": 0,\n      \"limit\": 9837,\n      \"expected_version\": null\n    }\n  }\n}\n",
+        "template": {
+          "blob": "745faa80d10f934bb9d056d8d84162af869b22ca",
+          "bytes": 384,
+          "sha256": "872b1bf28f29975621ca9dadf34c9bdb333b9ed6ef313c7dee3646f106284a09"
+        }
+      }
+    ]
+  },
+  {
+    "index": 13,
+    "reportIndex": 15,
+    "name": "service_snapshot_forward_client.rs",
+    "canonicalPath": "crates/heptabao-server/src/service_snapshot_forward_client.rs",
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_forward_client.rs",
+    "bytes": 20232,
+    "sha256": "f76bdf9fc65fcf99b0a214c00df7660436509036c107f5486b3226981635004f",
+    "source": {
+      "blob": "694edf2abe8a8f61dc887469e2dcc963dfc58fca",
+      "bytes": 18850,
+      "sha256": "0007a55d455493318cb2e606d5a19b94438e67b2b52cc0ab98465a240f74aa6c"
+    },
+    "infoRaw": "{\n  \"idempotency_key\": \"heptabao-snapshot2379-format23-observe-20261106-r1-info13\",\n  \"operation\": {\n    \"tool\": \"file_info\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_forward_client.rs\"\n    }\n  }\n}\n",
+    "info": {
+      "blob": "c531adfea3dde88011fd6783d726492c60766307",
+      "bytes": 314,
+      "sha256": "b042a0d78c531dd61d03f62900f9a38b5d74039ff86fc23d480114b238569618"
+    },
+    "ranges": [
+      {
+        "index": 0,
+        "offset": 0,
+        "limit": 20232,
+        "templateRaw": "{\n  \"idempotency_key\": \"heptabao-snapshot2379-format23-observe-20261106-r1-body13-00\",\n  \"operation\": {\n    \"tool\": \"binary_read\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_forward_client.rs\",\n      \"offset\": 0,\n      \"limit\": 20232,\n      \"expected_version\": null\n    }\n  }\n}\n",
+        "template": {
+          "blob": "8c4fbb0556f266f357693c0b01007d913d827b8a",
+          "bytes": 392,
+          "sha256": "35ee7e6b6d5661a6fcce1c2d688301c267b8736bbd30e052233b309e48206e39"
+        }
+      }
+    ]
+  },
+  {
+    "index": 14,
+    "reportIndex": 16,
+    "name": "service_snapshot_forward_file.rs",
+    "canonicalPath": "crates/heptabao-server/src/service_snapshot_forward_file.rs",
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_forward_file.rs",
+    "bytes": 1957,
+    "sha256": "e77aa9448bf431328da0500dc7dad21d515fa87b142350cdaf3eef6610d19b19",
+    "source": {
+      "blob": "cc96349fe49fa0ffa067971f2cbda21839804410",
+      "bytes": 1811,
+      "sha256": "36256ca40029f4bdd57d961f4c75d020fa089aa59ebc624d8271d28ff6b8c14e"
+    },
+    "infoRaw": "{\n  \"idempotency_key\": \"heptabao-snapshot2379-format23-observe-20261106-r1-info14\",\n  \"operation\": {\n    \"tool\": \"file_info\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_forward_file.rs\"\n    }\n  }\n}\n",
+    "info": {
+      "blob": "eea7da5769858453f8a8a637b25414ff9854dc59",
+      "bytes": 312,
+      "sha256": "a5c248dca3da4529958e972bb24df9d282a6c0cac6e97d5dffa617030f2db308"
+    },
+    "ranges": [
+      {
+        "index": 0,
+        "offset": 0,
+        "limit": 1957,
+        "templateRaw": "{\n  \"idempotency_key\": \"heptabao-snapshot2379-format23-observe-20261106-r1-body14-00\",\n  \"operation\": {\n    \"tool\": \"binary_read\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_forward_file.rs\",\n      \"offset\": 0,\n      \"limit\": 1957,\n      \"expected_version\": null\n    }\n  }\n}\n",
+        "template": {
+          "blob": "e275cd05e1fc4e9b61db0c5059e3cdc4b8316687",
+          "bytes": 389,
+          "sha256": "87f316b1e59bcb9021bce7e65d099c0c981a56d5f525d4d336e7bce24e38cfff"
+        }
+      }
+    ]
+  },
+  {
+    "index": 15,
+    "reportIndex": 17,
+    "name": "service_snapshot_forward_source.rs",
+    "canonicalPath": "crates/heptabao-server/src/service_snapshot_forward_source.rs",
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_forward_source.rs",
+    "bytes": 19516,
+    "sha256": "2644931919fdafdc2d68d8e9927ebca77647e7ce8839cec1abef3e7563635c73",
+    "source": {
+      "blob": "ca9962d39f90cdf6ebbc06d04a9cc6c0fa7aa0a1",
+      "bytes": 17522,
+      "sha256": "3f37df8a3ad5d4cc535127b2c286b32a2c633ec7c4295a2525367a91099ec560"
+    },
+    "infoRaw": "{\n  \"idempotency_key\": \"heptabao-snapshot2379-format23-observe-20261106-r1-info15\",\n  \"operation\": {\n    \"tool\": \"file_info\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_forward_source.rs\"\n    }\n  }\n}\n",
+    "info": {
+      "blob": "dfb04a240d020c474379a3cb73778d2e3ffe10d0",
+      "bytes": 314,
+      "sha256": "7d330cb882efd83133db3ea61ca3ce0d139a004e0026e8ac6aecec51c62538aa"
+    },
+    "ranges": [
+      {
+        "index": 0,
+        "offset": 0,
+        "limit": 19516,
+        "templateRaw": "{\n  \"idempotency_key\": \"heptabao-snapshot2379-format23-observe-20261106-r1-body15-00\",\n  \"operation\": {\n    \"tool\": \"binary_read\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_forward_source.rs\",\n      \"offset\": 0,\n      \"limit\": 19516,\n      \"expected_version\": null\n    }\n  }\n}\n",
+        "template": {
+          "blob": "558282880953d85b91d73873f3773764de548627",
+          "bytes": 392,
+          "sha256": "ade37ff5066fab8520db4930b1cfc220362efc9d6180e860f4bd7162b483dad8"
+        }
+      }
+    ]
+  },
+  {
+    "index": 16,
+    "reportIndex": 18,
+    "name": "service_snapshot_forward_wire.rs",
+    "canonicalPath": "crates/heptabao-server/src/service_snapshot_forward_wire.rs",
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_forward_wire.rs",
+    "bytes": 16474,
+    "sha256": "865e1c316cec0890b3a28076b95a00eedff366bae9d0949899afe23fa044fa75",
+    "source": {
+      "blob": "e7d14fb4237c4e2638068c91f7cb421fdc3e9f85",
+      "bytes": 15616,
+      "sha256": "458dc1a5c54dd9ee128030012c48e6a800b5e886233392894e485fdfc42fade7"
+    },
+    "infoRaw": "{\n  \"idempotency_key\": \"heptabao-snapshot2379-format23-observe-20261106-r1-info16\",\n  \"operation\": {\n    \"tool\": \"file_info\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_forward_wire.rs\"\n    }\n  }\n}\n",
+    "info": {
+      "blob": "f9235ae4d4d15739a3b814566ce548984b65d8b3",
+      "bytes": 312,
+      "sha256": "e12ea61c8a97bcac5320b810253715121d3bbd26b1ea10a06fe31b9033fa831a"
+    },
+    "ranges": [
+      {
+        "index": 0,
+        "offset": 0,
+        "limit": 16474,
+        "templateRaw": "{\n  \"idempotency_key\": \"heptabao-snapshot2379-format23-observe-20261106-r1-body16-00\",\n  \"operation\": {\n    \"tool\": \"binary_read\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_forward_wire.rs\",\n      \"offset\": 0,\n      \"limit\": 16474,\n      \"expected_version\": null\n    }\n  }\n}\n",
+        "template": {
+          "blob": "fb026a69fd06829da89df54ab5b4bf7ef2f13e58",
+          "bytes": 390,
+          "sha256": "f11de3416f2417b8d6fba238a17be15b31ab87d62253c8ab83f39a305faef494"
+        }
+      }
+    ]
+  },
+  {
+    "index": 17,
+    "reportIndex": 19,
+    "name": "service_snapshot_forward_wire_tests.rs",
+    "canonicalPath": "crates/heptabao-server/src/service_snapshot_forward_wire_tests.rs",
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_forward_wire_tests.rs",
+    "bytes": 11119,
+    "sha256": "231fa3d71173939acc1316716dc2b1f27523bbd9d2da40e9a410a095a0a65ae8",
+    "source": {
+      "blob": "7dd45fb0219ea92ad7debb45f534977875ebef9a",
+      "bytes": 9844,
+      "sha256": "c189b6999fef57fe2a5c6fc221c49647323c609f31f6d65a2eda6bcb682668cb"
+    },
+    "infoRaw": "{\n  \"idempotency_key\": \"heptabao-snapshot2379-format23-observe-20261106-r1-info17\",\n  \"operation\": {\n    \"tool\": \"file_info\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_forward_wire_tests.rs\"\n    }\n  }\n}\n",
+    "info": {
+      "blob": "65f14caa8ecc00b34b554b7b84211fd2445c1c3c",
+      "bytes": 318,
+      "sha256": "3723c4915a36800837aa708e9074805fd94a51f2843d3ef055815b82f6b584ca"
+    },
+    "ranges": [
+      {
+        "index": 0,
+        "offset": 0,
+        "limit": 11119,
+        "templateRaw": "{\n  \"idempotency_key\": \"heptabao-snapshot2379-format23-observe-20261106-r1-body17-00\",\n  \"operation\": {\n    \"tool\": \"binary_read\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_forward_wire_tests.rs\",\n      \"offset\": 0,\n      \"limit\": 11119,\n      \"expected_version\": null\n    }\n  }\n}\n",
+        "template": {
+          "blob": "2726d7e6948b919889b189f64348ac4db0ace75f",
+          "bytes": 396,
+          "sha256": "d1a016524cb42b2b06ffc9fc4798ddc9ff4dd7f9a376a17e724e081ea539ffa4"
+        }
+      }
+    ]
+  },
+  {
+    "index": 18,
+    "reportIndex": 20,
+    "name": "service_snapshot_transfer.rs",
+    "canonicalPath": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_transfer.rs",
+    "bytes": 52444,
+    "sha256": "bfb45bc6254782644b104dbb50f9cbfc887918812f84720af09941b38d73fa1d",
+    "source": {
+      "blob": "9dcea728cd9afd0ba9f78a65537e7cac6ccadf55",
+      "bytes": 52444,
+      "sha256": "fb6440b75feddef609a5ddf54de163f3ec4ad5ddb9d607c19586cfb000a0d223"
+    },
+    "infoRaw": "{\n  \"idempotency_key\": \"heptabao-snapshot2379-format23-observe-20261106-r1-info18\",\n  \"operation\": {\n    \"tool\": \"file_info\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_transfer.rs\"\n    }\n  }\n}\n",
+    "info": {
+      "blob": "ae25619c36dc11b8a0733e60048b85fb8beff019",
+      "bytes": 308,
+      "sha256": "0058e49959b930341d725b10959df1910d3511928eadf3eaaac011ddd92ef71c"
+    },
+    "ranges": [
+      {
+        "index": 0,
+        "offset": 0,
+        "limit": 52444,
+        "templateRaw": "{\n  \"idempotency_key\": \"heptabao-snapshot2379-format23-observe-20261106-r1-body18-00\",\n  \"operation\": {\n    \"tool\": \"binary_read\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_transfer.rs\",\n      \"offset\": 0,\n      \"limit\": 52444,\n      \"expected_version\": null\n    }\n  }\n}\n",
+        "template": {
+          "blob": "2d4aceede88fa0307a814e835311a20f537cb5d1",
+          "bytes": 386,
+          "sha256": "01aac3819d76bb3691f1a81da9080c75ca132e68af6cca1563cc0ba4e15422ae"
+        }
+      }
+    ]
+  },
+  {
+    "index": 19,
+    "reportIndex": 21,
+    "name": "service_snapshot_v6_ha.rs",
+    "canonicalPath": "crates/heptabao-server/src/service_snapshot_v6_ha.rs",
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_v6_ha.rs",
+    "bytes": 13772,
+    "sha256": "8857ecf9aa7a18ff13128c408708f1e9691cfeb84d185f77015504340c197b33",
+    "source": {
+      "blob": "4c111e446031fda7ac88f673298ddfa6322ecc83",
+      "bytes": 13609,
+      "sha256": "43dcba00a64eb1602aa84c7c753199db6a4f748a90426f46a6aa9ea44f29d855"
+    },
+    "infoRaw": "{\n  \"idempotency_key\": \"heptabao-snapshot2379-format23-observe-20261106-r1-info19\",\n  \"operation\": {\n    \"tool\": \"file_info\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_v6_ha.rs\"\n    }\n  }\n}\n",
+    "info": {
+      "blob": "b862a2683060ed60ace5d4ebda3475d680851e96",
+      "bytes": 305,
+      "sha256": "7c7bb46452675da720d9f3e4af8c7a8c3ea8560041fe9304637fcb29516de2fb"
+    },
+    "ranges": [
+      {
+        "index": 0,
+        "offset": 0,
+        "limit": 13772,
+        "templateRaw": "{\n  \"idempotency_key\": \"heptabao-snapshot2379-format23-observe-20261106-r1-body19-00\",\n  \"operation\": {\n    \"tool\": \"binary_read\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_v6_ha.rs\",\n      \"offset\": 0,\n      \"limit\": 13772,\n      \"expected_version\": null\n    }\n  }\n}\n",
+        "template": {
+          "blob": "b0744c36f03abe5b8d88c625903d11c7a0033e5b",
+          "bytes": 383,
+          "sha256": "b2e4202338d577b6dbe41cc230a7695a04c2ce9d66bb1df3c05ade05df5b8d7b"
+        }
+      }
+    ]
+  },
+  {
+    "index": 20,
+    "reportIndex": 22,
+    "name": "service_snapshot_v6_ha_restore.rs",
+    "canonicalPath": "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_v6_ha_restore.rs",
+    "bytes": 47093,
+    "sha256": "3027326105fd9865bc9dc66b3bd6fe1561de3a9a7f9c7e7efeb16bfa01ed2920",
+    "source": {
+      "blob": "100938ae027cc78c3037187b074856b473f9b174",
+      "bytes": 46836,
+      "sha256": "f0849c391e82b82a195779db8519245b7f27446680458b58b39ba9d034d2876c"
+    },
+    "infoRaw": "{\n  \"idempotency_key\": \"heptabao-snapshot2379-format23-observe-20261106-r1-info20\",\n  \"operation\": {\n    \"tool\": \"file_info\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_v6_ha_restore.rs\"\n    }\n  }\n}\n",
+    "info": {
+      "blob": "88e40b58a1775e403e52aba35ac3d1bae26d6a6a",
+      "bytes": 313,
+      "sha256": "3161d0187a69c80fa18d0d44a37a86707ab26ddca66514159384ed886050d335"
+    },
+    "ranges": [
+      {
+        "index": 0,
+        "offset": 0,
+        "limit": 47093,
+        "templateRaw": "{\n  \"idempotency_key\": \"heptabao-snapshot2379-format23-observe-20261106-r1-body20-00\",\n  \"operation\": {\n    \"tool\": \"binary_read\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_v6_ha_restore.rs\",\n      \"offset\": 0,\n      \"limit\": 47093,\n      \"expected_version\": null\n    }\n  }\n}\n",
+        "template": {
+          "blob": "5350a4c50a7f8d7542bfd20bdfcd52eddab0e424",
+          "bytes": 391,
+          "sha256": "e6dc29145737917c3293db2ede993a812306d0d15a10c7be3501964776a38609"
+        }
+      }
+    ]
+  },
+  {
+    "index": 21,
+    "reportIndex": 47,
+    "name": "service_snapshot_forward_test_faults.rs",
+    "canonicalPath": "crates/heptabao-server/src/service_snapshot_forward_test_faults.rs",
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_forward_test_faults.rs",
+    "bytes": 5490,
+    "sha256": "d23d5ce5f94de9906a734497631142ea348032d1bf6b241ab0438e2159378437",
+    "source": {
+      "blob": "abc4dbef9044f6105c00fdc290fd053e1d2cbd26",
+      "bytes": 5345,
+      "sha256": "51cbdba0849307d58e3631994a9d2fe0ecaacda7f69617becb2b8b698e65bb29"
+    },
+    "infoRaw": "{\n  \"idempotency_key\": \"heptabao-snapshot2379-format23-observe-20261106-r1-info21\",\n  \"operation\": {\n    \"tool\": \"file_info\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_forward_test_faults.rs\"\n    }\n  }\n}\n",
+    "info": {
+      "blob": "6f3d768bae3878eab116cdd3bdcf3b277da9c967",
+      "bytes": 319,
+      "sha256": "81673c14d9ca2da840a662b8fb83df0476a6f9209b754b9d808aac743c9a1ad1"
+    },
+    "ranges": [
+      {
+        "index": 0,
+        "offset": 0,
+        "limit": 5490,
+        "templateRaw": "{\n  \"idempotency_key\": \"heptabao-snapshot2379-format23-observe-20261106-r1-body21-00\",\n  \"operation\": {\n    \"tool\": \"binary_read\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_forward_test_faults.rs\",\n      \"offset\": 0,\n      \"limit\": 5490,\n      \"expected_version\": null\n    }\n  }\n}\n",
+        "template": {
+          "blob": "d8a04064300035a00e735986aa79a2943a9f6cb5",
+          "bytes": 396,
+          "sha256": "58e1b55db9c50cec6d607f68eb06ccc344c5ad05827c64ec3f71918406f4e12a"
+        }
+      }
+    ]
+  },
+  {
+    "index": 22,
+    "reportIndex": 48,
+    "name": "service_native_snapshot_forward_audit_tests.rs",
+    "canonicalPath": "crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs",
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_native_snapshot_forward_audit_tests.rs",
+    "bytes": 16080,
+    "sha256": "c0cdbd2a5951991b55ae2a93c22c6585c708f280c56f89d6ff105c0fd808448e",
+    "source": {
+      "blob": "43917b4f6547f28c097086533b4fba36ebbddb9c",
+      "bytes": 14875,
+      "sha256": "83b76edc5b8cc05de7ea748766c045d8dc67d487f82ed43d0fc614878f747c4e"
+    },
+    "infoRaw": "{\n  \"idempotency_key\": \"heptabao-snapshot2379-format23-observe-20261106-r1-info22\",\n  \"operation\": {\n    \"tool\": \"file_info\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_native_snapshot_forward_audit_tests.rs\"\n    }\n  }\n}\n",
+    "info": {
+      "blob": "6b4ca126156d56861dafd06cc312096e18de9d53",
+      "bytes": 326,
+      "sha256": "bce79aa028fd3c834572e733413853c9670a6a1b815a2e6147daa234df59e72f"
+    },
+    "ranges": [
+      {
+        "index": 0,
+        "offset": 0,
+        "limit": 16080,
+        "templateRaw": "{\n  \"idempotency_key\": \"heptabao-snapshot2379-format23-observe-20261106-r1-body22-00\",\n  \"operation\": {\n    \"tool\": \"binary_read\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_native_snapshot_forward_audit_tests.rs\",\n      \"offset\": 0,\n      \"limit\": 16080,\n      \"expected_version\": null\n    }\n  }\n}\n",
+        "template": {
+          "blob": "7a7c47593860123c39a95b6d1669dfd0ced6139d",
+          "bytes": 404,
+          "sha256": "2275c16bc63baef4bc800790f5501b2c04361c7a26657c0694ac209596a59379"
+        }
+      }
+    ]
+  }
+]

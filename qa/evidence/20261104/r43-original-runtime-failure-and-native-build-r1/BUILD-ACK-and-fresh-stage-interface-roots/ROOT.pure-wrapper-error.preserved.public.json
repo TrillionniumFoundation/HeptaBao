@@ -1,0 +1,7 @@
+{
+  "error": "SyntaxError: await is only valid in async functions",
+  "scope": "root JS wrapper construction before any tool call",
+  "NativeCalls": 0,
+  "GitCalls": 0,
+  "correctedBy": "explicit async IIFE"
+}

@@ -1,0 +1,112 @@
+{
+  "schema": "heptabao.root-source-review.025b-body0-same-key-reconciliation.r1",
+  "pass": true,
+  "checks": 14,
+  "rows": [
+    {
+      "id": "whole_source21",
+      "pass": true
+    },
+    {
+      "id": "author70_exact",
+      "pass": true
+    },
+    {
+      "id": "original270825_whole_cached",
+      "pass": true
+    },
+    {
+      "id": "strict7_forward_reverse",
+      "pass": true
+    },
+    {
+      "id": "current_candidate_pin",
+      "pass": true
+    },
+    {
+      "id": "same_original_unknown_record",
+      "pass": true
+    },
+    {
+      "id": "same_original_request_and_arm_context",
+      "pass": true
+    },
+    {
+      "id": "original_timeout_not_an_operation_identity",
+      "pass": true
+    },
+    {
+      "id": "metadata0_actual_and_frozen",
+      "pass": true
+    },
+    {
+      "id": "same_exact_public_range",
+      "pass": true
+    },
+    {
+      "id": "conditional_admission_honest_both_branches",
+      "pass": true
+    },
+    {
+      "id": "same_source_contract_not_deployment_attestation",
+      "pass": true
+    },
+    {
+      "id": "closed_complete_whole_body_only",
+      "pass": true
+    },
+    {
+      "id": "new_context_old_context_never_modified",
+      "pass": true
+    }
+  ],
+  "source": {
+    "tree": "6cfbfe93238ce6266d1e8980a243d960a441111c",
+    "files": 21,
+    "bytes": 117358,
+    "merkle": {
+      "root_sha": "6cfbfe93238ce6266d1e8980a243d960a441111c",
+      "trees_verified": 1,
+      "leaf_count": 21
+    },
+    "whole": true
+  },
+  "candidate": {
+    "blob": "c3c1cad15dad4e714c19e112dacdea929a1d9650",
+    "bytes": 23301,
+    "sha256": "24df845ef46bc77a66f7181c14bb4dc8c6419dab6cac46111cea23db86eb1c69"
+  },
+  "exactRequest": {
+    "blob": "b9e3c37da6a88ed78fe36893d8bf373e5213fdff",
+    "bytes": 417,
+    "sha256": "ba148cdadb1d9e0cb1147107cbe5be442c1b15873b4a1f8aec23ece70faba8be"
+  },
+  "unknownPacket": {
+    "tree": "4169bee13a26dafcce26cf156e490d03c9c91d1a",
+    "files": 9,
+    "bytes": 221346,
+    "merkle": {
+      "root_sha": "4169bee13a26dafcce26cf156e490d03c9c91d1a",
+      "trees_verified": 1,
+      "leaf_count": 9
+    },
+    "whole": true
+  },
+  "actualMetadataBindingPacket": {
+    "tree": "e8412710d414a5dac4e53c1f33b8dd4dade2cb35",
+    "files": 16,
+    "bytes": 303552,
+    "merkle": {
+      "root_sha": "e8412710d414a5dac4e53c1f33b8dd4dade2cb35",
+      "trees_verified": 1,
+      "leaf_count": 16
+    },
+    "whole": true
+  },
+  "authorChecksReproduced": 70,
+  "scope": "One conditional admission using the same original key and exact request, then returned-ID closure and complete original public body only.",
+  "sourceOnly": true,
+  "NativeCalls": 0,
+  "oldUnknownOutcomeUnchanged": true,
+  "fullReplacement": false
+}

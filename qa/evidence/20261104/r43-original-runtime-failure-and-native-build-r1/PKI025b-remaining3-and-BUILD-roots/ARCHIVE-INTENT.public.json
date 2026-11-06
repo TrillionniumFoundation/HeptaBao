@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r43-C-remaining3-actual-and-exact-BUILD-root-reviews-r1",
+  "records": [
+    {
+      "name": "remaining3-root-qualification.public.json",
+      "blob": "7e8aa73f35024baf7b351728d85027802b49e683",
+      "bytes": 6456,
+      "sha256": "25ec8052e3b7235ebddde2a82896fbb79d13564d4672786dfd6c312827de2e62"
+    },
+    {
+      "name": "author221-reproduced.public.json",
+      "blob": "4e2eb9eea319e1e4b8824d30d957bc8786e9065e",
+      "bytes": 16612,
+      "sha256": "845a7b64a1b1aba31a176e694f679db82898332c90d7ed97534d4f2ddf8c5e42"
+    },
+    {
+      "name": "BUILD-binding-root-qualification.public.json",
+      "blob": "a5efb43a3b3d7f60999c7e2c13f522d9705f3eb7",
+      "bytes": 2924,
+      "sha256": "1e52ec86372585622e0f53783b332ee012a3cebc86c2d0c49e311a36eb44ffdb"
+    }
+  ],
+  "expected_data_tree": "bfaa58589bf9c70d0f06de5ee82cd37f2661c247",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

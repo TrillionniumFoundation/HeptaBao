@@ -1,0 +1,16 @@
+{
+  "boundary": {
+    "blob": "caf7923b910dd5a6b93834a9c8cbb60f328a2c57",
+    "bytes": 20089,
+    "sha256": "c7441271fae072386473d93ecd5c21b691c52f9795424f57debb78599bf32a86"
+  },
+  "tree": "79d73f5ea422f0a10cda25af29472b4dd0752475",
+  "journal": {
+    "blob": "a154e8b3e4bbce818471dd10fe434e4ded570c8b",
+    "bytes": 79062,
+    "sha256": "8ad44f98b72e37ae7037451eada7cf9c5616609ec5123f7bc8cef3b4fcf4f9d9"
+  },
+  "go": "25ea12c4406a12ba5ce263b10a2723f73276d74b",
+  "newRootGO": false,
+  "newRuntimeCalls": 0
+}

@@ -1,0 +1,166 @@
+{
+  "schema": "heptabao.root.combined-test-inventory-source-qualification.v1",
+  "pass": true,
+  "sourcePacket": "f4af09012f370b9776d43755d4168e5e40610418",
+  "authorChecks": 44,
+  "rootChecks": [
+    {
+      "name": "author_44_report_exact",
+      "ok": true
+    },
+    {
+      "name": "profile_entries254_exact",
+      "ok": true
+    },
+    {
+      "name": "unique_cases237_exact",
+      "ok": true
+    },
+    {
+      "name": "module_edge_0_whole_pin",
+      "ok": true
+    },
+    {
+      "name": "module_edge_0_exact_lines",
+      "ok": true
+    },
+    {
+      "name": "module_edge_1_whole_pin",
+      "ok": true
+    },
+    {
+      "name": "module_edge_1_exact_lines",
+      "ok": true
+    },
+    {
+      "name": "module_edge_2_whole_pin",
+      "ok": true
+    },
+    {
+      "name": "module_edge_2_exact_lines",
+      "ok": true
+    },
+    {
+      "name": "module_edge_3_whole_pin",
+      "ok": true
+    },
+    {
+      "name": "module_edge_3_exact_lines",
+      "ok": true
+    },
+    {
+      "name": "module_edge_4_whole_pin",
+      "ok": true
+    },
+    {
+      "name": "module_edge_4_exact_lines",
+      "ok": true
+    },
+    {
+      "name": "module_edge_5_whole_pin",
+      "ok": true
+    },
+    {
+      "name": "module_edge_5_exact_lines",
+      "ok": true
+    },
+    {
+      "name": "module_edge_6_whole_pin",
+      "ok": true
+    },
+    {
+      "name": "module_edge_6_exact_lines",
+      "ok": true
+    },
+    {
+      "name": "module_edge_7_whole_pin",
+      "ok": true
+    },
+    {
+      "name": "module_edge_7_exact_lines",
+      "ok": true
+    },
+    {
+      "name": "module_edge_8_whole_pin",
+      "ok": true
+    },
+    {
+      "name": "module_edge_8_exact_lines",
+      "ok": true
+    },
+    {
+      "name": "module_edge_9_whole_pin",
+      "ok": true
+    },
+    {
+      "name": "module_edge_9_exact_lines",
+      "ok": true
+    },
+    {
+      "name": "module_edge_10_whole_pin",
+      "ok": true
+    },
+    {
+      "name": "module_edge_10_exact_lines",
+      "ok": true
+    },
+    {
+      "name": "module_edge_11_whole_pin",
+      "ok": true
+    },
+    {
+      "name": "module_edge_11_exact_lines",
+      "ok": true
+    },
+    {
+      "name": "module_edge_12_whole_pin",
+      "ok": true
+    },
+    {
+      "name": "module_edge_12_exact_lines",
+      "ok": true
+    },
+    {
+      "name": "module_edge_13_whole_pin",
+      "ok": true
+    },
+    {
+      "name": "module_edge_13_exact_lines",
+      "ok": true
+    }
+  ],
+  "counts": {
+    "C": {
+      "unique": 149,
+      "entries": 166
+    },
+    "snapshot": {
+      "unique": 27,
+      "entries": 27
+    },
+    "normal": {
+      "unique": 61,
+      "entries": 61
+    },
+    "withoutNormal": {
+      "unique": 176,
+      "entries": 193
+    },
+    "requiredWithNormal": {
+      "unique": 237,
+      "entries": 254
+    }
+  },
+  "profiles": {
+    "heptabao-server/file": 17,
+    "heptabao-server/default": 220,
+    "heptabao-ha-service/ha-native-v6-peer-ingress": 17
+  },
+  "moduleEdges": 14,
+  "actualCompiledLibtestObserved": false,
+  "testsExecuted": 0,
+  "readiness": false,
+  "combinedCommit": null,
+  "combinedTree": null,
+  "note": "Includes 61 original normal tests. Two snapshot test bodies retain frozen unformatted source evidence pending their original formatted-file readback."
+}

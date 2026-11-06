@@ -1,0 +1,5 @@
+{
+  "error": "verification.executionEntries254 undefined in inspection; exact structure re-read before use",
+  "nativeCalled": false,
+  "gitMutationCalled": false
+}

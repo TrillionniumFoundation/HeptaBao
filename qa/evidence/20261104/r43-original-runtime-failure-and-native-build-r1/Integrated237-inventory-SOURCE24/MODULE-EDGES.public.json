@@ -1,0 +1,184 @@
+[
+  {
+    "sourceFile": "lib.rs",
+    "sourcePin": {
+      "blob": "658ebe6c1596e0db88ead17e65c20e69d240dfbb",
+      "bytes": 85408,
+      "sha256": "2bddfb1eff7527f273c9c81f7ed90456de34cdcb71ae1fd1aed60e155ea9040d"
+    },
+    "evidence": "actual-formatted-whole",
+    "needle": "mod native_snapshot_body;",
+    "firstLine": 75,
+    "lastLine": 79,
+    "exactText": "};\n\n#[cfg(feature = \"native-v6-peer-ingress\")]\nmod native_snapshot_body;\n#[cfg(feature = \"native-v6-peer-ingress\")]\n"
+  },
+  {
+    "sourceFile": "native_snapshot_body.rs",
+    "sourcePin": {
+      "blob": "51b0497f92f570ee48993b9bbd13e0d6cafbf54c",
+      "bytes": 15502,
+      "sha256": "e250aadc92a5e114aabafd04de2578750c8291c483829f7d25ee249f6ccd5e26"
+    },
+    "evidence": "actual-formatted-whole",
+    "needle": "mod tests;",
+    "firstLine": 442,
+    "lastLine": 446,
+    "exactText": "\n#[cfg(test)]\n#[path = \"native_snapshot_body_tests.rs\"]\nmod tests;\n\n"
+  },
+  {
+    "sourceFile": "lib.rs",
+    "sourcePin": {
+      "blob": "658ebe6c1596e0db88ead17e65c20e69d240dfbb",
+      "bytes": 85408,
+      "sha256": "2bddfb1eff7527f273c9c81f7ed90456de34cdcb71ae1fd1aed60e155ea9040d"
+    },
+    "evidence": "actual-formatted-whole",
+    "needle": "mod authenticated_peer_frame;",
+    "firstLine": 63,
+    "lastLine": 67,
+    "exactText": "    MAX_NATIVE_KV2_WRITE_METADATA_BYTES, NATIVE_KV2_WRITE_REQUEST_MAGIC,\n};\n\nmod authenticated_peer_frame;\npub use authenticated_peer_frame::{\n"
+  },
+  {
+    "sourceFile": "authenticated_peer_frame.rs",
+    "sourcePin": {
+      "blob": "8edc95536e36540a0cf160cb904e4844a80f98fc",
+      "bytes": 6204,
+      "sha256": "cd3c37ffaaaada293f3ab31727cfcd99206f551d9851fbfc6ab5ef06ccb4fac4"
+    },
+    "evidence": "whole-frozen-source",
+    "needle": "mod snapshot;",
+    "firstLine": 151,
+    "lastLine": 155,
+    "exactText": "\n#[cfg(feature = \"native-v6-peer-ingress\")]\n#[path = \"native_snapshot_peer.rs\"]\nmod snapshot;\n#[cfg(feature = \"native-v6-peer-ingress\")]\n"
+  },
+  {
+    "sourceFile": "native_snapshot_peer.rs",
+    "sourcePin": {
+      "blob": "edf2e0e3a1e6a3da1a3308f4aa78213a160c28df",
+      "bytes": 23025,
+      "sha256": "4381447e1b8d5e0861c8f2ca88e9e550dc7494a1cbeb752008167b9700438c85"
+    },
+    "evidence": "actual-formatted-whole",
+    "needle": "mod tests;",
+    "firstLine": 608,
+    "lastLine": 612,
+    "exactText": "\n#[cfg(test)]\n#[path = \"native_snapshot_peer_tests.rs\"]\nmod tests;\n\n"
+  },
+  {
+    "sourceFile": "auth.rs",
+    "sourcePin": {
+      "blob": "c407b40741a5660b77e2342871888e2a61ac29da",
+      "bytes": 398266,
+      "sha256": "9f366e631019e55aca61717a324bf13c1995797ed088b5b9d8b80c4a11914f7f"
+    },
+    "evidence": "whole-frozen-source",
+    "needle": "mod forward_actor;",
+    "firstLine": 10124,
+    "lastLine": 10128,
+    "exactText": "#[path = \"auth_batch_principal.rs\"]\nmod batch_principal;\n#[path = \"auth_forward_actor.rs\"]\nmod forward_actor;\n#[path = \"auth_lease_owner.rs\"]\n"
+  },
+  {
+    "sourceFile": "auth_forward_actor.rs",
+    "sourcePin": {
+      "blob": "a77b6320e54d37388baebc1a41a6b04d599da61e",
+      "bytes": 5060,
+      "sha256": "7c11c0b16c7c61b25620462b005be9b88f9ab27b962df2d8f117cf1576cfbdcb"
+    },
+    "evidence": "actual-formatted-whole",
+    "needle": "mod snapshot_tests;",
+    "firstLine": 135,
+    "lastLine": 139,
+    "exactText": "\n#[cfg(all(test, feature = \"native-v6-ha\"))]\n#[path = \"auth_snapshot_forward_actor_tests.rs\"]\nmod snapshot_tests;\n\n"
+  },
+  {
+    "sourceFile": "service.rs",
+    "sourcePin": {
+      "blob": "63bacb537a17cc060239a1793f8ac526e15df158",
+      "bytes": 519577,
+      "sha256": "152d79076104755a522ad972e020be3f9efad47cfc0b20692dc3190169ebf276"
+    },
+    "evidence": "whole-frozen-source",
+    "needle": "mod snapshot_transfer;",
+    "firstLine": 385,
+    "lastLine": 389,
+    "exactText": "    OpenBaoWrapperConfig, OpenBaoWrapperLaunchPlan, OpenBaoWrapperTransport,\n};\n#[path = \"service_snapshot_transfer.rs\"]\nmod snapshot_transfer;\n#[path = \"service_ui_mounts.rs\"]\n"
+  },
+  {
+    "sourceFile": "service_snapshot_transfer.rs",
+    "sourcePin": {
+      "blob": "9dcea728cd9afd0ba9f78a65537e7cac6ccadf55",
+      "bytes": 52444,
+      "sha256": "fb6440b75feddef609a5ddf54de163f3ec4ad5ddb9d607c19586cfb000a0d223"
+    },
+    "evidence": "whole-frozen-source",
+    "needle": "mod forward;",
+    "firstLine": 75,
+    "lastLine": 79,
+    "exactText": "\n#[cfg(feature = \"native-v6-ha\")]\n#[path = \"service_snapshot_forward.rs\"]\npub(crate) mod forward;\n\n"
+  },
+  {
+    "sourceFile": "service_snapshot_forward.rs",
+    "sourcePin": {
+      "blob": "622770cca42dbbc1bd7c82dbd2fc0178180cfa42",
+      "bytes": 8891,
+      "sha256": "6db3cd4b9c8d115779b59282aef59755556099491f517985e453c1bd5b41586b"
+    },
+    "evidence": "whole-frozen-source",
+    "needle": "mod wire;",
+    "firstLine": 9,
+    "lastLine": 13,
+    "exactText": "use std::io;\n\n#[path = \"service_snapshot_forward_wire.rs\"]\nmod wire;\n#[path = \"service_snapshot_forward_file.rs\"]\n"
+  },
+  {
+    "sourceFile": "service_snapshot_forward_wire.rs",
+    "sourcePin": {
+      "blob": "e7d14fb4237c4e2638068c91f7cb421fdc3e9f85",
+      "bytes": 15616,
+      "sha256": "458dc1a5c54dd9ee128030012c48e6a800b5e886233392894e485fdfc42fade7"
+    },
+    "evidence": "whole-frozen-source",
+    "needle": "mod tests;",
+    "firstLine": 381,
+    "lastLine": 385,
+    "exactText": "\n#[cfg(test)]\n#[path = \"service_snapshot_forward_wire_tests.rs\"]\nmod tests;\n\n"
+  },
+  {
+    "sourceFile": "service.rs",
+    "sourcePin": {
+      "blob": "63bacb537a17cc060239a1793f8ac526e15df158",
+      "bytes": 519577,
+      "sha256": "152d79076104755a522ad972e020be3f9efad47cfc0b20692dc3190169ebf276"
+    },
+    "evidence": "whole-frozen-source",
+    "needle": "mod native_v6_ha_pipeline_tests;",
+    "firstLine": 12798,
+    "lastLine": 12802,
+    "exactText": "\n#[cfg(all(test, feature = \"native-v6-ha\"))]\n#[path = \"service_native_v6_ha_pipeline_tests.rs\"]\nmod native_v6_ha_pipeline_tests;\n\n"
+  },
+  {
+    "sourceFile": "service_native_v6_ha_pipeline_tests.rs",
+    "sourcePin": {
+      "blob": "ac8bbc490de8197097a16acc57956b2c5243fc69",
+      "bytes": 70780,
+      "sha256": "0e204bfd4f2a2b5640e1da6611014f5a87799b099c9b2f6c861283e60c57c2ea"
+    },
+    "evidence": "whole-frozen-source",
+    "needle": "mod historical_restore_tests;",
+    "firstLine": 13,
+    "lastLine": 17,
+    "exactText": "mod snapshot_repair_tests;\n\n#[path = \"service_native_v6_ha_historical_restore_tests.rs\"]\nmod historical_restore_tests;\n\n"
+  },
+  {
+    "sourceFile": "service_native_v6_ha_historical_restore_tests.rs",
+    "sourcePin": {
+      "blob": "1e9818f52ee2827166f2e9694e63513fb0e8e713",
+      "bytes": 53166,
+      "sha256": "ff6cc53a65ea25bcb9d4817f5875d1de950c4814b54bd7eafdff6b95ad8ed69d"
+    },
+    "evidence": "whole-frozen-source",
+    "needle": "mod snapshot_forward_audit_tests;",
+    "firstLine": 1,
+    "lastLine": 5,
+    "exactText": "//! Actual Service snapshot transport plus real pinned three-node TLS/Raft.\n//! Host power loss is separately measured by the physical acceptance runner.\n#[path = \"service_native_snapshot_forward_audit_tests.rs\"]\nmod snapshot_forward_audit_tests;\n\n"
+  }
+]

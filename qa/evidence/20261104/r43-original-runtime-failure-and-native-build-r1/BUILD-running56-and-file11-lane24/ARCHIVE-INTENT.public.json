@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r43-original-BUILD-running56-and-file11-lane24",
+  "records": [
+    {
+      "name": "ROOT.original-BUILD-running56.public.json",
+      "blob": "ec49746acdf203bf7004b72613f800852bdd5819",
+      "bytes": 7510,
+      "sha256": "a472388cfae346575a53c797a413c8600719e47d1a853dc0879f0200f2519f82"
+    },
+    {
+      "name": "ROOT.file11-lane24.public.json",
+      "blob": "806aa85a0bdd893409618fe3796a84a31f862b6d",
+      "bytes": 3057,
+      "sha256": "451c699bed52fb5e81a06724ba5c3fd66cab0d4b9ee063570d51cfbc3f31d4d1"
+    },
+    {
+      "name": "ROOT.verifier.js",
+      "blob": "668ce4f8dd44b17b7b2057cd062ec87cbb2bb20c",
+      "bytes": 6869,
+      "sha256": "7883aa38bd1003d352b66e4efa014ee81e384304bec8ff39dfbf13939a062b82"
+    },
+    {
+      "name": "ROOT.journal-helper.js",
+      "blob": "3c0ef26c0193c7e39724add83657466d88f560bb",
+      "bytes": 3404,
+      "sha256": "600711669602a25a77f41b713b51409130853ba1918af398aea928c01c5c6e01"
+    },
+    {
+      "name": "ROOT.checker-error.preserved.public.json",
+      "blob": "6928083d575a6157989366fb737d33f19a9b99b6",
+      "bytes": 24334,
+      "sha256": "11af382a2f8c44e5f6e8f725271060109e896dfdb879ec01274c5dfc6c7ed60e"
+    }
+  ],
+  "expected_data_tree": "78c2ec403701ce1f75bad3279ce550527cc2e04a",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

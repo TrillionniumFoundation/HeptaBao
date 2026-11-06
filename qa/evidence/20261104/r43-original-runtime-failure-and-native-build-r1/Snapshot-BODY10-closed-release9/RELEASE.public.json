@@ -1,0 +1,113 @@
+{
+  "schema": "heptabao.snapshot-formatted23.BODY10-boundary-release.v1",
+  "slot": "snapshot_2379_formatted23_readonly_gitfirst_r1",
+  "root_table_go": "25ea12c4406a12ba5ce263b10a2723f73276d74b",
+  "lane_resume_reference": "48a846c87d191b7f6e799cd12b9de8359842687d",
+  "native_calls_in_flight": 0,
+  "native_futures_active": 0,
+  "pending": null,
+  "activeObserver": null,
+  "paused": false,
+  "lane_hold": true,
+  "reason": "Root requested whole-file boundary handoff to C; INFO11 remains unsubmitted.",
+  "completed_files": 11,
+  "completed_observers": 28,
+  "native_call_records": 128,
+  "whole_body_bytes": 613004,
+  "next_file_index": 11,
+  "info11_started": false,
+  "body11_started": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  ],
+  "just_completed": {
+    "index": 10,
+    "name": "http_snapshot.rs",
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/http_snapshot.rs",
+    "body": {
+      "blob": "c8a2ccae144d8196e6377c31f4915ff81dd7a6bf",
+      "bytes": 38482,
+      "sha256": "d3ece20279fd3e225736b9138e892d28dc766112d1de94f8882c9117fe1eb93c"
+    },
+    "bodyTree": "e4e6d5ad9d028be4c8a3ef0b3866d4cdc0fa0eb1",
+    "version": "66306:31235984:38482:1793956738757596399:1793956738757596399",
+    "full9Strings": [
+      "66306",
+      "31235984",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "38482",
+      "1793956738757596399",
+      "1793956738757596399"
+    ],
+    "metadataOperation": "37a07e380c8f74019d9b6c20c86cfa339d409e3b6d01b42b3a4230cb767777dc",
+    "ranges": [
+      {
+        "offset": 0,
+        "next": 38482,
+        "limit": 38482,
+        "chunkSha256": "d3ece20279fd3e225736b9138e892d28dc766112d1de94f8882c9117fe1eb93c",
+        "originalOperation": "49c576dcc733deb0b26207d9d024349e93c85ae85ccc56c21d65d8f0b50ec628",
+        "nativeText": {
+          "blob": "6e7dc61cce99c8477b5eeeffe56f0e18a4ad5c56",
+          "bytes": 51651,
+          "sha256": "d2f9b54827e986dc5325d9e2fa140cb3f51a6ddb5579c91df62e83a9764bf831"
+        }
+      }
+    ],
+    "wholeUTF8DecodedAfterByteSHA": true,
+    "semanticQualification": false
+  },
+  "just_closed": {
+    "id": "49c576dcc733deb0b26207d9d024349e93c85ae85ccc56c21d65d8f0b50ec628",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "0a0d628ee87820fd2c8085b54f106598e71c8d92",
+      "bytes": 51754,
+      "sha256": "e9fe2ea54315dcbcb915ca7e60b6064808d01564bc0fafa73399cae675f21d38"
+    },
+    "payloadTree": "6f31b43d87c4ca72af4918c8b36d88a8e60d481d",
+    "nativeText": {
+      "blob": "6e7dc61cce99c8477b5eeeffe56f0e18a4ad5c56",
+      "bytes": 51651,
+      "sha256": "d2f9b54827e986dc5325d9e2fa140cb3f51a6ddb5579c91df62e83a9764bf831"
+    },
+    "pages": 4,
+    "completedInactive": true
+  },
+  "status_native": {
+    "blob": "d18e9a31576557876c11cbf5b21e5ae873badc64",
+    "bytes": 802,
+    "sha256": "284f7620ef981e553943968ec57fa927e428f45feb23da597b0e3239d4e8235a"
+  },
+  "status_sdk": {
+    "blob": "885003ede87be9344c36e98869be37723d877490",
+    "bytes": 977,
+    "sha256": "6b2555215a42aa093bf08b377f31d9c5f503b03fa3d98cfa21eb67fbc38810f8"
+  },
+  "original_body_call_keys": [
+    "sf23-r1-f10-b00-admit",
+    "sf23-r1-f10-b00-s0",
+    "sf23-r1-f10-b00-p0",
+    "sf23-r1-f10-b00-p1",
+    "sf23-r1-f10-b00-p2",
+    "sf23-r1-f10-b00-p3"
+  ],
+  "previous_checkpoint": "8861600ed28e0f823e16b064f45647e1c8b700cf",
+  "historical_errors_preserved": [
+    "INFO10 original page0 timeout 923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+    "INFO10 separate recovery completed; failed call unchanged",
+    "earlier file7 Git arm read error/reconciliation",
+    "pure state-summary null-index and keyed-calls display errors; no Native effects"
+  ],
+  "build_authorized": false,
+  "new_admission_authorized_by_this_release": false
+}

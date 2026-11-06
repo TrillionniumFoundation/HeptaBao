@@ -1,0 +1,353 @@
+[
+  {
+    "crate": "heptabao-ha-service",
+    "libtest_profile": "ha-native-v6-peer-ingress",
+    "name": "native_snapshot_body::tests::snapshot_stream_roundtrip_crosses_ordinary_frame_limit_once",
+    "family": "body",
+    "source": {
+      "blob": "5595cb6d05f012396f92c00ed51b2c02d4775063",
+      "bytes": 7525,
+      "sha256": "02cf32110c8a70a0e05a9f492ab9b6811bb4eecd5db5e44da30886c4422766c8"
+    },
+    "sourceFile": "native_snapshot_body_tests.rs",
+    "sourceEvidence": "actual-formatted-whole"
+  },
+  {
+    "crate": "heptabao-ha-service",
+    "libtest_profile": "ha-native-v6-peer-ingress",
+    "name": "native_snapshot_body::tests::snapshot_stream_empty_body_requires_explicit_end_and_eof",
+    "family": "body",
+    "source": {
+      "blob": "5595cb6d05f012396f92c00ed51b2c02d4775063",
+      "bytes": 7525,
+      "sha256": "02cf32110c8a70a0e05a9f492ab9b6811bb4eecd5db5e44da30886c4422766c8"
+    },
+    "sourceFile": "native_snapshot_body_tests.rs",
+    "sourceEvidence": "actual-formatted-whole"
+  },
+  {
+    "crate": "heptabao-ha-service",
+    "libtest_profile": "ha-native-v6-peer-ingress",
+    "name": "native_snapshot_body::tests::snapshot_stream_exact_payload_without_end_is_not_complete",
+    "family": "body",
+    "source": {
+      "blob": "5595cb6d05f012396f92c00ed51b2c02d4775063",
+      "bytes": 7525,
+      "sha256": "02cf32110c8a70a0e05a9f492ab9b6811bb4eecd5db5e44da30886c4422766c8"
+    },
+    "sourceFile": "native_snapshot_body_tests.rs",
+    "sourceEvidence": "actual-formatted-whole"
+  },
+  {
+    "crate": "heptabao-ha-service",
+    "libtest_profile": "ha-native-v6-peer-ingress",
+    "name": "native_snapshot_body::tests::snapshot_stream_end_digest_and_trailing_wire_bytes_are_rejected",
+    "family": "body",
+    "source": {
+      "blob": "5595cb6d05f012396f92c00ed51b2c02d4775063",
+      "bytes": 7525,
+      "sha256": "02cf32110c8a70a0e05a9f492ab9b6811bb4eecd5db5e44da30886c4422766c8"
+    },
+    "sourceFile": "native_snapshot_body_tests.rs",
+    "sourceEvidence": "actual-formatted-whole"
+  },
+  {
+    "crate": "heptabao-ha-service",
+    "libtest_profile": "ha-native-v6-peer-ingress",
+    "name": "native_snapshot_body::tests::snapshot_stream_declared_oversize_is_rejected_before_payload",
+    "family": "body",
+    "source": {
+      "blob": "5595cb6d05f012396f92c00ed51b2c02d4775063",
+      "bytes": 7525,
+      "sha256": "02cf32110c8a70a0e05a9f492ab9b6811bb4eecd5db5e44da30886c4422766c8"
+    },
+    "sourceFile": "native_snapshot_body_tests.rs",
+    "sourceEvidence": "actual-formatted-whole"
+  },
+  {
+    "crate": "heptabao-ha-service",
+    "libtest_profile": "ha-native-v6-peer-ingress",
+    "name": "native_snapshot_body::tests::snapshot_stream_short_chunk_cannot_be_followed_by_data",
+    "family": "body",
+    "source": {
+      "blob": "5595cb6d05f012396f92c00ed51b2c02d4775063",
+      "bytes": 7525,
+      "sha256": "02cf32110c8a70a0e05a9f492ab9b6811bb4eecd5db5e44da30886c4422766c8"
+    },
+    "sourceFile": "native_snapshot_body_tests.rs",
+    "sourceEvidence": "actual-formatted-whole"
+  },
+  {
+    "crate": "heptabao-ha-service",
+    "libtest_profile": "ha-native-v6-peer-ingress",
+    "name": "native_snapshot_body::tests::snapshot_stream_consumer_cannot_finish_with_unread_archive_bytes",
+    "family": "body",
+    "source": {
+      "blob": "5595cb6d05f012396f92c00ed51b2c02d4775063",
+      "bytes": 7525,
+      "sha256": "02cf32110c8a70a0e05a9f492ab9b6811bb4eecd5db5e44da30886c4422766c8"
+    },
+    "sourceFile": "native_snapshot_body_tests.rs",
+    "sourceEvidence": "actual-formatted-whole"
+  },
+  {
+    "crate": "heptabao-ha-service",
+    "libtest_profile": "ha-native-v6-peer-ingress",
+    "name": "native_snapshot_body::tests::snapshot_stream_tls_eof_error_after_valid_end_cannot_mint_binding",
+    "family": "body",
+    "source": {
+      "blob": "5595cb6d05f012396f92c00ed51b2c02d4775063",
+      "bytes": 7525,
+      "sha256": "02cf32110c8a70a0e05a9f492ab9b6811bb4eecd5db5e44da30886c4422766c8"
+    },
+    "sourceFile": "native_snapshot_body_tests.rs",
+    "sourceEvidence": "actual-formatted-whole"
+  },
+  {
+    "crate": "heptabao-ha-service",
+    "libtest_profile": "ha-native-v6-peer-ingress",
+    "name": "native_snapshot_body::tests::snapshot_stream_original_expired_deadline_precedes_io",
+    "family": "body",
+    "source": {
+      "blob": "5595cb6d05f012396f92c00ed51b2c02d4775063",
+      "bytes": 7525,
+      "sha256": "02cf32110c8a70a0e05a9f492ab9b6811bb4eecd5db5e44da30886c4422766c8"
+    },
+    "sourceFile": "native_snapshot_body_tests.rs",
+    "sourceEvidence": "actual-formatted-whole"
+  },
+  {
+    "crate": "heptabao-ha-service",
+    "libtest_profile": "ha-native-v6-peer-ingress",
+    "name": "native_snapshot_body::tests::snapshot_stream_encoder_checks_one_rejecting_eof_byte_at_exact_cap",
+    "family": "body",
+    "source": {
+      "blob": "5595cb6d05f012396f92c00ed51b2c02d4775063",
+      "bytes": 7525,
+      "sha256": "02cf32110c8a70a0e05a9f492ab9b6811bb4eecd5db5e44da30886c4422766c8"
+    },
+    "sourceFile": "native_snapshot_body_tests.rs",
+    "sourceEvidence": "actual-formatted-whole"
+  },
+  {
+    "crate": "heptabao-ha-service",
+    "libtest_profile": "ha-native-v6-peer-ingress",
+    "name": "authenticated_peer_frame::snapshot::tests::snapshot_peer_actual_mtls_upload_close_notify_allows_opposite_download",
+    "family": "transport",
+    "source": {
+      "blob": "b070183ad3d1774edd1469a9115c2a638b28b45b",
+      "bytes": 24476,
+      "sha256": "bdbb95b385de092a4c4a9bcae2d7a282d627654aa0bb608e743b7f61b9591589"
+    },
+    "sourceFile": "native_snapshot_peer_tests.rs",
+    "sourceEvidence": "actual-formatted-whole"
+  },
+  {
+    "crate": "heptabao-ha-service",
+    "libtest_profile": "ha-native-v6-peer-ingress",
+    "name": "authenticated_peer_frame::snapshot::tests::snapshot_peer_actual_mtls_bare_tcp_eof_cannot_finalize_upload",
+    "family": "transport",
+    "source": {
+      "blob": "b070183ad3d1774edd1469a9115c2a638b28b45b",
+      "bytes": 24476,
+      "sha256": "bdbb95b385de092a4c4a9bcae2d7a282d627654aa0bb608e743b7f61b9591589"
+    },
+    "sourceFile": "native_snapshot_peer_tests.rs",
+    "sourceEvidence": "actual-formatted-whole"
+  },
+  {
+    "crate": "heptabao-ha-service",
+    "libtest_profile": "ha-native-v6-peer-ingress",
+    "name": "authenticated_peer_frame::snapshot::tests::snapshot_peer_actual_mtls_wrong_selected_leaf_never_admits_body",
+    "family": "transport",
+    "source": {
+      "blob": "b070183ad3d1774edd1469a9115c2a638b28b45b",
+      "bytes": 24476,
+      "sha256": "bdbb95b385de092a4c4a9bcae2d7a282d627654aa0bb608e743b7f61b9591589"
+    },
+    "sourceFile": "native_snapshot_peer_tests.rs",
+    "sourceEvidence": "actual-formatted-whole"
+  },
+  {
+    "crate": "heptabao-ha-service",
+    "libtest_profile": "ha-native-v6-peer-ingress",
+    "name": "authenticated_peer_frame::snapshot::tests::snapshot_peer_actual_mtls_terminal_rejection_consumes_no_upload",
+    "family": "transport",
+    "source": {
+      "blob": "b070183ad3d1774edd1469a9115c2a638b28b45b",
+      "bytes": 24476,
+      "sha256": "bdbb95b385de092a4c4a9bcae2d7a282d627654aa0bb608e743b7f61b9591589"
+    },
+    "sourceFile": "native_snapshot_peer_tests.rs",
+    "sourceEvidence": "actual-formatted-whole"
+  },
+  {
+    "crate": "heptabao-ha-service",
+    "libtest_profile": "ha-native-v6-peer-ingress",
+    "name": "authenticated_peer_frame::snapshot::tests::snapshot_peer_original_frame_still_uses_only_old_callback",
+    "family": "transport",
+    "source": {
+      "blob": "b070183ad3d1774edd1469a9115c2a638b28b45b",
+      "bytes": 24476,
+      "sha256": "bdbb95b385de092a4c4a9bcae2d7a282d627654aa0bb608e743b7f61b9591589"
+    },
+    "sourceFile": "native_snapshot_peer_tests.rs",
+    "sourceEvidence": "actual-formatted-whole"
+  },
+  {
+    "crate": "heptabao-ha-service",
+    "libtest_profile": "ha-native-v6-peer-ingress",
+    "name": "authenticated_peer_frame::snapshot::tests::snapshot_peer_expired_deadline_refuses_before_connect",
+    "family": "transport",
+    "source": {
+      "blob": "b070183ad3d1774edd1469a9115c2a638b28b45b",
+      "bytes": 24476,
+      "sha256": "bdbb95b385de092a4c4a9bcae2d7a282d627654aa0bb608e743b7f61b9591589"
+    },
+    "sourceFile": "native_snapshot_peer_tests.rs",
+    "sourceEvidence": "actual-formatted-whole"
+  },
+  {
+    "crate": "heptabao-ha-service",
+    "libtest_profile": "ha-native-v6-peer-ingress",
+    "name": "authenticated_peer_frame::snapshot::tests::snapshot_peer_ready_veto_reads_no_upload_and_cannot_extend_deadline",
+    "family": "transport",
+    "source": {
+      "blob": "b070183ad3d1774edd1469a9115c2a638b28b45b",
+      "bytes": 24476,
+      "sha256": "bdbb95b385de092a4c4a9bcae2d7a282d627654aa0bb608e743b7f61b9591589"
+    },
+    "sourceFile": "native_snapshot_peer_tests.rs",
+    "sourceEvidence": "actual-formatted-whole"
+  },
+  {
+    "crate": "heptabao-server",
+    "libtest_profile": "default",
+    "name": "auth::forward_actor::snapshot_tests::snapshot_actor_final_use_remains_delivery_only_without_second_admission",
+    "family": "actor",
+    "source": {
+      "blob": "7a150190255e6bb826aa79e7fb7c0d445809ab72",
+      "bytes": 2392,
+      "sha256": "75be958fe598965828c339acb3ace93de69664a452ba8219b25cdd73f583ca41"
+    },
+    "sourceFile": "auth_snapshot_forward_actor_tests.rs",
+    "sourceEvidence": "actual-formatted-whole"
+  },
+  {
+    "crate": "heptabao-server",
+    "libtest_profile": "default",
+    "name": "auth::forward_actor::snapshot_tests::snapshot_actor_original_auth_is_distinct_from_a_new_restored_owner",
+    "family": "actor",
+    "source": {
+      "blob": "7a150190255e6bb826aa79e7fb7c0d445809ab72",
+      "bytes": 2392,
+      "sha256": "75be958fe598965828c339acb3ace93de69664a452ba8219b25cdd73f583ca41"
+    },
+    "sourceFile": "auth_snapshot_forward_actor_tests.rs",
+    "sourceEvidence": "actual-formatted-whole"
+  },
+  {
+    "crate": "heptabao-server",
+    "libtest_profile": "default",
+    "name": "service::snapshot_transfer::forward::wire::tests::snapshot_publication_actual_byte_witnesses_bind_save_and_restore",
+    "family": "completion",
+    "source": {
+      "blob": "7dd45fb0219ea92ad7debb45f534977875ebef9a",
+      "bytes": 9844,
+      "sha256": "c189b6999fef57fe2a5c6fc221c49647323c609f31f6d65a2eda6bcb682668cb"
+    },
+    "sourceFile": "service_snapshot_forward_wire_tests.rs",
+    "sourceEvidence": "frozen2379-unformatted-whole-pending-actual-output"
+  },
+  {
+    "crate": "heptabao-server",
+    "libtest_profile": "default",
+    "name": "service::snapshot_transfer::forward::wire::tests::snapshot_publication_valid_mac_cannot_substitute_a_binary_body",
+    "family": "completion",
+    "source": {
+      "blob": "7dd45fb0219ea92ad7debb45f534977875ebef9a",
+      "bytes": 9844,
+      "sha256": "c189b6999fef57fe2a5c6fc221c49647323c609f31f6d65a2eda6bcb682668cb"
+    },
+    "sourceFile": "service_snapshot_forward_wire_tests.rs",
+    "sourceEvidence": "frozen2379-unformatted-whole-pending-actual-output"
+  },
+  {
+    "crate": "heptabao-server",
+    "libtest_profile": "default",
+    "name": "service::snapshot_transfer::forward::wire::tests::snapshot_publication_metadata_and_original_owner_mutations_are_rejected",
+    "family": "completion",
+    "source": {
+      "blob": "7dd45fb0219ea92ad7debb45f534977875ebef9a",
+      "bytes": 9844,
+      "sha256": "c189b6999fef57fe2a5c6fc221c49647323c609f31f6d65a2eda6bcb682668cb"
+    },
+    "sourceFile": "service_snapshot_forward_wire_tests.rs",
+    "sourceEvidence": "frozen2379-unformatted-whole-pending-actual-output"
+  },
+  {
+    "crate": "heptabao-server",
+    "libtest_profile": "default",
+    "name": "service::snapshot_transfer::forward::wire::tests::snapshot_ready_rejects_retarget_replay_and_non_snapshot_routes",
+    "family": "completion",
+    "source": {
+      "blob": "7dd45fb0219ea92ad7debb45f534977875ebef9a",
+      "bytes": 9844,
+      "sha256": "c189b6999fef57fe2a5c6fc221c49647323c609f31f6d65a2eda6bcb682668cb"
+    },
+    "sourceFile": "service_snapshot_forward_wire_tests.rs",
+    "sourceEvidence": "frozen2379-unformatted-whole-pending-actual-output"
+  },
+  {
+    "crate": "heptabao-server",
+    "libtest_profile": "default",
+    "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_source_publication_audit_veto_keeps_real_restore_after_cold_reopen",
+    "family": "real-service-audit",
+    "source": {
+      "blob": "43917b4f6547f28c097086533b4fba36ebbddb9c",
+      "bytes": 14875,
+      "sha256": "83b76edc5b8cc05de7ea748766c045d8dc67d487f82ed43d0fc614878f747c4e"
+    },
+    "sourceFile": "service_native_snapshot_forward_audit_tests.rs",
+    "sourceEvidence": "frozen2379-unformatted-whole-pending-actual-output"
+  },
+  {
+    "crate": "heptabao-server",
+    "libtest_profile": "default",
+    "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_first_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen",
+    "family": "real-service-audit",
+    "source": {
+      "blob": "43917b4f6547f28c097086533b4fba36ebbddb9c",
+      "bytes": 14875,
+      "sha256": "83b76edc5b8cc05de7ea748766c045d8dc67d487f82ed43d0fc614878f747c4e"
+    },
+    "sourceFile": "service_native_snapshot_forward_audit_tests.rs",
+    "sourceEvidence": "frozen2379-unformatted-whole-pending-actual-output"
+  },
+  {
+    "crate": "heptabao-server",
+    "libtest_profile": "default",
+    "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_second_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen",
+    "family": "real-service-audit",
+    "source": {
+      "blob": "43917b4f6547f28c097086533b4fba36ebbddb9c",
+      "bytes": 14875,
+      "sha256": "83b76edc5b8cc05de7ea748766c045d8dc67d487f82ed43d0fc614878f747c4e"
+    },
+    "sourceFile": "service_native_snapshot_forward_audit_tests.rs",
+    "sourceEvidence": "frozen2379-unformatted-whole-pending-actual-output"
+  },
+  {
+    "crate": "heptabao-server",
+    "libtest_profile": "default",
+    "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_unverified_attempt_audit_failure_cannot_mint_root_authority",
+    "family": "real-service-audit",
+    "source": {
+      "blob": "43917b4f6547f28c097086533b4fba36ebbddb9c",
+      "bytes": 14875,
+      "sha256": "83b76edc5b8cc05de7ea748766c045d8dc67d487f82ed43d0fc614878f747c4e"
+    },
+    "sourceFile": "service_native_snapshot_forward_audit_tests.rs",
+    "sourceEvidence": "frozen2379-unformatted-whole-pending-actual-output"
+  }
+]

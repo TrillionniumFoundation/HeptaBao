@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r43-C-remaining3-exact-GO-and-BODY10-handoff-r1",
+  "records": [
+    {
+      "name": "ROOT-GO.public.json",
+      "blob": "680a66d85ec0b8aa808ca4e484934e36df8db5f5",
+      "bytes": 4158,
+      "sha256": "b8107d3bfb9f727cf91f64b2ae561d0147c742d4166de30d83b6467c688a5594"
+    },
+    {
+      "name": "root-source-qualification.public.json",
+      "blob": "cb07ceb8788b76090d9aaf431c89dc86f7d915b7",
+      "bytes": 3765,
+      "sha256": "448a689a146f608a5a9192eba2694e02c07ea6290f028991d13d3d2f8d084445"
+    },
+    {
+      "name": "BODY10-lane-release-qualification.public.json",
+      "blob": "d3deced0949bb4fe1a545ab3b4679343b02821b9",
+      "bytes": 883,
+      "sha256": "b797a3e454f850bea1c1b6e848b90fbfed57bcee1943049f17322c7ea72b9121"
+    }
+  ],
+  "expected_data_tree": "d1d224fde3f4574adace09fd118269c0d33c26ba",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

@@ -1,0 +1,10 @@
+[
+  {
+    "error": "TypeError reading index of null while summarizing outputInfos, no Native/Git mutation",
+    "phase": "pre-resume state display"
+  },
+  {
+    "message": "s.calls.slice is not a function; calls are keyed objects",
+    "scope": "read-only state display before release, no Native or Git mutation"
+  }
+]

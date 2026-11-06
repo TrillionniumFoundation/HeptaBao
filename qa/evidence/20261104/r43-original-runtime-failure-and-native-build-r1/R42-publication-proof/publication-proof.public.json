@@ -1,0 +1,38 @@
+{
+  "schema": "heptabao.r42-publication-proof.v1",
+  "status": "PUBLISHED_AND_READ_BACK",
+  "commit": "b1aab9285605544e50bf8ee332007dfa618008a6",
+  "tree": "9ebcc4bbc73ec70b9949b27788713e9c8b304b47",
+  "parent": "3e9ae35a5a6371bd180f3b93248e0c4d4ecf502b",
+  "branch": "codex/heptabao-validation-20261104",
+  "prefix": "qa/evidence/20261104/r42-actual-home-readback-controls-and-integrated-regression-r1",
+  "cutoffUTC": "2026-11-06 12:38:19 UTC",
+  "evidence": {
+    "packets": 47,
+    "files": 871,
+    "bytes": 14353547,
+    "allWhole": true
+  },
+  "rootCurrentTree": "1df8953ebf1feff2f5b72627d5cae9ce92b62752",
+  "treeCreateCount": 1,
+  "commitCreateCount": 1,
+  "refUpdateCount": 1,
+  "wholeTreeLayersVerified": 5,
+  "commitAndRefWholeVerified": true,
+  "publicationJournals": {
+    "tree_intent": "fa70e1291a31fbf588a7507bc9b9ab1fa9080d1e",
+    "tree_SDK": "1096cc1c921655f80df164e8f05aac8a15b7ebab",
+    "tree_verification": "e6e9c1b22f2362f2fdc0c4c96e65a328f0720a78",
+    "commit_intent": "603a8c3524f8e725c4d1e13b16428f874a352c27",
+    "commit_SDK": "430d336c785fb0be8a56ce77184b71461b9b173c",
+    "commit_verification": "fe9c86d4d25b60fd5cc73232650710ea9fcf61f0",
+    "ref_intent": "eb1a8fc4dc1b1c6187e5e6579ac8e7e35ec0a189",
+    "ref_SDK": "9f792892fb518ed5618720929edd5546462a9881",
+    "ref_verification": "4554fcb03ebbbdfef624ef274ae3f405076e5c5d"
+  },
+  "taskContinues": true,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "allClientsAndBackupsMigrated": false,
+  "legacyCleanup": false
+}

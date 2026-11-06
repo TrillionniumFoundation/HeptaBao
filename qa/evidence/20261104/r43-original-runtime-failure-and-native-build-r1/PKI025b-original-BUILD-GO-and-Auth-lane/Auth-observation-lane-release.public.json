@@ -1,0 +1,88 @@
+{
+  "schema": "heptabao.root.Auth-HOME-R2-observation-lane-release.v1",
+  "pass": true,
+  "packet": "eaadc34499cba2af751967f5edbfd3d8b2b6c094",
+  "release": {
+    "blob": "e23d82eb90bc5eeed2e5c83263f5d4ab5075d967",
+    "bytes": 3104,
+    "sha256": "bd18b81dc2829b26c8c592449542e6d887d4659355d655c8c2b29f1c8b951f49"
+  },
+  "checks": [
+    {
+      "name": "original_worker_terminal_failed_not_timeout",
+      "ok": true
+    },
+    {
+      "name": "whole_original_stream_extent",
+      "ok": true
+    },
+    {
+      "name": "observer1_completed_inactive",
+      "ok": true
+    },
+    {
+      "name": "observer2_completed_inactive",
+      "ok": true
+    },
+    {
+      "name": "observer3_completed_inactive",
+      "ok": true
+    },
+    {
+      "name": "observer4_completed_inactive",
+      "ok": true
+    },
+    {
+      "name": "observer5_completed_inactive",
+      "ok": true
+    },
+    {
+      "name": "observer6_completed_inactive",
+      "ok": true
+    },
+    {
+      "name": "observer7_completed_inactive",
+      "ok": true
+    },
+    {
+      "name": "observer8_completed_inactive",
+      "ok": true
+    },
+    {
+      "name": "observer9_completed_inactive",
+      "ok": true
+    },
+    {
+      "name": "observer10_completed_inactive",
+      "ok": true
+    },
+    {
+      "name": "no_current_native_call_or_future",
+      "ok": true
+    },
+    {
+      "name": "business_failure_and_managed_unknown_not_erased",
+      "ok": true
+    }
+  ],
+  "job": "1a1b0e85206-fc05-73e1",
+  "workerExit": 1,
+  "workerTimeout": false,
+  "stdout": {
+    "blob": "3d43fbce75a887e337dbe9500e86447727714cf6",
+    "bytes": 136193,
+    "sha256": "5dfef2c34195c7b24c8f54c23904291fb2017858a5ce9ec60f646a724d4634d5"
+  },
+  "newAuthCredentialCases": 0,
+  "managedServiceClosureKnown": false,
+  "managedOutcomeUnknown": true,
+  "nativeObservationLaneReleased": true,
+  "currentLanes": {
+    "authbus_migration": 0,
+    "compatibility_audit": 1,
+    "ha_validation": 1,
+    "root": 0,
+    "total": 2
+  },
+  "scope": "Observation-lane handoff only. Mac managed registration/lineage needs separate exact reconciliation; it is not deemed stopped."
+}

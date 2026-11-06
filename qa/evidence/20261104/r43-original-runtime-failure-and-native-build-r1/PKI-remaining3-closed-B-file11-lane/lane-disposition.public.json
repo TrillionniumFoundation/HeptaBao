@@ -1,0 +1,78 @@
+{
+  "schema": "heptabao.root.remaining3-lane-release-and-snapshot-resume.v1",
+  "pass": true,
+  "packet": "aa0f6eeac660ce57a57e9da9a6dbccf06dc8ab9d",
+  "release": {
+    "blob": "73f1ee53a845c63cdccc59b29ddba8ad8fb73f40",
+    "bytes": 7052,
+    "sha256": "65cdcc4b923bc976d904a9a90fa1e2ef4b3c88fa78d07b1d568b889087c25375"
+  },
+  "checks": [
+    {
+      "name": "body1_status_original_SDK",
+      "ok": true
+    },
+    {
+      "name": "body1_same_closed_binding",
+      "ok": true
+    },
+    {
+      "name": "body1_whole_expected_content",
+      "ok": true
+    },
+    {
+      "name": "body2_status_original_SDK",
+      "ok": true
+    },
+    {
+      "name": "body2_same_closed_binding",
+      "ok": true
+    },
+    {
+      "name": "body2_whole_expected_content",
+      "ok": true
+    },
+    {
+      "name": "body3_status_original_SDK",
+      "ok": true
+    },
+    {
+      "name": "body3_same_closed_binding",
+      "ok": true
+    },
+    {
+      "name": "body3_whole_expected_content",
+      "ok": true
+    },
+    {
+      "name": "reported_no_active_call_or_future",
+      "ok": true
+    },
+    {
+      "name": "same_remaining3_GO_scope",
+      "ok": true
+    },
+    {
+      "name": "old_UNKNOWN_retained",
+      "ok": true
+    }
+  ],
+  "currentLanes": {
+    "authbus_migration": 1,
+    "compatibility_audit": 1,
+    "ha_validation": 0,
+    "root": 0,
+    "total": 2
+  },
+  "scope": "Lane handoff and actual contents only. Full13-call original transport qualification and exact BUILD derivation remain pending.",
+  "snapshot": {
+    "GO": "25ea12c4406a12ba5ce263b10a2723f73276d74b",
+    "journal": "a154e8b3e4bbce818471dd10fe434e4ded570c8b",
+    "nextFile": 11,
+    "stopAfterWholeFile11ForBuildHandoff": true,
+    "newMetadataOrRanges": false
+  },
+  "BUILDSubmitted": false,
+  "productionCutover": false,
+  "cleanup": false
+}

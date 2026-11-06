@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r43-Auth-original-failed-runtime-root265",
+  "records": [
+    {
+      "name": "ROOT.qualification.public.json",
+      "blob": "1208fbe37f61e01e7324f8bef1b6fc6db9f5b4a5",
+      "bytes": 32162,
+      "sha256": "ea6db23190b816f88c4b7a88e66079bb01cccd6e5abb7b0a435285e89f7e0497"
+    },
+    {
+      "name": "ROOT.verifier.js",
+      "blob": "8d61f796749f0627d46354bf277e051fa10df60c",
+      "bytes": 7195,
+      "sha256": "5156f7746cab05b2fe44b6d1afdb3ac09982aa2c29c19c3aa5c90ccfdd256877"
+    },
+    {
+      "name": "AUTHOR1252.reproduced.public.json",
+      "blob": "d5098ac1dedbaf491b2323e1cc28819f0aa6598f",
+      "bytes": 135219,
+      "sha256": "fc075fd76f58d4519a96a5a3680ab1713f22aa2d6d23fcc56677e1a60da1f721"
+    }
+  ],
+  "expected_data_tree": "cb6503baf480ea80d72d87a530929f9e3416c89f",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

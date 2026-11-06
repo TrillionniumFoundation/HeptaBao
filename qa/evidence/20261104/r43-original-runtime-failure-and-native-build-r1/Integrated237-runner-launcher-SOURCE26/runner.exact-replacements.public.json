@@ -1,0 +1,92 @@
+[
+  {
+    "before": "\"\"\"Build the separately admitted native JWT and PKI source and run 149 unique names in 166 profile instances.\"\"\"",
+    "after": "\"\"\"Build one admitted combined source and run 237 unique cases in 254 profile instances.\"\"\"",
+    "why": "describe new source-only matrix"
+  },
+  {
+    "before": "BINDING_READY = True",
+    "after": "BINDING_READY = False",
+    "why": "unbound proposal cannot execute"
+  },
+  {
+    "before": "DIAGNOSTIC_COMMIT = '025b05a340de841b8161c1120344e86eae30eb97'\nDIAGNOSTIC_TREE = '1d8160c9385f8053b9a683cc1834da0f912e2d37'",
+    "after": "DIAGNOSTIC_COMMIT = None\nDIAGNOSTIC_TREE = None",
+    "why": "combined candidate not frozen"
+  },
+  {
+    "before": "assert args.groups_sha256 == '35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869'",
+    "after": "assert args.groups_sha256 == 'a3c126e1833c7d46eac8b30030d24d620540786bbe2b38d21ed9891ca42ccb38'",
+    "why": "fixed exact combined group bytes"
+  },
+  {
+    "before": "EXPECTED_GROUP_SHAPES = [('native-jwt-pki-file17', 'file', 17), ('native-jwt-pki-default17', 'default', 17),\n                         ('legacy-jwt-default63', 'default', 63), ('native-auth-identity-default69', 'default', 69)]\nassert [(g['label'], g['libtest_profile'], len(g['tests'])) for g in groups] == EXPECTED_GROUP_SHAPES\nall_names = []\nfor group in groups:\n    assert set(group) == {'label', 'libtest_profile', 'tests', 'runtime_seconds'}\n    assert group['runtime_seconds'] == 600 and group['libtest_profile'] in ('file', 'default')\n    assert group['tests'] and len(group['tests']) == len(set(group['tests']))\n    assert all(isinstance(n, str) and n for n in group['tests'])\n    assert group['label'].replace('-', '').replace('_', '').isalnum()\n    all_names.extend(group['tests'])\nassert groups[0]['tests'] == groups[1]['tests'], 'same seventeen source names in both feature profiles'\nassert len(all_names) == 166 and len(set(all_names)) == 149\nassert len(set(groups[1]['tests'] + groups[2]['tests'] + groups[3]['tests'])) == 149\n",
+    "after": "PROFILE_CRATES = {'file': 'heptabao-server', 'default': 'heptabao-server',\n                  'ha-native-v6-peer-ingress': 'heptabao-ha-service'}\nEXPECTED_GROUP_SHAPES = [\n    (\"native-jwt-pki-file17\", \"file\", 17), (\"native-jwt-pki-default17\", \"default\", 17),\n    (\"legacy-jwt-default63\", \"default\", 63), (\"native-auth-identity-default69\", \"default\", 69),\n    (\"snapshot-body10\", \"ha-native-v6-peer-ingress\", 10), (\"snapshot-peer7\", \"ha-native-v6-peer-ingress\", 7),\n    (\"snapshot-actor2\", \"default\", 2), (\"snapshot-wire4\", \"default\", 4),\n    (\"snapshot-service-audit4\", \"default\", 4), (\"ssh25\", \"default\", 25),\n    (\"mount1\", \"default\", 1), (\"redirect5\", \"default\", 5),\n    (\"actor2\", \"default\", 2), (\"ordinary5\", \"default\", 5),\n    (\"no_forward6\", \"default\", 6), (\"ingress_observer\", \"default\", 7),\n    (\"cold_h2\", \"default\", 9), (\"same_root_publication\", \"default\", 1)]\nassert [(g['label'], g['libtest_profile'], len(g['tests'])) for g in groups] == EXPECTED_GROUP_SHAPES\nall_cases = []\nfor group in groups:\n    assert set(group) == {'label', 'libtest_profile', 'tests', 'runtime_seconds'}\n    assert group['runtime_seconds'] == 600 and group['libtest_profile'] in PROFILE_CRATES\n    assert group['tests'] and len(group['tests']) == len(set(group['tests']))\n    assert all(isinstance(n, str) and n for n in group['tests'])\n    assert group['label'].replace('-', '').replace('_', '').isalnum()\n    all_cases.extend((PROFILE_CRATES[group['libtest_profile']], n) for n in group['tests'])\nassert groups[0]['tests'] == groups[1]['tests'], 'same seventeen source names in both feature profiles'\nassert len(all_cases) == 254 and len(set(all_cases)) == 237\nassert sum(len(g['tests']) for g in groups[:4]) == 166\nassert len({n for g in groups[:4] for n in g['tests']}) == 149\nassert sum(len(g['tests']) for g in groups[4:9]) == 27\nassert sum(len(g['tests']) for g in groups[9:]) == 61\n",
+    "why": "18 exact groups with crate-aware unique identity"
+  },
+  {
+    "before": "'schema': 'heptabao.native-jwt-pki-build-regression.v1'",
+    "after": "'schema': 'heptabao.combined-snapshot-jwt-pki-build-regression.v1'",
+    "why": "new result scope does not inherit C qualification"
+  },
+  {
+    "before": "'profile': profile, 'groups': groups, 'test_count': 149",
+    "after": "'profile': profile, 'groups': groups, 'test_count': 237",
+    "why": "selected combined unique count"
+  },
+  {
+    "before": "          'selected_unique_test_total': 149, 'selected_profile_instance_total': 166,\n          'new_unique_test_total': 17, 'existing_unique_test_total': 132,\n          'actual_fixture_backend_for_new_tests': 'FileV6',\n          'distributed_native_jwt_ha_qualified': False,\n          'old_normal61_full34_LAN98plus12_comparison69_rerun': False,",
+    "after": "          'selected_unique_test_total': 237, 'selected_profile_instance_total': 254,\n          'baseline_c_unique_test_total': 149, 'baseline_c_profile_instance_total': 166,\n          'baseline_c_added_unique_test_total': 17, 'baseline_c_existing_unique_test_total': 132,\n          'baseline_native_jwt_pki_fixture_backend': 'FileV6',\n          'snapshot_low_level_component_total': 23, 'snapshot_service_regression_total': 4,\n          'normal61_selected_test_total': 61, 'full34_LAN98plus12_comparison69_selected': False,\n          'distributed_native_jwt_ha_qualified': False,",
+    "why": "separate original C, snapshot27 and normal61 denominators"
+  },
+  {
+    "before": "# One original 3600-second compilation budget includes all three checks.",
+    "after": "# One original 3600-second compilation budget includes all four checks.",
+    "why": "one HA compile added under original shared deadline"
+  },
+  {
+    "before": "    for profile_name, feature_arguments, expected_features in (\n            ('file', ['--no-default-features', '--features', 'native-v6-storage'], ['native-v6-storage']),\n            ('default', [], ['default', 'native-v6-ha', 'native-v6-storage'])):",
+    "after": "    for profile_name, package, target_name, feature_arguments, expected_features in (\n            ('file', 'heptabao-server', 'heptabao_server', ['--no-default-features', '--features', 'native-v6-storage'], ['native-v6-storage']),\n            ('default', 'heptabao-server', 'heptabao_server', [], ['default', 'native-v6-ha', 'native-v6-storage']),\n            ('ha-native-v6-peer-ingress', 'heptabao-ha-service', 'heptabao_ha_service', ['--no-default-features', '--features', 'native-v6-peer-ingress'], ['native-v6-peer-ingress'])):",
+    "why": "independent HA libtest artifact"
+  },
+  {
+    "before": "'--offline', '-p', 'heptabao-server', '--lib', '--no-run',",
+    "after": "'--offline', '-p', package, '--lib', '--no-run',",
+    "why": "compile selected exact package"
+  },
+  {
+    "before": "and event.get('target', {}).get('name') == 'heptabao_server' and event.get('executable')):",
+    "after": "and event.get('target', {}).get('name') == target_name and event.get('executable')):",
+    "why": "require exact package target artifact"
+  },
+  {
+    "before": "binary = output / ('retained-heptabao-server-libtest-' + profile_name)",
+    "after": "binary = output / ('retained-' + package + '-libtest-' + profile_name)",
+    "why": "separate retained HA binary, unchanged server paths"
+  },
+  {
+    "before": "                                 'compiler_executable': str(built), 'build': build}",
+    "after": "                                 'compiler_executable': str(built), 'build': build, 'crate': package,\n                                 'target_name': target_name}",
+    "why": "bind retained binary to crate and target"
+  },
+  {
+    "before": "        family = {'label': group['label'], 'libtest_profile': group['libtest_profile'],",
+    "after": "        assert selected_binary['crate'] == PROFILE_CRATES[group['libtest_profile']]\n        family = {'label': group['label'], 'libtest_profile': group['libtest_profile'],\n                  'crate': selected_binary['crate'],",
+    "why": "exact family crate provenance"
+  },
+  {
+    "before": "    actual_names = [name for family in result['group_results'] for name in family['actual_test_names']]\n    assert len(actual_names) == 166 and len(set(actual_names)) == 149",
+    "after": "    actual_cases = [(family['crate'], name) for family in result['group_results'] for name in family['actual_test_names']]\n    assert len(actual_cases) == 254 and len(set(actual_cases)) == 237",
+    "why": "actual crate-aware denominator"
+  },
+  {
+    "before": "assert len(result['group_results']) == 4 and all(g['status'] == 'passed' for g in result['group_results'])",
+    "after": "assert len(result['group_results']) == 18 and all(g['status'] == 'passed' for g in result['group_results'])",
+    "why": "all exact families required"
+  },
+  {
+    "before": "result['actual_unique_test_total'] = 149\n    result['actual_profile_instance_total'] = 166",
+    "after": "result['actual_unique_test_total'] = 237\n    result['actual_profile_instance_total'] = 254",
+    "why": "record executed totals only after exact list/run success"
+  }
+]

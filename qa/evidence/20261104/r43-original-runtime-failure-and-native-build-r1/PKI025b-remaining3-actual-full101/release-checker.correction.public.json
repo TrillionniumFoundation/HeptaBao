@@ -1,0 +1,7 @@
+{
+  "schema": "heptabao.pure-release-checker-correction.v1",
+  "correctSerialization": "JSON.stringify(state,null,2)+\"\\n\"",
+  "bothHistoricalPinsMatched": true,
+  "originalContextsModified": false,
+  "Native": 0
+}

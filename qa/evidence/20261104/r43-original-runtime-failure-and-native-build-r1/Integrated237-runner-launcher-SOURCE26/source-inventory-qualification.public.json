@@ -1,0 +1,238 @@
+{
+  "schema": "heptabao.combined-snapshot-candidate.exact-denominator-source.r1",
+  "status": "SOURCE_INVENTORY_ONLY",
+  "rootRequiresNormal61": true,
+  "counts": {
+    "C": {
+      "unique": 149,
+      "entries": 166
+    },
+    "snapshot": {
+      "unique": 27,
+      "entries": 27
+    },
+    "normal": {
+      "unique": 61,
+      "entries": 61
+    },
+    "withoutNormal": {
+      "unique": 176,
+      "entries": 193
+    },
+    "requiredWithNormal": {
+      "unique": 237,
+      "entries": 254
+    }
+  },
+  "profiles": {
+    "heptabao-server/file": 17,
+    "heptabao-server/default": 220,
+    "heptabao-ha-service/ha-native-v6-peer-ingress": 17
+  },
+  "intersections": {
+    "C_snapshot": [],
+    "C_normal61": [],
+    "snapshot_normal61": []
+  },
+  "identityRules": {
+    "unique": "crate + exact fully qualified test name",
+    "entry": "crate + libtest profile + exact fully qualified test name"
+  },
+  "duplicateProfileNames": {
+    "count": 17,
+    "scope": "The original C file17 names also appear in C default17; no other cross-group duplicates."
+  },
+  "sources": {
+    "Cgroups": {
+      "blob": "5d563b1c7a1b7070395f6d8a03b512ddb019fae0",
+      "bytes": 19789,
+      "sha256": "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869"
+    },
+    "Crunner": {
+      "blob": "f8b36c8adccb493dfc6aa507856150ce8a6a764d",
+      "bytes": 30397,
+      "sha256": "d76b3d392c20bf4a7bbb7e8d8ea69abdfe3bb11f71a35075ba26ab948e778a50"
+    },
+    "N44groups": {
+      "blob": "302e5d5a5bfe501dcaf75f8c4cfc166acd58ea5f",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"
+    },
+    "Nrunner": {
+      "blob": "5e50290e953939bfab3b095244a50a7eb77d092d",
+      "bytes": 35452,
+      "sha256": "93dd6190c7f081305defdbc1c49600974bfa581d943736c77798d51a1c8f54be"
+    },
+    "snapshotSourceCommit": "2379d02ba1ee3e88989815d5a978f998822bac4f",
+    "frozenSnapshotSourceTree": "fc933c18a0415730e3658c17ff021db9b2df2caa"
+  },
+  "snapshotFamilies": [
+    {
+      "file": "native_snapshot_body_tests.rs",
+      "crate": "heptabao-ha-service",
+      "profile": "ha-native-v6-peer-ingress",
+      "prefix": "native_snapshot_body::tests::",
+      "family": "body",
+      "count": 10
+    },
+    {
+      "file": "native_snapshot_peer_tests.rs",
+      "crate": "heptabao-ha-service",
+      "profile": "ha-native-v6-peer-ingress",
+      "prefix": "authenticated_peer_frame::snapshot::tests::",
+      "family": "transport",
+      "count": 7
+    },
+    {
+      "file": "auth_snapshot_forward_actor_tests.rs",
+      "crate": "heptabao-server",
+      "profile": "default",
+      "prefix": "auth::forward_actor::snapshot_tests::",
+      "family": "actor",
+      "count": 2
+    },
+    {
+      "file": "service_snapshot_forward_wire_tests.rs",
+      "crate": "heptabao-server",
+      "profile": "default",
+      "prefix": "service::snapshot_transfer::forward::wire::tests::",
+      "family": "wire",
+      "count": 4
+    },
+    {
+      "file": "service_native_snapshot_forward_audit_tests.rs",
+      "crate": "heptabao-server",
+      "profile": "default",
+      "prefix": "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::",
+      "family": "service_audit",
+      "count": 4
+    }
+  ],
+  "sourceEvidence": [
+    {
+      "file": "native_snapshot_body_tests.rs",
+      "pin": {
+        "blob": "5595cb6d05f012396f92c00ed51b2c02d4775063",
+        "bytes": 7525,
+        "sha256": "02cf32110c8a70a0e05a9f492ab9b6811bb4eecd5db5e44da30886c4422766c8"
+      },
+      "evidence": "actual-formatted-whole",
+      "actualFormattedOutputWhole": true,
+      "actualCompiledOrExecuted": false
+    },
+    {
+      "file": "native_snapshot_peer_tests.rs",
+      "pin": {
+        "blob": "b070183ad3d1774edd1469a9115c2a638b28b45b",
+        "bytes": 24476,
+        "sha256": "bdbb95b385de092a4c4a9bcae2d7a282d627654aa0bb608e743b7f61b9591589"
+      },
+      "evidence": "actual-formatted-whole",
+      "actualFormattedOutputWhole": true,
+      "actualCompiledOrExecuted": false
+    },
+    {
+      "file": "auth_snapshot_forward_actor_tests.rs",
+      "pin": {
+        "blob": "7a150190255e6bb826aa79e7fb7c0d445809ab72",
+        "bytes": 2392,
+        "sha256": "75be958fe598965828c339acb3ace93de69664a452ba8219b25cdd73f583ca41"
+      },
+      "evidence": "actual-formatted-whole",
+      "actualFormattedOutputWhole": true,
+      "actualCompiledOrExecuted": false
+    },
+    {
+      "file": "service_snapshot_forward_wire_tests.rs",
+      "pin": {
+        "blob": "7dd45fb0219ea92ad7debb45f534977875ebef9a",
+        "bytes": 9844,
+        "sha256": "c189b6999fef57fe2a5c6fc221c49647323c609f31f6d65a2eda6bcb682668cb"
+      },
+      "evidence": "frozen2379-unformatted-whole-pending-actual-output",
+      "actualFormattedOutputWhole": false,
+      "actualCompiledOrExecuted": false
+    },
+    {
+      "file": "service_native_snapshot_forward_audit_tests.rs",
+      "pin": {
+        "blob": "43917b4f6547f28c097086533b4fba36ebbddb9c",
+        "bytes": 14875,
+        "sha256": "83b76edc5b8cc05de7ea748766c045d8dc67d487f82ed43d0fc614878f747c4e"
+      },
+      "evidence": "frozen2379-unformatted-whole-pending-actual-output",
+      "actualFormattedOutputWhole": false,
+      "actualCompiledOrExecuted": false
+    }
+  ],
+  "cargoProfileMeaning": [
+    {
+      "crate": "heptabao-server",
+      "profile": "default",
+      "entries": 220,
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ]
+    },
+    {
+      "crate": "heptabao-server",
+      "profile": "file",
+      "entries": 17,
+      "featureArguments": [
+        "--no-default-features",
+        "--features",
+        "native-v6-storage"
+      ],
+      "features": [
+        "native-v6-storage"
+      ]
+    },
+    {
+      "crate": "heptabao-ha-service",
+      "profile": "ha-native-v6-peer-ingress",
+      "entries": 17,
+      "requiredFeature": "native-v6-peer-ingress",
+      "requiresSeparateHaLibtestArtifact": true
+    }
+  ],
+  "boundaries": {
+    "originalC149166Unchanged": true,
+    "originalNormal61CasesPreserved": true,
+    "snapshot23LowLevelPlus4RealServiceSource": true,
+    "transport7Includes6SocketScenariosAnd1ConstructorOnly": true,
+    "existingNormal61RunnerReusedForTestNamesOnly": true,
+    "notAReadyExecutionRequest": true,
+    "noFutureBudgetCreatedOrChanged": true,
+    "ordinaryNoDefaultCargoCheckIsCompileGateOnly": true,
+    "allTestsActualListOrExecutionByThisWork": 0,
+    "oldB04B05FailurePreserved": true,
+    "old69NormalizedPKINotNumericProof": true,
+    "noNativeOrCargoCalls": true
+  },
+  "integrationPrerequisites": {
+    "baseCommit": "025b05a340de841b8161c1120344e86eae30eb97",
+    "pending49FormattedOverlay": true,
+    "wholeChangedOutputsAtThisCutoff": 10,
+    "expectedWholeChangedOutputs": 23,
+    "unchangedWholeSourcesReusable": 26,
+    "doNotCreateCandidateFromIncompleteBodies": true,
+    "preserveFiveOutsideOverlay": [
+      "crates/heptabao-server/src/engines/pki.rs",
+      "crates/heptabao-server/src/service_native_pki.rs",
+      "crates/heptabao-server/src/service_native_pki_tests.rs",
+      "crates/heptabao-server/src/service_native_ssh.rs",
+      "qa/openbao-acceptance/acceptance.py"
+    ]
+  },
+  "verification": {
+    "checks": 44,
+    "pass": true,
+    "verifier": {
+      "blob": "6dabe7d9e835792b2178111773da04dfe0fcecb6",
+      "bytes": 5658,
+      "sha256": "630adf5fb707bed7f30e7724a8032c2e78e21c02730382bb2bc3a2fca51042fa"
+    }
+  }
+}

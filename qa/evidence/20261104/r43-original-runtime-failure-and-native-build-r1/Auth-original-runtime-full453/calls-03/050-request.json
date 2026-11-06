@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-mac-current-home-launch-runtime-c67d6fe6-streams-06",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1b0e85206-fc05-73e1",
+      "stdout_offset": 81920,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

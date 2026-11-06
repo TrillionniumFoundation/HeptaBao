@@ -1,0 +1,164 @@
+{
+  "authorization": "GO",
+  "scope": "build_controls_fixed_four_file_info_only",
+  "original_job": "1a1b0ade81d-fc05-7220",
+  "maximum_file_info_starts": 4,
+  "binary_read_authorized": false,
+  "exact_requests": [
+    {
+      "blob": "78c9767df0ed826a7bab3d868787f33281960da6",
+      "bytes": 284,
+      "sha256": "b3c0790bc7e3a4df7715e3e6fc2f1c8519e4c76b89d2dcf88ca2960b8a7f61a3"
+    },
+    {
+      "blob": "0f0487c4d2e64d6474f0c321a4f56fc4c800d00d",
+      "bytes": 291,
+      "sha256": "33f596d548fcab8f1c1eae1c855f04cbe38e45eb6f6ff8febbb0bee57a3b3779"
+    },
+    {
+      "blob": "3cedb52ffcacd7820b98d9c80a022bfcb0e2aff5",
+      "bytes": 292,
+      "sha256": "81da20525aa4e777753bc5c4b0ad5a72f1efde628787d4cc55b3905e705c3905"
+    },
+    {
+      "blob": "55b50cccf3fa7c3948a04ae310bd9107639c56b6",
+      "bytes": 295,
+      "sha256": "d494099f252df35e1daf90e03505095d9e1a2cdf7aed1fcd957b584b5faf6751"
+    }
+  ],
+  "conditional_body_authorization": {
+    "authorization": "GO",
+    "scope": "build_controls_fixed_four_binary_reads_only",
+    "maximum_binary_read_starts": 4,
+    "immutable_page_bytes": 16384,
+    "maximum_total_body_bytes": 90605,
+    "deriver": {
+      "blob": "86be8f6bf5b498bdf6ca811e41345de36ec87d6b",
+      "bytes": 8101,
+      "sha256": "a698ae5dd323997c67ff63d4dc08755d1c010d9308522ab5004ca3974507651b"
+    },
+    "journal_template": {
+      "blob": "2f3cce0d06d30978b28d36e39936f8125a2f977f",
+      "bytes": 32519,
+      "sha256": "79cb54f0d8f661a445493bd20b8907ab80086d09ca58626aa84e7eda8a8761b8"
+    },
+    "exact_templates": [
+      {
+        "blob": "80a2bb969a1e900632b0c353f1f25d51ac185da6",
+        "bytes": 359,
+        "sha256": "d5e2d625af69662c7bd4821c87271fd3e8ae559c7118aee90da3d6142ab48d4a"
+      },
+      {
+        "blob": "be6adb2545856ef4d79815398997f851ec6753f2",
+        "bytes": 366,
+        "sha256": "6da8004c00f48beb173f5820b19642c3d551ed5ca8bb4066e51464efc43c16b1"
+      },
+      {
+        "blob": "64128cff9cbf613bf3c974119e583c22531327c9",
+        "bytes": 367,
+        "sha256": "bf39e9259fdc787d1f6f4215255a6e7317d072a97ec5a42e3c69d47291494ee0"
+      },
+      {
+        "blob": "108256126445a7a0a384c611f4b1871fd8a11fc0",
+        "bytes": 369,
+        "sha256": "d3204a7a76ad55e140b906233036cb4515883748627ac859ac2847071477194b"
+      }
+    ]
+  },
+  "schema": "heptabao.root-exact-GO.025b-fixed4-info-and-conditional-bodies.r1",
+  "userAuthorization": "Continue the requested isolated HeptaBao blocker validation.",
+  "sourcePacket": {
+    "tree": "92cc5fcc4111411ac5028728cb3773506920a057",
+    "files": 35,
+    "bytes": 410833,
+    "merkle": {
+      "root_sha": "92cc5fcc4111411ac5028728cb3773506920a057",
+      "trees_verified": 1,
+      "leaf_count": 35
+    },
+    "whole": true
+  },
+  "sourceReview": {
+    "blob": "0b39133e8a5e320e49bca0ed64b4922c96e05617",
+    "bytes": 2966,
+    "sha256": "0b269670077b654af8a4a23d6b6da804690383149d9760f8948e5dcca7658649"
+  },
+  "rootSourceChecks": 30,
+  "authorChecksReproduced": 73,
+  "infoJournal": {
+    "blob": "576f37e9856f99e5de88e49dbad848abd8ccf5d4",
+    "bytes": 26589,
+    "sha256": "51a5df5ec49318e8f7e0b8c5496332142bef4d4ed5e656c62510099c82a011b3"
+  },
+  "slot": "jwt_pki_025b05a3_build_controls_inert_gitfirst_r2",
+  "reuseExistingClosedOriginalSlot": true,
+  "noInitOrProcessStart": true,
+  "requiredSequence": [
+    "Four fixed INFO originals all completed/inactive and whole payloads before derivation.",
+    "Evaluate only pinned 86be8f deriver against pinned template, actual original native metadata, exact same whole root GO, and null-version templates.",
+    "Whole-archive derived source and four exact requests before attachment; source changes only GF_CONTROLS_BODY_REQUESTS and GF_CONTROLS_BODY_EXPECTED.",
+    "Run four derived fixed ranges exactly once with version guard, verify bytes then decode, publish whole files.",
+    "Stop at four-file acceptance and submit the actual bound original BUILD request for final review."
+  ],
+  "observationCaps": {
+    "originalOperations": 8,
+    "maximumStatusCallsPerOperation": 8,
+    "immutableInfoPageBytes": 8192,
+    "immutableBodyPageBytes": 16384,
+    "maximumImmutablePayload": 1048576,
+    "maximumBodyBytes": 90605,
+    "maximumRangeBytes": 65536,
+    "oneNativeCallAndOwnedFuture": true
+  },
+  "allocation": {
+    "line": "C",
+    "granted": true,
+    "maximumNativeCallsInFlight": 1,
+    "maximumOwnedFutures": 1,
+    "globalMaximumNativeLanes": 2,
+    "rootNativeCalls": 0,
+    "concurrentLine": "B",
+    "ARelease": {
+      "blob": "7f4363a4434e4c836b4853854a86e0630e585302",
+      "bytes": 10534,
+      "sha256": "fa211b20f3442f6dc29eeb365a7920982da218319b29c014ec469c623b20ef19"
+    },
+    "AReleasePacket": {
+      "tree": "349641321f0f33e7f91570dcaeb6ee27882de3c9",
+      "files": 12,
+      "bytes": 199416,
+      "merkle": {
+        "root_sha": "349641321f0f33e7f91570dcaeb6ee27882de3c9",
+        "trees_verified": 1,
+        "leaf_count": 12
+      },
+      "whole": true
+    },
+    "BClosedBoundary": {
+      "blob": "06d83030e95be222d05c2e04805c573ba5a86dfd",
+      "bytes": 26215,
+      "sha256": "2c8f5314f21e75ab4c05ef6994ed6dc79eff4dfef9f0a76745d21c54ac69a1e3"
+    },
+    "BClosedBoundaryPacket": {
+      "tree": "8646ec260bf571fff201d5e5919ebcad373b4c15",
+      "files": 1,
+      "bytes": 26215,
+      "merkle": {
+        "root_sha": "8646ec260bf571fff201d5e5919ebcad373b4c15",
+        "trees_verified": 1,
+        "leaf_count": 1
+      },
+      "whole": true
+    },
+    "explanation": "A has released after all 7 fixed read operations closed. Grant C one lane; B may resume its previously authorized fixed23 table using the other lane."
+  },
+  "preserveOriginalUnknownsAndAllJournals": true,
+  "noAutomaticRetryOrReinitialization": true,
+  "buildAuthorized": false,
+  "normalBuildQualified": false,
+  "tests149_166Run": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "allClientsAndBackupsMigrated": false,
+  "legacyCleanup": false
+}

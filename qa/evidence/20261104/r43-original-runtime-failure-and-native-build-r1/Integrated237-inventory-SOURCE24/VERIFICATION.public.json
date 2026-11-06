@@ -1,0 +1,221 @@
+{
+  "schema": "heptabao.combined-candidate.exact-test-inventory-check.r1",
+  "pass": true,
+  "checks": [
+    {
+      "name": "original_whole_Cgroups",
+      "ok": true
+    },
+    {
+      "name": "original_whole_Crunner",
+      "ok": true
+    },
+    {
+      "name": "original_whole_N44groups",
+      "ok": true
+    },
+    {
+      "name": "original_whole_Nrunner",
+      "ok": true
+    },
+    {
+      "name": "original_whole_haCargo",
+      "ok": true
+    },
+    {
+      "name": "original_whole_serverCargo",
+      "ok": true
+    },
+    {
+      "name": "test_source_whole_native_snapshot_body_tests.rs",
+      "ok": true
+    },
+    {
+      "name": "test_source_whole_native_snapshot_peer_tests.rs",
+      "ok": true
+    },
+    {
+      "name": "test_source_whole_auth_snapshot_forward_actor_tests.rs",
+      "ok": true
+    },
+    {
+      "name": "test_source_whole_service_snapshot_forward_wire_tests.rs",
+      "ok": true
+    },
+    {
+      "name": "test_source_whole_service_native_snapshot_forward_audit_tests.rs",
+      "ok": true
+    },
+    {
+      "name": "four_original_C_groups",
+      "ok": true
+    },
+    {
+      "name": "original_C_profiles",
+      "ok": true
+    },
+    {
+      "name": "original_C_group_budgets_unchanged",
+      "ok": true
+    },
+    {
+      "name": "normal_six_original_groups44",
+      "ok": true
+    },
+    {
+      "name": "normal_constant_INGRESS_OBSERVER_TESTS",
+      "ok": true
+    },
+    {
+      "name": "normal_constant_only_literal_names_INGRESS_OBSERVER_TESTS",
+      "ok": true
+    },
+    {
+      "name": "normal_named_count_ingress_observer",
+      "ok": true
+    },
+    {
+      "name": "normal_constant_COLD_H2_TESTS",
+      "ok": true
+    },
+    {
+      "name": "normal_constant_only_literal_names_COLD_H2_TESTS",
+      "ok": true
+    },
+    {
+      "name": "normal_named_count_cold_h2",
+      "ok": true
+    },
+    {
+      "name": "normal_constant_SAME_ROOT_PUBLICATION_TESTS",
+      "ok": true
+    },
+    {
+      "name": "normal_constant_only_literal_names_SAME_ROOT_PUBLICATION_TESTS",
+      "ok": true
+    },
+    {
+      "name": "normal_named_count_same_root_publication",
+      "ok": true
+    },
+    {
+      "name": "snapshot_exact_source_count_body",
+      "ok": true
+    },
+    {
+      "name": "snapshot_exact_source_count_transport",
+      "ok": true
+    },
+    {
+      "name": "snapshot_exact_source_count_actor",
+      "ok": true
+    },
+    {
+      "name": "snapshot_exact_source_count_wire",
+      "ok": true
+    },
+    {
+      "name": "snapshot_exact_source_count_service_audit",
+      "ok": true
+    },
+    {
+      "name": "C_full_entry_order_matches_inventory",
+      "ok": true
+    },
+    {
+      "name": "snapshot_full_entry_order_matches_inventory",
+      "ok": true
+    },
+    {
+      "name": "normal_full_entry_order_matches_inventory",
+      "ok": true
+    },
+    {
+      "name": "C149unique166profileentries",
+      "ok": true
+    },
+    {
+      "name": "snapshot27unique27entries",
+      "ok": true
+    },
+    {
+      "name": "normal61unique61entries",
+      "ok": true
+    },
+    {
+      "name": "all_three_pairwise_intersections_empty",
+      "ok": true
+    },
+    {
+      "name": "C_snapshot_union176_193",
+      "ok": true
+    },
+    {
+      "name": "required_final_union237_254",
+      "ok": true
+    },
+    {
+      "name": "exact_final_profiles",
+      "ok": true
+    },
+    {
+      "name": "ha_explicit_feature_exists",
+      "ok": true
+    },
+    {
+      "name": "server_default_native_ha_exists",
+      "ok": true
+    },
+    {
+      "name": "server_feature_propagates_ha_peer_ingress",
+      "ok": true
+    },
+    {
+      "name": "C_file_profile_exact_feature_selection",
+      "ok": true
+    },
+    {
+      "name": "C_default_profile_exact_feature_selection",
+      "ok": true
+    }
+  ],
+  "intersections": {
+    "C_snapshot": [],
+    "C_normal61": [],
+    "snapshot_normal61": []
+  },
+  "counts": {
+    "C": {
+      "unique": 149,
+      "entries": 166
+    },
+    "snapshot": {
+      "unique": 27,
+      "entries": 27
+    },
+    "normal": {
+      "unique": 61,
+      "entries": 61
+    },
+    "withoutNormal": {
+      "unique": 176,
+      "entries": 193
+    },
+    "requiredWithNormal": {
+      "unique": 237,
+      "entries": 254
+    }
+  },
+  "profiles": {
+    "heptabao-server/file": 17,
+    "heptabao-server/default": 220,
+    "heptabao-ha-service/ha-native-v6-peer-ingress": 17
+  },
+  "nativeCalls": 0,
+  "cargoCalls": 0,
+  "testsExecuted": 0,
+  "actualLibtestListObserved": false,
+  "budgetsChanged": false,
+  "ordinaryNoDefaultCheckCountedAsTest": false,
+  "note": "Inventory only. New candidate, exact retained artifacts, runtime requests, deadlines and execution authorization remain separate."
+}

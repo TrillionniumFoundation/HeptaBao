@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r43-official271-Linux-asset-primary-source-r1",
+  "records": [
+    {
+      "name": "source-facts.public.json",
+      "blob": "cc255b6c44818eb33b5186f68f6dce4b8b259aa1",
+      "bytes": 2641,
+      "sha256": "1490e25f473982bec6a7600698c28a533b82c7988e0037e8b94af4ed026c14a0"
+    },
+    {
+      "name": "release.original.json",
+      "blob": "877722b049cd34ea5f1bb79a2f00a0df67efeb13",
+      "bytes": 347751,
+      "sha256": "49b98b40970d66cc1a57fc6707d8e17adc38f2c36cc68139179c93ab565518bd"
+    },
+    {
+      "name": "release.original.sdk.json",
+      "blob": "bc3bdb18a727d9d2ac69332318b0b6c09477a667",
+      "bytes": 745327,
+      "sha256": "e288fd5b937d0bd7beeaef1f262db21e7741ce334f18aac02666ebc5167f302a"
+    },
+    {
+      "name": "official-launcher.original.py",
+      "blob": "d7ac02bceeb6ec0751c3ff0d2ec6126e36ac8405",
+      "bytes": 20008,
+      "sha256": "5c11b432e1180fb40394fab382da774cf4171bf51431aab7e5823068cfba01d6"
+    },
+    {
+      "name": "historical-Mac-fixed-path.original.py",
+      "blob": "203e9a3f03a6dd52956026267cd3cec8ddcff019",
+      "bytes": 5607,
+      "sha256": "ed0e197b533775d55cf99194132b9317ad138b7a5ca237ba5acbb10e6980f8f5"
+    }
+  ],
+  "expected_data_tree": "7973005d2ff401ff1c776d3c7c5c0766df9f6925",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

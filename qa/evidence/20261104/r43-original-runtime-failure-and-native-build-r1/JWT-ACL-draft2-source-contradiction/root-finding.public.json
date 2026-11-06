@@ -1,0 +1,76 @@
+{
+  "schema": "heptabao.root.JWT-ACL-draft2-internal-source-contradiction.v1",
+  "classification": "DEFINITE_SOURCE_PATH_CONTRADICTION_UNEXECUTED",
+  "packet": "74715d5f647960cfab278652079a773e88ddb0ac",
+  "auth": {
+    "blob": "c6a1517252cdef86ecd701a47cb1f443f4a09da3",
+    "bytes": 398708,
+    "sha256": "d1ba2a8a25a66682e4b01c1613898c172638bef2cfd0f70998ddd2bc05a7b86b"
+  },
+  "tests": {
+    "blob": "452fd4d6d12d0fe050c38032b99e39c459292fbb",
+    "bytes": 42561,
+    "sha256": "89ee932bf1e5933620ef53f6e2d3537f6c3e8643ad3942bf78017107848277ff"
+  },
+  "snippets": [
+    {
+      "label": "empty_explicit_policies_still_receive_default",
+      "file": "source1.after.rs",
+      "needle": "if add_default && !result.contains(\"root\")",
+      "span": "    if add_default && !result.contains(\"root\") {\n        result.insert(\"default\".into());\n    }\n    Ok(result)\n}\n\nfn claim_value",
+      "firstLine": 2122
+    },
+    {
+      "label": "JWT_role_calls_parser_with_add_default_true_then_assignment",
+      "file": "source1.after.rs",
+      "needle": "let role_policies = policies(",
+      "span": "                let role_policies = policies(\n                    body,\n                    if body.get(\"token_policies\").is_some() {\n                        \"token_policies\"\n                    } else {\n                        \"policies\"\n                    },\n                    &previous\n                        .as_ref()\n                        .map(|role| role.policies.clone())\n                        .unwrap_or_default(),\n                    true,\n                )?;\n                self.validate_assignment(actor, &role_policies)?;\n",
+      "firstLine": 6799
+    },
+    {
+      "label": "nonroot_assignment_requires_actor_policy_subset",
+      "file": "source1.after.rs",
+      "needle": "fn validate_assignment(",
+      "span": "    fn validate_assignment(\n        &self,\n        actor: &Principal,\n        requested: &BTreeSet<String>,\n    ) -> Result<(), AuthError> {\n        if requested.contains(\"root\") || !actor.is_root() && !requested.is_subset(actor.policies())\n        {\n            return Err(denied());\n        }\n        Ok(())\n    }\n\n    #[allow(clippy::too_many_arguments)]\n    fn userpass_login_failure(\n        &mut self,\n        scope: AuthScope<'_",
+      "firstLine": 8388
+    },
+    {
+      "label": "test_actor_has_only_case_policy_and_no_default",
+      "file": "source2.after.rs",
+      "needle": "json!({\"policies\":[name],\"no_default_policy\":true",
+      "span": "fn acl_token(\n    f: &mut Fixture,\n    name: &str,\n    path: &str,\n    capabilities: &[&str],\n) -> TestResult<Zeroizing<String>> {\n    let policy = format!(\n        \"path {path:?} {{ capabilities = {} }}\",\n        serde_json::to_string(capabilities)?\n    );\n    status(\n        &f.admin(\n            \"PUT\",\n            &format!(\"sys/policies/acl/{name}\"),\n            json!({\"policy\":policy}),\n        )?,\n        204,\n    );\n    let mut issued = f.admin(\n        \"POST\",\n        \"auth/token/create\",\n        json!({\"policies\":[name],\"no_default_policy\":true,\"ttl\":\"600s\"}),\n    )?;\n    status(&issued, 200);\n    assert_eq!(issued.body[\"auth\"][\"token_type\"], \"service\");\n    assert_eq!(issued.body[\"auth\"][\"policies\"], json!([name]));\n    assert_eq!(issued.body[\"auth\"][\"token_policies\"], json!([name]));\n    let token = secret(&mut issued, \"/auth/client_token\")?;\n    let mut looked = f.admin(\"POST\", \"auth/token/lookup\", json!({\"token\":token.as_str()}))?;\n    status(&looked, 200);\n    assert_eq!(looked.body[\"data\"][\"policies\"], json!([name]));\n    erase_json(&mut looked.body);\n    Ok(token)\n}\n",
+      "firstLine": 463
+    },
+    {
+      "label": "new_test_requires_204_for_explicit_empty_policy",
+      "file": "source2.after.rs",
+      "needle": "\"token_policies\":[]",
+      "span": "    let role = json!({\n        \"role_type\":\"jwt\",\"user_claim\":\"sub\",\"bound_audiences\":[\"native\"],\n        \"token_policies\":[],\"token_ttl\":120,\"token_max_ttl\":600\n    });\n    status(&f.admin(\"GET\", path, json!({}))?, 404);\n    let before = f.snapshot()?;\n    for token in [&update, &update_sudo] {\n        let denied = f.actor(token, \"POST\", path, role.clone())?;\n        status(&denied, 403);\n        no_credential(&denied);\n        assert!(before.as_slice() == f.snapshot()?.as_slice());\n    }\n    // Once published, this role exists. Delivery must retain the source's\n    // Create capability instead of recomputing Update against the new root.\n    status(&f.actor(&create, \"POST\", path, role.clone())?, 204);\n",
+      "firstLine": 507
+    }
+  ],
+  "inferred": {
+    "inputRoleTokenPolicies": [],
+    "parserAddDefault": true,
+    "resultingRolePolicies": [
+      "default"
+    ],
+    "nonrootActorPolicies": [
+      "jwt-acl-create"
+    ],
+    "requestedSubsetOfActor": false,
+    "inferredHandlerOutcome": 403,
+    "testExpectedStatus": 204,
+    "rustExecuted": false,
+    "productHTTPObserved": false
+  },
+  "implication": "The new draft role-management regression cannot reach its first asserted success for its independently verified no-default actor. Correct route capabilities alone do not satisfy this draft's own test.",
+  "next": "Keep the frozen original candidate unchanged. Observe official2.7.1 raw role-policy behavior and endpoint ACL in the isolated matrix, then apply a JWT-only policy-storage/delegation correction with matching cold-reopen tests. Do not change global validate_assignment used by other token/auth surfaces to hide this.",
+  "nonClaims": {
+    "rustCompilation": false,
+    "unitTestsRun": false,
+    "rawHTTPParity": false,
+    "combinedCandidateChanged": false,
+    "fullReplacement": false
+  }
+}

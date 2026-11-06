@@ -1,0 +1,270 @@
+{
+  "status": "PASS_ORIGINAL_RECONCILIATION_CHAIN_AND_BODY0_ONLY",
+  "checks": 64,
+  "rows": [
+    {
+      "name": "5 calls and exact dispatch sequence",
+      "pass": true
+    },
+    {
+      "name": "new context completely closed",
+      "pass": true
+    },
+    {
+      "name": "old original state pin unchanged",
+      "pass": true
+    },
+    {
+      "name": "old paused UNKNOWN untouched",
+      "pass": true
+    },
+    {
+      "name": "old record plus original request",
+      "pass": true
+    },
+    {
+      "name": "old timeout retained without operation identity",
+      "pass": true
+    },
+    {
+      "name": "call 0 request pin",
+      "pass": true
+    },
+    {
+      "name": "call 0 complete SDK pin",
+      "pass": true
+    },
+    {
+      "name": "call 0 native text pin",
+      "pass": true
+    },
+    {
+      "name": "call 0 arm intent request",
+      "pass": true
+    },
+    {
+      "name": "call 0 external whole records",
+      "pass": true
+    },
+    {
+      "name": "call 0 SDK original text",
+      "pass": true
+    },
+    {
+      "name": "call 1 request pin",
+      "pass": true
+    },
+    {
+      "name": "call 1 complete SDK pin",
+      "pass": true
+    },
+    {
+      "name": "call 1 native text pin",
+      "pass": true
+    },
+    {
+      "name": "call 1 arm intent request",
+      "pass": true
+    },
+    {
+      "name": "call 1 external whole records",
+      "pass": true
+    },
+    {
+      "name": "call 1 SDK original text",
+      "pass": true
+    },
+    {
+      "name": "call 2 request pin",
+      "pass": true
+    },
+    {
+      "name": "call 2 complete SDK pin",
+      "pass": true
+    },
+    {
+      "name": "call 2 native text pin",
+      "pass": true
+    },
+    {
+      "name": "call 2 arm intent request",
+      "pass": true
+    },
+    {
+      "name": "call 2 external whole records",
+      "pass": true
+    },
+    {
+      "name": "call 2 SDK original text",
+      "pass": true
+    },
+    {
+      "name": "call 3 request pin",
+      "pass": true
+    },
+    {
+      "name": "call 3 complete SDK pin",
+      "pass": true
+    },
+    {
+      "name": "call 3 native text pin",
+      "pass": true
+    },
+    {
+      "name": "call 3 arm intent request",
+      "pass": true
+    },
+    {
+      "name": "call 3 external whole records",
+      "pass": true
+    },
+    {
+      "name": "call 3 SDK original text",
+      "pass": true
+    },
+    {
+      "name": "call 4 request pin",
+      "pass": true
+    },
+    {
+      "name": "call 4 complete SDK pin",
+      "pass": true
+    },
+    {
+      "name": "call 4 native text pin",
+      "pass": true
+    },
+    {
+      "name": "call 4 arm intent request",
+      "pass": true
+    },
+    {
+      "name": "call 4 external whole records",
+      "pass": true
+    },
+    {
+      "name": "call 4 SDK original text",
+      "pass": true
+    },
+    {
+      "name": "exact same original request bytes",
+      "pass": true
+    },
+    {
+      "name": "actual existing-binding receipt",
+      "pass": true
+    },
+    {
+      "name": "same returned-ID status",
+      "pass": true
+    },
+    {
+      "name": "completed stored inactive available",
+      "pass": true
+    },
+    {
+      "name": "page 0 same exact request",
+      "pass": true
+    },
+    {
+      "name": "page 0 immutable original identity",
+      "pass": true
+    },
+    {
+      "name": "page 0 bounds EOF",
+      "pass": true
+    },
+    {
+      "name": "page 0 same total SHA",
+      "pass": true
+    },
+    {
+      "name": "page 1 same exact request",
+      "pass": true
+    },
+    {
+      "name": "page 1 immutable original identity",
+      "pass": true
+    },
+    {
+      "name": "page 1 bounds EOF",
+      "pass": true
+    },
+    {
+      "name": "page 1 same total SHA",
+      "pass": true
+    },
+    {
+      "name": "page 2 same exact request",
+      "pass": true
+    },
+    {
+      "name": "page 2 immutable original identity",
+      "pass": true
+    },
+    {
+      "name": "page 2 bounds EOF",
+      "pass": true
+    },
+    {
+      "name": "page 2 same total SHA",
+      "pass": true
+    },
+    {
+      "name": "complete original payload bytes SHA EOF",
+      "pass": true
+    },
+    {
+      "name": "complete success original native SDK",
+      "pass": true
+    },
+    {
+      "name": "native exact original text",
+      "pass": true
+    },
+    {
+      "name": "body metadata exact identity",
+      "pass": true
+    },
+    {
+      "name": "complete file extent and EOF",
+      "pass": true
+    },
+    {
+      "name": "whole decoded body exact SHA",
+      "pass": true
+    },
+    {
+      "name": "matches frozen runner source",
+      "pass": true
+    },
+    {
+      "name": "one observed closure full history",
+      "pass": true
+    },
+    {
+      "name": "old timeout not retrospectively replaced",
+      "pass": true
+    },
+    {
+      "name": "scope and call caps",
+      "pass": true
+    },
+    {
+      "name": "zero current calls and only lane release",
+      "pass": true
+    },
+    {
+      "name": "executed source exact",
+      "pass": true
+    }
+  ],
+  "actualCalls": 5,
+  "returnedObservers": 1,
+  "immutablePages": 3,
+  "NativeCallsByVerifier": 0,
+  "productCases": 0,
+  "otherBodiesSubmitted": false,
+  "buildSubmitted": false,
+  "oldUnknownPreserved": true
+}

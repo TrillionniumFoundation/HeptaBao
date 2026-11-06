@@ -1,0 +1,124 @@
+{
+  "schema": "heptabao.root.025b-body0-reconciliation-actual-qualification.v1",
+  "pass": true,
+  "packet": "7cd77449f1bc77ee1807733049f4f193b1c5abc5",
+  "authorChecks": 64,
+  "rootChecks": [
+    {
+      "name": "C_original_reused_body0_unique_calls",
+      "ok": true
+    },
+    {
+      "name": "C_original_reused_body0_call_jwt-pki-025b-body0-reconcile-r1-admit",
+      "ok": true
+    },
+    {
+      "name": "C_original_reused_body0_armed_tree_jwt-pki-025b-body0-reconcile-r1-admit",
+      "ok": true
+    },
+    {
+      "name": "C_original_reused_body0_call_jwt-pki-025b-body0-reconcile-r1-status0",
+      "ok": true
+    },
+    {
+      "name": "C_original_reused_body0_armed_tree_jwt-pki-025b-body0-reconcile-r1-status0",
+      "ok": true
+    },
+    {
+      "name": "C_original_reused_body0_call_jwt-pki-025b-body0-reconcile-r1-page0",
+      "ok": true
+    },
+    {
+      "name": "C_original_reused_body0_armed_tree_jwt-pki-025b-body0-reconcile-r1-page0",
+      "ok": true
+    },
+    {
+      "name": "C_original_reused_body0_call_jwt-pki-025b-body0-reconcile-r1-page1",
+      "ok": true
+    },
+    {
+      "name": "C_original_reused_body0_armed_tree_jwt-pki-025b-body0-reconcile-r1-page1",
+      "ok": true
+    },
+    {
+      "name": "C_original_reused_body0_call_jwt-pki-025b-body0-reconcile-r1-page2",
+      "ok": true
+    },
+    {
+      "name": "C_original_reused_body0_armed_tree_jwt-pki-025b-body0-reconcile-r1-page2",
+      "ok": true
+    },
+    {
+      "name": "C_original_reused_body0_observer_unique",
+      "ok": true
+    },
+    {
+      "name": "C_original_reused_body0_observer_ae1e362b109464c47c26d6ce6adff749986185dc9f480bb520a41e2c2646a1d3",
+      "ok": true
+    },
+    {
+      "name": "C_original_reused_body0_page_ae1e362b109464c47c26d6ce6adff749986185dc9f480bb520a41e2c2646a1d3_0",
+      "ok": true
+    },
+    {
+      "name": "C_original_reused_body0_page_ae1e362b109464c47c26d6ce6adff749986185dc9f480bb520a41e2c2646a1d3_16384",
+      "ok": true
+    },
+    {
+      "name": "C_original_reused_body0_page_ae1e362b109464c47c26d6ce6adff749986185dc9f480bb520a41e2c2646a1d3_32768",
+      "ok": true
+    },
+    {
+      "name": "C_original_reused_body0_payload_ae1e362b109464c47c26d6ce6adff749986185dc9f480bb520a41e2c2646a1d3",
+      "ok": true
+    },
+    {
+      "name": "C_original_reused_body0_all_observer_calls_accounted",
+      "ok": true
+    },
+    {
+      "name": "same_source_candidate_as_root_GO",
+      "ok": true
+    },
+    {
+      "name": "same_old_exact_request_as_reviewed_unknown",
+      "ok": true
+    },
+    {
+      "name": "same_old_state_as_reviewed_unknown",
+      "ok": true
+    },
+    {
+      "name": "same_actual_INFO0_as_original_fixed4",
+      "ok": true
+    },
+    {
+      "name": "corrected_release_exact",
+      "ok": true
+    },
+    {
+      "name": "old_release_preserved",
+      "ok": true
+    }
+  ],
+  "actualCalls": 5,
+  "observers": 1,
+  "pages": 3,
+  "payloadBytes": 40951,
+  "bodyBytes": 30397,
+  "body": {
+    "blob": "f8b36c8adccb493dfc6aa507856150ce8a6a764d",
+    "bytes": 30397,
+    "sha256": "d76b3d392c20bf4a7bbb7e8d8ea69abdfe3bb11f71a35075ba26ab948e778a50"
+  },
+  "observedOperationId": "ae1e362b109464c47c26d6ce6adff749986185dc9f480bb520a41e2c2646a1d3",
+  "reused": true,
+  "ownedFutureActive": false,
+  "originalAttemptOutcome": "UNKNOWN",
+  "originalContextUnchanged": true,
+  "otherBodiesSubmitted": false,
+  "buildSubmitted": false,
+  "productTestsExecuted": 0,
+  "productionCutover": false,
+  "fullReplacement": false
+}

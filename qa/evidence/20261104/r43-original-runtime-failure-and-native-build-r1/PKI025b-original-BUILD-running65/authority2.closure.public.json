@@ -1,0 +1,17 @@
+{
+  "id": "e7583a14c97010c7255ce74bebc762464d3f4a92dd58c50b57a0b2f9a360c119",
+  "tool": "process_status",
+  "payload": {
+    "blob": "49469140e2953c9b5382d0dbceb940cd511599d7",
+    "bytes": 618,
+    "sha256": "985d2e3c392882610f87cb5015c52e8550edbcc923952de7ef3449dc3a66a63c"
+  },
+  "payloadTree": "56545e5eeae504043f66b8f7c61ede88f26ed906",
+  "nativeText": {
+    "blob": "fffdd8e1c215d02546a9570666f70e7d2d7f3397",
+    "bytes": 471,
+    "sha256": "7e0abedd8f64e3aef8919518ba5272891bb2b74f4de124cc9266203d0df4dd6f"
+  },
+  "pages": 1,
+  "completedInactive": true
+}

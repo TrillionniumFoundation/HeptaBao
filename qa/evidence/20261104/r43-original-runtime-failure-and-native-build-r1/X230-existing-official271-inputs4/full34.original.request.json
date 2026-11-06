@@ -1,0 +1,13 @@
+{
+  "host": "x230",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "/home/qian/heptabao-same-root-publication-normal-20261105-r1/full34_controller.py"
+  ],
+  "cwd": "/home/qian/heptabao-same-root-publication-normal-20261105-r1",
+  "timeout_seconds": 1800,
+  "idempotency_key": "heptabao-4e808-x230-full34-r1-73f0ff55"
+}

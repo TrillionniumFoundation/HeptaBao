@@ -1,0 +1,195 @@
+{
+  "schema": "heptabao.combined237-stage-interface-source-checks.v1",
+  "pass": true,
+  "checks": 46,
+  "results": [
+    {
+      "name": "stage_whole_pin",
+      "pass": true
+    },
+    {
+      "name": "launcher_whole_pin",
+      "pass": true
+    },
+    {
+      "name": "carrier_whole_pin",
+      "pass": true
+    },
+    {
+      "name": "consumer:schema",
+      "pass": true
+    },
+    {
+      "name": "producer:schema",
+      "pass": true
+    },
+    {
+      "name": "consumer:status/source identity",
+      "pass": true
+    },
+    {
+      "name": "producer:status/source identity",
+      "pass": true
+    },
+    {
+      "name": "consumer:source clean/independent/old stable",
+      "pass": true
+    },
+    {
+      "name": "producer:source clean/independent/old stable",
+      "pass": true
+    },
+    {
+      "name": "consumer:cleanup",
+      "pass": true
+    },
+    {
+      "name": "producer:cleanup",
+      "pass": true
+    },
+    {
+      "name": "consumer:fsck/no alternatives/no links",
+      "pass": true
+    },
+    {
+      "name": "producer:fsck/no alternatives/no links",
+      "pass": true
+    },
+    {
+      "name": "consumer:root/source paths",
+      "pass": true
+    },
+    {
+      "name": "producer:root/source paths",
+      "pass": true
+    },
+    {
+      "name": "consumer:deadline/compiler/tests",
+      "pass": true
+    },
+    {
+      "name": "producer:deadline/compiler/tests",
+      "pass": true
+    },
+    {
+      "name": "consumer:formatter/historical controls",
+      "pass": true
+    },
+    {
+      "name": "producer:formatter/historical controls",
+      "pass": true
+    },
+    {
+      "name": "consumer:authority control exact",
+      "pass": true
+    },
+    {
+      "name": "producer:authority control exact",
+      "pass": true
+    },
+    {
+      "name": "consumer:stage failed-observer stable",
+      "pass": true
+    },
+    {
+      "name": "producer:stage failed-observer stable",
+      "pass": true
+    },
+    {
+      "name": "consumer:launcher independent failed-observer repeat",
+      "pass": true
+    },
+    {
+      "name": "producer:launcher independent failed-observer repeat",
+      "pass": true
+    },
+    {
+      "name": "consumer:stage report whole before parse",
+      "pass": true
+    },
+    {
+      "name": "producer:stage report whole before parse",
+      "pass": true
+    },
+    {
+      "name": "one_schema_occurrence",
+      "pass": true
+    },
+    {
+      "name": "same_launcher_schema_after_planned_literal",
+      "pass": true
+    },
+    {
+      "name": "one_purpose_occurrence",
+      "pass": true
+    },
+    {
+      "name": "failed12_tables_exact",
+      "pass": true
+    },
+    {
+      "name": "failed12_count",
+      "pass": true
+    },
+    {
+      "name": "failed_return_object_same",
+      "pass": true
+    },
+    {
+      "name": "authority_paths_equal_after_required_root_binding",
+      "pass": true
+    },
+    {
+      "name": "carrier_control:normal_same_root_publication_build.py",
+      "pass": true
+    },
+    {
+      "name": "carrier_control:launch_normal_same_root_publication.py",
+      "pass": true
+    },
+    {
+      "name": "carrier_control:normal-test-groups.public.json",
+      "pass": true
+    },
+    {
+      "name": "carrier_control:prior-observer-build-authority.public.json",
+      "pass": true
+    },
+    {
+      "name": "carrier_unchanged_f916",
+      "pass": true
+    },
+    {
+      "name": "budget300",
+      "pass": true
+    },
+    {
+      "name": "budget90",
+      "pass": true
+    },
+    {
+      "name": "budget180",
+      "pass": true
+    },
+    {
+      "name": "shared_absolute_clip",
+      "pass": true
+    },
+    {
+      "name": "carrier_cap",
+      "pass": true
+    },
+    {
+      "name": "bundle_cap",
+      "pass": true
+    },
+    {
+      "name": "no_runtime_request",
+      "pass": true
+    }
+  ],
+  "Native_calls_added": 0,
+  "candidate_code_executed": false,
+  "new_stager_created": false,
+  "actual_new_stage_qualification": false
+}

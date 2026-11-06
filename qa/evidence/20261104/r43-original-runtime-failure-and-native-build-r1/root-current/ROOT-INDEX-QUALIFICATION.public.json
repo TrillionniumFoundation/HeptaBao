@@ -1,0 +1,327 @@
+{
+  "schema": "heptabao.r43-root-index-qualification.v1",
+  "passed": true,
+  "checkCount": 78,
+  "checks": [
+    {
+      "name": "all_unique_packet_labels",
+      "passed": true
+    },
+    {
+      "name": "whole_members_R42-publication-proof",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_R42-publication-proof",
+      "passed": true
+    },
+    {
+      "name": "whole_members_original-runtime-and-reconcile-GOs",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_original-runtime-and-reconcile-GOs",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Auth-original-runtime-full453",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Auth-original-runtime-full453",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Auth-original-runtime-root265",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Auth-original-runtime-root265",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI025b-BODY0-reconcile-SOURCE21",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI025b-BODY0-reconcile-SOURCE21",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI025b-BODY0-reconcile-full47",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI025b-BODY0-reconcile-full47",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI025b-BODY0-and-inventory-roots",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI025b-BODY0-and-inventory-roots",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI025b-remaining3-SOURCE29",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI025b-remaining3-SOURCE29",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI025b-remaining3-source-root20",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI025b-remaining3-source-root20",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI025b-remaining3-root-binding3",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI025b-remaining3-root-binding3",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI025b-remaining3-GO-and-BODY10-lane",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI025b-remaining3-GO-and-BODY10-lane",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI025b-remaining3-actual-full101",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI025b-remaining3-actual-full101",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI025b-original-INFO4-full-transport",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI025b-original-INFO4-full-transport",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI025b-actual-bound-BUILD-SOURCE22",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI025b-actual-bound-BUILD-SOURCE22",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI025b-remaining3-and-BUILD-roots",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI025b-remaining3-and-BUILD-roots",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI025b-original-BUILD-GO-and-Auth-lane",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI025b-original-BUILD-GO-and-Auth-lane",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI025b-original-BUILD-ACK6",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI025b-original-BUILD-ACK6",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI025b-original-BUILD-arm3",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI025b-original-BUILD-arm3",
+      "passed": true
+    },
+    {
+      "name": "whole_members_BUILD-ACK-and-fresh-stage-interface-roots",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_BUILD-ACK-and-fresh-stage-interface-roots",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Snapshot-INFO10-page0-recovery-SOURCE21",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Snapshot-INFO10-page0-recovery-SOURCE21",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Snapshot-INFO10-page0-recovery-actual17",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Snapshot-INFO10-page0-recovery-actual17",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Snapshot-BODY10-closed-release9",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Snapshot-BODY10-closed-release9",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI-remaining3-closed-B-file11-lane",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI-remaining3-closed-B-file11-lane",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Integrated237-inventory-SOURCE24",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Integrated237-inventory-SOURCE24",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Integrated237-runner-launcher-SOURCE26",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Integrated237-runner-launcher-SOURCE26",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Integrated237-runner-root23",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Integrated237-runner-root23",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Integrated237-fresh-stage-interface11",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Integrated237-fresh-stage-interface11",
+      "passed": true
+    },
+    {
+      "name": "whole_members_official271-primary-release-source5",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_official271-primary-release-source5",
+      "passed": true
+    },
+    {
+      "name": "whole_members_X230-existing-official271-inputs4",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_X230-existing-official271-inputs4",
+      "passed": true
+    },
+    {
+      "name": "whole_members_X230-existing-official271-root-reference",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_X230-existing-official271-root-reference",
+      "passed": true
+    },
+    {
+      "name": "whole_members_X230-official271-oracle-only-plan6",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_X230-official271-oracle-only-plan6",
+      "passed": true
+    },
+    {
+      "name": "whole_members_JWT-ACL-draft2-source-contradiction",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_JWT-ACL-draft2-source-contradiction",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Mac-original-server-public-path-SOURCE3",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Mac-original-server-public-path-SOURCE3",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI025b-original-BUILD-running65",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI025b-original-BUILD-running65",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Snapshot-file11-closed-release24",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Snapshot-file11-closed-release24",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Snapshot-file11-whole-service",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Snapshot-file11-whole-service",
+      "passed": true
+    },
+    {
+      "name": "whole_members_BUILD-running56-and-file11-lane24",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_BUILD-running56-and-file11-lane24",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Snapshot-remaining11-original-table",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Snapshot-remaining11-original-table",
+      "passed": true
+    },
+    {
+      "name": "exact_totals",
+      "passed": true
+    }
+  ],
+  "totals": {
+    "packets": 38,
+    "files": 1053,
+    "bytes": 10333229,
+    "allWhole": true
+  },
+  "scope": "Complete previously whole packet members and Merkle identities; no source/runtime qualification is inferred from archival.",
+  "NativeCalls": 0
+}

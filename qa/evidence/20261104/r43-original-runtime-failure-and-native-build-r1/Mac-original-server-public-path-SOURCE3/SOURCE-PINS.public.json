@@ -1,0 +1,13 @@
+{
+  "manager": {
+    "blob": "03c8f2e6472a2b52dad789c28bacc28022c87dc0",
+    "bytes": 58452,
+    "sha256": "8feb3f9db05fa59986409c6c1306b48213102c7deaae6035219afa959add5ae4"
+  },
+  "server_wrapper": {
+    "blob": "031d410286a2aa4ed26c6512af3ee57be17ce687",
+    "bytes": 14052,
+    "sha256": "34aa6a9799419573dfc8cf6b63f479162b3e9e316dc391d54c5f0c0c54cdedb1"
+  },
+  "source_tree": "9204bd66dad2f266dd56cece33f455c5ffea9e2d"
+}

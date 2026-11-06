@@ -1,0 +1,124 @@
+{
+  "schema": "heptabao.root.X230-existing-official271-source-reference.v1",
+  "pass": true,
+  "packet": "1c742a87b5615d30022db344873892d44de2cdbd",
+  "checks": [
+    {
+      "name": "historical_root342_whole_pin",
+      "ok": true
+    },
+    {
+      "name": "whole_wrapper_pin",
+      "ok": true
+    },
+    {
+      "name": "oracle-binary_whole_native_pin",
+      "ok": true
+    },
+    {
+      "name": "oracle-binary_historical_path_size_digest_version",
+      "ok": true
+    },
+    {
+      "name": "oracle-binary_wrapper_fixed_path",
+      "ok": true
+    },
+    {
+      "name": "oracle-archive_whole_native_pin",
+      "ok": true
+    },
+    {
+      "name": "oracle-archive_historical_path_size_digest_version",
+      "ok": true
+    },
+    {
+      "name": "oracle-archive_wrapper_fixed_path",
+      "ok": true
+    },
+    {
+      "name": "historical_host_and_python_exact",
+      "ok": true
+    },
+    {
+      "name": "current_known_official_launcher_same_source",
+      "ok": true
+    },
+    {
+      "name": "actual_old31_remains_scoped_not_replacement",
+      "ok": true
+    }
+  ],
+  "host": "x230",
+  "inputs": [
+    {
+      "role": "oracle-binary",
+      "path": "/home/qian/heptabao-official-271-fresh-20261029-r1/bao",
+      "bytes": 181760103,
+      "sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+      "version": "2053:4484525:181760103:1793293201917498566:1793293202538497931",
+      "mode": 448,
+      "full9_decimal": [
+        "2053",
+        "4484525",
+        "1000",
+        "1000",
+        "33216",
+        "1",
+        "181760103",
+        "1793293201917498566",
+        "1793293202538497931"
+      ],
+      "original_operation_id": "1a239b868f01b65c463fd24048da93192df0bf464c8ac5359c62c3745d84a029",
+      "native_pin": {
+        "blob": "3fe97192ce568d3f502472d9bde3827f6cc1027b",
+        "bytes": 448,
+        "sha256": "d7ba1693438aa0088e684945b6024089778e23d53fa5f8da40c473b9e718f810"
+      },
+      "native_path_in_original_packet": "observations/oracle-binary/native.original.json"
+    },
+    {
+      "role": "oracle-archive",
+      "path": "/home/qian/heptabao-official-271-fresh-20261029-r1/official-openbao-2.7.1-linux-amd64.tar.gz",
+      "bytes": 74865426,
+      "sha256": "0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243",
+      "version": "2053:4484524:74865426:1793293199950500560:1793293199950500560",
+      "mode": 384,
+      "full9_decimal": [
+        "2053",
+        "4484524",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "74865426",
+        "1793293199950500560",
+        "1793293199950500560"
+      ],
+      "original_operation_id": "6e9dad0a31cfdea1fb95328fa928e5d324e069cbc9f512b290c68da4bead56cd",
+      "native_pin": {
+        "blob": "4d184134d27daa5a66fb899607340f0a10d48211",
+        "bytes": 484,
+        "sha256": "d4ce4b27d08040daa758fbed4ec55d9e781a117e58da2c81827086a5217c4022"
+      },
+      "native_path_in_original_packet": "observations/oracle-archive/native.original.json"
+    }
+  ],
+  "officialCurrentReleaseSource": {
+    "blob": "cc255b6c44818eb33b5186f68f6dce4b8b259aa1",
+    "bytes": 2641,
+    "sha256": "1490e25f473982bec6a7600698c28a533b82c7988e0037e8b94af4ed026c14a0"
+  },
+  "oldRuntimeQualification": {
+    "blob": "9fd3ec40974a0d7fc2eed14983fd8b621b6bc214",
+    "bytes": 4870,
+    "sha256": "76f7eef134bbb32d862417fd4e0834d67cb4eb5015c72bcd287b20565134c486"
+  },
+  "oldProductCommit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "oldRuntimeCases": 31,
+  "freshNativeObservation": false,
+  "artifactDownloadRequiredByKnownEvidence": false,
+  "fixtureMayUseExistingFilesSubjectToFreshVerifiedAdmission": true,
+  "currentRuntimeAuthorized": false,
+  "originalWrapperNotAuthorizedToRerun": true,
+  "newHTTPMatrixCases": 0
+}

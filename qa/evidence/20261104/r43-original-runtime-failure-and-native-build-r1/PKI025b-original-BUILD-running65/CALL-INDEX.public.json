@@ -1,0 +1,282 @@
+[
+  {
+    "key": "jwt-pki-025b-build149-r2-start",
+    "kind": "process_start",
+    "files": {
+      "request": "call01.request.json",
+      "intent": "call01.intent.json",
+      "armed": "call01.armed.json",
+      "sdk": "call01.sdk.original.json",
+      "native": "call01.native.original.json"
+    },
+    "request": {
+      "blob": "dab29b2b82ae23e24c5f78865553c140e9bab5de",
+      "bytes": 859,
+      "sha256": "bd5ffba6dce783ee4af25654a246a144ed8edc1c86111ad62460125d9100da53"
+    },
+    "sdk": {
+      "blob": "d6979a8ad2a659cccf52afbb43ca24e674931f63",
+      "bytes": 1935,
+      "sha256": "764d3b5cd4803c933e7f7a06eb038697fdd62d9756f4e2733748542024705a03"
+    },
+    "native": {
+      "blob": "d3f578e960358d02a8b858a9cb4c3ec4e1105c32",
+      "bytes": 1650,
+      "sha256": "0aa9f3d9621a9dce07a77512d9d42c562f6bba754b93a7c89d6bbcc488aa8128"
+    },
+    "armTree": "e976b7a0a34f60017097f82f1ffa4fe23b723f6c",
+    "sdkTree": "7df2dc980838eccb8e40e18cd37c44d0cab263d4"
+  },
+  {
+    "key": "jwt-pki-025b-build149-r2-authority0-admit",
+    "kind": "operation_start",
+    "files": {
+      "request": "call02.request.json",
+      "intent": "call02.intent.json",
+      "armed": "call02.armed.json",
+      "sdk": "call02.sdk.original.json",
+      "native": "call02.native.original.json"
+    },
+    "request": {
+      "blob": "1294384f582aa07f1830034e3e9a30ec01787730",
+      "bytes": 229,
+      "sha256": "86530361b51fed7d7e2a25a92d4cf3906f45e7c30d84d9d4e264f65be6c15b33"
+    },
+    "sdk": {
+      "blob": "83b345adf231166699d4737cab3d79928f2baf39",
+      "bytes": 709,
+      "sha256": "d556f291a848b64b19e9d5ddb49c8ae175e3ec9560e10e8b87c52f12d54ccf03"
+    },
+    "native": {
+      "blob": "9044f629f12f2fe917585e1a2e1a3805ebd6eab1",
+      "bytes": 548,
+      "sha256": "ee286cd78c18c0d95ff8040376879fe216ae8b31ae47708b4467da78367d9bb6"
+    },
+    "armTree": "546afb674beff0063db42701fb42fe003bcc5eb8",
+    "sdkTree": "218e4ccdcdd57ccb25c3c85e57e251b1b9d9e4d5"
+  },
+  {
+    "key": "jwt-pki-025b-build149-r2-authority0-status0",
+    "kind": "operation_status",
+    "files": {
+      "request": "call03.request.json",
+      "intent": "call03.intent.json",
+      "armed": "call03.armed.json",
+      "sdk": "call03.sdk.original.json",
+      "native": "call03.native.original.json"
+    },
+    "request": {
+      "blob": "bf330010b5f0074537d8837d0edb3f33aeb3f405",
+      "bytes": 89,
+      "sha256": "fcc5eb81956ced6a9b99e4d9e9d7e12b67006904c52a74528315c298645f21fb"
+    },
+    "sdk": {
+      "blob": "b8b0c40894821541649ed90c76a8a8bab0d3a29c",
+      "bytes": 980,
+      "sha256": "d850f762fa072da0200e13de5ad7a1179e3c9dfe05ca4f06e099bc56b04ff9a6"
+    },
+    "native": {
+      "blob": "6e12adae7069c525d356f9694d51e4683034091d",
+      "bytes": 805,
+      "sha256": "c52d2e9bd3a22bfd04b093ee9e96bc50c9b79baa80cef7ff0b5c952f5fea7caa"
+    },
+    "armTree": "9bdf4c8098f2df0329aca758fa2dc0aca19a8ac8",
+    "sdkTree": "3bba3db40ddca4f7360b28f44e2fd19d2c750349"
+  },
+  {
+    "key": "jwt-pki-025b-build149-r2-authority0-page0",
+    "kind": "operation_result",
+    "files": {
+      "request": "call04.request.json",
+      "intent": "call04.intent.json",
+      "armed": "call04.armed.json",
+      "sdk": "call04.sdk.original.json",
+      "native": "call04.native.original.json"
+    },
+    "request": {
+      "blob": "3d1f50b9465e080f86bb0c4de6501d71600ff788",
+      "bytes": 121,
+      "sha256": "23e9949d7f61e0581e0a5c5d81babf3fa91a1788ec7c45e245325e502e09e5aa"
+    },
+    "sdk": {
+      "blob": "64ff86d7c26a650708b0981a5070c2f0473185bc",
+      "bytes": 1676,
+      "sha256": "d33e9776e3c96c46e25c266cd51981a26e7aa86f24d6569ed3fd153c254aa122"
+    },
+    "native": {
+      "blob": "dd272cb886c999bc1b0877994dd532f4b8a609df",
+      "bytes": 1505,
+      "sha256": "28337e6e0c23d9c2bce0d7160a246fc80a176975fd734661e738d6fd5dad137c"
+    },
+    "armTree": "c4582437d9561f6454457ef41f32120073187e6c",
+    "sdkTree": "86c99b31ba0487da048ac797f1e50501a606e2a4"
+  },
+  {
+    "key": "jwt-pki-025b-build149-r2-authority1-admit",
+    "kind": "operation_start",
+    "files": {
+      "request": "call05.request.json",
+      "intent": "call05.intent.json",
+      "armed": "call05.armed.json",
+      "sdk": "call05.sdk.original.json",
+      "native": "call05.native.original.json"
+    },
+    "request": {
+      "blob": "ee9beb26caf90d9496fd08bb812a67acca791596",
+      "bytes": 229,
+      "sha256": "9d4fed6adde4c72f5b18fc75cee9d8574cb9f14fea1f044a69fa7158072d76de"
+    },
+    "sdk": {
+      "blob": "6448c3df44a4cd931991e02aaa8c22c4677ef326",
+      "bytes": 709,
+      "sha256": "c5659f7e33c0ede22e94e9e961cff5cbfc8b4f690e62ddc8107d6cac90d0cf7c"
+    },
+    "native": {
+      "blob": "f4d0309f74d1480f0c30695a71cd481d8a6fc690",
+      "bytes": 548,
+      "sha256": "ab71d4a3940916c4ba58f41d4cc4ceee74e155d15a8b446530a8d4a2e42de802"
+    },
+    "armTree": "1988db71fc1aa42dcd374f0e65cfa06586b8bab5",
+    "sdkTree": "0a50001174317e6deb971bcd555c22bb02a67523"
+  },
+  {
+    "key": "jwt-pki-025b-build149-r2-authority1-status0",
+    "kind": "operation_status",
+    "files": {
+      "request": "call06.request.json",
+      "intent": "call06.intent.json",
+      "armed": "call06.armed.json",
+      "sdk": "call06.sdk.original.json",
+      "native": "call06.native.original.json"
+    },
+    "request": {
+      "blob": "33d8acd2e10b61ff11ea4743d885502f178446c0",
+      "bytes": 89,
+      "sha256": "542fc3a96892f75aeefc078d2d941132b99144c7b7c3f3935a38e35b89f72122"
+    },
+    "sdk": {
+      "blob": "1213d3491cb32bfd6e613837696bc7a3f3fce30a",
+      "bytes": 980,
+      "sha256": "33a5da9708fa9044a1e3e4e0b11b63090c9416e8b75ba9b5ba60373206c382fd"
+    },
+    "native": {
+      "blob": "7a93c21b3837058fb04ab0fafb46acc4b18dbf7d",
+      "bytes": 805,
+      "sha256": "2b4f99ed5e9e01080a21b7a0e446d8db631fdef2907dda0fb2bd379dbca9c6ca"
+    },
+    "armTree": "c82bebd2dcdd0cccde2b2eae5b34a895988ea7af",
+    "sdkTree": "7b0df0ba669afb2504aaf348aaa980942f808877"
+  },
+  {
+    "key": "jwt-pki-025b-build149-r2-authority1-page0",
+    "kind": "operation_result",
+    "files": {
+      "request": "call07.request.json",
+      "intent": "call07.intent.json",
+      "armed": "call07.armed.json",
+      "sdk": "call07.sdk.original.json",
+      "native": "call07.native.original.json"
+    },
+    "request": {
+      "blob": "5b529c4ce00292a7fb20bab22dd9c797ae31db54",
+      "bytes": 121,
+      "sha256": "87421f839d894299e0a4bb18dfedd4d1020a7d00f21b9d8544f4d1369ef29fea"
+    },
+    "sdk": {
+      "blob": "03ec14696ef36ed0455e00c53eecd4fdad6f4caa",
+      "bytes": 1676,
+      "sha256": "ec5d4a4d4c02b6de16301c55e5921efd153f52f9132e68f28a0e3e1f8290b9a8"
+    },
+    "native": {
+      "blob": "4bde9d7c52ef171fc637f0e21bb34a0e947ba737",
+      "bytes": 1505,
+      "sha256": "c259b0fb9e992163e9e171b0929591af0b2cd08a6711c532d9d0fe57393a72d9"
+    },
+    "armTree": "99fb9d64805adfdce0438d0fd77085f5d06abe94",
+    "sdkTree": "8c97465f79c59c7462f11e12f2e299f365b4b6ea"
+  },
+  {
+    "key": "jwt-pki-025b-build149-r2-authority2-admit",
+    "kind": "operation_start",
+    "files": {
+      "request": "call08.request.json",
+      "intent": "call08.intent.json",
+      "armed": "call08.armed.json",
+      "sdk": "call08.sdk.original.json",
+      "native": "call08.native.original.json"
+    },
+    "request": {
+      "blob": "479e9536e66dd4f727fb15feb02d80559690e0dd",
+      "bytes": 229,
+      "sha256": "2a1957148a77ab2d2e8c0ef2aa3dc0176b9f046cedcf1679998aa2e899c24256"
+    },
+    "sdk": {
+      "blob": "7ee626ba5acddba302af921bf7cad1c4c236405d",
+      "bytes": 709,
+      "sha256": "0939bde1100c3ed2c5987924310cae06bde93ec0c1ad30a84be3265554f0eabb"
+    },
+    "native": {
+      "blob": "e48f539b1905937dedfd6b5f243ea75dc95c042f",
+      "bytes": 548,
+      "sha256": "aef785589df333234cdc31e945aa8175960f4b3e360479c9fb4dc41973800d80"
+    },
+    "armTree": "b3c37a0158991dc8218653d20e50d13f2f7a4c6c",
+    "sdkTree": "ae0b156a4950c826456109fe75349698c303c5d4"
+  },
+  {
+    "key": "jwt-pki-025b-build149-r2-authority2-status0",
+    "kind": "operation_status",
+    "files": {
+      "request": "call09.request.json",
+      "intent": "call09.intent.json",
+      "armed": "call09.armed.json",
+      "sdk": "call09.sdk.original.json",
+      "native": "call09.native.original.json"
+    },
+    "request": {
+      "blob": "0b607cf4c646b97af46630b8ea519a3d3523b2df",
+      "bytes": 89,
+      "sha256": "575216a128c6952cb4fe92d7b956b800e747b42fbb05b197bc44922b1dfe25dd"
+    },
+    "sdk": {
+      "blob": "0cb7ebddb58272388f3abae2c20bceecaae6f4dc",
+      "bytes": 980,
+      "sha256": "6a96d7914bda17682844a671df0d6fa7b70f6ec12a0b510d87920a2c7b3892b8"
+    },
+    "native": {
+      "blob": "71d7e9054f1f1f0600d207bd39367f073c2f9b19",
+      "bytes": 805,
+      "sha256": "bea18f62e7882075ae98e13321a6355434718b50389cf2ea929c3f4d6c38f236"
+    },
+    "armTree": "a52d3f9b5af81589bca5ecbfcb892d19d3d53351",
+    "sdkTree": "c33edecf906b15a2dd036196ca2ad6e1c77d5bf1"
+  },
+  {
+    "key": "jwt-pki-025b-build149-r2-authority2-page0",
+    "kind": "operation_result",
+    "files": {
+      "request": "call10.request.json",
+      "intent": "call10.intent.json",
+      "armed": "call10.armed.json",
+      "sdk": "call10.sdk.original.json",
+      "native": "call10.native.original.json"
+    },
+    "request": {
+      "blob": "8f70e0992e21e139d390567d533e451eda5c8713",
+      "bytes": 121,
+      "sha256": "2d22249cf731af954dc5c28c9f5fecf728b37e3cad145e2e7a053affc500d06f"
+    },
+    "sdk": {
+      "blob": "a895234a241d0d25ed95ba746fc0c70ad46ad66a",
+      "bytes": 1676,
+      "sha256": "88a5f9f55f1444cdf1602e72f7972438d5b5d7094c38c264d75a4cc3266b5c9d"
+    },
+    "native": {
+      "blob": "fd447ae477ab664a6d5fd5f86a829c675c8aa011",
+      "bytes": 1505,
+      "sha256": "0497b1dd069eec205741dbe3292faa2f36e6fae9e3b4f787cc38a42d1e6d007c"
+    },
+    "armTree": "465c006c8808891bcc520d5e657e3854ebb61065",
+    "sdkTree": "1227073d7ec043da1346efd2e5ce96a53a9531ea"
+  }
+]

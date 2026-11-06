@@ -1,0 +1,465 @@
+{
+  "schema": "heptabao.root.original-025b-controls-INFO4-transport-qualification.v1",
+  "pass": true,
+  "checks": [
+    {
+      "name": "INFO4_original_SDK_text_0",
+      "ok": true
+    },
+    {
+      "name": "INFO4_native_text_pin_from_original_SDK_0",
+      "ok": true
+    },
+    {
+      "name": "INFO4_original_SDK_text_1",
+      "ok": true
+    },
+    {
+      "name": "INFO4_native_text_pin_from_original_SDK_1",
+      "ok": true
+    },
+    {
+      "name": "INFO4_original_SDK_text_2",
+      "ok": true
+    },
+    {
+      "name": "INFO4_native_text_pin_from_original_SDK_2",
+      "ok": true
+    },
+    {
+      "name": "INFO4_original_SDK_text_3",
+      "ok": true
+    },
+    {
+      "name": "INFO4_native_text_pin_from_original_SDK_3",
+      "ok": true
+    },
+    {
+      "name": "INFO4_original_SDK_text_4",
+      "ok": true
+    },
+    {
+      "name": "INFO4_native_text_pin_from_original_SDK_4",
+      "ok": true
+    },
+    {
+      "name": "INFO4_original_SDK_text_5",
+      "ok": true
+    },
+    {
+      "name": "INFO4_native_text_pin_from_original_SDK_5",
+      "ok": true
+    },
+    {
+      "name": "INFO4_original_SDK_text_6",
+      "ok": true
+    },
+    {
+      "name": "INFO4_native_text_pin_from_original_SDK_6",
+      "ok": true
+    },
+    {
+      "name": "INFO4_original_SDK_text_7",
+      "ok": true
+    },
+    {
+      "name": "INFO4_native_text_pin_from_original_SDK_7",
+      "ok": true
+    },
+    {
+      "name": "INFO4_original_SDK_text_8",
+      "ok": true
+    },
+    {
+      "name": "INFO4_native_text_pin_from_original_SDK_8",
+      "ok": true
+    },
+    {
+      "name": "INFO4_original_SDK_text_9",
+      "ok": true
+    },
+    {
+      "name": "INFO4_native_text_pin_from_original_SDK_9",
+      "ok": true
+    },
+    {
+      "name": "INFO4_original_SDK_text_10",
+      "ok": true
+    },
+    {
+      "name": "INFO4_native_text_pin_from_original_SDK_10",
+      "ok": true
+    },
+    {
+      "name": "INFO4_original_SDK_text_11",
+      "ok": true
+    },
+    {
+      "name": "INFO4_native_text_pin_from_original_SDK_11",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_unique_calls",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_call_jwt-pki-025b05a3-controls-r2-published-info0-admit",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_armed_tree_jwt-pki-025b05a3-controls-r2-published-info0-admit",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_call_jwt-pki-025b05a3-controls-r2-published-info0-status0",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_armed_tree_jwt-pki-025b05a3-controls-r2-published-info0-status0",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_call_jwt-pki-025b05a3-controls-r2-published-info0-page0",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_armed_tree_jwt-pki-025b05a3-controls-r2-published-info0-page0",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_call_jwt-pki-025b05a3-controls-r2-published-info1-admit",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_armed_tree_jwt-pki-025b05a3-controls-r2-published-info1-admit",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_call_jwt-pki-025b05a3-controls-r2-published-info1-status0",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_armed_tree_jwt-pki-025b05a3-controls-r2-published-info1-status0",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_call_jwt-pki-025b05a3-controls-r2-published-info1-page0",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_armed_tree_jwt-pki-025b05a3-controls-r2-published-info1-page0",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_call_jwt-pki-025b05a3-controls-r2-published-info2-admit",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_armed_tree_jwt-pki-025b05a3-controls-r2-published-info2-admit",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_call_jwt-pki-025b05a3-controls-r2-published-info2-status0",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_armed_tree_jwt-pki-025b05a3-controls-r2-published-info2-status0",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_call_jwt-pki-025b05a3-controls-r2-published-info2-page0",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_armed_tree_jwt-pki-025b05a3-controls-r2-published-info2-page0",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_call_jwt-pki-025b05a3-controls-r2-published-info3-admit",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_armed_tree_jwt-pki-025b05a3-controls-r2-published-info3-admit",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_call_jwt-pki-025b05a3-controls-r2-published-info3-status0",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_armed_tree_jwt-pki-025b05a3-controls-r2-published-info3-status0",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_call_jwt-pki-025b05a3-controls-r2-published-info3-page0",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_armed_tree_jwt-pki-025b05a3-controls-r2-published-info3-page0",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_observer_unique",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_observer_e0b3516213ca2ce013bfc0288d2f641511f811b71f8ed4e08db682938e13860a",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_page_e0b3516213ca2ce013bfc0288d2f641511f811b71f8ed4e08db682938e13860a_0",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_payload_e0b3516213ca2ce013bfc0288d2f641511f811b71f8ed4e08db682938e13860a",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_observer_e8c754906784dc95c7d6f9f9db323c75f28d346c125b3b374a50b517ab950f87",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_page_e8c754906784dc95c7d6f9f9db323c75f28d346c125b3b374a50b517ab950f87_0",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_payload_e8c754906784dc95c7d6f9f9db323c75f28d346c125b3b374a50b517ab950f87",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_observer_1b398fc015b5d944a3e80c2b4eb0fadd0d343fcf29e265cdedb600c77ae316ad",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_page_1b398fc015b5d944a3e80c2b4eb0fadd0d343fcf29e265cdedb600c77ae316ad_0",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_payload_1b398fc015b5d944a3e80c2b4eb0fadd0d343fcf29e265cdedb600c77ae316ad",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_observer_9f565be95050449328b40b589e82270d644f88dc95a192de202c8de1f7e57a5a",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_page_9f565be95050449328b40b589e82270d644f88dc95a192de202c8de1f7e57a5a_0",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_payload_9f565be95050449328b40b589e82270d644f88dc95a192de202c8de1f7e57a5a",
+      "ok": true
+    },
+    {
+      "name": "original_INFO4_all_observer_calls_accounted",
+      "ok": true
+    },
+    {
+      "name": "INFO4_actual_0_path_size_hash_version_full9",
+      "ok": true
+    },
+    {
+      "name": "INFO4_actual_1_path_size_hash_version_full9",
+      "ok": true
+    },
+    {
+      "name": "INFO4_actual_2_path_size_hash_version_full9",
+      "ok": true
+    },
+    {
+      "name": "INFO4_actual_3_path_size_hash_version_full9",
+      "ok": true
+    },
+    {
+      "name": "INFO3_Git_arm_recovery_remains_history_only",
+      "ok": true
+    }
+  ],
+  "actualCalls": 12,
+  "observers": 4,
+  "pages": 4,
+  "sourceHistoricalState": {
+    "blob": "f809c4e2d2b28691637987aaf9f9c3ed90a56f09",
+    "bytes": 208774,
+    "sha256": "3d5f4023093b05d517dbd81066c0956bbd091f52fb8d8d1a8464157642719f51"
+  },
+  "originalFixedGO": {
+    "blob": "e8fc1a9e9d8b09411bc8a47f19da1bce5aa27d32",
+    "bytes": 5948,
+    "sha256": "aadd1bcd39e4c86448352d48fcce1c6258332edabee69b0a370b127589365ef9"
+  },
+  "nativeTextProvenance": [
+    {
+      "key": "jwt-pki-025b05a3-controls-r2-published-info0-admit",
+      "pin": {
+        "blob": "aff39d2a1ae030a22ae7625bf757a0ca8b397f18",
+        "bytes": 543,
+        "sha256": "4ce5907347cd5a45d854eff35cc5a8b7cffb305002d6bd53de3ebc51494c3e6e"
+      },
+      "derivedFromOriginalSDK": {
+        "blob": "5959767a02a46b52caff039db1d353094ea1acc1",
+        "bytes": 704,
+        "sha256": "27bc3006ecc68de9f1b4022d58cb80d8905c94d0bfc0e2c71b405901aa786646"
+      },
+      "originalStandaloneBlobHadBeenFetched": false
+    },
+    {
+      "key": "jwt-pki-025b05a3-controls-r2-published-info0-status0",
+      "pin": {
+        "blob": "845a1eb6cc203677d7d268d6c35b350bb2bce228",
+        "bytes": 800,
+        "sha256": "ad5844a9b4ac87d5e9a3a432f80a2c8ee75a7afa5765f87c12458f1da9399dd8"
+      },
+      "derivedFromOriginalSDK": {
+        "blob": "f62bb98ec976834002931f9c225584ddf80f2e45",
+        "bytes": 975,
+        "sha256": "ff74759975dbcf95148bbce2a166fd96c490b0dda4939626773870486febfcc3"
+      },
+      "originalStandaloneBlobHadBeenFetched": false
+    },
+    {
+      "key": "jwt-pki-025b05a3-controls-r2-published-info0-page0",
+      "pin": {
+        "blob": "7a64742cd391cc7dc293107ce82d41bda457c229",
+        "bytes": 1461,
+        "sha256": "09d10e8b2872508c50a4c87eafcd8fc7f065d3c563d835673353bca28d4331b8"
+      },
+      "derivedFromOriginalSDK": {
+        "blob": "33a513bb21c5dd7e68d80f32018ebfb364aa21d2",
+        "bytes": 1632,
+        "sha256": "c1fe474020e8bd365dd103e498fe36c62e33f457f17fd86fb3e2ad6b1d3d9c51"
+      },
+      "originalStandaloneBlobHadBeenFetched": false
+    },
+    {
+      "key": "jwt-pki-025b05a3-controls-r2-published-info1-admit",
+      "pin": {
+        "blob": "1e15f288a3824138cd5b9a0ef5084f929aa938fc",
+        "bytes": 543,
+        "sha256": "5ebdd886edb8900a5d24a91fc14e8e405093d3865ff7e9d57150497646755e7d"
+      },
+      "derivedFromOriginalSDK": {
+        "blob": "27c622c19bfcd82d020ae750eed8bd35c1705727",
+        "bytes": 704,
+        "sha256": "64bc7c02193e71e1e7e614814cf6b32ed5f669e8a5eb8c3f63e2a3e056bb098d"
+      },
+      "originalStandaloneBlobHadBeenFetched": false
+    },
+    {
+      "key": "jwt-pki-025b05a3-controls-r2-published-info1-status0",
+      "pin": {
+        "blob": "4d7b776f4b19791143aae64b180f2219fef7b7c4",
+        "bytes": 800,
+        "sha256": "76185641acf39dbc3a9047970dcdd74fe071f36c87d19c29e3cbe67899d3c9c4"
+      },
+      "derivedFromOriginalSDK": {
+        "blob": "3342cab1441ec5e166b06d2f348431106edc6d2a",
+        "bytes": 975,
+        "sha256": "209e6b108830ff7aa8213ab1214a9776c3fe37e38067b238a59c92b9319a74a0"
+      },
+      "originalStandaloneBlobHadBeenFetched": false
+    },
+    {
+      "key": "jwt-pki-025b05a3-controls-r2-published-info1-page0",
+      "pin": {
+        "blob": "b940904abf359147b1defc29b069a39ff6f2eb73",
+        "bytes": 1469,
+        "sha256": "17588d2106eba3adaddc89cd21fd7c0e5cfbffc7a2cf35dc66e4f5f0390fe4b0"
+      },
+      "derivedFromOriginalSDK": {
+        "blob": "ff45f548f5f216e6b9595626e9120cac137a721f",
+        "bytes": 1640,
+        "sha256": "9863885d4de435f86519f174247ebec61639a2044a25b46fb49480804ba51d86"
+      },
+      "originalStandaloneBlobHadBeenFetched": false
+    },
+    {
+      "key": "jwt-pki-025b05a3-controls-r2-published-info2-admit",
+      "pin": {
+        "blob": "855dbf2765281bae7e749c69e9e6dbb6bb29af53",
+        "bytes": 543,
+        "sha256": "dec2e6330c960c722f438c97c1c297ea7a30f2cb32471751bcdfe05642ce09fa"
+      },
+      "derivedFromOriginalSDK": {
+        "blob": "3573dfea046678f0fb3cb4cd4eeccd08120867b1",
+        "bytes": 704,
+        "sha256": "5659846ae71f0c12dcd238f849586dca634ad8e92c7ec9751f26a6ca9765c047"
+      },
+      "originalStandaloneBlobHadBeenFetched": false
+    },
+    {
+      "key": "jwt-pki-025b05a3-controls-r2-published-info2-status0",
+      "pin": {
+        "blob": "9c7b830885115f90985f5c08a24be7b702134646",
+        "bytes": 800,
+        "sha256": "9c811f6f5eb0957abb130a5a4b717ea26f86d702a454d4d580f494e73e95ff7f"
+      },
+      "derivedFromOriginalSDK": {
+        "blob": "a4b284bd637fcaae1229928c90536d52d0434f1a",
+        "bytes": 975,
+        "sha256": "af920b3c3e03b0f00238c83181b5d8609e0656f71c2868cfca7a128af7d01765"
+      },
+      "originalStandaloneBlobHadBeenFetched": false
+    },
+    {
+      "key": "jwt-pki-025b05a3-controls-r2-published-info2-page0",
+      "pin": {
+        "blob": "05c26e53c94b499917c1d2424c74e29e32ef375c",
+        "bytes": 1469,
+        "sha256": "79bc611a99f10ec16a965b73915f7c2139b13941df696d50f5121cdf11716665"
+      },
+      "derivedFromOriginalSDK": {
+        "blob": "8a00e7218f2aee45af7396b618cf811d53833475",
+        "bytes": 1640,
+        "sha256": "b43fd6827fad127df6e0907dcee4701f0234cda35f24a2dd8fcce71c9d941e2f"
+      },
+      "originalStandaloneBlobHadBeenFetched": false
+    },
+    {
+      "key": "jwt-pki-025b05a3-controls-r2-published-info3-admit",
+      "pin": {
+        "blob": "a04fbed8d4ab9d370a64d549926b67e78f61ce18",
+        "bytes": 543,
+        "sha256": "c8353380040e27d1543d34ee0610aff89b9510a540768df6da351b95d805f596"
+      },
+      "derivedFromOriginalSDK": {
+        "blob": "ace00f81a43bee1abef9dbeab1a09b96364f992d",
+        "bytes": 704,
+        "sha256": "faf71f0229490a5922d3df07b0508dbe3a9b2947089d80e04ca6dcb6f25aada0"
+      },
+      "originalStandaloneBlobHadBeenFetched": true
+    },
+    {
+      "key": "jwt-pki-025b05a3-controls-r2-published-info3-status0",
+      "pin": {
+        "blob": "0a3557f112b5f5bc21c8578590f8ff4206fa9cc9",
+        "bytes": 800,
+        "sha256": "d1ad304d41cf493f0946f7aad47d155e4beddddaf9012cb02cfe389efcc74756"
+      },
+      "derivedFromOriginalSDK": {
+        "blob": "48882427609d36cd37cef802e52999caa039ac7f",
+        "bytes": 975,
+        "sha256": "7fa617c07024a8482c16c5bc9d00f07b08e1943b4b6681c57b3c3b502c107ebd"
+      },
+      "originalStandaloneBlobHadBeenFetched": false
+    },
+    {
+      "key": "jwt-pki-025b05a3-controls-r2-published-info3-page0",
+      "pin": {
+        "blob": "2366b0cb4812a2b25eaf383fd82953f5eb84160c",
+        "bytes": 1473,
+        "sha256": "a7d7a1ea1e4596151e4ffcd5e92981bffe81941ff38c15b1ce035465fa0c9bc7"
+      },
+      "derivedFromOriginalSDK": {
+        "blob": "07f0bb62b0f23c9db501a7593d6a312a8e3b8644",
+        "bytes": 1644,
+        "sha256": "76cf477f2fd68ed1e78e3fbb80b436b9a2d97b14f77aa282c2bcb4e3032f3dab"
+      },
+      "originalStandaloneBlobHadBeenFetched": false
+    }
+  ],
+  "readOnlyRecoveryNote": "Eleven derived native-text hashes were not separately addressable as Git blobs. Their complete original SDK blobs were whole-readable and supplied the exact pinned text without any Native replay. Original read-only Git errors are retained.",
+  "freshNativeCalls": 0,
+  "BUILDSubmitted": false,
+  "doesNotEraseOriginalBody0UNKNOWN": true
+}

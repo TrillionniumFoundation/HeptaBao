@@ -1,0 +1,38 @@
+{
+  "schema": "heptabao.root.BODY10-lane-release-qualification.v1",
+  "pass": true,
+  "packet": "f79599ea8803894c6f1791bd2bd6d72eea5a1b91",
+  "release": {
+    "blob": "fc7ae8df08b7be0561e9572d5360f17be1dcf316",
+    "bytes": 3808,
+    "sha256": "cd22bf24fcc8fe88c481b881f511872cfa6303f42898f7bf83e6189f574cc5d5"
+  },
+  "checks": [
+    {
+      "name": "original_status_SDK_exact_native",
+      "ok": true
+    },
+    {
+      "name": "same_binary_observer_closed",
+      "ok": true
+    },
+    {
+      "name": "release_has_no_pending_call_or_future",
+      "ok": true
+    },
+    {
+      "name": "stopped_at_requested_file_boundary",
+      "ok": true
+    },
+    {
+      "name": "original_GO_unchanged",
+      "ok": true
+    }
+  ],
+  "scope": "Lane handoff only; complete 128-call formatted-source qualification remains separate.",
+  "B": 0,
+  "A": 1,
+  "C": 1,
+  "root": 0,
+  "total": 2
+}

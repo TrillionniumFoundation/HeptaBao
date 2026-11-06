@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r43-C-remaining3-source-root-review-r1",
+  "records": [
+    {
+      "name": "root-source-qualification.public.json",
+      "blob": "cb07ceb8788b76090d9aaf431c89dc86f7d915b7",
+      "bytes": 3765,
+      "sha256": "448a689a146f608a5a9192eba2694e02c07ea6290f028991d13d3d2f8d084445"
+    },
+    {
+      "name": "author74-guards37-reproduced.public.json",
+      "blob": "a9dd698f8c3952ef78590c6f6d7651bdf820614c",
+      "bytes": 6362,
+      "sha256": "1e65aa84519aca2c92927f1d2fbf36bfc7ff6e9afd54584127f364cab6cea0ae"
+    }
+  ],
+  "expected_data_tree": "6dd8212205015c68bd295e5658c5159367e2a2db",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

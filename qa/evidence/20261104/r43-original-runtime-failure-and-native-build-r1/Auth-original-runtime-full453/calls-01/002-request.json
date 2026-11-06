@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-mac-current-home-launch-runtime-c67d6fe6-status-01",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1b0e85206-fc05-73e1"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+function rootQualifyMacOriginalRuntime(f){
+const p=f.packet,raw=p.raw,s=JSON.parse(raw["evidence/state.final.original.json"]),m=JSON.parse(raw["MANIFEST.public.json"]),go=JSON.parse(raw["evidence/root-runtime-GO.original.json"]),rel=JSON.parse(raw["core/RELEASE.public.json"]),r=JSON.parse(raw["core/stdout.original.json"]),a=parseLosslessIntegers(raw["core/authority.original.json"]),eq=(x,y)=>JSON.stringify(x)===JSON.stringify(y),checks=[],ck=(name,pass)=>checks.push({name,pass:!!pass});
+ck("whole453_with8_Merkle_trees",p.audit.whole&&p.audit.files===453&&p.audit.bytes===3123560&&p.audit.merkle.trees_verified===8);
+ck("all452_manifest_files_whole_exact",m.files.length===452&&new Set(m.files.map(x=>x.path)).size===452&&m.files.every(x=>eq(gitBlobMeta(raw[x.path]),{blob:x.blob,bytes:x.bytes,sha256:x.sha256})));
+ck("minimal16_exact_original_members",Object.entries(f.minimal.raw).length===16&&Object.entries(f.minimal.raw).every(([name,text])=>raw["core/"+name]===text));
+ck("author1252_independently_reproduced",f.author.passed&&f.author.checkCount===1252&&eq(f.author,JSON.parse(raw["evidence/actual-result.public.json"])));
+ck("original_GO_exact",eq(gitBlobMeta(raw["evidence/root-runtime-GO.original.json"]),rel.rootGo)&&s.goRaw===raw["evidence/root-runtime-GO.original.json"]&&eq(s.goPin,rel.rootGo));
+ck("original_journal_exact",eq(gitBlobMeta(raw["evidence/runtime-journal.original.js"]),go.journal));
+const request=JSON.parse(raw["evidence/runtime-exact-request.original.json"]),binding=processStartBinding(request);
+ck("original_request_exact",eq(gitBlobMeta(raw["evidence/runtime-exact-request.original.json"]),go.exactProcessStart)&&eq(go.exactProcessStart,rel.exactRequest));
+ck("original_typed_binding_rederived",binding.sha256===go.nativeBinding.sha256&&binding.native_fingerprint===go.nativeBinding.native_fingerprint&&gitBlobMeta(binding.canonical).bytes===go.nativeBinding.canonicalBytes&&s.digest===binding.sha256&&s.fingerprint===binding.native_fingerprint);
+const callMap=JSON.parse(raw["evidence/calls-path-map.public.json"]);
+ck("81_unique_original_call_rows",callMap.length===81&&new Set(callMap.map(x=>x.callKey)).size===81&&callMap.every((x,i)=>x.ordinal===i+1)&&Object.keys(s.calls).length===81);
+for(const row of callMap){
+ const c=s.calls[row.callKey],x=Object.fromEntries(Object.entries(row.paths).map(([k,path])=>[k,raw[path]])),i=JSON.parse(x.intentRaw),armed=JSON.parse(x.armedRaw);
+ const armLeaves=[["request.json",x.requestRaw],["intent.json",x.intentRaw],["armed.json",x.armedRaw]].map(([path,t])=>({path,type:"blob",mode:"100644",sha:gitBlobMeta(t).blob}));
+ ck(row.callKey+":original3_leaf_arm_Merkle",immediateTreeSha(armLeaves)===row.armedTree&&row.armedTree===c.armed.tree&&c.armed.count===3&&c.armed.entries.every(e=>{const leaf=armLeaves.find(x=>x.path===e.path);return leaf?.sha===e.blob;}));
+ ck(row.callKey+":one_leaf_original_SDK_Merkle",immediateTreeSha([{path:"original.sdk.json",type:"blob",mode:"100644",sha:gitBlobMeta(x.sdkRaw).blob}])===row.sdkTree&&row.sdkTree===c.sdkArchive.tree&&c.sdkArchive.count===1);
+ ck(row.callKey+":same_exact_GO_binding",eq(i.rootGo,rel.rootGo)&&eq(armed.rootGo,rel.rootGo)&&i.lossOfAcknowledgmentNeverGrantsReplay===true&&armed.lossOfAcknowledgmentNeverGrantsReplay===true);
+}
+const os=JSON.parse(raw["evidence/observers-path-map.public.json"]);
+ck("10_original_payload_Merkle_trees",os.length===10&&os.every(o=>immediateTreeSha([{path:"payload.original.json",type:"blob",mode:"100644",sha:gitBlobMeta(raw[o.paths.payloadRaw]).blob}])===o.payloadTree));
+ck("original_observation_lane_closed",s.pending===null&&s.activeObserver===null&&s.nativeCallInFlight===false&&s.paused===false&&s.nextStdout===136193&&s.nextStderr===0&&s.completedObservers.every(o=>o.completedInactive));
+ck("authority_failed_exit1_full_durable",a.job_id===s.job&&a.state==="failed"&&a.exit_code===1&&a.timed_out===false&&a.output_complete&&a.output_durable&&a.terminal_publication_confirmed);
+ck("complete_public_output_exact",eq(gitBlobMeta(raw["core/stdout.original.json"]),rel.stdout)&&eq(gitBlobMeta(raw["core/stderr.original.txt"]),rel.stderr)&&rel.stdout.bytes===136193&&rel.stderr.bytes===0);
+ck("known_failure_preserved",r.ok===false&&r.errorType==="ManagerRefused"&&r.errorCode==="typed_launchctl_integer"&&r.outcomeUnknown===true);
+ck("managed_registration_and_lineage_still_UNKNOWN",r.manager.allRegistrationsClosed===false&&r.manager.allKnownLineagesClosed===false&&r.allOwnedRegistrationsLineagesHelpersClosed===false&&rel.managedClosureIsNotClaimed===true);
+ck("original_bootstrap_returned_zero_but_no_exec_identity",r.manager.registrations.length===1&&r.manager.registrations[0].generation==="server-initial"&&r.manager.registrations[0].attempts.bootstrap.exitCode===0&&r.manager.registrations[0].execIdentity===null&&r.manager.registrations[0].wrapperIdentity===null&&r.manager.registrations[0].cleanupErrorCode==="typed_launchctl_integer");
+ck("zero_business_phases_and_no_controlHTTP_claim",r.ownedPhases.length===0&&rel.result.controlHttpConstructed===false&&r.allAccountsQualified===false&&r.fullReplacementQualified===false);
+ck("before_capture_closed_but_not_a_credential_cycle",r.captureReports.length===1&&r.captureReports[0].stage==="before"&&r.captureReports[0].report.ok===true&&r.captureReports[0].terminalKnown&&r.captureReports[0].captureLibraryResourcesClosed&&r.captureReports[0].entryDescriptorsClosed);
+ck("all11_direct_helper_commands_closed",r.ownedCommands.commands.length===11&&r.ownedCommands.allOwnedCommandsStopped===true&&r.ownedCommands.unknownCommandCount===0);
+ck("owned_descriptors_closed",r.allReturnedHomeControlDescriptorsClosed===true&&r.allPublicProofAndCaptureLibraryClosuresKnown===true&&r.heldT5Final.allDescriptorsClosed===true&&r.outerDescriptorClosure.allOuterReadDescriptorsClosed===true&&r.manager.allManagerReadDescriptorsClosed===true&&r.homeControlFinal.effectUnknown===false);
+ck("original_deadline_preserved",r.originalOuterDeadlineMetAfterAllClosure===true&&r.elapsedSeconds<go.originalBudgets.outer&&request.timeout_seconds===go.originalBudgets.supervisor&&go.originalBudgets.outer===900);
+ck("production_and_J3160_remained_unaffected_by_controller",r.productionChangedByController===false&&r.productionServiceOperationDispatched===false&&r.j3160Contacted===false&&r.credentialValuesPublished===false);
+return {schema:"heptabao.root.mac-authbus-original-failed-runtime-qualification.r43",pass:checks.every(x=>x.pass),check_count:checks.length,checks,packet:p.audit.tree,original_job:"mac/"+s.job,original_call_count:81,original_observer_count:10,immutable_pages:60,author_checks_reproduced:1252,authority:rel.authority,stdout:rel.stdout,stderr:rel.stderr,actual_result:"FAILED_BEFORE_BUSINESS_PHASES",failure:{type:r.errorType,code:r.errorCode,elapsed_seconds:r.elapsedSeconds},observation_lane_released:true,managed_scope_qualified_closed:false,managed_registration_and_lineage:"UNKNOWN",offending_launchctl_field_or_value:"not retained; must observe original object through narrow read-only projection before parser change",new_credential_cycles:0,product_success:false,full_replacement:false,production_cutover:false,legacy_cleanup:false,root_Runtime_calls:0};
+}

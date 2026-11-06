@@ -1,0 +1,291 @@
+{
+  "status": "PASS_SOURCE_ONLY",
+  "checks": 70,
+  "rows": [
+    {
+      "name": "base whole pin",
+      "pass": true
+    },
+    {
+      "name": "candidate whole pin",
+      "pass": true
+    },
+    {
+      "name": "strict diff whole pin",
+      "pass": true
+    },
+    {
+      "name": "strict forward seven hunks",
+      "pass": true
+    },
+    {
+      "name": "strict reverse seven hunks",
+      "pass": true
+    },
+    {
+      "name": "twenty replacement groups",
+      "pass": true
+    },
+    {
+      "name": "replacement separate_new_context",
+      "pass": true
+    },
+    {
+      "name": "replacement unchanged_old_context_binding",
+      "pass": true
+    },
+    {
+      "name": "replacement unchanged_old_call_binding",
+      "pass": true
+    },
+    {
+      "name": "replacement exact_identical_original_request_pin",
+      "pass": true
+    },
+    {
+      "name": "replacement current_whole_unknown_record_pin",
+      "pass": true
+    },
+    {
+      "name": "replacement current_unknown_packet",
+      "pass": true
+    },
+    {
+      "name": "replacement fixed_actual_metadata0",
+      "pass": true
+    },
+    {
+      "name": "replacement original_job",
+      "pass": true
+    },
+    {
+      "name": "replacement existing_fourfile_state_shape",
+      "pass": true
+    },
+    {
+      "name": "replacement fourfile_unknown_view_shape",
+      "pass": true
+    },
+    {
+      "name": "replacement scope_binding",
+      "pass": true
+    },
+    {
+      "name": "replacement current_original_unknown_schema",
+      "pass": true
+    },
+    {
+      "name": "replacement same_original_private_idempotency_key",
+      "pass": true
+    },
+    {
+      "name": "replacement exact_native_range",
+      "pass": true
+    },
+    {
+      "name": "replacement exact_original_extent",
+      "pass": true
+    },
+    {
+      "name": "replacement current_complete_file_extent",
+      "pass": true
+    },
+    {
+      "name": "replacement whole_file_expected_SHA_binding",
+      "pass": true
+    },
+    {
+      "name": "replacement whole_body_bytes",
+      "pass": true
+    },
+    {
+      "name": "replacement public_actual_extent",
+      "pass": true
+    },
+    {
+      "name": "replacement complete_file_not_partial_range",
+      "pass": true
+    },
+    {
+      "name": "ordered replacements whole candidate",
+      "pass": true
+    },
+    {
+      "name": "same fourteen function definitions",
+      "pass": true
+    },
+    {
+      "name": "definition gfNeed",
+      "pass": true
+    },
+    {
+      "name": "definition gfMetaEquals",
+      "pass": true
+    },
+    {
+      "name": "definition gfOriginalUnknownView",
+      "pass": true
+    },
+    {
+      "name": "definition gfState",
+      "pass": true
+    },
+    {
+      "name": "definition gfSave",
+      "pass": true
+    },
+    {
+      "name": "definition gfIntegerText",
+      "pass": true
+    },
+    {
+      "name": "definition gfInitializeOnlyAfterRootGO",
+      "pass": true
+    },
+    {
+      "name": "definition gfValidateRequest",
+      "pass": true
+    },
+    {
+      "name": "definition gfPrepareOne",
+      "pass": true
+    },
+    {
+      "name": "definition gfInvokePreparedOnce",
+      "pass": true
+    },
+    {
+      "name": "definition gfAcceptArchivedSDK",
+      "pass": true
+    },
+    {
+      "name": "definition gfCloseOriginalObserver",
+      "pass": true
+    },
+    {
+      "name": "definition gfReconcileSameGitArchiveReadOnly",
+      "pass": true
+    },
+    {
+      "name": "definition gfRun",
+      "pass": true
+    },
+    {
+      "name": "exact original request whole",
+      "pass": true
+    },
+    {
+      "name": "request matches old unknown",
+      "pass": true
+    },
+    {
+      "name": "unknown original whole",
+      "pass": true
+    },
+    {
+      "name": "SDK original whole",
+      "pass": true
+    },
+    {
+      "name": "SDK is error and no operation ID",
+      "pass": true
+    },
+    {
+      "name": "original arm request exact",
+      "pass": true
+    },
+    {
+      "name": "original context exact",
+      "pass": true
+    },
+    {
+      "name": "original called and timeout state",
+      "pass": true
+    },
+    {
+      "name": "original pause pending unchanged",
+      "pass": true
+    },
+    {
+      "name": "only first BODY started",
+      "pass": true
+    },
+    {
+      "name": "no new reconciliation context",
+      "pass": true
+    },
+    {
+      "name": "metadata whole pin",
+      "pass": true
+    },
+    {
+      "name": "metadata path version size SHA",
+      "pass": true
+    },
+    {
+      "name": "metadata permission owner singlelink",
+      "pass": true
+    },
+    {
+      "name": "exact same key",
+      "pass": true
+    },
+    {
+      "name": "exact readonly extent",
+      "pass": true
+    },
+    {
+      "name": "unauthorized template",
+      "pass": true
+    },
+    {
+      "name": "both admission branches explicit",
+      "pass": true
+    },
+    {
+      "name": "reference is not deployment proof",
+      "pass": true
+    },
+    {
+      "name": "no original store",
+      "pass": true
+    },
+    {
+      "name": "closed native dispatch set",
+      "pass": true
+    },
+    {
+      "name": "one admission marker",
+      "pass": true
+    },
+    {
+      "name": "SDK Git whole before parse",
+      "pass": true
+    },
+    {
+      "name": "old attempt remains UNKNOWN",
+      "pass": true
+    },
+    {
+      "name": "full file exact EOF and SHA",
+      "pass": true
+    },
+    {
+      "name": "whole payload before parsing native",
+      "pass": true
+    },
+    {
+      "name": "no continuation bodies",
+      "pass": true
+    },
+    {
+      "name": "syntax-only source compilation",
+      "pass": true
+    }
+  ],
+  "NativeCalls": 0,
+  "candidateFunctionsExecuted": 0,
+  "productTestCases": 0,
+  "originalContextChanged": false,
+  "newContextInitialized": false
+}

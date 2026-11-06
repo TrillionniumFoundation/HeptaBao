@@ -1,0 +1,24 @@
+{
+  "tree": "8af54eabace408bcabe6e3bba44aa8774d2e50d0",
+  "entries": [
+    {
+      "path": "boundary.public.json",
+      "blob": "5af3c83752ca2c2f559bbb85014776da57c2c5ee",
+      "bytes": 5029,
+      "sha256": "2b01c0fd7c66038cc689e0ea3a8f510dd1b975daa4ab22814dfff8625f90ca0e",
+      "whole": true
+    },
+    {
+      "path": "state.original.json",
+      "blob": "31512778a6d581f0c0b7adb0a2b5ce541dddb3cd",
+      "bytes": 145909,
+      "sha256": "e32707d66764d23d3140732b3fa1aeb276bb5b681597b1170a7df4827e5d9d74",
+      "whole": true
+    }
+  ],
+  "count": 2,
+  "bytes": 150938,
+  "whole": true,
+  "localDurableJournal": false,
+  "runtimeAuthorized": false
+}

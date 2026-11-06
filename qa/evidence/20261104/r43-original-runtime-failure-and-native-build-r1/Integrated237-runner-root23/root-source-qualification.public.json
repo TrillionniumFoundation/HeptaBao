@@ -1,0 +1,185 @@
+{
+  "schema": "heptabao.root.combined237-254-unbound-runner-source-review.v1",
+  "pass": true,
+  "packet": "9bdb3eb3c6aac221d51d14a4a8f3bcc24e75f7e6",
+  "proposal": {
+    "runner": {
+      "blob": "635d6345fd513121f51fb4dd135783b1e3be6b7e",
+      "bytes": 31885,
+      "sha256": "59bba99270e8c2d779aed91f3053a94c66120cdbd8c90f423f7efb253adfe32f"
+    },
+    "launcher": {
+      "blob": "117bee05cd8da2aad9aef1a4209de067ce1b72d8",
+      "bytes": 39538,
+      "sha256": "9a9cad94b1c7a9e349203684d131538bb0c15d9563a08d89ecfe2a80be97a116"
+    },
+    "groups": {
+      "blob": "bbc853c04329f1f102a9e2ffda692e4733aed052",
+      "bytes": 32163,
+      "sha256": "a3c126e1833c7d46eac8b30030d24d620540786bbe2b38d21ed9891ca42ccb38"
+    },
+    "runner_replacements": 18,
+    "runner_hunks": 11,
+    "launcher_replacements": 11,
+    "launcher_hunks": 7
+  },
+  "authorChecks": 85,
+  "rootChecks": [
+    {
+      "name": "whole_original_runner_exact",
+      "ok": true
+    },
+    {
+      "name": "whole_original_launcher_exact",
+      "ok": true
+    },
+    {
+      "name": "input_objects_are_actual_packet_sources",
+      "ok": true
+    },
+    {
+      "name": "root_inventory_ordinals_contiguous",
+      "ok": true
+    },
+    {
+      "name": "input_original254_identity_profile_and_order",
+      "ok": true
+    },
+    {
+      "name": "only_eight_explicit_auxiliary_metadata_differences",
+      "ok": true
+    },
+    {
+      "name": "full_execution_table_is_exact_input",
+      "ok": true
+    },
+    {
+      "name": "input_original_C_groups_exact",
+      "ok": true
+    },
+    {
+      "name": "canonical_HA_features_whole",
+      "ok": true
+    },
+    {
+      "name": "canonical_server_features_whole",
+      "ok": true
+    },
+    {
+      "name": "runner_strict_forward_reverse",
+      "ok": true
+    },
+    {
+      "name": "runner_artifact_pin",
+      "ok": true
+    },
+    {
+      "name": "launcher_strict_forward_reverse",
+      "ok": true
+    },
+    {
+      "name": "launcher_artifact_pin",
+      "ok": true
+    },
+    {
+      "name": "runner_release_nonempty_original_whole",
+      "ok": true
+    },
+    {
+      "name": "runner_ordinary_compile_nonempty_original_whole",
+      "ok": true
+    },
+    {
+      "name": "runner_exact_list_test_loop_nonempty_original_whole",
+      "ok": true
+    },
+    {
+      "name": "launcher_shared_target_fences_nonempty_original_whole",
+      "ok": true
+    },
+    {
+      "name": "launcher_same_PID_argv_nonempty_original_whole",
+      "ok": true
+    },
+    {
+      "name": "three_crate_profiles_not_mislabeled",
+      "ok": true
+    },
+    {
+      "name": "no_unqualified_combined_inputs_bound",
+      "ok": true
+    },
+    {
+      "name": "all_time_limits_retained",
+      "ok": true
+    },
+    {
+      "name": "groups_bound_only_to_exact_fixed_content",
+      "ok": true
+    }
+  ],
+  "counts": {
+    "unique": 237,
+    "profile_entries": 254,
+    "families": 18,
+    "original_c": {
+      "unique": 149,
+      "entries": 166,
+      "families": 4
+    },
+    "snapshot": {
+      "unique": 27,
+      "entries": 27,
+      "families": 5,
+      "low_level": 23,
+      "real_service_audit_regressions": 4
+    },
+    "normal": {
+      "unique": 61,
+      "entries": 61,
+      "families": 9
+    },
+    "pairwise_intersections": 0,
+    "identity_key": [
+      "crate",
+      "fully_qualified_test_name"
+    ],
+    "profile_duplicates": 17,
+    "profile_duplicate_origin": "The original C native17 exact names run once with file features and once with default features."
+  },
+  "profiles": {
+    "heptabao-server/file": 17,
+    "heptabao-server/default": 220,
+    "heptabao-ha-service/ha-native-v6-peer-ingress": 17
+  },
+  "budgets": {
+    "outer_seconds": 12000,
+    "normal_release_build_seconds": 1800,
+    "all_compile_checks_shared_seconds": 3600,
+    "compile_deadline_reset": false,
+    "ordinary_no_default_check_count": 1,
+    "server_libtest_compile_count": 2,
+    "additional_ha_libtest_compile_count": 1,
+    "each_exact_listing_max_seconds": 30,
+    "each_runtime_family_shared_seconds": 600,
+    "runtime_family_count": 18,
+    "all_families_clipped_to_original_outer": true,
+    "cleanup_term_seconds": 5,
+    "cleanup_kill_seconds": 5
+  },
+  "readiness": false,
+  "combinedCommit": null,
+  "combinedTree": null,
+  "NativeCalls": 0,
+  "PythonCompilation": false,
+  "RustCompilation": false,
+  "actualTests": 0,
+  "actualLibtestListingObserved": false,
+  "requiredNext": [
+    "All23 actual formatted file bodies and independently bound49-overlay candidate.",
+    "Fresh exact source stage, controls publication and actual receipt binding.",
+    "Remeasure final bound launcher/runner under40000 and full carrier under262144.",
+    "Exclusive shared-target window and separate exact BUILD GO."
+  ],
+  "rootReviewHistory": "Two pure root comparisons detected inventory schema differences. The final check verifies contiguous root ordinals, exact254 crate/profile/name order and all source pins, with only the explicitly reviewed eight auxiliary family/sourceEvidence labels mapped. The eight still refer to frozen unformatted test sources awaiting actual formatted output. No candidate or Native state changed."
+}

@@ -1,0 +1,108 @@
+{
+  "schema": "heptabao.root.025b-original-BUILD-actual-binding-qualification.v1",
+  "pass": true,
+  "packet": "01f0b72fc115ee76371ffddc504c8970575e2e34",
+  "checks": [
+    {
+      "name": "original4322_binder_whole_unchanged",
+      "ok": true
+    },
+    {
+      "name": "original_template_whole_unchanged",
+      "ok": true
+    },
+    {
+      "name": "correct_native_binding_helper",
+      "ok": true
+    },
+    {
+      "name": "body_rows_from_actual_closed_context",
+      "ok": true
+    },
+    {
+      "name": "all_four_actual_file_bytes_exact",
+      "ok": true
+    },
+    {
+      "name": "request_exact_original_derivation",
+      "ok": true
+    },
+    {
+      "name": "journal_exact_original_derivation",
+      "ok": true
+    },
+    {
+      "name": "strict_two_hunks_forward_reverse",
+      "ok": true
+    },
+    {
+      "name": "diff_is_exact_frozen_binder_output",
+      "ok": true
+    },
+    {
+      "name": "typed_native_identity_exact",
+      "ok": true
+    },
+    {
+      "name": "only_actual_receipt_argument_bound",
+      "ok": true
+    },
+    {
+      "name": "five_journal_literal_groups_only",
+      "ok": true
+    },
+    {
+      "name": "old149_166_and_time_caps_unchanged",
+      "ok": true
+    },
+    {
+      "name": "no_process_or_compiler_started_by_binder",
+      "ok": true
+    }
+  ],
+  "bodyQualification": {
+    "blob": "7e8aa73f35024baf7b351728d85027802b49e683",
+    "bytes": 6456,
+    "sha256": "25ec8052e3b7235ebddde2a82896fbb79d13564d4672786dfd6c312827de2e62"
+  },
+  "request": {
+    "blob": "dab29b2b82ae23e24c5f78865553c140e9bab5de",
+    "bytes": 859,
+    "sha256": "bd5ffba6dce783ee4af25654a246a144ed8edc1c86111ad62460125d9100da53"
+  },
+  "journal": {
+    "blob": "bcb88527395732519b1db1ddc59312b54059d93e",
+    "bytes": 19045,
+    "sha256": "95f5a682db5695a6b95e7268c33c350bc2f7cb11fea660e971c08cc984af10c7"
+  },
+  "typedBinding": {
+    "sha256": "527c6f94dadb62d7f4ff1168adecc80f2b1af2feef6891e28a3bcb2b1673388d",
+    "native_fingerprint": "5943748293339865815",
+    "canonicalBytes": 749
+  },
+  "slot": "jwt_pki_025b05a3_build149_gitfirst_r2",
+  "sourceCommit": "025b05a340de841b8161c1120344e86eae30eb97",
+  "sourceTree": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+  "target": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3",
+  "targetLockMeaning": "Fresh nonblocking exclusive admission probe only; closed before same-PID exec, not a lifetime Cargo lock.",
+  "budgets": {
+    "release": 1800,
+    "compileShared": 3600,
+    "compileCommands": 3,
+    "listingMax": 30,
+    "familyShared": 600,
+    "families": 4,
+    "outer": 12000,
+    "cleanupTerm": 5,
+    "cleanupKill": 5,
+    "deadlineReset": false,
+    "publisherOuter": 60,
+    "publisherStdin": 262144,
+    "publisherPayloadActual": 118531
+  },
+  "selectedUnique": 149,
+  "profileInstances": 166,
+  "actualBuildSubmitted": false,
+  "requiresExclusiveRootTargetWindow": true,
+  "productionAuthority": false
+}

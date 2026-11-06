@@ -1,0 +1,50 @@
+{
+  "binderCompleted": true,
+  "strictForwardReverse": true,
+  "replacements": [
+    [
+      "jwt_pki_025b05a3_build_controls_inert_gitfirst_r2",
+      "jwt_pki_025b05a3_build149_gitfirst_r2"
+    ],
+    [
+      "4ef00cfaaeb93943db9aa93d7f3a864db4ec12ea",
+      "dab29b2b82ae23e24c5f78865553c140e9bab5de"
+    ],
+    [
+      "124154",
+      "859"
+    ],
+    [
+      "4730410592ed61808d13341ef5dd4f22f4317ff2947c27697f258b9fea56fb07",
+      "bd5ffba6dce783ee4af25654a246a144ed8edc1c86111ad62460125d9100da53"
+    ],
+    [
+      "heptabao-native-jwt-pki-025b05a3-controls-observe-r2-",
+      "heptabao-native-jwt-pki-025b05a3-build149-observe-r2-"
+    ]
+  ],
+  "actualContentPins": [
+    {
+      "blob": "f8b36c8adccb493dfc6aa507856150ce8a6a764d",
+      "bytes": 30397,
+      "sha256": "d76b3d392c20bf4a7bbb7e8d8ea69abdfe3bb11f71a35075ba26ab948e778a50"
+    },
+    {
+      "blob": "419a805247448d46180890fb9cdd69c2832d4811",
+      "bytes": 38565,
+      "sha256": "efec176c08804a91adfd0160cdc092fad879d64ff594debe2fffe8008488d00c"
+    },
+    {
+      "blob": "5d563b1c7a1b7070395f6d8a03b512ddb019fae0",
+      "bytes": 19789,
+      "sha256": "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869"
+    },
+    {
+      "blob": "9fff12f23126ba08a5f4a3e137faefcdf689c1af",
+      "bytes": 1854,
+      "sha256": "30cd7315341a685f3bf0b95b3938dd12e717d880ded7161d462f14e75c0eac61"
+    }
+  ],
+  "Native": 0,
+  "Cargo": 0
+}

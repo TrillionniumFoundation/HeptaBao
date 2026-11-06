@@ -1,0 +1,30 @@
+{
+  "before": "journal.body4.original.js",
+  "source": "journal.remaining3.after.js",
+  "diff": "journal.remaining3.strict.diff",
+  "replacements": "replacements.public.json",
+  "pure": "pure.original.js",
+  "archive": "archive.original.js",
+  "oldStateRaw": "state.original-unknown.original.json",
+  "recStateRaw": "state.body0-closed.original.json",
+  "infoNativeRaws": [
+    "info0.native.original.json",
+    "info1.native.original.json",
+    "info2.native.original.json",
+    "info3.native.original.json"
+  ],
+  "body0Raw": "body0.actual.py",
+  "body0NativeRaw": "body0.native.original.json",
+  "body0ReleaseRaw": "body0.RELEASE.original.json",
+  "requestRaws": [
+    "body0.EXACT.request.json",
+    "body1.EXACT.request.json",
+    "body2.EXACT.request.json",
+    "body3.EXACT.request.json"
+  ],
+  "goShape": "ROOT-GO-SHAPE.UNAUTHORIZED.json",
+  "plan": "PLAN.public.json",
+  "verifier": "VERIFY.source.js",
+  "diffHelper": "strict-diff.original.js",
+  "invocation": "Resolve file fields, then pure + strictDiffHelper + verifier; call verifyRemainingThreeSource(input). Candidate init/state/validator run only with private Map store and no-tools stub. Test-only qualification is explicitly not root authority."
+}

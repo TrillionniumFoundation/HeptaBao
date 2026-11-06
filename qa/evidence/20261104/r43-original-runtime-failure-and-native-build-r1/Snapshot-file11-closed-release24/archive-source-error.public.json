@@ -1,0 +1,7 @@
+{
+  "phase": "pure V8 construction before any execution",
+  "error": "SyntaxError: missing ) after argument list",
+  "nativeCalled": false,
+  "archiveMutationCalled": false,
+  "correction": "Close the observer-reference map expression; original Runtime state and all raw bytes unchanged."
+}

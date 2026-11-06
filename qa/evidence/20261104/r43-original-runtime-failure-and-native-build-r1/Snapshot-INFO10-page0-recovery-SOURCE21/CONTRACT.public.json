@@ -1,0 +1,91 @@
+{
+  "schema": "heptabao.snapshot-formatted23.info10-immutable-page-recovery.source.r1",
+  "status": "SOURCE_ONLY_REQUIRES_NEW_EXACT_ROOT_GO",
+  "base": {
+    "blob": "df89be7651e6d437f7d777a057c9b070a917bbb5",
+    "bytes": 72908,
+    "sha256": "7986493990bbdff66dd935cbf8405c21db4ea5c3ea662385d46c0a9777788125"
+  },
+  "candidate": {
+    "blob": "a154e8b3e4bbce818471dd10fe434e4ded570c8b",
+    "bytes": 79062,
+    "sha256": "8ad44f98b72e37ae7037451eada7cf9c5616609ec5123f7bc8cef3b4fcf4f9d9"
+  },
+  "strictHunks": 3,
+  "onlyAddedEntry": "gfPrepareClosedInfo10Page0Recovery",
+  "preservedOldDefinitionsExcept": [
+    "gfAcceptArchivedSDK: extra recovery-specific single-page EOF guard",
+    "gfRun: one entry dispatch"
+  ],
+  "originalSlot": "snapshot_2379_formatted23_readonly_gitfirst_r1",
+  "initializeForbidden": true,
+  "operation": {
+    "id": "37a07e380c8f74019d9b6c20c86cfa339d409e3b6d01b42b3a4230cb767777dc",
+    "tool": "file_info",
+    "alreadyCompletedInactive": true
+  },
+  "originalFailedCallKey": "sf23-r1-f10-info-p0",
+  "newRecoveryCallKey": "sf23-r1-f10-info-p0-recovery1",
+  "request": {
+    "blob": "916332b53c58b018404b00324cb5aa1588975b52",
+    "bytes": 121,
+    "sha256": "17f7fcfad72f016c11d8d7b0be379eb4f2043b20b9c33cc4698bb78d74173edd"
+  },
+  "failedSDK": {
+    "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+    "bytes": 248,
+    "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+  },
+  "release": {
+    "path": "RELEASE.public.json",
+    "blob": "549352ea6a594c036d13fe634e45d8413fec6271",
+    "bytes": 2951,
+    "sha256": "8228191bd99f20444a37b4130c679af9009afe5ef749fe8adbf3bc03fccb3451",
+    "whole": true
+  },
+  "releaseTree": "d3c0538a542a856595ec6b4c0d1fe6eb748b59dc",
+  "scope": {
+    "operation_result_calls": 1,
+    "offset": 0,
+    "limit": 8192,
+    "maximumPayloadBytes": 1048576,
+    "requireSinglePageEOF": true,
+    "newNativeFuture": 0,
+    "operation_start": 0,
+    "operation_status": 0,
+    "process_start": 0,
+    "sourceFileReads": 0,
+    "bodyReplays": 0,
+    "newIdempotencyKeys": 0
+  },
+  "preservation": {
+    "oldCalledRemainsTrue": true,
+    "oldFailedRowWholeUnchanged": true,
+    "oldSDKWholeUnchanged": true,
+    "oldUnknownNotReclassified": true,
+    "originalTableGoUnchanged": true,
+    "allExistingCountersUnchangedBeforeInvocation": true
+  },
+  "order": [
+    "Whole new root GO and match actual paused boundary",
+    "Prepare once: retain old pending while external request/intent/armed archive is unclosed",
+    "Only after arm whole, retain old row and point pending at the fresh recovery call",
+    "Return to model boundary",
+    "Original gfRun invoke once; original SDK external whole before accept",
+    "Original accept requires this single recovery page to finish original payload",
+    "Original close_observer external whole then exact INFO gates",
+    "Only after INFO closes, original 25ea12 table may continue if root lane is active"
+  ],
+  "noNewBusinessAuthorization": true,
+  "realNativeCallsDuringPreparation": 0,
+  "pureVerification": {
+    "pass": true,
+    "checks": 36,
+    "isolatedArchiveMock": true,
+    "noCandidateNativeExecution": true
+  },
+  "preexistingErrorPreserved": {
+    "localPackageGuard": "release_boundary array-vs-bool, before create; in release20",
+    "sourceVerifier": "initial function-span checker attributed inserted comment to gfValidateRequest; only checker corrected, candidate unchanged"
+  }
+}

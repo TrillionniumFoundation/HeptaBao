@@ -1,0 +1,30 @@
+{
+  "schema": "heptabao.025b-controls-remaining3-qualified-predecessor-binding.v1",
+  "authorization": "SOURCE_ONLY_NOT_GO",
+  "sourcePacket": "8b35912ae434197d5d1199682252a752975bf73c",
+  "candidate": {
+    "blob": "54d5a34812a42362900256bb85de60c3efac2563",
+    "bytes": 40045,
+    "sha256": "f881fb1d29d340b4cf00145497ce9ce83d7e0be87b15a514afc73cdf3c2d4cee"
+  },
+  "originalTemplate": {
+    "blob": "72f82c001f23391e62c611cfab3578063d9e17b1",
+    "bytes": 2444,
+    "sha256": "9ba8d7d615689bf1aa6ff9688a6515772d846c87b749b6a33f93d89eebe5c49c"
+  },
+  "boundTemplate": {
+    "blob": "b98d22e32640a665c536442c76d56591b47dc937",
+    "bytes": 2601,
+    "sha256": "d5e3e4624f43ce227fb8c42d29b3eed98605c4e06d91b0ed319e6f08b159b698"
+  },
+  "onlyChangedField": "predecessor_root_qualification",
+  "actualRootQualification": {
+    "blob": "eb9fca7b2e01729066ddbb14e05699d901a7520c",
+    "bytes": 3481,
+    "sha256": "b8f54ac90853d5fb40504ff0f5465c68529d26512e6794dba3b980c8bc6f9a1a"
+  },
+  "sourceChanged": false,
+  "originalRequestsChanged": false,
+  "newContextInitialized": false,
+  "NativeCalls": 0
+}

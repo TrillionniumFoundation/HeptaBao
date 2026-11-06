@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r43-checkpoint-root-current",
+  "records": [
+    {
+      "name": "README.md",
+      "blob": "64e9c943ced518fe73203fb4149d988ab2641782",
+      "bytes": 7810,
+      "sha256": "ef921a1b93b6c2abc5e51fd260787c5d4a1bbf4855803aede15e756b60471f3b"
+    },
+    {
+      "name": "STATE.public.json",
+      "blob": "38b41d26fba1e61fca4c180aabf5efeaa6c855c3",
+      "bytes": 14726,
+      "sha256": "b163627dc89976bcbc7d03a09114f6f744226c0634ab993b520d47f826022958"
+    },
+    {
+      "name": "WHOLE-PACKET-INDEX.public.json",
+      "blob": "fca7fde58d5f1ca3fd73eed5b0a1a0743e370b8c",
+      "bytes": 266084,
+      "sha256": "af2a42a756513fe94b788ddae73d121ff9becd855122ef59b35c53fd846a7354"
+    },
+    {
+      "name": "ROOT-INDEX-VERIFIER.js",
+      "blob": "aae1fe5f8c3e705666da96bffbb7dd00cff91694",
+      "bytes": 1125,
+      "sha256": "6591d2f0a6b2d42bbcbfc1216edbb7ed12f0206b9160a0d19d0b0246bae9751e"
+    },
+    {
+      "name": "ROOT-INDEX-HELPERS.js",
+      "blob": "c8879568f52b9a7d9de00788386469e60402f123",
+      "bytes": 8071,
+      "sha256": "ea8127e881c3d9a8405c6c2db04bf129c4da87f5bf21a3c0c3a77eb2f2ae7a20"
+    },
+    {
+      "name": "ROOT-INDEX-QUALIFICATION.public.json",
+      "blob": "59aeb208daecd71d13c3c4373d5812514eac10aa",
+      "bytes": 7981,
+      "sha256": "99529a14a78bc00d45a292f43478ffee91ca6c720721254b22b31acd94c4e04d"
+    },
+    {
+      "name": "PARENT-REF.original.sdk.json",
+      "blob": "71fc44f11c66749afe6f951f08202dddaae16ab1",
+      "bytes": 1637,
+      "sha256": "43116eb16832909457753e56422dfcc3e65b843f373d4c07288fb14fdd398dc8"
+    }
+  ],
+  "expected_data_tree": "bb44f135e78425cbe0c7e60bf7f646fc2e8518f9",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

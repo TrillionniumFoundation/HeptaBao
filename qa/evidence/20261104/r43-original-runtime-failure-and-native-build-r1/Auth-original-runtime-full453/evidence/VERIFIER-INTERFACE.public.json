@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.original-evidence-verifier-interface.r1",
+  "runtime": "pure V8 only",
+  "helper": {
+    "blob": "b6890e8b7217c546bec073dcb04988fc37652721"
+  },
+  "function": "verifyOriginalRuntimeEvidence(input)",
+  "input": {
+    "state": "evidence/state.final.original.json",
+    "calls": "calls-path-map reconstruct key -> exact strings requestRaw/intentRaw/armedRaw/sdkRaw/nativeRaw",
+    "payloads": "observers-path-map reconstruct operation ID -> exact payloadRaw/nativeRaw",
+    "authorityRaw": "core/authority.original.json",
+    "stdoutRaw": "core/stdout.original.json",
+    "stderrRaw": "core/stderr.original.txt"
+  },
+  "actualInvocationCount": 1,
+  "sourceReexecutions": 0,
+  "NativeCalls": 0,
+  "productTests": 0,
+  "scope": "Original81call/10observer/60page actual-chain and existing-known-failure checks; not product success."
+}

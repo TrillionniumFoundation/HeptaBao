@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r43-X230-known-official271-input-root-reference-r1",
+  "records": [
+    {
+      "name": "root-source-reference.public.json",
+      "blob": "7d6c498def2f453190569a135965d9867a741081",
+      "bytes": 3760,
+      "sha256": "ab58c3308e69e7e14f45af3a394bfe31a43c32ae2ad45a1f72c0da6a5e8d61f9"
+    },
+    {
+      "name": "original-root342.public.json",
+      "blob": "31a05798ea870d71c4d08092ad53e895e275c11f",
+      "bytes": 22370,
+      "sha256": "bd98852e1a4f7f22ba7a9467f6b89bcbede8e5f226743863463b887246178301"
+    },
+    {
+      "name": "original-full34-wrapper.py",
+      "blob": "bf3c0a43853e88eaf8b7dfc0b7f92b5420f5aaf1",
+      "bytes": 10142,
+      "sha256": "73f0ff5583a9323c91625a37afe3502de8f766735ff74baaa66b08f9b922b2b5"
+    },
+    {
+      "name": "original-full34-final-qualification.public.json",
+      "blob": "9fd3ec40974a0d7fc2eed14983fd8b621b6bc214",
+      "bytes": 4870,
+      "sha256": "76f7eef134bbb32d862417fd4e0834d67cb4eb5015c72bcd287b20565134c486"
+    }
+  ],
+  "expected_data_tree": "476dc708a8da8891b78dd9d7202636c7e75468a2",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

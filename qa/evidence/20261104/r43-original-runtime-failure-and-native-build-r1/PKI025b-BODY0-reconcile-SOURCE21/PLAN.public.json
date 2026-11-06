@@ -1,0 +1,159 @@
+{
+  "schema": "heptabao.025b.controls.body0-admission-reconciliation-source.v1",
+  "authorization": "SOURCE_ONLY_NOT_GO",
+  "no_runtime_dispatch_in_this_packet": true,
+  "candidate": {
+    "blob": "c3c1cad15dad4e714c19e112dacdea929a1d9650",
+    "bytes": 23301,
+    "sha256": "24df845ef46bc77a66f7181c14bb4dc8c6419dab6cac46111cea23db86eb1c69"
+  },
+  "base": {
+    "blob": "2708256540fc7476705c9bbb95f9f8b9e0637e49",
+    "bytes": 23211,
+    "sha256": "dde3323415dd2490da5825bf5d9685edaaf0ee6acd7b243a512e369bd2fce5af",
+    "tree": "d2f19cf39aefdc83407b7fa18424b87b3c631916"
+  },
+  "sourceDiff": {
+    "blob": "6560b636c1afd321bc7df845370d700ceea25bd1",
+    "bytes": 8361,
+    "sha256": "058391a8f9eabaee0a67ceeeeb7fcb419df977d6db330ca9f832d787d8b7d319"
+  },
+  "replacements": 20,
+  "strictHunks": 7,
+  "separate_context": "jwt_pki_025b05a3_controls_body0_admission_reconcile_r1",
+  "original_context": "jwt_pki_025b05a3_build_controls_inert_gitfirst_r2",
+  "original_unknown": {
+    "tree": "4169bee13a26dafcce26cf156e490d03c9c91d1a",
+    "state": {
+      "blob": "05d4be11937d3beca1fe0baa9f99df0fa761cb1b",
+      "bytes": 2322,
+      "sha256": "ff1276bf4f1fa41b64120a84b7e4688ca009992ad0f56d26202536aefa731d46"
+    },
+    "sdk": {
+      "blob": "f181c1e93e7b64c402b332fd29b23d0141762082",
+      "bytes": 247,
+      "sha256": "20bc68d840783af5cc8e791289d5ac77c6941d45f79768c397c95e629784e3fa"
+    },
+    "original_call": "jwt-pki-025b05a3-controls-r2-published-body0-admit",
+    "original_arm_tree": "fd3b5b35fd14a96fa6222f0c03ea0f7f8855a200"
+  },
+  "exact_request": {
+    "blob": "b9e3c37da6a88ed78fe36893d8bf373e5213fdff",
+    "bytes": 417,
+    "sha256": "ba148cdadb1d9e0cb1147107cbe5be442c1b15873b4a1f8aec23ece70faba8be"
+  },
+  "exact_typed_request": {
+    "idempotency_key": "heptabao-native-jwt-pki-025b05a3-controls-observe-r2-published-body0",
+    "operation": {
+      "tool": "binary_read",
+      "arguments": {
+        "host": "rog",
+        "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/native_jwt_build.py",
+        "expected_version": "66306:33212340:30397:1793965550402189411:1793965550403278461",
+        "offset": 0,
+        "limit": 30397
+      }
+    }
+  },
+  "original_metadata0": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/native_jwt_build.py",
+    "bytes": 30397,
+    "sha256": "d76b3d392c20bf4a7bbb7e8d8ea69abdfe3bb11f71a35075ba26ab948e778a50",
+    "version": "66306:33212340:30397:1793965550402189411:1793965550403278461",
+    "infoOperation": "e0b3516213ca2ce013bfc0288d2f641511f811b71f8ed4e08db682938e13860a",
+    "infoNative": {
+      "blob": "9cfffd12c038026416fcae6370c78cff0c17dd46",
+      "bytes": 466,
+      "sha256": "81fbf8bffb465a57091b6ca15842f92ac5f9536b3ede652ea7a94c4ec193f6d4"
+    }
+  },
+  "metadata4_packet": "e8412710d414a5dac4e53c1f33b8dd4dade2cb35",
+  "public_reference": {
+    "tree": "8e548a322b7585fd0e7f514f1831a7f749fedc77",
+    "report": {
+      "blob": "c08c41228c8a88dc1d660ee44e928aa3a1b97484",
+      "bytes": 7389,
+      "sha256": "7e7844b31acc9bb56bbe5ebb6b61f1d22ebd84d6faf1e4ab1ecd509c3eb1644c"
+    },
+    "deployed_revision_attestation": false
+  },
+  "admission_semantics": {
+    "lookup_only": false,
+    "may_create_first_admission_if_no_binding": true,
+    "identical_key_and_typed_arguments": true,
+    "maximum_additional_operation_start_calls": 1,
+    "existing_binding": "The current exposed contract says the same key/typed arguments return an existing operation_id without redispatch; preserve the actual reused value.",
+    "absent_binding": "The same entry point may admit this exact public readonly request for the first time.",
+    "reused_true": "Record an existing-binding receipt only. This does not recover the missing original SDK and does not erase the original transport UNKNOWN.",
+    "reused_false": "Record a new-admission receipt only. It does not prove that the original call never occurred or that its future disappeared.",
+    "no_original_unknown_reclassification": true,
+    "no_old_context_reset": true,
+    "error_identity": "The generic f181 timeout bytes are not an operation identity. Identity is bound by this exact original request, original armed tree, call key, slot, and matching current paused state."
+  },
+  "permitted_tools": [
+    "one operation_start with the exact original BODY0 key and typed arguments",
+    "operation_status only for the returned ID",
+    "operation_result only for that returned closed ID"
+  ],
+  "prohibited": [
+    "process_start",
+    "metadata refresh",
+    "new key/path/version/offset/limit",
+    "BODY1, BODY2, or BODY3 admission",
+    "operation_cancel",
+    "private ledger lookup",
+    "original context mutation",
+    "automatic retry",
+    "local executor"
+  ],
+  "one_native_call_and_one_binding_at_a_time": true,
+  "original_possible_future_not_claimed_closed": true,
+  "request_and_arm_external_whole_before_single_invoke": true,
+  "complete_original_SDK_external_whole_before_isError_or_parse": true,
+  "status_requires": {
+    "async_state": "completed",
+    "owned_future_active": false,
+    "result_state": "stored_observed",
+    "payload_available": true
+  },
+  "immutable_pages": {
+    "bytes": 16384,
+    "payload_bytes_maximum": 1048576,
+    "contiguous_from_zero": true,
+    "complete_payload_sha256_and_eof_required": true
+  },
+  "original_binary_result": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/native_jwt_build.py",
+    "bytes": 30397,
+    "sha256": "d76b3d392c20bf4a7bbb7e8d8ea69abdfe3bb11f71a35075ba26ab948e778a50",
+    "version": "66306:33212340:30397:1793965550402189411:1793965550403278461",
+    "infoOperation": "e0b3516213ca2ce013bfc0288d2f641511f811b71f8ed4e08db682938e13860a",
+    "infoNative": {
+      "blob": "9cfffd12c038026416fcae6370c78cff0c17dd46",
+      "bytes": 466,
+      "sha256": "81fbf8bffb465a57091b6ca15842f92ac5f9536b3ede652ea7a94c4ec193f6d4"
+    },
+    "offset": 0,
+    "limit": 30397,
+    "next_offset": 30397,
+    "eof": true,
+    "chunk_sha256": "d76b3d392c20bf4a7bbb7e8d8ea69abdfe3bb11f71a35075ba26ab948e778a50"
+  },
+  "final_output": "Only one complete 30,397-byte body0 with exact metadata-bound whole SHA, original payload, returned-ID closure and both attempt histories. The other three bodies remain unsubmitted.",
+  "unknown_handling": "Any second admission error/missing ACK stops this context. Later Git, identity, status or page errors also stop; no automatic re-admission, original-slot reset, key change, or absence inference.",
+  "archive_failure": "Only read the original expected Git tree/blob for reconciliation; no repeated mutation.",
+  "prerequisites": [
+    "A separate exact root GO with lane grant",
+    "Whole original request, UNKNOWN and timeout SDK",
+    "Unchanged original paused context; cache loss requires explicit restoration, not fresh reset"
+  ],
+  "downstream": "No automatic promotion of the original paused slot. After this scope closes, report the new body/closure for root disposition of the remaining existing three requests and eventual BUILD.",
+  "source_validation": {
+    "kind": "pure V8 byte/source checks and syntax-only compilation",
+    "candidate_functions_executed": 0,
+    "Native_calls": 0,
+    "Git_mutations_before_packet": 0,
+    "product_test_cases": 0,
+    "checks": 70
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "kind": "operation_result",
+  "requestRaw": "{\n  \"operation_id\": \"37a07e380c8f74019d9b6c20c86cfa339d409e3b6d01b42b3a4230cb767777dc\",\n  \"offset\": 0,\n  \"limit\": 8192\n}\n",
+  "requestPin": {
+    "blob": "916332b53c58b018404b00324cb5aa1588975b52",
+    "bytes": 121,
+    "sha256": "17f7fcfad72f016c11d8d7b0be379eb4f2043b20b9c33cc4698bb78d74173edd"
+  },
+  "phase": "native_interpretation_refused",
+  "called": true,
+  "armed": {
+    "tree": "3b7bdb2a9d20513b808603faf17b75466a4b5aba",
+    "entries": [
+      {
+        "path": "armed.json",
+        "blob": "261f15341968f825a5dcf8a439b979530b27e338",
+        "bytes": 910,
+        "sha256": "320f002b139c6cb520c2baef5096178143da92b17d96694b55096ac3746380b6",
+        "whole": true
+      },
+      {
+        "path": "intent.json",
+        "blob": "4a340424ddaec7f60ddfacdc427f2d888f610530",
+        "bytes": 773,
+        "sha256": "23bda7b51300f7a9429cf12734879af9acd68895de2d80859dab0f55d107a5f4",
+        "whole": true
+      },
+      {
+        "path": "request.json",
+        "blob": "916332b53c58b018404b00324cb5aa1588975b52",
+        "bytes": 121,
+        "sha256": "17f7fcfad72f016c11d8d7b0be379eb4f2043b20b9c33cc4698bb78d74173edd",
+        "whole": true
+      }
+    ],
+    "count": 3,
+    "bytes": 1804,
+    "whole": true,
+    "localDurableJournal": false,
+    "runtimeAuthorized": false
+  },
+  "sdkPin": {
+    "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+    "bytes": 248,
+    "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+  },
+  "sdkArchive": {
+    "tree": "e675db61e07e6dfbb6d7f12b44e0f33c3fc4d6bc",
+    "entries": [
+      {
+        "path": "original.sdk.json",
+        "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+        "bytes": 248,
+        "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173",
+        "whole": true
+      }
+    ],
+    "count": 1,
+    "bytes": 248,
+    "whole": true,
+    "localDurableJournal": false,
+    "runtimeAuthorized": false
+  },
+  "interpretationFailure": "Error: native_tool_error_preserved_stop"
+}

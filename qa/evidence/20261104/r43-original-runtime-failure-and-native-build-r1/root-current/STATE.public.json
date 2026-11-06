@@ -1,0 +1,311 @@
+{
+  "schema": "heptabao.r43-explicit-gates-and-current-state.v1",
+  "as_of_UTC": "2026-11-06 13:46:22 UTC",
+  "previous_validation_commit": "b1aab9285605544e50bf8ee332007dfa618008a6",
+  "prefix": "qa/evidence/20261104/r43-original-runtime-failure-and-native-build-r1",
+  "task_continues": true,
+  "full_OpenBao_2_7_1_replacement": false,
+  "production_cutover": false,
+  "all_current_clients_and_backup_paths_migrated": false,
+  "legacy_cleanup": false,
+  "qualified_product_baseline": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "qualified_prior_scopes": {
+      "Mac_normal": 61,
+      "ROG_normal": 61,
+      "Mac_KV2_full34": 31,
+      "X230_KV2_full34": 31,
+      "real_Mac_ROG_Pocket4_HA": 98,
+      "independent_cold_restart": 12,
+      "X230_comparison": {
+        "profiles": 69,
+        "numeric_status_exact": 67,
+        "normalized_PKI_cases": 2
+      }
+    },
+    "no_qualification_transfer_to_unbuilt_JWT_candidate": true
+  },
+  "prior_real_LAN_scope": "Mac192.168.0.8/ROG.10/Pocket4.9 real-process SIGKILL, election, ReadIndex, quorum loss, durable cold restart98+12; not physical power removal; no transfer of qualification to new uncompiled source.",
+  "AuthBus": {
+    "original_job": "mac/1a1b0e85206-fc05-73e1",
+    "original_result": "failed",
+    "exit_code": 1,
+    "timed_out": false,
+    "authority": {
+      "blob": "da3a5557ac8b536673404d7ad3e3fa6ea39921c2",
+      "bytes": 732,
+      "sha256": "c016f0392366b7b6b328f4be0dfd48915d061bbb9c78081cfb41b5339d732b8d"
+    },
+    "stdout": {
+      "blob": "3d43fbce75a887e337dbe9500e86447727714cf6",
+      "bytes": 136193,
+      "sha256": "5dfef2c34195c7b24c8f54c23904291fb2017858a5ce9ec60f646a724d4634d5"
+    },
+    "original_calls": 81,
+    "original_observers": 10,
+    "immutable_pages": 60,
+    "full_original_packet": "4a3bafecbc966aed7c6b14538c1403a1076598dd",
+    "root_qualification": {
+      "blob": "1208fbe37f61e01e7324f8bef1b6fc6db9f5b4a5",
+      "bytes": 32162,
+      "sha256": "ea6db23190b816f88c4b7a88e66079bb01cccd6e5abb7b0a435285e89f7e0497"
+    },
+    "qualification_scope": "Original failed evidence chain and Native observer closure only; no product success.",
+    "error_type": "ManagerRefused",
+    "error_code": "typed_launchctl_integer",
+    "elapsed_seconds": 1.498569583054632,
+    "exact_offending_field_and_value": null,
+    "source_parser_note": "Current original parser already accepts last exit code exactly '78: EX_CONFIG'. Do not infer the observed value from the error code.",
+    "current_before_capture_complete": true,
+    "private_capsule_body_exported": false,
+    "business_phases": 0,
+    "control_HTTP_constructed": false,
+    "new_credential_cycles": 0,
+    "original_bootstrap_exit_code": 0,
+    "managed_registration_closure": "UNKNOWN",
+    "managed_lineage_closure": "UNKNOWN",
+    "real_server_exec_identity": null,
+    "direct_helpers_closed": 11,
+    "returned_descriptors_closed": true,
+    "observation_lane_released": true,
+    "next_step": "Exact original registered object only: bounded read-only field projection and fixed public-file identity check, after separately reviewed diagnostic source/request/GO. No bootstrap or business replay is authorized by this checkpoint.",
+    "production_changed_by_controller": false,
+    "J3160_contacted": false,
+    "credential_values_published": false
+  },
+  "snapshot": {
+    "source_commit": "2379d02ba1ee3e88989815d5a978f998822bac4f",
+    "formatted_output_files": 23,
+    "total_formatted_bytes": 1346637,
+    "whole_files_at_cutoff": 12,
+    "whole_bytes": 1132623,
+    "closed_observers": 37,
+    "original_call_records": 194,
+    "latest_file_index": 11,
+    "latest_file": "crates/heptabao-server/src/service.rs",
+    "latest_body": {
+      "blob": "6574a4d522a62feb328fea61d19df575ce7f2550",
+      "bytes": 519619,
+      "sha256": "4ad6ea76e43a14a073843400b12f516175d46ed103610a6f7202b82a09d7c919"
+    },
+    "latest_file_ranges": 8,
+    "latest_original_pages": 48,
+    "root_lane_qualification": {
+      "blob": "806aa85a0bdd893409618fe3796a84a31f862b6d",
+      "bytes": 3057,
+      "sha256": "451c699bed52fb5e81a06724ba5c3fd66cab0d4b9ee063570d51cfbc3f31d4d1"
+    },
+    "all_194_call_chain_root_qualified": false,
+    "remaining_files": 11,
+    "remaining_bytes": 214014,
+    "remaining_INFOs": 11,
+    "remaining_single_ranges": 11,
+    "next_file_index": 12,
+    "INFO12_started": false,
+    "BODY12_started": false,
+    "lane_hold": true,
+    "original_INFO10_page0_failure_preserved": true,
+    "recovered_only_original_immutable_page": true,
+    "final_combined_commit": null,
+    "final_combined_tree": null,
+    "no_product_success_from_transport_qualification": true
+  },
+  "JWT_PKI": {
+    "candidate_commit": "025b05a340de841b8161c1120344e86eae30eb97",
+    "candidate_tree": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+    "old_33b_build_failed_with_2_E0061": true,
+    "original_four_controls_INFO_transport_qualified": true,
+    "body0_same_key_reconciliation_actual_reused": true,
+    "body0_original_lost_ACK_history_preserved": true,
+    "all_four_actual_control_bodies_qualified": true,
+    "remaining3_actual_packet": "9e868a7c2fc3a122b6d548ef029e1daa928af3b7",
+    "build_source_packet": "01f0b72fc115ee76371ffddc504c8970575e2e34",
+    "original_BUILD_GO": {
+      "blob": "b6a6c6ec377b907073d5ea9aad936d4b4c4e2518",
+      "bytes": 12799,
+      "sha256": "46d0166cbb080fbf679ae877dc1399487564dd05bb7caa430617da1d9ef0daae"
+    },
+    "original_build_job": "rog/1a1b10cad9b-fc05-7560",
+    "reused": false,
+    "typed_digest": "527c6f94dadb62d7f4ff1168adecc80f2b1af2feef6891e28a3bcb2b1673388d",
+    "native_fingerprint_decimal": "5943748293339865815",
+    "declared_unique_tests": 149,
+    "declared_profile_instances": 166,
+    "last_whole_authority_state": "running",
+    "last_authority_snapshot": "2026-11-06T13:43:06.421Z",
+    "running_packet": "c16bf600e321d8a210daa873f3cf501c4894c38c",
+    "running_root_qualification": {
+      "blob": "ec49746acdf203bf7004b72613f800852bdd5819",
+      "bytes": 7510,
+      "sha256": "a472388cfae346575a53c797a413c8600719e47d1a853dc0879f0200f2519f82"
+    },
+    "actual_normal_release_result": null,
+    "actual_test_list_result": null,
+    "actual_tests_started": null,
+    "actual_tests_passed": null,
+    "target": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3",
+    "target_window_owner": "/root/ha_validation",
+    "target_window_released": false,
+    "target_preflight_flock_is_not_a_lifetime_lock": true,
+    "other_Cargo_builds_authorized": false,
+    "original_budgets_preserved": {
+      "outer": 12000,
+      "release": 1800,
+      "shared_compile": 3600,
+      "family": 600,
+      "list": 30,
+      "TERM": 5,
+      "KILL": 5
+    },
+    "new_GO_observation_limits": "Explicit count limits are new; old33b GO did not contain total observation counts. They do not extend original worker/compile/test deadlines."
+  },
+  "integratedCandidate": {
+    "source_base": "025b05a340de841b8161c1120344e86eae30eb97",
+    "snapshot_overlay_leaves": 49,
+    "formatted_changed_bodies": 23,
+    "unchanged_frozen_reuse": 26,
+    "disjoint_newer_025b_leaves_retained": 5,
+    "strict_PKI_400_expectations_retained": true,
+    "expected_final_leaf_count": 3930,
+    "expected_final_bytes": 62498221,
+    "exact_regression_inventory": {
+      "unique": 237,
+      "profile_instances": 254,
+      "groups": 18,
+      "scope": "SOURCE inventory only; no actual list/compile/test result"
+    },
+    "runner_source_packet": "9bdb3eb3c6aac221d51d14a4a8f3bcc24e75f7e6",
+    "runner_root_qualification": {
+      "blob": "59c355473a02931facc459b051ceedc8202ba465",
+      "bytes": 5141,
+      "sha256": "0cdfb3b80b35d7499f235336dc725ea62e03d835ddb819ce4249f990fe4cca3c"
+    },
+    "stage_interface_packet": "2c399616f1f1faf03dd4e43ba68b0f99c549b777",
+    "stage_interface_root_qualification": {
+      "blob": "f73a5a403f7dd5a8680693f4419834cee5ea282f",
+      "bytes": 2251,
+      "sha256": "114bf02bcfd55c36297d1f3d823a8cb9a5da3b7e76d22ec03454dfac6be053c7"
+    },
+    "unbound_launcher_bytes": 39538,
+    "unchanged_launcher_cap": 40000,
+    "final_literal_binding_must_be_remeasured": true,
+    "reference_stage_reuse": "Existing2379 stager with exact future identity/ancestry/index literals, one schema and one purpose literal adaptation; old495 and failed12 fences and original time/size limits preserved.",
+    "commit": null,
+    "tree": null,
+    "exact_stage_request": null,
+    "build_submitted": false,
+    "tests_executed": false
+  },
+  "HTTP12_ACL23": {
+    "new_HTTP12_actual_cases": 0,
+    "new_ACL23_actual_cases": 0,
+    "official_primary_tag": "v2.7.1",
+    "official_tag_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+    "official_source_facts": {
+      "blob": "cc255b6c44818eb33b5186f68f6dce4b8b259aa1",
+      "bytes": 2641,
+      "sha256": "1490e25f473982bec6a7600698c28a533b82c7988e0037e8b94af4ed026c14a0"
+    },
+    "X230_existing_inputs_root_reference": {
+      "blob": "7d6c498def2f453190569a135965d9867a741081",
+      "bytes": 3760,
+      "sha256": "ab58c3308e69e7e14f45af3a394bfe31a43c32ae2ad45a1f72c0da6a5e8d61f9"
+    },
+    "fresh_official_binary_archive_verification_pending": true,
+    "oracle_only_plan": "cc95db3cbc0ffffe7ffc8141307cd27814047215",
+    "known_X230_binary": "/home/qian/heptabao-official-271-fresh-20261029-r1/bao",
+    "known_X230_archive": "/home/qian/heptabao-official-271-fresh-20261029-r1/official-openbao-2.7.1-linux-amd64.tar.gz",
+    "existing_launcher_requires_explicit_version": "2.7.1",
+    "Linux_Owner_360_required": true,
+    "Linux_Owner_not_applicable_to_Mac": true,
+    "static_ACL_request_upper_bound": 853,
+    "static_oracle_start_and_identity_total_without_PKI_or_cleanup": 957,
+    "static_bounds_are_not_observed_requests": true,
+    "JWT_draft2_source_contradiction": {
+      "blob": "70144aa777fe47ac2712a491f4571b907c6d137a",
+      "bytes": 5795,
+      "sha256": "992661b4d85206889e71269ce75b0e46d4e0307abd4d35b0a8ff835f97d4804c"
+    },
+    "contradiction_scope": "Source inference only: no-default actor plus requested empty policies gains default in handler, causing existing subset validator to reject the proposed expected204. No Rust/official HTTP result yet.",
+    "no_actor_default_policy_injection_to_hide_mismatch": true,
+    "no_global_policy_subset_relaxation": true,
+    "raw_status_case_local_fix_is_source_only": true,
+    "component_error_paths_not_yet_executed": true
+  },
+  "history_preserved": {
+    "R42_cutoff_unknowns_not_rewritten": true,
+    "old_BODY0_lost_ACK_record_immutable": true,
+    "actual_reconciliation_reused_true_kept_separate": true,
+    "INFO10_original_page_delivery_error_kept": true,
+    "Mac_original_failed_runtime_kept": true,
+    "pure_verifier_errors_kept_separate_from_Native_or_product_outcomes": true,
+    "root_INFO4_blob_reader_errors_recovered_only_from_whole_original_SDKs": true,
+    "no_uncertain_Native_mutation_replayed": true
+  },
+  "remaining_gates": [
+    {
+      "gate": "KV2",
+      "current": "Historical4e808 formal34MiB Mac31/31 and X23031/31 retained.",
+      "required": "Final integrated binary exact offline migration/export/import/snapshot/restore/cold-CAS/delete/undelete/destroy and CLI leader/standby paths; complete backup path migration."
+    },
+    {
+      "gate": "HA",
+      "current": "Historical4e808 real Mac/ROG/Pocket4 98+12 retained; SIGKILL/election/quorum/ReadIndex/cold restart scope.",
+      "required": "Repeat with final candidate bytes on all three hosts, persistence/restart and original failure cases. Existing result does not claim physical power loss."
+    },
+    {
+      "gate": "AuthBus",
+      "current": "Mac runtime failed before business phases; managed state UNKNOWN.",
+      "required": "Reconcile original managed instance, fix observed parser/launch cause, then current trusted AppRole/TLS/KV/Policy/renew/revoke/cold restart/inverse rollback without J3160."
+    },
+    {
+      "gate": "per-client-cutover",
+      "current": "No production cutover qualified.",
+      "required": "Every current Mac/ROG/Pocket4/X230 consumer inventory and real credential R/W/restart/rollback, then individually switch with evidence."
+    },
+    {
+      "gate": "legacy-cleanup",
+      "current": "Not authorized by completed migration evidence; no deletion performed.",
+      "required": "All current clients and backup paths migrated first; preserve required evidence/recovery assets and keep only latest qualified service after gate."
+    }
+  ],
+  "baseline_evidence_limits_preserved": [
+    "Mac/X230 formal34MiB31/31 is scoped to4e808 baseline; no current candidate qualification inheritance.",
+    "X23069 remains67 exact plus2 normalized PKI until actual new HTTP oracle.",
+    "RealLAN prior98+12 does not cover new snapshot forwarding, rawOpenBao archive interoperability or current production cutover.",
+    "H2 prior H01-H03 small archive/ALPN scope does not establish34MiB H2 or multi-host new CLI restore.",
+    "Native database,Kubernetes,RabbitMQ,ACME/EAB,KMS/HSM,root/rekey/plugin/namespace/admin capability gaps remain.",
+    "Current inventory and every real client restart/rollback plus every backup migration must precede old-service and asset removal."
+  ],
+  "next_work": [
+    "Original Mac-instance narrow diagnostic, then evidenced cleanup and minimal repair; no blind rebootstrap.",
+    "Observe only the original running025b job within its existing bounds; whole terminal authority, streams and actual report before test claims.",
+    "After Mac diagnostic lane closure, resume B original INFO12..22 and BODY12..22; qualify whole transport and final49overlay.",
+    "Freeze exact combined commit/tree/index; bind unchanged stage/runner controls and execute237/254, then final candidate formalKV2 and realLAN regressions.",
+    "Run unchanged official2.7.1 ACL23 with existing X230 artifacts and verified TLS/private fixture; repair JWT-only behavior from actual results and run strictHTTP12.",
+    "Finish current consumer and backup inventory, per-device real reads/writes/restarts/rollback, then authorized individual cutover and conditional cleanup."
+  ],
+  "publication": {
+    "preserves_parent": true,
+    "evidence_only": true,
+    "product_source_at_branch_head_unchanged": true,
+    "whole_packet_totals": {
+      "packets": 38,
+      "files": 1053,
+      "bytes": 10333229,
+      "allWhole": true
+    },
+    "root_index_qualification_checks": 78
+  },
+  "root_Runtime_calls": 0,
+  "maximum_Runtime_lanes": 2,
+  "local_executor_available": false,
+  "current_lanes_at_cutoff": {
+    "A": 0,
+    "B": 0,
+    "C": 1,
+    "root": 0,
+    "A_next_reserved_for_exact_original_instance_diagnostic": true
+  }
+}

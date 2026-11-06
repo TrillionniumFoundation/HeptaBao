@@ -1,0 +1,314 @@
+{
+  "status": "PASS_SOURCE_AND_PRIVATE_MEMORY_GUARDS_ONLY",
+  "checks": 74,
+  "guardCases": 37,
+  "rows": [
+    {
+      "name": "base exact whole",
+      "pass": true
+    },
+    {
+      "name": "candidate exact whole",
+      "pass": true
+    },
+    {
+      "name": "strict forward five hunks",
+      "pass": true
+    },
+    {
+      "name": "strict reverse five hunks",
+      "pass": true
+    },
+    {
+      "name": "unique fresh_remaining_three_context_only",
+      "pass": true
+    },
+    {
+      "name": "unique new_initializer_inherits_only_actual_closed_evidence",
+      "pass": true
+    },
+    {
+      "name": "unique each_action_keeps_both_historical_states_immutable",
+      "pass": true
+    },
+    {
+      "name": "unique closed_three_tool_set_original_exact_requests_only",
+      "pass": true
+    },
+    {
+      "name": "unique no_process_or_metadata_dispatch_paths",
+      "pass": true
+    },
+    {
+      "name": "unique only_fresh_initialize_and_remaining_observation_actions",
+      "pass": true
+    },
+    {
+      "name": "six declared replacement groups only",
+      "pass": true
+    },
+    {
+      "name": "same definition set",
+      "pass": true
+    },
+    {
+      "name": "definition gfAuthorizePublishedControlsInfoOnly",
+      "pass": true
+    },
+    {
+      "name": "definition gfAuthorizePublishedControlsBodiesOnly",
+      "pass": true
+    },
+    {
+      "name": "definition gfNeed",
+      "pass": true
+    },
+    {
+      "name": "definition gfMetaEquals",
+      "pass": true
+    },
+    {
+      "name": "definition gfState",
+      "pass": true
+    },
+    {
+      "name": "definition gfSave",
+      "pass": true
+    },
+    {
+      "name": "definition gfIntegerText",
+      "pass": true
+    },
+    {
+      "name": "definition gfInitializeOnlyAfterRootGO",
+      "pass": true
+    },
+    {
+      "name": "definition gfValidateRequest",
+      "pass": true
+    },
+    {
+      "name": "definition gfPrepareOne",
+      "pass": true
+    },
+    {
+      "name": "definition gfInvokePreparedOnce",
+      "pass": true
+    },
+    {
+      "name": "definition gfAcceptArchivedSDK",
+      "pass": true
+    },
+    {
+      "name": "definition gfCloseOriginalObserver",
+      "pass": true
+    },
+    {
+      "name": "definition gfReconcileSameGitArchiveReadOnly",
+      "pass": true
+    },
+    {
+      "name": "definition gfRun",
+      "pass": true
+    },
+    {
+      "name": "whole per-file close unchanged",
+      "pass": true
+    },
+    {
+      "name": "whole SDK accept unchanged",
+      "pass": true
+    },
+    {
+      "name": "no native process call",
+      "pass": true
+    },
+    {
+      "name": "only three Runtime dispatch kinds",
+      "pass": true
+    },
+    {
+      "name": "no historical store",
+      "pass": true
+    },
+    {
+      "name": "reject unauthorized GO template",
+      "pass": true
+    },
+    {
+      "name": "reject wrong remaining budget",
+      "pass": true
+    },
+    {
+      "name": "reject process permission",
+      "pass": true
+    },
+    {
+      "name": "reject missing root qualification",
+      "pass": true
+    },
+    {
+      "name": "reject root qualification bytes mismatch",
+      "pass": true
+    },
+    {
+      "name": "reject old UNKNOWN state mutation",
+      "pass": true
+    },
+    {
+      "name": "reject closed predecessor state mutation",
+      "pass": true
+    },
+    {
+      "name": "reject body0 actual bytes mismatch",
+      "pass": true
+    },
+    {
+      "name": "reject body0 native bytes mismatch",
+      "pass": true
+    },
+    {
+      "name": "reject independent metadata bytes mismatch",
+      "pass": true
+    },
+    {
+      "name": "private init historical context unchanged 1",
+      "pass": true
+    },
+    {
+      "name": "fresh context has no fabricated call",
+      "pass": true
+    },
+    {
+      "name": "real body0 provenance inherited",
+      "pass": true
+    },
+    {
+      "name": "four actual metadata full9 retained",
+      "pass": true
+    },
+    {
+      "name": "exact original body1 admitted by pure guard",
+      "pass": true
+    },
+    {
+      "name": "reject body0 repeat",
+      "pass": true
+    },
+    {
+      "name": "reject body2 before body1",
+      "pass": true
+    },
+    {
+      "name": "reject body3 before body1",
+      "pass": true
+    },
+    {
+      "name": "reject process START",
+      "pass": true
+    },
+    {
+      "name": "reject file_info",
+      "pass": true
+    },
+    {
+      "name": "reject changed host",
+      "pass": true
+    },
+    {
+      "name": "reject changed path",
+      "pass": true
+    },
+    {
+      "name": "reject changed expected_version",
+      "pass": true
+    },
+    {
+      "name": "reject changed offset",
+      "pass": true
+    },
+    {
+      "name": "reject changed limit",
+      "pass": true
+    },
+    {
+      "name": "reject changed private key",
+      "pass": true
+    },
+    {
+      "name": "reject repeated body1 admission",
+      "pass": true
+    },
+    {
+      "name": "body2 guard only after body1 closure row",
+      "pass": true
+    },
+    {
+      "name": "reject body1 after body1 closure",
+      "pass": true
+    },
+    {
+      "name": "body3 guard only after body2 closure row",
+      "pass": true
+    },
+    {
+      "name": "reject fourth admission after remaining three",
+      "pass": true
+    },
+    {
+      "name": "same original ID status accepted",
+      "pass": true
+    },
+    {
+      "name": "reject different status ID",
+      "pass": true
+    },
+    {
+      "name": "reject page before native closed",
+      "pass": true
+    },
+    {
+      "name": "reject ninth status",
+      "pass": true
+    },
+    {
+      "name": "closed next original page accepted",
+      "pass": true
+    },
+    {
+      "name": "reject skipped page",
+      "pass": true
+    },
+    {
+      "name": "reject larger page",
+      "pass": true
+    },
+    {
+      "name": "reject 65th page",
+      "pass": true
+    },
+    {
+      "name": "reject second initialize",
+      "pass": true
+    },
+    {
+      "name": "reject historical mutation after initialization",
+      "pass": true
+    },
+    {
+      "name": "pure tests made zero tool calls",
+      "pass": true
+    }
+  ],
+  "privateInitializations": 1,
+  "selectedFunctions": [
+    "gfInitializeOnlyAfterRootGO",
+    "gfState",
+    "gfValidateRequest"
+  ],
+  "realContextInitialized": false,
+  "NativeCalls": 0,
+  "GitCalls": 0,
+  "productCases": 0,
+  "actualBodies1to3Submitted": 0
+}

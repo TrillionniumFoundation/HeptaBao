@@ -1,0 +1,155 @@
+{
+  "schema": "heptabao.X230-official271-oracle-only-existing-fixture-binding.source.v1",
+  "state": "SOURCE_PLAN_ONLY_NO_RUNTIME_GO",
+  "purpose": "Run the unchanged raw23 JWT ACL matrix against the pinned official2.7.1 oracle independently of candidate build, then later pair raw observations with a separately qualified025b candidate fixture.",
+  "host": "x230",
+  "python": {
+    "path": "/usr/bin/python3",
+    "sourceOfPath": "3839158cca7a7d543d8b277fc4df9f271d45ab83",
+    "freshMetadata": null
+  },
+  "knownArtifactInputs": [
+    {
+      "role": "oracle-binary",
+      "path": "/home/qian/heptabao-official-271-fresh-20261029-r1/bao",
+      "bytes": 181760103,
+      "sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+      "version": "2053:4484525:181760103:1793293201917498566:1793293202538497931",
+      "mode": 448,
+      "full9_decimal": [
+        "2053",
+        "4484525",
+        "1000",
+        "1000",
+        "33216",
+        "1",
+        "181760103",
+        "1793293201917498566",
+        "1793293202538497931"
+      ],
+      "original_operation_id": "1a239b868f01b65c463fd24048da93192df0bf464c8ac5359c62c3745d84a029",
+      "native_pin": {
+        "blob": "3fe97192ce568d3f502472d9bde3827f6cc1027b",
+        "bytes": 448,
+        "sha256": "d7ba1693438aa0088e684945b6024089778e23d53fa5f8da40c473b9e718f810"
+      },
+      "native_path_in_original_packet": "observations/oracle-binary/native.original.json",
+      "currentPresence": null,
+      "currentIdentity": null
+    },
+    {
+      "role": "oracle-archive",
+      "path": "/home/qian/heptabao-official-271-fresh-20261029-r1/official-openbao-2.7.1-linux-amd64.tar.gz",
+      "bytes": 74865426,
+      "sha256": "0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243",
+      "version": "2053:4484524:74865426:1793293199950500560:1793293199950500560",
+      "mode": 384,
+      "full9_decimal": [
+        "2053",
+        "4484524",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "74865426",
+        "1793293199950500560",
+        "1793293199950500560"
+      ],
+      "original_operation_id": "6e9dad0a31cfdea1fb95328fa928e5d324e069cbc9f512b290c68da4bead56cd",
+      "native_pin": {
+        "blob": "4d184134d27daa5a66fb899607340f0a10d48211",
+        "bytes": 484,
+        "sha256": "d4ce4b27d08040daa758fbed4ec55d9e781a117e58da2c81827086a5217c4022"
+      },
+      "native_path_in_original_packet": "observations/oracle-archive/native.original.json",
+      "currentPresence": null,
+      "currentIdentity": null
+    }
+  ],
+  "historicalRootReference": {
+    "blob": "7d6c498def2f453190569a135965d9867a741081",
+    "bytes": 3760,
+    "sha256": "ab58c3308e69e7e14f45af3a394bfe31a43c32ae2ad45a1f72c0da6a5e8d61f9"
+  },
+  "launcher": {
+    "blob": "d7ac02bceeb6ec0751c3ff0d2ec6126e36ac8405",
+    "bytes": 20008,
+    "sha256": "5c11b432e1180fb40394fab382da774cf4171bf51431aab7e5823068cfba01d6"
+  },
+  "linuxOwner": {
+    "blob": "64793384ee1fd7db5081ac4ebb7e9dd354757889",
+    "bytes": 28442,
+    "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0"
+  },
+  "rawObserver": {
+    "blob": "c928d3750a3cdb05d3702f269b31026136e7a496",
+    "bytes": 13664,
+    "sha256": "1952270dba831b0e21e2291df8178e9557e7ff76fc83a2e8dc70cbf46eb7d4e9"
+  },
+  "acl23": {
+    "blob": "cb70eb45d483299702b73331caa360fa96d9d13a",
+    "bytes": 15599,
+    "sha256": "e96451d450224abfa7eeda34622b26b1d21493867b4344aa254709348515bfc4"
+  },
+  "matrix": {
+    "blob": "7364a32a2341a56b0730ad3486c72bdbd6de53c4",
+    "bytes": 14285,
+    "sha256": "59e3c9519e59e7ae26cde512a8171d39e2175e8bb24f12039222218570ebe6f8"
+  },
+  "existingRepositoryRoot": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+  "existingWrapperAuthority": "Path/content provenance only; old4e808 full34 request is not rerun or inherited.",
+  "fixture": {
+    "version": "2.7.1",
+    "audit_file": false,
+    "raft_storage": false,
+    "storage": "pebbledb",
+    "network": "X230 loopback HTTPS only",
+    "newPrivateWorkRoot": null,
+    "fixedLoopbackPort": null,
+    "publicRSA2048SPKI": null,
+    "actualTLS": null,
+    "actualLiveIdentity": null,
+    "actualSourceImports": null,
+    "controllerEntry": null,
+    "exactRequest": null
+  },
+  "sequence": [
+    "Verify exact fixed launcher/Owner/transport/ACL module bytes before importing their existing code; no directory discovery or plugin loader.",
+    "Create only a new private0700 fixture work parent. Activate one original Linux owned_process.Owner before fixture work; never use _CURRENT=None compatibility fallback.",
+    "Call existing official_openbao_launcher.start_oracle with explicit version='2.7.1',audit_file=False,raft_storage=False. Existing verify_inputs performs fresh full archive/binary hashes and verifies the unique regular bao archive member.",
+    "Bind returned live cluster/version/config through existing verify_selected_oracle; build the original Client with timeout15 and private root token from the owned private root.",
+    "Call unchanged FixedAcl23 with original matrix, fixed public SPKI and owner.remaining. Capture actual raw statuses, actor proof and before/after projections. Do not add default policy to actors or normalize source-prediction mismatches.",
+    "On any unknown mutation stop later cases; preserve private custody and public partial. Do not replay init, token issuance, case writes or config reset.",
+    "Finally call existing stop_oracle on the owned returned process/log, then let activated(owner) finish once. Only post-context original Owner receipt plus actual output may establish cleanup."
+  ],
+  "budgets": {
+    "ownerSeconds": 360,
+    "HTTPSeconds": 15,
+    "ownerDeadlineIncludesCleanup": true,
+    "deadlineReset": false,
+    "originalStopSeconds": 5,
+    "staticACLRequestsUpperBound": 853,
+    "staticACLBoundBreakdown": {
+      "setup": 26,
+      "caseBlocks": 782,
+      "maximumThreeConfigResets": 45
+    },
+    "existingLauncherStartupHTTPUpperBound": 103,
+    "additionalFreshIdentityHealthRequests": 1,
+    "totalWithoutPKIOrCleanupUpperBound": 957,
+    "maximumHTTPResponseBytes": 16777216,
+    "newOuterSeconds": null,
+    "newReportCap": null,
+    "newRequestAdmissionCap": null
+  },
+  "notes": [
+    "853 is source-derived, not observed execution. 957 adds existing launcher100 health polls+one init+one unseal+one live health and one explicit selected-health observation; future exact controller must account for any additional HTTP or cleanup.",
+    "No download is required by current provenance. If any fresh artifact validation fails, stop; do not silently substitute a file or download fallback.",
+    "Public key remains an explicit unbound slot. Existing launcher uses three owned OpenSSL certificate commands with RSA2048, but reusing/exporting a key for the ACL fixture requires an exact reviewed public-export step or a frozen valid public key; no secret or malformed PEM substitution.",
+    "Existing named sources are source pins; current import paths and tool/fixture inputs still need exact entry binding. This plan grants no execution.",
+    "Official-only23 is not current candidate parity. Current025b149/166 build remains the primary task; oldnormal61/full34/LAN/H2 qualifications remain separate."
+  ],
+  "Native": 0,
+  "testsExecuted": 0,
+  "buildSubmitted": false
+}

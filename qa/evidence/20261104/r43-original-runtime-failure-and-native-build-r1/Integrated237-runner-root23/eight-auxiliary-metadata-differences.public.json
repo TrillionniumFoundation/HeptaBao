@@ -1,0 +1,130 @@
+[
+  {
+    "ordinal": 186,
+    "name": "service::snapshot_transfer::forward::wire::tests::snapshot_publication_actual_byte_witnesses_bind_save_and_restore",
+    "differences": [
+      {
+        "key": "family",
+        "root": "wire",
+        "input": "completion"
+      },
+      {
+        "key": "sourceEvidence",
+        "root": "whole-frozen-source",
+        "input": "frozen2379-unformatted-whole-pending-actual-output"
+      }
+    ]
+  },
+  {
+    "ordinal": 187,
+    "name": "service::snapshot_transfer::forward::wire::tests::snapshot_publication_valid_mac_cannot_substitute_a_binary_body",
+    "differences": [
+      {
+        "key": "family",
+        "root": "wire",
+        "input": "completion"
+      },
+      {
+        "key": "sourceEvidence",
+        "root": "whole-frozen-source",
+        "input": "frozen2379-unformatted-whole-pending-actual-output"
+      }
+    ]
+  },
+  {
+    "ordinal": 188,
+    "name": "service::snapshot_transfer::forward::wire::tests::snapshot_publication_metadata_and_original_owner_mutations_are_rejected",
+    "differences": [
+      {
+        "key": "family",
+        "root": "wire",
+        "input": "completion"
+      },
+      {
+        "key": "sourceEvidence",
+        "root": "whole-frozen-source",
+        "input": "frozen2379-unformatted-whole-pending-actual-output"
+      }
+    ]
+  },
+  {
+    "ordinal": 189,
+    "name": "service::snapshot_transfer::forward::wire::tests::snapshot_ready_rejects_retarget_replay_and_non_snapshot_routes",
+    "differences": [
+      {
+        "key": "family",
+        "root": "wire",
+        "input": "completion"
+      },
+      {
+        "key": "sourceEvidence",
+        "root": "whole-frozen-source",
+        "input": "frozen2379-unformatted-whole-pending-actual-output"
+      }
+    ]
+  },
+  {
+    "ordinal": 190,
+    "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_source_publication_audit_veto_keeps_real_restore_after_cold_reopen",
+    "differences": [
+      {
+        "key": "family",
+        "root": "service_audit",
+        "input": "real-service-audit"
+      },
+      {
+        "key": "sourceEvidence",
+        "root": "whole-frozen-source",
+        "input": "frozen2379-unformatted-whole-pending-actual-output"
+      }
+    ]
+  },
+  {
+    "ordinal": 191,
+    "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_first_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen",
+    "differences": [
+      {
+        "key": "family",
+        "root": "service_audit",
+        "input": "real-service-audit"
+      },
+      {
+        "key": "sourceEvidence",
+        "root": "whole-frozen-source",
+        "input": "frozen2379-unformatted-whole-pending-actual-output"
+      }
+    ]
+  },
+  {
+    "ordinal": 192,
+    "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_second_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen",
+    "differences": [
+      {
+        "key": "family",
+        "root": "service_audit",
+        "input": "real-service-audit"
+      },
+      {
+        "key": "sourceEvidence",
+        "root": "whole-frozen-source",
+        "input": "frozen2379-unformatted-whole-pending-actual-output"
+      }
+    ]
+  },
+  {
+    "ordinal": 193,
+    "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_unverified_attempt_audit_failure_cannot_mint_root_authority",
+    "differences": [
+      {
+        "key": "family",
+        "root": "service_audit",
+        "input": "real-service-audit"
+      },
+      {
+        "key": "sourceEvidence",
+        "root": "whole-frozen-source",
+        "input": "frozen2379-unformatted-whole-pending-actual-output"
+      }
+    ]
+  }
+]

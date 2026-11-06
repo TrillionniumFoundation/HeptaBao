@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.authbus-home-r2-actual-history.r1",
+  "thisRunNativeErrors": [],
+  "businessKnownFailure": true,
+  "parserFieldAndValueNotObserved": true,
+  "originalPrintBodiesNotRetained": true,
+  "oldR1PartialRootUnchanged": true,
+  "oldGit8916UnknownUnchanged": true,
+  "oldHelper87650UnknownUnchanged": true,
+  "oldQAHistoryNotRetroactivelyClosed": true,
+  "noBusinessReplay": true,
+  "privateCapsuleBodyExported": false
+}

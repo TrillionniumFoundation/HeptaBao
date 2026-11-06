@@ -1,0 +1,121 @@
+{
+  "schema": "heptabao.existing-X230-official271-input-provenance.v1",
+  "scope": "Pure Git recovery of fixed prior actual evidence. No new host observation, download, execution or changed qualification.",
+  "native_host": "x230",
+  "historical_actual_packet": "174c2816524022fbb9b128e6ae2b12a66fafc312",
+  "historical_root_review": {
+    "blob": "31a05798ea870d71c4d08092ad53e895e275c11f",
+    "bytes": 22370,
+    "sha256": "bd98852e1a4f7f22ba7a9467f6b89bcbede8e5f226743863463b887246178301"
+  },
+  "original_inputs": [
+    {
+      "role": "oracle-binary",
+      "path": "/home/qian/heptabao-official-271-fresh-20261029-r1/bao",
+      "bytes": 181760103,
+      "sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+      "version": "2053:4484525:181760103:1793293201917498566:1793293202538497931",
+      "mode": 448,
+      "full9_decimal": [
+        "2053",
+        "4484525",
+        "1000",
+        "1000",
+        "33216",
+        "1",
+        "181760103",
+        "1793293201917498566",
+        "1793293202538497931"
+      ],
+      "original_operation_id": "1a239b868f01b65c463fd24048da93192df0bf464c8ac5359c62c3745d84a029",
+      "native_pin": {
+        "blob": "3fe97192ce568d3f502472d9bde3827f6cc1027b",
+        "bytes": 448,
+        "sha256": "d7ba1693438aa0088e684945b6024089778e23d53fa5f8da40c473b9e718f810"
+      },
+      "native_path_in_original_packet": "observations/oracle-binary/native.original.json"
+    },
+    {
+      "role": "oracle-archive",
+      "path": "/home/qian/heptabao-official-271-fresh-20261029-r1/official-openbao-2.7.1-linux-amd64.tar.gz",
+      "bytes": 74865426,
+      "sha256": "0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243",
+      "version": "2053:4484524:74865426:1793293199950500560:1793293199950500560",
+      "mode": 384,
+      "full9_decimal": [
+        "2053",
+        "4484524",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "74865426",
+        "1793293199950500560",
+        "1793293199950500560"
+      ],
+      "original_operation_id": "6e9dad0a31cfdea1fb95328fa928e5d324e069cbc9f512b290c68da4bead56cd",
+      "native_pin": {
+        "blob": "4d184134d27daa5a66fb899607340f0a10d48211",
+        "bytes": 484,
+        "sha256": "d4ce4b27d08040daa758fbed4ec55d9e781a117e58da2c81827086a5217c4022"
+      },
+      "native_path_in_original_packet": "observations/oracle-archive/native.original.json"
+    }
+  ],
+  "full34_wrapper": {
+    "blob": "bf3c0a43853e88eaf8b7dfc0b7f92b5420f5aaf1",
+    "bytes": 10142,
+    "sha256": "73f0ff5583a9323c91625a37afe3502de8f766735ff74baaa66b08f9b922b2b5",
+    "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/full34_controller.py",
+    "version": "2053:3062745:10142:1793908417811750782:1793908417813750783",
+    "full9_decimal": [
+      "2053",
+      "3062745",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "10142",
+      "1793908417811750782",
+      "1793908417813750783"
+    ]
+  },
+  "full34_original_request": {
+    "blob": "3839158cca7a7d543d8b277fc4df9f271d45ab83",
+    "bytes": 355,
+    "sha256": "235880f1326aa4d1848b2a9867c5915719c787bb9b58e90140b95838a7c49b69"
+  },
+  "original_request_value": {
+    "host": "x230",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian/heptabao-same-root-publication-normal-20261105-r1/full34_controller.py"
+    ],
+    "cwd": "/home/qian/heptabao-same-root-publication-normal-20261105-r1",
+    "timeout_seconds": 1800,
+    "idempotency_key": "heptabao-4e808-x230-full34-r1-73f0ff55"
+  },
+  "full34_original_job_reference": "x230/1a1ad5ffad0-fc05-599a",
+  "final_full34_qualification_reference": "9fd3ec40974a0d7fc2eed14983fd8b621b6bc214",
+  "qa_source_pins_from_whole_wrapper": [
+    {
+      "canonical_path": "qa/openbao-acceptance/kv2_271_lossless_native_live.py",
+      "sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581"
+    },
+    {
+      "canonical_path": "qa/openbao-acceptance/official_openbao_launcher.py",
+      "sha256": "5c11b432e1180fb40394fab382da774cf4171bf51431aab7e5823068cfba01d6"
+    }
+  ],
+  "limits": [
+    "Prior metadata is historical, not a fresh file_info.",
+    "The whole wrapper is bound to old current4e808 source and cb840 server; it is provenance and setup reference, not a direct launch gate for a later candidate.",
+    "No new HTTP12/ACL23 request or fixture is authorized by this index.",
+    "The two QA driver hashes are exact assertions in the whole wrapper; this small recovery does not independently retrieve their full source bodies."
+  ],
+  "Native_calls": 0,
+  "whole_copied_old161": false
+}

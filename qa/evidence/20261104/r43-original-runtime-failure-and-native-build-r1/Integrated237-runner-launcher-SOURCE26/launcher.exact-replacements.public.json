@@ -1,0 +1,57 @@
+[
+  {
+    "before": "\"\"\"Preserve prior evidence and admit one frozen native JWT and PKI build and exact regression matrix.\"\"\"",
+    "after": "\"\"\"Preserve prior evidence and admit one frozen combined source and exact 237/254 matrix.\"\"\"",
+    "why": "new combined scope"
+  },
+  {
+    "before": "BINDING_READY = True",
+    "after": "BINDING_READY = False",
+    "why": "unbound proposal cannot execute"
+  },
+  {
+    "before": "FINAL_COMMIT = '025b05a340de841b8161c1120344e86eae30eb97'\nFINAL_TREE = '1d8160c9385f8053b9a683cc1834da0f912e2d37'\nSOURCE_STAGE_ROOT = Path('/home/qian-qi/heptabao-native-jwt-pki-source-025b05a3-20261106-r1')",
+    "after": "FINAL_COMMIT = None\nFINAL_TREE = None\nSOURCE_STAGE_ROOT = None",
+    "why": "unfrozen combined identity and independent future stage"
+  },
+  {
+    "before": "GROUPS_SHA256 = '35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869'",
+    "after": "GROUPS_SHA256 = 'a3c126e1833c7d46eac8b30030d24d620540786bbe2b38d21ed9891ca42ccb38'",
+    "why": "exact same group bytes as runner"
+  },
+  {
+    "before": "    ROOT = Path('/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2')",
+    "after": "    ROOT = None",
+    "why": "fresh control destination unresolved, old root not reused"
+  },
+  {
+    "before": "groups_raw, groups_pin = read_bound(CONTROL / 'jwt-test-groups.public.json', args.groups_sha256, 20000)",
+    "after": "groups_raw, groups_pin = read_bound(CONTROL / 'jwt-test-groups.public.json', args.groups_sha256, 32163)",
+    "why": "only exact fixed groups limit updated to known whole bytes"
+  },
+  {
+    "before": "assert [(g['label'], g['libtest_profile'], len(g['tests'])) for g in groups] == [\n    ('native-jwt-pki-file17', 'file', 17), ('native-jwt-pki-default17', 'default', 17),\n    ('legacy-jwt-default63', 'default', 63), ('native-auth-identity-default69', 'default', 69)]\nassert all(set(g) == {'label', 'libtest_profile', 'tests', 'runtime_seconds'}\n           and g['runtime_seconds'] == 600 and len(g['tests']) == len(set(g['tests'])) for g in groups)\nassert groups[0]['tests'] == groups[1]['tests']\nassert sum(len(g['tests']) for g in groups) == 166\nassert len({name for g in groups for name in g['tests']}) == 149\n",
+    "after": "PROFILE_CRATES = {'file': 'heptabao-server', 'default': 'heptabao-server',\n                  'ha-native-v6-peer-ingress': 'heptabao-ha-service'}\nassert [(g['label'], g['libtest_profile'], len(g['tests'])) for g in groups] == [\n    (\"native-jwt-pki-file17\", \"file\", 17), (\"native-jwt-pki-default17\", \"default\", 17),\n    (\"legacy-jwt-default63\", \"default\", 63), (\"native-auth-identity-default69\", \"default\", 69),\n    (\"snapshot-body10\", \"ha-native-v6-peer-ingress\", 10), (\"snapshot-peer7\", \"ha-native-v6-peer-ingress\", 7),\n    (\"snapshot-actor2\", \"default\", 2), (\"snapshot-wire4\", \"default\", 4),\n    (\"snapshot-service-audit4\", \"default\", 4), (\"ssh25\", \"default\", 25),\n    (\"mount1\", \"default\", 1), (\"redirect5\", \"default\", 5),\n    (\"actor2\", \"default\", 2), (\"ordinary5\", \"default\", 5),\n    (\"no_forward6\", \"default\", 6), (\"ingress_observer\", \"default\", 7),\n    (\"cold_h2\", \"default\", 9), (\"same_root_publication\", \"default\", 1)]\nassert all(set(g) == {'label', 'libtest_profile', 'tests', 'runtime_seconds'}\n           and g['runtime_seconds'] == 600 and g['libtest_profile'] in PROFILE_CRATES\n           and len(g['tests']) == len(set(g['tests'])) for g in groups)\nassert groups[0]['tests'] == groups[1]['tests']\nassert sum(len(g['tests']) for g in groups) == 254\nassert len({(PROFILE_CRATES[g['libtest_profile']], name) for g in groups for name in g['tests']}) == 237\nassert sum(len(g['tests']) for g in groups[:4]) == 166\nassert len({n for g in groups[:4] for n in g['tests']}) == 149\nassert sum(len(g['tests']) for g in groups[4:9]) == 27\nassert sum(len(g['tests']) for g in groups[9:]) == 61\n",
+    "why": "same exact 18 families and crate-aware count before control admission"
+  },
+  {
+    "before": "'schema': 'heptabao.native-jwt-pki-target-admission.v1'",
+    "after": "'schema': 'heptabao.combined-snapshot-jwt-pki-target-admission.v1'",
+    "why": "new admission receipt scope"
+  },
+  {
+    "before": "                  unique_test_count=149, profile_instance_test_count=166,",
+    "after": "                  unique_test_count=237, profile_instance_test_count=254,\n                  baseline_c_unique=149, baseline_c_profile_instances=166,\n                  snapshot_components=23, snapshot_service_regressions=4, normal61_tests=61,",
+    "why": "separate denominator receipt"
+  },
+  {
+    "before": "existing_auth_identity_test_names=132, compile_profiles=['file', 'default'],",
+    "after": "existing_auth_identity_test_names=132, compile_profiles=['file', 'default', 'ha-native-v6-peer-ingress'],",
+    "why": "HA independent third libtest profile"
+  },
+  {
+    "before": "'source_tree': args.tree, 'unique_test_count': 149, 'profile_instance_test_count': 166,",
+    "after": "'source_tree': args.tree, 'unique_test_count': 237, 'profile_instance_test_count': 254,",
+    "why": "new preflight count"
+  }
+]

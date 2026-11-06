@@ -1,0 +1,42 @@
+{
+  "schema": "heptabao.025b-fixed4-body0-original-admission-UNKNOWN.v1",
+  "status": "UNKNOWN_BODY_ADMISSION_STOPPED",
+  "slot": "jwt_pki_025b05a3_build_controls_inert_gitfirst_r2",
+  "job": "1a1b0ade81d-fc05-7220",
+  "callKey": "jwt-pki-025b05a3-controls-r2-published-body0-admit",
+  "request": {
+    "blob": "b9e3c37da6a88ed78fe36893d8bf373e5213fdff",
+    "bytes": 417,
+    "sha256": "ba148cdadb1d9e0cb1147107cbe5be442c1b15873b4a1f8aec23ece70faba8be"
+  },
+  "requestRaw": "{\n  \"idempotency_key\": \"heptabao-native-jwt-pki-025b05a3-controls-observe-r2-published-body0\",\n  \"operation\": {\n    \"tool\": \"binary_read\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/native_jwt_build.py\",\n      \"expected_version\": \"66306:33212340:30397:1793965550402189411:1793965550403278461\",\n      \"offset\": 0,\n      \"limit\": 30397\n    }\n  }\n}\n",
+  "originalSDK": {
+    "blob": "f181c1e93e7b64c402b332fd29b23d0141762082",
+    "bytes": 247,
+    "sha256": "20bc68d840783af5cc8e791289d5ac77c6941d45f79768c397c95e629784e3fa"
+  },
+  "armedTree": "fd3b5b35fd14a96fa6222f0c03ea0f7f8855a200",
+  "sdkTree": "b47e9ddb57c646147c0bcd40fed017d965e806cd",
+  "bodyOperationID": null,
+  "bodyStartedOnce": true,
+  "automaticRetry": false,
+  "admissions1to3Submitted": false,
+  "metadata4Closed": true,
+  "originalMetadataObserverIDs": [
+    "e0b3516213ca2ce013bfc0288d2f641511f811b71f8ed4e08db682938e13860a",
+    "e8c754906784dc95c7d6f9f9db323c75f28d346c125b3b374a50b517ab950f87",
+    "1b398fc015b5d944a3e80c2b4eb0fadd0d343fcf29e265cdedb600c77ae316ad",
+    "9f565be95050449328b40b589e82270d644f88dc95a192de202c8de1f7e57a5a"
+  ],
+  "sameKeyReconciliationAuthorized": false,
+  "NativeCallsCurrentlyInFlight": 0,
+  "ownedFutureClosureUnknown": true,
+  "globalLaneRetained": true,
+  "reason": "SDK isError=true arrived after the one binary_read admission; the original idempotent operation may exist but no operation_id was delivered. This is not evidence of body absence or of a product/build failure.",
+  "rootGO": {
+    "blob": "e8fc1a9e9d8b09411bc8a47f19da1bce5aa27d32",
+    "bytes": 5948,
+    "sha256": "aadd1bcd39e4c86448352d48fcce1c6258332edabee69b0a370b127589365ef9"
+  },
+  "metadataBindingPacket": "e8412710d414a5dac4e53c1f33b8dd4dade2cb35"
+}

@@ -1,0 +1,99 @@
+{
+  "authorization": "GO",
+  "scope": "controls_body0_exact_admission_reconciliation",
+  "slot": "jwt_pki_025b05a3_controls_body0_admission_reconcile_r1",
+  "original_slot": "jwt_pki_025b05a3_build_controls_inert_gitfirst_r2",
+  "lookup_only": false,
+  "may_create_first_admission": true,
+  "maximum_operation_start_calls": 1,
+  "process_start_authorized": false,
+  "second_body_range_authorized": false,
+  "immutable_page_bytes": 16384,
+  "maximum_retained_payload_bytes": 1048576,
+  "old_unknown": {
+    "blob": "05d4be11937d3beca1fe0baa9f99df0fa761cb1b",
+    "bytes": 2322,
+    "sha256": "ff1276bf4f1fa41b64120a84b7e4688ca009992ad0f56d26202536aefa731d46"
+  },
+  "original_error_sdk": {
+    "blob": "f181c1e93e7b64c402b332fd29b23d0141762082",
+    "bytes": 247,
+    "sha256": "20bc68d840783af5cc8e791289d5ac77c6941d45f79768c397c95e629784e3fa"
+  },
+  "exact_request": {
+    "blob": "b9e3c37da6a88ed78fe36893d8bf373e5213fdff",
+    "bytes": 417,
+    "sha256": "ba148cdadb1d9e0cb1147107cbe5be442c1b15873b4a1f8aec23ece70faba8be"
+  },
+  "schema": "heptabao.root-exact-GO.025b-body0-same-key-conditional-reconciliation.r1",
+  "sourcePacket": {
+    "tree": "6cfbfe93238ce6266d1e8980a243d960a441111c",
+    "files": 21,
+    "bytes": 117358,
+    "merkle": {
+      "root_sha": "6cfbfe93238ce6266d1e8980a243d960a441111c",
+      "trees_verified": 1,
+      "leaf_count": 21
+    },
+    "whole": true
+  },
+  "candidateSource": {
+    "blob": "c3c1cad15dad4e714c19e112dacdea929a1d9650",
+    "bytes": 23301,
+    "sha256": "24df845ef46bc77a66f7181c14bb4dc8c6419dab6cac46111cea23db86eb1c69"
+  },
+  "rootSourceReview": {
+    "blob": "c2e00cf18730d986746d25f99087a448810d3924",
+    "bytes": 2693,
+    "sha256": "2365aca09285961e444f975eb9f147e38701e8516b0cdf3a41bce2c6cc6f058e"
+  },
+  "rootSourceChecks": 14,
+  "authorChecksReproduced": 70,
+  "actualMetadataBindingRoot": {
+    "blob": "ee65fb972b712a63c87ed031b894fa7a5b434ba3",
+    "bytes": 6511,
+    "sha256": "05c9a3655fc6149274ffaf0b412a99fd14c5a18971fadb469812211fe6f1a360"
+  },
+  "originalArmTree": "fd3b5b35fd14a96fa6222f0c03ea0f7f8855a200",
+  "originalCallKey": "jwt-pki-025b05a3-controls-r2-published-body0-admit",
+  "sameAuthenticatedCredentialAndPolicyRequired": true,
+  "existingBranch": "Record the actual returned existing-binding receipt and observe that returned ID; do not replace the missing original SDK.",
+  "absentBranch": "This exact same-key entry may first admit the same fixed public readonly range if no prior binding exists. Record reused=false as a new observation; it does not prove the old call was unsubmitted or closed.",
+  "maximumOperationStatusCalls": 8,
+  "maximumOperationResultPages": 64,
+  "wholeBodyBytes": 30397,
+  "expectedWholeSHA256": "d76b3d392c20bf4a7bbb7e8d8ea69abdfe3bb11f71a35075ba26ab948e778a50",
+  "existingUnknownOutcomePreserved": true,
+  "originalContextMutationAuthorized": false,
+  "otherThreeBodiesAuthorized": false,
+  "buildAuthorized": false,
+  "rootDispositionAfterClosureRequired": true,
+  "allocation": {
+    "line": "C",
+    "granted": true,
+    "maximumNativeCallsInFlight": 1,
+    "maximumAuthenticatedKeyBindingsInScope": 1,
+    "globalMaximumNativeLanes": 2,
+    "rootNativeCalls": 0,
+    "A": 1,
+    "B": 0,
+    "originalUnknownLaneRetained": true,
+    "newUnrelatedAdmissionAuthorized": false,
+    "BTransportRecovery": {
+      "blob": "ba35240411a23d656aaa3b65372288c7f1bfc0a9",
+      "bytes": 2800,
+      "sha256": "e02a2d82c3b897cc3a89ec23e589b30ad36ab676e1690763032a8256934e9fa6"
+    },
+    "BRelease": {
+      "blob": "3faec1b373cef9d1afdb223996b7fb0b450c5923",
+      "bytes": 3436,
+      "sha256": "a3fe8743e5d7ee05a374fdfffb1e9311e64054a333e90b99dd5c7ed163ccb498"
+    }
+  },
+  "execution": "Whole exact new GO/request/arm before the one original-key operation_start; whole original SDK before interpretation. Then only the actually returned ID's status and immutable pages; full payload, exact whole body hash and EOF. No key, version, offset, path or length change.",
+  "onAnySecondAdmissionError": "Preserve the second original SDK and stop; no third admission, alternate key or old-slot reset.",
+  "publicRuntimeSourceIsNotDeploymentAttestation": true,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

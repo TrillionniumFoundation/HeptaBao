@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r43_runtime_and_reconcile_exact_GOs_v1",
+  "records": [
+    {
+      "name": "Auth-runtime-GO.public.json",
+      "blob": "6e4ab624a8594d9e0ba19d1b980dea3a78dac90f",
+      "bytes": 8308,
+      "sha256": "b5ed59063f9b06b96e4f64503015761735f1cc7d503db85c18ff7d27d9cb8f8d"
+    },
+    {
+      "name": "PKI-body0-reconcile-GO.public.json",
+      "blob": "3c906e2aaeff7d708183e9dc4a94c0739e0a7c89",
+      "bytes": 4246,
+      "sha256": "7f984fe961b0126c83a4a04d6b584bd659071fa23d019634276140d8444aec36"
+    },
+    {
+      "name": "lane-allocation.public.json",
+      "blob": "a07d92e8700e31b9655cff63aa654d7477b2cd89",
+      "bytes": 865,
+      "sha256": "57813ee4fc8b5bd389ed851b596299ccf83c12c4b97ce7360383de70e9d44229"
+    },
+    {
+      "name": "B-original-page-recovery-root12.public.json",
+      "blob": "ba35240411a23d656aaa3b65372288c7f1bfc0a9",
+      "bytes": 2800,
+      "sha256": "e02a2d82c3b897cc3a89ec23e589b30ad36ab676e1690763032a8256934e9fa6"
+    },
+    {
+      "name": "C-reconcile-source-root14.public.json",
+      "blob": "c2e00cf18730d986746d25f99087a448810d3924",
+      "bytes": 2693,
+      "sha256": "2365aca09285961e444f975eb9f147e38701e8516b0cdf3a41bce2c6cc6f058e"
+    },
+    {
+      "name": "C-author70-reproduced.public.json",
+      "blob": "3369a8ffee5269c7a3cbe9ad62d17884a1f6c4e7",
+      "bytes": 5760,
+      "sha256": "15e2dd26f8e63859b7f47454e1b0dc2697f86ddac6d69ccbeb9d113449d96259"
+    }
+  ],
+  "expected_data_tree": "a22d95a19f4d59429f0a3e5070ac35d722ee83f9",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

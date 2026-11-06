@@ -1,0 +1,42 @@
+[
+  {
+    "file": "native_snapshot_body_tests.rs",
+    "crate": "heptabao-ha-service",
+    "profile": "ha-native-v6-peer-ingress",
+    "prefix": "native_snapshot_body::tests::",
+    "family": "body",
+    "count": 10
+  },
+  {
+    "file": "native_snapshot_peer_tests.rs",
+    "crate": "heptabao-ha-service",
+    "profile": "ha-native-v6-peer-ingress",
+    "prefix": "authenticated_peer_frame::snapshot::tests::",
+    "family": "transport",
+    "count": 7
+  },
+  {
+    "file": "auth_snapshot_forward_actor_tests.rs",
+    "crate": "heptabao-server",
+    "profile": "default",
+    "prefix": "auth::forward_actor::snapshot_tests::",
+    "family": "actor",
+    "count": 2
+  },
+  {
+    "file": "service_snapshot_forward_wire_tests.rs",
+    "crate": "heptabao-server",
+    "profile": "default",
+    "prefix": "service::snapshot_transfer::forward::wire::tests::",
+    "family": "wire",
+    "count": 4
+  },
+  {
+    "file": "service_native_snapshot_forward_audit_tests.rs",
+    "crate": "heptabao-server",
+    "profile": "default",
+    "prefix": "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::",
+    "family": "service_audit",
+    "count": 4
+  }
+]

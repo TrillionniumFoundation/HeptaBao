@@ -1,0 +1,67 @@
+{
+  "schema": "heptabao.root.original-025b-BUILD-ACK-qualification.r43",
+  "pass": true,
+  "checks": 11,
+  "results": [
+    {
+      "name": "whole_ACK6_and_original_arm3",
+      "pass": true
+    },
+    {
+      "name": "request_exact_GO",
+      "pass": true
+    },
+    {
+      "name": "GO_exact_root_current",
+      "pass": true
+    },
+    {
+      "name": "original_SDK_contains_exact_native",
+      "pass": true
+    },
+    {
+      "name": "exact_original_three_leaf_arm",
+      "pass": true
+    },
+    {
+      "name": "arm_intent_exact_request_and_GO",
+      "pass": true
+    },
+    {
+      "name": "one_unique_admission_only",
+      "pass": true
+    },
+    {
+      "name": "ACK_launched_original_ROG_job",
+      "pass": true
+    },
+    {
+      "name": "18argv_and_fixed_cwd_executable_key",
+      "pass": true
+    },
+    {
+      "name": "typed_digest_and_lossless_fingerprint",
+      "pass": true
+    },
+    {
+      "name": "GO_is_exact_original_025b_target",
+      "pass": true
+    }
+  ],
+  "packet": "cefd11d7992054bf3e70970dfcca4f0fb5806ea8",
+  "arm": "e976b7a0a34f60017097f82f1ffa4fe23b723f6c",
+  "original_job": "rog/1a1b10cad9b-fc05-7560",
+  "native": {
+    "blob": "d3f578e960358d02a8b858a9cb4c3ec4e1105c32",
+    "bytes": 1650,
+    "sha256": "0aa9f3d9621a9dce07a77512d9d42c562f6bba754b93a7c89d6bbcc488aa8128"
+  },
+  "typed_digest": "527c6f94dadb62d7f4ff1168adecc80f2b1af2feef6891e28a3bcb2b1673388d",
+  "native_fingerprint_decimal": "5943748293339865815",
+  "qualification": "original admission ACK only; actual build/166 instances pending",
+  "build_result_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r43-JWT-ACL-draft2-source-contradiction-r1",
+  "records": [
+    {
+      "name": "root-finding.public.json",
+      "blob": "70144aa777fe47ac2712a491f4571b907c6d137a",
+      "bytes": 5795,
+      "sha256": "992661b4d85206889e71269ce75b0e46d4e0307abd4d35b0a8ff835f97d4804c"
+    }
+  ],
+  "expected_data_tree": "9c3cfc18309845f7d545494c8c378211d5c3742f",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

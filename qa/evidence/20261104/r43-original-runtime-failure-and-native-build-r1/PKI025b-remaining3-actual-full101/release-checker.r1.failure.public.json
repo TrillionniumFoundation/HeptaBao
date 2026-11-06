@@ -1,0 +1,8 @@
+{
+  "schema": "heptabao.pure-release-checker-correction.v1",
+  "status": "failed",
+  "message": "historical_context_changed:jwt_pki_025b05a3_build_controls_inert_gitfirst_r2",
+  "cause": "Local release checker used compact JSON.stringify(state), while frozen journal pins encode pretty JSON with terminal LF; no Runtime/Git mutation occurred in failed check.",
+  "nativeCalls": 0,
+  "originalContextsModified": false
+}
